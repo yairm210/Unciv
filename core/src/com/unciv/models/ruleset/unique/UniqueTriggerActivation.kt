@@ -495,7 +495,7 @@ object UniqueTriggerActivation {
                 return true
             }
             OneTimeUnitUpgrade -> {
-                val upgradeAction = UnitActions.getUpgradeAction(unit, true)
+                val upgradeAction = UnitActions.getFreeUpgradeAction(unit)
                     ?: return false
                 upgradeAction.action!!()
                 if (notification != null)

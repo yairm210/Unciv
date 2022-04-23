@@ -512,8 +512,9 @@ class MapUnit {
         if (name == unitToUpgradeTo.name) return false
         val rejectionReasons = unitToUpgradeTo.getRejectionReasons(civInfo)
         if (rejectionReasons.isEmpty()) return true
+        if (ignoreRequired && rejectionReasons.filterTechPolicyEraWonderRequirements().isEmpty()) return true
 
-        if (rejectionReasons.size == 1 && rejectionReasons.contains(RejectionReason.ConsumesResources)) {
+        if (rejectionReasons.contains(RejectionReason.ConsumesResources)) {
             // We need to remove the unit from the civ for this check,
             // because if the unit requires, say, horses, and so does its upgrade,
             // and the civ currently has 0 horses, we need to see if the upgrade will be buildable
@@ -978,6 +979,8 @@ class MapUnit {
 
     fun canIntercept(): Boolean {
         if (interceptChance() == 0) return false
+        // Air Units can only Intercept if they didn't move this turn
+        if (baseUnit.isAirUnit() && currentMovement == 0f) return false
         val maxAttacksPerTurn = 1 +
             getMatchingUniques("[] extra interceptions may be made per turn").sumOf { it.params[0].toInt() }
         if (attacksThisTurn >= maxAttacksPerTurn) return false
@@ -1004,7 +1007,7 @@ class MapUnit {
     fun canTransport(unit: MapUnit): Boolean {
         if (owner != unit.owner) return false
         if (!isTransportTypeOf(unit)) return false
-        if (unit.getMatchingUniques(UniqueType.CannotBeCarriedBy).any{matchesFilter(it.params[0])}) return false
+        if (unit.getMatchingUniques(UniqueType.CannotBeCarriedBy).any { matchesFilter(it.params[0]) }) return false
         if (currentTile.airUnits.count { it.isTransported } >= carryCapacity(unit)) return false
         return true
     }

@@ -90,6 +90,7 @@ enum class UniqueParameterType(
             if ('{' in parameterText) // "{filter} {filter}" for and logic
                 return parameterText.filterCompositeLogic({ getErrorSeverity(it, ruleset) }) { a, b -> maxOf(a, b) }
             if (UnitName.getErrorSeverity(parameterText, ruleset) == null) return null
+            if (ruleset.units.values.any { it.uniques.contains(parameterText) }) return null
             return UnitTypeFilter.getErrorSeverity(parameterText, ruleset)
         }
     },
@@ -99,38 +100,27 @@ enum class UniqueParameterType(
     UnitTypeFilter("unitType", "Water", null, "Unit Type Filters") {
         // As you can see there is a difference between these and what's in unitTypeStrings (for translation) -
         // the goal is to unify, but for now this is the "real" list
-        private val knownValues = setOf("All", "Melee", "Ranged", "Civilian", "Military", "Land", "Water", "Air",
-            "non-air", "Nuclear Weapon", "Great Person", "Religious", "Barbarian")
-        // TODO make this obsolete
-        private val unitTypeStrings = setOf(
-            "Military",
-            "Civilian",
-            "non-air",
-            "relevant",
-            "Nuclear Weapon",
-            "City",
-            "Barbarian",
-            "Great Person",
+        // Note: this can't handle combinations of parameters (e.g. [{Military} {Water}])
+        private val knownValues = setOf(
+            "All", "Melee", "Ranged", "Civilian", "Military", "Land", "Water", "Air",
+            "non-air", "Nuclear Weapon", "Great Person", "Religious", "Barbarian",
+            "relevant", "City",
             // These are up for debate
-            "Air",
-            "land units",
-            "water units",
-            "air units",
-            "military units",
-            "submarine units",
-            // Note: this can't handle combinations of parameters (e.g. [{Military} {Water}])
+//            "land units", "water units", "air units", "military units", "submarine units",
         )
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
             if (parameterText in knownValues) return null
             if (ruleset.unitTypes.containsKey(parameterText)) return null
+            if (ruleset.unitTypes.values.any { it.uniques.contains(parameterText) }) return null
             return UniqueType.UniqueComplianceErrorSeverity.WarningOnly
         }
 
         override fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset) =
-            parameterText in ruleset.unitTypes.keys || parameterText in unitTypeStrings
-        override fun getTranslationWriterStringsForOutput() = unitTypeStrings
+            parameterText in ruleset.unitTypes.keys || parameterText in getTranslationWriterStringsForOutput()
+
+        override fun getTranslationWriterStringsForOutput() = knownValues
     },
 
     /** Only used by [BaseUnitFilter] */
@@ -226,13 +216,13 @@ enum class UniqueParameterType(
 
     /** Implemented by [Building.matchesFilter][com.unciv.models.ruleset.Building.matchesFilter] */
     BuildingFilter("buildingFilter", "Culture") {
-        private val knownValues = setOf("All","Building","Buildings","Wonder","Wonders","National Wonder","World Wonder")
+        private val knownValues = mutableSetOf("All","Building","Buildings","Wonder","Wonders","National Wonder","World Wonder")
+            .apply { addAll(Stat.values().map { it.name }) }
         override fun getErrorSeverity(
             parameterText: String,
             ruleset: Ruleset
         ): UniqueType.UniqueComplianceErrorSeverity? {
             if (parameterText in knownValues) return null
-            if (Stat.values().any { it.name == parameterText }) return null   // Allow filtering Science, Culture buildings
             if (BuildingName.getErrorSeverity(parameterText, ruleset) == null) return null
             return UniqueType.UniqueComplianceErrorSeverity.WarningOnly
         }
@@ -279,7 +269,9 @@ enum class UniqueParameterType(
             in knownValues -> null
             in ruleset.terrains -> null
             in ruleset.tileResources -> null
-            else -> UniqueType.UniqueComplianceErrorSeverity.WarningOnly
+            in ruleset.terrains.values.asSequence().flatMap { it.uniques } -> null
+            in ruleset.tileResources.values.asSequence().flatMap { it.uniques } -> null
+            else -> UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
         }
         override fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset) =
             parameterText in ruleset.terrains || parameterText != "All" && parameterText in knownValues
@@ -388,7 +380,9 @@ enum class UniqueParameterType(
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
             if (parameterText in knownValues) return null
-            return ImprovementName.getErrorSeverity(parameterText, ruleset)
+            if (ImprovementName.getErrorSeverity(parameterText, ruleset) == null) return null
+            if (ruleset.tileImprovements.values.any { it.hasUnique(parameterText) }) return null
+            return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
         }
         override fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset) =
             parameterText != "All" && getErrorSeverity(parameterText, ruleset) == null

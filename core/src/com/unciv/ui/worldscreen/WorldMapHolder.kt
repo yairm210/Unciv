@@ -38,7 +38,7 @@ import com.unciv.ui.utils.*
 
 class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap: TileMap): ZoomableScrollPane() {
     internal var selectedTile: TileInfo? = null
-    private val tileGroups = HashMap<TileInfo, List<WorldTileGroup>>()
+    val tileGroups = HashMap<TileInfo, List<WorldTileGroup>>()
 
     //allWorldTileGroups exists to easily access all WordTileGroups
     //since tileGroup is a HashMap of Lists and getting all WordTileGroups
@@ -486,13 +486,8 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
      * @param visibleAttacks Sequence of pairs of [Vector2] positions of the sources and the targets of all attacks that can be displayed.
      * */
     internal fun updateMovementOverlay(pastVisibleUnits: Sequence<MapUnit>, targetVisibleUnits: Sequence<MapUnit>, visibleAttacks: Sequence<Pair<Vector2, Vector2>>) {
-        if (!UncivGame.Current.settings.showUnitMovements) {
-            return
-        }
         for (unit in pastVisibleUnits) {
-            if (unit.movementMemories.isEmpty()) {
-                continue
-            }
+            if (unit.movementMemories.isEmpty()) continue
             val stepIter = unit.movementMemories.iterator()
             var previous = stepIter.next()
             while (stepIter.hasNext()) {

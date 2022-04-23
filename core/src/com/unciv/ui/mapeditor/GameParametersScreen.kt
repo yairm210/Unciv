@@ -12,43 +12,18 @@ import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
 
 /**
+ * As of MapEditor V2, the editor no longer deals with GameParameters, **only** with MapParameters,
+ * and has no need of this. There are no instantiations. The class, stripped, is left in as skeleton
+ * so its references in PlayerPickerTable and NationPickerPopup can stay. They have been effectively dead even before.
+ *
  * This [Screen] is used for editing game parameters when scenario is edited/created in map editor.
  * Implements [IPreviousScreen] for compatibility with [PlayerPickerTable], [GameOptionsTable]
  * Uses [PlayerPickerTable] and [GameOptionsTable] to change local [gameSetupInfo]. Upon confirmation
  * updates [mapEditorScreen] and switches to it.
  * @param [mapEditorScreen] previous screen from map editor.
  */
+@Deprecated("As of 4.0.x")
 class GameParametersScreen(var mapEditorScreen: MapEditorScreen): IPreviousScreen, PickerScreen(disableScroll = true) {
-    override var gameSetupInfo = GameSetupInfo(mapEditorScreen.gameSetupInfo)
+    override var gameSetupInfo = GameSetupInfo(mapParameters = mapEditorScreen.newMapParameters)
     override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods, gameSetupInfo.gameParameters.baseRuleset)
-    var playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)
-    var gameOptionsTable = GameOptionsTable(this) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
-
-
-    init {
-        setDefaultCloseAction(mapEditorScreen)
-
-        topTable.add(AutoScrollPane(gameOptionsTable).apply { setScrollingDisabled(true, false) })
-                .maxHeight(topTable.parent.height).width(stage.width / 2).padTop(20f).top()
-        topTable.addSeparatorVertical()
-        topTable.add(playerPickerTable).maxHeight(topTable.parent.height).width(stage.width / 2).padTop(20f).top()
-        rightSideButton.setText(Constants.OK.tr())
-        rightSideButton.onClick {
-            mapEditorScreen.gameSetupInfo = gameSetupInfo
-            mapEditorScreen.ruleset.clear()
-            mapEditorScreen.ruleset.add(ruleset)
-            mapEditorScreen.mapEditorOptionsTable.update()
-            // Remove resources that are not applicable to this ruleset
-            for(tile in mapEditorScreen.tileMap.values) {
-                if (tile.resource != null && !ruleset.tileResources.containsKey(tile.resource!!))
-                    tile.resource = null
-                if (tile.improvement != null && !ruleset.tileImprovements.containsKey(tile.improvement!!))
-                    tile.improvement = null
-            }
-
-            mapEditorScreen.mapHolder.updateTileGroups()
-            UncivGame.Current.setScreen(mapEditorScreen)
-            dispose()
-        }
-    }
 }

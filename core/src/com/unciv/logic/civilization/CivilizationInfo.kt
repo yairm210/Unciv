@@ -7,6 +7,7 @@ import com.unciv.logic.UncivShowableException
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.RuinsManager.RuinsManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
@@ -28,6 +29,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.MayaCalendar
 import com.unciv.ui.utils.toPercent
+import com.unciv.ui.utils.withItem
 import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
 import kotlin.NoSuchElementException
@@ -546,6 +548,9 @@ class CivilizationInfo {
         }
         for ((key, value) in giftAmount)
             otherCiv.addStat(key, value.toInt())
+        
+        if (cities.isNotEmpty())
+            otherCiv.exploredTiles = otherCiv.exploredTiles.withItem(getCapital().location)
         
         questManager.justMet(otherCiv) // Include them in war with major pseudo-quest
     }

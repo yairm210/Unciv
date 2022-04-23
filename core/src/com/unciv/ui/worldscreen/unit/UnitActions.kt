@@ -311,14 +311,14 @@ object UnitActions {
         if (upgradeAction != null) actionList += upgradeAction
     }
 
-    fun getUpgradeAction(unit: MapUnit, isFree: Boolean = false): UnitAction? {
+    fun getUpgradeAction(unit: MapUnit): UnitAction? {
         val tile = unit.currentTile
-        if (unit.baseUnit().upgradesTo == null || !unit.canUpgrade()) return null
-        if (tile.getOwner() != unit.civInfo && !isFree) return null
-        val goldCostOfUpgrade =
-            if (isFree) 0
-            else unit.getCostOfUpgrade()
+        if (unit.baseUnit().upgradesTo == null) return null
+        if (!unit.canUpgrade()) return null
+        if (tile.getOwner() != unit.civInfo) return null
+        
         val upgradedUnit = unit.getUnitToUpgradeTo()
+        val goldCostOfUpgrade = unit.getCostOfUpgrade()
 
         return UnitAction(UnitActionType.Upgrade,
             title = "Upgrade to [${upgradedUnit.name}] ([$goldCostOfUpgrade] gold)",
@@ -339,12 +339,35 @@ object UnitActions {
                     newUnit.currentMovement = 0f
                 }
             }.takeIf {
-                isFree ||
-                (
-                        unit.civInfo.gold >= goldCostOfUpgrade
-                                && unit.currentMovement > 0
-                                && !unit.isEmbarked()
-                )
+                unit.civInfo.gold >= goldCostOfUpgrade
+                && unit.currentMovement > 0
+                && !unit.isEmbarked()
+            }
+        )
+    }
+    
+    fun getFreeUpgradeAction(unit: MapUnit): UnitAction? {
+        if (unit.baseUnit().upgradesTo == null) return null
+        val upgradedUnit = unit.civInfo.getEquivalentUnit(unit.baseUnit().upgradesTo!!)
+        if (!unit.canUpgrade(upgradedUnit, true)) return null
+
+        return UnitAction(UnitActionType.Upgrade,
+            title = "Upgrade to [${upgradedUnit.name}] (FREE)",
+            action = {
+                val unitTile = unit.getTile()
+                unit.destroy()
+                val newUnit = unit.civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name)
+
+                /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
+                 * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
+                 */
+                if (newUnit == null) {
+                    val readdedUnit = unit.civInfo.placeUnitNearTile(unitTile.position, unit.name)
+                    unit.copyStatisticsTo(readdedUnit!!)
+                } else { // Managed to upgrade
+                    unit.copyStatisticsTo(newUnit)
+                    newUnit.currentMovement = 0f
+                }
             }
         )
     }
@@ -357,9 +380,8 @@ object UnitActions {
                 else -> return null
             }
         val upgradedUnit =
-            unit.civInfo.getEquivalentUnit(
-                unit.civInfo.gameInfo.ruleSet.units[upgradedUnitName]!!
-            )
+            unit.civInfo.getEquivalentUnit(unit.civInfo.gameInfo.ruleSet.units[upgradedUnitName]!!)
+        
         if (!unit.canUpgrade(upgradedUnit,true)) return null
 
         return UnitAction(UnitActionType.Upgrade,

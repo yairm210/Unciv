@@ -129,7 +129,8 @@ class RejectionReasons: HashSet<RejectionReasonInstance>() {
             RejectionReason.PopulationRequirement,
             RejectionReason.ConsumesResources,
             RejectionReason.CanOnlyBePurchased,
-            RejectionReason.MaxNumberBuildable
+            RejectionReason.MaxNumberBuildable,
+            RejectionReason.NoPlaceToPutUnit
         )
     }
 } 
@@ -184,7 +185,8 @@ enum class RejectionReason(val shouldShow: Boolean, val errorMessage: String) {
 
     PopulationRequirement(true, "Requires more population"),
 
-    NoSettlerForOneCityPlayers(false, "No settlers for city-states or one-city challengers");
+    NoSettlerForOneCityPlayers(false, "No settlers for city-states or one-city challengers"),
+    NoPlaceToPutUnit(true, "No space to place this unit");
     
     fun toInstance(errorMessage: String = this.errorMessage,
         shouldShow: Boolean = this.shouldShow): RejectionReasonInstance {

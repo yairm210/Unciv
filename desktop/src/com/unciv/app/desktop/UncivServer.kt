@@ -48,10 +48,10 @@ private class UncivServerRunner : CliktCommand() {
                 put("/files/{fileName}") {
                     val fileName = call.parameters["fileName"] ?: throw Exception("No fileName!")
                     withContext(Dispatchers.IO) {
-                        val recievedBytes =
-                            call.request.receiveChannel().toInputStream().readAllBytes()
-                        val textString = String(recievedBytes)
-                        println("Recieved text: $textString")
+                        val receivedBytes =
+                            call.request.receiveChannel().toInputStream().readBytes()
+                        val textString = String(receivedBytes)
+                        println("Received text: $textString")
                         File(fileFolderName, fileName).writeText(textString)
                     }
                 }

@@ -1,3 +1,53 @@
+## 4.0.8
+
+Redone Map Editor - By SomeTroglodyte
+
+Added very basic "flash red on attack" battle animations
+
+Air units with no space in the city cannot be selected for construction
+
+Unpillagable improvements removed entirely on nuke
+
+AIs don't add double agreements to counteroffers
+
+Clearer "owned" resource on AI trade offer
+
+By xlenstra:
+- Made 'go to on map' translatable & fixed crash 
+- Fixed two small bugs 
+
+## 4.0.7
+
+Resolved problems in hosting Unciv server
+
+By xlenstra:
+- Added 'unit upgrades for free' unique
+- Added a 'go to capital'-button in diplomacy screen 
+- Fixed vanilla policies regression 
+
+By itanasi:
+- Air Units take damage in Combat 
+- Updating XP Rewards. Interception now gives XP 
+- When capturing Civilian, stop current action 
+
+Fixed TurnChecker crash when using custom server  - By GGGuenni
+
+Add modding translation instruction to the wiki  - By heipizhu4
+
+## 4.0.6
+
+Got rid of ANRs from multiple sources
+
+Performance improvements, including framerate
+
+Improved continuous rendering's framerate, to solve some ANRs
+
+Discord suggestion - have allied city states see all tiles of their ally, so they can support them militarily
+
+MusicController improvements  - By SomeTroglodyte
+
+Fixed a bug where production would not be retained when changing from an obsolete unit to its upgraded unique unit - By xlenstra
+
 ## 4.0.5
 
 Added borders to minimap 

@@ -41,7 +41,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     override fun getUniqueTarget() = UniqueTarget.Unit
 
-    private var replacementTextForUniques = ""
+    var replacementTextForUniques = ""
     var promotions = HashSet<String>()
     var obsoleteTech: String? = null
     var upgradesTo: String? = null
@@ -230,6 +230,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         val unit = MapUnit()
         unit.name = name
         unit.civInfo = civInfo
+        unit.owner = civInfo.civName
 
         // must be after setting name & civInfo because it sets the baseUnit according to the name
         // and the civInfo is required for using `hasUnique` when determining its movement options  
@@ -352,6 +353,12 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         val rejectionReasons = RejectionReasons()
         if (isWaterUnit() && !cityConstructions.cityInfo.isCoastal())
             rejectionReasons.add(RejectionReason.WaterUnitsInCoastalCities)
+        if (isAirUnit()) {
+            val fakeUnit = getMapUnit(cityConstructions.cityInfo.civInfo)
+            val canUnitEnterTile = fakeUnit.movement.canMoveTo(cityConstructions.cityInfo.getCenterTile())
+            if (!canUnitEnterTile)
+                rejectionReasons.add(RejectionReason.NoPlaceToPutUnit)
+        }
         val civInfo = cityConstructions.cityInfo.civInfo
         for (unique in uniqueObjects) {
             @Suppress("NON_EXHAUSTIVE_WHEN")
