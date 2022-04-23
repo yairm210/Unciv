@@ -599,11 +599,13 @@ class CityStats(val cityInfo: CityInfo) {
         val buildingsMaintenance = getBuildingMaintenanceCosts() // this is AFTER the bonus calculation!
         newFinalStatList["Maintenance"] = Stats(gold = -buildingsMaintenance.toInt().toFloat())
 
-        if (totalFood > 0 
-            && currentConstruction is INonPerpetualConstruction 
+        if (currentConstruction is INonPerpetualConstruction
             && currentConstruction.hasUnique(UniqueType.ConvertFoodToProductionWhenConstructed)
         ) {
-            newFinalStatList["Excess food to production"] = Stats(production = totalFood, food = -totalFood)
+            if (totalFood > 0)
+                newFinalStatList["Excess food to production"] = Stats(production = getProductionFromExcessiveFood(totalFood), food = -totalFood)
+            else // prevent starvation but no bonus from excess food
+                newFinalStatList["Excess food to production"] = Stats(food = -totalFood)
         }
         
         val growthNullifyingUnique = cityInfo.getMatchingUniques(UniqueType.NullifiesGrowth).firstOrNull()
@@ -619,6 +621,17 @@ class CityStats(val cityInfo: CityInfo) {
         if (newFinalStatList.values.map { it.production }.sum() < 1)  // Minimum production for things to progress
             newFinalStatList["Production"] = Stats(production = 1f)
         finalStatList = newFinalStatList
+    }
+
+    // calculate the conversion of the excessive food to the production
+    // See for details: https://www.youtube.com/watch?v=n5vSKAahXT4
+    private fun getProductionFromExcessiveFood(food : Float): Float {
+        return if (food >= 12.0f ) 5.0f
+          else if (food >= 8.0f ) 4.0f
+          else if (food >= 4.0f ) 3.0f
+          else if (food >= 2.0f ) 2.0f
+          else if (food >= 1.0f ) 1.0f
+        else 0.0f
     }
 
     private fun updateFoodEaten() {
