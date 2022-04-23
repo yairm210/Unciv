@@ -624,11 +624,9 @@ class CityStats(val cityInfo: CityInfo) {
     }
 
     // calculate the conversion of the excessive food to the production
-    // See for details: https://www.youtube.com/watch?v=n5vSKAahXT4
+    // See for details: https://civilization.fandom.com/wiki/Settler_(Civ5)
     private fun getProductionFromExcessiveFood(food : Float): Float {
-        return if (food >= 12.0f ) 5.0f
-          else if (food >= 8.0f ) 4.0f
-          else if (food >= 4.0f ) 3.0f
+        return if (food >= 4.0f ) 2.0f + (food / 4.0f).toInt()
           else if (food >= 2.0f ) 2.0f
           else if (food >= 1.0f ) 1.0f
         else 0.0f
