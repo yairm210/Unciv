@@ -124,7 +124,7 @@ enum class UniqueParameterType(
     },
 
     /** Only used by [BaseUnitFilter] */
-    UnitName("unit", "Worker") {
+    UnitName("unit", "Musketman") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
             if (ruleset.units.containsKey(parameterText)) return null
