@@ -6,8 +6,8 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.*
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.ruleset.ThingToFocus
 import com.unciv.models.ruleset.unique.UniqueType.*
-import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters
@@ -144,14 +144,12 @@ object UniqueTriggerActivation {
                     if (greatPeople.isEmpty()) return false
                     var greatPerson = greatPeople.random()
 
-                    val preferredVictoryType = civInfo.victoryType()
-                    
-                    if (preferredVictoryType == VictoryType.Cultural) {
+                    if (civInfo.wantsToFocusOn(ThingToFocus.Culture)) {
                         val culturalGP =
                             greatPeople.firstOrNull { it.uniques.contains("Great Person - [Culture]") }
                         if (culturalGP != null) greatPerson = culturalGP
                     }
-                    if (preferredVictoryType == VictoryType.Scientific) {
+                    if (civInfo.wantsToFocusOn(ThingToFocus.Science)) {
                         val scientificGP =
                             greatPeople.firstOrNull { it.uniques.contains("Great Person - [Science]") }
                         if (scientificGP != null) greatPerson = scientificGP
@@ -459,7 +457,7 @@ object UniqueTriggerActivation {
                     if (!civ.isBarbarian() && !civ.isSpectator())
                         civ.addFlag(
                             CivFlags.TurnsTillNextDiplomaticVote.name,
-                            civInfo.getTurnsBetweenDiplomaticVotings()
+                            civInfo.getTurnsBetweenDiplomaticVotes()
                         )
                 if (notification != null)
                     civInfo.addNotification(notification, NotificationIcon.Diplomacy)

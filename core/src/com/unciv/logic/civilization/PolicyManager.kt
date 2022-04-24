@@ -38,7 +38,7 @@ class PolicyManager {
         get() {
             val value = HashMap<PolicyBranch, Int>()
             for (branch in branches) {
-                value[branch] = branch.priorities[civInfo.victoryType().name] ?: 0
+                value[branch] = branch.priorities[civInfo.getPreferredVictoryType()] ?: 0
             }
             return value
         }

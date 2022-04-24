@@ -18,7 +18,7 @@ import kotlin.math.pow
 
 class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
-    var requiredTech: String? = null
+    override var requiredTech: String? = null
 
     var cost: Int = 0
     var maintenance = 0
@@ -535,11 +535,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     }
                 }
 
+                // To be replaced with `Only available <after [Apollo Project] has been build>`
                 UniqueType.SpaceshipPart -> {
                     if (!civInfo.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts))
                         rejectionReasons.add(RejectionReason.RequiresBuildingInSomeCity.toInstance("Apollo project not built!"))
-                    if (civInfo.victoryManager.unconstructedSpaceshipParts()[name] == 0)
-                        rejectionReasons.add(RejectionReason.ReachedBuildCap)
                 }
 
                 UniqueType.RequiresAnotherBuilding -> {
@@ -590,7 +589,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 }
 
                 UniqueType.HiddenWithoutVictoryType -> {
-                    if (!civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.valueOf(unique.params[0])))
+                    if (!civInfo.gameInfo.gameParameters.victoryTypes.contains(unique.params[0]))
                         rejectionReasons.add(RejectionReason.HiddenWithoutVictory.toInstance(unique.text))
                 }
             }
@@ -670,7 +669,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     override fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat?): Boolean {
         val civInfo = cityConstructions.cityInfo.civInfo
 
-        if (hasUnique(UniqueType.SpaceshipPart)) {
+        if (civInfo.gameInfo.spaceResources.contains(name)) {
             civInfo.victoryManager.currentsSpaceshipParts.add(name, 1)
             return true
         }

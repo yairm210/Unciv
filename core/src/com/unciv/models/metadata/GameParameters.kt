@@ -1,10 +1,6 @@
 package com.unciv.models.metadata
 
-import com.unciv.Constants
 import com.unciv.logic.civilization.PlayerType
-import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.ruleset.VictoryType
 
 enum class BaseRuleset(val fullName:String){
     Civ_V_Vanilla("Civ V - Vanilla"),
@@ -26,9 +22,8 @@ class GameParameters { // Default values are the default new game
     var godMode = false
     var nuclearWeaponsEnabled = true
     var religionEnabled = false
-
-    // By default, all victory types except Diplomacy and time as they are quite new
-    var victoryTypes: ArrayList<VictoryType> = arrayListOf(VictoryType.Cultural, VictoryType.Domination, VictoryType.Scientific)  
+    
+    var victoryTypes: ArrayList<String> = arrayListOf()  
     var startingEra = "Ancient era"
 
     var isOnlineMultiplayer = false
@@ -70,9 +65,7 @@ class GameParameters { // Default values are the default new game
             if (!nuclearWeaponsEnabled) yield("No nukes")
             if (religionEnabled) yield("Religion")
             if (godMode) yield("God mode")
-            for (victoryType in VictoryType.values()) {
-                if (victoryType !in victoryTypes) yield("No $victoryType Victory")
-            }
+            yield("Enabled Victories: " + victoryTypes.joinToString())
             yield(baseRuleset)
             yield(if (mods.isEmpty()) "no mods" else mods.joinToString(",", "mods=(", ")", 6) )
         }.joinToString(prefix = "(", postfix = ")")

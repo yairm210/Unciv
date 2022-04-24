@@ -5,7 +5,6 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.CityStateType
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
@@ -135,7 +134,8 @@ class GameOptionsTable(
     }
 
     private fun Table.addMaxTurnsSlider(): UncivSlider? {
-        if (!gameParameters.victoryTypes.contains(VictoryType.Time)) return null
+        if (gameParameters.victoryTypes.none { ruleset.victories[it]?.enablesMaxTurns() == true })
+            return null
 
         add("{Max Turns}:".toLabel()).left().expandX()
         val slider = UncivSlider(250f, 1500f, 50f) {
@@ -229,25 +229,23 @@ class GameOptionsTable(
         add("{Victory Conditions}:".toLabel()).colspan(2).row()
 
         // Create a checkbox for each VictoryType existing
-        var i = 0
         val victoryConditionsTable = Table().apply { defaults().pad(5f) }
-        for (victoryType in VictoryType.values()) {
-            if (victoryType == VictoryType.Neutral) continue
-            val victoryCheckbox = victoryType.name.toCheckBox(gameParameters.victoryTypes.contains(victoryType)) {
+        for ((i, victoryType) in ruleset.victories.values.withIndex()) {
+            val victoryCheckbox = victoryType.name.toCheckBox(gameParameters.victoryTypes.contains(victoryType.name)) {
                 // If the checkbox is checked, adds the victoryTypes else remove it
                 if (it) {
-                    gameParameters.victoryTypes.add(victoryType)
+                    gameParameters.victoryTypes.add(victoryType.name)
                 } else {
-                    gameParameters.victoryTypes.remove(victoryType)
+                    gameParameters.victoryTypes.remove(victoryType.name)
                 }
                 // show or hide the max turns select box
-                if (victoryType == VictoryType.Time)
+                if (victoryType.enablesMaxTurns())
                     update()
             }
             victoryCheckbox.name = victoryType.name
             victoryCheckbox.isDisabled = locked
             victoryConditionsTable.add(victoryCheckbox).left()
-            if (++i % 2 == 0) victoryConditionsTable.row()
+            if ((i + 1) % 2 == 0) victoryConditionsTable.row()
         }
         add(victoryConditionsTable).colspan(2).row()
     }

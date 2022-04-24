@@ -10,7 +10,6 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Era
 import com.unciv.models.ruleset.QuestName
-import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaCategories
@@ -108,7 +107,7 @@ class WonderOverviewTab(
         wonder.name in startingObsolete -> false
         wonder.getMatchingUniques(UniqueType.HiddenWithoutVictoryType)
             .any { unique ->
-                !gameInfo.gameParameters.victoryTypes.contains(VictoryType.valueOf(unique.params[0]))
+                !gameInfo.gameParameters.victoryTypes.contains(unique.params[0])
             } -> false
         else -> wonderEra <= viewerEra
     }

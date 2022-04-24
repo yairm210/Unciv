@@ -35,7 +35,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     var interceptRange = 0
     lateinit var unitType: String
     fun getType() = ruleset.unitTypes[unitType]!!
-    var requiredTech: String? = null
+    override var requiredTech: String? = null
     private var requiredResource: String? = null
 
     override fun getUniqueTarget() = UniqueTarget.Unit

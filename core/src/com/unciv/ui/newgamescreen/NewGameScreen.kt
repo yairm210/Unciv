@@ -41,6 +41,10 @@ class NewGameScreen(
     init {
         updateRuleset()  // must come before playerPickerTable so mod nations from fromSettings
         // Has to be initialized before the mapOptionsTable, since the mapOptionsTable refers to it on init
+
+        if (gameSetupInfo.gameParameters.victoryTypes.isEmpty())
+            gameSetupInfo.gameParameters.victoryTypes.addAll(ruleset.victories.keys)
+        
         playerPickerTable = PlayerPickerTable(
             this, gameSetupInfo.gameParameters,
             if (isNarrowerThan4to3()) stage.width - 20f else 0f
@@ -90,6 +94,14 @@ class NewGameScreen(
                 noHumanPlayersPopup.addGoodSizedLabel("No human players selected!".tr()).row()
                 noHumanPlayersPopup.addCloseButton()
                 noHumanPlayersPopup.open()
+                return@onClick
+            }
+            
+            if (gameSetupInfo.gameParameters.victoryTypes.isEmpty()) {
+                val noVictoryTypesPopup = Popup(this)
+                noVictoryTypesPopup.addGoodSizedLabel("No victory conditions were selected!".tr()).row()
+                noVictoryTypesPopup.addCloseButton()
+                noVictoryTypesPopup.open()
                 return@onClick
             }
 

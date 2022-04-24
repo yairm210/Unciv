@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.*
+import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
@@ -177,13 +178,13 @@ class CivilopediaScreen(
         val religionEnabled = if (game.isGameInfoInitialized()) game.gameInfo.isReligionEnabled()
             else ruleset.beliefs.isNotEmpty()
         val victoryTypes = if (game.isGameInfoInitialized()) game.gameInfo.gameParameters.victoryTypes
-            else VictoryType.values().toList()
+            else listOf()
 
         fun shouldBeDisplayed(obj: IHasUniques): Boolean {
             return when {
                 obj.hasUnique(UniqueType.HiddenFromCivilopedia) -> false
                 (!religionEnabled && obj.hasUnique(UniqueType.HiddenWithoutReligion)) -> false
-                obj.getMatchingUniques(UniqueType.HiddenWithoutVictoryType).any { !victoryTypes.contains(VictoryType.valueOf(it.params[0])) } -> false
+                obj.getMatchingUniques(UniqueType.HiddenWithoutVictoryType).any { !victoryTypes.contains(it.params[0]) } -> false
                 else -> true
             }
         }

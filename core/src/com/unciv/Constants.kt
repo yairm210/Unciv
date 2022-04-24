@@ -47,9 +47,11 @@ object Constants {
     const val citadel = "Citadel"
 
     const val futureTech = "Future Tech"
-    // Easter egg name. Hopefully is to hopefully avoid conflicts when later players can name their own religions.
+    // Easter egg name. Is to avoid conflicts when players name their own religions.
     // This religion name should never be displayed.
     const val noReligionName = "The religion of TheLegend27"
+    
+    const val neutralVictoryType = "Neutral"
 
     const val cancelImprovementOrder = "Cancel improvement order"
     const val tutorialPopupNamePrefix = "Tutorial: "
