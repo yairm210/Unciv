@@ -726,8 +726,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
-??? example  "Earn [relativeAmount]% of the damage done to [combatantFilter] units as [plunderableStat]"
-	Example: "Earn [20]% of the damage done to [City] units as [Gold]"
+??? example  "Earn [amount]% of the damage done to [combatantFilter] units as [plunderableStat]"
+	Example: "Earn [3]% of the damage done to [City] units as [Gold]"
 
 	Applicable to: Global, Unit
 

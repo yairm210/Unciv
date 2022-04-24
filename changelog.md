@@ -1,6 +1,8 @@
 ## 4.0.9
 
-Fixed bug with aircraft rejection reasons
+By xlenstra: Moddable victories!
+  
+Fixed crashing bug with aircraft rejection reasons
 
 Mod land units with missile and nuke uniques no longer crash the game
 
@@ -9,11 +11,6 @@ improvementFilter accepts uniques as well
 terrainFilter accepts tile resource uniques
 
 Unique docs writer makeover  - By SomeTroglodyte
-
-By xlenstra:
-- Moddable victories 
-- Fixed a problem with the ordering of the vanilla policies 
-- Fixed the internal name & parameter of a unique 
 
 Add checks against 0 Strength combat  - By itanasi
 
