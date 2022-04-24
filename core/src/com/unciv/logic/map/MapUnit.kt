@@ -23,6 +23,7 @@ import com.unciv.models.ruleset.unique.UniqueMapTyped
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
+import com.unciv.ui.utils.filterAndLogic
 import com.unciv.ui.utils.toPercent
 import java.text.DecimalFormat
 import kotlin.math.pow
@@ -177,18 +178,16 @@ class MapUnit {
     /**
      * Container class to represent a single instant in a [MapUnit]'s recent movement history.
      *
-     * @property position Position on the map at this instant.
+     * @property position Position on the map at this instant, cloned on instantiation.
      * @property type Category of the last change in position that brought the unit to this position.
      * @see [movementMemories]
      * */
-    class UnitMovementMemory() {
-        constructor(position: Vector2, type: UnitMovementMemoryType): this() {
-            this.position = position
-            this.type = type
-        }
-        lateinit var position: Vector2
-        lateinit var type: UnitMovementMemoryType
-        fun clone() = UnitMovementMemory(Vector2(position), type)
+    class UnitMovementMemory(position: Vector2, val type: UnitMovementMemoryType) {
+        @Suppress("unused") // needed because this is part of a save and gets deserialized
+        constructor(): this(Vector2.Zero, UnitMovementMemoryType.UnitMoved)
+        val position = Vector2(position)
+
+        fun clone() = UnitMovementMemory(position, type)
         override fun toString() = "${this::class.simpleName}($position, $type)"
     }
 
@@ -200,7 +199,7 @@ class MapUnit {
 
     /** Add the current position and the most recent movement type to [movementMemories]. Called once at end and once at start of turn, and at unit creation. */
     fun addMovementMemory() {
-        movementMemories.add(UnitMovementMemory(Vector2(getTile().position), mostRecentMoveType))
+        movementMemories.add(UnitMovementMemory(getTile().position, mostRecentMoveType))
         while (movementMemories.size > 2) { // O(n) but n == 2.
             // Keep at most one arrow segment— A lot of the time even that won't be rendered because the two positions will be the same.
             // When in the unit's turn— I.E. For a player unit— The last two entries will be from .endTurn() followed by from .startTurn(), so the segment from .movementMemories will have zero length. Instead, what gets seen will be the segment from the end of .movementMemories to the unit's current position.
@@ -1090,12 +1089,11 @@ class MapUnit {
         )
     }
 
+    /** Implements [UniqueParameterType.MapUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.MapUnitFilter] */
     fun matchesFilter(filter: String): Boolean {
-        if (filter.contains('{')) // multiple types at once - AND logic. Looks like:"{Military} {Land}"
-            return filter.removePrefix("{").removeSuffix("}").split("} {")
-                .all { matchesFilter(it) }
-        
-        return when (filter) {
+        return filter.filterAndLogic { matchesFilter(it) } // multiple types at once - AND logic. Looks like:"{Military} {Land}"
+            ?: when (filter) {
+
             // todo: unit filters should be adjectives, fitting "[filterType] units"
             // This means converting "wounded units" to "Wounded", "Barbarians" to "Barbarian"
             "Wounded", "wounded units" -> health < 100

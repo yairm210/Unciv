@@ -409,6 +409,7 @@ object UniqueTriggerActivation {
                 val revealedTiles = nearbyRevealableTiles
                         .shuffled(tileBasedRandom)
                         .apply {
+                            // Implements [UniqueParameterType.CombatantFilter] - At the moment the only use
                             if (unique.params[0] != "All") this.take(unique.params[0].toInt())
                         }
                 for (position in revealedTiles) {

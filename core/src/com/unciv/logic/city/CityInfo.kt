@@ -827,7 +827,7 @@ class CityInfo {
         }
     }
 
-    // When adding here, add to UniqueParameterType.cityFilterStrings
+    /** Implements [UniqueParameterType.CityFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CityFilter] */
     fun matchesFilter(filter: String, viewingCiv: CivilizationInfo = civInfo): Boolean {
         return when (filter) {
             "in this city" -> true
