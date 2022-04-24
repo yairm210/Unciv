@@ -535,18 +535,29 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         val ourOldPosition = unit.getTile()
         val theirOldPosition = otherUnit.getTile()
 
+        val ourPayload = ourOldPosition.getUnits().filter { it.isTransported && unit.canTransport(it) }.toList()
+        val theirPayload = theirOldPosition.getUnits().filter { it.isTransported && otherUnit.canTransport(it) }.toList()
+
         // Swap the units
         // Step 1: Release the destination tile
         otherUnit.removeFromTile()
+        for (payload in theirPayload)
+            payload.removeFromTile()
         // Step 2: Perform the movement
         unit.movement.moveToTile(destination)
         // Step 3: Release the newly taken tile
         unit.removeFromTile()
+        for (payload in ourPayload)
+            payload.removeFromTile()
         // Step 4: Perform the another movement
         otherUnit.putInTile(theirOldPosition)
+        for (payload in theirPayload)
+            payload.putInTile(theirOldPosition)
         otherUnit.movement.moveToTile(ourOldPosition)
         // Step 5: Restore the position in the new tile
         unit.putInTile(theirOldPosition)
+        for (payload in ourPayload)
+            payload.putInTile(theirOldPosition)
         // Step 6: Update states
         otherUnit.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
         unit.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
