@@ -139,7 +139,7 @@ object ChooseBeliefsAutomation {
                 UniqueType.BuyUnitsForAmountStat, UniqueType.BuyBuildingsForAmountStat ->
                     if (civInfo.religionManager.religion != null 
                         && civInfo.religionManager.religion!!.getFollowerUniques()
-                            .any { it.placeholderText == unique.placeholderText } 
+                            .any { it.type == unique.type } 
                     ) 0f
                     // This is something completely different from the original, but I have no idea
                     // what happens over there
@@ -147,7 +147,7 @@ object ChooseBeliefsAutomation {
                 UniqueType.BuyUnitsWithStat, UniqueType.BuyBuildingsWithStat ->
                     if (civInfo.religionManager.religion != null
                         && civInfo.religionManager.religion!!.getFollowerUniques()
-                            .any { it.placeholderText == unique.placeholderText }
+                            .any { it.type == unique.type }
                     ) 0f
                     // This is something completely different from the original, but I have no idea
                     // what happens over there
