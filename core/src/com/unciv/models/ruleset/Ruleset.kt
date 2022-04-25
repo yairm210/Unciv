@@ -939,9 +939,6 @@ object RulesetCache : HashMap<String,Ruleset>() {
         }
         newRuleset.updateBuildingCosts() // only after we've added all the mods can we calculate the building costs
 
-        println(optionalBaseRuleset)
-        println(newRuleset.victories)
-        
         return newRuleset
     }
 

@@ -260,7 +260,7 @@ object NextTurnAutomation {
             }
         }
 
-        if (civInfo.wantsToFocusOn(ThingToFocus.Culture)) {
+        if (civInfo.wantsToFocusOn(Victory.Focus.Culture)) {
             for (cityState in civInfo.getKnownCivs()
                     .filter { it.isCityState() && it.cityStateType == CityStateType.Cultured }) {
                 val diploManager = cityState.getDiplomacyManager(civInfo)
@@ -298,20 +298,20 @@ object NextTurnAutomation {
         if (!cityState.isAlive() || cityState.cities.isEmpty() || civInfo.cities.isEmpty())
             return value
 
-        if (civInfo.wantsToFocusOn(ThingToFocus.Culture) && cityState.canGiveStat(Stat.Culture)) {
+        if (civInfo.wantsToFocusOn(Victory.Focus.Culture) && cityState.canGiveStat(Stat.Culture)) {
             value += 10
         }
-        else if (civInfo.wantsToFocusOn(ThingToFocus.Science) && cityState.canGiveStat(Stat.Science)) {
+        else if (civInfo.wantsToFocusOn(Victory.Focus.Science) && cityState.canGiveStat(Stat.Science)) {
             // In case someone mods this in
             value += 10
         }
-        else if (civInfo.wantsToFocusOn(ThingToFocus.Military)) {
+        else if (civInfo.wantsToFocusOn(Victory.Focus.Military)) {
             // Don't ally close city-states, conquer them instead
             val distance = getMinDistanceBetweenCities(civInfo, cityState)
             if (distance < 20)
                 value -= (20 - distance) / 4
         }
-        else if (civInfo.wantsToFocusOn(ThingToFocus.CityStates)) {
+        else if (civInfo.wantsToFocusOn(Victory.Focus.CityStates)) {
             value += 5  // Generally be friendly
         }
         if (civInfo.gold < 100) {
@@ -658,7 +658,7 @@ object NextTurnAutomation {
     }
 
     private fun declareWar(civInfo: CivilizationInfo) {
-        if (civInfo.wantsToFocusOn(ThingToFocus.Culture)) return
+        if (civInfo.wantsToFocusOn(Victory.Focus.Culture)) return
         if (civInfo.cities.isEmpty() || civInfo.diplomacy.isEmpty()) return
         if (civInfo.isAtWar() || civInfo.getHappiness() <= 0) return
 
@@ -848,7 +848,7 @@ object NextTurnAutomation {
     private fun trainSettler(civInfo: CivilizationInfo) {
         if (civInfo.isCityState()) return
         if (civInfo.isAtWar()) return // don't train settlers when you could be training troops.
-        if (civInfo.wantsToFocusOn(ThingToFocus.Culture) && civInfo.cities.size > 3) return
+        if (civInfo.wantsToFocusOn(Victory.Focus.Culture) && civInfo.cities.size > 3) return
         if (civInfo.cities.none() || civInfo.getHappiness() <= civInfo.cities.size + 5) return
 
         val settlerUnits = civInfo.gameInfo.ruleSet.units.values

@@ -121,7 +121,7 @@ class CivilizationInfo {
     val lastEraResourceUsedForUnit = HashMap<String, Int>()
     
     @Transient
-    var thingsToFocusOnForVictory = setOf<ThingToFocus>()
+    var thingsToFocusOnForVictory = setOf<Victory.Focus>()
 
     var playerType = PlayerType.AI
 
@@ -348,8 +348,8 @@ class CivilizationInfo {
                else gameInfo.ruleSet.victories[getPreferredVictoryType()]!!
     }
     
-    fun wantsToFocusOn(thingToFocusOn: ThingToFocus): Boolean {
-        return thingsToFocusOnForVictory.contains(thingToFocusOn)
+    fun wantsToFocusOn(focus: Victory.Focus): Boolean {
+        return thingsToFocusOnForVictory.contains(focus)
     }
     
     @Transient
