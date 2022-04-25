@@ -64,8 +64,6 @@ class CityStats(val cityInfo: CityInfo) {
 
     var baseStatTree = StatTreeNode()
 
-    var statPercentBonusList = LinkedHashMap<String, Stats>()
-
     var statPercentBonusTree = StatTreeNode()
 
     // Computed from baseStatList and statPercentBonusList - this is so the players can see a breakdown
@@ -74,8 +72,6 @@ class CityStats(val cityInfo: CityInfo) {
     var happinessList = LinkedHashMap<String, Float>()
 
     var statsFromTiles = Stats()
-
-    var foodEaten = 0f
 
     var currentCityStats: Stats = Stats()  // This is so we won't have to calculate this multiple times - takes a lot of time, especially on phones
 
@@ -96,7 +92,7 @@ class CityStats(val cityInfo: CityInfo) {
             // Deprecated as of 3.19.19
                 if (civInfo.hasUnique(UniqueType.GoldBonusFromTradeRoutesDeprecated)) percentageStats[Stat.Gold] += 25f // Machu Picchu speciality
             //
-            for ((stat, value) in stats) {
+            for ((stat) in stats) {
                 stats[stat] *= percentageStats[stat].toPercent()
             }
         }
@@ -344,7 +340,7 @@ class CityStats(val cityInfo: CityInfo) {
     }
 
     fun isConnectedToCapital(roadType: RoadStatus): Boolean {
-        if (cityInfo.civInfo.cities.count() < 2) return false// first city!
+        if (cityInfo.civInfo.cities.size < 2) return false// first city!
 
         // Railroad, or harbor from railroad
         return if (roadType == RoadStatus.Railroad)
@@ -573,7 +569,7 @@ class CityStats(val cityInfo: CityInfo) {
         Now we have the excess food, to which "growth" modifiers apply
         Some policies have bonuses for growth only, not general food production. */
 
-        updateFoodEaten()
+        val foodEaten = calcFoodEaten()
         newFinalStatList["Population"]!!.food -= foodEaten
 
         var totalFood = newFinalStatList.values.map { it.food }.sum()
@@ -631,8 +627,8 @@ class CityStats(val cityInfo: CityInfo) {
         else 0.0f
     }
 
-    private fun updateFoodEaten() {
-        foodEaten = cityInfo.population.population.toFloat() * 2
+    private fun calcFoodEaten(): Float {
+        var foodEaten = cityInfo.population.population.toFloat() * 2
         var foodEatenBySpecialists = 2f * cityInfo.population.getNumberOfSpecialists()
 
         for (unique in cityInfo.getMatchingUniques(UniqueType.FoodConsumptionBySpecialists))
@@ -640,6 +636,7 @@ class CityStats(val cityInfo: CityInfo) {
                 foodEatenBySpecialists *= unique.params[0].toPercent()
 
         foodEaten -= 2f * cityInfo.population.getNumberOfSpecialists() - foodEatenBySpecialists
+        return foodEaten
     }
 
     //endregion
