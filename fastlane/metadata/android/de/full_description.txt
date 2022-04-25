@@ -1,15 +1,15 @@
-A reimplementation of the most famous civilization-building game ever—fast, small, no ads, free forever!
+Eine Neuimplementierung vom berühmtesten Zivilisations-Aufbau-Spiel aller Zeiten. Schnell, klein, Spam-los und für immer frei!
 
-Build your civilization, research technologies, expand your cities and defeat your foes!
+Baue Deine Zivilisation auf, erforsche Technologien, entwickle Deine Städte und besiege Deine Kontrahenten!
 
-Requests? Bugs? Todo list for the application is https://github.com/yairm210/UnCiv/issues, every small help is welcome!
+Wünsche? Bugs? Die Liste der zu erledigenden Probleme is die [github issues - Seite](https://github.com/yairm210/UnCiv/issues) - jede noch so kleine Hilfe ist willkommen!
 
-Questions? Comments? Just bored? Join us on https://discord.gg/bjrB4Xw.
+Fragen? Kommentare? Einfach nur gelangweilt? Chatte mit uns auf [Discord](https://discord.gg/bjrB4Xw).
 
-Want to help translating the game into your language? Send me an email to yairm210@hotmail.com.
+Willst Du bei der Übersetzung helfen? Schau auf [dem Wiki](https://yairm210.github.io/Unciv/Other/Translating/), wie man Übersetzungen vorschlägt.
 
-Grok Java or Kotlin? Join us at https://github.com/yairm210/UnCiv.
+Schnallst Du Kotlin oder Java? Mach bei der Entwicklung im [github repository](https://github.com/yairm210/UnCiv) mit.
 
-The world awaits! Will you build your civilization into an empire that will stand the test of time?
+Die Welt erwartet Dich! Wirst Du Deine Zivilisations zu einem Imperium entwickeln, das dem Zahn der Zeit standhält?
 
-The 'have full network access' permission is required for user-initiated downloads and the multiplayer feature. All other listed permissions are included automatically by the API used to implement multiplayer turn notifications. Network permissions are used to list mods, download mods, download music and to upload/download multiplayer games. No other internet communication is initiated by Unciv.
+Die App-Berechtigung 'Auf alle Netzwerke zugreifen' wird benötigt für vom Benutzer initiierte Downloads und das Online Mehrspieler-Feature. Alle anderen aufgeführten Berechtigungen werden vom API automatisch hinzugefügt durch die Implementierung der Zug-Benachrichtigungen für das Mehrspieler-Feature. Netzwerk-Berechtigungen werden verwendet für das Abfragen verfügbarer Mods und deren Download, den Download von Musik und das Hoch-und Herunterladen der Spielstände für Online Mehrspieler. Unciv initiiert keine anderen Verbindungen ins Internet.
