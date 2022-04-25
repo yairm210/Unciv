@@ -179,7 +179,7 @@ class WonderOverviewTab(
                 val status = when {
                     viewingPlayer == city.civInfo -> WonderStatus.Owned
                     viewingPlayer.knows(city.civInfo) -> WonderStatus.Known
-                    else -> WonderStatus.Unknown
+                    else -> WonderStatus.NotFound
                 }
                 wonders[index] = WonderInfo(wonderName, CivilopediaCategories.Wonder,
                     wonders[index].groupName, wonders[index].groupColor,
