@@ -25,6 +25,8 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.civilopedia.CivilopediaScreen
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.tilegroups.CityButton
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
@@ -392,6 +394,8 @@ class DiplomacyScreen(
                 diplomacyTable.add(declareWarButton).row()
             }
         }
+        
+        diplomacyTable.add(getGoToOnMapButton(otherCiv)).row()
 
         val diplomaticMarriageButton = getDiplomaticMarriageButton(otherCiv)
         if (diplomaticMarriageButton != null) diplomacyTable.add(diplomaticMarriageButton).row()
@@ -744,6 +748,9 @@ class DiplomacyScreen(
         diplomacyTable.add(demandsButton).row()
         if (isNotPlayersTurn()) demandsButton.disable()
 
+        if (otherCiv.cities.isNotEmpty() && otherCiv.getCapital().location in viewingCiv.exploredTiles)
+            diplomacyTable.add(getGoToOnMapButton(otherCiv)).row()
+        
         if (!otherCiv.isPlayerCivilization()) { // human players make their own choices
             diplomacyTable.add(getRelationshipTable(otherCivDiplomacyManager)).row()
             diplomacyTable.add(getDiplomacyModifiersTable(otherCivDiplomacyManager)).row()
@@ -923,6 +930,15 @@ class DiplomacyScreen(
         rightSideTable.clear()
         rightSideTable.add(diplomacyTable)
     }
+    
+    private fun getGoToOnMapButton(civilization: CivilizationInfo): TextButton {
+        val goToOnMapButton = TextButton("Go to on map", skin)
+        goToOnMapButton.onClick {
+            UncivGame.Current.setWorldScreen()
+            UncivGame.Current.worldScreen.mapHolder.setCenterPosition(civilization.getCapital().location, selectUnit = false)
+        }
+        return goToOnMapButton
+    } 
 
     override fun resize(width: Int, height: Int) {
         super.resize(width, height)

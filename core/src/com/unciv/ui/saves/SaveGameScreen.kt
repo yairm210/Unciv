@@ -10,7 +10,11 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.models.translations.tr
+import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.pickerscreens.PickerScreen
+import com.unciv.ui.popup.ToastPopup
+import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.utils.*
 import java.util.concurrent.CancellationException
 import kotlin.concurrent.thread

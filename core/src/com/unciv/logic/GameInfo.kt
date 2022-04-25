@@ -37,6 +37,8 @@ class GameInfo {
 
     // Maps a civ to the civ they voted for
     var diplomaticVictoryVotesCast = HashMap<String, String>()
+    // Set to false whenever the results still need te be processed
+    var diplomaticVictoryVotesProcessed = false
 
     /**Keep track of a custom location this game was saved to _or_ loaded from
      *
@@ -205,7 +207,6 @@ class GameInfo {
             currentPlayerIndex = (currentPlayerIndex + 1) % civilizations.size
             if (currentPlayerIndex == 0) {
                 turns++
-                checkForTimeVictory()
             }
             thisPlayer = civilizations[currentPlayerIndex]
             thisPlayer.startTurn()
@@ -266,7 +267,7 @@ class GameInfo {
                             && (!it.militaryUnit!!.isInvisible(thisPlayer) || viewableInvisibleTiles.contains(it.position)))
                 }
 
-        // enemy units ON our territory
+        // enemy units IN our territory
         addEnemyUnitNotification(thisPlayer,
                 enemyUnitsCloseToTerritory.filter { it.getOwner() == thisPlayer },
                 "in"
@@ -283,16 +284,17 @@ class GameInfo {
                 }
         )
     }
+    
+    fun getEnabledVictories() = ruleSet.victories.filter { !it.value.hiddenInVictoryScreen && gameParameters.victoryTypes.contains(it.key) }
 
-    private fun checkForTimeVictory() {
-        if (turns != gameParameters.maxTurns || !gameParameters.victoryTypes.contains(VictoryType.Time)) return
-
-        val winningCiv = civilizations
-            .filter { it.isMajorCiv() && !it.isSpectator() && !it.isBarbarian() }
-            .maxByOrNull { it.calculateTotalScore() } 
-            ?: return // Are there no civs left?
-
-        winningCiv.victoryManager.hasWonTimeVictory = true
+    fun processDiplomaticVictory() {
+        if (diplomaticVictoryVotesProcessed) return
+        for (civInfo in civilizations) {
+            if (civInfo.victoryManager.hasEnoughVotesForDiplomaticVictory()) {
+                civInfo.victoryManager.hasEverWonDiplomaticVote = true
+            }
+        }
+        diplomaticVictoryVotesProcessed = true
     }
 
     private fun addEnemyUnitNotification(thisPlayer: CivilizationInfo, tiles: List<TileInfo>, inOrNear: String) {
@@ -450,8 +452,10 @@ class GameInfo {
             }
         }
 
+        spaceResources.clear()
         spaceResources.addAll(ruleSet.buildings.values.filter { it.hasUnique(UniqueType.SpaceshipPart) }
             .flatMap { it.getResourceRequirements().keys } )
+        spaceResources.addAll(ruleSet.victories.values.flatMap { it.requiredSpaceshipParts })
         
         barbarians.setTransients(this)
 

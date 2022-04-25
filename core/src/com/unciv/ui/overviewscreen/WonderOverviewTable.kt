@@ -2,9 +2,7 @@ package com.unciv.ui.overviewscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.utils.Align
-import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
@@ -12,12 +10,11 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Era
 import com.unciv.models.ruleset.QuestName
-import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaCategories
 import com.unciv.ui.civilopedia.CivilopediaScreen
-import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.toLabel
 
@@ -110,7 +107,7 @@ class WonderOverviewTab(
         wonder.name in startingObsolete -> false
         wonder.getMatchingUniques(UniqueType.HiddenWithoutVictoryType)
             .any { unique ->
-                !gameInfo.gameParameters.victoryTypes.contains(VictoryType.valueOf(unique.params[0]))
+                !gameInfo.gameParameters.victoryTypes.contains(unique.params[0])
             } -> false
         else -> wonderEra <= viewerEra
     }

@@ -1,7 +1,7 @@
 package com.unciv.logic.city
 
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.models.ruleset.IHasUniques
+import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.INamed
@@ -20,6 +20,7 @@ interface IConstruction : INamed {
 
 interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     val hurryCostModifier: Int
+    var requiredTech: String?
 
     fun getProductionCost(civInfo: CivilizationInfo): Int
     fun getStatBuyCost(cityInfo: CityInfo, stat: Stat): Int?
@@ -111,14 +112,14 @@ class RejectionReasons: HashSet<RejectionReasonInstance>() {
             RejectionReason.RequiresTech,
             RejectionReason.RequiresPolicy,
             RejectionReason.MorePolicyBranches,
-            RejectionReason.RequiresBuildingInSomeCity
+            RejectionReason.RequiresBuildingInSomeCity,
         )
         private val reasonsToDefinitivelyRemoveFromQueue = hashSetOf(
             RejectionReason.Obsoleted,
             RejectionReason.WonderAlreadyBuilt,
             RejectionReason.NationalWonderAlreadyBuilt,
             RejectionReason.CannotBeBuiltWith,
-            RejectionReason.ReachedBuildCap
+            RejectionReason.MaxNumberBuildable,
         )
         private val orderOfErrorMessages = listOf(
             RejectionReason.WonderBeingBuiltElsewhere,
@@ -129,7 +130,8 @@ class RejectionReasons: HashSet<RejectionReasonInstance>() {
             RejectionReason.PopulationRequirement,
             RejectionReason.ConsumesResources,
             RejectionReason.CanOnlyBePurchased,
-            RejectionReason.MaxNumberBuildable
+            RejectionReason.MaxNumberBuildable,
+            RejectionReason.NoPlaceToPutUnit,
         )
     }
 } 
@@ -151,7 +153,7 @@ enum class RejectionReason(val shouldShow: Boolean, val errorMessage: String) {
     MustOwnTile(false, "Must own a specific tile close by"),
     WaterUnitsInCoastalCities(false, "May only built water units in coastal cities"),
     CanOnlyBeBuiltInSpecificCities(false, "Can only be built in specific cities"),
-    MaxNumberBuildable(true, "Maximum number have been built or are being constructed"),
+    MaxNumberBuildable(false, "Maximum number have been built or are being constructed"),
 
     UniqueToOtherNation(false, "Unique to another nation"),
     ReplacedByOurUnique(false, "Our unique replaces this"),
@@ -178,13 +180,12 @@ enum class RejectionReason(val shouldShow: Boolean, val errorMessage: String) {
     CityStateNationalWonder(false, "No National Wonders for city-states"),
     WonderDisabledEra(false, "This Wonder is disabled when starting in this era"),
 
-    ReachedBuildCap(false, "Don't need to build any more of these!"),
-
     ConsumesResources(true, "Consumes resources which you are lacking"),
 
     PopulationRequirement(true, "Requires more population"),
 
-    NoSettlerForOneCityPlayers(false, "No settlers for city-states or one-city challengers");
+    NoSettlerForOneCityPlayers(false, "No settlers for city-states or one-city challengers"),
+    NoPlaceToPutUnit(true, "No space to place this unit");
     
     fun toInstance(errorMessage: String = this.errorMessage,
         shouldShow: Boolean = this.shouldShow): RejectionReasonInstance {

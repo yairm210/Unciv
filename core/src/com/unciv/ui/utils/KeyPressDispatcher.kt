@@ -106,7 +106,7 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
  *      keyPressDispatcher['+'] = { zoomIn() }
  *  ```
  *  Optionally use [setCheckpoint] and [revertToCheckPoint] to remember and restore one state.
- *  
+ *
  *  @param name Optional name of the container screen or popup for debugging
  */
 class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (() -> Unit)>() {
@@ -219,6 +219,8 @@ class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (()
 
     /** uninstall our [EventListener] from the stage it was installed on. */
     fun uninstall() {
+        if (consoleLog)
+            println("$this: uninstall")
         checkInstall(forceRemove = true)
         listener = null
         installStage = null
@@ -237,11 +239,15 @@ class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (()
             if (consoleLog)
                 println("$this: removeListener")
             installStage!!.removeListener(listener)
+            if (consoleLog)
+                println("$this: Listener removed")
         } else if (!listenerInstalled && !(isEmpty() || isPaused)) {
             if (consoleLog)
                 println("$this: addListener")
             installStage!!.addListener(listener)
             listenerInstalled = true
+            if (consoleLog)
+                println("$this: Listener added")
         }
     }
 

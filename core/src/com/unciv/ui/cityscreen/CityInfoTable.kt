@@ -15,6 +15,10 @@ import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
+import com.unciv.ui.images.IconCircleGroup
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popup.YesNoPopup
+import com.unciv.ui.popup.closeAllPopups
 import com.unciv.ui.utils.*
 import java.text.DecimalFormat
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane

@@ -6,6 +6,8 @@ import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeOffersList
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.translations.tr
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popup.AskNumberPopup
 import com.unciv.ui.utils.*
 
 /** This is the class that holds the 4 columns of the offers (ours/theirs/ offered/available) in trade */

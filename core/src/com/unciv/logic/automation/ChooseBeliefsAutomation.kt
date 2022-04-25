@@ -5,7 +5,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
-import com.unciv.models.ruleset.VictoryType
+import com.unciv.models.ruleset.ThingToFocus
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import kotlin.math.min
@@ -133,7 +133,7 @@ object ChooseBeliefsAutomation {
             score += modifier * when (unique.placeholderText) {
                 "Earn []% of [] unit's [] as [] when killed within 4 tiles of a city following this religion" ->
                     unique.params[0].toFloat() * 4f *
-                        if (civInfo.victoryType() == VictoryType.Domination) 2f
+                        if (civInfo.wantsToFocusOn(ThingToFocus.Military)) 2f
                         else 1f
                 "May buy [] buildings for [] [] []", "May buy [] units for [] [] []" ->
                     if (civInfo.religionManager.religion != null 
@@ -152,7 +152,7 @@ object ChooseBeliefsAutomation {
                     // what happens over there
                     else civInfo.statsForNextTurn[Stat.valueOf(unique.params[1])] * 10f / civInfo.getEra().baseUnitBuyCost
                 UniqueType.BuyUnitsByProductionCost.placeholderText ->
-                    15f * if (civInfo.victoryType() == VictoryType.Domination) 2f else 1f
+                    15f * if (civInfo.wantsToFocusOn(ThingToFocus.Military)) 2f else 1f
                 "when a city adopts this religion for the first time (modified by game speed)" -> // Modified by personality
                     unique.stats.values.sum() * 10f
                 "When spreading religion to a city, gain [] times the amount of followers of other religions as []" ->

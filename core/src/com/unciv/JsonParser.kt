@@ -12,7 +12,7 @@ class JsonParser {
     fun <T> getFromJson(tClass: Class<T>, filePath: String): T = getFromJson(tClass, Gdx.files.internal(filePath))
 
     fun <T> getFromJson(tClass: Class<T>, file: FileHandle): T {
-        try{
+        try {
             val jsonText = file.readString(Charsets.UTF_8.name())
             return json.fromJson(tClass, jsonText)
         } catch (exception:Exception){

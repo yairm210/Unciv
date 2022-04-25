@@ -253,8 +253,10 @@ class CityInfoConquestFunctions(val city: CityInfo){
             if (cityConstructions.isBuilt(capitalCityIndicator)) {
                 cityConstructions.removeBuilding(capitalCityIndicator)
                 val firstOtherCity = oldCiv.cities.firstOrNull { it != this }
-                if (firstOtherCity != null)
+                if (firstOtherCity != null) {
                     firstOtherCity.cityConstructions.addBuilding(capitalCityIndicator) // relocate palace
+                    firstOtherCity.isBeingRazed = false // Do not allow it to continue being razed if it was!
+                }
             }
 
             civInfo.cities = civInfo.cities.toMutableList().apply { remove(city) }

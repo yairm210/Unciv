@@ -30,7 +30,13 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.MarkupRenderer
+import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.crashhandling.postCrashHandlingRunnable
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.newgamescreen.TranslatedSelectBox
+import com.unciv.ui.popup.Popup
+import com.unciv.ui.popup.ToastPopup
+import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.LanguageTable.Companion.addLanguageTables
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
@@ -234,9 +240,10 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             addMusicVolumeSlider()
             addMusicPauseSlider()
             addMusicCurrentlyPlaying()
-        } else {
-            addDownloadMusic()
         }
+
+        if (!previousScreen.game.musicController.isDefaultFileAvailable())
+            addDownloadMusic()
     }
 
     private fun getMultiplayerTab(): Table = Table(BaseScreen.skin).apply {
@@ -754,7 +761,9 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
                 label.setText("Currently playing: [$it]".tr())
             }
         }
-        label.onClick { previousScreen.game.musicController.chooseTrack(flags = MusicTrackChooserFlags.setNextTurn) }
+        label.onClick(UncivSound.Silent) {
+            previousScreen.game.musicController.chooseTrack(flags = MusicTrackChooserFlags.none)
+        }
     }
 
     private fun Table.addDownloadMusic() {

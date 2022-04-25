@@ -3,15 +3,23 @@ package com.unciv.ui.cityscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfoReligionManager
 import com.unciv.models.Religion
+import com.unciv.ui.civilopedia.CivilopediaCategories
+import com.unciv.ui.civilopedia.CivilopediaScreen
+import com.unciv.ui.images.IconCircleGroup
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.overviewscreen.EmpireOverviewCategories
+import com.unciv.ui.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.utils.*
 
 class CityReligionInfoTable(
     private val religionManager: CityInfoReligionManager,
     showMajority: Boolean = false
 ) : Table(BaseScreen.skin) {
-    private val gameInfo = religionManager.cityInfo.civInfo.gameInfo
+    private val civInfo = religionManager.cityInfo.civInfo
+    private val gameInfo = civInfo.gameInfo
 
     init {
         val gridColor = Color.DARK_GRAY
@@ -19,15 +27,16 @@ class CityReligionInfoTable(
         val futurePressures = religionManager.getPressuresFromSurroundingCities()
 
         if (showMajority) {
-            val (icon, label) = getIconAndLabel(religionManager.getMajorityReligion())
-            add(ImageGetter.getCircledReligionIcon(icon, 30f)).pad(5f)
+            val majorityReligion = religionManager.getMajorityReligion()
+            val (iconName, label) = getIconAndLabel(majorityReligion)
+            add(linkedReligionIcon(iconName, majorityReligion?.name)).pad(5f)
             add()  // skip vertical separator
             add("Majority Religion: [$label]".toLabel()).colspan(3).center().row()
         }
 
-        val (icon, label) = getIconAndLabel(religionManager.religionThisIsTheHolyCityOf)
-        if (label != "None") {
-            add(ImageGetter.getCircledReligionIcon(icon, 30f)).pad(5f)
+        if (religionManager.religionThisIsTheHolyCityOf != null) {
+            val (iconName, label) = getIconAndLabel(religionManager.religionThisIsTheHolyCityOf)
+            add(linkedReligionIcon(iconName, religionManager.religionThisIsTheHolyCityOf)).pad(5f)
             add()
             add("Holy city of: [$label]".toLabel()).colspan(3).center().row()
         }
@@ -42,7 +51,7 @@ class CityReligionInfoTable(
 
             for ((religion, followerCount) in followers) {
                 val iconName = gameInfo.religions[religion]!!.getIconName()
-                add(ImageGetter.getCircledReligionIcon(iconName, 30f)).pad(5f)
+                add(linkedReligionIcon(iconName, religion)).pad(5f)
                 addSeparatorVertical(gridColor)
                 add(followerCount.toLabel()).pad(5f)
                 addSeparatorVertical(gridColor)
@@ -60,6 +69,17 @@ class CityReligionInfoTable(
     private fun getIconAndLabel(religion: Religion?): Pair<String, String> {
         return if (religion == null) "Religion" to "None" 
             else religion.getIconName() to religion.getReligionDisplayName()
+    }
+    private fun linkedReligionIcon(iconName: String, religion: String?): IconCircleGroup {
+        val icon = ImageGetter.getCircledReligionIcon(iconName, 30f)
+        if (religion == null) return icon
+        icon.onClick {
+            val newScreen = if (religion == iconName)
+                EmpireOverviewScreen(civInfo, EmpireOverviewCategories.Religion.name, religion)
+            else CivilopediaScreen(gameInfo.ruleSet, UncivGame.Current.screen as BaseScreen, CivilopediaCategories.Belief, religion )
+            UncivGame.Current.setScreen(newScreen)
+        }
+        return icon
     }
 
     fun asExpander(onChange: (()->Unit)?): ExpanderTab {

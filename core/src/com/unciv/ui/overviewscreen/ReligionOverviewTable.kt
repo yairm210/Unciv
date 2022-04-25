@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -16,6 +15,7 @@ import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.civilopedia.MarkupRenderer
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.*
 import kotlin.math.max
 
@@ -109,6 +109,11 @@ class ReligionOverviewTab(
         }
     }
 
+    override fun select(selection: String) {
+        persistableData.selectedReligion = selection
+        loadReligionButtons()  // so the icon is "highlighted"
+        loadReligion(selection)
+    }
     private fun loadReligion(religionName: String?) {
         if (religionName == null) return
         val religion = gameInfo.religions[religionName] ?: return

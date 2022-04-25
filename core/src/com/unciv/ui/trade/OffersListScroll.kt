@@ -11,6 +11,8 @@ import com.unciv.logic.trade.TradeType
 import com.unciv.logic.trade.TradeType.*
 import com.unciv.models.ruleset.tile.ResourceSupply
 import com.unciv.models.translations.tr
+import com.unciv.ui.images.IconTextButton
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.*
 import kotlin.math.min
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane

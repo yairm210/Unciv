@@ -42,23 +42,30 @@ class RiverGenerator(
         return true
     }
 
-    private fun getClosestWaterTile(tile: TileInfo): TileInfo {
+    fun getClosestWaterTile(tile: TileInfo): TileInfo? {
         for (distance in 1..maxRiverLength) {
             val waterTiles = tile.getTilesAtDistance(distance).filter { it.isWater }
             if (waterTiles.any())
                 return waterTiles.toList().random(randomness.RNG)
         }
-        throw IllegalStateException()
+        return null
     }
 
     private fun spawnRiver(initialPosition: TileInfo) {
-        // Recommendation: Draw a bunch of hexagons on paper before trying to understand this, it's super helpful!
         val endPosition = getClosestWaterTile(initialPosition)
+            ?: throw IllegalStateException("No water found for river destination")
+        spawnRiver(initialPosition, endPosition)
+    }
+
+    fun spawnRiver(initialPosition: TileInfo, endPosition: TileInfo, resultingTiles: MutableSet<TileInfo>? = null) {
+        // Recommendation: Draw a bunch of hexagons on paper before trying to understand this, it's super helpful!
 
         var riverCoordinate = RiverCoordinate(initialPosition.position,
                 RiverCoordinate.BottomRightOrLeft.values().random(randomness.RNG))
 
         for (step in 1..maxRiverLength) {     // Arbitrary max on river length, otherwise this will go in circles - rarely
+            val riverCoordinateTile = tileMap[riverCoordinate.position]
+            resultingTiles?.add(riverCoordinateTile)
             if (riverCoordinate.getAdjacentTiles(tileMap).any { it.isWater }) return
             val possibleCoordinates = riverCoordinate.getAdjacentPositions(tileMap)
             if (possibleCoordinates.none()) return // end of the line
@@ -71,7 +78,6 @@ class RiverGenerator(
                     .component2().random(randomness.RNG)
 
             // set new rivers in place
-            val riverCoordinateTile = tileMap[riverCoordinate.position]
             if (newCoordinate.position == riverCoordinate.position) // same tile, switched right-to-left
                 riverCoordinateTile.hasBottomRiver = true
             else if (riverCoordinate.bottomRightOrLeft == RiverCoordinate.BottomRightOrLeft.BottomRight) {

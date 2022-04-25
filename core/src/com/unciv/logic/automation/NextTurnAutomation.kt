@@ -139,6 +139,8 @@ object NextTurnAutomation {
                 continue // For example resources gained by trade or CS
             if (offer.type == TradeType.City)
                 continue // Players generally don't want to give up their cities, and they might misclick
+            if (offer.type == TradeType.Agreement && tradeLogic.currentTrade.theirOffers.contains(offer))
+                continue // So you don't get double offers of open borders etc.
             val value = evaluation.evaluateBuyCost(offer, civInfo, otherCiv)
             if (value > 0)
                 potentialAsks[offer] = value
@@ -258,7 +260,7 @@ object NextTurnAutomation {
             }
         }
 
-        if (civInfo.victoryType() == VictoryType.Cultural) {
+        if (civInfo.wantsToFocusOn(ThingToFocus.Culture)) {
             for (cityState in civInfo.getKnownCivs()
                     .filter { it.isCityState() && it.cityStateType == CityStateType.Cultured }) {
                 val diploManager = cityState.getDiplomacyManager(civInfo)
@@ -296,20 +298,20 @@ object NextTurnAutomation {
         if (!cityState.isAlive() || cityState.cities.isEmpty() || civInfo.cities.isEmpty())
             return value
 
-        if (civInfo.victoryType() == VictoryType.Cultural && cityState.canGiveStat(Stat.Culture)) {
+        if (civInfo.wantsToFocusOn(ThingToFocus.Culture) && cityState.canGiveStat(Stat.Culture)) {
             value += 10
         }
-        else if (civInfo.victoryType() == VictoryType.Scientific && cityState.canGiveStat(Stat.Science)) {
+        else if (civInfo.wantsToFocusOn(ThingToFocus.Science) && cityState.canGiveStat(Stat.Science)) {
             // In case someone mods this in
             value += 10
         }
-        else if (civInfo.victoryType() == VictoryType.Domination) {
+        else if (civInfo.wantsToFocusOn(ThingToFocus.Military)) {
             // Don't ally close city-states, conquer them instead
             val distance = getMinDistanceBetweenCities(civInfo, cityState)
             if (distance < 20)
                 value -= (20 - distance) / 4
         }
-        else if (civInfo.victoryType() == VictoryType.Diplomatic) {
+        else if (civInfo.wantsToFocusOn(ThingToFocus.CityStates)) {
             value += 5  // Generally be friendly
         }
         if (civInfo.gold < 100) {
@@ -656,7 +658,7 @@ object NextTurnAutomation {
     }
 
     private fun declareWar(civInfo: CivilizationInfo) {
-        if (civInfo.victoryType() == VictoryType.Cultural) return
+        if (civInfo.wantsToFocusOn(ThingToFocus.Culture)) return
         if (civInfo.cities.isEmpty() || civInfo.diplomacy.isEmpty()) return
         if (civInfo.isAtWar() || civInfo.getHappiness() <= 0) return
 
@@ -846,7 +848,7 @@ object NextTurnAutomation {
     private fun trainSettler(civInfo: CivilizationInfo) {
         if (civInfo.isCityState()) return
         if (civInfo.isAtWar()) return // don't train settlers when you could be training troops.
-        if (civInfo.victoryType() == VictoryType.Cultural && civInfo.cities.size > 3) return
+        if (civInfo.wantsToFocusOn(ThingToFocus.Culture) && civInfo.cities.size > 3) return
         if (civInfo.cities.none() || civInfo.getHappiness() <= civInfo.cities.size + 5) return
 
         val settlerUnits = civInfo.gameInfo.ruleSet.units.values

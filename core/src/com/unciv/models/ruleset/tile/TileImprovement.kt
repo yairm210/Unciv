@@ -77,12 +77,14 @@ class TileImprovement : RulesetStatsObject() {
      */
     fun isAllowedOnFeature(name: String) = getMatchingUniques(UniqueType.NoFeatureRemovalNeeded).any { it.params[0] == name }
 
+    /** Implements [UniqueParameterType.ImprovementFilter][com.unciv.models.ruleset.unique.UniqueParameterType.ImprovementFilter] */
     fun matchesFilter(filter: String): Boolean {
         return when (filter) {
             name -> true
             "All" -> true
             "All Road" -> isRoad()
             "Great Improvement", "Great" -> isGreatImprovement()
+            in uniques -> true
             else -> false
         }
     }

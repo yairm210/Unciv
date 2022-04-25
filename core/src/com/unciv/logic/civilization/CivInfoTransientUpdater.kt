@@ -84,11 +84,9 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         newViewableTiles.addAll(neighboringUnownedTiles)
         newViewableTiles.addAll(civInfo.getCivUnits().flatMap { unit -> unit.viewableTiles.asSequence().filter { it.getOwner() != civInfo } })
 
-        if (!civInfo.isCityState()) {
-            for (otherCiv in civInfo.getKnownCivs()) {
-                if (otherCiv.getAllyCiv() == civInfo.civName) {
-                    newViewableTiles.addAll(otherCiv.cities.asSequence().flatMap { it.getTiles() })
-                }
+        for (otherCiv in civInfo.getKnownCivs()) {
+            if (otherCiv.getAllyCiv() == civInfo.civName || otherCiv.civName ==civInfo.getAllyCiv()) {
+                newViewableTiles.addAll(otherCiv.cities.asSequence().flatMap { it.getTiles() })
             }
         }
 

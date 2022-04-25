@@ -5,12 +5,13 @@ import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.ui.overviewscreen.EmpireOverviewTab.EmpireOverviewTabPersistableData
 import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.TabbedPager
 
 class EmpireOverviewScreen(
     private var viewingPlayer: CivilizationInfo,
-    defaultPage: String = ""
+    defaultPage: String = "",
+    selection: String = ""
 ) : BaseScreen() {
     // 50 normal button height + 2*10 topTable padding + 2 Separator + 2*5 centerTable padding
     // Since a resize recreates this screen this should be fine as a val
@@ -70,8 +71,10 @@ class EmpireOverviewScreen(
                 shortcutKey = category.shortcutKey,
                 scrollAlign = category.scrollAlign
             )
-            if (category.name == page)
+            if (category.name == page) {
                 tabbedPager.selectPage(index)
+                pageObject.select(selection)
+            }
         }
 
         tabbedPager.setFillParent(true)

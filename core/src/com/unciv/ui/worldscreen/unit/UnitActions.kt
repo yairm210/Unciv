@@ -23,8 +23,8 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
-import com.unciv.ui.utils.YesNoPopup
-import com.unciv.ui.utils.hasOpenPopups
+import com.unciv.ui.popup.YesNoPopup
+import com.unciv.ui.popup.hasOpenPopups
 import com.unciv.ui.utils.toPercent
 import com.unciv.ui.worldscreen.WorldScreen
 import kotlin.math.min
@@ -311,14 +311,14 @@ object UnitActions {
         if (upgradeAction != null) actionList += upgradeAction
     }
 
-    fun getUpgradeAction(unit: MapUnit, isFree: Boolean = false): UnitAction? {
+    fun getUpgradeAction(unit: MapUnit): UnitAction? {
         val tile = unit.currentTile
-        if (unit.baseUnit().upgradesTo == null || !unit.canUpgrade()) return null
-        if (tile.getOwner() != unit.civInfo && !isFree) return null
-        val goldCostOfUpgrade =
-            if (isFree) 0
-            else unit.getCostOfUpgrade()
+        if (unit.baseUnit().upgradesTo == null) return null
+        if (!unit.canUpgrade()) return null
+        if (tile.getOwner() != unit.civInfo) return null
+        
         val upgradedUnit = unit.getUnitToUpgradeTo()
+        val goldCostOfUpgrade = unit.getCostOfUpgrade()
 
         return UnitAction(UnitActionType.Upgrade,
             title = "Upgrade to [${upgradedUnit.name}] ([$goldCostOfUpgrade] gold)",
@@ -339,12 +339,35 @@ object UnitActions {
                     newUnit.currentMovement = 0f
                 }
             }.takeIf {
-                isFree ||
-                (
-                        unit.civInfo.gold >= goldCostOfUpgrade
-                                && unit.currentMovement > 0
-                                && !unit.isEmbarked()
-                )
+                unit.civInfo.gold >= goldCostOfUpgrade
+                && unit.currentMovement > 0
+                && !unit.isEmbarked()
+            }
+        )
+    }
+    
+    fun getFreeUpgradeAction(unit: MapUnit): UnitAction? {
+        if (unit.baseUnit().upgradesTo == null) return null
+        val upgradedUnit = unit.civInfo.getEquivalentUnit(unit.baseUnit().upgradesTo!!)
+        if (!unit.canUpgrade(upgradedUnit, true)) return null
+
+        return UnitAction(UnitActionType.Upgrade,
+            title = "Upgrade to [${upgradedUnit.name}] (FREE)",
+            action = {
+                val unitTile = unit.getTile()
+                unit.destroy()
+                val newUnit = unit.civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name)
+
+                /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
+                 * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
+                 */
+                if (newUnit == null) {
+                    val readdedUnit = unit.civInfo.placeUnitNearTile(unitTile.position, unit.name)
+                    unit.copyStatisticsTo(readdedUnit!!)
+                } else { // Managed to upgrade
+                    unit.copyStatisticsTo(newUnit)
+                    newUnit.currentMovement = 0f
+                }
             }
         )
     }
@@ -357,9 +380,8 @@ object UnitActions {
                 else -> return null
             }
         val upgradedUnit =
-            unit.civInfo.getEquivalentUnit(
-                unit.civInfo.gameInfo.ruleSet.units[upgradedUnitName]!!
-            )
+            unit.civInfo.getEquivalentUnit(unit.civInfo.gameInfo.ruleSet.units[upgradedUnitName]!!)
+        
         if (!unit.canUpgrade(upgradedUnit,true)) return null
 
         return UnitAction(UnitActionType.Upgrade,
@@ -764,7 +786,8 @@ object UnitActions {
     private fun addSleepActions(actionList: ArrayList<UnitAction>, unit: MapUnit, showingAdditionalActions: Boolean) {
         if (unit.isFortified() || unit.canFortify() || unit.currentMovement == 0f) return
         // If this unit is working on an improvement, it cannot sleep
-        if (unit.currentTile.hasImprovementInProgress() && unit.canBuildImprovement(unit.currentTile.getTileImprovementInProgress()!!)) return
+        if (unit.currentTile.hasImprovementInProgress()
+            && unit.canBuildImprovement(unit.currentTile.getTileImprovementInProgress()!!)) return
         val isSleeping = unit.isSleeping()
         val isDamaged = unit.health < 100
 

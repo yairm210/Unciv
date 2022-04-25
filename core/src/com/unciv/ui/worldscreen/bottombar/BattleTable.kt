@@ -1,8 +1,11 @@
 package com.unciv.ui.worldscreen.bottombar
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.math.Interpolation
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
@@ -15,6 +18,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 import kotlin.math.max
@@ -245,7 +249,26 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             attackButton.onClick(attacker.getAttackSound()) {
                 Battle.moveAndAttack(attacker, attackableTile)
                 worldScreen.mapHolder.removeUnitActionOverlay() // the overlay was one of attacking
-                worldScreen.shouldUpdate = true
+                worldScreen.update()
+
+                val actorsToFlashRed = arrayListOf<Actor>()
+
+                if (damageToDefender != 0)
+                    actorsToFlashRed.addAll(getMapActorsForCombatant(defender))
+                if (damageToAttacker != 0)
+                    actorsToFlashRed.addAll(getMapActorsForCombatant(attacker))
+                fun updateRedPercent(percent: Float) {
+                    for (actor in actorsToFlashRed)
+                        actor.color = Color.WHITE.cpy().lerp(Color.RED, percent)
+                }
+                worldScreen.stage.addAction(Actions.sequence(
+                    object : FloatAction(0f, 1f, 0.3f, Interpolation.sine) {
+                        override fun update(percent: Float) = updateRedPercent(percent)
+                    },
+                    object : FloatAction(0f, 1f, 0.3f, Interpolation.sine) {
+                        override fun update(percent: Float) = updateRedPercent(1 - percent)
+                    }
+                ))
             }
         }
 
@@ -255,6 +278,28 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         setPosition(worldScreen.stage.width/2-width/2, 5f)
     }
+
+
+    fun getMapActorsForCombatant(combatant: ICombatant):Sequence<Actor> =
+        sequence {
+            val tilegroups =
+                worldScreen.mapHolder.tileGroups[combatant.getTile()]!!
+            when {
+                combatant.isCity() -> yieldAll(tilegroups.mapNotNull { it.icons.improvementIcon })
+                combatant.isCivilian() -> {
+                    for (tileGroup in tilegroups) {
+                        tileGroup.icons.civilianUnitIcon?.let { yield(it) }
+                        yieldAll(tileGroup.pixelCivilianUnitGroup.children)
+                    }
+                }
+                else -> {
+                    for (tileGroup in tilegroups) {
+                        tileGroup.icons.militaryUnitIcon?.let { yield(it) }
+                        yieldAll(tileGroup.pixelMilitaryUnitGroup.children)
+                    }
+                }
+            }
+        }
 
     private fun simulateNuke(attacker: MapUnitCombatant, targetTile: TileInfo){
         clear()

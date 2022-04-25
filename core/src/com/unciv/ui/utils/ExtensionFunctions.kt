@@ -8,10 +8,14 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
-import com.unciv.CrashScreen
+import com.unciv.ui.crashhandling.CrashScreen
 import com.unciv.UncivGame
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
+import com.unciv.ui.audio.Sounds
+import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.images.IconCircleGroup
+import com.unciv.ui.images.ImageGetter
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.random.Random
@@ -355,3 +359,16 @@ fun (() -> Unit).wrapCrashHandlingUnit(
     // Don't instantiate a new lambda every time the return get called.
     return { wrappedReturning() ?: Unit }
 }
+
+/** For filters containing '{', apply the [predicate] to each part inside "{}" and aggregate using [operation];
+ *  otherwise return `null` for Elvis chaining of the individual filter. */
+fun <T> String.filterCompositeLogic(predicate: (String) -> T?, operation: (T, T) -> T): T? {
+    val elements: List<T> = removePrefix("{").removeSuffix("}").split("} {")
+        .mapNotNull(predicate)
+    if (elements.isEmpty()) return null
+    return elements.reduce(operation)
+}
+/** If a filter string contains '{', apply the [predicate] to each part inside "{}" then 'and' (`&&`) them together;
+ *  otherwise return `null` for Elvis chaining of the individual filter. */
+fun String.filterAndLogic(predicate: (String) -> Boolean): Boolean? =
+    if (contains('{')) filterCompositeLogic(predicate) { a, b -> a && b } else null

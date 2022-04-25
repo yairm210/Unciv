@@ -13,6 +13,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
+import com.unciv.ui.utils.filterAndLogic
 import com.unciv.ui.utils.toPercent
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -35,12 +36,12 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     var interceptRange = 0
     lateinit var unitType: String
     fun getType() = ruleset.unitTypes[unitType]!!
-    var requiredTech: String? = null
+    override var requiredTech: String? = null
     private var requiredResource: String? = null
 
     override fun getUniqueTarget() = UniqueTarget.Unit
 
-    private var replacementTextForUniques = ""
+    var replacementTextForUniques = ""
     var promotions = HashSet<String>()
     var obsoleteTech: String? = null
     var upgradesTo: String? = null
@@ -229,6 +230,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         val unit = MapUnit()
         unit.name = name
         unit.civInfo = civInfo
+        unit.owner = civInfo.civName
 
         // must be after setting name & civInfo because it sets the baseUnit according to the name
         // and the civInfo is required for using `hasUnique` when determining its movement options  
@@ -351,6 +353,12 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         val rejectionReasons = RejectionReasons()
         if (isWaterUnit() && !cityConstructions.cityInfo.isCoastal())
             rejectionReasons.add(RejectionReason.WaterUnitsInCoastalCities)
+        if (isAirUnit()) {
+            val fakeUnit = getMapUnit(cityConstructions.cityInfo.civInfo)
+            val canUnitEnterTile = fakeUnit.movement.canMoveTo(cityConstructions.cityInfo.getCenterTile())
+            if (!canUnitEnterTile)
+                rejectionReasons.add(RejectionReason.NoPlaceToPutUnit)
+        }
         val civInfo = cityConstructions.cityInfo.civInfo
         for (unique in uniqueObjects) {
             @Suppress("NON_EXHAUSTIVE_WHEN")
@@ -527,12 +535,11 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         else ruleset.units[replaces!!]!!
     }
 
+    /** Implements [UniqueParameterType.BaseUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.BaseUnitFilter] */
     fun matchesFilter(filter: String): Boolean {
-        if (filter.contains('{')) // multiple types at once - AND logic. Looks like:"{Military} {Land}"
-            return filter.removePrefix("{").removeSuffix("}").split("} {")
-                .all { matchesFilter(it) }
+        return filter.filterAndLogic { matchesFilter(it) } // multiple types at once - AND logic. Looks like:"{Military} {Land}"
+            ?: when (filter) {
 
-        return when (filter) {
             unitType -> true
             name -> true
             replaces -> true

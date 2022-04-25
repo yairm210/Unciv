@@ -8,6 +8,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.ui.images.IconTextButton
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 
 //TODO If keys are assigned, the widget is in a popup not filling stage width, and a button is
@@ -36,8 +39,8 @@ import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
  * [keyPressDispatcher] is optional and works with the `shortcutKey` parameter of [addPage] to support key bindings with tooltips.
  */
 //region Fields
-@Suppress("MemberVisibilityCanBePrivate", "unused")  // All member are part of our API
-class TabbedPager(
+@Suppress("MemberVisibilityCanBePrivate", "unused")  // All members are part of our API
+open class TabbedPager(
     minimumWidth: Float = 0f,
     maximumWidth: Float = Float.MAX_VALUE,
     minimumHeight: Float = 0f,
@@ -65,7 +68,7 @@ class TabbedPager(
 
     private val header = Table(BaseScreen.skin)
     private val headerScroll = LinkedScrollPane(horizontalOnly = true, header)
-    private var headerHeight = 0f
+    protected var headerHeight = 0f
 
     private val fixedContentScroll = LinkedScrollPane(horizontalOnly = true)
     private val fixedContentScrollCell: Cell<ScrollPane>
@@ -164,11 +167,11 @@ class TabbedPager(
             group.packIfNeeded()
             return measure(group.minHeight, group.prefHeight, group.maxHeight)
         }
-        fun combine(header: Float, top: DimensionMeasurement, bottom: DimensionMeasurement) {
-            min = (header + top.min + bottom.min).coerceAtLeast(min).coerceAtMost(limit)
-            pref = (header + top.pref + bottom.pref).coerceAtLeast(pref).coerceIn(min..limit)
+        fun combine(top: DimensionMeasurement, bottom: DimensionMeasurement) {
+            min = (top.min + bottom.min).coerceAtLeast(min).coerceAtMost(limit)
+            pref = (top.pref + bottom.pref).coerceAtLeast(pref).coerceIn(min..limit)
             if (growMax)
-                max = (header + top.max + bottom.max).coerceAtLeast(max).coerceIn(pref..limit)
+                max = (top.max + bottom.max).coerceAtLeast(max).coerceIn(pref..limit)
         }
     }
 
@@ -295,20 +298,23 @@ class TabbedPager(
     // The following are part of the Widget interface and serve dynamic sizing
     override fun getPrefWidth() = dimW.pref
     fun setPrefWidth(width: Float) {
+        if (dimW.growMax && width > dimW.max) dimW.max = width
         if (width !in dimW.min..dimW.max) throw IllegalArgumentException()
         dimW.pref = width
         invalidateHierarchy()
     }
-    override fun getPrefHeight() = dimH.pref
+    override fun getPrefHeight() = dimH.pref + headerHeight
     fun setPrefHeight(height: Float) {
-        if (height !in dimH.min..dimH.max) throw IllegalArgumentException()
-        dimH.pref = height
+        val contentHeight = (height - headerHeight).coerceIn(0f..dimH.limit)
+        if (dimH.growMax && contentHeight > dimH.max) dimH.max = contentHeight
+        if (contentHeight !in dimH.min..dimH.max) throw IllegalArgumentException()
+        dimH.pref = contentHeight
         invalidateHierarchy()
     }
     override fun getMinWidth() = dimW.min
     override fun getMaxWidth() = dimW.max
-    override fun getMinHeight() = dimH.min
-    override fun getMaxHeight() = dimH.max
+    override fun getMinHeight() = dimH.min + headerHeight
+    override fun getMaxHeight() = dimH.max + headerHeight
 
     //endregion
     //region API
@@ -599,7 +605,7 @@ class TabbedPager(
         page.fixedHeight = dimFixedH.min
         dimW.measureWidth(page.content as? WidgetGroup)
         dimContentH.measureHeight(page.content as? WidgetGroup)
-        dimH.combine(headerHeight, dimFixedH, dimContentH)
+        dimH.combine(dimFixedH, dimContentH)
     }
 
     private fun addAndShowPage(page: PageState, insertBefore: Int): Int {

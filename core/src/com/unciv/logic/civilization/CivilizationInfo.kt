@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
@@ -28,6 +29,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.MayaCalendar
 import com.unciv.ui.utils.toPercent
+import com.unciv.ui.utils.withItem
 import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
 import kotlin.NoSuchElementException
@@ -117,6 +119,9 @@ class CivilizationInfo {
 
     @Transient
     val lastEraResourceUsedForUnit = HashMap<String, Int>()
+    
+    @Transient
+    var thingsToFocusOnForVictory = setOf<ThingToFocus>()
 
     var playerType = PlayerType.AI
 
@@ -320,21 +325,33 @@ class CivilizationInfo {
     fun isAlive(): Boolean = !isDefeated()
 
     @Suppress("unused")  //TODO remove if future use unlikely, including DiplomacyFlags.EverBeenFriends and 2 DiplomacyManager methods - see #3183
+    // I'm willing to call this deprecated after so long
     fun hasEverBeenFriendWith(otherCiv: CivilizationInfo): Boolean = getDiplomacyManager(otherCiv).everBeenFriends()
 
     fun hasMetCivTerritory(otherCiv: CivilizationInfo): Boolean = otherCiv.getCivTerritory().any { it in exploredTiles }
     fun getCompletedPolicyBranchesCount(): Int = policies.adoptedPolicies.count { Policy.isBranchCompleteByName(it) }
+    fun originalMajorCapitalsOwned(): Int = cities.count { it.isOriginalCapital && it.foundingCiv != "" && gameInfo.getCivilization(it.foundingCiv).isMajorCiv() }
     private fun getCivTerritory() = cities.asSequence().flatMap { it.tiles.asSequence() }
 
-    fun victoryType(): VictoryType {
+    fun getPreferredVictoryType(): String {
         val victoryTypes = gameInfo.gameParameters.victoryTypes
         if (victoryTypes.size == 1)
             return victoryTypes.first() // That is the most relevant one
         val victoryType = nation.preferredVictoryType
-        return if (victoryType in victoryTypes) victoryType
-               else VictoryType.Neutral
+        return if (victoryType in gameInfo.ruleSet.victories) victoryType
+               else Constants.neutralVictoryType
     }
-
+    
+    fun getPreferredVictoryTypeObject(): Victory? {
+        val preferredVictoryType = getPreferredVictoryType()
+        return if (preferredVictoryType == Constants.neutralVictoryType) null
+               else gameInfo.ruleSet.victories[getPreferredVictoryType()]!!
+    }
+    
+    fun wantsToFocusOn(thingToFocusOn: ThingToFocus): Boolean {
+        return thingsToFocusOnForVictory.contains(thingToFocusOn)
+    }
+    
     @Transient
     private val civInfoStats = CivInfoStats(this)
     fun stats() = civInfoStats
@@ -547,6 +564,9 @@ class CivilizationInfo {
         for ((key, value) in giftAmount)
             otherCiv.addStat(key, value.toInt())
         
+        if (cities.isNotEmpty())
+            otherCiv.exploredTiles = otherCiv.exploredTiles.withItem(getCapital().location)
+        
         questManager.justMet(otherCiv) // Include them in war with major pseudo-quest
     }
 
@@ -746,6 +766,8 @@ class CivilizationInfo {
         }
 
         victoryManager.civInfo = this
+        
+        thingsToFocusOnForVictory = getPreferredVictoryTypeObject()?.getThingsToFocus(this) ?: setOf()
 
         for (cityInfo in cities) {
             cityInfo.civInfo = this // must be before the city's setTransients because it depends on the tilemap, that comes from the currentPlayerCivInfo
@@ -923,16 +945,17 @@ class CivilizationInfo {
     private fun handleDiplomaticVictoryFlags() {
         if (flagsCountdown[CivFlags.ShouldResetDiplomaticVotes.name] == 0) {
             gameInfo.diplomaticVictoryVotesCast.clear()
-            removeFlag(CivFlags.ShouldResetDiplomaticVotes.name)
             removeFlag(CivFlags.ShowDiplomaticVotingResults.name)
+            removeFlag(CivFlags.ShouldResetDiplomaticVotes.name)
         }
 
         if (flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == 0) {
+            gameInfo.processDiplomaticVictory()
             if (gameInfo.civilizations.any { it.victoryManager.hasWon() } ) {
                 removeFlag(CivFlags.TurnsTillNextDiplomaticVote.name)
             } else {
                 addFlag(CivFlags.ShouldResetDiplomaticVotes.name, 1)
-                addFlag(CivFlags.TurnsTillNextDiplomaticVote.name, getTurnsBetweenDiplomaticVotings())
+                addFlag(CivFlags.TurnsTillNextDiplomaticVote.name, getTurnsBetweenDiplomaticVotes())
             }
         }
 
@@ -945,7 +968,7 @@ class CivilizationInfo {
     fun removeFlag(flag: String) = flagsCountdown.remove(flag)
     fun hasFlag(flag: String) = flagsCountdown.contains(flag)
 
-    fun getTurnsBetweenDiplomaticVotings() = (15 * gameInfo.gameParameters.gameSpeed.modifier).toInt() // Dunno the exact calculation, hidden in Lua files
+    fun getTurnsBetweenDiplomaticVotes() = (15 * gameInfo.gameParameters.gameSpeed.modifier).toInt() // Dunno the exact calculation, hidden in Lua files
 
     fun getTurnsTillNextDiplomaticVote() = flagsCountdown[CivFlags.TurnsTillNextDiplomaticVote.name]
 
@@ -966,9 +989,12 @@ class CivilizationInfo {
          flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == 0
          && gameInfo.civilizations.any { it.isMajorCiv() && !it.isDefeated() && it != this }
 
-    // Yes, this is the same function as above, but with a different use case so it has a different name.
+    // Yes, this is the same function as above, but with the possibility that the results were shown
+    //  to the user and thus the flag is set at -1/ 
     fun shouldCheckForDiplomaticVictory() =
-        shouldShowDiplomaticVotingResults()
+        (flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == 0 
+            || flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == -1)
+        && gameInfo.civilizations.any { it.isMajorCiv() && !it.isDefeated() && it != this }
 
     private fun updateRevolts() {
         if (gameInfo.civilizations.none { it.isBarbarian() }) {

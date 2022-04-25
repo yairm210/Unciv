@@ -13,6 +13,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.INamed
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.*
 import kotlin.math.max
 
@@ -109,7 +110,7 @@ class FormattedLine (
 
     /** Returns true if this formatted line will not display anything */
     fun isEmpty(): Boolean = text.isEmpty() && extraImage.isEmpty() && 
-            !starred && icon.isEmpty() && link.isEmpty() 
+            !starred && icon.isEmpty() && link.isEmpty() && !separator
 
     /** Self-check to potentially support the mod checker
      * @return `null` if no problems found, or multiline String naming problems.
@@ -351,9 +352,9 @@ object MarkupRenderer {
     /** Default cell padding of non-empty lines */
     private const val defaultPadding = 2.5f
     /** Padding above a [separator][FormattedLine.separator] line */
-    private const val separatorTopPadding = 5f
+    private const val separatorTopPadding = 10f
     /** Padding below a [separator][FormattedLine.separator] line */
-    private const val separatorBottomPadding = 15f
+    private const val separatorBottomPadding = 10f
 
     /**
      *  Build a Gdx [Table] showing [formatted][FormattedLine] [content][lines].

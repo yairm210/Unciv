@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
 import com.unciv.models.translations.tr
+import com.unciv.ui.images.ImageGetter
 
 /**
  * A **Replacement** for Gdx [Tooltip], placement does not follow the mouse.

@@ -7,6 +7,7 @@ import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.translations.tr
+import com.unciv.ui.popup.Popup
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.trade.LeaderIntroTable
 import com.unciv.ui.utils.*
@@ -53,7 +54,7 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
         fun getOfferText(offer:TradeOffer): String {
             var tradeText = offer.getOfferText()
             if (offer.type == TradeType.Luxury_Resource || offer.type == TradeType.Strategic_Resource)
-                tradeText += "\n" + "Owned: [${ourResources[offer.name]}]".tr()
+                tradeText += "\n" + "Owned by you: [${ourResources[offer.name]}]".tr()
             return tradeText
         }
 
