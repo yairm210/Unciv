@@ -417,7 +417,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
   
     MayFoundReligion("May found a religion", UniqueTarget.Unit),
     MayEnhanceReligion("May enhance a religion", UniqueTarget.Unit),
-    StatsWhenSpreading("When spreading religion to a city, gain [amount] times the amount of followers of other religions as [Stat]", UniqueTarget.Unit, UniqueTarget.Global),
+    StatsWhenSpreading("When spreading religion to a city, gain [amount] times the amount of followers of other religions as [stat]", UniqueTarget.Unit, UniqueTarget.Global),
 
     CanOnlyAttackUnits("Can only attack [combatantFilter] units", UniqueTarget.Unit),
     CanOnlyAttackTiles("Can only attack [tileFilter] tiles", UniqueTarget.Unit),
