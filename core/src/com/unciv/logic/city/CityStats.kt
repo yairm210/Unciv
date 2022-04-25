@@ -599,13 +599,12 @@ class CityStats(val cityInfo: CityInfo) {
         val buildingsMaintenance = getBuildingMaintenanceCosts() // this is AFTER the bonus calculation!
         newFinalStatList["Maintenance"] = Stats(gold = -buildingsMaintenance.toInt().toFloat())
 
-        if (currentConstruction is INonPerpetualConstruction
+        if (totalFood > 0
+            && currentConstruction is INonPerpetualConstruction
             && currentConstruction.hasUnique(UniqueType.ConvertFoodToProductionWhenConstructed)
         ) {
-            if (totalFood > 0)
-                newFinalStatList["Excess food to production"] = Stats(production = getProductionFromExcessiveFood(totalFood), food = -totalFood)
-            else // prevent starvation but no bonus from excess food
-                newFinalStatList["Excess food to production"] = Stats(food = -totalFood)
+            newFinalStatList["Excess food to production"] =
+                Stats(production = getProductionFromExcessiveFood(totalFood), food = -totalFood)
         }
         
         val growthNullifyingUnique = cityInfo.getMatchingUniques(UniqueType.NullifiesGrowth).firstOrNull()
