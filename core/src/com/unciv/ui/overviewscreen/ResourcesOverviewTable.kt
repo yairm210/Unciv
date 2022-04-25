@@ -10,6 +10,8 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.translations.tr
+import com.unciv.ui.civilopedia.CivilopediaCategories
+import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
@@ -75,6 +77,11 @@ class ResourcesOverviewTab(
                 overviewScreen.game.setWorldScreen()
             }
         }
+    private fun TileResource.getLabel() = name.toLabel().apply {
+        onClick {
+            overviewScreen.game.setScreen(CivilopediaScreen(gameInfo.ruleSet, overviewScreen, CivilopediaCategories.Resource, this@getLabel.name))
+        }
+    }
 
     private enum class ExtraInfoOrigin(
         val horizontalCaption: String,
@@ -180,7 +187,7 @@ class ResourcesOverviewTab(
         // One detail row per resource
         for (resource in resources) {
             add(getResourceImage(resource.name))
-            add(resource.name.toLabel())
+            add(resource.getLabel())
             addSeparatorVertical(Color.GRAY).pad(0f)
             for (origin in origins) {
                 add(resourceDrilldown.getLabel(resource, origin))
