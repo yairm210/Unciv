@@ -86,4 +86,19 @@ class SpecialistAllocationTable(val cityScreen: CityScreen): Table(BaseScreen.sk
         }
         return specialistStatTable
     }
+
+
+    fun asExpander(onChange: (()->Unit)?): ExpanderTab {
+        return ExpanderTab(
+            title = "Specialists:",
+            fontSize = Constants.defaultFontSize,
+            persistenceID = "CityStatsTable.Specialists",
+            startsOutOpened = true,
+            onChange = onChange
+        ) {
+            it.add(this)
+            update()
+        }
+    }
+
 }
