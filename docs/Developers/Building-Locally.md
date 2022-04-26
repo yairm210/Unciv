@@ -30,6 +30,8 @@ So first things first - the initial "No assumptions" setup to have Unciv run fro
 
 Unciv uses Gradle to specify dependencies and how to run. In the background, the Gradle gnomes will be off fetching the packages (a one-time effort) and, once that's done, will build the project!
 
+Unciv uses Grade 7.2 and the Android Gradle Plugin 7.1.0
+    
 ## Without Android Studio
 
 If you also have JDK 11 installed, you can compile Unciv on your own by cloning (or downloading and unzipping) the project, opening a terminal in the Unciv folder and run the following commands:
