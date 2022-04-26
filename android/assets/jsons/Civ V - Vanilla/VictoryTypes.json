@@ -27,8 +27,8 @@
     },
     {
         "name": "Diplomatic",
-        "hiddenInVictoryScreen": true,
-        "milestones": ["[United Nations] build globally", "Win diplomatic vote"],
+        "hiddenInVictoryScreen": false,
+        "milestones": ["Anyone build [United Nations]", "Win diplomatic vote"],
         "victoryString": "You have triumphed over your foes through the art of diplomacy! Your cunning and wisdom have earned you great friends - and divided and sown confusion among your enemies! Forever will you be remembered as the leader who brought peace to this weary world!",
         "defeatString": "You have been defeated. Your civilization has been overwhelmed by its many foes. But your people do not despair, for they know that one day you shall return - and lead them forward to victory!"
     },
