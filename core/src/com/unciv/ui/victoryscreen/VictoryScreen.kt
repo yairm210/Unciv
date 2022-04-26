@@ -174,6 +174,12 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
     }
 
     private fun setCivRankingsTable() {
+        if (gameInfo.gameParameters.demographicsEnabled ) {
+            // use new demographics table
+        } else {
+            // use old rankings table
+        }
+
         val majorCivs = gameInfo.civilizations.filter { it.isMajorCiv() }
         val civRankingsTable = Table().apply { defaults().pad(5f) }
 
