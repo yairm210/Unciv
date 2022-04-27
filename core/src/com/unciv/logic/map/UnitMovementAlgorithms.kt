@@ -530,13 +530,13 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
                 destination.civilianUnit
             else
                 destination.militaryUnit
-        )!! // The precondition guarantees that there is an eligible same-type unit at the destination
+        )?: return // The precondition guarantees that there is an eligible same-type unit at the destination
 
         val ourOldPosition = unit.getTile()
         val theirOldPosition = otherUnit.getTile()
 
-        val ourPayload = ourOldPosition.getUnits().filter { it.isTransported && unit.canTransport(it) }.toList()
-        val theirPayload = theirOldPosition.getUnits().filter { it.isTransported && otherUnit.canTransport(it) }.toList()
+        val ourPayload = ourOldPosition.getUnits().filter { it.isTransported }.toList()
+        val theirPayload = theirOldPosition.getUnits().filter { it.isTransported }.toList()
 
         // Swap the units
         // Step 1: Release the destination tile
@@ -551,13 +551,17 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
             payload.removeFromTile()
         // Step 4: Perform the another movement
         otherUnit.putInTile(theirOldPosition)
-        for (payload in theirPayload)
+        for (payload in theirPayload) {
             payload.putInTile(theirOldPosition)
+            payload.isTransported = true // restore the flag to not leave the payload in the city
+        }
         otherUnit.movement.moveToTile(ourOldPosition)
         // Step 5: Restore the position in the new tile
         unit.putInTile(theirOldPosition)
-        for (payload in ourPayload)
+        for (payload in ourPayload) {
             payload.putInTile(theirOldPosition)
+            payload.isTransported = true // restore the flag to not leave the payload in the city
+        }
         // Step 6: Update states
         otherUnit.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
         unit.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
