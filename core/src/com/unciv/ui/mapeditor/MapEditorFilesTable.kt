@@ -62,7 +62,7 @@ class MapEditorFilesTable(
         )
         if (includeMods) {
             for (modFolder in RulesetCache.values.mapNotNull { it.folderLocation }) {
-                val mapsFolder = modFolder.child("maps")
+                val mapsFolder = modFolder.child(MapSaver.mapsFolder)
                 if (mapsFolder.exists())
                     sortedFiles.addAll(
                         mapsFolder.list()
@@ -91,5 +91,15 @@ class MapEditorFilesTable(
             add(mapButton).row()
         }
         layout()
+    }
+
+    fun noMapsAvailable(includeMods: Boolean = false): Boolean {
+        if (MapSaver.getMaps().any()) return true
+        if (!includeMods) return false
+        for (modFolder in RulesetCache.values.mapNotNull { it.folderLocation }) {
+            val mapsFolder = modFolder.child(MapSaver.mapsFolder)
+            if (mapsFolder.exists() && mapsFolder.list().any()) return true
+        }
+        return false
     }
 }

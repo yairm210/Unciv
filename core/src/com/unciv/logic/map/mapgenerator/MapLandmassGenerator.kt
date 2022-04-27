@@ -10,9 +10,13 @@ import kotlin.math.min
 import kotlin.math.pow
 
 class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRandomness) {
-
+    //region _Fields
     private val firstLandTerrain = ruleset.terrains.values.first { it.type==TerrainType.Land }
+    private val landTerrainName = firstLandTerrain.name
     private val firstWaterTerrain = ruleset.terrains.values.firstOrNull { it.type==TerrainType.Water }
+    private val waterTerrainName = firstWaterTerrain?.name ?: ""
+    private var waterThreshold = 0.0
+    //endregion
 
     fun generateLand(tileMap: TileMap) {
         // This is to accommodate land-only mods
@@ -21,6 +25,8 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
                 tile.baseTerrain = firstLandTerrain.name
             return
         }
+
+        waterThreshold = tileMap.mapParameters.waterThreshold.toDouble()
 
         when (tileMap.mapParameters.type) {
             MapType.pangaea -> createPangaea(tileMap)
@@ -33,11 +39,8 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
         }
     }
 
-    private fun spawnLandOrWater(tile: TileInfo, elevation: Double, threshold: Double) {
-        when {
-            elevation < threshold -> tile.baseTerrain = firstWaterTerrain!!.name
-            else -> tile.baseTerrain = firstLandTerrain.name
-        }
+    private fun spawnLandOrWater(tile: TileInfo, elevation: Double) {
+        tile.baseTerrain = if (elevation < waterThreshold) waterTerrainName else landTerrainName
     }
 
     /**
@@ -62,15 +65,16 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
         val elevationSeed = randomness.RNG.nextInt().toDouble()
         for (tile in tileMap.values) {
             val elevation = randomness.getPerlinNoise(tile, elevationSeed)
-            spawnLandOrWater(tile, elevation, tileMap.mapParameters.waterThreshold.toDouble())
+            spawnLandOrWater(tile, elevation)
         }
     }
 
     private fun createArchipelago(tileMap: TileMap) {
         val elevationSeed = randomness.RNG.nextInt().toDouble()
+        waterThreshold += 0.25
         for (tile in tileMap.values) {
             val elevation = getRidgedPerlinNoise(tile, elevationSeed)
-            spawnLandOrWater(tile, elevation, 0.25 + tileMap.mapParameters.waterThreshold.toDouble())
+            spawnLandOrWater(tile, elevation)
         }
     }
 
@@ -79,7 +83,7 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
         for (tile in tileMap.values) {
             var elevation = randomness.getPerlinNoise(tile, elevationSeed)
             elevation = (elevation + getEllipticContinent(tile, tileMap)) / 2.0
-            spawnLandOrWater(tile, elevation, tileMap.mapParameters.waterThreshold.toDouble())
+            spawnLandOrWater(tile, elevation)
         }
     }
 
@@ -88,7 +92,7 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
         for (tile in tileMap.values) {
             var elevation = randomness.getPerlinNoise(tile, elevationSeed)
             elevation -= getEllipticContinent(tile, tileMap, 0.6) * 0.3
-            spawnLandOrWater(tile, elevation, tileMap.mapParameters.waterThreshold.toDouble())
+            spawnLandOrWater(tile, elevation)
         }
     }
 
@@ -97,7 +101,7 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
         for (tile in tileMap.values) {
             var elevation = randomness.getPerlinNoise(tile, elevationSeed)
             elevation = (elevation + getTwoContinentsTransform(tile, tileMap)) / 2.0
-            spawnLandOrWater(tile, elevation, tileMap.mapParameters.waterThreshold.toDouble())
+            spawnLandOrWater(tile, elevation)
         }
     }
 
@@ -106,7 +110,7 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
         for (tile in tileMap.values) {
             var elevation = randomness.getPerlinNoise(tile, elevationSeed)
             elevation = (elevation + getFourCornersTransform(tile, tileMap)) / 2.0
-            spawnLandOrWater(tile, elevation, tileMap.mapParameters.waterThreshold.toDouble())
+            spawnLandOrWater(tile, elevation)
         }
     }
 
@@ -184,7 +188,6 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
         return Perlin.ridgedNoise3d(worldCoords.x.toDouble(), worldCoords.y.toDouble(), seed, nOctaves, persistence, lacunarity, scale)
     }
 
-    // region Cellular automata
     private fun generateLandCellularAutomata(tileMap: TileMap) {
 
         for (tile in tileMap.values) {
@@ -196,5 +199,4 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
 
         smoothen(tileMap)
     }
-    // endregion
 }
