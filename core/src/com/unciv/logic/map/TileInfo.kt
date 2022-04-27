@@ -229,7 +229,7 @@ open class TileInfo {
         }
     }
 
-    fun isEnemyTerritory(civInfo: CivilizationInfo): Boolean {
+    private fun isEnemyTerritory(civInfo: CivilizationInfo): Boolean {
         val tileOwner = getOwner() ?: return false
         return civInfo.isAtWarWith(tileOwner)
     }

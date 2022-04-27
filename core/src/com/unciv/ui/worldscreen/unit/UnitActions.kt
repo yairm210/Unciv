@@ -102,7 +102,7 @@ object UnitActions {
         // have the visual bug that the tile overlays for the eligible swap locations are drawn for
         // /all/ selected units instead of only the first one. This could be fixed, but again,
         // swapping makes little sense for multiselect anyway.
-        if (worldScreen.bottomUnitTable.selectedUnits.count() > 1) return
+        if (worldScreen.bottomUnitTable.selectedUnits.size > 1) return
         // Only show the swap action if there is at least one possible swap movement
         if (unit.movement.getUnitSwappableTiles().none()) return
         actionList += UnitAction(
@@ -653,7 +653,7 @@ object UnitActions {
 
             var resourcesAvailable = true
             if (improvement.uniqueObjects.any {
-                    it.isOfType(UniqueType.ConsumesResources) && civResources[unique.params[1]] ?: 0 < unique.params[0].toInt()
+                    it.isOfType(UniqueType.ConsumesResources) && (civResources[unique.params[1]] ?: 0) < unique.params[0].toInt()
             })
                 resourcesAvailable = false
 
