@@ -75,14 +75,10 @@ class MainMenuScreen: BaseScreen() {
                     .generateMap(MapParameters().apply { mapSize = MapSizeNew(MapSize.Small); type = MapType.default })
             postCrashHandlingRunnable { // for GL context
                 ImageGetter.setNewRuleset(RulesetCache.getVanillaRuleset())
-                val mapHolder = EditorMapHolder(MapEditorScreen(), newMap) {}
+                val mapHolder = EditorMapHolder(this, newMap) {}
                 backgroundTable.addAction(Actions.sequence(
                         Actions.fadeOut(0f),
                         Actions.run {
-                            mapHolder.apply {
-                                addTiles(this@MainMenuScreen.stage)
-                                touchable = Touchable.disabled
-                            }
                             backgroundTable.addActor(mapHolder)
                             mapHolder.center(backgroundTable)
                         },

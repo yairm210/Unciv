@@ -1,3 +1,21 @@
+## 4.0.10
+
+By JackRainy:
+- Correct calculation of production for Settlers 
+- Fixed swapping carriers with payloads 
+- Display wonders built in other civs correctly 
+
+By SomeTroglodyte:
+- Resources UI 
+- Some improvements to Map Editor - step 1 
+- Implement fastlane step 1 - minimal framework
+
+Made Specialist allocation table expandable  - By ultradian
+
+Fix typo in vanilla - By touhidurrr
+
+Healing values per Civ V - By letstalkaboutdune
+
 ## 4.0.9
 
 By xlenstra: Moddable victories!

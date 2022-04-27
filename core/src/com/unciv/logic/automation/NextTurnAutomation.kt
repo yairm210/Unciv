@@ -465,13 +465,14 @@ object NextTurnAutomation {
     /** If we are able to build a spaceship but have already spent our resources, try disbanding
      *  a unit and selling a building to make room. Can happen due to trades etc */
     private fun freeUpSpaceResources(civInfo: CivilizationInfo) {
-        // Can't build spaceships
-        if (!civInfo.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts))
+        // No need to build spaceship parts just yet
+        if (civInfo.gameInfo.ruleSet.victories.none { civInfo.victoryManager.getNextMilestone(it.key)?.type == MilestoneType.AddedSSPartsInCapital } )
             return
 
         for (resource in civInfo.gameInfo.spaceResources) {
             // Have enough resources already
-            if (civInfo.getCivResourcesByName()[resource]!! >= Automation.getReservedSpaceResourceAmount(civInfo))
+            val resourceCount = civInfo.getCivResourcesByName()[resource] ?: 0 
+            if (resourceCount >= Automation.getReservedSpaceResourceAmount(civInfo))
                 continue
 
             val unitToDisband = civInfo.getCivUnits()

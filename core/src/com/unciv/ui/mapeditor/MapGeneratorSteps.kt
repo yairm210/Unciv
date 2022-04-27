@@ -42,7 +42,7 @@ enum class MapGeneratorSteps(
     RareFeatures("Spawn rare features", MapGeneratorStepsHelpers.applyRareFeatures),
     Ice("Distribute ice"),
     Continents("Assign continent IDs"),
-    NaturalWonders("Natural Wonders"),
+    NaturalWonders("Place Natural Wonders"),
     Rivers("Let the rivers flow"),
     Resources("Spread Resources", MapGeneratorStepsHelpers.applyResources),
     AncientRuins("Create ancient ruins"),

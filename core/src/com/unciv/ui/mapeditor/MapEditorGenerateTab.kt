@@ -4,8 +4,11 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapType
+import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapgenerator.MapGenerator
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
@@ -48,6 +51,11 @@ class MapEditorGenerateTab(
     }
 
     private fun generate(step: MapGeneratorSteps) {
+        if (step <= MapGeneratorSteps.Landmass && step in seedUsedForStep) {
+            // reseed visibly when starting from scratch (new seed shows in advanced settings widget)
+            newTab.mapParametersTable.reseed()
+            seedUsedForStep -= step
+        }
         val mapParameters = editorScreen.newMapParameters.clone()  // this clone is very important here
         val message = mapParameters.mapSize.fixUndesiredSizes(mapParameters.worldWrap)
         if (message != null) {
@@ -76,29 +84,53 @@ class MapEditorGenerateTab(
         Gdx.input.inputProcessor = null // remove input processing - nothing will be clicked!
         setButtonsEnabled(false)
 
-        thread(name = "MapGenerator") {
+        fun freshMapCompleted(generatedMap: TileMap, mapParameters: MapParameters, newRuleset: Ruleset, selectPage: Int) {
+            MapEditorScreen.saveDefaultParameters(mapParameters)
+            editorScreen.loadMap(generatedMap, newRuleset, selectPage) // also reactivates inputProcessor
+            editorScreen.isDirty = true
+            setButtonsEnabled(true)
+        }
+        fun stepCompleted(step: MapGeneratorSteps) {
+            if (step == MapGeneratorSteps.NaturalWonders) editorScreen.naturalWondersNeedRefresh = true
+            editorScreen.mapHolder.updateTileGroups()
+            editorScreen.isDirty = true
+            setButtonsEnabled(true)
+            Gdx.input.inputProcessor = editorScreen.stage
+        }
+
+        // Map generation can take a while and we don't want ANRs
+        thread(name = "MapGenerator", isDaemon = true) {
             try {
-                // Map generation can take a while and we don't want ANRs
-                if (step == MapGeneratorSteps.All) {
-                    val newRuleset = RulesetCache.getComplexRuleset(mapParameters.mods, mapParameters.baseRuleset)
-                    val generatedMap = MapGenerator(newRuleset).generateMap(mapParameters)
-
-                    Gdx.app.postRunnable {
-                        MapEditorScreen.saveDefaultParameters(mapParameters)
-                        editorScreen.loadMap(generatedMap, newRuleset)
-                        editorScreen.isDirty = true
-                        setButtonsEnabled(true)
-                        Gdx.input.inputProcessor = editorScreen.stage
+                val (newRuleset, generator) = if (step > MapGeneratorSteps.Landmass) null to null
+                    else {
+                        val newRuleset = RulesetCache.getComplexRuleset(mapParameters.mods, mapParameters.baseRuleset)
+                        newRuleset to MapGenerator(newRuleset)
                     }
-                } else {
-                    MapGenerator(editorScreen.ruleset).generateSingleStep(editorScreen.tileMap, step)
-
-                    Gdx.app.postRunnable {
-                        if (step == MapGeneratorSteps.NaturalWonders) editorScreen.naturalWondersNeedRefresh = true
-                        editorScreen.mapHolder.updateTileGroups()
-                        editorScreen.isDirty = true
-                        setButtonsEnabled(true)
-                        Gdx.input.inputProcessor = editorScreen.stage
+                when (step) {
+                    MapGeneratorSteps.All -> {
+                        val generatedMap = generator!!.generateMap(mapParameters)
+                        Gdx.app.postRunnable {
+                            freshMapCompleted(generatedMap, mapParameters, newRuleset!!, selectPage = 0)
+                        }
+                    }
+                    MapGeneratorSteps.Landmass -> {
+                        // This step _could_ run on an existing tileMap, but that opens a loophole where you get hills on water - fixing that is more expensive than always recreating 
+                        mapParameters.type = MapType.empty
+                        val generatedMap = generator!!.generateMap(mapParameters)
+                        mapParameters.type = editorScreen.newMapParameters.type
+                        generator.generateSingleStep(generatedMap, step)
+                        val savedScale = editorScreen.mapHolder.scaleX
+                        Gdx.app.postRunnable {
+                            freshMapCompleted(generatedMap, mapParameters, newRuleset!!, selectPage = 1)
+                            editorScreen.mapHolder.zoom(savedScale)
+                        }
+                    }
+                    else -> {
+                        editorScreen.tileMap.mapParameters.seed = mapParameters.seed
+                        MapGenerator(editorScreen.ruleset).generateSingleStep(editorScreen.tileMap, step)
+                        Gdx.app.postRunnable {
+                            stepCompleted(step)
+                        }
                     }
                 }
             } catch (exception: Exception) {
