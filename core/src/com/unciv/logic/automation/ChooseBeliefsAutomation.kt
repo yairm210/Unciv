@@ -44,15 +44,16 @@ object ChooseBeliefsAutomation {
     private fun beliefBonusForTile(belief: Belief, tile: TileInfo, city: CityInfo): Float {
         var bonusYield = 0f
         for (unique in belief.uniqueObjects) {
-            when (unique.placeholderText) {
-                UniqueType.StatsFromObject.placeholderText -> if (tile.matchesFilter(unique.params[1]))
+            when (unique.type) {
+                UniqueType.StatsFromObject -> if (tile.matchesFilter(unique.params[1]))
                     bonusYield += unique.stats.values.sum()
-                "[] from [] tiles without [] []" -> 
+                UniqueType.StatsFromTilesWithout -> 
                     if (city.matchesFilter(unique.params[3])
                         && tile.matchesFilter(unique.params[1])
                         && !tile.matchesFilter(unique.params[2])
                     ) bonusYield += unique.stats.values.sum()
                 // ToDo: Also calculate add stats for improvements that will be buildable
+                else -> {}
             }
         }
         return bonusYield
@@ -131,54 +132,50 @@ object ChooseBeliefsAutomation {
                 if (unique.conditionals.any { it.type == UniqueType.ConditionalOurUnit && it.params[0] == civInfo.religionManager.getGreatProphetEquivalent() }) 1/2f
                 else 1f
             // Some city-filters are modified by personality (non-enemy foreign cities)
-            score += modifier * when (unique.placeholderText) {
-                "Earn []% of [] unit's [] as [] when killed within 4 tiles of a city following this religion" ->
+            score += modifier * when (unique.type) {
+                UniqueType.KillUnitPlunderNearCity ->
                     unique.params[0].toFloat() * 4f *
                         if (civInfo.wantsToFocusOn(Focus.Military)) 2f
                         else 1f
-                "May buy [] buildings for [] [] []", "May buy [] units for [] [] []" ->
+                UniqueType.BuyUnitsForAmountStat, UniqueType.BuyBuildingsForAmountStat ->
                     if (civInfo.religionManager.religion != null 
                         && civInfo.religionManager.religion!!.getFollowerUniques()
-                            .any { it.placeholderText == unique.placeholderText } 
+                            .any { it.type == unique.type } 
                     ) 0f
                     // This is something completely different from the original, but I have no idea
                     // what happens over there
                     else civInfo.statsForNextTurn[Stat.valueOf(unique.params[2])] * 5f / unique.params[1].toFloat()
-                "May buy [] buildings with []", "May buy [] units with []" ->
+                UniqueType.BuyUnitsWithStat, UniqueType.BuyBuildingsWithStat ->
                     if (civInfo.religionManager.religion != null
                         && civInfo.religionManager.religion!!.getFollowerUniques()
-                            .any { it.placeholderText == unique.placeholderText }
+                            .any { it.type == unique.type }
                     ) 0f
                     // This is something completely different from the original, but I have no idea
                     // what happens over there
                     else civInfo.statsForNextTurn[Stat.valueOf(unique.params[1])] * 10f / civInfo.getEra().baseUnitBuyCost
-                UniqueType.BuyUnitsByProductionCost.placeholderText ->
-                    15f * if (civInfo.wantsToFocusOn(Focus.Military)) 2f else 1f
-                "when a city adopts this religion for the first time (modified by game speed)" -> // Modified by personality
-                    unique.stats.values.sum() * 10f
-                "When spreading religion to a city, gain [] times the amount of followers of other religions as []" ->
+                UniqueType.BuyUnitsByProductionCost ->
+                    15f * if (civInfo.wantsToFocusOn(ThingToFocus.Military)) 2f else 1f
+                UniqueType.StatsWhenSpreading ->
                     unique.params[0].toInt() / 5f
-                "[] when a city adopts this religion for the first time (modified by game speed)" ->
+                UniqueType.StatsWhenAdoptingReligion, UniqueType.StatsWhenAdoptingReligionSpeed ->
                     unique.stats.values.sum() / 50f
-                "Resting point for influence with City-States following this religion []" ->
+                UniqueType.RestingPointOfCityStatesFollowingReligionChange ->
                     unique.params[0].toInt() / 7f
-                "[] for each global city following this religion" ->
+                UniqueType.StatsFromGlobalCitiesFollowingReligion ->
                     50f / unique.stats.values.sum()
-                UniqueType.StatsSpendingGreatPeople.placeholderText ->
+                UniqueType.StatsSpendingGreatPeople ->
                     unique.stats.values.sum() / 2f
-                "[]% Natural religion spread to []" ->
-                    unique.params[0].toFloat() / 4f
-                UniqueType.Strength.placeholderText ->
+                UniqueType.Strength ->
                     unique.params[0].toInt() / 4f
-                "Religion naturally spreads to cities [] tiles away" ->
+                UniqueType.ReligionSpreadDistance ->
                     (10 + unique.params[0].toInt()) / goodEarlyModifier
-                "[]% Natural religion spread []", "[]% Natural religion spread [] with []" ->
+                UniqueType.NaturalReligionSpreadStrength ->
                     (10 + unique.params[0].toInt()) / goodEarlyModifier
-                UniqueType.SpreadReligionStrength.placeholderText ->
+                UniqueType.SpreadReligionStrength ->
                     unique.params[0].toInt() / goodLateModifier
-                "[]% Faith cost of generating Great Prophet equivalents" ->
+                UniqueType.FaithCostOfGreatProphetChange ->
                     unique.params[0].toInt() / goodLateModifier / 2f    
-                "[] cost for [] units []%" ->
+                UniqueType.BuyBuildingsDiscount, UniqueType.BuyItemsDiscount, UniqueType.BuyUnitsDiscount ->
                     unique.params[2].toInt() / goodLateModifier
                 else -> 0f
             }

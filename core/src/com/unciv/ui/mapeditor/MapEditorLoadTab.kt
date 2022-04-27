@@ -47,7 +47,9 @@ class MapEditorLoadTab(
 
     private fun loadHandler() {
         if (chosenMap == null) return
-        thread(name = "MapLoader", block = this::loaderThread)
+        editorScreen.askIfDirty("Do you want to load another map without saving the recent changes?") {
+            thread(name = "MapLoader", isDaemon = true, block = this::loaderThread)
+        }
     }
 
     private fun deleteHandler() {
@@ -119,7 +121,6 @@ class MapEditorLoadTab(
                     editorScreen.loadMap(map)
                     needPopup = false
                     popup?.close()
-                    Gdx.input.inputProcessor = stage
                 } catch (ex: Throwable) {
                     needPopup = false
                     popup?.close()
@@ -138,4 +139,6 @@ class MapEditorLoadTab(
             }
         }
     }
+
+    fun noMapsAvailable() = mapFiles.noMapsAvailable()
 }

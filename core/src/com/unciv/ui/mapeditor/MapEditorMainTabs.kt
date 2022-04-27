@@ -37,7 +37,7 @@ class MapEditorMainTabs(
         addPage("Load", load,
             ImageGetter.getImage("OtherIcons/Load"), 25f,
             shortcutKey = KeyCharAndCode.ctrl('l'),
-            disabled = MapSaver.getMaps().isEmpty())
+            disabled = load.noMapsAvailable())
         addPage("Save", save,
             ImageGetter.getImage("OtherIcons/Checkmark"), 25f,
             shortcutKey = KeyCharAndCode.ctrl('s'))

@@ -12,7 +12,7 @@ import com.unciv.ui.utils.toTextButton
 
 enum class MilestoneType(val text: String) {
     BuiltBuilding("Build [building]"),
-    BuildingBuiltGlobally("[building] build globally"),
+    BuildingBuiltGlobally("Anyone should build [building]"),
     AddedSSPartsInCapital("Add all [comment] in capital"),
     DestroyAllPlayers("Destroy all players"),
     CaptureAllCapitals("Capture all capitals"),
