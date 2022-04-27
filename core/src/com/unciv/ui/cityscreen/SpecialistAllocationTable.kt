@@ -90,7 +90,7 @@ class SpecialistAllocationTable(val cityScreen: CityScreen): Table(BaseScreen.sk
 
     fun asExpander(onChange: (()->Unit)?): ExpanderTab {
         return ExpanderTab(
-            title = "Specialists:",
+            title = "{Specialists}:",
             fontSize = Constants.defaultFontSize,
             persistenceID = "CityStatsTable.Specialists",
             startsOutOpened = true,
