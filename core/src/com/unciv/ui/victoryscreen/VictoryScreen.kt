@@ -174,29 +174,34 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
     }
 
     private fun setCivRankingsTable() {
-        if (gameInfo.gameParameters.demographicsEnabled ) {
-            // use new demographics table
-        } else {
-            // use old rankings table
-        }
+        val majorCivs = gameInfo.civilizations.filter { it.isMajorCiv() } //creates element of only major civs from gameInfo
+        val civRankingsTable = Table().apply { defaults().pad(5f) } //creates table with padding of 5f
 
-        val majorCivs = gameInfo.civilizations.filter { it.isMajorCiv() }
-        val civRankingsTable = Table().apply { defaults().pad(5f) }
+        if (gameInfo.gameParameters.demographicsEnabled ) { //if demographics option is enabled...
+            val demographicsHeaders = arrayOf("Demographic","Rank","Value","Best","Average","Worst")
 
-        for (category in RankingType.values()) {
-            val column = Table().apply { defaults().pad(5f) }
-            column.add(category.name.replace('_',' ').toLabel()).row()
-            column.addSeparator()
-
-            for (civ in majorCivs.sortedByDescending { it.getStatForRanking(category) }) {
-                column.add(getCivGroup(civ, ": " + civ.getStatForRanking(category).toString(), playerCivInfo)).fillX().row()
+            for (i in demographicsHeaders.indices) { //for every index in DemographicsHeaders array...
+                val column = Table().apply { defaults().pad(5f) } //create a column with padding of 5f
+                column.add(demographicsHeaders[i].replace('_',' ').toLabel()).row() //pulls name of category and creates label with it
+                column.addSeparator() //adds a separator line
+                civRankingsTable.add(column) //add resulting column to table
             }
+        } else { //if demographics option is disabled...
+            for (category in RankingType.values()) { //for every category in RankingType class (Score, Population, etc.)...
+                val column = Table().apply { defaults().pad(5f) } //create a column with padding of 5f
+                column.add(category.name.replace('_',' ').toLabel()).row() //pulls name of category and creates label with it
+                column.addSeparator() //adds a separator line
 
-            civRankingsTable.add(column)
+                for (civ in majorCivs.sortedByDescending { it.getStatForRanking(category) }) { //for every civ in majorCivs element, get ranking for this category and sort descending
+                    column.add(getCivGroup(civ, ": " + civ.getStatForRanking(category).toString(), playerCivInfo)).fillX().row() //add the civ name, background, and rank value to a row in the column
+                }
+
+                civRankingsTable.add(column) //add resulting column to table
+            }
         }
 
-        contentsTable.clear()
-        contentsTable.add(civRankingsTable)
+        contentsTable.clear() //clear previous contents of table
+        contentsTable.add(civRankingsTable) //add civRankingsTable to table
     }
 
     private fun getCivGroup(civ: CivilizationInfo, afterCivNameText: String, currentPlayer: CivilizationInfo): Table {
