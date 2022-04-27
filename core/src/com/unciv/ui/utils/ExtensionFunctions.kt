@@ -360,8 +360,17 @@ fun (() -> Unit).wrapCrashHandlingUnit(
     return { wrappedReturning() ?: Unit }
 }
 
-private val compositeLogicCheckRegex = Regex("""^\s*(?:\{[^{}]+}\s*)+$""")
-private val compositeLogicSplitRegex = Regex("""\{([^{}]+)}""")
+@Suppress("RegExpRedundantEscape")  // Old Android JRE's need the '}' escaped
+private val compositeLogicCheckRegex = Regex("""^\s*(?:\{[^{}]+\}\s*)+$""")
+// Regexplanation:
+//          [^{}]+           A string of any characters except opening or closing curly braces
+//        \{[^{}]+\}         ..must be enclosed in curly braces
+//     (?:\{[^{}]+\}\s*)+    ..this can repeat 1..n times with any white space including none in between or trailing
+// ^\s*(?:\{[^{}]+\}\s*)+$   ..additionally allow any leading whitespace, but now the entire input string must be matched
+
+@Suppress("RegExpRedundantEscape")  // dito
+private val compositeLogicSplitRegex = Regex("""\{([^{}]+)\}""")
+
 /** For filters containing '{', apply the [predicate] to each part inside "{}" and aggregate using [operation].
  * 
  *  A syntax check is performed, if the string doesn't consist only of non-empty, non-nested {} pairs separated by optional whitespace, then [invalidSyntaxResult] is returned. 
