@@ -46,10 +46,8 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         innerTable.addSeparator()
         addText()
         if (!cityInfo.population.getMaxSpecialists().isEmpty()) {
-            innerTable.addSeparator()
-            innerTable.add(SpecialistAllocationTable(cityScreen).apply { update() }).row()
+            addSpecialistInfo()
         }
-        
         if (cityInfo.religion.getNumberOfFollowers().isNotEmpty() && cityInfo.civInfo.gameInfo.isReligionEnabled())
             addReligionInfo()
 
@@ -111,6 +109,18 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         }
 
         innerTable.add(tableWithIcons).row()
+    }
+
+    private fun addSpecialistInfo() {
+        val expanderTab = SpecialistAllocationTable(cityScreen).asExpander {
+            pack()
+            setPosition(
+                stage.width - CityScreen.posFromEdge,
+                stage.height - CityScreen.posFromEdge,
+                Align.topRight
+            )
+        }
+        innerTable.add(expanderTab).growX().row()
     }
 
     private fun addReligionInfo() {
