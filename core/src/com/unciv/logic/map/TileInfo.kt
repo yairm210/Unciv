@@ -507,7 +507,9 @@ open class TileInfo {
 
         return when {
             improvement.name == this.improvement -> false
-            isCityCenter() -> false
+            // We do an exception for "Remove Fallout" here
+            //   since Fallout is the only "improvement" can be "built" in the city.
+            isCityCenter() && (improvement.name != "Remove Fallout") -> false
             improvement.getMatchingUniques(UniqueType.CannotBuildOnTile, StateForConditionals(tile = this)).any {
                 unique -> matchesTerrainFilter(unique.params[0])
             } -> false

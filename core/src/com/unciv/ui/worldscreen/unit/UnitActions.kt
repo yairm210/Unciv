@@ -402,7 +402,6 @@ object UnitActions {
         if (unit.isEmbarked()) return
 
         val canConstruct = unit.currentMovement > 0
-            && !tile.isCityCenter()
             && unit.civInfo.gameInfo.ruleSet.tileImprovements.values.any { 
                 tile.canBuildImprovement(it, unit.civInfo) 
                 && unit.canBuildImprovement(it)
