@@ -1,28 +1,20 @@
 ## 4.0.10
 
 By JackRainy:
-- Correct calculation of the production for the Settlers 
-- Fix of misprint 
-- Correct swapping of the carriers with payloads 
+- Correct calculation of production for Settlers 
+- Fixed swapping carriers with payloads 
 - Display wonders built in other civs correctly 
 
 By SomeTroglodyte:
 - Resources UI 
 - Some improvements to Map Editor - step 1 
-- Implement fastlane step 1 - minimal framework 
+- Implement fastlane step 1 - minimal framework
 
-By xlenstra:
-- Changed milestone build globally text to make it more understandable 
-- Updated documentation to contain information on victory types 
-- Typed all belief automation uniques 
+Made Specialist allocation table expandable  - By ultradian
 
-Making SpecialistAllocationTable an ExpanderTab  - By ultradian
+Fix typo in vanilla - By touhidurrr
 
-Fix typo in vanilla  - By touhidurrr
-
-Healing parity  - By letstalkaboutdune
-
-Added missing "s"  - By Mape6
+Healing values per Civ V - By letstalkaboutdune
 
 ## 4.0.9
 

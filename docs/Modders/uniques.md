@@ -1,5 +1,5 @@
 # Uniques
-Simple unique parameters are explained by mouseover. Complex parameters are explained in [Unique parameter types](../Unique-parameters)
+Simple unique parameters are explained by mouseover. Complex parameters are explained in [Unique parameter types](../unique parameters)
 ## Triggerable uniques
 ??? example  "Free [baseUnitFilter] appears"
 	Example: "Free [Melee] appears"
