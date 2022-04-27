@@ -360,15 +360,25 @@ fun (() -> Unit).wrapCrashHandlingUnit(
     return { wrappedReturning() ?: Unit }
 }
 
-/** For filters containing '{', apply the [predicate] to each part inside "{}" and aggregate using [operation];
- *  otherwise return `null` for Elvis chaining of the individual filter. */
-fun <T> String.filterCompositeLogic(predicate: (String) -> T?, operation: (T, T) -> T): T? {
-    val elements: List<T> = removePrefix("{").removeSuffix("}").split("} {")
+private val compositeLogicCheckRegex = Regex("""^\s*(?:\{[^{}]+}\s*)+$""")
+private val compositeLogicSplitRegex = Regex("""\{([^{}]+)}""")
+/** For filters containing '{', apply the [predicate] to each part inside "{}" and aggregate using [operation].
+ * 
+ *  A syntax check is performed, if the string doesn't consist only of non-empty, non-nested {} pairs separated by optional whitespace, then [invalidSyntaxResult] is returned. 
+ *  If valid, this returns `null` if and only if all [predicate] results were `null`, otherwise the aggregation by the [operation] lambda of non-null [predicate] results. */
+fun <T> String.filterCompositeLogic(
+    predicate: (String) -> T?,
+    invalidSyntaxResult: T? = null,
+    operation: (T, T) -> T
+): T? {
+    if (!compositeLogicCheckRegex.matches(this)) return invalidSyntaxResult
+    val elements: Sequence<T> = compositeLogicSplitRegex.findAll(this)
+        .map { it.groups[1]!!.value }
         .mapNotNull(predicate)
-    if (elements.isEmpty()) return null
+    if (elements.none()) return null
     return elements.reduce(operation)
 }
 /** If a filter string contains '{', apply the [predicate] to each part inside "{}" then 'and' (`&&`) them together;
  *  otherwise return `null` for Elvis chaining of the individual filter. */
 fun String.filterAndLogic(predicate: (String) -> Boolean): Boolean? =
-    if (contains('{')) filterCompositeLogic(predicate) { a, b -> a && b } else null
+    if (contains('{')) filterCompositeLogic(predicate, false) { a, b -> a && b } else null

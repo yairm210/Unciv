@@ -75,7 +75,7 @@ enum class UniqueParameterType(
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
             if ('{' in parameterText) // "{filter} {filter}" for and logic
-                return parameterText.filterCompositeLogic({ getErrorSeverity(it, ruleset) }) { a, b -> maxOf(a, b) }
+                return filterCompositeCheckErrors(parameterText, this, ruleset)
             if (parameterText in knownValues) return null
             return BaseUnitFilter.getErrorSeverity(parameterText, ruleset)
         }
@@ -87,7 +87,7 @@ enum class UniqueParameterType(
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
             if ('{' in parameterText) // "{filter} {filter}" for and logic
-                return parameterText.filterCompositeLogic({ getErrorSeverity(it, ruleset) }) { a, b -> maxOf(a, b) }
+                return filterCompositeCheckErrors(parameterText, this, ruleset)
             if (UnitName.getErrorSeverity(parameterText, ruleset) == null) return null
             if (ruleset.units.values.any { it.uniques.contains(parameterText) }) return null
             return UnitTypeFilter.getErrorSeverity(parameterText, ruleset)
@@ -557,6 +557,16 @@ enum class UniqueParameterType(
 
         fun safeValueOf(param: String) = values().firstOrNull { it.parameterName == param }
             ?: Unknown.apply { this.parameterName = param }  //TODO Danger: There is only one instance of Unknown!
+
+        /** Helper for [getErrorSeverity] in [BaseUnitFilter] and [MapUnitFilter] */
+        private fun filterCompositeCheckErrors(
+            text: String, type: UniqueParameterType, ruleset: Ruleset
+        ): UniqueType.UniqueComplianceErrorSeverity? =
+            text.filterCompositeLogic(
+                predicate = { type.getErrorSeverity(it, ruleset) },
+                invalidSyntaxResult = UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant,
+                operation = { a, b -> maxOf(a, b) }
+            )
     }
 
     //endregion
