@@ -392,10 +392,9 @@ fun String.tr(): String {
  * allowing us to have nested translations!
  */
 fun String.getPlaceholderParametersIgnoringLowerLevelBraces(): List<String> {
-//    val parameters = ArrayList<String>()
+    val parameters = ArrayList<String>()
     var depthOfBraces = 0
     var startOfCurrentParameter = -1
-    val parameterLocations = ArrayList<Pair<Int,Int>>()
     for (i in this.indices) {
         if (this[i] == '[') {
             if (depthOfBraces == 0) startOfCurrentParameter = i+1
@@ -403,12 +402,10 @@ fun String.getPlaceholderParametersIgnoringLowerLevelBraces(): List<String> {
         }
         if (this[i] == ']' && depthOfBraces > 0) {
             depthOfBraces--
-            if (depthOfBraces == 0) {
-                parameterLocations.add(Pair(startOfCurrentParameter,i))
-            }
+            if (depthOfBraces == 0) parameters.add(substring(startOfCurrentParameter,i))
         }
     }
-    return parameterLocations.map { substring(it.first, it.second) }
+    return parameters
 }
 
 fun String.getPlaceholderText(): String {
