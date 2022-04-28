@@ -202,7 +202,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
             MilestoneType.DestroyAllPlayers -> {
                 val majorCivs = civInfo.gameInfo.civilizations.filter { it.isMajorCiv() && it != civInfo }
                 for (civ in majorCivs) {
-                    buttons.add(getMilestoneButton("Destroy [${civ.civName}]", civ.isAlive()))
+                    buttons.add(getMilestoneButton("Destroy [${civ.civName}]", !civ.isAlive()))
                 }
             }
             
