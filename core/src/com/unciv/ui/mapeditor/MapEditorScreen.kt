@@ -38,7 +38,6 @@ import com.unciv.ui.utils.*
 //todo "random nation" starting location (maybe no new internal representation = all major nations)
 //todo Nat Wonder step generator: Needs tweaks to avoid placing duplicates or wonders too close together
 //todo Music? Different suffix? Off? 20% Volume?
-//todo Unciv Europe Map Example - does not load due to "Gold / Gold ore": Solve problem that multiple errors are not shown nicely, and re-enable fixing the map and displaying it
 //todo See #6610 - re-layout after the map size dropdown changes to custom and new widgets are inserted - can reach "Create" only by dragging the _header_ of the sub-TabbedPager
 
 class MapEditorScreen(map: TileMap? = null): BaseScreen() {
