@@ -76,8 +76,7 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen() {
                 mapParameters.mapSize = MapSizeNew(MapSize.Tiny)
             }
         } else {
-            ruleset = map.ruleset ?:
-                    RulesetCache.getComplexRuleset(map.mapParameters.mods, map.mapParameters.baseRuleset)
+            ruleset = map.ruleset ?: RulesetCache.getComplexRuleset(map.mapParameters)
             tileMap = map
         }
 
@@ -148,8 +147,7 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen() {
         mapHolder.remove()
         tileMap = map
         checkAndFixMapSize()
-        ruleset = newRuleset ?:
-                RulesetCache.getComplexRuleset(map.mapParameters.mods, map.mapParameters.baseRuleset)
+        ruleset = newRuleset ?: RulesetCache.getComplexRuleset(map.mapParameters)
         mapHolder = newMapHolder()
         isDirty = false
         Gdx.input.inputProcessor = stage

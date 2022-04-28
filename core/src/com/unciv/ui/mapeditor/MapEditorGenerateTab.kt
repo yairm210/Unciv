@@ -103,7 +103,7 @@ class MapEditorGenerateTab(
             try {
                 val (newRuleset, generator) = if (step > MapGeneratorSteps.Landmass) null to null
                     else {
-                        val newRuleset = RulesetCache.getComplexRuleset(mapParameters.mods, mapParameters.baseRuleset)
+                        val newRuleset = RulesetCache.getComplexRuleset(mapParameters)
                         newRuleset to MapGenerator(newRuleset)
                     }
                 when (step) {

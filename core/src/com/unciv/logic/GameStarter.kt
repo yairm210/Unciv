@@ -43,7 +43,7 @@ object GameStarter {
             gameSetupInfo.gameParameters.baseRuleset = RulesetCache.getVanillaRuleset().name
 
         gameInfo.gameParameters = gameSetupInfo.gameParameters
-        val ruleset = RulesetCache.getComplexRuleset(gameInfo.gameParameters.mods, gameInfo.gameParameters.baseRuleset)
+        val ruleset = RulesetCache.getComplexRuleset(gameInfo.gameParameters)
         val mapGen = MapGenerator(ruleset)
 
         if (gameSetupInfo.mapParameters.name != "") runAndMeasure("loadMap") {
