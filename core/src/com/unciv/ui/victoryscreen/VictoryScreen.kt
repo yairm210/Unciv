@@ -176,42 +176,40 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
     private fun setCivRankingsTable() {
         val majorCivs = gameInfo.civilizations.filter { it.isMajorCiv() }
         val civRankingsTable = Table().apply { defaults().pad(5f) }
+        val rankLabels = arrayOf("Demographic","Rank","Value","Best","Average","Worst")
 
         if (gameInfo.gameParameters.demographicsEnabled ) {
-            val demographicsHeaders = arrayOf("Demographic","Rank","Value","Best","Average","Worst")
+            for (i in rankLabels.indices) {
+                if (i == 0) {
+                    val demoColumn = Table().apply { defaults().pad(5f) }
+                    demoColumn.add(rankLabels[i].toLabel()).row()
+                    demoColumn.addSeparator()
+                    civRankingsTable.add(demoColumn)
+                    for (category in RankingType.values()) {
+                        val headers = Table().apply { defaults().pad(5f) }
+                        headers.add(category.name.replace('_',' ').toLabel()).row()
+                        headers.addSeparator()
+                        civRankingsTable.add(headers)
+                    }
+                } else {
+                    civRankingsTable.row()
+                    val demoRow = Table().apply {defaults().pad(5f)}
+                    demoRow.add(rankLabels[i].toLabel()).row()
 
-            for (i in demographicsHeaders.indices) {
-                val demoColumn = Table().apply { defaults().pad(5f) }
-                demoColumn.add(demographicsHeaders[i].toLabel()).row()
-                demoColumn.addSeparator()
-                civRankingsTable.add(demoColumn)
+                    //add rank and other info here
+
+                    civRankingsTable.add(demoRow)
+                }
             }
-
-            /*
-            val catColumn = Table().apply { defaults().pad(5f) }
-            for (category in RankingType.values()) {
-                catColumn.add(category.name.replace('_',' ')).fillX().row()
-            }
-            civRankingsTable.add(catColumn)*/
-
-                //pull categories and add to col. 0 of civRankingsTable: Score, Population, Yield, etc.
-                //determine player's civ
-                //determine player's rank in all categories, add to col. 1
-                //show player's value in all categories, add to col. 2
-                //determine best civ in all categories, show in col. 3 (hide civ if unmet)
-                //calculate average score in all categories, show in col. 4
-                //calculate worst civ in all categories, show in col. 5
 
         } else {
             for (category in RankingType.values()) {
                 val column = Table().apply { defaults().pad(5f) }
                 column.add(category.name.replace('_',' ').toLabel()).row()
                 column.addSeparator()
-
                 for (civ in majorCivs.sortedByDescending { it.getStatForRanking(category) }) {
                     column.add(getCivGroup(civ, ": " + civ.getStatForRanking(category).toString(), playerCivInfo)).fillX().row()
                 }
-
                 civRankingsTable.add(column)
             }
         }
