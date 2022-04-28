@@ -20,7 +20,7 @@ import com.unciv.ui.utils.*
 
 //todo normalize properly
 
-//todo functional Tab for Units
+//todo functional Tab for Units (empty Tab is prepared but commented out in MapEditorEditTab.AllEditSubTabs)
 //todo copy/paste tile areas? (As tool tab, brush sized, floodfill forbidden, tab displays copied area)
 //todo Synergy with Civilopedia for drawing loose tiles / terrain icons
 //todo left-align everything so a half-open drawer is more useful
