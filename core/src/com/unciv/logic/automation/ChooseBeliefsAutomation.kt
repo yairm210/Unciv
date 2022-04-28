@@ -134,7 +134,7 @@ object ChooseBeliefsAutomation {
             score += modifier * when (unique.type) {
                 UniqueType.KillUnitPlunderNearCity ->
                     unique.params[0].toFloat() * 4f *
-                        if (civInfo.wantsToFocusOn(Focus.Military)) 2f
+                        if (civInfo.wantsToFocusOn(Victory.Focus.Military)) 2f
                         else 1f
                 UniqueType.BuyUnitsForAmountStat, UniqueType.BuyBuildingsForAmountStat ->
                     if (civInfo.religionManager.religion != null 
