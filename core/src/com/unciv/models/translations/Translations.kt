@@ -359,7 +359,7 @@ fun String.tr(): String {
         }
 
         // Take the terms in the message, WITHOUT square brackets
-        val termsInMessage = this.getPlaceholderParameters()
+        val termsInMessage = this.getPlaceholderParametersIgnoringLowerLevelBraces()
         // Take the term from the placeholder, INCLUDING the square brackets
         val termsInTranslationPlaceholder =
             squareBraceRegex.findAll(originalEntry).map { it.value }.toList()
@@ -375,7 +375,6 @@ fun String.tr(): String {
         return languageSpecificPlaceholder      // every component is already translated
     }
 
-
     if (Stats.isStats(this)) return Stats.parse(this).toString()
 
     val translation = UncivGame.Current.translations.getText(this, language, activeMods)
@@ -386,9 +385,36 @@ fun String.tr(): String {
     return translation
 }
 
-fun String.getPlaceholderText() = this
-        .removeConditionals()
-        .replace(squareBraceRegex, "[]")
+
+/**
+ * Finds the parameters in a string while IGNORING the lower-leveled braces.
+ * For example, a string like 'The city of [New [York]]' will return ['New [York]'],
+ * allowing us to have nested translations!
+ */
+fun String.getPlaceholderParametersIgnoringLowerLevelBraces(): List<String> {
+    val parameters = ArrayList<String>()
+    var depthOfBraces = 0
+    var startOfCurrentParameter = -1
+    for (i in this.indices) {
+        if (this[i] == '[') {
+            if (depthOfBraces == 0) startOfCurrentParameter = i+1
+            depthOfBraces++
+        }
+        if (this[i] == ']' && depthOfBraces > 0) {
+            depthOfBraces--
+            if (depthOfBraces == 0) parameters.add(substring(startOfCurrentParameter,i))
+        }
+    }
+    return parameters
+}
+
+fun String.getPlaceholderText(): String {
+    var stringToReturn = this.removeConditionals()
+    val placeholderParameters = stringToReturn.getPlaceholderParametersIgnoringLowerLevelBraces()
+    for (placeholderParameter in placeholderParameters)
+        stringToReturn = stringToReturn.replace("[$placeholderParameter]", "[]")
+    return stringToReturn
+}
 
 fun String.equalsPlaceholderText(str:String): Boolean {
     if (first() != str.first()) return false // for quick negative return 95% of the time
