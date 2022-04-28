@@ -174,34 +174,50 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
     }
 
     private fun setCivRankingsTable() {
-        val majorCivs = gameInfo.civilizations.filter { it.isMajorCiv() } //creates element of only major civs from gameInfo
-        val civRankingsTable = Table().apply { defaults().pad(5f) } //creates table with padding of 5f
+        val majorCivs = gameInfo.civilizations.filter { it.isMajorCiv() }
+        val civRankingsTable = Table().apply { defaults().pad(5f) }
 
-        if (gameInfo.gameParameters.demographicsEnabled ) { //if demographics option is enabled...
+        if (gameInfo.gameParameters.demographicsEnabled ) {
             val demographicsHeaders = arrayOf("Demographic","Rank","Value","Best","Average","Worst")
 
-            for (i in demographicsHeaders.indices) { //for every index in DemographicsHeaders array...
-                val column = Table().apply { defaults().pad(5f) } //create a column with padding of 5f
-                column.add(demographicsHeaders[i].replace('_',' ').toLabel()).row() //pulls name of category and creates label with it
-                column.addSeparator() //adds a separator line
-                civRankingsTable.add(column) //add resulting column to table
+            for (i in demographicsHeaders.indices) {
+                val demoColumn = Table().apply { defaults().pad(5f) }
+                demoColumn.add(demographicsHeaders[i].toLabel()).row()
+                demoColumn.addSeparator()
+                civRankingsTable.add(demoColumn)
             }
-        } else { //if demographics option is disabled...
-            for (category in RankingType.values()) { //for every category in RankingType class (Score, Population, etc.)...
-                val column = Table().apply { defaults().pad(5f) } //create a column with padding of 5f
-                column.add(category.name.replace('_',' ').toLabel()).row() //pulls name of category and creates label with it
-                column.addSeparator() //adds a separator line
 
-                for (civ in majorCivs.sortedByDescending { it.getStatForRanking(category) }) { //for every civ in majorCivs element, get ranking for this category and sort descending
-                    column.add(getCivGroup(civ, ": " + civ.getStatForRanking(category).toString(), playerCivInfo)).fillX().row() //add the civ name, background, and rank value to a row in the column
+            /*
+            val catColumn = Table().apply { defaults().pad(5f) }
+            for (category in RankingType.values()) {
+                catColumn.add(category.name.replace('_',' ')).fillX().row()
+            }
+            civRankingsTable.add(catColumn)*/
+
+                //pull categories and add to col. 0 of civRankingsTable: Score, Population, Yield, etc.
+                //determine player's civ
+                //determine player's rank in all categories, add to col. 1
+                //show player's value in all categories, add to col. 2
+                //determine best civ in all categories, show in col. 3 (hide civ if unmet)
+                //calculate average score in all categories, show in col. 4
+                //calculate worst civ in all categories, show in col. 5
+
+        } else {
+            for (category in RankingType.values()) {
+                val column = Table().apply { defaults().pad(5f) }
+                column.add(category.name.replace('_',' ').toLabel()).row()
+                column.addSeparator()
+
+                for (civ in majorCivs.sortedByDescending { it.getStatForRanking(category) }) {
+                    column.add(getCivGroup(civ, ": " + civ.getStatForRanking(category).toString(), playerCivInfo)).fillX().row()
                 }
 
-                civRankingsTable.add(column) //add resulting column to table
+                civRankingsTable.add(column)
             }
         }
 
-        contentsTable.clear() //clear previous contents of table
-        contentsTable.add(civRankingsTable) //add civRankingsTable to table
+        contentsTable.clear()
+        contentsTable.add(civRankingsTable)
     }
 
     private fun getCivGroup(civ: CivilizationInfo, afterCivNameText: String, currentPlayer: CivilizationInfo): Table {
