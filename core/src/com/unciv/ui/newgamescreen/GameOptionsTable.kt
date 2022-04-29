@@ -100,7 +100,7 @@ class GameOptionsTable(
             { gameParameters.nuclearWeaponsEnabled = it }
 
     private fun Table.addDemographicsCheckbox() =
-        addCheckbox("Demographics Scoreboard", gameParameters.demographicsEnabled)
+        addCheckbox("Demographics Scoreboard\n(replaces Rankings)", gameParameters.demographicsEnabled)
         { gameParameters.demographicsEnabled = it }
 
 
