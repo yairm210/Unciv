@@ -32,7 +32,13 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         if (!playerCivInfo.isSpectator()) tabsTable.add(setMyVictoryButton)
         val setGlobalVictoryButton = "Global status".toTextButton().onClick { setGlobalVictoryTable() }
         tabsTable.add(setGlobalVictoryButton)
-        val setCivRankingsButton = "Rankings".toTextButton().onClick { setCivRankingsTable() }
+
+        val rankingLabel = if (gameInfo.gameParameters.demographicsEnabled ) {
+            "Demographics"
+        } else {
+            "Rankings"
+        }
+        val setCivRankingsButton = rankingLabel.toTextButton().onClick { setCivRankingsTable() }
         tabsTable.add(setCivRankingsButton)
         topTable.add(tabsTable)
         topTable.addSeparator()
@@ -175,33 +181,69 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
     private fun setCivRankingsTable() {
         val majorCivs = gameInfo.civilizations.filter { it.isMajorCiv() }
+        val playerCiv = gameInfo.civilizations.filter { it.isCurrentPlayer() }
         val civRankingsTable = Table().apply { defaults().pad(5f) }
         val rankLabels = arrayOf("Demographic","Rank","Value","Best","Average","Worst")
 
-        if (gameInfo.gameParameters.demographicsEnabled ) {
-            for (i in rankLabels.indices) {
-                if (i == 0) {
-                    val demoColumn = Table().apply { defaults().pad(5f) }
-                    demoColumn.add(rankLabels[i].toLabel()).row()
-                    demoColumn.addSeparator()
-                    civRankingsTable.add(demoColumn)
+        if (gameInfo.gameParameters.demographicsEnabled ) { //uses Demographics ranking screen if selected at game setup
+            for (n in rankLabels.indices) {
+                if (n==0) {
+                    val demoLabel = Table().apply { defaults().pad(5f) }
+                    demoLabel.add(rankLabels[n].toLabel()).row()
+                    demoLabel.addSeparator().fillX()
+                    civRankingsTable.add(demoLabel)
                     for (category in RankingType.values()) {
                         val headers = Table().apply { defaults().pad(5f) }
                         headers.add(category.name.replace('_',' ').toLabel()).row()
-                        headers.addSeparator()
+                        headers.addSeparator().fillX()
                         civRankingsTable.add(headers)
                     }
                 } else {
                     civRankingsTable.row()
-                    val demoRow = Table().apply {defaults().pad(5f)}
-                    demoRow.add(rankLabels[i].toLabel()).row()
+                    civRankingsTable.add(rankLabels[n].toLabel())
+                    for (category in RankingType.values()) {
+                        when (n) {
+                            1 -> { //finds the current player's rank in each category
+                                for ((rankCount, civ) in majorCivs.sortedByDescending { it.getStatForRanking(category) }.withIndex()){
+                                    if(civ.isCurrentPlayer()){
+                                        val rank = (rankCount+1).toLabel()
+                                        civRankingsTable.add(rank)
+                                    }
+                                }
+                            }
+                            2 -> { //finds the current player's value in each category
+                                for (civ in playerCiv) civRankingsTable.add(getCivGroup(civ, ": " + civ.getStatForRanking(category).toString(), playerCivInfo)).fillX()
+                            }
+                            3 -> { //finds civ with the best value in each category
+                                for ((rankCount, civ) in majorCivs.sortedByDescending { it.getStatForRanking(category) }.withIndex()) {
+                                    if(rankCount == majorCivs.indices.first){
+                                        civRankingsTable.add(getCivGroup(civ, ": " + civ.getStatForRanking(category).toString(), playerCivInfo)).fillX()
+                                    }
+                                }
+                            }
+                            4 -> {
+                                //calculates the average value in each category
+                                var totalScore: Int=0
+                                for (civ in majorCivs) {
+                                    totalScore+=civ.getStatForRanking(category)
+                                }
 
-                    //add rank and other info here
-
-                    civRankingsTable.add(demoRow)
+                                val averageScore = totalScore / (majorCivs.lastIndex+1)
+                                civRankingsTable.add(averageScore.toLabel())
+                            }
+                            5-> {
+                                //finds civ with the worst value in each category
+                                for ((rankCount, civ) in majorCivs.sortedByDescending { it.getStatForRanking(category) }.withIndex()) {
+                                    if(rankCount == majorCivs.lastIndex){
+                                        civRankingsTable.add(getCivGroup(civ, ": " + civ.getStatForRanking(category).toString(), playerCivInfo)).fillX()
+                                    }
+                                }
+                            }
+                            else -> {}
+                        }
+                    }
                 }
             }
-
         } else {
             for (category in RankingType.values()) {
                 val column = Table().apply { defaults().pad(5f) }
