@@ -427,8 +427,9 @@ class TileMap {
             val rightX = tileList.asSequence().map { it.position.x.toInt() }.maxOrNull()!!
             leftX = tileList.asSequence().map { it.position.x.toInt() }.minOrNull()!!
 
+            tileMatrix.ensureCapacity(rightX - leftX + 1)
             for (x in leftX..rightX) {
-                val row = ArrayList<TileInfo?>()
+                val row = ArrayList<TileInfo?>(topY - bottomY + 1)
                 for (y in bottomY..topY) row.add(null)
                 tileMatrix.add(row)
             }
@@ -443,6 +444,9 @@ class TileMap {
             tileMatrix[tileInfo.position.x.toInt() - leftX][tileInfo.position.y.toInt() - bottomY] = tileInfo
             tileInfo.tileMap = this
             tileInfo.ruleset = this.ruleset!!
+        }
+        for (tileInfo in values) {
+            // Do ***NOT*** call before the tileMatrix is complete - might trigger the neighbors lazy thanks to convertHillToTerrainFeature:
             tileInfo.setTerrainTransients()
             tileInfo.setUnitTransients(setUnitCivTransients)
         }
