@@ -185,7 +185,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         val civRankingsTable = Table().apply { defaults().pad(5f) }
         val rankLabels = arrayOf("Demographic","Rank","Value","Best","Average","Worst")
 
-        if (gameInfo.gameParameters.demographicsEnabled ) { //uses Demographics ranking screen if selected at game setup
+        if (gameInfo.gameParameters.demographicsEnabled ) { //uses Demographics Scoreboard if selected at new game setup
             for (n in rankLabels.indices) {
                 if (n==0) {
                     val demoLabel = Table().apply { defaults().pad(5f) }

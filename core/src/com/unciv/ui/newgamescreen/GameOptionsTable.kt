@@ -96,11 +96,11 @@ class GameOptionsTable(
             { gameParameters.oneCityChallenge = it }
 
     private fun Table.addNuclearWeaponsCheckbox() =
-            addCheckbox("Enable nuclear weapons", gameParameters.nuclearWeaponsEnabled)
+            addCheckbox("Enable Nuclear Weapons", gameParameters.nuclearWeaponsEnabled)
             { gameParameters.nuclearWeaponsEnabled = it }
 
     private fun Table.addDemographicsCheckbox() =
-        addCheckbox("Demographics-style ranking", gameParameters.demographicsEnabled)
+        addCheckbox("Demographics Scoreboard", gameParameters.demographicsEnabled)
         { gameParameters.demographicsEnabled = it }
 
 
