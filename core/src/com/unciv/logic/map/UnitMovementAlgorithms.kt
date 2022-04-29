@@ -501,14 +501,16 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
 
         // The .toList() here is because we have a sequence that's running on the units in the tile,
         // then if we move one of the units we'll get a ConcurrentModificationException, se we save them all to a list
-        for (payload in origin.getUnits().filter { it.isTransported && unit.canTransport(it) }.toList()) {  // bring along the payloads
+        val payloadUnits = origin.getUnits().filter { it.isTransported && unit.canTransport(it) }.toList()
+        // bring along the payloads
+        for (payload in payloadUnits) {
             payload.removeFromTile()
             for (tile in pathToLastReachableTile){
                 payload.moveThroughTile(tile)
                 if (tile == finalTileReached) break // this is the final tile the transport reached
             }
             payload.putInTile(finalTileReached)
-            payload.isTransported = true // restore the flag to not leave the payload in the cit
+            payload.isTransported = true // restore the flag to not leave the payload in the city
             payload.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
         }
 
@@ -530,18 +532,40 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
                 destination.civilianUnit
             else
                 destination.militaryUnit
-        )!! // The precondition guarantees that there is an eligible same-type unit at the destination
+        )?: return // The precondition guarantees that there is an eligible same-type unit at the destination
 
         val ourOldPosition = unit.getTile()
         val theirOldPosition = otherUnit.getTile()
 
+        val ourPayload = ourOldPosition.getUnits().filter { it.isTransported }.toList()
+        val theirPayload = theirOldPosition.getUnits().filter { it.isTransported }.toList()
+
         // Swap the units
+        // Step 1: Release the destination tile
         otherUnit.removeFromTile()
+        for (payload in theirPayload)
+            payload.removeFromTile()
+        // Step 2: Perform the movement
         unit.movement.moveToTile(destination)
+        // Step 3: Release the newly taken tile
         unit.removeFromTile()
+        for (payload in ourPayload)
+            payload.removeFromTile()
+        // Step 4: Restore the initial position after step 1
         otherUnit.putInTile(theirOldPosition)
+        for (payload in theirPayload) {
+            payload.putInTile(theirOldPosition)
+            payload.isTransported = true // restore the flag to not leave the payload in the city
+        }
+        // Step 5: Perform the another movement
         otherUnit.movement.moveToTile(ourOldPosition)
+        // Step 6: Restore the position in the new tile after step 3
         unit.putInTile(theirOldPosition)
+        for (payload in ourPayload) {
+            payload.putInTile(theirOldPosition)
+            payload.isTransported = true // restore the flag to not leave the payload in the city
+        }
+        // Step 6: Update states
         otherUnit.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
         unit.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
     }

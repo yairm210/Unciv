@@ -390,7 +390,7 @@ class CityInfo {
                 cityResources.add(
                     resource, 
                     unique.params[0].toInt() * civInfo.getResourceModifier(resource), 
-                    "Tiles"
+                    "Buildings+"
                 )
             }
         }

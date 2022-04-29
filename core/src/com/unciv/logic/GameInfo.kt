@@ -320,8 +320,18 @@ class GameInfo {
         }
     }
 
-    fun notifyExploredResources(civInfo: CivilizationInfo, resourceName: String, maxDistance: Int, showForeign: Boolean) {
-        // Calling with `maxDistance = 0` removes distance limitation.
+    /** Generate a notification pointing out resources.
+     *  Used by [addTechnology][TechManager.addTechnology] and [ResourcesOverviewTab][com.unciv.ui.overviewscreen.ResourcesOverviewTab]
+     * @param maxDistance from next City, 0 removes distance limitation.
+     * @param showForeign Disables filter to exclude foreign territory.
+     * @return `false` if no resources were found and no notification was added.
+     */
+    fun notifyExploredResources(
+        civInfo: CivilizationInfo,
+        resourceName: String,
+        maxDistance: Int,
+        showForeign: Boolean
+    ): Boolean {
         data class CityTileAndDistance(val city: CityInfo, val tile: TileInfo, val distance: Int)
 
         val exploredRevealTiles: Sequence<TileInfo> =
@@ -351,7 +361,7 @@ class GameInfo {
             .sortedWith ( compareBy { it.distance } )
             .distinctBy { it.tile }
 
-        val chosenCity = exploredRevealInfo.firstOrNull()?.city ?: return
+        val chosenCity = exploredRevealInfo.firstOrNull()?.city ?: return false
         val positions = exploredRevealInfo
             // re-sort to a more pleasant display order
             .sortedWith(compareBy{ it.tile.aerialDistanceTo(chosenCity.getCenterTile()) })
@@ -368,6 +378,7 @@ class GameInfo {
             LocationAction(positions),
             "ResourceIcons/$resourceName"
         )
+        return true
     }
 
     // All cross-game data which needs to be altered (e.g. when removing or changing a name of a building/tech)
