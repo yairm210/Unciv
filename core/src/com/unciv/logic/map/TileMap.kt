@@ -427,6 +427,8 @@ class TileMap {
             val rightX = tileList.asSequence().map { it.position.x.toInt() }.maxOrNull()!!
             leftX = tileList.asSequence().map { it.position.x.toInt() }.minOrNull()!!
 
+            // Initialize arrays with enough capacity to avoid re-allocations (+Arrays.copyOf).
+            // We have just calculated the dimensions above, so we know the final size. 
             tileMatrix.ensureCapacity(rightX - leftX + 1)
             for (x in leftX..rightX) {
                 val row = ArrayList<TileInfo?>(topY - bottomY + 1)
@@ -442,11 +444,15 @@ class TileMap {
 
         for (tileInfo in values) {
             tileMatrix[tileInfo.position.x.toInt() - leftX][tileInfo.position.y.toInt() - bottomY] = tileInfo
-            tileInfo.tileMap = this
-            tileInfo.ruleset = this.ruleset!!
         }
         for (tileInfo in values) {
-            // Do ***NOT*** call before the tileMatrix is complete - might trigger the neighbors lazy thanks to convertHillToTerrainFeature:
+            // Do ***NOT*** call TileInfo.setTerrainTransients before the tileMatrix is complete -
+            // setting transients might trigger the neighbors lazy (e.g. thanks to convertHillToTerrainFeature).
+            // When that lazy runs, some directions might be omitted because getIfTileExistsOrNull
+            // looks at tileMatrix. Thus filling TileInfos into tileMatrix and setting their
+            // transients in the same loop will leave incomplete cached `neighbors`.
+            tileInfo.tileMap = this
+            tileInfo.ruleset = this.ruleset!!
             tileInfo.setTerrainTransients()
             tileInfo.setUnitTransients(setUnitCivTransients)
         }
