@@ -25,5 +25,5 @@ import com.unciv.ui.utils.*
 @Deprecated("As of 4.0.x")
 class GameParametersScreen(var mapEditorScreen: MapEditorScreen): IPreviousScreen, PickerScreen(disableScroll = true) {
     override var gameSetupInfo = GameSetupInfo(mapParameters = mapEditorScreen.newMapParameters)
-    override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods, gameSetupInfo.gameParameters.baseRuleset)
+    override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters)
 }
