@@ -18,11 +18,11 @@ class SpecialistAllocationTable(val cityScreen: CityScreen): Table(BaseScreen.sk
         // Auto/Manual Specialists Toggle
         // 5 columns: unassignButton, AllocationTable, assignButton, SeparatorVertical, SpecialistsStatsTabe
         if(cityInfo.manualSpecialists){
-            val manualSpecialists = "Manual Specialists".tr().toLabel(Color.SKY)
+            val manualSpecialists = "Manual Specialists".tr().toLabel(Color.WHITE).addBorder(1f, colorFromRGB(51, 76, 127))
             manualSpecialists.onClick { cityInfo.manualSpecialists = false; cityInfo.reassignPopulation(); cityScreen.update() }
             add(manualSpecialists).colspan(5).row()  
         }else{
-            val autoSpecialists = "Auto Specialists".tr().toLabel(Color.WHITE)
+            val autoSpecialists = "Auto Specialists".tr().toLabel(Color.WHITE).addBorder(1f, colorFromRGB(51, 76, 127))
             autoSpecialists.onClick { cityInfo.manualSpecialists = true; update() }
             add(autoSpecialists).colspan(5).row()
         }
