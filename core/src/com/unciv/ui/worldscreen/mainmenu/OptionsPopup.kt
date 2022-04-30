@@ -34,6 +34,7 @@ import com.unciv.ui.crashhandling.crashHandlingThread
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.newgamescreen.TranslatedSelectBox
+import com.unciv.ui.popup.AskNumberPopup
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.popup.YesNoPopup
@@ -557,6 +558,22 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         defaults().pad(5f)
 
         val game = UncivGame.Current
+        val simulateButton = "Simulate until turn".toTextButton()
+        simulateButton.onClick {
+            AskNumberPopup(
+                previousScreen,
+                label = "Simulate until turn:",
+                amountButtons = listOf(1, 10, 50, 250),
+                bounds = IntRange(0, 1000),
+                defaultValue = "0",
+                actionOnOk = {
+                    game.simulateUntilTurnForDebug = it
+                    game.gameInfo.nextTurn()
+                    game.simulateUntilTurnForDebug = 0
+                }
+            ).open()
+        }
+        add(simulateButton).row()
         add("Supercharged".toCheckBox(game.superchargedForDebug) {
             game.superchargedForDebug = it
         }).row()
