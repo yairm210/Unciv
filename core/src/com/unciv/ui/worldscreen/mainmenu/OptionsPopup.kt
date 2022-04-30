@@ -4,10 +4,8 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
-import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextField
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.MainMenuScreen
@@ -50,7 +48,10 @@ import com.badlogic.gdx.utils.Array as GdxArray
  * @param previousScreen The caller - note if this is a [WorldScreen] or [MainMenuScreen] they will be rebuilt when major options change.
  */
 //region Fields
-class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
+class OptionsPopup(
+    private val previousScreen: BaseScreen,
+    private val selectPage: Int = defaultPage
+) : Popup(previousScreen) {
     private val settings = previousScreen.game.settings
     private val tabs: TabbedPager
     private val resolutionArray = com.badlogic.gdx.utils.Array(arrayOf("750x500", "900x600", "1050x700", "1200x800", "1500x1000"))
@@ -62,6 +63,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     //endregion
 
     companion object {
+        const val defaultPage = 2  // Gameplay
         private const val modCheckWithoutBase = "-none-"
     }
 
@@ -88,12 +90,8 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         tabs.addPage("Language", getLanguageTab(), ImageGetter.getImage("FlagIcons/${settings.language}"), 24f)
         tabs.addPage("Sound", getSoundTab(), ImageGetter.getImage("OtherIcons/Speaker"), 24f)
         tabs.addPage("Multiplayer", getMultiplayerTab(), ImageGetter.getImage("OtherIcons/Multiplayer"), 24f)
-        crashHandlingThread(name="Add Advanced Options Tab") {
-            val fontNames = Fonts.getAvailableFontFamilyNames() // This is a heavy operation and causes ANRs
-            postCrashHandlingRunnable {
-                tabs.addPage("Advanced", getAdvancedTab(fontNames), ImageGetter.getImage("OtherIcons/Settings"), 24f)
-            }
-        }
+        tabs.addPage("Advanced", getAdvancedTab(), ImageGetter.getImage("OtherIcons/Settings"), 24f)
+
         if (RulesetCache.size > BaseRuleset.values().size) {
             val content = ModCheckTab(this) {
                 if (modCheckFirstRun) runModChecker()
@@ -121,10 +119,10 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         super.setVisible(visible)
         if (!visible) return
         tabs.askForPassword(secretHashCode = 2747985)
-        if (tabs.activePage < 0) tabs.selectPage(2)
+        if (tabs.activePage < 0) tabs.selectPage(selectPage)
     }
 
-    /** Reload this Popup after major changes (resolution, tileset, language) */
+    /** Reload this Popup after major changes (resolution, tileset, language, font) */
     private fun reloadWorldAndOptions() {
         settings.save()
         if (previousScreen is WorldScreen) {
@@ -133,7 +131,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         } else if (previousScreen is MainMenuScreen) {
             previousScreen.game.setScreen(MainMenuScreen())
         }
-        (previousScreen.game.screen as BaseScreen).openOptionsPopup()
+        (previousScreen.game.screen as BaseScreen).openOptionsPopup(tabs.activePage)
     }
 
     private fun successfullyConnectedToServer(action: (Boolean, String)->Unit){
@@ -305,7 +303,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         }).row()
     }
 
-    private fun getAdvancedTab(fontNames: Collection<FontData>) = Table(BaseScreen.skin).apply {
+    private fun getAdvancedTab() = Table(BaseScreen.skin).apply {
         pad(10f)
         defaults().pad(5f)
 
@@ -326,7 +324,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             }
         }
 
-        addFontFamilySelect(fontNames)
+        addFontFamilySelect()
 
         addTranslationGeneration()
 
@@ -863,31 +861,34 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         add(maxZoomSlider).pad(5f).row()
     }
 
-    private fun Table.addFontFamilySelect(fonts: Collection<FontData>) {
-        if (fonts.isEmpty()) return
-
+    private fun Table.addFontFamilySelect() {
         add("Font family".toLabel()).left().fillX()
+        val selectCell = add()
+        row()
 
-        val fontSelectBox = SelectBox<String>(skin)
-        val fontsLocalName = GdxArray<String>().apply { add("Default Font".tr()) }
-        val fontsEnName = GdxArray<String>().apply { add("") }
-        for (font in fonts) {
-            fontsLocalName.add(font.localName)
-            fontsEnName.add(font.enName)
+        fun loadFontSelect(fonts: GdxArray<FontFamilyData>, selectCell: Cell<Actor>) {
+            if (fonts.isEmpty) return
+
+            val fontSelectBox = SelectBox<FontFamilyData>(skin)
+            fontSelectBox.items = fonts
+            fontSelectBox.selected = FontFamilyData(settings.fontFamily)
+
+            selectCell.setActor(fontSelectBox).minWidth(selectBoxMinWidth).pad(10f)
+
+            fontSelectBox.onChange {
+                settings.fontFamily = fontSelectBox.selected.invariantName
+                Fonts.resetFont(settings.fontFamily)
+                reloadWorldAndOptions()
+            }
         }
 
-        val selectedIndex = fontsEnName.indexOf(settings.fontFamily).let { if (it == -1) 0 else it }
-
-        fontSelectBox.items = fontsLocalName
-        fontSelectBox.selected = fontsLocalName[selectedIndex]
-
-        add(fontSelectBox).minWidth(selectBoxMinWidth).pad(10f).row()
-
-        fontSelectBox.onChange {
-            settings.fontFamily = fontsEnName[fontSelectBox.selectedIndex]
-            ToastPopup(
-                "You need to restart the game for this change to take effect.", previousScreen
-            )
+        crashHandlingThread(name="Add Font Select") {
+            val fonts = GdxArray<FontFamilyData>().apply {
+                add(FontFamilyData("Default Font".tr(),""))
+                for (font in Fonts.getAvailableFontFamilyNames())
+                    add(font)
+            } // This is a heavy operation and causes ANRs
+            postCrashHandlingRunnable { loadFontSelect(fonts, selectCell) }
         }
     }
 

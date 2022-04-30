@@ -33,7 +33,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     val version = parameters.version
     val crashReportSysInfo = parameters.crashReportSysInfo
     val cancelDiscordEvent = parameters.cancelDiscordEvent
-    val fontImplementation = parameters.fontImplementation
+    var fontImplementation = parameters.fontImplementation
     val consoleMode = parameters.consoleMode
     val customSaveLocationHelper = parameters.customSaveLocationHelper
     val limitOrientationsHelper = parameters.limitOrientationsHelper
