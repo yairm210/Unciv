@@ -81,7 +81,7 @@ class PopulationManager {
             if (percentOfFoodCarriedOver > 95) percentOfFoodCarriedOver = 95 
             foodStored += (getFoodToNextPopulation() * percentOfFoodCarriedOver / 100f).toInt()
             addPopulation(1)
-            autoAssignPopulation()
+            cityInfo.reassignPopulation()
             cityInfo.civInfo.addNotification("[${cityInfo.name}] has grown!", cityInfo.location, NotificationIcon.Growth)
         }
     }

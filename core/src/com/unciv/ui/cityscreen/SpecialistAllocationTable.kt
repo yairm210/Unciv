@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.*
 
@@ -14,7 +15,17 @@ class SpecialistAllocationTable(val cityScreen: CityScreen): Table(BaseScreen.sk
 
     fun update() {
         clear()
-
+        // Auto/Manual Specialists Toggle
+        // 5 columns: unassignButton, AllocationTable, assignButton, SeparatorVertical, SpecialistsStatsTabe
+        if(cityInfo.manualSpecialists){
+            val manualSpecialists = "Manual Specialists".tr().toLabel(Color.SKY)
+            manualSpecialists.onClick { cityInfo.manualSpecialists = false; cityInfo.reassignPopulation(); cityScreen.update() }
+            add(manualSpecialists).colspan(5).row()  
+        }else{
+            val autoSpecialists = "Auto Specialists".tr().toLabel(Color.WHITE)
+            autoSpecialists.onClick { cityInfo.manualSpecialists = true; update() }
+            add(autoSpecialists).colspan(5).row()
+        }
         for ((specialistName, maxSpecialists) in cityInfo.population.getMaxSpecialists()) {
             if (!cityInfo.getRuleset().specialists.containsKey(specialistName)) // specialist doesn't exist in this ruleset, probably a mod
                 continue

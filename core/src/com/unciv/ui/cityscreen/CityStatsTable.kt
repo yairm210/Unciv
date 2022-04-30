@@ -59,6 +59,8 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
     private fun addText() {
         val unassignedPopString = "{Unassigned population}: ".tr() +
                 cityInfo.population.getFreePopulation().toString() + "/" + cityInfo.population.population
+        val unassignedPopLabel = unassignedPopString.toLabel()
+        unassignedPopLabel.onClick { cityInfo.reassignPopulation(); cityScreen.update() }
 
         var turnsToExpansionString =
                 if (cityInfo.cityStats.currentCityStats.culture > 0 && cityInfo.expansion.chooseNewTileToOwn() != null) {
@@ -82,7 +84,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
                 }.tr()
         turnsToPopString += " (${cityInfo.population.foodStored}${Fonts.food}/${cityInfo.population.getFoodToNextPopulation()}${Fonts.food})"
 
-        innerTable.add(unassignedPopString.toLabel()).row()
+        innerTable.add(unassignedPopLabel).row()
         innerTable.add(turnsToExpansionString.toLabel()).row()
         innerTable.add(turnsToPopString.toLabel()).row()
 
@@ -111,15 +113,6 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         }
 
         innerTable.add(tableWithIcons).row()
-        if(cityInfo.manualSpecialists){
-            val manualSpecialists = "Manual Specialists".toLabel(Color.SKY)
-            manualSpecialists.onClick { cityInfo.manualSpecialists = false; cityInfo.reassignPopulation(); cityScreen.update() }
-            innerTable.add(manualSpecialists).row()
-        }else{
-            val autoSpecialists = "Auto Specialists".toLabel(Color.WHITE)
-            autoSpecialists.onClick { cityInfo.manualSpecialists = true; update() }
-            innerTable.add(autoSpecialists).row()
-        }
     }
 
     private fun addReligionInfo() {
