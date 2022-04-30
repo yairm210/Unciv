@@ -889,7 +889,7 @@ class MapUnit {
     fun putInTile(tile: TileInfo) {
         when {
             !movement.canMoveTo(tile) ->
-                throw Exception("I can't go there!")
+                throw Exception("Unit $name at $currentTile can't be put in tile ${tile.position}!")
             baseUnit.movesLikeAirUnits() -> tile.airUnits.add(this)
             isCivilian() -> tile.civilianUnit = this
             else -> tile.militaryUnit = this

@@ -393,8 +393,8 @@ class GameInfo {
             gameParameters.mods = LinkedHashSet(gameParameters.mods.filter { it != baseRulesetInMods })
         }
 
-        ruleSet = RulesetCache.getComplexRuleset(gameParameters.mods, gameParameters.baseRuleset)
-        
+        ruleSet = RulesetCache.getComplexRuleset(gameParameters)
+
         // any mod the saved game lists that is currently not installed causes null pointer
         // exceptions in this routine unless it contained no new objects or was very simple.
         // Player's fault, so better complain early:

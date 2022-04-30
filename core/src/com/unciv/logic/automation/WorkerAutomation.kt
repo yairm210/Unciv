@@ -330,7 +330,7 @@ class WorkerAutomation(
 
         val potentialTileImprovements = ruleSet.tileImprovements.filter {
             unit.canBuildImprovement(it.value, tile)
-                    && tile.canImprovementBeBuiltHere(it.value, tile.hasViewableResource(civInfo))
+                    && tile.canBuildImprovement(it.value, civInfo)
                     && (it.value.uniqueTo == null || it.value.uniqueTo == unit.civInfo.civName)
         }
         if (potentialTileImprovements.isEmpty()) return null
