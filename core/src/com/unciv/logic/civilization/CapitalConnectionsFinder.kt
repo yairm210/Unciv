@@ -11,7 +11,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
     private var citiesToCheck = mutableListOf(civInfo.getCapital())
     private lateinit var newCitiesToCheck: MutableList<CityInfo>
 
-    private val nonEnemyCivCities = civInfo.gameInfo.getCities().filter { !it.civInfo.isAtWarWith(civInfo) }
+    private val openBordersCivCities = civInfo.gameInfo.getCities().filter { civInfo.hasOpenBordersTo(it.civInfo) }
 
     private val harbor = "Harbor"   // hardcoding at least centralized for this class for now
     private val road = RoadStatus.Road.name
@@ -32,7 +32,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
         // this is so we know that if we've seen which cities can be connected by port A, and one
         // of those is city B, then we don't need to check the cities that B can connect to by port,
         // since we'll get the same cities we got from A, since they're connected to the same sea.
-        while (citiesToCheck.isNotEmpty() && citiesReachedToMediums.size < nonEnemyCivCities.count()) {
+        while (citiesToCheck.isNotEmpty() && citiesReachedToMediums.size < openBordersCivCities.count()) {
             newCitiesToCheck = mutableListOf()
             for (cityToConnectFrom in citiesToCheck) {
                 if (cityToConnectFrom.containsHarbor()) {
@@ -92,9 +92,10 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
         if (cityToConnectFrom.wasPreviouslyReached(transportType, overridingTransportType))
             return
 
-        val bfs = BFS(cityToConnectFrom.getCenterTile()) { it.isCityCenter() || tileFilter(it) }
+        val bfs = BFS(cityToConnectFrom.getCenterTile()) {
+              it.getOwner()?.let { owner -> civInfo.hasOpenBordersTo(owner) } ?: true && (it.isCityCenter() || tileFilter(it)) }
         bfs.stepToEnd()
-        val reachedCities = nonEnemyCivCities.filter {
+        val reachedCities = openBordersCivCities.filter {
             bfs.hasReachedTile(it.getCenterTile()) && cityFilter(it)
         }
         for (reachedCity in reachedCities) {
