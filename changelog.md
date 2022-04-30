@@ -1,25 +1,20 @@
 ## 4.0.11
 
-Added new page with map rendering documentation
+Enabled nested translations!
 
-Don't allow trade routes through enemy cities - 
-
-4.0.10-patch1
-
-Added placeholder parameter location in a way that enables nested translations 
+Don't allow trade routes through enemy cities
 
 By JackRainy:
 - Protect the cities from the fallout spawning 
 - Correct swap of the full-loaded carriers 
 
 By SomeTroglodyte:
+- Map editor2.2
 - Show number of global followers in Religion Overview 
-- Map editor2.2 
 
 By xlenstra:
 - Fixed improvements with unfulfilled 'Only Available' still buildable 
-- Fixed a crash when a plane tried to enter a full city 
-- Very likely fixed a new 4.0.9 crash. 
+- Fixed a crash when a plane tried to enter a full city
 
 ## 4.0.10
 
