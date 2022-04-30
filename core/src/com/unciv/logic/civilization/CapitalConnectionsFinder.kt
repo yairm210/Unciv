@@ -57,7 +57,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
                 cityToConnectFrom,
                 transportType = road,
                 overridingTransportType = railroad,
-                tileFilter = { tile -> tile.hasConnection(civInfo) || tile.isCityCenter() }
+                tileFilter = { tile -> tile.hasConnection(civInfo) }
         )
     }
 
@@ -65,7 +65,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
         check(
                 cityToConnectFrom,
                 transportType = railroad,
-                tileFilter = { tile -> tile.roadStatus == RoadStatus.Railroad || tile.isCityCenter() }
+                tileFilter = { tile -> tile.roadStatus == RoadStatus.Railroad }
         )
     }
 
@@ -74,7 +74,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
                 cityToConnectFrom,
                 transportType = if(cityToConnectFrom.wasPreviouslyReached(railroad,null)) harborFromRailroad else harborFromRoad,
                 overridingTransportType = harborFromRailroad,
-                tileFilter = { tile -> tile.isWater || tile.isCityCenter() },
+                tileFilter = { tile -> tile.isWater },
                 cityFilter = { city -> city.containsHarbor() }
         )
     }
@@ -92,7 +92,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
         if (cityToConnectFrom.wasPreviouslyReached(transportType, overridingTransportType))
             return
 
-        val bfs = BFS(cityToConnectFrom.getCenterTile()) { tileFilter(it) }
+        val bfs = BFS(cityToConnectFrom.getCenterTile()) { it.isCityCenter() || tileFilter(it) }
         bfs.stepToEnd()
         val reachedCities = nonEnemyCivCities.filter {
             bfs.hasReachedTile(it.getCenterTile()) && cityFilter(it)
