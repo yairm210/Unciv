@@ -247,14 +247,14 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (uniques.isNotEmpty() || !stats.isEmpty() || !percentStats.isEmpty() || this.greatPersonPoints.isNotEmpty() || specialists.isNotEmpty())
             textList += FormattedLine()
 
-        if (uniques.isNotEmpty()) {
-            if (replacementTextForUniques.isNotEmpty())
-                textList += FormattedLine(replacementTextForUniques)
-            else
-                uniqueObjects.forEach {
-                    if (!it.hasFlag(UniqueFlag.HiddenToUsers))
-                        textList += FormattedLine(it)
-                }
+        if (replacementTextForUniques.isNotEmpty()) {
+            textList += FormattedLine(replacementTextForUniques)
+        } else if (uniques.isNotEmpty()) {
+            for (unique in uniqueObjects.sortedBy { it.text }) {
+                if (unique.hasFlag(UniqueFlag.HiddenToUsers)) continue
+                if (unique.type == UniqueType.ConsumesResources) continue  // already shown from getResourceRequirements
+                textList += FormattedLine(unique)
+            }
         }
 
         if (!stats.isEmpty()) {
@@ -268,7 +268,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             }
         }
 
-        for((greatPersonName, value) in greatPersonPoints) {
+        for ((greatPersonName, value) in greatPersonPoints) {
             textList += FormattedLine(
                 "+$value " + "[$greatPersonName] points".tr(),
                 link = "Unit/$greatPersonName"
@@ -296,7 +296,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         val seeAlso = ArrayList<FormattedLine>()
         for (building in ruleset.buildings.values) {
             if (building.replaces == name
-                    || building.uniqueObjects.any { unique -> unique.params.any { it ==name } })
+                    || building.uniqueObjects.any { unique -> unique.params.any { it == name } })
                 seeAlso += FormattedLine(building.name, link=building.makeLink(), indent=1)
         }
         seeAlso += Belief.getCivilopediaTextMatching(name, ruleset, false)

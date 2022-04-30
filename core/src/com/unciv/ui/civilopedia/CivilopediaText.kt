@@ -316,16 +316,7 @@ class FormattedLine (
         val image = category.getImage?.invoke(parts[1], iconSize) ?: return 0
 
         if (iconCrossed) {
-            val cross = ImageGetter.getRedCross(iconSize * 0.7f, 0.7f)
-            val group = Group().apply {
-                isTransform = false
-                setSize(iconSize, iconSize)
-                image.center(this)
-                addActor(image)
-                cross.center(this)
-                addActor(cross)
-            }
-            table.add(group).size(iconSize).padRight(iconPad)
+            table.add(ImageGetter.getCrossedImage(image, iconSize)).size(iconSize).padRight(iconPad)
         } else {
             table.add(image).size(iconSize).padRight(iconPad)
         }

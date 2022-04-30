@@ -27,7 +27,7 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
     private val mapFilesSequence = sequence<FileHandle> {
         yieldAll(MapSaver.getMaps().asSequence())
         for (modFolder in RulesetCache.values.mapNotNull { it.folderLocation }) {
-            val mapsFolder = modFolder.child("maps")
+            val mapsFolder = modFolder.child(MapSaver.mapsFolder)
             if (mapsFolder.exists())
                 yieldAll(mapsFolder.list().asSequence())
         }

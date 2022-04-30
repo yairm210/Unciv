@@ -127,14 +127,15 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             textList += FormattedLine(stats.joinToString(", ", "{Cost}: "))
         }
 
-        if (replacementTextForUniques != "") {
+        if (replacementTextForUniques.isNotEmpty()) {
             textList += FormattedLine()
             textList += FormattedLine(replacementTextForUniques)
         } else if (uniques.isNotEmpty()) {
             textList += FormattedLine()
-            uniqueObjects.sortedBy { it.text }.forEach {
-                if (!it.hasFlag(UniqueFlag.HiddenToUsers))
-                    textList += FormattedLine(it)
+            for (unique in uniqueObjects.sortedBy { it.text }) {
+                if (unique.hasFlag(UniqueFlag.HiddenToUsers)) continue
+                if (unique.type == UniqueType.ConsumesResources) continue  // already shown from getResourceRequirements
+                textList += FormattedLine(unique)
             }
         }
 

@@ -612,7 +612,7 @@ object UnitActions {
             title = "Spread [${unit.getReligionDisplayName()!!}]",
             action = {
                 val followersOfOtherReligions = city.religion.getFollowersOfOtherReligionsThan(unit.religion!!)
-                for (unique in unit.getMatchingUniques("When spreading religion to a city, gain [] times the amount of followers of other religions as []")) {
+                for (unique in unit.getMatchingUniques(UniqueType.StatsWhenSpreading, checkCivInfoUniques = true)) {
                     unit.civInfo.addStat(Stat.valueOf(unique.params[1]), followersOfOtherReligions * unique.params[0].toInt())
                 }
                 city.religion.addPressure(unit.religion!!, unit.getPressureAddedFromSpread())
