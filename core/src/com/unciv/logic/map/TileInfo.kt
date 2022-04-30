@@ -471,7 +471,9 @@ open class TileInfo {
                     && neighbors.any { it.getOwner() == civInfo }
                 )
                 ) -> false
-            improvement.hasUnique(UniqueType.OnlyAvailableWhen, StateForConditionals(civInfo=civInfo, tile=this)) -> false
+            improvement.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals).any {
+                !it.conditionalsApply(StateForConditionals(civInfo, tile=this))
+            } -> false
             improvement.getMatchingUniques(UniqueType.ObsoleteWith).any {
                 civInfo.tech.isResearched(it.params[0])
             } -> return false
