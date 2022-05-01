@@ -642,11 +642,11 @@ class CityInfo {
 
     // Reassign all Specialists and Unlock all tiles
     // Mainly for automated cities, Puppets, just captured
-    fun reassignAllPopulation(){
+    fun reassignAllPopulation() {
         manualSpecialists = false
         reassignPopulation(resetLocked = true)
     }
-    
+
     fun reassignPopulation(resetLocked: Boolean = false) {
         var foodWeight = 1f
         var foodPerTurn = 0f
@@ -654,10 +654,10 @@ class CityInfo {
             if (resetLocked) {
                 workedTiles = hashSetOf()
                 lockedTiles = hashSetOf()
-            }else{
+            } else {
                 workedTiles = lockedTiles
             }
-            if(!manualSpecialists)
+            if (!manualSpecialists)
                 population.specialistAllocations.clear()
             population.autoAssignPopulation(foodWeight)
             cityStats.update()

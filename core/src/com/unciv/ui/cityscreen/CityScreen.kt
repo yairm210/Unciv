@@ -10,12 +10,12 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.*
 import java.util.*
-import kotlin.math.max
 
 class CityScreen(
     internal val city: CityInfo,
@@ -50,8 +50,8 @@ class CityScreen(
     /** Displays raze city button - sits on TOP CENTER */
     private var razeCityButtonHolder = Table()
 
-    /** Displays reset tiles button - sits on BOT RIGHT */
-    private var resetTilesButtonHolder = Table()
+    /** Displays reset locks button - sits on BOT RIGHT */
+    private var unlockTilesButtonHolder = Table()
 
     /** Displays city stats info */
     private var cityStatsTable = CityStatsTable(this)
@@ -85,12 +85,12 @@ class CityScreen(
 
         //stage.setDebugTableUnderMouse(true)
         stage.addActor(cityStatsTable)
-        val resetTilesButton = "Reset Tiles".toTextButton()
-        resetTilesButton.labelCell.pad(5f)
-        resetTilesButton.onClick { city.reassignPopulation(resetLocked = true); update() }
-        resetTilesButtonHolder.add(resetTilesButton)
-        resetTilesButtonHolder.pack()
-        stage.addActor(resetTilesButtonHolder)
+        val unlockTilesButton = "Unlock Tiles".tr().toTextButton()
+        unlockTilesButton.labelCell.pad(5f)
+        unlockTilesButton.onClick { city.reassignPopulation(resetLocked = true); update() }
+        unlockTilesButtonHolder.add(unlockTilesButton)
+        unlockTilesButtonHolder.pack()
+        stage.addActor(unlockTilesButtonHolder)
         constructionsTable.addActorsToStage()
         stage.addActor(cityInfoTable)
         stage.addActor(selectedConstructionTable)
@@ -132,9 +132,16 @@ class CityScreen(
         tileTable.setPosition(stage.width - posFromEdge, posFromEdge, Align.bottomRight)
         selectedConstructionTable.update(selectedConstruction)
         selectedConstructionTable.setPosition(stage.width - posFromEdge, posFromEdge, Align.bottomRight)
-        resetTilesButtonHolder.setPosition(stage.width - posFromEdge,
-                posFromEdge + max(tileTable.height, selectedConstructionTable.height) + 10f, Align.bottomRight)
-
+        if (selectedTile == null && selectedConstruction == null)
+            unlockTilesButtonHolder.setPosition(stage.width - posFromEdge,
+                    posFromEdge, Align.bottomRight)
+        else if (selectedTile == null)
+            unlockTilesButtonHolder.setPosition(stage.width - posFromEdge,
+                    posFromEdge + selectedConstructionTable.height + 10f, Align.bottomRight)
+        else
+            unlockTilesButtonHolder.setPosition(stage.width - posFromEdge,
+                    posFromEdge + tileTable.height + 10f, Align.bottomRight)
+            
         // In portrait mode only: calculate already occupied horizontal space
         val rightMargin = when {
             !isPortrait() -> 0f
