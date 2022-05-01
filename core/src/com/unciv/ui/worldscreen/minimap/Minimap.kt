@@ -36,7 +36,7 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Group() {
         for (image in minimapTiles.map { it.image }) {
             tileLayer.addActor(image)
 
-            // keeps track of the current topmost/bottommost
+            // keeps track of the current top/bottom/left/rightmost tiles to size and position the minimap correctly
             topX = max(topX, image.x + tileSize)
             topY = max(topY, image.y + tileSize)
             bottomX = min(bottomX, image.x)
