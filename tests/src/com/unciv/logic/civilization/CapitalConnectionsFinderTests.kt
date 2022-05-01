@@ -23,6 +23,18 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/** Legend to maps in the tests below:
+ *  A - capital
+ *    - land without roads
+ *  - - road
+ *  = - railroad
+ *  C - connected city
+ *  N - not connected city
+ *  O - open borders
+ *  X - closed borders
+ *  ~ - water
+ */
+
 @RunWith(GdxTestRunner::class)
 class CapitalConnectionsFinderTests {
 
@@ -118,7 +130,7 @@ class CapitalConnectionsFinderTests {
 
     @Test
     fun `Own cities are connected by road`() {
-
+        // Map: C-A N
         createLand(-2,2)
         ourCiv.cities = listOf( createCity(ourCiv, Vector2(0f, 0f), "Capital", true),
                                 createCity(ourCiv, Vector2(0f, -2f), "Connected"),
@@ -133,7 +145,7 @@ class CapitalConnectionsFinderTests {
 
     @Test
     fun `Own cities are connected by railroad`() {
-
+        // Map: N A=C
         createLand(-2,2)
         ourCiv.cities = listOf( createCity(ourCiv, Vector2(0f, 0f), "Capital", true),
             createCity(ourCiv, Vector2(0f, 2f), "Connected"),
@@ -148,7 +160,8 @@ class CapitalConnectionsFinderTests {
 
     @Test
     fun `Own cities are connected by road and harbor`() {
-
+        // Map: N A-C C
+        //      ~~~~~~~
         createLand(-2,4)
         createMedium(0,2, RoadStatus.Road)
         createWater(-2,4)
@@ -165,7 +178,7 @@ class CapitalConnectionsFinderTests {
 
     @Test
     fun `Cities are connected by roads via Open Borders`() {
-
+        // Map: N-X=A-O=C
         createLand(-4,4)
         ourCiv.cities = listOf( createCity(ourCiv, Vector2(0f, 0f), "Capital", true),
             createCity(ourCiv, Vector2(0f, -4f), "Not connected"),
@@ -195,7 +208,9 @@ class CapitalConnectionsFinderTests {
 
     @Test
     fun `Cities are connected via own harbors only`() {
-
+        // Map: A
+        //      ~~~~~
+        //      C O-N=N
         createLand(-4,-4) // capital is on an island
         createWater(-4,0)
         createLand(-4,2) // some land without access to ocean
