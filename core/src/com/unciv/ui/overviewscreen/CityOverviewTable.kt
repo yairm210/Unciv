@@ -57,7 +57,7 @@ class CityOverviewTab(
             .apply { addTooltip("Current construction", 18f, tipAlign = Align.center) }
 
         // Readability helpers
-        private fun String.isStat() = Stat.values().any { it.name == this }
+        private fun String.isStat() = Stat.isStat(this)
 
         private fun CityInfo.getStat(stat: Stat) =
             if (stat == Stat.Happiness)
@@ -115,7 +115,7 @@ class CityOverviewTab(
             "Population" -> city2.population.population - city1.population.population
             WLTK -> city2.isWeLoveTheKingDayActive().compareTo(city1.isWeLoveTheKingDayActive())
             else -> {
-                val stat = Stat.valueOf(persistableData.sortedBy)
+                val stat = Stat.safeValueOf(persistableData.sortedBy)!!
                 city2.getStat(stat) - city1.getStat(stat)
             }
         }
@@ -199,8 +199,8 @@ class CityOverviewTab(
             cityInfoTableDetails.add(city.population.population.toCenteredLabel())
 
             for (column in columnsNames) {
-                if (!column.isStat()) continue
-                cityInfoTableDetails.add(city.getStat(Stat.valueOf(column)).toCenteredLabel())
+                val stat = Stat.safeValueOf(column) ?: continue
+                cityInfoTableDetails.add(city.getStat(stat).toCenteredLabel())
             }
 
             when {
