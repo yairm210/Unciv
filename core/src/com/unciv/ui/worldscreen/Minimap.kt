@@ -24,20 +24,15 @@ import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.surroundWithCircle
+import com.unciv.ui.worldscreen.WorldMapHolder
 import kotlin.math.max
 import kotlin.math.min
 
 class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Group() {
-    private val allTiles = Group()
-
-    class MinimapTileImages(val tileHexagonImage: Image) {
-        var cityCircleImage: IconCircleGroup? = null
-        var owningCiv: CivilizationInfo? = null
-        var neighborToBorderImage = HashMap<TileInfo, Image>()
-    }
-
-    private val tileinfoToImages = HashMap<TileInfo, MinimapTileImages>()
+    private val tileLayer = Group()
+    private val minimapTiles = ArrayList<MinimapTile>()
     private val scrollPositionIndicators = ArrayList<ClippingImage>()
+    private var lastViewingCiv: CivilizationInfo? = null
 
     init {
         // don't try to resize rotate etc - this table has a LOT of children so that's valuable render time!
@@ -65,34 +60,26 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Group() {
         val groupSize = smallerWorldDimension * mapSizePercent / 100 / effectiveRadius
 
         for (tileInfo in mapHolder.tileMap.values) {
-            val hex = ImageGetter.getImage("OtherIcons/Hexagon")
-
-            val positionalVector = HexMath.hex2WorldCoords(tileInfo.position)
-
-            hex.setSize(groupSize, groupSize)
-            hex.setPosition(
-                positionalVector.x * 0.5f * groupSize,
-                positionalVector.y * 0.5f * groupSize
-            )
-            hex.onClick {
+            val minimapTile = MinimapTile(tileInfo, groupSize) {
                 mapHolder.setCenterPosition(tileInfo.position)
             }
-            allTiles.addActor(hex)
-            tileinfoToImages[tileInfo] = MinimapTileImages(hex)
+            minimapTiles.add(minimapTile)
+            val image = minimapTile.image
+            tileLayer.addActor(image)
 
-            topX = max(topX, hex.x + groupSize)
-            topY = max(topY, hex.y + groupSize)
-            bottomX = min(bottomX, hex.x)
-            bottomY = min(bottomY, hex.y)
+            topX = max(topX, image.x + groupSize)
+            topY = max(topY, image.y + groupSize)
+            bottomX = min(bottomX, image.x)
+            bottomY = min(bottomY, image.y)
         }
 
-        for (group in allTiles.children) {
+        for (group in tileLayer.children) {
             group.moveBy(-bottomX, -bottomY)
         }
 
         // there are tiles "below the zero",
         // so we zero out the starting position of the whole board so they will be displayed as well
-        allTiles.setSize(topX - bottomX, topY - bottomY)
+        tileLayer.setSize(topX - bottomX, topY - bottomY)
 
         scrollPositionIndicators.add(ClippingImage(ImageGetter.getDrawable("OtherIcons/Camera")))
         // If we are continuous scrolling (world wrap), add another 2 scrollPositionIndicators which
@@ -103,11 +90,11 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Group() {
         }
         for (indicator in scrollPositionIndicators) {
             indicator.touchable = Touchable.disabled
-            allTiles.addActor(indicator)
+            tileLayer.addActor(indicator)
         }
 
-        setSize(allTiles.width, allTiles.height)
-        addActor(allTiles)
+        setSize(tileLayer.width, tileLayer.height)
+        addActor(tileLayer)
     }
 
     /**### Transform and set coordinates for the scrollPositionIndicator.
@@ -131,7 +118,7 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Group() {
             x = rect.x; y = rect.y; width = rect.width; height = rect.height
         }
 
-        val worldToMiniFactor = Vector2(allTiles.width / mapHolder.maxX, allTiles.height / mapHolder.maxY)
+        val worldToMiniFactor = Vector2(tileLayer.width / mapHolder.maxX, tileLayer.height / mapHolder.maxY)
         val worldVisibleArea = Vector2(mapHolder.width / 2 / mapHolder.scaleX, mapHolder.height / 2 / mapHolder.scaleY)
         val worldViewport = Vector2(mapHolder.scrollX, mapHolder.scrollY).centeredRectangle(worldVisibleArea)
         val miniViewport = worldViewport.invertY(mapHolder.maxY) * worldToMiniFactor
@@ -140,84 +127,39 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Group() {
 
         // If world wrap enabled, draw another 2 viewports at proper offset to simulate wrapping
         if (scrollPositionIndicators.size != 1) {
-            miniViewport.x -= allTiles.width
+            miniViewport.x -= tileLayer.width
             scrollPositionIndicators[1].setViewport(miniViewport)
-            miniViewport.x += allTiles.width * 2
+            miniViewport.x += tileLayer.width * 2
             scrollPositionIndicators[2].setViewport(miniViewport)
         }
     }
 
-    fun update(cloneCivilization: CivilizationInfo) {
-        for ((tileInfo, tileImages) in tileinfoToImages) {
-            tileImages.tileHexagonImage.color = when {
-                !UncivGame.Current.viewEntireMapForDebug && !cloneCivilization.exploredTiles.contains(tileInfo.position) -> Color.DARK_GRAY
-                tileInfo.isCityCenter() && !tileInfo.isWater -> tileInfo.getOwner()!!.nation.getInnerColor()
-                tileInfo.getCity() != null && !tileInfo.isWater -> tileInfo.getOwner()!!.nation.getOuterColor()
-                else -> tileInfo.getBaseTerrain().getColor().lerp(Color.GRAY, 0.5f)
+    fun update(viewingCiv: CivilizationInfo) {
+        for (minimapTile in minimapTiles) {
+            val tileInfo = minimapTile.tileInfo
+            val ownerChanged = minimapTile.owningCiv != tileInfo.getOwner()
+            if (ownerChanged) {
+                minimapTile.owningCiv = tileInfo.getOwner()
             }
 
-            if (!cloneCivilization.exploredTiles.contains(tileInfo.position)) continue
-
-            if (tileInfo.isCityCenter() && tileImages.owningCiv != tileInfo.getOwner()) {
-                tileImages.cityCircleImage?.remove()
-                val nation = tileInfo.getOwner()!!.nation
-                val hex = tileImages.tileHexagonImage
-                val nationIconSize = (if (tileInfo.getCity()!!.isCapital() && tileInfo.getOwner()!!.isMajorCiv()) 1.667f else 1.25f) * hex.width
-                val nationIcon = ImageGetter.getCircle().apply { color = nation.getInnerColor() }
-                    .surroundWithCircle(nationIconSize, color = nation.getOuterColor())
-                val hexCenterXPosition = hex.x + hex.width / 2
-                nationIcon.x = hexCenterXPosition - nationIconSize / 2
-                val hexCenterYPosition = hex.y + hex.height / 2
-                nationIcon.y = hexCenterYPosition - nationIconSize / 2
-                nationIcon.onClick {
-                    mapHolder.setCenterPosition(tileInfo.position)
-                }
-                tileImages.cityCircleImage = nationIcon
-                addActor(nationIcon)
+            val shouldBeUnrevealed = tileInfo.position !in viewingCiv.exploredTiles
+            val revealStatusChanged = minimapTile.isUnrevealed != shouldBeUnrevealed
+            if (revealStatusChanged || ownerChanged) {
+                minimapTile.updateColor(shouldBeUnrevealed)
             }
 
-            if (tileImages.owningCiv != tileInfo.getOwner()) {
-                tileImages.neighborToBorderImage.values.forEach { it.remove() }
-                tileImages.owningCiv = tileInfo.getOwner()
+            // If owner didn't change, neither city circle nor borders can have changed
+            if (shouldBeUnrevealed || !ownerChanged) continue
+
+            if (tileInfo.isCityCenter()) {
+                minimapTile.updateCityCircle().updateActorsIn(this)
             }
 
-            for (neighbor in tileInfo.neighbors) {
-                val shouldHaveBorderDisplayed = tileInfo.getOwner() != null &&
-                    neighbor.getOwner() != tileInfo.getOwner()
-                if (!shouldHaveBorderDisplayed) {
-                    tileImages.neighborToBorderImage[neighbor]?.remove()
-                    tileImages.neighborToBorderImage.remove(neighbor)
-                    continue
-                }
-                if (tileImages.neighborToBorderImage.containsKey(neighbor)) continue
-                val borderImage = ImageGetter.getWhiteDot()
-
-                // copied from tilegroup border logic
-
-                val hexagonEdgeLength = tileImages.tileHexagonImage.width / 2
-
-                borderImage.setSize(hexagonEdgeLength, hexagonEdgeLength / 4)
-                borderImage.setOrigin(Align.center)
-                val hexagonCenterX = tileImages.tileHexagonImage.x + tileImages.tileHexagonImage.width / 2
-                borderImage.x = hexagonCenterX - borderImage.width / 2
-                val hexagonCenterY = tileImages.tileHexagonImage.y + tileImages.tileHexagonImage.height / 2
-                borderImage.y = hexagonCenterY - borderImage.height / 2
-                // Until this point, the border image is now CENTERED on the tile it's a border for
-
-                val relativeWorldPosition = tileInfo.tileMap.getNeighborTilePositionAsWorldCoords(tileInfo, neighbor)
-                val sign = if (relativeWorldPosition.x < 0) -1 else 1
-                val angle = sign * (atan(sign * relativeWorldPosition.y / relativeWorldPosition.x) * 180 / PI - 90.0).toFloat()
-
-                borderImage.moveBy(
-                    -relativeWorldPosition.x * hexagonEdgeLength / 2,
-                    -relativeWorldPosition.y * hexagonEdgeLength / 2
-                )
-                borderImage.rotateBy(angle)
-                borderImage.color = tileInfo.getOwner()!!.nation.getInnerColor()
-                addActor(borderImage)
-            }
+            minimapTile.updateBorders().updateActorsIn(this)
         }
+        lastViewingCiv = viewingCiv
     }
+
 
     // For debugging purposes
     override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
@@ -367,5 +309,104 @@ private class ClippingImage(drawable: Drawable) : Image(drawable) {
             batch.flush()
             clipEnd()
         }
+    }
+}
+
+
+private class MinimapTile(val tileInfo: TileInfo, groupSize: Float, val onClick: () -> Unit) {
+    companion object {
+        val UNREVEALED_COLOR = Color.DARK_GRAY!!
+    }
+
+    val image: Image = ImageGetter.getImage("OtherIcons/Hexagon")
+    var cityCircleImage: IconCircleGroup? = null
+    var owningCiv: CivilizationInfo? = null
+    var neighborToBorderImage = HashMap<TileInfo, Image>()
+    val isUnrevealed get() = image.color == UNREVEALED_COLOR
+
+    init {
+        val positionalVector = HexMath.hex2WorldCoords(tileInfo.position)
+
+        image.color = UNREVEALED_COLOR
+        image.setSize(groupSize, groupSize)
+        image.setPosition(
+            positionalVector.x * 0.5f * groupSize,
+            positionalVector.y * 0.5f * groupSize
+        )
+        image.onClick(onClick)
+    }
+
+    fun updateColor(isTileUnrevealed: Boolean) {
+        image.color = when {
+            !UncivGame.Current.viewEntireMapForDebug && isTileUnrevealed -> UNREVEALED_COLOR
+            tileInfo.isCityCenter() && !tileInfo.isWater -> tileInfo.getOwner()!!.nation.getInnerColor()
+            tileInfo.getCity() != null && !tileInfo.isWater -> tileInfo.getOwner()!!.nation.getOuterColor()
+            else -> tileInfo.getBaseTerrain().getColor().lerp(Color.GRAY, 0.5f)
+        }
+    }
+
+    class ActorChange(val removed: Set<Actor>, val added: Set<Actor>) {
+        fun updateActorsIn(group: Group) {
+            removed.forEach { group.removeActor(it) }
+            added.forEach { group.addActor(it) }
+        }
+    }
+
+    fun updateBorders(): ActorChange {
+        val imagesBefore = neighborToBorderImage.values.toSet()
+        for (neighbor in tileInfo.neighbors) {
+            val shouldHaveBorderDisplayed = tileInfo.getOwner() != null &&
+                neighbor.getOwner() != tileInfo.getOwner()
+            if (!shouldHaveBorderDisplayed) {
+                neighborToBorderImage.remove(neighbor)
+                continue
+            }
+            if (neighbor in neighborToBorderImage) continue
+
+            val borderImage = ImageGetter.getWhiteDot()
+
+            // copied from tilegroup border logic
+
+            val hexagonEdgeLength = image.width / 2
+
+            borderImage.setSize(hexagonEdgeLength, hexagonEdgeLength / 4)
+            borderImage.setOrigin(Align.center)
+            val hexagonCenterX = image.x + image.width / 2
+            borderImage.x = hexagonCenterX - borderImage.width / 2
+            val hexagonCenterY = image.y + image.height / 2
+            borderImage.y = hexagonCenterY - borderImage.height / 2
+            // Until this point, the border image is now CENTERED on the tile it's a border for
+
+            val relativeWorldPosition = tileInfo.tileMap.getNeighborTilePositionAsWorldCoords(tileInfo, neighbor)
+            val sign = if (relativeWorldPosition.x < 0) -1 else 1
+            val angle = sign * (atan(sign * relativeWorldPosition.y / relativeWorldPosition.x) * 180 / PI - 90.0).toFloat()
+
+            borderImage.moveBy(
+                -relativeWorldPosition.x * hexagonEdgeLength / 2,
+                -relativeWorldPosition.y * hexagonEdgeLength / 2
+            )
+            borderImage.rotateBy(angle)
+            borderImage.color = tileInfo.getOwner()!!.nation.getInnerColor()
+            neighborToBorderImage[neighbor] = borderImage
+        }
+        val imagesAfter = neighborToBorderImage.values.toSet()
+        return ActorChange(imagesBefore - imagesAfter, imagesAfter - imagesBefore)
+    }
+
+    fun updateCityCircle(): ActorChange {
+        val prevCircle = cityCircleImage
+
+        val nation = tileInfo.getOwner()!!.nation
+        val nationIconSize = (if (tileInfo.getCity()!!.isCapital() && tileInfo.getOwner()!!.isMajorCiv()) 1.667f else 1.25f) * image.width
+        val cityCircle = ImageGetter.getCircle().apply { color = nation.getInnerColor() }
+            .surroundWithCircle(nationIconSize, color = nation.getOuterColor())
+        val hexCenterXPosition = image.x + image.width / 2
+        cityCircle.x = hexCenterXPosition - nationIconSize / 2
+        val hexCenterYPosition = image.y + image.height / 2
+        cityCircle.y = hexCenterYPosition - nationIconSize / 2
+        cityCircle.onClick(onClick)
+        cityCircleImage = cityCircle
+
+        return ActorChange(if (prevCircle != null) setOf(prevCircle) else emptySet(), setOf(cityCircle))
     }
 }
