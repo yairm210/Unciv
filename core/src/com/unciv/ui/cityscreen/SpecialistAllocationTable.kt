@@ -16,14 +16,14 @@ class SpecialistAllocationTable(val cityScreen: CityScreen): Table(BaseScreen.sk
     fun update() {
         clear()
         // Auto/Manual Specialists Toggle
+        // Color of "color" coming from Skin.json that's loaded into BaseScreen
         // 5 columns: unassignButton, AllocationTable, assignButton, SeparatorVertical, SpecialistsStatsTabe
         if(cityInfo.manualSpecialists) {
-            val manualSpecialists = "Manual Specialists".tr().toLabel().addBorder(2f, colorFromRGB(51, 76, 127))
+            val manualSpecialists = "Manual Specialists".tr().toLabel().addBorder(2f, BaseScreen.skin.get("color", Color::class.java))
             manualSpecialists.onClick { cityInfo.manualSpecialists = false; cityInfo.reassignPopulation(); cityScreen.update() }
             add(manualSpecialists).colspan(5).row()
         } else {
-            val autoSpecialists = "Auto Specialists".tr().toLabel().addBorder(2f, colorFromRGB(51, 76, 127))
-            //val autoSpecialists = "Auto Specialists".tr().toTextButton().pad(-5f, 0f, -5f, 0f)
+            val autoSpecialists = "Auto Specialists".tr().toLabel().addBorder(2f, BaseScreen.skin.get("color", Color::class.java))
             autoSpecialists.onClick { cityInfo.manualSpecialists = true; update() }
             add(autoSpecialists).colspan(5).row()
         }
