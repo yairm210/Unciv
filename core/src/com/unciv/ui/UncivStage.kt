@@ -1,5 +1,6 @@
 package com.unciv.ui
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.Viewport
@@ -10,11 +11,23 @@ import com.unciv.ui.utils.wrapCrashHandlingUnit
 /** Main stage for the game. Safely brings the game to a [CrashScreen] if any event handlers throw an exception or an error that doesn't get otherwise handled. */
 class UncivStage(viewport: Viewport, batch: Batch) : Stage(viewport, batch) {
 
+    /**
+     * Enables/disables sending pointer enter/exit events to actors on this stage. May be disabled for performance reasons if enter/exit events are not needed temporarily.
+     */
+    var performPointerEnterExitEvents: Boolean = false
+
     override fun draw() =
         { super.draw() }.wrapCrashHandlingUnit()()
+    override fun act() = {
+        /** We're basically replicating [Stage.act], so this value is simply taken from there. */
+        val delta = Gdx.graphics.deltaTime.coerceAtMost(1 / 30f)
 
-    override fun act() =
-        { super.act() }.wrapCrashHandlingUnit()()
+        if (performPointerEnterExitEvents) {
+            super.act(delta)
+        } else {
+            root.act(delta)
+        }
+    }.wrapCrashHandlingUnit()()
 
     override fun act(delta: Float) =
         { super.act(delta) }.wrapCrashHandlingUnit()()
