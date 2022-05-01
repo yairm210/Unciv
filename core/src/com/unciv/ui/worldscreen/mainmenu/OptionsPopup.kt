@@ -858,14 +858,12 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     }
 
     private fun Table.addFontFamilySelect() {
-        val labelCell = add()
+        add("Font family".toLabel()).left().fillX()
         val selectCell = add()
         row()
 
-        fun loadFontSelect(fonts: Collection<FontData>, labelCell: Cell<Actor>, selectCell: Cell<Actor>) {
+        fun loadFontSelect(fonts: Collection<FontData>, selectCell: Cell<Actor>) {
             if (fonts.isEmpty()) return
-
-            labelCell.setActor("Font family".toLabel()).left().fillX()
 
             val fontSelectBox = SelectBox<String>(skin)
             val fontsLocalName = GdxArray<String>().apply { add("Default Font".tr()) }
@@ -892,7 +890,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
         crashHandlingThread(name="Add Font Select") {
             val fonts = Fonts.getAvailableFontFamilyNames() // This is a heavy operation and causes ANRs
-            postCrashHandlingRunnable { loadFontSelect(fonts, labelCell, selectCell) }
+            postCrashHandlingRunnable { loadFontSelect(fonts, selectCell) }
         }
     }
 
