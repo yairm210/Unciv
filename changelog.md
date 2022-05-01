@@ -1,3 +1,39 @@
+## 4.0.11
+
+Enabled nested translations!
+
+Don't allow trade routes through enemy cities
+
+By JackRainy:
+- Protect the cities from the fallout spawning 
+- Correct swap of the full-loaded carriers 
+
+By SomeTroglodyte:
+- Map editor2.2
+- Show number of global followers in Religion Overview 
+
+By xlenstra:
+- Fixed improvements with unfulfilled 'Only Available' still buildable 
+- Fixed a crash when a plane tried to enter a full city
+
+## 4.0.10
+
+By JackRainy:
+- Correct calculation of production for Settlers 
+- Fixed swapping carriers with payloads 
+- Display wonders built in other civs correctly 
+
+By SomeTroglodyte:
+- Resources UI 
+- Some improvements to Map Editor - step 1 
+- Implement fastlane step 1 - minimal framework
+
+Made Specialist allocation table expandable  - By ultradian
+
+Fix typo in vanilla - By touhidurrr
+
+Healing values per Civ V - By letstalkaboutdune
+
 ## 4.0.9
 
 By xlenstra: Moddable victories!

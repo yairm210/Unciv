@@ -68,7 +68,7 @@ class MapEditorEditFeaturesTab(
         val eraserIcon = "Terrain/${firstFeature.name}"
         val eraser = FormattedLine("Remove features", icon = eraserIcon, size = 32, iconCrossed = true)
         add(eraser.render(0f).apply { onClick {
-            editTab.setBrush("Remove feature", eraserIcon) { tile ->
+            editTab.setBrush("Remove features", eraserIcon, true) { tile ->
                 tile.removeTerrainFeatures()
             }
         } }).padBottom(0f).row()
@@ -139,7 +139,7 @@ class MapEditorEditResourcesTab(
         val eraserIcon = "Resource/${firstResource.name}"
         val eraser = FormattedLine("Remove resource", icon = eraserIcon, size = 32, iconCrossed = true)
         add(eraser.render(0f).apply { onClick {
-            editTab.setBrush("Remove resource", eraserIcon) { tile ->
+            editTab.setBrush("Remove resource", eraserIcon, true) { tile ->
                 tile.resource = null
             }
         } }).padBottom(0f).row()
@@ -186,7 +186,7 @@ class MapEditorEditImprovementsTab(
         val eraserIcon = "Improvement/${firstImprovement.name}"
         val eraser = FormattedLine("Remove improvement", icon = eraserIcon, size = 32, iconCrossed = true)
         add(eraser.render(0f).apply { onClick {
-            editTab.setBrush("Remove improvement", eraserIcon) { tile ->
+            editTab.setBrush("Remove improvement", eraserIcon, true) { tile ->
                 tile.improvement = null
                 tile.roadStatus = RoadStatus.None
             }
@@ -259,7 +259,7 @@ class MapEditorEditStartsTab(
         val eraserIcon = "Nation/${firstNation.name}"
         val eraser = FormattedLine("Remove starting locations", icon = eraserIcon, size = 24, iconCrossed = true)
         add(eraser.render(0f).apply { onClick {
-            editTab.setBrush(BrushHandlerType.Direct, "Remove starting locations", eraserIcon) { tile ->
+            editTab.setBrush(BrushHandlerType.Direct, "Remove starting locations", eraserIcon, true) { tile ->
                 tile.tileMap.removeStartingLocations(tile.position)
             }
         } }).padBottom(0f).row()
@@ -406,16 +406,8 @@ class MapEditorEditRiversTab(
                 }
             }
         }.makeTileGroup()
-    private fun getRemoveRiverIcon() = Group().apply {
-        isTransform = false
-        setSize(iconSize, iconSize)
-        val tileGroup = getTileGroupWithRivers(RiverEdge.All)
-        tileGroup.center(this)
-        addActor(tileGroup)
-        val cross = ImageGetter.getRedCross(iconSize * 0.7f, 1f)
-        cross.center(this)
-        addActor(cross)
-    }
+    private fun getRemoveRiverIcon() =
+        ImageGetter.getCrossedImage(getTileGroupWithRivers(RiverEdge.All), iconSize)
     private fun getRiverIcon(edge: RiverEdge) = Group().apply {
         // wrap same as getRemoveRiverIcon so the icons align the same (using getTileGroupWithRivers directly works but looks ugly - reason unknown to me)
         isTransform = false

@@ -712,12 +712,12 @@ class MapUnit {
         val isFriendlyTerritory = tileInfo.isFriendlyTerritory(civInfo)
 
         var healing = when {
-            tileInfo.isCityCenter() -> 20
-            tileInfo.isWater && isFriendlyTerritory && (baseUnit.isWaterUnit() || isTransported) -> 15 // Water unit on friendly water
+            tileInfo.isCityCenter() -> 25 // Increased from 20 for CV parity
+            tileInfo.isWater && isFriendlyTerritory && (baseUnit.isWaterUnit() || isTransported) -> 20 // Water unit on friendly water, increased from 15 for CV parity
             tileInfo.isWater -> 0 // All other water cases
-            isFriendlyTerritory -> 15 // Allied territory
+            isFriendlyTerritory -> 20 // Allied territory, increased from 15 for CV parity
             tileInfo.getOwner() == null -> 10 // Neutral territory
-            else -> 5 // Enemy territory
+            else -> 10 // Enemy territory, increased from 5 for CV  parity
         }
 
         val mayHeal = healing > 0 || (tileInfo.isWater && hasUnique(UniqueType.HealsOutsideFriendlyTerritory, checkCivInfoUniques = true))
@@ -889,7 +889,7 @@ class MapUnit {
     fun putInTile(tile: TileInfo) {
         when {
             !movement.canMoveTo(tile) ->
-                throw Exception("I can't go there!")
+                throw Exception("Unit $name at $currentTile can't be put in tile ${tile.position}!")
             baseUnit.movesLikeAirUnits() -> tile.airUnits.add(this)
             isCivilian() -> tile.civilianUnit = this
             else -> tile.militaryUnit = this

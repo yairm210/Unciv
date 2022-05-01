@@ -62,7 +62,7 @@ class MapEditorEditTab(
         Improvements("Improvements", 'i', "OtherIcons/Improvements", { parent, ruleset -> MapEditorEditImprovementsTab(parent, ruleset) }),
         Rivers("Rivers", 'v', "OtherIcons/Star", { parent, ruleset -> MapEditorEditRiversTab(parent, ruleset) }),
         StartingLocations("Starting locations", 's', "OtherIcons/Nations", { parent, ruleset -> MapEditorEditStartsTab(parent, ruleset) }),
-        Units("Units", 'u', "OtherIcons/Shield", { parent, ruleset -> MapEditorEditUnitsTab(parent, ruleset) }),
+        // Units("Units", 'u', "OtherIcons/Shield", { parent, ruleset -> MapEditorEditUnitsTab(parent, ruleset) }),
     }
 
     init {
@@ -107,21 +107,12 @@ class MapEditorEditTab(
 
     private fun selectPage(index: Int) = subTabs.selectPage(index)
 
-    fun setBrush(
-        name: String,
-        icon: String,
-        isRemove: Boolean = false,
-        applyAction: (TileInfo)->Unit
-    ) {
+    fun setBrush(name: String, icon: String, isRemove: Boolean = false, applyAction: (TileInfo)->Unit) {
         brushHandlerType = BrushHandlerType.Tile
         brushCell.setActor(FormattedLine(name, icon = icon, iconCrossed = isRemove).render(0f))
         brushAction = applyAction
     }
-    private fun setBrush(
-        name: String,
-        icon: Actor,
-        applyAction: (TileInfo)->Unit
-    ) {
+    private fun setBrush(name: String, icon: Actor, applyAction: (TileInfo)->Unit) {
         brushHandlerType = BrushHandlerType.Tile
         val line = Table().apply {
             add(icon).padRight(10f)
@@ -130,22 +121,12 @@ class MapEditorEditTab(
         brushCell.setActor(line)
         brushAction = applyAction
     }
-    fun setBrush(
-        handlerType: BrushHandlerType,
-        name: String,
-        icon: String,
-        isRemove: Boolean = false,
-        applyAction: (TileInfo)->Unit
-    ) {
+    fun setBrush(handlerType: BrushHandlerType, name: String, icon: String,
+                 isRemove: Boolean = false, applyAction: (TileInfo)->Unit) {
         setBrush(name, icon, isRemove, applyAction)
         brushHandlerType = handlerType
     }
-    fun setBrush(
-        handlerType: BrushHandlerType,
-        name: String,
-        icon: Actor,
-        applyAction: (TileInfo)->Unit
-    ) {
+    fun setBrush(handlerType: BrushHandlerType, name: String, icon: Actor, applyAction: (TileInfo)->Unit) {
         setBrush(name, icon, applyAction)
         brushHandlerType = handlerType
     }
@@ -236,7 +217,7 @@ class MapEditorEditTab(
         resultingTiles.forEach { editorScreen.updateAndHighlight(it, Color.SKY) }
     }
 
-    private fun paintTilesWithBrush(tile: TileInfo) {
+    internal fun paintTilesWithBrush(tile: TileInfo) {
         val tiles =
             if (brushSize == -1) {
                 val bfs = BFS(tile) { it.isSimilarEnough(tile) }

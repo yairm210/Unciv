@@ -192,8 +192,9 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
         if (civInfo.religionManager.religion != null) {
             for (unique in civInfo.religionManager.religion!!.getBeliefs(BeliefType.Founder)
-                .flatMap { it.uniqueObjects }) {
-                if (unique.placeholderText == "[] for each global city following this religion") {
+                .flatMap { it.uniqueObjects }
+            ) {
+                if (unique.type == UniqueType.StatsFromGlobalCitiesFollowingReligion) {
                     statMap.add(
                         "Religion",
                         unique.stats.times(civInfo.religionManager.numberOfCitiesFollowingThisReligion())
@@ -307,8 +308,9 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         if (civInfo.religionManager.religion != null) {
             var religionHappiness = 0f
             for (unique in civInfo.religionManager.religion!!.getBeliefs(BeliefType.Founder)
-                .flatMap { it.uniqueObjects }) {
-                if (unique.placeholderText == "[] for each global city following this religion") {
+                .flatMap { it.uniqueObjects }
+            ) {
+                if (unique.type == UniqueType.StatsFromGlobalCitiesFollowingReligion) {
                     val followingCities =
                         civInfo.religionManager.numberOfCitiesFollowingThisReligion()
                     religionHappiness += unique.stats.happiness * followingCities

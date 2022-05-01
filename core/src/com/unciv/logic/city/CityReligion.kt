@@ -116,13 +116,14 @@ class CityInfoReligionManager {
         if (newMajorityReligion in religionsAtSomePointAdopted) return
         
         val religionOwningCiv = newMajorityReligionObject.getFounder()
-        for (unique in newMajorityReligionObject.getFounderUniques()) {
-            val statsGranted = when (unique.placeholderText) {
-                "[] when a city adopts this religion for the first time (modified by game speed)" ->
-                    unique.stats.times(cityInfo.civInfo.gameInfo.gameParameters.gameSpeed.modifier)
-                "[] when a city adopts this religion for the first time" -> unique.stats
-                else -> continue
-            }
+        if (religionOwningCiv.hasUnique(UniqueType.StatsWhenAdoptingReligionSpeed) || religionOwningCiv.hasUnique(UniqueType.StatsWhenAdoptingReligion)) {
+            val statsGranted = 
+                (
+                    religionOwningCiv.getMatchingUniques(UniqueType.StatsWhenAdoptingReligionSpeed) 
+                    + religionOwningCiv.getMatchingUniques(UniqueType.StatsWhenAdoptingReligion)
+                ).map { it.stats }
+                .reduce { acc, stats -> acc + stats }
+            
             for ((key, value) in statsGranted)
                 religionOwningCiv.addStat(key, value.toInt())
             if (cityInfo.location in religionOwningCiv.exploredTiles)
