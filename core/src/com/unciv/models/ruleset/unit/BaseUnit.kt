@@ -71,12 +71,14 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         return infoList.joinToString()
     }
 
-    /** Generate description as multi-line string for Nation description addUniqueUnitsText and CityScreen addSelectedConstructionTable */
-    fun getDescription(): String {
+    /** Generate description as multi-line string for CityScreen addSelectedConstructionTable
+     * @param cityInfo Supplies civInfo to show available resources after resource requirements */
+    fun getDescription(cityInfo: CityInfo): String {
         val lines = mutableListOf<String>()
+        val availableResources = cityInfo.civInfo.getCivResources().associate { it.resource.name to it.amount }
         for ((resource, amount) in getResourceRequirements()) {
-            lines += if (amount == 1) "Consumes 1 [$resource]".tr()
-                     else "Consumes [$amount] [$resource]".tr()
+            val available = availableResources[resource] ?: 0
+            lines += "Consumes ${if (amount == 1) "1" else "[$amount]"} [$resource] ({[$available] available})".tr()
         }
         var strengthLine = ""
         if (strength != 0) {
@@ -89,6 +91,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (replacementTextForUniques != "") lines += replacementTextForUniques
         else for (unique in uniqueObjects.filterNot {
             it.type == UniqueType.Unbuildable
+                    || it.type == UniqueType.ConsumesResources  // already shown from getResourceRequirements
                     || it.type?.flags?.contains(UniqueFlag.HiddenToUsers) == true
         })
             lines += unique.text.tr()
@@ -325,8 +328,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     }
 
     override fun getStatBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
-        var cost = getBaseBuyCost(cityInfo, stat)?.toDouble()
-        if (cost == null) return null
+        var cost = getBaseBuyCost(cityInfo, stat)?.toDouble() ?: return null
 
         for (unique in cityInfo.getMatchingUniques(UniqueType.BuyUnitsDiscount)) {
             if (stat.name == unique.params[0] && matchesFilter(unique.params[1]))
