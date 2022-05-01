@@ -41,6 +41,11 @@ object Constants {
     const val peaceTreaty = "Peace Treaty"
     const val researchAgreement = "Research Agreement"
     const val openBorders = "Open Borders"
+    /** Used as origin in StatMap or ResourceSupplyList, or the toggle button in DiplomacyOverviewTab */
+    const val cityStates = "City-States"
+    /** Used as origin in ResourceSupplyList */
+    const val tradable = "Tradable"
+
     const val random = "Random"
     const val unknownNationName = "???"
     const val unknownCityName = "???"
@@ -51,7 +56,7 @@ object Constants {
     // Easter egg name. Is to avoid conflicts when players name their own religions.
     // This religion name should never be displayed.
     const val noReligionName = "The religion of TheLegend27"
-    
+
     const val neutralVictoryType = "Neutral"
 
     const val cancelImprovementOrder = "Cancel improvement order"
@@ -70,7 +75,7 @@ object Constants {
     const val remove = "Remove "
 
     const val uniqueOrDelimiter = "\" OR \""
-    
+
     const val dropboxMultiplayerServer = "Dropbox"
 
     /**
@@ -79,6 +84,7 @@ object Constants {
      * _Most_ checks do compare to 0!
      */
     const val minimumMovementEpsilon = 0.05f  // 0.1f was used previously, too - here for global searches
+
     const val defaultFontSize = 18
     const val headingFontSize = 24
 }

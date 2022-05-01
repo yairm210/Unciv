@@ -367,18 +367,16 @@ class CivilizationInfo {
     fun getCivResources(): ResourceSupplyList = summarizedCivResources
 
     // Preserves some origins for resources so we can separate them for trades
-    fun getCivResourcesWithOriginsForTrade(): ResourceSupplyList {
-        val newResourceSupplyList = ResourceSupplyList()
+    fun getCivResourcesWithOriginsForTrade() = ResourceSupplyList(keepZeroAmounts = true).apply {
         for (resourceSupply in detailedCivResources) {
             // If we got it from another trade or from a CS, preserve the origin
-            if ((resourceSupply.origin == "City-States" || resourceSupply.origin == "Trade") && resourceSupply.amount > 0) {
-                newResourceSupplyList.add(resourceSupply.resource, resourceSupply.amount, resourceSupply.origin)
-                newResourceSupplyList.add(resourceSupply.resource, 0, "Tradable") // Still add an empty "tradable" entry so it shows up in the list
+            if (resourceSupply.isCityStateOrTrade()) {
+                add(resourceSupply.resource, resourceSupply.origin, resourceSupply.amount)
+                add(resourceSupply.resource, Constants.tradable, 0) // Still add an empty "tradable" entry so it shows up in the list
             }
             else
-                newResourceSupplyList.add(resourceSupply.resource, resourceSupply.amount, "Tradable")
+                add(resourceSupply.resource, Constants.tradable, resourceSupply.amount)
         }
-        return newResourceSupplyList
     }
 
     fun isCapitalConnectedToCity(city: CityInfo): Boolean = citiesConnectedToCapitalToMediums.keys.contains(city)

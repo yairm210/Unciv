@@ -20,18 +20,18 @@ class TileResource : RulesetStatsObject() {
     var improvedBy: List<String> = listOf()
     var majorDepositAmount: DepositAmount = DepositAmount()
     var minorDepositAmount: DepositAmount = DepositAmount()
-    
-    val _allImprovements by lazy {
+
+    private val _allImprovements by lazy {
         if (improvement == null) improvedBy
         else improvedBy + improvement!!
     }
-    
+
     fun getImprovements(): List<String> {
         return _allImprovements
     }
-    
+
     override fun getUniqueTarget() = UniqueTarget.Resource
-    
+
     override fun makeLink() = "Resource/$name"
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
@@ -128,35 +128,17 @@ class TileResource : RulesetStatsObject() {
     fun isImprovedBy(improvementName: String): Boolean {
         return getImprovements().contains(improvementName)
     }
-    
+
     fun getImprovingImprovement(tile: TileInfo, civInfo: CivilizationInfo): String? {
         return getImprovements().firstOrNull { 
             tile.canBuildImprovement(civInfo.gameInfo.ruleSet.tileImprovements[it]!!, civInfo) 
         }
     }
-    
+
     class DepositAmount {
         var sparse: Int = 1
         var default: Int = 2
         var abundant: Int = 3
     }
 
-}
-
-
-data class ResourceSupply(val resource:TileResource, var amount:Int, val origin:String)
-
-class ResourceSupplyList:ArrayList<ResourceSupply>() {
-    fun add(resource: TileResource, amount: Int, origin: String) {
-        val existingResourceSupply = firstOrNull { it.resource == resource && it.origin == origin }
-        if (existingResourceSupply != null) {
-            existingResourceSupply.amount += amount
-            if (existingResourceSupply.amount == 0) remove(existingResourceSupply)
-        } else add(ResourceSupply(resource, amount, origin))
-    }
-
-    fun add(resourceSupplyList: ResourceSupplyList) {
-        for (resourceSupply in resourceSupplyList)
-            add(resourceSupply.resource, resourceSupply.amount, resourceSupply.origin)
-    }
 }

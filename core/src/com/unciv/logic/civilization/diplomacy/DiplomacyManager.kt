@@ -324,8 +324,7 @@ class DiplomacyManager() {
         otherCivDiplomacy().totalOfScienceDuringRA = 0
     }
 
-    fun resourcesFromTrade(): ResourceSupplyList {
-        val counter = ResourceSupplyList()
+    fun resourcesFromTrade() = ResourceSupplyList().apply {
         val resourcesMap = civInfo.gameInfo.ruleSet.tileResources
         val isResourceFilter: (TradeOffer) -> Boolean = {
             (it.type == TradeType.Strategic_Resource || it.type == TradeType.Luxury_Resource)
@@ -333,17 +332,15 @@ class DiplomacyManager() {
         }
         for (trade in trades) {
             for (offer in trade.ourOffers.filter(isResourceFilter))
-                counter.add(resourcesMap[offer.name]!!, -offer.amount, "Trade")
+                add(resourcesMap[offer.name]!!, "Trade", -offer.amount)
             for (offer in trade.theirOffers.filter(isResourceFilter))
-                counter.add(resourcesMap[offer.name]!!, offer.amount, "Trade")
+                add(resourcesMap[offer.name]!!, "Trade", offer.amount)
         }
 
         for (trade in otherCiv().tradeRequests.filter { it.requestingCiv == civInfo.civName }) {
             for (offer in trade.trade.theirOffers.filter(isResourceFilter))
-                counter.add(resourcesMap[offer.name]!!, -offer.amount, "Trade request")
+                add(resourcesMap[offer.name]!!, "Trade request", -offer.amount)
         }
-
-        return counter
     }
 
     /** Returns the [civilizations][CivilizationInfo] that know about both sides ([civInfo] and [otherCiv]) */

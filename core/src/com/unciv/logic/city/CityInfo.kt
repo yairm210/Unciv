@@ -386,40 +386,36 @@ class CityInfo {
     fun isWeLoveTheKingDayActive() = hasFlag(CityFlags.WeLoveTheKing)
     fun isInResistance() = hasFlag(CityFlags.Resistance)
 
-    /** @return the number of tiles 4 out from this city that could hold a city, ie how lonely this city is */
-    fun getFrontierScore() = getCenterTile().getTilesAtDistance(4).count { it.canBeSettled() && (it.getOwner() == null || it.getOwner() == civInfo ) }
+    /** @return the number of tiles 4 (un-modded) out from this city that could hold a city, ie how lonely this city is */
+    fun getFrontierScore() = getCenterTile()
+        .getTilesAtDistance(civInfo.gameInfo.ruleSet.modOptions.constants.minimalCityDistance + 1)
+        .count { it.canBeSettled() && (it.getOwner() == null || it.getOwner() == civInfo ) }
 
     fun getRuleset() = civInfo.gameInfo.ruleSet
 
-    fun getCityResources(): ResourceSupplyList {
-        val cityResources = ResourceSupplyList()
-
+    fun getCityResources() = ResourceSupplyList().apply {
         for (tileInfo in getTiles().filter { it.resource != null }) {
             val resource = tileInfo.tileResource
             val amount = getTileResourceAmount(tileInfo) * civInfo.getResourceModifier(resource)
-            if (amount > 0) cityResources.add(resource, amount, "Tiles")
+            if (amount > 0) add(resource, "Tiles", amount)
         }
-        
-        
-        
+
         for (tileInfo in getTiles()) {
-            val stateForConditionals = StateForConditionals(civInfo, this, tile = tileInfo)
+            val stateForConditionals = StateForConditionals(civInfo, this@CityInfo, tile = tileInfo)
             if (tileInfo.improvement == null) continue
             val tileImprovement = tileInfo.getTileImprovement()
             for (unique in tileImprovement!!.getMatchingUniques(UniqueType.ProvidesResources, stateForConditionals)) {
                 val resource = getRuleset().tileResources[unique.params[1]] ?: continue
-                cityResources.add(
-                    resource,
-                    unique.params[0].toInt() * civInfo.getResourceModifier(resource),
-                    "Improvements"
+                add(
+                    resource, "Improvements",
+                    unique.params[0].toInt() * civInfo.getResourceModifier(resource)
                 )
             }
             for (unique in tileImprovement.getMatchingUniques(UniqueType.ConsumesResources, stateForConditionals)) {
                 val resource = getRuleset().tileResources[unique.params[1]] ?: continue
-                cityResources.add(
-                    resource,
-                    -1 * unique.params[0].toInt(),
-                    "Improvements"
+                add(
+                    resource, "Improvements",
+                    -1 * unique.params[0].toInt()
                 )
             }
         }
@@ -427,33 +423,27 @@ class CityInfo {
         val freeBuildings = civInfo.civConstructions.getFreeBuildings(id)
         for (building in cityConstructions.getBuiltBuildings()) {
             // Free buildings cost no resources
-            if (building.name in freeBuildings)
-                continue
-            for ((resourceName, amount) in building.getResourceRequirements()) {
-                val resource = getRuleset().tileResources[resourceName]!!
-                cityResources.add(resource, -amount, "Buildings")
-            }
+            if (building.name in freeBuildings) continue
+            subtractResourceRequirements(building.getResourceRequirements(), getRuleset(), "Buildings")
         }
 
-        for (unique in getLocalMatchingUniques(UniqueType.ProvidesResources, StateForConditionals(civInfo, this))) { // E.G "Provides [1] [Iron]"
+        for (unique in getLocalMatchingUniques(UniqueType.ProvidesResources, StateForConditionals(civInfo, this@CityInfo))) { // E.G "Provides [1] [Iron]"
+            if (!unique.conditionalsApply(civInfo, this@CityInfo)) continue
             val resource = getRuleset().tileResources[unique.params[1]]
             if (resource != null) {
-                cityResources.add(
-                    resource, 
-                    unique.params[0].toInt() * civInfo.getResourceModifier(resource), 
-                    "Buildings+"
+                add(
+                    resource, "Buildings+",
+                    unique.params[0].toInt() * civInfo.getResourceModifier(resource)
                 )
             }
         }
+
         if (civInfo.isCityState() && isCapital() && civInfo.cityStateResource != null) {
-            cityResources.add(
+            add(
                 getRuleset().tileResources[civInfo.cityStateResource]!!,
-                1,
                 "Mercantile City-State"
             )
         }
-
-        return cityResources
     }
 
     fun getTileResourceAmount(tileInfo: TileInfo): Int {
