@@ -3,6 +3,8 @@ package com.unciv.logic.civilization
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.civilization.diplomacy.DiplomacyManager
+import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
@@ -69,8 +71,8 @@ class CapitalConnectionsFinderTests {
         tilesMap.bottomY = from
         tiles.add(ArrayList())
         for (y in from..to)
-            tiles[0].add(TileInfo().apply { tileMap = tilesMap
-                position = Vector2(0f, y.toFloat())
+            tiles.last().add(TileInfo().apply { tileMap = tilesMap
+                position = Vector2(tiles.size-1f, y.toFloat())
                 baseTerrain = rules.terrains.values.first { it.type == TerrainType.Land }.name })
     }
 
@@ -81,15 +83,15 @@ class CapitalConnectionsFinderTests {
         // here we assume the row with a land is already created
         tiles.add(ArrayList())
         for (y in from..to)
-            tiles[1].add(TileInfo().apply { tileMap = tilesMap
-                position = Vector2(1f, y.toFloat())
+            tiles.last().add(TileInfo().apply { tileMap = tilesMap
+                position = Vector2(tiles.size-1f, y.toFloat())
                 isWater = true
                 baseTerrain = rules.terrains.values.first { it.type == TerrainType.Water }.name })
     }
 
     private fun createMedium(from:Int, to: Int, type: RoadStatus) {
         val tiles = tilesMap.tileMatrix
-        for (tile in tiles[0])
+        for (tile in tiles.last())
             if (tile != null && tile.position.y > from && tile.position.y < to)
                 tile.roadStatus = type
     }
@@ -106,6 +108,12 @@ class CapitalConnectionsFinderTests {
             setTransients()
             tilesMap[location].setOwningCity(this)
         }
+    }
+
+    private fun meetCivAndSetBorders(name: String, areBordersOpen: Boolean) {
+        ourCiv.diplomacy[name] = DiplomacyManager(ourCiv, name)
+            .apply { diplomaticStatus = DiplomaticStatus.Peace }
+        ourCiv.diplomacy[name]!!.hasOpenBorders = areBordersOpen
     }
 
     @Test
@@ -142,13 +150,12 @@ class CapitalConnectionsFinderTests {
     fun `Own cities are connected by road and harbor`() {
 
         createLand(-2,4)
+        createMedium(0,2, RoadStatus.Road)
         createWater(-2,4)
         ourCiv.cities = listOf( createCity(ourCiv, Vector2(0f, 0f), "Capital", true),
             createCity(ourCiv, Vector2(0f, -2f), "Not connected"),
             createCity(ourCiv, Vector2(0f, 2f), "Connected1", capital = false, hasHarbor = true),
             createCity(ourCiv, Vector2(0f, 4f), "Connected2", capital = false, hasHarbor = true))
-
-        createMedium(0,2, RoadStatus.Road)
 
         val connectionsFinder = CapitalConnectionsFinder(ourCiv)
         val res = connectionsFinder.find()
@@ -156,4 +163,58 @@ class CapitalConnectionsFinderTests {
         Assert.assertTrue(res.keys.count { it.name.startsWith("Connected") } == 2 && !res.keys.any { it.name == "Not connected" }  )
     }
 
+    @Test
+    fun `Cities are connected by roads via Open Borders`() {
+
+        createLand(-4,4)
+        ourCiv.cities = listOf( createCity(ourCiv, Vector2(0f, 0f), "Capital", true),
+            createCity(ourCiv, Vector2(0f, -4f), "Not connected"),
+            createCity(ourCiv, Vector2(0f, 4f), "Connected"))
+
+        val openCiv = civilizations["Germany"]!!
+        openCiv.cities = listOf( createCity(openCiv, Vector2(0f, 2f), "Berlin", true))
+        meetCivAndSetBorders("Germany", true)
+
+        val closedCiv = civilizations["Greece"]!!
+        closedCiv.cities = listOf( createCity(closedCiv, Vector2(0f, -2f), "Athens", true))
+        meetCivAndSetBorders("Greece", false)
+
+        createMedium(-4,-2, RoadStatus.Road)
+        createMedium(-2,0, RoadStatus.Railroad)
+        createMedium(0,2, RoadStatus.Road)
+        createMedium(2,4, RoadStatus.Railroad)
+        // part of the railroad (Berlin-Connected) goes through other civilization territory
+        tilesMap.tileMatrix[0][7]!!.setOwningCity(openCiv.cities.first())
+
+
+        val connectionsFinder = CapitalConnectionsFinder(ourCiv)
+        val res = connectionsFinder.find()
+
+        Assert.assertTrue(res.keys.any { it.name == "Connected" } && !res.keys.any { it.name == "Not connected" }  )
+    }
+
+    @Test
+    fun `Cities are connected via own harbors only`() {
+
+        createLand(-4,-4) // capital is on an island
+        createWater(-4,0)
+        createLand(-4,2) // some land without access to ocean
+        ourCiv.cities = listOf( createCity(ourCiv, Vector2(0f, -4f), "Capital", true, hasHarbor = true),
+            createCity(ourCiv, Vector2(2f, 2f), "Not connected1", capital = false, hasHarbor = true), // cannot reach ocean
+            createCity(ourCiv, Vector2(2f, 0f), "Not connected2"), // has no harbor, has road to Berlin
+            createCity(ourCiv, Vector2(2f, -4f), "Connected", capital = false, hasHarbor = true))
+
+        val openCiv = civilizations["Germany"]!!
+        openCiv.cities = listOf( createCity(openCiv, Vector2(2f, -2f), "Berlin", true, hasHarbor = true))
+        meetCivAndSetBorders("Germany", true)
+
+        createMedium(-2,0, RoadStatus.Road)
+        createMedium(0,2, RoadStatus.Railroad)
+
+        val connectionsFinder = CapitalConnectionsFinder(ourCiv)
+        val res = connectionsFinder.find()
+
+        Assert.assertTrue(res.keys.any { it.name == "Connected" } && !res.keys.any { it.name.startsWith("Not connected") } )
+
+    }
 }
