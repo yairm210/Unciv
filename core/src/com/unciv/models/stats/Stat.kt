@@ -19,6 +19,8 @@ enum class Stat(
 
     companion object {
         val statsUsableToBuy = listOf(Gold, Food, Science, Culture, Faith)
+        private val valuesAsMap = values().associateBy { it.name }
+        fun safeValueOf(name: String) = valuesAsMap[name]
     }
 }
 
