@@ -348,9 +348,10 @@ class CityInfo {
             if (amount > 0) cityResources.add(resource, amount, "Tiles")
         }
         
-        val stateForConditionals = StateForConditionals(civInfo, this);
+        
         
         for (tileInfo in getTiles()) {
+            val stateForConditionals = StateForConditionals(civInfo, this, tile = tileInfo)
             if (tileInfo.improvement == null) continue
             val tileImprovement = tileInfo.getTileImprovement()
             for (unique in tileImprovement!!.getMatchingUniques(UniqueType.ProvidesResources, stateForConditionals)) {
@@ -382,7 +383,7 @@ class CityInfo {
             }
         }
 
-        for (unique in getLocalMatchingUniques(UniqueType.ProvidesResources, stateForConditionals)) { // E.G "Provides [1] [Iron]"
+        for (unique in getLocalMatchingUniques(UniqueType.ProvidesResources, StateForConditionals(civInfo, this))) { // E.G "Provides [1] [Iron]"
             val resource = getRuleset().tileResources[unique.params[1]]
             if (resource != null) {
                 cityResources.add(
