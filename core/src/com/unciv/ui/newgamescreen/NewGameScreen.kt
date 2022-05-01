@@ -11,18 +11,19 @@ import com.unciv.UncivGame
 import com.unciv.logic.*
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapType
+import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.pickerscreens.PickerScreen
-import com.unciv.ui.utils.*
-import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.ui.crashhandling.crashHandlingThread
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.popup.YesNoPopup
+import com.unciv.ui.utils.*
+import java.io.IOException
 import java.util.*
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
@@ -37,6 +38,12 @@ class NewGameScreen(
     private val newGameOptionsTable: GameOptionsTable
     private val playerPickerTable: PlayerPickerTable
     private val mapOptionsTable: MapOptionsTable
+
+    @Throws(InterruptedException::class, IOException::class)
+    fun isConnected(): Boolean {
+        val command = "ping -c 1 github.com"
+        return Runtime.getRuntime().exec(command).waitFor() == 0
+    }
 
     init {
         updateRuleset()  // must come before playerPickerTable so mod nations from fromSettings
@@ -71,6 +78,13 @@ class NewGameScreen(
         rightSideButton.setText("Start game!".tr())
         rightSideButton.onClick {
             if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
+                if(!isConnected()){
+                    val invalidPlayerIdPopup = Popup(this)
+                    invalidPlayerIdPopup.addGoodSizedLabel("No internet connection!".tr()).row()
+                    invalidPlayerIdPopup.addCloseButton()
+                    invalidPlayerIdPopup.open()
+                    return@onClick
+                }
                 for (player in gameSetupInfo.gameParameters.players.filter { it.playerType == PlayerType.Human }) {
                     try {
                         UUID.fromString(IdChecker.checkAndReturnPlayerUuid(player.playerId))
