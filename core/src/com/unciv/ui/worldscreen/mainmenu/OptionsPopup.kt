@@ -555,7 +555,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
         val game = UncivGame.Current
         val simulateButton = "Simulate until turn:".toTextButton()
-        val simulateTextField = TextField("0", BaseScreen.skin)
+        val simulateTextField = TextField(game.simulateUntilTurnForDebug.toString(), BaseScreen.skin)
         val invalidInputLabel = "This is not a valid integer!".toLabel().also { it.isVisible = false }
         simulateButton.onClick {
             val simulateUntilTurns = simulateTextField.text.toIntOrNull() 
@@ -565,8 +565,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             }
             game.simulateUntilTurnForDebug = simulateUntilTurns
             invalidInputLabel.isVisible = false
-            game.gameInfo.nextTurn()
-            game.simulateUntilTurnForDebug = 0
+            game.worldScreen.nextTurn()
         }
         add(simulateButton)
         add(simulateTextField).row()
