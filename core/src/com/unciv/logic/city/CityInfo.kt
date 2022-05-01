@@ -351,24 +351,21 @@ class CityInfo {
         for (tileInfo in getTiles()) {
             if (tileInfo.improvement == null) continue
             val tileImprovement = tileInfo.getTileImprovement()
-            for (unique in tileImprovement!!.uniqueObjects) {
-                if (unique.isOfType(UniqueType.ProvidesResources)) {
-                    if (!unique.conditionalsApply(civInfo, this)) continue
-                    val resource = getRuleset().tileResources[unique.params[1]] ?: continue
-                    cityResources.add(
-                        resource,
-                        unique.params[0].toInt() * civInfo.getResourceModifier(resource),
-                        "Improvements"
-                    )
-                }
-                if (unique.isOfType(UniqueType.ConsumesResources)) {
-                    val resource = getRuleset().tileResources[unique.params[1]] ?: continue
-                    cityResources.add(
-                        resource,
-                        -1 * unique.params[0].toInt(),
-                        "Improvements"
-                    )
-                }
+            for (unique in tileImprovement!!.getMatchingUniques(UniqueType.ProvidesResources, StateForConditionals(civInfo, this))) {
+                val resource = getRuleset().tileResources[unique.params[1]] ?: continue
+                cityResources.add(
+                    resource,
+                    unique.params[0].toInt() * civInfo.getResourceModifier(resource),
+                    "Improvements"
+                )
+            }
+            for (unique in tileImprovement.getMatchingUniques(UniqueType.ConsumesResources, StateForConditionals(civInfo, this))) {
+                val resource = getRuleset().tileResources[unique.params[1]] ?: continue
+                cityResources.add(
+                    resource,
+                    -1 * unique.params[0].toInt(),
+                    "Improvements"
+                )
             }
         }
 
@@ -383,8 +380,7 @@ class CityInfo {
             }
         }
 
-        for (unique in getLocalMatchingUniques(UniqueType.ProvidesResources)) { // E.G "Provides [1] [Iron]"
-            if (!unique.conditionalsApply(civInfo, this)) continue
+        for (unique in getLocalMatchingUniques(UniqueType.ProvidesResources, StateForConditionals(civInfo, this))) { // E.G "Provides [1] [Iron]"
             val resource = getRuleset().tileResources[unique.params[1]]
             if (resource != null) {
                 cityResources.add(
