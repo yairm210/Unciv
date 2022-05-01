@@ -87,6 +87,7 @@ class UniqueDocsWriter {
             lines += "*[${paramType.parameterName}]: ${paramType.docDescription}$punctuation"
         }
 
-        File("../../docs/Modders/uniques.md").writeText(lines.joinToString("\n"))
+        // Let's use CRLF ending same as in all other files
+        File("../../docs/Modders/uniques.md").writeText(lines.joinToString("\r\n"))
     }
 }
