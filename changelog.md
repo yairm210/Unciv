@@ -1,3 +1,21 @@
+## 4.0.11
+
+Enabled nested translations!
+
+Don't allow trade routes through enemy cities
+
+By JackRainy:
+- Protect the cities from the fallout spawning 
+- Correct swap of the full-loaded carriers 
+
+By SomeTroglodyte:
+- Map editor2.2
+- Show number of global followers in Religion Overview 
+
+By xlenstra:
+- Fixed improvements with unfulfilled 'Only Available' still buildable 
+- Fixed a crash when a plane tried to enter a full city
+
 ## 4.0.10
 
 By JackRainy:

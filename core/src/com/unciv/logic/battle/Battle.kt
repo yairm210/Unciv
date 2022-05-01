@@ -742,7 +742,7 @@ object Battle {
             }
         }
         tile.roadStatus = RoadStatus.None
-        if (tile.isLand && !tile.isImpassible()) {
+        if (tile.isLand && !tile.isImpassible() && !tile.isCityCenter()) {
             if (tile.hasUnique(UniqueType.DestroyableByNukesChance)) {
                 for (terrainFeature in tile.terrainFeatureObjects) {
                     for (unique in terrainFeature.getMatchingUniques(UniqueType.DestroyableByNukesChance)) {
@@ -755,7 +755,7 @@ object Battle {
             } else if (Random().nextFloat() < 0.5f && !tile.terrainFeatures.contains("Fallout") && !tile.hasUnique(UniqueType.Indestructible)) {
                 tile.addTerrainFeature("Fallout")
             }
-            if (!tile.hasUnique(UniqueType.DestroyableByNukes)) return;
+            if (!tile.hasUnique(UniqueType.DestroyableByNukes)) return
             
             // Deprecated as of 3.19.19 -- If removed, the two successive `if`s above should be merged
                 val destructionChance = if (tile.hasUnique(UniqueType.ResistsNukes)) 0.25f

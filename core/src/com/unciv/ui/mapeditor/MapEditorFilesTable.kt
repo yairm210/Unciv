@@ -93,13 +93,13 @@ class MapEditorFilesTable(
         layout()
     }
 
-    fun noMapsAvailable(includeMods: Boolean = false): Boolean {
-        if (MapSaver.getMaps().any()) return true
-        if (!includeMods) return false
+    fun noMapsAvailable(): Boolean {
+        if (MapSaver.getMaps().any()) return false
+        if (!includeMods) return true
         for (modFolder in RulesetCache.values.mapNotNull { it.folderLocation }) {
             val mapsFolder = modFolder.child(MapSaver.mapsFolder)
-            if (mapsFolder.exists() && mapsFolder.list().any()) return true
+            if (mapsFolder.exists() && mapsFolder.list().any()) return false
         }
-        return false
+        return true
     }
 }

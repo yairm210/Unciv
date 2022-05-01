@@ -11,7 +11,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
     private var citiesToCheck = mutableListOf(civInfo.getCapital())
     private lateinit var newCitiesToCheck: MutableList<CityInfo>
 
-    private val allCivCities = civInfo.gameInfo.getCities()
+    private val nonEnemyCivCities = civInfo.gameInfo.getCities().filter { !it.civInfo.isAtWarWith(civInfo) }
 
     private val harbor = "Harbor"   // hardcoding at least centralized for this class for now
     private val road = RoadStatus.Road.name
@@ -32,7 +32,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
         // this is so we know that if we've seen which cities can be connected by port A, and one
         // of those is city B, then we don't need to check the cities that B can connect to by port,
         // since we'll get the same cities we got from A, since they're connected to the same sea.
-        while (citiesToCheck.isNotEmpty() && citiesReachedToMediums.size < allCivCities.count()) {
+        while (citiesToCheck.isNotEmpty() && citiesReachedToMediums.size < nonEnemyCivCities.count()) {
             newCitiesToCheck = mutableListOf()
             for (cityToConnectFrom in citiesToCheck) {
                 if (cityToConnectFrom.containsHarbor()) {
@@ -89,12 +89,12 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
                       cityFilter: (CityInfo) -> Boolean = { true }) {
         // This is the time-saving mechanism we discussed earlier - If I arrived at this city via a certain BFS,
         // then obviously I already have all the cities that can be reached via that BFS so I don't need to run it again.
-        if(cityToConnectFrom.wasPreviouslyReached(transportType,overridingTransportType))
+        if (cityToConnectFrom.wasPreviouslyReached(transportType, overridingTransportType))
             return
 
-        val bfs = BFS(cityToConnectFrom.getCenterTile(), tileFilter)
+        val bfs = BFS(cityToConnectFrom.getCenterTile()) { tileFilter(it) }
         bfs.stepToEnd()
-        val reachedCities = allCivCities.filter {
+        val reachedCities = nonEnemyCivCities.filter {
             bfs.hasReachedTile(it.getCenterTile()) && cityFilter(it)
         }
         for (reachedCity in reachedCities) {

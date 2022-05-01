@@ -252,12 +252,12 @@ class GameOptionsTable(
 
     fun reloadRuleset() {
         ruleset.clear()
-        val newRuleset = RulesetCache.getComplexRuleset(gameParameters.mods, gameParameters.baseRuleset)
+        val newRuleset = RulesetCache.getComplexRuleset(gameParameters)
         ruleset.add(newRuleset)
         ruleset.mods += gameParameters.baseRuleset
         ruleset.mods += gameParameters.mods
         ruleset.modOptions = newRuleset.modOptions
-        
+
         ImageGetter.setNewRuleset(ruleset)
         UncivGame.Current.musicController.setModList(gameParameters.getModsAndBaseRuleset())
     }
@@ -267,7 +267,7 @@ class GameOptionsTable(
             onChooseMod(it)
         }
     }
-    
+
     private fun onChooseMod(mod: String) {
         val activeMods: LinkedHashSet<String> = LinkedHashSet(gameParameters.getModsAndBaseRuleset())
         UncivGame.Current.translations.translationActiveMods = activeMods
