@@ -820,11 +820,11 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
                     val clipboardContents = Gdx.app.clipboard.contents.trim()
                     UUID.fromString(clipboardContents)
                     YesNoPopup("Doing this will reset your current user ID to the clipboard contents - are you sure?",
-                            {
-                                settings.userId = clipboardContents
-                                settings.save()
-                                idSetLabel.setFontColor(Color.WHITE).setText("ID successfully set!".tr())
-                            }, previousScreen).open(true)
+                        {
+                            settings.userId = clipboardContents
+                            settings.save()
+                            idSetLabel.setFontColor(Color.WHITE).setText("ID successfully set!".tr())
+                        }, previousScreen).open(true)
                     idSetLabel.isVisible = true
                 } catch (ex: Exception) {
                     idSetLabel.isVisible = true
