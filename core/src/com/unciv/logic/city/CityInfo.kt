@@ -34,6 +34,19 @@ enum class CityFlags {
     Resistance
 }
 
+enum class CityFocus {
+    NoFocus,
+    FoodFocus,
+    ProductionFocus,
+    GoldFocus,
+    ScienceFocus,
+    CultureFocus,
+    GoldGrowthFocus,
+    ProductionGrowthFocus,
+    FaithFocus,
+    GreatPersonFocus
+}
+
 class CityInfo {
     @Suppress("JoinDeclarationAndAssignment")
     @Transient
@@ -87,6 +100,7 @@ class CityInfo {
     var hasSoldBuildingThisTurn = false
     var isPuppet = false
     var updateCitizens = false  // flag so that on endTurn() the Governor reassigns Citizens
+    var cityAIFocus: CityFocus = CityFocus.NoFocus
 
     /** The very first found city is the _original_ capital,
      * while the _current_ capital can be any other city after the original one is captured.
@@ -305,6 +319,7 @@ class CityInfo {
         toReturn.flagsCountdown.putAll(flagsCountdown)
         toReturn.demandedResource = demandedResource
         toReturn.updateCitizens = updateCitizens
+        toReturn.cityAIFocus = cityAIFocus
         return toReturn
     }
 
@@ -588,6 +603,10 @@ class CityInfo {
         attackedThisTurn = false
 
         if (isPuppet) reassignAllPopulation()
+        if (updateCitizens){
+            reassignPopulation()
+            updateCitizens = false
+        }
 
         // The ordering is intentional - you get a turn without WLTKD even if you have the next resource already
         if (!hasFlag(CityFlags.WeLoveTheKing))
@@ -700,12 +719,6 @@ class CityInfo {
         if (this in civInfo.cities) { // city was not destroyed
             health = min(health + 20, getMaxHealth())
             population.unassignExtraPopulation()
-            // if flagged, Governor reallocates Citizens
-            if (updateCitizens) {
-                //println("reassigning in $name")
-                reassignPopulation()
-                updateCitizens = false
-            }
         }
     }
 
