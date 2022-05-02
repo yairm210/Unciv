@@ -35,15 +35,15 @@ open class AndroidLauncher : AndroidApplication() {
         val fontFamily = settings.fontFamily
 
         // Manage orientation lock
-        val platformSpecificHelper = PlatformSpecificHelpersAndroid(this)
-        platformSpecificHelper.allowPortrait(settings.allowAndroidPortrait)
+        val limitOrientationsHelper = LimitOrientationsHelperAndroid(this)
+        limitOrientationsHelper.allowPortrait(settings.allowAndroidPortrait)
 
         val androidParameters = UncivGameParameters(
-                version = BuildConfig.VERSION_NAME,
-                crashReportSysInfo = CrashReportSysInfoAndroid,
-                fontImplementation = NativeFontAndroid(Fonts.ORIGINAL_FONT_SIZE.toInt(), fontFamily),
-                customSaveLocationHelper = customSaveLocationHelper,
-                platformSpecificHelper = platformSpecificHelper
+            version = BuildConfig.VERSION_NAME,
+            crashReportSysInfo = CrashReportSysInfoAndroid,
+            fontImplementation = NativeFontAndroid(Fonts.ORIGINAL_FONT_SIZE.toInt(), fontFamily),
+            customSaveLocationHelper = customSaveLocationHelper,
+            limitOrientationsHelper = limitOrientationsHelper
         )
 
         game = UncivGame(androidParameters)

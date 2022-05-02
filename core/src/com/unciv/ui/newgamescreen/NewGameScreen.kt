@@ -71,13 +71,6 @@ class NewGameScreen(
         rightSideButton.setText("Start game!".tr())
         rightSideButton.onClick {
             if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
-                if (UncivGame.Current.platformSpecificHelper?.isInternetConnected() != true) {
-                    val noInternetConnectionPopup = Popup(this)
-                    noInternetConnectionPopup.addGoodSizedLabel("No internet connection!".tr()).row()
-                    noInternetConnectionPopup.addCloseButton()
-                    noInternetConnectionPopup.open()
-                    return@onClick
-                }
                 for (player in gameSetupInfo.gameParameters.players.filter { it.playerType == PlayerType.Human }) {
                     try {
                         UUID.fromString(IdChecker.checkAndReturnPlayerUuid(player.playerId))
