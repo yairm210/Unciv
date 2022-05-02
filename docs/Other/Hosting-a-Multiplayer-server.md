@@ -6,7 +6,7 @@ Therefore, you can now host your own Unciv server, when not on Android.
 
 To do so, you must have a JDK installed.
 
-From the directory where the Unciv.jar file is located, open a terminal and run the following line:
+From the directory where the Unciv.jar file is located, create a folder named "MultiplayerFiles", open a terminal and run the following line:
 `java -cp Unciv.jar com.unciv.app.desktop.UncivServer`
 
 Don't forget to use 'cd' to switch to the correct dictionary. Here's an example in Windows.
@@ -15,6 +15,7 @@ Don't forget to use 'cd' to switch to the correct dictionary. Here's an example 
 D:
 cd Games
 cd unciv
+mkdir MultiplayerFiles
 java -cp Unciv.jar com.unciv.app.desktop.UncivServer
 ```
 
