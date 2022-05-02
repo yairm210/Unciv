@@ -93,7 +93,9 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
             return
 
         val bfs = BFS(cityToConnectFrom.getCenterTile()) {
-              it.getOwner()?.let { owner -> civInfo.hasOpenBordersTo(owner) } ?: true && (it.isCityCenter() || tileFilter(it)) }
+              val owner = it.getOwner()
+              (it.isCityCenter() || tileFilter(it)) && (owner == null || civInfo.hasOpenBordersTo(owner))
+        }
         bfs.stepToEnd()
         val reachedCities = openBordersCivCities.filter {
             bfs.hasReachedTile(it.getCenterTile()) && cityFilter(it)
