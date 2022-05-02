@@ -52,6 +52,7 @@ internal object DesktopLauncher {
             fontImplementation = NativeFontDesktop(Fonts.ORIGINAL_FONT_SIZE.toInt(), settings.fontFamily),
             customSaveLocationHelper = CustomSaveLocationHelperDesktop(),
             crashReportSysInfo = CrashReportSysInfoDesktop(),
+            platformSpecificHelper = PlatformSpecificHelpersDesktop(),
             audioExceptionHelper = HardenGdxAudio()
         )
 

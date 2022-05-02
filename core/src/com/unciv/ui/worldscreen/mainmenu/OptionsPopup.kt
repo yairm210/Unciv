@@ -108,7 +108,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
         addCloseButton {
             previousScreen.game.musicController.onChange(null)
-            previousScreen.game.limitOrientationsHelper?.allowPortrait(settings.allowAndroidPortrait)
+            previousScreen.game.platformSpecificHelper?.allowPortrait(settings.allowAndroidPortrait)
             if (previousScreen is WorldScreen)
                 previousScreen.enableNextTurnButtonAfterOptions()
         }.padBottom(10f)
@@ -270,17 +270,17 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
         val connectionToServerButton = "Check connection to server".toTextButton()
 
-        val textToShowForMultiplayerAddress = 
+        val textToShowForMultiplayerAddress =
             if (settings.multiplayerServer != Constants.dropboxMultiplayerServer) settings.multiplayerServer
         else "https://..."
         val multiplayerServerTextField = TextField(textToShowForMultiplayerAddress, BaseScreen.skin)
         multiplayerServerTextField.programmaticChangeEvents = true
         val serverIpTable = Table()
 
-        serverIpTable.add("Server address".toLabel().onClick { 
+        serverIpTable.add("Server address".toLabel().onClick {
             multiplayerServerTextField.text = Gdx.app.clipboard.contents
         }).row()
-        multiplayerServerTextField.onChange { 
+        multiplayerServerTextField.onChange {
             settings.multiplayerServer = multiplayerServerTextField.text
             settings.save()
             connectionToServerButton.isEnabled = multiplayerServerTextField.text != Constants.dropboxMultiplayerServer
@@ -318,11 +318,11 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
         addMaxZoomSlider()
 
-        if (previousScreen.game.limitOrientationsHelper != null) {
+        if (previousScreen.game.platformSpecificHelper != null) {
             addCheckbox("Enable portrait orientation", settings.allowAndroidPortrait) {
                 settings.allowAndroidPortrait = it
                 // Note the following might close the options screen indirectly and delayed
-                previousScreen.game.limitOrientationsHelper.allowPortrait(it)
+                previousScreen.game.platformSpecificHelper.allowPortrait(it)
             }
         }
 
