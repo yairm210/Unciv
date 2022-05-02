@@ -425,7 +425,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
                         }
                         for (line in modLinks) {
                             val label = Label(line.text, BaseScreen.skin)
-                                .apply { color = line.errorSeverityToReport.color }
+                                    .apply { color = line.errorSeverityToReport.color }
                             label.wrap = true
                             it.add(label).width(stage.width / 2).row()
                         }
