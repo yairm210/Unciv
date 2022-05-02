@@ -1304,7 +1304,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Improvement
 
-??? example  "Consumes builder when build"
+??? example  "Consumes builder when built"
 	Applicable to: Improvement
 
 ??? example  "Can be built outside your borders"
@@ -1349,7 +1349,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Provides a random bonus when entered"
 	Applicable to: Improvement
 
-??? example  "Adds adjacent tiles to your closest city"
+??? example  "Constructing it will take over the tiles around it and assign them to your closest city"
 	Applicable to: Improvement
 
 ??? example  "Unpillagable"
