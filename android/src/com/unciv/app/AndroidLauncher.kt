@@ -39,11 +39,11 @@ open class AndroidLauncher : AndroidApplication() {
         platformSpecificHelper.allowPortrait(settings.allowAndroidPortrait)
 
         val androidParameters = UncivGameParameters(
-                version = BuildConfig.VERSION_NAME,
-                crashReportSysInfo = CrashReportSysInfoAndroid,
-                fontImplementation = NativeFontAndroid(Fonts.ORIGINAL_FONT_SIZE.toInt(), fontFamily),
-                customSaveLocationHelper = customSaveLocationHelper,
-                platformSpecificHelper = platformSpecificHelper
+            version = BuildConfig.VERSION_NAME,
+            crashReportSysInfo = CrashReportSysInfoAndroid,
+            fontImplementation = NativeFontAndroid(Fonts.ORIGINAL_FONT_SIZE.toInt(), fontFamily),
+            customSaveLocationHelper = customSaveLocationHelper,
+            platformSpecificHelper = platformSpecificHelper
         )
 
         game = UncivGame(androidParameters)

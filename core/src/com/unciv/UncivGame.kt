@@ -99,8 +99,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         screen = LoadingScreen()  // NOT dependent on any atlas or skin
         musicController = MusicController()  // early, but at this point does only copy volume from settings
         audioExceptionHelper?.installHooks(
-                musicController.getAudioLoopCallback(),
-                musicController.getAudioExceptionHandler()
+            musicController.getAudioLoopCallback(),
+            musicController.getAudioExceptionHandler()
         )
 
         ImageGetter.resetAtlases()
