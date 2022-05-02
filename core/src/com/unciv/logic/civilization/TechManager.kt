@@ -257,7 +257,7 @@ class TechManager {
             UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
         }
         updateTransientBooleans()
-        for (city in civInfo.cities){
+        for (city in civInfo.cities) {
             city.updateCitizens = true
         }
 
