@@ -9,9 +9,9 @@ class PlatformSpecificHelpersDesktop : GeneralPlatformSpecificHelpers {
     }
 
     override fun isInternetConnected(): Boolean {
-        return try{
+        return try {
             InetAddress.getByName("8.8.8.8").isReachable(500)  // Parameter timeout in milliseconds
-        }catch (ex: Exception){
+        } catch (ex: Throwable) {
             false
         }
     }
