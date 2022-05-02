@@ -82,7 +82,7 @@
 		"terrainsCanBeBuiltOn": ["Coast"],
 		"food": 1,
 		"techRequired": "Sailing",
-		"uniques": ["[+1 Gold] <after discovering [Compass]>", "Consumes builder when build"]
+		"uniques": ["[+1 Gold] <after discovering [Compass]>", "Consumes builder when built"]
 	},
 
 	// Military improvement
@@ -174,35 +174,35 @@
 	{
 		"name": "Academy",
 		"science": 8,
-		"uniques": ["Great Improvement", "[+2 Science] <after discovering [Scientific Theory]>", "Consumes builder when build"]
+		"uniques": ["Great Improvement", "[+2 Science] <after discovering [Scientific Theory]>", "Consumes builder when built"]
 	},
 	{
 		"name": "Landmark",
 		"culture": 6,
-		"uniques": ["Great Improvement", "Consumes builder when build"]
+		"uniques": ["Great Improvement", "Consumes builder when built"]
 	},
 	{
 		"name": "Manufactory",
 		"production": 4,
-		"uniques": ["Great Improvement", "[+1 Production] <after discovering [Chemistry]>", "Consumes builder when build"]
+		"uniques": ["Great Improvement", "[+1 Production] <after discovering [Chemistry]>", "Consumes builder when built"]
 	},
 	{
 		"name": "Customs house",
 		"gold": 4,
-		"uniques": ["Great Improvement", "[+1 Gold] <after discovering [Economics]>", "Consumes builder when build"]
+		"uniques": ["Great Improvement", "[+1 Gold] <after discovering [Economics]>", "Consumes builder when built"]
 	},
 	{
 		"name": "Holy site",
 		"faith": 6,
-		"uniques": ["Great Improvement", "Consumes builder when build"]
+		"uniques": ["Great Improvement", "Consumes builder when built"]
 	},
 	{
 		"name": "Citadel",
 		"uniques": [
 			"Great Improvement", "Gives a defensive bonus of [100]%", "Adjacent enemy units ending their turn take [30] damage", 
-			"Can be built just outside your borders", "Adds adjacent tiles to your closest city", "Consumes builder when build"
+			"Can be built just outside your borders", "Constructing it will take over the tiles around it and assign them to your closest city", 
+			"Consumes builder when built"
 		],
-        "civilopediaText": [{"text":"Constructing it will take over the tiles around it and assign them to your closest city"}]
 	},
 
 	//Civilization unique improvements

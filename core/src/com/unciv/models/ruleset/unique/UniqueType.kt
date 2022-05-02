@@ -583,7 +583,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ImprovementStatsOnTile("[stats] from [tileFilter] tiles", UniqueTarget.Improvement),
     ImprovementStatsForAdjacencies("[stats] for each adjacent [tileFilter]", UniqueTarget.Improvement),
 
-    ConsumesBuilder("Consumes builder when build", UniqueTarget.Improvement),
+    ConsumesBuilder("Consumes builder when built", UniqueTarget.Improvement),
     CanBuildOutsideBorders("Can be built outside your borders", UniqueTarget.Improvement),
     CanBuildJustOutsideBorders("Can be built just outside your borders", UniqueTarget.Improvement),
     CanOnlyBeBuiltOnTile("Can only be built on [tileFilter] tiles", UniqueTarget.Improvement),
@@ -596,7 +596,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
   
     GreatImprovement("Great Improvement", UniqueTarget.Improvement),
     IsAncientRuinsEquivalent("Provides a random bonus when entered", UniqueTarget.Improvement),
-    TakesOverAdjacentTiles("Adds adjacent tiles to your closest city", UniqueTarget.Improvement),
+    TakesOverAdjacentTiles("Constructing it will take over the tiles around it and assign them to your closest city", UniqueTarget.Improvement),
 
     Unpillagable("Unpillagable", UniqueTarget.Improvement),
     Irremovable("Irremovable", UniqueTarget.Improvement),
@@ -726,7 +726,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     // region DEPRECATED AND REMOVED
 
     @Deprecated("as of 4.0.12", ReplaceWith("Irremovable"), DeprecationLevel.ERROR)
-    Indestructable("Indestructable", UniqueTarget.Improvement),
+    Indestructible("Indestructible", UniqueTarget.Improvement),
     
     @Deprecated("as of 3.19.1", ReplaceWith("[stats] from every [Wonder]"), DeprecationLevel.ERROR)
     StatsFromWondersDeprecated("[stats] from every Wonder", UniqueTarget.Global, UniqueTarget.FollowerBelief),
