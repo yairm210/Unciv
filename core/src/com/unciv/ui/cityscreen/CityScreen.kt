@@ -51,7 +51,7 @@ class CityScreen(
     private var razeCityButtonHolder = Table()
 
     /** Displays reset locks button - sits on BOT RIGHT */
-    private var unlockTilesButtonHolder = Table()
+    private var resetCitizensButtonHolder = Table()
 
     /** Displays city stats info */
     private var cityStatsTable = CityStatsTable(this)
@@ -85,12 +85,12 @@ class CityScreen(
 
         //stage.setDebugTableUnderMouse(true)
         stage.addActor(cityStatsTable)
-        val unlockTilesButton = "Unlock Tiles".tr().toTextButton()
-        unlockTilesButton.labelCell.pad(5f)
-        unlockTilesButton.onClick { city.reassignPopulation(resetLocked = true); update() }
-        unlockTilesButtonHolder.add(unlockTilesButton)
-        unlockTilesButtonHolder.pack()
-        stage.addActor(unlockTilesButtonHolder)
+        val resetCitizensButton = "Reset Citizens".tr().toTextButton()
+        resetCitizensButton.labelCell.pad(5f)
+        resetCitizensButton.onClick { city.reassignPopulation(resetLocked = true); update() }
+        resetCitizensButtonHolder.add(resetCitizensButton)
+        resetCitizensButtonHolder.pack()
+        stage.addActor(resetCitizensButtonHolder)
         constructionsTable.addActorsToStage()
         stage.addActor(cityInfoTable)
         stage.addActor(selectedConstructionTable)
@@ -133,13 +133,13 @@ class CityScreen(
         selectedConstructionTable.update(selectedConstruction)
         selectedConstructionTable.setPosition(stage.width - posFromEdge, posFromEdge, Align.bottomRight)
         if (selectedTile == null && selectedConstruction == null)
-            unlockTilesButtonHolder.setPosition(stage.width - posFromEdge,
+            resetCitizensButtonHolder.setPosition(stage.width - posFromEdge,
                     posFromEdge, Align.bottomRight)
         else if (selectedTile == null)
-            unlockTilesButtonHolder.setPosition(stage.width - posFromEdge,
+            resetCitizensButtonHolder.setPosition(stage.width - posFromEdge,
                     posFromEdge + selectedConstructionTable.height + 10f, Align.bottomRight)
         else
-            unlockTilesButtonHolder.setPosition(stage.width - posFromEdge,
+            resetCitizensButtonHolder.setPosition(stage.width - posFromEdge,
                     posFromEdge + tileTable.height + 10f, Align.bottomRight)
             
         // In portrait mode only: calculate already occupied horizontal space
@@ -283,9 +283,12 @@ class CityScreen(
                 if (tileGroup.isWorkable && canChangeState) {
                     if (!tileInfo.providesYield() && city.population.getFreePopulation() > 0) {
                         city.workedTiles.add(tileInfo.position)
+                        city.lockedTiles.add(tileInfo.position)
                         game.settings.addCompletedTutorialTask("Reassign worked tiles")
-                    } else if (tileInfo.isWorked() && !tileInfo.isLocked())
+                    } else if (tileInfo.isWorked()) {
                         city.workedTiles.remove(tileInfo.position)
+                        city.lockedTiles.remove(tileInfo.position)
+                    }
                     city.cityStats.update()
                 }
                 update()
