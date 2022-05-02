@@ -158,13 +158,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
                 else
                     GameSaver.saveGame(gamePreview, gameName)
 
-                postCrashHandlingRunnable {
-                    val mods = sequenceOf(gamePreview.gameParameters.baseRuleset) + gamePreview.gameParameters.mods.asSequence()
-                    val missingMods = mods.filterNot { it.isEmpty() || it in RulesetCache }
-                    if (missingMods.any())
-                        ToastPopup("Missing mods: [${missingMods.joinToString("\n", limit = 32)}]", this, 5000L)
-                    reloadGameListUI()
-                }
+                postCrashHandlingRunnable { reloadGameListUI() }
             } catch (ex: FileNotFoundException) {
                 // Game is so old that a preview could not be found on dropbox lets try the real gameInfo instead
                 try {
