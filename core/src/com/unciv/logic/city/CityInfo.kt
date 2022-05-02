@@ -86,6 +86,7 @@ class CityInfo {
     var attackedThisTurn = false
     var hasSoldBuildingThisTurn = false
     var isPuppet = false
+    var updateCitizens = false
 
     /** The very first found city is the _original_ capital,
      * while the _current_ capital can be any other city after the original one is captured.
@@ -303,6 +304,7 @@ class CityInfo {
         toReturn.isOriginalCapital = isOriginalCapital
         toReturn.flagsCountdown.putAll(flagsCountdown)
         toReturn.demandedResource = demandedResource
+        toReturn.updateCitizens = updateCitizens
         return toReturn
     }
 
@@ -698,6 +700,12 @@ class CityInfo {
         if (this in civInfo.cities) { // city was not destroyed
             health = min(health + 20, getMaxHealth())
             population.unassignExtraPopulation()
+            // if flagged, Governor reallocates Citizens
+            if (updateCitizens) {
+                //println("reassigning in $name")
+                reassignPopulation()
+                updateCitizens = false
+            }
         }
     }
 
