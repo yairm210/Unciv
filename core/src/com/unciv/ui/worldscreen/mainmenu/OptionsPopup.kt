@@ -79,7 +79,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             tabMaxHeight = (if (isPortrait()) 0.7f else 0.8f) * stage.height
         }
         tabs = TabbedPager(tabMinWidth, tabMaxWidth, 0f, tabMaxHeight,
-            headerFontSize = 21, backgroundColor = Color.CLEAR, keyPressDispatcher = this.keyPressDispatcher, capacity = 8)
+                headerFontSize = 21, backgroundColor = Color.CLEAR, keyPressDispatcher = this.keyPressDispatcher, capacity = 8)
         add(tabs).pad(0f).grow().row()
 
         tabs.addPage("About", getAboutTab(), ImageGetter.getExternalImage("Icon.png"), 24f)
@@ -108,7 +108,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
         addCloseButton {
             previousScreen.game.musicController.onChange(null)
-            previousScreen.game.limitOrientationsHelper?.allowPortrait(settings.allowAndroidPortrait)
+            previousScreen.game.platformSpecificHelper?.allowPortrait(settings.allowAndroidPortrait)
             if (previousScreen is WorldScreen)
                 previousScreen.enableNextTurnButtonAfterOptions()
         }.padBottom(10f)
@@ -219,7 +219,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         addCheckbox("Auto-assign city production", settings.autoAssignCityProduction, true) {
             settings.autoAssignCityProduction = it
             if (it && previousScreen is WorldScreen &&
-                previousScreen.viewingCiv.isCurrentPlayer() && previousScreen.viewingCiv.playerType == PlayerType.Human) {
+                    previousScreen.viewingCiv.isCurrentPlayer() && previousScreen.viewingCiv.playerType == PlayerType.Human) {
                 previousScreen.gameInfo.currentPlayerCiv.cities.forEach { city ->
                     city.cityConstructions.chooseNextConstruction()
                 }
@@ -253,7 +253,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         // at the moment the notification service only exists on Android
         if (Gdx.app.type == Application.ApplicationType.Android) {
             addCheckbox("Enable out-of-game turn notifications",
-                settings.multiplayerTurnCheckerEnabled) {
+                    settings.multiplayerTurnCheckerEnabled) {
                 settings.multiplayerTurnCheckerEnabled = it
                 settings.save()
                 tabs.replacePage("Multiplayer", getMultiplayerTab())
@@ -263,24 +263,24 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
                 addMultiplayerTurnCheckerDelayBox()
 
                 addCheckbox("Show persistent notification for turn notifier service",
-                    settings.multiplayerTurnCheckerPersistentNotificationEnabled)
+                        settings.multiplayerTurnCheckerPersistentNotificationEnabled)
                 { settings.multiplayerTurnCheckerPersistentNotificationEnabled = it }
             }
         }
 
         val connectionToServerButton = "Check connection to server".toTextButton()
 
-        val textToShowForMultiplayerAddress = 
-            if (settings.multiplayerServer != Constants.dropboxMultiplayerServer) settings.multiplayerServer
-        else "https://..."
+        val textToShowForMultiplayerAddress =
+                if (settings.multiplayerServer != Constants.dropboxMultiplayerServer) settings.multiplayerServer
+                else "https://..."
         val multiplayerServerTextField = TextField(textToShowForMultiplayerAddress, BaseScreen.skin)
         multiplayerServerTextField.programmaticChangeEvents = true
         val serverIpTable = Table()
 
-        serverIpTable.add("Server address".toLabel().onClick { 
+        serverIpTable.add("Server address".toLabel().onClick {
             multiplayerServerTextField.text = Gdx.app.clipboard.contents
         }).row()
-        multiplayerServerTextField.onChange { 
+        multiplayerServerTextField.onChange {
             settings.multiplayerServer = multiplayerServerTextField.text
             settings.save()
             connectionToServerButton.isEnabled = multiplayerServerTextField.text != Constants.dropboxMultiplayerServer
@@ -312,17 +312,17 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         addAutosaveTurnsSelectBox()
 
         addCheckbox("{Show experimental world wrap for maps}\n{HIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!}",
-            settings.showExperimentalWorldWrap) {
+                settings.showExperimentalWorldWrap) {
             settings.showExperimentalWorldWrap = it
         }
 
         addMaxZoomSlider()
 
-        if (previousScreen.game.limitOrientationsHelper != null) {
+        if (previousScreen.game.platformSpecificHelper != null) {
             addCheckbox("Enable portrait orientation", settings.allowAndroidPortrait) {
                 settings.allowAndroidPortrait = it
                 // Note the following might close the options screen indirectly and delayed
-                previousScreen.game.limitOrientationsHelper.allowPortrait(it)
+                previousScreen.game.platformSpecificHelper.allowPortrait(it)
             }
         }
 
@@ -334,8 +334,8 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     }
 
     private class ModCheckTab(
-        options: OptionsPopup,
-        private val runAction: ()->Unit
+            options: OptionsPopup,
+            private val runAction: ()->Unit
     ) : Table(), TabbedPager.IPageExtensions {
         private val fixedContent = Table()
 
@@ -412,8 +412,8 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
                         else -> "OtherIcons/Checkmark"
                     }
                     val icon = ImageGetter.getImage(iconName)
-                        .apply { color = Color.BLACK }
-                        .surroundWithCircle(30f, color = iconColor)
+                            .apply { color = Color.BLACK }
+                            .surroundWithCircle(30f, color = iconColor)
 
                     val expanderTab = ExpanderTab(mod.name, icon = icon, startsOutOpened = false) {
                         it.defaults().align(Align.left)
@@ -421,18 +421,18 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
                             val replaceableUniques = getDeprecatedReplaceableUniques(mod)
                             if (replaceableUniques.isNotEmpty())
                                 it.add("Autoupdate mod uniques".toTextButton()
-                                    .onClick { autoUpdateUniques(mod, replaceableUniques) }).pad(10f).row()
+                                        .onClick { autoUpdateUniques(mod, replaceableUniques) }).pad(10f).row()
                         }
                         for (line in modLinks) {
                             val label = Label(line.text, BaseScreen.skin)
-                                .apply { color = line.errorSeverityToReport.color }
+                                    .apply { color = line.errorSeverityToReport.color }
                             label.wrap = true
                             it.add(label).width(stage.width / 2).row()
                         }
                         if (!noProblem)
                             it.add("Copy to clipboard".toTextButton().onClick {
                                 Gdx.app.clipboard.contents = modLinks
-                                    .joinToString("\n") { line -> line.text }
+                                        .joinToString("\n") { line -> line.text }
                             }).row()
                     }
 
@@ -454,24 +454,24 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     private fun getDeprecatedReplaceableUniques(mod:Ruleset): HashMap<String, String> {
 
         val objectsToCheck = sequenceOf(
-            mod.beliefs,
-            mod.buildings,
-            mod.nations,
-            mod.policies,
-            mod.technologies,
-            mod.terrains,
-            mod.tileImprovements,
-            mod.unitPromotions,
-            mod.unitTypes,
-            mod.units,
+                mod.beliefs,
+                mod.buildings,
+                mod.nations,
+                mod.policies,
+                mod.technologies,
+                mod.terrains,
+                mod.tileImprovements,
+                mod.unitPromotions,
+                mod.unitTypes,
+                mod.units,
         )
         val allDeprecatedUniques = HashSet<String>()
         val deprecatedUniquesToReplacementText = HashMap<String, String>()
 
         val deprecatedUniques = objectsToCheck
-            .flatMap { it.values }
-            .flatMap { it.uniqueObjects }
-            .filter { it.getDeprecationAnnotation() != null }
+                .flatMap { it.values }
+                .flatMap { it.uniqueObjects }
+                .filter { it.getDeprecationAnnotation() != null }
 
 
         for (deprecatedUnique in deprecatedUniques) {
@@ -490,11 +490,11 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             val replacementUnique = Unique(uniqueReplacementText)
 
             val modInvariantErrors = mod.checkUnique(
-                replacementUnique,
-                false,
-                "",
-                UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant,
-                deprecatedUnique.sourceObjectType!!
+                    replacementUnique,
+                    false,
+                    "",
+                    UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant,
+                    deprecatedUnique.sourceObjectType!!
             )
             for (error in modInvariantErrors)
                 println(error.text + " - " + error.errorSeverityToReport)
@@ -502,11 +502,11 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
             if (mod.modOptions.isBaseRuleset) {
                 val modSpecificErrors = mod.checkUnique(
-                    replacementUnique,
-                    false,
-                    "",
-                    UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant,
-                    deprecatedUnique.sourceObjectType
+                        replacementUnique,
+                        false,
+                        "",
+                        UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant,
+                        deprecatedUnique.sourceObjectType
                 )
                 for (error in modSpecificErrors)
                     println(error.text + " - " + error.errorSeverityToReport)
@@ -525,16 +525,16 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             println("mod")
 
         val filesToReplace = listOf(
-            "Beliefs.json",
-            "Buildings.json",
-            "Nations.json",
-            "Policies.json",
-            "Techs.json",
-            "Terrains.json",
-            "TileImprovements.json",
-            "UnitPromotions.json",
-            "UnitTypes.json",
-            "Units.json",
+                "Beliefs.json",
+                "Buildings.json",
+                "Nations.json",
+                "Policies.json",
+                "Techs.json",
+                "Terrains.json",
+                "TileImprovements.json",
+                "UnitPromotions.json",
+                "UnitTypes.json",
+                "Units.json",
         )
 
         val jsonFolder = mod.folderLocation!!.child("jsons")
@@ -582,9 +582,9 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         add(Table().apply {
             add("Unique misspelling threshold".toLabel()).left().fillX()
             add(
-                UncivSlider(0f, 0.5f, 0.05f, initial = RulesetCache.uniqueMisspellingThreshold.toFloat()) {
-                    RulesetCache.uniqueMisspellingThreshold = it.toDouble()
-                }
+                    UncivSlider(0f, 0.5f, 0.05f, initial = RulesetCache.uniqueMisspellingThreshold.toFloat()) {
+                        RulesetCache.uniqueMisspellingThreshold = it.toDouble()
+                    }
             ).minWidth(120f).pad(5f)
         }).row()
 
@@ -638,8 +638,8 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             }
         }
         val minimapSlider = UncivSlider(0f, 25f, 1f,
-            initial = if (settings.showMinimap) settings.minimapSize.toFloat() else 0f,
-            getTipText = getTipText
+                initial = if (settings.showMinimap) settings.minimapSize.toFloat() else 0f,
+                getTipText = getTipText
         ) {
             val size = it.toInt()
             if (size == 0) settings.showMinimap = false
@@ -691,8 +691,8 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         add("Sound effects volume".tr()).left().fillX()
 
         val soundEffectsVolumeSlider = UncivSlider(0f, 1.0f, 0.05f,
-            initial = settings.soundEffectsVolume,
-            getTipText = UncivSlider::formatPercent
+                initial = settings.soundEffectsVolume,
+                getTipText = UncivSlider::formatPercent
         ) {
             settings.soundEffectsVolume = it
             settings.save()
@@ -704,9 +704,9 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         add("Music volume".tr()).left().fillX()
 
         val musicVolumeSlider = UncivSlider(0f, 1.0f, 0.05f,
-            initial = settings.musicVolume,
-            sound = UncivSound.Silent,
-            getTipText = UncivSlider::formatPercent
+                initial = settings.musicVolume,
+                sound = UncivSound.Silent,
+                getTipText = UncivSlider::formatPercent
         ) {
             settings.musicVolume = it
             settings.save()
@@ -742,9 +742,9 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         add("Pause between tracks".tr()).left().fillX()
 
         val pauseLengthSlider = UncivSlider(0f, 30f, 1f,
-            initial = lengthToPos(music.silenceLength),
-            sound = UncivSound.Silent,
-            getTipText = getTipText
+                initial = lengthToPos(music.silenceLength),
+                sound = UncivSound.Silent,
+                getTipText = getTipText
         ) {
             music.silenceLength = posToLength(it)
             settings.pauseBetweenTracks = music.silenceLength.toInt()
@@ -815,22 +815,22 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     private fun Table.addSetUserId() {
         val idSetLabel = "".toLabel()
         val takeUserIdFromClipboardButton = "Take user ID from clipboard".toTextButton()
-            .onClick {
-                try {
-                    val clipboardContents = Gdx.app.clipboard.contents.trim()
-                    UUID.fromString(clipboardContents)
-                    YesNoPopup("Doing this will reset your current user ID to the clipboard contents - are you sure?",
-                        {
-                            settings.userId = clipboardContents
-                            settings.save()
-                            idSetLabel.setFontColor(Color.WHITE).setText("ID successfully set!".tr())
-                        }, previousScreen).open(true)
-                    idSetLabel.isVisible = true
-                } catch (ex: Exception) {
-                    idSetLabel.isVisible = true
-                    idSetLabel.setFontColor(Color.RED).setText("Invalid ID!".tr())
+                .onClick {
+                    try {
+                        val clipboardContents = Gdx.app.clipboard.contents.trim()
+                        UUID.fromString(clipboardContents)
+                        YesNoPopup("Doing this will reset your current user ID to the clipboard contents - are you sure?",
+                                {
+                                    settings.userId = clipboardContents
+                                    settings.save()
+                                    idSetLabel.setFontColor(Color.WHITE).setText("ID successfully set!".tr())
+                                }, previousScreen).open(true)
+                        idSetLabel.isVisible = true
+                    } catch (ex: Exception) {
+                        idSetLabel.isVisible = true
+                        idSetLabel.setFontColor(Color.RED).setText("Invalid ID!".tr())
+                    }
                 }
-            }
         add(takeUserIdFromClipboardButton).pad(5f).colspan(2).row()
         add(idSetLabel).colspan(2).row()
     }
@@ -855,7 +855,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     private fun Table.addMaxZoomSlider() {
         add("Max zoom out".tr()).left().fillX()
         val maxZoomSlider = UncivSlider(2f, 6f, 1f,
-            initial = settings.maxWorldZoomOut
+                initial = settings.maxWorldZoomOut
         ) {
             settings.maxWorldZoomOut = it
             settings.save()
@@ -886,7 +886,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         fontSelectBox.onChange {
             settings.fontFamily = fontsEnName[fontSelectBox.selectedIndex]
             ToastPopup(
-                "You need to restart the game for this change to take effect.", previousScreen
+                    "You need to restart the game for this change to take effect.", previousScreen
             )
         }
     }
