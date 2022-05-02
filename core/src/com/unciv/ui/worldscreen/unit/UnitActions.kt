@@ -671,9 +671,8 @@ object UnitActions {
                         }
                     ) 
                     unitTile.improvement = improvementName
-                    unitTile.improvementInProgress = null
-                    unitTile.turnsToImprovement = 0
-                    if (improvementName == Constants.citadel)
+                    unitTile.stopWorkingOnImprovement()
+                    if (improvement.hasUnique(UniqueType.TakeOverTilesAroundWhenBuilt))
                         takeOverTilesAround(unit)
                     val city = unitTile.getCity()
                     if (city != null) {
