@@ -145,12 +145,14 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
             ToastPopup("Game is already added", this)
             return
         }
-
+/*
         if (UncivGame.Current.platformSpecificHelper?.isInternetConnected() != true) {
             ToastPopup("No internet connection!", this)
             return
         }
 
+
+ */
         addGameButton.setText("Working...".tr())
         addGameButton.disable()
         crashHandlingThread(name = "MultiplayerDownload") {
