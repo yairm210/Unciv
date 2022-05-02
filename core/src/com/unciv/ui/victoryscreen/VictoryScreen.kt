@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.translations.tr
 import com.unciv.models.metadata.GameSetupInfo
@@ -33,7 +34,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         val setGlobalVictoryButton = "Global status".toTextButton().onClick { setGlobalVictoryTable() }
         tabsTable.add(setGlobalVictoryButton)
 
-        val rankingLabel = if (gameInfo.gameParameters.demographicsEnabled ) "Demographics" else "Rankings"
+        val rankingLabel = if (UncivGame.Current.settings.useDemographics) "Demographics" else "Rankings"
         val setCivRankingsButton = rankingLabel.toTextButton().onClick { setCivRankingsTable() }
         tabsTable.add(setCivRankingsButton)
         topTable.add(tabsTable)
@@ -180,18 +181,18 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         val playerCiv = gameInfo.civilizations.filter { it.isCurrentPlayer() }
 
         contentsTable.clear()
-
-        if (gameInfo.gameParameters.demographicsEnabled) contentsTable.add(buildDemographicsTable(majorCivs, playerCiv))
+        
+        if (UncivGame.Current.settings.useDemographics) contentsTable.add(buildDemographicsTable(majorCivs, playerCiv))
         else contentsTable.add(buildRankingsTable(majorCivs))
     }
 
+    enum class RankLabels { Demographic, Rank, Value, Best, Average, Worst}
     private fun buildDemographicsTable(majorCivs: List<CivilizationInfo>, playerCiv: List<CivilizationInfo>): Table {
-        val rankLabels = arrayOf("Demographic", "Rank", "Value", "Best", "Average", "Worst")
         val demographicsTable = Table().apply { defaults().pad(5f) }
-        for (n in rankLabels.indices)   {
-            if (n == 0) {
+        for (rankLabel in RankLabels.values())   {
+            if (rankLabel == RankLabels.Demographic) {
                 val demoLabel = Table().apply { defaults().pad(5f) }
-                demoLabel.add(rankLabels[n].toLabel()).row()
+                demoLabel.add(rankLabel.name.toLabel()).row()
                 demoLabel.addSeparator().fillX()
                 demographicsTable.add(demoLabel)
                 for (category in RankingType.values()) {
@@ -202,39 +203,52 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
                     }
             } else {
                 demographicsTable.row()
-                demographicsTable.add(rankLabels[n].toLabel())
+                demographicsTable.add(rankLabel.name.toLabel())
                 for (category in RankingType.values()) {
-                    when (n) {
-                        1 -> { //finds the current player's rank in each category
+                    @Suppress("NON_EXHAUSTIVE_WHEN") // RankLabels.Demographic treated above
+                    when (rankLabel) {
+                        RankLabels.Rank -> { //finds the current player's rank in each category
+                            // use gameInfo.currentPlayer
+                            ///*
                             for ((rankCount, civ) in majorCivs.sortedByDescending { it.getStatForRanking(category) }.withIndex()) {
                                 if (civ.isCurrentPlayer()) {
                                     val rank = (rankCount + 1).toLabel()
                                     demographicsTable.add(rank)
                                 }
                             }
+                            //*/
                         }
-                        2 -> { //finds the current player's value in each category
-                            for (civ in playerCiv) demographicsTable.add(getCivGroup(civ, ": " + civ.getStatForRanking(category).toString(), playerCivInfo)).fillX()
+                        RankLabels.Value -> { //finds the current player's value in each category
+                            demographicsTable.add(getCivGroup(gameInfo.currentPlayerCiv, ": " + gameInfo.currentPlayerCiv.getStatForRanking(category).toString(), playerCivInfo)).fillX()
                         }
-                        3 -> { //finds civ with the best value in each category
+                      
+                        RankLabels.Best -> { //finds civ with the best value in each category
+                            //use MaxBy
+                            /*
                             for ((rankCount, civ) in majorCivs.sortedByDescending { it.getStatForRanking(category) }.withIndex()) {
                                 if (rankCount == majorCivs.indices.first) {
                                     demographicsTable.add(getCivGroup(civ, ": " + civ.getStatForRanking(category).toString(), playerCivInfo)).fillX()
                                 }
                             }
+                            */
                         }
-                        4 -> { //calculates the average value in each category
+                      
+                        RankLabels.Average -> { //calculates the average value in each category
                             var totalScore = 0
                             for (civ in majorCivs) totalScore += civ.getStatForRanking(category)
                             val averageScore = totalScore / (majorCivs.lastIndex + 1)
                             demographicsTable.add(averageScore.toLabel())
                         }
-                        5 -> { //finds civ with the worst value in each category
+                      
+                        RankLabels.Worst -> { //finds civ with the worst value in each category
+                            //use MinBy
+                            /*
                             for ((rankCount, civ) in majorCivs.sortedByDescending { it.getStatForRanking(category) }.withIndex()) {
                                 if (rankCount == majorCivs.lastIndex) {
                                     demographicsTable.add(getCivGroup(civ, ": " + civ.getStatForRanking(category).toString(), playerCivInfo)).fillX()
                                 }
                             }
+                            */
                         }
                     }
                 }

@@ -22,7 +22,6 @@ class GameParameters { // Default values are the default new game
     var godMode = false
     var nuclearWeaponsEnabled = true
     var religionEnabled = false
-    var demographicsEnabled = false
     
     var victoryTypes: ArrayList<String> = arrayListOf()  
     var startingEra = "Ancient era"
@@ -44,7 +43,6 @@ class GameParameters { // Default values are the default new game
         parameters.oneCityChallenge = oneCityChallenge
         parameters.nuclearWeaponsEnabled = nuclearWeaponsEnabled
         parameters.religionEnabled = religionEnabled
-        parameters.demographicsEnabled = demographicsEnabled
         parameters.victoryTypes = ArrayList(victoryTypes)
         parameters.startingEra = startingEra
         parameters.isOnlineMultiplayer = isOnlineMultiplayer

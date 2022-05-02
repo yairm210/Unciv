@@ -68,7 +68,6 @@ class GameOptionsTable(
         checkboxTable.addNuclearWeaponsCheckbox()
         checkboxTable.addIsOnlineMultiplayerCheckbox()
         checkboxTable.addReligionCheckbox(cityStateSlider)
-        checkboxTable.addDemographicsCheckbox()
         add(checkboxTable).center().row()
 
         if (!isPortrait)
@@ -98,12 +97,7 @@ class GameOptionsTable(
     private fun Table.addNuclearWeaponsCheckbox() =
             addCheckbox("Enable Nuclear Weapons", gameParameters.nuclearWeaponsEnabled)
             { gameParameters.nuclearWeaponsEnabled = it }
-
-    private fun Table.addDemographicsCheckbox() =
-        addCheckbox("Demographics Scoreboard\n(replaces Rankings)", gameParameters.demographicsEnabled)
-        { gameParameters.demographicsEnabled = it }
-
-
+    
     private fun Table.addIsOnlineMultiplayerCheckbox() =
             addCheckbox("Online Multiplayer", gameParameters.isOnlineMultiplayer)
             {
