@@ -36,7 +36,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     val fontImplementation = parameters.fontImplementation
     val consoleMode = parameters.consoleMode
     val customSaveLocationHelper = parameters.customSaveLocationHelper
-    val limitOrientationsHelper = parameters.limitOrientationsHelper
+    val platformSpecificHelper = parameters.platformSpecificHelper
     private val audioExceptionHelper = parameters.audioExceptionHelper
 
     var deepLinkedMultiplayerGame: String? = null
