@@ -82,7 +82,7 @@
 		"terrainsCanBeBuiltOn": ["Coast"],
 		"food": 1,
 		"techRequired": "Sailing",
-		"uniques": ["[+1 Gold] <after discovering [Compass]>"]
+		"uniques": ["[+1 Gold] <after discovering [Compass]>", "Consumes builder when build"]
 	},
 
 	// Military improvement
@@ -174,31 +174,34 @@
 	{
 		"name": "Academy",
 		"science": 8,
-		"uniques": ["Great Improvement", "[+2 Science] <after discovering [Scientific Theory]>", "[+2 Science] <after discovering [Atomic Theory]>"]
+		"uniques": ["Great Improvement", "[+2 Science] <after discovering [Scientific Theory]>", "[+2 Science] <after discovering [Atomic Theory]>", "Consumes builder when build"]
 	},
 	{
 		"name": "Landmark",
 		"culture": 6,
-		"uniques": ["Great Improvement"]
+		"uniques": ["Great Improvement", "Consumes builder when build"]
 	},
 	{
 		"name": "Manufactory",
 		"production": 4,
-		"uniques": ["Great Improvement", "[+1 Production] <after discovering [Chemistry]>"]
+		"uniques": ["Great Improvement", "[+1 Production] <after discovering [Chemistry]>", "Consumes builder when build"]
 	},
 	{
 		"name": "Customs house",
 		"gold": 4,
-		"uniques": ["Great Improvement", "[+1 Gold] <after discovering [Economics]>"]
+		"uniques": ["Great Improvement", "[+1 Gold] <after discovering [Economics]>", "Consumes builder when build"]
 	},
 	{
 		"name": "Holy site",
 		"faith": 6,
-		"uniques": ["Great Improvement"]
+		"uniques": ["Great Improvement", "Consumes builder when build"]
 	},
 	{
 		"name": "Citadel",
-		"uniques": ["Great Improvement", "Gives a defensive bonus of [100]%", "Adjacent enemy units ending their turn take [30] damage", "Can be built just outside your borders"],
+		"uniques": [
+			"Great Improvement", "Gives a defensive bonus of [100]%", "Adjacent enemy units ending their turn take [30] damage", 
+			"Can be built just outside your borders", "Adds adjacent tiles to your closest city", "Consumes builder when build"
+		],
         "civilopediaText": [{"text":"Constructing it will take over the tiles around it and assign them to your closest city"}]
 	},
 

@@ -13,6 +13,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.toPercent
+import com.unciv.ui.worldscreen.unit.UnitActions
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -23,7 +24,8 @@ class TileImprovement : RulesetStatsObject() {
     var uniqueTo:String? = null
     override fun getUniqueTarget() = UniqueTarget.Improvement
     val shortcutKey: Char? = null
-    val turnsToBuild: Int = 0 // This is the base cost.
+    // This is the base cost. A cost of 0 means created instead of buildable.
+    val turnsToBuild: Int = 0 
 
 
     fun getTurnsToBuild(civInfo: CivilizationInfo, unit: MapUnit?): Int {
@@ -65,6 +67,31 @@ class TileImprovement : RulesetStatsObject() {
     fun isRoad() = RoadStatus.values().any { it != RoadStatus.None && it.name == this.name }
     fun isAncientRuinsEquivalent() = hasUnique(UniqueType.IsAncientRuinsEquivalent)
 
+    fun canBeBuiltOnTerrain(terrain: Terrain): Boolean {
+        return when {
+            terrain.name in terrainsCanBeBuiltOn -> true
+            terrain.type == TerrainType.Land -> terrainsCanBeBuiltOn.contains("Land")
+            terrain.type == TerrainType.Water -> terrainsCanBeBuiltOn.contains("Water")
+            else -> false
+        }
+    }
+    
+    fun handleImprovementCompletion(builder: MapUnit) {
+        if (hasUnique(UniqueType.TakesOverAdjacentTiles))
+            UnitActions.takeOverTilesAround(builder)
+        if (hasUnique(UniqueType.ConsumesBuilder))
+            builder.consume()
+        if (builder.getTile().resource != null) {
+            val city = builder.getTile().getCity()
+            if (city != null) {
+                city.cityStats.update()
+                city.civInfo.updateDetailedCivResources()
+            }
+        }
+    }
+    
+    fun isCreatedInstantly() = turnsToBuild == 0
+    
     /**
      * Check: Is this improvement allowed on a [given][name] terrain feature?
      *

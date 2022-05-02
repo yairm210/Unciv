@@ -16,6 +16,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
@@ -454,8 +455,7 @@ object UnitActions {
                 actionList += UnitAction(UnitActionType.HurryResearch,
                     action = {
                         unit.civInfo.tech.addScience(unit.civInfo.tech.getScienceFromGreatScientist())
-                        addStatsPerGreatPersonUsage(unit)
-                        unit.destroy()
+                        unit.consume()
                     }.takeIf { unit.civInfo.tech.currentTechnologyName() != null }
                 )
             }
@@ -464,8 +464,7 @@ object UnitActions {
                 actionList += UnitAction(UnitActionType.StartGoldenAge,
                     action = {
                         unit.civInfo.goldenAges.enterGoldenAge(turnsToGoldenAge)
-                        addStatsPerGreatPersonUsage(unit)
-                        unit.destroy()
+                        unit.consume()
                     }.takeIf { unit.currentTile.getOwner() != null && unit.currentTile.getOwner() == unit.civInfo }
                 )
             }
@@ -483,8 +482,7 @@ object UnitActions {
                             constructIfEnough()
                         }
 
-                        addStatsPerGreatPersonUsage(unit)
-                        unit.destroy()
+                        unit.consume()
                     }.takeIf { canHurryWonder }
                 )
             }
@@ -514,8 +512,7 @@ object UnitActions {
                             constructIfEnough()
                         }
 
-                        addStatsPerGreatPersonUsage(unit)
-                        unit.destroy()
+                        unit.consume()
                     }.takeIf { canHurryConstruction }
                 )
             }
@@ -533,8 +530,7 @@ object UnitActions {
                         tile.owningCity!!.civInfo.getDiplomacyManager(unit.civInfo).addInfluence(influenceEarned)
                         unit.civInfo.addNotification("Your trade mission to [${tile.owningCity!!.civInfo}] has earned you [${goldEarned}] gold and [$influenceEarned] influence!",
                             tile.owningCity!!.civInfo.civName, NotificationIcon.Gold, NotificationIcon.Culture)
-                        addStatsPerGreatPersonUsage(unit)
-                        unit.destroy()
+                        unit.consume()
                     }.takeIf { canConductTradeMission }
                 )
             }
@@ -551,9 +547,8 @@ object UnitActions {
 
     fun getFoundReligionAction(unit: MapUnit): () -> Unit {
         return {
-            addStatsPerGreatPersonUsage(unit)
             unit.civInfo.religionManager.useProphetForFoundingReligion(unit)
-            unit.destroy()
+            unit.consume()
         }
     }
 
@@ -568,9 +563,8 @@ object UnitActions {
 
     fun getEnhanceReligionAction(unit: MapUnit): () -> Unit {
         return {
-            addStatsPerGreatPersonUsage(unit)
             unit.civInfo.religionManager.useProphetForEnhancingReligion(unit)
-            unit.destroy()
+            unit.consume()
         }
     }
 
@@ -593,8 +587,7 @@ object UnitActions {
     private fun useActionWithLimitedUses(unit: MapUnit, action: String) {
         unit.abilityUsesLeft[action] = unit.abilityUsesLeft[action]!! - 1
         if (unit.abilityUsesLeft[action]!! <= 0) {
-            addStatsPerGreatPersonUsage(unit)
-            unit.destroy()
+            unit.consume()
         }
     }
 
@@ -673,16 +666,7 @@ object UnitActions {
                     unitTile.improvement = improvementName
                     unitTile.improvementInProgress = null
                     unitTile.turnsToImprovement = 0
-                    if (improvementName == Constants.citadel)
-                        takeOverTilesAround(unit)
-                    val city = unitTile.getCity()
-                    if (city != null) {
-                        city.cityStats.update()
-                        city.civInfo.updateDetailedCivResources()
-                    }
-                    if (unit.isGreatPerson())
-                        addStatsPerGreatPersonUsage(unit)
-                    unit.destroy()
+                    improvement.handleImprovementCompletion(unit)
                 }.takeIf {
                     resourcesAvailable
                     && unit.currentMovement > 0f
@@ -693,7 +677,7 @@ object UnitActions {
         return finalActions
     }
 
-    private fun takeOverTilesAround(unit: MapUnit) {
+    fun takeOverTilesAround(unit: MapUnit) {
         // This method should only be called for a citadel - therefore one of the neighbour tile
         // must belong to unit's civ, so minByOrNull in the nearestCity formula should be never `null`.
         // That is, unless a mod does not specify the proper unique - then fallbackNearestCity will take over.
@@ -735,26 +719,6 @@ object UnitActions {
 
         for (otherCiv in civsToNotify)
             otherCiv.addNotification("[${unit.civInfo}] has stolen your territory!", unit.currentTile.position, unit.civInfo.civName, NotificationIcon.War)
-    }
-
-    private fun addStatsPerGreatPersonUsage(unit: MapUnit) {
-        if (!unit.isGreatPerson()) return
-
-        val civInfo = unit.civInfo
-
-        val gainedStats = Stats()
-        for (unique in civInfo.getMatchingUniques(UniqueType.ProvidesGoldWheneverGreatPersonExpended)) {
-            gainedStats.gold += (100 * civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt()
-        }
-        for (unique in civInfo.getMatchingUniques(UniqueType.ProvidesStatsWheneverGreatPersonExpended)) {
-            gainedStats.add(unique.stats)
-        }
-
-        if (gainedStats.isEmpty()) return
-
-        for (stat in gainedStats)
-            civInfo.addStat(stat.key, stat.value.toInt())
-        civInfo.addNotification("By expending your [${unit.name}] you gained [${gainedStats}]!", unit.getTile().position, unit.name)
     }
 
     private fun addFortifyActions(actionList: ArrayList<UnitAction>, unit: MapUnit, showingAdditionalActions: Boolean) {
@@ -864,8 +828,7 @@ object UnitActions {
             if (!unique.conditionals.any { it.type == UniqueType.ConditionalConsumeUnit }) continue
             val unitAction = UnitAction(type = UnitActionType.TriggerUnique, unique.text){
                 UniqueTriggerActivation.triggerCivwideUnique(unique, unit.civInfo)
-                addStatsPerGreatPersonUsage(unit)
-                unit.destroy()
+                unit.consume()
             }
             actionList += unitAction
         }

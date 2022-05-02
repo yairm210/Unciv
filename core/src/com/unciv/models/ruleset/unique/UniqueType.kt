@@ -583,6 +583,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ImprovementStatsOnTile("[stats] from [tileFilter] tiles", UniqueTarget.Improvement),
     ImprovementStatsForAdjacencies("[stats] for each adjacent [tileFilter]", UniqueTarget.Improvement),
 
+    ConsumesBuilder("Consumes builder when build", UniqueTarget.Improvement),
     CanBuildOutsideBorders("Can be built outside your borders", UniqueTarget.Improvement),
     CanBuildJustOutsideBorders("Can be built just outside your borders", UniqueTarget.Improvement),
     CanOnlyBeBuiltOnTile("Can only be built on [tileFilter] tiles", UniqueTarget.Improvement),
@@ -595,6 +596,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
   
     GreatImprovement("Great Improvement", UniqueTarget.Improvement),
     IsAncientRuinsEquivalent("Provides a random bonus when entered", UniqueTarget.Improvement),
+    TakesOverAdjacentTiles("Adds adjacent tiles to your closest city", UniqueTarget.Improvement),
 
     Unpillagable("Unpillagable", UniqueTarget.Improvement),
     Indestructible("Indestructible", UniqueTarget.Improvement),
