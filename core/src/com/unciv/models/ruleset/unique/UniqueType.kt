@@ -599,7 +599,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     TakesOverAdjacentTiles("Adds adjacent tiles to your closest city", UniqueTarget.Improvement),
 
     Unpillagable("Unpillagable", UniqueTarget.Improvement),
-    Indestructible("Indestructible", UniqueTarget.Improvement),
     Irremovable("Irremovable", UniqueTarget.Improvement),
     //endregion
 
@@ -726,6 +725,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     // region DEPRECATED AND REMOVED
 
+    @Deprecated("as of 4.0.12", ReplaceWith("Irremovable"), DeprecationLevel.ERROR)
+    Indestructable("Indestructable", UniqueTarget.Improvement),
+    
     @Deprecated("as of 3.19.1", ReplaceWith("[stats] from every [Wonder]"), DeprecationLevel.ERROR)
     StatsFromWondersDeprecated("[stats] from every Wonder", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     @Deprecated("as of 3.19.3", ReplaceWith("[stats] from every [buildingFilter] <in cities where this religion has at least [amount] followers>"), DeprecationLevel.ERROR)
