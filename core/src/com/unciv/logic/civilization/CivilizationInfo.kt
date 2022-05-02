@@ -606,7 +606,7 @@ class CivilizationInfo {
 
     fun hasOpenBordersTo(otherCiv: CivilizationInfo): Boolean {
         if (otherCiv == this) return true // own borders are always open
-        if (otherCiv.isBarbarian() || isBarbarian()) return true // barbarians do not care of borders
+        if (otherCiv.isBarbarian() || isBarbarian()) return false // barbarians blocks the routes
         val diplomacyManager = diplomacy[otherCiv.civName]
             ?: return false // not encountered yet
         return diplomacyManager.hasOpenBorders
