@@ -86,7 +86,7 @@ class CityInfo {
     var attackedThisTurn = false
     var hasSoldBuildingThisTurn = false
     var isPuppet = false
-    var updateCitizens = false
+    var updateCitizens = false  // flag so that on endTurn() the Governor reassigns Citizens
 
     /** The very first found city is the _original_ capital,
      * while the _current_ capital can be any other city after the original one is captured.
