@@ -12,6 +12,7 @@ import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.Victory.Focus
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
@@ -168,9 +169,35 @@ object Automation {
         return true
     }
 
+    /** Checks both feasibility of Buildings with a CreatesOneImprovement unique
+     *  and resource scarcity making a construction undesirable.
+      */
+    fun allowAutomatedConstruction(
+        civInfo: CivilizationInfo,
+        cityInfo: CityInfo,
+        construction: INonPerpetualConstruction
+    ): Boolean {
+        return allowCreateImprovementBuildings(civInfo, cityInfo, construction)
+                && allowSpendingResource(civInfo, construction)
+    }
+
+    /** Checks both feasibility of Buildings with a [UniqueType.CreatesOneImprovement] unique (appropriate tile available).
+     *  Constructions without pass uncontested. */
+    fun allowCreateImprovementBuildings(
+        civInfo: CivilizationInfo,
+        cityInfo: CityInfo,
+        construction: INonPerpetualConstruction
+    ): Boolean {
+        if (construction !is Building) return true
+        if (!construction.hasCreateOneImprovementUnique()) return true  // redundant but faster???
+        val improvement = construction.getImprovementToCreate(cityInfo.getRuleset()) ?: return true
+        return cityInfo.getTiles().any {
+            it.canBuildImprovement(improvement, civInfo)
+        }
+    }
 
     /** Determines whether the AI should be willing to spend strategic resources to build
-     *  [construction] in [city], assumes that we are actually able to do so. */
+     *  [construction] for [civInfo], assumes that we are actually able to do so. */
     fun allowSpendingResource(civInfo: CivilizationInfo, construction: INonPerpetualConstruction): Boolean {
         // City states do whatever they want
         if (civInfo.isCityState())
@@ -254,6 +281,15 @@ object Automation {
         }
     }
 
+    /** Support [UniqueType.CreatesOneImprovement] unique - find best tile for placement automation */
+    fun getTileForConstructionImprovement(cityInfo: CityInfo,  improvement: TileImprovement): TileInfo? {
+        return cityInfo.getTiles().filter {
+            it.canBuildImprovement(improvement, cityInfo.civInfo)
+        }.associateWith {
+            rankTileForCityWork(it, cityInfo)
+        }.maxByOrNull { it.value }?.key
+    }
+
     // Ranks a tile for any purpose except the expansion algorithm of cities
     internal fun rankTile(tile: TileInfo?, civInfo: CivilizationInfo): Float {
         if (tile == null) return 0f
@@ -269,7 +305,7 @@ object Automation {
         }
         return rank
     }
-    
+
     // Ranks a tile for the expansion algorithm of cities
     internal fun rankTileForExpansion(tile: TileInfo, cityInfo: CityInfo): Int {
         // https://github.com/Gedemon/Civ5-DLL/blob/aa29e80751f541ae04858b6d2a2c7dcca454201e/CvGameCoreDLL_Expansion1/CvCity.cpp#L10301
@@ -324,7 +360,7 @@ object Automation {
         // Tiles not adjacent to owned land are very hard to acquire
         if (tile.neighbors.none { it.getCity() != null && it.getCity()!!.id == cityInfo.id })
             score += 1000
-        
+
         return score
     }
 

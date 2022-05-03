@@ -280,13 +280,7 @@ object UnitActions {
 
         return UnitAction(UnitActionType.Pillage,
                 action = {
-                    // http://well-of-souls.com/civ/civ5_improvements.html says that naval improvements are destroyed upon pillage
-                    //    and I can't find any other sources so I'll go with that
-                    if (tile.isLand) {
-                        tile.improvementInProgress = tile.improvement
-                        tile.turnsToImprovement = 2
-                    }
-                    tile.improvement = null
+                    tile.setPillaged()
                     unit.civInfo.lastSeenImprovement.remove(tile.position)
                     if (tile.resource != null) tile.getOwner()?.updateDetailedCivResources()    // this might take away a resource
 
@@ -407,7 +401,6 @@ object UnitActions {
                 tile.canBuildImprovement(it, unit.civInfo) 
                 && unit.canBuildImprovement(it)
             }
-        
 
         actionList += UnitAction(UnitActionType.ConstructImprovement,
             isCurrentAction = unit.currentTile.hasImprovementInProgress(),
@@ -429,7 +422,7 @@ object UnitActions {
             }.takeIf { unit.currentMovement > 0 }
         )
     }
-    
+
     fun getAddInCapitalAction(unit: MapUnit, tile: TileInfo): UnitAction {
         return UnitAction(UnitActionType.AddInCapital,
             title = "Add to [${unit.getMatchingUniques(UniqueType.AddInCapital).first().params[0]}]",
@@ -652,11 +645,10 @@ object UnitActions {
             val improvement = tile.ruleset.tileImprovements[improvementName]
                 ?: continue
 
-            var resourcesAvailable = true
-            if (improvement.uniqueObjects.any {
-                    it.isOfType(UniqueType.ConsumesResources) && civResources[unique.params[1]] ?: 0 < unique.params[0].toInt()
-            })
-                resourcesAvailable = false
+            val resourcesAvailable = improvement.uniqueObjects.none {
+                it.isOfType(UniqueType.ConsumesResources) &&
+                        civResources[unique.params[1]] ?: 0 < unique.params[0].toInt()
+            }
 
             finalActions += UnitAction(UnitActionType.Create,
                 title = "Create [$improvementName]",
@@ -669,7 +661,8 @@ object UnitActions {
                             "Remove $it" !in unitTile.ruleset.tileImprovements ||
                             it in improvement.terrainsCanBeBuiltOn
                         }
-                    ) 
+                    )
+                    unitTile.removeCreatesOneImprovementMarker()
                     unitTile.improvement = improvementName
                     unitTile.stopWorkingOnImprovement()
                     if (improvement.hasUnique(UniqueType.TakeOverTilesAroundWhenBuilt))
@@ -686,6 +679,9 @@ object UnitActions {
                     resourcesAvailable
                     && unit.currentMovement > 0f
                     && tile.canBuildImprovement(improvement, unit.civInfo)
+                    // Next test is to prevent interfering with UniqueType.CreatesOneImprovement -
+                    // not pretty, but users *can* remove the building from the city queue an thus clear this:
+                    && !tile.isMarkedForCreatesOneImprovement()
                     && !tile.isImpassible() // Not 100% sure that this check is necessary...
                 })
         }

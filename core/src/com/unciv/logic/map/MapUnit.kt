@@ -453,9 +453,11 @@ class MapUnit {
 
     fun isIdle(): Boolean {
         if (currentMovement == 0f) return false
-        if (getTile().improvementInProgress != null 
-            && canBuildImprovement(getTile().getTileImprovementInProgress()!!)) 
-                return false
+        val tile = getTile()
+        if (tile.improvementInProgress != null &&
+                canBuildImprovement(tile.getTileImprovementInProgress()!!) &&
+                !tile.isMarkedForCreatesOneImprovement()
+            ) return false
         return !(isFortified() || isExploring() || isSleeping() || isAutomated() || isMoving())
     }
 
@@ -629,6 +631,7 @@ class MapUnit {
 
     private fun workOnImprovement() {
         val tile = getTile()
+        if (tile.isMarkedForCreatesOneImprovement()) return
         tile.turnsToImprovement -= 1
         if (tile.turnsToImprovement != 0) return
 
