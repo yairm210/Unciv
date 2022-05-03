@@ -39,6 +39,7 @@ class UnitMovementAlgorithmsTests {
         civInfo.gameInfo = GameInfo()
         civInfo.gameInfo.ruleSet = ruleSet
         civInfo.gameInfo.difficultyObject = Difficulty()
+        civInfo.gameInfo.civilizations.add(civInfo)
         unit.civInfo = civInfo
         unit.owner = civInfo.civName
 
@@ -284,16 +285,23 @@ class UnitMovementAlgorithmsTests {
         return newTiles
     }
 
-    // primary purpose of the method to set the ownership of the tile to be evacuated from
-    private fun createOpponentCivAndCity() {
+    private fun createOpponentCiv(namePrefix: String, relations: DiplomaticStatus): CivilizationInfo {
         val otherCiv = CivilizationInfo()
-        otherCiv.civName = "Other civ"
-        otherCiv.nation = Nation().apply { name = "Other nation" }
-        DiplomacyManager(otherCiv, otherCiv.civName).apply {
-            civInfo.diplomacy[otherCiv.civName] = this
-            diplomaticStatus = DiplomaticStatus.Peace
+        otherCiv.civName = "$namePrefix civ"
+        otherCiv.nation = Nation().apply { name = "$namePrefix nation" }
+        otherCiv.gameInfo = civInfo.gameInfo
+        otherCiv.gameInfo.civilizations.add(otherCiv)
+        civInfo.diplomacy[otherCiv.civName] = DiplomacyManager(otherCiv, otherCiv.civName).apply {
+            diplomaticStatus = relations
             hasOpenBorders = false
         }
+        return otherCiv
+    }
+
+    // primary purpose of the method to set the ownership of the tile to be evacuated from
+    private fun createOpponentCivAndCity() {
+
+        val otherCiv = createOpponentCiv("Other", DiplomaticStatus.Peace)
 
         val city = CityInfo()
         city.location = tile.position.cpy().add(5f, 5f) // random shift to avoid of being in city
@@ -413,6 +421,34 @@ class UnitMovementAlgorithmsTests {
 
         Assert.assertTrue("Unit must not be teleported but destroyed",
             unit.currentTile == tile && unit.isDestroyed)
+    }
+
+    @Test
+    fun `can teleport land unit over civilian and capture it`() {
+        // this is needed for unit.putInTile(), unit.moveThroughTile() to avoid using Uncivgame.Current.viewEntireMapForDebug
+        civInfo.nation.name = Constants.spectator
+
+        tile.baseTerrain = Constants.grassland
+        tile.position.set(0f, 0f)
+        tile.setTransients()
+        createOpponentCivAndCity()
+        val newTiles = generateTileCopies(2)
+
+        setupMilitaryUnitInTheCurrentTile("Sword")
+
+        val thirdCiv = createOpponentCiv("Third", DiplomaticStatus.War)
+        val otherUnit = MapUnit()
+        otherUnit.baseUnit = BaseUnit().apply { unitType = "Civilian"; ruleset = ruleSet }
+        otherUnit.currentTile = newTiles.last()
+        newTiles.last().civilianUnit = otherUnit
+        otherUnit.name = "Worker"
+        otherUnit.civInfo = thirdCiv
+        otherUnit.owner = thirdCiv.civName
+
+        unit.movement.teleportToClosestMoveableTile()
+
+        Assert.assertTrue("Civilian unit must be captured by teleported unit",
+            unit.currentTile == newTiles.last() && otherUnit.civInfo == unit.civInfo)
     }
 
 }

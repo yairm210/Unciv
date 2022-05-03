@@ -868,8 +868,12 @@ class MapUnit {
         }
         if (tile.improvement == Constants.barbarianEncampment && !civInfo.isBarbarian())
             clearEncampment(tile)
+        // Check whether any civilians without military units are there.
+        // Keep in mind that putInTile(), which calls this method,
+        // might has already placed your military unit in this tile.
+        val unguardedCivilian = tile.getUnguardedCivilian(this)
         // Capture Enemy Civilian Unit if you move on top of it
-        if (isMilitary() && tile.getUnguardedCivilian() != null && civInfo.isAtWarWith(tile.getUnguardedCivilian()!!.civInfo)) {
+        if (isMilitary() && unguardedCivilian != null && civInfo.isAtWarWith(unguardedCivilian.civInfo)) {
             Battle.captureCivilianUnit(MapUnitCombatant(this), MapUnitCombatant(tile.civilianUnit!!))
         }
 
