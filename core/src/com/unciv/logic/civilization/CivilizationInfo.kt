@@ -724,7 +724,6 @@ class CivilizationInfo {
         return scoreBreakdown
     }
 
-    //fun calculateTotalScore() = if (isAlive()) calculateScoreBreakdown().values.sum() else 0
     fun calculateTotalScore() = calculateScoreBreakdown().values.sum()
 
     //endregion
