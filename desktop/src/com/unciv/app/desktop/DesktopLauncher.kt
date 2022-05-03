@@ -30,6 +30,8 @@ internal object DesktopLauncher {
         config.setTitle("Unciv")
         config.setHdpiMode(HdpiMode.Logical)
         config.setWindowSizeLimits(120, 80, -1, -1)
+        val turnNotifier = MultiplayerTurnNotifierWindows()
+        config.setWindowListener(turnNotifier);
 
         // We don't need the initial Audio created in Lwjgl3Application, HardenGdxAudio will replace it anyway.
         // Note that means config.setAudioConfig() would be ignored too, those would need to go into the HardenedGdxAudio constructor.
@@ -53,7 +55,8 @@ internal object DesktopLauncher {
             customSaveLocationHelper = CustomSaveLocationHelperDesktop(),
             crashReportSysInfo = CrashReportSysInfoDesktop(),
             platformSpecificHelper = PlatformSpecificHelpersDesktop(),
-            audioExceptionHelper = HardenGdxAudio()
+            audioExceptionHelper = HardenGdxAudio(),
+            multiplayerTurnNotifier = turnNotifier
         )
 
         val game = UncivGame(desktopParameters)

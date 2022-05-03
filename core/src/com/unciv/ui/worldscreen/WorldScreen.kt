@@ -363,6 +363,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                 // stuff has changed and the "waiting for X" will now show the correct civ
                 stopMultiPlayerRefresher()
                 latestGame.isUpToDate = true
+                game.multiplayerTurnNotifier?.turnStarted()
                 postCrashHandlingRunnable { createNewWorldScreen(latestGame) }
             }
 
