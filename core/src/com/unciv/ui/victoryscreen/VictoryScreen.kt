@@ -188,6 +188,8 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
     enum class RankLabels { Demographic, Rank, Value, Best, Average, Worst}
     private fun buildDemographicsTable(majorCivs: List<CivilizationInfo>): Table {
         val demographicsTable = Table().apply { defaults().pad(5f) }
+        val aliveMajorCivs = majorCivs.filter{ it.isAlive() }
+
         for (rankLabel in RankLabels.values())   {
             if (rankLabel == RankLabels.Demographic) {
                 val demoLabel = Table().apply { defaults().pad(5f) }
@@ -199,38 +201,42 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
                     headers.add(category.name.replace('_', ' ').toLabel()).row()
                     headers.addSeparator().fillX()
                     demographicsTable.add(headers)
-                    }
+                }
             } else {
                 demographicsTable.row()
                 demographicsTable.add(rankLabel.name.toLabel())
 
                 for (category in RankingType.values()) {
+
+                    fun addRankCivGroup(civ: CivilizationInfo) { // local function for reuse of getting and formatting civ stats
+                        demographicsTable.add(getCivGroup(civ, ": " + civ.getStatForRanking(category).toString(), playerCivInfo)).fillX()
+                    }
+
                     @Suppress("NON_EXHAUSTIVE_WHEN") // RankLabels.Demographic treated above
                     when (rankLabel) {
                         RankLabels.Rank -> { // finds the current player's rank in each category
-                            val rank = majorCivs.filter{ it.isAlive() }.sortedByDescending { it.getStatForRanking(category) }.indexOfFirst { it.civName == gameInfo.currentPlayerCiv.civName } + 1
+                            val rank = aliveMajorCivs.sortedByDescending { it.getStatForRanking(category) }.indexOfFirst { it == gameInfo.currentPlayerCiv } + 1
                             demographicsTable.add(rank.toLabel())
                         }
 
                         RankLabels.Value -> { // finds the current player's value in each category
-                            demographicsTable.add(getCivGroup(gameInfo.currentPlayerCiv, ": " + gameInfo.currentPlayerCiv.getStatForRanking(category).toString(), playerCivInfo)).fillX()
+                            addRankCivGroup(gameInfo.currentPlayerCiv)
                         }
                       
                         RankLabels.Best -> { // finds civ with the best value in each category
-                            val bestCiv = majorCivs.filter{ it.isAlive() }.maxByOrNull { it.getStatForRanking(category) }!!
-                            demographicsTable.add(getCivGroup(bestCiv, ": " + bestCiv.getStatForRanking(category).toString(), playerCivInfo)).fillX()
+                            val bestCiv = aliveMajorCivs.maxByOrNull { it.getStatForRanking(category) }!!
+                            addRankCivGroup(bestCiv)
                         }
                       
                         RankLabels.Average -> { // calculates the average value in each category
-                            var totalScore = 0
-                            for (civ in majorCivs.filter{ it.isAlive()} ) totalScore += civ.getStatForRanking(category)
-                            val averageScore = totalScore / (majorCivs.filter{ it.isAlive() }.lastIndex + 1)
+                            var totalScore = aliveMajorCivs.sumOf { it.getStatForRanking(category) }
+                            val averageScore = totalScore / majorCivs.count{ it.isAlive() }
                             demographicsTable.add(averageScore.toLabel())
                         }
                       
                         RankLabels.Worst -> { // finds civ with the worst value in each category
-                            val worstCiv = majorCivs.filter{ it.isAlive() }.minByOrNull { it.getStatForRanking(category) }!!
-                            demographicsTable.add(getCivGroup(worstCiv, ": " + worstCiv.getStatForRanking(category).toString(), playerCivInfo)).fillX()
+                            val worstCiv = aliveMajorCivs.minByOrNull { it.getStatForRanking(category) }!!
+                            addRankCivGroup(worstCiv)
                         }
                     }
                 }
