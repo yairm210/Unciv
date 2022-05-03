@@ -1,5 +1,6 @@
 package com.unciv.logic.automation
 
+import com.unciv.logic.city.CityFocus
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.civilization.CivilizationInfo
@@ -23,28 +24,59 @@ object Automation {
     }
 
     private fun rankStatsForCityWork(stats: Stats, city: CityInfo, foodWeight: Float = 1f): Float {
-        var rank = 0f
+        val cityAIFocus = city.cityAIFocus
+        // For now, no base weights
+        var foodYield = stats.food * foodWeight
+        var productionYield = stats.production
+        var goldYield = stats.gold
+        var scienceYield = stats.science
+        var cultureYield = stats.culture
+        var faithYield = stats.faith
+        //var happinessYield = stats.happiness  // TODO: count happiness?
+        //if (city.civInfo.getHappiness() < 0) happinessYield *= 2  // double weight for unhappy civilization
+        // var GPPYield = stats.GPP * 3 // TODO: rework GPP Yield
+
+        //val surplusFood = city.foodForNextTurn() // intensive to calc based on Excess Food?
+
+        // Apply City focus
+        if (cityAIFocus == CityFocus.ProductionFocus)
+            productionYield *= 2
+        if (cityAIFocus == CityFocus.ScienceFocus)
+            scienceYield *= 2
+        if (cityAIFocus == CityFocus.CultureFocus)
+            cultureYield *= 2
+        if (cityAIFocus == CityFocus.GoldFocus)
+            goldYield *= 2
+        if (cityAIFocus == CityFocus.FaithFocus)
+            faithYield *= 2
+        
         if (city.population.population < 5) {
             // "small city" - we care more about food and less about global problems like gold science and culture
-            rank += stats.food * 1.2f * foodWeight
-            rank += stats.production
-            rank += stats.science / 2
-            rank += stats.culture / 2
-            rank += stats.gold / 5 // it's barely worth anything at this point
+            foodYield *= 1.2f
+            scienceYield /= 2
+            cultureYield /= 2
+            goldYield /= 5 // it's barely worth anything at this point
         } else {
-            if (stats.food <= 2 || city.civInfo.getHappiness() > 5) rank += stats.food * 1.2f * foodWeight // food get more value to keep city growing
-            else rank += (2.4f + (stats.food - 2) / 2) * foodWeight // 1.2 point for each food up to 2, from there on half a point
+            if (stats.food <= 2 || city.civInfo.getHappiness() > 5) foodYield *= 1.2f // food get more value to keep city growing
+            else foodYield = (2.4f + (stats.food - 2) / 2) * foodWeight // 1.2 point for each food up to 2, from there on half a point
 
-            if (city.civInfo.gold < 0 && city.civInfo.statsForNextTurn.gold <= 0)
-                rank += stats.gold // we have a global problem
-            else rank += stats.gold / 3 // 3 gold is worse than 2 production
+            if (!(city.civInfo.gold < 0 && city.civInfo.statsForNextTurn.gold <= 0))
+                goldYield /= 3 // 3 gold is worse than 2 production
 
-            rank += stats.production
-            rank += stats.science
-            if (city.tiles.size < 12 || city.civInfo.victoryType() == VictoryType.Cultural) {
-                rank += stats.culture
-            } else rank += stats.culture / 2
+            if (!(city.tiles.size < 12 || city.civInfo.victoryType() == VictoryType.Cultural))
+                cultureYield /= 2
         }
+        // do this late due to potential override assignment
+        if (cityAIFocus == CityFocus.FoodFocus)
+            foodYield *= 2
+        var rank = 0f
+        rank += foodYield
+        rank += productionYield
+        rank += scienceYield
+        rank += cultureYield
+        rank += goldYield
+        rank += faithYield
+        //rank += happinessYield
         return rank
     }
 
