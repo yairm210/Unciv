@@ -352,6 +352,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         pickConstructionButton.onClick {
             cityScreen.selectedConstruction = construction
             cityScreen.selectedTile = null
+            cityScreen.citizenManagementVisible = false
             selectedQueueEntry = -1
             cityScreen.update()
         }

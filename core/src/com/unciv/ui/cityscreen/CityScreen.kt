@@ -53,6 +53,9 @@ class CityScreen(
     /** Displays reset locks button - sits on BOT RIGHT */
     private var resetCitizensButtonHolder = Table()
 
+    /** Displays reset locks button - sits on BOT RIGHT */
+    private var citizenManagementButtonHolder = Table()
+
     /** Displays city stats info */
     private var cityStatsTable = CityStatsTable(this)
 
@@ -61,6 +64,10 @@ class CityScreen(
 
     /** Displays selected construction info, alternate with tileTable - sits on BOTTOM RIGHT */
     private var selectedConstructionTable = ConstructionInfoTable(this)
+
+    /** Displays selected construction info, alternate with tileTable - sits on BOTTOM RIGHT */
+    private var citizenManagementTable = CitizenManagementTable(this)
+    var citizenManagementVisible = false
 
     /** Displays city name, allows switching between cities - sits on BOTTOM CENTER */
     private var cityPickerTable = CityScreenCityPickerTable(this)
@@ -91,10 +98,22 @@ class CityScreen(
         resetCitizensButtonHolder.add(resetCitizensButton)
         resetCitizensButtonHolder.pack()
         stage.addActor(resetCitizensButtonHolder)
+        val citizenManagementButton = "Citizen Management".tr().toTextButton()
+        citizenManagementButton.labelCell.pad(5f)
+        citizenManagementButton.onClick {
+            selectedTile = null
+            selectedConstruction = null
+            citizenManagementVisible = true
+            update()
+        }
+        citizenManagementButtonHolder.add(citizenManagementButton)
+        citizenManagementButtonHolder.pack()
+        stage.addActor(citizenManagementButtonHolder)
         constructionsTable.addActorsToStage()
         stage.addActor(cityInfoTable)
         stage.addActor(selectedConstructionTable)
         stage.addActor(tileTable)
+        stage.addActor(citizenManagementTable)
         stage.addActor(cityPickerTable)  // add late so it's top in Z-order and doesn't get covered in cramped portrait
         stage.addActor(exitCityButton)
         update()
@@ -132,15 +151,22 @@ class CityScreen(
         tileTable.setPosition(stage.width - posFromEdge, posFromEdge, Align.bottomRight)
         selectedConstructionTable.update(selectedConstruction)
         selectedConstructionTable.setPosition(stage.width - posFromEdge, posFromEdge, Align.bottomRight)
-        if (selectedTile == null && selectedConstruction == null)
+        citizenManagementTable.update(citizenManagementVisible)
+        citizenManagementTable.setPosition(stage.width - posFromEdge, posFromEdge, Align.bottomRight)
+        if (selectedTile == null && selectedConstruction == null && !citizenManagementVisible)
             resetCitizensButtonHolder.setPosition(stage.width - posFromEdge,
                     posFromEdge, Align.bottomRight)
-        else if (selectedTile == null)
+        else if (selectedConstruction != null)
             resetCitizensButtonHolder.setPosition(stage.width - posFromEdge,
                     posFromEdge + selectedConstructionTable.height + 10f, Align.bottomRight)
-        else
+        else if (selectedTile != null)
             resetCitizensButtonHolder.setPosition(stage.width - posFromEdge,
                     posFromEdge + tileTable.height + 10f, Align.bottomRight)
+        else
+            resetCitizensButtonHolder.setPosition(stage.width - posFromEdge,
+                    posFromEdge + citizenManagementTable.height + 10f, Align.bottomRight)
+        citizenManagementButtonHolder.setPosition(stage.width - posFromEdge,
+                posFromEdge + resetCitizensButtonHolder.y + resetCitizensButtonHolder.height + 10f, Align.bottomRight)
             
         // In portrait mode only: calculate already occupied horizontal space
         val rightMargin = when {
@@ -280,6 +306,7 @@ class CityScreen(
 
                 selectedTile = tileInfo
                 selectedConstruction = null
+                citizenManagementVisible = false
                 if (tileGroup.isWorkable && canChangeState) {
                     if (!tileInfo.providesYield() && city.population.getFreePopulation() > 0) {
                         city.workedTiles.add(tileInfo.position)
