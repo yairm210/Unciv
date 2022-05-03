@@ -39,8 +39,8 @@ class NativeFontAndroid(
                         abs(style.slant - FontStyle.FONT_SLANT_UPRIGHT)
             }
             val font = fontList.mapNotNull {
-                val q = it.matchesFamily(fontFamily)
-                if (q == Int.MAX_VALUE) null else it to q
+                val distanceToRegular = it.matchesFamily(fontFamily)
+                if (distanceToRegular == Int.MAX_VALUE) null else it to distanceToRegular
             }.minByOrNull { it.second }?.first
             if (font != null) {
                 Typeface.CustomFallbackBuilder(FontFamily.Builder(font).build())
