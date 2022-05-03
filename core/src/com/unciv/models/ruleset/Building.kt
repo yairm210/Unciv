@@ -99,7 +99,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         }
 
     /** used in CityScreen (CityInfoTable and ConstructionInfoTable) */
-    fun getDescription(cityInfo: CityInfo, showMissingRequiredCities:Boolean): String {
+    fun getDescription(cityInfo: CityInfo, showAdditionalInfo: Boolean): String {
         val stats = getStats(cityInfo)
         val lines = ArrayList<String>()
         val isFree = name in cityInfo.civInfo.civConstructions.getFreeBuildings(cityInfo.id)
@@ -109,8 +109,13 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (isWonder) lines += "Wonder"
         if (isNationalWonder) lines += "National Wonder"
         if (!isFree) {
+            val availableResources = if(!showAdditionalInfo) emptyMap()
+                else cityInfo.civInfo.getCivResources().associate { it.resource.name to it.amount }
             for ((resource, amount) in getResourceRequirements()) {
-                lines += "Consumes [$amount] [$resource]"
+                val available = availableResources[resource] ?: 0
+                lines += if (showAdditionalInfo)
+                    "{Consumes [$amount] [$resource]} ({[$available] available})"
+                else "Consumes [$amount] [$resource]"
             }
         }
 
@@ -125,7 +130,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (uniques.isNotEmpty()) {
             if (replacementTextForUniques != "") lines += replacementTextForUniques
             else lines += getUniquesStringsWithoutDisablers(
-                filterUniques=if (missingCities.isEmpty()) null
+                filterUniques = if (missingCities.isEmpty()) null
                     else { unique -> !unique.isOfType(UniqueType.RequiresBuildingInAllCities) }
                     // Filter out the "Requires a [] in all cities" unique if any cities are still missing the required building, since in that case the list of cities will be appended at the end.
             )
@@ -148,7 +153,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (cityStrength != 0) lines += "{City strength} +$cityStrength"
         if (cityHealth != 0) lines += "{City health} +$cityHealth"
         if (maintenance != 0 && !isFree) lines += "{Maintenance cost}: $maintenance {Gold}"
-        if (showMissingRequiredCities && missingCities.isNotEmpty()) {
+        if (showAdditionalInfo && missingCities.isNotEmpty()) {
             // Could be red. But IMO that should be done by enabling GDX's ColorMarkupLanguage globally instead of adding a separate label.
             lines += "\n" + 
                 "[${cityInfo.civInfo.getEquivalentBuilding(missingUnique!!.params[0])}] required:".tr() +
@@ -407,8 +412,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     }
 
     override fun getStatBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
-        var cost = getBaseBuyCost(cityInfo, stat)?.toDouble()
-        if (cost == null) return null
+        var cost = getBaseBuyCost(cityInfo, stat)?.toDouble() ?: return null
 
         for (unique in cityInfo.getMatchingUniques(UniqueType.BuyItemsDiscount))
             if (stat.name == unique.params[0])

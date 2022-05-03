@@ -121,7 +121,7 @@ class CivilizationInfo {
     val lastEraResourceUsedForUnit = HashMap<String, Int>()
     
     @Transient
-    var thingsToFocusOnForVictory = setOf<ThingToFocus>()
+    var thingsToFocusOnForVictory = setOf<Victory.Focus>()
 
     var playerType = PlayerType.AI
 
@@ -348,8 +348,8 @@ class CivilizationInfo {
                else gameInfo.ruleSet.victories[getPreferredVictoryType()]!!
     }
     
-    fun wantsToFocusOn(thingToFocusOn: ThingToFocus): Boolean {
-        return thingsToFocusOnForVictory.contains(thingToFocusOn)
+    fun wantsToFocusOn(focus: Victory.Focus): Boolean {
+        return thingsToFocusOnForVictory.contains(focus)
     }
     
     @Transient
@@ -595,7 +595,7 @@ class CivilizationInfo {
     fun getEraNumber(): Int = getEra().eraNumber
 
     fun isAtWarWith(otherCiv: CivilizationInfo): Boolean {
-        if (otherCiv.civName == civName) return false // never at war with itself
+        if (otherCiv == this) return false // never at war with itself
         if (otherCiv.isBarbarian() || isBarbarian()) return true
         val diplomacyManager = diplomacy[otherCiv.civName]
             ?: return false // not encountered yet
@@ -603,6 +603,14 @@ class CivilizationInfo {
     }
 
     fun isAtWar() = diplomacy.values.any { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv().isDefeated() }
+
+    fun hasOpenBordersTo(otherCiv: CivilizationInfo): Boolean {
+        if (otherCiv == this) return true // own borders are always open
+        if (otherCiv.isBarbarian() || isBarbarian()) return false // barbarians blocks the routes
+        val diplomacyManager = diplomacy[otherCiv.civName]
+            ?: return false // not encountered yet
+        return diplomacyManager.hasOpenBorders
+    }
 
     /**
      * Returns a civilization caption suitable for greetings including player type info:

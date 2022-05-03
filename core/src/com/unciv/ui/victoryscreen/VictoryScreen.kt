@@ -7,7 +7,7 @@ import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.translations.tr
 import com.unciv.models.metadata.GameSetupInfo
-import com.unciv.models.ruleset.CompletionStatus
+import com.unciv.models.ruleset.Victory
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.PickerScreen
@@ -127,12 +127,12 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         for (milestone in victoryObject.milestoneObjects) {
             val completionStatus =
                 when {
-                    milestone.hasBeenCompletedBy(playerCivInfo) -> CompletionStatus.Completed
+                    milestone.hasBeenCompletedBy(playerCivInfo) -> Victory.CompletionStatus.Completed
                     firstIncomplete -> {
                         firstIncomplete = false
-                        CompletionStatus.Partially
+                        Victory.CompletionStatus.Partially
                     }
-                    else -> CompletionStatus.Incomplete
+                    else -> Victory.CompletionStatus.Incomplete
                 }
             for (button in milestone.getVictoryScreenButtons(completionStatus, playerCivInfo)) {
                 table.add(button).row()
