@@ -644,17 +644,20 @@ class CivilizationInfo {
     }
 
     fun getStatForRanking(category: RankingType): Int {
-        return when (category) {
-            RankingType.Score -> if (isAlive()) calculateTotalScore().toInt() else 0
-            RankingType.Population -> if (isAlive()) cities.sumOf { it.population.population } else 0
-            RankingType.Crop_Yield -> if (isAlive()) statsForNextTurn.food.roundToInt() else 0
-            RankingType.Production -> if (isAlive()) statsForNextTurn.production.roundToInt() else 0
-            RankingType.Gold -> if (isAlive()) gold else 0
-            RankingType.Territory -> if (isAlive()) cities.sumOf { it.tiles.size } else 0
-            RankingType.Force -> if (isAlive()) getMilitaryMight() else 0
-            RankingType.Happiness -> if (isAlive()) getHappiness() else 0
-            RankingType.Technologies -> if (isAlive()) tech.researchedTechnologies.size else 0
-            RankingType.Culture -> if (isAlive()) policies.adoptedPolicies.count { !Policy.isBranchCompleteByName(it) } else 0
+        return if (isDefeated()) 0
+        else {
+            when (category) {
+                RankingType.Score -> calculateTotalScore().toInt()
+                RankingType.Population -> cities.sumOf { it.population.population }
+                RankingType.Crop_Yield -> statsForNextTurn.food.roundToInt()
+                RankingType.Production -> statsForNextTurn.production.roundToInt()
+                RankingType.Gold -> gold
+                RankingType.Territory -> cities.sumOf { it.tiles.size }
+                RankingType.Force -> getMilitaryMight()
+                RankingType.Happiness -> getHappiness()
+                RankingType.Technologies -> tech.researchedTechnologies.size
+                RankingType.Culture -> policies.adoptedPolicies.count { !Policy.isBranchCompleteByName(it) }
+            }
         }
     }
 
