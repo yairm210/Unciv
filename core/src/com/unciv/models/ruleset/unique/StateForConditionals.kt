@@ -21,7 +21,7 @@ data class StateForConditionals(
 
     val region: Region? = null,
 
-    val ignoreConditionals:Boolean = false,
+    val ignoreConditionals: Boolean = false,
 ) {
 
     companion object {
