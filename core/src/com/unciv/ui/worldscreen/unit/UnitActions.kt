@@ -662,8 +662,7 @@ object UnitActions {
                             "Remove $it" !in unitTile.ruleset.tileImprovements ||
                             it in improvement.terrainsCanBeBuiltOn
                         }
-                    ) 
-                    unitTile.improvement = improvementName
+                    )
                     unitTile.improvementInProgress = null
                     unitTile.turnsToImprovement = 0
                     improvement.handleImprovementCompletion(unit)

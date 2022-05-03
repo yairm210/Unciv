@@ -77,12 +77,14 @@ class TileImprovement : RulesetStatsObject() {
     }
     
     fun handleImprovementCompletion(builder: MapUnit) {
+        val tile = builder.getTile()
+        tile.improvement = name
         if (hasUnique(UniqueType.TakesOverAdjacentTiles))
             UnitActions.takeOverTilesAround(builder)
         if (hasUnique(UniqueType.ConsumesBuilder))
             builder.consume()
-        if (builder.getTile().resource != null) {
-            val city = builder.getTile().getCity()
+        if (tile.resource != null) {
+            val city = tile.getCity()
             if (city != null) {
                 city.cityStats.update()
                 city.civInfo.updateDetailedCivResources()
