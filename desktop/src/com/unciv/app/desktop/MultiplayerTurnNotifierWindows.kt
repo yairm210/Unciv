@@ -43,9 +43,9 @@ class MultiplayerTurnNotifierWindows: Lwjgl3WindowAdapter(), MultiplayerTurnNoti
      */
     override fun turnStarted() {
         try {
-            if (user32 == null || hasFocus) return
+            if (user32 == null || window == null || hasFocus) return
             val flashwinfo = WinUser.FLASHWINFO()
-            val hwnd = GLFWNativeWin32.glfwGetWin32Window((Gdx.graphics as Lwjgl3Graphics).window.windowHandle)
+            val hwnd = GLFWNativeWin32.glfwGetWin32Window(window!!.windowHandle)
             flashwinfo.hWnd = WinNT.HANDLE(Pointer.createConstant(hwnd))
             flashwinfo.dwFlags = 3 // FLASHW_ALL
             flashwinfo.uCount = 3
