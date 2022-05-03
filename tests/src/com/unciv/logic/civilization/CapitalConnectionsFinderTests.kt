@@ -123,9 +123,10 @@ class CapitalConnectionsFinderTests {
     }
 
     private fun meetCivAndSetBorders(name: String, areBordersOpen: Boolean) {
-        ourCiv.diplomacy[name] = DiplomacyManager(ourCiv, name)
+        val otherCiv = civilizations[name]!!
+        otherCiv.diplomacy[ourCiv.civName] = DiplomacyManager(otherCiv, ourCiv.civName)
             .apply { diplomaticStatus = DiplomaticStatus.Peace }
-        ourCiv.diplomacy[name]!!.hasOpenBorders = areBordersOpen
+        otherCiv.diplomacy[ourCiv.civName]!!.hasOpenBorders = areBordersOpen
     }
 
     @Test
