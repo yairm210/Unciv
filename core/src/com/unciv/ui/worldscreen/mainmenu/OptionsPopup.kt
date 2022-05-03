@@ -4,10 +4,8 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
-import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextField
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.MainMenuScreen
@@ -88,12 +86,8 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         tabs.addPage("Language", getLanguageTab(), ImageGetter.getImage("FlagIcons/${settings.language}"), 24f)
         tabs.addPage("Sound", getSoundTab(), ImageGetter.getImage("OtherIcons/Speaker"), 24f)
         tabs.addPage("Multiplayer", getMultiplayerTab(), ImageGetter.getImage("OtherIcons/Multiplayer"), 24f)
-        crashHandlingThread(name="Add Advanced Options Tab") {
-            val fontNames = Fonts.getAvailableFontFamilyNames() // This is a heavy operation and causes ANRs
-            postCrashHandlingRunnable {
-                tabs.addPage("Advanced", getAdvancedTab(fontNames), ImageGetter.getImage("OtherIcons/Settings"), 24f)
-            }
-        }
+        tabs.addPage("Advanced", getAdvancedTab(), ImageGetter.getImage("OtherIcons/Settings"), 24f)
+
         if (RulesetCache.size > BaseRuleset.values().size) {
             val content = ModCheckTab(this) {
                 if (modCheckFirstRun) runModChecker()
@@ -305,7 +299,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         }).row()
     }
 
-    private fun getAdvancedTab(fontNames: Collection<FontData>) = Table(BaseScreen.skin).apply {
+    private fun getAdvancedTab() = Table(BaseScreen.skin).apply {
         pad(10f)
         defaults().pad(5f)
 
@@ -326,7 +320,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             }
         }
 
-        addFontFamilySelect(fontNames)
+        addFontFamilySelect()
 
         addTranslationGeneration()
 
@@ -863,48 +857,65 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         add(maxZoomSlider).pad(5f).row()
     }
 
-    private fun Table.addFontFamilySelect(fonts: Collection<FontData>) {
-        if (fonts.isEmpty()) return
-
+    private fun Table.addFontFamilySelect() {
         add("Font family".toLabel()).left().fillX()
+        val selectCell = add()
+        row()
 
-        val fontSelectBox = SelectBox<String>(skin)
-        val fontsLocalName = GdxArray<String>().apply { add("Default Font".tr()) }
-        val fontsEnName = GdxArray<String>().apply { add("") }
-        for (font in fonts) {
-            fontsLocalName.add(font.localName)
-            fontsEnName.add(font.enName)
+        fun loadFontSelect(fonts: Collection<FontData>, selectCell: Cell<Actor>) {
+            if (fonts.isEmpty()) return
+
+            val fontSelectBox = SelectBox<String>(skin)
+            val fontsLocalName = GdxArray<String>().apply { add("Default Font".tr()) }
+            val fontsEnName = GdxArray<String>().apply { add("") }
+            for (font in fonts) {
+                fontsLocalName.add(font.localName)
+                fontsEnName.add(font.enName)
+            }
+
+            val selectedIndex = fontsEnName.indexOf(settings.fontFamily).let { if (it == -1) 0 else it }
+
+            fontSelectBox.items = fontsLocalName
+            fontSelectBox.selected = fontsLocalName[selectedIndex]
+
+            selectCell.setActor(fontSelectBox).minWidth(selectBoxMinWidth).pad(10f)
+
+            fontSelectBox.onChange {
+                settings.fontFamily = fontsEnName[fontSelectBox.selectedIndex]
+                ToastPopup(
+                    "You need to restart the game for this change to take effect.", previousScreen
+                )
+            }
         }
 
-        val selectedIndex = fontsEnName.indexOf(settings.fontFamily).let { if (it == -1) 0 else it }
-
-        fontSelectBox.items = fontsLocalName
-        fontSelectBox.selected = fontsLocalName[selectedIndex]
-
-        add(fontSelectBox).minWidth(selectBoxMinWidth).pad(10f).row()
-
-        fontSelectBox.onChange {
-            settings.fontFamily = fontsEnName[fontSelectBox.selectedIndex]
-            ToastPopup(
-                "You need to restart the game for this change to take effect.", previousScreen
-            )
+        crashHandlingThread(name="Add Font Select") {
+            val fonts = Fonts.getAvailableFontFamilyNames() // This is a heavy operation and causes ANRs
+            postCrashHandlingRunnable { loadFontSelect(fonts, selectCell) }
         }
     }
 
     private fun Table.addTranslationGeneration() {
-        if (Gdx.app.type == Application.ApplicationType.Desktop) {
-            val generateTranslationsButton = "Generate translation files".toTextButton()
-            val generateAction = {
+        if (Gdx.app.type != Application.ApplicationType.Desktop) return
+
+        val generateTranslationsButton = "Generate translation files".toTextButton()
+
+        val generateAction: ()->Unit = {
+            tabs.selectPage("Advanced")
+            generateTranslationsButton.setText("Working...".tr())
+            crashHandlingThread {
                 val result = TranslationFileWriter.writeNewTranslationFiles()
-                // notify about completion
-                generateTranslationsButton.setText(result.tr())
-                generateTranslationsButton.disable()
+                postCrashHandlingRunnable {
+                    // notify about completion
+                    generateTranslationsButton.setText(result.tr())
+                    generateTranslationsButton.disable()
+                }
             }
-            generateTranslationsButton.onClick(generateAction)
-            keyPressDispatcher[Input.Keys.F12] = generateAction
-            generateTranslationsButton.addTooltip("F12",18f)
-            add(generateTranslationsButton).colspan(2).row()
         }
+
+        generateTranslationsButton.onClick(generateAction)
+        keyPressDispatcher[Input.Keys.F12] = generateAction
+        generateTranslationsButton.addTooltip("F12",18f)
+        add(generateTranslationsButton).colspan(2).row()
     }
 
     private fun Table.addCheckbox(text: String, initialState: Boolean, updateWorld: Boolean = false, action: ((Boolean) -> Unit)) {
