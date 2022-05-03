@@ -5,7 +5,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
-import com.unciv.models.ruleset.ThingToFocus
+import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import kotlin.math.min
@@ -134,7 +134,7 @@ object ChooseBeliefsAutomation {
             score += modifier * when (unique.type) {
                 UniqueType.KillUnitPlunderNearCity ->
                     unique.params[0].toFloat() * 4f *
-                        if (civInfo.wantsToFocusOn(ThingToFocus.Military)) 2f
+                        if (civInfo.wantsToFocusOn(Victory.Focus.Military)) 2f
                         else 1f
                 UniqueType.BuyUnitsForAmountStat, UniqueType.BuyBuildingsForAmountStat ->
                     if (civInfo.religionManager.religion != null 
@@ -153,7 +153,7 @@ object ChooseBeliefsAutomation {
                     // what happens over there
                     else civInfo.statsForNextTurn[Stat.valueOf(unique.params[1])] * 10f / civInfo.getEra().baseUnitBuyCost
                 UniqueType.BuyUnitsByProductionCost ->
-                    15f * if (civInfo.wantsToFocusOn(ThingToFocus.Military)) 2f else 1f
+                    15f * if (civInfo.wantsToFocusOn(Victory.Focus.Military)) 2f else 1f
                 UniqueType.StatsWhenSpreading ->
                     unique.params[0].toInt() / 5f
                 UniqueType.StatsWhenAdoptingReligion, UniqueType.StatsWhenAdoptingReligionSpeed ->

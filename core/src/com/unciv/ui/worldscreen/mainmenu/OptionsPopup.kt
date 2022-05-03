@@ -106,7 +106,7 @@ class OptionsPopup(
 
         addCloseButton {
             previousScreen.game.musicController.onChange(null)
-            previousScreen.game.limitOrientationsHelper?.allowPortrait(settings.allowAndroidPortrait)
+            previousScreen.game.platformSpecificHelper?.allowPortrait(settings.allowAndroidPortrait)
             if (previousScreen is WorldScreen)
                 previousScreen.enableNextTurnButtonAfterOptions()
         }.padBottom(10f)
@@ -268,17 +268,17 @@ class OptionsPopup(
 
         val connectionToServerButton = "Check connection to server".toTextButton()
 
-        val textToShowForMultiplayerAddress = 
+        val textToShowForMultiplayerAddress =
             if (settings.multiplayerServer != Constants.dropboxMultiplayerServer) settings.multiplayerServer
         else "https://..."
         val multiplayerServerTextField = TextField(textToShowForMultiplayerAddress, BaseScreen.skin)
         multiplayerServerTextField.programmaticChangeEvents = true
         val serverIpTable = Table()
 
-        serverIpTable.add("Server address".toLabel().onClick { 
+        serverIpTable.add("Server address".toLabel().onClick {
             multiplayerServerTextField.text = Gdx.app.clipboard.contents
         }).row()
-        multiplayerServerTextField.onChange { 
+        multiplayerServerTextField.onChange {
             settings.multiplayerServer = multiplayerServerTextField.text
             settings.save()
             connectionToServerButton.isEnabled = multiplayerServerTextField.text != Constants.dropboxMultiplayerServer
@@ -316,11 +316,11 @@ class OptionsPopup(
 
         addMaxZoomSlider()
 
-        if (previousScreen.game.limitOrientationsHelper != null) {
+        if (previousScreen.game.platformSpecificHelper != null) {
             addCheckbox("Enable portrait orientation", settings.allowAndroidPortrait) {
                 settings.allowAndroidPortrait = it
                 // Note the following might close the options screen indirectly and delayed
-                previousScreen.game.limitOrientationsHelper.allowPortrait(it)
+                previousScreen.game.platformSpecificHelper.allowPortrait(it)
             }
         }
 
@@ -882,30 +882,39 @@ class OptionsPopup(
             }
         }
 
-        crashHandlingThread(name="Add Font Select") {
+        crashHandlingThread(name = "Add Font Select") {
+            // This is a heavy operation and causes ANRs
             val fonts = GdxArray<FontFamilyData>().apply {
-                add(FontFamilyData("Default Font".tr(),""))
+                add(FontFamilyData("Default Font".tr(), ""))
                 for (font in Fonts.getAvailableFontFamilyNames())
                     add(font)
-            } // This is a heavy operation and causes ANRs
+            }
             postCrashHandlingRunnable { loadFontSelect(fonts, selectCell) }
         }
     }
 
     private fun Table.addTranslationGeneration() {
-        if (Gdx.app.type == Application.ApplicationType.Desktop) {
-            val generateTranslationsButton = "Generate translation files".toTextButton()
-            val generateAction = {
+        if (Gdx.app.type != Application.ApplicationType.Desktop) return
+
+        val generateTranslationsButton = "Generate translation files".toTextButton()
+
+        val generateAction: ()->Unit = {
+            tabs.selectPage("Advanced")
+            generateTranslationsButton.setText("Working...".tr())
+            crashHandlingThread {
                 val result = TranslationFileWriter.writeNewTranslationFiles()
-                // notify about completion
-                generateTranslationsButton.setText(result.tr())
-                generateTranslationsButton.disable()
+                postCrashHandlingRunnable {
+                    // notify about completion
+                    generateTranslationsButton.setText(result.tr())
+                    generateTranslationsButton.disable()
+                }
             }
-            generateTranslationsButton.onClick(generateAction)
-            keyPressDispatcher[Input.Keys.F12] = generateAction
-            generateTranslationsButton.addTooltip("F12",18f)
-            add(generateTranslationsButton).colspan(2).row()
         }
+
+        generateTranslationsButton.onClick(generateAction)
+        keyPressDispatcher[Input.Keys.F12] = generateAction
+        generateTranslationsButton.addTooltip("F12",18f)
+        add(generateTranslationsButton).colspan(2).row()
     }
 
     private fun Table.addCheckbox(text: String, initialState: Boolean, updateWorld: Boolean = false, action: ((Boolean) -> Unit)) {

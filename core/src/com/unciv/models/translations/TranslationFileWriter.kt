@@ -5,6 +5,7 @@ import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Array
 import com.unciv.JsonParser
 import com.unciv.models.metadata.BaseRuleset
+import com.unciv.models.metadata.LocaleCode
 import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tile.Terrain
@@ -14,6 +15,7 @@ import com.unciv.models.ruleset.unique.*
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
+import java.io.File
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 
@@ -22,7 +24,14 @@ object TranslationFileWriter {
     private const val specialNewLineCode = "# This is an empty line "
     const val templateFileLocation = "jsons/translations/template.properties"
     private const val languageFileLocation = "jsons/translations/%s.properties"
+    private const val shortDescriptionKey = "Fastlane_short_description"
+    private const val shortDescriptionFile = "short_description.txt"
+    private const val fullDescriptionKey = "Fastlane_full_description"
+    private const val fullDescriptionFile = "full_description.txt"
+    // Current dir on desktop should be assets, so use two '..' get us to project root
+    private const val fastlanePath = "../../fastlane/metadata/android/"
 
+    //region Update translation files
     fun writeNewTranslationFiles(): String {
         try {
             val translations = Translations()
@@ -38,7 +47,8 @@ object TranslationFileWriter {
                 writeLanguagePercentages(modPercentages, modFolder)  // unused by the game but maybe helpful for the mod developer
             }
 
-            return "Translation files are generated successfully."
+            return "Translation files are generated successfully.\n" +
+                    writeTranslatedFastlaneFiles(translations)
         } catch (ex: Throwable) {
             ex.printStackTrace()
             return ex.localizedMessage ?: ex.javaClass.simpleName
@@ -464,4 +474,39 @@ object TranslationFileWriter {
             }
         }
     }
+
+    //endregion
+    //region Fastlane 
+
+    /** This writes translated short_description.txt and full_description.txt files into the Fastlane structure.
+     *  @param [translations] A [Translations] instance with all languages loaded.
+     *  @return Success or error message.
+     */
+    private fun writeTranslatedFastlaneFiles(translations: Translations): String {
+        return try {
+            writeFastlaneFiles(shortDescriptionFile, translations[shortDescriptionKey], false)
+            writeFastlaneFiles(fullDescriptionFile, translations[fullDescriptionKey], true)
+            "Fastlane files are generated successfully."
+        } catch (ex: Throwable) {
+            ex.printStackTrace()
+            ex.localizedMessage ?: ex.javaClass.simpleName
+        }
+    }
+
+    private fun writeFastlaneFiles(fileName: String, translationEntry: TranslationEntry?, endWithNewline: Boolean) {
+        if (translationEntry == null) return
+        for ((language, translated) in translationEntry) {
+            val fileContent = when {
+                endWithNewline && !translated.endsWith('\n') -> translated + '\n'
+                !endWithNewline && translated.endsWith('\n') -> translated.removeSuffix("\n")
+                else -> translated
+            }
+            val localeCode = LocaleCode.valueOf(language)
+            val path = fastlanePath + localeCode.language
+            File(path).mkdirs()
+            File(path + File.separator + fileName).writeText(fileContent)
+        }
+    }
+
+    //endregion
 }
