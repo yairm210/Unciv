@@ -55,7 +55,7 @@ class UniqueDocsWriter {
         val capacity = 25 + targetTypesToUniques.size + UniqueType.values().size * (if (showUniqueOnOneTarget) 3 else 16)
         val lines = ArrayList<String>(capacity)
         lines += "# Uniques"
-        lines += "Simple unique parameters are explained by mouseover. Complex parameters are explained in [Unique parameter types](../unique parameters)"
+        lines += "Simple unique parameters are explained by mouseover. Complex parameters are explained in [Unique parameter types](../Unique-parameters)"
 
         for ((targetType, uniqueTypes) in targetTypesToUniques) {
             if (uniqueTypes.isEmpty()) continue
@@ -87,6 +87,7 @@ class UniqueDocsWriter {
             lines += "*[${paramType.parameterName}]: ${paramType.docDescription}$punctuation"
         }
 
-        File("../../docs/Modders/uniques.md").writeText(lines.joinToString("\n"))
+        // Let's use CRLF ending same as in all other files
+        File("../../docs/Modders/uniques.md").writeText(lines.joinToString("\r\n"))
     }
 }
