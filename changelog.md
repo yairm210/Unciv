@@ -1,3 +1,30 @@
+## 4.0.12
+
+Minor performance improvement for border strings
+
+By SomeTroglodyte:
+- Optimize String to Stat and Translation mod list somewhat 
+- Implement fastlane step 2: Translating 
+- Show available resources from CityScreen (bottom right info only) 
+- Fastlane - sort screenshots by renaming 
+- Unciv Adaptive Android Icon 
+- Fix TileInfo.neighbors being incomplete in rare circumstances 
+
+By JackRainy:
+- Allow city connections via open borders and own harbors only 
+- Fix of the broken link in the uniques.md (once again) 
+- Enable scrolling for the oversized popups 
+
+Make 'Followers of this religion" translatable  - By heipizhu4
+
+Fix minimap actor leak  - By Azzurite
+
+By xlenstra:
+- Fixed `provides [amount] [resource]` on buildings not accepting conditionals 
+- Implemented most easy things from comments on moddable victory PR 
+
+check for internet before starting a mp game to avoid freeze  - By alexban011
+
 ## 4.0.11
 
 Enabled nested translations!
