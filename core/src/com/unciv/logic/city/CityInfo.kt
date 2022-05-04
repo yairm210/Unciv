@@ -889,9 +889,10 @@ class CityInfo {
 
 
     fun getMatchingUniquesWithNonLocalEffects(uniqueType: UniqueType, stateForConditionals: StateForConditionals): Sequence<Unique> {
-        return cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
-            .filter { !it.isLocalEffect && it.conditionalsApply(stateForConditionals) }
-        // Note that we don't query religion here, as those only have local effects
+        val uniques = cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
+        // Memory performance showed that this function was very memory intensive, thus we only create the filter if needed
+        return if (uniques.any()) uniques.filter { !it.isLocalEffect && it.conditionalsApply(stateForConditionals) }
+        else uniques
     }
 
     //endregion
