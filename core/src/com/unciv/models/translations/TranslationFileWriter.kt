@@ -515,7 +515,6 @@ object TranslationFileWriter {
     private fun updateFastlaneChangelog() {
         // Relative path since we're in android/assets
         val changelogFile = File("../../changelog.md").readText()
-        // first group catches the version name, second group catches the rest of the version changelog
         //  changelogs by definition do not have #'s in them so we can use it as a delimiter
         val latestVersionRegexGroup = Regex("## \\S*([^#]*)").find(changelogFile)
         val versionChangelog = latestVersionRegexGroup!!.groups[1]!!.value.trim()
