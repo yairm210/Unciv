@@ -483,13 +483,15 @@ object TranslationFileWriter {
      *  @return Success or error message.
      */
     private fun writeTranslatedFastlaneFiles(translations: Translations): String {
-        return try {
+        try {
             writeFastlaneFiles(shortDescriptionFile, translations[shortDescriptionKey], false)
             writeFastlaneFiles(fullDescriptionFile, translations[fullDescriptionKey], true)
-            "Fastlane files are generated successfully."
+            updateFastlaneChangelog()
+
+            return "Fastlane files are generated successfully."
         } catch (ex: Throwable) {
             ex.printStackTrace()
-            ex.localizedMessage ?: ex.javaClass.simpleName
+            return ex.localizedMessage ?: ex.javaClass.simpleName
         }
     }
 
@@ -507,6 +509,23 @@ object TranslationFileWriter {
             File(path + File.separator + fileName).writeText(fileContent)
         }
     }
+    
+    // Original changelog entry, written by incrementVersionAndChangelog, is often changed manually for readability.
+    // This updates the fastlane changelog entry to match the latest one in changelog.md
+    private fun updateFastlaneChangelog() {
+        // Relative path since we're in android/assets
+        val changelogFile = File("../../changelog.md").readText()
+        // first group catches the version name, second group catches the rest of the version changelog
+        //  changelogs by definition do not have #'s in them so we can use it as a delimiter
+        val latestVersionRegexGroup = Regex("## \\S*([^#]*)").find(changelogFile)
+        val versionChangelog = latestVersionRegexGroup!!.groups[1]!!.value.trim()
 
+        val buildConfigFile = File("../../buildSrc/src/main/kotlin/BuildConfig.kt").readText()
+        val versionNumber =
+            Regex("appCodeNumber = (\\d*)").find(buildConfigFile)!!.groups[1]!!.value
+
+        val fileName = "$fastlanePath/en-US/changelogs/$versionNumber.txt"
+        File(fileName).writeText(versionChangelog)
+    }
     //endregion
 }
