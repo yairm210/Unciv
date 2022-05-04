@@ -214,30 +214,11 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
                     @Suppress("NON_EXHAUSTIVE_WHEN") // RankLabels.Demographic treated above
                     when (rankLabel) {
-                        RankLabels.Rank -> { // finds the current player's rank in each category
-                            val rank = aliveMajorCivsSorted.indexOfFirst { it == gameInfo.currentPlayerCiv } + 1
-                            demographicsTable.add(rank.toLabel())
-                        }
-
-                        RankLabels.Value -> { // finds the current player's value in each category
-                            addRankCivGroup(gameInfo.currentPlayerCiv)
-                        }
-                      
-                        RankLabels.Best -> { // finds civ with the best value in each category
-                            val bestCiv = aliveMajorCivsSorted.firstOrNull()!!                         
-                            addRankCivGroup(bestCiv)
-                        }
-                      
-                        RankLabels.Average -> { // calculates the average value in each category
-                            var totalScore = aliveMajorCivsSorted.sumOf { it.getStatForRanking(category) }
-                            val averageScore = totalScore / aliveMajorCivsSorted.count()
-                            demographicsTable.add(averageScore.toLabel())
-                        }
-                      
-                        RankLabels.Worst -> { // finds civ with the worst value in each category
-                            val worstCiv = aliveMajorCivsSorted.lastOrNull()!!
-                            addRankCivGroup(worstCiv)
-                        }
+                        RankLabels.Rank -> demographicsTable.add((aliveMajorCivsSorted.indexOfFirst { it == gameInfo.currentPlayerCiv } + 1).toLabel())
+                        RankLabels.Value -> addRankCivGroup(gameInfo.currentPlayerCiv)
+                        RankLabels.Best -> addRankCivGroup(aliveMajorCivsSorted.firstOrNull()!!)
+                        RankLabels.Average -> demographicsTable.add((aliveMajorCivsSorted.sumOf { it.getStatForRanking(category) } / aliveMajorCivsSorted.count()).toLabel())
+                        RankLabels.Worst -> addRankCivGroup(aliveMajorCivsSorted.lastOrNull()!!)
                     }
                 }
             }
