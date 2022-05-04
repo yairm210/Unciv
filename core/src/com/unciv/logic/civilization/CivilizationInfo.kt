@@ -546,7 +546,7 @@ class CivilizationInfo {
         // For now, it might be overkill though.
         var meetString = "[${civName}] has given us [${giftAmount}] as a token of goodwill for meeting us"
         val religionMeetString = "[${civName}] has also given us [${faithAmount}]"
-        if (diplomacy.filter { it.value.otherCiv().isMajorCiv() }.count() == 1) {
+        if (diplomacy.filter { it.value.otherCiv().isMajorCiv() }.size == 1) {
             giftAmount.timesInPlace(2f)
             meetString = "[${civName}] has given us [${giftAmount}] as we are the first major civ to meet them"
         }
@@ -604,7 +604,7 @@ class CivilizationInfo {
 
     fun isAtWar() = diplomacy.values.any { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv().isDefeated() }
 
-    fun hasOpenBordersTo(otherCiv: CivilizationInfo): Boolean {
+    fun canEnterBordersOf(otherCiv: CivilizationInfo): Boolean {
         if (otherCiv == this) return true // own borders are always open
         if (otherCiv.isBarbarian() || isBarbarian()) return false // barbarians blocks the routes
         val diplomacyManager = diplomacy[otherCiv.civName]
@@ -717,12 +717,12 @@ class CivilizationInfo {
         if (mapSizeModifier > 1)
             mapSizeModifier = (mapSizeModifier - 1) / 3 + 1
 
-        scoreBreakdown["Cities"] = cities.count() * 10 * mapSizeModifier
+        scoreBreakdown["Cities"] = cities.size * 10 * mapSizeModifier
         scoreBreakdown["Population"] = cities.sumOf { it.population.population } * 3 * mapSizeModifier
         scoreBreakdown["Tiles"] = cities.sumOf { city -> city.getTiles().filter { !it.isWater}.count() } * 1 * mapSizeModifier
         scoreBreakdown["Wonders"] = 40 * cities
             .sumOf { city -> city.cityConstructions.builtBuildings
-                .filter { gameInfo.ruleSet.buildings[it]!!.isWonder }.count() 
+                .filter { gameInfo.ruleSet.buildings[it]!!.isWonder }.size
             }.toDouble()
         scoreBreakdown["Techs"] = tech.getNumberOfTechsResearched() * 4.toDouble()
         scoreBreakdown["Future Tech"] = tech.repeatingTechsResearched * 10.toDouble()
@@ -759,7 +759,7 @@ class CivilizationInfo {
         questManager.setTransients()
 
         if (citiesCreated == 0 && cities.any())
-            citiesCreated = cities.filter { it.name in nation.cities }.count()
+            citiesCreated = cities.filter { it.name in nation.cities }.size
 
         religionManager.civInfo = this // needs to be before tech, since tech setTransients looks at all uniques
         religionManager.setTransients()
@@ -1289,7 +1289,7 @@ class CivilizationInfo {
         }
 
         // If there aren't many players (left) we can't be that far
-        val numMajors = gameInfo.getAliveMajorCivs().count()
+        val numMajors = gameInfo.getAliveMajorCivs().size
         if (numMajors <= 2 && proximity > Proximity.Close)
             proximity = Proximity.Close
         if (numMajors <= 4 && proximity > Proximity.Far)
