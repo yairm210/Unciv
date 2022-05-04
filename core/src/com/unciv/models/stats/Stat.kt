@@ -18,7 +18,12 @@ enum class Stat(
     Faith(NotificationIcon.Faith, UncivSound.Choir, Fonts.faith);
 
     companion object {
-        val statsUsableToBuy = listOf(Gold, Food, Science, Culture, Faith)
+        val statsUsableToBuy = setOf(Gold, Food, Science, Culture, Faith)
+        private val valuesAsMap = values().associateBy { it.name }
+        fun safeValueOf(name: String) = valuesAsMap[name]
+        fun isStat(name: String) = name in valuesAsMap
+        fun names() = valuesAsMap.keys
+        val statsWithCivWideField = setOf(Gold, Science, Culture, Faith)
     }
 }
 

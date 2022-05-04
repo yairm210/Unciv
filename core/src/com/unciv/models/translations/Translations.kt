@@ -241,7 +241,39 @@ val curlyBraceRegex = Regex("""\{([^}]*)\}""")
 val pointyBraceRegex = Regex("""\<([^>]*)\>""")
 
 
-/**
+object TranslationActiveModsCache {
+    private var cachedHash = Int.MIN_VALUE
+
+    var activeMods: HashSet<String> = hashSetOf()
+        get() {
+            val hash = getCurrentHash()
+            if (hash != cachedHash) {
+                cachedHash = hash
+                field = getCurrentSet()
+            }
+            return field
+        }
+        private set
+
+    private fun getCurrentHash() = UncivGame.Current.run {
+            if (isGameInfoInitialized())
+                gameInfo.gameParameters.mods.hashCode() + gameInfo.gameParameters.baseRuleset.hashCode() * 31
+            else translations.translationActiveMods.hashCode() * 31 * 31
+        }
+
+    private fun getCurrentSet() = UncivGame.Current.run {
+            if (isGameInfoInitialized()) {
+                val par = gameInfo.gameParameters
+                // This is equivalent to (par.mods + par.baseRuleset) without the cast down to `Set`
+                LinkedHashSet<String>(par.mods.size + 1).apply {
+                    addAll(par.mods)
+                    add(par.baseRuleset)
+                }
+            } else translations.translationActiveMods
+        }
+}
+
+    /**
  *  This function does the actual translation work,
  *      using an instance of [Translations] stored in UncivGame.Current
  *
@@ -256,11 +288,6 @@ val pointyBraceRegex = Regex("""\<([^>]*)\>""")
  *                  but with placeholder or sentence brackets removed.
  */
 fun String.tr(): String {
-    val activeMods = with(UncivGame.Current) {
-        if (isGameInfoInitialized())
-            gameInfo.gameParameters.mods + gameInfo.gameParameters.baseRuleset
-        else translations.translationActiveMods
-    }.toHashSet()
     val language = UncivGame.Current.settings.language
 
     if (contains('<') && contains('>')) { // Conditionals!
@@ -325,7 +352,7 @@ fun String.tr(): String {
     if (contains('{')) { // Translating partial sentences
         return curlyBraceRegex.replace(this) { it.groups[1]!!.value.tr() }
     }
-    
+
     // There might still be optimization potential here!
     if (contains('[')) { // Placeholders!
         /**
@@ -345,7 +372,7 @@ fun String.tr(): String {
         val translationStringWithSquareBracketsOnly = this.getPlaceholderText()
         // That is now the key into the translation HashMap!
         val translationEntry = UncivGame.Current.translations
-            .get(translationStringWithSquareBracketsOnly, language, activeMods)
+            .get(translationStringWithSquareBracketsOnly, language, TranslationActiveModsCache.activeMods)
 
         var languageSpecificPlaceholder: String
         val originalEntry: String
@@ -377,9 +404,9 @@ fun String.tr(): String {
 
     if (Stats.isStats(this)) return Stats.parse(this).toString()
 
-    val translation = UncivGame.Current.translations.getText(this, language, activeMods)
+    val translation = UncivGame.Current.translations.getText(this, language, TranslationActiveModsCache.activeMods)
 
-    val stat = Stat.values().firstOrNull { it.name == this }
+    val stat = Stat.safeValueOf(this)
     if (stat != null) return stat.character + translation
 
     return translation

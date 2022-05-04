@@ -1,3 +1,21 @@
+## 4.0.12
+
+By SomeTroglodyte:
+- Show available resources from CityScreen
+- F-droid integration improvements! 
+
+By JackRainy:
+- Allow city connections via open borders and own harbors only 
+- Enable scrolling for the oversized popups
+
+Performance improvements - By Azzurite
+
+By xlenstra:
+- Fixed `provides [amount] [resource]` on buildings not accepting conditionals 
+- Implemented most things for moddable victory conditions
+
+Check internet before starting mp game to avoid freeze - By alexban011
+
 ## 4.0.11
 
 Enabled nested translations!
