@@ -871,7 +871,18 @@ class OptionsPopup(
 
             val fontSelectBox = SelectBox<FontFamilyData>(skin)
             fontSelectBox.items = fonts
-            fontSelectBox.selected = FontFamilyData(settings.fontFamily)
+
+            // `FontFamilyData` implements kotlin equality contract such that _only_ the invariantName field is compared.
+            // The Gdx SelectBox should honor that - but it doesn't, as it is a _kotlin_ thing to implement
+            // `==` by calling `equals`, and there's precompiled _Java_ `==` in the widget code.
+            // `setSelected` first calls a `contains` which can switch between using `==` and `equals` (set to `equals`)
+            // but just one step later (where it re-checks whether the new selection is equal to the old one)
+            // it does a hard `==`. Also, setSelection copies its argument to the selection var, it doesn't pull a match from `items`.
+            // Therefore, _selecting_ an item in a `SelectBox` by an instance of `FontFamilyData` where only the `invariantName` is valid won't work properly.
+            //
+            // This is why it's _not_ `fontSelectBox.selected = FontFamilyData(settings.fontFamily)`
+            val fontToSelect = settings.fontFamily
+            fontSelectBox.selected = fonts.firstOrNull { it.invariantName == fontToSelect } // will default to first entry if `null` is passed
 
             selectCell.setActor(fontSelectBox).minWidth(selectBoxMinWidth).pad(10f)
 
@@ -885,7 +896,7 @@ class OptionsPopup(
         crashHandlingThread(name = "Add Font Select") {
             // This is a heavy operation and causes ANRs
             val fonts = GdxArray<FontFamilyData>().apply {
-                add(FontFamilyData("Default Font".tr(), ""))
+                add(FontFamilyData.default)
                 for (font in Fonts.getAvailableFontFamilyNames())
                     add(font)
             }

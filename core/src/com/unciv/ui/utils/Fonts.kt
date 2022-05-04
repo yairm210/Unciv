@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.Disposable
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.stats.Stat
+import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import java.lang.Exception
 
@@ -30,6 +31,7 @@ class FontFamilyData(
     val localName: String,
     val invariantName: String = localName
 ) {
+    // Implement kotlin equality contract such that _only_ the invariantName field is compared.
     override fun equals(other: Any?): Boolean {
         return if (other is FontFamilyData) invariantName == other.invariantName
         else super.equals(other)
@@ -39,6 +41,10 @@ class FontFamilyData(
 
     /** For SelectBox usage */
     override fun toString() = localName
+
+    companion object {
+        val default = FontFamilyData("Default Font".tr(), Fonts.DEFAULT_FONT_FAMILY)
+    }
 }
 
 // This class is loosely based on libgdx's FreeTypeBitmapFontData
