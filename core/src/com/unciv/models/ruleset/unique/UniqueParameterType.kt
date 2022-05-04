@@ -155,14 +155,14 @@ enum class UniqueParameterType(
     StatName("stat", "Culture", "This is one of the 7 major stats in the game - `Gold`, `Science`, `Production`, `Food`, `Happiness`, `Culture` and `Faith`. Note that the stat names need to be capitalized!") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
-            if (Stat.values().any { it.name == parameterText }) return null
+            if (Stat.isStat(parameterText)) return null
             return UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
         }
     },
 
     /** [UniqueType.DamageUnitsPlunder] and others near that one */
     PlunderableStatName("plunderableStat", "Gold", "All the following stats can be plundered: `Gold`, `Science`, `Culture`, `Faith`") {
-        private val knownValues = setOf(Stat.Gold.name, Stat.Science.name, Stat.Culture.name, Stat.Faith.name)
+        private val knownValues = Stat.statsWithCivWideField.map { it.name }.toSet()
         override fun getErrorSeverity(
             parameterText: String,
             ruleset: Ruleset
@@ -216,7 +216,7 @@ enum class UniqueParameterType(
     /** Implemented by [Building.matchesFilter][com.unciv.models.ruleset.Building.matchesFilter] */
     BuildingFilter("buildingFilter", "Culture") {
         private val knownValues = mutableSetOf("All","Building","Buildings","Wonder","Wonders","National Wonder","World Wonder")
-            .apply { addAll(Stat.values().map { it.name }) }
+            .apply { addAll(Stat.names()) }
         override fun getErrorSeverity(
             parameterText: String,
             ruleset: Ruleset
