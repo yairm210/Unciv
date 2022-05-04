@@ -609,6 +609,7 @@ class CivilizationInfo {
         if (otherCiv.isBarbarian() || isBarbarian()) return false // barbarians blocks the routes
         val diplomacyManager = diplomacy[otherCiv.civName]
             ?: return false // not encountered yet
+        if (otherCiv.isCityState() && diplomacyManager.diplomaticStatus != DiplomaticStatus.War) return true
         return diplomacyManager.hasOpenBorders
     }
 
