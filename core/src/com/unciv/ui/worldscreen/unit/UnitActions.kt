@@ -817,7 +817,7 @@ object UnitActions {
         if (getGiftAction != null) actionList += getGiftAction
     }
 
-    private fun getGiftAction(unit: MapUnit, tile: TileInfo): UnitAction? {
+    fun getGiftAction(unit: MapUnit, tile: TileInfo): UnitAction? {
         val recipient = tile.getOwner()
         // We need to be in another civs territory.
         if (recipient == null || recipient.isCurrentPlayer()) return null
@@ -825,7 +825,7 @@ object UnitActions {
         // City States only take military units (and units specifically allowed by uniques)
         if (recipient.isCityState()) {
             if (!unit.matchesFilter("Military")
-                && unit.getMatchingUniques("Gain [] Influence with a [] gift to a City-State")
+                && unit.getMatchingUniques(UniqueType.GainInfluenceWithUnitGiftToCityState, checkCivInfoUniques = true)
                     .none { unit.matchesFilter(it.params[1]) }
             ) return null
         }
@@ -837,7 +837,7 @@ object UnitActions {
 
         val giftAction = {
             if (recipient.isCityState()) {
-                for (unique in unit.civInfo.getMatchingUniques(UniqueType.GainInfluenceWithUnitGiftToCityState)) {
+                for (unique in unit.getMatchingUniques(UniqueType.GainInfluenceWithUnitGiftToCityState, checkCivInfoUniques = true)) {
                     if (unit.matchesFilter(unique.params[1])) {
                         recipient.getDiplomacyManager(unit.civInfo)
                             .addInfluence(unique.params[0].toFloat() - 5f)
