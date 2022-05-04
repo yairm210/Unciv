@@ -536,7 +536,7 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
                 val angle = sign * (atan(sign * relativeWorldPosition.y / relativeWorldPosition.x) * 180 / PI - 90.0).toFloat()
                 
                 val innerBorderImage = ImageGetter.getImage(
-                        tileSetStrings.orFallback { getBorder("${borderShapeString}Inner") }
+                        tileSetStrings.orFallback { getBorder(borderShapeString,"Inner") }
                 )
                 miscLayerGroup.addActor(innerBorderImage)
                 images.add(innerBorderImage)
@@ -545,7 +545,7 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
                 innerBorderImage.color = civOuterColor
 
                 val outerBorderImage = ImageGetter.getImage(
-                        tileSetStrings.orFallback { getBorder("${borderShapeString}Outer") }
+                        tileSetStrings.orFallback { getBorder(borderShapeString, "Outer") }
                 )
                 miscLayerGroup.addActor(outerBorderImage)
                 images.add(outerBorderImage)

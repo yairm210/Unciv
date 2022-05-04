@@ -78,7 +78,7 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, fallb
         else return cityTile
     }
 
-    fun getBorder(imageName: String) = getString(bordersLocation, imageName)
+    fun getBorder(borderShapeString: String, innerOrOuter:String) = getString(bordersLocation, borderShapeString, innerOrOuter)
 
     /** Fallback [TileSetStrings] to use when the currently chosen tileset is missing an image. */
     val fallback by lazy {
