@@ -294,9 +294,18 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
             var locationToCheck = baseLocation
             if (tileInfo.owningCity != null) {
                 val ownersEra = tileInfo.getOwner()!!.getEra()
-                val eraSpecificLocation = tileSetStrings.getString(locationToCheck, tileSetStrings.tag, ownersEra.name)
+                val eraSpecificLocation =
+                    tileSetStrings.getString(locationToCheck, tileSetStrings.tag, ownersEra.name)
                 if (ImageGetter.imageExists(eraSpecificLocation))
                     locationToCheck = eraSpecificLocation
+
+                var ownersStyle = tileInfo.getOwner()!!.nation.style
+                if (ownersStyle == "") ownersStyle = tileInfo.getOwner()!!.civName
+                val styleSpecificLocation =
+                    tileSetStrings.getString(locationToCheck, tileSetStrings.tag, ownersStyle)
+
+                if (ImageGetter.imageExists(styleSpecificLocation))
+                    locationToCheck = styleSpecificLocation
             }
 
             val existingImages = ArrayList<String>()
