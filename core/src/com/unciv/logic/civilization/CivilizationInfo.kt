@@ -645,8 +645,7 @@ class CivilizationInfo {
 
     fun getStatForRanking(category: RankingType): Int {
         return if (isDefeated()) 0
-        else {
-            when (category) {
+        else when (category) {
                 RankingType.Score -> calculateTotalScore().toInt()
                 RankingType.Population -> cities.sumOf { it.population.population }
                 RankingType.Crop_Yield -> statsForNextTurn.food.roundToInt()
@@ -657,7 +656,6 @@ class CivilizationInfo {
                 RankingType.Happiness -> getHappiness()
                 RankingType.Technologies -> tech.researchedTechnologies.size
                 RankingType.Culture -> policies.adoptedPolicies.count { !Policy.isBranchCompleteByName(it) }
-            }
         }
     }
 
