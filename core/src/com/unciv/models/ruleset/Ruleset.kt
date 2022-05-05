@@ -962,11 +962,11 @@ object RulesetCache : HashMap<String,Ruleset>() {
             val newRuleset = getComplexRuleset(mods, baseRuleset)
             newRuleset.modOptions.isBaseRuleset = true // This is so the checkModLinks finds all connections
             newRuleset.checkModLinks(forOptionsPopup)
-        } catch (ex: Exception) {
+        } catch (ex: UncivShowableException) {
             // This happens if a building is dependent on a tech not in the base ruleset
             //  because newRuleset.updateBuildingCosts() in getComplexRuleset() throws an error
             Ruleset.RulesetErrorList()
-                .apply { add(ex.localizedMessage, Ruleset.RulesetErrorSeverity.Error) }
+                .apply { add(ex.message!!.tr(), Ruleset.RulesetErrorSeverity.Error) }
         }
     }
 

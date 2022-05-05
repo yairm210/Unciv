@@ -10,6 +10,7 @@ import com.unciv.logic.map.MapUnit  // for Kdoc only
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
@@ -101,8 +102,9 @@ class CityConstructions {
      */
     fun getStats(): StatTreeNode {
         val stats = StatTreeNode()
+        val localUniqueCache = LocalUniqueCache()
         for (building in getBuiltBuildings())
-            stats.addStats(building.getStats(cityInfo), building.name)
+            stats.addStats(building.getStats(cityInfo, localUniqueCache), building.name)
         return stats
     }
 
@@ -113,11 +115,9 @@ class CityConstructions {
         var maintenanceCost = 0
         val freeBuildings = cityInfo.civInfo.civConstructions.getFreeBuildings(cityInfo.id)
 
-        for (building in getBuiltBuildings()) {
-            if (building.name !in freeBuildings) {
+        for (building in getBuiltBuildings())
+            if (building.name !in freeBuildings)
                 maintenanceCost += building.maintenance
-            }
-        }
 
         return maintenanceCost
     }
