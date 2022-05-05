@@ -364,7 +364,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                 stopMultiPlayerRefresher()
                 latestGame.isUpToDate = true
                 if (viewingCiv.civName == latestGame.currentPlayer || viewingCiv.civName == Constants.spectator) {
-                    game.multiplayerTurnNotifier?.turnStarted()
+                    game.platformSpecificHelper?.notifyTurnStarted()
                 }
                 postCrashHandlingRunnable { createNewWorldScreen(latestGame) }
             }

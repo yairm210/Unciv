@@ -38,7 +38,6 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     val customSaveLocationHelper = parameters.customSaveLocationHelper
     val platformSpecificHelper = parameters.platformSpecificHelper
     private val audioExceptionHelper = parameters.audioExceptionHelper
-    val multiplayerTurnNotifier = parameters.multiplayerTurnNotifier
 
     var deepLinkedMultiplayerGame: String? = null
     lateinit var gameInfo: GameInfo

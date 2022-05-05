@@ -9,10 +9,9 @@ import com.sun.jna.Pointer
 import com.sun.jna.platform.win32.User32
 import com.sun.jna.platform.win32.WinNT
 import com.sun.jna.platform.win32.WinUser
-import com.unciv.ui.MultiplayerTurnNotifier
 import org.lwjgl.glfw.GLFWNativeWin32
 
-class MultiplayerTurnNotifierWindows: Lwjgl3WindowAdapter(), MultiplayerTurnNotifier {
+class MultiplayerTurnNotifierWindows: Lwjgl3WindowAdapter() {
     companion object {
         val user32: User32? = try {
             Native.load(User32::class.java)
@@ -41,7 +40,7 @@ class MultiplayerTurnNotifierWindows: Lwjgl3WindowAdapter(), MultiplayerTurnNoti
      *
      * We should've used FlashWindow instead of FlashWindowEx, but for some reason the former has no binding in Java's User32
      */
-    override fun turnStarted() {
+    fun turnStarted() {
         try {
             if (user32 == null || window == null || hasFocus) return
             val flashwinfo = WinUser.FLASHWINFO()
