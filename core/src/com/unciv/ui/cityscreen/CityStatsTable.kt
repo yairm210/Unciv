@@ -37,7 +37,12 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         val miniStatsTable = Table()
         for ((stat, amount) in cityInfo.cityStats.currentCityStats) {
             if (stat == Stat.Faith && !cityInfo.civInfo.gameInfo.isReligionEnabled()) continue
-            miniStatsTable.add(ImageGetter.getStatIcon(stat.name)).size(20f).padRight(5f)
+            val icon = Table()
+            icon.add(ImageGetter.getStatIcon(stat.name).addBorder(2f, Color.CLEAR))
+            if (cityInfo.isFocus(stat.name)) {
+                icon.background = ImageGetter.getBackground(BaseScreen.skin.get("selection", Color::class.java))
+            }
+            miniStatsTable.add(icon).size(20f).padRight(5f)
             val valueToDisplay = if (stat == Stat.Happiness) cityInfo.cityStats.happinessList.values.sum() else amount
             miniStatsTable.add(round(valueToDisplay).toInt().toLabel()).padRight(10f)
         }

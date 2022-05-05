@@ -688,6 +688,14 @@ class CityInfo {
         }
     }
 
+    fun isFocus(statName: String): Boolean {
+        return (statName == "Production" && cityAIFocus == CityFocus.ProductionFocus ||
+                statName == "Food" && cityAIFocus == CityFocus.FoodFocus ||
+                statName == "Gold" && cityAIFocus == CityFocus.GoldFocus ||
+                statName == "Science" && cityAIFocus == CityFocus.ScienceFocus ||
+                statName == "Culture" && cityAIFocus == CityFocus.CultureFocus)
+    }
+
     fun endTurn() {
         val stats = cityStats.currentCityStats
 
