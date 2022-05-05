@@ -708,12 +708,12 @@ class MapUnit {
         val isFriendlyTerritory = tileInfo.isFriendlyTerritory(civInfo)
 
         var healing = when {
-            tileInfo.isCityCenter() -> 25 // Increased from 20 for CV parity
-            tileInfo.isWater && isFriendlyTerritory && (baseUnit.isWaterUnit() || isTransported) -> 20 // Water unit on friendly water, increased from 15 for CV parity
+            tileInfo.isCityCenter() -> 25
+            tileInfo.isWater && isFriendlyTerritory && (baseUnit.isWaterUnit() || isTransported) -> 20 // Water unit on friendly water
             tileInfo.isWater -> 0 // All other water cases
-            isFriendlyTerritory -> 20 // Allied territory, increased from 15 for CV parity
+            isFriendlyTerritory -> 20 // Allied territory
             tileInfo.getOwner() == null -> 10 // Neutral territory
-            else -> 10 // Enemy territory, increased from 5 for CV  parity
+            else -> 10 // Enemy territory
         }
 
         val mayHeal = healing > 0 || (tileInfo.isWater && hasUnique(UniqueType.HealsOutsideFriendlyTerritory, checkCivInfoUniques = true))

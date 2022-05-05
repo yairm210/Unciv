@@ -653,17 +653,18 @@ class CivilizationInfo {
     }
 
     fun getStatForRanking(category: RankingType): Int {
-        return when (category) {
-            RankingType.Score -> calculateTotalScore().toInt()
-            RankingType.Population -> cities.sumOf { it.population.population }
-            RankingType.Crop_Yield -> statsForNextTurn.food.roundToInt()
-            RankingType.Production -> statsForNextTurn.production.roundToInt()
-            RankingType.Gold -> gold
-            RankingType.Territory -> cities.sumOf { it.tiles.size }
-            RankingType.Force -> getMilitaryMight()
-            RankingType.Happiness -> getHappiness()
-            RankingType.Technologies -> tech.researchedTechnologies.size
-            RankingType.Culture -> policies.adoptedPolicies.count { !Policy.isBranchCompleteByName(it) }
+        return if (isDefeated()) 0
+        else when (category) {
+                RankingType.Score -> calculateTotalScore().toInt()
+                RankingType.Population -> cities.sumOf { it.population.population }
+                RankingType.Crop_Yield -> statsForNextTurn.food.roundToInt()
+                RankingType.Production -> statsForNextTurn.production.roundToInt()
+                RankingType.Gold -> gold
+                RankingType.Territory -> cities.sumOf { it.tiles.size }
+                RankingType.Force -> getMilitaryMight()
+                RankingType.Happiness -> getHappiness()
+                RankingType.Technologies -> tech.researchedTechnologies.size
+                RankingType.Culture -> policies.adoptedPolicies.count { !Policy.isBranchCompleteByName(it) }
         }
     }
 
