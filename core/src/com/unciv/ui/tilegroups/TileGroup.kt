@@ -86,7 +86,8 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
     }
     val miscLayerGroup = MiscLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize) }
 
-    var tileYieldGroup = YieldGroup() // JN
+    var tileYieldGroupInitialized = false
+    val tileYieldGroup: YieldGroup by lazy { YieldGroup() }
 
     var resourceImage: Actor? = null
     var resource: String? = null
