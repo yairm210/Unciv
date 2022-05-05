@@ -687,12 +687,13 @@ class CityInfo {
         }
     }
 
-    fun isFocus(statName: String): Boolean {
-        return (statName == "Production" && cityAIFocus == CityFocus.ProductionFocus ||
-                statName == "Food" && cityAIFocus == CityFocus.FoodFocus ||
-                statName == "Gold" && cityAIFocus == CityFocus.GoldFocus ||
-                statName == "Science" && cityAIFocus == CityFocus.ScienceFocus ||
-                statName == "Culture" && cityAIFocus == CityFocus.CultureFocus)
+    fun isFocus(stat: Stat): Boolean {
+        return (stat == Stat.Production && cityAIFocus == CityFocus.ProductionFocus ||
+                stat == Stat.Food && cityAIFocus == CityFocus.FoodFocus ||
+                stat == Stat.Gold && cityAIFocus == CityFocus.GoldFocus ||
+                stat == Stat.Science && cityAIFocus == CityFocus.ScienceFocus ||
+                stat == Stat.Culture && cityAIFocus == CityFocus.CultureFocus ||
+                stat == Stat.Faith && cityAIFocus == CityFocus.FaithFocus)
     }
 
     fun endTurn() {

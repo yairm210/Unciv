@@ -136,6 +136,8 @@ class PopulationManager {
                 if (bestTile != null)
                     cityInfo.workedTiles = cityInfo.workedTiles.withItem(bestTile.position)
             } else if (bestJob != null) specialistAllocations.add(bestJob, 1)
+            
+            cityInfo.cityStats.update()
         }
     }
 

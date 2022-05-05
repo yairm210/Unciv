@@ -39,7 +39,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
             if (stat == Stat.Faith && !cityInfo.civInfo.gameInfo.isReligionEnabled()) continue
             val icon = Table()
             icon.add(ImageGetter.getStatIcon(stat.name).addBorder(2f, Color.CLEAR))
-            if (cityInfo.isFocus(stat.name)) {
+            if (cityInfo.isFocus(stat)) {
                 icon.background = ImageGetter.getBackground(BaseScreen.skin.get("selection", Color::class.java))
             }
             miniStatsTable.add(icon).size(20f).padRight(5f)
