@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
+import com.unciv.logic.automation.Automation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.city.INonPerpetualConstruction
@@ -187,13 +188,22 @@ class CityScreen(
     }
 
     private fun updateTileGroups() {
-        fun getPickImprovementColor(tileInfo: TileInfo): Color {
+        fun isExistingImprovementValuable(tileInfo: TileInfo, improvement: TileImprovement): Boolean {
+            if (tileInfo.improvement == null) return false
+            val civInfo = city.civInfo
+            val existingStats = tileInfo.getImprovementStats(tileInfo.getTileImprovement()!!, civInfo, city)
+            val replacingStats = tileInfo.getImprovementStats(improvement, civInfo, city)
+            return Automation.rankStatsValue(existingStats, civInfo) > Automation.rankStatsValue(replacingStats, civInfo)
+        }
+        fun getPickImprovementColor(tileInfo: TileInfo): Pair<Color, Float> {
             val improvement = pickTileData!!.improvement
             return when {
-                tileInfo.isMarkedForCreatesOneImprovement() -> Color.BROWN
-                !tileInfo.canBuildImprovement(improvement, city.civInfo) -> Color.RED
-                tileInfo.turnsToImprovement > 0 -> Color.YELLOW
-                else -> Color.GREEN
+                tileInfo.isMarkedForCreatesOneImprovement() -> Color.BROWN to 0.7f
+                !tileInfo.canBuildImprovement(improvement, city.civInfo) -> Color.RED to 0.4f
+                isExistingImprovementValuable(tileInfo, improvement) -> Color.ORANGE to 0.5f
+                tileInfo.improvement != null -> Color.YELLOW to 0.6f
+                tileInfo.turnsToImprovement > 0 -> Color.YELLOW to 0.6f
+                else -> Color.GREEN to 0.5f
             }
         }
         for (tileGroup in tileGroups) {
@@ -206,9 +216,9 @@ class CityScreen(
                 }
                 /** Support for [UniqueType.CreatesOneImprovement] */
                 tileGroup.tileInfo == selectedQueueEntryTargetTile ->
-                    tileGroup.showHighlight(Color.BROWN, 0.4f)
+                    tileGroup.showHighlight(Color.BROWN, 0.7f)
                 pickTileData != null && city.tiles.contains(tileGroup.tileInfo.position) ->
-                    tileGroup.showHighlight(getPickImprovementColor(tileGroup.tileInfo), 0.4f)
+                    getPickImprovementColor(tileGroup.tileInfo).run { tileGroup.showHighlight(first, second) }
             }
         }
     }
