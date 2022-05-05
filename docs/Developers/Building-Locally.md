@@ -75,6 +75,8 @@ The simple multiplayer host included in the sources can be set up to debug or ru
     -   Set the module to `Unciv.server`, main class to `com.unciv.app.server.DesktopLauncher` and `<repo_folder>/android/assets/` as the Working directory, OK to close the window.
 -   Select the UncivServer configuration and click the green arrow button to run! Or start a debug session as above.
 
+To build a jar file, refer to [Without Android Studio](#Without-Android-Studio) and replace 'desktop' with 'server'. That is, run `./gradlew server:dist` and when it's done look for /server/build/libs/UncivServer.jar
+
 ## Unit Tests
 
 You can (and in some cases _should_) run and even debug the unit tests locally.
