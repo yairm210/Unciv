@@ -344,6 +344,16 @@ object ImageGetter {
         return redCross
     }
 
+    fun getCrossedImage(image: Actor, iconSize: Float) = Group().apply {
+            isTransform = false
+            setSize(iconSize, iconSize)
+            image.center(this)
+            addActor(image)
+            val cross = getRedCross(iconSize * 0.7f, 0.7f)
+            cross.center(this)
+            addActor(cross)
+        }
+
     fun getArrowImage(align:Int = Align.right): Image {
         val image = getImage("OtherIcons/ArrowRight")
         image.setOrigin(Align.center)

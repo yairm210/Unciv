@@ -2,6 +2,7 @@ package com.unciv.ui.mapeditor
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
@@ -17,26 +18,27 @@ import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.utils.*
 
-
 //todo normalize properly
 
-//todo drag painting - migrate from old editor
-//todo Nat Wonder step generator: *New* wonders?
-//todo functional Tab for Units
+//todo functional Tab for Units (empty Tab is prepared but commented out in MapEditorEditTab.AllEditSubTabs)
 //todo copy/paste tile areas? (As tool tab, brush sized, floodfill forbidden, tab displays copied area)
 //todo Synergy with Civilopedia for drawing loose tiles / terrain icons
 //todo left-align everything so a half-open drawer is more useful
 //todo combined brush
-//todo Load should check isDirty before discarding and replacing the current map
 //todo New function `convertTerrains` is auto-run after rivers the right decision for step-wise generation? Will paintRiverFromTo need the same? Will painting manually need the conversion?
 //todo work in Simon's changes to continent/landmass
 //todo work in Simon's regions - check whether generate and store or discard is the way
 //todo Regions: If relevant, view and possibly work in Simon's colored visualization
+//todo Strategic Resource abundance control
 //todo Tooltips for Edit items with info on placeability? Place this info as Brush description? In Expander?
 //todo Civilopedia links from edit items by right-click/long-tap?
 //todo Mod tab change base ruleset - disableAllCheckboxes - instead some intelligence to leave those mods on that stay compatible?
 //todo The setSkin call in newMapHolder belongs in ImageGetter.setNewRuleset and should be intelligent as resetFont is expensive and the probability a mod touched a few EmojiIcons is low
-
+//todo new brush: remove natural wonder
+//todo "random nation" starting location (maybe no new internal representation = all major nations)
+//todo Nat Wonder step generator: Needs tweaks to avoid placing duplicates or wonders too close together
+//todo Music? Different suffix? Off? 20% Volume?
+//todo See #6610 - re-layout after the map size dropdown changes to custom and new widgets are inserted - can reach "Create" only by dragging the _header_ of the sub-TabbedPager
 
 class MapEditorScreen(map: TileMap? = null): BaseScreen() {
     /** The map being edited, with mod list for that map */
@@ -73,8 +75,7 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen() {
                 mapParameters.mapSize = MapSizeNew(MapSize.Tiny)
             }
         } else {
-            ruleset = map.ruleset ?:
-                    RulesetCache.getComplexRuleset(map.mapParameters.mods, map.mapParameters.baseRuleset)
+            ruleset = map.ruleset ?: RulesetCache.getComplexRuleset(map.mapParameters)
             tileMap = map
         }
 
@@ -82,7 +83,7 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen() {
         isDirty = false
 
         tabs = MapEditorMainTabs(this)
-        MapEditorToolsDrawer(tabs, stage)
+        MapEditorToolsDrawer(tabs, stage, mapHolder)
 
         // The top level pager assigns its own key bindings, but making nested TabbedPagers bind keys
         // so all levels select to show the tab in question is too complex. Sub-Tabs need to maintain
@@ -141,18 +142,15 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen() {
         return result
     }
 
-    fun loadMap(map: TileMap, newRuleset: Ruleset? = null) {
+    fun loadMap(map: TileMap, newRuleset: Ruleset? = null, selectPage: Int = 0) {
         mapHolder.remove()
         tileMap = map
         checkAndFixMapSize()
-        ruleset = newRuleset ?:
-                RulesetCache.getComplexRuleset(map.mapParameters.mods, map.mapParameters.baseRuleset)
+        ruleset = newRuleset ?: RulesetCache.getComplexRuleset(map.mapParameters)
         mapHolder = newMapHolder()
         isDirty = false
-        Gdx.app.postRunnable {
-            // Doing this directly freezes the game, despite loadMap already running under postRunnable
-            tabs.selectPage(0)
-        }
+        Gdx.input.inputProcessor = stage
+        tabs.selectPage(selectPage)  // must be done _after_ resetting inputProcessor!
     }
 
     fun getMapCloneForSave() =
@@ -171,10 +169,14 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen() {
     }
 
     internal fun closeEditor() {
-        if (!isDirty) return game.setScreen(MainMenuScreen())
-        YesNoPopup("Do you want to leave without saving the recent changes?", action = {
+        askIfDirty("Do you want to leave without saving the recent changes?") {
             game.setScreen(MainMenuScreen())
-        }, screen = this, restoreDefault = {
+        }
+    }
+
+    fun askIfDirty(question: String, action: ()->Unit) {
+        if (!isDirty) return action()
+        YesNoPopup(question, action, screen = this, restoreDefault = {
             keyPressDispatcher[KeyCharAndCode.BACK] = this::closeEditor
         }).open()
     }

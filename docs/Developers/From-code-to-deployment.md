@@ -32,7 +32,7 @@ When I'm ready to release a new version I:
     -   Send an announcement on the Discord server of the version release and release notes via webhook
     -   Pack, Sign, and Upload a new APK to the Google Play Console at 10% rollout
 -   The F-Droid bot checks periodically if we added a new tag. When it recognizes that we did, it will update the [yaml file here](https://gitlab.com/fdroid/fdroiddata/blob/master/metadata/com.unciv.app.yml)
-    -   When the bot next runs and sees that there's a version it doesn't have a release for, it will attempt to build the new release. The log of the build will be added [here](https://monitor.f-droid.org/builds/running), and the new release will eventually be available [here](https://f-droid.org/en/packages/com.unciv.app/)
+    -   When the bot next runs and sees that there's a version it doesn't have a release for, it will attempt to build the new release. The log of the build will be added [here](https://monitor.f-droid.org/builds/build) (search for Unciv, there's a log link like this: `https://monitor.f-droid.org/builds/log/com.unciv.app/<appCodeNumber>`), and the new release will eventually be available [here](https://f-droid.org/en/packages/com.unciv.app/)
 
 ## About Google Play publishing
 

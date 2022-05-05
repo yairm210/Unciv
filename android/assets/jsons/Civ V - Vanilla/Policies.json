@@ -258,7 +258,7 @@
             {
                 "name": "Free Religion",
                 "uniques": [
-                    "[1] Free Social Policy",
+                    "Free Social Policy",
                     "[+1 Culture] from every [Monument]",
                     "[+1 Culture] from every [Temple]",
                     "[+1 Culture] from every [Monastery]"

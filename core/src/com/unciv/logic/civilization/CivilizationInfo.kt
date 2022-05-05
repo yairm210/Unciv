@@ -121,7 +121,7 @@ class CivilizationInfo {
     val lastEraResourceUsedForUnit = HashMap<String, Int>()
     
     @Transient
-    var thingsToFocusOnForVictory = setOf<ThingToFocus>()
+    var thingsToFocusOnForVictory = setOf<Victory.Focus>()
 
     var playerType = PlayerType.AI
 
@@ -348,8 +348,8 @@ class CivilizationInfo {
                else gameInfo.ruleSet.victories[getPreferredVictoryType()]!!
     }
     
-    fun wantsToFocusOn(thingToFocusOn: ThingToFocus): Boolean {
-        return thingsToFocusOnForVictory.contains(thingToFocusOn)
+    fun wantsToFocusOn(focus: Victory.Focus): Boolean {
+        return thingsToFocusOnForVictory.contains(focus)
     }
     
     @Transient
@@ -427,10 +427,11 @@ class CivilizationInfo {
         )
         yieldAll(policies.policyUniques.getMatchingUniques(uniqueType, stateForConditionals))
         yieldAll(tech.techUniques.getMatchingUniques(uniqueType, stateForConditionals))
-        yieldAll(temporaryUniques.asSequence()
-            .map { it.uniqueObject }
-            .filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) }
-        )
+        if (temporaryUniques.isNotEmpty())
+            yieldAll(temporaryUniques.asSequence()
+                .map { it.uniqueObject }
+                .filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) }
+            )
         yieldAll(getEra().getMatchingUniques(uniqueType, stateForConditionals))
         if (religionManager.religion != null)
             yieldAll(religionManager.religion!!.getFounderUniques()
@@ -595,7 +596,7 @@ class CivilizationInfo {
     fun getEraNumber(): Int = getEra().eraNumber
 
     fun isAtWarWith(otherCiv: CivilizationInfo): Boolean {
-        if (otherCiv.civName == civName) return false // never at war with itself
+        if (otherCiv == this) return false // never at war with itself
         if (otherCiv.isBarbarian() || isBarbarian()) return true
         val diplomacyManager = diplomacy[otherCiv.civName]
             ?: return false // not encountered yet
@@ -603,6 +604,14 @@ class CivilizationInfo {
     }
 
     fun isAtWar() = diplomacy.values.any { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv().isDefeated() }
+
+    fun hasOpenBordersTo(otherCiv: CivilizationInfo): Boolean {
+        if (otherCiv == this) return true // own borders are always open
+        if (otherCiv.isBarbarian() || isBarbarian()) return false // barbarians blocks the routes
+        val diplomacyManager = diplomacy[otherCiv.civName]
+            ?: return false // not encountered yet
+        return diplomacyManager.hasOpenBorders
+    }
 
     /**
      * Returns a civilization caption suitable for greetings including player type info:
@@ -644,17 +653,18 @@ class CivilizationInfo {
     }
 
     fun getStatForRanking(category: RankingType): Int {
-        return when (category) {
-            RankingType.Score -> calculateTotalScore().toInt()
-            RankingType.Population -> cities.sumOf { it.population.population }
-            RankingType.Crop_Yield -> statsForNextTurn.food.roundToInt()
-            RankingType.Production -> statsForNextTurn.production.roundToInt()
-            RankingType.Gold -> gold
-            RankingType.Territory -> cities.sumOf { it.tiles.size }
-            RankingType.Force -> getMilitaryMight()
-            RankingType.Happiness -> getHappiness()
-            RankingType.Technologies -> tech.researchedTechnologies.size
-            RankingType.Culture -> policies.adoptedPolicies.count { !Policy.isBranchCompleteByName(it) }
+        return if (isDefeated()) 0
+        else when (category) {
+                RankingType.Score -> calculateTotalScore().toInt()
+                RankingType.Population -> cities.sumOf { it.population.population }
+                RankingType.Crop_Yield -> statsForNextTurn.food.roundToInt()
+                RankingType.Production -> statsForNextTurn.production.roundToInt()
+                RankingType.Gold -> gold
+                RankingType.Territory -> cities.sumOf { it.tiles.size }
+                RankingType.Force -> getMilitaryMight()
+                RankingType.Happiness -> getHappiness()
+                RankingType.Technologies -> tech.researchedTechnologies.size
+                RankingType.Culture -> policies.adoptedPolicies.count { !Policy.isBranchCompleteByName(it) }
         }
     }
 

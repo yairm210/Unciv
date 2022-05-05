@@ -71,12 +71,14 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         return infoList.joinToString()
     }
 
-    /** Generate description as multi-line string for Nation description addUniqueUnitsText and CityScreen addSelectedConstructionTable */
-    fun getDescription(): String {
+    /** Generate description as multi-line string for CityScreen addSelectedConstructionTable
+     * @param cityInfo Supplies civInfo to show available resources after resource requirements */
+    fun getDescription(cityInfo: CityInfo): String {
         val lines = mutableListOf<String>()
+        val availableResources = cityInfo.civInfo.getCivResources().associate { it.resource.name to it.amount }
         for ((resource, amount) in getResourceRequirements()) {
-            lines += if (amount == 1) "Consumes 1 [$resource]".tr()
-                     else "Consumes [$amount] [$resource]".tr()
+            val available = availableResources[resource] ?: 0
+            lines += "Consumes ${if (amount == 1) "1" else "[$amount]"} [$resource] ({[$available] available})".tr()
         }
         var strengthLine = ""
         if (strength != 0) {
@@ -89,6 +91,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (replacementTextForUniques != "") lines += replacementTextForUniques
         else for (unique in uniqueObjects.filterNot {
             it.type == UniqueType.Unbuildable
+                    || it.type == UniqueType.ConsumesResources  // already shown from getResourceRequirements
                     || it.type?.flags?.contains(UniqueFlag.HiddenToUsers) == true
         })
             lines += unique.text.tr()
@@ -127,14 +130,15 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             textList += FormattedLine(stats.joinToString(", ", "{Cost}: "))
         }
 
-        if (replacementTextForUniques != "") {
+        if (replacementTextForUniques.isNotEmpty()) {
             textList += FormattedLine()
             textList += FormattedLine(replacementTextForUniques)
         } else if (uniques.isNotEmpty()) {
             textList += FormattedLine()
-            uniqueObjects.sortedBy { it.text }.forEach {
-                if (!it.hasFlag(UniqueFlag.HiddenToUsers))
-                    textList += FormattedLine(it)
+            for (unique in uniqueObjects.sortedBy { it.text }) {
+                if (unique.hasFlag(UniqueFlag.HiddenToUsers)) continue
+                if (unique.type == UniqueType.ConsumesResources) continue  // already shown from getResourceRequirements
+                textList += FormattedLine(unique)
             }
         }
 
@@ -324,8 +328,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     }
 
     override fun getStatBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
-        var cost = getBaseBuyCost(cityInfo, stat)?.toDouble()
-        if (cost == null) return null
+        var cost = getBaseBuyCost(cityInfo, stat)?.toDouble() ?: return null
 
         for (unique in cityInfo.getMatchingUniques(UniqueType.BuyUnitsDiscount)) {
             if (stat.name == unique.params[0] && matchesFilter(unique.params[1]))
@@ -577,6 +580,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     fun movesLikeAirUnits() = getType().getMovementType() == UnitMovementType.Air
 
+    /** Returns resource requirements from both uniques and requiredResource field */
     override fun getResourceRequirements(): HashMap<String, Int> = resourceRequirementsInternal
 
     private val resourceRequirementsInternal: HashMap<String, Int> by lazy {
@@ -587,13 +591,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         resourceRequirements
     }
 
-    override fun requiresResource(resource: String): Boolean {
-        if (requiredResource == resource) return true
-        for (unique in getMatchingUniques(UniqueType.ConsumesResources)) {
-            if (unique.params[1] == resource) return true
-        }
-        return false
-    }
+    override fun requiresResource(resource: String) = getResourceRequirements().containsKey(resource)
 
     fun isRanged() = rangedStrength > 0
     fun isMelee() = !isRanged() && strength > 0

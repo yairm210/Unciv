@@ -62,7 +62,7 @@ Each era can have the following attributes:
 
 ## ModOptions.json
 
-[Link to original](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/ModOptions.json)
+<!-- [Link to original](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/ModOptions.json) -->
 
 This file is a little different:
 
@@ -134,6 +134,42 @@ Legend:
 -   [^F]: MapGenerator.spreadAncientRuins: number of ruins = suitable tile count * this
 -   [^H]: MapGenerator.spawnLakesAndCoasts: Water bodies up to this tile count become Lakes
 -   [^I]: RiverGenerator: river frequency and length bounds
+
+## VictoryTypes.json
+
+[link to original](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/VictoryTypes.json)
+
+These files contain which victories this mod provides, and what milestones must be reached for someone to win a victory.
+Most of the file contains of strings that are shown to the user in the victory screen, with the rest being the requirements for winning.
+
+Each victory can have the following attributes:
+
+| Attribute | Type | Optional | Notes |
+| --------- | ---- | -------- | ----- |
+| name | String | Required | Name of the victory |
+| victoryScreenHeader | String | Defaults to "" | Shown in the footer of the victory in the `our status` in the victory screen |
+| victoryString | String | Defaults to "" | Shown in the footer of the victory screen when you won the game with this victory |
+| defeatString | String | Defaults to "" | Shown in the footer of the victory screen when someone else won the game with this victory |
+| hiddenInVictoryScreen | Boolean | Defaults to false | Whether progress of this victory is hidden in the victory screen |
+| requiredSpaceshipParts | List of Strings | Defaults to "" | What spaceship parts must be added to the capital for the corresponding milestone |
+| Milestones | List of Strings | Required | List of milestones that must be accomplished to win, see [below](#Milestones) |
+
+### Milestones
+
+Currently the following milestones are supported:
+
+| Milestone | Requirement |
+| --------- | ----------- |
+| Build [building] | Build the building [building] in any city |
+| Anyone build [building] | Anyone must build the building [building] for all players to have this milestone |
+| Add all [comment] in capital | Add all units in the `requiredSpaceshipParts` field of this victory to the capital | 
+| Destroy all players | You must be the only major civilization with any cities left |
+| Capture all capitals | Capture all the original capitals of major civilizations in the game |
+| Complete [amount] Policy branches | Fully complete at least [amount] policy branches |
+| Win diplomatic vote | At any point in the game win a diplomatic vote (UN). You may lose afterwards and still retain this milestone |
+| Become the world religion | Have your religion be the majority religion in a majority of cities of all major civs |
+| Have highest score after max turns | Basically time victory. Enables the 'max turn' slider and calculates score when that amount is reached |  
+
 
 ## Civilopedia text
 

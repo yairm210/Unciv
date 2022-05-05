@@ -54,6 +54,7 @@ class GameSettings {
     var windowState = WindowState()
     var isFreshlyCreated = false
     var visualMods = HashSet<String>()
+    var useDemographics: Boolean = false
 
 
     var multiplayerServer = Constants.dropboxMultiplayerServer

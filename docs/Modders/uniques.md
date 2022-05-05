@@ -1,5 +1,5 @@
 # Uniques
-Simple unique parameters are explained by mouseover. Complex parameters are explained in [Unique parameter types](../unique parameters)
+Simple unique parameters are explained by mouseover. Complex parameters are explained in [Unique parameter types](../Unique-parameters)
 ## Triggerable uniques
 ??? example  "Free [baseUnitFilter] appears"
 	Example: "Free [Melee] appears"
@@ -277,6 +277,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "May choose [amount] additional belief(s) of any type when [foundingOrEnhancing] a religion"
 	Example: "May choose [3] additional belief(s) of any type when [founding] a religion"
+
+	Applicable to: Global
+
+??? example  "[stats] when a city adopts this religion for the first time (modified by game speed)"
+	Example: "[+1 Gold, +2 Production] when a city adopts this religion for the first time (modified by game speed)"
+
+	Applicable to: Global
+
+??? example  "[stats] when a city adopts this religion for the first time"
+	Example: "[+1 Gold, +2 Production] when a city adopts this religion for the first time"
 
 	Applicable to: Global
 
@@ -679,6 +689,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
+??? example  "When spreading religion to a city, gain [amount] times the amount of followers of other religions as [stat]"
+	Example: "When spreading religion to a city, gain [3] times the amount of followers of other religions as [Culture]"
+
+	Applicable to: Global, Unit
+
 ??? example  "No defensive terrain bonus"
 	Applicable to: Global, Unit
 
@@ -784,6 +799,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Only available"
 	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement
+
+## FounderBelief uniques
+??? example  "[stats] for each global city following this religion"
+	Example: "[+1 Gold, +2 Production] for each global city following this religion"
+
+	Applicable to: FounderBelief
 
 ## FollowerBelief uniques
 ??? example  "[relativeAmount]% [stat] from every follower, up to [relativeAmount]%"

@@ -27,6 +27,8 @@ class MapEditorSaveTab(
 
     private val saveButton = "Save map".toTextButton()
     private val deleteButton = "Delete map".toTextButton()
+    private val quitButton = "Exit map editor".toTextButton()
+
     private val mapNameTextField = TextField("", skin)
 
     private var chosenMap: FileHandle? = null
@@ -48,6 +50,9 @@ class MapEditorSaveTab(
 
         deleteButton.onClick(this::deleteHandler)
         buttonTable.add(deleteButton)
+
+        quitButton.onClick(editorScreen::closeEditor)
+        buttonTable.add(quitButton)
         buttonTable.pack()
 
         val fileTableHeight = editorScreen.stage.height - headerHeight - mapNameTextField.prefHeight - buttonTable.height - 22f

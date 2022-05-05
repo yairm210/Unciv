@@ -12,6 +12,14 @@ You don't need to download anything, all translation work can be done on the Git
 
 When you feel that you're ready to add your translation to the game, you'll need to create a merge request, which takes your changes and puts them into the main version of the game - it's pretty straightforward once you do it
 
+## App store text
+
+There are two special entries that won't show in the game but are automatically used to provide short and long descriptions for F-Droid (and possibly other stores soon). They're near the beginning of each language file and marked "Fastlane". See the comments just above each for help, and where to find the actual english original to translate. Do not overlook the note on line breaks in [Other notes](#Other_notes) for the full description!
+
+## App store images
+
+The stores can show screenshots. To show translated versions of these images a different approach is necessary: they must be merged into appropriate subfolders of [fastlane/metadata/android] in the Unciv repository. If in doubt on how to do this, look at the existing ones for the proper dimensions and offer your version using an issue. Hints: relative paths and names must match the 'en-US' subfolder with 'en-US' replaced with the _two-letter_ ISO code of your language. You can use Add file - Upload files if the folder you need already exits. Using the github site to create a PR with new folders is possible, but outside the scope of this document.
+
 ## Pitfalls
 
 -   If a translation template (the stuff to the left of "` = `") contains square brackets, you will have to include each of them _verbatim_ in your translation, but you can move them. Upper/lower case is relevant! e.g. `All [personFilter] are cool` can be translated as `Tous les [personFilter] sont cool`, but ***not*** as `Tous les [personnages] sont cool`, and neither as `Nous sommes vraiment cool`. Failing this is the main cause of your PR's showing up with red "x"es and "checks failed".
@@ -44,11 +52,9 @@ Each untranslated phrase will have a "requires translation" line before it, so y
 
 Order of lines does not matter, they will be rearranged automatically each release.
 
-When Unciv no longer needs a translation entry, it will be moved to the end and prefixed with `#~~`. Those removed lines will survive automatic processes, so please check them and remove those where you are sure they will indeed no longer be needed. They exist for cases where e.g. a detail in the english source version needed changing - that will invalidate existing translations, but now you can recover previous versions and adapt them to the new template.
-
-You can leave very limited comments to yourself or other translators - prefix comments with `#~~#<number> = ` (assign sequential numbers to that `<number>` placeholder) and place them at the end of the file. The comment style you see in the rest of the file is reserved for internal use, and placing such comments in earlier parts will lead to them being moved to the end by the next release.
-
 Do as much as you're comfortable with - it's a big game with a lot of named objects, so don't feel pressured into doing everything =)
+
+Some entries have line breaks expressed as `\n`: Your translation can and in most cases should use them as well, but you do not need to distribute them exactly as in the original. Try to find a translation that reads nicely, then place the line break codes at roughly the same intervals as the original uses (less if your language's glyphs are wider than latin ones). Important: You cannot use normal line breaks, you must use the `\n` codes, normal line breaks are not part of a translation.
 
 Note that Right-to-Left languages such as Arabic and Hebrew are not supported by the framework :/
 

@@ -214,7 +214,7 @@ class MapEditorViewTab(
         if (tiles.isEmpty()) return
         if (roundRobinIndex >= tiles.size) roundRobinIndex = 0
         val tile = tiles[roundRobinIndex++]
-        editorScreen.mapHolder.setCenterPosition(tile.position)
+        editorScreen.mapHolder.setCenterPosition(tile.position, blink = true)
         tileClickHandler(tile)
     }
 

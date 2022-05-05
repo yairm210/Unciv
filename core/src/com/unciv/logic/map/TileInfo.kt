@@ -10,6 +10,7 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.tile.*
+import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.Stats
@@ -264,7 +265,9 @@ open class TileInfo {
 
     fun getTileStats(observingCiv: CivilizationInfo?): Stats = getTileStats(getCity(), observingCiv)
 
-    fun getTileStats(city: CityInfo?, observingCiv: CivilizationInfo?): Stats {
+    fun getTileStats(city: CityInfo?, observingCiv: CivilizationInfo?,
+                     localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)
+    ): Stats {
         var stats = getBaseTerrain().cloneStats()
 
         val stateForConditionals = StateForConditionals(civInfo = observingCiv, cityInfo = city, tile = this)
@@ -296,7 +299,7 @@ open class TileInfo {
             var tileUniques = city.getMatchingUniques(UniqueType.StatsFromTiles, stateForConditionals)
                 .filter { city.matchesFilter(it.params[2]) }
             tileUniques += city.getMatchingUniques(UniqueType.StatsFromObject, stateForConditionals)
-            for (unique in tileUniques) {
+            for (unique in localUniqueCache.get("StatsFromTilesAndObjects", tileUniques)) {
                 val tileType = unique.params[1]
                 if (tileType == improvement) continue // This is added to the calculation in getImprovementStats. we don't want to add it twice
                 if (matchesTerrainFilter(tileType, observingCiv)) 
@@ -306,7 +309,8 @@ open class TileInfo {
                 }
             }
 
-            for (unique in city.getMatchingUniques(UniqueType.StatsFromTilesWithout, stateForConditionals))
+            for (unique in localUniqueCache.get("StatsFromTilesWithout", 
+                city.getMatchingUniques(UniqueType.StatsFromTilesWithout, stateForConditionals)))
                 if (
                     matchesTerrainFilter(unique.params[1]) &&
                     !matchesTerrainFilter(unique.params[2]) &&
@@ -471,7 +475,9 @@ open class TileInfo {
                     && neighbors.any { it.getOwner() == civInfo }
                 )
                 ) -> false
-            improvement.hasUnique(UniqueType.OnlyAvailableWhen, StateForConditionals(civInfo=civInfo, tile=this)) -> false
+            improvement.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals).any {
+                !it.conditionalsApply(StateForConditionals(civInfo, tile=this))
+            } -> false
             improvement.getMatchingUniques(UniqueType.ObsoleteWith).any {
                 civInfo.tech.isResearched(it.params[0])
             } -> return false

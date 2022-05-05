@@ -7,9 +7,11 @@ import com.unciv.Constants
 import com.unciv.JsonParser
 import com.unciv.logic.BackwardCompatibility.updateDeprecations
 import com.unciv.logic.UncivShowableException
+import com.unciv.logic.map.MapParameters
 import com.unciv.models.Counter
 import com.unciv.models.ModConstants
 import com.unciv.models.metadata.BaseRuleset
+import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.Terrain
@@ -909,10 +911,19 @@ object RulesetCache : HashMap<String,Ruleset>() {
             )
         )
     }
-    
+
+    /** Creates a combined [Ruleset] from a list of mods contained in [parameters]. */
+    fun getComplexRuleset(parameters: MapParameters) =
+        getComplexRuleset(parameters.mods, parameters.baseRuleset)
+
+    /** Creates a combined [Ruleset] from a list of mods contained in [parameters]. */
+    fun getComplexRuleset(parameters: GameParameters) =
+        getComplexRuleset(parameters.mods, parameters.baseRuleset)
+
     /**
-     * Creates a combined [Ruleset] from a list of mods. If no baseRuleset is listed in [mods],
-     * then the vanilla Ruleset is included automatically.
+     * Creates a combined [Ruleset] from a list of mods.
+     * If no baseRuleset is passed in [optionalBaseRuleset] (or a non-existing one), then the vanilla Ruleset is included automatically.
+     * Any mods in the [mods] parameter marked as base ruleset (or not loaded in [RulesetCache]) are ignored.
      */
     fun getComplexRuleset(mods: LinkedHashSet<String>, optionalBaseRuleset: String? = null): Ruleset {
         val newRuleset = Ruleset()
@@ -939,9 +950,6 @@ object RulesetCache : HashMap<String,Ruleset>() {
         }
         newRuleset.updateBuildingCosts() // only after we've added all the mods can we calculate the building costs
 
-        println(optionalBaseRuleset)
-        println(newRuleset.victories)
-        
         return newRuleset
     }
 
