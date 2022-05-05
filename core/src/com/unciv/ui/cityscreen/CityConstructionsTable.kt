@@ -173,10 +173,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             val useStoredProduction = entry is Building || !cityConstructions.isBeingConstructedOrEnqueued(entry.name)
             var buttonText = entry.name.tr() + cityConstructions.getTurnsToConstructionString(entry.name, useStoredProduction)
             for ((resource, amount) in entry.getResourceRequirements()) {
-                buttonText += "\n" + (
-                    if (amount == 1) "Consumes 1 [$resource]"
-                    else "Consumes [$amount] [$resource]"
-                ).tr()
+                buttonText += "\n" + resource.getConsumesAmountString(amount).tr()
             }
 
             constructionButtonDTOList.add(
@@ -277,8 +274,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         val constructionResource = cityConstructions.getConstruction(constructionName).getResourceRequirements()
         for ((resource, amount) in constructionResource)
-            text += if (amount == 1) "\n" + "Consumes 1 [$resource]".tr()
-                else "\n" + "Consumes [$amount] [$resource]".tr()
+            text += "\n" + resource.getConsumesAmountString(amount).tr()
 
         table.defaults().pad(2f).minWidth(40f)
         if (isFirstConstructionOfItsKind) table.add(getProgressBar(constructionName)).minWidth(5f)

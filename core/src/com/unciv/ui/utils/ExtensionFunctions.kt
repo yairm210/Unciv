@@ -372,3 +372,11 @@ fun <T> String.filterCompositeLogic(predicate: (String) -> T?, operation: (T, T)
  *  otherwise return `null` for Elvis chaining of the individual filter. */
 fun String.filterAndLogic(predicate: (String) -> Boolean): Boolean? =
     if (contains('{')) filterCompositeLogic(predicate) { a, b -> a && b } else null
+
+
+/** Convert a [resource name][this] into "Consumes [amount] $resource" string (untranslated, using separate templates for 1 and other amounts) */
+//todo some day... remove and use just one translatable where this is called
+fun String.getConsumesAmountString(amount: Int) = (
+            if (amount == 1) "Consumes 1 [$this]"
+            else "Consumes [$amount] [$this]"
+        )

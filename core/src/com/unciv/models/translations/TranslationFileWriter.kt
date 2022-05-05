@@ -344,6 +344,8 @@ object TranslationFileWriter {
                         UniqueParameterType.guessTypeForTranslationWriter(parameter, ruleset).parameterName
                     }
                 parameterNames.addNumberedParameter(parameterName)
+                if (parameterName == UniqueParameterType.Unknown.parameterName)
+                    resultStrings.add("$parameter = ")  // Unknown parameter contents better be offered to translators too
             }
             resultStrings.add("${stringToTranslate.fillPlaceholders(*parameterNames.toTypedArray())} = ")
         }

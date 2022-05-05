@@ -930,9 +930,9 @@ class DiplomacyScreen(
         rightSideTable.clear()
         rightSideTable.add(diplomacyTable)
     }
-    
+
     private fun getGoToOnMapButton(civilization: CivilizationInfo): TextButton {
-        val goToOnMapButton = TextButton("Go to on map", skin)
+        val goToOnMapButton = "Go to on map".toTextButton()
         goToOnMapButton.onClick {
             UncivGame.Current.setWorldScreen()
             UncivGame.Current.worldScreen.mapHolder.setCenterPosition(civilization.getCapital().location, selectUnit = false)
