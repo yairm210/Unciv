@@ -33,7 +33,7 @@ class NewGameScreen(
 ): IPreviousScreen, PickerScreen() {
 
     override val gameSetupInfo = _gameSetupInfo ?: GameSetupInfo.fromSettings()
-    override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods, gameSetupInfo.gameParameters.baseRuleset) // needs to be set because the GameOptionsTable etc. depend on this
+    override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters) // needs to be set because the GameOptionsTable etc. depend on this
     private val newGameOptionsTable: GameOptionsTable
     private val playerPickerTable: PlayerPickerTable
     private val mapOptionsTable: MapOptionsTable
@@ -41,6 +41,10 @@ class NewGameScreen(
     init {
         updateRuleset()  // must come before playerPickerTable so mod nations from fromSettings
         // Has to be initialized before the mapOptionsTable, since the mapOptionsTable refers to it on init
+
+        if (gameSetupInfo.gameParameters.victoryTypes.isEmpty())
+            gameSetupInfo.gameParameters.victoryTypes.addAll(ruleset.victories.keys)
+        
         playerPickerTable = PlayerPickerTable(
             this, gameSetupInfo.gameParameters,
             if (isNarrowerThan4to3()) stage.width - 20f else 0f
@@ -67,6 +71,13 @@ class NewGameScreen(
         rightSideButton.setText("Start game!".tr())
         rightSideButton.onClick {
             if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
+                if (UncivGame.Current.platformSpecificHelper?.isInternetConnected() != true) {
+                    val noInternetConnectionPopup = Popup(this)
+                    noInternetConnectionPopup.addGoodSizedLabel("No internet connection!".tr()).row()
+                    noInternetConnectionPopup.addCloseButton()
+                    noInternetConnectionPopup.open()
+                    return@onClick
+                }
                 for (player in gameSetupInfo.gameParameters.players.filter { it.playerType == PlayerType.Human }) {
                     try {
                         UUID.fromString(IdChecker.checkAndReturnPlayerUuid(player.playerId))
@@ -90,6 +101,14 @@ class NewGameScreen(
                 noHumanPlayersPopup.addGoodSizedLabel("No human players selected!".tr()).row()
                 noHumanPlayersPopup.addCloseButton()
                 noHumanPlayersPopup.open()
+                return@onClick
+            }
+            
+            if (gameSetupInfo.gameParameters.victoryTypes.isEmpty()) {
+                val noVictoryTypesPopup = Popup(this)
+                noVictoryTypesPopup.addGoodSizedLabel("No victory conditions were selected!".tr()).row()
+                noVictoryTypesPopup.addCloseButton()
+                noVictoryTypesPopup.open()
                 return@onClick
             }
 
@@ -244,7 +263,7 @@ class NewGameScreen(
 
     fun updateRuleset() {
         ruleset.clear()
-        ruleset.add(RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods, gameSetupInfo.gameParameters.baseRuleset))
+        ruleset.add(RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters))
         ImageGetter.setNewRuleset(ruleset)
         game.musicController.setModList(gameSetupInfo.gameParameters.getModsAndBaseRuleset())
     }

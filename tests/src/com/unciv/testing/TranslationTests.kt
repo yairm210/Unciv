@@ -3,7 +3,6 @@ package com.unciv.testing
 
 import com.badlogic.gdx.Gdx
 import com.unciv.UncivGame
-import com.unciv.models.UnitActionType
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
@@ -14,7 +13,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.OutputStream
 import java.io.PrintStream
-import java.util.*
 
 @RunWith(GdxTestRunner::class)
 class TranslationTests {
@@ -208,7 +206,59 @@ class TranslationTests {
             allTranslationsCheckedOut
         )
     }
-    
+
+
+    @Test
+    fun translationParameterExtractionForNestedBracesWorks() {
+        Assert.assertEquals(listOf("New [York]"), 
+            "The city of [New [York]]".getPlaceholderParametersIgnoringLowerLevelBraces())
+
+        // Closing braces without a matching opening brace - 'level 0' - are ignored
+        Assert.assertEquals(listOf("New [York]"),
+            "The city of [New [York]]]".getPlaceholderParametersIgnoringLowerLevelBraces())
+        
+        // Opening braces without a matching closing brace mean that the term is never 'closed'
+        // so there are no parameters
+        Assert.assertEquals(listOf<String>(),
+            "The city of [[New [York]".getPlaceholderParametersIgnoringLowerLevelBraces())
+        
+        // Supernesting
+        val superNestedString = "The brother of [[my [best friend]] and [[America]'s greatest [Dad]]]"
+        Assert.assertEquals(listOf("[my [best friend]] and [[America]'s greatest [Dad]]"),
+                superNestedString.getPlaceholderParametersIgnoringLowerLevelBraces())
+        Assert.assertEquals(listOf("my [best friend]", "[America]'s greatest [Dad]"),
+        superNestedString.getPlaceholderParametersIgnoringLowerLevelBraces()[0]
+            .getPlaceholderParametersIgnoringLowerLevelBraces())
+
+        UncivGame.Current = UncivGame("")
+        UncivGame.Current.settings = GameSettings()
+
+        fun addTranslation(original:String, result:String){
+            UncivGame.Current.translations[original.getPlaceholderText()] =TranslationEntry(original)
+                .apply { this["English"] = result }
+        }
+        addTranslation("The brother of [person]", "The sibling of [person]")
+        Assert.assertEquals("The sibling of bob", "The brother of [bob]".tr())
+        
+        
+        addTranslation("[a] and [b]", "[a] and indeed [b]")
+        addTranslation("my [whatever]", "mine own [whatever]")
+        addTranslation("[place]'s greatest [job]", "the greatest [job] in [place]")
+        addTranslation("Dad", "Father")
+        addTranslation("best friend", "closest ally")
+        addTranslation("America", "The old British colonies")
+
+        println("[Dad] and [my [best friend]]".getPlaceholderText())
+        Assert.assertEquals(listOf("Dad","my [best friend]"),
+            "[Dad] and [my [best friend]]".getPlaceholderParametersIgnoringLowerLevelBraces())
+        Assert.assertEquals("Father and indeed mine own closest ally", "[Dad] and [my [best friend]]".tr())
+        
+        // Reminder: "The brother of [[my [best friend]] and [[America]'s greatest [Dad]]]"
+        Assert.assertEquals("The sibling of mine own closest ally and indeed the greatest Father in The old British colonies",
+            superNestedString.tr())
+    }
+
+
 //    @Test
 //    fun allConditionalsAreContainedInConditionalOrderTranslation() {
 //        val orderedConditionals = Translations.englishConditionalOrderingString

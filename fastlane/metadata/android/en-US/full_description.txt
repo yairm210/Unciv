@@ -1,0 +1,15 @@
+A reimplementation of the most famous civilization-building game ever - fast, small, no ads, free forever!
+
+Build your civilization, research technologies, expand your cities and defeat your foes!
+
+Requests? Bugs? Todo list for the application is https://github.com/yairm210/UnCiv/issues, every small help is welcome!
+
+Questions? Comments? Just bored? Join us on https://discord.gg/bjrB4Xw.
+
+Want to help translating the game into your language? Send me an email to yairm210@hotmail.com.
+
+Grok Java or Kotlin? Join us at https://github.com/yairm210/UnCiv.
+
+The world awaits! Will you build your civilization into an empire that will stand the test of time?
+
+The 'have full network access' permission is required for user-initiated downloads and the multiplayer feature. All other listed permissions are included automatically by the API used to implement multiplayer turn notifications. Network permissions are used to list mods, download mods, download music and to upload/download multiplayer games. No other internet communication is initiated by Unciv.

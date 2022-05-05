@@ -1,24 +1,32 @@
 package com.unciv.ui.mapeditor
 
+import com.badlogic.gdx.Application
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
+import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.addSeparatorVertical
 import kotlin.math.abs
 
 class MapEditorToolsDrawer(
     tabs: MapEditorMainTabs,
-    initStage: Stage
+    initStage: Stage,
+    private val mapHolder: EditorMapHolder
 ): Table(BaseScreen.skin) {
-    companion object {
-        const val handleWidth = 10f
+    private companion object {
+        const val arrowImage = "OtherIcons/BackArrow"
+        const val animationDuration = 0.333f
+        const val clickEpsilon = 0.001f
     }
+    private val handleWidth = if (Gdx.app.type == Application.ApplicationType.Desktop) 10f else 25f
+    private val arrowSize = if (Gdx.app.type == Application.ApplicationType.Desktop) 10f else 20f  //todo tweak on actual phone
 
     var splitAmount = 1f
         set(value) {
@@ -26,22 +34,35 @@ class MapEditorToolsDrawer(
             reposition()
         }
 
+    private val arrowIcon = ImageGetter.getImage(arrowImage)
+
     init {
         touchable = Touchable.childrenOnly
-        addSeparatorVertical(Color.CLEAR, handleWidth) // the "handle"
+
+        arrowIcon.setSize(arrowSize, arrowSize)
+        arrowIcon.setOrigin(Align.center)
+        arrowIcon.rotation = 180f
+        val arrowWrapper = Container(arrowIcon)
+        arrowWrapper.align(Align.center)
+        arrowWrapper.setSize(arrowSize, arrowSize)
+        arrowWrapper.setOrigin(Align.center)
+        add(arrowWrapper).align(Align.center).width(handleWidth).fillY().apply {  // the "handle"
+            background = ImageGetter.getBackground(BaseScreen.skin.get("color", Color::class.java))
+        }
+
         add(tabs)
             .height(initStage.height)
             .fill().top()
         pack()
         setPosition(initStage.width, 0f, Align.bottomRight)
         initStage.addActor(this)
-        initStage.addListener(getListener(this))
+        initStage.addCaptureListener(getListener(this))
     }
 
     private class SplitAmountAction(
         private val drawer: MapEditorToolsDrawer,
         endAmount: Float
-    ): FloatAction(drawer.splitAmount, endAmount, 0.333f) {
+    ): FloatAction(drawer.splitAmount, endAmount, animationDuration) {
         override fun act(delta: Float): Boolean {
             val result = super.act(delta)
             drawer.splitAmount = value
@@ -59,6 +80,7 @@ class MapEditorToolsDrawer(
             if (draggingPointer != -1) return false
             if (pointer == 0 && button != 0) return false
             if (x !in drawer.x..(drawer.x + handleWidth)) return false
+            mapHolder.killListeners()
             draggingPointer = pointer
             lastX = x
             handleX = drawer.x
@@ -67,6 +89,7 @@ class MapEditorToolsDrawer(
         }
         override fun touchUp(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int) {
             if (pointer != draggingPointer) return
+            mapHolder.resurrectListeners()
             draggingPointer = -1
             if (oldSplitAmount < 0f) return
             addAction(SplitAmountAction(drawer, if (splitAmount > 0.5f) 0f else 1f))
@@ -74,17 +97,32 @@ class MapEditorToolsDrawer(
         override fun touchDragged(event: InputEvent, x: Float, y: Float, pointer: Int) {
             if (pointer != draggingPointer) return
             val delta = x - lastX
-            val availWidth = stage.width - handleWidth
-            handleX += delta
             lastX = x
-            splitAmount = ((availWidth - handleX) / drawer.width).coerceIn(0f, 1f)
-            if (oldSplitAmount >= 0f && abs(oldSplitAmount - splitAmount) >= 0.0001f) oldSplitAmount = -1f
+            handleX += delta
+            splitAmount = drawer.xToSplitAmount(handleX)
+            if (oldSplitAmount >= 0f && abs(oldSplitAmount - splitAmount) >= clickEpsilon ) oldSplitAmount = -1f
         }
     }
 
+    // single-use helpers placed together for readability. One should be the exact inverse of the other except for the clamping. 
+    private fun splitAmountToX() =
+        stage.width - width + (1f - splitAmount) * (width - handleWidth)
+    private fun xToSplitAmount(x: Float) =
+        (1f - (x + width - stage.width) / (width - handleWidth)).coerceIn(0f, 1f)
+
     fun reposition() {
         if (stage == null) return
-        val dx = stage.width + (1f - splitAmount) * (width - handleWidth)
-        setPosition(dx, 0f, Align.bottomRight)
+        when (splitAmount) {
+            0f -> {
+                arrowIcon.rotation = 0f
+                arrowIcon.isVisible = true
+            }
+            1f -> {
+                arrowIcon.rotation = 180f
+                arrowIcon.isVisible = true
+            }
+            else -> arrowIcon.isVisible = false
+        }
+        setPosition(splitAmountToX(), 0f, Align.bottomLeft)
     }
 }

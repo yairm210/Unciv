@@ -260,7 +260,7 @@ object NextTurnAutomation {
             }
         }
 
-        if (civInfo.victoryType() == VictoryType.Cultural) {
+        if (civInfo.wantsToFocusOn(Victory.Focus.Culture)) {
             for (cityState in civInfo.getKnownCivs()
                     .filter { it.isCityState() && it.cityStateType == CityStateType.Cultured }) {
                 val diploManager = cityState.getDiplomacyManager(civInfo)
@@ -298,20 +298,20 @@ object NextTurnAutomation {
         if (!cityState.isAlive() || cityState.cities.isEmpty() || civInfo.cities.isEmpty())
             return value
 
-        if (civInfo.victoryType() == VictoryType.Cultural && cityState.canGiveStat(Stat.Culture)) {
+        if (civInfo.wantsToFocusOn(Victory.Focus.Culture) && cityState.canGiveStat(Stat.Culture)) {
             value += 10
         }
-        else if (civInfo.victoryType() == VictoryType.Scientific && cityState.canGiveStat(Stat.Science)) {
+        else if (civInfo.wantsToFocusOn(Victory.Focus.Science) && cityState.canGiveStat(Stat.Science)) {
             // In case someone mods this in
             value += 10
         }
-        else if (civInfo.victoryType() == VictoryType.Domination) {
+        else if (civInfo.wantsToFocusOn(Victory.Focus.Military)) {
             // Don't ally close city-states, conquer them instead
             val distance = getMinDistanceBetweenCities(civInfo, cityState)
             if (distance < 20)
                 value -= (20 - distance) / 4
         }
-        else if (civInfo.victoryType() == VictoryType.Diplomatic) {
+        else if (civInfo.wantsToFocusOn(Victory.Focus.CityStates)) {
             value += 5  // Generally be friendly
         }
         if (civInfo.gold < 100) {
@@ -465,13 +465,14 @@ object NextTurnAutomation {
     /** If we are able to build a spaceship but have already spent our resources, try disbanding
      *  a unit and selling a building to make room. Can happen due to trades etc */
     private fun freeUpSpaceResources(civInfo: CivilizationInfo) {
-        // Can't build spaceships
-        if (!civInfo.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts))
+        // No need to build spaceship parts just yet
+        if (civInfo.gameInfo.ruleSet.victories.none { civInfo.victoryManager.getNextMilestone(it.key)?.type == MilestoneType.AddedSSPartsInCapital } )
             return
 
         for (resource in civInfo.gameInfo.spaceResources) {
             // Have enough resources already
-            if (civInfo.getCivResourcesByName()[resource]!! >= Automation.getReservedSpaceResourceAmount(civInfo))
+            val resourceCount = civInfo.getCivResourcesByName()[resource] ?: 0 
+            if (resourceCount >= Automation.getReservedSpaceResourceAmount(civInfo))
                 continue
 
             val unitToDisband = civInfo.getCivUnits()
@@ -658,7 +659,7 @@ object NextTurnAutomation {
     }
 
     private fun declareWar(civInfo: CivilizationInfo) {
-        if (civInfo.victoryType() == VictoryType.Cultural) return
+        if (civInfo.wantsToFocusOn(Victory.Focus.Culture)) return
         if (civInfo.cities.isEmpty() || civInfo.diplomacy.isEmpty()) return
         if (civInfo.isAtWar() || civInfo.getHappiness() <= 0) return
 
@@ -848,7 +849,7 @@ object NextTurnAutomation {
     private fun trainSettler(civInfo: CivilizationInfo) {
         if (civInfo.isCityState()) return
         if (civInfo.isAtWar()) return // don't train settlers when you could be training troops.
-        if (civInfo.victoryType() == VictoryType.Cultural && civInfo.cities.size > 3) return
+        if (civInfo.wantsToFocusOn(Victory.Focus.Culture) && civInfo.cities.size > 3) return
         if (civInfo.cities.none() || civInfo.getHappiness() <= civInfo.cities.size + 5) return
 
         val settlerUnits = civInfo.gameInfo.ruleSet.units.values

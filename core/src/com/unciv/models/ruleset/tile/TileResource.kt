@@ -4,6 +4,7 @@ import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetStatsObject
 import com.unciv.models.ruleset.unique.UniqueTarget
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stats
 import com.unciv.ui.civilopedia.FormattedLine
 
@@ -51,6 +52,34 @@ class TileResource : RulesetStatsObject() {
                 textList += FormattedLine("{Bonus stats for improvement}: " + improvementStats.toString())
         }
 
+        val improvementsThatProvideThis = ruleset.tileImprovements.values
+            .filter { improvement ->
+                improvement.uniqueObjects.any { unique ->
+                    unique.type == UniqueType.ProvidesResources && unique.params[1] == name
+                }
+            }
+        if (improvementsThatProvideThis.isNotEmpty()) {
+            textList += FormattedLine()
+            textList += FormattedLine("{Improvements that provide this resource}:")
+            improvementsThatProvideThis.forEach {
+                textList += FormattedLine(it.name, link = it.makeLink(), indent = 1)
+            }
+        }
+
+        val buildingsThatProvideThis = ruleset.buildings.values
+            .filter { building ->
+                building.uniqueObjects.any { unique ->
+                    unique.type == UniqueType.ProvidesResources && unique.params[1] == name
+                }
+            }
+        if (buildingsThatProvideThis.isNotEmpty()) {
+            textList += FormattedLine()
+            textList += FormattedLine("{Buildings that provide this resource}:")
+            buildingsThatProvideThis.forEach {
+                textList += FormattedLine(it.name, link = it.makeLink(), indent = 1)
+            }
+        }
+
         val buildingsThatConsumeThis = ruleset.buildings.values.filter { it.getResourceRequirements().containsKey(name) }
         if (buildingsThatConsumeThis.isNotEmpty()) {
             textList += FormattedLine()
@@ -84,7 +113,7 @@ class TileResource : RulesetStatsObject() {
 
         return textList
     }
-    
+
     class DepositAmount {
         var sparse: Int = 1
         var default: Int = 2
@@ -94,7 +123,7 @@ class TileResource : RulesetStatsObject() {
 }
 
 
-data class ResourceSupply(val resource:TileResource,var amount:Int, val origin:String)
+data class ResourceSupply(val resource:TileResource, var amount:Int, val origin:String)
 
 class ResourceSupplyList:ArrayList<ResourceSupply>() {
     fun add(resource: TileResource, amount: Int, origin: String) {

@@ -47,7 +47,9 @@ class MapEditorLoadTab(
 
     private fun loadHandler() {
         if (chosenMap == null) return
-        thread(name = "MapLoader", block = this::loaderThread)
+        editorScreen.askIfDirty("Do you want to load another map without saving the recent changes?") {
+            thread(name = "MapLoader", isDaemon = true, block = this::loaderThread)
+        }
     }
 
     private fun deleteHandler() {
@@ -98,8 +100,8 @@ class MapEditorLoadTab(
             val newBaseRuleset = map.mapParameters.mods.filter { it !in missingMods }.firstOrNull { RulesetCache[it]!!.modOptions.isBaseRuleset }
             if (newBaseRuleset != null) map.mapParameters.baseRuleset = newBaseRuleset
             //
-
             if (map.mapParameters.baseRuleset !in RulesetCache) missingMods += map.mapParameters.baseRuleset
+
             if (missingMods.isNotEmpty()) {
                 Gdx.app.postRunnable {
                     needPopup = false
@@ -116,10 +118,19 @@ class MapEditorLoadTab(
                         map.mapParameters.mods -= modBaseRuleset
                     }
 
-                    editorScreen.loadMap(map)
+                    val ruleset = RulesetCache.getComplexRuleset(map.mapParameters)
+                    val rulesetIncompatibilities = map.getRulesetIncompatibility(ruleset)
+                    if (rulesetIncompatibilities.isNotEmpty()) {
+                        map.removeMissingTerrainModReferences(ruleset)
+                        val message = "{This map has errors:}\n\n".tr() +
+                                rulesetIncompatibilities.sorted().joinToString("\n") { it.tr() } +
+                                "\n\n{The incompatible elements have been removed.}"
+                        ToastPopup(message, editorScreen, 4000L)
+                    }
+
+                    editorScreen.loadMap(map, ruleset)
                     needPopup = false
                     popup?.close()
-                    Gdx.input.inputProcessor = stage
                 } catch (ex: Throwable) {
                     needPopup = false
                     popup?.close()
@@ -138,4 +149,6 @@ class MapEditorLoadTab(
             }
         }
     }
+
+    fun noMapsAvailable() = mapFiles.noMapsAvailable()
 }

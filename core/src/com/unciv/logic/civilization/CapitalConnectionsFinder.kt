@@ -11,7 +11,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
     private var citiesToCheck = mutableListOf(civInfo.getCapital())
     private lateinit var newCitiesToCheck: MutableList<CityInfo>
 
-    private val allCivCities = civInfo.gameInfo.getCities()
+    private val openBordersCivCities = civInfo.gameInfo.getCities().filter { civInfo.hasOpenBordersTo(it.civInfo) }
 
     private val harbor = "Harbor"   // hardcoding at least centralized for this class for now
     private val road = RoadStatus.Road.name
@@ -32,7 +32,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
         // this is so we know that if we've seen which cities can be connected by port A, and one
         // of those is city B, then we don't need to check the cities that B can connect to by port,
         // since we'll get the same cities we got from A, since they're connected to the same sea.
-        while (citiesToCheck.isNotEmpty() && citiesReachedToMediums.size < allCivCities.count()) {
+        while (citiesToCheck.isNotEmpty() && citiesReachedToMediums.size < openBordersCivCities.count()) {
             newCitiesToCheck = mutableListOf()
             for (cityToConnectFrom in citiesToCheck) {
                 if (cityToConnectFrom.containsHarbor()) {
@@ -57,7 +57,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
                 cityToConnectFrom,
                 transportType = road,
                 overridingTransportType = railroad,
-                tileFilter = { tile -> tile.hasConnection(civInfo) || tile.isCityCenter() }
+                tileFilter = { tile -> tile.hasConnection(civInfo) }
         )
     }
 
@@ -65,7 +65,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
         check(
                 cityToConnectFrom,
                 transportType = railroad,
-                tileFilter = { tile -> tile.roadStatus == RoadStatus.Railroad || tile.isCityCenter() }
+                tileFilter = { tile -> tile.roadStatus == RoadStatus.Railroad }
         )
     }
 
@@ -74,8 +74,8 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
                 cityToConnectFrom,
                 transportType = if(cityToConnectFrom.wasPreviouslyReached(railroad,null)) harborFromRailroad else harborFromRoad,
                 overridingTransportType = harborFromRailroad,
-                tileFilter = { tile -> tile.isWater || tile.isCityCenter() },
-                cityFilter = { city -> city.containsHarbor() }
+                tileFilter = { tile -> tile.isWater },
+                cityFilter = { city -> city.containsHarbor() && city.civInfo == civInfo } // use only own harbors
         )
     }
 
@@ -89,12 +89,15 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
                       cityFilter: (CityInfo) -> Boolean = { true }) {
         // This is the time-saving mechanism we discussed earlier - If I arrived at this city via a certain BFS,
         // then obviously I already have all the cities that can be reached via that BFS so I don't need to run it again.
-        if(cityToConnectFrom.wasPreviouslyReached(transportType,overridingTransportType))
+        if (cityToConnectFrom.wasPreviouslyReached(transportType, overridingTransportType))
             return
 
-        val bfs = BFS(cityToConnectFrom.getCenterTile(), tileFilter)
+        val bfs = BFS(cityToConnectFrom.getCenterTile()) {
+              val owner = it.getOwner()
+              (it.isCityCenter() || tileFilter(it)) && (owner == null || civInfo.hasOpenBordersTo(owner))
+        }
         bfs.stepToEnd()
-        val reachedCities = allCivCities.filter {
+        val reachedCities = openBordersCivCities.filter {
             bfs.hasReachedTile(it.getCenterTile()) && cityFilter(it)
         }
         for (reachedCity in reachedCities) {

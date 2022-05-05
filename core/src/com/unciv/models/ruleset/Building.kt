@@ -18,7 +18,7 @@ import kotlin.math.pow
 
 class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
-    var requiredTech: String? = null
+    override var requiredTech: String? = null
 
     var cost: Int = 0
     var maintenance = 0
@@ -99,7 +99,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         }
 
     /** used in CityScreen (CityInfoTable and ConstructionInfoTable) */
-    fun getDescription(cityInfo: CityInfo, showMissingRequiredCities:Boolean): String {
+    fun getDescription(cityInfo: CityInfo, showAdditionalInfo: Boolean): String {
         val stats = getStats(cityInfo)
         val lines = ArrayList<String>()
         val isFree = name in cityInfo.civInfo.civConstructions.getFreeBuildings(cityInfo.id)
@@ -109,8 +109,13 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (isWonder) lines += "Wonder"
         if (isNationalWonder) lines += "National Wonder"
         if (!isFree) {
+            val availableResources = if(!showAdditionalInfo) emptyMap()
+                else cityInfo.civInfo.getCivResources().associate { it.resource.name to it.amount }
             for ((resource, amount) in getResourceRequirements()) {
-                lines += "Consumes [$amount] [$resource]"
+                val available = availableResources[resource] ?: 0
+                lines += if (showAdditionalInfo)
+                    "{Consumes [$amount] [$resource]} ({[$available] available})"
+                else "Consumes [$amount] [$resource]"
             }
         }
 
@@ -125,7 +130,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (uniques.isNotEmpty()) {
             if (replacementTextForUniques != "") lines += replacementTextForUniques
             else lines += getUniquesStringsWithoutDisablers(
-                filterUniques=if (missingCities.isEmpty()) null
+                filterUniques = if (missingCities.isEmpty()) null
                     else { unique -> !unique.isOfType(UniqueType.RequiresBuildingInAllCities) }
                     // Filter out the "Requires a [] in all cities" unique if any cities are still missing the required building, since in that case the list of cities will be appended at the end.
             )
@@ -148,7 +153,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (cityStrength != 0) lines += "{City strength} +$cityStrength"
         if (cityHealth != 0) lines += "{City health} +$cityHealth"
         if (maintenance != 0 && !isFree) lines += "{Maintenance cost}: $maintenance {Gold}"
-        if (showMissingRequiredCities && missingCities.isNotEmpty()) {
+        if (showAdditionalInfo && missingCities.isNotEmpty()) {
             // Could be red. But IMO that should be done by enabling GDX's ColorMarkupLanguage globally instead of adding a separate label.
             lines += "\n" + 
                 "[${cityInfo.civInfo.getEquivalentBuilding(missingUnique!!.params[0])}] required:".tr() +
@@ -247,14 +252,14 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (uniques.isNotEmpty() || !stats.isEmpty() || !percentStats.isEmpty() || this.greatPersonPoints.isNotEmpty() || specialists.isNotEmpty())
             textList += FormattedLine()
 
-        if (uniques.isNotEmpty()) {
-            if (replacementTextForUniques.isNotEmpty())
-                textList += FormattedLine(replacementTextForUniques)
-            else
-                uniqueObjects.forEach {
-                    if (!it.hasFlag(UniqueFlag.HiddenToUsers))
-                        textList += FormattedLine(it)
-                }
+        if (replacementTextForUniques.isNotEmpty()) {
+            textList += FormattedLine(replacementTextForUniques)
+        } else if (uniques.isNotEmpty()) {
+            for (unique in uniqueObjects.sortedBy { it.text }) {
+                if (unique.hasFlag(UniqueFlag.HiddenToUsers)) continue
+                if (unique.type == UniqueType.ConsumesResources) continue  // already shown from getResourceRequirements
+                textList += FormattedLine(unique)
+            }
         }
 
         if (!stats.isEmpty()) {
@@ -268,7 +273,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             }
         }
 
-        for((greatPersonName, value) in greatPersonPoints) {
+        for ((greatPersonName, value) in greatPersonPoints) {
             textList += FormattedLine(
                 "+$value " + "[$greatPersonName] points".tr(),
                 link = "Unit/$greatPersonName"
@@ -296,7 +301,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         val seeAlso = ArrayList<FormattedLine>()
         for (building in ruleset.buildings.values) {
             if (building.replaces == name
-                    || building.uniqueObjects.any { unique -> unique.params.any { it ==name } })
+                    || building.uniqueObjects.any { unique -> unique.params.any { it == name } })
                 seeAlso += FormattedLine(building.name, link=building.makeLink(), indent=1)
         }
         seeAlso += Belief.getCivilopediaTextMatching(name, ruleset, false)
@@ -407,8 +412,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     }
 
     override fun getStatBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
-        var cost = getBaseBuyCost(cityInfo, stat)?.toDouble()
-        if (cost == null) return null
+        var cost = getBaseBuyCost(cityInfo, stat)?.toDouble() ?: return null
 
         for (unique in cityInfo.getMatchingUniques(UniqueType.BuyItemsDiscount))
             if (stat.name == unique.params[0])
@@ -535,11 +539,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     }
                 }
 
+                // To be replaced with `Only available <after [Apollo Project] has been build>`
                 UniqueType.SpaceshipPart -> {
                     if (!civInfo.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts))
                         rejectionReasons.add(RejectionReason.RequiresBuildingInSomeCity.toInstance("Apollo project not built!"))
-                    if (civInfo.victoryManager.unconstructedSpaceshipParts()[name] == 0)
-                        rejectionReasons.add(RejectionReason.ReachedBuildCap)
                 }
 
                 UniqueType.RequiresAnotherBuilding -> {
@@ -590,7 +593,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 }
 
                 UniqueType.HiddenWithoutVictoryType -> {
-                    if (!civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.valueOf(unique.params[0])))
+                    if (!civInfo.gameInfo.gameParameters.victoryTypes.contains(unique.params[0]))
                         rejectionReasons.add(RejectionReason.HiddenWithoutVictory.toInstance(unique.text))
                 }
             }
@@ -670,7 +673,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     override fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat?): Boolean {
         val civInfo = cityConstructions.cityInfo.civInfo
 
-        if (hasUnique(UniqueType.SpaceshipPart)) {
+        if (civInfo.gameInfo.spaceResources.contains(name)) {
             civInfo.victoryManager.currentsSpaceshipParts.add(name, 1)
             return true
         }
@@ -707,6 +710,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         return true
     }
 
+    /** Implements [UniqueParameterType.BuildingFilter] */
     fun matchesFilter(filter: String): Boolean {
         return when (filter) {
             "All" -> true
@@ -718,7 +722,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             replaces -> true
             else -> {
                 if (uniques.contains(filter)) return true
-                val stat = Stat.values().firstOrNull { it.name == filter }
+                val stat = Stat.safeValueOf(filter)
                 if (stat != null && isStatRelated(stat)) return true
                 return false
             }

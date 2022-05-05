@@ -1,15 +1,19 @@
 package com.unciv.app
 
 import android.app.Activity
+import android.content.Context
 import android.content.pm.ActivityInfo
-import com.unciv.ui.utils.LimitOrientationsHelper
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import com.unciv.ui.utils.GeneralPlatformSpecificHelpers
 
-/** See also interface [LimitOrientationsHelper].
+/** See also interface [GeneralPlatformSpecificHelpers].
  *
  *  The Android implementation (currently the only one) effectively ends up doing
  *  [Activity.setRequestedOrientation]
  */
-class LimitOrientationsHelperAndroid(private val activity: Activity) : LimitOrientationsHelper {
+class PlatformSpecificHelpersAndroid(private val activity: Activity) : GeneralPlatformSpecificHelpers {
+
 /*
 Sources for Info about current orientation in case need:
         val windowManager = (activity.getSystemService(Context.WINDOW_SERVICE) as WindowManager)
@@ -27,5 +31,16 @@ Sources for Info about current orientation in case need:
         }
         // Comparison ensures ActivityTaskManager.getService().setRequestedOrientation isn't called unless necessary
         if (activity.requestedOrientation != orientation) activity.requestedOrientation = orientation
+    }
+
+    override fun isInternetConnected(): Boolean {
+        val connectivityManager = activity.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        for (network in connectivityManager.allNetworks) {
+            val networkCapabilities = connectivityManager.getNetworkCapabilities(network) ?: continue
+            val isInternet = networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            val info = connectivityManager.getNetworkInfo(network) ?: continue
+            if (isInternet && info.isConnected) return true
+        }
+        return false
     }
 }

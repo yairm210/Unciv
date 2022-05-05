@@ -1,0 +1,19 @@
+Eine Neuimplementierung vom berühmtesten Zivilisations-Aufbau-Spiel aller Zeiten. Schnell, klein, ohne Spam und für immer frei!
+
+Baue Deine Zivilisation auf, erforsche Technologien, entwickle Deine Städte und besiege Deine Kontrahenten!
+
+Wünsche? Bugs? Die Liste der offenen Themen findest du auf der <a href="https://github.com/yairm210/UnCiv/issues">GitHub Issues - Seite</a> - jede noch so kleine Hilfe ist willkommen!
+
+Fragen? Kommentare? Einfach nur gelangweilt? Chatte mit uns auf <a href="https://discord.gg/bjrB4Xw">Discord</a>.
+
+Willst Du bei der Übersetzung helfen? Schau im <a href="https://yairm210.github.io/Unciv/Other/Translating">Wiki</a> vorbei, dort ist detailliert beschrieben, wie Übersetzungen erstellt und vorgeschlagen werden.
+
+Schnallst Du Kotlin oder Java? Unterstütze gerne bei der Entwicklung im <a href="https://github.com/yairm210/UnCiv">GitHub Repository</a>.
+
+Die Welt erwartet Dich! Wirst Du deine Zivilisation zu einem Imperium entwickeln, das dem Zahn der Zeit standhält?
+
+Die App-Berechtigung 'Auf alle Netzwerke zugreifen' wird für die folgenden Funktionen benötigt:
+- Abfrage und Herunterladen der verfügbaren Mods
+- Herunterladen von Musik
+- Hoch- und Herunterladen der Speicherstände im Online Mehrspieler-Modus
+Durch die Implementierung der Zug-Benachrichtigung für den Mehrspieler-Modus werden alle anderen aufgeführten Berechtigungen vom API automatisch hinzugefügt.

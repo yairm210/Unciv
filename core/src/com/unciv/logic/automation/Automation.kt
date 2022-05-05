@@ -9,7 +9,9 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.VictoryType
+import com.unciv.models.ruleset.MilestoneType
+import com.unciv.models.ruleset.Victory
+import com.unciv.models.ruleset.Victory.Focus
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -63,7 +65,7 @@ object Automation {
             if (!(city.civInfo.gold < 0 && city.civInfo.statsForNextTurn.gold <= 0))
                 goldYield /= 3 // 3 gold is worse than 2 production
 
-            if (!(city.tiles.size < 12 || city.civInfo.victoryType() == VictoryType.Cultural))
+            if (!(city.tiles.size < 12 || city.civInfo.wantsToFocusOn(Victory.Focus.Culture)))
                 cultureYield /= 2
         }
         // do this late due to potential override assignment
@@ -207,7 +209,7 @@ object Automation {
             return true
 
         // Spaceships are always allowed
-        if (construction.hasUnique(UniqueType.SpaceshipPart))
+        if (construction.name in civInfo.gameInfo.spaceResources)
             return true
 
         val requiredResources = construction.getResourceRequirements()
@@ -269,7 +271,7 @@ object Automation {
     }
 
     fun getReservedSpaceResourceAmount(civInfo: CivilizationInfo): Int {
-        return if (civInfo.nation.preferredVictoryType == VictoryType.Scientific) 3 else 2
+        return if (civInfo.wantsToFocusOn(Victory.Focus.Science)) 3 else 2
     }
 
     fun threatAssessment(assessor: CivilizationInfo, assessed: CivilizationInfo): ThreatLevel {

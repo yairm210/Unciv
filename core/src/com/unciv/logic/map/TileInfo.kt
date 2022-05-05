@@ -471,7 +471,9 @@ open class TileInfo {
                     && neighbors.any { it.getOwner() == civInfo }
                 )
                 ) -> false
-            improvement.hasUnique(UniqueType.OnlyAvailableWhen, StateForConditionals(civInfo=civInfo, tile=this)) -> false
+            improvement.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals).any {
+                !it.conditionalsApply(StateForConditionals(civInfo, tile=this))
+            } -> false
             improvement.getMatchingUniques(UniqueType.ObsoleteWith).any {
                 civInfo.tech.isResearched(it.params[0])
             } -> return false
@@ -543,16 +545,14 @@ open class TileInfo {
         }
     }
 
-    /**
-     * Implementation of _`tileFilter`_
-     * @see <a href="https://github.com/yairm210/Unciv/wiki/uniques#user-content-tilefilter">tileFilter</a>
-     */
+    /** Implements [UniqueParameterType.TileFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TileFilter] */
     fun matchesFilter(filter: String, civInfo: CivilizationInfo? = null): Boolean {
         if (matchesTerrainFilter(filter, civInfo)) return true
         if (improvement != null && ruleset.tileImprovements[improvement]!!.matchesFilter(filter)) return true
         return improvement == null && filter == "unimproved"
     }
 
+    /** Implements [UniqueParameterType.TerrainFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TerrainFilter] */
     fun matchesTerrainFilter(filter: String, observingCiv: CivilizationInfo? = null): Boolean {
         return when (filter) {
             "All" -> true

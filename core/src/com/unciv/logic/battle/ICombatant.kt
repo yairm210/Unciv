@@ -18,6 +18,7 @@ interface ICombatant {
     fun getTile(): TileInfo
     fun isInvisible(to: CivilizationInfo): Boolean
     fun canAttack(): Boolean
+    /** Implements [UniqueParameterType.CombatantFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CombatantFilter] */
     fun matchesCategory(category:String): Boolean
     fun getAttackSound(): UncivSound
 

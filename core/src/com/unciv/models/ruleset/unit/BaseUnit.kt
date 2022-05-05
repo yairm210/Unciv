@@ -13,6 +13,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
+import com.unciv.ui.utils.filterAndLogic
 import com.unciv.ui.utils.toPercent
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -35,7 +36,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     var interceptRange = 0
     lateinit var unitType: String
     fun getType() = ruleset.unitTypes[unitType]!!
-    var requiredTech: String? = null
+    override var requiredTech: String? = null
     private var requiredResource: String? = null
 
     override fun getUniqueTarget() = UniqueTarget.Unit
@@ -70,12 +71,14 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         return infoList.joinToString()
     }
 
-    /** Generate description as multi-line string for Nation description addUniqueUnitsText and CityScreen addSelectedConstructionTable */
-    fun getDescription(): String {
+    /** Generate description as multi-line string for CityScreen addSelectedConstructionTable
+     * @param cityInfo Supplies civInfo to show available resources after resource requirements */
+    fun getDescription(cityInfo: CityInfo): String {
         val lines = mutableListOf<String>()
+        val availableResources = cityInfo.civInfo.getCivResources().associate { it.resource.name to it.amount }
         for ((resource, amount) in getResourceRequirements()) {
-            lines += if (amount == 1) "Consumes 1 [$resource]".tr()
-                     else "Consumes [$amount] [$resource]".tr()
+            val available = availableResources[resource] ?: 0
+            lines += "Consumes ${if (amount == 1) "1" else "[$amount]"} [$resource] ({[$available] available})".tr()
         }
         var strengthLine = ""
         if (strength != 0) {
@@ -88,6 +91,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (replacementTextForUniques != "") lines += replacementTextForUniques
         else for (unique in uniqueObjects.filterNot {
             it.type == UniqueType.Unbuildable
+                    || it.type == UniqueType.ConsumesResources  // already shown from getResourceRequirements
                     || it.type?.flags?.contains(UniqueFlag.HiddenToUsers) == true
         })
             lines += unique.text.tr()
@@ -126,14 +130,15 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             textList += FormattedLine(stats.joinToString(", ", "{Cost}: "))
         }
 
-        if (replacementTextForUniques != "") {
+        if (replacementTextForUniques.isNotEmpty()) {
             textList += FormattedLine()
             textList += FormattedLine(replacementTextForUniques)
         } else if (uniques.isNotEmpty()) {
             textList += FormattedLine()
-            uniqueObjects.sortedBy { it.text }.forEach {
-                if (!it.hasFlag(UniqueFlag.HiddenToUsers))
-                    textList += FormattedLine(it)
+            for (unique in uniqueObjects.sortedBy { it.text }) {
+                if (unique.hasFlag(UniqueFlag.HiddenToUsers)) continue
+                if (unique.type == UniqueType.ConsumesResources) continue  // already shown from getResourceRequirements
+                textList += FormattedLine(unique)
             }
         }
 
@@ -323,8 +328,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     }
 
     override fun getStatBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
-        var cost = getBaseBuyCost(cityInfo, stat)?.toDouble()
-        if (cost == null) return null
+        var cost = getBaseBuyCost(cityInfo, stat)?.toDouble() ?: return null
 
         for (unique in cityInfo.getMatchingUniques(UniqueType.BuyUnitsDiscount)) {
             if (stat.name == unique.params[0] && matchesFilter(unique.params[1]))
@@ -534,12 +538,11 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         else ruleset.units[replaces!!]!!
     }
 
+    /** Implements [UniqueParameterType.BaseUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.BaseUnitFilter] */
     fun matchesFilter(filter: String): Boolean {
-        if (filter.contains('{')) // multiple types at once - AND logic. Looks like:"{Military} {Land}"
-            return filter.removePrefix("{").removeSuffix("}").split("} {")
-                .all { matchesFilter(it) }
+        return filter.filterAndLogic { matchesFilter(it) } // multiple types at once - AND logic. Looks like:"{Military} {Land}"
+            ?: when (filter) {
 
-        return when (filter) {
             unitType -> true
             name -> true
             replaces -> true

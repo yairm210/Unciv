@@ -23,6 +23,7 @@ import com.unciv.models.ruleset.unique.UniqueMapTyped
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
+import com.unciv.ui.utils.filterAndLogic
 import com.unciv.ui.utils.toPercent
 import java.text.DecimalFormat
 import kotlin.math.pow
@@ -177,18 +178,16 @@ class MapUnit {
     /**
      * Container class to represent a single instant in a [MapUnit]'s recent movement history.
      *
-     * @property position Position on the map at this instant.
+     * @property position Position on the map at this instant, cloned on instantiation.
      * @property type Category of the last change in position that brought the unit to this position.
      * @see [movementMemories]
      * */
-    class UnitMovementMemory() {
-        constructor(position: Vector2, type: UnitMovementMemoryType): this() {
-            this.position = position
-            this.type = type
-        }
-        lateinit var position: Vector2
-        lateinit var type: UnitMovementMemoryType
-        fun clone() = UnitMovementMemory(Vector2(position), type)
+    class UnitMovementMemory(position: Vector2, val type: UnitMovementMemoryType) {
+        @Suppress("unused") // needed because this is part of a save and gets deserialized
+        constructor(): this(Vector2.Zero, UnitMovementMemoryType.UnitMoved)
+        val position = Vector2(position)
+
+        fun clone() = UnitMovementMemory(position, type)
         override fun toString() = "${this::class.simpleName}($position, $type)"
     }
 
@@ -200,7 +199,7 @@ class MapUnit {
 
     /** Add the current position and the most recent movement type to [movementMemories]. Called once at end and once at start of turn, and at unit creation. */
     fun addMovementMemory() {
-        movementMemories.add(UnitMovementMemory(Vector2(getTile().position), mostRecentMoveType))
+        movementMemories.add(UnitMovementMemory(getTile().position, mostRecentMoveType))
         while (movementMemories.size > 2) { // O(n) but n == 2.
             // Keep at most one arrow segment— A lot of the time even that won't be rendered because the two positions will be the same.
             // When in the unit's turn— I.E. For a player unit— The last two entries will be from .endTurn() followed by from .startTurn(), so the segment from .movementMemories will have zero length. Instead, what gets seen will be the segment from the end of .movementMemories to the unit's current position.
@@ -714,12 +713,12 @@ class MapUnit {
         val isFriendlyTerritory = tileInfo.isFriendlyTerritory(civInfo)
 
         var healing = when {
-            tileInfo.isCityCenter() -> 20
-            tileInfo.isWater && isFriendlyTerritory && (baseUnit.isWaterUnit() || isTransported) -> 15 // Water unit on friendly water
+            tileInfo.isCityCenter() -> 25 // Increased from 20 for CV parity
+            tileInfo.isWater && isFriendlyTerritory && (baseUnit.isWaterUnit() || isTransported) -> 20 // Water unit on friendly water, increased from 15 for CV parity
             tileInfo.isWater -> 0 // All other water cases
-            isFriendlyTerritory -> 15 // Allied territory
+            isFriendlyTerritory -> 20 // Allied territory, increased from 15 for CV parity
             tileInfo.getOwner() == null -> 10 // Neutral territory
-            else -> 5 // Enemy territory
+            else -> 10 // Enemy territory, increased from 5 for CV  parity
         }
 
         val mayHeal = healing > 0 || (tileInfo.isWater && hasUnique(UniqueType.HealsOutsideFriendlyTerritory, checkCivInfoUniques = true))
@@ -891,7 +890,7 @@ class MapUnit {
     fun putInTile(tile: TileInfo) {
         when {
             !movement.canMoveTo(tile) ->
-                throw Exception("I can't go there!")
+                throw Exception("Unit $name at $currentTile can't be put in tile ${tile.position}!")
             baseUnit.movesLikeAirUnits() -> tile.airUnits.add(this)
             isCivilian() -> tile.civilianUnit = this
             else -> tile.militaryUnit = this
@@ -1091,12 +1090,11 @@ class MapUnit {
         )
     }
 
+    /** Implements [UniqueParameterType.MapUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.MapUnitFilter] */
     fun matchesFilter(filter: String): Boolean {
-        if (filter.contains('{')) // multiple types at once - AND logic. Looks like:"{Military} {Land}"
-            return filter.removePrefix("{").removeSuffix("}").split("} {")
-                .all { matchesFilter(it) }
-        
-        return when (filter) {
+        return filter.filterAndLogic { matchesFilter(it) } // multiple types at once - AND logic. Looks like:"{Military} {Land}"
+            ?: when (filter) {
+
             // todo: unit filters should be adjectives, fitting "[filterType] units"
             // This means converting "wounded units" to "Wounded", "Barbarians" to "Barbarian"
             "Wounded", "wounded units" -> health < 100

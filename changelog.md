@@ -1,3 +1,73 @@
+## 4.0.12
+
+By SomeTroglodyte:
+- Show available resources from CityScreen
+- F-droid integration improvements! 
+
+By JackRainy:
+- Allow city connections via open borders and own harbors only 
+- Enable scrolling for the oversized popups
+
+Performance improvements - By Azzurite
+
+By xlenstra:
+- Fixed `provides [amount] [resource]` on buildings not accepting conditionals 
+- Implemented most things for moddable victory conditions
+
+Check internet before starting mp game to avoid freeze - By alexban011
+
+## 4.0.11
+
+Enabled nested translations!
+
+Don't allow trade routes through enemy cities
+
+By JackRainy:
+- Protect the cities from the fallout spawning 
+- Correct swap of the full-loaded carriers 
+
+By SomeTroglodyte:
+- Map editor2.2
+- Show number of global followers in Religion Overview 
+
+By xlenstra:
+- Fixed improvements with unfulfilled 'Only Available' still buildable 
+- Fixed a crash when a plane tried to enter a full city
+
+## 4.0.10
+
+By JackRainy:
+- Correct calculation of production for Settlers 
+- Fixed swapping carriers with payloads 
+- Display wonders built in other civs correctly 
+
+By SomeTroglodyte:
+- Resources UI 
+- Some improvements to Map Editor - step 1 
+- Implement fastlane step 1 - minimal framework
+
+Made Specialist allocation table expandable  - By ultradian
+
+Fix typo in vanilla - By touhidurrr
+
+Healing values per Civ V - By letstalkaboutdune
+
+## 4.0.9
+
+By xlenstra: Moddable victories!
+  
+Fixed crashing bug with aircraft rejection reasons
+
+Mod land units with missile and nuke uniques no longer crash the game
+
+improvementFilter accepts uniques as well
+
+terrainFilter accepts tile resource uniques
+
+Unique docs writer makeover  - By SomeTroglodyte
+
+Add checks against 0 Strength combat  - By itanasi
+
 ## 4.0.8
 
 Redone Map Editor - By SomeTroglodyte

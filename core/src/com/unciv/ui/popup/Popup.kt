@@ -28,12 +28,14 @@ open class Popup(val screen: BaseScreen): Table(BaseScreen.skin) {
         // Set actor name for debugging
         name = javaClass.simpleName
 
+        val scrollPane = AutoScrollPane(innerTable, BaseScreen.skin)
+
         background = ImageGetter.getBackground(Color.GRAY.cpy().apply { a=.5f })
         innerTable.background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.5f))
 
         innerTable.pad(20f)
         innerTable.defaults().pad(5f)
-        super.add(innerTable)
+        super.add(scrollPane)
 
         this.isVisible = false
         touchable = Touchable.enabled // don't allow clicking behind

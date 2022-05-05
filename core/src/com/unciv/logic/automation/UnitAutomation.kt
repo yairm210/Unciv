@@ -280,17 +280,36 @@ object UnitAutomation {
                 .filter { it !in dangerousTiles && unit.movement.canMoveTo(it) }
         val tilesByHealingRate = viableTilesForHealing.groupBy { unit.rankTileForHealing(it) }
 
-        if (tilesByHealingRate.keys.none { it != 0 }) { // We can't heal here at all! We're probably embarked
-            val reachableCityTile = unit.civInfo.cities.asSequence().map { it.getCenterTile() }
+        if (tilesByHealingRate.keys.all { it == 0 }) { // We can't heal here at all! We're probably embarked
+            if (!unit.baseUnit.movesLikeAirUnits()) {
+                val reachableCityTile = unit.civInfo.cities.asSequence()
+                    .map { it.getCenterTile() }
                     .sortedBy { it.aerialDistanceTo(unit.currentTile) }
                     .firstOrNull { unit.movement.canReach(it) }
-            if (reachableCityTile != null) unit.movement.headTowards(reachableCityTile)
-            else wander(unit)
+                if (reachableCityTile != null) unit.movement.headTowards(reachableCityTile)
+                else wander(unit)
+                return true
+            }
+            // Try to get closer to an empty city
+            val emptyCities = unit.civInfo.cities.asSequence()
+                .map { it.getCenterTile() }
+                .filter { unit.movement.canMoveTo(it) }
+            if (emptyCities.none()) return false // Nowhere to move to heal
+            
+            val nextTileToMove = unitDistanceToTiles.keys
+                .filter { unit.movement.canMoveTo(it) }
+                .minByOrNull { tile ->
+                    emptyCities.minOf { city ->
+                        city.aerialDistanceTo(tile)
+                    }
+                } ?: return false
+            
+            unit.movement.moveToTile(nextTileToMove)
             return true
         }
 
-        val bestTilesForHealing = tilesByHealingRate.maxByOrNull {  it.key }!!.value
-        val bestTileForHealing = bestTilesForHealing.maxByOrNull {  it.getDefensiveBonus() }!!
+        val bestTilesForHealing = tilesByHealingRate.maxByOrNull { it.key }!!.value
+        val bestTileForHealing = bestTilesForHealing.maxByOrNull { it.getDefensiveBonus() }!!
         val bestTileForHealingRank = unit.rankTileForHealing(bestTileForHealing)
 
         if (currentUnitTile != bestTileForHealing

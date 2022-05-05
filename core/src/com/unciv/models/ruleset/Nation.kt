@@ -14,15 +14,6 @@ import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.colorFromRGB
 
-enum class VictoryType {
-    Neutral,
-    Cultural,
-    Diplomatic,
-    Domination,
-    Scientific,
-    Time,
-}
-
 class Nation : RulesetObject() {
     var leaderName = ""
     fun getLeaderDisplayName() = if (isCityState()) name
@@ -30,7 +21,7 @@ class Nation : RulesetObject() {
 
     val style = ""
     var cityStateType: CityStateType? = null
-    var preferredVictoryType: VictoryType = VictoryType.Neutral
+    var preferredVictoryType: String = Constants.neutralVictoryType
     var declaringWar = ""
     var attacked = ""
     var defeated = ""
