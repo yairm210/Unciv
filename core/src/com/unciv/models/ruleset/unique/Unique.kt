@@ -288,7 +288,7 @@ class UniqueMap: HashMap<String, ArrayList<Unique>>() {
         this[unique.placeholderText]!!.add(unique)
     }
 
-    private fun getUniques(placeholderText: String): Sequence<Unique> {
+    fun getUniques(placeholderText: String): Sequence<Unique> {
         return this[placeholderText]?.asSequence() ?: emptySequence()
     }
 
@@ -296,20 +296,8 @@ class UniqueMap: HashMap<String, ArrayList<Unique>>() {
 
     fun getMatchingUniques(uniqueType: UniqueType, state: StateForConditionals) = getUniques(uniqueType)
         .filter { it.conditionalsApply(state) }
-
+    
     fun getAllUniques() = this.asSequence().flatMap { it.value.asSequence() }
-}
-
-/** DOES NOT hold untyped uniques! */
-class UniqueMapTyped: EnumMap<UniqueType, ArrayList<Unique>>(UniqueType::class.java) {
-    fun addUnique(unique: Unique) {
-        if(unique.type==null) return
-        if (!containsKey(unique.type)) this[unique.type] = ArrayList()
-        this[unique.type]!!.add(unique)
-    }
-
-    fun getUniques(uniqueType: UniqueType): Sequence<Unique> =
-        this[uniqueType]?.asSequence() ?: sequenceOf()
 }
 
 
