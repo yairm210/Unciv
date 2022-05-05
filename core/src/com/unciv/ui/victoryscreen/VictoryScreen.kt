@@ -178,53 +178,55 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
     private fun setCivRankingsTable() {
         val majorCivs = gameInfo.civilizations.filter { it.isMajorCiv() }
-
         contentsTable.clear()
         
         if (UncivGame.Current.settings.useDemographics) contentsTable.add(buildDemographicsTable(majorCivs))
         else contentsTable.add(buildRankingsTable(majorCivs))
     }
 
-    enum class RankLabels { Demographic, Rank, Value, Best, Average, Worst}
+    enum class RankLabels { Rank, Value, Best, Average, Worst}
     private fun buildDemographicsTable(majorCivs: List<CivilizationInfo>): Table {
         val demographicsTable = Table().apply { defaults().pad(5f) }
-
+        buildDemographicsHeaders(demographicsTable)
+        
         for (rankLabel in RankLabels.values())   {
-            if (rankLabel == RankLabels.Demographic) {
-                val demoLabel = Table().apply { defaults().pad(5f) }
-                demoLabel.add(rankLabel.name.toLabel()).row()
-                demoLabel.addSeparator().fillX()
-                demographicsTable.add(demoLabel)
-                for (category in RankingType.values()) {
-                    val headers = Table().apply { defaults().pad(5f) }
-                    headers.add(category.name.replace('_', ' ').toLabel()).row()
-                    headers.addSeparator().fillX()
-                    demographicsTable.add(headers)
+            demographicsTable.row()
+            demographicsTable.add(rankLabel.name.toLabel())
+
+            for (category in RankingType.values()) {
+                val aliveMajorCivsSorted = majorCivs.filter{ it.isAlive() }.sortedByDescending { it.getStatForRanking(category) }
+                
+                fun addRankCivGroup(civ: CivilizationInfo) { // local function for reuse of getting and formatting civ stats
+                    demographicsTable.add(getCivGroup(civ, ": " + civ.getStatForRanking(category).toString(), playerCivInfo)).fillX()
                 }
-            } else {
-                demographicsTable.row()
-                demographicsTable.add(rankLabel.name.toLabel())
 
-                for (category in RankingType.values()) {
-                    val aliveMajorCivsSorted = majorCivs.filter{ it.isAlive() }.sortedByDescending { it.getStatForRanking(category) }
-                    
-                    fun addRankCivGroup(civ: CivilizationInfo) { // local function for reuse of getting and formatting civ stats
-                        demographicsTable.add(getCivGroup(civ, ": " + civ.getStatForRanking(category).toString(), playerCivInfo)).fillX()
-                    }
-
-                    @Suppress("NON_EXHAUSTIVE_WHEN") // RankLabels.Demographic treated above
-                    when (rankLabel) {
-                        RankLabels.Rank -> demographicsTable.add((aliveMajorCivsSorted.indexOfFirst { it == gameInfo.currentPlayerCiv } + 1).toLabel())
-                        RankLabels.Value -> addRankCivGroup(gameInfo.currentPlayerCiv)
-                        RankLabels.Best -> addRankCivGroup(aliveMajorCivsSorted.firstOrNull()!!)
-                        RankLabels.Average -> demographicsTable.add((aliveMajorCivsSorted.sumOf { it.getStatForRanking(category) } / aliveMajorCivsSorted.count()).toLabel())
-                        RankLabels.Worst -> addRankCivGroup(aliveMajorCivsSorted.lastOrNull()!!)
-                    }
+                @Suppress("NON_EXHAUSTIVE_WHEN") // RankLabels.Demographic treated above
+                when (rankLabel) {
+                    RankLabels.Rank -> demographicsTable.add((aliveMajorCivsSorted.indexOfFirst { it == gameInfo.currentPlayerCiv } + 1).toLabel())
+                    RankLabels.Value -> addRankCivGroup(gameInfo.currentPlayerCiv)
+                    RankLabels.Best -> addRankCivGroup(aliveMajorCivsSorted.firstOrNull()!!)
+                    RankLabels.Average -> demographicsTable.add((aliveMajorCivsSorted.sumOf { it.getStatForRanking(category) } / aliveMajorCivsSorted.count()).toLabel())
+                    RankLabels.Worst -> addRankCivGroup(aliveMajorCivsSorted.lastOrNull()!!)
                 }
             }
         }
 
         return demographicsTable
+    }
+    
+    private fun buildDemographicsHeaders(demographicsTable: Table) {
+        val demoLabel = Table().apply { defaults().pad(5f) }
+
+        demoLabel.add("Demographic".toLabel()).row()
+        demoLabel.addSeparator().fillX()
+        demographicsTable.add(demoLabel)
+
+        for (category in RankingType.values()) {
+            val headers = Table().apply { defaults().pad(5f) }
+            headers.add(category.name.replace('_', ' ').toLabel()).row()
+            headers.addSeparator().fillX()
+            demographicsTable.add(headers)
+        }
     }
 
     private fun buildRankingsTable(majorCivs: List<CivilizationInfo>): Table {
