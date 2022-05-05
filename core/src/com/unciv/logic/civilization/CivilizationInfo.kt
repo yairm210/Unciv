@@ -427,10 +427,11 @@ class CivilizationInfo {
         )
         yieldAll(policies.policyUniques.getMatchingUniques(uniqueType, stateForConditionals))
         yieldAll(tech.techUniques.getMatchingUniques(uniqueType, stateForConditionals))
-        yieldAll(temporaryUniques.asSequence()
-            .map { it.uniqueObject }
-            .filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) }
-        )
+        if (temporaryUniques.isNotEmpty())
+            yieldAll(temporaryUniques.asSequence()
+                .map { it.uniqueObject }
+                .filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) }
+            )
         yieldAll(getEra().getMatchingUniques(uniqueType, stateForConditionals))
         if (religionManager.religion != null)
             yieldAll(religionManager.religion!!.getFounderUniques()
@@ -652,17 +653,18 @@ class CivilizationInfo {
     }
 
     fun getStatForRanking(category: RankingType): Int {
-        return when (category) {
-            RankingType.Score -> calculateTotalScore().toInt()
-            RankingType.Population -> cities.sumOf { it.population.population }
-            RankingType.Crop_Yield -> statsForNextTurn.food.roundToInt()
-            RankingType.Production -> statsForNextTurn.production.roundToInt()
-            RankingType.Gold -> gold
-            RankingType.Territory -> cities.sumOf { it.tiles.size }
-            RankingType.Force -> getMilitaryMight()
-            RankingType.Happiness -> getHappiness()
-            RankingType.Technologies -> tech.researchedTechnologies.size
-            RankingType.Culture -> policies.adoptedPolicies.count { !Policy.isBranchCompleteByName(it) }
+        return if (isDefeated()) 0
+        else when (category) {
+                RankingType.Score -> calculateTotalScore().toInt()
+                RankingType.Population -> cities.sumOf { it.population.population }
+                RankingType.Crop_Yield -> statsForNextTurn.food.roundToInt()
+                RankingType.Production -> statsForNextTurn.production.roundToInt()
+                RankingType.Gold -> gold
+                RankingType.Territory -> cities.sumOf { it.tiles.size }
+                RankingType.Force -> getMilitaryMight()
+                RankingType.Happiness -> getHappiness()
+                RankingType.Technologies -> tech.researchedTechnologies.size
+                RankingType.Culture -> policies.adoptedPolicies.count { !Policy.isBranchCompleteByName(it) }
         }
     }
 

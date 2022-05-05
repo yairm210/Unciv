@@ -580,6 +580,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     fun movesLikeAirUnits() = getType().getMovementType() == UnitMovementType.Air
 
+    /** Returns resource requirements from both uniques and requiredResource field */
     override fun getResourceRequirements(): HashMap<String, Int> = resourceRequirementsInternal
 
     private val resourceRequirementsInternal: HashMap<String, Int> by lazy {
@@ -590,13 +591,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         resourceRequirements
     }
 
-    override fun requiresResource(resource: String): Boolean {
-        if (requiredResource == resource) return true
-        for (unique in getMatchingUniques(UniqueType.ConsumesResources)) {
-            if (unique.params[1] == resource) return true
-        }
-        return false
-    }
+    override fun requiresResource(resource: String) = getResourceRequirements().containsKey(resource)
 
     fun isRanged() = rangedStrength > 0
     fun isMelee() = !isRanged() && strength > 0

@@ -186,7 +186,8 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         addCheckbox("Show tutorials", settings.showTutorials, true) { settings.showTutorials = it }
         addCheckbox("Show pixel units", settings.showPixelUnits, true) { settings.showPixelUnits = it }
         addCheckbox("Show pixel improvements", settings.showPixelImprovements, true) { settings.showPixelImprovements = it }
-
+        addCheckbox("Experimental Demographics scoreboard", settings.useDemographics, true) { settings.useDemographics = it }
+        
         addMinimapSizeSlider()
 
         addResolutionSelectBox()
