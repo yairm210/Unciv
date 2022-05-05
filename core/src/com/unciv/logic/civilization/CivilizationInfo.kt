@@ -427,10 +427,11 @@ class CivilizationInfo {
         )
         yieldAll(policies.policyUniques.getMatchingUniques(uniqueType, stateForConditionals))
         yieldAll(tech.techUniques.getMatchingUniques(uniqueType, stateForConditionals))
-        yieldAll(temporaryUniques.asSequence()
-            .map { it.uniqueObject }
-            .filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) }
-        )
+        if (temporaryUniques.isNotEmpty())
+            yieldAll(temporaryUniques.asSequence()
+                .map { it.uniqueObject }
+                .filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) }
+            )
         yieldAll(getEra().getMatchingUniques(uniqueType, stateForConditionals))
         if (religionManager.religion != null)
             yieldAll(religionManager.religion!!.getFounderUniques()
