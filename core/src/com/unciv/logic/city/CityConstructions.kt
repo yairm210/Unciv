@@ -6,6 +6,7 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
@@ -87,8 +88,9 @@ class CityConstructions {
      */
     fun getStats(): StatTreeNode {
         val stats = StatTreeNode()
+        val localUniqueCache = LocalUniqueCache()
         for (building in getBuiltBuildings())
-            stats.addStats(building.getStats(cityInfo), building.name)
+            stats.addStats(building.getStats(cityInfo, localUniqueCache), building.name)
         return stats
     }
 
@@ -98,13 +100,11 @@ class CityConstructions {
     fun getMaintenanceCosts(): Int {
         var maintenanceCost = 0
         val freeBuildings = cityInfo.civInfo.civConstructions.getFreeBuildings(cityInfo.id)
-        
-        for (building in getBuiltBuildings()) {
-            if (building.name !in freeBuildings) {
+
+        for (building in getBuiltBuildings())
+            if (building.name !in freeBuildings)
                 maintenanceCost += building.maintenance
-            }
-        }
-        
+
         return maintenanceCost
     }
 

@@ -163,12 +163,15 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         return lines.joinToString("\n") { it.tr() }.trim()
     }
 
-    fun getStats(city: CityInfo): Stats {
+    fun getStats(city: CityInfo, 
+                 /* By default, do not cache - if we're getting stats for only one building this isn't efficient.
+                 * Only use a cache if it was sent to us from outside, which means we can use the results for other buildings.  */
+                 localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Stats {
         // Calls the clone function of the NamedStats this class is derived from, not a clone function of this class
         val stats = cloneStats()
         val civInfo = city.civInfo
 
-        for (unique in city.getMatchingUniques(UniqueType.StatsFromObject)) {
+        for (unique in localUniqueCache.get("StatsFromObject", city.getMatchingUniques(UniqueType.StatsFromObject))) {
             if (!matchesFilter(unique.params[1])) continue
             stats.add(unique.stats)
         }
@@ -179,7 +182,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 stats.add(unique.stats)
 
         if (!isWonder)
-            for (unique in city.getMatchingUniques(UniqueType.StatsFromBuildings)) {
+            for (unique in localUniqueCache.get("StatsFromBuildings", city.getMatchingUniques(UniqueType.StatsFromBuildings))) {
                 if (matchesFilter(unique.params[1]))
                     stats.add(unique.stats)
             }
