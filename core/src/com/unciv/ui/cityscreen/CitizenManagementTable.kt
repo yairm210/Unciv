@@ -34,7 +34,7 @@ class CitizenManagementTable(val cityScreen: CityScreen): Table() {
         defaultCell.touchable = Touchable.enabled
         defaultCell.onClick { city.cityAIFocus = CityFocus.NoFocus; city.reassignPopulation(); cityScreen.update() }
         if (city.cityAIFocus == CityFocus.NoFocus)
-            defaultCell.background = ImageGetter.getBackground(Color.FIREBRICK)
+            defaultCell.background = ImageGetter.getBackground(BaseScreen.skin.get("selection", Color::class.java))
         else
             defaultCell.background = ImageGetter.getBackground(BaseScreen.skin.get("color", Color::class.java))
         innerTable.add(defaultCell).growX().pad(3f).row()

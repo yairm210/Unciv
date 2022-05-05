@@ -452,7 +452,7 @@ class CityInfo {
     fun isGrowing() = foodForNextTurn() > 0
     fun isStarving() = foodForNextTurn() < 0
 
-    private fun foodForNextTurn() = cityStats.currentCityStats.food.roundToInt()
+    fun foodForNextTurn() = cityStats.currentCityStats.food.roundToInt()
 
     /** Take null to mean infinity. */
     fun getNumTurnsToNewPopulation(): Int? {

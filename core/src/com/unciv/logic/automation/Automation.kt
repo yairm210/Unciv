@@ -38,19 +38,35 @@ object Automation {
         //if (city.civInfo.getHappiness() < 0) happinessYield *= 2  // double weight for unhappy civilization
         // var GPPYield = stats.GPP * 3 // TODO: rework GPP Yield
 
-        //val surplusFood = city.foodForNextTurn() // intensive to calc based on Excess Food?
+        val surplusFood = city.foodForNextTurn() // intensive to calc based on Excess Food?
 
         // Apply City focus
         if (cityAIFocus == CityFocus.ProductionFocus)
-            productionYield *= 2
+            productionYield *= 3
         if (cityAIFocus == CityFocus.ScienceFocus)
-            scienceYield *= 2
+            scienceYield *= 3
         if (cityAIFocus == CityFocus.CultureFocus)
-            cultureYield *= 2
+            cultureYield *= 3
         if (cityAIFocus == CityFocus.GoldFocus)
-            goldYield *= 2
+            goldYield *= 3
         if (cityAIFocus == CityFocus.FaithFocus)
-            faithYield *= 2
+            faithYield *= 3
+        
+        if (cityAIFocus != CityFocus.NoFocus && cityAIFocus != CityFocus.FoodFocus && cityAIFocus != CityFocus.ProductionGrowthFocus && cityAIFocus != CityFocus.GoldGrowthFocus){
+            // Starving, need Food, get to 0
+            if (surplusFood < 0){
+                foodYield * 8
+            } else {
+                foodYield /= 2
+            }
+        } else {
+            // Target +2 Food Surplus
+            if (surplusFood < 2) {
+                foodYield * 8
+            } else if (cityAIFocus != CityFocus.FoodFocus) {
+                foodYield /= 2
+            }
+        }
         
         if (city.population.population < 5) {
             // "small city" - we care more about food and less about global problems like gold science and culture
@@ -70,7 +86,7 @@ object Automation {
         }
         // do this late due to potential override assignment
         if (cityAIFocus == CityFocus.FoodFocus)
-            foodYield *= 2
+            foodYield *= 3
         var rank = 0f
         rank += foodYield
         rank += productionYield
@@ -83,8 +99,90 @@ object Automation {
     }
 
     internal fun rankSpecialist(stats: Stats, cityInfo: CityInfo): Float {
-        var rank = rankStatsForCityWork(stats, cityInfo)
+        var rank = rankSpecialistForCityWork(stats, cityInfo)
         rank += 0.3f //GPP bonus
+        return rank
+    }
+
+    private fun rankSpecialistForCityWork(stats: Stats, city: CityInfo, foodWeight: Float = 1f): Float {
+        val cityAIFocus = city.cityAIFocus
+
+        // If you have the Food Bonus, count as 1 extra food production (base is 2food)
+        var foodBonus = 0
+        for (unique in city.getMatchingUniques(UniqueType.FoodConsumptionBySpecialists))
+            if (city.matchesFilter(unique.params[1]))
+                foodBonus = 1
+        // For now, no base weights
+        var foodYield = (stats.food + foodBonus) * foodWeight
+        var productionYield = stats.production
+        var goldYield = stats.gold
+        var scienceYield = stats.science
+        var cultureYield = stats.culture
+        var faithYield = stats.faith
+        var happinessYield = 0f
+        for (unique in city.getMatchingUniques(UniqueType.UnhappinessFromPopulationTypePercentageChange))
+            if (city.matchesFilter(unique.params[2]) && unique.params[1] == "Specialists")
+                happinessYield = -(unique.params[0].toFloat() / 100f)  // relative val is negative, make positive
+        if (city.civInfo.getHappiness() < 0) happinessYield *= 2  // double weight for unhappy civilization
+        // var GPPYield = stats.GPP * 3 // TODO: rework GPP Yield
+
+        val surplusFood = city.foodForNextTurn() // intensive to calc based on Excess Food?
+        
+        // Apply City focus
+        if (cityAIFocus == CityFocus.ProductionFocus)
+            productionYield *= 3
+        if (cityAIFocus == CityFocus.ScienceFocus)
+            scienceYield *= 3
+        if (cityAIFocus == CityFocus.CultureFocus)
+            cultureYield *= 3
+        if (cityAIFocus == CityFocus.GoldFocus)
+            goldYield *= 3
+        if (cityAIFocus == CityFocus.FaithFocus)
+            faithYield *= 3
+
+        if (cityAIFocus != CityFocus.NoFocus && cityAIFocus != CityFocus.FoodFocus && cityAIFocus != CityFocus.ProductionGrowthFocus && cityAIFocus != CityFocus.GoldGrowthFocus){
+            // Starving, need Food, get to 0
+            if (surplusFood < 0){
+                foodYield * 8
+            } else {
+                foodYield /= 2
+            }
+        } else {
+            // Target +2 Food Surplus
+            if (surplusFood < 2) {
+                foodYield * 8
+            } else if (cityAIFocus != CityFocus.FoodFocus) {
+                foodYield /= 2
+            }
+        }
+
+        if (city.population.population < 5) {
+            // "small city" - we care more about food and less about global problems like gold science and culture
+            foodYield *= 1.2f
+            scienceYield /= 2
+            cultureYield /= 2
+            goldYield /= 5 // it's barely worth anything at this point
+        } else {
+            if (stats.food <= 2 || city.civInfo.getHappiness() > 5) foodYield *= 1.2f // food get more value to keep city growing
+            else foodYield = (2.4f + (stats.food - 2) / 2) * foodWeight // 1.2 point for each food up to 2, from there on half a point
+
+            if (!(city.civInfo.gold < 0 && city.civInfo.statsForNextTurn.gold <= 0))
+                goldYield /= 3 // 3 gold is worse than 2 production
+
+            if (!(city.tiles.size < 12 || city.civInfo.wantsToFocusOn(Victory.Focus.Culture)))
+                cultureYield /= 2
+        }
+        // do this late due to potential override assignment
+        if (cityAIFocus == CityFocus.FoodFocus)
+            foodYield *= 3
+        var rank = 0f
+        rank += foodYield
+        rank += productionYield
+        rank += scienceYield
+        rank += cultureYield
+        rank += goldYield
+        rank += faithYield
+        rank += happinessYield
         return rank
     }
 
