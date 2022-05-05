@@ -5,7 +5,7 @@ import com.unciv.ui.utils.GeneralPlatformSpecificHelpers
 import java.net.InetAddress
 
 class PlatformSpecificHelpersDesktop(config: Lwjgl3ApplicationConfiguration) : GeneralPlatformSpecificHelpers {
-    val turnNotifier = MultiplayerTurnNotifierWindows()
+    val turnNotifier = MultiplayerTurnNotifierDesktop()
     init {
         config.setWindowListener(turnNotifier);
     }

@@ -1,7 +1,5 @@
 package com.unciv.app.desktop
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Window
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3WindowAdapter
 import com.sun.jna.Native
@@ -11,10 +9,14 @@ import com.sun.jna.platform.win32.WinNT
 import com.sun.jna.platform.win32.WinUser
 import org.lwjgl.glfw.GLFWNativeWin32
 
-class MultiplayerTurnNotifierWindows: Lwjgl3WindowAdapter() {
+class MultiplayerTurnNotifierDesktop: Lwjgl3WindowAdapter() {
     companion object {
         val user32: User32? = try {
-            Native.load(User32::class.java)
+            if (System.getProperty("os.name")?.contains("Windows") == true) {
+                Native.load(User32::class.java)
+            } else {
+                null
+            }
         } catch (e: UnsatisfiedLinkError) {
             println("Error while initializing turn notifier: " + e.message)
             null
@@ -35,12 +37,17 @@ class MultiplayerTurnNotifierWindows: Lwjgl3WindowAdapter() {
         hasFocus = true
     }
 
+
+    fun turnStarted() {
+        flashWindow()
+    }
+
     /**
      * See https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-flashwindowex
      *
      * We should've used FlashWindow instead of FlashWindowEx, but for some reason the former has no binding in Java's User32
      */
-    fun turnStarted() {
+    private fun flashWindow() {
         try {
             if (user32 == null || window == null || hasFocus) return
             val flashwinfo = WinUser.FLASHWINFO()
