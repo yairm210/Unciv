@@ -133,13 +133,10 @@ object BackwardCompatibility {
 
     /** Make sure all MapUnits have the starting promotions that they're supposed to. */
     fun GameInfo.guaranteeUnitPromotions() {
-        for (tileInfo in tileMap.values) for (unit in tileInfo.getUnits()) {
-            for (startingPromo in unit.baseUnit.promotions) {
-                if (startingPromo !in unit.promotions.promotions) {
+        for (tileInfo in tileMap.values) for (unit in tileInfo.getUnits())
+            for (startingPromo in unit.baseUnit.promotions)
+                if (startingPromo !in unit.promotions.promotions)
                     unit.promotions.addPromotion(startingPromo, true)
-                }
-            }
-        }
     }
 
     /** Move max XP from barbarians to new home */
