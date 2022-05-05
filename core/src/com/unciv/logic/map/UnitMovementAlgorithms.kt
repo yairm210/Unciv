@@ -261,7 +261,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         if (currentTile == finalDestination) return currentTile
 
         // If we can fly, head there directly
-        if (unit.baseUnit.movesLikeAirUnits() || unit.isPreparingParadrop()) return finalDestination
+        if ((unit.baseUnit.movesLikeAirUnits() || unit.isPreparingParadrop()) && canMoveTo(finalDestination)) return finalDestination
 
         val distanceToTiles = getDistanceToTiles()
 

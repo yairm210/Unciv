@@ -6,7 +6,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.*
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.ruleset.ThingToFocus
+import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.unique.UniqueType.*
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.fillPlaceholders
@@ -144,12 +144,12 @@ object UniqueTriggerActivation {
                     if (greatPeople.isEmpty()) return false
                     var greatPerson = greatPeople.random()
 
-                    if (civInfo.wantsToFocusOn(ThingToFocus.Culture)) {
+                    if (civInfo.wantsToFocusOn(Victory.Focus.Culture)) {
                         val culturalGP =
                             greatPeople.firstOrNull { it.uniques.contains("Great Person - [Culture]") }
                         if (culturalGP != null) greatPerson = culturalGP
                     }
-                    if (civInfo.wantsToFocusOn(ThingToFocus.Science)) {
+                    if (civInfo.wantsToFocusOn(Victory.Focus.Science)) {
                         val scientificGP =
                             greatPeople.firstOrNull { it.uniques.contains("Great Person - [Science]") }
                         if (scientificGP != null) greatPerson = scientificGP
@@ -319,10 +319,9 @@ object UniqueTriggerActivation {
             // I could parametrize the [Allied], but eh.
 
             OneTimeGainStat -> {
-                if (Stat.values().none { it.name == unique.params[1] }) return false
-                val stat = Stat.valueOf(unique.params[1])
+                val stat = Stat.safeValueOf(unique.params[1]) ?: return false
 
-                if (stat !in listOf(Stat.Gold, Stat.Faith, Stat.Science, Stat.Culture)
+                if (stat !in Stat.statsWithCivWideField
                     || unique.params[0].toIntOrNull() == null
                 ) return false
 
@@ -332,10 +331,9 @@ object UniqueTriggerActivation {
                 return true
             }
             OneTimeGainStatRange -> {
-                if (Stat.values().none { it.name == unique.params[2] }) return false
-                val stat = Stat.valueOf(unique.params[2])
+                val stat = Stat.safeValueOf(unique.params[2]) ?: return false
 
-                if (stat !in listOf(Stat.Gold, Stat.Faith, Stat.Science, Stat.Culture)
+                if (stat !in Stat.statsWithCivWideField
                     || unique.params[0].toIntOrNull() == null
                     || unique.params[1].toIntOrNull() == null
                 ) return false

@@ -17,10 +17,7 @@ import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileImprovement
-import com.unciv.models.ruleset.unique.StateForConditionals
-import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueMapTyped
-import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unique.*
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.utils.filterAndLogic
@@ -256,29 +253,28 @@ class MapUnit {
     private var tempUniques = ArrayList<Unique>()
 
     @Transient
-    private var tempUniquesMap = UniqueMapTyped()
+    private var tempUniquesMap = UniqueMap()
 
     fun getUniques(): ArrayList<Unique> = tempUniques
 
+    // TODO typify usages and remove this function
     fun getMatchingUniques(placeholderText: String): Sequence<Unique> =
-        tempUniques.asSequence().filter { it.placeholderText == placeholderText }
-
+        tempUniquesMap.getUniques(placeholderText)
+    
     fun getMatchingUniques(
         uniqueType: UniqueType,
         stateForConditionals: StateForConditionals = StateForConditionals(civInfo, unit=this),
         checkCivInfoUniques: Boolean = false
     ) = sequence {
-        val tempUniques = tempUniquesMap[uniqueType]
-        if (tempUniques != null)
             yieldAll(
-                tempUniques.asSequence().filter { it.conditionalsApply(stateForConditionals) }
+                tempUniquesMap.getMatchingUniques(uniqueType, stateForConditionals)
             )
         if (checkCivInfoUniques)
             yieldAll(civInfo.getMatchingUniques(uniqueType, stateForConditionals))
     }
 
     fun hasUnique(unique: String): Boolean {
-        return tempUniques.any { it.placeholderText == unique }
+        return getMatchingUniques(unique).any()
     }
 
     fun hasUnique(
@@ -300,7 +296,7 @@ class MapUnit {
         }
 
         tempUniques = uniques
-        val newUniquesMap = UniqueMapTyped()
+        val newUniquesMap = UniqueMap()
         for (unique in uniques)
             if (unique.type != null)
                 newUniquesMap.addUnique(unique)
@@ -712,12 +708,12 @@ class MapUnit {
         val isFriendlyTerritory = tileInfo.isFriendlyTerritory(civInfo)
 
         var healing = when {
-            tileInfo.isCityCenter() -> 25 // Increased from 20 for CV parity
-            tileInfo.isWater && isFriendlyTerritory && (baseUnit.isWaterUnit() || isTransported) -> 20 // Water unit on friendly water, increased from 15 for CV parity
+            tileInfo.isCityCenter() -> 25
+            tileInfo.isWater && isFriendlyTerritory && (baseUnit.isWaterUnit() || isTransported) -> 20 // Water unit on friendly water
             tileInfo.isWater -> 0 // All other water cases
-            isFriendlyTerritory -> 20 // Allied territory, increased from 15 for CV parity
+            isFriendlyTerritory -> 20 // Allied territory
             tileInfo.getOwner() == null -> 10 // Neutral territory
-            else -> 10 // Enemy territory, increased from 5 for CV  parity
+            else -> 10 // Enemy territory
         }
 
         val mayHeal = healing > 0 || (tileInfo.isWater && hasUnique(UniqueType.HealsOutsideFriendlyTerritory, checkCivInfoUniques = true))
@@ -889,7 +885,7 @@ class MapUnit {
     fun putInTile(tile: TileInfo) {
         when {
             !movement.canMoveTo(tile) ->
-                throw Exception("I can't go there!")
+                throw Exception("Unit $name at $currentTile can't be put in tile ${tile.position}!")
             baseUnit.movesLikeAirUnits() -> tile.airUnits.add(this)
             isCivilian() -> tile.civilianUnit = this
             else -> tile.militaryUnit = this

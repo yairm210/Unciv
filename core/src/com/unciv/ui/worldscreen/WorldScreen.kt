@@ -47,6 +47,7 @@ import com.unciv.ui.popup.ExitGamePopup
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.popup.hasOpenPopups
+import com.unciv.ui.worldscreen.minimap.MinimapHolder
 import com.unciv.ui.worldscreen.unit.UnitActionsTable
 import com.unciv.ui.worldscreen.unit.UnitTable
 import java.util.*

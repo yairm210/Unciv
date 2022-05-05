@@ -99,7 +99,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         }
 
     /** used in CityScreen (CityInfoTable and ConstructionInfoTable) */
-    fun getDescription(cityInfo: CityInfo, showMissingRequiredCities:Boolean): String {
+    fun getDescription(cityInfo: CityInfo, showAdditionalInfo: Boolean): String {
         val stats = getStats(cityInfo)
         val lines = ArrayList<String>()
         val isFree = name in cityInfo.civInfo.civConstructions.getFreeBuildings(cityInfo.id)
@@ -109,8 +109,13 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (isWonder) lines += "Wonder"
         if (isNationalWonder) lines += "National Wonder"
         if (!isFree) {
+            val availableResources = if(!showAdditionalInfo) emptyMap()
+                else cityInfo.civInfo.getCivResources().associate { it.resource.name to it.amount }
             for ((resource, amount) in getResourceRequirements()) {
-                lines += "Consumes [$amount] [$resource]"
+                val available = availableResources[resource] ?: 0
+                lines += if (showAdditionalInfo)
+                    "{Consumes [$amount] [$resource]} ({[$available] available})"
+                else "Consumes [$amount] [$resource]"
             }
         }
 
@@ -125,7 +130,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (uniques.isNotEmpty()) {
             if (replacementTextForUniques != "") lines += replacementTextForUniques
             else lines += getUniquesStringsWithoutDisablers(
-                filterUniques=if (missingCities.isEmpty()) null
+                filterUniques = if (missingCities.isEmpty()) null
                     else { unique -> !unique.isOfType(UniqueType.RequiresBuildingInAllCities) }
                     // Filter out the "Requires a [] in all cities" unique if any cities are still missing the required building, since in that case the list of cities will be appended at the end.
             )
@@ -148,7 +153,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (cityStrength != 0) lines += "{City strength} +$cityStrength"
         if (cityHealth != 0) lines += "{City health} +$cityHealth"
         if (maintenance != 0 && !isFree) lines += "{Maintenance cost}: $maintenance {Gold}"
-        if (showMissingRequiredCities && missingCities.isNotEmpty()) {
+        if (showAdditionalInfo && missingCities.isNotEmpty()) {
             // Could be red. But IMO that should be done by enabling GDX's ColorMarkupLanguage globally instead of adding a separate label.
             lines += "\n" + 
                 "[${cityInfo.civInfo.getEquivalentBuilding(missingUnique!!.params[0])}] required:".tr() +
@@ -158,12 +163,15 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         return lines.joinToString("\n") { it.tr() }.trim()
     }
 
-    fun getStats(city: CityInfo): Stats {
+    fun getStats(city: CityInfo, 
+                 /* By default, do not cache - if we're getting stats for only one building this isn't efficient.
+                 * Only use a cache if it was sent to us from outside, which means we can use the results for other buildings.  */
+                 localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Stats {
         // Calls the clone function of the NamedStats this class is derived from, not a clone function of this class
         val stats = cloneStats()
         val civInfo = city.civInfo
 
-        for (unique in city.getMatchingUniques(UniqueType.StatsFromObject)) {
+        for (unique in localUniqueCache.get("StatsFromObject", city.getMatchingUniques(UniqueType.StatsFromObject))) {
             if (!matchesFilter(unique.params[1])) continue
             stats.add(unique.stats)
         }
@@ -174,18 +182,18 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 stats.add(unique.stats)
 
         if (!isWonder)
-            for (unique in city.getMatchingUniques(UniqueType.StatsFromBuildings)) {
+            for (unique in localUniqueCache.get("StatsFromBuildings", city.getMatchingUniques(UniqueType.StatsFromBuildings))) {
                 if (matchesFilter(unique.params[1]))
                     stats.add(unique.stats)
             }
         return stats
     }
 
-    fun getStatPercentageBonuses(cityInfo: CityInfo?): Stats {
+    fun getStatPercentageBonuses(cityInfo: CityInfo?, localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Stats {
         val stats = percentStatBonus?.clone() ?: Stats()
         val civInfo = cityInfo?.civInfo ?: return stats  // initial stats
         
-        for (unique in civInfo.getMatchingUniques(UniqueType.StatPercentFromObject)) {
+        for (unique in localUniqueCache.get("StatPercentFromObject", civInfo.getMatchingUniques(UniqueType.StatPercentFromObject))) {
             if (matchesFilter(unique.params[2]))
                 stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
         }
@@ -250,7 +258,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (replacementTextForUniques.isNotEmpty()) {
             textList += FormattedLine(replacementTextForUniques)
         } else if (uniques.isNotEmpty()) {
-            for (unique in uniqueObjects.sortedBy { it.text }) {
+            for (unique in uniqueObjects) {
                 if (unique.hasFlag(UniqueFlag.HiddenToUsers)) continue
                 if (unique.type == UniqueType.ConsumesResources) continue  // already shown from getResourceRequirements
                 textList += FormattedLine(unique)
@@ -407,8 +415,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     }
 
     override fun getStatBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
-        var cost = getBaseBuyCost(cityInfo, stat)?.toDouble()
-        if (cost == null) return null
+        var cost = getBaseBuyCost(cityInfo, stat)?.toDouble() ?: return null
 
         for (unique in cityInfo.getMatchingUniques(UniqueType.BuyItemsDiscount))
             if (stat.name == unique.params[0])
@@ -718,7 +725,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             replaces -> true
             else -> {
                 if (uniques.contains(filter)) return true
-                val stat = Stat.values().firstOrNull { it.name == filter }
+                val stat = Stat.safeValueOf(filter)
                 if (stat != null && isStatRelated(stat)) return true
                 return false
             }

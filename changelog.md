@@ -1,3 +1,39 @@
+## 4.0.12
+
+By SomeTroglodyte:
+- Show available resources from CityScreen
+- F-droid integration improvements! 
+
+By JackRainy:
+- Allow city connections via open borders and own harbors only 
+- Enable scrolling for the oversized popups
+
+Performance improvements - By Azzurite
+
+By xlenstra:
+- Fixed `provides [amount] [resource]` on buildings not accepting conditionals 
+- Implemented most things for moddable victory conditions
+
+Check internet before starting mp game to avoid freeze - By alexban011
+
+## 4.0.11
+
+Enabled nested translations!
+
+Don't allow trade routes through enemy cities
+
+By JackRainy:
+- Protect the cities from the fallout spawning 
+- Correct swap of the full-loaded carriers 
+
+By SomeTroglodyte:
+- Map editor2.2
+- Show number of global followers in Religion Overview 
+
+By xlenstra:
+- Fixed improvements with unfulfilled 'Only Available' still buildable 
+- Fixed a crash when a plane tried to enter a full city
+
 ## 4.0.10
 
 By JackRainy:

@@ -39,7 +39,8 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
         // We IGNORE the conditionals when we get them civ-wide, so we won't need to do the same thing for EVERY unit in the civ.
         // This leads to massive memory and CPU time savings when calculating the maintenance!
-        val civwideDiscountUniques = civInfo.getMatchingUniques(UniqueType.UnitMaintenanceDiscount, StateForConditionals.IgnoreConditionals).toList()
+        val civwideDiscountUniques = civInfo.getMatchingUniques(UniqueType.UnitMaintenanceDiscount, StateForConditionals.IgnoreConditionals)
+            .toList().asSequence()
 
         for (unit in unitsToPayFor) {
             val stateForConditionals = StateForConditionals(civInfo = civInfo, unit = unit)
@@ -47,8 +48,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             val uniquesThatApply = unit.getMatchingUniques(
                 UniqueType.UnitMaintenanceDiscount,
                 stateForConditionals
-            ) + civwideDiscountUniques.asSequence()
-                .filter { it.conditionalsApply(stateForConditionals) }
+            ) + civwideDiscountUniques.filter { it.conditionalsApply(stateForConditionals) }
             for (unique in uniquesThatApply) {
                 unitMaintenance *= unique.params[0].toPercent()
             }
