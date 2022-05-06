@@ -732,7 +732,7 @@ object Battle {
         }
 
         // Pillage improvements, remove roads, add fallout
-        if (tile.improvement != null && !tile.getTileImprovement()!!.hasUnique(UniqueType.Indestructible)) {
+        if (tile.improvement != null && !tile.getTileImprovement()!!.hasUnique(UniqueType.Irremovable)) {
             if (tile.getTileImprovement()!!.hasUnique(UniqueType.Unpillagable)) {
                 tile.improvement = null
             } else {
@@ -743,29 +743,28 @@ object Battle {
         }
         tile.roadStatus = RoadStatus.None
         if (tile.isLand && !tile.isImpassible() && !tile.isCityCenter()) {
-            if (tile.hasUnique(UniqueType.DestroyableByNukesChance)) {
+            if (tile.terrainHasUnique(UniqueType.DestroyableByNukesChance)) {
                 for (terrainFeature in tile.terrainFeatureObjects) {
                     for (unique in terrainFeature.getMatchingUniques(UniqueType.DestroyableByNukesChance)) {
                         if (Random().nextFloat() >= unique.params[0].toFloat() / 100f) continue
                         tile.removeTerrainFeature(terrainFeature.name)
-                        if (!tile.terrainFeatures.contains("Fallout") && !tile.hasUnique(UniqueType.Indestructible))
+                        if (!tile.terrainFeatures.contains("Fallout"))
                             tile.addTerrainFeature("Fallout")
                     }
                 }
-            } else if (Random().nextFloat() < 0.5f && !tile.terrainFeatures.contains("Fallout") && !tile.hasUnique(UniqueType.Indestructible)) {
+            } else if (Random().nextFloat() < 0.5f && !tile.terrainFeatures.contains("Fallout")) {
                 tile.addTerrainFeature("Fallout")
             }
-            if (!tile.hasUnique(UniqueType.DestroyableByNukes)) return
+            if (!tile.terrainHasUnique(UniqueType.DestroyableByNukes)) return
             
             // Deprecated as of 3.19.19 -- If removed, the two successive `if`s above should be merged
-                val destructionChance = if (tile.hasUnique(UniqueType.ResistsNukes)) 0.25f
+                val destructionChance = if (tile.terrainHasUnique(UniqueType.ResistsNukes)) 0.25f
                 else 0.5f
                 if (Random().nextFloat() < destructionChance) {
                     for (terrainFeature in tile.terrainFeatureObjects)
                         if (terrainFeature.hasUnique(UniqueType.DestroyableByNukes))
                             tile.removeTerrainFeature(terrainFeature.name)
-                    if (!tile.hasUnique(UniqueType.Indestructible))
-                        tile.addTerrainFeature("Fallout")
+                    tile.addTerrainFeature("Fallout")
                 }
             //
         }

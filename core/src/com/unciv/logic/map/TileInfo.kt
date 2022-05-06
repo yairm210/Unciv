@@ -242,11 +242,19 @@ open class TileInfo {
 
     fun isRoughTerrain() = getAllTerrains().any{ it.isRough() }
 
-    fun hasUnique(uniqueType: UniqueType) = getAllTerrains().any { it.hasUnique(uniqueType) }
-    fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(tile=this) ): Sequence<Unique> {
+    /** Checks whether any of the TERRAINS of this tile has a certain unqiue */
+    fun terrainHasUnique(uniqueType: UniqueType) = getAllTerrains().any { it.hasUnique(uniqueType) }
+    /** Get all uniques of this type that any TERRAIN on this tile has */
+    fun getTerrainMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(tile=this) ): Sequence<Unique> {
         return getAllTerrains().flatMap { it.getMatchingUniques(uniqueType, stateForConditionals) }
     }
-
+    
+    /** Get all uniques of this type that any part of this tile has: terrains, improvement, resource */
+    fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(tile=this)) = 
+        getTerrainMatchingUniques(uniqueType, stateForConditionals) +
+        (getTileImprovement()?.getMatchingUniques(uniqueType, stateForConditionals) ?: sequenceOf()) +
+        if (resource == null) sequenceOf() else tileResource.getMatchingUniques(uniqueType, stateForConditionals)
+    
     fun getWorkingCity(): CityInfo? {
         val civInfo = getOwner() ?: return null
         return civInfo.cities.firstOrNull { it.isWorked(this) }
@@ -255,7 +263,7 @@ open class TileInfo {
     fun isWorked(): Boolean = getWorkingCity() != null
     fun providesYield() = getCity() != null && (isCityCenter() || isWorked()
             || getTileImprovement()?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation) == true
-            || hasUnique(UniqueType.TileProvidesYieldWithoutPopulation))
+            || terrainHasUnique(UniqueType.TileProvidesYieldWithoutPopulation))
 
     fun isLocked(): Boolean {
         val workingCity = getWorkingCity()
@@ -459,6 +467,14 @@ open class TileInfo {
         return stats
     }
 
+    // This should be the only adjacency function
+    fun isAdjacentTo(terrainFilter:String): Boolean {
+        // Rivers are odd, as they aren't technically part of any specific tile but still count towards adjacency
+        if (terrainFilter == "River") return isAdjacentToRiver()
+        if (terrainFilter == Constants.freshWater && isAdjacentToRiver()) return true
+        return (neighbors + this).any { neighbor -> neighbor.matchesFilter(terrainFilter) }
+    }
+
     /** Returns true if the [improvement] can be built on this [TileInfo] */
     fun canBuildImprovement(improvement: TileImprovement, civInfo: CivilizationInfo): Boolean {
         return when {
@@ -491,14 +507,6 @@ open class TileInfo {
             // any state for conditionals. Therefore, duplicating the check is the easiest option.
             else -> canImprovementBeBuiltHere(improvement, hasViewableResource(civInfo))
         }
-    }
-
-    // This should be the only adjacency function
-    fun isAdjacentTo(terrainFilter:String): Boolean {
-        // Rivers are odd, as they aren't technically part of any specific tile but still count towards adjacency
-        if (terrainFilter == "River") return isAdjacentToRiver()
-        if (terrainFilter == Constants.freshWater && isAdjacentToRiver()) return true
-        return (neighbors + this).any { neighbor -> neighbor.matchesFilter(terrainFilter) }
     }
 
     /** Without regards to what CivInfo it is, a lot of the checks are just for the improvement on the tile.

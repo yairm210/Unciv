@@ -13,6 +13,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.toPercent
+import com.unciv.ui.worldscreen.unit.UnitActions
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -23,16 +24,17 @@ class TileImprovement : RulesetStatsObject() {
     var uniqueTo:String? = null
     override fun getUniqueTarget() = UniqueTarget.Improvement
     val shortcutKey: Char? = null
-    val turnsToBuild: Int = 0 // This is the base cost.
+    // This is the base cost. A cost of 0 means created instead of buildable.
+    val turnsToBuild: Int = 0 
 
 
-    fun getTurnsToBuild(civInfo: CivilizationInfo, unit: MapUnit?): Int {
+    fun getTurnsToBuild(civInfo: CivilizationInfo, unit: MapUnit): Int {
         val state = StateForConditionals(civInfo, unit = unit)
-        val uniques = civInfo.getMatchingUniques(UniqueType.TileImprovementTime, state) +
-            (unit?.getMatchingUniques(UniqueType.TileImprovementTime, state) ?: sequenceOf())
-        return uniques.fold(turnsToBuild.toFloat() * civInfo.gameInfo.gameParameters.gameSpeed.modifier) {
-            it, unique -> it * unique.params[0].toPercent()
-        }.roundToInt().coerceAtLeast(1)
+        return unit.getMatchingUniques(UniqueType.TileImprovementTime, state, checkCivInfoUniques = true)
+            .fold(turnsToBuild.toFloat() * civInfo.gameInfo.gameParameters.gameSpeed.modifier) { it, unique ->
+                it * unique.params[0].toPercent()
+            }.roundToInt()
+            .coerceAtLeast(1)
         // In some weird cases it was possible for something to take 0 turns, leading to it instead never finishing
     }
 
@@ -65,6 +67,18 @@ class TileImprovement : RulesetStatsObject() {
     fun isRoad() = RoadStatus.values().any { it != RoadStatus.None && it.name == this.name }
     fun isAncientRuinsEquivalent() = hasUnique(UniqueType.IsAncientRuinsEquivalent)
 
+    fun handleImprovementCompletion(builder: MapUnit) {
+        if (hasUnique(UniqueType.TakesOverAdjacentTiles))
+            UnitActions.takeOverTilesAround(builder)
+        if (builder.getTile().resource != null) {
+            val city = builder.getTile().getCity()
+            if (city != null) {
+                city.cityStats.update()
+                city.civInfo.updateDetailedCivResources()
+            }
+        }
+    }
+    
     /**
      * Check: Is this improvement allowed on a [given][name] terrain feature?
      *

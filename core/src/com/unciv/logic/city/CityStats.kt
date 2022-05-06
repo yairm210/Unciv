@@ -376,7 +376,7 @@ class CityStats(val cityInfo: CityInfo) {
                         || cityInfo.isWorked(it)
                         || it.owningCity == cityInfo && (it.getTileImprovement()
                     ?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation) == true
-                        || it.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation))
+                        || it.terrainHasUnique(UniqueType.TileProvidesYieldWithoutPopulation))
             })
             stats.add(cell.getTileStats(cityInfo, cityInfo.civInfo))
         statsFromTiles = stats

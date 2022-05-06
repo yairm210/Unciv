@@ -1346,10 +1346,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Provides a random bonus when entered"
 	Applicable to: Improvement
 
-??? example  "Unpillagable"
+??? example  "Constructing it will take over the tiles around it and assign them to your closest city"
 	Applicable to: Improvement
 
-??? example  "Indestructible"
+??? example  "Unpillagable"
 	Applicable to: Improvement
 
 ??? example  "Irremovable"

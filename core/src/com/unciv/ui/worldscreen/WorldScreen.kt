@@ -540,7 +540,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
         displayTutorial(Tutorial.Workers) {
             gameInfo.getCurrentPlayerCivilization().getCivUnits().any {
-                it.hasUniqueToBuildImprovements && it.isCivilian()
+                it.hasUniqueToBuildImprovements && it.isCivilian() && !it.isGreatPerson()
             }
         }
     }

@@ -23,8 +23,10 @@ import com.unciv.models.ruleset.unique.UniqueMapTyped
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
+import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.filterAndLogic
 import com.unciv.ui.utils.toPercent
+import com.unciv.ui.worldscreen.unit.UnitActions
 import java.text.DecimalFormat
 import kotlin.math.pow
 
@@ -851,6 +853,30 @@ class MapUnit {
             .forEach { unit -> unit.destroy() }
         assignOwner(recipient)
         recipient.updateViewableTiles()
+    }
+    
+    /** Destroys the unit and gives stats if its a great person */
+    fun consume() {
+        addStatsPerGreatPersonUsage()
+        destroy()
+    }
+
+    private fun addStatsPerGreatPersonUsage() {
+        if (!isGreatPerson()) return
+
+        val gainedStats = Stats()
+        for (unique in civInfo.getMatchingUniques(UniqueType.ProvidesGoldWheneverGreatPersonExpended)) {
+            gainedStats.gold += (100 * civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt()
+        }
+        for (unique in civInfo.getMatchingUniques(UniqueType.ProvidesStatsWheneverGreatPersonExpended)) {
+            gainedStats.add(unique.stats)
+        }
+
+        if (gainedStats.isEmpty()) return
+
+        for (stat in gainedStats)
+            civInfo.addStat(stat.key, stat.value.toInt())
+        civInfo.addNotification("By expending your [$name] you gained [${gainedStats}]!", getTile().position, name)
     }
 
     fun removeFromTile() = currentTile.removeUnit(this)
