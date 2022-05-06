@@ -11,11 +11,16 @@ class PlatformSpecificHelpersDesktop : GeneralPlatformSpecificHelpers {
 
     override fun isInternetConnected(): Boolean {
         return try {
-            val u = URL("http://www.dropbox.com")
-            val conn = u.openConnection()
-            conn.connect() //because isReachable fails while using proxy
-
-            InetAddress.getByName("8.8.8.8").isReachable(500) // Parameter timeout in milliseconds
+            try {
+		val u = URL("http://www.dropbox.com")
+	        val conn = u.openConnection()
+                conn.connect() //because isReachable fails while using proxy
+                return true
+            } catch (ex: Throwable) {
+               return false
+            }
+            true
+            //InetAddress.getByName("8.8.8.8").isReachable(500)  // Parameter timeout in milliseconds
         } catch (ex: Throwable) {
             false
         }
