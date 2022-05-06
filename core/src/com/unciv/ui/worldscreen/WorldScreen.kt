@@ -645,7 +645,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         game.setWorldScreen()
     }
 
-    private fun nextTurn() {
+    fun nextTurn() {
         isPlayersTurn = false
         shouldUpdate = true
 
