@@ -76,7 +76,7 @@
       "Once you have completed the Apollo Program, you can start constructing spaceship parts in your cities\n (with the relevant technologies) to win a Scientific Victory!"
   ],
   Injured_Units: [
-      "Injured units deal less damage, but recover after turns that they have been inactive.\nUnits heal 5 health per turn in enemy territory, 10 in neutral land,\n  15 inside your territory and 20 in your cities."
+      "Injured units deal less damage, but recover after turns that they have been inactive.\nUnits heal 10 health per turn in enemy territory or neutral land,\n  20 inside your territory and 25 in your cities."
   ],
   Workers: [
       "Workers are vital to your cities' growth, since only they can construct improvements on tiles.\nImprovements raise the yield of your tiles, allowing your city to produce more and grow faster while working the same amount of tiles!"

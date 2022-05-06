@@ -146,8 +146,8 @@ open class TileInfo {
     }
 
     /** Return null if military/air units on tile, or no civilian */
-    fun getUnguardedCivilian(): MapUnit? {
-        if (militaryUnit != null) return null
+    fun getUnguardedCivilian(attacker: MapUnit): MapUnit? {
+        if (militaryUnit != null && militaryUnit != attacker) return null
         if (airUnits.isNotEmpty()) return null
         if (civilianUnit != null) return civilianUnit!!
         return null

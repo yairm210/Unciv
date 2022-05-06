@@ -1,3 +1,23 @@
+## 4.0.13
+
+Extensive performance work
+
+Can no longer gift units to enemy City States
+
+Can now have owner-style-specific improvement images (e.g. Mine-Medieval-European)
+
+Resolved rare crashes
+
+By Azzurite:
+- Create turn notifier for when the game is running for Windows
+- Fix Sweden not being able to gift great people to city states
+
+By Jack Rainy:
+- Allow trade routes via city-states
+- Better unit expulsion when declaring war/after open borders ended
+
+New Demographics Scoreboard  - By letstalkaboutdune
+
 ## 4.0.12
 
 By SomeTroglodyte:
