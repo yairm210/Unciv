@@ -73,7 +73,7 @@ class NewGameScreen(
             if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
                 if (UncivGame.Current.platformSpecificHelper?.isInternetConnected() != true) {
                     val noInternetConnectionPopup = Popup(this)
-                    noInternetConnectionPopup.addGoodSizedLabel("No internet connection!".tr()).row()
+                    noInternetConnectionPopup.addGoodSizedLabel("No connection to internet or dropbox!".tr()).row()
                     noInternetConnectionPopup.addCloseButton()
                     noInternetConnectionPopup.open()
                     return@onClick
