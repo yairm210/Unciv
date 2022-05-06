@@ -14,7 +14,7 @@ class PlatformSpecificHelpersDesktop(config: Lwjgl3ApplicationConfiguration) : G
     override fun isInternetConnected(): Boolean {
         return try {
             val multiplayerServer = UncivGame.Current.settings.multiplayerServer ?: "Dropbox"
-            val u = URL(if (multiplayerServer != "Dropbox") multiplayerServer else "http://www.dropbox.com")
+            val u = URL(if (multiplayerServer != "Dropbox") multiplayerServer else "https://content.dropboxapi.com")
             val conn = u.openConnection()
             conn.connect()
             true
