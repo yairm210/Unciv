@@ -3,6 +3,7 @@ package com.unciv.logic
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
+import com.unciv.logic.BackwardCompatibility.migrateSeenImprovements
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.civilization.*
@@ -395,6 +396,8 @@ class GameInfo {
             gameParameters.baseRuleset = baseRulesetInMods
             gameParameters.mods = LinkedHashSet(gameParameters.mods.filter { it != baseRulesetInMods })
         }
+        // [TEMPORARY] Convert old saves to remove json workaround
+        for (civInfo in civilizations) civInfo.migrateSeenImprovements()
 
         ruleSet = RulesetCache.getComplexRuleset(gameParameters)
 

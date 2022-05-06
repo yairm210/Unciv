@@ -3,7 +3,7 @@ package com.unciv.models.translations
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Array
-import com.unciv.JsonParser
+import com.unciv.json.JsonParser
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.LocaleCode
 import com.unciv.models.ruleset.*

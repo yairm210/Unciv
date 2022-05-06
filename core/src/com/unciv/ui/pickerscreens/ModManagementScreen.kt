@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
-import com.unciv.JsonParser
+import com.unciv.json.JsonParser
 import com.unciv.MainMenuScreen
 import com.unciv.models.ruleset.ModOptions
 import com.unciv.models.ruleset.Ruleset

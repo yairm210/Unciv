@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
-import com.unciv.JsonParser
+import com.unciv.json.JsonParser
 import com.unciv.logic.BackwardCompatibility.updateDeprecations
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.map.MapParameters

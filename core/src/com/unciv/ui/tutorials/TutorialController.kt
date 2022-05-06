@@ -1,7 +1,7 @@
 package com.unciv.ui.tutorials
 
 import com.badlogic.gdx.utils.Array
-import com.unciv.JsonParser
+import com.unciv.json.JsonParser
 import com.unciv.UncivGame
 import com.unciv.models.Tutorial
 import com.unciv.models.stats.INamed

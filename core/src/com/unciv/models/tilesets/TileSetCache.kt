@@ -2,7 +2,7 @@ package com.unciv.models.tilesets
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
-import com.unciv.JsonParser
+import com.unciv.json.JsonParser
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.images.ImageGetter

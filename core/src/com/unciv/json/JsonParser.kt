@@ -1,9 +1,8 @@
-package com.unciv
+package com.unciv.json
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Json
-import com.unciv.logic.UncivShowableException
 
 class JsonParser {
 

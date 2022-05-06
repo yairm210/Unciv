@@ -3,7 +3,7 @@ package com.unciv.models.metadata
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
-import com.unciv.JsonParser
+import com.unciv.json.JsonParser
 import com.unciv.Constants
 import com.unciv.logic.GameSaver
 import com.unciv.ui.utils.Fonts

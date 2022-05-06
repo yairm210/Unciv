@@ -1,7 +1,7 @@
 package com.unciv.testing
 
 import com.badlogic.gdx.utils.Array
-import com.unciv.JsonParser
+import com.unciv.json.JsonParser
 import com.unciv.models.Tutorial
 import org.junit.Assert.assertTrue
 import org.junit.Test
