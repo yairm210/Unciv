@@ -67,6 +67,10 @@ class TileImprovement : RulesetStatsObject() {
     fun isRoad() = RoadStatus.values().any { it != RoadStatus.None && it.name == this.name }
     fun isAncientRuinsEquivalent() = hasUnique(UniqueType.IsAncientRuinsEquivalent)
 
+    fun canBeBuiltOn(terrain: String): Boolean {
+        return terrain in terrainsCanBeBuiltOn
+    }
+    
     fun handleImprovementCompletion(builder: MapUnit) {
         if (hasUnique(UniqueType.TakesOverAdjacentTiles))
             UnitActions.takeOverTilesAround(builder)
@@ -89,7 +93,7 @@ class TileImprovement : RulesetStatsObject() {
      * so this check is done in conjunction - for the user, success means he does not need to remove
      * a terrain feature, thus the unique name.
      */
-    fun isAllowedOnFeature(name: String) = getMatchingUniques(UniqueType.NoFeatureRemovalNeeded).any { it.params[0] == name }
+    fun isAllowedOnFeature(name: String) = terrainsCanBeBuiltOn.contains(name) || getMatchingUniques(UniqueType.NoFeatureRemovalNeeded).any { it.params[0] == name }
 
     /** Implements [UniqueParameterType.ImprovementFilter][com.unciv.models.ruleset.unique.UniqueParameterType.ImprovementFilter] */
     fun matchesFilter(filter: String): Boolean {

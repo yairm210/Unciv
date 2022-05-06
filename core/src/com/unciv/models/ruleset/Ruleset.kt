@@ -678,7 +678,7 @@ class Ruleset {
             if (improvement.techRequired != null && !technologies.containsKey(improvement.techRequired!!))
                 lines += "${improvement.name} requires tech ${improvement.techRequired} which does not exist!"
             for (terrain in improvement.terrainsCanBeBuiltOn)
-                if (!terrains.containsKey(terrain))
+                if (!terrains.containsKey(terrain) && terrain != "Land" && terrain != "Water")
                     lines += "${improvement.name} can be built on terrain $terrain which does not exist!"
             checkUniques(improvement, lines, rulesetSpecific, forOptionsPopup)
         }

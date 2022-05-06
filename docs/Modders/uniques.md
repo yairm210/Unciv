@@ -829,7 +829,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Building, Improvement
 
 ??? example  "Unbuildable"
-	Applicable to: Building, Unit
+	Applicable to: Building, Unit, Improvement
 
 ??? example  "Cannot be purchased"
 	Applicable to: Building, Unit
@@ -1323,6 +1323,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Does not need removal of [tileFilter]"
 	Example: "Does not need removal of [Farm]"
 
+	Applicable to: Improvement
+
+??? example  "Can only be built to improve a resource"
 	Applicable to: Improvement
 
 ??? example  "Gives a defensive bonus of [relativeAmount]%"

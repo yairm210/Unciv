@@ -44,7 +44,7 @@
 		"name": "Camp",
 		"turnsToBuild": 7,
 		"techRequired": "Trapping",
-		"uniques": ["Does not need removal of [Forest]","Does not need removal of [Jungle]","[+1 Gold] <after discovering [Economics]>"],
+		"uniques": ["Does not need removal of [Forest]","Does not need removal of [Jungle]","[+1 Gold] <after discovering [Economics]>", "Can only be built to improve a resource"],
 		"shortcutKey": "C"
 	},
 	{
@@ -59,7 +59,7 @@
 		"name": "Pasture",
 		"turnsToBuild": 8,
 		"techRequired": "Animal Husbandry",
-		"uniques": ["[+1 Food] <after discovering [Fertilizer]>"],
+		"uniques": ["[+1 Food] <after discovering [Fertilizer]>", "Can only be built to improve a resource"],
 		"shortcutKey": "P"
 	},
 	{
@@ -67,14 +67,14 @@
 		"turnsToBuild": 6,
 		"gold": 1,
 		"techRequired": "Calendar",
-		"uniques": ["[+1 Food] <after discovering [Fertilizer]>"],
+		"uniques": ["[+1 Food] <after discovering [Fertilizer]>", "Can only be built to improve a resource"],
 		"shortcutKey": "P"
 	},
 	{
 		"name": "Quarry",
 		"turnsToBuild": 8,
 		"techRequired": "Masonry",
-		"uniques": ["[+1 Production] <after discovering [Chemistry]>"],
+		"uniques": ["[+1 Production] <after discovering [Chemistry]>", "Can only be built to improve a resource"],
 		"shortcutKey": "Q"
 	},
 	{
@@ -82,7 +82,8 @@
 		"terrainsCanBeBuiltOn": ["Coast"],
 		"food": 1,
 		"techRequired": "Sailing",
-		"uniques": ["[+1 Gold] <after discovering [Compass]>"]
+		"uniques": ["[+1 Gold] <after discovering [Compass]>", "Can only be built to improve a resource"],
+		"shortcutKey": "F"
 	},
 
 	// Military improvement
@@ -98,6 +99,7 @@
 	// Transportation
 	{
 		"name": "Road",
+		"terrainsCanBeBuiltOn": ["Land"],
 		"turnsToBuild": 4,
 		"techRequired": "The Wheel",
 		// "Costs [1] gold per turn when in your territory" does nothing and is only to inform the user
@@ -111,6 +113,7 @@
 	},
 	{
 		"name": "Railroad",
+		"terrainsCanBeBuiltOn": ["Land"],
 		"turnsToBuild": 4,
 		"techRequired": "Railroads",
 		"uniques": ["Can be built outside your borders", "Costs [2] gold per turn when in your territory"],
@@ -119,10 +122,11 @@
 	},
 	
 	// Removals
+	// Any improvement that starts with 'Remove ' is automatically changed into 
+	// the improvement that removes the terrainfeature after it.
 	{
 		"name": "Remove Forest",
 		"turnsToBuild": 4,
-		"terrainsCanBeBuiltOn": ["Forest"],
 		"techRequired": "Mining",
 		"uniques": ["Can be built outside your borders"],
 		"shortcutKey": "X",
@@ -131,7 +135,6 @@
 	{
 		"name": "Remove Jungle",
 		"turnsToBuild": 7,
-		"terrainsCanBeBuiltOn": ["Jungle"],
 		"techRequired": "Bronze Working",
 		"uniques": ["Can be built outside your borders"],
 		"shortcutKey": "X"
@@ -139,15 +142,13 @@
 	{
 		"name": "Remove Fallout",
 		"turnsToBuild": 2,
-		"terrainsCanBeBuiltOn": ["Fallout"],
-		// Has no tile improvements as it can always be built
+		// Has no tech requirements as it can always be built
 		"uniques": ["Can be built outside your borders"],
 		"shortcutKey": "X"
 	},
 	{
 		"name": "Remove Marsh",
 		"turnsToBuild": 6,
-		"terrainsCanBeBuiltOn": ["Marsh"],
 		"techRequired": "Masonry",
 		"uniques": ["Can be built outside your borders"],
 		"shortcutKey": "X"
@@ -173,39 +174,48 @@
 	// Great Person improvements
 	{
 		"name": "Academy",
+		"terrainsCanBeBuiltOn": ["Land"],
 		"science": 8,
 		"uniques": ["Great Improvement", "[+2 Science] <after discovering [Scientific Theory]>", "[+2 Science] <after discovering [Atomic Theory]>"]
 	},
 	{
 		"name": "Landmark",
+		"terrainsCanBeBuiltOn": ["Land"],
 		"culture": 6,
 		"uniques": ["Great Improvement"]
 	},
 	{
 		"name": "Manufactory",
+		"terrainsCanBeBuiltOn": ["Land"],
 		"production": 4,
 		"uniques": ["Great Improvement", "[+1 Production] <after discovering [Chemistry]>"]
 	},
 	{
 		"name": "Customs house",
+		"terrainsCanBeBuiltOn": ["Land"],
 		"gold": 4,
 		"uniques": ["Great Improvement", "[+1 Gold] <after discovering [Economics]>"]
 	},
 	{
 		"name": "Holy site",
+		"terrainsCanBeBuiltOn": ["Land"],
 		"faith": 6,
 		"uniques": ["Great Improvement"]
 	},
 	{
 		"name": "Citadel",
-		"uniques": ["Great Improvement", "Gives a defensive bonus of [100]%", "Adjacent enemy units ending their turn take [30] damage", "Can be built just outside your borders"],
-        "civilopediaText": [{"text":"Constructing it will take over the tiles around it and assign them to your closest city"}]
+		"terrainsCanBeBuiltOn": ["Land"],
+		"uniques": [
+			"Great Improvement", "Gives a defensive bonus of [100]%", "Adjacent enemy units ending their turn take [30] damage", 
+			"Can be built just outside your borders", "Constructing it will take over the tiles around it and assign them to your closest city"
+		]
 	},
 
 	//Civilization unique improvements
 	{
 		"name": "Moai",
 		"uniqueTo": "Polynesia",
+		"terrainsCanBeBuiltOn": ["Land"],
 		"culture": 1,
 		"turnsToBuild": 4,
 		"uniques": ["Can only be built on [Coastal] tiles", "[+1 Culture] for each adjacent [Moai]", "[+1 Gold] <after discovering [Flight]>"],
@@ -236,26 +246,31 @@
 		"shortcutKey": "F"
 	},
 
+	// Unbuildable improvements
 	{ 
-		"name": "Ancient ruins", 
-		"uniques": ["Unpillagable", "Provides a random bonus when entered"]
+		"name": "Ancient ruins",
+		"terrainsCanBeBuiltOn": ["Land"],
+		"uniques": ["Unpillagable", "Provides a random bonus when entered", "Unbuildable"]
 	},
 	{ 
-		"name": "City ruins", 
-		"uniques": ["Unpillagable"],
+		"name": "City ruins",
+		"terrainsCanBeBuiltOn": ["Land"],
+		"uniques": ["Unpillagable", "Unbuildable"],
         "civilopediaText": [{"text":"A bleak reminder of the destruction wreaked by War"}]
 	},
 	{ 
-		"name": "City center", 
-		"uniques": ["Unpillagable", "Indestructible"],
+		"name": "City center",
+		"terrainsCanBeBuiltOn": ["Land"],
+		"uniques": ["Unpillagable", "Irremovable", "Unbuildable"],
         "civilopediaText": [
 			{"text":"Marks the center of a city"},
 			{"text":"Appearance changes with the technological era of the owning civilization"}
 		]
 	},
 	{ 
-		"name": "Barbarian encampment", 
-		"uniques": ["Unpillagable"],
+		"name": "Barbarian encampment",
+		"terrainsCanBeBuiltOn": ["Land"],
+		"uniques": ["Unpillagable", "Unbuildable"],
         "civilopediaText": [{"text":"Home to uncivilized barbarians, will spawn a hostile unit from time to time"}]
 	}
 ]
