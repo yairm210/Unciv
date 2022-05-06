@@ -127,6 +127,8 @@ class CityExpansionManager {
                 city.lockedTiles.remove(tileInfo.position)
         }
 
+        tileInfo.removeCreatesOneImprovementMarker()
+
         tileInfo.setOwningCity(null)
 
         cityInfo.civInfo.updateDetailedCivResources()

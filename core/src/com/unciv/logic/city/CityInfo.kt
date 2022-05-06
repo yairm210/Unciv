@@ -697,7 +697,6 @@ class CityInfo {
         // The relinquish ownership MUST come before removing the city,
         // because it updates the city stats which assumes there is a capital, so if you remove the capital it crashes
         for (tile in getTiles()) {
-            tile.removeCreatesOneImprovementMarker()
             expansion.relinquishOwnership(tile)
         }
         civInfo.cities = civInfo.cities.toMutableList().apply { remove(this@CityInfo) }

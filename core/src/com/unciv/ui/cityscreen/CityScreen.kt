@@ -188,19 +188,19 @@ class CityScreen(
     }
 
     private fun updateTileGroups() {
-        fun isExistingImprovementValuable(tileInfo: TileInfo, improvement: TileImprovement): Boolean {
+        fun isExistingImprovementValuable(tileInfo: TileInfo, improvementToPlace: TileImprovement): Boolean {
             if (tileInfo.improvement == null) return false
             val civInfo = city.civInfo
             val existingStats = tileInfo.getImprovementStats(tileInfo.getTileImprovement()!!, civInfo, city)
-            val replacingStats = tileInfo.getImprovementStats(improvement, civInfo, city)
+            val replacingStats = tileInfo.getImprovementStats(improvementToPlace, civInfo, city)
             return Automation.rankStatsValue(existingStats, civInfo) > Automation.rankStatsValue(replacingStats, civInfo)
         }
         fun getPickImprovementColor(tileInfo: TileInfo): Pair<Color, Float> {
-            val improvement = pickTileData!!.improvement
+            val improvementToPlace = pickTileData!!.improvement
             return when {
                 tileInfo.isMarkedForCreatesOneImprovement() -> Color.BROWN to 0.7f
-                !tileInfo.canBuildImprovement(improvement, city.civInfo) -> Color.RED to 0.4f
-                isExistingImprovementValuable(tileInfo, improvement) -> Color.ORANGE to 0.5f
+                !tileInfo.canBuildImprovement(improvementToPlace, city.civInfo) -> Color.RED to 0.4f
+                isExistingImprovementValuable(tileInfo, improvementToPlace) -> Color.ORANGE to 0.5f
                 tileInfo.improvement != null -> Color.YELLOW to 0.6f
                 tileInfo.turnsToImprovement > 0 -> Color.YELLOW to 0.6f
                 else -> Color.GREEN to 0.5f

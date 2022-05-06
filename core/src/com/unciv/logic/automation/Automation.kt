@@ -285,9 +285,9 @@ object Automation {
     fun getTileForConstructionImprovement(cityInfo: CityInfo,  improvement: TileImprovement): TileInfo? {
         return cityInfo.getTiles().filter {
             it.canBuildImprovement(improvement, cityInfo.civInfo)
-        }.associateWith {
+        }.maxByOrNull {
             rankTileForCityWork(it, cityInfo)
-        }.maxByOrNull { it.value }?.key
+        }
     }
 
     // Ranks a tile for any purpose except the expansion algorithm of cities
