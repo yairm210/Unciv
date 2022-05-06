@@ -2,7 +2,7 @@ package com.unciv.app.desktop
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import com.unciv.ui.utils.GeneralPlatformSpecificHelpers
-import java.net.InetAddress
+import java.net.URL
 
 class PlatformSpecificHelpersDesktop(config: Lwjgl3ApplicationConfiguration) : GeneralPlatformSpecificHelpers {
     val turnNotifier = MultiplayerTurnNotifierDesktop()
@@ -12,7 +12,10 @@ class PlatformSpecificHelpersDesktop(config: Lwjgl3ApplicationConfiguration) : G
 
     override fun isInternetConnected(): Boolean {
         return try {
-            InetAddress.getByName("8.8.8.8").isReachable(500)  // Parameter timeout in milliseconds
+            val u = URL("http://www.dropbox.com")
+            val conn = u.openConnection()
+            conn.connect()
+            true
         } catch (ex: Throwable) {
             false
         }
