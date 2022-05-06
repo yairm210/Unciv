@@ -34,13 +34,23 @@ Sources for Info about current orientation in case need:
     }
 
     override fun isInternetConnected(): Boolean {
-        val connectivityManager = activity.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        for (network in connectivityManager.allNetworks) {
-            val networkCapabilities = connectivityManager.getNetworkCapabilities(network) ?: continue
-            val isInternet = networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-            val info = connectivityManager.getNetworkInfo(network) ?: continue
-            if (isInternet && info.isConnected) return true
+        return try {
+            val multiplayerServer = UncivGame.Current.settings.multiplayerServer ?: "Dropbox"
+            val u = URL(if (multiplayerServer != "Dropbox") multiplayerServer else "https://content.dropboxapi.com")
+            val conn = u.openConnection()
+            conn.connect()
+
+            val connectivityManager = activity.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            for (network in connectivityManager.allNetworks) {
+                val networkCapabilities = connectivityManager.getNetworkCapabilities(network) ?: continue
+                val isInternet = networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                val info = connectivityManager.getNetworkInfo(network) ?: continue
+                if (isInternet && info.isConnected) return true
+            }
+
+            true
+        } catch (ex: Throwable) {
+            false
         }
-        return false
     }
 }
