@@ -411,12 +411,14 @@ class CityInfo {
         if (resource.revealedBy != null && !civInfo.tech.isResearched(resource.revealedBy!!)) return 0
 
         // Even if the improvement exists (we conquered an enemy city or somesuch) or we have a city on it, we won't get the resource until the correct tech is researched
-        if (resource.improvement != null) {
-            val improvement = getRuleset().tileImprovements[resource.improvement!!]!!
-            if (improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!)) return 0
+        if (resource.getImprovements().any()) {
+            if (!resource.getImprovements().any { improvementString ->
+                val improvement = getRuleset().tileImprovements[improvementString]!!
+                improvement.techRequired == null || civInfo.tech.isResearched(improvement.techRequired!!)
+            }) return 0
         }
 
-        if (resource.improvement == tileInfo.improvement || tileInfo.isCityCenter()
+        if ((tileInfo.improvement != null && resource.isImprovedBy(tileInfo.improvement!!)) || tileInfo.isCityCenter()
             // Per https://gaming.stackexchange.com/questions/53155/do-manufactories-and-customs-houses-sacrifice-the-strategic-or-luxury-resources
             || resource.resourceType == ResourceType.Strategic && tileInfo.containsGreatImprovement()
         ) {

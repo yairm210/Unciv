@@ -98,7 +98,7 @@ class ImprovementPickerScreen(
             val turnsToBuild = if (tileInfo.improvementInProgress == improvement.name) tileInfo.turnsToImprovement
                 else improvement.getTurnsToBuild(currentPlayerCiv, unit)
             if (turnsToBuild > 0) labelText += " - $turnsToBuild${Fonts.turn}"
-            val provideResource = tileInfo.hasViewableResource(currentPlayerCiv) && tileInfo.tileResource.improvement == improvement.name
+            val provideResource = tileInfo.hasViewableResource(currentPlayerCiv) && tileInfo.tileResource.isImprovedBy(improvement.name)
             if (provideResource) labelText += "\n" + "Provides [${tileInfo.resource}]".tr()
             val removeImprovement = (improvement.isRoad()
                     && !improvement.name.startsWith(Constants.remove)
@@ -161,7 +161,7 @@ class ImprovementPickerScreen(
             statIcons.add(ImageGetter.getResourceImage(tileInfo.resource.toString(), 30f)).pad(3f)
 
         // icon for removing the resource by replacing improvement
-        if (removeImprovement && tileInfo.hasViewableResource(currentPlayerCiv) && tileInfo.tileResource.improvement == tileInfo.improvement) {
+        if (removeImprovement && tileInfo.hasViewableResource(currentPlayerCiv) && tileInfo.improvement != null && tileInfo.tileResource.isImprovedBy(tileInfo.improvement!!)) {
             val resourceIcon = ImageGetter.getResourceImage(tileInfo.resource!!, 30f)
             statIcons.add(ImageGetter.getCrossedImage(resourceIcon, 30f))
         }

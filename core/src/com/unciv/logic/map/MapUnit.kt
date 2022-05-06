@@ -664,10 +664,11 @@ class MapUnit {
             tile.improvementInProgress == RoadStatus.Road.name -> tile.roadStatus = RoadStatus.Road
             tile.improvementInProgress == RoadStatus.Railroad.name -> tile.roadStatus = RoadStatus.Railroad
             else -> {
-                tile.improvement = tile.improvementInProgress
-                if (tile.resource != null) civInfo.updateDetailedCivResources()
+                val improvement = civInfo.gameInfo.ruleSet.tileImprovements[tile.improvementInProgress]!!
+                improvement.handleImprovementCompletion(this)
             }
         }
+        
         tile.improvementInProgress = null
     }
 

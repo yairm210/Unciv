@@ -668,6 +668,9 @@ class Ruleset {
                 lines += "${resource.name} revealed by tech ${resource.revealedBy} which does not exist!"
             if (resource.improvement != null && !tileImprovements.containsKey(resource.improvement!!))
                 lines += "${resource.name} improved by improvement ${resource.improvement} which does not exist!"
+            for (improvement in resource.improvedBy)
+                if (!tileImprovements.containsKey(improvement))
+                    lines += "${resource.name} improved by improvement $improvement which does not exist!"
             for (terrain in resource.terrainsCanBeFoundOn)
                 if (!terrains.containsKey(terrain))
                     lines += "${resource.name} can be found on terrain $terrain which does not exist!"

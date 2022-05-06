@@ -49,11 +49,16 @@
 	},
 	{
 		"name": "Oil well",
-		"terrainsCanBeBuiltOn": ["Coast"],
 		"turnsToBuild": 9,
 		"techRequired": "Biology",
-		"uniques": ["Cannot be built on [Coast] tiles <before discovering [Refrigeration]>"],
+		"uniques": ["Can only be built to improve a resource", "Cannot be built on [Water] tiles"],
 		"shortcutKey": "W"
+	},
+	{
+		"name": "Offshore Platform",
+		"techRequired": "Refrigeration",
+		"uniques": ["Can only be built to improve a resource", "Can only be built on [Water] tiles"],
+		"shortcutKey": "P"
 	},
 	{
 		"name": "Pasture",

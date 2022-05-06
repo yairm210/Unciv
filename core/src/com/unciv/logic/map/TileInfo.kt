@@ -409,7 +409,7 @@ open class TileInfo {
 
     fun getImprovementStats(improvement: TileImprovement, observingCiv: CivilizationInfo, city: CityInfo?): Stats {
         val stats = improvement.cloneStats()
-        if (hasViewableResource(observingCiv) && tileResource.improvement == improvement.name
+        if (hasViewableResource(observingCiv) && tileResource.isImprovedBy(improvement.name)
             && tileResource.improvementStats != null
         )
             stats.add(tileResource.improvementStats!!.clone()) // resource-specific improvement
@@ -556,7 +556,7 @@ open class TileInfo {
             
             // Can't build it if it is only allowed to improve resources and it doesn't improve this reousrce
             improvement.hasUnique(UniqueType.CanOnlyImproveResource, stateForConditionals) && (
-                !resourceIsVisible || tileResource.improvement != improvement.name
+                !resourceIsVisible || !tileResource.isImprovedBy(improvement.name)
             ) -> false
 
             // At this point we know this is a normal improvement and that there is no reason not to allow it to be built.
@@ -565,8 +565,11 @@ open class TileInfo {
             isLand && improvement.canBeBuiltOn("Land") -> true
             isWater && improvement.canBeBuiltOn("Water") -> true
             // DO NOT reverse this &&. isAdjacentToFreshwater() is a lazy which calls a function, and reversing it breaks the tests.
-            improvement.hasUnique(UniqueType.ImprovementBuildableByFreshWater) && isAdjacentTo(Constants.freshWater) -> true
-            else -> resourceIsVisible && tileResource.improvement == improvement.name
+            improvement.hasUnique(UniqueType.ImprovementBuildableByFreshWater, stateForConditionals) 
+                && isAdjacentTo(Constants.freshWater) -> true
+            // I don't particularly like this check, but it is required to build mines on non-hill resources
+            resourceIsVisible && tileResource.isImprovedBy(improvement.name) -> true
+            else -> false
         }
     }
 
@@ -758,7 +761,8 @@ open class TileInfo {
                 else
                     FormattedLine(resource!!, link="Resource/$resource")
         if (resource != null && viewingCiv != null && hasViewableResource(viewingCiv)) {
-            val tileImprovement = ruleset.tileImprovements[tileResource.improvement]
+            val resourceImprovement = tileResource.getImprovements().firstOrNull { canBuildImprovement(ruleset.tileImprovements[it]!!, viewingCiv) }
+            val tileImprovement = ruleset.tileImprovements[resourceImprovement]
             if (tileImprovement?.techRequired != null
                 && !viewingCiv.tech.isResearched(tileImprovement.techRequired!!)) {
                 lineList += FormattedLine(

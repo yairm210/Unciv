@@ -50,7 +50,7 @@ class TileImprovement : RulesetStatsObject() {
             }
             lines += "Can be built on".tr() + terrainsCanBeBuiltOnString.joinToString(", ", " ") //language can be changed when setting changes.
         }
-        for (resource: TileResource in ruleset.tileResources.values.filter { it.improvement == name }) {
+        for (resource: TileResource in ruleset.tileResources.values.filter { it.isImprovedBy(name) }) {
             if (resource.improvementStats == null) continue
             val statsString = resource.improvementStats.toString()
             lines += "[${statsString}] <in [${resource.name}] tiles>".tr()
@@ -135,7 +135,7 @@ class TileImprovement : RulesetStatsObject() {
         }
 
         var addedLineBeforeResourceBonus = false
-        for (resource in ruleset.tileResources.values.filter { it.improvement == name }) {
+        for (resource in ruleset.tileResources.values.filter { it.isImprovedBy(name) }) {
             if (resource.improvementStats == null) continue
             if (!addedLineBeforeResourceBonus) {
                 addedLineBeforeResourceBonus = true

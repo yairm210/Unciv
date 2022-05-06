@@ -57,7 +57,7 @@ class TileImprovementConstructionTests {
             val tile = getTile()
             tile.baseTerrain = terrain
             if (improvement.hasUnique(UniqueType.CanOnlyImproveResource, StateForConditionals.IgnoreConditionals)) {
-                tile.resource = ruleSet.tileResources.values.firstOrNull { it.improvement == improvement.name }?.name ?: continue
+                tile.resource = ruleSet.tileResources.values.firstOrNull { it.isImprovedBy(improvement.name) }?.name ?: continue
             }
             tile.setTransients()
             if (improvement.uniqueTo != null) civInfo.civName = improvement.uniqueTo!!
@@ -72,7 +72,7 @@ class TileImprovementConstructionTests {
         for (improvement in ruleSet.tileImprovements.values) {
             val tile = getTile()
             tile.resource = ruleSet.tileResources.values
-                    .firstOrNull { it.improvement == improvement.name }?.name
+                .firstOrNull { it.isImprovedBy(improvement.name) }?.name
             if (tile.resource == null) continue
             // If this improvement requires additional conditions to be true, 
             // its too complex to handle all of them, so just skip it and hope its fine
@@ -135,11 +135,11 @@ class TileImprovementConstructionTests {
         civInfo.civName = "OtherCiv"
 
         for (resource in ruleSet.tileResources.values) {
-            if (resource.improvement == null) continue
-            val improvement = ruleSet.tileImprovements[resource.improvement]!!
+            if (resource.getImprovements().isEmpty()) continue
+            val improvement = ruleSet.tileImprovements[resource.getImprovements().first()]!!
             if (!improvement.hasUnique(UniqueType.CanOnlyImproveResource)) continue
             val wrongResource = ruleSet.tileResources.values.firstOrNull { 
-                it != resource && it.improvement != improvement.name 
+                it != resource && !it.isImprovedBy(improvement.name) 
             } ?: continue
             val tile = getTile()
             tile.baseTerrain = "Plains"
