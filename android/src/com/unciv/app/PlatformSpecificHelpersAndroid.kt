@@ -6,6 +6,8 @@ import android.content.pm.ActivityInfo
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import com.unciv.ui.utils.GeneralPlatformSpecificHelpers
+import com.unciv.UncivGame
+import java.net.URL
 
 /** See also interface [GeneralPlatformSpecificHelpers].
  *
