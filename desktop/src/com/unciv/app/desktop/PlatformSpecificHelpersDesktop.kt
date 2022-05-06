@@ -14,11 +14,10 @@ class PlatformSpecificHelpersDesktop : GeneralPlatformSpecificHelpers {
             val u = URL("http://www.dropbox.com")
             val conn = u.openConnection()
             conn.connect() //because isReachable fails while using proxy
-            InetAddress.getByName("8.8.8.8").isReachable(500)
+
+            InetAddress.getByName("8.8.8.8").isReachable(500) // Parameter timeout in milliseconds
         } catch (ex: Throwable) {
             false
         }
-
-
     }
 }
