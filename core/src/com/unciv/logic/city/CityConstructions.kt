@@ -519,11 +519,9 @@ class CityConstructions {
         val improvementToPlace = (construction as? Building)?.getImprovementToCreate(cityInfo.getRuleset())
         if (improvementToPlace != null) {
             // If active without a predetermined tile to place the improvement on, automate a tile
-            val finalTile = tile ?: Automation.getTileForConstructionImprovement(cityInfo, improvementToPlace)
-            if (finalTile == null) {
-                println("${cityInfo.name} tried to buy $constructionName without having any suitable tile for a ${improvementToPlace.name}.")  // todo remove when debugged
-                return false
-            }
+            val finalTile = tile
+                ?: Automation.getTileForConstructionImprovement(cityInfo, improvementToPlace)
+                ?: return false // This was never reached in testing
             finalTile.markForCreatesOneImprovement(improvementToPlace.name)
             // postBuildEvent does the rest by calling cityConstructions.applyCreateOneImprovement
         }
