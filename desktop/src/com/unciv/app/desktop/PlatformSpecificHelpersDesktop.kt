@@ -2,6 +2,7 @@ package com.unciv.app.desktop
 
 import com.unciv.ui.utils.GeneralPlatformSpecificHelpers
 import java.net.InetAddress
+import java.net.URL
 
 class PlatformSpecificHelpersDesktop : GeneralPlatformSpecificHelpers {
     override fun allowPortrait(allow: Boolean) {
@@ -10,9 +11,14 @@ class PlatformSpecificHelpersDesktop : GeneralPlatformSpecificHelpers {
 
     override fun isInternetConnected(): Boolean {
         return try {
-            InetAddress.getByName("8.8.8.8").isReachable(500)  // Parameter timeout in milliseconds
+            val u = URL("http://www.dropbox.com")
+            val conn = u.openConnection()
+            conn.connect() //because isReachable fails while using proxy
+            InetAddress.getByName("8.8.8.8").isReachable(500)
         } catch (ex: Throwable) {
             false
         }
+
+
     }
 }
