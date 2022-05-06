@@ -186,7 +186,8 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         addCheckbox("Show tutorials", settings.showTutorials, true) { settings.showTutorials = it }
         addCheckbox("Show pixel units", settings.showPixelUnits, true) { settings.showPixelUnits = it }
         addCheckbox("Show pixel improvements", settings.showPixelImprovements, true) { settings.showPixelImprovements = it }
-
+        addCheckbox("Experimental Demographics scoreboard", settings.useDemographics, true) { settings.useDemographics = it }
+        
         addMinimapSizeSlider()
 
         addResolutionSelectBox()
@@ -515,9 +516,6 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
     private fun autoUpdateUniques(mod: Ruleset, replaceableUniques: HashMap<String, String>) {
 
-        if (mod.name.contains("mod"))
-            println("mod")
-
         val filesToReplace = listOf(
             "Beliefs.json",
             "Buildings.json",
@@ -551,27 +549,43 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         defaults().pad(5f)
 
         val game = UncivGame.Current
+        val simulateButton = "Simulate until turn:".toTextButton()
+        val simulateTextField = TextField(game.simulateUntilTurnForDebug.toString(), BaseScreen.skin)
+        val invalidInputLabel = "This is not a valid integer!".toLabel().also { it.isVisible = false }
+        simulateButton.onClick {
+            val simulateUntilTurns = simulateTextField.text.toIntOrNull() 
+            if (simulateUntilTurns == null) {
+                invalidInputLabel.isVisible = true
+                return@onClick
+            }
+            game.simulateUntilTurnForDebug = simulateUntilTurns
+            invalidInputLabel.isVisible = false
+            game.worldScreen.nextTurn()
+        }
+        add(simulateButton)
+        add(simulateTextField).row()
+        add(invalidInputLabel).colspan(2).row()
         add("Supercharged".toCheckBox(game.superchargedForDebug) {
             game.superchargedForDebug = it
-        }).row()
+        }).colspan(2).row()
         add("View entire map".toCheckBox(game.viewEntireMapForDebug) {
             game.viewEntireMapForDebug = it
-        }).row()
+        }).colspan(2).row()
         if (game.isGameInfoInitialized()) {
             add("God mode (current game)".toCheckBox(game.gameInfo.gameParameters.godMode) {
                 game.gameInfo.gameParameters.godMode = it
-            }).row()
+            }).colspan(2).row()
         }
         add("Save maps compressed".toCheckBox(MapSaver.saveZipped) {
             MapSaver.saveZipped = it
-        }).row()
+        }).colspan(2).row()
         add("Gdx Scene2D debug".toCheckBox(BaseScreen.enableSceneDebug) {
             BaseScreen.enableSceneDebug = it
-        }).row()
+        }).colspan(2).row()
 
         add("Allow untyped Uniques in mod checker".toCheckBox(RulesetCache.modCheckerAllowUntypedUniques) {
             RulesetCache.modCheckerAllowUntypedUniques = it
-        }).row()
+        }).colspan(2).row()
 
         add(Table().apply {
             add("Unique misspelling threshold".toLabel()).left().fillX()
@@ -580,7 +594,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
                     RulesetCache.uniqueMisspellingThreshold = it.toDouble()
                 }
             ).minWidth(120f).pad(5f)
-        }).row()
+        }).colspan(2).row()
 
         val unlockTechsButton = "Unlock all techs".toTextButton()
         unlockTechsButton.onClick {
@@ -595,9 +609,9 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             game.gameInfo.getCurrentPlayerCivilization().updateSightAndResources()
             game.worldScreen.shouldUpdate = true
         }
-        add(unlockTechsButton).row()
+        add(unlockTechsButton).colspan(2).row()
 
-        val giveResourcesButton = "Give all strategic resources".toTextButton()
+        val giveResourcesButton = "Get all strategic resources".toTextButton()
         giveResourcesButton.onClick {
             if (!game.isGameInfoInitialized())
                 return@onClick
@@ -611,7 +625,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             game.gameInfo.getCurrentPlayerCivilization().updateSightAndResources()
             game.worldScreen.shouldUpdate = true
         }
-        add(giveResourcesButton).row()
+        add(giveResourcesButton).colspan(2).row()
     }
 
     //endregion

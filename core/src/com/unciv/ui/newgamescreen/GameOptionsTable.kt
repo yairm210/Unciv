@@ -95,10 +95,9 @@ class GameOptionsTable(
             { gameParameters.oneCityChallenge = it }
 
     private fun Table.addNuclearWeaponsCheckbox() =
-            addCheckbox("Enable nuclear weapons", gameParameters.nuclearWeaponsEnabled)
+            addCheckbox("Enable Nuclear Weapons", gameParameters.nuclearWeaponsEnabled)
             { gameParameters.nuclearWeaponsEnabled = it }
-
-
+    
     private fun Table.addIsOnlineMultiplayerCheckbox() =
             addCheckbox("Online Multiplayer", gameParameters.isOnlineMultiplayer)
             {
