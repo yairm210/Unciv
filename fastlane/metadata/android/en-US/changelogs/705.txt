@@ -1,0 +1,36 @@
+## 4.0.13
+
+Do not resort building uniques when displaying in Civilopedia - leave as the json order to allow modders to determine order themselves
+
+Can no longer gift units to enemy City States
+
+Resolved crash due to sending 'localized message' from exception
+
+Resolved  - No crash from Science victory AI units that cannot head towards capital
+
+Use a UniqueMap to have hashmap finding instead of array iteration and string comparison for MapUnit getUnique(string) - see 
+
+When updating civ resources, only update stats if anything has changed - see 
+
+Cache city-wide uniques in addStatPercentBonusesFromBuildings and updateTileStats, don't build maps in Stats - see 
+
+Cache city-wide uniques in CityConstructions.getStats() for reuse between buildings - see 
+
+Ignore temporary uniques if not relevant - see 
+
+Lazy initialize of Yield group - see 
+
+Don't create unneeded filters in getMatchingUniquesWithNonLocalEffects - see 
+
+Placeholder and Conditional function optimization - see 
+
+Added owner-style-specific improvements
+
+By Azzurite:
+- Create turn notifier for when the game is running for Windows 
+- Fix Sweden not being able to gift great people to city states 
+
+New Demographics Scoreboard  - By letstalkaboutdune
+
+Fix typo in new translation line  - By Mape6
+
