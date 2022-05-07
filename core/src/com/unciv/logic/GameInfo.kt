@@ -19,7 +19,8 @@ import com.unciv.ui.audio.MusicTrackChooserFlags
 import java.util.*
 
 
-class UncivShowableException(missingMods: String) : Exception(missingMods)
+class MissingModsException(val missingMods: String) : UncivShowableException("Missing mods: [$missingMods]")
+open class UncivShowableException(errorText: String) : Exception(errorText)
 
 class GameInfo {
     //region Fields - Serialized
@@ -402,7 +403,7 @@ class GameInfo {
             .filterNot { it in ruleSet.mods }
             .joinToString(limit = 120) { it }
         if (missingMods.isNotEmpty()) {
-            throw UncivShowableException("Missing mods: [$missingMods]")
+            throw MissingModsException(missingMods)
         }
 
         removeMissingModReferences()

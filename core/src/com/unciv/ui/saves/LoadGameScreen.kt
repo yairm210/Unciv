@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.GameSaver
+import com.unciv.logic.MissingModsException
 import com.unciv.logic.UncivShowableException
 import com.unciv.models.translations.tr
 import com.unciv.ui.crashhandling.crashHandlingThread
@@ -28,7 +29,10 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
     private val copySavedGameToClipboardButton = "Copy saved game to clipboard".toTextButton()
     private val saveTable = Table()
     private val deleteSaveButton = "Delete save".toTextButton()
+    private val errorLabel = "".toLabel(Color.RED)
+    private val loadMissingModsButton = "Load missing mods".toTextButton()
     private val showAutosavesCheckbox = CheckBox("Show autosaves".tr(), skin)
+    private var missingModsToLoad = ""
 
     init {
         setDefaultCloseAction(previousScreen)
@@ -78,7 +82,6 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
         val rightSideTable = Table()
         rightSideTable.defaults().pad(10f)
 
-        val errorLabel = "".toLabel(Color.RED)
         val loadFromClipboardButton = "Load copied data".toTextButton()
         loadFromClipboardButton.onClick {
             try {
@@ -89,11 +92,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
                 val loadedGame = GameSaver.gameInfoFromString(decoded)
                 UncivGame.Current.loadGame(loadedGame)
             } catch (ex: Exception) {
-                var text = "Could not load game from clipboard!".tr()
-                if (ex is UncivShowableException) text += "\n" + ex.message
-                errorLabel.setText(text)
-
-                ex.printStackTrace()
+                exceptionHandling("Could not load game from clipboard!", ex)
             }
         }
         rightSideTable.add(loadFromClipboardButton).row()
@@ -105,16 +104,19 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
                         postCrashHandlingRunnable {
                             game.loadGame(gameInfo)
                         }
-                    } else if (exception !is CancellationException) {
-                        val errorText = if (exception is UncivShowableException) "\n${exception.message}" else ""
-                        errorLabel.setText("Could not load game from custom location!".tr() + errorText)
-                        exception?.printStackTrace()
-                    }
+                    } else if (exception !is CancellationException)
+                        exceptionHandling("Could not load game from custom location!", exception)
                 }
             }
             rightSideTable.add(loadFromCustomLocation).row()
         }
         rightSideTable.add(errorLabel).row()
+
+        loadMissingModsButton.onClick {
+            loadMissingMods()
+        }
+        loadMissingModsButton.isVisible = false
+        rightSideTable.add(loadMissingModsButton).row()
 
         deleteSaveButton.onClick {
             GameSaver.deleteSave(selectedSave)
@@ -137,6 +139,23 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
         }
         rightSideTable.add(showAutosavesCheckbox).row()
         return rightSideTable
+    }
+
+    private fun exceptionHandling(primaryText: String, ex: Exception?) {
+        var errorText = primaryText.tr()
+        if (ex is UncivShowableException) errorText += "\n${ex.message}"
+        errorLabel.setText(errorText)
+        ex?.printStackTrace()
+        if (ex is MissingModsException) {
+            loadMissingModsButton.isVisible = true
+            missingModsToLoad = ex.missingMods
+        }
+    }
+
+    private fun loadMissingMods() {
+        
+        missingModsToLoad = ""
+        loadMissingModsButton.isVisible = false
     }
 
     private fun resetWindowState() {
