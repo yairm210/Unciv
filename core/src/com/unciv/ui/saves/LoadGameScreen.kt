@@ -12,12 +12,15 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameSaver
 import com.unciv.logic.MissingModsException
 import com.unciv.logic.UncivShowableException
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.crashhandling.crashHandlingThread
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.pickerscreens.Github
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.Popup
+import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivDateFormat.formatDate
 import java.util.*
@@ -153,9 +156,31 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
     }
 
     private fun loadMissingMods() {
-        
-        missingModsToLoad = ""
-        loadMissingModsButton.isVisible = false
+        crashHandlingThread(name="DownloadMods") {
+            try {
+                val mods = missingModsToLoad.replace(' ', '-').lowercase().splitToSequence(",-")
+                for (modName in mods) {
+                    val repos = Github.tryGetGithubReposWithTopic(10, 1, modName)
+                        ?: throw Exception("Could not download mod list")
+                    val repo = repos.items.first { it.name.lowercase() == modName }
+                    val modFolder = Github.downloadAndExtract(
+                        repo.html_url, repo.default_branch,
+                        Gdx.files.local("mods")
+                    )
+                        ?: throw Exception() // downloadAndExtract returns null for 404 errors and the like -> display something!
+                    Github.rewriteModOptions(repo, modFolder)
+                }
+                postCrashHandlingRunnable {
+                    RulesetCache.loadRulesets()
+                    ToastPopup("Missing mods are downloaded successfully.", this)
+                    missingModsToLoad = ""
+                    loadMissingModsButton.isVisible = false
+                    errorLabel.setText("")
+                }
+            } catch (ex: Exception) {
+                exceptionHandling("Cannot load missing mods!", ex)
+            }
+        }
     }
 
     private fun resetWindowState() {

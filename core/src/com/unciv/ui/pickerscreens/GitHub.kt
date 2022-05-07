@@ -219,8 +219,8 @@ object Github {
      * @return              Parsed [RepoSearch] json on success, `null` on failure.
      * @see <a href="https://docs.github.com/en/rest/reference/search#search-repositories">Github API doc</a>
      */
-    fun tryGetGithubReposWithTopic(amountPerPage:Int, page:Int): RepoSearch? {
-        val link = "https://api.github.com/search/repositories?q=topic:unciv-mod&sort:stars&per_page=$amountPerPage&page=$page"
+    fun tryGetGithubReposWithTopic(amountPerPage:Int, page:Int, searchRequest: String = ""): RepoSearch? {
+        val link = "https://api.github.com/search/repositories?q=${searchRequest}topic:unciv-mod&sort:stars&per_page=$amountPerPage&page=$page"
         var retries = 2
         while (retries > 0) {
             retries--
