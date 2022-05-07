@@ -12,7 +12,7 @@ import com.unciv.ui.utils.*
  * @param screen The previous screen the user was on
  * @param label A line of text shown to the user
  * @param icon Icon at the top, should have size 80f
- * @param defaultText The text that should be in the prompt at the start
+ * @param defaultValue The number that should be in the prompt at the start
  * @param amountButtons Buttons that when clicked will add/subtract these amounts to the number
  * @param bounds The bounds in which the number must lie. Defaults to [Int.MIN_VALUE, Int.MAX_VALUE]
  * @param errorText Text that will be shown when an error is detected
@@ -24,7 +24,7 @@ class AskNumberPopup(
     screen: BaseScreen,
     label: String = "Please enter a number",
     icon: IconCircleGroup = ImageGetter.getImage("OtherIcons/Pencil").apply { this.color = Color.BLACK }.surroundWithCircle(80f),
-    defaultText: String = "",
+    defaultValue: String = "",
     amountButtons: List<Int> = listOf(),
     bounds: IntRange = IntRange(Int.MIN_VALUE, Int.MAX_VALUE),
     errorText: String = "Invalid input! Please enter a valid number.",
@@ -56,7 +56,7 @@ class AskNumberPopup(
         wrapper.add(label.toLabel())
         add(wrapper).colspan(2).row()
 
-        val nameField = TextField(defaultText, skin)
+        val nameField = TextField(defaultValue, skin)
         nameField.textFieldFilter = TextField.TextFieldFilter { _, char -> char.isDigit() || char == '-' }
         
         fun isValidInt(input: String): Boolean {

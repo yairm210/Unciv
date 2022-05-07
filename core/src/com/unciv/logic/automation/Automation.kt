@@ -13,6 +13,7 @@ import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.Victory.Focus
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileImprovement
+import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
@@ -307,7 +308,8 @@ object Automation {
     }
 
     // Ranks a tile for the expansion algorithm of cities
-    internal fun rankTileForExpansion(tile: TileInfo, cityInfo: CityInfo): Int {
+    internal fun rankTileForExpansion(tile: TileInfo, cityInfo: CityInfo,
+                                      localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Int {
         // https://github.com/Gedemon/Civ5-DLL/blob/aa29e80751f541ae04858b6d2a2c7dcca454201e/CvGameCoreDLL_Expansion1/CvCity.cpp#L10301
         // Apparently this is not the full calculation. The exact tiles are also
         // dependent on which tiles are between the chosen tile and the city center
@@ -338,7 +340,7 @@ object Automation {
         if (tile.naturalWonder != null) score -= 105
 
         // Straight up take the sum of all yields
-        score -= tile.getTileStats(cityInfo, cityInfo.civInfo).values.sum().toInt()
+        score -= tile.getTileStats(cityInfo, cityInfo.civInfo, localUniqueCache).values.sum().toInt()
 
         // Check if we get access to better tiles from this tile
         var adjacentNaturalWonder = false

@@ -207,6 +207,8 @@ class GameInfo {
             currentPlayerIndex = (currentPlayerIndex + 1) % civilizations.size
             if (currentPlayerIndex == 0) {
                 turns++
+                if (UncivGame.Current.simulateUntilTurnForDebug != 0)
+                    println("Starting simulation of turn $turns")
             }
             thisPlayer = civilizations[currentPlayerIndex]
             thisPlayer.startTurn()
