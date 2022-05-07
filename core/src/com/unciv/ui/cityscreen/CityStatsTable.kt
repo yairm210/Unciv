@@ -7,6 +7,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityFlags
+import com.unciv.logic.city.CityFocus
+import com.unciv.logic.city.statToFocus
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
@@ -38,11 +40,17 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         for ((stat, amount) in cityInfo.cityStats.currentCityStats) {
             if (stat == Stat.Faith && !cityInfo.civInfo.gameInfo.isReligionEnabled()) continue
             val icon = Table()
-            icon.add(ImageGetter.getStatIcon(stat.name).addBorder(2f, Color.CLEAR))
-            if (cityInfo.isFocus(stat)) {
-                icon.background = ImageGetter.getBackground(BaseScreen.skin.get("selection", Color::class.java))
+            if (cityInfo.cityAIFocus.stat == stat) {
+                icon.add(ImageGetter.getStatIcon(stat.name).surroundWithCircle(27f, false, color = BaseScreen.skin.get("selection", Color::class.java)))
+                icon.onClick { cityInfo.cityAIFocus = CityFocus.NoFocus
+                    cityInfo.reassignPopulation(); cityScreen.update() }
+                miniStatsTable.add(icon).size(27f).padRight(5f)
+            } else {
+                icon.add(ImageGetter.getStatIcon(stat.name))
+                icon.onClick { cityInfo.cityAIFocus = statToFocus(stat)
+                    cityInfo.reassignPopulation(); cityScreen.update()}
+                miniStatsTable.add(icon).size(20f).padRight(5f)
             }
-            miniStatsTable.add(icon).size(20f).padRight(5f)
             val valueToDisplay = if (stat == Stat.Happiness) cityInfo.cityStats.happinessList.values.sum() else amount
             miniStatsTable.add(round(valueToDisplay).toInt().toLabel()).padRight(10f)
         }

@@ -28,7 +28,7 @@ class CitizenManagementTable(val cityScreen: CityScreen): Table() {
         }
         isVisible = true
 
-        val focusLabel = "Default Focus".tr().toLabel().addBorder(5f, Color.CLEAR)
+        val focusLabel = "Default Focus".toLabel().addBorder(5f, Color.CLEAR)
         val defaultCell = Table()
         defaultCell.add(focusLabel)
         defaultCell.touchable = Touchable.enabled
@@ -38,32 +38,21 @@ class CitizenManagementTable(val cityScreen: CityScreen): Table() {
         else
             defaultCell.background = ImageGetter.getBackground(BaseScreen.skin.get("color", Color::class.java))
         innerTable.add(defaultCell).growX().pad(3f).row()
-        for ((stat, _) in city.cityStats.currentCityStats) {
-            if (stat == Stat.Happiness) continue
-            if (stat == Stat.Faith && !city.civInfo.gameInfo.isReligionEnabled()) continue
-            val label = "${stat.name} Focus".tr().toLabel().addBorder(5f, Color.CLEAR)
+        for (stat in CityFocus.values()) {
+            if (stat.stat == null) continue
+            if (stat == CityFocus.FaithFocus && !city.civInfo.gameInfo.isReligionEnabled()) continue
+            val label = "${stat.stat.name} Focus".toLabel().addBorder(5f, Color.CLEAR)
             val cell = Table()
             cell.touchable = Touchable.enabled
             cell.add(label)
-            if (stat == Stat.Production)
-                cell.onClick { city.cityAIFocus = CityFocus.ProductionFocus; city.reassignPopulation(); cityScreen.update() }
-            if (stat == Stat.Food)
-                cell.onClick { city.cityAIFocus = CityFocus.FoodFocus; city.reassignPopulation(); cityScreen.update() }
-            if (stat == Stat.Gold)
-                cell.onClick { city.cityAIFocus = CityFocus.GoldFocus; city.reassignPopulation(); cityScreen.update()}
-            if (stat == Stat.Science)
-                cell.onClick { city.cityAIFocus = CityFocus.ScienceFocus; city.reassignPopulation(); cityScreen.update() }
-            if (stat == Stat.Culture)
-                cell.onClick { city.cityAIFocus = CityFocus.CultureFocus; city.reassignPopulation(); cityScreen.update() }
-            if (stat == Stat.Faith)
-                cell.onClick { city.cityAIFocus = CityFocus.FaithFocus; city.reassignPopulation(); cityScreen.update() }
+            cell.onClick { city.cityAIFocus = stat; city.reassignPopulation(); cityScreen.update() }
             
-            if (city.isFocus(stat))
+            if (city.cityAIFocus == stat)
                 cell.background = ImageGetter.getBackground(BaseScreen.skin.get("selection", Color::class.java))
             else
                 cell.background = ImageGetter.getBackground(BaseScreen.skin.get("color", Color::class.java))
             innerTable.add(cell).growX().pad(3f)
-            innerTable.add(ImageGetter.getStatIcon(stat.name)).size(20f).padRight(5f)
+            innerTable.add(ImageGetter.getStatIcon(stat.stat.name)).size(20f).padRight(5f)
             innerTable.row()
         }
 

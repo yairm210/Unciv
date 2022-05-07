@@ -19,6 +19,7 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
+import com.unciv.models.stats.Stats
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -34,17 +35,51 @@ enum class CityFlags {
     Resistance
 }
 
-enum class CityFocus {
-    NoFocus,
-    FoodFocus,
-    ProductionFocus,
-    GoldFocus,
-    ScienceFocus,
-    CultureFocus,
-    GoldGrowthFocus,
-    ProductionGrowthFocus,
-    FaithFocus,
-    GreatPersonFocus
+enum class CityFocus(val stat: Stat? = null) {
+    NoFocus (null){
+        override fun getStatMultiplier(stat: Stat) = 1f  // actually redundant, but that's two steps to see
+    },
+    FoodFocus(Stat.Food),
+    ProductionFocus(Stat.Production),
+    GoldFocus(Stat.Gold),
+    ScienceFocus(Stat.Science),
+    CultureFocus(Stat.Culture),
+    GoldGrowthFocus {
+        override fun getStatMultiplier(stat: Stat) = when(stat) {
+            Stat.Production, Stat.Food -> 2f
+            else -> 1f
+        }
+    },
+    ProductionGrowthFocus {
+        override fun getStatMultiplier(stat: Stat) = when(stat) {
+            Stat.Production, Stat.Food -> 2f
+            else -> 1f
+        }
+    },
+    FaithFocus(Stat.Faith);
+    //GreatPersonFocus;
+
+    open fun getStatMultiplier(stat: Stat) = when (this.stat) {
+        stat -> 3f
+        else -> 1f
+    }
+
+    fun applyWeightTo(stats: Stats) {
+        for (stat in Stat.values()) {
+            stats[stat] *= getStatMultiplier(stat)
+        }
+    }
+}
+
+fun statToFocus(stat: Stat): CityFocus{
+    return when(stat){
+        Stat.Food -> CityFocus.FoodFocus
+        Stat.Production -> CityFocus.ProductionFocus
+        Stat.Gold -> CityFocus.GoldFocus
+        Stat.Science -> CityFocus.ScienceFocus
+        Stat.Culture -> CityFocus.CultureFocus
+        else -> CityFocus.NoFocus
+    }
 }
 
 class CityInfo {
@@ -469,7 +504,7 @@ class CityInfo {
         if (!isStarving()) return null
         return population.foodStored / -foodForNextTurn() + 1
     }
-
+    
     fun containsBuildingUnique(uniqueType: UniqueType) =
         cityConstructions.getBuiltBuildings().flatMap { it.uniqueObjects }.any { it.isOfType(uniqueType) }
 
@@ -685,15 +720,6 @@ class CityInfo {
             foodPerTurn = foodForNextTurn().toFloat()
             foodWeight += 0.5f
         }
-    }
-
-    fun isFocus(stat: Stat): Boolean {
-        return (stat == Stat.Production && cityAIFocus == CityFocus.ProductionFocus ||
-                stat == Stat.Food && cityAIFocus == CityFocus.FoodFocus ||
-                stat == Stat.Gold && cityAIFocus == CityFocus.GoldFocus ||
-                stat == Stat.Science && cityAIFocus == CityFocus.ScienceFocus ||
-                stat == Stat.Culture && cityAIFocus == CityFocus.CultureFocus ||
-                stat == Stat.Faith && cityAIFocus == CityFocus.FaithFocus)
     }
 
     fun endTurn() {
