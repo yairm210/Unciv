@@ -33,7 +33,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
     private val saveTable = Table()
     private val deleteSaveButton = "Delete save".toTextButton()
     private val errorLabel = "".toLabel(Color.RED)
-    private val loadMissingModsButton = "Load missing mods".toTextButton()
+    private val loadMissingModsButton = "Download missing mods".toTextButton()
     private val showAutosavesCheckbox = CheckBox("Show autosaves".tr(), skin)
     private var missingModsToLoad = ""
 
@@ -95,7 +95,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
                 val loadedGame = GameSaver.gameInfoFromString(decoded)
                 UncivGame.Current.loadGame(loadedGame)
             } catch (ex: Exception) {
-                exceptionHandling("Could not load game from clipboard!", ex)
+                handleLoadGameException("Could not load game from clipboard!", ex)
             }
         }
         rightSideTable.add(loadFromClipboardButton).row()
@@ -108,7 +108,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
                             game.loadGame(gameInfo)
                         }
                     } else if (exception !is CancellationException)
-                        exceptionHandling("Could not load game from custom location!", exception)
+                        handleLoadGameException("Could not load game from custom location!", exception)
                 }
             }
             rightSideTable.add(loadFromCustomLocation).row()
@@ -144,7 +144,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
         return rightSideTable
     }
 
-    private fun exceptionHandling(primaryText: String, ex: Exception?) {
+    private fun handleLoadGameException(primaryText: String, ex: Exception?) {
         var errorText = primaryText.tr()
         if (ex is UncivShowableException) errorText += "\n${ex.message}"
         errorLabel.setText(errorText)
@@ -156,6 +156,8 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
     }
 
     private fun loadMissingMods() {
+        loadMissingModsButton.isEnabled = false
+        descriptionLabel.setText("Loading...".tr())
         crashHandlingThread(name="DownloadMods") {
             try {
                 val mods = missingModsToLoad.replace(' ', '-').lowercase().splitToSequence(",-")
@@ -172,14 +174,18 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
                 }
                 postCrashHandlingRunnable {
                     RulesetCache.loadRulesets()
-                    ToastPopup("Missing mods are downloaded successfully.", this)
                     missingModsToLoad = ""
                     loadMissingModsButton.isVisible = false
                     errorLabel.setText("")
+                    ToastPopup("Missing mods are downloaded successfully.", this)
                 }
             } catch (ex: Exception) {
-                exceptionHandling("Cannot load missing mods!", ex)
+                handleLoadGameException("Could not load the missing mods!", ex)
+            } finally {
+                loadMissingModsButton.isEnabled = true
+                descriptionLabel.setText("")
             }
+
         }
     }
 
