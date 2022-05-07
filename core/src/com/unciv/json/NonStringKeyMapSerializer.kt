@@ -27,7 +27,7 @@ class NonStringKeyMapSerializer<MT, KT>(
         for ((key, value) in `object` as Map<*, *>) {
             json?.writeArrayStart()
             json?.writeValue(key)
-            json?.writeValue(value)
+            json?.writeValue(value, null)
             json?.writeArrayEnd()
         }
         json?.writeArrayEnd()
