@@ -1,8 +1,12 @@
-package com.unciv.ui.worldscreen.mainmenu
+package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.Files
 import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.utils.Json
+import com.unciv.JsonParser
+import com.unciv.logic.BackwardCompatibility.updateDeprecations
 import com.unciv.logic.GameSaver
+import com.unciv.models.ruleset.ModOptions
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
@@ -215,8 +219,8 @@ object Github {
      * @return              Parsed [RepoSearch] json on success, `null` on failure.
      * @see <a href="https://docs.github.com/en/rest/reference/search#search-repositories">Github API doc</a>
      */
-    fun tryGetGithubReposWithTopic(amountPerPage:Int, page:Int): RepoSearch? {
-        val link = "https://api.github.com/search/repositories?q=topic:unciv-mod&sort:stars&per_page=$amountPerPage&page=$page"
+    fun tryGetGithubReposWithTopic(amountPerPage:Int, page:Int, searchRequest: String = ""): RepoSearch? {
+        val link = "https://api.github.com/search/repositories?q=${searchRequest}topic:unciv-mod&sort:stars&per_page=$amountPerPage&page=$page"
         var retries = 2
         while (retries > 0) {
             retries--
@@ -303,6 +307,21 @@ object Github {
     class RepoOwner {
         var login = ""
         var avatar_url: String? = null
+    }
+
+    /** Rewrite modOptions file for a mod we just installed to include metadata we got from the GitHub api
+     *
+     *  (called on background thread)
+     */
+    fun rewriteModOptions(repo: Repo, modFolder: FileHandle) {
+        val modOptionsFile = modFolder.child("jsons/ModOptions.json")
+        val modOptions = if (modOptionsFile.exists()) JsonParser().getFromJson(ModOptions::class.java, modOptionsFile) else ModOptions()
+        modOptions.modUrl = repo.html_url
+        modOptions.lastUpdated = repo.pushed_at
+        modOptions.author = repo.owner.login
+        modOptions.modSize = repo.size
+        modOptions.updateDeprecations()
+        Json().toJson(modOptions, modOptionsFile)
     }
 }
 
