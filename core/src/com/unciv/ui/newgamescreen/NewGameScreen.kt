@@ -11,18 +11,19 @@ import com.unciv.UncivGame
 import com.unciv.logic.*
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapType
+import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.pickerscreens.PickerScreen
-import com.unciv.ui.utils.*
-import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.ui.crashhandling.crashHandlingThread
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.popup.YesNoPopup
+import com.unciv.ui.utils.*
+import java.net.URL
 import java.util.*
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
@@ -71,13 +72,25 @@ class NewGameScreen(
         rightSideButton.setText("Start game!".tr())
         rightSideButton.onClick {
             if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
-                if (UncivGame.Current.platformSpecificHelper?.isInternetConnected() != true) {
-                    val noInternetConnectionPopup = Popup(this)
-                    noInternetConnectionPopup.addGoodSizedLabel("No connection to internet or dropbox!".tr()).row()
-                    noInternetConnectionPopup.addCloseButton()
-                    noInternetConnectionPopup.open()
-                    return@onClick
+                val multiplayerServer = UncivGame.Current.settings.multiplayerServer ?: "Dropbox"
+                if (multiplayerServer != "Dropbox") {
+                    if (checkConnectionToMultiplayerServer() != true) {
+                        val noInternetConnectionPopup = Popup(this)
+                        noInternetConnectionPopup.addGoodSizedLabel("The server is unreachable!".tr()).row()
+                        noInternetConnectionPopup.addCloseButton()
+                        noInternetConnectionPopup.open()
+                        return@onClick
+                    }
+                } else {
+                    if (checkConnectionToInternet() != true) {
+                        val noInternetConnectionPopup = Popup(this)
+                        noInternetConnectionPopup.addGoodSizedLabel("No internet connection!".tr()).row()
+                        noInternetConnectionPopup.addCloseButton()
+                        noInternetConnectionPopup.open()
+                        return@onClick
+                    }
                 }
+
                 for (player in gameSetupInfo.gameParameters.players.filter { it.playerType == PlayerType.Human }) {
                     try {
                         UUID.fromString(IdChecker.checkAndReturnPlayerUuid(player.playerId))
@@ -204,6 +217,28 @@ class NewGameScreen(
         topTable.add(ExpanderTab("Civilizations") {
             it.add(playerPickerTable).row()
         }).expandX().fillX().row()
+    }
+
+    private fun checkConnectionToInternet(): Boolean {
+        return try {
+            val u = URL("https://content.dropboxapi.com")
+            val conn = u.openConnection()
+            conn.connect()
+            true
+        } catch (ex: Throwable) {
+            false
+        }
+    }
+
+    private fun checkConnectionToMultiplayerServer(): Boolean {
+        return try {
+            val u = URL(UncivGame.Current.settings.multiplayerServer)
+            val conn = u.openConnection()
+            conn.connect()
+            true
+        } catch (ex: Throwable) {
+            false
+        }
     }
 
     private fun newGameThread() {

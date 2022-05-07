@@ -31,16 +31,4 @@ Sources for Info about current orientation in case need:
         // Comparison ensures ActivityTaskManager.getService().setRequestedOrientation isn't called unless necessary
         if (activity.requestedOrientation != orientation) activity.requestedOrientation = orientation
     }
-
-    override fun isInternetConnected(): Boolean {
-        return try {
-            val multiplayerServer = UncivGame.Current.settings.multiplayerServer ?: "Dropbox"
-            val u = URL(if (multiplayerServer != "Dropbox") multiplayerServer else "https://content.dropboxapi.com")
-            val conn = u.openConnection()
-            conn.connect()
-            true
-        } catch (ex: Throwable) {
-            false
-        }
-    }
 }

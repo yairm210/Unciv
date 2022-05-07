@@ -11,18 +11,6 @@ class PlatformSpecificHelpersDesktop(config: Lwjgl3ApplicationConfiguration) : G
         config.setWindowListener(turnNotifier);
     }
 
-    override fun isInternetConnected(): Boolean {
-        return try {
-            val multiplayerServer = UncivGame.Current.settings.multiplayerServer ?: "Dropbox"
-            val u = URL(if (multiplayerServer != "Dropbox") multiplayerServer else "https://content.dropboxapi.com")
-            val conn = u.openConnection()
-            conn.connect()
-            true
-        } catch (ex: Throwable) {
-            false
-        }
-    }
-
     override fun notifyTurnStarted() {
         turnNotifier.turnStarted()
     }
