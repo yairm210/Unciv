@@ -16,7 +16,7 @@ import kotlin.math.min
 import kotlin.math.pow
 
 class BarbarianManager {
-    val camps = HashMap<Vector2, Encampment>()
+    val camps = HashMapVector2<Encampment>()
 
     @Transient
     lateinit var gameInfo: GameInfo
