@@ -25,7 +25,6 @@ import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.utils.UncivDateFormat.formatDate
 import com.unciv.ui.utils.UncivDateFormat.parseDate
-import com.unciv.ui.worldscreen.mainmenu.Github
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.math.max

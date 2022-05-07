@@ -1,4 +1,4 @@
-package com.unciv.ui.worldscreen.mainmenu
+package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.Files
 import com.badlogic.gdx.files.FileHandle
