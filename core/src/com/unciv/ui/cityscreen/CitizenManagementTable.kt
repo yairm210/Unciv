@@ -38,6 +38,8 @@ class CitizenManagementTable(val cityScreen: CityScreen): Table() {
         else
             defaultCell.background = ImageGetter.getBackground(BaseScreen.skin.get("color", Color::class.java))
         innerTable.add(defaultCell).growX().pad(3f).row()
+        val colorSelected = BaseScreen.skin.get("selection", Color::class.java)
+        val colorButton = BaseScreen.skin.get("color", Color::class.java)
         for (stat in CityFocus.values()) {
             if (stat.stat == null) continue
             if (stat == CityFocus.FaithFocus && !city.civInfo.gameInfo.isReligionEnabled()) continue
@@ -46,11 +48,11 @@ class CitizenManagementTable(val cityScreen: CityScreen): Table() {
             cell.touchable = Touchable.enabled
             cell.add(label)
             cell.onClick { city.cityAIFocus = stat; city.reassignPopulation(); cityScreen.update() }
-            
+
             if (city.cityAIFocus == stat)
-                cell.background = ImageGetter.getBackground(BaseScreen.skin.get("selection", Color::class.java))
+                cell.background = ImageGetter.getBackground(colorSelected)
             else
-                cell.background = ImageGetter.getBackground(BaseScreen.skin.get("color", Color::class.java))
+                cell.background = ImageGetter.getBackground(colorButton)
             innerTable.add(cell).growX().pad(3f)
             innerTable.add(ImageGetter.getStatIcon(stat.stat.name)).size(20f).padRight(5f)
             innerTable.row()
