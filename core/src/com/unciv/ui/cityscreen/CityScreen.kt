@@ -165,6 +165,7 @@ class CityScreen(
         else
             resetCitizensButtonHolder.setPosition(stage.width - posFromEdge,
                     posFromEdge + citizenManagementTable.height + 10f, Align.bottomRight)
+        citizenManagementButtonHolder.isVisible = !citizenManagementVisible
         citizenManagementButtonHolder.setPosition(stage.width - posFromEdge,
                 posFromEdge + resetCitizensButtonHolder.y + resetCitizensButtonHolder.height + 10f, Align.bottomRight)
             
