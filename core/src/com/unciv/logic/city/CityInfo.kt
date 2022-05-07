@@ -703,23 +703,15 @@ class CityInfo {
     }
 
     fun reassignPopulation(resetLocked: Boolean = false) {
-        var foodWeight = 1f
-        var foodPerTurn = 0f
-        while (foodWeight < 3 && foodPerTurn <= 0) {
-            if (resetLocked) {
-                workedTiles = hashSetOf()
-                lockedTiles = hashSetOf()
-            } else {
-                workedTiles = lockedTiles
-            }
-            if (!manualSpecialists)
-                population.specialistAllocations.clear()
-            population.autoAssignPopulation(foodWeight)
-            cityStats.update()
-
-            foodPerTurn = foodForNextTurn().toFloat()
-            foodWeight += 0.5f
+        if (resetLocked) {
+            workedTiles = hashSetOf()
+            lockedTiles = hashSetOf()
+        } else {
+            workedTiles = lockedTiles
         }
+        if (!manualSpecialists)
+            population.specialistAllocations.clear()
+        population.autoAssignPopulation()
     }
 
     fun endTurn() {
