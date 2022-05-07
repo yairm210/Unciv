@@ -106,7 +106,8 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
                             game.loadGame(gameInfo)
                         }
                     } else if (exception !is CancellationException) {
-                        errorLabel.setText("Could not load game from custom location!".tr())
+                        val errorText = if (exception is UncivShowableException) "\n${exception.message}" else ""
+                        errorLabel.setText("Could not load game from custom location!".tr() + errorText)
                         exception?.printStackTrace()
                     }
                 }
