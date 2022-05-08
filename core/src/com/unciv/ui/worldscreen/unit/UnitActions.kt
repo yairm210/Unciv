@@ -822,9 +822,10 @@ object UnitActions {
         // We need to be in another civs territory.
         if (recipient == null || recipient.isCurrentPlayer()) return null
 
-        // City States only take military units (and units specifically allowed by uniques)
         if (recipient.isCityState()) {
-            if (!unit.matchesFilter("Military")
+            if (recipient.isAtWarWith(unit.civInfo)) return null // No gifts to enemy CS
+            // City States only take military units (and units specifically allowed by uniques)
+            if (!unit.isMilitary()
                 && unit.getMatchingUniques(UniqueType.GainInfluenceWithUnitGiftToCityState, checkCivInfoUniques = true)
                     .none { unit.matchesFilter(it.params[1]) }
             ) return null

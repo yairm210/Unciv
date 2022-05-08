@@ -258,7 +258,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (replacementTextForUniques.isNotEmpty()) {
             textList += FormattedLine(replacementTextForUniques)
         } else if (uniques.isNotEmpty()) {
-            for (unique in uniqueObjects.sortedBy { it.text }) {
+            for (unique in uniqueObjects) {
                 if (unique.hasFlag(UniqueFlag.HiddenToUsers)) continue
                 if (unique.type == UniqueType.ConsumesResources) continue  // already shown from getResourceRequirements
                 textList += FormattedLine(unique)

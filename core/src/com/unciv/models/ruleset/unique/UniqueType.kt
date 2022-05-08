@@ -392,6 +392,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
 
     RemoveAnnexUnhappiness("Remove extra unhappiness from annexed cities", UniqueTarget.Building),
+    ConnectTradeRoutes("Connects trade routes over water", UniqueTarget.Building),
 
     //endregion
 
@@ -400,6 +401,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     FoundCity("Founds a new city", UniqueTarget.Unit),
     ConstructImprovementConsumingUnit("Can construct [improvementName]", UniqueTarget.Unit),
+    CanConstructIfNoOtherActions("Can construct [improvementName] if it hasn't used other actions yet", UniqueTarget.Unit),
     BuildImprovements("Can build [improvementFilter/terrainFilter] improvements on tiles", UniqueTarget.Unit),
     CreateWaterImprovements("May create improvements on water resources", UniqueTarget.Unit),
 
@@ -426,6 +428,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     SelfDestructs("Self-destructs when attacking", UniqueTarget.Unit),
     BlastRadius("Blast radius [amount]", UniqueTarget.Unit),
     IndirectFire("Ranged attacks may be performed over obstacles", UniqueTarget.Unit),
+    NuclearWeapon("Nuclear weapon of Strength [amount]", UniqueTarget.Unit),
 
     NoDefensiveTerrainBonus("No defensive terrain bonus", UniqueTarget.Unit, UniqueTarget.Global),
     NoDefensiveTerrainPenalty("No defensive terrain penalty", UniqueTarget.Unit, UniqueTarget.Global),
@@ -437,6 +440,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     NoMovementToPillage("No movement cost to pillage", UniqueTarget.Unit, UniqueTarget.Global),
     CanMoveAfterAttacking("Can move after attacking", UniqueTarget.Unit),
     MoveImmediatelyOnceBought("Can move immediately once bought", UniqueTarget.Unit),
+    MayParadrop("May Paradrop up to [amount] tiles from inside friendly territory", UniqueTarget.Unit),
 
     HealsOutsideFriendlyTerritory("May heal outside of friendly territory", UniqueTarget.Unit, UniqueTarget.Global),
     HealingEffectsDoubled("All healing effects doubled", UniqueTarget.Unit, UniqueTarget.Global),
@@ -462,6 +466,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     CarryAirUnits("Can carry [amount] [mapUnitFilter] units", UniqueTarget.Unit),
     CarryExtraAirUnits("Can carry [amount] extra [mapUnitFilter] units", UniqueTarget.Unit),
     CannotBeCarriedBy("Cannot be carried by [mapUnitFilter] units", UniqueTarget.Unit),
+    ChanceInterceptAirAttacks("[relativeAmount]% chance to intercept air attacks", UniqueTarget.Unit),
+    DamageFromInterceptionReduced("Damage taken from interception reduced by [relativeAmount]%", UniqueTarget.Unit),
 
     UnitMaintenanceDiscount("[relativeAmount]% maintenance costs", UniqueTarget.Unit, UniqueTarget.Global),
     UnitUpgradeCost("[relativeAmount]% Gold cost of upgrading", UniqueTarget.Unit, UniqueTarget.Global),
@@ -503,6 +509,22 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ReligiousUnit("Religious Unit", UniqueTarget.Unit),
     SpaceshipPart("Spaceship part", UniqueTarget.Unit, UniqueTarget.Building), // Should be deprecated in the near future
     AddInCapital("Can be added to [comment] in the Capital", UniqueTarget.Unit),
+
+    StartGoldenAge("Can start an [amount]-turn golden age", UniqueTarget.Unit),
+    GreatPerson("Great Person - [comment]", UniqueTarget.Unit),
+
+    PreventSpreadingReligion("Prevents spreading of religion to the city it is next to", UniqueTarget.Unit),
+    TakeReligionOverBirthCity("Takes your religion over the one in their birth city", UniqueTarget.Unit),
+    RemoveOtherReligions("Removes other religions when spreading religion", UniqueTarget.Unit),
+
+    CanActionSeveralTimes("Can [action] [amount] times", UniqueTarget.Unit),
+    // TODO needs to be more general
+    BonusForUnitsInRadius("Bonus for units in 2 tile radius 15%", UniqueTarget.Unit),
+
+    CanSpeedupConstruction("Can speed up construction of a building", UniqueTarget.Unit),
+    CanHurryResearch("Can hurry technology research", UniqueTarget.Unit),
+    CanTradeWithCityStateForGoldAndInfluence("Can undertake a trade mission with City-State, giving a large sum of gold and [amount] Influence", UniqueTarget.Unit),
+
 
 
     //endregion

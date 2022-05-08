@@ -70,10 +70,13 @@ project(":desktop") {
         }
 
         "implementation"("com.github.MinnDevelopment:java-discord-rpc:v2.0.1")
+    
+        "implementation"("net.java.dev.jna:jna:5.11.0")
+        "implementation"("net.java.dev.jna:jna-platform:5.11.0")
     }
-
 }
 
+// For server-side
 project(":server") {
     apply(plugin = "kotlin")
 
