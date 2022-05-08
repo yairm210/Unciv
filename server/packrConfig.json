@@ -1,0 +1,52 @@
+{
+  "reduce": [
+    {
+      "archive": "jre/lib/rt.jar",
+      "paths": [
+        "com/sun/corba",
+        "com/sun/jmx",
+        "com/sun/jndi",
+        "com/sun/media",
+        "com/sun/naming",
+        "com/sun/org",
+        "com/sun/rowset",
+        "com/sun/script",
+        "com/sun/xml",
+        "sun/applet",
+        "sun/corba",
+        "sun/management"
+      ]
+    },
+    {
+      "archive": "jre/lib/charsets.jar",
+      "paths": [
+      ]
+    },
+    {
+      "archive": "jre/lib/jsse.jar",
+      "paths": [
+      ]
+    },
+    {
+      "archive": "jre/lib/resources.jar",
+      "paths": [
+      ]
+    }
+  ],
+  "remove": [
+    {
+      "platform": "*",
+      "paths": [
+        "jre/lib/rhino.jar",
+		"jre/lib/amd64/libjfxwebkit.so"
+      ]
+    },
+    {
+      "platform": "windows",
+      "paths": [
+        "jre/bin/*.exe",
+        "jre/bin/client"
+      ]
+    }
+  ]
+}
