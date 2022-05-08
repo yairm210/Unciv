@@ -4,10 +4,8 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
-import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextField
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.MainMenuScreen
@@ -50,7 +48,10 @@ import com.badlogic.gdx.utils.Array as GdxArray
  * @param previousScreen The caller - note if this is a [WorldScreen] or [MainMenuScreen] they will be rebuilt when major options change.
  */
 //region Fields
-class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
+class OptionsPopup(
+    private val previousScreen: BaseScreen,
+    private val selectPage: Int = defaultPage
+) : Popup(previousScreen) {
     private val settings = previousScreen.game.settings
     private val tabs: TabbedPager
     private val resolutionArray = com.badlogic.gdx.utils.Array(arrayOf("750x500", "900x600", "1050x700", "1200x800", "1500x1000"))
@@ -62,6 +63,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     //endregion
 
     companion object {
+        const val defaultPage = 2  // Gameplay
         private const val modCheckWithoutBase = "-none-"
     }
 
@@ -88,12 +90,8 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         tabs.addPage("Language", getLanguageTab(), ImageGetter.getImage("FlagIcons/${settings.language}"), 24f)
         tabs.addPage("Sound", getSoundTab(), ImageGetter.getImage("OtherIcons/Speaker"), 24f)
         tabs.addPage("Multiplayer", getMultiplayerTab(), ImageGetter.getImage("OtherIcons/Multiplayer"), 24f)
-        crashHandlingThread(name="Add Advanced Options Tab") {
-            val fontNames = Fonts.getAvailableFontFamilyNames() // This is a heavy operation and causes ANRs
-            postCrashHandlingRunnable {
-                tabs.addPage("Advanced", getAdvancedTab(fontNames), ImageGetter.getImage("OtherIcons/Settings"), 24f)
-            }
-        }
+        tabs.addPage("Advanced", getAdvancedTab(), ImageGetter.getImage("OtherIcons/Settings"), 24f)
+
         if (RulesetCache.size > BaseRuleset.values().size) {
             val content = ModCheckTab(this) {
                 if (modCheckFirstRun) runModChecker()
@@ -108,7 +106,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
         addCloseButton {
             previousScreen.game.musicController.onChange(null)
-            previousScreen.game.limitOrientationsHelper?.allowPortrait(settings.allowAndroidPortrait)
+            previousScreen.game.platformSpecificHelper?.allowPortrait(settings.allowAndroidPortrait)
             if (previousScreen is WorldScreen)
                 previousScreen.enableNextTurnButtonAfterOptions()
         }.padBottom(10f)
@@ -121,10 +119,10 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         super.setVisible(visible)
         if (!visible) return
         tabs.askForPassword(secretHashCode = 2747985)
-        if (tabs.activePage < 0) tabs.selectPage(2)
+        if (tabs.activePage < 0) tabs.selectPage(selectPage)
     }
 
-    /** Reload this Popup after major changes (resolution, tileset, language) */
+    /** Reload this Popup after major changes (resolution, tileset, language, font) */
     private fun reloadWorldAndOptions() {
         settings.save()
         if (previousScreen is WorldScreen) {
@@ -133,7 +131,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         } else if (previousScreen is MainMenuScreen) {
             previousScreen.game.setScreen(MainMenuScreen())
         }
-        (previousScreen.game.screen as BaseScreen).openOptionsPopup()
+        (previousScreen.game.screen as BaseScreen).openOptionsPopup(tabs.activePage)
     }
 
     private fun successfullyConnectedToServer(action: (Boolean, String)->Unit){
@@ -192,7 +190,8 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         addCheckbox("Show tutorials", settings.showTutorials, true) { settings.showTutorials = it }
         addCheckbox("Show pixel units", settings.showPixelUnits, true) { settings.showPixelUnits = it }
         addCheckbox("Show pixel improvements", settings.showPixelImprovements, true) { settings.showPixelImprovements = it }
-
+        addCheckbox("Experimental Demographics scoreboard", settings.useDemographics, true) { settings.useDemographics = it }
+        
         addMinimapSizeSlider()
 
         addResolutionSelectBox()
@@ -270,17 +269,17 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
         val connectionToServerButton = "Check connection to server".toTextButton()
 
-        val textToShowForMultiplayerAddress = 
+        val textToShowForMultiplayerAddress =
             if (settings.multiplayerServer != Constants.dropboxMultiplayerServer) settings.multiplayerServer
         else "https://..."
         val multiplayerServerTextField = TextField(textToShowForMultiplayerAddress, BaseScreen.skin)
         multiplayerServerTextField.programmaticChangeEvents = true
         val serverIpTable = Table()
 
-        serverIpTable.add("Server address".toLabel().onClick { 
+        serverIpTable.add("Server address".toLabel().onClick {
             multiplayerServerTextField.text = Gdx.app.clipboard.contents
         }).row()
-        multiplayerServerTextField.onChange { 
+        multiplayerServerTextField.onChange {
             settings.multiplayerServer = multiplayerServerTextField.text
             settings.save()
             connectionToServerButton.isEnabled = multiplayerServerTextField.text != Constants.dropboxMultiplayerServer
@@ -305,7 +304,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         }).row()
     }
 
-    private fun getAdvancedTab(fontNames: Collection<FontData>) = Table(BaseScreen.skin).apply {
+    private fun getAdvancedTab() = Table(BaseScreen.skin).apply {
         pad(10f)
         defaults().pad(5f)
 
@@ -318,15 +317,15 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
         addMaxZoomSlider()
 
-        if (previousScreen.game.limitOrientationsHelper != null) {
+        if (previousScreen.game.platformSpecificHelper != null) {
             addCheckbox("Enable portrait orientation", settings.allowAndroidPortrait) {
                 settings.allowAndroidPortrait = it
                 // Note the following might close the options screen indirectly and delayed
-                previousScreen.game.limitOrientationsHelper.allowPortrait(it)
+                previousScreen.game.platformSpecificHelper.allowPortrait(it)
             }
         }
 
-        addFontFamilySelect(fontNames)
+        addFontFamilySelect()
 
         addTranslationGeneration()
 
@@ -521,9 +520,6 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
     private fun autoUpdateUniques(mod: Ruleset, replaceableUniques: HashMap<String, String>) {
 
-        if (mod.name.contains("mod"))
-            println("mod")
-
         val filesToReplace = listOf(
             "Beliefs.json",
             "Buildings.json",
@@ -557,27 +553,43 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         defaults().pad(5f)
 
         val game = UncivGame.Current
+        val simulateButton = "Simulate until turn:".toTextButton()
+        val simulateTextField = TextField(game.simulateUntilTurnForDebug.toString(), BaseScreen.skin)
+        val invalidInputLabel = "This is not a valid integer!".toLabel().also { it.isVisible = false }
+        simulateButton.onClick {
+            val simulateUntilTurns = simulateTextField.text.toIntOrNull() 
+            if (simulateUntilTurns == null) {
+                invalidInputLabel.isVisible = true
+                return@onClick
+            }
+            game.simulateUntilTurnForDebug = simulateUntilTurns
+            invalidInputLabel.isVisible = false
+            game.worldScreen.nextTurn()
+        }
+        add(simulateButton)
+        add(simulateTextField).row()
+        add(invalidInputLabel).colspan(2).row()
         add("Supercharged".toCheckBox(game.superchargedForDebug) {
             game.superchargedForDebug = it
-        }).row()
+        }).colspan(2).row()
         add("View entire map".toCheckBox(game.viewEntireMapForDebug) {
             game.viewEntireMapForDebug = it
-        }).row()
+        }).colspan(2).row()
         if (game.isGameInfoInitialized()) {
             add("God mode (current game)".toCheckBox(game.gameInfo.gameParameters.godMode) {
                 game.gameInfo.gameParameters.godMode = it
-            }).row()
+            }).colspan(2).row()
         }
         add("Save maps compressed".toCheckBox(MapSaver.saveZipped) {
             MapSaver.saveZipped = it
-        }).row()
+        }).colspan(2).row()
         add("Gdx Scene2D debug".toCheckBox(BaseScreen.enableSceneDebug) {
             BaseScreen.enableSceneDebug = it
-        }).row()
+        }).colspan(2).row()
 
         add("Allow untyped Uniques in mod checker".toCheckBox(RulesetCache.modCheckerAllowUntypedUniques) {
             RulesetCache.modCheckerAllowUntypedUniques = it
-        }).row()
+        }).colspan(2).row()
 
         add(Table().apply {
             add("Unique misspelling threshold".toLabel()).left().fillX()
@@ -586,7 +598,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
                     RulesetCache.uniqueMisspellingThreshold = it.toDouble()
                 }
             ).minWidth(120f).pad(5f)
-        }).row()
+        }).colspan(2).row()
 
         val unlockTechsButton = "Unlock all techs".toTextButton()
         unlockTechsButton.onClick {
@@ -601,9 +613,9 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             game.gameInfo.getCurrentPlayerCivilization().updateSightAndResources()
             game.worldScreen.shouldUpdate = true
         }
-        add(unlockTechsButton).row()
+        add(unlockTechsButton).colspan(2).row()
 
-        val giveResourcesButton = "Give all strategic resources".toTextButton()
+        val giveResourcesButton = "Get all strategic resources".toTextButton()
         giveResourcesButton.onClick {
             if (!game.isGameInfoInitialized())
                 return@onClick
@@ -619,7 +631,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             game.gameInfo.getCurrentPlayerCivilization().updateSightAndResources()
             game.worldScreen.shouldUpdate = true
         }
-        add(giveResourcesButton).row()
+        add(giveResourcesButton).colspan(2).row()
     }
 
     //endregion
@@ -865,48 +877,71 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         add(maxZoomSlider).pad(5f).row()
     }
 
-    private fun Table.addFontFamilySelect(fonts: Collection<FontData>) {
-        if (fonts.isEmpty()) return
-
+    private fun Table.addFontFamilySelect() {
         add("Font family".toLabel()).left().fillX()
+        val selectCell = add()
+        row()
 
-        val fontSelectBox = SelectBox<String>(skin)
-        val fontsLocalName = GdxArray<String>().apply { add("Default Font".tr()) }
-        val fontsEnName = GdxArray<String>().apply { add("") }
-        for (font in fonts) {
-            fontsLocalName.add(font.localName)
-            fontsEnName.add(font.enName)
+        fun loadFontSelect(fonts: GdxArray<FontFamilyData>, selectCell: Cell<Actor>) {
+            if (fonts.isEmpty) return
+
+            val fontSelectBox = SelectBox<FontFamilyData>(skin)
+            fontSelectBox.items = fonts
+
+            // `FontFamilyData` implements kotlin equality contract such that _only_ the invariantName field is compared.
+            // The Gdx SelectBox should honor that - but it doesn't, as it is a _kotlin_ thing to implement
+            // `==` by calling `equals`, and there's precompiled _Java_ `==` in the widget code.
+            // `setSelected` first calls a `contains` which can switch between using `==` and `equals` (set to `equals`)
+            // but just one step later (where it re-checks whether the new selection is equal to the old one)
+            // it does a hard `==`. Also, setSelection copies its argument to the selection var, it doesn't pull a match from `items`.
+            // Therefore, _selecting_ an item in a `SelectBox` by an instance of `FontFamilyData` where only the `invariantName` is valid won't work properly.
+            //
+            // This is why it's _not_ `fontSelectBox.selected = FontFamilyData(settings.fontFamily)`
+            val fontToSelect = settings.fontFamily
+            fontSelectBox.selected = fonts.firstOrNull { it.invariantName == fontToSelect } // will default to first entry if `null` is passed
+
+            selectCell.setActor(fontSelectBox).minWidth(selectBoxMinWidth).pad(10f)
+
+            fontSelectBox.onChange {
+                settings.fontFamily = fontSelectBox.selected.invariantName
+                Fonts.resetFont(settings.fontFamily)
+                reloadWorldAndOptions()
+            }
         }
 
-        val selectedIndex = fontsEnName.indexOf(settings.fontFamily).let { if (it == -1) 0 else it }
-
-        fontSelectBox.items = fontsLocalName
-        fontSelectBox.selected = fontsLocalName[selectedIndex]
-
-        add(fontSelectBox).minWidth(selectBoxMinWidth).pad(10f).row()
-
-        fontSelectBox.onChange {
-            settings.fontFamily = fontsEnName[fontSelectBox.selectedIndex]
-            ToastPopup(
-                "You need to restart the game for this change to take effect.", previousScreen
-            )
+        crashHandlingThread(name = "Add Font Select") {
+            // This is a heavy operation and causes ANRs
+            val fonts = GdxArray<FontFamilyData>().apply {
+                add(FontFamilyData.default)
+                for (font in Fonts.getAvailableFontFamilyNames())
+                    add(font)
+            }
+            postCrashHandlingRunnable { loadFontSelect(fonts, selectCell) }
         }
     }
 
     private fun Table.addTranslationGeneration() {
-        if (Gdx.app.type == Application.ApplicationType.Desktop) {
-            val generateTranslationsButton = "Generate translation files".toTextButton()
-            val generateAction = {
+        if (Gdx.app.type != Application.ApplicationType.Desktop) return
+
+        val generateTranslationsButton = "Generate translation files".toTextButton()
+
+        val generateAction: ()->Unit = {
+            tabs.selectPage("Advanced")
+            generateTranslationsButton.setText("Working...".tr())
+            crashHandlingThread {
                 val result = TranslationFileWriter.writeNewTranslationFiles()
-                // notify about completion
-                generateTranslationsButton.setText(result.tr())
-                generateTranslationsButton.disable()
+                postCrashHandlingRunnable {
+                    // notify about completion
+                    generateTranslationsButton.setText(result.tr())
+                    generateTranslationsButton.disable()
+                }
             }
-            generateTranslationsButton.onClick(generateAction)
-            keyPressDispatcher[Input.Keys.F12] = generateAction
-            generateTranslationsButton.addTooltip("F12",18f)
-            add(generateTranslationsButton).colspan(2).row()
         }
+
+        generateTranslationsButton.onClick(generateAction)
+        keyPressDispatcher[Input.Keys.F12] = generateAction
+        generateTranslationsButton.addTooltip("F12",18f)
+        add(generateTranslationsButton).colspan(2).row()
     }
 
     private fun Table.addCheckbox(text: String, initialState: Boolean, updateWorld: Boolean = false, action: ((Boolean) -> Unit)) {

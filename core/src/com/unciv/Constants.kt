@@ -45,7 +45,6 @@ object Constants {
     const val unknownNationName = "???"
 
     const val fort = "Fort"
-    const val citadel = "Citadel"
 
     const val futureTech = "Future Tech"
     // Easter egg name. Is to avoid conflicts when players name their own religions.

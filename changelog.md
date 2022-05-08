@@ -1,3 +1,75 @@
+## 4.0.14
+
+Performance improvements
+
+By SomeTroglodyte:
+- Move UncivServer to own module
+- Font choice rework 
+- Reworked "Creates improvement on a specific tile" Unique
+
+By Azzurite:
+- Fixed Barbarian Camps revealed by Honor not showing immediately in multiplayer
+
+By JackRainy:
+- Auto-downloading missing mods for save files
+- Typed missing uniques 
+
+## 4.0.13
+
+Extensive performance work
+
+Can no longer gift units to enemy City States
+
+Can now have owner-style-specific improvement images (e.g. Mine-Medieval-European)
+
+Resolved rare crashes
+
+By Azzurite:
+- Create turn notifier for when the game is running for Windows
+- Fix Sweden not being able to gift great people to city states
+
+By Jack Rainy:
+- Allow trade routes via city-states
+- Better unit expulsion when declaring war/after open borders ended
+
+New Demographics Scoreboard  - By letstalkaboutdune
+
+## 4.0.12
+
+By SomeTroglodyte:
+- Show available resources from CityScreen
+- F-droid integration improvements! 
+
+By JackRainy:
+- Allow city connections via open borders and own harbors only 
+- Enable scrolling for the oversized popups
+
+Performance improvements - By Azzurite
+
+By xlenstra:
+- Fixed `provides [amount] [resource]` on buildings not accepting conditionals 
+- Implemented most things for moddable victory conditions
+
+Check internet before starting mp game to avoid freeze - By alexban011
+
+## 4.0.11
+
+Enabled nested translations!
+
+Don't allow trade routes through enemy cities
+
+By JackRainy:
+- Protect the cities from the fallout spawning 
+- Correct swap of the full-loaded carriers 
+
+By SomeTroglodyte:
+- Map editor2.2
+- Show number of global followers in Religion Overview 
+
+By xlenstra:
+- Fixed improvements with unfulfilled 'Only Available' still buildable 
+- Fixed a crash when a plane tried to enter a full city
+
 ## 4.0.10
 
 By JackRainy:

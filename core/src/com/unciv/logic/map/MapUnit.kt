@@ -17,10 +17,7 @@ import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileImprovement
-import com.unciv.models.ruleset.unique.StateForConditionals
-import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueMapTyped
-import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unique.*
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stats
@@ -258,29 +255,28 @@ class MapUnit {
     private var tempUniques = ArrayList<Unique>()
 
     @Transient
-    private var tempUniquesMap = UniqueMapTyped()
+    private var tempUniquesMap = UniqueMap()
 
     fun getUniques(): ArrayList<Unique> = tempUniques
 
+    // TODO typify usages and remove this function
     fun getMatchingUniques(placeholderText: String): Sequence<Unique> =
-        tempUniques.asSequence().filter { it.placeholderText == placeholderText }
-
+        tempUniquesMap.getUniques(placeholderText)
+    
     fun getMatchingUniques(
         uniqueType: UniqueType,
         stateForConditionals: StateForConditionals = StateForConditionals(civInfo, unit=this),
         checkCivInfoUniques: Boolean = false
     ) = sequence {
-        val tempUniques = tempUniquesMap[uniqueType]
-        if (tempUniques != null)
             yieldAll(
-                tempUniques.asSequence().filter { it.conditionalsApply(stateForConditionals) }
+                tempUniquesMap.getMatchingUniques(uniqueType, stateForConditionals)
             )
         if (checkCivInfoUniques)
             yieldAll(civInfo.getMatchingUniques(uniqueType, stateForConditionals))
     }
 
     fun hasUnique(unique: String): Boolean {
-        return tempUniques.any { it.placeholderText == unique }
+        return getMatchingUniques(unique).any()
     }
 
     fun hasUnique(
@@ -302,7 +298,7 @@ class MapUnit {
         }
 
         tempUniques = uniques
-        val newUniquesMap = UniqueMapTyped()
+        val newUniquesMap = UniqueMap()
         for (unique in uniques)
             if (unique.type != null)
                 newUniquesMap.addUnique(unique)
@@ -455,9 +451,11 @@ class MapUnit {
 
     fun isIdle(): Boolean {
         if (currentMovement == 0f) return false
-        if (getTile().improvementInProgress != null 
-            && canBuildImprovement(getTile().getTileImprovementInProgress()!!)) 
-                return false
+        val tile = getTile()
+        if (tile.improvementInProgress != null &&
+                canBuildImprovement(tile.getTileImprovementInProgress()!!) &&
+                !tile.isMarkedForCreatesOneImprovement()
+            ) return false
         return !(isFortified() || isExploring() || isSleeping() || isAutomated() || isMoving())
     }
 
@@ -631,6 +629,7 @@ class MapUnit {
 
     private fun workOnImprovement() {
         val tile = getTile()
+        if (tile.isMarkedForCreatesOneImprovement()) return
         tile.turnsToImprovement -= 1
         if (tile.turnsToImprovement != 0) return
 
@@ -715,12 +714,12 @@ class MapUnit {
         val isFriendlyTerritory = tileInfo.isFriendlyTerritory(civInfo)
 
         var healing = when {
-            tileInfo.isCityCenter() -> 25 // Increased from 20 for CV parity
-            tileInfo.isWater && isFriendlyTerritory && (baseUnit.isWaterUnit() || isTransported) -> 20 // Water unit on friendly water, increased from 15 for CV parity
+            tileInfo.isCityCenter() -> 25
+            tileInfo.isWater && isFriendlyTerritory && (baseUnit.isWaterUnit() || isTransported) -> 20 // Water unit on friendly water
             tileInfo.isWater -> 0 // All other water cases
-            isFriendlyTerritory -> 20 // Allied territory, increased from 15 for CV parity
+            isFriendlyTerritory -> 20 // Allied territory
             tileInfo.getOwner() == null -> 10 // Neutral territory
-            else -> 10 // Enemy territory, increased from 5 for CV  parity
+            else -> 10 // Enemy territory
         }
 
         val mayHeal = healing > 0 || (tileInfo.isWater && hasUnique(UniqueType.HealsOutsideFriendlyTerritory, checkCivInfoUniques = true))
@@ -895,8 +894,12 @@ class MapUnit {
         }
         if (tile.improvement == Constants.barbarianEncampment && !civInfo.isBarbarian())
             clearEncampment(tile)
+        // Check whether any civilians without military units are there.
+        // Keep in mind that putInTile(), which calls this method,
+        // might have already placed your military unit in this tile.
+        val unguardedCivilian = tile.getUnguardedCivilian(this)
         // Capture Enemy Civilian Unit if you move on top of it
-        if (isMilitary() && tile.getUnguardedCivilian() != null && civInfo.isAtWarWith(tile.getUnguardedCivilian()!!.civInfo)) {
+        if (isMilitary() && unguardedCivilian != null && civInfo.isAtWarWith(unguardedCivilian.civInfo)) {
             Battle.captureCivilianUnit(MapUnitCombatant(this), MapUnitCombatant(tile.civilianUnit!!))
         }
 

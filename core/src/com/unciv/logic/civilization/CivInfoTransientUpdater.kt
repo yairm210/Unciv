@@ -191,6 +191,10 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         for (unit in civInfo.getCivUnits())
             for ((resource, amount) in unit.baseUnit.getResourceRequirements())
                 newDetailedCivResources.add(civInfo.gameInfo.ruleSet.tileResources[resource]!!, -amount, "Units")
+        
+        // Check if anything has actually changed so we don't update stats for no reason - this uses List equality which means it checks the elements
+        if (civInfo.detailedCivResources == newDetailedCivResources) return
+        
         civInfo.detailedCivResources = newDetailedCivResources
 
         val newSummarizedCivResources = ResourceSupplyList()

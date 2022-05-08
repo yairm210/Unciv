@@ -68,6 +68,10 @@ class ReligionManager {
     fun endTurn(faithFromNewTurn: Int) {
         storedFaith += faithFromNewTurn
     }
+    
+    fun isMajorityReligionForCiv(religion: Religion): Boolean {
+        return civInfo.cities.count { it.religion.getMajorityReligion() == religion } >= civInfo.cities.count() / 2
+    }
 
     fun faithForPantheon(additionalCivs: Int = 0) =
         10 + (civInfo.gameInfo.civilizations.count { it.isMajorCiv() && it.religionManager.religion != null } + additionalCivs) * 5

@@ -128,7 +128,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                                     appContext.resources.getString(R.string.Notify_Persist_Long_P2) + " " + checkPeriod + " "
                                     + appContext.resources.getString(R.string.Notify_Persist_Long_P3)
                                     + " " + appContext.resources.getString(R.string.Notify_Persist_Long_P4)))
-                    .setSmallIcon(R.drawable.uncivicon2)
+                    .setSmallIcon(R.drawable.uncivnotification)
                     .setContentIntent(pendingIntent)
                     .setCategory(NotificationCompat.CATEGORY_SERVICE)
                     .setOnlyAlertOnce(true)
@@ -156,7 +156,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                     // without at least vibrate, some Android versions don't show a heads-up notification
                     .setDefaults(DEFAULT_VIBRATE)
                     .setLights(Color.YELLOW, 300, 100)
-                    .setSmallIcon(R.drawable.uncivicon2)
+                    .setSmallIcon(R.drawable.uncivnotification)
                     .setContentIntent(pendingIntent)
                     .setCategory(NotificationCompat.CATEGORY_SOCIAL)
                     .setOngoing(false)
@@ -348,7 +348,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                 .setPriority(NotificationManagerCompat.IMPORTANCE_DEFAULT) // No direct user action expected
                 .setContentTitle(applicationContext.resources.getString(R.string.Notify_Error_Short))
                 .setContentText(applicationContext.resources.getString(R.string.Notify_Error_Long))
-                .setSmallIcon(R.drawable.uncivicon2)
+                .setSmallIcon(R.drawable.uncivnotification)
                 // without at least vibrate, some Android versions don't show a heads-up notification
                 .setDefaults(DEFAULT_VIBRATE)
                 .setLights(Color.YELLOW, 300, 100)

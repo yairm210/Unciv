@@ -241,7 +241,39 @@ val curlyBraceRegex = Regex("""\{([^}]*)\}""")
 val pointyBraceRegex = Regex("""\<([^>]*)\>""")
 
 
-/**
+object TranslationActiveModsCache {
+    private var cachedHash = Int.MIN_VALUE
+
+    var activeMods: HashSet<String> = hashSetOf()
+        get() {
+            val hash = getCurrentHash()
+            if (hash != cachedHash) {
+                cachedHash = hash
+                field = getCurrentSet()
+            }
+            return field
+        }
+        private set
+
+    private fun getCurrentHash() = UncivGame.Current.run {
+            if (isGameInfoInitialized())
+                gameInfo.gameParameters.mods.hashCode() + gameInfo.gameParameters.baseRuleset.hashCode() * 31
+            else translations.translationActiveMods.hashCode() * 31 * 31
+        }
+
+    private fun getCurrentSet() = UncivGame.Current.run {
+            if (isGameInfoInitialized()) {
+                val par = gameInfo.gameParameters
+                // This is equivalent to (par.mods + par.baseRuleset) without the cast down to `Set`
+                LinkedHashSet<String>(par.mods.size + 1).apply {
+                    addAll(par.mods)
+                    add(par.baseRuleset)
+                }
+            } else translations.translationActiveMods
+        }
+}
+
+    /**
  *  This function does the actual translation work,
  *      using an instance of [Translations] stored in UncivGame.Current
  *
@@ -256,11 +288,6 @@ val pointyBraceRegex = Regex("""\<([^>]*)\>""")
  *                  but with placeholder or sentence brackets removed.
  */
 fun String.tr(): String {
-    val activeMods = with(UncivGame.Current) {
-        if (isGameInfoInitialized())
-            gameInfo.gameParameters.mods + gameInfo.gameParameters.baseRuleset
-        else translations.translationActiveMods
-    }.toHashSet()
     val language = UncivGame.Current.settings.language
 
     if (contains('<') && contains('>')) { // Conditionals!
@@ -325,7 +352,7 @@ fun String.tr(): String {
     if (contains('{')) { // Translating partial sentences
         return curlyBraceRegex.replace(this) { it.groups[1]!!.value.tr() }
     }
-    
+
     // There might still be optimization potential here!
     if (contains('[')) { // Placeholders!
         /**
@@ -345,7 +372,7 @@ fun String.tr(): String {
         val translationStringWithSquareBracketsOnly = this.getPlaceholderText()
         // That is now the key into the translation HashMap!
         val translationEntry = UncivGame.Current.translations
-            .get(translationStringWithSquareBracketsOnly, language, activeMods)
+            .get(translationStringWithSquareBracketsOnly, language, TranslationActiveModsCache.activeMods)
 
         var languageSpecificPlaceholder: String
         val originalEntry: String
@@ -377,9 +404,9 @@ fun String.tr(): String {
 
     if (Stats.isStats(this)) return Stats.parse(this).toString()
 
-    val translation = UncivGame.Current.translations.getText(this, language, activeMods)
+    val translation = UncivGame.Current.translations.getText(this, language, TranslationActiveModsCache.activeMods)
 
-    val stat = Stat.values().firstOrNull { it.name == this }
+    val stat = Stat.safeValueOf(this)
     if (stat != null) return stat.character + translation
 
     return translation
@@ -392,6 +419,7 @@ fun String.tr(): String {
  * allowing us to have nested translations!
  */
 fun String.getPlaceholderParametersIgnoringLowerLevelBraces(): List<String> {
+    if (!this.contains('[')) return emptyList()
     val parameters = ArrayList<String>()
     var depthOfBraces = 0
     var startOfCurrentParameter = -1
@@ -421,9 +449,15 @@ fun String.equalsPlaceholderText(str:String): Boolean {
     return this.getPlaceholderText() == str
 }
 
-fun String.hasPlaceholderParameters() = squareBraceRegex.containsMatchIn(this.removeConditionals())
+fun String.hasPlaceholderParameters(): Boolean {
+    if (!this.contains('[')) return false
+    return squareBraceRegex.containsMatchIn(this.removeConditionals())
+}
 
-fun String.getPlaceholderParameters() = squareBraceRegex.findAll(this.removeConditionals()).map { it.groups[1]!!.value }.toList()
+fun String.getPlaceholderParameters(): List<String> {
+    if (!this.contains('[')) return emptyList()
+    return squareBraceRegex.findAll(this.removeConditionals()).map { it.groups[1]!!.value }.toList()
+}
 
 /** Substitutes placeholders with [strings], respecting order of appearance. */
 fun String.fillPlaceholders(vararg strings: String): String {
@@ -437,16 +471,22 @@ fun String.fillPlaceholders(vararg strings: String): String {
     return filledString
 }
 
-fun String.getConditionals() = pointyBraceRegex.findAll(this).map { Unique(it.groups[1]!!.value) }.toList()
+fun String.getConditionals(): List<Unique> {
+    if (!this.contains('<')) return emptyList()
+    return pointyBraceRegex.findAll(this).map { Unique(it.groups[1]!!.value) }.toList()
+}
 
-fun String.removeConditionals() = this
-    .replace(pointyBraceRegex, "")
-    // So, this is a quick hack, but it works as long as nobody uses word separators different from " " (space) and "" (none),
-    // And no translations start or end with a space.
-    // According to https://linguistics.stackexchange.com/questions/6131/is-there-a-long-list-of-languages-whose-writing-systems-dont-use-spaces
-    // This is a reasonable but not fully correct assumption to make.
-    // By doing it like this, we exclude languages such as Tibetan, Dzongkha (Bhutan), and Ethiopian.
-    // If we ever start getting translations for these, we'll work something out then.
-    .replace("  ", " ")
-    .trim()
+fun String.removeConditionals(): String {
+    if (!this.contains('<')) return this // no need to regex search
+    return this
+        .replace(pointyBraceRegex, "")
+        // So, this is a quick hack, but it works as long as nobody uses word separators different from " " (space) and "" (none),
+        // And no translations start or end with a space.
+        // According to https://linguistics.stackexchange.com/questions/6131/is-there-a-long-list-of-languages-whose-writing-systems-dont-use-spaces
+        // This is a reasonable but not fully correct assumption to make.
+        // By doing it like this, we exclude languages such as Tibetan, Dzongkha (Bhutan), and Ethiopian.
+        // If we ever start getting translations for these, we'll work something out then.
+        .replace("  ", " ")
+        .trim()
+}
 

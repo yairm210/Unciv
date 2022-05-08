@@ -10,6 +10,7 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.tile.*
+import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.Stats
@@ -119,6 +120,8 @@ open class TileInfo {
         return toReturn
     }
 
+    //region pure functions
+
     fun containsGreatImprovement(): Boolean {
         return getTileImprovement()?.isGreatImprovement() == true
     }
@@ -127,7 +130,6 @@ open class TileInfo {
         if (improvementInProgress == null) return false
         return ruleset.tileImprovements[improvementInProgress!!]!!.isGreatImprovement()
     }
-    //region pure functions
 
     /** Returns military, civilian and air units in tile */
     fun getUnits() = sequence {
@@ -144,10 +146,9 @@ open class TileInfo {
         return null
     }
 
-    /** Return null if military/air units on tile, or no civilian */
-    fun getUnguardedCivilian(): MapUnit? {
-        if (militaryUnit != null) return null
-        if (airUnits.isNotEmpty()) return null
+    /** Return null if military on tile, or no civilian */
+    fun getUnguardedCivilian(attacker: MapUnit): MapUnit? {
+        if (militaryUnit != null && militaryUnit != attacker) return null
         if (civilianUnit != null) return civilianUnit!!
         return null
     }
@@ -272,7 +273,9 @@ open class TileInfo {
 
     fun getTileStats(observingCiv: CivilizationInfo?): Stats = getTileStats(getCity(), observingCiv)
 
-    fun getTileStats(city: CityInfo?, observingCiv: CivilizationInfo?): Stats {
+    fun getTileStats(city: CityInfo?, observingCiv: CivilizationInfo?,
+                     localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)
+    ): Stats {
         var stats = getBaseTerrain().cloneStats()
 
         val stateForConditionals = StateForConditionals(civInfo = observingCiv, cityInfo = city, tile = this)
@@ -304,7 +307,7 @@ open class TileInfo {
             var tileUniques = city.getMatchingUniques(UniqueType.StatsFromTiles, stateForConditionals)
                 .filter { city.matchesFilter(it.params[2]) }
             tileUniques += city.getMatchingUniques(UniqueType.StatsFromObject, stateForConditionals)
-            for (unique in tileUniques) {
+            for (unique in localUniqueCache.get("StatsFromTilesAndObjects", tileUniques)) {
                 val tileType = unique.params[1]
                 if (tileType == improvement) continue // This is added to the calculation in getImprovementStats. we don't want to add it twice
                 if (matchesTerrainFilter(tileType, observingCiv)) 
@@ -314,7 +317,8 @@ open class TileInfo {
                 }
             }
 
-            for (unique in city.getMatchingUniques(UniqueType.StatsFromTilesWithout, stateForConditionals))
+            for (unique in localUniqueCache.get("StatsFromTilesWithout", 
+                city.getMatchingUniques(UniqueType.StatsFromTilesWithout, stateForConditionals)))
                 if (
                     matchesTerrainFilter(unique.params[1]) &&
                     !matchesTerrainFilter(unique.params[2]) &&
@@ -619,7 +623,7 @@ open class TileInfo {
         }
     }
 
-    fun hasImprovementInProgress() = improvementInProgress != null
+    fun hasImprovementInProgress() = improvementInProgress != null && turnsToImprovement > 0
 
     @delegate:Transient
     private val _isCoastalTile: Boolean by lazy { neighbors.any { it.baseTerrain == Constants.coast } }
@@ -741,6 +745,7 @@ open class TileInfo {
         return true
     }
 
+    /** Get info on a selected tile, used on WorldScreen (right side above minimap), CityScreen or MapEditorViewTab. */
     fun toMarkup(viewingCiv: CivilizationInfo?): ArrayList<FormattedLine> {
         val lineList = ArrayList<FormattedLine>()
         val isViewableToPlayer = viewingCiv == null || UncivGame.Current.viewEntireMapForDebug
@@ -754,6 +759,7 @@ open class TileInfo {
             if (UncivGame.Current.viewEntireMapForDebug || city.civInfo == viewingCiv)
                 lineList += city.cityConstructions.getProductionMarkup(ruleset)
         }
+
         lineList += FormattedLine(baseTerrain, link="Terrain/$baseTerrain")
         for (terrainFeature in terrainFeatures)
             lineList += FormattedLine(terrainFeature, link="Terrain/$terrainFeature")
@@ -781,11 +787,14 @@ open class TileInfo {
         val shownImprovement = getShownImprovement(viewingCiv)
         if (shownImprovement != null)
             lineList += FormattedLine(shownImprovement, link="Improvement/$shownImprovement")
+
         if (improvementInProgress != null && isViewableToPlayer) {
+            // Negative turnsToImprovement is used for UniqueType.CreatesOneImprovement
             val line = "{$improvementInProgress}" +
                 if (turnsToImprovement > 0) " - $turnsToImprovement${Fonts.turn}" else " ({Under construction})"
             lineList += FormattedLine(line, link="Improvement/$improvementInProgress")
         }
+
         if (civilianUnit != null && isViewableToPlayer)
             lineList += FormattedLine(civilianUnit!!.name.tr() + " - " + civilianUnit!!.civInfo.civName.tr(),
                 link="Unit/${civilianUnit!!.name}")
@@ -795,6 +804,7 @@ open class TileInfo {
                 " - " + militaryUnit!!.civInfo.civName.tr()
             lineList += FormattedLine(milUnitString, link="Unit/${militaryUnit!!.name}")
         }
+
         val defenceBonus = getDefensiveBonus()
         if (defenceBonus != 0f) {
             var defencePercentString = (defenceBonus * 100).toInt().toString() + "%"
@@ -843,9 +853,16 @@ open class TileInfo {
 
     fun getContinent() = continent
 
-    //endregion
+    /** Checks if this tile is marked as target tile for a building with a [UniqueType.CreatesOneImprovement] unique */
+    fun isMarkedForCreatesOneImprovement() =
+        turnsToImprovement < 0 && improvementInProgress != null
+    /** Checks if this tile is marked as target tile for a building with a [UniqueType.CreatesOneImprovement] unique creating a specific [improvement] */
+    fun isMarkedForCreatesOneImprovement(improvement: String) =
+        turnsToImprovement < 0 && improvementInProgress == improvement
 
+    //endregion
     //region state-changing functions
+
     fun setTransients() {
         setTerrainTransients()
         setUnitTransients(true)
@@ -942,9 +959,37 @@ open class TileInfo {
             else improvement.getTurnsToBuild(civInfo, unit)
     }
 
+    /** Clears [improvementInProgress] and [turnsToImprovement] */
     fun stopWorkingOnImprovement() {
         improvementInProgress = null
         turnsToImprovement = 0
+    }
+
+    /** Sets tile improvement to pillaged (without prior checks for validity)
+     *  and ensures that matching [UniqueType.CreatesOneImprovement] queued buildings are removed. */
+    fun setPillaged() {
+        // http://well-of-souls.com/civ/civ5_improvements.html says that naval improvements are destroyed upon pillage
+        //    and I can't find any other sources so I'll go with that
+        if (isLand) {
+            // Setting turnsToImprovement might interfere with UniqueType.CreatesOneImprovement
+            removeCreatesOneImprovementMarker()
+            improvementInProgress = improvement
+            turnsToImprovement = 2
+        }
+        improvement = null
+    }
+
+    /** Marks tile as target tile for a building with a [UniqueType.CreatesOneImprovement] unique */
+    fun markForCreatesOneImprovement(improvement: String) {
+        improvementInProgress = improvement
+        turnsToImprovement = -1
+    }
+    /** Un-Marks a tile as target tile for a building with a [UniqueType.CreatesOneImprovement] unique,
+     *  and ensures that matching queued buildings are removed. */
+    fun removeCreatesOneImprovementMarker() {
+        if (!isMarkedForCreatesOneImprovement()) return
+        owningCity?.cityConstructions?.removeCreateOneImprovementConstruction(improvementInProgress!!)
+        stopWorkingOnImprovement()
     }
 
     fun normalizeToRuleset(ruleset: Ruleset) {

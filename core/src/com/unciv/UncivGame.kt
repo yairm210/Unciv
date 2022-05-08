@@ -33,10 +33,10 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     val version = parameters.version
     val crashReportSysInfo = parameters.crashReportSysInfo
     val cancelDiscordEvent = parameters.cancelDiscordEvent
-    val fontImplementation = parameters.fontImplementation
+    var fontImplementation = parameters.fontImplementation
     val consoleMode = parameters.consoleMode
     val customSaveLocationHelper = parameters.customSaveLocationHelper
-    val limitOrientationsHelper = parameters.limitOrientationsHelper
+    val platformSpecificHelper = parameters.platformSpecificHelper
     private val audioExceptionHelper = parameters.audioExceptionHelper
 
     var deepLinkedMultiplayerGame: String? = null
@@ -57,7 +57,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
      *  Does not update World View changes until finished.
      *  Set to 0 to disable.
      */
-    val simulateUntilTurnForDebug: Int = 0
+    var simulateUntilTurnForDebug: Int = 0
 
     /** Console log battles
      */
@@ -167,7 +167,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         worldScreen.shouldUpdate = true // This can set the screen to the policy picker or tech picker screen, so the input processor must come before
         Gdx.graphics.requestRendering()
     }
-    
+
     fun tryLoadDeepLinkedGame() {
         if (deepLinkedMultiplayerGame != null) {
             try {
@@ -205,7 +205,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     override fun dispose() {
         Gdx.input.inputProcessor = null // don't allow ANRs when shutting down, that's silly
-        
+
         cancelDiscordEvent?.invoke()
         Sounds.clearCache()
         if (::musicController.isInitialized) musicController.gracefulShutdown()  // Do allow fade-out
@@ -214,7 +214,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         val numThreads = Thread.activeCount()
         val threadList = Array(numThreads) { _ -> Thread() }
         Thread.enumerate(threadList)
-        
+
         if (isGameInfoInitialized()) {
             val autoSaveThread = threadList.firstOrNull { it.name == "Autosave" }
             if (autoSaveThread != null && autoSaveThread.isAlive) {

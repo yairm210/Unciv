@@ -1,16 +1,14 @@
 package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
-import com.badlogic.gdx.utils.Json
-import com.unciv.JsonParser
 import com.unciv.MainMenuScreen
-import com.unciv.logic.BackwardCompatibility.updateDeprecations
+import com.unciv.json.fromJsonFile
+import com.unciv.json.json
 import com.unciv.models.ruleset.ModOptions
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
@@ -25,7 +23,6 @@ import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.utils.UncivDateFormat.formatDate
 import com.unciv.ui.utils.UncivDateFormat.parseDate
-import com.unciv.ui.worldscreen.mainmenu.Github
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.math.max
@@ -241,7 +238,7 @@ class ModManagementScreen(
                 }
 
                 if (installedMod.modOptions.author.isEmpty()) {
-                    rewriteModOptions(repo, installedMod.folderLocation!!)
+                    Github.rewriteModOptions(repo, installedMod.folderLocation!!)
                     installedMod.modOptions.author = repo.owner.login
                     installedMod.modOptions.modSize = repo.size
                 }
@@ -397,7 +394,7 @@ class ModManagementScreen(
                 val modFolder = Github.downloadAndExtract(repo.html_url, repo.default_branch,
                     Gdx.files.local("mods"))
                     ?: throw Exception()    // downloadAndExtract returns null for 404 errors and the like -> display something!
-                rewriteModOptions(repo, modFolder)
+                Github.rewriteModOptions(repo, modFolder)
                 postCrashHandlingRunnable {
                     ToastPopup("[${repo.name}] Downloaded!", this)
                     RulesetCache.loadRulesets()
@@ -416,21 +413,6 @@ class ModManagementScreen(
                 }
             }
         }
-    }
-
-    /** Rewrite modOptions file for a mod we just installed to include metadata we got from the GitHub api
-     *
-     *  (called on background thread)
-     */
-    private fun rewriteModOptions(repo: Github.Repo, modFolder: FileHandle) {
-        val modOptionsFile = modFolder.child("jsons/ModOptions.json")
-        val modOptions = if (modOptionsFile.exists()) JsonParser().getFromJson(ModOptions::class.java, modOptionsFile) else ModOptions()
-        modOptions.modUrl = repo.html_url
-        modOptions.lastUpdated = repo.pushed_at
-        modOptions.author = repo.owner.login
-        modOptions.modSize = repo.size
-        modOptions.updateDeprecations()
-        Json().toJson(modOptions, modOptionsFile)
     }
 
     /** Remove the visual indicators for an 'updated' mod after re-downloading it.
@@ -600,7 +582,7 @@ class ModManagementScreen(
     companion object {
         val modsToHideAsUrl by lazy {
             val blockedModsFile = Gdx.files.internal("jsons/ManuallyBlockedMods.json")
-            JsonParser().getFromJson(Array<String>::class.java, blockedModsFile)
+            json().fromJsonFile(Array<String>::class.java, blockedModsFile)
         }
     }
 }

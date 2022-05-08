@@ -88,7 +88,7 @@ class OfferColumnsTable(private val tradeLogic: TradeLogic, val screen: Diplomac
             screen,
             label = "Enter the amount of gold",
             icon = ImageGetter.getStatIcon("Gold").surroundWithCircle(80f),
-            defaultText = offer.amount.toString(),
+            defaultValue = offer.amount.toString(),
             amountButtons = 
                 if (offer.type == TradeType.Gold) listOf(50, 500)
                 else listOf(5, 15),

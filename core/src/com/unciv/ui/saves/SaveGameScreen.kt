@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Json
 import com.unciv.UncivGame
+import com.unciv.json.json
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.models.translations.tr
@@ -45,7 +46,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen(disableScroll = true
         copyJsonButton.onClick {
             thread(name="Copy to clipboard") { // the Gzip rarely leads to ANRs
                 try {
-                    val json = Json().toJson(gameInfo)
+                    val json = json().toJson(gameInfo)
                     val base64Gzip = Gzip.zip(json)
                     Gdx.app.clipboard.contents = base64Gzip
                 } catch (OOM: OutOfMemoryError) {

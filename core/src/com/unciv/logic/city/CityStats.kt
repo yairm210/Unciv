@@ -130,8 +130,9 @@ class CityStats(val cityInfo: CityInfo) {
     }
 
     private fun addStatPercentBonusesFromBuildings(statPercentBonusTree: StatTreeNode) {
+        val localUniqueCache = LocalUniqueCache()
         for (building in cityInfo.cityConstructions.getBuiltBuildings())
-            statPercentBonusTree.addStats(building.getStatPercentageBonuses(cityInfo), "Buildings", building.name)
+            statPercentBonusTree.addStats(building.getStatPercentageBonuses(cityInfo, localUniqueCache), "Buildings", building.name)
     }
 
 
@@ -370,6 +371,7 @@ class CityStats(val cityInfo: CityInfo) {
 
     fun updateTileStats() {
         val stats = Stats()
+        val localUniqueCache = LocalUniqueCache()
         for (cell in cityInfo.tilesInRange
             .filter {
                 cityInfo.location == it.position
@@ -378,7 +380,7 @@ class CityStats(val cityInfo: CityInfo) {
                     ?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation) == true
                         || it.terrainHasUnique(UniqueType.TileProvidesYieldWithoutPopulation))
             })
-            stats.add(cell.getTileStats(cityInfo, cityInfo.civInfo))
+            stats.add(cell.getTileStats(cityInfo, cityInfo.civInfo, localUniqueCache))
         statsFromTiles = stats
     }
 
