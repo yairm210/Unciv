@@ -20,7 +20,8 @@ import kotlin.math.roundToInt
 class ImprovementPickerScreen(
     private val tileInfo: TileInfo,
     private val unit: MapUnit,
-    private val onAccept: ()->Unit
+    private val createInstantly: Boolean = false,
+    private val onAccept: ()->Unit,
 ) : PickerScreen() {
     private var selectedImprovement: TileImprovement? = null
     private val gameInfo = tileInfo.tileMap.gameInfo
@@ -66,8 +67,6 @@ class ImprovementPickerScreen(
 
         for (improvement in ruleSet.tileImprovements.values) {
             var suggestRemoval = false
-            // canBuildImprovement() would allow e.g. great improvements thus we need to exclude them - except cancel
-            if (improvement.turnsToBuild == 0 && improvement.name != Constants.cancelImprovementOrder) continue
             if (improvement.name == tileInfo.improvement) continue // also checked by canImprovementBeBuiltHere, but after more expensive tests
             if (!tileInfo.canBuildImprovement(improvement, currentPlayerCiv)) {
                 // if there is an improvement that could remove that terrain
@@ -95,9 +94,13 @@ class ImprovementPickerScreen(
             }
 
             var labelText = improvement.name.tr()
-            val turnsToBuild = if (tileInfo.improvementInProgress == improvement.name) tileInfo.turnsToImprovement
-                else improvement.getTurnsToBuild(currentPlayerCiv, unit)
+            val turnsToBuild = when {
+                createInstantly -> 0
+                tileInfo.improvementInProgress == improvement.name -> tileInfo.turnsToImprovement
+                else -> improvement.getTurnsToBuild(currentPlayerCiv, unit)
+            }
             if (turnsToBuild > 0) labelText += " - $turnsToBuild${Fonts.turn}"
+            else labelText += " - [Instant!]"
             val provideResource = tileInfo.hasViewableResource(currentPlayerCiv) && tileInfo.tileResource.isImprovedBy(improvement.name)
             if (provideResource) labelText += "\n" + "Provides [${tileInfo.resource}]".tr()
             val removeImprovement = (improvement.isRoad()

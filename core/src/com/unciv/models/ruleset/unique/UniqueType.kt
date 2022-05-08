@@ -399,8 +399,13 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ///////////////////////////////////////// region UNIT UNIQUES /////////////////////////////////////////
 
     FoundCity("Founds a new city", UniqueTarget.Unit),
+//    @Deprecated("as of 4.0.13", ReplaceWith("Can instantly build [improvementName] improvements on tiles [1] times"))
     ConstructImprovementConsumingUnit("Can construct [improvementName]", UniqueTarget.Unit),
     BuildImprovements("Can build [improvementFilter/terrainFilter] improvements on tiles", UniqueTarget.Unit),
+//    CreateImprovements("Can instantly build [improvementFilter/terrainFilter] improvements on tiles", UniqueTarget.Unit),
+//    BuildImprovementLimitedTimes("Can build [improvementFilter/terrainFilter] improvements on tiles [amount] times", UniqueTarget.Unit),
+//    CreateImprovementLimitedTimes("Can instantly build [improvementFilter/terrainFilter] improvements on tiles [amount] times", UniqueTarget.Unit),
+//    @Deprecated("as of 4.0.13", ReplaceWith("Can instantly build [Water] improvements on tiles [1] times"))
     CreateWaterImprovements("May create improvements on water resources", UniqueTarget.Unit),
 
     Strength("[relativeAmount]% Strength", UniqueTarget.Unit, UniqueTarget.Global),
