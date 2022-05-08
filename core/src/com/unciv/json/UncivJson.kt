@@ -2,10 +2,10 @@ package com.unciv.json
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.Json.Serializer
 
-internal val jsonSerializers = ArrayList<Pair<Class<*>, Serializer<*>>>()
 
 /**
  * [Json] is not thread-safe. Use a new one for each parse.
@@ -13,10 +13,8 @@ internal val jsonSerializers = ArrayList<Pair<Class<*>, Serializer<*>>>()
 fun json() = Json().apply {
     setIgnoreDeprecated(true)
     ignoreUnknownFields = true
-    for ((clazz, serializer) in jsonSerializers) {
-        @Suppress("UNCHECKED_CAST") // we used * to accept all types, so kotlin can't know if the class & serializer parameters are actually the same
-        setSerializer(clazz as Class<Any>, serializer as Serializer<Any>)
-    }
+
+    setSerializer(HashMapVector2.getSerializerClass(), HashMapVector2.createSerializer())
 }
 
 fun <T> Json.fromJsonFile(tClass: Class<T>, filePath: String): T = fromJsonFile(tClass, Gdx.files.internal(filePath))

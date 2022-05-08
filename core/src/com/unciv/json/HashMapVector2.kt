@@ -9,15 +9,19 @@ import java.util.HashMap
  */
 class HashMapVector2<T> : HashMap<Vector2, T>() {
     companion object {
-        init {
+        fun createSerializer(): NonStringKeyMapSerializer<MutableMap<Vector2, Any>, Vector2> {
             @Suppress("UNCHECKED_CAST") // kotlin can't tell that HashMapVector2 is also a MutableMap within generics
             val mapClass = HashMapVector2::class.java as Class<MutableMap<Vector2, Any>>
-            val serializer = NonStringKeyMapSerializer(
+            return NonStringKeyMapSerializer(
                 mapClass,
                 Vector2::class.java,
-                { HashMapVector2<Any>() }
+                { HashMapVector2() }
             )
-            jsonSerializers.add(Pair(mapClass, serializer))
+        }
+
+        fun getSerializerClass(): Class<MutableMap<Vector2, Any>> {
+            @Suppress("UNCHECKED_CAST") // kotlin can't tell that HashMapVector2 is also a MutableMap within generics
+            return HashMapVector2::class.java as Class<MutableMap<Vector2, Any>>
         }
     }
 }

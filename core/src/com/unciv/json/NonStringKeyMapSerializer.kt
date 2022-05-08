@@ -67,7 +67,7 @@ class NonStringKeyMapSerializer<MT: MutableMap<KT, Any>, KT>(
         while (entry != null) {
             val key = json.readValue(keyClass, entry.child)
             val value = json.readValue<Any>(null, entry.child.next)
-            result[key!!] = value!! as Any
+            result[key!!] = value!!
 
             entry = entry.next
         }
