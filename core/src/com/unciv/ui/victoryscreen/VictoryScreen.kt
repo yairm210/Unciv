@@ -202,8 +202,8 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
                 @Suppress("NON_EXHAUSTIVE_WHEN") // RankLabels.Demographic treated above
                 when (rankLabel) {
-                    RankLabels.Rank -> demographicsTable.add((aliveMajorCivsSorted.indexOfFirst { it == gameInfo.currentPlayerCiv } + 1).toLabel())
-                    RankLabels.Value -> addRankCivGroup(gameInfo.currentPlayerCiv)
+                    RankLabels.Rank -> demographicsTable.add((aliveMajorCivsSorted.indexOfFirst { it == worldScreen.viewingCiv } + 1).toLabel())
+                    RankLabels.Value -> addRankCivGroup(worldScreen.viewingCiv)
                     RankLabels.Best -> addRankCivGroup(aliveMajorCivsSorted.firstOrNull()!!)
                     RankLabels.Average -> demographicsTable.add((aliveMajorCivsSorted.sumOf { it.getStatForRanking(category) } / aliveMajorCivsSorted.count()).toLabel())
                     RankLabels.Worst -> addRankCivGroup(aliveMajorCivsSorted.lastOrNull()!!)
