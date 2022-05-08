@@ -1,7 +1,8 @@
 package com.unciv.testing
 
 import com.badlogic.gdx.utils.Array
-import com.unciv.json.JsonParser
+import com.unciv.json.fromJsonFile
+import com.unciv.json.json
 import com.unciv.models.Tutorial
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -16,7 +17,7 @@ class TutorialTranslationTests {
 
     @Test
     fun tutorialsFileIsSerializable() {
-        val map = JsonParser().getFromJson(LinkedHashMap<String, Array<String>>().javaClass, "jsons/Tutorials.json")
+        val map = json().fromJsonFile(LinkedHashMap<String, Array<String>>().javaClass, "jsons/Tutorials.json")
 
         assertTrue("The number of items from Tutorials.json must match to the enum Tutorial",
                 map.size == tutorialCount)

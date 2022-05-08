@@ -6,8 +6,9 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
-import com.unciv.json.JsonParser
 import com.unciv.MainMenuScreen
+import com.unciv.json.fromJsonFile
+import com.unciv.json.json
 import com.unciv.models.ruleset.ModOptions
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
@@ -581,7 +582,7 @@ class ModManagementScreen(
     companion object {
         val modsToHideAsUrl by lazy {
             val blockedModsFile = Gdx.files.internal("jsons/ManuallyBlockedMods.json")
-            JsonParser().getFromJson(Array<String>::class.java, blockedModsFile)
+            json().fromJsonFile(Array<String>::class.java, blockedModsFile)
         }
     }
 }

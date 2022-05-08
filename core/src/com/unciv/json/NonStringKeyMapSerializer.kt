@@ -10,42 +10,44 @@ import com.badlogic.gdx.utils.JsonValue
  * Exists solely because [Json] always serializes any map by converting its key to [String], so when you load it again,
  * all your keys are [String], messing up value retrieval.
  *
+ * To work around that, we have to use a custom serializer. A custom serializer in Json is only added for a specific class
+ * and only checks for direct equality, and since we can't just do `HashMap<Any, *>::class.java`, only `HashMap::class.java`,
+ * we have to create a completely new class and use that class as [mapClass] here.
  *
- * To work around that, we have to use a custom serializer, and for that we have to have a specific class to add the serializer for,
- * since generics are not available at runtime.
+ * @param MT Must be a type that extends [MutableMap]
+ * @param KT Must be the key type of [MT]
  */
-class NonStringKeyMapSerializer<MT, KT>(
+class NonStringKeyMapSerializer<MT: MutableMap<KT, Any>, KT>(
     private val mapClass: Class<MT>,
     private val keyClass: Class<KT>,
     private val mutableMapFactory: () -> MT
-) : Serializer<MT> {
+) : Serializer<MT>  {
 
-    override fun write(json: Json?, `object`: MT?, knownType: Class<*>?) {
-        json?.writeObjectStart()
-        json?.writeType(mapClass)
-        json?.writeArrayStart("entries")
-        for ((key, value) in `object` as Map<*, *>) {
-            json?.writeArrayStart()
-            json?.writeValue(key)
-            json?.writeValue(value, null)
-            json?.writeArrayEnd()
+    override fun write(json: Json, toWrite: MT, knownType: Class<*>) {
+        json.writeObjectStart()
+        json.writeType(mapClass)
+        json.writeArrayStart("entries")
+        for ((key, value) in toWrite) {
+            json.writeArrayStart()
+            json.writeValue(key)
+            json.writeValue(value, null)
+            json.writeArrayEnd()
         }
-        json?.writeArrayEnd()
-        json?.writeObjectEnd()
+        json.writeArrayEnd()
+        json.writeObjectEnd()
     }
 
-    @Suppress("UNCHECKED_CAST")
-    override fun read(json: Json?, jsonData: JsonValue?, type: Class<*>?): MT {
-        val result = mutableMapFactory() as MutableMap<Any, Any>
-        val entries = jsonData?.get("entries")
+    override fun read(json: Json, jsonData: JsonValue, type: Class<*>?): MT {
+        val result = mutableMapFactory()
+        val entries = jsonData.get("entries")
         var entry = entries!!.child
         while (entry != null) {
-            val key = json?.readValue(keyClass, entry.child)
-            val value = json?.readValue<Any>(null, entry.child.next)
-            result.put(key!!, value!!)
+            val key = json.readValue(keyClass, entry.child)
+            val value = json.readValue<Any>(null, entry.child.next)
+            result[key!!] = value!! as Any
 
             entry = entry.next
         }
-        return result as MT
+        return result
     }
 }

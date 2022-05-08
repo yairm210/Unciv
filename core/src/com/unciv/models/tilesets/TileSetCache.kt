@@ -2,8 +2,9 @@ package com.unciv.models.tilesets
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
-import com.unciv.json.JsonParser
 import com.unciv.UncivGame
+import com.unciv.json.fromJsonFile
+import com.unciv.json.json
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.images.ImageGetter
 
@@ -49,7 +50,7 @@ object TileSetCache : HashMap<String, TileSetConfig>() {
             try {
                 val key = TileSetAndMod(tileSetName, "")
                 assert(key !in allConfigs)
-                allConfigs[key] = JsonParser().getFromJson(TileSetConfig::class.java, configFile)
+                allConfigs[key] = json().fromJsonFile(TileSetConfig::class.java, configFile)
                 if (printOutput) {
                     println("TileSetConfig loaded successfully: ${configFile.name()}")
                     println()
@@ -78,7 +79,7 @@ object TileSetCache : HashMap<String, TileSetConfig>() {
                     tileSetName = configFile.nameWithoutExtension().removeSuffix("Config")
                     val key = TileSetAndMod(tileSetName, modName)
                     assert(key !in allConfigs)
-                    allConfigs[key] = JsonParser().getFromJson(TileSetConfig::class.java, configFile)
+                    allConfigs[key] = json().fromJsonFile(TileSetConfig::class.java, configFile)
                     if (printOutput) {
                         println("TileSetConfig loaded successfully: ${configFile.path()}")
                         println()

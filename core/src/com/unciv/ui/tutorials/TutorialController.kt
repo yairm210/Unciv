@@ -1,8 +1,9 @@
 package com.unciv.ui.tutorials
 
 import com.badlogic.gdx.utils.Array
-import com.unciv.json.JsonParser
 import com.unciv.UncivGame
+import com.unciv.json.fromJsonFile
+import com.unciv.json.json
 import com.unciv.models.Tutorial
 import com.unciv.models.stats.INamed
 import com.unciv.ui.civilopedia.FormattedLine
@@ -15,7 +16,7 @@ class TutorialController(screen: BaseScreen) {
     private var isTutorialShowing = false
     var allTutorialsShowedCallback: (() -> Unit)? = null
     private val tutorialRender = TutorialRender(screen)
-    private val tutorials = JsonParser().getFromJson(LinkedHashMap<String, Array<String>>().javaClass, "jsons/Tutorials.json")
+    private val tutorials = json().fromJsonFile(LinkedHashMap<String, Array<String>>().javaClass, "jsons/Tutorials.json")
 
     fun showTutorial(tutorial: Tutorial) {
         tutorialQueue.add(tutorial)
