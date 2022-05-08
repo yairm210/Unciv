@@ -1,6 +1,9 @@
 package com.unciv.logic
 
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.utils.JsonValue
+import com.unciv.json.HashMapVector2
+import com.unciv.json.json
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.CivilizationInfo
@@ -158,5 +161,39 @@ object BackwardCompatibility {
         if (lastSeenImprovementSaved.isEmpty()) return;
         lastSeenImprovement.putAll(lastSeenImprovementSaved.mapKeys { Vector2().fromString(it.key) })
         lastSeenImprovementSaved.clear()
+    }
+
+    /**
+     * Fixes barbarian manager camps not being correctly serialized. Previously we had a [HashMap<Vector2, Encampment] but it was being
+     * serialized as [HashMap<String, Encampment>]. We need to fix that each time an old save is loaded.
+     *
+     * When removing this, also remove [com.unciv.json.NonStringKeyMapSerializer.readOldFormat]
+     */
+    @Suppress("DEPRECATION")
+    fun BarbarianManager.migrateBarbarianCamps() {
+        if (isOldFormat(this)) {
+            val newFormat = HashMapVector2<Encampment>()
+            @Suppress("UNCHECKED_CAST") // The old format is deserialized to a <String, JsonValue> map
+            for ((key, value) in camps as MutableMap<String, JsonValue>) {
+                val newKey = Vector2().fromString(key)
+                val newValue = json().readValue(Encampment::class.java, value)
+                newFormat[newKey] = newValue
+            }
+
+            camps.clear()
+            camps.putAll(newFormat)
+        }
+    }
+
+    private fun isOldFormat(manager: BarbarianManager): Boolean {
+        val keys = manager.camps.keys as Set<Any>
+        val iterator = keys.iterator()
+        while (iterator.hasNext()) {
+            val key = iterator.next()
+            if (key is String) {
+                return true
+            }
+        }
+        return false
     }
 }
