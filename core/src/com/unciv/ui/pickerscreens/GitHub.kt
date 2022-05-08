@@ -3,9 +3,9 @@ package com.unciv.ui.pickerscreens
 import com.badlogic.gdx.Files
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Json
-import com.unciv.JsonParser
+import com.unciv.json.fromJsonFile
+import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.updateDeprecations
-import com.unciv.logic.GameSaver
 import com.unciv.models.ruleset.ModOptions
 import java.io.*
 import java.net.HttpURLConnection
@@ -234,7 +234,7 @@ object Github {
                     retries++   // An extra retry so the 403 is ignored in the retry count
                 }
             } ?: continue       
-            return GameSaver.json().fromJson(RepoSearch::class.java, inputStream.bufferedReader().readText())
+            return json().fromJson(RepoSearch::class.java, inputStream.bufferedReader().readText())
         }
         return null
     }
@@ -315,13 +315,13 @@ object Github {
      */
     fun rewriteModOptions(repo: Repo, modFolder: FileHandle) {
         val modOptionsFile = modFolder.child("jsons/ModOptions.json")
-        val modOptions = if (modOptionsFile.exists()) JsonParser().getFromJson(ModOptions::class.java, modOptionsFile) else ModOptions()
+        val modOptions = if (modOptionsFile.exists()) json().fromJsonFile(ModOptions::class.java, modOptionsFile) else ModOptions()
         modOptions.modUrl = repo.html_url
         modOptions.lastUpdated = repo.pushed_at
         modOptions.author = repo.owner.login
         modOptions.modSize = repo.size
         modOptions.updateDeprecations()
-        Json().toJson(modOptions, modOptionsFile)
+        json().toJson(modOptions, modOptionsFile)
     }
 }
 

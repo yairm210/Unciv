@@ -1,7 +1,9 @@
 package com.unciv.logic
 
+import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.PerpetualConstruction
+import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.TechManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
@@ -146,5 +148,15 @@ object BackwardCompatibility {
             constants.maxXPfromBarbarians = maxXPfromBarbarians
             maxXPfromBarbarians = 30
         }
+    }
+
+    /** Removes the workaround previously used for storing a map that does not have a [String] key
+     * @see com.unciv.json.NonStringKeyMapSerializer
+     */
+    @Suppress("DEPRECATION")
+    fun CivilizationInfo.migrateSeenImprovements() {
+        if (lastSeenImprovementSaved.isEmpty()) return;
+        lastSeenImprovement.putAll(lastSeenImprovementSaved.mapKeys { Vector2().fromString(it.key) })
+        lastSeenImprovementSaved.clear()
     }
 }

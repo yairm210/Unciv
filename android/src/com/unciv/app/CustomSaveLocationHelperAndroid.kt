@@ -6,10 +6,10 @@ import android.net.Uri
 import android.os.Build
 import androidx.annotation.GuardedBy
 import androidx.annotation.RequiresApi
+import com.unciv.json.json
 import com.unciv.logic.CustomSaveLocationHelper
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
-import com.unciv.logic.GameSaver.json
 
 // The Storage Access Framework is available from API 19 and up:
 // https://developer.android.com/guide/topics/providers/document-provider

@@ -1,8 +1,15 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.utils.Json
+import com.badlogic.gdx.utils.Json.Serializer
+import com.badlogic.gdx.utils.JsonValue
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.json.HashMapVector2
+import com.unciv.json.json
+import com.unciv.logic.BarbarianManager
+import com.unciv.logic.Encampment
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.automation.NextTurnAutomation
@@ -32,9 +39,6 @@ import com.unciv.ui.utils.toPercent
 import com.unciv.ui.utils.withItem
 import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
-import kotlin.NoSuchElementException
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -166,13 +170,11 @@ class CivilizationInfo {
     var citiesCreated = 0
     var exploredTiles = HashSet<Vector2>()
 
-    // This double construction because for some reason the game wants to load a
-    // map<Vector2, String> as a map<String, String> causing all sorts of type problems.
-    // So we let the game have its map<String, String> and remap it in setTransients,
-    // everyone's happy. Sort of.
+    @Deprecated("Only for backward compatibility, will have no values after GameInfo.setTransients",
+        ReplaceWith("lastSeenImprovement"))
     var lastSeenImprovementSaved = HashMap<String, String>()
-    @Transient
-    var lastSeenImprovement = HashMap<Vector2, String>()
+
+    var lastSeenImprovement = HashMapVector2<String>()
 
     // To correctly determine "game over" condition as clarified in #4707
     // Nullable type meant to be deprecated and converted to non-nullable,
@@ -251,7 +253,7 @@ class CivilizationInfo {
         // Cloning it by-pointer is a horrific move, since the serialization would go over it ANYWAY and still lead to concurrency problems.
         // Cloning it by iterating on the tilemap values may seem ridiculous, but it's a perfectly thread-safe way to go about it, unlike the other solutions.
         toReturn.exploredTiles.addAll(gameInfo.tileMap.values.asSequence().map { it.position }.filter { it in exploredTiles })
-        toReturn.lastSeenImprovementSaved.putAll(lastSeenImprovement.mapKeys { it.key.toString() })
+        toReturn.lastSeenImprovement.putAll(lastSeenImprovement)
         toReturn.notifications.addAll(notifications)
         toReturn.citiesCreated = citiesCreated
         toReturn.popupAlerts.addAll(popupAlerts)
@@ -805,8 +807,6 @@ class CivilizationInfo {
         }
 
         hasLongCountDisplayUnique = hasUnique(UniqueType.MayanCalendarDisplay)
-
-        lastSeenImprovement.putAll(lastSeenImprovementSaved.mapKeys { Vector2().fromString(it.key) })
     }
 
     fun updateSightAndResources() {
