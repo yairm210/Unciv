@@ -165,7 +165,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
                     val repos = Github.tryGetGithubReposWithTopic(10, 1, modName)
                         ?: throw UncivShowableException("Could not download mod list.".tr())
                     val repo = repos.items.firstOrNull { it.name.lowercase() == modName }
-                        ?: throw UncivShowableException("The [$modName] is not found.".tr())
+                        ?: throw UncivShowableException("Could not find a mod named \"[$modName]\".".tr())
                     val modFolder = Github.downloadAndExtract(
                         repo.html_url, repo.default_branch,
                         Gdx.files.local("mods")
