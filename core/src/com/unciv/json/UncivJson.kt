@@ -8,7 +8,7 @@ import com.badlogic.gdx.utils.Json.Serializer
 internal val jsonSerializers = ArrayList<Pair<Class<*>, Serializer<*>>>()
 
 /**
- * [Json] is not thread-safe.
+ * [Json] is not thread-safe. Use a new one for each parse.
  */
 fun json() = Json().apply {
     setIgnoreDeprecated(true)

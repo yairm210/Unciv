@@ -40,7 +40,30 @@ class NonStringKeyMapSerializer<MT: MutableMap<KT, Any>, KT>(
     override fun read(json: Json, jsonData: JsonValue, type: Class<*>?): MT {
         val result = mutableMapFactory()
         val entries = jsonData.get("entries")
-        var entry = entries!!.child
+        if (entries == null) {
+            readOldFormat(jsonData, json, result)
+        } else {
+            readNewFormat(entries!!, json, result)
+        }
+        return result
+    }
+
+    @Deprecated("This is only here temporarily until all users migrate the old properties to the new ones")
+    private fun readOldFormat(jsonData: JsonValue, json: Json, result: MT) {
+        val map = result as MutableMap<String, Any>
+        var child: JsonValue? = jsonData.child
+        while (child != null) {
+            if (child.name == "class") {
+                child = child.next
+                continue
+            }
+            map[child.name] = json.readValue(null, child)
+            child = child.next
+        }
+    }
+
+    private fun readNewFormat(entries: JsonValue, json: Json, result: MT) {
+        var entry = entries.child
         while (entry != null) {
             val key = json.readValue(keyClass, entry.child)
             val value = json.readValue<Any>(null, entry.child.next)
@@ -48,6 +71,5 @@ class NonStringKeyMapSerializer<MT: MutableMap<KT, Any>, KT>(
 
             entry = entry.next
         }
-        return result
     }
 }
