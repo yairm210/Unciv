@@ -991,7 +991,7 @@ class MapUnit {
     }
 
     fun interceptChance(): Int {
-        return getMatchingUniques("[]% chance to intercept air attacks").sumOf { it.params[0].toInt() }
+        return getMatchingUniques(UniqueType.ChanceInterceptAirAttacks).sumOf { it.params[0].toInt() }
     }
 
     fun isTransportTypeOf(mapUnit: MapUnit): Boolean {
@@ -1022,7 +1022,7 @@ class MapUnit {
 
     fun receivedInterceptDamageFactor(): Float {
         var damageFactor = 1f
-        for (unique in getMatchingUniques("Damage taken from interception reduced by []%"))
+        for (unique in getMatchingUniques(UniqueType.DamageFromInterceptionReduced))
             damageFactor *= 1f - unique.params[0].toFloat() / 100f
         return damageFactor
     }
@@ -1130,18 +1130,18 @@ class MapUnit {
     }
 
     fun religiousActionsUnitCanDo(): Sequence<String> {
-        return getMatchingUniques("Can [] [] times")
+        return getMatchingUniques(UniqueType.CanActionSeveralTimes)
             .map { it.params[0] }
     }
 
     fun canDoReligiousAction(action: String): Boolean {
-        return getMatchingUniques("Can [] [] times").any { it.params[0] == action }
+        return getMatchingUniques(UniqueType.CanActionSeveralTimes).any { it.params[0] == action }
     }
 
     /** For the actual value, check the member variable [maxAbilityUses]
      */
     fun getBaseMaxActionUses(action: String): Int {
-        return getMatchingUniques("Can [] [] times")
+        return getMatchingUniques(UniqueType.CanActionSeveralTimes)
             .filter { it.params[0] == action }
             .sumOf { it.params[1].toInt() }
     }

@@ -137,7 +137,7 @@ enum class UniqueParameterType(
             parameterText: String,
             ruleset: Ruleset
         ): UniqueType.UniqueComplianceErrorSeverity? {
-            if (ruleset.units[parameterText]?.hasUnique("Great Person - []") == true) return null
+            if (ruleset.units[parameterText]?.hasUnique(UniqueType.GreatPerson) == true) return null
             return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
         }
     },

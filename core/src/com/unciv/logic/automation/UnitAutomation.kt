@@ -164,7 +164,7 @@ object UnitAutomation {
             if (unit.hasUnique(UniqueType.ConstructImprovementConsumingUnit))
                 return SpecificUnitAutomation.automateImprovementPlacer(unit) // includes great people plus moddable units
 
-            if (unit.getMatchingUniques("Can [] [] times").any{ it.params[0] == "Spread Religion" })
+            if (unit.getMatchingUniques(UniqueType.CanActionSeveralTimes).any{ it.params[0] == "Spread Religion" })
                 return SpecificUnitAutomation.automateMissionary(unit)
 
             if (unit.hasUnique("Prevents spreading of religion to the city it is next to"))

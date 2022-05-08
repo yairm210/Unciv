@@ -102,7 +102,7 @@ object UnitActions {
         // have the visual bug that the tile overlays for the eligible swap locations are drawn for
         // /all/ selected units instead of only the first one. This could be fixed, but again,
         // swapping makes little sense for multiselect anyway.
-        if (worldScreen.bottomUnitTable.selectedUnits.count() > 1) return
+        if (worldScreen.bottomUnitTable.selectedUnits.size > 1) return
         // Only show the swap action if there is at least one possible swap movement
         if (unit.movement.getUnitSwappableTiles().none()) return
         actionList += UnitAction(
@@ -246,7 +246,7 @@ object UnitActions {
 
     private fun addParadropAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
         val paradropUniques =
-            unit.getMatchingUniques("May Paradrop up to [] tiles from inside friendly territory")
+            unit.getMatchingUniques(UniqueType.MayParadrop)
         if (!paradropUniques.any() || unit.isEmbarked()) return
         unit.paradropRange = paradropUniques.maxOfOrNull { it.params[0] }!!.toInt()
         actionList += UnitAction(UnitActionType.Paradrop,
@@ -637,7 +637,7 @@ object UnitActions {
         val finalActions = ArrayList<UnitAction>()
         var uniquesToCheck = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
         if (unit.religiousActionsUnitCanDo().all { unit.abilityUsesLeft[it] == unit.maxAbilityUses[it] })
-            uniquesToCheck += unit.getMatchingUniques("Can construct [] if it hasn't used other actions yet")
+            uniquesToCheck += unit.getMatchingUniques(UniqueType.CanConstructIfNoOtherActions)
         val civResources = unit.civInfo.getCivResourcesByName()
 
         for (unique in uniquesToCheck) {
@@ -647,7 +647,7 @@ object UnitActions {
 
             val resourcesAvailable = improvement.uniqueObjects.none {
                 it.isOfType(UniqueType.ConsumesResources) &&
-                        civResources[unique.params[1]] ?: 0 < unique.params[0].toInt()
+                        (civResources[unique.params[1]] ?: 0) < unique.params[0].toInt()
             }
 
             finalActions += UnitAction(UnitActionType.Create,

@@ -574,9 +574,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
     }
 
-    fun isGreatPerson() = hasUnique("Great Person - []")
+    fun isGreatPerson() = hasUnique(UniqueType.GreatPerson)
 
-    fun isNuclearWeapon() = hasUnique("Nuclear weapon of Strength []")
+    fun isNuclearWeapon() = hasUnique(UniqueType.NuclearWeapon)
 
     fun movesLikeAirUnits() = getType().getMovementType() == UnitMovementType.Air
 
@@ -667,7 +667,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 unique.isOfType(UniqueType.StrengthNearCapital) && unique.params[0].toInt() > 0 ->
                     power *= (unique.params[0].toInt() / 4f).toPercent()  // Bonus decreasing with distance from capital - not worth much most of the map???
 
-                unique.placeholderText == "May Paradrop up to [] tiles from inside friendly territory" // Paradrop - 25% bonus
+                unique.placeholderText == UniqueType.MayParadrop.placeholderText // Paradrop - 25% bonus
                     -> power += power / 4
                 unique.isOfType(UniqueType.MustSetUp) // Must set up - 20 % penalty
                     -> power -= power / 5

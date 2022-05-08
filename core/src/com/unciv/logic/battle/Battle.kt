@@ -641,8 +641,8 @@ object Battle {
             else attacker.unit.getMatchingUniques(UniqueType.BlastRadius).first().params[0].toInt()
 
         val strength = when {
-            (attacker.unit.hasUnique("Nuclear weapon of Strength []")) ->
-                attacker.unit.getMatchingUniques("Nuclear weapon of Strength []").first().params[0].toInt()
+            (attacker.unit.hasUnique(UniqueType.NuclearWeapon)) ->
+                attacker.unit.getMatchingUniques(UniqueType.NuclearWeapon).first().params[0].toInt()
             else -> return
         }
 
