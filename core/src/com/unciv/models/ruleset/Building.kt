@@ -683,15 +683,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
         cityConstructions.addBuilding(name)
 
-        val improvement = getImprovement(civInfo.gameInfo.ruleSet)
-        if (improvement != null) {
-            val tileWithImprovement = cityConstructions.cityInfo.getTiles().firstOrNull { it.improvementInProgress == improvement.name }
-            if (tileWithImprovement != null) {
-                tileWithImprovement.turnsToImprovement = 0
-                tileWithImprovement.improvementInProgress = null
-                tileWithImprovement.improvement = improvement.name
-            }
-        }
+        /** Support for [UniqueType.CreatesOneImprovement] */
+        cityConstructions.applyCreateOneImprovement(this)
 
         // "Provides a free [buildingName] [cityFilter]"
         cityConstructions.addFreeBuildings()
@@ -741,10 +734,20 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         return false
     }
 
-    fun getImprovement(ruleset: Ruleset): TileImprovement? {
-        val improvementUnique = getMatchingUniques("Creates a [] improvement on a specific tile")
-            .firstOrNull() ?: return null
-        return ruleset.tileImprovements[improvementUnique.params[0]]
+    private val _hasCreatesOneImprovementUnique by lazy {
+        hasUnique(UniqueType.CreatesOneImprovement)
+    }
+    fun hasCreateOneImprovementUnique() = _hasCreatesOneImprovementUnique
+
+    private var _getImprovementToCreate: TileImprovement? = null
+    fun getImprovementToCreate(ruleset: Ruleset): TileImprovement? {
+        if (!hasCreateOneImprovementUnique()) return null
+        if (_getImprovementToCreate == null) {
+            val improvementUnique = getMatchingUniques(UniqueType.CreatesOneImprovement)
+                .firstOrNull() ?: return null
+            _getImprovementToCreate = ruleset.tileImprovements[improvementUnique.params[0]]
+        }
+        return _getImprovementToCreate
     }
 
     fun isSellable() = !isAnyWonder() && !hasUnique(UniqueType.Unsellable)
