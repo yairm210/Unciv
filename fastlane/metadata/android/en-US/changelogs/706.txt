@@ -1,0 +1,18 @@
+## 4.0.14
+
+Resolved ANR in City Screen by increasing performance of rankTileForExpansion
+
+By SomeTroglodyte:
+- Move UncivServer to own module (and jar) 
+- Font choice rework 
+- Rework of the "Creates improvement on a specific tile" Unique 
+
+By Azzurite:
+- Fix old barbarian camps not being properly loaded after 86d5011 
+- In-depth serialization improvement, fixes Barbarian Camps revealed by Honor not showing immediately in multiplayer
+
+By JackRainy:
+- Leftovers from previous PRs 
+- Missing uniques are added 
+- Assist on downloading of the missing mods 
+
