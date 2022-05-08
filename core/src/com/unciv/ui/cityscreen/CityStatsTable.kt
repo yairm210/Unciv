@@ -65,7 +65,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
                     if (turnsToExpansion < 1) turnsToExpansion = 1
                     "[$turnsToExpansion] turns to expansion".tr()
                 } else "Stopped expansion".tr()
-        if (cityInfo.expansion.chooseNewTileToOwn() != null)
+        if (cityInfo.expansion.getChoosableTiles().any())
             turnsToExpansionString +=
                     " (${cityInfo.expansion.cultureStored}${Fonts.culture}/${cityInfo.expansion.getCultureToNextTile()}${Fonts.culture})"
 

@@ -945,6 +945,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Connects trade routes over water"
 	Applicable to: Building
 
+??? example  "Creates a [improvementName] improvement on a specific tile"
+	Example: "Creates a [Trading Post] improvement on a specific tile"
+
+	Applicable to: Building
+
 ??? example  "Spaceship part"
 	Applicable to: Building, Unit
 
@@ -1404,6 +1409,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Adjacent enemy units ending their turn take [amount] damage"
 	Example: "Adjacent enemy units ending their turn take [3] damage"
 
+	Applicable to: Improvement
+
+??? example  "Constructing it will take over the tiles around it and assign them to your closest city"
 	Applicable to: Improvement
 
 ??? example  "Great Improvement"

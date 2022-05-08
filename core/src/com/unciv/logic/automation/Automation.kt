@@ -309,7 +309,7 @@ object Automation {
 
     // Ranks a tile for the expansion algorithm of cities
     internal fun rankTileForExpansion(tile: TileInfo, cityInfo: CityInfo,
-                                      localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Int {
+                                      localUniqueCache: LocalUniqueCache): Int {
         // https://github.com/Gedemon/Civ5-DLL/blob/aa29e80751f541ae04858b6d2a2c7dcca454201e/CvGameCoreDLL_Expansion1/CvCity.cpp#L10301
         // Apparently this is not the full calculation. The exact tiles are also
         // dependent on which tiles are between the chosen tile and the city center

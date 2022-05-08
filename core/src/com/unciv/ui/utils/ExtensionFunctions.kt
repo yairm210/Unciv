@@ -336,9 +336,7 @@ fun <R> (() -> R).wrapCrashHandling(
                 Gdx.app.postRunnable {
                     UncivGame.Current.setScreen(CrashScreen(e))
                 }
-            } else {
-                UncivGame.Current.setScreen(CrashScreen(e))
-            }
+            } else UncivGame.Current.setScreen(CrashScreen(e))
             null
         }
     }
