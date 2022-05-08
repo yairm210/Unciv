@@ -48,7 +48,10 @@ import com.badlogic.gdx.utils.Array as GdxArray
  * @param previousScreen The caller - note if this is a [WorldScreen] or [MainMenuScreen] they will be rebuilt when major options change.
  */
 //region Fields
-class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
+class OptionsPopup(
+    private val previousScreen: BaseScreen,
+    private val selectPage: Int = defaultPage
+) : Popup(previousScreen) {
     private val settings = previousScreen.game.settings
     private val tabs: TabbedPager
     private val resolutionArray = com.badlogic.gdx.utils.Array(arrayOf("750x500", "900x600", "1050x700", "1200x800", "1500x1000"))
@@ -60,6 +63,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     //endregion
 
     companion object {
+        const val defaultPage = 2  // Gameplay
         private const val modCheckWithoutBase = "-none-"
     }
 
@@ -115,10 +119,10 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         super.setVisible(visible)
         if (!visible) return
         tabs.askForPassword(secretHashCode = 2747985)
-        if (tabs.activePage < 0) tabs.selectPage(2)
+        if (tabs.activePage < 0) tabs.selectPage(selectPage)
     }
 
-    /** Reload this Popup after major changes (resolution, tileset, language) */
+    /** Reload this Popup after major changes (resolution, tileset, language, font) */
     private fun reloadWorldAndOptions() {
         settings.save()
         if (previousScreen is WorldScreen) {
@@ -127,7 +131,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         } else if (previousScreen is MainMenuScreen) {
             previousScreen.game.setScreen(MainMenuScreen())
         }
-        (previousScreen.game.screen as BaseScreen).openOptionsPopup()
+        (previousScreen.game.screen as BaseScreen).openOptionsPopup(tabs.activePage)
     }
 
     private fun successfullyConnectedToServer(action: (Boolean, String)->Unit){
@@ -876,34 +880,40 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         val selectCell = add()
         row()
 
-        fun loadFontSelect(fonts: Collection<FontData>, selectCell: Cell<Actor>) {
-            if (fonts.isEmpty()) return
+        fun loadFontSelect(fonts: GdxArray<FontFamilyData>, selectCell: Cell<Actor>) {
+            if (fonts.isEmpty) return
 
-            val fontSelectBox = SelectBox<String>(skin)
-            val fontsLocalName = GdxArray<String>().apply { add("Default Font".tr()) }
-            val fontsEnName = GdxArray<String>().apply { add("") }
-            for (font in fonts) {
-                fontsLocalName.add(font.localName)
-                fontsEnName.add(font.enName)
-            }
+            val fontSelectBox = SelectBox<FontFamilyData>(skin)
+            fontSelectBox.items = fonts
 
-            val selectedIndex = fontsEnName.indexOf(settings.fontFamily).let { if (it == -1) 0 else it }
-
-            fontSelectBox.items = fontsLocalName
-            fontSelectBox.selected = fontsLocalName[selectedIndex]
+            // `FontFamilyData` implements kotlin equality contract such that _only_ the invariantName field is compared.
+            // The Gdx SelectBox should honor that - but it doesn't, as it is a _kotlin_ thing to implement
+            // `==` by calling `equals`, and there's precompiled _Java_ `==` in the widget code.
+            // `setSelected` first calls a `contains` which can switch between using `==` and `equals` (set to `equals`)
+            // but just one step later (where it re-checks whether the new selection is equal to the old one)
+            // it does a hard `==`. Also, setSelection copies its argument to the selection var, it doesn't pull a match from `items`.
+            // Therefore, _selecting_ an item in a `SelectBox` by an instance of `FontFamilyData` where only the `invariantName` is valid won't work properly.
+            //
+            // This is why it's _not_ `fontSelectBox.selected = FontFamilyData(settings.fontFamily)`
+            val fontToSelect = settings.fontFamily
+            fontSelectBox.selected = fonts.firstOrNull { it.invariantName == fontToSelect } // will default to first entry if `null` is passed
 
             selectCell.setActor(fontSelectBox).minWidth(selectBoxMinWidth).pad(10f)
 
             fontSelectBox.onChange {
-                settings.fontFamily = fontsEnName[fontSelectBox.selectedIndex]
-                ToastPopup(
-                    "You need to restart the game for this change to take effect.", previousScreen
-                )
+                settings.fontFamily = fontSelectBox.selected.invariantName
+                Fonts.resetFont(settings.fontFamily)
+                reloadWorldAndOptions()
             }
         }
 
-        crashHandlingThread(name="Add Font Select") {
-            val fonts = Fonts.getAvailableFontFamilyNames() // This is a heavy operation and causes ANRs
+        crashHandlingThread(name = "Add Font Select") {
+            // This is a heavy operation and causes ANRs
+            val fonts = GdxArray<FontFamilyData>().apply {
+                add(FontFamilyData.default)
+                for (font in Fonts.getAvailableFontFamilyNames())
+                    add(font)
+            }
             postCrashHandlingRunnable { loadFontSelect(fonts, selectCell) }
         }
     }
