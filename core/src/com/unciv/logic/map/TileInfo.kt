@@ -569,6 +569,8 @@ open class TileInfo {
                 && isAdjacentTo(Constants.freshWater) -> true
             // I don't particularly like this check, but it is required to build mines on non-hill resources
             resourceIsVisible && tileResource.isImprovedBy(improvement.name) -> true
+            // DEPRECATED since 4.0.14, REMOVE SOON:
+            isLand && improvement.terrainsCanBeBuiltOn.isEmpty() && !improvement.hasUnique(UniqueType.CanOnlyImproveResource) -> true
             else -> false
         }
     }

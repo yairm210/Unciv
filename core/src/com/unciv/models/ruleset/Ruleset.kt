@@ -683,6 +683,8 @@ class Ruleset {
             for (terrain in improvement.terrainsCanBeBuiltOn)
                 if (!terrains.containsKey(terrain) && terrain != "Land" && terrain != "Water")
                     lines += "${improvement.name} can be built on terrain $terrain which does not exist!"
+            if (improvement.terrainsCanBeBuiltOn.isEmpty() && !improvement.hasUnique(UniqueType.CanOnlyImproveResource))
+                lines += "${improvement.name} has an empty `terrainsCanBeBuiltOn` and also isn't allowed to improving only resources. Support for this will soon end; add `Land` (or another terrain) as a `terrainsCanBeBuiltOn` or the unique \"Can only be built to improve a resource\" to easily fix this."
             checkUniques(improvement, lines, rulesetSpecific, forOptionsPopup)
         }
 

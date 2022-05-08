@@ -726,7 +726,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     // region DEPRECATED AND REMOVED
 
-    @Deprecated("as of 4.0.12", ReplaceWith("Irremovable"), DeprecationLevel.ERROR)
+    @Deprecated("as of 4.0.14", ReplaceWith("Irremovable"), DeprecationLevel.ERROR)
     Indestructible("Indestructible", UniqueTarget.Improvement),
     
     @Deprecated("as of 3.19.1", ReplaceWith("[stats] from every [Wonder]"), DeprecationLevel.ERROR)
