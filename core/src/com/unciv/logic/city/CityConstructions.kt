@@ -451,9 +451,7 @@ class CityConstructions {
     fun updateUniques() {
         builtBuildingUniqueMap.clear()
         for (building in getBuiltBuildings())
-            for (unique in building.uniqueObjects)
-                if (unique.conditionals.none { it.type == UniqueType.ConditionalTimedUnique })
-                    builtBuildingUniqueMap.addUnique(unique)
+            builtBuildingUniqueMap.addUniques(building.uniqueObjects)
     }
 
     fun addFreeBuildings() {
