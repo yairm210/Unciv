@@ -203,7 +203,9 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
             MilestoneType.DestroyAllPlayers -> {
                 val majorCivs = civInfo.gameInfo.civilizations.filter { it.isMajorCiv() && it != civInfo }
                 for (civ in majorCivs) {
-                    val milestoneText = if (civInfo.knows(civ) || !civ.isAlive()) "Destroy [${civ.civName}]" else "Destroy [${Constants.unknownNationName}]"
+                    val milestoneText =
+                        if (civInfo.knows(civ) || !civ.isAlive()) "Destroy [${civ.civName}]"
+                        else "Destroy [${Constants.unknownNationName}]"
                     buttons.add(getMilestoneButton(milestoneText, !civ.isAlive()))
                 }
             }
@@ -211,8 +213,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
             MilestoneType.CaptureAllCapitals -> {
                 val originalCapitals = civInfo.gameInfo.getCities().filter { it.isOriginalCapital }
                 for (city in originalCapitals) {
-                    val milestoneText = if (civInfo.knows(city.civInfo)) "Capture [${city.name}]" else "Capture [${Constants.unknownNationName}]"
-                    buttons.add(getMilestoneButton(milestoneText, city.civInfo == civInfo))
+                    buttons.add(getMilestoneButton("Capture [${city.name}]", city.civInfo == civInfo))
                 }
             }
             
@@ -226,7 +227,9 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                 val majorCivs = civInfo.gameInfo.civilizations.filter { it.isMajorCiv() }
                 val civReligion = civInfo.religionManager.religion
                 for (civ in majorCivs) {
-                    val milestoneText = if (civInfo.knows(civ) || !civ.isAlive()) "Majority religion of [${civ.civName}]" else "Majority religion of [${Constants.unknownNationName}]"
+                    val milestoneText =
+                        if (civInfo.knows(civ) || !civ.isAlive()) "Majority religion of [${civ.civName}]"
+                        else "Majority religion of [${Constants.unknownNationName}]"
                     if (civReligion == null || (civReligion.isPantheon() && civInfo != civ) || !civ.religionManager.isMajorityReligionForCiv(civReligion))
                         buttons.add(getMilestoneButton(milestoneText, false))
                     else
