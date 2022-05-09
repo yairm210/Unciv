@@ -671,7 +671,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                     -> power += power / 4
                 unique.isOfType(UniqueType.MustSetUp) // Must set up - 20 % penalty
                     -> power -= power / 5
-                unique.placeholderText == "[] additional attacks per turn" // Extra attacks - 20% bonus per extra attack
+                unique.isOfType(UniqueType.AdditionalAttacks) // Extra attacks - 20% bonus per extra attack
                     -> power += (power * unique.params[0].toInt()) / 5
             }
         }
