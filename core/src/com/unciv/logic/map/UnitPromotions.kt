@@ -73,8 +73,10 @@ class UnitPromotions {
         // If we upgrade this unit to its new version, we already need to have this promotion added,
         // so this has to go after the `promotions.add(promotionname)` line.
         doDirectPromotionEffects(promotion)
-        
+
         unit.updateUniques(ruleset)
+
+        unit.civInfo.updateMaxGeneralBonusRadius()  // In case a mod has promotions granting GG uniques
 
         // Since some units get promotions upon construction, they will get the addPromotion from the unit.postBuildEvent
         // upon creation, BEFORE they are assigned to a tile, so the updateVisibleTiles() would crash.

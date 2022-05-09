@@ -1,6 +1,7 @@
 ﻿package com.unciv.logic.automation
 
 import com.unciv.logic.battle.Battle
+import com.unciv.logic.battle.GreatGeneralImplementation
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
@@ -45,28 +46,16 @@ object SpecificUnitAutomation {
         }
     }
 
-    fun automateGreatGeneral(unit: MapUnit) {
+    fun automateGreatGeneral(unit: MapUnit): Boolean {
         //try to follow nearby units. Do not garrison in city if possible
-        val militaryUnitTilesInDistance = unit.movement.getDistanceToTiles().asSequence()
-                .filter {
-                    val militant = it.key.militaryUnit
-                    militant != null && militant.civInfo == unit.civInfo
-                            && (it.key.civilianUnit == null || it.key.civilianUnit == unit)
-                            && militant.getMaxMovement() <= 2 && !it.key.isCityCenter()
-                }
+        val maxAffectedTroopsTile = GreatGeneralImplementation.getBestAffectedTroopsTile(unit)
+            ?: return false
 
-        val maxAffectedTroopsTile = militaryUnitTilesInDistance
-                .maxByOrNull {
-                    it.key.getTilesInDistance(2).count { tile ->
-                        val militaryUnit = tile.militaryUnit
-                        militaryUnit != null && militaryUnit.civInfo == unit.civInfo
-                    }
-                }?.key
-        if (maxAffectedTroopsTile != null) {
-            unit.movement.headTowards(maxAffectedTroopsTile)
-            return
-        }
+        unit.movement.headTowards(maxAffectedTroopsTile)
+        return true
+    }
 
+    fun automateCitadelPlacer(unit: MapUnit): Boolean {
         // try to revenge and capture their tiles
         val enemyCities = unit.civInfo.getKnownCivs()
                 .filter { unit.civInfo.getDiplomacyManager(it).hasModifier(DiplomaticModifiers.StealingTerritory) }
@@ -94,16 +83,19 @@ object SpecificUnitAutomation {
             unit.movement.headTowards(tileToSteal)
             if (unit.currentMovement > 0 && unit.currentTile == tileToSteal)
                 UnitActions.getImprovementConstructionActions(unit, unit.currentTile).firstOrNull()?.action?.invoke()
-            return
+            return true
         }
 
         // try to build a citadel for defensive purposes
         if (WorkerAutomation.evaluateFortPlacement(unit.currentTile, unit.civInfo, true)) {
             UnitActions.getImprovementConstructionActions(unit, unit.currentTile).firstOrNull()?.action?.invoke()
-            return
+            return true
         }
+        return false
+    }
 
-        //if no unit to follow, take refuge in city or build citadel there.
+    fun automateGreatGeneralFallback(unit: MapUnit, isCitadelPlacer: Boolean) {
+        // if no unit to follow, take refuge in city or build citadel there.
         val reachableTest: (TileInfo) -> Boolean = {
             it.civilianUnit == null &&
                     unit.movement.canMoveTo(it)
@@ -112,22 +104,26 @@ object SpecificUnitAutomation {
         val cityToGarrison = unit.civInfo.cities.asSequence().map { it.getCenterTile() }
                 .sortedBy { it.aerialDistanceTo(unit.currentTile) }
                 .firstOrNull { reachableTest(it) }
-
-        if (cityToGarrison != null) {
-            // try to find a good place for citadel nearby
-            val potentialTilesNearCity = cityToGarrison.getTilesInDistanceRange(3..4)
-            val tileForCitadel = potentialTilesNearCity.firstOrNull {
-                reachableTest(it) &&
-                        WorkerAutomation.evaluateFortPlacement(it, unit.civInfo, true)
-            }
-            if (tileForCitadel != null) {
-                unit.movement.headTowards(tileForCitadel)
-                if (unit.currentMovement > 0 && unit.currentTile == tileForCitadel)
-                    UnitActions.getImprovementConstructionActions(unit, unit.currentTile).firstOrNull()?.action?.invoke()
-            } else
-                unit.movement.headTowards(cityToGarrison)
+            ?: return
+        if (!isCitadelPlacer) {
+            unit.movement.headTowards(cityToGarrison)
             return
         }
+
+        // try to find a good place for citadel nearby
+        val tileForCitadel = cityToGarrison.getTilesInDistanceRange(3..4)
+            .firstOrNull {
+                reachableTest(it) &&
+                WorkerAutomation.evaluateFortPlacement(it, unit.civInfo, true)
+            }
+        if (tileForCitadel == null) {
+            unit.movement.headTowards(cityToGarrison)
+            return
+        }
+        unit.movement.headTowards(tileForCitadel)
+        if (unit.currentMovement > 0 && unit.currentTile == tileForCitadel)
+            UnitActions.getImprovementConstructionActions(unit, unit.currentTile)
+                .firstOrNull()?.action?.invoke()
     }
 
     private fun rankTileAsCityCenter(tileInfo: TileInfo, nearbyTileRankings: Map<TileInfo, Float>,

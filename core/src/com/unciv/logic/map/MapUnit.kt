@@ -120,6 +120,9 @@ class MapUnit {
     @Transient
     var hasUniqueToBuildImprovements = false    // not canBuildImprovements to avoid confusion
 
+    @Transient
+    var hasGreatGeneralUnique = false
+
     /** civName owning the unit */
     lateinit var owner: String
 
@@ -342,6 +345,9 @@ class MapUnit {
         hasUniqueToBuildImprovements = hasUnique(UniqueType.BuildImprovements)
         canEnterForeignTerrain = hasUnique(UniqueType.CanEnterForeignTiles)
             || hasUnique(UniqueType.CanEnterForeignTilesButLosesReligiousStrength)
+
+        hasGreatGeneralUnique = hasUnique(UniqueType.GreatGeneralAura) ||
+                hasUnique(UniqueType.BonusForUnitsInRadius)
     }
 
     fun copyStatisticsTo(newUnit: MapUnit) {
@@ -837,6 +843,7 @@ class MapUnit {
         removeFromTile()
         civInfo.removeUnit(this)
         civInfo.updateViewableTiles()
+        civInfo.updateMaxGeneralBonusRadius()
         // all transported units should be destroyed as well
         currentTile.getUnits().filter { it.isTransported && isTransportTypeOf(it) }
             .toList() // because we're changing the list
