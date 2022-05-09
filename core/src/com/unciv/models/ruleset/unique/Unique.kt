@@ -283,9 +283,17 @@ class UniqueMap: HashMap<String, ArrayList<Unique>>() {
     //todo Once all untyped Uniques are converted, this should be  HashMap<UniqueType, *>
     // For now, we can have both map types "side by side" each serving their own purpose,
     // and gradually this one will be deprecated in favor of the other
+
+    /** Adds one [unique] unless it has a ConditionalTimedUnique conditional */
     fun addUnique(unique: Unique) {
+        if (unique.conditionals.any { it.type == UniqueType.ConditionalTimedUnique }) return
         if (!containsKey(unique.placeholderText)) this[unique.placeholderText] = ArrayList()
         this[unique.placeholderText]!!.add(unique)
+    }
+
+    /** Calls [addUnique] on each item from [uniques] */
+    fun addUniques(uniques: Iterable<Unique>) {
+        for (unique in uniques) addUnique(unique)
     }
 
     fun getUniques(placeholderText: String): Sequence<Unique> {
