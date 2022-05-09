@@ -64,7 +64,7 @@ object BattleDamage {
 
 
             for (unique in adjacentUnits.filter { it.civInfo.isAtWarWith(combatant.getCivInfo()) }
-                .flatMap { it.getMatchingUniques("[]% Strength for enemy [] units in adjacent [] tiles") })
+                    .flatMap { it.getMatchingUniques(UniqueType.StrengthForAdjacentEnemies) })
                 if (combatant.matchesCategory(unique.params[1]) && combatant.getTile()
                         .matchesFilter(unique.params[2])
                 )
@@ -85,7 +85,7 @@ object BattleDamage {
                 modifiers["Great General"] = greatGeneralModifier
             }
 
-            for (unique in combatant.unit.getMatchingUniques("[]% Strength when stacked with []")) {
+            for (unique in combatant.unit.getMatchingUniques(UniqueType.StrengthWhenStacked)) {
                 var stackedUnitsBonus = 0
                 if (combatant.unit.getTile().getUnits().any { it.matchesFilter(unique.params[1]) })
                     stackedUnitsBonus += unique.params[0].toInt()
@@ -149,10 +149,9 @@ object BattleDamage {
                     modifiers["Flanking"] =
                         (flankingBonus * (numberOfAttackersSurroundingDefender - 1)).toInt()
                 }
-                if (attacker.getTile()
-                        .aerialDistanceTo(defender.getTile()) == 1 && attacker.getTile()
-                        .isConnectedByRiver(defender.getTile())
-                    && !attacker.unit.hasUnique("Eliminates combat penalty for attacking over a river")
+                if (attacker.getTile().aerialDistanceTo(defender.getTile()) == 1 &&
+                        attacker.getTile().isConnectedByRiver(defender.getTile()) &&
+                        !attacker.unit.hasUnique(UniqueType.AttackAcrossRiver)
                 ) {
                     if (!attacker.getTile()
                             .hasConnection(attacker.getCivInfo()) // meaning, the tiles are not road-connected for this civ
