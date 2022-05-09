@@ -19,7 +19,7 @@ object GameSaver {
     private const val multiplayerFilesFolder = "MultiplayerGames"
     const val autoSaveFileName = "Autosave"
     const val settingsFileName = "GameSettings.json"
-    var saveZipped = true
+    var saveZipped = false
 
     @Volatile
     var customSaveLocationHelper: CustomSaveLocationHelper? = null
