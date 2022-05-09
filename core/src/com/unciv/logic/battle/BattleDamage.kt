@@ -40,10 +40,9 @@ object BattleDamage {
 
         val conditionalState = StateForConditionals(civInfo, cityInfo = (combatant as? CityCombatant)?.city, ourCombatant = combatant, theirCombatant = enemy,
             attackedTile = attackedTile, combatAction = combatAction)
-        
-        
+
         if (combatant is MapUnitCombatant) {
-            
+
             for (unique in combatant.getMatchingUniques(UniqueType.Strength, conditionalState, true)) {
                 modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
             }
@@ -61,9 +60,7 @@ object BattleDamage {
 
             //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
             val adjacentUnits = combatant.getTile().neighbors.flatMap { it.getUnits() }
-
-
-            for (unique in adjacentUnits.filter { it.civInfo.isAtWarWith(combatant.getCivInfo()) }
+            for (unique in adjacentUnits.filter { it.civInfo.isAtWarWith(civInfo) }
                     .flatMap { it.getMatchingUniques(UniqueType.StrengthForAdjacentEnemies) })
                 if (combatant.matchesCategory(unique.params[1]) && combatant.getTile()
                         .matchesFilter(unique.params[2])
@@ -73,17 +70,11 @@ object BattleDamage {
             val civResources = civInfo.getCivResourcesByName()
             for (resource in combatant.unit.baseUnit.getResourceRequirements().keys)
                 if (civResources[resource]!! < 0 && !civInfo.isBarbarian())
-                    modifiers["Missing resource"] = -25
+                    modifiers["Missing resource"] = -25  //todo ModConstants
 
-
-            val nearbyCivUnits = combatant.unit.getTile().getTilesInDistance(2)
-                .flatMap { it.getUnits() }.filter { it.civInfo == combatant.unit.civInfo }
-            if (nearbyCivUnits.any { it.hasUnique("Bonus for units in 2 tile radius 15%") }) {
-                val greatGeneralModifier =
-                    if (combatant.unit.civInfo.hasUnique(UniqueType.GreatGeneralProvidesDoubleCombatBonus)) 30 else 15
-
+            val greatGeneralModifier = GreatGeneralImplementation.getGreatGeneralBonus(combatant.unit)
+            if (greatGeneralModifier != 0)
                 modifiers["Great General"] = greatGeneralModifier
-            }
 
             for (unique in combatant.unit.getMatchingUniques(UniqueType.StrengthWhenStacked)) {
                 var stackedUnitsBonus = 0

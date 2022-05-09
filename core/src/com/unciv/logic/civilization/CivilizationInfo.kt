@@ -1,19 +1,14 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.utils.Json
-import com.badlogic.gdx.utils.Json.Serializer
-import com.badlogic.gdx.utils.JsonValue
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.json.HashMapVector2
-import com.unciv.json.json
-import com.unciv.logic.BarbarianManager
-import com.unciv.logic.Encampment
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.automation.WorkerAutomation
+import com.unciv.logic.battle.GreatGeneralImplementation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.RuinsManager.RuinsManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -123,9 +118,16 @@ class CivilizationInfo {
 
     @Transient
     val lastEraResourceUsedForUnit = HashMap<String, Int>()
-    
+
     @Transient
     var thingsToFocusOnForVictory = setOf<Victory.Focus>()
+
+    @Transient
+    /** Maximum radius of Great General or equivalent effect, from BaseUnit Uniques _only_. */
+    var maxGeneralBonusRadiusBase = 0
+    @Transient
+    /** Maximum radius of Great General or equivalent effect, from BaseUnit Uniques _or_ Promotion Uniques. 0 if none found!! */
+    var maxGeneralBonusRadius = 0
 
     var playerType = PlayerType.AI
 
@@ -753,7 +755,7 @@ class CivilizationInfo {
         goldenAges.civInfo = this
 
         civConstructions.setTransients(civInfo = this)
-        
+
         policies.civInfo = this
         if (policies.adoptedPolicies.size > 0 && policies.numberOfAdoptedPolicies == 0)
             policies.numberOfAdoptedPolicies = policies.adoptedPolicies.count { !Policy.isBranchCompleteByName(it) }
@@ -772,14 +774,14 @@ class CivilizationInfo {
         tech.setTransients()
 
         ruinsManager.setTransients(this)
-        
+
         for (diplomacyManager in diplomacy.values) {
             diplomacyManager.civInfo = this
             diplomacyManager.updateHasOpenBorders()
         }
 
         victoryManager.civInfo = this
-        
+
         thingsToFocusOnForVictory = getPreferredVictoryTypeObject()?.getThingsToFocus(this) ?: setOf()
 
         for (cityInfo in cities) {
@@ -807,6 +809,8 @@ class CivilizationInfo {
         }
 
         hasLongCountDisplayUnique = hasUnique(UniqueType.MayanCalendarDisplay)
+
+        GreatGeneralImplementation.setMaxGeneralBonusRadiusBase(this)
     }
 
     fun updateSightAndResources() {
@@ -824,6 +828,7 @@ class CivilizationInfo {
     fun updateHasActiveGreatWall() = transients().updateHasActiveGreatWall()
     fun updateViewableTiles() = transients().updateViewableTiles()
     fun updateDetailedCivResources() = transients().updateCivResources()
+    fun updateMaxGeneralBonusRadius() = GreatGeneralImplementation.updateMaxGeneralBonusRadius(this)
 
     fun startTurn() {
         civConstructions.startTurn()

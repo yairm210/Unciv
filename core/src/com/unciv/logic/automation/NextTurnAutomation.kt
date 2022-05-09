@@ -163,8 +163,7 @@ object NextTurnAutomation {
         while (delta > 0) {
             // Now remove the best offer valued below delta until the deal is barely acceptable
             val offerToRemove = counterofferAsks.filter { it.value <= delta }.maxByOrNull { it.value }
-            if (offerToRemove == null)
-                break // Nothing more can be removed, at least en bloc
+                ?: break  // Nothing more can be removed, at least en bloc
             delta -= offerToRemove.value
             counterofferAsks.remove(offerToRemove.key)
         }
@@ -831,7 +830,7 @@ object NextTurnAutomation {
             when {
                 unit.baseUnit.isRanged() -> rangedUnits.add(unit)
                 unit.baseUnit.isMelee() -> meleeUnits.add(unit)
-                unit.hasUnique("Bonus for units in 2 tile radius 15%")
+                unit.hasGreatGeneralUnique
                     -> generals.add(unit) // Generals move after military units
                 else -> civilianUnits.add(unit)
             }

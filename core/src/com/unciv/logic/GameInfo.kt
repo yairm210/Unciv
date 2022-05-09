@@ -82,6 +82,14 @@ class GameInfo {
     @Transient
     var spaceResources = HashSet<String>()
 
+    /** Cache of all promotions granting Great General capabilities, used in [updateMaxGeneralBonusRadius][com.unciv.logic.battle.GreatGeneralImplementation.updateMaxGeneralBonusRadius] */
+    // Does _not_ support UniqueType.BonusForUnitsInRadius, it's a new option for mods.
+    @delegate:Transient
+    val promotionsGrantingGeneralBonus by lazy {
+        ruleSet.unitPromotions.values.asSequence()
+            .filter { it.hasUnique(UniqueType.GreatGeneralAura) }.toList()
+    }
+
     //endregion
     //region Pure functions
 
