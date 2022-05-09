@@ -26,12 +26,14 @@ class ImprovementPickerScreen(
     private val gameInfo = tileInfo.tileMap.gameInfo
     private val ruleSet = gameInfo.ruleSet
     private val currentPlayerCiv = gameInfo.getCurrentPlayerCivilization()
+    // Support for UniqueType.CreatesOneImprovement
+    private val tileMarkedForCreatesOneImprovement = tileInfo.isMarkedForCreatesOneImprovement()
 
     private fun getRequiredTechColumn(improvement: TileImprovement) =
         ruleSet.technologies[improvement.techRequired]?.column?.columnNumber ?: -1
 
     fun accept(improvement: TileImprovement?) {
-        if (improvement == null) return
+        if (improvement == null || tileMarkedForCreatesOneImprovement) return
         if (improvement.name == Constants.cancelImprovementOrder) {
             tileInfo.stopWorkingOnImprovement()
             // no onAccept() - Worker can stay selected
@@ -108,8 +110,9 @@ class ImprovementPickerScreen(
 
             val pickNow = when {
                 suggestRemoval -> "${Constants.remove}[${tileInfo.getLastTerrain().name}] first".toLabel()
-                tileInfo.improvementInProgress != improvement.name -> "Pick now!".toLabel().onClick { accept(improvement) }
-                else -> "Current construction".toLabel()
+                tileInfo.improvementInProgress == improvement.name -> "Current construction".toLabel()
+                tileMarkedForCreatesOneImprovement -> null
+                else -> "Pick now!".toLabel().onClick { accept(improvement) }
             }
 
             val statIcons = getStatIconsTable(provideResource, removeImprovement)
@@ -126,7 +129,6 @@ class ImprovementPickerScreen(
             val statsTable = getStatsTable(stats)
             statIcons.add(statsTable).padLeft(13f)
 
-
             regularImprovements.add(statIcons).align(Align.right)
 
             val improvementButton = getPickerOptionButton(image, labelText)
@@ -137,16 +139,14 @@ class ImprovementPickerScreen(
             }
 
             if (improvement.name == tileInfo.improvementInProgress) improvementButton.color = Color.GREEN
-            if (suggestRemoval){
+            if (suggestRemoval || tileMarkedForCreatesOneImprovement) {
                 improvementButton.disable()
-            }
-            regularImprovements.add(improvementButton)
-
-            if (shortcutKey != null) {
+            } else if (shortcutKey != null) {
                 keyPressDispatcher[shortcutKey] = { accept(improvement) }
                 improvementButton.addTooltip(shortcutKey)
             }
 
+            regularImprovements.add(improvementButton)
             regularImprovements.add(pickNow).padLeft(10f).fillY()
             regularImprovements.row()
         }

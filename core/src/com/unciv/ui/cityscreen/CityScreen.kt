@@ -6,20 +6,27 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
+import com.unciv.logic.automation.Automation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.tile.TileImprovement
+import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.stats.Stat
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.map.TileGroupMap
+import com.unciv.ui.popup.ToastPopup
+import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.*
 import java.util.*
 
 class CityScreen(
     internal val city: CityInfo,
-    var selectedConstruction: IConstruction? = null,
-    var selectedTile: TileInfo? = null
+    initSelectedConstruction: IConstruction? = null,
+    initSelectedTile: TileInfo? = null
 ): BaseScreen() {
     companion object {
         /** Distance from stage edges to floating widgets */
@@ -72,6 +79,27 @@ class CityScreen(
 
     /** The ScrollPane for the background map view of the city surroundings */
     private val mapScrollPane = ZoomableScrollPane()
+
+    /** Support for [UniqueType.CreatesOneImprovement] - need user to pick a tile */
+    class PickTileForImprovementData (
+        val building: Building,
+        val improvement: TileImprovement,
+        val isBuying: Boolean,
+        val buyStat: Stat
+    )
+
+    // The following fields control what the user selects
+    var selectedConstruction: IConstruction? = initSelectedConstruction
+        private set
+    var selectedTile: TileInfo? = initSelectedTile
+        private set
+    /** If set, we are waiting for the user to pick a tile for [UniqueType.CreatesOneImprovement] */
+    var pickTileData: PickTileForImprovementData? = null
+    /** A [Building] with [UniqueType.CreatesOneImprovement] has been selected _in the queue_: show the tile it will place the improvement on */
+    private var selectedQueueEntryTargetTile: TileInfo? = null
+    /** Cached city.expansion.chooseNewTileToOwn() */
+    // val should be OK as buying tiles is what changes this, and that would re-create the whole CityScreen
+    private val nextTileToOwn = city.expansion.chooseNewTileToOwn()
 
     init {
         onBackButtonClicked { game.setWorldScreen() }
@@ -160,20 +188,37 @@ class CityScreen(
     }
 
     private fun updateTileGroups() {
-        val nextTile = city.expansion.chooseNewTileToOwn()
+        fun isExistingImprovementValuable(tileInfo: TileInfo, improvementToPlace: TileImprovement): Boolean {
+            if (tileInfo.improvement == null) return false
+            val civInfo = city.civInfo
+            val existingStats = tileInfo.getImprovementStats(tileInfo.getTileImprovement()!!, civInfo, city)
+            val replacingStats = tileInfo.getImprovementStats(improvementToPlace, civInfo, city)
+            return Automation.rankStatsValue(existingStats, civInfo) > Automation.rankStatsValue(replacingStats, civInfo)
+        }
+        fun getPickImprovementColor(tileInfo: TileInfo): Pair<Color, Float> {
+            val improvementToPlace = pickTileData!!.improvement
+            return when {
+                tileInfo.isMarkedForCreatesOneImprovement() -> Color.BROWN to 0.7f
+                !tileInfo.canBuildImprovement(improvementToPlace, city.civInfo) -> Color.RED to 0.4f
+                isExistingImprovementValuable(tileInfo, improvementToPlace) -> Color.ORANGE to 0.5f
+                tileInfo.improvement != null -> Color.YELLOW to 0.6f
+                tileInfo.turnsToImprovement > 0 -> Color.YELLOW to 0.6f
+                else -> Color.GREEN to 0.5f
+            }
+        }
         for (tileGroup in tileGroups) {
             tileGroup.update()
             tileGroup.hideHighlight()
-            if (city.tiles.contains(tileGroup.tileInfo.position)
-                    && constructionsTable.improvementBuildingToConstruct != null) {
-                val improvement = constructionsTable.improvementBuildingToConstruct!!.getImprovement(city.getRuleset())!!
-                if (tileGroup.tileInfo.canBuildImprovement(improvement, city.civInfo))
-                    tileGroup.showHighlight(Color.GREEN)
-                else tileGroup.showHighlight(Color.RED)
-            }
-            if (tileGroup.tileInfo == nextTile) {
-                tileGroup.showHighlight(Color.PURPLE)
-                tileGroup.setColor(0f, 0f, 0f, 0.7f)
+            when {
+                tileGroup.tileInfo == nextTileToOwn -> {
+                    tileGroup.showHighlight(Color.PURPLE)
+                    tileGroup.setColor(0f, 0f, 0f, 0.7f)
+                }
+                /** Support for [UniqueType.CreatesOneImprovement] */
+                tileGroup.tileInfo == selectedQueueEntryTargetTile ->
+                    tileGroup.showHighlight(Color.BROWN, 0.7f)
+                pickTileData != null && city.tiles.contains(tileGroup.tileInfo.position) ->
+                    getPickImprovementColor(tileGroup.tileInfo).run { tileGroup.showHighlight(first, second) }
             }
         }
     }
@@ -235,50 +280,20 @@ class CityScreen(
 
         val tileSetStrings = TileSetStrings()
         val cityTileGroups = cityInfo.getCenterTile().getTilesInDistance(5)
-                .filter { city.civInfo.exploredTiles.contains(it.position) }
+                .filter { cityInfo.civInfo.exploredTiles.contains(it.position) }
                 .map { CityTileGroup(cityInfo, it, tileSetStrings) }
 
         for (tileGroup in cityTileGroups) {
-            val tileInfo = tileGroup.tileInfo
-
             tileGroup.onClick {
-                if (city.isPuppet) return@onClick
-
-                if (constructionsTable.improvementBuildingToConstruct != null) {
-                    val improvement = constructionsTable.improvementBuildingToConstruct!!.getImprovement(city.getRuleset())!!
-                    if (tileInfo.canBuildImprovement(improvement, cityInfo.civInfo)) {
-                        tileInfo.improvementInProgress = improvement.name
-                        tileInfo.turnsToImprovement = -1
-                        constructionsTable.improvementBuildingToConstruct = null
-                        cityInfo.cityConstructions.addToQueue(improvement.name)
-                        update()
-                    } else {
-                        constructionsTable.improvementBuildingToConstruct = null
-                        update()
-                    }
-                    return@onClick
-                }
-
-                selectedTile = tileInfo
-                selectedConstruction = null
-                if (tileGroup.isWorkable && canChangeState) {
-                    if (!tileInfo.providesYield() && city.population.getFreePopulation() > 0) {
-                        city.workedTiles.add(tileInfo.position)
-                        game.settings.addCompletedTutorialTask("Reassign worked tiles")
-                    } else if (tileInfo.isWorked() && !tileInfo.isLocked())
-                        city.workedTiles.remove(tileInfo.position)
-                    city.cityStats.update()
-                }
-                update()
+                tileGroupOnClick(tileGroup, cityInfo)
             }
-
             tileGroups.add(tileGroup)
         }
 
         val tilesToUnwrap = ArrayList<CityTileGroup>()
         for (tileGroup in tileGroups) {
-            val xDifference = city.getCenterTile().position.x - tileGroup.tileInfo.position.x
-            val yDifference = city.getCenterTile().position.y - tileGroup.tileInfo.position.y
+            val xDifference = cityInfo.getCenterTile().position.x - tileGroup.tileInfo.position.x
+            val yDifference = cityInfo.getCenterTile().position.y - tileGroup.tileInfo.position.y
             //if difference is bigger than 5 the tileGroup we are looking for is on the other side of the map
             if (xDifference > 5 || xDifference < -5 || yDifference > 5 || yDifference < -5) {
                 //so we want to unwrap its position
@@ -297,6 +312,78 @@ class CityScreen(
         mapScrollPane.scrollPercentX = 0.5f
         mapScrollPane.scrollPercentY = 0.5f
         mapScrollPane.updateVisualScroll()
+    }
+
+    private fun tileGroupOnClick(tileGroup: CityTileGroup, cityInfo: CityInfo) {
+        if (cityInfo.isPuppet) return
+        val tileInfo = tileGroup.tileInfo
+
+        /** [UniqueType.CreatesOneImprovement] support - select tile for improvement */
+        if (pickTileData != null) {
+            val pickTileData = this.pickTileData!!
+            this.pickTileData = null
+            val improvement = pickTileData.improvement
+            if (tileInfo.canBuildImprovement(improvement, cityInfo.civInfo)) {
+                if (pickTileData.isBuying) {
+                    constructionsTable.askToBuyConstruction(pickTileData.building, pickTileData.buyStat, tileInfo)
+                } else {
+                    // This way to store where the improvement a CreatesOneImprovement Building will create goes
+                    // might get a bit fragile if several buildings constructing the same improvement type
+                    // were to be allowed in the queue - or a little nontransparent to the user why they
+                    // won't reorder - maybe one day redesign to have the target tiles attached to queue entries.
+                    tileInfo.markForCreatesOneImprovement(improvement.name)
+                    cityInfo.cityConstructions.addToQueue(pickTileData.building.name)
+                }
+            }
+            update()
+            return
+        }
+
+        selectTile(tileInfo)
+        if (tileGroup.isWorkable && canChangeState) {
+            if (!tileInfo.providesYield() && cityInfo.population.getFreePopulation() > 0) {
+                cityInfo.workedTiles.add(tileInfo.position)
+                game.settings.addCompletedTutorialTask("Reassign worked tiles")
+            } else if (tileInfo.isWorked() && !tileInfo.isLocked())
+                cityInfo.workedTiles.remove(tileInfo.position)
+            cityInfo.cityStats.update()
+        }
+        update()
+    }
+
+    fun selectConstruction(name: String) {
+        selectConstruction(city.cityConstructions.getConstruction(name))
+    }
+    fun selectConstruction(newConstruction: IConstruction) {
+        selectedConstruction = newConstruction
+        if (newConstruction is Building && newConstruction.hasCreateOneImprovementUnique()) {
+            val improvement = newConstruction.getImprovementToCreate(city.getRuleset())
+            selectedQueueEntryTargetTile = if (improvement == null) null
+                else city.cityConstructions.getTileForImprovement(improvement.name)
+        } else {
+            selectedQueueEntryTargetTile = null
+            pickTileData = null
+        }
+        selectedTile = null
+    }
+    private fun selectTile(newTile: TileInfo?) {
+        selectedConstruction = null
+        selectedQueueEntryTargetTile = null
+        pickTileData = null
+        selectedTile = newTile
+    }
+    fun clearSelection() = selectTile(null)
+
+    fun startPickTileForCreatesOneImprovement(construction: Building, stat: Stat, isBuying: Boolean) {
+        val improvement = construction.getImprovementToCreate(city.getRuleset()) ?: return
+        pickTileData = PickTileForImprovementData(construction, improvement, isBuying, stat)
+        updateTileGroups()
+        ToastPopup("Please select a tile for this building's [${improvement.name}]", this)
+    }
+    fun stopPickTileForCreatesOneImprovement() {
+        if (pickTileData == null) return
+        pickTileData = null
+        updateTileGroups()
     }
 
     fun exit() {

@@ -1,10 +1,10 @@
 package com.unciv.app.desktop
 
 import com.badlogic.gdx.Gdx
+import com.unciv.json.json
 import com.unciv.logic.CustomSaveLocationHelper
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
-import com.unciv.logic.GameSaver.json
 import java.awt.event.WindowEvent
 import java.io.File
 import java.util.concurrent.CancellationException

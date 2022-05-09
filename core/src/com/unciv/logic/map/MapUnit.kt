@@ -449,9 +449,11 @@ class MapUnit {
 
     fun isIdle(): Boolean {
         if (currentMovement == 0f) return false
-        if (getTile().improvementInProgress != null 
-            && canBuildImprovement(getTile().getTileImprovementInProgress()!!)) 
-                return false
+        val tile = getTile()
+        if (tile.improvementInProgress != null &&
+                canBuildImprovement(tile.getTileImprovementInProgress()!!) &&
+                !tile.isMarkedForCreatesOneImprovement()
+            ) return false
         return !(isFortified() || isExploring() || isSleeping() || isAutomated() || isMoving())
     }
 
@@ -625,6 +627,7 @@ class MapUnit {
 
     private fun workOnImprovement() {
         val tile = getTile()
+        if (tile.isMarkedForCreatesOneImprovement()) return
         tile.turnsToImprovement -= 1
         if (tile.turnsToImprovement != 0) return
 
@@ -866,7 +869,7 @@ class MapUnit {
             clearEncampment(tile)
         // Check whether any civilians without military units are there.
         // Keep in mind that putInTile(), which calls this method,
-        // might has already placed your military unit in this tile.
+        // might have already placed your military unit in this tile.
         val unguardedCivilian = tile.getUnguardedCivilian(this)
         // Capture Enemy Civilian Unit if you move on top of it
         if (isMilitary() && unguardedCivilian != null && civInfo.isAtWarWith(unguardedCivilian.civInfo)) {

@@ -14,27 +14,36 @@ import com.badlogic.gdx.utils.Disposable
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.stats.Stat
+import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
+import java.lang.Exception
 
 interface NativeFontImplementation {
     fun getFontSize(): Int
     fun getCharPixmap(char: Char): Pixmap
-    fun getAvailableFont(): Collection<FontData>
+    fun getAvailableFontFamilies(): Sequence<FontFamilyData>
 }
 
-// If save in `GameSettings` need use enName.
+// If save in `GameSettings` need use invariantFamily.
 // If show to user need use localName.
 // If save localName in `GameSettings` may generate garbled characters by encoding.
-data class FontData(val localName: String, val enName: String = localName) {
+class FontFamilyData(
+    val localName: String,
+    val invariantName: String = localName
+) {
+    // Implement kotlin equality contract such that _only_ the invariantName field is compared.
     override fun equals(other: Any?): Boolean {
-        return if (other is FontData) enName == other.enName
+        return if (other is FontFamilyData) invariantName == other.invariantName
         else super.equals(other)
     }
 
-    override fun hashCode(): Int {
-        var result = localName.hashCode()
-        result = 31 * result + enName.hashCode()
-        return result
+    override fun hashCode() = invariantName.hashCode()
+
+    /** For SelectBox usage */
+    override fun toString() = localName
+
+    companion object {
+        val default = FontFamilyData("Default Font".tr(), Fonts.DEFAULT_FONT_FAMILY)
     }
 }
 
@@ -149,6 +158,10 @@ object Fonts {
     const val DEFAULT_FONT_FAMILY = ""
 
     lateinit var font: BitmapFont
+
+    /** This resets all cached font data in object Fonts.
+     *  Do not call from normal code - reset the Skin instead: `BaseScreen.setSkin()`
+     */
     fun resetFont() {
         val fontData = NativeBitmapFontData(UncivGame.Current.fontImplementation!!)
         font = BitmapFont(fontData, fontData.regions, false)
@@ -156,9 +169,24 @@ object Fonts {
         font.data.setScale(Constants.defaultFontSize / ORIGINAL_FONT_SIZE)
     }
 
-    fun getAvailableFontFamilyNames(): Collection<FontData> {
-        if (UncivGame.Current.fontImplementation == null) return emptyList()
-        return UncivGame.Current.fontImplementation!!.getAvailableFont()
+    /** This resets all cached font data and allows changing the font */
+    fun resetFont(newFamily: String) {
+        try {
+            val fontImplementationClass = UncivGame.Current.fontImplementation!!::class.java
+            val fontImplementationConstructor = fontImplementationClass.constructors.first()
+            val newFontImpl = fontImplementationConstructor.newInstance(ORIGINAL_FONT_SIZE.toInt(), newFamily)
+            if (newFontImpl is NativeFontImplementation)
+                UncivGame.Current.fontImplementation = newFontImpl
+        } catch (ex: Exception) {}
+        BaseScreen.setSkin()  // calls our resetFont() - needed - the Skin seems to cache glyphs
+    }
+
+    /** Reduce the font list returned by platform-specific code to font families (plain variant if possible) */
+    fun getAvailableFontFamilyNames(): Sequence<FontFamilyData> {
+        val fontImplementation = UncivGame.Current.fontImplementation
+            ?: return emptySequence()
+        return fontImplementation.getAvailableFontFamilies()
+            .sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.localName })
     }
 
     /**
@@ -206,6 +234,7 @@ object Fonts {
     const val happiness = '⌣'           // U+2323 'smile' (😀 U+1F600 'grinning face')
     const val faith = '☮'               // U+262E 'peace symbol' (🕊 U+1F54A 'dove of peace')
 
+    @Deprecated("Since quite a while", ReplaceWith("stat.character"), DeprecationLevel.ERROR)
     fun statToChar(stat: Stat): Char {
         return when (stat) {
             Stat.Food -> food
@@ -217,4 +246,5 @@ object Fonts {
             Stat.Faith -> faith
         }
     }
+
 }

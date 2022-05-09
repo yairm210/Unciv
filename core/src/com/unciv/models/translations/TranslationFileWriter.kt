@@ -3,7 +3,8 @@ package com.unciv.models.translations
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Array
-import com.unciv.JsonParser
+import com.unciv.json.fromJsonFile
+import com.unciv.json.json
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.LocaleCode
 import com.unciv.models.ruleset.*
@@ -219,7 +220,7 @@ object TranslationFileWriter {
 
     private fun generateTutorialsStrings(): MutableSet<String> {
         val tutorialsStrings = mutableSetOf<String>()
-        val tutorials = JsonParser().getFromJson(LinkedHashMap<String, Array<String>>().javaClass, "jsons/Tutorials.json")
+        val tutorials = json().fromJsonFile(LinkedHashMap<String, Array<String>>().javaClass, "jsons/Tutorials.json")
 
         var uniqueIndexOfNewLine = 0
         for (tutorial in tutorials) {
@@ -273,7 +274,6 @@ object TranslationFileWriter {
         val startMillis = System.currentTimeMillis()
 
         var uniqueIndexOfNewLine = 0
-        val jsonParser = JsonParser()
         val listOfJSONFiles = jsonsFolder
                 .list { file -> file.name.endsWith(".json", true) }
                 .sortedBy { it.name() }       // generatedStrings maintains order, so let's feed it a predictable one
@@ -290,7 +290,7 @@ object TranslationFileWriter {
                 if (javaClass == this.javaClass)
                     continue // unknown JSON, let's skip it
 
-                val array = jsonParser.getFromJson(javaClass, jsonFile.path())
+                val array = json().fromJsonFile(javaClass, jsonFile.path())
 
                 resultStrings = mutableSetOf()
                 this[filename] = resultStrings
