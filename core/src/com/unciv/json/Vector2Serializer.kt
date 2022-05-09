@@ -9,8 +9,28 @@ import kotlin.math.max
 
 class Vector2Serializer : Json.Serializer<Vector2> {
     companion object {
-        private const val outputFormat = '0'  // {=object, [=array, ~=compact, 0=base64
+        // Helpers for base64, both encoding and decoding. Note a nibble is 3 bits here instead of the usual 4.
+        // For operator precedence see https://kotlinlang.org/docs/reference/grammar.html#expressions:
+        // bit shifts are omitted from officially documented precedence, therefore we use brackets galore.
+        private fun Int.nibblesNeeded(): Int {
+            var nibbles = 0
+            while (nibbles < 11) {
+                val min = if (nibbles == 0) 0 else -1 shl ((nibbles * 3) - 1)
+                val max = if (nibbles == 0) 0 else (1 shl ((nibbles * 3) - 1)) - 1
+                if (this in min..max) return nibbles
+                nibbles++
+            }
+            return 11
+        }
+        private fun Int.nibblesToOffset(): Int {
+            if (this <= 0) return 0
+            return -1 shl (this * 3 - 1)
+        }
+        private fun Int.nibblesToDivisor(): Int {
+            return 1 shl (this * 3)
+        }
 
+        // encoding base64
         private fun Int.toBase64Char() = Char(when(this) {
             in 0..25 -> 65 + this  // 'A'..'Z'
             in 26..51 -> 97 - 26 + this  // 'a'..'z'
@@ -28,33 +48,33 @@ class Vector2Serializer : Json.Serializer<Vector2> {
                 if (residue == 0) return sb.toString()
             }
         }
-        private fun Int.charsNeeded(): Int = when(this) {
-            in -32..31 -> 1
-            in -2048..2047 -> 2
-            in -131072..131071 -> 3
-            else -> 4 // actually -8388608..8388608 but who's gonna exceed that
-        }
-        private fun Int.charsNeededToOffset() = when(this) {
-            1 -> -32
-            2 -> -2048
-            3 -> -131072
-            else -> -8388608
-        }
         private fun Vector2.toBase64(): String {
             val x = x.toInt()
             val y = y.toInt()
-            if (x in -4..3 && y in -4..3)
+            val xNibbles = x.nibblesNeeded()
+            val yNibbles = y.nibblesNeeded()
+            if (xNibbles <= 1 && yNibbles <= 1)  // this optimization also makes Vector2.Zero take 1 char instead of 0
                 return ((x + 4) + 8 * (y + 4)).toBase64Char().toString()
-            val xChars = x.charsNeeded()
-            val yChars = y.charsNeeded()
-            if (xChars == 1 && yChars == 1)
+            if (xNibbles <= 2 && yNibbles <= 2)  // optimization only
                 return String(charArrayOf((x + 32).toBase64Char(), (y + 32).toBase64Char()))
-            val charsPerCoord = max(xChars, yChars)
-            val offset = charsPerCoord.charsNeededToOffset()
-            return (x - offset).toBase64String().padEnd(charsPerCoord, 'A') +
-                    (y - offset).toBase64String().padEnd(charsPerCoord, '=')
+            val nibblesPerCoord = max(xNibbles, yNibbles)
+            val offset = nibblesPerCoord.nibblesToOffset()
+            val charsPerCoord = nibblesPerCoord / 2  // when odd the extra char carrying bits from both coords goes separately
+            if (nibblesPerCoord % 2 == 0)
+                // Easy case: even number of chars, half for x, half for y
+                return (x - offset).toBase64String().padEnd(charsPerCoord, 'A') +
+                        (y - offset).toBase64String()
+            // Not so easy case: odd number of chars, the middle one carrying one nibble from x and y each
+            val divisor = (nibblesPerCoord - 1).nibblesToDivisor()  // don't count the nibble sharing a char
+            val xFirstPart = (x - offset) % divisor
+            val middlePart = ((x - offset) / divisor) + 8 * ((y - offset) % 8)
+            val yLastPart = (y - offset) / 8
+            return xFirstPart.toBase64String().padEnd(charsPerCoord, 'A') +
+                    middlePart.toBase64Char() +
+                    yLastPart.toBase64String()
         }
 
+        // decoding base64
         private fun Char.parseBase64(): Int = when(this) {
             in 'A'..'Z' ->  this - 'A'
             in 'a'..'z' ->  this - 'a' + 26
@@ -73,51 +93,35 @@ class Vector2Serializer : Json.Serializer<Vector2> {
         }
         private fun vectorFromInts(x: Int, y: Int) = Vector2(x.toFloat(), y.toFloat())
         private fun String.base64ToVector2(): Vector2 {
-            if (length == 0) return Vector2.Zero
-            if (length == 1) {
+            val nibblesPerCoord = length  // just to make it clear
+            if (nibblesPerCoord == 0) return Vector2.Zero
+            // Two optimizations only, should give the same result without
+            if (nibblesPerCoord == 1) {
                 val z = get(0).parseBase64()
                 return vectorFromInts(z % 8 - 4, z / 8 - 4)
             }
-            if (length == 2)
+            if (nibblesPerCoord == 2)
                 return vectorFromInts(get(0).parseBase64() - 32, get(1).parseBase64() - 32)
-            val charsPerCoord = (length + 1) / 2
-            val offset = charsPerCoord.charsNeededToOffset()
-            val x = this.take(charsPerCoord).parseBase64() + offset
-            val y = this.drop(charsPerCoord).parseBase64() + offset
+            val offset = nibblesPerCoord.nibblesToOffset()
+            val charsPerCoord = nibblesPerCoord / 2  // again not counting the shared char
+            if (nibblesPerCoord % 2 == 0) {
+                val x = take(charsPerCoord).parseBase64() + offset
+                val y = drop(charsPerCoord).parseBase64() + offset
+                return vectorFromInts(x, y)
+            }
+            val divisor = (nibblesPerCoord - 1).nibblesToDivisor()  // don't count the nibble sharing a char
+            val xFirstPart = take(charsPerCoord).parseBase64()
+            val middlePart = get(charsPerCoord).parseBase64()
+            val yLastPart = drop(charsPerCoord + 1).parseBase64()
+            val x = (xFirstPart + (middlePart % 8) * divisor) + offset
+            val y = (yLastPart * 8 + (middlePart / 8)) + offset
             return vectorFromInts(x, y)
         }
     }
 
     override fun write(json: Json, vector: Vector2?, knownType: Class<*>?) {
-        when (outputFormat) {
-            '{' -> {
-                json.writeObjectStart()
-                if (vector != null) {
-                    if (vector.x != 0f)
-                        json.writeValue("x", vector.x.toInt())
-                    if (vector.y != 0f)
-                        json.writeValue("y", vector.y.toInt())
-                }
-                json.writeObjectEnd()
-            }
-            '[' -> {
-                json.writeArrayStart()
-                if (vector != null) {
-                    json.writeValue(vector.x.toInt())
-                    if (vector.y != 0f)
-                        json.writeValue(vector.y.toInt())
-                }
-                json.writeArrayEnd()
-            }
-            '~' -> {
-                if (vector != null) {
-                    json.writeValue("${vector.x.toInt()}~${vector.y.toInt()}")
-                }
-            }
-            '0' ->
-                if (vector != null) {
-                    json.writeValue(vector.toBase64())
-                }
+        if (vector != null) {
+            json.writeValue(vector.toBase64())
         }
     }
 
@@ -132,24 +136,11 @@ class Vector2Serializer : Json.Serializer<Vector2> {
                 val y = jsonData["y"]?.asFloat() ?: 0f
                 Vector2(x, y)
             }
-            // Format [Float,Float]
-            jsonData.isArray && jsonData.size <= 2 -> {
-                val x = jsonData[0]?.asFloat() ?: 0f
-                val y = jsonData[1]?.asFloat() ?: 0f
-                Vector2(x, y)
-            }
-            // Format Int~Int
-            jsonData.isString && '~' in jsonData.asString() -> {
-                val parts = jsonData.asString().split('~', limit = 2)
-                val x = parts[0].toFloatOrNull() ?: 0f
-                val y = parts[1].toFloatOrNull() ?: 0f
-                Vector2(x, y)
-            }
+            // base64 is just a string to Json, but if it's only decimal digits isLong takes precedence
             jsonData.isString || jsonData.isLong ->
                 jsonData.asString().base64ToVector2()
             else ->
                 throw SerializationException("Invalid format for Vector2 data")
         }
     }
-
 }
