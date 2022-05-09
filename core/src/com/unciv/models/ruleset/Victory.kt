@@ -211,7 +211,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
             MilestoneType.CaptureAllCapitals -> {
                 val originalCapitals = civInfo.gameInfo.getCities().filter { it.isOriginalCapital }
                 for (city in originalCapitals) {
-                    val milestoneText = if (civInfo.knows(city.civInfo) || !city.civInfo.isAlive()) "Capture [${city.name}]" else "Capture [${Constants.unknownNationName}]"
+                    val milestoneText = if (civInfo.knows(city.civInfo)) "Capture [${city.name}]" else "Capture [${Constants.unknownNationName}]"
                     buttons.add(getMilestoneButton(milestoneText, city.civInfo == civInfo))
                 }
             }
