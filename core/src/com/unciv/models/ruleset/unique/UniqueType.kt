@@ -413,7 +413,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     StrengthForAdjacentEnemies("[relativeAmount]% Strength for enemy [combatantFilter] units in adjacent [tileFilter] tiles", UniqueTarget.Unit),
     StrengthWhenStacked("[relativeAmount]% Strength when stacked with [mapUnitFilter]", UniqueTarget.Unit),  // candidate for conditional!
 
-    AdditionalAttacks("[] additional attacks per turn", UniqueTarget.Unit, UniqueTarget.Global),
+    AdditionalAttacks("[amount] additional attacks per turn", UniqueTarget.Unit, UniqueTarget.Global),
     Movement("[amount] Movement", UniqueTarget.Unit, UniqueTarget.Global),
     Sight("[amount] Sight", UniqueTarget.Unit, UniqueTarget.Global, UniqueTarget.Terrain),
     Range("[amount] Range", UniqueTarget.Unit, UniqueTarget.Global),
