@@ -1,5 +1,6 @@
 package com.unciv.testing
 
+import com.badlogic.gdx.math.Vector2
 import com.unciv.UncivGame
 import com.unciv.json.json
 import com.unciv.logic.GameInfo
@@ -106,13 +107,56 @@ class SerializationTests {
             return
         }
 
-        val pattern = """\{(\w+)\${'$'}delegate:\{class:kotlin.SynchronizedLazyImpl,"""
+        @Suppress("RegExpRedundantEscape")  // Yes kotlin's "raw" strings are broken
+        val pattern = """\{(\w+)\""" + '$' + """delegate:\{class:kotlin.SynchronizedLazyImpl,"""
         val matches = Regex(pattern).findAll(json)
         matches.forEach {
             println("Lazy missing `@delegate:Transient` annotation: " + it.groups[1]!!.value)
         }
         val result = matches.any()
         Assert.assertFalse("This test will only pass when no serializable lazy fields are found", result)
+    }
+
+    @Test
+    fun base64CodedVector2() {
+        val positions = listOf(
+            Vector2(0f, 0f),
+            Vector2(0f, 2f),
+            Vector2(-2f, 1f),
+            Vector2(-4f, 3f),
+            Vector2(0f, 9f),
+            Vector2(-9f, 1f),
+            Vector2(31f, -32f),
+            Vector2(0f, 42f),
+            Vector2(-42f, 1f),
+            Vector2(0f, 999f),
+            Vector2(-999f, 1f),
+            Vector2(-2048f, 2047f),
+            Vector2(0f, 55555f),
+            Vector2(-55555f, 1f),
+            Vector2(123456f, -123456f),
+            Vector2(-131071f, 131071f),
+            Vector2(-131072f, 131072f),
+            Vector2(7999999f, 7999999f),
+        )
+        var fail = false
+        val json = json()
+        for (vector in positions) {
+            val coded = try {
+                json.toJson(vector)
+            } catch (ex: Throwable) {
+                ex::class.java.simpleName
+            }
+            val decoded = try {
+                json.fromJson(Vector2::class.java, coded)
+            } catch (ex: Throwable) {
+                ex::class.java.simpleName
+            }
+            println("Vector $vector -> coded \"$coded\" -> decoded $decoded")
+            if (decoded == vector) continue
+            fail = true
+        }
+        Assert.assertFalse("This test will only pass when all test vectors stay equal on a json roundtrip", fail)
     }
 
     @After
