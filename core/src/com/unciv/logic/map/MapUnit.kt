@@ -296,11 +296,9 @@ class MapUnit {
         }
 
         tempUniques = uniques
-        val newUniquesMap = UniqueMap()
-        for (unique in uniques)
-            if (unique.type != null)
-                newUniquesMap.addUnique(unique)
-        tempUniquesMap = newUniquesMap
+        tempUniquesMap = UniqueMap().apply {
+            addUniques(uniques)
+        }
 
         allTilesCosts1 = hasUnique(UniqueType.AllTilesCost1Move)
         canPassThroughImpassableTiles = hasUnique(UniqueType.CanPassImpassable)
