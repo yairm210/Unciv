@@ -181,7 +181,7 @@ open class TileInfo {
     fun getTileImprovementInProgress(): TileImprovement? = if (improvementInProgress == null) null else ruleset.tileImprovements[improvementInProgress!!]
 
     fun getShownImprovement(viewingCiv: CivilizationInfo?): String? {
-        return if (viewingCiv == null || viewingCiv.playerType == PlayerType.AI)
+        return if (viewingCiv == null || viewingCiv.playerType == PlayerType.AI || viewingCiv.isSpectator())
             improvement
         else
             viewingCiv.lastSeenImprovement[position]
