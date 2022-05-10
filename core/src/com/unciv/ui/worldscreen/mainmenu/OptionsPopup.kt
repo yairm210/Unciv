@@ -41,6 +41,7 @@ import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.UUID
 import kotlin.math.floor
+import kotlin.text.Regex
 import com.badlogic.gdx.utils.Array as GdxArray
 
 /**
@@ -280,7 +281,7 @@ class OptionsPopup(
             multiplayerServerTextField.text = Gdx.app.clipboard.contents
         }).row()
         multiplayerServerTextField.onChange {
-            settings.multiplayerServer = multiplayerServerTextField.text
+            settings.multiplayerServer = formatMultiplayerUrlInput(multiplayerServerTextField.text)
             settings.save()
             connectionToServerButton.isEnabled = multiplayerServerTextField.text != Constants.dropboxMultiplayerServer
         }
@@ -950,6 +951,24 @@ class OptionsPopup(
                 previousScreen.shouldUpdate = true
         }
         add(checkbox).colspan(2).left().row()
+    }
+
+    private fun formatMultiplayerUrlInput(input: String): String {
+        var result : String
+
+        // remove all whitespaces
+        result = Regex("\\s+").replace(input, "")
+
+        // replace multiple slash with a single one
+        result = Regex("/{2,}").replace(result, "/")
+
+        // remove trailing slash and return
+        result = Regex("/$").replace(result, "")
+
+        // reinstate protocol & return
+        // all the formatting above makes "https://" -> "http:/"
+        // so we need to fix that before returning
+        return Regex(":/").replaceFirst(result, "://")
     }
 
     //endregion
