@@ -14,6 +14,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.filterAndLogic
+import com.unciv.ui.utils.getConsumesAmountString
 import com.unciv.ui.utils.toPercent
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -78,7 +79,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         val availableResources = cityInfo.civInfo.getCivResources().associate { it.resource.name to it.amount }
         for ((resource, amount) in getResourceRequirements()) {
             val available = availableResources[resource] ?: 0
-            lines += "Consumes ${if (amount == 1) "1" else "[$amount]"} [$resource] ({[$available] available})".tr()
+            lines += "{${resource.getConsumesAmountString(amount)}} ({[$available] available})".tr()
         }
         var strengthLine = ""
         if (strength != 0) {
@@ -147,7 +148,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             textList += FormattedLine()
             for ((resource, amount) in resourceRequirements) {
                 textList += FormattedLine(
-                    if (amount == 1) "Consumes 1 [$resource]" else "Consumes [$amount] [$resource]",
+                    resource.getConsumesAmountString(amount),
                     link = "Resource/$resource", color = "#F42"
                 )
             }
@@ -441,7 +442,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (!civInfo.isBarbarian()) { // Barbarians don't need resources
             for ((resource, amount) in getResourceRequirements())
                 if (civInfo.getCivResourcesByName()[resource]!! < amount) {
-                    rejectionReasons.add(RejectionReason.ConsumesResources.toInstance("Consumes [$amount] [$resource]"))
+                    rejectionReasons.add(RejectionReason.ConsumesResources.toInstance(resource.getConsumesAmountString(amount)))
                 }
         }
 
