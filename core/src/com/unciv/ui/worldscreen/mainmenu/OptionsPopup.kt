@@ -962,13 +962,11 @@ class OptionsPopup(
         // replace multiple slash with a single one
         result = Regex("/{2,}").replace(result, "/")
 
-        // remove trailing slash and return
-        result = Regex("/$").replace(result, "")
-
-        // reinstate protocol & return
+        // remove trailing slash, reinstate protocol & return
         // all the formatting above makes "https://" -> "http:/"
-        // so we need to fix that before returning
-        return Regex(":/").replaceFirst(result, "://")
+        // also people might leave a slash at end my mistake
+        // so we need to fix those before returning
+        return result.trimEnd('/').replaceFirst(":/", "://")
     }
 
     //endregion
