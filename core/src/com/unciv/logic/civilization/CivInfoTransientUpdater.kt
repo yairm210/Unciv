@@ -71,6 +71,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         if (civInfo.isSpectator() || UncivGame.Current.viewEntireMapForDebug) {
             val allTiles = civInfo.gameInfo.tileMap.values.toSet()
             civInfo.viewableTiles = allTiles
+            civInfo.exploredTiles = allTiles.map { it.position }.toHashSet()
             civInfo.viewableInvisibleUnitsTiles = allTiles
             return
         }
