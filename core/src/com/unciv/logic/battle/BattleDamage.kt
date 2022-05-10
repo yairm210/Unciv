@@ -90,10 +90,12 @@ object BattleDamage {
             if (nearbyCivUnit != null) {
                 val unique = nearbyCivUnit.getMatchingUniques(UniqueType.BonusForUnitsInRadius).first()
                 val greatGeneralModifier =
-                    if (combatant.unit.civInfo.hasUnique(UniqueType.GreatGeneralProvidesDoubleCombatBonus))
-                        unique.params[1].toInt() * 2 else unique.params[1].toInt()
+                    if (combatant.unit.civInfo.hasUnique(UniqueType.GreatGeneralProvidesDoubleCombatBonus)
+                            && nearbyCivUnit.getMatchingUniques(UniqueType.GreatPerson).any { it.params[0] == "War" })
+                        unique.params[1].toInt() * 2
+                    else unique.params[1].toInt()
 
-                modifiers["Great General"] = greatGeneralModifier
+                modifiers[nearbyCivUnit.name] = greatGeneralModifier
             }
 
             for (unique in combatant.unit.getMatchingUniques(UniqueType.StrengthWhenStacked)) {
