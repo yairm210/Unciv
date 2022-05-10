@@ -215,7 +215,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                 for (city in originalCapitals) {
                     val milestoneText =
                         if (civInfo.exploredTiles.contains(city.location)) "Capture [${city.name}]"
-                        else "Capture [${Constants.unknownNationName}]"
+                        else "Capture [${Constants.unknownCityName}]"
                     buttons.add(getMilestoneButton(milestoneText, city.civInfo == civInfo))
                 }
             }
