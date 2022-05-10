@@ -806,7 +806,8 @@ class MapUnit {
                 if (unit == this)
                     continue
 
-                if (unit.getMatchingUniques("Transfer Movement to []").any { matchesFilter(it.params[0]) } )
+                if (unit.getMatchingUniques(UniqueType.TransferMovement)
+                        .any { matchesFilter(it.params[0]) } )
                     currentMovement = maxOf(getMaxMovement().toFloat(), unit.getMaxMovement().toFloat())
             }
         }
@@ -985,7 +986,8 @@ class MapUnit {
         // Air Units can only Intercept if they didn't move this turn
         if (baseUnit.isAirUnit() && currentMovement == 0f) return false
         val maxAttacksPerTurn = 1 +
-            getMatchingUniques("[] extra interceptions may be made per turn").sumOf { it.params[0].toInt() }
+            getMatchingUniques(UniqueType.ExtraInterceptionsPerTurn)
+                .sumOf { it.params[0].toInt() }
         if (attacksThisTurn >= maxAttacksPerTurn) return false
         return true
     }
@@ -1016,7 +1018,7 @@ class MapUnit {
     }
 
     fun interceptDamagePercentBonus(): Int {
-        return getMatchingUniques("[]% Damage when intercepting")
+        return getMatchingUniques(UniqueType.DamageWhenIntercepting)
             .sumOf { it.params[0].toInt() }
     }
 

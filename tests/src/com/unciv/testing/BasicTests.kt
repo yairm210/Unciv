@@ -158,6 +158,21 @@ class BasicTests {
     }
 
     @Test
+    fun allPromotionsUniquesHaveTheirUniqueTypes() {
+        val promotions = ruleset.unitPromotions.values
+        var allOK = true
+        for (promotion in promotions) {
+            for (unique in promotion.uniques) {
+                if (!UniqueType.values().any { it.placeholderText == unique.getPlaceholderText() }) {
+                    println("${promotion.name}: $unique")
+                    allOK = false
+                }
+            }
+        }
+        Assert.assertTrue("This test succeeds only if all uniques of promotions are presented in UniqueType.values()", allOK)
+    }
+
+    @Test
     fun allTerrainRelatedUniquesHaveTheirUniqueTypes() {
         val objects : MutableCollection<RulesetStatsObject> = mutableListOf()
         objects.addAll(ruleset.tileImprovements.values)
