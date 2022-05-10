@@ -1,0 +1,15 @@
+Ünlü medeniyet kurma oyununun yeniden uyarlanmış hali - hızlı, küçük, reklamsız, sonsuza kadar ücretsiz!
+
+Medeniyetinizi inşa edin, teknolojileri araştırın, şehirlerinizi genişletin ve düşmanlarınızı alt edin!
+
+İstek, hata bildirimi, uygulama için yapılacaklar listesi vb tüm her şey burada https://github.com/yairm210/UnCiv/issues, her çeşit yardıma açığız!
+
+Soru ve yorumlarınız mı var veya sadece sıkıldınız mı? https://discord.gg/bjrB4Xw adresinde bize katılın.
+
+Oyunun dilinize çevrilmesine yardım etmek isterseniz, yairm210@hotmail.com adresine e-posta gönderin.
+
+Grok Java mı, Kotlin mi? https://github.com/yairm210/UnCiv adresinde bize katılın.
+
+Dünya bekliyor! Medeniyetinizi zamana direnen bir imparatorluğa dönüştürebilecek misiniz?
+
+Kullanıcı tarafından başlatılan indirmeler ve çok oyunculu özellik için 'ağ erişimi' izni gereklidir. Diğer izinler, çok oyunculu modda sıra bildirimlerini gösterebilmek için, kullanılan API tarafından otomatik olarak istenir. Ağ izinleri modları listelemek, indirmek, müzik indirmek ve çok oyunculu oyunları yüklemek/indirmek için kullanılır. Unciv başka amaçla internet iletişimi başlatmaz.
