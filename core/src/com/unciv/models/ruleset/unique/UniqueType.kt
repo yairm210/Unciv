@@ -522,8 +522,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     RemoveOtherReligions("Removes other religions when spreading religion", UniqueTarget.Unit),
 
     CanActionSeveralTimes("Can [action] [amount] times", UniqueTarget.Unit),
-    // TODO needs to be more general
-    BonusForUnitsInRadius("Bonus for units in 2 tile radius 15%", UniqueTarget.Unit),
+    BonusForUnitsInRadius("Bonus for units in [amount] tile radius [relativeAmount]%", UniqueTarget.Unit),
 
     CanSpeedupConstruction("Can speed up construction of a building", UniqueTarget.Unit),
     CanHurryResearch("Can hurry technology research", UniqueTarget.Unit),

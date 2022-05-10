@@ -1178,7 +1178,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Unit
 
-??? example  "Bonus for units in 2 tile radius 15%"
+??? example  "Bonus for units in [amount] tile radius [relativeAmount]%"
+	Example: "Bonus for units in [3] tile radius [+20]%"
+
 	Applicable to: Unit
 
 ??? example  "Can speed up construction of a building"

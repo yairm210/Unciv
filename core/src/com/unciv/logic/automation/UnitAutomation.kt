@@ -158,7 +158,7 @@ object UnitAutomation {
             if (unit.hasUnique(UniqueType.AddInCapital))
                 return SpecificUnitAutomation.automateAddInCapital(unit)
             
-            if (unit.hasUnique("Bonus for units in 2 tile radius 15%"))
+            if (unit.getMatchingUniques(UniqueType.GreatPerson).any { it.params[0] == "War" })
                 return SpecificUnitAutomation.automateGreatGeneral(unit)
 
             if (unit.hasUnique(UniqueType.ConstructImprovementConsumingUnit))

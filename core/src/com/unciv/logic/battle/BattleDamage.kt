@@ -76,11 +76,22 @@ object BattleDamage {
                     modifiers["Missing resource"] = -25
 
 
-            val nearbyCivUnits = combatant.unit.getTile().getTilesInDistance(2)
-                .flatMap { it.getUnits() }.filter { it.civInfo == combatant.unit.civInfo }
-            if (nearbyCivUnits.any { it.hasUnique("Bonus for units in 2 tile radius 15%") }) {
+            // Get a unit which provides a bonus in range
+            val nearbyCivUnit = combatant.getCivInfo().getCivUnits().firstOrNull {
+                    val unique = it.getMatchingUniques(UniqueType.BonusForUnitsInRadius).firstOrNull()
+                    if (unique != null) {
+                        // if current combatant is near by, pick this unit
+                        it.currentTile.getTilesInDistance(unique.params[0].toInt())
+                            .any { tileInfo -> tileInfo.militaryUnit == combatant.unit }
+                    } else false
+                }
+
+            // get its unique and apply the bonus
+            if (nearbyCivUnit != null) {
+                val unique = nearbyCivUnit.getMatchingUniques(UniqueType.BonusForUnitsInRadius).first()
                 val greatGeneralModifier =
-                    if (combatant.unit.civInfo.hasUnique(UniqueType.GreatGeneralProvidesDoubleCombatBonus)) 30 else 15
+                    if (combatant.unit.civInfo.hasUnique(UniqueType.GreatGeneralProvidesDoubleCombatBonus))
+                        unique.params[1].toInt() * 2 else unique.params[1].toInt()
 
                 modifiers["Great General"] = greatGeneralModifier
             }

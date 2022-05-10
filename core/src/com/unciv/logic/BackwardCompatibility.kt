@@ -144,6 +144,14 @@ object BackwardCompatibility {
                     unit.promotions.addPromotion(startingPromo, true)
     }
 
+    /** Upgrade the uniques from deprecated format to the new more general one **/
+    fun GameInfo.updateGreatGeneralUniques() {
+        ruleSet.units.values.filter { it.uniques.contains("Bonus for units in 2 tile radius 15%") }.forEach {
+            it.uniques.remove("Bonus for units in 2 tile radius 15%")
+            it.uniques.add("Bonus for units in [2] tile radius [+15]%")
+        }
+    }
+
     /** Move max XP from barbarians to new home */
     @Suppress("DEPRECATION")
     fun ModOptions.updateDeprecations() {
