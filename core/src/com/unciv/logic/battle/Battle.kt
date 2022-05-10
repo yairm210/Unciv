@@ -214,8 +214,8 @@ object Battle {
     }
 
     private fun takeDamage(attacker: ICombatant, defender: ICombatant) {
-        var potentialDamageToDefender = BattleDamage.calculateDamageToDefender(attacker, attacker.getTile(), defender)
-        var potentialDamageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, attacker.getTile(), defender)
+        var potentialDamageToDefender = BattleDamage.calculateDamageToDefender(attacker, defender)
+        var potentialDamageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, defender)
 
         val defenderHealthBefore = defender.getHealth()
 
@@ -635,16 +635,11 @@ object Battle {
             }
         }
 
-        val blastRadius =
-            if (!attacker.hasUnique(UniqueType.BlastRadius)) 2
-            // Don't check conditionals as there are not supported
-            else attacker.unit.getMatchingUniques(UniqueType.BlastRadius).first().params[0].toInt()
+        val strength = attacker.unit.getMatchingUniques(UniqueType.NuclearWeapon)
+            .firstOrNull()?.params?.get(0)?.toInt() ?: return
 
-        val strength = when {
-            (attacker.unit.hasUnique(UniqueType.NuclearWeapon)) ->
-                attacker.unit.getMatchingUniques(UniqueType.NuclearWeapon).first().params[0].toInt()
-            else -> return
-        }
+        val blastRadius = attacker.unit.getMatchingUniques(UniqueType.BlastRadius)
+            .firstOrNull()?.params?.get(0)?.toInt() ?: 2
 
         // Calculate the tiles that are hit
         val hitTiles = targetTile.getTilesInDistance(blastRadius)
@@ -804,9 +799,8 @@ object Battle {
             if (Random().nextFloat() > interceptor.interceptChance() / 100f) return
 
             var damage = BattleDamage.calculateDamageToDefender(
-                    MapUnitCombatant(interceptor),
-                    null,
-                    attacker
+                MapUnitCombatant(interceptor),
+                attacker
             )
 
             var damageFactor = 1f + interceptor.interceptDamagePercentBonus().toFloat() / 100f

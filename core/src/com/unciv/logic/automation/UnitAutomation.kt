@@ -356,9 +356,10 @@ object UnitAutomation {
                 tilesToCheck = unit.getTile().getTilesInDistance(CLOSE_ENEMY_TILES_AWAY_LIMIT).toList()
         ).filter {
             // Ignore units that would 1-shot you if you attacked. Account for taking terrain damage after the fact.
-            BattleDamage.calculateDamageToAttacker(MapUnitCombatant(unit),
-                    it.tileToAttackFrom,
-                    Battle.getMapCombatantOfTile(it.tileToAttack)!!)
+            BattleDamage.calculateDamageToAttacker(
+                MapUnitCombatant(unit),
+                Battle.getMapCombatantOfTile(it.tileToAttack)!!
+            )
                     + unit.getDamageFromTerrain(it.tileToAttackFrom) < unit.health
         }
 
