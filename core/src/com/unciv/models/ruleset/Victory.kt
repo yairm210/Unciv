@@ -229,6 +229,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                         buttons.add(getMilestoneButton("Majority religion of [${civ.civName}]", true))
                 }
             }
+            null -> {}
         }
         return buttons
     }

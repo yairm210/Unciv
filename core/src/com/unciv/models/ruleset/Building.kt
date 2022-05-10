@@ -459,7 +459,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             rejectionReasons.add(RejectionReason.Unbuildable)
 
         for (unique in uniqueObjects) {
-            @Suppress("NON_EXHAUSTIVE_WHEN")
             when (unique.type) { // TODO: Lots of typification…
                 UniqueType.OnlyAvailableWhen->
                     if (!unique.conditionalsApply(civInfo, cityConstructions.cityInfo))
@@ -599,6 +598,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     if (!civInfo.gameInfo.gameParameters.victoryTypes.contains(unique.params[0]))
                         rejectionReasons.add(RejectionReason.HiddenWithoutVictory.toInstance(unique.text))
                 }
+
+                else -> {}
             }
         }
 

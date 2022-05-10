@@ -364,7 +364,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
         val civInfo = cityConstructions.cityInfo.civInfo
         for (unique in uniqueObjects) {
-            @Suppress("NON_EXHAUSTIVE_WHEN")
             when (unique.type) {
                 UniqueType.OnlyAvailableWhen -> if (!unique.conditionalsApply(civInfo, cityConstructions.cityInfo))
                     rejectionReasons.add(RejectionReason.ShouldNotBeDisplayed)
@@ -378,6 +377,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
                 UniqueType.RequiresPopulation -> if (unique.params[0].toInt() > cityConstructions.cityInfo.population.population)
                     rejectionReasons.add(RejectionReason.PopulationRequirement.toInstance(unique.text))
+
+                else -> {}
             }
         }
 
@@ -406,7 +407,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             rejectionReasons.add(RejectionReason.DisabledBySetting)
 
         for (unique in uniqueObjects) {
-            @Suppress("NON_EXHAUSTIVE_WHEN")  // Yes we want to implement only a few here
             when (unique.type) {
                 UniqueType.Unbuildable ->
                     rejectionReasons.add(RejectionReason.Unbuildable)
@@ -435,6 +435,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
                 UniqueType.MaxNumberBuildable -> if (civInfo.civConstructions.countConstructedObjects(this) >= unique.params[0].toInt())
                     rejectionReasons.add(RejectionReason.MaxNumberBuildable)
+
+                else -> {}
             }
         }
 
