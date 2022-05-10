@@ -230,10 +230,8 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                     val milestoneText =
                         if (civInfo.knows(civ) || !civ.isAlive()) "Majority religion of [${civ.civName}]"
                         else "Majority religion of [${Constants.unknownNationName}]"
-                    if (civReligion == null || (civReligion.isPantheon() && civInfo != civ) || !civ.religionManager.isMajorityReligionForCiv(civReligion))
-                        buttons.add(getMilestoneButton(milestoneText, false))
-                    else
-                        buttons.add(getMilestoneButton(milestoneText, true))
+                    val milestoneMet = (civReligion != null && (!civReligion.isPantheon() || civInfo == civ) && civ.religionManager.isMajorityReligionForCiv(civReligion))
+                    buttons.add(getMilestoneButton(milestoneText, milestoneMet))
                 }
             }
         }
