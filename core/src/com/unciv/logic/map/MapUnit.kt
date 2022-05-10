@@ -257,10 +257,6 @@ class MapUnit {
 
     fun getUniques(): ArrayList<Unique> = tempUniques
 
-    // TODO typify usages and remove this function
-    fun getMatchingUniques(placeholderText: String): Sequence<Unique> =
-        tempUniquesMap.getUniques(placeholderText)
-
     fun getMatchingUniques(
         uniqueType: UniqueType,
         stateForConditionals: StateForConditionals = StateForConditionals(civInfo, unit=this),
@@ -273,8 +269,10 @@ class MapUnit {
             yieldAll(civInfo.getMatchingUniques(uniqueType, stateForConditionals))
     }
 
+    // TODO typify usages and remove this function
+    @Deprecated("as of 4.0.15", ReplaceWith("hasUnique(uniqueType: UniqueType, ...)"))
     fun hasUnique(unique: String): Boolean {
-        return getMatchingUniques(unique).any()
+        return tempUniquesMap.getUniques(unique).any()
     }
 
     fun hasUnique(

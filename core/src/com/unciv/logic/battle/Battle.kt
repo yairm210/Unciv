@@ -793,7 +793,7 @@ object Battle {
     }
     
     private fun tryInterceptAirAttack(attacker: MapUnitCombatant, attackedTile: TileInfo, interceptingCiv: CivilizationInfo, defender: ICombatant?) {
-        if (attacker.unit.hasUnique("Cannot be intercepted")) return
+        if (attacker.unit.hasUnique(UniqueType.CannotBeIntercepted)) return
         // Pick highest chance interceptor
         for (interceptor in interceptingCiv.getCivUnits()
                 .filter { it.canIntercept(attackedTile) }

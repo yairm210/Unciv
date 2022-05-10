@@ -598,7 +598,7 @@ object UnitActions {
                 .getTilesInDistance(1)
                 .flatMap { it.getUnits() }
                 .any {
-                    it.hasUnique("Prevents spreading of religion to the city it is next to")
+                    it.hasUnique(UniqueType.PreventSpreadingReligion)
                     && it.religion != unit.religion
                 }
         actionList += UnitAction(UnitActionType.SpreadReligion,
@@ -609,7 +609,7 @@ object UnitActions {
                     unit.civInfo.addStat(Stat.valueOf(unique.params[1]), followersOfOtherReligions * unique.params[0].toInt())
                 }
                 city.religion.addPressure(unit.religion!!, unit.getPressureAddedFromSpread())
-                if (unit.hasUnique("Removes other religions when spreading religion"))
+                if (unit.hasUnique(UniqueType.RemoveOtherReligions))
                     city.religion.removeAllPressuresExceptFor(unit.religion!!)
                 unit.currentMovement = 0f
                 useActionWithLimitedUses(unit, Constants.spreadReligionAbilityCount)
