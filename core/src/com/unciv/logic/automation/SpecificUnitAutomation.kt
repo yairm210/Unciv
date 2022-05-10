@@ -38,8 +38,8 @@ object SpecificUnitAutomation {
                 unit.movement.headTowards(closestReachableResource)
 
                 // could be either fishing boats or oil well
-                val improvement = closestReachableResource.tileResource.improvement
-                if (unit.currentTile == closestReachableResource && improvement != null)
+                val isImprovable = closestReachableResource.tileResource.getImprovements().any()
+                if (isImprovable && unit.currentTile == closestReachableResource)
                     UnitActions.getWaterImprovementAction(unit)?.action?.invoke()
             }
         }

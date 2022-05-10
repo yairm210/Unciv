@@ -20,7 +20,7 @@ import kotlin.math.roundToInt
 class ImprovementPickerScreen(
     private val tileInfo: TileInfo,
     private val unit: MapUnit,
-    private val onAccept: ()->Unit
+    private val onAccept: ()->Unit,
 ) : PickerScreen() {
     private var selectedImprovement: TileImprovement? = null
     private val gameInfo = tileInfo.tileMap.gameInfo
@@ -98,12 +98,12 @@ class ImprovementPickerScreen(
 
             var labelText = improvement.name.tr()
             val turnsToBuild = if (tileInfo.improvementInProgress == improvement.name) tileInfo.turnsToImprovement
-                else improvement.getTurnsToBuild(currentPlayerCiv, unit)
+            else improvement.getTurnsToBuild(currentPlayerCiv, unit)
+            
             if (turnsToBuild > 0) labelText += " - $turnsToBuild${Fonts.turn}"
-            val provideResource = tileInfo.hasViewableResource(currentPlayerCiv) && tileInfo.tileResource.improvement == improvement.name
+            val provideResource = tileInfo.hasViewableResource(currentPlayerCiv) && tileInfo.tileResource.isImprovedBy(improvement.name)
             if (provideResource) labelText += "\n" + "Provides [${tileInfo.resource}]".tr()
-            val removeImprovement = (improvement.name != RoadStatus.Road.name
-                    && improvement.name != RoadStatus.Railroad.name
+            val removeImprovement = (improvement.isRoad()
                     && !improvement.name.startsWith(Constants.remove)
                     && improvement.name != Constants.cancelImprovementOrder)
             if (tileInfo.improvement != null && removeImprovement) labelText += "\n" + "Replaces [${tileInfo.improvement}]".tr()
@@ -162,7 +162,7 @@ class ImprovementPickerScreen(
             statIcons.add(ImageGetter.getResourceImage(tileInfo.resource.toString(), 30f)).pad(3f)
 
         // icon for removing the resource by replacing improvement
-        if (removeImprovement && tileInfo.hasViewableResource(currentPlayerCiv) && tileInfo.tileResource.improvement == tileInfo.improvement) {
+        if (removeImprovement && tileInfo.hasViewableResource(currentPlayerCiv) && tileInfo.improvement != null && tileInfo.tileResource.isImprovedBy(tileInfo.improvement!!)) {
             val resourceIcon = ImageGetter.getResourceImage(tileInfo.resource!!, 30f)
             statIcons.add(ImageGetter.getCrossedImage(resourceIcon, 30f))
         }

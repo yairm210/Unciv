@@ -624,7 +624,9 @@ class OptionsPopup(
             for ((tile, resource) in ownedTiles zip resourceTypes) {
                 tile.resource = resource.name
                 tile.resourceAmount = 999
-                tile.improvement = resource.improvement
+                // Debug option, so if it crashes on this that's relatively fine
+                // If this becomes a problem, check if such an improvement exists and otherwise plop down a great improvement or so
+                tile.improvement = resource.getImprovements().first() 
             }
             game.gameInfo.getCurrentPlayerCivilization().updateSightAndResources()
             game.worldScreen.shouldUpdate = true

@@ -360,7 +360,7 @@ class TileMap {
                         || cTileHeight > bNeighborHeight // c>b
                         || (
                             currentTileHeight == bNeighborHeight // a==b
-                            && !bNeighbor.hasUnique(UniqueType.BlocksLineOfSightAtSameElevation)
+                            && !bNeighbor.terrainHasUnique(UniqueType.BlocksLineOfSightAtSameElevation)
                         )
                     )
                 }

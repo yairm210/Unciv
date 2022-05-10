@@ -9,6 +9,7 @@ import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.updateDeprecations
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.map.MapParameters
+import com.unciv.logic.map.RoadStatus
 import com.unciv.models.Counter
 import com.unciv.models.ModConstants
 import com.unciv.models.metadata.BaseRuleset
@@ -665,6 +666,9 @@ class Ruleset {
                 lines += "${resource.name} revealed by tech ${resource.revealedBy} which does not exist!"
             if (resource.improvement != null && !tileImprovements.containsKey(resource.improvement!!))
                 lines += "${resource.name} improved by improvement ${resource.improvement} which does not exist!"
+            for (improvement in resource.improvedBy)
+                if (!tileImprovements.containsKey(improvement))
+                    lines += "${resource.name} improved by improvement $improvement which does not exist!"
             for (terrain in resource.terrainsCanBeFoundOn)
                 if (!terrains.containsKey(terrain))
                     lines += "${resource.name} can be found on terrain $terrain which does not exist!"
@@ -675,8 +679,20 @@ class Ruleset {
             if (improvement.techRequired != null && !technologies.containsKey(improvement.techRequired!!))
                 lines += "${improvement.name} requires tech ${improvement.techRequired} which does not exist!"
             for (terrain in improvement.terrainsCanBeBuiltOn)
-                if (!terrains.containsKey(terrain))
+                if (!terrains.containsKey(terrain) && terrain != "Land" && terrain != "Water")
                     lines += "${improvement.name} can be built on terrain $terrain which does not exist!"
+            if (improvement.terrainsCanBeBuiltOn.isEmpty() 
+                && !improvement.hasUnique(UniqueType.CanOnlyImproveResource) 
+                && !improvement.hasUnique(UniqueType.Unbuildable) 
+                && !improvement.name.startsWith(Constants.remove) 
+                && improvement.name !in RoadStatus.values().map { it.removeAction }
+                && improvement.name != Constants.cancelImprovementOrder
+            ) {
+                lines.add(
+                    "${improvement.name} has an empty `terrainsCanBeBuiltOn`, isn't allowed to only improve resources and isn't unbuildable! Support for this will soon end. Either give this the unique \"Unbuildable\", \"Can only be built to improve a resource\" or add \"Land\", \"Water\" or any other value to `terrainsCanBeBuiltOn`.",
+                    RulesetErrorSeverity.Warning
+                )
+            }
             checkUniques(improvement, lines, rulesetSpecific, forOptionsPopup)
         }
 

@@ -13,6 +13,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.toPercent
+import com.unciv.ui.worldscreen.unit.UnitActions
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -23,16 +24,17 @@ class TileImprovement : RulesetStatsObject() {
     var uniqueTo:String? = null
     override fun getUniqueTarget() = UniqueTarget.Improvement
     val shortcutKey: Char? = null
-    val turnsToBuild: Int = 0 // This is the base cost.
+    // This is the base cost. A cost of 0 means created instead of buildable.
+    val turnsToBuild: Int = 0 
 
 
-    fun getTurnsToBuild(civInfo: CivilizationInfo, unit: MapUnit?): Int {
+    fun getTurnsToBuild(civInfo: CivilizationInfo, unit: MapUnit): Int {
         val state = StateForConditionals(civInfo, unit = unit)
-        val uniques = civInfo.getMatchingUniques(UniqueType.TileImprovementTime, state) +
-            (unit?.getMatchingUniques(UniqueType.TileImprovementTime, state) ?: sequenceOf())
-        return uniques.fold(turnsToBuild.toFloat() * civInfo.gameInfo.gameParameters.gameSpeed.modifier) {
-            it, unique -> it * unique.params[0].toPercent()
-        }.roundToInt().coerceAtLeast(1)
+        return unit.getMatchingUniques(UniqueType.TileImprovementTime, state, checkCivInfoUniques = true)
+            .fold(turnsToBuild.toFloat() * civInfo.gameInfo.gameParameters.gameSpeed.modifier) { it, unique ->
+                it * unique.params[0].toPercent()
+            }.roundToInt()
+            .coerceAtLeast(1)
         // In some weird cases it was possible for something to take 0 turns, leading to it instead never finishing
     }
 
@@ -48,7 +50,7 @@ class TileImprovement : RulesetStatsObject() {
             }
             lines += "Can be built on".tr() + terrainsCanBeBuiltOnString.joinToString(", ", " ") //language can be changed when setting changes.
         }
-        for (resource: TileResource in ruleset.tileResources.values.filter { it.improvement == name }) {
+        for (resource: TileResource in ruleset.tileResources.values.filter { it.isImprovedBy(name) }) {
             if (resource.improvementStats == null) continue
             val statsString = resource.improvementStats.toString()
             lines += "[${statsString}] <in [${resource.name}] tiles>".tr()
@@ -65,6 +67,22 @@ class TileImprovement : RulesetStatsObject() {
     fun isRoad() = RoadStatus.values().any { it != RoadStatus.None && it.name == this.name }
     fun isAncientRuinsEquivalent() = hasUnique(UniqueType.IsAncientRuinsEquivalent)
 
+    fun canBeBuiltOn(terrain: String): Boolean {
+        return terrain in terrainsCanBeBuiltOn
+    }
+    
+    fun handleImprovementCompletion(builder: MapUnit) {
+        if (hasUnique(UniqueType.TakesOverAdjacentTiles))
+            UnitActions.takeOverTilesAround(builder)
+        if (builder.getTile().resource != null) {
+            val city = builder.getTile().getCity()
+            if (city != null) {
+                city.cityStats.update()
+                city.civInfo.updateDetailedCivResources()
+            }
+        }
+    }
+    
     /**
      * Check: Is this improvement allowed on a [given][name] terrain feature?
      *
@@ -75,7 +93,7 @@ class TileImprovement : RulesetStatsObject() {
      * so this check is done in conjunction - for the user, success means he does not need to remove
      * a terrain feature, thus the unique name.
      */
-    fun isAllowedOnFeature(name: String) = getMatchingUniques(UniqueType.NoFeatureRemovalNeeded).any { it.params[0] == name }
+    fun isAllowedOnFeature(name: String) = terrainsCanBeBuiltOn.contains(name) || getMatchingUniques(UniqueType.NoFeatureRemovalNeeded).any { it.params[0] == name }
 
     /** Implements [UniqueParameterType.ImprovementFilter][com.unciv.models.ruleset.unique.UniqueParameterType.ImprovementFilter] */
     fun matchesFilter(filter: String): Boolean {
@@ -117,7 +135,7 @@ class TileImprovement : RulesetStatsObject() {
         }
 
         var addedLineBeforeResourceBonus = false
-        for (resource in ruleset.tileResources.values.filter { it.improvement == name }) {
+        for (resource in ruleset.tileResources.values.filter { it.isImprovedBy(name) }) {
             if (resource.improvementStats == null) continue
             if (!addedLineBeforeResourceBonus) {
                 addedLineBeforeResourceBonus = true

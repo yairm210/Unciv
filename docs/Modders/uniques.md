@@ -829,7 +829,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Building, Improvement
 
 ??? example  "Unbuildable"
-	Applicable to: Building, Unit
+	Applicable to: Building, Unit, Improvement
 
 ??? example  "Cannot be purchased"
 	Applicable to: Building, Unit
@@ -1396,6 +1396,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Improvement
 
+??? example  "Can only be built to improve a resource"
+	Applicable to: Improvement
+
 ??? example  "Gives a defensive bonus of [relativeAmount]%"
 	Example: "Gives a defensive bonus of [+20]%"
 
@@ -1420,10 +1423,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Provides a random bonus when entered"
 	Applicable to: Improvement
 
-??? example  "Unpillagable"
+??? example  "Constructing it will take over the tiles around it and assign them to your closest city"
 	Applicable to: Improvement
 
-??? example  "Indestructible"
+??? example  "Unpillagable"
 	Applicable to: Improvement
 
 ??? example  "Irremovable"
