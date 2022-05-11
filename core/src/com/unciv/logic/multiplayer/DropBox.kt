@@ -18,7 +18,7 @@ object DropBox: IFileStorage {
     private fun dropboxApi(url: String, data: String = "", contentType: String = "", dropboxApiArg: String = ""): InputStream? {
 
         if (remainingRateLimitSeconds > 0)
-            throw FileStorageRateLimitReached(remainingRateLimitSeconds.toString())
+            throw FileStorageRateLimitReached(remainingRateLimitSeconds)
 
         with(URL(url).openConnection() as HttpURLConnection) {
             requestMethod = "POST"  // default is GET
@@ -113,19 +113,15 @@ object DropBox: IFileStorage {
      * the default value of 5 minutes will be used.
      * Any attempt before the rate limit is dropped again will also contribute to the rate limit
      */
-    private fun triggerRateLimit(error: ErrorResponse) {
-        try {
-            remainingRateLimitSeconds = error.details?.retry_after?.toInt() ?: 300
-        } catch (ex: NumberFormatException) {
-            remainingRateLimitSeconds = 300
-        }
+    private fun triggerRateLimit(response: ErrorResponse) {
+        remainingRateLimitSeconds = response.error?.retry_after?.toIntOrNull() ?: 300
 
         rateLimitTimer = timer("RateLimitTimer", true, 0, 1000) {
             remainingRateLimitSeconds--
             if (remainingRateLimitSeconds == 0)
                 rateLimitTimer?.cancel()
         }
-        throw FileStorageRateLimitReached(remainingRateLimitSeconds.toString())
+        throw FileStorageRateLimitReached(remainingRateLimitSeconds)
     }
 
     fun getFolderList(folder: String): ArrayList<IFileMetaData> {
@@ -184,7 +180,7 @@ object DropBox: IFileStorage {
     @Suppress("PropertyName")
     private class ErrorResponse {
         var error_summary = ""
-        var details: Details? = null
+        var error: Details? = null
 
         class Details {
             var retry_after = ""

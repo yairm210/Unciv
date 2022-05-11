@@ -264,7 +264,7 @@ class NewGameScreen(
                 GameSaver.saveGame(newGamePreview, newGamePreview.gameId)
             } catch (ex: FileStorageRateLimitReached) {
                 postCrashHandlingRunnable {
-                    popup.reuseWith("Server limit reached! Please wait for [${ex.message}] seconds", true)
+                    popup.reuseWith("Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds", true)
                 }
                 Gdx.input.inputProcessor = stage
                 rightSideButton.enable()

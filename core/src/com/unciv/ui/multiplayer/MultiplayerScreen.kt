@@ -174,7 +174,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
                 }
             } catch (ex: FileStorageRateLimitReached) {
                 postCrashHandlingRunnable {
-                    popup.reuseWith("Server limit reached! Please wait for [${ex.message}] seconds", true)
+                    popup.reuseWith("Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds", true)
                 }
             } catch (ex: Exception) {
                 postCrashHandlingRunnable {
@@ -201,7 +201,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
                 postCrashHandlingRunnable { game.loadGame(gameInfo) }
             } catch (ex: FileStorageRateLimitReached) {
                 postCrashHandlingRunnable {
-                    loadingGamePopup.reuseWith("Server limit reached! Please wait for [${ex.message}] seconds", true)
+                    loadingGamePopup.reuseWith("Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds", true)
                 }
             } catch (ex: Exception) {
                 postCrashHandlingRunnable {
@@ -354,7 +354,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
                     }
                 } catch (ex: FileStorageRateLimitReached) {
                     postCrashHandlingRunnable {
-                        ToastPopup("Server limit reached! Please wait for [${ex.message}] seconds", this)
+                        ToastPopup("Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds", this)
                     }
                     break // No need to keep trying if rate limit is reached
                 } catch (ex: Exception) {
