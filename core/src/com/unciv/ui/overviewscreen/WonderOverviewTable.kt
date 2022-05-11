@@ -178,7 +178,6 @@ class WonderOverviewTab(
                 val index = wonderIndexMap[wonderName]!!
                 val status = when {
                     viewingPlayer == city.civInfo -> WonderStatus.Owned
-                    //viewingPlayer.knows(city.civInfo) -> WonderStatus.Known
                     viewingPlayer.exploredTiles.contains(city.location) -> WonderStatus.Known
                     else -> WonderStatus.NotFound
                 }
