@@ -12,13 +12,14 @@ import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
+import com.unciv.ui.utils.getConsumesAmountString
 import com.unciv.ui.utils.toPercent
 import kotlin.math.pow
 
 
 class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
-    var requiredTech: String? = null
+    override var requiredTech: String? = null
 
     var cost: Int = 0
     var maintenance = 0
@@ -99,7 +100,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         }
 
     /** used in CityScreen (CityInfoTable and ConstructionInfoTable) */
-    fun getDescription(cityInfo: CityInfo, showMissingRequiredCities:Boolean): String {
+    fun getDescription(cityInfo: CityInfo, showAdditionalInfo: Boolean): String {
         val stats = getStats(cityInfo)
         val lines = ArrayList<String>()
         val isFree = name in cityInfo.civInfo.civConstructions.getFreeBuildings(cityInfo.id)
@@ -109,8 +110,13 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (isWonder) lines += "Wonder"
         if (isNationalWonder) lines += "National Wonder"
         if (!isFree) {
+            val availableResources = if (!showAdditionalInfo) emptyMap()
+                else cityInfo.civInfo.getCivResources().associate { it.resource.name to it.amount }
             for ((resource, amount) in getResourceRequirements()) {
-                lines += "Consumes [$amount] [$resource]"
+                val available = availableResources[resource] ?: 0
+                lines += if (showAdditionalInfo)
+                        "{${resource.getConsumesAmountString(amount)}} ({[$available] available})"
+                    else resource.getConsumesAmountString(amount)
             }
         }
 
@@ -125,7 +131,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (uniques.isNotEmpty()) {
             if (replacementTextForUniques != "") lines += replacementTextForUniques
             else lines += getUniquesStringsWithoutDisablers(
-                filterUniques=if (missingCities.isEmpty()) null
+                filterUniques = if (missingCities.isEmpty()) null
                     else { unique -> !unique.isOfType(UniqueType.RequiresBuildingInAllCities) }
                     // Filter out the "Requires a [] in all cities" unique if any cities are still missing the required building, since in that case the list of cities will be appended at the end.
             )
@@ -148,7 +154,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (cityStrength != 0) lines += "{City strength} +$cityStrength"
         if (cityHealth != 0) lines += "{City health} +$cityHealth"
         if (maintenance != 0 && !isFree) lines += "{Maintenance cost}: $maintenance {Gold}"
-        if (showMissingRequiredCities && missingCities.isNotEmpty()) {
+        if (showAdditionalInfo && missingCities.isNotEmpty()) {
             // Could be red. But IMO that should be done by enabling GDX's ColorMarkupLanguage globally instead of adding a separate label.
             lines += "\n" + 
                 "[${cityInfo.civInfo.getEquivalentBuilding(missingUnique!!.params[0])}] required:".tr() +
@@ -158,12 +164,15 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         return lines.joinToString("\n") { it.tr() }.trim()
     }
 
-    fun getStats(city: CityInfo): Stats {
+    fun getStats(city: CityInfo, 
+                 /* By default, do not cache - if we're getting stats for only one building this isn't efficient.
+                 * Only use a cache if it was sent to us from outside, which means we can use the results for other buildings.  */
+                 localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Stats {
         // Calls the clone function of the NamedStats this class is derived from, not a clone function of this class
         val stats = cloneStats()
         val civInfo = city.civInfo
 
-        for (unique in city.getMatchingUniques(UniqueType.StatsFromObject)) {
+        for (unique in localUniqueCache.get("StatsFromObject", city.getMatchingUniques(UniqueType.StatsFromObject))) {
             if (!matchesFilter(unique.params[1])) continue
             stats.add(unique.stats)
         }
@@ -174,18 +183,18 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 stats.add(unique.stats)
 
         if (!isWonder)
-            for (unique in city.getMatchingUniques(UniqueType.StatsFromBuildings)) {
+            for (unique in localUniqueCache.get("StatsFromBuildings", city.getMatchingUniques(UniqueType.StatsFromBuildings))) {
                 if (matchesFilter(unique.params[1]))
                     stats.add(unique.stats)
             }
         return stats
     }
 
-    fun getStatPercentageBonuses(cityInfo: CityInfo?): Stats {
+    fun getStatPercentageBonuses(cityInfo: CityInfo?, localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Stats {
         val stats = percentStatBonus?.clone() ?: Stats()
         val civInfo = cityInfo?.civInfo ?: return stats  // initial stats
         
-        for (unique in civInfo.getMatchingUniques(UniqueType.StatPercentFromObject)) {
+        for (unique in localUniqueCache.get("StatPercentFromObject", civInfo.getMatchingUniques(UniqueType.StatPercentFromObject))) {
             if (matchesFilter(unique.params[2]))
                 stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
         }
@@ -236,7 +245,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             for ((resource, amount) in resourceRequirements) {
                 textList += FormattedLine(
                     // the 1 variant should deprecate some time
-                    if (amount == 1) "Consumes 1 [$resource]" else "Consumes [$amount] [$resource]",
+                    resource.getConsumesAmountString(amount),
                     link="Resources/$resource", color="#F42" )
             }
         }
@@ -247,14 +256,14 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (uniques.isNotEmpty() || !stats.isEmpty() || !percentStats.isEmpty() || this.greatPersonPoints.isNotEmpty() || specialists.isNotEmpty())
             textList += FormattedLine()
 
-        if (uniques.isNotEmpty()) {
-            if (replacementTextForUniques.isNotEmpty())
-                textList += FormattedLine(replacementTextForUniques)
-            else
-                uniqueObjects.forEach {
-                    if (!it.hasFlag(UniqueFlag.HiddenToUsers))
-                        textList += FormattedLine(it)
-                }
+        if (replacementTextForUniques.isNotEmpty()) {
+            textList += FormattedLine(replacementTextForUniques)
+        } else if (uniques.isNotEmpty()) {
+            for (unique in uniqueObjects) {
+                if (unique.hasFlag(UniqueFlag.HiddenToUsers)) continue
+                if (unique.type == UniqueType.ConsumesResources) continue  // already shown from getResourceRequirements
+                textList += FormattedLine(unique)
+            }
         }
 
         if (!stats.isEmpty()) {
@@ -268,7 +277,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             }
         }
 
-        for((greatPersonName, value) in greatPersonPoints) {
+        for ((greatPersonName, value) in greatPersonPoints) {
             textList += FormattedLine(
                 "+$value " + "[$greatPersonName] points".tr(),
                 link = "Unit/$greatPersonName"
@@ -296,7 +305,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         val seeAlso = ArrayList<FormattedLine>()
         for (building in ruleset.buildings.values) {
             if (building.replaces == name
-                    || building.uniqueObjects.any { unique -> unique.params.any { it ==name } })
+                    || building.uniqueObjects.any { unique -> unique.params.any { it == name } })
                 seeAlso += FormattedLine(building.name, link=building.makeLink(), indent=1)
         }
         seeAlso += Belief.getCivilopediaTextMatching(name, ruleset, false)
@@ -407,8 +416,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     }
 
     override fun getStatBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
-        var cost = getBaseBuyCost(cityInfo, stat)?.toDouble()
-        if (cost == null) return null
+        var cost = getBaseBuyCost(cityInfo, stat)?.toDouble() ?: return null
 
         for (unique in cityInfo.getMatchingUniques(UniqueType.BuyItemsDiscount))
             if (stat.name == unique.params[0])
@@ -535,11 +543,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     }
                 }
 
+                // To be replaced with `Only available <after [Apollo Project] has been build>`
                 UniqueType.SpaceshipPart -> {
                     if (!civInfo.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts))
                         rejectionReasons.add(RejectionReason.RequiresBuildingInSomeCity.toInstance("Apollo project not built!"))
-                    if (civInfo.victoryManager.unconstructedSpaceshipParts()[name] == 0)
-                        rejectionReasons.add(RejectionReason.ReachedBuildCap)
                 }
 
                 UniqueType.RequiresAnotherBuilding -> {
@@ -590,7 +597,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 }
 
                 UniqueType.HiddenWithoutVictoryType -> {
-                    if (!civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.valueOf(unique.params[0])))
+                    if (!civInfo.gameInfo.gameParameters.victoryTypes.contains(unique.params[0]))
                         rejectionReasons.add(RejectionReason.HiddenWithoutVictory.toInstance(unique.text))
                 }
             }
@@ -644,7 +651,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
         for ((resource, amount) in getResourceRequirements())
             if (civInfo.getCivResourcesByName()[resource]!! < amount) {
-                rejectionReasons.add(RejectionReason.ConsumesResources.toInstance("Consumes [$amount] [$resource]" ))
+                rejectionReasons.add(RejectionReason.ConsumesResources.toInstance(resource.getConsumesAmountString(amount)))
             }
 
         if (requiredNearbyImprovedResources != null) {
@@ -653,7 +660,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     it.resource != null
                     && requiredNearbyImprovedResources!!.contains(it.resource!!)
                     && it.getOwner() == civInfo
-                    && (it.tileResource.improvement == it.improvement || it.isCityCenter()
+                    && ((it.improvement != null && it.tileResource.isImprovedBy(it.improvement!!)) || it.isCityCenter()
                        || (it.getTileImprovement()?.isGreatImprovement() == true && it.tileResource.resourceType == ResourceType.Strategic)
                     )
                 }
@@ -670,22 +677,15 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     override fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat?): Boolean {
         val civInfo = cityConstructions.cityInfo.civInfo
 
-        if (hasUnique(UniqueType.SpaceshipPart)) {
+        if (civInfo.gameInfo.spaceResources.contains(name)) {
             civInfo.victoryManager.currentsSpaceshipParts.add(name, 1)
             return true
         }
 
         cityConstructions.addBuilding(name)
 
-        val improvement = getImprovement(civInfo.gameInfo.ruleSet)
-        if (improvement != null) {
-            val tileWithImprovement = cityConstructions.cityInfo.getTiles().firstOrNull { it.improvementInProgress == improvement.name }
-            if (tileWithImprovement != null) {
-                tileWithImprovement.turnsToImprovement = 0
-                tileWithImprovement.improvementInProgress = null
-                tileWithImprovement.improvement = improvement.name
-            }
-        }
+        /** Support for [UniqueType.CreatesOneImprovement] */
+        cityConstructions.applyCreateOneImprovement(this)
 
         // "Provides a free [buildingName] [cityFilter]"
         cityConstructions.addFreeBuildings()
@@ -707,6 +707,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         return true
     }
 
+    /** Implements [UniqueParameterType.BuildingFilter] */
     fun matchesFilter(filter: String): Boolean {
         return when (filter) {
             "All" -> true
@@ -718,7 +719,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             replaces -> true
             else -> {
                 if (uniques.contains(filter)) return true
-                val stat = Stat.values().firstOrNull { it.name == filter }
+                val stat = Stat.safeValueOf(filter)
                 if (stat != null && isStatRelated(stat)) return true
                 return false
             }
@@ -734,10 +735,20 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         return false
     }
 
-    fun getImprovement(ruleset: Ruleset): TileImprovement? {
-        val improvementUnique = getMatchingUniques("Creates a [] improvement on a specific tile")
-            .firstOrNull() ?: return null
-        return ruleset.tileImprovements[improvementUnique.params[0]]
+    private val _hasCreatesOneImprovementUnique by lazy {
+        hasUnique(UniqueType.CreatesOneImprovement)
+    }
+    fun hasCreateOneImprovementUnique() = _hasCreatesOneImprovementUnique
+
+    private var _getImprovementToCreate: TileImprovement? = null
+    fun getImprovementToCreate(ruleset: Ruleset): TileImprovement? {
+        if (!hasCreateOneImprovementUnique()) return null
+        if (_getImprovementToCreate == null) {
+            val improvementUnique = getMatchingUniques(UniqueType.CreatesOneImprovement)
+                .firstOrNull() ?: return null
+            _getImprovementToCreate = ruleset.tileImprovements[improvementUnique.params[0]]
+        }
+        return _getImprovementToCreate
     }
 
     fun isSellable() = !isAnyWonder() && !hasUnique(UniqueType.Unsellable)

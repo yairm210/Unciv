@@ -348,27 +348,27 @@ class CityInfo {
             if (amount > 0) cityResources.add(resource, amount, "Tiles")
         }
         
+        
+        
         for (tileInfo in getTiles()) {
+            val stateForConditionals = StateForConditionals(civInfo, this, tile = tileInfo)
             if (tileInfo.improvement == null) continue
             val tileImprovement = tileInfo.getTileImprovement()
-            for (unique in tileImprovement!!.uniqueObjects) {
-                if (unique.isOfType(UniqueType.ProvidesResources)) {
-                    if (!unique.conditionalsApply(civInfo, this)) continue
-                    val resource = getRuleset().tileResources[unique.params[1]] ?: continue
-                    cityResources.add(
-                        resource,
-                        unique.params[0].toInt() * civInfo.getResourceModifier(resource),
-                        "Improvements"
-                    )
-                }
-                if (unique.isOfType(UniqueType.ConsumesResources)) {
-                    val resource = getRuleset().tileResources[unique.params[1]] ?: continue
-                    cityResources.add(
-                        resource,
-                        -1 * unique.params[0].toInt(),
-                        "Improvements"
-                    )
-                }
+            for (unique in tileImprovement!!.getMatchingUniques(UniqueType.ProvidesResources, stateForConditionals)) {
+                val resource = getRuleset().tileResources[unique.params[1]] ?: continue
+                cityResources.add(
+                    resource,
+                    unique.params[0].toInt() * civInfo.getResourceModifier(resource),
+                    "Improvements"
+                )
+            }
+            for (unique in tileImprovement.getMatchingUniques(UniqueType.ConsumesResources, stateForConditionals)) {
+                val resource = getRuleset().tileResources[unique.params[1]] ?: continue
+                cityResources.add(
+                    resource,
+                    -1 * unique.params[0].toInt(),
+                    "Improvements"
+                )
             }
         }
 
@@ -383,14 +383,13 @@ class CityInfo {
             }
         }
 
-        for (unique in getLocalMatchingUniques(UniqueType.ProvidesResources)) { // E.G "Provides [1] [Iron]"
-            if (!unique.conditionalsApply(civInfo, this)) continue
+        for (unique in getLocalMatchingUniques(UniqueType.ProvidesResources, StateForConditionals(civInfo, this))) { // E.G "Provides [1] [Iron]"
             val resource = getRuleset().tileResources[unique.params[1]]
             if (resource != null) {
                 cityResources.add(
                     resource, 
                     unique.params[0].toInt() * civInfo.getResourceModifier(resource), 
-                    "Tiles"
+                    "Buildings+"
                 )
             }
         }
@@ -411,12 +410,14 @@ class CityInfo {
         if (resource.revealedBy != null && !civInfo.tech.isResearched(resource.revealedBy!!)) return 0
 
         // Even if the improvement exists (we conquered an enemy city or somesuch) or we have a city on it, we won't get the resource until the correct tech is researched
-        if (resource.improvement != null) {
-            val improvement = getRuleset().tileImprovements[resource.improvement!!]!!
-            if (improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!)) return 0
+        if (resource.getImprovements().any()) {
+            if (!resource.getImprovements().any { improvementString ->
+                val improvement = getRuleset().tileImprovements[improvementString]!!
+                improvement.techRequired == null || civInfo.tech.isResearched(improvement.techRequired!!)
+            }) return 0
         }
 
-        if (resource.improvement == tileInfo.improvement || tileInfo.isCityCenter()
+        if ((tileInfo.improvement != null && resource.isImprovedBy(tileInfo.improvement!!)) || tileInfo.isCityCenter()
             // Per https://gaming.stackexchange.com/questions/53155/do-manufactories-and-customs-houses-sacrifice-the-strategic-or-luxury-resources
             || resource.resourceType == ResourceType.Strategic && tileInfo.containsGreatImprovement()
         ) {
@@ -697,7 +698,9 @@ class CityInfo {
 
         // The relinquish ownership MUST come before removing the city,
         // because it updates the city stats which assumes there is a capital, so if you remove the capital it crashes
-        getTiles().forEach { expansion.relinquishOwnership(it) }
+        for (tile in getTiles()) {
+            expansion.relinquishOwnership(tile)
+        }
         civInfo.cities = civInfo.cities.toMutableList().apply { remove(this@CityInfo) }
         getCenterTile().improvement = "City ruins"
 
@@ -827,7 +830,7 @@ class CityInfo {
         }
     }
 
-    // When adding here, add to UniqueParameterType.cityFilterStrings
+    /** Implements [UniqueParameterType.CityFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CityFilter] */
     fun matchesFilter(filter: String, viewingCiv: CivilizationInfo = civInfo): Boolean {
         return when (filter) {
             "in this city" -> true
@@ -890,9 +893,10 @@ class CityInfo {
 
 
     fun getMatchingUniquesWithNonLocalEffects(uniqueType: UniqueType, stateForConditionals: StateForConditionals): Sequence<Unique> {
-        return cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
-            .filter { !it.isLocalEffect && it.conditionalsApply(stateForConditionals) }
-        // Note that we don't query religion here, as those only have local effects
+        val uniques = cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
+        // Memory performance showed that this function was very memory intensive, thus we only create the filter if needed
+        return if (uniques.any()) uniques.filter { !it.isLocalEffect && it.conditionalsApply(stateForConditionals) }
+        else uniques
     }
 
     //endregion

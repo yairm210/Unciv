@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
-import com.badlogic.gdx.utils.Json
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
@@ -35,7 +34,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen(disableScroll = true
 
         val newSave = Table()
         newSave.defaults().pad(5f, 10f)
-        val defaultSaveName = gameInfo.currentPlayer + " -  " + gameInfo.turns + " turns"
+        val defaultSaveName = "[${gameInfo.currentPlayer}] - [${gameInfo.turns}] turns".tr()
         gameNameTextField.text = defaultSaveName
 
         newSave.add("Saved game name".toLabel()).row()
@@ -45,15 +44,14 @@ class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen(disableScroll = true
         copyJsonButton.onClick {
             thread(name="Copy to clipboard") { // the Gzip rarely leads to ANRs
                 try {
-                    val json = Json().toJson(gameInfo)
-                    val base64Gzip = Gzip.zip(json)
-                    Gdx.app.clipboard.contents = base64Gzip
+                    Gdx.app.clipboard.contents = GameSaver.gameInfoToString(gameInfo, forceZip = true)
                 } catch (OOM: OutOfMemoryError) {
                     // you don't get a special toast, this isn't nearly common enough, this is a total edge-case
                 }
             }
         }
         newSave.add(copyJsonButton).row()
+
         if (GameSaver.canLoadFromCustomSaveLocation()) {
             val saveToCustomLocation = "Save to custom location".toTextButton()
             val errorLabel = "".toLabel(Color.RED)
@@ -77,7 +75,6 @@ class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen(disableScroll = true
             newSave.add(saveToCustomLocation).row()
             newSave.add(errorLabel).row()
         }
-
 
         val showAutosavesCheckbox = CheckBox("Show autosaves".tr(), skin)
         showAutosavesCheckbox.isChecked = false
@@ -115,7 +112,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen(disableScroll = true
         val saves = GameSaver.getSaves()
                 .sortedByDescending { it.lastModified() }
         for (saveGameFile in saves) {
-            if (saveGameFile.name().startsWith("Autosave") && !showAutosaves) continue
+            if (saveGameFile.name().startsWith(GameSaver.autoSaveFileName) && !showAutosaves) continue
             val textButton = saveGameFile.name().toTextButton()
             textButton.onClick {
                 gameNameTextField.text = saveGameFile.name()

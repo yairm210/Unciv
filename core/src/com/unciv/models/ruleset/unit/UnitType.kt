@@ -1,10 +1,7 @@
 package com.unciv.models.ruleset.unit
 
-import com.unciv.models.ruleset.IHasUniques
 import com.unciv.models.ruleset.RulesetObject
-import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
-import com.unciv.models.stats.INamed
 
 
 enum class UnitLayer { // The layer in which the unit moves
@@ -30,13 +27,14 @@ class UnitType() : RulesetObject() {
         this.name = name
         this.movementType = domain
     }
-    
+
     fun getMovementType() = unitMovementType
-    
+
     fun isLandUnit() = unitMovementType == UnitMovementType.Land
     fun isWaterUnit() = unitMovementType == UnitMovementType.Water
     fun isAirUnit() = unitMovementType == UnitMovementType.Air
-    
+
+    /** Implements [UniqueParameterType.UnitTypeFilter][com.unciv.models.ruleset.unique.UniqueParameterType.UnitTypeFilter] */
     fun matchesFilter(filter: String): Boolean {
         return when (filter) {
             "Land" -> isLandUnit()
@@ -47,7 +45,7 @@ class UnitType() : RulesetObject() {
             }
         }
     }
-    
+
     companion object {
         val City = UnitType("City", "Land")
     }

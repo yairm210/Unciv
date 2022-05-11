@@ -3,6 +3,8 @@ package com.unciv.logic
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
+import com.unciv.logic.BackwardCompatibility.migrateBarbarianCamps
+import com.unciv.logic.BackwardCompatibility.migrateSeenImprovements
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.civilization.*
@@ -19,7 +21,8 @@ import com.unciv.ui.audio.MusicTrackChooserFlags
 import java.util.*
 
 
-class UncivShowableException(missingMods: String) : Exception(missingMods)
+class MissingModsException(val missingMods: String) : UncivShowableException("Missing mods: [$missingMods]")
+open class UncivShowableException(errorText: String) : Exception(errorText)
 
 class GameInfo {
     //region Fields - Serialized
@@ -37,6 +40,8 @@ class GameInfo {
 
     // Maps a civ to the civ they voted for
     var diplomaticVictoryVotesCast = HashMap<String, String>()
+    // Set to false whenever the results still need te be processed
+    var diplomaticVictoryVotesProcessed = false
 
     /**Keep track of a custom location this game was saved to _or_ loaded from
      *
@@ -205,7 +210,8 @@ class GameInfo {
             currentPlayerIndex = (currentPlayerIndex + 1) % civilizations.size
             if (currentPlayerIndex == 0) {
                 turns++
-                checkForTimeVictory()
+                if (UncivGame.Current.simulateUntilTurnForDebug != 0)
+                    println("Starting simulation of turn $turns")
             }
             thisPlayer = civilizations[currentPlayerIndex]
             thisPlayer.startTurn()
@@ -266,7 +272,7 @@ class GameInfo {
                             && (!it.militaryUnit!!.isInvisible(thisPlayer) || viewableInvisibleTiles.contains(it.position)))
                 }
 
-        // enemy units ON our territory
+        // enemy units IN our territory
         addEnemyUnitNotification(thisPlayer,
                 enemyUnitsCloseToTerritory.filter { it.getOwner() == thisPlayer },
                 "in"
@@ -283,16 +289,17 @@ class GameInfo {
                 }
         )
     }
+    
+    fun getEnabledVictories() = ruleSet.victories.filter { !it.value.hiddenInVictoryScreen && gameParameters.victoryTypes.contains(it.key) }
 
-    private fun checkForTimeVictory() {
-        if (turns != gameParameters.maxTurns || !gameParameters.victoryTypes.contains(VictoryType.Time)) return
-
-        val winningCiv = civilizations
-            .filter { it.isMajorCiv() && !it.isSpectator() && !it.isBarbarian() }
-            .maxByOrNull { it.calculateTotalScore() } 
-            ?: return // Are there no civs left?
-
-        winningCiv.victoryManager.hasWonTimeVictory = true
+    fun processDiplomaticVictory() {
+        if (diplomaticVictoryVotesProcessed) return
+        for (civInfo in civilizations) {
+            if (civInfo.victoryManager.hasEnoughVotesForDiplomaticVictory()) {
+                civInfo.victoryManager.hasEverWonDiplomaticVote = true
+            }
+        }
+        diplomaticVictoryVotesProcessed = true
     }
 
     private fun addEnemyUnitNotification(thisPlayer: CivilizationInfo, tiles: List<TileInfo>, inOrNear: String) {
@@ -318,8 +325,18 @@ class GameInfo {
         }
     }
 
-    fun notifyExploredResources(civInfo: CivilizationInfo, resourceName: String, maxDistance: Int, showForeign: Boolean) {
-        // Calling with `maxDistance = 0` removes distance limitation.
+    /** Generate a notification pointing out resources.
+     *  Used by [addTechnology][TechManager.addTechnology] and [ResourcesOverviewTab][com.unciv.ui.overviewscreen.ResourcesOverviewTab]
+     * @param maxDistance from next City, 0 removes distance limitation.
+     * @param showForeign Disables filter to exclude foreign territory.
+     * @return `false` if no resources were found and no notification was added.
+     */
+    fun notifyExploredResources(
+        civInfo: CivilizationInfo,
+        resourceName: String,
+        maxDistance: Int,
+        showForeign: Boolean
+    ): Boolean {
         data class CityTileAndDistance(val city: CityInfo, val tile: TileInfo, val distance: Int)
 
         val exploredRevealTiles: Sequence<TileInfo> =
@@ -349,7 +366,7 @@ class GameInfo {
             .sortedWith ( compareBy { it.distance } )
             .distinctBy { it.tile }
 
-        val chosenCity = exploredRevealInfo.firstOrNull()?.city ?: return
+        val chosenCity = exploredRevealInfo.firstOrNull()?.city ?: return false
         val positions = exploredRevealInfo
             // re-sort to a more pleasant display order
             .sortedWith(compareBy{ it.tile.aerialDistanceTo(chosenCity.getCenterTile()) })
@@ -366,6 +383,7 @@ class GameInfo {
             LocationAction(positions),
             "ResourceIcons/$resourceName"
         )
+        return true
     }
 
     // All cross-game data which needs to be altered (e.g. when removing or changing a name of a building/tech)
@@ -379,9 +397,12 @@ class GameInfo {
             gameParameters.baseRuleset = baseRulesetInMods
             gameParameters.mods = LinkedHashSet(gameParameters.mods.filter { it != baseRulesetInMods })
         }
+        // [TEMPORARY] Convert old saves to remove json workaround
+        for (civInfo in civilizations) civInfo.migrateSeenImprovements()
+        barbarians.migrateBarbarianCamps()
 
-        ruleSet = RulesetCache.getComplexRuleset(gameParameters.mods, gameParameters.baseRuleset)
-        
+        ruleSet = RulesetCache.getComplexRuleset(gameParameters)
+
         // any mod the saved game lists that is currently not installed causes null pointer
         // exceptions in this routine unless it contained no new objects or was very simple.
         // Player's fault, so better complain early:
@@ -389,7 +410,7 @@ class GameInfo {
             .filterNot { it in ruleSet.mods }
             .joinToString(limit = 120) { it }
         if (missingMods.isNotEmpty()) {
-            throw UncivShowableException("Missing mods: [$missingMods]")
+            throw MissingModsException(missingMods)
         }
 
         removeMissingModReferences()
@@ -450,8 +471,10 @@ class GameInfo {
             }
         }
 
+        spaceResources.clear()
         spaceResources.addAll(ruleSet.buildings.values.filter { it.hasUnique(UniqueType.SpaceshipPart) }
             .flatMap { it.getResourceRequirements().keys } )
+        spaceResources.addAll(ruleSet.victories.values.flatMap { it.requiredSpaceshipParts })
         
         barbarians.setTransients(this)
 

@@ -48,6 +48,7 @@ import com.unciv.ui.popup.ExitGamePopup
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.popup.hasOpenPopups
+import com.unciv.ui.worldscreen.minimap.MinimapHolder
 import com.unciv.ui.worldscreen.unit.UnitActionsTable
 import com.unciv.ui.worldscreen.unit.UnitTable
 import java.util.*
@@ -69,7 +70,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     var isPlayersTurn = viewingCiv == gameInfo.currentPlayerCiv
         private set     // only this class is allowed to make changes
     var selectedCiv = viewingCiv
-    private var fogOfWar = true
+    var fogOfWar = true
+        private set
     val canChangeState
         get() = isPlayersTurn && !viewingCiv.isSpectator()
     private var waitingForAutosave = false
@@ -363,6 +365,9 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                 // stuff has changed and the "waiting for X" will now show the correct civ
                 stopMultiPlayerRefresher()
                 latestGame.isUpToDate = true
+                if (viewingCiv.civName == latestGame.currentPlayer || viewingCiv.civName == Constants.spectator) {
+                    game.platformSpecificHelper?.notifyTurnStarted()
+                }
                 postCrashHandlingRunnable { createNewWorldScreen(latestGame) }
             }
 
@@ -391,7 +396,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     // This is private so that we will set the shouldUpdate to true instead.
     // That way, not only do we save a lot of unnecessary updates, we also ensure that all updates are called from the main GL thread
     // and we don't get any silly concurrency problems!
-    private fun update() {
+    internal fun update() {
 
         displayTutorialsOnUpdate()
 
@@ -551,7 +556,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
         displayTutorial(Tutorial.Workers) {
             gameInfo.getCurrentPlayerCivilization().getCivUnits().any {
-                it.hasUniqueToBuildImprovements && it.isCivilian()
+                it.hasUniqueToBuildImprovements && it.isCivilian() && !it.isGreatPerson()
             }
         }
     }
@@ -652,7 +657,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         game.setWorldScreen()
     }
 
-    private fun nextTurn() {
+    fun nextTurn() {
         isPlayersTurn = false
         shouldUpdate = true
 

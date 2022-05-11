@@ -27,7 +27,10 @@ object SimpleHttp {
         
         with(urlObj.openConnection() as HttpURLConnection) {
             requestMethod = method  // default is GET
-            setRequestProperty("User-Agent", "Unciv/${UncivGame.Current.version}-GNU-Terry-Pratchett")
+            if (UncivGame.isCurrentInitialized())
+                setRequestProperty("User-Agent", "Unciv/${UncivGame.Current.version}-GNU-Terry-Pratchett")
+            else
+                setRequestProperty("User-Agent", "Unciv/Turn-Checker-GNU-Terry-Pratchett")
 
             try {
                 if (content.isNotEmpty()) {

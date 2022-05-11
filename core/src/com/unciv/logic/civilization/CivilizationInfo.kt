@@ -1,13 +1,20 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.utils.Json
+import com.badlogic.gdx.utils.Json.Serializer
+import com.badlogic.gdx.utils.JsonValue
+import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.json.HashMapVector2
+import com.unciv.json.json
+import com.unciv.logic.BarbarianManager
+import com.unciv.logic.Encampment
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.city.CityInfo
-import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.RuinsManager.RuinsManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
@@ -29,11 +36,9 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.MayaCalendar
 import com.unciv.ui.utils.toPercent
+import com.unciv.ui.utils.withItem
 import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
-import kotlin.NoSuchElementException
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -118,6 +123,9 @@ class CivilizationInfo {
 
     @Transient
     val lastEraResourceUsedForUnit = HashMap<String, Int>()
+    
+    @Transient
+    var thingsToFocusOnForVictory = setOf<Victory.Focus>()
 
     var playerType = PlayerType.AI
 
@@ -162,13 +170,11 @@ class CivilizationInfo {
     var citiesCreated = 0
     var exploredTiles = HashSet<Vector2>()
 
-    // This double construction because for some reason the game wants to load a
-    // map<Vector2, String> as a map<String, String> causing all sorts of type problems.
-    // So we let the game have its map<String, String> and remap it in setTransients,
-    // everyone's happy. Sort of.
+    @Deprecated("Only for backward compatibility, will have no values after GameInfo.setTransients",
+        ReplaceWith("lastSeenImprovement"))
     var lastSeenImprovementSaved = HashMap<String, String>()
-    @Transient
-    var lastSeenImprovement = HashMap<Vector2, String>()
+
+    var lastSeenImprovement = HashMapVector2<String>()
 
     // To correctly determine "game over" condition as clarified in #4707
     // Nullable type meant to be deprecated and converted to non-nullable,
@@ -247,7 +253,7 @@ class CivilizationInfo {
         // Cloning it by-pointer is a horrific move, since the serialization would go over it ANYWAY and still lead to concurrency problems.
         // Cloning it by iterating on the tilemap values may seem ridiculous, but it's a perfectly thread-safe way to go about it, unlike the other solutions.
         toReturn.exploredTiles.addAll(gameInfo.tileMap.values.asSequence().map { it.position }.filter { it in exploredTiles })
-        toReturn.lastSeenImprovementSaved.putAll(lastSeenImprovement.mapKeys { it.key.toString() })
+        toReturn.lastSeenImprovement.putAll(lastSeenImprovement)
         toReturn.notifications.addAll(notifications)
         toReturn.citiesCreated = citiesCreated
         toReturn.popupAlerts.addAll(popupAlerts)
@@ -321,21 +327,33 @@ class CivilizationInfo {
     fun isAlive(): Boolean = !isDefeated()
 
     @Suppress("unused")  //TODO remove if future use unlikely, including DiplomacyFlags.EverBeenFriends and 2 DiplomacyManager methods - see #3183
+    // I'm willing to call this deprecated after so long
     fun hasEverBeenFriendWith(otherCiv: CivilizationInfo): Boolean = getDiplomacyManager(otherCiv).everBeenFriends()
 
     fun hasMetCivTerritory(otherCiv: CivilizationInfo): Boolean = otherCiv.getCivTerritory().any { it in exploredTiles }
     fun getCompletedPolicyBranchesCount(): Int = policies.adoptedPolicies.count { Policy.isBranchCompleteByName(it) }
+    fun originalMajorCapitalsOwned(): Int = cities.count { it.isOriginalCapital && it.foundingCiv != "" && gameInfo.getCivilization(it.foundingCiv).isMajorCiv() }
     private fun getCivTerritory() = cities.asSequence().flatMap { it.tiles.asSequence() }
 
-    fun victoryType(): VictoryType {
+    fun getPreferredVictoryType(): String {
         val victoryTypes = gameInfo.gameParameters.victoryTypes
         if (victoryTypes.size == 1)
             return victoryTypes.first() // That is the most relevant one
         val victoryType = nation.preferredVictoryType
-        return if (victoryType in victoryTypes) victoryType
-               else VictoryType.Neutral
+        return if (victoryType in gameInfo.ruleSet.victories) victoryType
+               else Constants.neutralVictoryType
     }
-
+    
+    fun getPreferredVictoryTypeObject(): Victory? {
+        val preferredVictoryType = getPreferredVictoryType()
+        return if (preferredVictoryType == Constants.neutralVictoryType) null
+               else gameInfo.ruleSet.victories[getPreferredVictoryType()]!!
+    }
+    
+    fun wantsToFocusOn(focus: Victory.Focus): Boolean {
+        return thingsToFocusOnForVictory.contains(focus)
+    }
+    
     @Transient
     private val civInfoStats = CivInfoStats(this)
     fun stats() = civInfoStats
@@ -411,10 +429,11 @@ class CivilizationInfo {
         )
         yieldAll(policies.policyUniques.getMatchingUniques(uniqueType, stateForConditionals))
         yieldAll(tech.techUniques.getMatchingUniques(uniqueType, stateForConditionals))
-        yieldAll(temporaryUniques.asSequence()
-            .map { it.uniqueObject }
-            .filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) }
-        )
+        if (temporaryUniques.isNotEmpty())
+            yieldAll(temporaryUniques.asSequence()
+                .map { it.uniqueObject }
+                .filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) }
+            )
         yieldAll(getEra().getMatchingUniques(uniqueType, stateForConditionals))
         if (religionManager.religion != null)
             yieldAll(religionManager.religion!!.getFounderUniques()
@@ -530,7 +549,7 @@ class CivilizationInfo {
         // For now, it might be overkill though.
         var meetString = "[${civName}] has given us [${giftAmount}] as a token of goodwill for meeting us"
         val religionMeetString = "[${civName}] has also given us [${faithAmount}]"
-        if (diplomacy.filter { it.value.otherCiv().isMajorCiv() }.count() == 1) {
+        if (diplomacy.filter { it.value.otherCiv().isMajorCiv() }.size == 1) {
             giftAmount.timesInPlace(2f)
             meetString = "[${civName}] has given us [${giftAmount}] as we are the first major civ to meet them"
         }
@@ -547,6 +566,9 @@ class CivilizationInfo {
         }
         for ((key, value) in giftAmount)
             otherCiv.addStat(key, value.toInt())
+        
+        if (cities.isNotEmpty())
+            otherCiv.exploredTiles = otherCiv.exploredTiles.withItem(getCapital().location)
         
         questManager.justMet(otherCiv) // Include them in war with major pseudo-quest
     }
@@ -576,7 +598,7 @@ class CivilizationInfo {
     fun getEraNumber(): Int = getEra().eraNumber
 
     fun isAtWarWith(otherCiv: CivilizationInfo): Boolean {
-        if (otherCiv.civName == civName) return false // never at war with itself
+        if (otherCiv == this) return false // never at war with itself
         if (otherCiv.isBarbarian() || isBarbarian()) return true
         val diplomacyManager = diplomacy[otherCiv.civName]
             ?: return false // not encountered yet
@@ -584,6 +606,15 @@ class CivilizationInfo {
     }
 
     fun isAtWar() = diplomacy.values.any { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv().isDefeated() }
+
+    fun canEnterBordersOf(otherCiv: CivilizationInfo): Boolean {
+        if (otherCiv == this) return true // own borders are always open
+        if (otherCiv.isBarbarian() || isBarbarian()) return false // barbarians blocks the routes
+        val diplomacyManager = diplomacy[otherCiv.civName]
+            ?: return false // not encountered yet
+        if (otherCiv.isCityState() && diplomacyManager.diplomaticStatus != DiplomaticStatus.War) return true
+        return diplomacyManager.hasOpenBorders
+    }
 
     /**
      * Returns a civilization caption suitable for greetings including player type info:
@@ -625,17 +656,18 @@ class CivilizationInfo {
     }
 
     fun getStatForRanking(category: RankingType): Int {
-        return when (category) {
-            RankingType.Score -> calculateTotalScore().toInt()
-            RankingType.Population -> cities.sumOf { it.population.population }
-            RankingType.Crop_Yield -> statsForNextTurn.food.roundToInt()
-            RankingType.Production -> statsForNextTurn.production.roundToInt()
-            RankingType.Gold -> gold
-            RankingType.Territory -> cities.sumOf { it.tiles.size }
-            RankingType.Force -> getMilitaryMight()
-            RankingType.Happiness -> getHappiness()
-            RankingType.Technologies -> tech.researchedTechnologies.size
-            RankingType.Culture -> policies.adoptedPolicies.count { !Policy.isBranchCompleteByName(it) }
+        return if (isDefeated()) 0
+        else when (category) {
+                RankingType.Score -> calculateTotalScore().toInt()
+                RankingType.Population -> cities.sumOf { it.population.population }
+                RankingType.Crop_Yield -> statsForNextTurn.food.roundToInt()
+                RankingType.Production -> statsForNextTurn.production.roundToInt()
+                RankingType.Gold -> gold
+                RankingType.Territory -> cities.sumOf { it.tiles.size }
+                RankingType.Force -> getMilitaryMight()
+                RankingType.Happiness -> getHappiness()
+                RankingType.Technologies -> tech.researchedTechnologies.size
+                RankingType.Culture -> policies.adoptedPolicies.count { !Policy.isBranchCompleteByName(it) }
         }
     }
 
@@ -689,12 +721,12 @@ class CivilizationInfo {
         if (mapSizeModifier > 1)
             mapSizeModifier = (mapSizeModifier - 1) / 3 + 1
 
-        scoreBreakdown["Cities"] = cities.count() * 10 * mapSizeModifier
+        scoreBreakdown["Cities"] = cities.size * 10 * mapSizeModifier
         scoreBreakdown["Population"] = cities.sumOf { it.population.population } * 3 * mapSizeModifier
         scoreBreakdown["Tiles"] = cities.sumOf { city -> city.getTiles().filter { !it.isWater}.count() } * 1 * mapSizeModifier
         scoreBreakdown["Wonders"] = 40 * cities
             .sumOf { city -> city.cityConstructions.builtBuildings
-                .filter { gameInfo.ruleSet.buildings[it]!!.isWonder }.count() 
+                .filter { gameInfo.ruleSet.buildings[it]!!.isWonder }.size
             }.toDouble()
         scoreBreakdown["Techs"] = tech.getNumberOfTechsResearched() * 4.toDouble()
         scoreBreakdown["Future Tech"] = tech.repeatingTechsResearched * 10.toDouble()
@@ -731,7 +763,7 @@ class CivilizationInfo {
         questManager.setTransients()
 
         if (citiesCreated == 0 && cities.any())
-            citiesCreated = cities.filter { it.name in nation.cities }.count()
+            citiesCreated = cities.filter { it.name in nation.cities }.size
 
         religionManager.civInfo = this // needs to be before tech, since tech setTransients looks at all uniques
         religionManager.setTransients()
@@ -747,6 +779,8 @@ class CivilizationInfo {
         }
 
         victoryManager.civInfo = this
+        
+        thingsToFocusOnForVictory = getPreferredVictoryTypeObject()?.getThingsToFocus(this) ?: setOf()
 
         for (cityInfo in cities) {
             cityInfo.civInfo = this // must be before the city's setTransients because it depends on the tilemap, that comes from the currentPlayerCivInfo
@@ -773,8 +807,6 @@ class CivilizationInfo {
         }
 
         hasLongCountDisplayUnique = hasUnique(UniqueType.MayanCalendarDisplay)
-
-        lastSeenImprovement.putAll(lastSeenImprovementSaved.mapKeys { Vector2().fromString(it.key) })
     }
 
     fun updateSightAndResources() {
@@ -924,16 +956,17 @@ class CivilizationInfo {
     private fun handleDiplomaticVictoryFlags() {
         if (flagsCountdown[CivFlags.ShouldResetDiplomaticVotes.name] == 0) {
             gameInfo.diplomaticVictoryVotesCast.clear()
-            removeFlag(CivFlags.ShouldResetDiplomaticVotes.name)
             removeFlag(CivFlags.ShowDiplomaticVotingResults.name)
+            removeFlag(CivFlags.ShouldResetDiplomaticVotes.name)
         }
 
         if (flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == 0) {
+            gameInfo.processDiplomaticVictory()
             if (gameInfo.civilizations.any { it.victoryManager.hasWon() } ) {
                 removeFlag(CivFlags.TurnsTillNextDiplomaticVote.name)
             } else {
                 addFlag(CivFlags.ShouldResetDiplomaticVotes.name, 1)
-                addFlag(CivFlags.TurnsTillNextDiplomaticVote.name, getTurnsBetweenDiplomaticVotings())
+                addFlag(CivFlags.TurnsTillNextDiplomaticVote.name, getTurnsBetweenDiplomaticVotes())
             }
         }
 
@@ -946,7 +979,7 @@ class CivilizationInfo {
     fun removeFlag(flag: String) = flagsCountdown.remove(flag)
     fun hasFlag(flag: String) = flagsCountdown.contains(flag)
 
-    fun getTurnsBetweenDiplomaticVotings() = (15 * gameInfo.gameParameters.gameSpeed.modifier).toInt() // Dunno the exact calculation, hidden in Lua files
+    fun getTurnsBetweenDiplomaticVotes() = (15 * gameInfo.gameParameters.gameSpeed.modifier).toInt() // Dunno the exact calculation, hidden in Lua files
 
     fun getTurnsTillNextDiplomaticVote() = flagsCountdown[CivFlags.TurnsTillNextDiplomaticVote.name]
 
@@ -971,8 +1004,8 @@ class CivilizationInfo {
     //  to the user and thus the flag is set at -1/ 
     fun shouldCheckForDiplomaticVictory() =
         (flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == 0 
-                || flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == -1)
-                && gameInfo.civilizations.any { it.isMajorCiv() && !it.isDefeated() && it != this }
+            || flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == -1)
+        && gameInfo.civilizations.any { it.isMajorCiv() && !it.isDefeated() && it != this }
 
     private fun updateRevolts() {
         if (gameInfo.civilizations.none { it.isBarbarian() }) {
@@ -1258,7 +1291,7 @@ class CivilizationInfo {
         }
 
         // If there aren't many players (left) we can't be that far
-        val numMajors = gameInfo.getAliveMajorCivs().count()
+        val numMajors = gameInfo.getAliveMajorCivs().size
         if (numMajors <= 2 && proximity > Proximity.Close)
             proximity = Proximity.Close
         if (numMajors <= 4 && proximity > Proximity.Far)

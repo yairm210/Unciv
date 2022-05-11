@@ -27,7 +27,6 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 
 class MainMenuScreen: BaseScreen() {
-    private val autosave = "Autosave"
     private val backgroundTable = Table().apply { background= ImageGetter.getBackground(Color.WHITE) }
     private val singleColumn = isCrampedPortrait()
 
@@ -75,14 +74,10 @@ class MainMenuScreen: BaseScreen() {
                     .generateMap(MapParameters().apply { mapSize = MapSizeNew(MapSize.Small); type = MapType.default })
             postCrashHandlingRunnable { // for GL context
                 ImageGetter.setNewRuleset(RulesetCache.getVanillaRuleset())
-                val mapHolder = EditorMapHolder(MapEditorScreen(), newMap)
+                val mapHolder = EditorMapHolder(this, newMap) {}
                 backgroundTable.addAction(Actions.sequence(
                         Actions.fadeOut(0f),
                         Actions.run {
-                            mapHolder.apply {
-                                addTiles(this@MainMenuScreen.stage.width, this@MainMenuScreen.stage.height)
-                                touchable = Touchable.disabled
-                            }
                             backgroundTable.addActor(mapHolder)
                             mapHolder.center(backgroundTable)
                         },
@@ -94,7 +89,7 @@ class MainMenuScreen: BaseScreen() {
         val column1 = Table().apply { defaults().pad(10f).fillX() }
         val column2 = if(singleColumn) column1 else Table().apply { defaults().pad(10f).fillX() }
 
-        val autosaveGame = GameSaver.getSave(autosave, false)
+        val autosaveGame = GameSaver.getSave(GameSaver.autoSaveFileName, false)
         if (autosaveGame.exists()) {
             val resumeTable = getMenuButton("Resume","OtherIcons/Resume", 'r')
                 { autoLoadGame() }
@@ -120,7 +115,7 @@ class MainMenuScreen: BaseScreen() {
         column2.add(multiplayerTable).row()
 
         val mapEditorScreenTable = getMenuButton("Map editor", "OtherIcons/MapEditor", 'e')
-            { if(stage.actors.none { it is MapEditorMainScreenPopup }) MapEditorMainScreenPopup(this) }
+            { game.setScreen(MapEditorScreen()) }
         column2.add(mapEditorScreenTable).row()
 
         val modsTable = getMenuButton("Mods", "OtherIcons/Mods", 'd')
@@ -152,49 +147,6 @@ class MainMenuScreen: BaseScreen() {
     }
 
 
-    /** Shows the [Popup] with the map editor initialization options */
-    class MapEditorMainScreenPopup(screen: MainMenuScreen): Popup(screen){
-        init{
-            // Using MainMenuScreen.getMenuButton - normally that would place key bindings into the
-            // screen's key dispatcher, but we need them in this Popup's dispatcher instead.
-            // Thus the crutch with keyVisualOnly, we assign the key binding here but want
-            // The button to install the tooltip handler anyway.
-
-            defaults().pad(10f)
-
-            val tableBackground = ImageGetter.getBackground(colorFromRGB(29, 102, 107))
-
-            val newMapAction = {
-                val newMapScreen = NewMapScreen()
-                newMapScreen.setDefaultCloseAction(MainMenuScreen())
-                screen.game.setScreen(newMapScreen)
-                screen.dispose()
-            }
-            val newMapButton = screen.getMenuButton("New map", "OtherIcons/New", 'n', true, newMapAction) 
-            newMapButton.background = tableBackground
-            add(newMapButton).row()
-            keyPressDispatcher['n'] = newMapAction 
-
-            val loadMapAction = {
-                val loadMapScreen = SaveAndLoadMapScreen(null, false, screen)
-                loadMapScreen.setDefaultCloseAction(MainMenuScreen())
-                screen.game.setScreen(loadMapScreen)
-                screen.dispose()
-            }
-            val loadMapButton = screen.getMenuButton("Load map", "OtherIcons/Load", 'l', true, loadMapAction) 
-            loadMapButton.background = tableBackground
-            add(loadMapButton).row()
-            keyPressDispatcher['l'] = loadMapAction
-
-            add(screen.getMenuButton(Constants.close, "OtherIcons/Close") { close() }
-                    .apply { background=tableBackground })
-            keyPressDispatcher[KeyCharAndCode.BACK] = { close() }
-
-            open(force = true)
-        }
-    }
-
-
     private fun autoLoadGame() {
         val loadingPopup = Popup(this)
         loadingPopup.addGoodSizedLabel("Loading...")
@@ -210,7 +162,7 @@ class MainMenuScreen: BaseScreen() {
 
             var savedGame: GameInfo
             try {
-                savedGame = GameSaver.loadGameByName(autosave)
+                savedGame = GameSaver.loadGameByName(GameSaver.autoSaveFileName)
             } catch (oom: OutOfMemoryError) {
                 outOfMemory()
                 return@crashHandlingThread
@@ -218,7 +170,7 @@ class MainMenuScreen: BaseScreen() {
                 // This can help for situations when the autosave is corrupted
                 try {
                     val autosaves = GameSaver.getSaves()
-                        .filter { it.name() != autosave && it.name().startsWith(autosave) }
+                        .filter { it.name() != GameSaver.autoSaveFileName && it.name().startsWith(GameSaver.autoSaveFileName) }
                     savedGame =
                         GameSaver.loadGameFromFile(autosaves.maxByOrNull { it.lastModified() }!!)
                 } catch (oom: OutOfMemoryError) { // The autosave could have oom problems as well... smh

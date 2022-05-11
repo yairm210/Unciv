@@ -10,6 +10,8 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.translations.tr
+import com.unciv.ui.civilopedia.CivilopediaCategories
+import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
@@ -71,10 +73,15 @@ class ResourcesOverviewTab(
     private fun getResourceImage(name: String) =
         ImageGetter.getResourceImage(name, iconSize).apply {
             onClick {
-                viewingPlayer.gameInfo.notifyExploredResources(viewingPlayer, name, 0, true)
-                overviewScreen.game.setWorldScreen()
+                if (viewingPlayer.gameInfo.notifyExploredResources(viewingPlayer, name, 0, true))
+                    overviewScreen.game.setWorldScreen()
             }
         }
+    private fun TileResource.getLabel() = name.toLabel().apply {
+        onClick {
+            overviewScreen.game.setScreen(CivilopediaScreen(gameInfo.ruleSet, overviewScreen, CivilopediaCategories.Resource, this@getLabel.name))
+        }
+    }
 
     private enum class ExtraInfoOrigin(
         val horizontalCaption: String,
@@ -131,7 +138,7 @@ class ResourcesOverviewTab(
 
         // One detail row per origin
         for (origin in origins) {
-            add(origin.toLabel()).left()
+            add(origin.removeSuffix("+").toLabel()).left()
             for (resource in resources) {
                 add(resourceDrilldown.getLabel(resource, origin))
             }
@@ -159,13 +166,16 @@ class ResourcesOverviewTab(
     }
 
     private fun updateVertical() {
+        val groupedOrigins = origins
+            .groupBy { it.removeSuffix("+") }
+
         // First row of table has all the origin labels
         fixedContent.apply {
             add(turnImageV).size(iconSize)
             add()
             addSeparatorVertical(Color.GRAY).pad(0f)
-            for (origin in origins) {
-                add(origin.toLabel())
+            for (origin in groupedOrigins) {
+                add(origin.key.toLabel())
             }
             add("Total".toLabel())
             addSeparatorVertical(Color.GRAY).pad(0f)
@@ -180,10 +190,17 @@ class ResourcesOverviewTab(
         // One detail row per resource
         for (resource in resources) {
             add(getResourceImage(resource.name))
-            add(resource.name.toLabel())
+            add(resource.getLabel())
             addSeparatorVertical(Color.GRAY).pad(0f)
-            for (origin in origins) {
-                add(resourceDrilldown.getLabel(resource, origin))
+            for (groupedOrigin in groupedOrigins) {
+                if (groupedOrigin.value.size == 1)
+                    add(resourceDrilldown.getLabel(resource, groupedOrigin.key))
+                else
+                    add(Table().apply {
+                        for (origin in groupedOrigin.value.withIndex())
+                            add(resourceDrilldown.getLabel(resource, origin.value))
+                                .padLeft(if (origin.index == 0) 0f else defaultPad)
+                    })
             }
             add(resourceDrilldown.getTotalLabel(resource))
             addSeparatorVertical(Color.GRAY).pad(0f)
@@ -212,7 +229,7 @@ class ResourcesOverviewTab(
                 if (!tile.hasViewableResource(viewingPlayer)) continue
                 val tileResource = tile.tileResource
                 if (tileResource.resourceType == ResourceType.Bonus) continue
-                if (tile.improvement == tileResource.improvement) continue
+                if (tile.improvement != null && tileResource.isImprovedBy(tile.improvement!!)) continue
                 if (tileResource.resourceType == ResourceType.Strategic && tile.getTileImprovement()?.isGreatImprovement() == true) continue
                 resourceSupplyList.add(tileResource, 1, ExtraInfoOrigin.Unimproved.name)
             }

@@ -14,15 +14,6 @@ import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.colorFromRGB
 
-enum class VictoryType {
-    Neutral,
-    Cultural,
-    Diplomatic,
-    Domination,
-    Scientific,
-    Time,
-}
-
 class Nation : RulesetObject() {
     var leaderName = ""
     fun getLeaderDisplayName() = if (isCityState()) name
@@ -30,7 +21,7 @@ class Nation : RulesetObject() {
 
     val style = ""
     var cityStateType: CityStateType? = null
-    var preferredVictoryType: VictoryType = VictoryType.Neutral
+    var preferredVictoryType: String = Constants.neutralVictoryType
     var declaringWar = ""
     var attacked = ""
     var defeated = ""
@@ -248,8 +239,10 @@ class Nation : RulesetObject() {
                 // This does not use the auto-linking FormattedLine(Unique) for two reasons:
                 // would look a little chaotic as unit uniques unlike most uniques are a HashSet and thus do not preserve order
                 // No .copy() factory on FormattedLine and no FormattedLine(Unique, all other val's) constructor either
-                for (unique in unit.uniqueObjects.filterNot { it.text in originalUnit.uniques || it.hasFlag(UniqueFlag.HiddenToUsers) }) {
-
+                if (unit.replacementTextForUniques.isNotEmpty()) {
+                    yield(FormattedLine(unit.replacementTextForUniques))
+                }
+                else for (unique in unit.uniqueObjects.filterNot { it.text in originalUnit.uniques || it.hasFlag(UniqueFlag.HiddenToUsers) }) {
                     yield(FormattedLine(unique.text.tr(), indent = 1))
                 }
                 for (unique in originalUnit.uniqueObjects.filterNot { it.text in unit.uniques || it.hasFlag(UniqueFlag.HiddenToUsers) }) {

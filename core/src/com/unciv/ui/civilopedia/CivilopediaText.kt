@@ -110,7 +110,7 @@ class FormattedLine (
 
     /** Returns true if this formatted line will not display anything */
     fun isEmpty(): Boolean = text.isEmpty() && extraImage.isEmpty() && 
-            !starred && icon.isEmpty() && link.isEmpty() 
+            !starred && icon.isEmpty() && link.isEmpty() && !separator
 
     /** Self-check to potentially support the mod checker
      * @return `null` if no problems found, or multiline String naming problems.
@@ -316,16 +316,7 @@ class FormattedLine (
         val image = category.getImage?.invoke(parts[1], iconSize) ?: return 0
 
         if (iconCrossed) {
-            val cross = ImageGetter.getRedCross(iconSize * 0.7f, 0.7f)
-            val group = Group().apply {
-                isTransform = false
-                setSize(iconSize, iconSize)
-                image.center(this)
-                addActor(image)
-                cross.center(this)
-                addActor(cross)
-            }
-            table.add(group).size(iconSize).padRight(iconPad)
+            table.add(ImageGetter.getCrossedImage(image, iconSize)).size(iconSize).padRight(iconPad)
         } else {
             table.add(image).size(iconSize).padRight(iconPad)
         }
@@ -352,9 +343,9 @@ object MarkupRenderer {
     /** Default cell padding of non-empty lines */
     private const val defaultPadding = 2.5f
     /** Padding above a [separator][FormattedLine.separator] line */
-    private const val separatorTopPadding = 5f
+    private const val separatorTopPadding = 10f
     /** Padding below a [separator][FormattedLine.separator] line */
-    private const val separatorBottomPadding = 15f
+    private const val separatorBottomPadding = 10f
 
     /**
      *  Build a Gdx [Table] showing [formatted][FormattedLine] [content][lines].

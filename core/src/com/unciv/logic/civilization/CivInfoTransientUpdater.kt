@@ -71,6 +71,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         if (civInfo.isSpectator() || UncivGame.Current.viewEntireMapForDebug) {
             val allTiles = civInfo.gameInfo.tileMap.values.toSet()
             civInfo.viewableTiles = allTiles
+            civInfo.exploredTiles = allTiles.map { it.position }.toHashSet()
             civInfo.viewableInvisibleUnitsTiles = allTiles
             return
         }
@@ -121,7 +122,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
             var goldGained = 0
             val discoveredNaturalWonders = civInfo.gameInfo.civilizations.filter { it != civInfo && it.isMajorCiv() }
                     .flatMap { it.naturalWonders }
-            if (tile.hasUnique(UniqueType.GrantsGoldToFirstToDiscover)
+            if (tile.terrainHasUnique(UniqueType.GrantsGoldToFirstToDiscover)
                     && !discoveredNaturalWonders.contains(tile.naturalWonder!!)) {
                 goldGained += 500
             }
@@ -191,6 +192,10 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         for (unit in civInfo.getCivUnits())
             for ((resource, amount) in unit.baseUnit.getResourceRequirements())
                 newDetailedCivResources.add(civInfo.gameInfo.ruleSet.tileResources[resource]!!, -amount, "Units")
+        
+        // Check if anything has actually changed so we don't update stats for no reason - this uses List equality which means it checks the elements
+        if (civInfo.detailedCivResources == newDetailedCivResources) return
+        
         civInfo.detailedCivResources = newDetailedCivResources
 
         val newSummarizedCivResources = ResourceSupplyList()

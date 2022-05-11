@@ -360,7 +360,7 @@ class TileMap {
                         || cTileHeight > bNeighborHeight // c>b
                         || (
                             currentTileHeight == bNeighborHeight // a==b
-                            && !bNeighbor.hasUnique(UniqueType.BlocksLineOfSightAtSameElevation)
+                            && !bNeighbor.terrainHasUnique(UniqueType.BlocksLineOfSightAtSameElevation)
                         )
                     )
                 }
@@ -427,8 +427,11 @@ class TileMap {
             val rightX = tileList.asSequence().map { it.position.x.toInt() }.maxOrNull()!!
             leftX = tileList.asSequence().map { it.position.x.toInt() }.minOrNull()!!
 
+            // Initialize arrays with enough capacity to avoid re-allocations (+Arrays.copyOf).
+            // We have just calculated the dimensions above, so we know the final size. 
+            tileMatrix.ensureCapacity(rightX - leftX + 1)
             for (x in leftX..rightX) {
-                val row = ArrayList<TileInfo?>()
+                val row = ArrayList<TileInfo?>(topY - bottomY + 1)
                 for (y in bottomY..topY) row.add(null)
                 tileMatrix.add(row)
             }
@@ -441,6 +444,13 @@ class TileMap {
 
         for (tileInfo in values) {
             tileMatrix[tileInfo.position.x.toInt() - leftX][tileInfo.position.y.toInt() - bottomY] = tileInfo
+        }
+        for (tileInfo in values) {
+            // Do ***NOT*** call TileInfo.setTerrainTransients before the tileMatrix is complete -
+            // setting transients might trigger the neighbors lazy (e.g. thanks to convertHillToTerrainFeature).
+            // When that lazy runs, some directions might be omitted because getIfTileExistsOrNull
+            // looks at tileMatrix. Thus filling TileInfos into tileMatrix and setting their
+            // transients in the same loop will leave incomplete cached `neighbors`.
             tileInfo.tileMap = this
             tileInfo.ruleset = this.ruleset!!
             tileInfo.setTerrainTransients()
@@ -626,6 +636,12 @@ class TileMap {
             startingLocations.remove(StartingLocation(tile.position, nationName))
         }
         startingLocationsByNation[nationName]!!.clear()
+    }
+
+    /** Removes all starting positions for [position], rebuilding the transients */
+    fun removeStartingLocations(position: Vector2) {
+        startingLocations.removeAll(startingLocations.filter { it.position == position })
+        setStartingLocationsTransients()
     }
 
     /** Clears starting positions, e.g. after GameStarter is done with them. Does not clear the pseudo-improvements. */

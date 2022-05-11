@@ -8,8 +8,12 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.VictoryType
+import com.unciv.models.ruleset.MilestoneType
+import com.unciv.models.ruleset.Victory
+import com.unciv.models.ruleset.Victory.Focus
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.tile.TileImprovement
+import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
@@ -41,7 +45,7 @@ object Automation {
 
             rank += stats.production
             rank += stats.science
-            if (city.tiles.size < 12 || city.civInfo.victoryType() == VictoryType.Cultural) {
+            if (city.tiles.size < 12 || city.civInfo.wantsToFocusOn(Victory.Focus.Culture)) {
                 rank += stats.culture
             } else rank += stats.culture / 2
         }
@@ -166,16 +170,42 @@ object Automation {
         return true
     }
 
+    /** Checks both feasibility of Buildings with a CreatesOneImprovement unique
+     *  and resource scarcity making a construction undesirable.
+      */
+    fun allowAutomatedConstruction(
+        civInfo: CivilizationInfo,
+        cityInfo: CityInfo,
+        construction: INonPerpetualConstruction
+    ): Boolean {
+        return allowCreateImprovementBuildings(civInfo, cityInfo, construction)
+                && allowSpendingResource(civInfo, construction)
+    }
+
+    /** Checks both feasibility of Buildings with a [UniqueType.CreatesOneImprovement] unique (appropriate tile available).
+     *  Constructions without pass uncontested. */
+    fun allowCreateImprovementBuildings(
+        civInfo: CivilizationInfo,
+        cityInfo: CityInfo,
+        construction: INonPerpetualConstruction
+    ): Boolean {
+        if (construction !is Building) return true
+        if (!construction.hasCreateOneImprovementUnique()) return true  // redundant but faster???
+        val improvement = construction.getImprovementToCreate(cityInfo.getRuleset()) ?: return true
+        return cityInfo.getTiles().any {
+            it.canBuildImprovement(improvement, civInfo)
+        }
+    }
 
     /** Determines whether the AI should be willing to spend strategic resources to build
-     *  [construction] in [city], assumes that we are actually able to do so. */
+     *  [construction] for [civInfo], assumes that we are actually able to do so. */
     fun allowSpendingResource(civInfo: CivilizationInfo, construction: INonPerpetualConstruction): Boolean {
         // City states do whatever they want
         if (civInfo.isCityState())
             return true
 
         // Spaceships are always allowed
-        if (construction.hasUnique(UniqueType.SpaceshipPart))
+        if (construction.name in civInfo.gameInfo.spaceResources)
             return true
 
         val requiredResources = construction.getResourceRequirements()
@@ -237,7 +267,7 @@ object Automation {
     }
 
     fun getReservedSpaceResourceAmount(civInfo: CivilizationInfo): Int {
-        return if (civInfo.nation.preferredVictoryType == VictoryType.Scientific) 3 else 2
+        return if (civInfo.wantsToFocusOn(Victory.Focus.Science)) 3 else 2
     }
 
     fun threatAssessment(assessor: CivilizationInfo, assessed: CivilizationInfo): ThreatLevel {
@@ -249,6 +279,15 @@ object Automation {
             powerLevelComparison < (1 / 1.5f) -> ThreatLevel.Low
             powerLevelComparison < 0.5f -> ThreatLevel.VeryLow
             else -> ThreatLevel.Medium
+        }
+    }
+
+    /** Support [UniqueType.CreatesOneImprovement] unique - find best tile for placement automation */
+    fun getTileForConstructionImprovement(cityInfo: CityInfo,  improvement: TileImprovement): TileInfo? {
+        return cityInfo.getTiles().filter {
+            it.canBuildImprovement(improvement, cityInfo.civInfo)
+        }.maxByOrNull {
+            rankTileForCityWork(it, cityInfo)
         }
     }
 
@@ -267,9 +306,10 @@ object Automation {
         }
         return rank
     }
-    
+
     // Ranks a tile for the expansion algorithm of cities
-    internal fun rankTileForExpansion(tile: TileInfo, cityInfo: CityInfo): Int {
+    internal fun rankTileForExpansion(tile: TileInfo, cityInfo: CityInfo,
+                                      localUniqueCache: LocalUniqueCache): Int {
         // https://github.com/Gedemon/Civ5-DLL/blob/aa29e80751f541ae04858b6d2a2c7dcca454201e/CvGameCoreDLL_Expansion1/CvCity.cpp#L10301
         // Apparently this is not the full calculation. The exact tiles are also
         // dependent on which tiles are between the chosen tile and the city center
@@ -300,7 +340,7 @@ object Automation {
         if (tile.naturalWonder != null) score -= 105
 
         // Straight up take the sum of all yields
-        score -= tile.getTileStats(cityInfo, cityInfo.civInfo).values.sum().toInt()
+        score -= tile.getTileStats(cityInfo, cityInfo.civInfo, localUniqueCache).values.sum().toInt()
 
         // Check if we get access to better tiles from this tile
         var adjacentNaturalWonder = false
@@ -322,7 +362,7 @@ object Automation {
         // Tiles not adjacent to owned land are very hard to acquire
         if (tile.neighbors.none { it.getCity() != null && it.getCity()!!.id == cityInfo.id })
             score += 1000
-        
+
         return score
     }
 

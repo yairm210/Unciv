@@ -2,14 +2,13 @@ package com.unciv.logic
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
+import com.unciv.json.json
 import com.unciv.logic.map.TileMap
 import com.unciv.ui.saves.Gzip
 
 object MapSaver {
 
-    fun json() = GameSaver.json()
-
-    private const val mapsFolder = "maps"
+    const val mapsFolder = "maps"
     var saveZipped = true
 
     private fun getMap(mapName:String) = Gdx.files.local("$mapsFolder/$mapName")

@@ -89,8 +89,12 @@ async function main(){
 
         console.log("Final: "+buildConfigString)
         fs.writeFileSync(buildConfigPath, buildConfigString)
+
+        // A new, discrete changelog file for fastlane (F-Droid support):
+        var fastlaneChangelogPath = "fastlane/metadata/android/en-US/changelogs/" + nextAndroidVersion + ".txt"
+        fs.writeFileSync(fastlaneChangelogPath, textToAddToChangelog)
     }
-   
+
 }
 
 main()
