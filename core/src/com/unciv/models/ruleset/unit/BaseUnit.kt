@@ -650,29 +650,34 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 .flatMap { it.uniqueObjects }
 
         for (unique in allUniques) {
-            when {
-                unique.isOfType(UniqueType.Strength) && unique.params[0].toInt() > 0 -> {
-                    if (unique.conditionals.any { it.isOfType(UniqueType.ConditionalVsUnits) } ) { // Bonus vs some units - a quarter of the bonus
-                        power *= (unique.params[0].toInt() / 4f).toPercent()
-                    } else if (
-                        unique.conditionals.any {
-                            it.isOfType(UniqueType.ConditionalVsCity) // City Attack - half the bonus
-                            || it.isOfType(UniqueType.ConditionalAttacking) // Attack - half the bonus
-                            || it.isOfType(UniqueType.ConditionalDefending) // Defense - half the bonus 
-                            || it.isOfType(UniqueType.ConditionalFightingInTiles) } // Bonus in terrain or feature - half the bonus
-                    ) {
-                        power *= (unique.params[0].toInt() / 2f).toPercent()
+            when (unique.type) {
+                UniqueType.Strength -> {
+                    if (unique.params[0].toInt() > 0) {
+                        if (unique.conditionals.any { it.isOfType(UniqueType.ConditionalVsUnits) }) { // Bonus vs some units - a quarter of the bonus
+                            power *= (unique.params[0].toInt() / 4f).toPercent()
+                        } else if (
+                            unique.conditionals.any {
+                                it.isOfType(UniqueType.ConditionalVsCity) // City Attack - half the bonus
+                                        || it.isOfType(UniqueType.ConditionalAttacking) // Attack - half the bonus
+                                        || it.isOfType(UniqueType.ConditionalDefending) // Defense - half the bonus
+                                        || it.isOfType(UniqueType.ConditionalFightingInTiles)
+                            } // Bonus in terrain or feature - half the bonus
+                        ) {
+                            power *= (unique.params[0].toInt() / 2f).toPercent()
+                        }
                     }
                 }
-                unique.isOfType(UniqueType.StrengthNearCapital) && unique.params[0].toInt() > 0 ->
-                    power *= (unique.params[0].toInt() / 4f).toPercent()  // Bonus decreasing with distance from capital - not worth much most of the map???
+                UniqueType.StrengthNearCapital ->
+                    if (unique.params[0].toInt() > 0)
+                        power *= (unique.params[0].toInt() / 4f).toPercent()  // Bonus decreasing with distance from capital - not worth much most of the map???
 
-                unique.placeholderText == UniqueType.MayParadrop.placeholderText // Paradrop - 25% bonus
+                UniqueType.MayParadrop // Paradrop - 25% bonus
                     -> power += power / 4
-                unique.isOfType(UniqueType.MustSetUp) // Must set up - 20 % penalty
+                UniqueType.MustSetUp // Must set up - 20 % penalty
                     -> power -= power / 5
-                unique.isOfType(UniqueType.AdditionalAttacks) // Extra attacks - 20% bonus per extra attack
+                UniqueType.AdditionalAttacks // Extra attacks - 20% bonus per extra attack
                     -> power += (power * unique.params[0].toInt()) / 5
+                else -> {}
             }
         }
 
