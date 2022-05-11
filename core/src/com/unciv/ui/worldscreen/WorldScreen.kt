@@ -373,7 +373,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
         } catch (ex: FileStorageRateLimitReached) {
             postCrashHandlingRunnable {
-                loadingGamePopup.reuseWith("Server limit reached! Please wait for [${ex.message}] seconds", true)
+                loadingGamePopup.reuseWith("Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds", true)
             }
             // stop refresher to not spam user with "Server limit reached!"
             // popups and restart after limit timer is over
@@ -678,7 +678,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                 } catch (ex: FileStorageRateLimitReached) {
                     postCrashHandlingRunnable {
                         val cantUploadNewGamePopup = Popup(this)
-                        cantUploadNewGamePopup.addGoodSizedLabel("Server limit reached! Please wait for [${ex.message}] seconds").row()
+                        cantUploadNewGamePopup.addGoodSizedLabel("Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds").row()
                         cantUploadNewGamePopup.addCloseButton()
                         cantUploadNewGamePopup.open()
                     }

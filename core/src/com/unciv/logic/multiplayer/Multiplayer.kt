@@ -6,12 +6,29 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.GameSaver
+import java.io.FileNotFoundException
 import java.util.*
 
 interface IFileStorage {
+    /**
+     * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
+     * @throws FileStorageConflictException if the file already exists and [overwrite] is false
+     */
     fun saveFileData(fileName: String, data: String, overwrite: Boolean)
+    /**
+     * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
+     * @throws FileNotFoundException if the file can't be found
+     */
     fun loadFileData(fileName: String): String
+    /**
+     * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
+     * @throws FileNotFoundException if the file can't be found
+     */
     fun getFileMetaData(fileName: String): IFileMetaData
+    /**
+     * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
+     * @throws FileNotFoundException if the file can't be found
+     */
     fun deleteFile(fileName: String)
 }
 
@@ -59,7 +76,7 @@ class UncivServerFileStorage(val serverUrl:String):IFileStorage {
 }
 
 class FileStorageConflictException: Exception()
-class FileStorageRateLimitReached(rateLimit: String): Exception(rateLimit)
+class FileStorageRateLimitReached(val limitRemainingSeconds: Int): Exception()
 
 /**
  * Allows access to games stored on a server for multiplayer purposes.

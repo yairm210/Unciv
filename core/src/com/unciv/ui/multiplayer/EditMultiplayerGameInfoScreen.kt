@@ -123,7 +123,7 @@ class EditMultiplayerGameInfoScreen(val gameInfo: GameInfoPreview?, gameName: St
                 }
             } catch (ex: FileStorageRateLimitReached) {
                 postCrashHandlingRunnable {
-                    popup.reuseWith("Server limit reached! Please wait for [${ex.message}] seconds", true)
+                    popup.reuseWith("Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds", true)
                 }
             } catch (ex: Exception) {
                 postCrashHandlingRunnable {
