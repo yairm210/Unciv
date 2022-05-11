@@ -568,6 +568,7 @@ class MapUnit {
     fun canGarrison() = isMilitary() && baseUnit.isLandUnit()
 
     fun isGreatPerson() = baseUnit.isGreatPerson()
+    fun isGreatPersonOfType(type: String) = baseUnit.isGreatPersonOfType(type)
 
     //endregion
 

@@ -574,7 +574,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
     }
 
-    fun isGreatPerson() = hasUnique("Great Person - []")
+    fun isGreatPerson() = getMatchingUniques(UniqueType.GreatPerson).any()
+    fun isGreatPersonOfType(type: String) = getMatchingUniques(UniqueType.GreatPerson).any { it.params[0] == type }
 
     fun isNuclearWeapon() = hasUnique("Nuclear weapon of Strength []")
 

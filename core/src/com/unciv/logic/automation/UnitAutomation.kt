@@ -158,7 +158,7 @@ object UnitAutomation {
             if (unit.hasUnique(UniqueType.AddInCapital))
                 return SpecificUnitAutomation.automateAddInCapital(unit)
             
-            if (unit.getMatchingUniques(UniqueType.GreatPerson).any { it.params[0] == "War" })
+            if (unit.isGreatPersonOfType("War"))
                 return SpecificUnitAutomation.automateGreatGeneral(unit)
 
             if (unit.hasUnique(UniqueType.ConstructImprovementConsumingUnit))
