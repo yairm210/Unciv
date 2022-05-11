@@ -162,7 +162,9 @@ object UnitAutomation {
             // abilities, but not additional capabilities if automation finds no use for those two
             if (unit.hasGreatGeneralUnique && SpecificUnitAutomation.automateGreatGeneral(unit))
                 return
-            val isCitadelPlacer = unit.hasUnique(UniqueType.TakeOverTilesAroundWhenBuilt)
+            val isCitadelPlacer = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
+                .mapNotNull { unit.civInfo.gameInfo.ruleSet.tileImprovements[it.params[0]] }
+                .any { it.hasUnique(UniqueType.TakeOverTilesAroundWhenBuilt) }
             if (isCitadelPlacer && SpecificUnitAutomation.automateCitadelPlacer(unit))
                 return
             if (isCitadelPlacer || unit.hasGreatGeneralUnique)

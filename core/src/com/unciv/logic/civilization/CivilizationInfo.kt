@@ -124,10 +124,10 @@ class CivilizationInfo {
 
     @Transient
     /** Maximum radius of Great General or equivalent effect, from BaseUnit Uniques _only_. */
-    var maxGeneralBonusRadiusBase = 0
+    var maxGreatGeneralBonusRadiusBase = 0
     @Transient
     /** Maximum radius of Great General or equivalent effect, from BaseUnit Uniques _or_ Promotion Uniques. 0 if none found!! */
-    var maxGeneralBonusRadius = 0
+    var maxGreatGeneralBonusRadius = 0
 
     var playerType = PlayerType.AI
 
@@ -810,7 +810,7 @@ class CivilizationInfo {
 
         hasLongCountDisplayUnique = hasUnique(UniqueType.MayanCalendarDisplay)
 
-        GreatGeneralImplementation.setMaxGeneralBonusRadiusBase(this)
+        GreatGeneralImplementation.setMaxGreatGeneralBonusRadiusBase(this)
     }
 
     fun updateSightAndResources() {
@@ -828,7 +828,7 @@ class CivilizationInfo {
     fun updateHasActiveGreatWall() = transients().updateHasActiveGreatWall()
     fun updateViewableTiles() = transients().updateViewableTiles()
     fun updateDetailedCivResources() = transients().updateCivResources()
-    fun updateMaxGeneralBonusRadius() = GreatGeneralImplementation.updateMaxGeneralBonusRadius(this)
+    fun updateMaxGreatGeneralBonusRadius() = GreatGeneralImplementation.updateMaxGreatGeneralBonusRadius(this)
 
     fun startTurn() {
         civConstructions.startTurn()

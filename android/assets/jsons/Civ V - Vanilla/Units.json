@@ -1310,7 +1310,7 @@
 	{
 		"name": "Great General",
 		"unitType": "Civilian",
-		"uniques": ["Can start an [8]-turn golden age", "[15]% Strength bonus for [Military] units in a [2] tile radius",
+		"uniques": ["Can start an [8]-turn golden age", "[15]% Strength for [Military] units in a [2] tile radius",
 			"Can construct [Citadel]", "Great Person - [War]", "Unbuildable", "Uncapturable"],
 		"movement": 2
 	},
@@ -1319,7 +1319,7 @@
 		"unitType": "Civilian",
 		"uniqueTo": "Mongolia",
 		"replaces": "Great General",
-		"uniques": ["Can start an [8]-turn golden age","[15]% Strength bonus for [Military] units in a [2] tile radius",
+		"uniques": ["Can start an [8]-turn golden age","[15]% Strength for [Military] units in a [2] tile radius",
 			"All adjacent units heal [+15] HP when healing", "[+15] HP when healing",
 			"Can construct [Citadel]", "Great Person - [War]", "Unbuildable", "Uncapturable"],
 		"movement": 5

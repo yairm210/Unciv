@@ -412,9 +412,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     StrengthBonusVsCityStates("+30% Strength when fighting City-State units and cities", UniqueTarget.Global),
     StrengthForAdjacentEnemies("[relativeAmount]% Strength for enemy [combatantFilter] units in adjacent [tileFilter] tiles", UniqueTarget.Unit),
     StrengthWhenStacked("[relativeAmount]% Strength when stacked with [mapUnitFilter]", UniqueTarget.Unit),  // candidate for conditional!
-    @Deprecated("as of 4.0.15", ReplaceWith("[15]% Strength bonus for [Military] units in a [2] tile radius"))
+    @Deprecated("as of 4.0.15", ReplaceWith("[15]% Strength for [Military] units in a [2] tile radius"))
     BonusForUnitsInRadius("Bonus for units in 2 tile radius 15%", UniqueTarget.Unit),
-    GreatGeneralAura("[relativeAmount]% Strength bonus for [mapUnitFilter] units in a [amount] tile radius", UniqueTarget.Unit),
+    GreatGeneralAura("[relativeAmount]% Strength for [mapUnitFilter] units in a [amount] tile radius", UniqueTarget.Unit),
 
     AdditionalAttacks("[amount] additional attacks per turn", UniqueTarget.Unit, UniqueTarget.Global),
     Movement("[amount] Movement", UniqueTarget.Unit, UniqueTarget.Global),
