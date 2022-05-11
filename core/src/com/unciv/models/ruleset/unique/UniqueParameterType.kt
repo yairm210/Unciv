@@ -504,6 +504,8 @@ enum class UniqueParameterType(
         override fun getTranslationWriterStringsForOutput() = scanExistingValues(this)
     },
 
+    /** We don't know anything about this parameter - this needs to return
+     *  [isTranslationWriterGuess]() == `true` for all inputs or TranslationFileWriter will have a problem! */
     Unknown("param", "Unknown") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? = null

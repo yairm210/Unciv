@@ -6,6 +6,9 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.testing.GdxTestRunner
 import org.junit.Assert
 import org.junit.Before
@@ -42,11 +45,23 @@ class TileImprovementConstructionTests {
     fun allTerrainSpecificImprovementsCanBeBuilt() {
 
         for (improvement in ruleSet.tileImprovements.values) {
-            val terrain = improvement.terrainsCanBeBuiltOn.firstOrNull() ?: continue
+            var terrain = improvement.terrainsCanBeBuiltOn.firstOrNull() ?: continue
+            if (terrain == "Land") terrain = ruleSet.terrains.values.first { it.type == TerrainType.Land }.name
+            if (terrain == "Water") terrain = ruleSet.terrains.values.first { it.type == TerrainType.Water }.name
+            // If this improvement requires additional conditions to be true, 
+            // its too complex to handle all of them, so just skip it and hope its fine
+            // I would like some comments on whether this approach is fine or if it's better if I handle every single unique here as well
+            if (improvement.hasUnique(UniqueType.CanOnlyBeBuiltOnTile, StateForConditionals.IgnoreConditionals)) continue
+            if (improvement.hasUnique(UniqueType.Unbuildable, StateForConditionals.IgnoreConditionals)) continue
+            
             val tile = getTile()
             tile.baseTerrain = terrain
+            if (improvement.hasUnique(UniqueType.CanOnlyImproveResource, StateForConditionals.IgnoreConditionals)) {
+                tile.resource = ruleSet.tileResources.values.firstOrNull { it.isImprovedBy(improvement.name) }?.name ?: continue
+            }
             tile.setTransients()
             if (improvement.uniqueTo != null) civInfo.civName = improvement.uniqueTo!!
+            
             val canBeBuilt = tile.canBuildImprovement(improvement, civInfo)
             Assert.assertTrue(improvement.name, canBeBuilt)
         }
@@ -57,8 +72,12 @@ class TileImprovementConstructionTests {
         for (improvement in ruleSet.tileImprovements.values) {
             val tile = getTile()
             tile.resource = ruleSet.tileResources.values
-                    .firstOrNull { it.improvement == improvement.name }?.name
+                .firstOrNull { it.isImprovedBy(improvement.name) }?.name
             if (tile.resource == null) continue
+            // If this improvement requires additional conditions to be true, 
+            // its too complex to handle all of them, so just skip it and hope its fine
+            if (improvement.hasUnique(UniqueType.CanOnlyBeBuiltOnTile, StateForConditionals.IgnoreConditionals)) continue
+            
             tile.setTransients()
             val canBeBuilt = tile.canBuildImprovement(improvement, civInfo)
             Assert.assertTrue(improvement.name, canBeBuilt)
@@ -116,11 +135,11 @@ class TileImprovementConstructionTests {
         civInfo.civName = "OtherCiv"
 
         for (resource in ruleSet.tileResources.values) {
-            if (resource.improvement == null) continue
-            val improvement = ruleSet.tileImprovements[resource.improvement]!!
-            if (improvement.terrainsCanBeBuiltOn.isNotEmpty()) continue
+            if (resource.getImprovements().isEmpty()) continue
+            val improvement = ruleSet.tileImprovements[resource.getImprovements().first()]!!
+            if (!improvement.hasUnique(UniqueType.CanOnlyImproveResource)) continue
             val wrongResource = ruleSet.tileResources.values.firstOrNull { 
-                it != resource && it.improvement != improvement.name 
+                it != resource && !it.isImprovedBy(improvement.name) 
             } ?: continue
             val tile = getTile()
             tile.baseTerrain = "Plains"

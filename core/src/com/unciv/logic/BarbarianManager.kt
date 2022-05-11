@@ -236,7 +236,7 @@ class Encampment() {
                     || it.isCityCenter()
                     || it.getFirstUnit() != null
                     || (it.isWater && !canSpawnBoats)
-                    || (it.hasUnique(UniqueType.FreshWater) && it.isWater) // No Lakes
+                    || (it.terrainHasUnique(UniqueType.FreshWater) && it.isWater) // No Lakes
         }
         if (validTiles.isEmpty()) return false
 

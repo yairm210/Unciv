@@ -425,10 +425,8 @@ class DiplomacyScreen(
 
         for (improvableTile in improvableResourceTiles)
             for (tileImprovement in improvements.values)
-                if (improvableTile.canBuildImprovement(
-                        tileImprovement,
-                        otherCiv
-                    ) && improvableTile.tileResource.improvement == tileImprovement.name
+                if (improvableTile.tileResource.isImprovedBy(tileImprovement.name) 
+                    && improvableTile.canBuildImprovement(tileImprovement, otherCiv)
                 )
                     needsImprovements = true
 
@@ -490,9 +488,11 @@ class DiplomacyScreen(
         return diplomacyTable
     }
 
-    fun getImprovableResourceTiles(otherCiv:CivilizationInfo) =  otherCiv.getCapital().getTiles()
-        .filter { it.hasViewableResource(otherCiv) && it.tileResource.resourceType!=ResourceType.Bonus
-                && it.tileResource.improvement != it.improvement }
+    fun getImprovableResourceTiles(otherCiv:CivilizationInfo) = otherCiv.getCapital().getTiles().filter { 
+        it.hasViewableResource(otherCiv) 
+        && it.tileResource.resourceType != ResourceType.Bonus
+        && (it.improvement == null || !it.tileResource.isImprovedBy(it.improvement!!))
+    }
 
     private fun getImprovementGiftTable(otherCiv: CivilizationInfo): Table {
         val improvementGiftTable = getCityStateDiplomacyTableHeader(otherCiv)
@@ -504,7 +504,7 @@ class DiplomacyScreen(
 
         for (improvableTile in improvableResourceTiles) {
             for (tileImprovement in tileImprovements.values) {
-                if (improvableTile.tileResource.improvement == tileImprovement.name
+                if (improvableTile.tileResource.isImprovedBy(tileImprovement.name)
                     && improvableTile.canBuildImprovement(tileImprovement, otherCiv)
                 ) {
                     val improveTileButton =
@@ -930,9 +930,9 @@ class DiplomacyScreen(
         rightSideTable.clear()
         rightSideTable.add(diplomacyTable)
     }
-    
+
     private fun getGoToOnMapButton(civilization: CivilizationInfo): TextButton {
-        val goToOnMapButton = TextButton("Go to on map", skin)
+        val goToOnMapButton = "Go to on map".toTextButton()
         goToOnMapButton.onClick {
             UncivGame.Current.setWorldScreen()
             UncivGame.Current.worldScreen.mapHolder.setCenterPosition(civilization.getCapital().location, selectUnit = false)

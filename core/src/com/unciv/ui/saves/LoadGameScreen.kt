@@ -89,10 +89,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
         loadFromClipboardButton.onClick {
             try {
                 val clipboardContentsString = Gdx.app.clipboard.contents.trim()
-                val decoded =
-                    if (clipboardContentsString.startsWith("{")) clipboardContentsString
-                    else Gzip.unzip(clipboardContentsString)
-                val loadedGame = GameSaver.gameInfoFromString(decoded)
+                val loadedGame = GameSaver.gameInfoFromString(clipboardContentsString)
                 UncivGame.Current.loadGame(loadedGame)
             } catch (ex: Exception) {
                 handleLoadGameException("Could not load game from clipboard!", ex)
@@ -216,7 +213,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
             postCrashHandlingRunnable {
                 saveTable.clear()
                 for (save in saves) {
-                    if (save.name().startsWith("Autosave") && !showAutosaves) continue
+                    if (save.name().startsWith(GameSaver.autoSaveFileName) && !showAutosaves) continue
                     val textButton = TextButton(save.name(), skin)
                     textButton.onClick { onSaveSelected(save) }
                     saveTable.add(textButton).pad(5f).row()
