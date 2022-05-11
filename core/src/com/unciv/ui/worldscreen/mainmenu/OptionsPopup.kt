@@ -43,6 +43,7 @@ import com.unciv.ui.worldscreen.WorldScreen
 import java.util.UUID
 import kotlin.math.floor
 import kotlin.text.Regex
+import kotlin.text.substring
 import com.badlogic.gdx.utils.Array as GdxArray
 
 /**
@@ -275,6 +276,7 @@ class OptionsPopup(
             if (settings.multiplayerServer != Constants.dropboxMultiplayerServer) settings.multiplayerServer
         else "https://..."
         val multiplayerServerTextField = TextField(textToShowForMultiplayerAddress, BaseScreen.skin)
+        multiplayerServerTextField.setTextFieldFilter { _, c -> c !in " \r\n\t\\" }
         multiplayerServerTextField.programmaticChangeEvents = true
         val serverIpTable = Table()
 
@@ -282,8 +284,9 @@ class OptionsPopup(
             multiplayerServerTextField.text = Gdx.app.clipboard.contents
         }).row()
         multiplayerServerTextField.onChange {
-            multiplayerServerTextField.text = formatMultiplayerUrlInput(multiplayerServerTextField.text)
-            settings.multiplayerServer = multiplayerServerTextField.text
+            fixTextFieldUrlOnType(multiplayerServerTextField)
+            // we can't trim on 'fixTextFieldUrlOnType' for reasons
+            settings.multiplayerServer = multiplayerServerTextField.text.trimEnd('/')
             settings.save()
             connectionToServerButton.isEnabled = multiplayerServerTextField.text != Constants.dropboxMultiplayerServer
         }
@@ -962,20 +965,37 @@ class OptionsPopup(
         add(checkbox).colspan(2).left().row()
     }
 
-    private fun formatMultiplayerUrlInput(input: String): String {
-        var result : String
+    private fun fixTextFieldUrlOnType(TextField: TextField) {
+        var text: String = TextField.text
+        var cursor: Int = TextField.cursor
 
-        // remove all whitespaces
-        result = Regex("\\s+").replace(input, "")
+        // if text is 'http:' or 'https:' auto append '//'
+        if (Regex("^https?:$").containsMatchIn(text)) {
+            TextField.text = text.plus("//")
+            TextField.cursor = cursor + 2
+            return
+        }
+
+        val textBeforeCursor: String = text.substring(0, cursor)
 
         // replace multiple slash with a single one
-        result = Regex("/{2,}").replace(result, "/")
+        val multipleSlashes = Regex("/{2,}")
+        text = multipleSlashes.replace(text, "/")
 
-        // remove trailing slash, reinstate protocol & return
-        // all the formatting above makes "https://" -> "http:/"
-        // also people might leave a slash at end my mistake
-        // so we need to fix those before returning
-        return result.trimEnd('/').replaceFirst(":/", "://")
+        // calculate updated cursor
+        cursor = multipleSlashes.replace(textBeforeCursor, "/").length
+
+        // operations above makes 'https://' -> 'https:/'
+        // fix that if available and update cursor
+        val index: Int = text.indexOf(":/")
+        if (index > -1) {
+            text = text.replaceFirst(":/", "://")
+            if (cursor > index + 1) ++cursor
+        }
+
+        // update TextField
+        TextField.text = text
+        TextField.cursor = cursor
     }
 
     //endregion
