@@ -72,23 +72,14 @@ class NewGameScreen(
         rightSideButton.setText("Start game!".tr())
         rightSideButton.onClick {
             if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
-                val multiplayerServer = UncivGame.Current.settings.multiplayerServer ?: "Dropbox"
-                if (multiplayerServer != "Dropbox") {
-                    if (checkConnectionToMultiplayerServer() != true) {
-                        val noInternetConnectionPopup = Popup(this)
-                        noInternetConnectionPopup.addGoodSizedLabel("The server is unreachable!".tr()).row()
-                        noInternetConnectionPopup.addCloseButton()
-                        noInternetConnectionPopup.open()
-                        return@onClick
-                    }
-                } else {
-                    if (checkConnectionToInternet() != true) {
-                        val noInternetConnectionPopup = Popup(this)
-                        noInternetConnectionPopup.addGoodSizedLabel("No internet connection!".tr()).row()
-                        noInternetConnectionPopup.addCloseButton()
-                        noInternetConnectionPopup.open()
-                        return@onClick
-                    }
+                val isDropbox = UncivGame.Current.settings.multiplayerServer == Constants.dropboxMultiplayerServer
+                if (!checkConnectionToMultiplayerServer()) {
+                    val noInternetConnectionPopup = Popup(this)
+                    val label = if (isDropbox) "Couldn't connect to Dropbox!" else "Couldn't connect to Multiplayer Server!"
+                    noInternetConnectionPopup.addGoodSizedLabel(label.tr()).row()
+                    noInternetConnectionPopup.addCloseButton()
+                    noInternetConnectionPopup.open()
+                    return@onClick
                 }
 
                 for (player in gameSetupInfo.gameParameters.players.filter { it.playerType == PlayerType.Human }) {
@@ -219,24 +210,17 @@ class NewGameScreen(
         }).expandX().fillX().row()
     }
 
-    private fun checkConnectionToInternet(): Boolean {
-        return try {
-            val u = URL("https://content.dropboxapi.com")
-            val conn = u.openConnection()
-            conn.connect()
-            true
-        } catch (ex: Throwable) {
-            false
-        }
-    }
-
     private fun checkConnectionToMultiplayerServer(): Boolean {
+        val isDropbox = UncivGame.Current.settings.multiplayerServer == Constants.dropboxMultiplayerServer
         return try {
-            val u = URL(UncivGame.Current.settings.multiplayerServer)
-            val conn = u.openConnection()
-            conn.connect()
+            val multiplayerServer = UncivGame.Current.settings.multiplayerServer
+            val u =  URL(if (isDropbox) "https://content.dropboxapi.com" else multiplayerServer)
+            val con = u.openConnection()
+            con.setConnectTimeout(3000)
+            con.connect()
+
             true
-        } catch (ex: Throwable) {
+        } catch(ex: Throwable) {
             false
         }
     }
