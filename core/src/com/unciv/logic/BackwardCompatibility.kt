@@ -148,7 +148,7 @@ object BackwardCompatibility {
     fun GameInfo.updateGreatGeneralUniques() {
         ruleSet.units.values.filter { it.uniques.contains("Bonus for units in 2 tile radius 15%") }.forEach {
             it.uniques.remove("Bonus for units in 2 tile radius 15%")
-            it.uniques.add("Bonus for units in [2] tile radius [+15]%")
+            it.uniques.add("[+15]% Strength bonus for [Military] units in [2] tiles")
         }
     }
 

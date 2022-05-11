@@ -412,6 +412,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     StrengthBonusVsCityStates("+30% Strength when fighting City-State units and cities", UniqueTarget.Global),
     StrengthForAdjacentEnemies("[relativeAmount]% Strength for enemy [combatantFilter] units in adjacent [tileFilter] tiles", UniqueTarget.Unit),
     StrengthWhenStacked("[relativeAmount]% Strength when stacked with [mapUnitFilter]", UniqueTarget.Unit),  // candidate for conditional!
+    StrengthBonusInRadius("[relativeAmount]% Strength bonus for [mapUnitFilter] units in [amount] tiles", UniqueTarget.Unit),
 
     AdditionalAttacks("[amount] additional attacks per turn", UniqueTarget.Unit, UniqueTarget.Global),
     Movement("[amount] Movement", UniqueTarget.Unit, UniqueTarget.Global),
@@ -522,7 +523,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     RemoveOtherReligions("Removes other religions when spreading religion", UniqueTarget.Unit),
 
     CanActionSeveralTimes("Can [action] [amount] times", UniqueTarget.Unit),
-    BonusForUnitsInRadius("Bonus for units in [amount] tile radius [relativeAmount]%", UniqueTarget.Unit),
 
     CanSpeedupConstruction("Can speed up construction of a building", UniqueTarget.Unit),
     CanHurryResearch("Can hurry technology research", UniqueTarget.Unit),
