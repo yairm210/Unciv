@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
+import com.unciv.logic.GameSaver
 import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.multiplayer.SimpleHttp
@@ -553,8 +554,8 @@ class OptionsPopup(
     private fun getDebugTab() = Table(BaseScreen.skin).apply {
         pad(10f)
         defaults().pad(5f)
-
         val game = UncivGame.Current
+
         val simulateButton = "Simulate until turn:".toTextButton()
         val simulateTextField = TextField(game.simulateUntilTurnForDebug.toString(), BaseScreen.skin)
         val invalidInputLabel = "This is not a valid integer!".toLabel().also { it.isVisible = false }
@@ -571,6 +572,7 @@ class OptionsPopup(
         add(simulateButton)
         add(simulateTextField).row()
         add(invalidInputLabel).colspan(2).row()
+
         add("Supercharged".toCheckBox(game.superchargedForDebug) {
             game.superchargedForDebug = it
         }).colspan(2).row()
@@ -582,9 +584,13 @@ class OptionsPopup(
                 game.gameInfo.gameParameters.godMode = it
             }).colspan(2).row()
         }
+        add("Save games compressed".toCheckBox(GameSaver.saveZipped) {
+            GameSaver.saveZipped = it
+        }).colspan(2).row()
         add("Save maps compressed".toCheckBox(MapSaver.saveZipped) {
             MapSaver.saveZipped = it
         }).colspan(2).row()
+
         add("Gdx Scene2D debug".toCheckBox(BaseScreen.enableSceneDebug) {
             BaseScreen.enableSceneDebug = it
         }).colspan(2).row()
