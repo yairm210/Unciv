@@ -1,0 +1,356 @@
+
+PolicyIcons.png
+size: 2048, 128
+format: RGBA8888
+filter: MipMapLinearLinear, MipMapLinearLinear
+repeat: none
+Aesthetics
+  rotate: false
+  xy: 4, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Aristocracy
+  rotate: false
+  xy: 4, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Citizenship
+  rotate: false
+  xy: 62, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Civil Society
+  rotate: false
+  xy: 62, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Collective Rule
+  rotate: false
+  xy: 120, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Communism
+  rotate: false
+  xy: 120, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Constitution
+  rotate: false
+  xy: 178, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Cultural Diplomacy
+  rotate: false
+  xy: 178, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Democracy
+  rotate: false
+  xy: 236, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Discipline
+  rotate: false
+  xy: 236, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Educated Elite
+  rotate: false
+  xy: 294, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Fascism
+  rotate: false
+  xy: 294, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Free Religion
+  rotate: false
+  xy: 352, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Free Speech
+  rotate: false
+  xy: 352, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Free Thought
+  rotate: false
+  xy: 410, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Humanism
+  rotate: false
+  xy: 410, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Landed Elite
+  rotate: false
+  xy: 468, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Legalism
+  rotate: false
+  xy: 468, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Mandate Of Heaven
+  rotate: false
+  xy: 526, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Mercantilism
+  rotate: false
+  xy: 526, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Merchant Navy
+  rotate: false
+  xy: 584, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Meritocracy
+  rotate: false
+  xy: 584, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Militarism
+  rotate: false
+  xy: 642, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Military Caste
+  rotate: false
+  xy: 642, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Military Tradition
+  rotate: false
+  xy: 700, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Monarchy
+  rotate: false
+  xy: 700, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Nationalism
+  rotate: false
+  xy: 758, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Naval Tradition
+  rotate: false
+  xy: 758, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Oligarchy
+  rotate: false
+  xy: 816, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Organized Religion
+  rotate: false
+  xy: 816, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Philantropy
+  rotate: false
+  xy: 874, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Planned Economy
+  rotate: false
+  xy: 874, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Police State
+  rotate: false
+  xy: 932, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Populism
+  rotate: false
+  xy: 932, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Professional Army
+  rotate: false
+  xy: 990, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Protectionism
+  rotate: false
+  xy: 990, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Reformation
+  rotate: false
+  xy: 1048, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Representation
+  rotate: false
+  xy: 1048, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Republic
+  rotate: false
+  xy: 1106, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Scholasticism
+  rotate: false
+  xy: 1106, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Scientific Revolution
+  rotate: false
+  xy: 1164, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Secularism
+  rotate: false
+  xy: 1164, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Socialism
+  rotate: false
+  xy: 1222, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Sovereignty
+  rotate: false
+  xy: 1222, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Theocracy
+  rotate: false
+  xy: 1280, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Total War
+  rotate: false
+  xy: 1280, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Trade Unions
+  rotate: false
+  xy: 1338, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+United Front
+  rotate: false
+  xy: 1338, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Universal Suffrage
+  rotate: false
+  xy: 1396, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+Warrior Code
+  rotate: false
+  xy: 1396, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
