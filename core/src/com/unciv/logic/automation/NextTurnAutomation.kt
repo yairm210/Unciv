@@ -707,7 +707,7 @@ object NextTurnAutomation {
         val ourCity = closestCities.city1
         val theirCity = closestCities.city2
         
-        if (civInfo.getCivUnits().none {
+        if (civInfo.getCivUnits().filter { it.isMilitary() }.none {
                 val damageRecievedWhenAttacking = 
                     BattleDamage.calculateDamageToAttacker(
                         MapUnitCombatant(it),
