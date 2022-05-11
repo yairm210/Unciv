@@ -20,8 +20,10 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.*
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
+import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.filterAndLogic
 import com.unciv.ui.utils.toPercent
+import com.unciv.ui.worldscreen.unit.UnitActions
 import java.text.DecimalFormat
 import kotlin.math.pow
 
@@ -245,7 +247,7 @@ class MapUnit {
         DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + getMaxMovement()
 
     fun getTile(): TileInfo = currentTile
-    
+
 
     // This SHOULD NOT be a HashSet, because if it is, then promotions with the same text (e.g. barrage I, barrage II)
     //  will not get counted twice!
@@ -260,7 +262,7 @@ class MapUnit {
     // TODO typify usages and remove this function
     fun getMatchingUniques(placeholderText: String): Sequence<Unique> =
         tempUniquesMap.getUniques(placeholderText)
-    
+
     fun getMatchingUniques(
         uniqueType: UniqueType,
         stateForConditionals: StateForConditionals = StateForConditionals(civInfo, unit=this),
@@ -296,11 +298,9 @@ class MapUnit {
         }
 
         tempUniques = uniques
-        val newUniquesMap = UniqueMap()
-        for (unique in uniques)
-            if (unique.type != null)
-                newUniquesMap.addUnique(unique)
-        tempUniquesMap = newUniquesMap
+        tempUniquesMap = UniqueMap().apply {
+            addUniques(uniques)
+        }
 
         allTilesCosts1 = hasUnique(UniqueType.AllTilesCost1Move)
         canPassThroughImpassableTiles = hasUnique(UniqueType.CanPassImpassable)
@@ -449,14 +449,17 @@ class MapUnit {
 
     fun isIdle(): Boolean {
         if (currentMovement == 0f) return false
-        if (getTile().improvementInProgress != null 
-            && canBuildImprovement(getTile().getTileImprovementInProgress()!!)) 
-                return false
+        val tile = getTile()
+        if (tile.improvementInProgress != null &&
+                canBuildImprovement(tile.getTileImprovementInProgress()!!) &&
+                !tile.isMarkedForCreatesOneImprovement()
+            ) return false
         return !(isFortified() || isExploring() || isSleeping() || isAutomated() || isMoving())
     }
 
     fun maxAttacksPerTurn(): Int {
-        return 1 + getMatchingUniques("[] additional attacks per turn").sumOf { it.params[0].toInt() }
+        return 1 + getMatchingUniques(UniqueType.AdditionalAttacks, checkCivInfoUniques = true)
+            .sumOf { it.params[0].toInt() }
     }
 
     fun canAttack(): Boolean {
@@ -467,7 +470,8 @@ class MapUnit {
     fun getRange(): Int {
         if (baseUnit.isMelee()) return 1
         var range = baseUnit().range
-        range += getMatchingUniques(UniqueType.Range, checkCivInfoUniques = true).sumOf { it.params[0].toInt() }
+        range += getMatchingUniques(UniqueType.Range, checkCivInfoUniques = true)
+            .sumOf { it.params[0].toInt() }
         return range
     }
 
@@ -625,6 +629,7 @@ class MapUnit {
 
     private fun workOnImprovement() {
         val tile = getTile()
+        if (tile.isMarkedForCreatesOneImprovement()) return
         tile.turnsToImprovement -= 1
         if (tile.turnsToImprovement != 0) return
 
@@ -658,10 +663,11 @@ class MapUnit {
             tile.improvementInProgress == RoadStatus.Road.name -> tile.roadStatus = RoadStatus.Road
             tile.improvementInProgress == RoadStatus.Railroad.name -> tile.roadStatus = RoadStatus.Railroad
             else -> {
-                tile.improvement = tile.improvementInProgress
-                if (tile.resource != null) civInfo.updateDetailedCivResources()
+                val improvement = civInfo.gameInfo.ruleSet.tileImprovements[tile.improvementInProgress]!!
+                improvement.handleImprovementCompletion(this)
             }
         }
+        
         tile.improvementInProgress = null
     }
 
@@ -848,6 +854,30 @@ class MapUnit {
         assignOwner(recipient)
         recipient.updateViewableTiles()
     }
+    
+    /** Destroys the unit and gives stats if its a great person */
+    fun consume() {
+        addStatsPerGreatPersonUsage()
+        destroy()
+    }
+
+    private fun addStatsPerGreatPersonUsage() {
+        if (!isGreatPerson()) return
+
+        val gainedStats = Stats()
+        for (unique in civInfo.getMatchingUniques(UniqueType.ProvidesGoldWheneverGreatPersonExpended)) {
+            gainedStats.gold += (100 * civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt()
+        }
+        for (unique in civInfo.getMatchingUniques(UniqueType.ProvidesStatsWheneverGreatPersonExpended)) {
+            gainedStats.add(unique.stats)
+        }
+
+        if (gainedStats.isEmpty()) return
+
+        for (stat in gainedStats)
+            civInfo.addStat(stat.key, stat.value.toInt())
+        civInfo.addNotification("By expending your [$name] you gained [${gainedStats}]!", getTile().position, name)
+    }
 
     fun removeFromTile() = currentTile.removeUnit(this)
 
@@ -866,7 +896,7 @@ class MapUnit {
             clearEncampment(tile)
         // Check whether any civilians without military units are there.
         // Keep in mind that putInTile(), which calls this method,
-        // might has already placed your military unit in this tile.
+        // might have already placed your military unit in this tile.
         val unguardedCivilian = tile.getUnguardedCivilian(this)
         // Capture Enemy Civilian Unit if you move on top of it
         if (isMilitary() && unguardedCivilian != null && civInfo.isAtWarWith(unguardedCivilian.civInfo)) {

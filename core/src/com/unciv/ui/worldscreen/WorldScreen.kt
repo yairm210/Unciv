@@ -69,7 +69,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     var isPlayersTurn = viewingCiv == gameInfo.currentPlayerCiv
         private set     // only this class is allowed to make changes
     var selectedCiv = viewingCiv
-    private var fogOfWar = true
+    var fogOfWar = true
+        private set
     val canChangeState
         get() = isPlayersTurn && !viewingCiv.isSpectator()
     private var waitingForAutosave = false
@@ -544,7 +545,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
         displayTutorial(Tutorial.Workers) {
             gameInfo.getCurrentPlayerCivilization().getCivUnits().any {
-                it.hasUniqueToBuildImprovements && it.isCivilian()
+                it.hasUniqueToBuildImprovements && it.isCivilian() && !it.isGreatPerson()
             }
         }
     }

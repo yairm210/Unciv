@@ -1,3 +1,19 @@
+## 4.0.14
+
+Performance improvements
+
+By SomeTroglodyte:
+- Move UncivServer to own module
+- Font choice rework 
+- Reworked "Creates improvement on a specific tile" Unique
+
+By Azzurite:
+- Fixed Barbarian Camps revealed by Honor not showing immediately in multiplayer
+
+By JackRainy:
+- Auto-downloading missing mods for save files
+- Typed missing uniques 
+
 ## 4.0.13
 
 Extensive performance work

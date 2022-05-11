@@ -12,6 +12,7 @@ import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
+import com.unciv.ui.utils.getConsumesAmountString
 import com.unciv.ui.utils.toPercent
 import kotlin.math.pow
 
@@ -109,13 +110,13 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (isWonder) lines += "Wonder"
         if (isNationalWonder) lines += "National Wonder"
         if (!isFree) {
-            val availableResources = if(!showAdditionalInfo) emptyMap()
+            val availableResources = if (!showAdditionalInfo) emptyMap()
                 else cityInfo.civInfo.getCivResources().associate { it.resource.name to it.amount }
             for ((resource, amount) in getResourceRequirements()) {
                 val available = availableResources[resource] ?: 0
                 lines += if (showAdditionalInfo)
-                    "{Consumes [$amount] [$resource]} ({[$available] available})"
-                else "Consumes [$amount] [$resource]"
+                        "{${resource.getConsumesAmountString(amount)}} ({[$available] available})"
+                    else resource.getConsumesAmountString(amount)
             }
         }
 
@@ -244,7 +245,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             for ((resource, amount) in resourceRequirements) {
                 textList += FormattedLine(
                     // the 1 variant should deprecate some time
-                    if (amount == 1) "Consumes 1 [$resource]" else "Consumes [$amount] [$resource]",
+                    resource.getConsumesAmountString(amount),
                     link="Resources/$resource", color="#F42" )
             }
         }
@@ -650,7 +651,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
         for ((resource, amount) in getResourceRequirements())
             if (civInfo.getCivResourcesByName()[resource]!! < amount) {
-                rejectionReasons.add(RejectionReason.ConsumesResources.toInstance("Consumes [$amount] [$resource]" ))
+                rejectionReasons.add(RejectionReason.ConsumesResources.toInstance(resource.getConsumesAmountString(amount)))
             }
 
         if (requiredNearbyImprovedResources != null) {
@@ -659,7 +660,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     it.resource != null
                     && requiredNearbyImprovedResources!!.contains(it.resource!!)
                     && it.getOwner() == civInfo
-                    && (it.tileResource.improvement == it.improvement || it.isCityCenter()
+                    && ((it.improvement != null && it.tileResource.isImprovedBy(it.improvement!!)) || it.isCityCenter()
                        || (it.getTileImprovement()?.isGreatImprovement() == true && it.tileResource.resourceType == ResourceType.Strategic)
                     )
                 }
@@ -683,15 +684,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
         cityConstructions.addBuilding(name)
 
-        val improvement = getImprovement(civInfo.gameInfo.ruleSet)
-        if (improvement != null) {
-            val tileWithImprovement = cityConstructions.cityInfo.getTiles().firstOrNull { it.improvementInProgress == improvement.name }
-            if (tileWithImprovement != null) {
-                tileWithImprovement.turnsToImprovement = 0
-                tileWithImprovement.improvementInProgress = null
-                tileWithImprovement.improvement = improvement.name
-            }
-        }
+        /** Support for [UniqueType.CreatesOneImprovement] */
+        cityConstructions.applyCreateOneImprovement(this)
 
         // "Provides a free [buildingName] [cityFilter]"
         cityConstructions.addFreeBuildings()
@@ -741,10 +735,20 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         return false
     }
 
-    fun getImprovement(ruleset: Ruleset): TileImprovement? {
-        val improvementUnique = getMatchingUniques("Creates a [] improvement on a specific tile")
-            .firstOrNull() ?: return null
-        return ruleset.tileImprovements[improvementUnique.params[0]]
+    private val _hasCreatesOneImprovementUnique by lazy {
+        hasUnique(UniqueType.CreatesOneImprovement)
+    }
+    fun hasCreateOneImprovementUnique() = _hasCreatesOneImprovementUnique
+
+    private var _getImprovementToCreate: TileImprovement? = null
+    fun getImprovementToCreate(ruleset: Ruleset): TileImprovement? {
+        if (!hasCreateOneImprovementUnique()) return null
+        if (_getImprovementToCreate == null) {
+            val improvementUnique = getMatchingUniques(UniqueType.CreatesOneImprovement)
+                .firstOrNull() ?: return null
+            _getImprovementToCreate = ruleset.tileImprovements[improvementUnique.params[0]]
+        }
+        return _getImprovementToCreate
     }
 
     fun isSellable() = !isAnyWonder() && !hasUnique(UniqueType.Unsellable)

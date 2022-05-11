@@ -2,6 +2,8 @@ package com.unciv.logic
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
+import com.unciv.json.HashMapVector2
+import com.unciv.json.json
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
@@ -15,7 +17,7 @@ import kotlin.math.min
 import kotlin.math.pow
 
 class BarbarianManager {
-    val camps = HashMap<Vector2, Encampment>()
+    val camps = HashMapVector2<Encampment>()
 
     @Transient
     lateinit var gameInfo: GameInfo
@@ -234,7 +236,7 @@ class Encampment() {
                     || it.isCityCenter()
                     || it.getFirstUnit() != null
                     || (it.isWater && !canSpawnBoats)
-                    || (it.hasUnique(UniqueType.FreshWater) && it.isWater) // No Lakes
+                    || (it.terrainHasUnique(UniqueType.FreshWater) && it.isWater) // No Lakes
         }
         if (validTiles.isEmpty()) return false
 

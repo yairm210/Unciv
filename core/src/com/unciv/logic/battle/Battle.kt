@@ -690,12 +690,12 @@ object Battle {
         for (civ in attackingCiv.getKnownCivs()) {
             civ.getDiplomacyManager(attackingCiv).setModifier(DiplomaticModifiers.UsedNuclearWeapons, -50f)
         }
-        
+
         if (!attacker.isDefeated()) {
             attacker.unit.attacksThisTurn += 1
         }
     }
-    
+
     private fun doNukeExplosionForTile(attacker: MapUnitCombatant, tile: TileInfo, nukeStrength: Int) {
         // https://forums.civfanatics.com/resources/unit-guide-modern-future-units-g-k.25628/
         // https://www.carlsguides.com/strategy/civilization5/units/aircraft-nukes.ph
@@ -708,7 +708,7 @@ object Battle {
             if (civResources[resource]!! < 0 && !attacker.getCivInfo().isBarbarian())
                 damageModifierFromMissingResource *= 0.5f // I could not find a source for this number, but this felt about right
         }
-        
+
         // Damage city and reduce its population
         val city = tile.getCity()
         if (city != null && tile.position == city.location) {
@@ -716,7 +716,7 @@ object Battle {
             postBattleNotifications(attacker, CityCombatant(city), city.getCenterTile())
             destroyIfDefeated(city.civInfo, attacker.getCivInfo())
         }
-        
+
         // Damage and/or destroy units on the tile
         for (unit in tile.getUnits().toList()) { // toList so if it's destroyed there's no concurrent modification
             val defender = MapUnitCombatant(unit)
@@ -732,45 +732,42 @@ object Battle {
         }
 
         // Pillage improvements, remove roads, add fallout
-        if (tile.improvement != null && !tile.getTileImprovement()!!.hasUnique(UniqueType.Indestructible)) {
+        if (tile.improvement != null && !tile.getTileImprovement()!!.hasUnique(UniqueType.Irremovable)) {
             if (tile.getTileImprovement()!!.hasUnique(UniqueType.Unpillagable)) {
                 tile.improvement = null
             } else {
-                tile.turnsToImprovement = 2
-                tile.improvementInProgress = tile.improvement
-                tile.improvement = null
+                tile.setPillaged()
             }
         }
         tile.roadStatus = RoadStatus.None
         if (tile.isLand && !tile.isImpassible() && !tile.isCityCenter()) {
-            if (tile.hasUnique(UniqueType.DestroyableByNukesChance)) {
+            if (tile.terrainHasUnique(UniqueType.DestroyableByNukesChance)) {
                 for (terrainFeature in tile.terrainFeatureObjects) {
                     for (unique in terrainFeature.getMatchingUniques(UniqueType.DestroyableByNukesChance)) {
                         if (Random().nextFloat() >= unique.params[0].toFloat() / 100f) continue
                         tile.removeTerrainFeature(terrainFeature.name)
-                        if (!tile.terrainFeatures.contains("Fallout") && !tile.hasUnique(UniqueType.Indestructible))
+                        if (!tile.terrainFeatures.contains("Fallout"))
                             tile.addTerrainFeature("Fallout")
                     }
                 }
-            } else if (Random().nextFloat() < 0.5f && !tile.terrainFeatures.contains("Fallout") && !tile.hasUnique(UniqueType.Indestructible)) {
+            } else if (Random().nextFloat() < 0.5f && !tile.terrainFeatures.contains("Fallout")) {
                 tile.addTerrainFeature("Fallout")
             }
-            if (!tile.hasUnique(UniqueType.DestroyableByNukes)) return
-            
+            if (!tile.terrainHasUnique(UniqueType.DestroyableByNukes)) return
+        
             // Deprecated as of 3.19.19 -- If removed, the two successive `if`s above should be merged
-                val destructionChance = if (tile.hasUnique(UniqueType.ResistsNukes)) 0.25f
+                val destructionChance = if (tile.terrainHasUnique(UniqueType.ResistsNukes)) 0.25f
                 else 0.5f
                 if (Random().nextFloat() < destructionChance) {
                     for (terrainFeature in tile.terrainFeatureObjects)
                         if (terrainFeature.hasUnique(UniqueType.DestroyableByNukes))
                             tile.removeTerrainFeature(terrainFeature.name)
-                    if (!tile.hasUnique(UniqueType.Indestructible))
-                        tile.addTerrainFeature("Fallout")
+                    tile.addTerrainFeature("Fallout")
                 }
             //
         }
     }
-    
+
     private fun doNukeExplosionDamageToCity(targetedCity: CityInfo, nukeStrength: Int, damageModifierFromMissingResource: Float) {
         if (nukeStrength > 1 && targetedCity.population.population < 5 && targetedCity.canBeDestroyed(true)) {
             targetedCity.destroyCity()

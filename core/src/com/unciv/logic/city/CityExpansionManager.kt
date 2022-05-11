@@ -5,6 +5,7 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.utils.toPercent
 import com.unciv.ui.utils.withItem
@@ -72,17 +73,18 @@ class CityExpansionManager {
         return cost.roundToInt()
     }
 
+    fun getChoosableTiles() = cityInfo.getCenterTile().getTilesInDistance(5)
+        .filter { it.getOwner() == null }
+    
     fun chooseNewTileToOwn(): TileInfo? {
-        val choosableTiles = cityInfo.getCenterTile().getTilesInDistance(5)
-            .filter { it.getOwner() == null }
-        
         // Technically, in the original a random tile with the lowest score was selected
         // However, doing this requires either caching it, which is way more work,
         // or selecting all possible tiles and only choosing one when the border expands.
         // But since the order in which tiles are selected in distance is kinda random anyways,
         // this is fine.
-        return choosableTiles.minByOrNull {
-            Automation.rankTileForExpansion(it, cityInfo)
+        val localUniqueCache = LocalUniqueCache()
+        return getChoosableTiles().minByOrNull {
+            Automation.rankTileForExpansion(it, cityInfo, localUniqueCache)
         }
     }
 
@@ -126,6 +128,8 @@ class CityExpansionManager {
             if (city.lockedTiles.contains(tileInfo.position))
                 city.lockedTiles.remove(tileInfo.position)
         }
+
+        tileInfo.removeCreatesOneImprovementMarker()
 
         tileInfo.setOwningCity(null)
 

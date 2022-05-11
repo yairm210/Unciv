@@ -364,10 +364,12 @@ enum class UniqueParameterType(
             }
     },
 
-    /** [UniqueType.ConstructImprovementConsumingUnit] */
+    /** For [UniqueType.ConstructImprovementConsumingUnit], [UniqueType.CreatesOneImprovement] */
     ImprovementName("improvementName", "Trading Post", "The name of any improvement"){
-        override fun getErrorSeverity(parameterText: String,ruleset: Ruleset):
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
+            if (parameterText == Constants.cancelImprovementOrder)
+                return UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
             if (ruleset.tileImprovements.containsKey(parameterText)) return null
             return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
         }
@@ -502,6 +504,8 @@ enum class UniqueParameterType(
         override fun getTranslationWriterStringsForOutput() = scanExistingValues(this)
     },
 
+    /** We don't know anything about this parameter - this needs to return
+     *  [isTranslationWriterGuess]() == `true` for all inputs or TranslationFileWriter will have a problem! */
     Unknown("param", "Unknown") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? = null

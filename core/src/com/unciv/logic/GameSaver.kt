@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Json
 import com.unciv.UncivGame
+import com.unciv.json.json
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.crashhandling.crashHandlingThread
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
@@ -20,8 +21,6 @@ object GameSaver {
     /** When set, we know we're on Android and can save to the app's personal external file directory
      * See https://developer.android.com/training/data-storage/app-specific#external-access-files */
     var externalFilesDirForAndroid = ""
-
-    fun json() = Json().apply { setIgnoreDeprecated(true); ignoreUnknownFields = true } // Json() is NOT THREAD SAFE so we need to create a new one for each function
 
     fun getSubfolder(multiplayer: Boolean = false) = if (multiplayer) multiplayerFilesFolder else saveFilesFolder
 
