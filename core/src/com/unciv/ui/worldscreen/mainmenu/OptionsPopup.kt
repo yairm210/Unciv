@@ -275,15 +275,20 @@ class OptionsPopup(
             if (settings.multiplayerServer != Constants.dropboxMultiplayerServer) settings.multiplayerServer
         else "https://..."
         val multiplayerServerTextField = TextField(textToShowForMultiplayerAddress, BaseScreen.skin)
-        multiplayerServerTextField.programmaticChangeEvents = true
         val serverIpTable = Table()
 
         serverIpTable.add("Server address".toLabel().onClick {
             multiplayerServerTextField.text = Gdx.app.clipboard.contents
         }).row()
         multiplayerServerTextField.onChange {
-            multiplayerServerTextField.text = formatMultiplayerUrlInput(multiplayerServerTextField.text)
-            settings.multiplayerServer = multiplayerServerTextField.text
+            val curText = multiplayerServerTextField.text
+            val formatted = formatMultiplayerUrlInput(curText)
+            if (curText != formatted) {
+                val prevPos = multiplayerServerTextField.cursorPosition
+                multiplayerServerTextField.text = formatted
+                multiplayerServerTextField.cursorPosition = if (prevPos > 0) prevPos - 1 else 0 // we likely removed the last char the user typed
+            }
+            settings.multiplayerServer = formatted
             settings.save()
             connectionToServerButton.isEnabled = multiplayerServerTextField.text != Constants.dropboxMultiplayerServer
         }
@@ -963,19 +968,11 @@ class OptionsPopup(
     }
 
     private fun formatMultiplayerUrlInput(input: String): String {
-        var result : String
-
         // remove all whitespaces
-        result = Regex("\\s+").replace(input, "")
+        val noWhiteSpace = Regex("\\s+").replace(input, "")
 
-        // replace multiple slash with a single one
-        result = Regex("/{2,}").replace(result, "/")
-
-        // remove trailing slash, reinstate protocol & return
-        // all the formatting above makes "https://" -> "http:/"
-        // also people might leave a slash at end my mistake
-        // so we need to fix those before returning
-        return result.trimEnd('/').replaceFirst(":/", "://")
+        // replace multiple slash with a single one, except if preceded by http(s):
+        return Regex("(?<!https?:)/{2,}").replace(noWhiteSpace, "/")
     }
 
     //endregion
