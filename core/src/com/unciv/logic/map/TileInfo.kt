@@ -66,9 +66,12 @@ open class TileInfo {
     var terrainFeatureObjects: List<Terrain> = listOf()
         private set
 
-
     var naturalWonder: String? = null
     var resource: String? = null
+        set(value) {
+            tileResourceCache = null
+            field = value
+        }
     var resourceAmount: Int = 0
     var improvement: String? = null
     var improvementInProgress: String? = null
@@ -162,12 +165,17 @@ open class TileInfo {
         else -> getBaseTerrain()
     }
 
-    @delegate:Transient
-    val tileResource: TileResource by lazy {
-        if (resource == null) throw Exception("No resource exists for this tile!")
-        else if (!ruleset.tileResources.containsKey(resource!!)) throw Exception("Resource $resource does not exist in this ruleset!")
-        else ruleset.tileResources[resource!!]!!
-    }
+    @Transient
+    private var tileResourceCache: TileResource? = null
+    val tileResource: TileResource
+        get() {
+            if (tileResourceCache == null) {
+                if (resource == null) throw Exception("No resource exists for this tile!")
+                if (!ruleset.tileResources.containsKey(resource!!)) throw Exception("Resource $resource does not exist in this ruleset!")
+                tileResourceCache = ruleset.tileResources[resource!!]!!
+            }
+            return tileResourceCache!!
+        }
 
     private fun getNaturalWonder(): Terrain =
             if (naturalWonder == null) throw Exception("No natural wonder exists for this tile!")
@@ -243,7 +251,7 @@ open class TileInfo {
 
     fun isRoughTerrain() = getAllTerrains().any{ it.isRough() }
 
-    /** Checks whether any of the TERRAINS of this tile has a certain unqiue */
+    /** Checks whether any of the TERRAINS of this tile has a certain unique */
     fun terrainHasUnique(uniqueType: UniqueType) = getAllTerrains().any { it.hasUnique(uniqueType) }
     /** Get all uniques of this type that any TERRAIN on this tile has */
     fun getTerrainMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(tile=this) ): Sequence<Unique> {
@@ -528,17 +536,17 @@ open class TileInfo {
             RoadStatus.values().any { it.name == improvement.name } -> !isWater && RoadStatus.valueOf(improvement.name) > roadStatus
             // Can always build road removal improvements
             improvement.name == roadStatus.removeAction -> true
-            
+
             // Then we check if there is any reason to not allow this improvement to be build
-            
+
             // Can't build if there is already an irremovable improvement here
             this.improvement != null && getTileImprovement()!!.hasUnique(UniqueType.Irremovable, stateForConditionals) -> false
-            
+
             // Can't build if any terrain specifically prevents building this improvement
             getTerrainMatchingUniques(UniqueType.RestrictedBuildableImprovements, stateForConditionals).any {
                 unique -> !improvement.matchesFilter(unique.params[0])
             } -> false
-            
+
             // Can't build if the improvement specifically prevents building on some present feature
             improvement.getMatchingUniques(UniqueType.CannotBuildOnTile, stateForConditionals).any {
                 unique -> matchesTerrainFilter(unique.params[0])
@@ -549,7 +557,7 @@ open class TileInfo {
             improvement.getMatchingUniques(UniqueType.CanOnlyBeBuiltOnTile, stateForConditionals).let {
                 it.any() && it.any { unique -> !matchesTerrainFilter(unique.params[0]) }
             } -> false
-            
+
             // Can't build if the improvement requires an adjacent terrain that is not present
             improvement.getMatchingUniques(UniqueType.MustBeNextTo, stateForConditionals).any {
                 !isAdjacentTo(it.params[0])
@@ -557,8 +565,8 @@ open class TileInfo {
 
             // Can't build on unbuildable terrains - EXCEPT when specifically allowed to
             topTerrain.unbuildable && !improvement.isAllowedOnFeature(topTerrain.name) -> false
-            
-            // Can't build it if it is only allowed to improve resources and it doesn't improve this reousrce
+
+            // Can't build it if it is only allowed to improve resources and it doesn't improve this resource
             improvement.hasUnique(UniqueType.CanOnlyImproveResource, stateForConditionals) && (
                 !resourceIsVisible || !tileResource.isImprovedBy(improvement.name)
             ) -> false
