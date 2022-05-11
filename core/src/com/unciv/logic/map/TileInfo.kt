@@ -20,6 +20,7 @@ import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.toPercent
 import kotlin.math.abs
 import kotlin.math.min
+import kotlin.random.Random
 
 open class TileInfo {
     @Transient
@@ -907,7 +908,15 @@ open class TileInfo {
         for (unit in this.getUnits()) removeUnit(unit)
     }
 
-    fun setTileResource(newResource: TileResource, majorDeposit: Boolean = false) {
+    /**
+     * Sets this tile's [resource] and, if [newResource] is a Strategic resource, [resourceAmount] fields.
+     * 
+     * [resourceAmount] is determined by [MapParameters.mapResources] and [majorDeposit], and
+     * if the latter is `null` a random choice between major and minor deposit is made, approximating
+     * the frequency [MapRegions] would use. A randomness source ([rng]) can optionally be provided
+     * for that step (not used otherwise).
+     */
+    fun setTileResource(newResource: TileResource, majorDeposit: Boolean? = null, rng: Random = Random.Default) {
         resource = newResource.name
 
         if (newResource.resourceType != ResourceType.Strategic) return
@@ -919,20 +928,27 @@ open class TileInfo {
             }
         }
 
+        val majorDepositFinal = majorDeposit ?: (rng.nextDouble() < approximateMajorDepositDistribution())
+        val depositAmounts = if (majorDepositFinal) newResource.majorDepositAmount else newResource.minorDepositAmount
         resourceAmount = when (tileMap.mapParameters.mapResources) {
-            MapResources.sparse -> {
-                if (majorDeposit) newResource.majorDepositAmount.sparse
-                else newResource.minorDepositAmount.sparse
-            }
-            MapResources.abundant -> {
-                if (majorDeposit) newResource.majorDepositAmount.abundant
-                else newResource.minorDepositAmount.abundant
-            }
-            else -> {
-                if (majorDeposit) newResource.majorDepositAmount.default
-                else newResource.minorDepositAmount.default
-            }
+            MapResources.sparse -> depositAmounts.sparse
+            MapResources.abundant -> depositAmounts.abundant
+            else -> depositAmounts.default
         }
+    }
+
+    private fun approximateMajorDepositDistribution(): Double {
+        // We can't replicate the MapRegions resource distributor, so let's try to get
+        // a close probability of major deposits per tile
+        return getAllTerrains()
+            .flatMap {
+                it.getMatchingUniques(UniqueType.MajorStrategicFrequency)
+            }.sumOf {
+                // The unique param is literally "every N tiles", so to get a probability p=1/f
+                // The null hoops are so we can sum without exceptions no matter what a mod may put there 
+                it.params[0].toIntOrNull()?.run { if (this <= 0) null else 1.0 / this }
+                    ?: 0.0
+            }.takeUnless { it == 0.0 } ?: 0.04  // This is the default of 1 per 25 tiles
     }
 
     fun setTerrainFeatures(terrainFeatureList:List<String>) {
