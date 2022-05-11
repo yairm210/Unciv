@@ -281,7 +281,8 @@ class OptionsPopup(
             multiplayerServerTextField.text = Gdx.app.clipboard.contents
         }).row()
         multiplayerServerTextField.onChange {
-            settings.multiplayerServer = formatMultiplayerUrlInput(multiplayerServerTextField.text)
+            multiplayerServerTextField.text = formatMultiplayerUrlInput(multiplayerServerTextField.text)
+            settings.multiplayerServer = multiplayerServerTextField.text
             settings.save()
             connectionToServerButton.isEnabled = multiplayerServerTextField.text != Constants.dropboxMultiplayerServer
         }
