@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
+import com.unciv.logic.GameSaver
 import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.multiplayer.SimpleHttp
@@ -41,6 +42,7 @@ import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.UUID
 import kotlin.math.floor
+import kotlin.text.Regex
 import com.badlogic.gdx.utils.Array as GdxArray
 
 /**
@@ -280,6 +282,7 @@ class OptionsPopup(
             multiplayerServerTextField.text = Gdx.app.clipboard.contents
         }).row()
         multiplayerServerTextField.onChange {
+            multiplayerServerTextField.text = formatMultiplayerUrlInput(multiplayerServerTextField.text)
             settings.multiplayerServer = multiplayerServerTextField.text
             settings.save()
             connectionToServerButton.isEnabled = multiplayerServerTextField.text != Constants.dropboxMultiplayerServer
@@ -551,8 +554,8 @@ class OptionsPopup(
     private fun getDebugTab() = Table(BaseScreen.skin).apply {
         pad(10f)
         defaults().pad(5f)
-
         val game = UncivGame.Current
+
         val simulateButton = "Simulate until turn:".toTextButton()
         val simulateTextField = TextField(game.simulateUntilTurnForDebug.toString(), BaseScreen.skin)
         val invalidInputLabel = "This is not a valid integer!".toLabel().also { it.isVisible = false }
@@ -569,6 +572,7 @@ class OptionsPopup(
         add(simulateButton)
         add(simulateTextField).row()
         add(invalidInputLabel).colspan(2).row()
+
         add("Supercharged".toCheckBox(game.superchargedForDebug) {
             game.superchargedForDebug = it
         }).colspan(2).row()
@@ -580,9 +584,13 @@ class OptionsPopup(
                 game.gameInfo.gameParameters.godMode = it
             }).colspan(2).row()
         }
+        add("Save games compressed".toCheckBox(GameSaver.saveZipped) {
+            GameSaver.saveZipped = it
+        }).colspan(2).row()
         add("Save maps compressed".toCheckBox(MapSaver.saveZipped) {
             MapSaver.saveZipped = it
         }).colspan(2).row()
+
         add("Gdx Scene2D debug".toCheckBox(BaseScreen.enableSceneDebug) {
             BaseScreen.enableSceneDebug = it
         }).colspan(2).row()
@@ -952,6 +960,22 @@ class OptionsPopup(
                 previousScreen.shouldUpdate = true
         }
         add(checkbox).colspan(2).left().row()
+    }
+
+    private fun formatMultiplayerUrlInput(input: String): String {
+        var result : String
+
+        // remove all whitespaces
+        result = Regex("\\s+").replace(input, "")
+
+        // replace multiple slash with a single one
+        result = Regex("/{2,}").replace(result, "/")
+
+        // remove trailing slash, reinstate protocol & return
+        // all the formatting above makes "https://" -> "http:/"
+        // also people might leave a slash at end my mistake
+        // so we need to fix those before returning
+        return result.trimEnd('/').replaceFirst(":/", "://")
     }
 
     //endregion
