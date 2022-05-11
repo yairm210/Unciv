@@ -4,245 +4,245 @@ size: 2048, 256
 format: RGBA8888
 filter: MipMapLinearLinear, MipMapLinearLinear
 repeat: none
-America
+NationIcons/America
   rotate: false
   xy: 4, 112
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Arabia
+NationIcons/Arabia
   rotate: false
   xy: 4, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Austria
+NationIcons/Austria
   rotate: false
   xy: 112, 112
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Aztecs
+NationIcons/Aztecs
   rotate: false
   xy: 112, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Babylon
+NationIcons/Babylon
   rotate: false
   xy: 220, 112
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Byzantium
+NationIcons/Byzantium
   rotate: false
   xy: 220, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Carthage
+NationIcons/Carthage
   rotate: false
   xy: 328, 112
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Celts
+NationIcons/Celts
   rotate: false
   xy: 328, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-China
+NationIcons/China
   rotate: false
   xy: 436, 112
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-CityState
+NationIcons/CityState
   rotate: false
   xy: 436, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Denmark
+NationIcons/Denmark
   rotate: false
   xy: 544, 112
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Egypt
+NationIcons/Egypt
   rotate: false
   xy: 544, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-England
+NationIcons/England
   rotate: false
   xy: 652, 112
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Ethiopia
+NationIcons/Ethiopia
   rotate: false
   xy: 652, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-France
+NationIcons/France
   rotate: false
   xy: 760, 112
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Germany
+NationIcons/Germany
   rotate: false
   xy: 760, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Greece
+NationIcons/Greece
   rotate: false
   xy: 868, 112
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Inca
+NationIcons/Inca
   rotate: false
   xy: 868, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-India
+NationIcons/India
   rotate: false
   xy: 976, 112
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Iroquois
+NationIcons/Iroquois
   rotate: false
   xy: 976, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Japan
+NationIcons/Japan
   rotate: false
   xy: 1084, 112
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Korea
+NationIcons/Korea
   rotate: false
   xy: 1084, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Mongolia
+NationIcons/Mongolia
   rotate: false
   xy: 1192, 112
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Persia
+NationIcons/Persia
   rotate: false
   xy: 1192, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Polynesia
+NationIcons/Polynesia
   rotate: false
   xy: 1300, 112
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Rome
+NationIcons/Rome
   rotate: false
   xy: 1300, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Russia
+NationIcons/Russia
   rotate: false
   xy: 1408, 112
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Siam
+NationIcons/Siam
   rotate: false
   xy: 1408, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Songhai
+NationIcons/Songhai
   rotate: false
   xy: 1516, 112
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Spain
+NationIcons/Spain
   rotate: false
   xy: 1516, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Sweden
+NationIcons/Sweden
   rotate: false
   xy: 1624, 112
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-The Huns
+NationIcons/The Huns
   rotate: false
   xy: 1624, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-The Maya
+NationIcons/The Maya
   rotate: false
   xy: 1732, 112
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-The Netherlands
+NationIcons/The Netherlands
   rotate: false
   xy: 1732, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-The Ottomans
+NationIcons/The Ottomans
   rotate: false
   xy: 1840, 112
   size: 100, 100
