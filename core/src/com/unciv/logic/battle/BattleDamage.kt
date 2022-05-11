@@ -79,11 +79,10 @@ object BattleDamage {
             // Get a unit which provides a bonus in range
             val nearbyCivUnit = combatant.getCivInfo().getCivUnits().firstOrNull {
                     val unique = it.getMatchingUniques(UniqueType.StrengthBonusInRadius).firstOrNull()
-                    if ((unique != null) && combatant.unit.matchesFilter(unique.params[1])) {
-                        // if current combatant is near by, pick this unit
-                        it.currentTile.getTilesInDistance(unique.params[2].toInt())
-                            .any { tileInfo -> tileInfo.militaryUnit == combatant.unit }
-                    } else false
+                    (unique != null)
+                       && combatant.unit.matchesFilter(unique.params[1])
+                         // if current combatant is near by, pick this unit
+                         && it.currentTile.aerialDistanceTo(combatant.getTile()) <= unique.params[2].toInt()
                 }
 
             // get its unique and apply the bonus
