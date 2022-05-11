@@ -3,11 +3,9 @@ package com.unciv.logic.multiplayer
 import com.badlogic.gdx.Net
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.json.json
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.GameSaver
-import com.unciv.ui.saves.Gzip
 import java.util.*
 
 interface IFileStorage {
@@ -87,7 +85,7 @@ class OnlineMultiplayer(var fileStorageIdentifier: String? = null) {
             tryUploadGamePreview(gameInfo.asPreview())
         }
 
-        val zippedGameInfo = Gzip.zip(json().toJson(gameInfo))
+        val zippedGameInfo = GameSaver.gameInfoToString(gameInfo, forceZip = true)
         fileStorage.saveFileData(gameInfo.gameId, zippedGameInfo)
     }
 
@@ -98,17 +96,17 @@ class OnlineMultiplayer(var fileStorageIdentifier: String? = null) {
      * @see GameInfo.asPreview
      */
     fun tryUploadGamePreview(gameInfo: GameInfoPreview) {
-        val zippedGameInfo = Gzip.zip(json().toJson(gameInfo))
+        val zippedGameInfo = GameSaver.gameInfoToString(gameInfo)
         fileStorage.saveFileData("${gameInfo.gameId}_Preview", zippedGameInfo)
     }
 
     fun tryDownloadGame(gameId: String): GameInfo {
         val zippedGameInfo = fileStorage.loadFileData(gameId)
-        return GameSaver.gameInfoFromString(Gzip.unzip(zippedGameInfo))
+        return GameSaver.gameInfoFromString(zippedGameInfo)
     }
 
     fun tryDownloadGamePreview(gameId: String): GameInfoPreview {
         val zippedGameInfo = fileStorage.loadFileData("${gameId}_Preview")
-        return GameSaver.gameInfoPreviewFromString(Gzip.unzip(zippedGameInfo))
+        return GameSaver.gameInfoPreviewFromString(zippedGameInfo)
     }
 }

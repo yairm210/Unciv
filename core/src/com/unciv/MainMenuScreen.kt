@@ -27,7 +27,6 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 
 class MainMenuScreen: BaseScreen() {
-    private val autosave = "Autosave"
     private val backgroundTable = Table().apply { background= ImageGetter.getBackground(Color.WHITE) }
     private val singleColumn = isCrampedPortrait()
 
@@ -90,7 +89,7 @@ class MainMenuScreen: BaseScreen() {
         val column1 = Table().apply { defaults().pad(10f).fillX() }
         val column2 = if(singleColumn) column1 else Table().apply { defaults().pad(10f).fillX() }
 
-        val autosaveGame = GameSaver.getSave(autosave, false)
+        val autosaveGame = GameSaver.getSave(GameSaver.autoSaveFileName, false)
         if (autosaveGame.exists()) {
             val resumeTable = getMenuButton("Resume","OtherIcons/Resume", 'r')
                 { autoLoadGame() }
@@ -163,7 +162,7 @@ class MainMenuScreen: BaseScreen() {
 
             var savedGame: GameInfo
             try {
-                savedGame = GameSaver.loadGameByName(autosave)
+                savedGame = GameSaver.loadGameByName(GameSaver.autoSaveFileName)
             } catch (oom: OutOfMemoryError) {
                 outOfMemory()
                 return@crashHandlingThread
@@ -171,7 +170,7 @@ class MainMenuScreen: BaseScreen() {
                 // This can help for situations when the autosave is corrupted
                 try {
                     val autosaves = GameSaver.getSaves()
-                        .filter { it.name() != autosave && it.name().startsWith(autosave) }
+                        .filter { it.name() != GameSaver.autoSaveFileName && it.name().startsWith(GameSaver.autoSaveFileName) }
                     savedGame =
                         GameSaver.loadGameFromFile(autosaves.maxByOrNull { it.lastModified() }!!)
                 } catch (oom: OutOfMemoryError) { // The autosave could have oom problems as well... smh
