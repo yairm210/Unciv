@@ -214,8 +214,8 @@ object Battle {
     }
 
     private fun takeDamage(attacker: ICombatant, defender: ICombatant) {
-        var potentialDamageToDefender = BattleDamage.calculateDamageToDefender(attacker, attacker.getTile(), defender)
-        var potentialDamageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, attacker.getTile(), defender)
+        var potentialDamageToDefender = BattleDamage.calculateDamageToDefender(attacker, defender)
+        var potentialDamageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, defender)
 
         val defenderHealthBefore = defender.getHealth()
 
@@ -803,9 +803,8 @@ object Battle {
             if (Random().nextFloat() > interceptor.interceptChance() / 100f) return
 
             var damage = BattleDamage.calculateDamageToDefender(
-                    MapUnitCombatant(interceptor),
-                    null,
-                    attacker
+                MapUnitCombatant(interceptor),
+                attacker
             )
 
             var damageFactor = 1f + interceptor.interceptDamagePercentBonus().toFloat() / 100f

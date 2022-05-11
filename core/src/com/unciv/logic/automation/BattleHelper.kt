@@ -18,9 +18,10 @@ object BattleHelper {
         val attackableEnemies = getAttackableEnemies(unit, unit.movement.getDistanceToTiles(), stayOnTile=stayOnTile)
             // Only take enemies we can fight without dying
             .filter {
-                BattleDamage.calculateDamageToAttacker(MapUnitCombatant(unit),
-                it.tileToAttackFrom,
-                Battle.getMapCombatantOfTile(it.tileToAttack)!!) < unit.health
+                BattleDamage.calculateDamageToAttacker(
+                    MapUnitCombatant(unit),
+                    Battle.getMapCombatantOfTile(it.tileToAttack)!!
+                ) < unit.health
             }
 
         val enemyTileToAttack = chooseAttackTarget(unit, attackableEnemies)
@@ -129,9 +130,10 @@ object BattleHelper {
         val attackableEnemiesNextTurn = getAttackableEnemies(unit, unitDistanceToTiles)
                 // Only take enemies we can fight without dying
                 .filter {
-                    BattleDamage.calculateDamageToAttacker(MapUnitCombatant(unit),
-                            it.tileToAttackFrom,
-                            Battle.getMapCombatantOfTile(it.tileToAttack)!!) < unit.health
+                    BattleDamage.calculateDamageToAttacker(
+                        MapUnitCombatant(unit),
+                        Battle.getMapCombatantOfTile(it.tileToAttack)!!
+                    ) < unit.health
                 }
                 .filter { it.tileToAttackFrom.isLand }
 
