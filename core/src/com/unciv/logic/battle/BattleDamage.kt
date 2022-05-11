@@ -11,6 +11,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.utils.toPercent
 import java.util.*
 import kotlin.collections.set
+import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -63,7 +64,7 @@ object BattleDamage {
 
 
             for (unique in adjacentUnits.filter { it.civInfo.isAtWarWith(combatant.getCivInfo()) }
-                .flatMap { it.getMatchingUniques("[]% Strength for enemy [] units in adjacent [] tiles") })
+                    .flatMap { it.getMatchingUniques(UniqueType.StrengthForAdjacentEnemies) })
                 if (combatant.matchesCategory(unique.params[1]) && combatant.getTile()
                         .matchesFilter(unique.params[2])
                 )
@@ -84,7 +85,7 @@ object BattleDamage {
                 modifiers["Great General"] = greatGeneralModifier
             }
 
-            for (unique in combatant.unit.getMatchingUniques("[]% Strength when stacked with []")) {
+            for (unique in combatant.unit.getMatchingUniques(UniqueType.StrengthWhenStacked)) {
                 var stackedUnitsBonus = 0
                 if (combatant.unit.getTile().getUnits().any { it.matchesFilter(unique.params[1]) })
                     stackedUnitsBonus += unique.params[0].toInt()
@@ -148,10 +149,9 @@ object BattleDamage {
                     modifiers["Flanking"] =
                         (flankingBonus * (numberOfAttackersSurroundingDefender - 1)).toInt()
                 }
-                if (attacker.getTile()
-                        .aerialDistanceTo(defender.getTile()) == 1 && attacker.getTile()
-                        .isConnectedByRiver(defender.getTile())
-                    && !attacker.unit.hasUnique("Eliminates combat penalty for attacking over a river")
+                if (attacker.getTile().aerialDistanceTo(defender.getTile()) == 1 &&
+                        attacker.getTile().isConnectedByRiver(defender.getTile()) &&
+                        !attacker.unit.hasUnique(UniqueType.AttackAcrossRiver)
                 ) {
                     if (!attacker.getTile()
                             .hasConnection(attacker.getCivInfo()) // meaning, the tiles are not road-connected for this civ
@@ -246,7 +246,7 @@ object BattleDamage {
         defender: ICombatant
     ): Float {
         val attackModifier = modifiersToMultiplicationBonus(getAttackModifiers(attacker, defender))
-        return attacker.getAttackingStrength() * attackModifier
+        return max(1f, attacker.getAttackingStrength() * attackModifier)
     }
 
 
@@ -255,7 +255,7 @@ object BattleDamage {
      */
     private fun getDefendingStrength(attacker: ICombatant, defender: ICombatant): Float {
         val defenceModifier = modifiersToMultiplicationBonus(getDefenceModifiers(attacker, defender))
-        return defender.getDefendingStrength() * defenceModifier
+        return max(1f, defender.getDefendingStrength() * defenceModifier)
     }
 
     fun calculateDamageToAttacker(
@@ -264,13 +264,10 @@ object BattleDamage {
         defender: ICombatant,
         ignoreRandomness: Boolean = false,
     ): Int {
-        if (attacker.isRanged()) return 0
+        if (attacker.isRanged() && !attacker.isAirUnit()) return 0
         if (defender.isCivilian()) return 0
-        val ratio =
-            getAttackingStrength(attacker, defender) / getDefendingStrength(
-                attacker,
-                defender
-            )
+        val ratio = getAttackingStrength(attacker, defender) / getDefendingStrength(
+                attacker, defender)
         return (damageModifier(ratio, true, attacker, ignoreRandomness) * getHealthDependantDamageRatio(defender)).roundToInt()
     }
 
@@ -280,12 +277,9 @@ object BattleDamage {
         defender: ICombatant,
         ignoreRandomness: Boolean = false,
     ): Int {
-        val ratio =
-            getAttackingStrength(attacker, defender) / getDefendingStrength(
-                attacker,
-                defender
-            )
         if (defender.isCivilian()) return 40
+        val ratio = getAttackingStrength(attacker, defender) / getDefendingStrength(
+                attacker, defender)
         return (damageModifier(ratio, false, attacker, ignoreRandomness) * getHealthDependantDamageRatio(attacker)).roundToInt()
     }
 
@@ -302,9 +296,9 @@ object BattleDamage {
         if (damageToAttacker && attackerToDefenderRatio > 1 || !damageToAttacker && attackerToDefenderRatio < 1) // damage ratio from the weaker party is inverted
             ratioModifier = ratioModifier.pow(-1)
         val randomSeed = attacker.getCivInfo().gameInfo.turns * attacker.getTile().position.hashCode() // so people don't save-scum to get optimal results
-        val randomCenteredAround30 = 24 + 
-            if (ignoreRandomness) 6f
-            else 12 * Random(randomSeed.toLong()).nextFloat()
+        val randomCenteredAround30 = 24 +
+                if (ignoreRandomness) 6f
+                else 12 * Random(randomSeed.toLong()).nextFloat()
         return randomCenteredAround30 * ratioModifier
     }
 }

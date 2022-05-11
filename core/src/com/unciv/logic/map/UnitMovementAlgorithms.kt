@@ -261,7 +261,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         if (currentTile == finalDestination) return currentTile
 
         // If we can fly, head there directly
-        if (unit.baseUnit.movesLikeAirUnits() || unit.isPreparingParadrop()) return finalDestination
+        if ((unit.baseUnit.movesLikeAirUnits() || unit.isPreparingParadrop()) && canMoveTo(finalDestination)) return finalDestination
 
         val distanceToTiles = getDistanceToTiles()
 
@@ -381,7 +381,10 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         while (allowedTile == null && distance < 5) {
             distance++
             allowedTile = unit.getTile().getTilesAtDistance(distance)
-                    .firstOrNull { canMoveTo(it) }
+                // can the unit be placed safely there?
+                .filter { canMoveTo(it) }
+                // out of those where it can be placed, can it reach them in any meaningful way?
+                .firstOrNull { getPathBetweenTiles(unit.currentTile, it).size > 1 }
         }
 
         // No tile within 4 spaces? move him to a city.
@@ -501,14 +504,16 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
 
         // The .toList() here is because we have a sequence that's running on the units in the tile,
         // then if we move one of the units we'll get a ConcurrentModificationException, se we save them all to a list
-        for (payload in origin.getUnits().filter { it.isTransported && unit.canTransport(it) }.toList()) {  // bring along the payloads
+        val payloadUnits = origin.getUnits().filter { it.isTransported && unit.canTransport(it) }.toList()
+        // bring along the payloads
+        for (payload in payloadUnits) {
             payload.removeFromTile()
             for (tile in pathToLastReachableTile){
                 payload.moveThroughTile(tile)
                 if (tile == finalTileReached) break // this is the final tile the transport reached
             }
             payload.putInTile(finalTileReached)
-            payload.isTransported = true // restore the flag to not leave the payload in the cit
+            payload.isTransported = true // restore the flag to not leave the payload in the city
             payload.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
         }
 
@@ -530,18 +535,40 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
                 destination.civilianUnit
             else
                 destination.militaryUnit
-        )!! // The precondition guarantees that there is an eligible same-type unit at the destination
+        )?: return // The precondition guarantees that there is an eligible same-type unit at the destination
 
         val ourOldPosition = unit.getTile()
         val theirOldPosition = otherUnit.getTile()
 
+        val ourPayload = ourOldPosition.getUnits().filter { it.isTransported }.toList()
+        val theirPayload = theirOldPosition.getUnits().filter { it.isTransported }.toList()
+
         // Swap the units
+        // Step 1: Release the destination tile
         otherUnit.removeFromTile()
+        for (payload in theirPayload)
+            payload.removeFromTile()
+        // Step 2: Perform the movement
         unit.movement.moveToTile(destination)
+        // Step 3: Release the newly taken tile
         unit.removeFromTile()
+        for (payload in ourPayload)
+            payload.removeFromTile()
+        // Step 4: Restore the initial position after step 1
         otherUnit.putInTile(theirOldPosition)
+        for (payload in theirPayload) {
+            payload.putInTile(theirOldPosition)
+            payload.isTransported = true // restore the flag to not leave the payload in the city
+        }
+        // Step 5: Perform the another movement
         otherUnit.movement.moveToTile(ourOldPosition)
+        // Step 6: Restore the position in the new tile after step 3
         unit.putInTile(theirOldPosition)
+        for (payload in ourPayload) {
+            payload.putInTile(theirOldPosition)
+            payload.isTransported = true // restore the flag to not leave the payload in the city
+        }
+        // Step 6: Update states
         otherUnit.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
         unit.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
     }
@@ -630,13 +657,17 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
 
         if (!unit.canEnterForeignTerrain && !tile.canCivPassThrough(unit.civInfo)) return false
 
+        // The first unit is:
+        //   1. Either military unit
+        //   2. or unprotected civilian
+        //   3. or unprotected air unit while no civilians on tile
         val firstUnit = tile.getFirstUnit()
         // Moving to non-empty tile
         if (firstUnit != null && unit.civInfo != firstUnit.civInfo) {
             // Allow movement through unguarded, at-war Civilian Unit. Capture on the way 
             // But not for Embarked Units capturing on Water
             if (!(unit.isEmbarked() && tile.isWater)
-                    && tile.getUnguardedCivilian() != null && unit.civInfo.isAtWarWith(tile.civilianUnit!!.civInfo))
+                    && firstUnit.isCivilian() && unit.civInfo.isAtWarWith(firstUnit.civInfo))
                 return true
             // Cannot enter hostile tile with any unit in there
             if (unit.civInfo.isAtWarWith(firstUnit.civInfo))
@@ -689,6 +720,21 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         pathsToCities.remove(startingTile)
         return pathsToCities
     }
+
+    /**
+     * @returns the set of [TileInfo] between [from] and [to] tiles.
+     * It takes into account the terrain and units possibilities of entering the terrain,
+     * however ignores the diplomatic aspects of such movement like crossing closed borders.
+     */
+    private fun getPathBetweenTiles(from: TileInfo, to: TileInfo): MutableSet<TileInfo> {
+        val tmp = unit.canEnterForeignTerrain
+        unit.canEnterForeignTerrain = true // the trick to ignore tiles owners
+        val bfs = BFS(from) { canMoveTo(it) }
+        bfs.stepUntilDestination(to)
+        unit.canEnterForeignTerrain = tmp
+        return bfs.getReachedTiles()
+    }
+
 }
 
 class PathsToTilesWithinTurn : LinkedHashMap<TileInfo, UnitMovementAlgorithms.ParentTileAndTotalDistance>() {

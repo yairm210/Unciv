@@ -27,7 +27,7 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
     private val mapFilesSequence = sequence<FileHandle> {
         yieldAll(MapSaver.getMaps().asSequence())
         for (modFolder in RulesetCache.values.mapNotNull { it.folderLocation }) {
-            val mapsFolder = modFolder.child("maps")
+            val mapsFolder = modFolder.child(MapSaver.mapsFolder)
             if (mapsFolder.exists())
                 yieldAll(mapsFolder.list().asSequence())
         }
@@ -107,8 +107,9 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
             }
             mapParameters.name = mapFile.name()
             newGameScreen.gameSetupInfo.mapFile = mapFile
-            newGameScreen.gameSetupInfo.gameParameters.mods = LinkedHashSet(map.mapParameters.mods.filter { RulesetCache[it]?.modOptions?.isBaseRuleset != true })
-            newGameScreen.gameSetupInfo.gameParameters.baseRuleset = map.mapParameters.mods.firstOrNull { RulesetCache[it]?.modOptions?.isBaseRuleset == true } ?: map.mapParameters.baseRuleset
+            val mapMods = map.mapParameters.mods.partition { RulesetCache[it]?.modOptions?.isBaseRuleset == true }
+            newGameScreen.gameSetupInfo.gameParameters.mods = LinkedHashSet(mapMods.second)
+            newGameScreen.gameSetupInfo.gameParameters.baseRuleset = mapMods.first.firstOrNull() ?: map.mapParameters.baseRuleset
             newGameScreen.updateRuleset()
             newGameScreen.updateTables()
         }

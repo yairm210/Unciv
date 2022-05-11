@@ -3,8 +3,9 @@ package com.unciv.models.metadata
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
-import com.unciv.JsonParser
 import com.unciv.Constants
+import com.unciv.json.fromJsonFile
+import com.unciv.json.json
 import com.unciv.logic.GameSaver
 import com.unciv.ui.utils.Fonts
 import java.io.File
@@ -54,6 +55,7 @@ class GameSettings {
     var windowState = WindowState()
     var isFreshlyCreated = false
     var visualMods = HashSet<String>()
+    var useDemographics: Boolean = false
 
 
     var multiplayerServer = Constants.dropboxMultiplayerServer
@@ -123,7 +125,7 @@ class GameSettings {
             // In fact, at this point Gdx.app or Gdx.files are null but this still works.
             val file = FileHandle(base + File.separator + GameSaver.settingsFileName)
             return if (file.exists())
-                JsonParser().getFromJson(
+                json().fromJsonFile(
                     GameSettings::class.java,
                     file
                 )

@@ -228,21 +228,31 @@ class MapParameters {
         (if (worldWrap) "w" else "")
     }
 
+    // Human readable float representation akin to .net "0.###" - round to N digits but without redundant trailing zeroes
+    private fun Float.niceToString(maxPrecision: Int) =
+        "%.${maxPrecision}f".format(this).trimEnd('0').trimEnd('.')
+
     // For debugging and MapGenerator console output
     override fun toString() = sequence {
         if (name.isNotEmpty()) yield("\"$name\" ")
         yield("(")
         if (mapSize.name != MapSize.custom) yield(mapSize.name + " ")
-        if (worldWrap) yield("wrapped ")
+        if (worldWrap) yield("{wrapped} ")
         yield(shape)
-        yield(" " + displayMapDimensions())
+        yield(" " + displayMapDimensions() + ")")
         yield(mapResources)
         if (name.isEmpty()) return@sequence
-        yield(", $type, Seed $seed, ")
-        yield("$elevationExponent/$temperatureExtremeness/$resourceRichness/$vegetationRichness/")
-        yield("$rareFeaturesRichness/$maxCoastExtension/$tilesPerBiomeArea/$waterThreshold")
-    }.joinToString("", postfix = ")")
-
+        yield("\n$type, {Seed} $seed")
+        yield(", {Map Height}=" + elevationExponent.niceToString(2))
+        yield(", {Temperature extremeness}=" + temperatureExtremeness.niceToString(2))
+        yield(", {Resource richness}=" + resourceRichness.niceToString(3))
+        yield(", {Vegetation richness}=" + vegetationRichness.niceToString(2))
+        yield(", {Rare features richness}=" + rareFeaturesRichness.niceToString(3))
+        yield(", {Max Coast extension}=$maxCoastExtension")
+        yield(", {Biome areas extension}=$tilesPerBiomeArea")
+        yield(", {Water level}=" + waterThreshold.niceToString(2))
+    }.joinToString("")
+    
     fun numberOfTiles() =
         if (shape == MapShape.hexagonal) {
             1 + 3 * mapSize.radius * (mapSize.radius - 1)

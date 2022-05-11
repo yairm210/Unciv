@@ -1,32 +1,59 @@
 package com.unciv.ui.mapeditor
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.*
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.unciv.UncivGame
 import com.unciv.logic.HexMath
-import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
-import com.unciv.ui.utils.ZoomableScrollPane
-import com.unciv.ui.utils.center
-import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.*
 
-class EditorMapHolder(private val mapEditorScreen: MapEditorScreen, internal val tileMap: TileMap): ZoomableScrollPane() {
+
+/**
+ * This MapHolder is used both for the Map Editor and the Main Menu background!
+ * @param parentScreen a MapEditorScreen or a MainMenuScreen
+ */
+class EditorMapHolder(
+    parentScreen: BaseScreen,
+    internal val tileMap: TileMap,
+    private val onTileClick: (TileInfo) -> Unit
+): ZoomableScrollPane() {
+    val editorScreen = parentScreen as? MapEditorScreen
+
     val tileGroups = HashMap<TileInfo, List<TileGroup>>()
-    lateinit var tileGroupMap: TileGroupMap<TileGroup>
+    private lateinit var tileGroupMap: TileGroupMap<TileGroup>
     private val allTileGroups = ArrayList<TileGroup>()
 
+    private val maxWorldZoomOut = UncivGame.Current.settings.maxWorldZoomOut
+    private val minZoomScale = 1f / maxWorldZoomOut
+
+    private var blinkAction: Action? = null
+
+    private var savedCaptureListeners = emptyList<EventListener>()
+    private var savedListeners = emptyList<EventListener>()
+
     init {
+        if (editorScreen == null) touchable = Touchable.disabled
         continuousScrollingX = tileMap.mapParameters.worldWrap
+        addTiles(parentScreen.stage)
+        if (editorScreen != null) addCaptureListener(getDragPaintListener())
     }
 
-    internal fun addTiles(leftAndRightPadding: Float, topAndBottomPadding: Float) {
+    internal fun addTiles(stage: Stage) {
 
         val tileSetStrings = TileSetStrings()
         val daTileGroups = tileMap.values.map { TileGroup(it, tileSetStrings) }
 
-        tileGroupMap = TileGroupMap(daTileGroups, leftAndRightPadding, topAndBottomPadding, continuousScrollingX)
+        tileGroupMap = TileGroupMap(
+            daTileGroups,
+            stage.width * maxWorldZoomOut / 2,
+            stage.height * maxWorldZoomOut / 2,
+            continuousScrollingX)
         actor = tileGroupMap
         val mirrorTileGroups = tileGroupMap.getMirrorTiles()
 
@@ -48,29 +75,26 @@ class EditorMapHolder(private val mapEditorScreen: MapEditorScreen, internal val
 
         for (tileGroup in allTileGroups) {
 
+/* revisit when Unit editing is re-implemented
             // This is a hack to make the unit icons render correctly on the game, even though the map isn't part of a game
             // and the units aren't assigned to any "real" CivInfo
-            tileGroup.tileInfo.getUnits().forEach { it.civInfo= CivilizationInfo()
-                    .apply { nation=mapEditorScreen.ruleset.nations[it.owner]!! } }
-
-            tileGroup.showEntireMap = true
-            tileGroup.update()
-            tileGroup.onClick {
-
-                val distance = mapEditorScreen.mapEditorOptionsTable.brushSize - 1
-
-                for (tileInfo in mapEditorScreen.tileMap.getTilesInDistance(tileGroup.tileInfo.position, distance)) {
-                    mapEditorScreen.mapEditorOptionsTable.updateTileWhenClicked(tileInfo)
-
-                    tileInfo.setTerrainTransients()
-                    tileGroups[tileInfo]!!.forEach { it.update() }
+            //to do make safe the !!
+            //to do worse - don't create a whole Civ instance per unit
+            tileGroup.tileInfo.getUnits().forEach {
+                it.civInfo = CivilizationInfo().apply {
+                    nation = ruleset.nations[it.owner]!!
                 }
             }
+*/
+            tileGroup.showEntireMap = true
+            tileGroup.update()
+            if (touchable != Touchable.disabled)
+                tileGroup.onClick { onTileClick(tileGroup.tileInfo) }
         }
 
-        setSize(mapEditorScreen.stage.width * 2, mapEditorScreen.stage.height * 2)
+        setSize(stage.width * maxWorldZoomOut, stage.height * maxWorldZoomOut)
         setOrigin(width / 2,height / 2)
-        center(mapEditorScreen.stage)
+        center(stage)
 
         layout()
 
@@ -89,11 +113,109 @@ class EditorMapHolder(private val mapEditorScreen: MapEditorScreen, internal val
             tileInfo.setTerrainTransients()
     }
 
+    // This emulates `private TileMap.getOrNull(Int,Int)` and should really move there
+    // still more efficient than `if (rounded in tileMap) tileMap[rounded] else null`
+    private fun TileMap.getOrNull(pos: Vector2): TileInfo? {
+        val x = pos.x.toInt()
+        val y = pos.y.toInt()
+        if (contains(x, y)) return get(x, y)
+        return null
+    }
+
+    fun setCenterPosition(vector: Vector2, blink: Boolean = false) {
+        val tileGroup = allTileGroups.firstOrNull { it.tileInfo.position == vector } ?: return
+        scrollX = tileGroup.x + tileGroup.width / 2 - width / 2
+        scrollY = maxY - (tileGroup.y + tileGroup.width / 2 - height / 2)
+        if (!blink) return
+
+        removeAction(blinkAction) // so we don't have multiple blinks at once
+        blinkAction = Actions.repeat(3, Actions.sequence(
+            Actions.run { tileGroup.highlightImage.isVisible = false },
+            Actions.delay(.3f),
+            Actions.run { tileGroup.highlightImage.isVisible = true },
+            Actions.delay(.3f)
+        ))
+        addAction(blinkAction) // Don't set it on the group because it's an actionless group
+    }
+
+    override fun zoom(zoomScale: Float) {
+        if (zoomScale < minZoomScale || zoomScale > 2f) return
+        setScale(zoomScale)
+    }
+
+    /*
+    The ScrollPane interferes with the dragging listener of MapEditorToolsDrawer.
+    Once the ZoomableScrollPane super is initialized, there are 3 listeners + 1 capture listener:
+    listeners[0] = ZoomableScrollPane.getFlickScrollListener()
+    listeners[1] = ZoomableScrollPane.addZoomListeners: override fun scrolled (MouseWheel)
+    listeners[2] = ZoomableScrollPane.addZoomListeners: override fun zoom (Android pinch)
+    captureListeners[0] = ScrollPane.addCaptureListener: touchDown, touchUp, touchDragged, mouseMoved
+    Clearing and putting back the captureListener _should_ suffice, but in practice it doesn't.
+    Therefore, save all listeners when they're hurting us, and put them back when needed.
+    */
+    internal fun killListeners() {
+        savedCaptureListeners = captureListeners.toList()
+        savedListeners = listeners.toList()
+        clearListeners()
+    }
+    internal fun resurrectListeners() {
+        val captureListenersToAdd = savedCaptureListeners
+        savedCaptureListeners = emptyList()
+        val listenersToAdd = savedListeners
+        savedListeners = emptyList()
+        for (listener in listenersToAdd) addListener(listener)
+        for (listener in captureListenersToAdd) addCaptureListener(listener)
+    }
+
+    /** Factory to create the listener that does "paint by dragging"
+     *  Should only be called if this MapHolder is used from MapEditorScreen
+     */
+    private fun getDragPaintListener(): InputListener {
+        return object : InputListener() {
+            var isDragging = false
+            var isPainting = false
+            var touchDownTime = System.currentTimeMillis()
+
+            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
+                touchDownTime = System.currentTimeMillis()
+                return true
+            }
+
+            override fun touchDragged(event: InputEvent?, x: Float, y: Float, pointer: Int) {
+                if (!isDragging) {
+                    isDragging = true
+                    val deltaTime = System.currentTimeMillis() - touchDownTime
+                    if (deltaTime > 400) {
+                        isPainting = true
+                        stage.cancelTouchFocusExcept(this, this@EditorMapHolder)
+                    }
+                }
+                if (!isPainting) return
+
+                editorScreen!!.hideSelection()
+                val stageCoords = actor.stageToLocalCoordinates(Vector2(event!!.stageX, event.stageY))
+                val centerTileInfo = getClosestTileTo(stageCoords)
+                    ?: return
+                editorScreen.tabs.edit.paintTilesWithBrush(centerTileInfo)
+            }
+
+            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
+                // Reset the whole map
+                if (isPainting) {
+                    updateTileGroups()
+                    setTransients()
+                }
+
+                isDragging = false
+                isPainting = false
+            }
+        }
+    }
+
     fun getClosestTileTo(stageCoords: Vector2): TileInfo? {
         val positionalCoords = tileGroupMap.getPositionalVector(stageCoords)
         val hexPosition = HexMath.world2HexCoords(positionalCoords)
         val rounded = HexMath.roundHexCoords(hexPosition)
-
-        return if (rounded in tileMap) tileMap[rounded] else null
+        return tileMap.getOrNull(rounded)
     }
 }

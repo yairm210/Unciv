@@ -1,12 +1,13 @@
 package com.unciv.models.ruleset
 
+import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.NamedStats
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.ICivilopediaText
 
-interface IRulesetObject:INamed, IHasUniques, ICivilopediaText
+interface IRulesetObject: INamed, IHasUniques, ICivilopediaText
 
 abstract class RulesetObject: IRulesetObject {
     override var name = ""

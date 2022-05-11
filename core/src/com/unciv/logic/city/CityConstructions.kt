@@ -1,11 +1,16 @@
 package com.unciv.logic.city
 
+import com.unciv.UncivGame
+import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ConstructionAutomation
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.map.MapUnit  // for Kdoc only
+import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
@@ -18,10 +23,12 @@ import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.withItem
 import com.unciv.ui.utils.withoutItem
+import com.unciv.ui.worldscreen.unit.UnitActions  // for Kdoc only
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.ceil
 import kotlin.math.roundToInt
+
 
 /**
  * City constructions manager.
@@ -32,6 +39,7 @@ import kotlin.math.roundToInt
  * @property constructionQueue a list of constructions names enqueued
  */
 class CityConstructions {
+    //region Non-Serialized Properties
     @Transient
     lateinit var cityInfo: CityInfo
 
@@ -41,25 +49,32 @@ class CityConstructions {
     @Transient
     val builtBuildingUniqueMap = UniqueMap()
 
-    var builtBuildings = HashSet<String>()
-    val inProgressConstructions = HashMap<String, Int>()
+    // No backing field, not serialized
     var currentConstructionFromQueue: String
         get() {
-            return if (constructionQueue.isEmpty()) "" 
-                else constructionQueue.first()
+            return if (constructionQueue.isEmpty()) ""
+            else constructionQueue.first()
         }
         set(value) {
             if (constructionQueue.isEmpty()) constructionQueue.add(value) else constructionQueue[0] = value
         }
+
+    //endregion
+    //region Serialized Fields
+
+    var builtBuildings = HashSet<String>()
+    val inProgressConstructions = HashMap<String, Int>()
     var currentConstructionIsUserSet = false
     var constructionQueue = mutableListOf<String>()
     var productionOverflow = 0
-    val queueMaxSize = 10
+    private val queueMaxSize = 10
 
     // Maps cities to the buildings they received
     val freeBuildingsProvidedFromThisCity: HashMap<String, HashSet<String>> = hashMapOf()
-    
+
+    //endregion
     //region pure functions
+
     fun clone(): CityConstructions {
         val toReturn = CityConstructions()
         toReturn.builtBuildings.addAll(builtBuildings)
@@ -87,8 +102,9 @@ class CityConstructions {
      */
     fun getStats(): StatTreeNode {
         val stats = StatTreeNode()
+        val localUniqueCache = LocalUniqueCache()
         for (building in getBuiltBuildings())
-            stats.addStats(building.getStats(cityInfo), building.name)
+            stats.addStats(building.getStats(cityInfo, localUniqueCache), building.name)
         return stats
     }
 
@@ -98,60 +114,23 @@ class CityConstructions {
     fun getMaintenanceCosts(): Int {
         var maintenanceCost = 0
         val freeBuildings = cityInfo.civInfo.civConstructions.getFreeBuildings(cityInfo.id)
-        
-        for (building in getBuiltBuildings()) {
-            if (building.name !in freeBuildings) {
+
+        for (building in getBuiltBuildings())
+            if (building.name !in freeBuildings)
                 maintenanceCost += building.maintenance
-            }
-        }
-        
+
         return maintenanceCost
     }
 
     fun getCityProductionTextForCityButton(): String {
         val currentConstructionSnapshot = currentConstructionFromQueue // See below
         var result = currentConstructionSnapshot.tr()
-        if (currentConstructionSnapshot != "") {
+        if (currentConstructionSnapshot.isNotEmpty()) {
             val construction = PerpetualConstruction.perpetualConstructionsMap[currentConstructionSnapshot]
-            if (construction == null) result += getTurnsToConstructionString(currentConstructionSnapshot)
-            else result += construction.getProductionTooltip(cityInfo)
+            result += construction?.getProductionTooltip(cityInfo)
+                ?: getTurnsToConstructionString(currentConstructionSnapshot)
         }
         return result
-    }
-    
-    fun addFreeBuildings() {
-        // "Gain a free [buildingName] [cityFilter]"
-        val freeBuildingUniques = cityInfo.getLocalMatchingUniques(UniqueType.GainFreeBuildings, StateForConditionals(cityInfo.civInfo, cityInfo))
-
-        for (unique in freeBuildingUniques) {
-            val freeBuildingName = cityInfo.civInfo.getEquivalentBuilding(unique.params[0]).name
-            val citiesThatApply = when (unique.params[1]) {
-                "in this city" -> listOf(cityInfo)
-                "in other cities" -> cityInfo.civInfo.cities.filter { it !== cityInfo }
-                else -> cityInfo.civInfo.cities.filter { it.matchesFilter(unique.params[1]) }
-            }
-            
-            for (city in citiesThatApply) {
-                if (city.cityConstructions.containsBuildingOrEquivalent(freeBuildingName)) continue
-                city.cityConstructions.addBuilding(freeBuildingName)
-                if (city.id !in freeBuildingsProvidedFromThisCity)
-                    freeBuildingsProvidedFromThisCity[city.id] = hashSetOf()
-
-                freeBuildingsProvidedFromThisCity[city.id]!!.add(freeBuildingName)
-            }
-        }
-
-        // Civ-level uniques - for these only add free buildings from each city to itself to avoid weirdness on city conquest
-        for (unique in cityInfo.civInfo.getMatchingUniques(UniqueType.GainFreeBuildings, stateForConditionals = StateForConditionals(cityInfo.civInfo, cityInfo))) {
-            val freeBuildingName = cityInfo.civInfo.getEquivalentBuilding(unique.params[0]).name
-            if (cityInfo.matchesFilter(unique.params[1])) {
-                if (cityInfo.id !in freeBuildingsProvidedFromThisCity)
-                    freeBuildingsProvidedFromThisCity[cityInfo.id] = hashSetOf()
-                freeBuildingsProvidedFromThisCity[cityInfo.id]!!.add(freeBuildingName)
-                if (!isBuilt(freeBuildingName))
-                    addBuilding(freeBuildingName)
-            }
-        }
     }
 
     /** @constructionName needs to be a non-perpetual construction, else an empty string is returned */
@@ -214,7 +193,7 @@ class CityConstructions {
         // if the construction name is the same as the current construction, it isn't the first
         return constructionQueueIndex == constructionQueue.indexOfFirst { it == name }
     }
-    
+
 
     internal fun getConstruction(constructionName: String): IConstruction {
         val gameBasics = cityInfo.getRuleset()
@@ -284,9 +263,17 @@ class CityConstructions {
 
         return ceil((workLeft-productionOverflow) / production.toDouble()).toInt()
     }
-    //endregion
 
+    fun hasBuildableStatBuildings(stat: Stat): Boolean {
+        return getBasicStatBuildings(stat)
+            .map { cityInfo.civInfo.getEquivalentBuilding(it.name) }
+            .filter { it.isBuildable(this) || isBeingConstructedOrEnqueued(it.name) }
+            .any()
+    }
+
+    //endregion
     //region state changing functions
+
     fun setTransients() {
         builtBuildingObjects = ArrayList(builtBuildings.map {
             cityInfo.getRuleset().buildings[it]
@@ -362,8 +349,8 @@ class CityConstructions {
             val construction = getConstruction(constructionName)
             // Perpetual constructions should always still be valid (I hope)
             if (construction is PerpetualConstruction) continue
-            
-            val rejectionReasons = 
+
+            val rejectionReasons =
                 (construction as INonPerpetualConstruction).getRejectionReasons(this)
 
             if (rejectionReasons.hasAReasonToBeRemovedFromQueue()) {
@@ -432,7 +419,7 @@ class CityConstructions {
             cityInfo.civInfo.addNotification("[${construction.name}] has been built in [" + cityInfo.name + "]",
                     cityInfo.location, NotificationIcon.Construction, icon)
         }
-        
+
         if (construction is Building && construction.hasUnique(UniqueType.TriggersAlertOnCompletion,
                 StateForConditionals(cityInfo.civInfo, cityInfo)
             )) {
@@ -464,9 +451,42 @@ class CityConstructions {
     fun updateUniques() {
         builtBuildingUniqueMap.clear()
         for (building in getBuiltBuildings())
-            for (unique in building.uniqueObjects)
-                if (unique.conditionals.none { it.type == UniqueType.ConditionalTimedUnique })
-                    builtBuildingUniqueMap.addUnique(unique)
+            builtBuildingUniqueMap.addUniques(building.uniqueObjects)
+    }
+
+    fun addFreeBuildings() {
+        // "Gain a free [buildingName] [cityFilter]"
+        val freeBuildingUniques = cityInfo.getLocalMatchingUniques(UniqueType.GainFreeBuildings, StateForConditionals(cityInfo.civInfo, cityInfo))
+
+        for (unique in freeBuildingUniques) {
+            val freeBuildingName = cityInfo.civInfo.getEquivalentBuilding(unique.params[0]).name
+            val citiesThatApply = when (unique.params[1]) {
+                "in this city" -> listOf(cityInfo)
+                "in other cities" -> cityInfo.civInfo.cities.filter { it !== cityInfo }
+                else -> cityInfo.civInfo.cities.filter { it.matchesFilter(unique.params[1]) }
+            }
+
+            for (city in citiesThatApply) {
+                if (city.cityConstructions.containsBuildingOrEquivalent(freeBuildingName)) continue
+                city.cityConstructions.addBuilding(freeBuildingName)
+                if (city.id !in freeBuildingsProvidedFromThisCity)
+                    freeBuildingsProvidedFromThisCity[city.id] = hashSetOf()
+
+                freeBuildingsProvidedFromThisCity[city.id]!!.add(freeBuildingName)
+            }
+        }
+
+        // Civ-level uniques - for these only add free buildings from each city to itself to avoid weirdness on city conquest
+        for (unique in cityInfo.civInfo.getMatchingUniques(UniqueType.GainFreeBuildings, stateForConditionals = StateForConditionals(cityInfo.civInfo, cityInfo))) {
+            val freeBuildingName = cityInfo.civInfo.getEquivalentBuilding(unique.params[0]).name
+            if (cityInfo.matchesFilter(unique.params[1])) {
+                if (cityInfo.id !in freeBuildingsProvidedFromThisCity)
+                    freeBuildingsProvidedFromThisCity[cityInfo.id] = hashSetOf()
+                freeBuildingsProvidedFromThisCity[cityInfo.id]!!.add(freeBuildingName)
+                if (!isBuilt(freeBuildingName))
+                    addBuilding(freeBuildingName)
+            }
+        }
     }
 
     /**
@@ -480,26 +500,40 @@ class CityConstructions {
      *  @param automatic        Flag whether automation should try to choose what next to build (not coming from UI)
      *                          Note: settings.autoAssignCityProduction is handled later
      *  @param stat             Stat object of the stat with which was paid for the construction
-     *  @return                 Success (false e.g. unit cannot be placed
+     *  @param tile             Supports [UniqueType.CreatesOneImprovement] the tile to place the improvement from that unique on.
+     *                          Ignored when the [constructionName] does not have that unique. If null and the building has the unique, a tile is chosen automatically.
+     *  @return                 Success (false e.g. unit cannot be placed)
      */
     fun purchaseConstruction(
-        constructionName: String, 
-        queuePosition: Int, 
-        automatic: Boolean, 
-        stat: Stat = Stat.Gold
+        constructionName: String,
+        queuePosition: Int,
+        automatic: Boolean,
+        stat: Stat = Stat.Gold,
+        tile: TileInfo? = null
     ): Boolean {
-        if (!(getConstruction(constructionName) as INonPerpetualConstruction).postBuildEvent(this, stat))
+        val construction = getConstruction(constructionName) as? INonPerpetualConstruction ?: return false
+
+        // Support UniqueType.CreatesOneImprovement: it is active when getImprovementToCreate returns an improvement
+        val improvementToPlace = (construction as? Building)?.getImprovementToCreate(cityInfo.getRuleset())
+        if (improvementToPlace != null) {
+            // If active without a predetermined tile to place the improvement on, automate a tile
+            val finalTile = tile
+                ?: Automation.getTileForConstructionImprovement(cityInfo, improvementToPlace)
+                ?: return false // This was never reached in testing
+            finalTile.markForCreatesOneImprovement(improvementToPlace.name)
+            // postBuildEvent does the rest by calling cityConstructions.applyCreateOneImprovement
+        }
+
+        if (!construction.postBuildEvent(this, stat))
             return false // nothing built - no pay
 
         if (!cityInfo.civInfo.gameInfo.gameParameters.godMode) {
-            val construction = getConstruction(constructionName)
-            if (construction is PerpetualConstruction) return false
-            val constructionCost = (construction as INonPerpetualConstruction).getStatBuyCost(cityInfo, stat)
-            if (constructionCost == null) return false // We should never end up here anyway, so things have already gone _way_ wrong
+            val constructionCost = construction.getStatBuyCost(cityInfo, stat)
+                ?: return false // We should never end up here anyway, so things have already gone _way_ wrong
             cityInfo.addStat(stat, -1 * constructionCost)
 
             val conditionalState = StateForConditionals(civInfo = cityInfo.civInfo, cityInfo = cityInfo)
-            
+
             if ((
                     cityInfo.civInfo.getMatchingUniques(UniqueType.BuyUnitsIncreasingCost, conditionalState) +
                     cityInfo.civInfo.getMatchingUniques(UniqueType.BuyBuildingsIncreasingCost, conditionalState)
@@ -522,22 +556,13 @@ class CityConstructions {
 
         return true
     }
-    
-    fun hasBuildableStatBuildings(stat: Stat): Boolean {
-        return getBasicStatBuildings(stat)
-            .map { cityInfo.civInfo.getEquivalentBuilding(it.name) }
-            .filter { it.isBuildable(this) || isBeingConstructedOrEnqueued(it.name) }
-            .any()
-    }
 
     fun addCheapestBuildableStatBuilding(stat: Stat): String? {
         val cheapestBuildableStatBuilding = getBasicStatBuildings(stat)
             .map { cityInfo.civInfo.getEquivalentBuilding(it.name) }
             .filter { it.isBuildable(this) || isBeingConstructedOrEnqueued(it.name) }
             .minByOrNull { it.cost }?.name
-
-        if (cheapestBuildableStatBuilding == null)
-            return null
+            ?: return null
 
         constructionComplete(getConstruction(cheapestBuildableStatBuilding) as INonPerpetualConstruction)
 
@@ -555,6 +580,13 @@ class CityConstructions {
         }
 
         ConstructionAutomation(this).chooseNextConstruction()
+
+        /** Support for [UniqueType.CreatesOneImprovement] - if an Improvement-creating Building was auto-queued, auto-choose a tile: */
+        val building = getCurrentConstruction() as? Building ?: return
+        val improvement = building.getImprovementToCreate(cityInfo.getRuleset()) ?: return
+        if (getTileForImprovement(improvement.name) != null) return
+        val newTile = Automation.getTileForConstructionImprovement(cityInfo, improvement) ?: return
+        newTile.markForCreatesOneImprovement(improvement.name)
     }
 
     fun addToQueue(constructionName: String) {
@@ -578,13 +610,13 @@ class CityConstructions {
     /** If this was done automatically, we should automatically try to choose a new construction and treat it as such */
     fun removeFromQueue(constructionQueueIndex: Int, automatic: Boolean) {
         val constructionName = constructionQueue.removeAt(constructionQueueIndex)
+
+        // UniqueType.CreatesOneImprovement support
         val construction = getConstruction(constructionName)
         if (construction is Building) {
-            val improvement = construction.getImprovement(cityInfo.getRuleset())
+            val improvement = construction.getImprovementToCreate(cityInfo.getRuleset())
             if (improvement != null) {
-                val tileWithImprovement = cityInfo.getTiles().firstOrNull { it.improvementInProgress == improvement.name }
-                tileWithImprovement?.improvementInProgress = null
-                tileWithImprovement?.turnsToImprovement = 0
+                getTileForImprovement(improvement.name)?.stopWorkingOnImprovement()
             }
         }
 
@@ -604,10 +636,61 @@ class CityConstructions {
         raisePriority(constructionQueueIndex + 1)
     }
 
-    //endregion
     private fun MutableList<String>.swap(idx1: Int, idx2: Int) {
         val tmp = this[idx1]
         this[idx1] = this[idx2]
         this[idx2] = tmp
     }
+
+    /** Support for [UniqueType.CreatesOneImprovement]:
+     *
+     *  If [building] is an improvement-creating one, find a marked tile matching the improvement to be created
+     *  (skip if none found), then un-mark the tile and place the improvement unless [removeOnly] is set.
+     */
+    fun applyCreateOneImprovement(building: Building, removeOnly: Boolean = false) {
+        val improvement = building.getImprovementToCreate(cityInfo.getRuleset())
+            ?: return
+        val tileForImprovement = getTileForImprovement(improvement.name) ?: return
+        tileForImprovement.stopWorkingOnImprovement()  // clears mark
+        if (removeOnly) return
+        /**todo unify with [UnitActions.getImprovementConstructionActions] and [MapUnit.workOnImprovement] - this won't allow e.g. a building to place a road */
+        tileForImprovement.improvement = improvement.name
+        cityInfo.civInfo.lastSeenImprovement[tileForImprovement.position] = improvement.name
+        cityInfo.cityStats.update()
+        cityInfo.civInfo.updateDetailedCivResources()
+        // If bought the worldscreen will not have been marked to update, and the new improvement won't show until later...
+        if (UncivGame.isCurrentInitialized())
+            UncivGame.Current.worldScreen.shouldUpdate = true
+    }
+
+    /** Support for [UniqueType.CreatesOneImprovement]:
+     *
+     *  To be called after circumstances forced clearing a marker from a tile (pillaging, nuking).
+     *  Should remove one matching building from the queue without looking for a marked tile.
+     */
+    fun removeCreateOneImprovementConstruction(improvement: String) {
+        val ruleset = cityInfo.getRuleset()
+        val indexToRemove = constructionQueue.withIndex().mapNotNull {
+            val construction = getConstruction(it.value)
+            val buildingImprovement = (construction as? Building)?.getImprovementToCreate(ruleset)?.name
+            it.index.takeIf { buildingImprovement == improvement }
+        }.firstOrNull() ?: return
+
+        constructionQueue.removeAt(indexToRemove)
+
+        if (constructionQueue.isEmpty()) {
+            constructionQueue.add("Nothing")
+            currentConstructionIsUserSet = false
+        } else currentConstructionIsUserSet = true
+    }
+
+    /** Support for [UniqueType.CreatesOneImprovement]:
+     *
+     *  Find the selected tile for a specific improvement being constructed via a building, if any.
+     */
+    fun getTileForImprovement(improvementName: String) = cityInfo.getTiles()
+        .firstOrNull {
+            it.isMarkedForCreatesOneImprovement(improvementName)
+        }
+    //endregion
 }

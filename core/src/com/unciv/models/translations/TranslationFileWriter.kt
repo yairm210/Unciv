@@ -3,8 +3,10 @@ package com.unciv.models.translations
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Array
-import com.unciv.JsonParser
+import com.unciv.json.fromJsonFile
+import com.unciv.json.json
 import com.unciv.models.metadata.BaseRuleset
+import com.unciv.models.metadata.LocaleCode
 import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tile.Terrain
@@ -14,6 +16,7 @@ import com.unciv.models.ruleset.unique.*
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
+import java.io.File
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 
@@ -22,7 +25,14 @@ object TranslationFileWriter {
     private const val specialNewLineCode = "# This is an empty line "
     const val templateFileLocation = "jsons/translations/template.properties"
     private const val languageFileLocation = "jsons/translations/%s.properties"
+    private const val shortDescriptionKey = "Fastlane_short_description"
+    private const val shortDescriptionFile = "short_description.txt"
+    private const val fullDescriptionKey = "Fastlane_full_description"
+    private const val fullDescriptionFile = "full_description.txt"
+    // Current dir on desktop should be assets, so use two '..' get us to project root
+    private const val fastlanePath = "../../fastlane/metadata/android/"
 
+    //region Update translation files
     fun writeNewTranslationFiles(): String {
         try {
             val translations = Translations()
@@ -38,7 +48,8 @@ object TranslationFileWriter {
                 writeLanguagePercentages(modPercentages, modFolder)  // unused by the game but maybe helpful for the mod developer
             }
 
-            return "Translation files are generated successfully."
+            return "Translation files are generated successfully.\n" +
+                    writeTranslatedFastlaneFiles(translations)
         } catch (ex: Throwable) {
             ex.printStackTrace()
             return ex.localizedMessage ?: ex.javaClass.simpleName
@@ -209,7 +220,7 @@ object TranslationFileWriter {
 
     private fun generateTutorialsStrings(): MutableSet<String> {
         val tutorialsStrings = mutableSetOf<String>()
-        val tutorials = JsonParser().getFromJson(LinkedHashMap<String, Array<String>>().javaClass, "jsons/Tutorials.json")
+        val tutorials = json().fromJsonFile(LinkedHashMap<String, Array<String>>().javaClass, "jsons/Tutorials.json")
 
         var uniqueIndexOfNewLine = 0
         for (tutorial in tutorials) {
@@ -263,7 +274,6 @@ object TranslationFileWriter {
         val startMillis = System.currentTimeMillis()
 
         var uniqueIndexOfNewLine = 0
-        val jsonParser = JsonParser()
         val listOfJSONFiles = jsonsFolder
                 .list { file -> file.name.endsWith(".json", true) }
                 .sortedBy { it.name() }       // generatedStrings maintains order, so let's feed it a predictable one
@@ -280,7 +290,7 @@ object TranslationFileWriter {
                 if (javaClass == this.javaClass)
                     continue // unknown JSON, let's skip it
 
-                val array = jsonParser.getFromJson(javaClass, jsonFile.path())
+                val array = json().fromJsonFile(javaClass, jsonFile.path())
 
                 resultStrings = mutableSetOf()
                 this[filename] = resultStrings
@@ -334,6 +344,8 @@ object TranslationFileWriter {
                         UniqueParameterType.guessTypeForTranslationWriter(parameter, ruleset).parameterName
                     }
                 parameterNames.addNumberedParameter(parameterName)
+                if (parameterName == UniqueParameterType.Unknown.parameterName)
+                    resultStrings.add("$parameter = ")  // Unknown parameter contents better be offered to translators too
             }
             resultStrings.add("${stringToTranslate.fillPlaceholders(*parameterNames.toTypedArray())} = ")
         }
@@ -377,7 +389,9 @@ object TranslationFileWriter {
                 when {
                     // Promotion names are not uniques but since we did the "[unitName] ability"
                     // they need the "parameters" treatment too
-                    (field.name == "uniques" || field.name == "promotions") && (fieldValue is java.util.AbstractCollection<*>) ->
+                    // Same for victory milestones
+                    (field.name == "uniques" || field.name == "promotions" || field.name == "milestones") 
+                    && (fieldValue is java.util.AbstractCollection<*>) ->
                         for (item in fieldValue)
                             if (item is String) submitString(item, Unique(item)) else serializeElement(item!!)
                     fieldValue is java.util.AbstractCollection<*> ->
@@ -456,9 +470,63 @@ object TranslationFileWriter {
                     "UnitPromotions" -> emptyArray<Promotion>().javaClass
                     "Units" -> emptyArray<BaseUnit>().javaClass
                     "UnitTypes" -> emptyArray<UnitType>().javaClass
+                    "VictoryTypes" -> emptyArray<Victory>().javaClass
                     else -> this.javaClass // dummy value
                 }
             }
         }
     }
+
+    //endregion
+    //region Fastlane 
+
+    /** This writes translated short_description.txt and full_description.txt files into the Fastlane structure.
+     *  @param [translations] A [Translations] instance with all languages loaded.
+     *  @return Success or error message.
+     */
+    private fun writeTranslatedFastlaneFiles(translations: Translations): String {
+        try {
+            writeFastlaneFiles(shortDescriptionFile, translations[shortDescriptionKey], false)
+            writeFastlaneFiles(fullDescriptionFile, translations[fullDescriptionKey], true)
+            updateFastlaneChangelog()
+
+            return "Fastlane files are generated successfully."
+        } catch (ex: Throwable) {
+            ex.printStackTrace()
+            return ex.localizedMessage ?: ex.javaClass.simpleName
+        }
+    }
+
+    private fun writeFastlaneFiles(fileName: String, translationEntry: TranslationEntry?, endWithNewline: Boolean) {
+        if (translationEntry == null) return
+        for ((language, translated) in translationEntry) {
+            val fileContent = when {
+                endWithNewline && !translated.endsWith('\n') -> translated + '\n'
+                !endWithNewline && translated.endsWith('\n') -> translated.removeSuffix("\n")
+                else -> translated
+            }
+            val localeCode = LocaleCode.valueOf(language)
+            val path = fastlanePath + localeCode.language
+            File(path).mkdirs()
+            File(path + File.separator + fileName).writeText(fileContent)
+        }
+    }
+    
+    // Original changelog entry, written by incrementVersionAndChangelog, is often changed manually for readability.
+    // This updates the fastlane changelog entry to match the latest one in changelog.md
+    private fun updateFastlaneChangelog() {
+        // Relative path since we're in android/assets
+        val changelogFile = File("../../changelog.md").readText()
+        //  changelogs by definition do not have #'s in them so we can use it as a delimiter
+        val latestVersionRegexGroup = Regex("## \\S*([^#]*)").find(changelogFile)
+        val versionChangelog = latestVersionRegexGroup!!.groups[1]!!.value.trim()
+
+        val buildConfigFile = File("../../buildSrc/src/main/kotlin/BuildConfig.kt").readText()
+        val versionNumber =
+            Regex("appCodeNumber = (\\d*)").find(buildConfigFile)!!.groups[1]!!.value
+
+        val fileName = "$fastlanePath/en-US/changelogs/$versionNumber.txt"
+        File(fileName).writeText(versionChangelog)
+    }
+    //endregion
 }

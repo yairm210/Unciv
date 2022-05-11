@@ -46,10 +46,8 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         innerTable.addSeparator()
         addText()
         if (!cityInfo.population.getMaxSpecialists().isEmpty()) {
-            innerTable.addSeparator()
-            innerTable.add(SpecialistAllocationTable(cityScreen).apply { update() }).row()
+            addSpecialistInfo()
         }
-        
         if (cityInfo.religion.getNumberOfFollowers().isNotEmpty() && cityInfo.civInfo.gameInfo.isReligionEnabled())
             addReligionInfo()
 
@@ -61,23 +59,23 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
                 cityInfo.population.getFreePopulation().toString() + "/" + cityInfo.population.population
 
         var turnsToExpansionString =
-                if (cityInfo.cityStats.currentCityStats.culture > 0 && cityInfo.expansion.chooseNewTileToOwn() != null) {
+                if (cityInfo.cityStats.currentCityStats.culture > 0 && cityInfo.expansion.getChoosableTiles().any()) {
                     val remainingCulture = cityInfo.expansion.getCultureToNextTile() - cityInfo.expansion.cultureStored
                     var turnsToExpansion = ceil(remainingCulture / cityInfo.cityStats.currentCityStats.culture).toInt()
                     if (turnsToExpansion < 1) turnsToExpansion = 1
                     "[$turnsToExpansion] turns to expansion".tr()
                 } else "Stopped expansion".tr()
-        if (cityInfo.expansion.chooseNewTileToOwn() != null)
+        if (cityInfo.expansion.getChoosableTiles().any())
             turnsToExpansionString +=
                     " (${cityInfo.expansion.cultureStored}${Fonts.culture}/${cityInfo.expansion.getCultureToNextTile()}${Fonts.culture})"
 
         var turnsToPopString =
                 when {
-                    cityInfo.isGrowing() -> "[${cityInfo.getNumTurnsToNewPopulation()}] turns to new population"
                     cityInfo.isStarving() -> "[${cityInfo.getNumTurnsToStarvation()}] turns to lose population"
                     cityInfo.getRuleset().units[cityInfo.cityConstructions.currentConstructionFromQueue]
-                            .let { it != null && it.hasUnique(UniqueType.ConvertFoodToProductionWhenConstructed) }
+                        .let { it != null && it.hasUnique(UniqueType.ConvertFoodToProductionWhenConstructed) }
                     -> "Food converts to production"
+                    cityInfo.isGrowing() -> "[${cityInfo.getNumTurnsToNewPopulation()}] turns to new population"
                     else -> "Stopped population growth"
                 }.tr()
         turnsToPopString += " (${cityInfo.population.foodStored}${Fonts.food}/${cityInfo.population.getFoodToNextPopulation()}${Fonts.food})"
@@ -111,6 +109,18 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         }
 
         innerTable.add(tableWithIcons).row()
+    }
+
+    private fun addSpecialistInfo() {
+        val expanderTab = SpecialistAllocationTable(cityScreen).asExpander {
+            pack()
+            setPosition(
+                stage.width - CityScreen.posFromEdge,
+                stage.height - CityScreen.posFromEdge,
+                Align.topRight
+            )
+        }
+        innerTable.add(expanderTab).growX().row()
     }
 
     private fun addReligionInfo() {

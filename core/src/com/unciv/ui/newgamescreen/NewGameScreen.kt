@@ -12,18 +12,19 @@ import com.unciv.logic.*
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapType
 import com.unciv.logic.multiplayer.FileStorageRateLimitReached
+import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.pickerscreens.PickerScreen
-import com.unciv.ui.utils.*
-import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.ui.crashhandling.crashHandlingThread
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.popup.YesNoPopup
+import com.unciv.ui.utils.*
+import java.net.URL
 import java.util.*
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
@@ -34,7 +35,7 @@ class NewGameScreen(
 ): IPreviousScreen, PickerScreen() {
 
     override val gameSetupInfo = _gameSetupInfo ?: GameSetupInfo.fromSettings()
-    override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods, gameSetupInfo.gameParameters.baseRuleset) // needs to be set because the GameOptionsTable etc. depend on this
+    override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters) // needs to be set because the GameOptionsTable etc. depend on this
     private val newGameOptionsTable: GameOptionsTable
     private val playerPickerTable: PlayerPickerTable
     private val mapOptionsTable: MapOptionsTable
@@ -42,6 +43,10 @@ class NewGameScreen(
     init {
         updateRuleset()  // must come before playerPickerTable so mod nations from fromSettings
         // Has to be initialized before the mapOptionsTable, since the mapOptionsTable refers to it on init
+
+        if (gameSetupInfo.gameParameters.victoryTypes.isEmpty())
+            gameSetupInfo.gameParameters.victoryTypes.addAll(ruleset.victories.keys)
+
         playerPickerTable = PlayerPickerTable(
             this, gameSetupInfo.gameParameters,
             if (isNarrowerThan4to3()) stage.width - 20f else 0f
@@ -68,6 +73,16 @@ class NewGameScreen(
         rightSideButton.setText("Start game!".tr())
         rightSideButton.onClick {
             if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
+                val isDropbox = UncivGame.Current.settings.multiplayerServer == Constants.dropboxMultiplayerServer
+                if (!checkConnectionToMultiplayerServer()) {
+                    val noInternetConnectionPopup = Popup(this)
+                    val label = if (isDropbox) "Couldn't connect to Dropbox!" else "Couldn't connect to Multiplayer Server!"
+                    noInternetConnectionPopup.addGoodSizedLabel(label.tr()).row()
+                    noInternetConnectionPopup.addCloseButton()
+                    noInternetConnectionPopup.open()
+                    return@onClick
+                }
+
                 for (player in gameSetupInfo.gameParameters.players.filter { it.playerType == PlayerType.Human }) {
                     try {
                         UUID.fromString(IdChecker.checkAndReturnPlayerUuid(player.playerId))
@@ -91,6 +106,14 @@ class NewGameScreen(
                 noHumanPlayersPopup.addGoodSizedLabel("No human players selected!".tr()).row()
                 noHumanPlayersPopup.addCloseButton()
                 noHumanPlayersPopup.open()
+                return@onClick
+            }
+
+            if (gameSetupInfo.gameParameters.victoryTypes.isEmpty()) {
+                val noVictoryTypesPopup = Popup(this)
+                noVictoryTypesPopup.addGoodSizedLabel("No victory conditions were selected!".tr()).row()
+                noVictoryTypesPopup.addCloseButton()
+                noVictoryTypesPopup.open()
                 return@onClick
             }
 
@@ -188,6 +211,21 @@ class NewGameScreen(
         }).expandX().fillX().row()
     }
 
+    private fun checkConnectionToMultiplayerServer(): Boolean {
+        val isDropbox = UncivGame.Current.settings.multiplayerServer == Constants.dropboxMultiplayerServer
+        return try {
+            val multiplayerServer = UncivGame.Current.settings.multiplayerServer
+            val u =  URL(if (isDropbox) "https://content.dropboxapi.com" else multiplayerServer)
+            val con = u.openConnection()
+            con.connectTimeout = 3000
+            con.connect()
+
+            true
+        } catch(ex: Throwable) {
+            false
+        }
+    }
+
     private fun newGameThread() {
         val popup = Popup(this)
         postCrashHandlingRunnable {
@@ -257,7 +295,7 @@ class NewGameScreen(
 
     fun updateRuleset() {
         ruleset.clear()
-        ruleset.add(RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods, gameSetupInfo.gameParameters.baseRuleset))
+        ruleset.add(RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters))
         ImageGetter.setNewRuleset(ruleset)
         game.musicController.setModList(gameSetupInfo.gameParameters.getModsAndBaseRuleset())
     }

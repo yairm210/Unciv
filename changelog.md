@@ -1,3 +1,164 @@
+## 4.0.15
+
+Fixed proxy issues when starting new multiplayer games - By alexban011
+
+By SomeTroglodyte:
+- Optional gzipping of saved games 
+- Modding: Typed unit promotion effects
+
+By Azzurite:
+- Add UncivServer.jar to github release
+- Improvements and city buttons visible to Spectator
+
+By touhidurrr:
+- Autofix Multiplayer Server URL on input 
+
+Hide Unmet Civ and Capital Names in Victory Screen - By OptimizedForDensity
+
+Improved clarity & moddability of building improvements  - By xlenstra
+
+## 4.0.14
+
+Performance improvements
+
+By SomeTroglodyte:
+- Move UncivServer to own module
+- Font choice rework 
+- Reworked "Creates improvement on a specific tile" Unique
+
+By Azzurite:
+- Fixed Barbarian Camps revealed by Honor not showing immediately in multiplayer
+
+By JackRainy:
+- Auto-downloading missing mods for save files
+- Typed missing uniques 
+
+## 4.0.13
+
+Extensive performance work
+
+Can no longer gift units to enemy City States
+
+Can now have owner-style-specific improvement images (e.g. Mine-Medieval-European)
+
+Resolved rare crashes
+
+By Azzurite:
+- Create turn notifier for when the game is running for Windows
+- Fix Sweden not being able to gift great people to city states
+
+By Jack Rainy:
+- Allow trade routes via city-states
+- Better unit expulsion when declaring war/after open borders ended
+
+New Demographics Scoreboard  - By letstalkaboutdune
+
+## 4.0.12
+
+By SomeTroglodyte:
+- Show available resources from CityScreen
+- F-droid integration improvements! 
+
+By JackRainy:
+- Allow city connections via open borders and own harbors only 
+- Enable scrolling for the oversized popups
+
+Performance improvements - By Azzurite
+
+By xlenstra:
+- Fixed `provides [amount] [resource]` on buildings not accepting conditionals 
+- Implemented most things for moddable victory conditions
+
+Check internet before starting mp game to avoid freeze - By alexban011
+
+## 4.0.11
+
+Enabled nested translations!
+
+Don't allow trade routes through enemy cities
+
+By JackRainy:
+- Protect the cities from the fallout spawning 
+- Correct swap of the full-loaded carriers 
+
+By SomeTroglodyte:
+- Map editor2.2
+- Show number of global followers in Religion Overview 
+
+By xlenstra:
+- Fixed improvements with unfulfilled 'Only Available' still buildable 
+- Fixed a crash when a plane tried to enter a full city
+
+## 4.0.10
+
+By JackRainy:
+- Correct calculation of production for Settlers 
+- Fixed swapping carriers with payloads 
+- Display wonders built in other civs correctly 
+
+By SomeTroglodyte:
+- Resources UI 
+- Some improvements to Map Editor - step 1 
+- Implement fastlane step 1 - minimal framework
+
+Made Specialist allocation table expandable  - By ultradian
+
+Fix typo in vanilla - By touhidurrr
+
+Healing values per Civ V - By letstalkaboutdune
+
+## 4.0.9
+
+By xlenstra: Moddable victories!
+  
+Fixed crashing bug with aircraft rejection reasons
+
+Mod land units with missile and nuke uniques no longer crash the game
+
+improvementFilter accepts uniques as well
+
+terrainFilter accepts tile resource uniques
+
+Unique docs writer makeover  - By SomeTroglodyte
+
+Add checks against 0 Strength combat  - By itanasi
+
+## 4.0.8
+
+Redone Map Editor - By SomeTroglodyte
+
+Added very basic "flash red on attack" battle animations
+
+Air units with no space in the city cannot be selected for construction
+
+Unpillagable improvements removed entirely on nuke
+
+AIs don't add double agreements to counteroffers
+
+Clearer "owned" resource on AI trade offer
+
+By xlenstra:
+- Made 'go to on map' translatable & fixed crash 
+- Fixed two small bugs 
+
+## 4.0.7
+
+Resolved problems in hosting Unciv server
+
+By xlenstra:
+- Added 'unit upgrades for free' unique
+- Added a 'go to capital'-button in diplomacy screen 
+- Fixed vanilla policies regression 
+
+By itanasi:
+- Air Units take damage in Combat 
+- Updating XP Rewards. Interception now gives XP 
+- When capturing Civilian, stop current action 
+
+Fixed TurnChecker crash when using custom server  - By GGGuenni
+
+Add modding translation instruction to the wiki  - By heipizhu4
+
 ## 4.0.6
 
 Got rid of ANRs from multiple sources

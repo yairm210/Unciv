@@ -17,13 +17,13 @@ import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileImprovement
-import com.unciv.models.ruleset.unique.StateForConditionals
-import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueMapTyped
-import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unique.*
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
+import com.unciv.models.stats.Stats
+import com.unciv.ui.utils.filterAndLogic
 import com.unciv.ui.utils.toPercent
+import com.unciv.ui.worldscreen.unit.UnitActions
 import java.text.DecimalFormat
 import kotlin.math.pow
 
@@ -177,18 +177,16 @@ class MapUnit {
     /**
      * Container class to represent a single instant in a [MapUnit]'s recent movement history.
      *
-     * @property position Position on the map at this instant.
+     * @property position Position on the map at this instant, cloned on instantiation.
      * @property type Category of the last change in position that brought the unit to this position.
      * @see [movementMemories]
      * */
-    class UnitMovementMemory() {
-        constructor(position: Vector2, type: UnitMovementMemoryType): this() {
-            this.position = position
-            this.type = type
-        }
-        lateinit var position: Vector2
-        lateinit var type: UnitMovementMemoryType
-        fun clone() = UnitMovementMemory(Vector2(position), type)
+    class UnitMovementMemory(position: Vector2, val type: UnitMovementMemoryType) {
+        @Suppress("unused") // needed because this is part of a save and gets deserialized
+        constructor(): this(Vector2.Zero, UnitMovementMemoryType.UnitMoved)
+        val position = Vector2(position)
+
+        fun clone() = UnitMovementMemory(position, type)
         override fun toString() = "${this::class.simpleName}($position, $type)"
     }
 
@@ -200,7 +198,7 @@ class MapUnit {
 
     /** Add the current position and the most recent movement type to [movementMemories]. Called once at end and once at start of turn, and at unit creation. */
     fun addMovementMemory() {
-        movementMemories.add(UnitMovementMemory(Vector2(getTile().position), mostRecentMoveType))
+        movementMemories.add(UnitMovementMemory(getTile().position, mostRecentMoveType))
         while (movementMemories.size > 2) { // O(n) but n == 2.
             // Keep at most one arrow segment— A lot of the time even that won't be rendered because the two positions will be the same.
             // When in the unit's turn— I.E. For a player unit— The last two entries will be from .endTurn() followed by from .startTurn(), so the segment from .movementMemories will have zero length. Instead, what gets seen will be the segment from the end of .movementMemories to the unit's current position.
@@ -249,7 +247,7 @@ class MapUnit {
         DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + getMaxMovement()
 
     fun getTile(): TileInfo = currentTile
-    
+
 
     // This SHOULD NOT be a HashSet, because if it is, then promotions with the same text (e.g. barrage I, barrage II)
     //  will not get counted twice!
@@ -257,29 +255,28 @@ class MapUnit {
     private var tempUniques = ArrayList<Unique>()
 
     @Transient
-    private var tempUniquesMap = UniqueMapTyped()
+    private var tempUniquesMap = UniqueMap()
 
     fun getUniques(): ArrayList<Unique> = tempUniques
 
+    // TODO typify usages and remove this function
     fun getMatchingUniques(placeholderText: String): Sequence<Unique> =
-        tempUniques.asSequence().filter { it.placeholderText == placeholderText }
+        tempUniquesMap.getUniques(placeholderText)
 
     fun getMatchingUniques(
         uniqueType: UniqueType,
         stateForConditionals: StateForConditionals = StateForConditionals(civInfo, unit=this),
         checkCivInfoUniques: Boolean = false
     ) = sequence {
-        val tempUniques = tempUniquesMap[uniqueType]
-        if (tempUniques != null)
             yieldAll(
-                tempUniques.asSequence().filter { it.conditionalsApply(stateForConditionals) }
+                tempUniquesMap.getMatchingUniques(uniqueType, stateForConditionals)
             )
         if (checkCivInfoUniques)
             yieldAll(civInfo.getMatchingUniques(uniqueType, stateForConditionals))
     }
 
     fun hasUnique(unique: String): Boolean {
-        return tempUniques.any { it.placeholderText == unique }
+        return getMatchingUniques(unique).any()
     }
 
     fun hasUnique(
@@ -301,11 +298,9 @@ class MapUnit {
         }
 
         tempUniques = uniques
-        val newUniquesMap = UniqueMapTyped()
-        for (unique in uniques)
-            if (unique.type != null)
-                newUniquesMap.addUnique(unique)
-        tempUniquesMap = newUniquesMap
+        tempUniquesMap = UniqueMap().apply {
+            addUniques(uniques)
+        }
 
         allTilesCosts1 = hasUnique(UniqueType.AllTilesCost1Move)
         canPassThroughImpassableTiles = hasUnique(UniqueType.CanPassImpassable)
@@ -454,14 +449,17 @@ class MapUnit {
 
     fun isIdle(): Boolean {
         if (currentMovement == 0f) return false
-        if (getTile().improvementInProgress != null 
-            && canBuildImprovement(getTile().getTileImprovementInProgress()!!)) 
-                return false
+        val tile = getTile()
+        if (tile.improvementInProgress != null &&
+                canBuildImprovement(tile.getTileImprovementInProgress()!!) &&
+                !tile.isMarkedForCreatesOneImprovement()
+            ) return false
         return !(isFortified() || isExploring() || isSleeping() || isAutomated() || isMoving())
     }
 
     fun maxAttacksPerTurn(): Int {
-        return 1 + getMatchingUniques("[] additional attacks per turn").sumOf { it.params[0].toInt() }
+        return 1 + getMatchingUniques(UniqueType.AdditionalAttacks, checkCivInfoUniques = true)
+            .sumOf { it.params[0].toInt() }
     }
 
     fun canAttack(): Boolean {
@@ -472,7 +470,8 @@ class MapUnit {
     fun getRange(): Int {
         if (baseUnit.isMelee()) return 1
         var range = baseUnit().range
-        range += getMatchingUniques(UniqueType.Range, checkCivInfoUniques = true).sumOf { it.params[0].toInt() }
+        range += getMatchingUniques(UniqueType.Range, checkCivInfoUniques = true)
+            .sumOf { it.params[0].toInt() }
         return range
     }
 
@@ -513,8 +512,9 @@ class MapUnit {
         if (name == unitToUpgradeTo.name) return false
         val rejectionReasons = unitToUpgradeTo.getRejectionReasons(civInfo)
         if (rejectionReasons.isEmpty()) return true
+        if (ignoreRequired && rejectionReasons.filterTechPolicyEraWonderRequirements().isEmpty()) return true
 
-        if (rejectionReasons.size == 1 && rejectionReasons.contains(RejectionReason.ConsumesResources)) {
+        if (rejectionReasons.contains(RejectionReason.ConsumesResources)) {
             // We need to remove the unit from the civ for this check,
             // because if the unit requires, say, horses, and so does its upgrade,
             // and the civ currently has 0 horses, we need to see if the upgrade will be buildable
@@ -629,6 +629,7 @@ class MapUnit {
 
     private fun workOnImprovement() {
         val tile = getTile()
+        if (tile.isMarkedForCreatesOneImprovement()) return
         tile.turnsToImprovement -= 1
         if (tile.turnsToImprovement != 0) return
 
@@ -662,10 +663,11 @@ class MapUnit {
             tile.improvementInProgress == RoadStatus.Road.name -> tile.roadStatus = RoadStatus.Road
             tile.improvementInProgress == RoadStatus.Railroad.name -> tile.roadStatus = RoadStatus.Railroad
             else -> {
-                tile.improvement = tile.improvementInProgress
-                if (tile.resource != null) civInfo.updateDetailedCivResources()
+                val improvement = civInfo.gameInfo.ruleSet.tileImprovements[tile.improvementInProgress]!!
+                improvement.handleImprovementCompletion(this)
             }
         }
+        
         tile.improvementInProgress = null
     }
 
@@ -712,12 +714,12 @@ class MapUnit {
         val isFriendlyTerritory = tileInfo.isFriendlyTerritory(civInfo)
 
         var healing = when {
-            tileInfo.isCityCenter() -> 20
-            tileInfo.isWater && isFriendlyTerritory && (baseUnit.isWaterUnit() || isTransported) -> 15 // Water unit on friendly water
+            tileInfo.isCityCenter() -> 25
+            tileInfo.isWater && isFriendlyTerritory && (baseUnit.isWaterUnit() || isTransported) -> 20 // Water unit on friendly water
             tileInfo.isWater -> 0 // All other water cases
-            isFriendlyTerritory -> 15 // Allied territory
+            isFriendlyTerritory -> 20 // Allied territory
             tileInfo.getOwner() == null -> 10 // Neutral territory
-            else -> 5 // Enemy territory
+            else -> 10 // Enemy territory
         }
 
         val mayHeal = healing > 0 || (tileInfo.isWater && hasUnique(UniqueType.HealsOutsideFriendlyTerritory, checkCivInfoUniques = true))
@@ -852,6 +854,30 @@ class MapUnit {
         assignOwner(recipient)
         recipient.updateViewableTiles()
     }
+    
+    /** Destroys the unit and gives stats if its a great person */
+    fun consume() {
+        addStatsPerGreatPersonUsage()
+        destroy()
+    }
+
+    private fun addStatsPerGreatPersonUsage() {
+        if (!isGreatPerson()) return
+
+        val gainedStats = Stats()
+        for (unique in civInfo.getMatchingUniques(UniqueType.ProvidesGoldWheneverGreatPersonExpended)) {
+            gainedStats.gold += (100 * civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt()
+        }
+        for (unique in civInfo.getMatchingUniques(UniqueType.ProvidesStatsWheneverGreatPersonExpended)) {
+            gainedStats.add(unique.stats)
+        }
+
+        if (gainedStats.isEmpty()) return
+
+        for (stat in gainedStats)
+            civInfo.addStat(stat.key, stat.value.toInt())
+        civInfo.addNotification("By expending your [$name] you gained [${gainedStats}]!", getTile().position, name)
+    }
 
     fun removeFromTile() = currentTile.removeUnit(this)
 
@@ -868,8 +894,12 @@ class MapUnit {
         }
         if (tile.improvement == Constants.barbarianEncampment && !civInfo.isBarbarian())
             clearEncampment(tile)
+        // Check whether any civilians without military units are there.
+        // Keep in mind that putInTile(), which calls this method,
+        // might have already placed your military unit in this tile.
+        val unguardedCivilian = tile.getUnguardedCivilian(this)
         // Capture Enemy Civilian Unit if you move on top of it
-        if (isMilitary() && tile.getUnguardedCivilian() != null && civInfo.isAtWarWith(tile.getUnguardedCivilian()!!.civInfo)) {
+        if (isMilitary() && unguardedCivilian != null && civInfo.isAtWarWith(unguardedCivilian.civInfo)) {
             Battle.captureCivilianUnit(MapUnitCombatant(this), MapUnitCombatant(tile.civilianUnit!!))
         }
 
@@ -889,7 +919,7 @@ class MapUnit {
     fun putInTile(tile: TileInfo) {
         when {
             !movement.canMoveTo(tile) ->
-                throw Exception("I can't go there!")
+                throw Exception("Unit $name at $currentTile can't be put in tile ${tile.position}!")
             baseUnit.movesLikeAirUnits() -> tile.airUnits.add(this)
             isCivilian() -> tile.civilianUnit = this
             else -> tile.militaryUnit = this
@@ -979,6 +1009,8 @@ class MapUnit {
 
     fun canIntercept(): Boolean {
         if (interceptChance() == 0) return false
+        // Air Units can only Intercept if they didn't move this turn
+        if (baseUnit.isAirUnit() && currentMovement == 0f) return false
         val maxAttacksPerTurn = 1 +
             getMatchingUniques("[] extra interceptions may be made per turn").sumOf { it.params[0].toInt() }
         if (attacksThisTurn >= maxAttacksPerTurn) return false
@@ -1005,7 +1037,7 @@ class MapUnit {
     fun canTransport(unit: MapUnit): Boolean {
         if (owner != unit.owner) return false
         if (!isTransportTypeOf(unit)) return false
-        if (unit.getMatchingUniques(UniqueType.CannotBeCarriedBy).any{matchesFilter(it.params[0])}) return false
+        if (unit.getMatchingUniques(UniqueType.CannotBeCarriedBy).any { matchesFilter(it.params[0]) }) return false
         if (currentTile.airUnits.count { it.isTransported } >= carryCapacity(unit)) return false
         return true
     }
@@ -1087,12 +1119,11 @@ class MapUnit {
         )
     }
 
+    /** Implements [UniqueParameterType.MapUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.MapUnitFilter] */
     fun matchesFilter(filter: String): Boolean {
-        if (filter.contains('{')) // multiple types at once - AND logic. Looks like:"{Military} {Land}"
-            return filter.removePrefix("{").removeSuffix("}").split("} {")
-                .all { matchesFilter(it) }
-        
-        return when (filter) {
+        return filter.filterAndLogic { matchesFilter(it) } // multiple types at once - AND logic. Looks like:"{Military} {Land}"
+            ?: when (filter) {
+
             // todo: unit filters should be adjectives, fitting "[filterType] units"
             // This means converting "wounded units" to "Wounded", "Barbarians" to "Barbarian"
             "Wounded", "wounded units" -> health < 100

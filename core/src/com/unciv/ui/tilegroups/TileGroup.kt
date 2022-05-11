@@ -76,17 +76,18 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
     protected var cityImage: Image? = null
     private var naturalWonderImage: Image? = null
 
-    private  var pixelMilitaryUnitImageLocation = ""
-    private  var pixelMilitaryUnitGroup = ActionlessGroup().apply { isTransform = false; setSize(groupSize, groupSize) }
-    private  var pixelCivilianUnitImageLocation = ""
-    private  var pixelCivilianUnitGroup = ActionlessGroup().apply { isTransform = false; setSize(groupSize, groupSize) }
+    private var pixelMilitaryUnitImageLocation = ""
+    var pixelMilitaryUnitGroup = ActionlessGroup().apply { isTransform = false; setSize(groupSize, groupSize) }
+    private var pixelCivilianUnitImageLocation = ""
+    var pixelCivilianUnitGroup = ActionlessGroup().apply { isTransform = false; setSize(groupSize, groupSize) }
 
     class MiscLayerGroupClass:ActionlessGroup(){
         override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
     }
     val miscLayerGroup = MiscLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize) }
 
-    var tileYieldGroup = YieldGroup() // JN
+    var tileYieldGroupInitialized = false
+    val tileYieldGroup: YieldGroup by lazy { YieldGroup() }
 
     var resourceImage: Actor? = null
     var resource: String? = null
@@ -294,9 +295,18 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
             var locationToCheck = baseLocation
             if (tileInfo.owningCity != null) {
                 val ownersEra = tileInfo.getOwner()!!.getEra()
-                val eraSpecificLocation = tileSetStrings.getString(locationToCheck, tileSetStrings.tag, ownersEra.name)
+                val eraSpecificLocation =
+                    tileSetStrings.getString(locationToCheck, tileSetStrings.tag, ownersEra.name)
                 if (ImageGetter.imageExists(eraSpecificLocation))
                     locationToCheck = eraSpecificLocation
+
+                var ownersStyle = tileInfo.getOwner()!!.nation.style
+                if (ownersStyle == "") ownersStyle = tileInfo.getOwner()!!.civName
+                val styleSpecificLocation =
+                    tileSetStrings.getString(locationToCheck, tileSetStrings.tag, ownersStyle)
+
+                if (ImageGetter.imageExists(styleSpecificLocation))
+                    locationToCheck = styleSpecificLocation
             }
 
             val existingImages = ArrayList<String>()
@@ -536,7 +546,7 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
                 val angle = sign * (atan(sign * relativeWorldPosition.y / relativeWorldPosition.x) * 180 / PI - 90.0).toFloat()
                 
                 val innerBorderImage = ImageGetter.getImage(
-                        tileSetStrings.orFallback { getBorder("${borderShapeString}Inner") }
+                        tileSetStrings.orFallback { getBorder(borderShapeString,"Inner") }
                 )
                 miscLayerGroup.addActor(innerBorderImage)
                 images.add(innerBorderImage)
@@ -545,7 +555,7 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
                 innerBorderImage.color = civOuterColor
 
                 val outerBorderImage = ImageGetter.getImage(
-                        tileSetStrings.orFallback { getBorder("${borderShapeString}Outer") }
+                        tileSetStrings.orFallback { getBorder(borderShapeString, "Outer") }
                 )
                 miscLayerGroup.addActor(outerBorderImage)
                 images.add(outerBorderImage)

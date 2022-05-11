@@ -1,6 +1,6 @@
 package com.unciv.logic.multiplayer
 
-import com.unciv.logic.GameSaver
+import com.unciv.json.json
 import com.unciv.ui.utils.UncivDateFormat.parseDate
 import java.io.*
 import java.net.HttpURLConnection
@@ -47,7 +47,7 @@ object DropBox: IFileStorage {
                 val responseString = reader.readText()
                 println(responseString)
 
-                val error = GameSaver.json().fromJson(ErrorResponse::class.java, responseString)
+                val error = json().fromJson(ErrorResponse::class.java, responseString)
                 // Throw Exceptions based on the HTTP response from dropbox
                 when {
                     error.error_summary.startsWith("too_many_requests/") -> triggerRateLimit(error)
@@ -83,7 +83,7 @@ object DropBox: IFileStorage {
             contentType="application/json"
         )!!
         val reader = BufferedReader(InputStreamReader(stream))
-        return GameSaver.json().fromJson(MetaData::class.java, reader.readText())
+        return json().fromJson(MetaData::class.java, reader.readText())
     }
 
     override fun saveFileData(fileName: String, data: String, overwrite: Boolean) {
@@ -135,12 +135,12 @@ object DropBox: IFileStorage {
         // instead of the path.
         val response = dropboxApi("https://api.dropboxapi.com/2/files/list_folder",
                 "{\"path\":\"$folder\"}", "application/json")
-        var currentFolderListChunk = GameSaver.json().fromJson(FolderList::class.java, response)
+        var currentFolderListChunk = json().fromJson(FolderList::class.java, response)
         folderList.addAll(currentFolderListChunk.entries)
         while (currentFolderListChunk.has_more) {
             val continuationResponse = dropboxApi("https://api.dropboxapi.com/2/files/list_folder/continue",
                     "{\"cursor\":\"${currentFolderListChunk.cursor}\"}", "application/json")
-            currentFolderListChunk = GameSaver.json().fromJson(FolderList::class.java, continuationResponse)
+            currentFolderListChunk = json().fromJson(FolderList::class.java, continuationResponse)
             folderList.addAll(currentFolderListChunk.entries)
         }
         return folderList

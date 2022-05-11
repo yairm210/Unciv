@@ -46,12 +46,14 @@ internal object DesktopLauncher {
             UniqueDocsWriter().write()
         }
 
+        val platformSpecificHelper = PlatformSpecificHelpersDesktop(config)
         val desktopParameters = UncivGameParameters(
             versionFromJar,
             cancelDiscordEvent = { discordTimer?.cancel() },
             fontImplementation = NativeFontDesktop(Fonts.ORIGINAL_FONT_SIZE.toInt(), settings.fontFamily),
             customSaveLocationHelper = CustomSaveLocationHelperDesktop(),
             crashReportSysInfo = CrashReportSysInfoDesktop(),
+            platformSpecificHelper = platformSpecificHelper,
             audioExceptionHelper = HardenGdxAudio()
         )
 

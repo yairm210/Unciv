@@ -13,6 +13,7 @@ import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.Unique
 import kotlin.math.*
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.mapeditor.MapGeneratorSteps
 import kotlin.random.Random
 
 
@@ -128,6 +129,33 @@ class MapGenerator(val ruleset: Ruleset) {
             spreadAncientRuins(map)
         }
         return map
+    }
+
+    fun generateSingleStep(map: TileMap, step: MapGeneratorSteps) {
+        if (map.mapParameters.seed == 0L)
+            map.mapParameters.seed = System.currentTimeMillis()
+
+        randomness.seedRNG(map.mapParameters.seed)
+
+        when(step) {
+            MapGeneratorSteps.None -> return
+            MapGeneratorSteps.All -> throw IllegalArgumentException("MapGeneratorSteps.All cannot be used in generateSingleStep")
+            MapGeneratorSteps.Landmass -> MapLandmassGenerator(ruleset, randomness).generateLand(map)
+            MapGeneratorSteps.Elevation -> raiseMountainsAndHills(map)
+            MapGeneratorSteps.HumidityAndTemperature -> applyHumidityAndTemperature(map)
+            MapGeneratorSteps.LakesAndCoast -> spawnLakesAndCoasts(map)
+            MapGeneratorSteps.Vegetation -> spawnVegetation(map)
+            MapGeneratorSteps.RareFeatures -> spawnRareFeatures(map)
+            MapGeneratorSteps.Ice -> spawnIce(map)
+            MapGeneratorSteps.Continents -> map.assignContinents(TileMap.AssignContinentsMode.Reassign)
+            MapGeneratorSteps.NaturalWonders -> NaturalWonderGenerator(ruleset, randomness).spawnNaturalWonders(map)
+            MapGeneratorSteps.Rivers -> {
+                RiverGenerator(map, randomness, ruleset).spawnRivers()
+                convertTerrains(map, ruleset)
+            }
+            MapGeneratorSteps.Resources -> spreadResources(map)
+            MapGeneratorSteps.AncientRuins -> spreadAncientRuins(map)
+        }
     }
 
 
@@ -481,15 +509,17 @@ class MapGenerator(val ruleset: Ruleset) {
      */
     private fun spawnVegetation(tileMap: TileMap) {
         val vegetationSeed = randomness.RNG.nextInt().toDouble()
-        val candidateTerrains = Constants.vegetation.mapNotNull { ruleset.terrains[it] }.flatMap{ it.occursOn }
-        //Checking it.baseTerrain in candidateTerrains to make sure forest does not spawn on desert hill
+        val vegetationTerrains = (Constants.vegetation.mapNotNull { ruleset.terrains[it] }
+                + ruleset.terrains.values.filter { it.hasUnique(UniqueType.Vegetation) }).toHashSet()
+        val candidateTerrains = vegetationTerrains.flatMap{ it.occursOn }
+        // Checking it.baseTerrain in candidateTerrains to make sure forest does not spawn on desert hill
         for (tile in tileMap.values.asSequence().filter { it.baseTerrain in candidateTerrains
                 && it.getLastTerrain().name in candidateTerrains }) {
             val vegetation = (randomness.getPerlinNoise(tile, vegetationSeed, scale = 3.0, nOctaves = 1) + 1.0) / 2.0
 
             if (vegetation <= tileMap.mapParameters.vegetationRichness) {
-                val randomVegetation = Constants.vegetation.filter { ruleset.terrains[it]!!.occursOn.contains(tile.getLastTerrain().name) }.random(randomness.RNG)
-                tile.addTerrainFeature(randomVegetation)
+                val randomVegetation = vegetationTerrains.filter { it.occursOn.contains(tile.getLastTerrain().name) }.random(randomness.RNG)
+                tile.addTerrainFeature(randomVegetation.name)
             }
         }
     }

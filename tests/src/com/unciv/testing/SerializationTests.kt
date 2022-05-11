@@ -1,6 +1,7 @@
 package com.unciv.testing
 
 import com.unciv.UncivGame
+import com.unciv.json.json
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
@@ -83,7 +84,7 @@ class SerializationTests {
     @Test
     fun canSerializeGame() {
         val json = try {
-            GameSaver.json().toJson(game)
+            json().toJson(game)
         } catch (ex: Exception) {
             ""
         }

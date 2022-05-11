@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Json
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.json.json
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
@@ -55,7 +56,7 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
     private fun tryGetSaveGame()
         = try {
             UncivGame.Current.gameInfo.let { gameInfo ->
-                Json().toJson(gameInfo).let {
+                json().toJson(gameInfo).let {
                     jsonString -> Gzip.zip(jsonString)
                 }
             } // Taken from old CrashController().buildReport().

@@ -38,7 +38,7 @@ import com.unciv.ui.utils.*
 
 class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap: TileMap): ZoomableScrollPane() {
     internal var selectedTile: TileInfo? = null
-    private val tileGroups = HashMap<TileInfo, List<WorldTileGroup>>()
+    val tileGroups = HashMap<TileInfo, List<WorldTileGroup>>()
 
     //allWorldTileGroups exists to easily access all WordTileGroups
     //since tileGroup is a HashMap of Lists and getting all WordTileGroups

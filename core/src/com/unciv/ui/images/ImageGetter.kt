@@ -18,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.json.json
 import com.unciv.logic.GameSaver
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
@@ -79,7 +80,7 @@ object ImageGetter {
     fun loadModAtlases(mod: String, folder: FileHandle) {
         // See #4993 - you can't .list() on a jar file, so the ImagePacker leaves us the list of actual atlases.
         val controlFile = folder.child("Atlases.json")
-        val fileNames = (if (controlFile.exists()) GameSaver.json().fromJson(Array<String>::class.java, controlFile)
+        val fileNames = (if (controlFile.exists()) json().fromJson(Array<String>::class.java, controlFile)
             else emptyArray()).toMutableList()
         if (mod.isNotEmpty()) fileNames += "game"
         for (fileName in fileNames) {
@@ -343,6 +344,16 @@ object ImageGetter {
         redCross.color = Color.RED.cpy().apply { a = alpha }
         return redCross
     }
+
+    fun getCrossedImage(image: Actor, iconSize: Float) = Group().apply {
+            isTransform = false
+            setSize(iconSize, iconSize)
+            image.center(this)
+            addActor(image)
+            val cross = getRedCross(iconSize * 0.7f, 0.7f)
+            cross.center(this)
+            addActor(cross)
+        }
 
     fun getArrowImage(align:Int = Align.right): Image {
         val image = getImage("OtherIcons/ArrowRight")

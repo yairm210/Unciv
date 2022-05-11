@@ -149,8 +149,11 @@ class ReligionOverviewTab(
                 statsTable.add(cityName.toLabel()).right().row()
             }
         }
+        val manager = religion.getFounder().religionManager
         statsTable.add("Cities following this religion:".toLabel())
-        statsTable.add(religion.getFounder().religionManager.numberOfCitiesFollowingThisReligion().toLabel()).right().row()
+        statsTable.add(manager.numberOfCitiesFollowingThisReligion().toLabel()).right().row()
+        statsTable.add("Followers of this religion:".toLabel())
+        statsTable.add(manager.numberOfFollowersFollowingThisReligion("in all cities").toLabel()).right().row()
 
         val minWidth = max(statsTable.minWidth, beliefsTable.minWidth) + 5
 

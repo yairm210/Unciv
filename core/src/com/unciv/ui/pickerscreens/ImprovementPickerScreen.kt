@@ -20,18 +20,20 @@ import kotlin.math.roundToInt
 class ImprovementPickerScreen(
     private val tileInfo: TileInfo,
     private val unit: MapUnit,
-    private val onAccept: ()->Unit
+    private val onAccept: ()->Unit,
 ) : PickerScreen() {
     private var selectedImprovement: TileImprovement? = null
     private val gameInfo = tileInfo.tileMap.gameInfo
     private val ruleSet = gameInfo.ruleSet
     private val currentPlayerCiv = gameInfo.getCurrentPlayerCivilization()
+    // Support for UniqueType.CreatesOneImprovement
+    private val tileMarkedForCreatesOneImprovement = tileInfo.isMarkedForCreatesOneImprovement()
 
     private fun getRequiredTechColumn(improvement: TileImprovement) =
         ruleSet.technologies[improvement.techRequired]?.column?.columnNumber ?: -1
 
     fun accept(improvement: TileImprovement?) {
-        if (improvement == null) return
+        if (improvement == null || tileMarkedForCreatesOneImprovement) return
         if (improvement.name == Constants.cancelImprovementOrder) {
             tileInfo.stopWorkingOnImprovement()
             // no onAccept() - Worker can stay selected
@@ -96,20 +98,21 @@ class ImprovementPickerScreen(
 
             var labelText = improvement.name.tr()
             val turnsToBuild = if (tileInfo.improvementInProgress == improvement.name) tileInfo.turnsToImprovement
-                else improvement.getTurnsToBuild(currentPlayerCiv, unit)
+            else improvement.getTurnsToBuild(currentPlayerCiv, unit)
+            
             if (turnsToBuild > 0) labelText += " - $turnsToBuild${Fonts.turn}"
-            val provideResource = tileInfo.hasViewableResource(currentPlayerCiv) && tileInfo.tileResource.improvement == improvement.name
+            val provideResource = tileInfo.hasViewableResource(currentPlayerCiv) && tileInfo.tileResource.isImprovedBy(improvement.name)
             if (provideResource) labelText += "\n" + "Provides [${tileInfo.resource}]".tr()
-            val removeImprovement = (improvement.name != RoadStatus.Road.name
-                    && improvement.name != RoadStatus.Railroad.name
+            val removeImprovement = (improvement.isRoad()
                     && !improvement.name.startsWith(Constants.remove)
                     && improvement.name != Constants.cancelImprovementOrder)
             if (tileInfo.improvement != null && removeImprovement) labelText += "\n" + "Replaces [${tileInfo.improvement}]".tr()
 
             val pickNow = when {
                 suggestRemoval -> "${Constants.remove}[${tileInfo.getLastTerrain().name}] first".toLabel()
-                tileInfo.improvementInProgress != improvement.name -> "Pick now!".toLabel().onClick { accept(improvement) }
-                else -> "Current construction".toLabel()
+                tileInfo.improvementInProgress == improvement.name -> "Current construction".toLabel()
+                tileMarkedForCreatesOneImprovement -> null
+                else -> "Pick now!".toLabel().onClick { accept(improvement) }
             }
 
             val statIcons = getStatIconsTable(provideResource, removeImprovement)
@@ -126,7 +129,6 @@ class ImprovementPickerScreen(
             val statsTable = getStatsTable(stats)
             statIcons.add(statsTable).padLeft(13f)
 
-
             regularImprovements.add(statIcons).align(Align.right)
 
             val improvementButton = getPickerOptionButton(image, labelText)
@@ -137,16 +139,14 @@ class ImprovementPickerScreen(
             }
 
             if (improvement.name == tileInfo.improvementInProgress) improvementButton.color = Color.GREEN
-            if (suggestRemoval){
+            if (suggestRemoval || tileMarkedForCreatesOneImprovement) {
                 improvementButton.disable()
-            }
-            regularImprovements.add(improvementButton)
-
-            if (shortcutKey != null) {
+            } else if (shortcutKey != null) {
                 keyPressDispatcher[shortcutKey] = { accept(improvement) }
                 improvementButton.addTooltip(shortcutKey)
             }
 
+            regularImprovements.add(improvementButton)
             regularImprovements.add(pickNow).padLeft(10f).fillY()
             regularImprovements.row()
         }
@@ -162,13 +162,9 @@ class ImprovementPickerScreen(
             statIcons.add(ImageGetter.getResourceImage(tileInfo.resource.toString(), 30f)).pad(3f)
 
         // icon for removing the resource by replacing improvement
-        if (removeImprovement && tileInfo.hasViewableResource(currentPlayerCiv) && tileInfo.tileResource.improvement == tileInfo.improvement) {
-            val crossedResource = Group()
-            val cross = ImageGetter.getRedCross(30f, 0.8f)
-            val resourceIcon = ImageGetter.getResourceImage(tileInfo.resource.toString(), 30f)
-            crossedResource.addActor(resourceIcon)
-            crossedResource.addActor(cross)
-            statIcons.add(crossedResource).padTop(30f).padRight(33f)
+        if (removeImprovement && tileInfo.hasViewableResource(currentPlayerCiv) && tileInfo.improvement != null && tileInfo.tileResource.isImprovedBy(tileInfo.improvement!!)) {
+            val resourceIcon = ImageGetter.getResourceImage(tileInfo.resource!!, 30f)
+            statIcons.add(ImageGetter.getCrossedImage(resourceIcon, 30f))
         }
         return statIcons
     }

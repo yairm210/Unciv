@@ -9,7 +9,6 @@ import androidx.annotation.RequiresApi
 import com.unciv.logic.CustomSaveLocationHelper
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
-import com.unciv.logic.GameSaver.json
 
 // The Storage Access Framework is available from API 19 and up:
 // https://developer.android.com/guide/topics/providers/document-provider
@@ -74,7 +73,7 @@ class CustomSaveLocationHelperAndroid(private val activity: Activity) : CustomSa
         activity.contentResolver.openOutputStream(uri, "rwt")
                 ?.writer()
                 ?.use {
-                    it.write(json().toJson(gameInfo))
+                    it.write(GameSaver.gameInfoToString(gameInfo))
                 }
     }
 

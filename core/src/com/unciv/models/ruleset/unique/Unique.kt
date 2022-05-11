@@ -262,17 +262,41 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     override fun toString() = if (type == null) "\"$text\"" else "$type (\"$text\")"
 }
 
+/** Used to cache results of getMatchingUniques
+ * Must only be used when we're sure the matching uniques will not change in the meantime */
+class LocalUniqueCache(val cache:Boolean = true) {
+    // This stores sequences *that iterate directly on a list* - that is, pre-resolved
+    private val keyToUniques = HashMap<String, Sequence<Unique>>()
+
+    /** Get cached results as a sequence */
+    fun get(key: String, sequence: Sequence<Unique>): Sequence<Unique> {
+        if (!cache) return sequence
+        if (keyToUniques.containsKey(key)) return keyToUniques[key]!!
+        // Iterate the sequence, save actual results as a list, as return a sequence to that
+        val results = sequence.toList().asSequence()
+        keyToUniques[key] = results
+        return results
+    }
+}
 
 class UniqueMap: HashMap<String, ArrayList<Unique>>() {
     //todo Once all untyped Uniques are converted, this should be  HashMap<UniqueType, *>
     // For now, we can have both map types "side by side" each serving their own purpose,
     // and gradually this one will be deprecated in favor of the other
+
+    /** Adds one [unique] unless it has a ConditionalTimedUnique conditional */
     fun addUnique(unique: Unique) {
+        if (unique.conditionals.any { it.type == UniqueType.ConditionalTimedUnique }) return
         if (!containsKey(unique.placeholderText)) this[unique.placeholderText] = ArrayList()
         this[unique.placeholderText]!!.add(unique)
     }
 
-    private fun getUniques(placeholderText: String): Sequence<Unique> {
+    /** Calls [addUnique] on each item from [uniques] */
+    fun addUniques(uniques: Iterable<Unique>) {
+        for (unique in uniques) addUnique(unique)
+    }
+
+    fun getUniques(placeholderText: String): Sequence<Unique> {
         return this[placeholderText]?.asSequence() ?: emptySequence()
     }
 
@@ -280,20 +304,8 @@ class UniqueMap: HashMap<String, ArrayList<Unique>>() {
 
     fun getMatchingUniques(uniqueType: UniqueType, state: StateForConditionals) = getUniques(uniqueType)
         .filter { it.conditionalsApply(state) }
-
+    
     fun getAllUniques() = this.asSequence().flatMap { it.value.asSequence() }
-}
-
-/** DOES NOT hold untyped uniques! */
-class UniqueMapTyped: EnumMap<UniqueType, ArrayList<Unique>>(UniqueType::class.java) {
-    fun addUnique(unique: Unique) {
-        if(unique.type==null) return
-        if (!containsKey(unique.type)) this[unique.type] = ArrayList()
-        this[unique.type]!!.add(unique)
-    }
-
-    fun getUniques(uniqueType: UniqueType): Sequence<Unique> =
-        this[uniqueType]?.asSequence() ?: sequenceOf()
 }
 
 

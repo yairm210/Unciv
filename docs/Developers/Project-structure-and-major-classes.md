@@ -2,11 +2,14 @@
 
 Since LibGDX, and therefore Unciv, are built for multi-platform support, the project structure is built accordingly.
 
-99% of the code is in the [Core](/com/unciv) project, which contains all the platform-independant code.
+99% of the code is in the [core](https://github.com/yairm210/Unciv/tree/master/core) project, which contains all the platform-independant code.
 
-The [Desktop](/) and [Android](/) folders contain platform-specific things, and the Android folder also contains the game Images and the all-important Assets, which are required for running from Desktop as well, so we bundle them up into the .jar file when releasing.
+The [desktop](https://github.com/yairm210/Unciv/tree/master/desktop) and [android](https://github.com/yairm210/Unciv/tree/master/android) folders contain platform-specific things, and the Android folder also contains the game Images and the all-important Assets, which are required for running from Desktop as well, so we bundle them up into the .jar file when releasing.
 
-The [Test](/com/unciv) folder contains tests that can be run manually via gradle with `./gradlew tests:test`, and are run automatically by Travis for every push.
+The [tests](https://github.com/yairm210/Unciv/tree/master/tests) folder contains tests that can be run manually via gradle with `./gradlew tests:test`, and are run automatically by Travis for every push.
+
+The [server](https://github.com/yairm210/Unciv/tree/master/server) folder contains the sources for the UncivServer (a host enabling communication between multiplayer game instances), which is packaged into its own separate jar.
+
 
 ## Translations
 

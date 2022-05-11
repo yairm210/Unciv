@@ -63,15 +63,16 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
         /** Guaranteed to be ignored by [KeyPressDispatcher.set] and never to be generated for an actual event, used as fallback to ensure no action is taken */
         val UNKNOWN = KeyCharAndCode(Input.Keys.UNKNOWN)
 
-        // Kludges because we got crashes: java.lang.NoSuchMethodError: 'int kotlin.CharCodeKt.access$getCode$p(char)'  
-        fun Char.toCode() =
-            try { code } catch (ex: Throwable) { null }
-                ?: try { @Suppress("DEPRECATION") toInt() } catch (ex: Throwable) { null }
-                ?: 0
-        fun Int.makeChar() =
-            try { Char(this) } catch (ex: Throwable) { null }
-                ?: try { toChar() } catch (ex: Throwable) { null }
-                ?: Char.MIN_VALUE
+        // Kludges because we got crashes: java.lang.NoSuchMethodError: 'int kotlin.CharCodeKt.access$getCode$p(char)'
+        //TODO fixed by removing UncivServer from the desktop module - clean up comments and all uses
+        fun Char.toCode() = code
+//            try { code } catch (ex: Throwable) { null }
+//                ?: try { @Suppress("DEPRECATION") toInt() } catch (ex: Throwable) { null }
+//                ?: 0
+        fun Int.makeChar() = Char(this)
+//            try { Char(this) } catch (ex: Throwable) { null }
+//                ?: try { toChar() } catch (ex: Throwable) { null }
+//                ?: Char.MIN_VALUE
 
         /** mini-factory for control codes - case insensitive */
         fun ctrl(letter: Char) = KeyCharAndCode((letter.toCode() and 31).makeChar(),0)
@@ -105,7 +106,7 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
  *      keyPressDispatcher['+'] = { zoomIn() }
  *  ```
  *  Optionally use [setCheckpoint] and [revertToCheckPoint] to remember and restore one state.
- *  
+ *
  *  @param name Optional name of the container screen or popup for debugging
  */
 class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (() -> Unit)>() {
@@ -218,6 +219,8 @@ class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (()
 
     /** uninstall our [EventListener] from the stage it was installed on. */
     fun uninstall() {
+        if (consoleLog)
+            println("$this: uninstall")
         checkInstall(forceRemove = true)
         listener = null
         installStage = null
@@ -236,11 +239,15 @@ class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (()
             if (consoleLog)
                 println("$this: removeListener")
             installStage!!.removeListener(listener)
+            if (consoleLog)
+                println("$this: Listener removed")
         } else if (!listenerInstalled && !(isEmpty() || isPaused)) {
             if (consoleLog)
                 println("$this: addListener")
             installStage!!.addListener(listener)
             listenerInstalled = true
+            if (consoleLog)
+                println("$this: Listener added")
         }
     }
 
