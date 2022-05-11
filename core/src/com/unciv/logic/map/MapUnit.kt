@@ -23,7 +23,6 @@ import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.filterAndLogic
 import com.unciv.ui.utils.toPercent
-import com.unciv.ui.worldscreen.unit.UnitActions
 import java.text.DecimalFormat
 import kotlin.math.pow
 
@@ -843,7 +842,7 @@ class MapUnit {
         removeFromTile()
         civInfo.removeUnit(this)
         civInfo.updateViewableTiles()
-        civInfo.updateMaxGeneralBonusRadius()
+        civInfo.updateMaxGreatGeneralBonusRadius()
         // all transported units should be destroyed as well
         currentTile.getUnits().filter { it.isTransported && isTransportTypeOf(it) }
             .toList() // because we're changing the list
