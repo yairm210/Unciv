@@ -1,3 +1,27 @@
+## 4.0.15
+
+Extracted policies, religions, nations and promotions to separate png files in order to fit HexaRealm tileset into the main file - see 
+
+Fixed proxy issues when starting a new multiplayer game  - By alexban011
+
+By SomeTroglodyte:
+- Switchable gzipping of saved games 
+- Fix missing translatables, again 
+- Four Uniques typed - Blitz, Haka Dance, Hakkapeliitta, Amphibious 
+- Allow untyped Uniques in MapUnit UniqueMap 
+
+By Azzurite:
+- Add UncivServer.jar to github release 
+- Fix spectator not being able to view tile improvements or city buttons 
+
+By touhidurrr:
+- improve autofix on multiplayerServer from url input 
+- Autofix Multiplayer Server URL on input 
+
+Hide Unmet Civ and Capital Names in the Victory Status Screen  - By OptimizedForDensity
+
+Improved clarity and moddability of building improvements  - By xlenstra
+
 ## 4.0.14
 
 Performance improvements
