@@ -664,6 +664,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "+30% Strength when fighting City-State units and cities"
 	Applicable to: Global
 
+??? example  "[amount] additional attacks per turn"
+	Example: "[3] additional attacks per turn"
+
+	Applicable to: Global, Unit
+
 ??? example  "[amount] Movement"
 	Example: "[3] Movement"
 
@@ -829,7 +834,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Building, Improvement
 
 ??? example  "Unbuildable"
-	Applicable to: Building, Unit
+	Applicable to: Building, Unit, Improvement
 
 ??? example  "Cannot be purchased"
 	Applicable to: Building, Unit
@@ -983,6 +988,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "May create improvements on water resources"
 	Applicable to: Unit
 
+??? example  "[relativeAmount]% Strength for enemy [combatantFilter] units in adjacent [tileFilter] tiles"
+	Example: "[+20]% Strength for enemy [City] units in adjacent [Farm] tiles"
+
+	Applicable to: Unit
+
+??? example  "[relativeAmount]% Strength when stacked with [mapUnitFilter]"
+	Example: "[+20]% Strength when stacked with [Wounded]"
+
+	Applicable to: Unit
+
 ??? example  "May found a religion"
 	Applicable to: Unit
 
@@ -1055,6 +1070,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "May attack when embarked"
+	Applicable to: Unit
+
+??? example  "Eliminates combat penalty for attacking over a river"
 	Applicable to: Unit
 
 ??? example  "No Sight"
@@ -1396,6 +1414,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Improvement
 
+??? example  "Can only be built to improve a resource"
+	Applicable to: Improvement
+
 ??? example  "Gives a defensive bonus of [relativeAmount]%"
 	Example: "Gives a defensive bonus of [+20]%"
 
@@ -1420,10 +1441,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Provides a random bonus when entered"
 	Applicable to: Improvement
 
-??? example  "Unpillagable"
+??? example  "Constructing it will take over the tiles around it and assign them to your closest city"
 	Applicable to: Improvement
 
-??? example  "Indestructible"
+??? example  "Unpillagable"
 	Applicable to: Improvement
 
 ??? example  "Irremovable"

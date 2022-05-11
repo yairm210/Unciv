@@ -316,7 +316,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ///////////////////////////////////////// region CONSTRUCTION UNIQUES /////////////////////////////////////////
 
 
-    Unbuildable("Unbuildable", UniqueTarget.Building, UniqueTarget.Unit),
+    Unbuildable("Unbuildable", UniqueTarget.Building, UniqueTarget.Unit, UniqueTarget.Improvement),
     CannotBePurchased("Cannot be purchased", UniqueTarget.Building, UniqueTarget.Unit),
     CanBePurchasedWithStat("Can be purchased with [stat] [cityFilter]", UniqueTarget.Building, UniqueTarget.Unit),
     CanBePurchasedForAmountStat("Can be purchased for [amount] [stat] [cityFilter]", UniqueTarget.Building, UniqueTarget.Unit),
@@ -410,13 +410,16 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     FlankAttackBonus("[relativeAmount]% to Flank Attack bonuses", UniqueTarget.Unit, UniqueTarget.Global),
     // There's currently no conditional that would allow you strength vs city-state *cities* and that's why this isn't deprecated yet
     StrengthBonusVsCityStates("+30% Strength when fighting City-State units and cities", UniqueTarget.Global),
+    StrengthForAdjacentEnemies("[relativeAmount]% Strength for enemy [combatantFilter] units in adjacent [tileFilter] tiles", UniqueTarget.Unit),
+    StrengthWhenStacked("[relativeAmount]% Strength when stacked with [mapUnitFilter]", UniqueTarget.Unit),  // candidate for conditional!
 
+    AdditionalAttacks("[amount] additional attacks per turn", UniqueTarget.Unit, UniqueTarget.Global),
     Movement("[amount] Movement", UniqueTarget.Unit, UniqueTarget.Global),
     Sight("[amount] Sight", UniqueTarget.Unit, UniqueTarget.Global, UniqueTarget.Terrain),
     Range("[amount] Range", UniqueTarget.Unit, UniqueTarget.Global),
     Heal("[amount] HP when healing", UniqueTarget.Unit, UniqueTarget.Global),
+
     SpreadReligionStrength("[relativeAmount]% Spread Religion Strength", UniqueTarget.Unit, UniqueTarget.Global),
-  
     MayFoundReligion("May found a religion", UniqueTarget.Unit),
     MayEnhanceReligion("May enhance a religion", UniqueTarget.Unit),
     StatsWhenSpreading("When spreading religion to a city, gain [amount] times the amount of followers of other religions as [stat]", UniqueTarget.Unit, UniqueTarget.Global),
@@ -434,6 +437,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     NoDefensiveTerrainPenalty("No defensive terrain penalty", UniqueTarget.Unit, UniqueTarget.Global),
     NoDamagePenalty("Damage is ignored when determining unit Strength", UniqueTarget.Unit, UniqueTarget.Global),
     Uncapturable("Uncapturable", UniqueTarget.Unit),
+    // Replace with "Withdraws before melee combat <with [amount]% chance>"?
     MayWithdraw("May withdraw before melee ([amount]%)", UniqueTarget.Unit),
     CannotCaptureCities("Unable to capture cities", UniqueTarget.Unit),
 
@@ -448,7 +452,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     HealOnlyByPillaging("Can only heal by pillaging", UniqueTarget.Unit, UniqueTarget.Global),
     HealsEvenAfterAction("Unit will heal every turn, even if it performs an action", UniqueTarget.Unit),
     HealAdjacentUnits("All adjacent units heal [amount] HP when healing", UniqueTarget.Unit),
-    
+
     NormalVisionWhenEmbarked("Normal vision when embarked", UniqueTarget.Unit, UniqueTarget.Global),
     DefenceBonusWhenEmbarked("Defense bonus when embarked", UniqueTarget.Unit, UniqueTarget.Global),
     @Deprecated("as of 4.0.3", ReplaceWith("Defense bonus when embarked <for [All] units>"))
@@ -457,6 +461,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     AttackFromSea("Eliminates combat penalty for attacking from the sea", UniqueTarget.Unit),
     AttackAcrossCoast("Eliminates combat penalty for attacking across a coast", UniqueTarget.Unit),
     AttackOnSea("May attack when embarked", UniqueTarget.Unit),
+    AttackAcrossRiver("Eliminates combat penalty for attacking over a river", UniqueTarget.Unit),
 
     NoSight("No Sight", UniqueTarget.Unit),
     CanSeeOverObstacles("Can see over obstacles", UniqueTarget.Unit),
@@ -610,6 +615,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     CanOnlyBeBuiltOnTile("Can only be built on [tileFilter] tiles", UniqueTarget.Improvement),
     CannotBuildOnTile("Cannot be built on [tileFilter] tiles", UniqueTarget.Improvement),
     NoFeatureRemovalNeeded("Does not need removal of [tileFilter]", UniqueTarget.Improvement),
+    CanOnlyImproveResource("Can only be built to improve a resource", UniqueTarget.Improvement),
 
     DefensiveBonus("Gives a defensive bonus of [relativeAmount]%", UniqueTarget.Improvement),
     ImprovementMaintenance("Costs [amount] gold per turn when in your territory", UniqueTarget.Improvement), // Unused
@@ -618,9 +624,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     GreatImprovement("Great Improvement", UniqueTarget.Improvement),
     IsAncientRuinsEquivalent("Provides a random bonus when entered", UniqueTarget.Improvement),
+    TakesOverAdjacentTiles("Constructing it will take over the tiles around it and assign them to your closest city", UniqueTarget.Improvement),
 
     Unpillagable("Unpillagable", UniqueTarget.Improvement),
-    Indestructible("Indestructible", UniqueTarget.Improvement),
     Irremovable("Irremovable", UniqueTarget.Improvement),
     //endregion
 
@@ -747,6 +753,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     // region DEPRECATED AND REMOVED
 
+    @Deprecated("as of 4.0.15", ReplaceWith("Irremovable"), DeprecationLevel.ERROR)
+    Indestructible("Indestructible", UniqueTarget.Improvement),
+    
     @Deprecated("as of 3.19.1", ReplaceWith("[stats] from every [Wonder]"), DeprecationLevel.ERROR)
     StatsFromWondersDeprecated("[stats] from every Wonder", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     @Deprecated("as of 3.19.3", ReplaceWith("[stats] from every [buildingFilter] <in cities where this religion has at least [amount] followers>"), DeprecationLevel.ERROR)

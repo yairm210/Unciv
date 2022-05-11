@@ -71,6 +71,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         if (civInfo.isSpectator() || UncivGame.Current.viewEntireMapForDebug) {
             val allTiles = civInfo.gameInfo.tileMap.values.toSet()
             civInfo.viewableTiles = allTiles
+            civInfo.exploredTiles = allTiles.map { it.position }.toHashSet()
             civInfo.viewableInvisibleUnitsTiles = allTiles
             return
         }
@@ -121,7 +122,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
             var goldGained = 0
             val discoveredNaturalWonders = civInfo.gameInfo.civilizations.filter { it != civInfo && it.isMajorCiv() }
                     .flatMap { it.naturalWonders }
-            if (tile.hasUnique(UniqueType.GrantsGoldToFirstToDiscover)
+            if (tile.terrainHasUnique(UniqueType.GrantsGoldToFirstToDiscover)
                     && !discoveredNaturalWonders.contains(tile.naturalWonder!!)) {
                 goldGained += 500
             }

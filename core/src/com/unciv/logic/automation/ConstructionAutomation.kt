@@ -162,10 +162,12 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         }
         for (i in 1..10) bfs.nextStep()
         if (!bfs.getReachedTiles()
-                .any { it.hasViewableResource(civInfo) && it.improvement == null && it.getOwner() == civInfo
-                        && it.tileResource.improvement != null
-                        && it.canBuildImprovement(it.ruleset.tileImprovements[it.tileResource.improvement]!!, civInfo)
+            .any { tile -> 
+                tile.hasViewableResource(civInfo) && tile.improvement == null && tile.getOwner() == civInfo
+                && tile.tileResource.getImprovements().any {
+                    tile.canBuildImprovement(tile.ruleset.tileImprovements[it]!!, civInfo) 
                 }
+            }
         ) return
 
         addChoice(
