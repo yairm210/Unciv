@@ -216,7 +216,7 @@ class NewGameScreen(
             val multiplayerServer = UncivGame.Current.settings.multiplayerServer
             val u =  URL(if (isDropbox) "https://content.dropboxapi.com" else multiplayerServer)
             val con = u.openConnection()
-            con.setConnectTimeout(3000)
+            con.connectTimeout = 3000
             con.connect()
 
             true

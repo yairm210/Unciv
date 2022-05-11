@@ -3,8 +3,6 @@ package com.unciv.app
 import android.app.Activity
 import android.content.pm.ActivityInfo
 import com.unciv.ui.utils.GeneralPlatformSpecificHelpers
-import com.unciv.UncivGame
-import java.net.URL
 
 /** See also interface [GeneralPlatformSpecificHelpers].
  *
