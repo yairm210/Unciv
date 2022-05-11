@@ -966,13 +966,13 @@ class OptionsPopup(
     }
 
     private fun fixTextFieldUrlOnType(TextField: TextField) {
-        var text: String = TextField.text()
-        var cursor: Int = TextField.cursorPosition()
+        var text: String = TextField.text
+        var cursor: Int = TextField.cursorPosition
 
         // if text is 'http:' or 'https:' auto append '//'
         if (Regex("^https?:$").containsMatchIn(text)) {
             TextField.text = text.plus("//")
-            TextField.setCursorPosition(cursor + 2)
+            TextField.cursorPosition = cursor + 2
             return
         }
 
@@ -994,8 +994,8 @@ class OptionsPopup(
         }
 
         // update TextField
-        TextField.setText(text)
-        TextField.setCursorPosition(cursor)
+        TextField.text = text
+        TextField.cursorPosition = cursor
     }
 
     //endregion
