@@ -7,19 +7,19 @@ import com.unciv.models.ruleset.unit.UnitType
 
 interface ICombatant {
     fun getName(): String
-    fun getHealth():Int
-    fun getMaxHealth():Int
+    fun getHealth(): Int
+    fun getMaxHealth(): Int
     fun getUnitType(): UnitType
     fun getAttackingStrength(): Int
-    fun getDefendingStrength(attackedByRange:Boolean = false): Int
-    fun takeDamage(damage:Int)
-    fun isDefeated():Boolean
+    fun getDefendingStrength(attackedByRanged: Boolean = false): Int
+    fun takeDamage(damage: Int)
+    fun isDefeated(): Boolean
     fun getCivInfo(): CivilizationInfo
     fun getTile(): TileInfo
     fun isInvisible(to: CivilizationInfo): Boolean
     fun canAttack(): Boolean
     /** Implements [UniqueParameterType.CombatantFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CombatantFilter] */
-    fun matchesCategory(category:String): Boolean
+    fun matchesCategory(category: String): Boolean
     fun getAttackSound(): UncivSound
 
     fun isMelee(): Boolean = !isRanged()

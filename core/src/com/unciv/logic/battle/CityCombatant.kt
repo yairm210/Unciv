@@ -33,7 +33,7 @@ class CityCombatant(val city: CityInfo) : ICombatant {
 
     override fun getUnitType(): UnitType = UnitType.City
     override fun getAttackingStrength(): Int = (getCityStrength(CombatAction.Attack) * 0.75).roundToInt()
-    override fun getDefendingStrength(attackedByRange: Boolean): Int {
+    override fun getDefendingStrength(attackedByRanged: Boolean): Int {
         if (isDefeated()) return 1
         return getCityStrength()
     }
