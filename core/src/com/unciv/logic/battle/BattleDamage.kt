@@ -255,7 +255,7 @@ object BattleDamage {
      */
     private fun getDefendingStrength(attacker: ICombatant, defender: ICombatant): Float {
         val defenceModifier = modifiersToMultiplicationBonus(getDefenceModifiers(attacker, defender))
-        return max(1f, defender.getDefendingStrength() * defenceModifier)
+        return max(1f, defender.getDefendingStrength(attacker.isRanged()) * defenceModifier)
     }
 
     fun calculateDamageToAttacker(

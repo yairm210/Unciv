@@ -121,8 +121,13 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         addSeparator().pad(0f)
 
-        add(attacker.getAttackingStrength().toString() + Fonts.strength)
-        add(defender.getDefendingStrength().toString() + Fonts.strength).row()
+        val attackIcon = if (attacker.isRanged()) Fonts.rangedStrength else Fonts.strength
+        var defenceIcon =
+            if (attacker.isRanged() && defender.isRanged() && !defender.isCity() && !(defender is MapUnitCombatant && defender.unit.isEmbarked()))
+                Fonts.rangedStrength
+            else Fonts.strength // use strength icon if attacker is melee, defender is melee, defender is a city, or defender is embarked
+        add(attacker.getAttackingStrength().toString() + attackIcon)
+        add(defender.getDefendingStrength(attacker.isRanged()).toString() + defenceIcon).row()
 
 
         val quarterScreen = worldScreen.stage.width/4
