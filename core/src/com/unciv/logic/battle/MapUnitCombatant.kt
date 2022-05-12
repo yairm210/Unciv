@@ -34,9 +34,11 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
         else unit.baseUnit().strength
     }
 
-    override fun getDefendingStrength(): Int {
+    override fun getDefendingStrength(attackedByRange:Boolean): Int {
         return if (unit.isEmbarked() && !isCivilian())
             unit.civInfo.getEra().embarkDefense
+        else if (isRanged() && attackedByRange)
+            unit.baseUnit().rangedStrength
         else unit.baseUnit().strength
     }
 

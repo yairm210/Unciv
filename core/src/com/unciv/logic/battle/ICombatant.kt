@@ -11,7 +11,7 @@ interface ICombatant {
     fun getMaxHealth():Int
     fun getUnitType(): UnitType
     fun getAttackingStrength(): Int
-    fun getDefendingStrength(): Int
+    fun getDefendingStrength(attackedByRange:Boolean = false): Int
     fun takeDamage(damage:Int)
     fun isDefeated():Boolean
     fun getCivInfo(): CivilizationInfo
