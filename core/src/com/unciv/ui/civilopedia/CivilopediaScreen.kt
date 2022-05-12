@@ -205,6 +205,7 @@ class CivilopediaScreen(
                 CivilopediaCategories.Difficulty -> ruleset.difficulties.values
                 CivilopediaCategories.Belief -> (ruleset.beliefs.values.asSequence() +
                         Belief.getCivilopediaReligionEntry(ruleset)).toList()
+                CivilopediaCategories.Era -> ruleset.eras.values
             }
 
         for (loopCategory in CivilopediaCategories.values()) {
