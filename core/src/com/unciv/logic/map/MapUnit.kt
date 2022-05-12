@@ -121,6 +121,8 @@ class MapUnit {
 
     @Transient
     var hasGreatGeneralUnique = false
+    @Transient
+    var hasCitadelPlacementUnique = false
 
     /** civName owning the unit */
     lateinit var owner: String
@@ -345,6 +347,9 @@ class MapUnit {
 
         hasGreatGeneralUnique = hasUnique(UniqueType.GreatGeneralAura) ||
                 hasUnique(UniqueType.BonusForUnitsInRadius)
+        hasCitadelPlacementUnique = getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
+            .mapNotNull { civInfo.gameInfo.ruleSet.tileImprovements[it.params[0]] }
+            .any { it.hasUnique(UniqueType.TakeOverTilesAroundWhenBuilt) }
     }
 
     fun copyStatisticsTo(newUnit: MapUnit) {

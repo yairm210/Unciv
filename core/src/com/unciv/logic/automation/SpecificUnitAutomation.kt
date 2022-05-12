@@ -94,7 +94,7 @@ object SpecificUnitAutomation {
         return false
     }
 
-    fun automateGreatGeneralFallback(unit: MapUnit, isCitadelPlacer: Boolean) {
+    fun automateGreatGeneralFallback(unit: MapUnit) {
         // if no unit to follow, take refuge in city or build citadel there.
         val reachableTest: (TileInfo) -> Boolean = {
             it.civilianUnit == null &&
@@ -105,7 +105,7 @@ object SpecificUnitAutomation {
                 .sortedBy { it.aerialDistanceTo(unit.currentTile) }
                 .firstOrNull { reachableTest(it) }
             ?: return
-        if (!isCitadelPlacer) {
+        if (!unit.hasCitadelPlacementUnique) {
             unit.movement.headTowards(cityToGarrison)
             return
         }

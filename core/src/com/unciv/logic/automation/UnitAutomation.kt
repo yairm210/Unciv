@@ -162,13 +162,10 @@ object UnitAutomation {
             // abilities, but not additional capabilities if automation finds no use for those two
             if (unit.hasGreatGeneralUnique && SpecificUnitAutomation.automateGreatGeneral(unit))
                 return
-            val isCitadelPlacer = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
-                .mapNotNull { unit.civInfo.gameInfo.ruleSet.tileImprovements[it.params[0]] }
-                .any { it.hasUnique(UniqueType.TakeOverTilesAroundWhenBuilt) }
-            if (isCitadelPlacer && SpecificUnitAutomation.automateCitadelPlacer(unit))
+            if (unit.hasCitadelPlacementUnique && SpecificUnitAutomation.automateCitadelPlacer(unit))
                 return
-            if (isCitadelPlacer || unit.hasGreatGeneralUnique)
-                return SpecificUnitAutomation.automateGreatGeneralFallback(unit, isCitadelPlacer)
+            if (unit.hasCitadelPlacementUnique || unit.hasGreatGeneralUnique)
+                return SpecificUnitAutomation.automateGreatGeneralFallback(unit)
 
             if (unit.hasUnique(UniqueType.ConstructImprovementConsumingUnit))
                 return SpecificUnitAutomation.automateImprovementPlacer(unit) // includes great people plus moddable units
