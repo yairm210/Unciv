@@ -378,7 +378,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
             // stop refresher to not spam user with "Server limit reached!"
             // popups and restart after limit timer is over
             stopMultiPlayerRefresher()
-            val restartAfter : Long = (ex.message?.toLongOrNull() ?: 0) * 1000
+            val restartAfter : Long = ex.limitRemainingSeconds.toLong() * 1000
 
             timer("RestartTimerTimer", true, restartAfter, 0 ) {
                 multiPlayerRefresher = timer("multiPlayerRefresh", true, period = 10000) {
