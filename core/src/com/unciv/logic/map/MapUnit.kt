@@ -670,6 +670,7 @@ class MapUnit {
             else -> {
                 val improvement = civInfo.gameInfo.ruleSet.tileImprovements[tile.improvementInProgress]!!
                 improvement.handleImprovementCompletion(this)
+                tile.improvement = tile.improvementInProgress
             }
         }
         
