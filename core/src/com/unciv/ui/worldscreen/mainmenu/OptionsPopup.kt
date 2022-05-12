@@ -994,8 +994,10 @@ class OptionsPopup(
         }
 
         // update TextField
-        TextField.text = text
-        TextField.cursorPosition = cursor
+        if (text != TextField.text) {
+            TextField.text = text
+            TextField.cursorPosition = cursor
+        }
     }
 
     //endregion
