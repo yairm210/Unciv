@@ -284,11 +284,15 @@ class OptionsPopup(
             multiplayerServerTextField.text = Gdx.app.clipboard.contents
         }).row()
         multiplayerServerTextField.onChange {
-            fixTextFieldUrlOnType(multiplayerServerTextField)
-            // we can't trim on 'fixTextFieldUrlOnType' for reasons
-            settings.multiplayerServer = multiplayerServerTextField.text.trimEnd('/')
-            settings.save()
             connectionToServerButton.isEnabled = multiplayerServerTextField.text != Constants.dropboxMultiplayerServer
+            if (connectionToServerButton.isEnabled) {
+                fixTextFieldUrlOnType(multiplayerServerTextField)
+                // we can't trim on 'fixTextFieldUrlOnType' for reasons
+                settings.multiplayerServer = multiplayerServerTextField.text.trimEnd('/')
+            } else {
+                settings.multiplayerServer = multiplayerServerTextField.text
+            }
+            settings.save()
         }
         serverIpTable.add(multiplayerServerTextField).minWidth(screen.stage.width / 2).growX()
         add(serverIpTable).fillX().row()
