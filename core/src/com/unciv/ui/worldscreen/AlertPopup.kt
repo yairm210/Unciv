@@ -32,7 +32,8 @@ import java.util.*
  * @see AlertType
  */
 class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popup(worldScreen) {
-    fun getCloseButton(text: String, key: Char = Char.MIN_VALUE, action: (() -> Unit)? = null): TextButton {
+
+    private fun getCloseButton(text: String, key: Char = Char.MIN_VALUE, action: (() -> Unit)? = null): TextButton {
         // Popup.addCloseButton is close but AlertPopup needs the flexibility to add these inside a wrapper
         val button = text.toTextButton()
         val buttonAction = {
@@ -92,8 +93,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
             }
             AlertType.CityConquered -> {
                 val city = worldScreen.gameInfo.getCities().first { it.id == popupAlert.value }
-                addGoodSizedLabel("What would you like to do with the city?", Constants.headingFontSize)
-                        .padBottom(20f).row()
+                addQuestionAboutTheCity(city.name)
                 val conqueringCiv = worldScreen.gameInfo.currentPlayerCiv
 
                 if (city.foundingCiv != ""
@@ -138,6 +138,19 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                         close()
                     }
                 }
+            }
+            AlertType.CityTraded -> {
+                val city = worldScreen.gameInfo.getCities().first { it.id == popupAlert.value }
+                addQuestionAboutTheCity(city.name)
+                val conqueringCiv = worldScreen.gameInfo.currentPlayerCiv
+
+                addLiberateOption(city.foundingCiv) {
+                    city.liberateCity(conqueringCiv)
+                    worldScreen.shouldUpdate = true
+                    close()
+                }
+                addSeparator()
+                add(getCloseButton("Keep it")).row()
             }
             AlertType.BorderConflict -> {
                 val civInfo = worldScreen.gameInfo.getCivilization(popupAlert.value)
@@ -340,6 +353,11 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 capturedUnit.capturedBy(captor)
         }).row()
         add(responseTable)
+    }
+
+    private fun addQuestionAboutTheCity(cityName: String) {
+        addGoodSizedLabel("What would you like to do with the city of [$cityName]?",
+            Constants.headingFontSize).padBottom(20f).row()
     }
 
     private fun addDestroyOption(destroyAction: () -> Unit) {
