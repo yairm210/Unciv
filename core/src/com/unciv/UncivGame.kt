@@ -64,6 +64,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     val alertBattle = false
 
     lateinit var worldScreen: WorldScreen
+    fun getWorldScreenOrNull() = if (this::worldScreen.isInitialized) worldScreen else null
 
     var isInitialized = false
 

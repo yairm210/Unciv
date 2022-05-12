@@ -312,7 +312,7 @@ class CivilopediaScreen(
 
     override fun resize(width: Int, height: Int) {
         if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
-            game.setScreen(CivilopediaScreen(game.worldScreen.gameInfo.ruleSet, previousScreen, currentCategory, currentEntry))
+            game.setScreen(CivilopediaScreen(ruleset, previousScreen, currentCategory, currentEntry))
         }
     }
 }
