@@ -975,8 +975,7 @@ class OptionsPopup(
 
         // if text is 'http:' or 'https:' auto append '//'
         if (Regex("^https?:$").containsMatchIn(text)) {
-            TextField.text = text.plus("//")
-            TextField.cursorPosition = cursor + 2
+            TextField.appendText("//")
             return
         }
 
