@@ -16,14 +16,13 @@ import java.util.*
  * @see FileStorage
  * @see UncivGame.Current.settings.multiplayerServer
  */
-class OnlineMultiplayerGameSaver(var fileStorageIdentifier: String? = null) {
-    val fileStorage: FileStorage
-    init {
-        if (fileStorageIdentifier == null)
-            fileStorageIdentifier = UncivGame.Current.settings.multiplayerServer
-        fileStorage = if (fileStorageIdentifier == Constants.dropboxMultiplayerServer)
-            DropBox
-        else UncivServerFileStorage(fileStorageIdentifier!!)
+class OnlineMultiplayerGameSaver(
+    private var fileStorageIdentifier: String? = null
+) {
+    fun fileStorage(): FileStorage {
+        val identifier = if (fileStorageIdentifier == null) UncivGame.Current.settings.multiplayerServer else fileStorageIdentifier
+
+        return if (identifier == Constants.dropboxMultiplayerServer) DropBox else UncivServerFileStorage(identifier!!)
     }
 
     fun tryUploadGame(gameInfo: GameInfo, withPreview: Boolean) {
@@ -34,7 +33,7 @@ class OnlineMultiplayerGameSaver(var fileStorageIdentifier: String? = null) {
         }
 
         val zippedGameInfo = GameSaver.gameInfoToString(gameInfo, forceZip = true)
-        fileStorage.saveFileData(gameInfo.gameId, zippedGameInfo, true)
+        fileStorage().saveFileData(gameInfo.gameId, zippedGameInfo, true)
     }
 
     /**
@@ -45,7 +44,7 @@ class OnlineMultiplayerGameSaver(var fileStorageIdentifier: String? = null) {
      */
     fun tryUploadGamePreview(gameInfo: GameInfoPreview) {
         val zippedGameInfo = GameSaver.gameInfoToString(gameInfo)
-        fileStorage.saveFileData("${gameInfo.gameId}_Preview", zippedGameInfo, true)
+        fileStorage().saveFileData("${gameInfo.gameId}_Preview", zippedGameInfo, true)
     }
 
     fun tryDownloadGame(gameId: String): GameInfo {
@@ -54,7 +53,7 @@ class OnlineMultiplayerGameSaver(var fileStorageIdentifier: String? = null) {
     }
 
     fun tryDownloadGamePreview(gameId: String): GameInfoPreview {
-        val zippedGameInfo = fileStorage.loadFileData("${gameId}_Preview")
+        val zippedGameInfo = fileStorage().loadFileData("${gameId}_Preview")
         return GameSaver.gameInfoPreviewFromString(zippedGameInfo)
     }
 }
