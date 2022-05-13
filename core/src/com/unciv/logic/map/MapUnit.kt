@@ -20,8 +20,10 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.*
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
+import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.filterAndLogic
 import com.unciv.ui.utils.toPercent
+import com.unciv.ui.worldscreen.unit.UnitActions
 import java.text.DecimalFormat
 import kotlin.math.pow
 
@@ -257,10 +259,6 @@ class MapUnit {
 
     fun getUniques(): ArrayList<Unique> = tempUniques
 
-    // TODO typify usages and remove this function
-    fun getMatchingUniques(placeholderText: String): Sequence<Unique> =
-        tempUniquesMap.getUniques(placeholderText)
-
     fun getMatchingUniques(
         uniqueType: UniqueType,
         stateForConditionals: StateForConditionals = StateForConditionals(civInfo, unit=this),
@@ -273,8 +271,10 @@ class MapUnit {
             yieldAll(civInfo.getMatchingUniques(uniqueType, stateForConditionals))
     }
 
+    // TODO typify usages and remove this function
+    @Deprecated("as of 4.0.15", ReplaceWith("hasUnique(uniqueType: UniqueType, ...)"))
     fun hasUnique(unique: String): Boolean {
-        return getMatchingUniques(unique).any()
+        return tempUniquesMap.getUniques(unique).any()
     }
 
     fun hasUnique(
@@ -661,10 +661,12 @@ class MapUnit {
             tile.improvementInProgress == RoadStatus.Road.name -> tile.roadStatus = RoadStatus.Road
             tile.improvementInProgress == RoadStatus.Railroad.name -> tile.roadStatus = RoadStatus.Railroad
             else -> {
+                val improvement = civInfo.gameInfo.ruleSet.tileImprovements[tile.improvementInProgress]!!
+                improvement.handleImprovementCompletion(this)
                 tile.improvement = tile.improvementInProgress
-                if (tile.resource != null) civInfo.updateDetailedCivResources()
             }
         }
+        
         tile.improvementInProgress = null
     }
 
@@ -806,7 +808,8 @@ class MapUnit {
                 if (unit == this)
                     continue
 
-                if (unit.getMatchingUniques("Transfer Movement to []").any { matchesFilter(it.params[0]) } )
+                if (unit.getMatchingUniques(UniqueType.TransferMovement)
+                        .any { matchesFilter(it.params[0]) } )
                     currentMovement = maxOf(getMaxMovement().toFloat(), unit.getMaxMovement().toFloat())
             }
         }
@@ -850,6 +853,30 @@ class MapUnit {
             .forEach { unit -> unit.destroy() }
         assignOwner(recipient)
         recipient.updateViewableTiles()
+    }
+    
+    /** Destroys the unit and gives stats if its a great person */
+    fun consume() {
+        addStatsPerGreatPersonUsage()
+        destroy()
+    }
+
+    private fun addStatsPerGreatPersonUsage() {
+        if (!isGreatPerson()) return
+
+        val gainedStats = Stats()
+        for (unique in civInfo.getMatchingUniques(UniqueType.ProvidesGoldWheneverGreatPersonExpended)) {
+            gainedStats.gold += (100 * civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt()
+        }
+        for (unique in civInfo.getMatchingUniques(UniqueType.ProvidesStatsWheneverGreatPersonExpended)) {
+            gainedStats.add(unique.stats)
+        }
+
+        if (gainedStats.isEmpty()) return
+
+        for (stat in gainedStats)
+            civInfo.addStat(stat.key, stat.value.toInt())
+        civInfo.addNotification("By expending your [$name] you gained [${gainedStats}]!", getTile().position, name)
     }
 
     fun removeFromTile() = currentTile.removeUnit(this)
@@ -985,13 +1012,14 @@ class MapUnit {
         // Air Units can only Intercept if they didn't move this turn
         if (baseUnit.isAirUnit() && currentMovement == 0f) return false
         val maxAttacksPerTurn = 1 +
-            getMatchingUniques("[] extra interceptions may be made per turn").sumOf { it.params[0].toInt() }
+            getMatchingUniques(UniqueType.ExtraInterceptionsPerTurn)
+                .sumOf { it.params[0].toInt() }
         if (attacksThisTurn >= maxAttacksPerTurn) return false
         return true
     }
 
     fun interceptChance(): Int {
-        return getMatchingUniques("[]% chance to intercept air attacks").sumOf { it.params[0].toInt() }
+        return getMatchingUniques(UniqueType.ChanceInterceptAirAttacks).sumOf { it.params[0].toInt() }
     }
 
     fun isTransportTypeOf(mapUnit: MapUnit): Boolean {
@@ -1016,13 +1044,13 @@ class MapUnit {
     }
 
     fun interceptDamagePercentBonus(): Int {
-        return getMatchingUniques("[]% Damage when intercepting")
+        return getMatchingUniques(UniqueType.DamageWhenIntercepting)
             .sumOf { it.params[0].toInt() }
     }
 
     fun receivedInterceptDamageFactor(): Float {
         var damageFactor = 1f
-        for (unique in getMatchingUniques("Damage taken from interception reduced by []%"))
+        for (unique in getMatchingUniques(UniqueType.DamageFromInterceptionReduced))
             damageFactor *= 1f - unique.params[0].toFloat() / 100f
         return damageFactor
     }
@@ -1130,18 +1158,18 @@ class MapUnit {
     }
 
     fun religiousActionsUnitCanDo(): Sequence<String> {
-        return getMatchingUniques("Can [] [] times")
+        return getMatchingUniques(UniqueType.CanActionSeveralTimes)
             .map { it.params[0] }
     }
 
     fun canDoReligiousAction(action: String): Boolean {
-        return getMatchingUniques("Can [] [] times").any { it.params[0] == action }
+        return getMatchingUniques(UniqueType.CanActionSeveralTimes).any { it.params[0] == action }
     }
 
     /** For the actual value, check the member variable [maxAbilityUses]
      */
     fun getBaseMaxActionUses(action: String): Int {
-        return getMatchingUniques("Can [] [] times")
+        return getMatchingUniques(UniqueType.CanActionSeveralTimes)
             .filter { it.params[0] == action }
             .sumOf { it.params[1].toInt() }
     }

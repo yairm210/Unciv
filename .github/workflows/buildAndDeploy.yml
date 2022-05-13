@@ -160,7 +160,17 @@ jobs:
           ./butler push deploy/Unciv-Windows64.zip yairm210/unciv:Windows64 --userversion ${{steps.tag.outputs.tag}}
 
           mv desktop/build/libs/Unciv.jar deploy/Unciv.jar
-          
+
+## Server
+
+      - name: Build UncivServer.jar
+        continue-on-error: true
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+        run: |
+          ./gradlew server:dist
+          mv server/build/libs/UncivServer.jar deploy/UncivServer.jar
+
+## Finalize
 
       - name: Upload binaries to Github release
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')

@@ -30,6 +30,7 @@ object Constants {
     val vegetation = arrayOf(forest, jungle)
 
     // Note the difference in case. **Not** interchangeable!
+    // TODO this is very opaque behaviour to modders
     /** The "Fresh water" terrain _unique_ */
     const val freshWater = "Fresh water"
     /** The "Fresh Water" terrain _filter_ */
@@ -42,6 +43,7 @@ object Constants {
     const val openBorders = "Open Borders"
     const val random = "Random"
     const val unknownNationName = "???"
+    const val unknownCityName = "???"
 
     const val fort = "Fort"
 

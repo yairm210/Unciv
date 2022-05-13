@@ -19,7 +19,7 @@ class CustomSaveLocationHelperDesktop : CustomSaveLocationHelper {
                 File(customSaveLocation).outputStream()
                         .writer()
                         .use { writer ->
-                            writer.write(json().toJson(gameInfo))
+                            writer.write(GameSaver.gameInfoToString(gameInfo))
                         }
                 saveCompleteCallback?.invoke(null)
             } catch (e: Exception) {

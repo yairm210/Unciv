@@ -212,6 +212,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Citadel](https://thenounproject.com/term/fort/1697646/) By Adrien Coquet
 -   [Village](https://thenounproject.com/search/?q=city+center&i=476338) by Andrey Vasiliev
 -   [pumping station](https://thenounproject.com/search/?q=dike&i=555172) by Peter van Driel for Polder
+-   [Oil Platform](https://thenounproject.com/icon/oil-platform-1364795/) by Georgiana Ionescu for Offshore Platform
 
 ### Buildings
 
@@ -686,6 +687,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Party](https://thenounproject.com/icon/party-1784941/) by Adrien Coquet for WLTK header on City Overview
 -   [Party](https://thenounproject.com/icon/party-2955155/) by Lars Meiertoberens as additional WLKT decoration
 -   [turn right](https://thenounproject.com/icon/turn-right-1920867/) by Alice Design for Resource Overview
+-   [Tyrannosaurus Rex](https://thenounproject.com/icon/tyrannosaurus-rex-4130976/) by Amethyst Studio for Civilopedia Eras header
 
 ### Main menu
 

@@ -1,9 +1,11 @@
 ﻿package com.unciv
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
@@ -12,10 +14,12 @@ import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.mapgenerator.MapGenerator
+import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.MultiplayerScreen
 import com.unciv.ui.mapeditor.*
 import com.unciv.models.metadata.GameSetupInfo
+import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.crashhandling.crashHandlingThread
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
@@ -27,7 +31,6 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 
 class MainMenuScreen: BaseScreen() {
-    private val autosave = "Autosave"
     private val backgroundTable = Table().apply { background= ImageGetter.getBackground(Color.WHITE) }
     private val singleColumn = isCrampedPortrait()
 
@@ -57,7 +60,7 @@ class MainMenuScreen: BaseScreen() {
                 keyPressDispatcher[key] = function
             table.addTooltip(key, 32f)
         }
-        
+
         table.pack()
         return table
     }
@@ -88,9 +91,9 @@ class MainMenuScreen: BaseScreen() {
         }
 
         val column1 = Table().apply { defaults().pad(10f).fillX() }
-        val column2 = if(singleColumn) column1 else Table().apply { defaults().pad(10f).fillX() }
+        val column2 = if (singleColumn) column1 else Table().apply { defaults().pad(10f).fillX() }
 
-        val autosaveGame = GameSaver.getSave(autosave, false)
+        val autosaveGame = GameSaver.getSave(GameSaver.autoSaveFileName, false)
         if (autosaveGame.exists()) {
             val resumeTable = getMenuButton("Resume","OtherIcons/Resume", 'r')
                 { autoLoadGame() }
@@ -128,7 +131,7 @@ class MainMenuScreen: BaseScreen() {
         column2.add(optionsTable).row()
 
 
-        val table=Table().apply { defaults().pad(10f) }
+        val table = Table().apply { defaults().pad(10f) }
         table.add(column1)
         if (!singleColumn) table.add(column2)
         table.pack()
@@ -145,6 +148,18 @@ class MainMenuScreen: BaseScreen() {
             }
             ExitGamePopup(this)
         }
+
+        val helpButton = "?".toLabel(fontSize = 32)
+            .apply { setAlignment(Align.center) }
+            .surroundWithCircle(40f, color = ImageGetter.getBlue())
+            .apply { actor.y -= 2.5f } // compensate font baseline (empirical)
+            .surroundWithCircle(42f, resizeActor = false)
+        helpButton.touchable = Touchable.enabled
+        helpButton.onClick { openCivilopedia() }
+        keyPressDispatcher[Input.Keys.F1] = { openCivilopedia() }
+        helpButton.addTooltip(KeyCharAndCode(Input.Keys.F1), 20f)
+        helpButton.setPosition(20f, 20f)
+        stage.addActor(helpButton)
     }
 
 
@@ -163,7 +178,7 @@ class MainMenuScreen: BaseScreen() {
 
             var savedGame: GameInfo
             try {
-                savedGame = GameSaver.loadGameByName(autosave)
+                savedGame = GameSaver.loadGameByName(GameSaver.autoSaveFileName)
             } catch (oom: OutOfMemoryError) {
                 outOfMemory()
                 return@crashHandlingThread
@@ -171,7 +186,7 @@ class MainMenuScreen: BaseScreen() {
                 // This can help for situations when the autosave is corrupted
                 try {
                     val autosaves = GameSaver.getSaves()
-                        .filter { it.name() != autosave && it.name().startsWith(autosave) }
+                        .filter { it.name() != GameSaver.autoSaveFileName && it.name().startsWith(GameSaver.autoSaveFileName) }
                     savedGame =
                         GameSaver.loadGameFromFile(autosaves.maxByOrNull { it.lastModified() }!!)
                 } catch (oom: OutOfMemoryError) { // The autosave could have oom problems as well... smh
@@ -221,6 +236,13 @@ class MainMenuScreen: BaseScreen() {
                 }
             }
         }
+    }
+
+    private fun openCivilopedia() {
+        val ruleset =RulesetCache[game.settings.lastGameSetup?.gameParameters?.baseRuleset]
+            ?: RulesetCache[BaseRuleset.Civ_V_GnK.fullName]
+            ?: return
+        game.setScreen(CivilopediaScreen(ruleset, this))
     }
 
     override fun resize(width: Int, height: Int) {

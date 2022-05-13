@@ -6,7 +6,6 @@ import android.net.Uri
 import android.os.Build
 import androidx.annotation.GuardedBy
 import androidx.annotation.RequiresApi
-import com.unciv.json.json
 import com.unciv.logic.CustomSaveLocationHelper
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
@@ -74,7 +73,7 @@ class CustomSaveLocationHelperAndroid(private val activity: Activity) : CustomSa
         activity.contentResolver.openOutputStream(uri, "rwt")
                 ?.writer()
                 ?.use {
-                    it.write(json().toJson(gameInfo))
+                    it.write(GameSaver.gameInfoToString(gameInfo))
                 }
     }
 

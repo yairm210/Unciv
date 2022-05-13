@@ -185,6 +185,20 @@ open class Popup(val screen: BaseScreen): Table(BaseScreen.skin) {
     }
 
     /**
+     * Reuse this popup as an error/info popup with a new message.
+     * Removes everything from the popup to replace it with the message
+     * and a close button if requested
+     */
+    fun reuseWith(newText: String, withCloseButton: Boolean = false) {
+        innerTable.clear()
+        addGoodSizedLabel(newText)
+        if (withCloseButton) {
+            row()
+            addCloseButton()
+        }
+    }
+
+    /**
      * Sets or retrieves the [Actor] that currently has keyboard focus.
      *
      * Setting focus on a [TextField] will select all contained text unless a
