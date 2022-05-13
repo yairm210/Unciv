@@ -150,8 +150,8 @@ jobs:
           ./butler push deploy/Unciv-Linux64.zip yairm210/unciv:Linux64 --userversion ${{steps.tag.outputs.tag}}
           ./gradlew desktop:zipLinuxFilesForJar
 
-          wget -q -O jdk-windows-32.zip 
-          ./gradlew desktop:packrWindows32 "$(echo "$JRE_LIST" | grep -m1 'x86-32_windows')"
+          wget -q -O jdk-windows-32.zip "$(echo "$JRE_LIST" | grep -m1 'x86-32_windows')"
+          ./gradlew desktop:packrWindows32
           ./butler push deploy/Unciv-Windows32.zip yairm210/unciv:Windows32 --userversion ${{steps.tag.outputs.tag}}
 
           #  MacOS bundles correctly but does not run as intended, see https://github.com/yairm210/Unciv/issues/4970
