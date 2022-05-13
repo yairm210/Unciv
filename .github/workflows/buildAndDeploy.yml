@@ -30,9 +30,11 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      - uses: actions/setup-java@v1
+      - uses: actions/setup-java@v3
         with:
+          distribution: 'zulu'
           java-version: '11'
+          cache: 'gradle'
 
       - name: Compile kotlin and build classes
         run: ./gradlew classes
