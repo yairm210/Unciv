@@ -5,11 +5,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.PlayerType
-import com.unciv.logic.multiplayer.FileStorageRateLimitReached
+import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
-import com.unciv.logic.multiplayer.OnlineMultiplayer
+import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
 import com.unciv.ui.crashhandling.crashHandlingThread
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.popup.Popup
@@ -86,7 +86,7 @@ class EditMultiplayerGameInfoScreen(val gameInfo: GameInfoPreview?, gameName: St
         crashHandlingThread {
             try {
                 //download to work with newest game state
-                val gameInfo = OnlineMultiplayer().tryDownloadGame(gameId)
+                val gameInfo = OnlineMultiplayerGameSaver().tryDownloadGame(gameId)
                 val playerCiv = gameInfo.currentPlayerCiv
 
                 //only give up if it's the users turn
@@ -108,7 +108,7 @@ class EditMultiplayerGameInfoScreen(val gameInfo: GameInfoPreview?, gameName: St
                     //save game so multiplayer list stays up to date but do not override multiplayer settings
                     val updatedSave = this.gameInfo!!.updateCurrentTurn(gameInfo)
                     GameSaver.saveGame(updatedSave, gameName)
-                    OnlineMultiplayer().tryUploadGame(gameInfo, withPreview = true)
+                    OnlineMultiplayerGameSaver().tryUploadGame(gameInfo, withPreview = true)
 
                     postCrashHandlingRunnable {
                         popup.close()

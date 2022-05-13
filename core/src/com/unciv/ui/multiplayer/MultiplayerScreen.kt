@@ -4,11 +4,11 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.logic.*
-import com.unciv.logic.multiplayer.FileStorageRateLimitReached
+import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
-import com.unciv.logic.multiplayer.OnlineMultiplayer
+import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
 import com.unciv.ui.crashhandling.crashHandlingThread
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
@@ -150,7 +150,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
             try {
                 // The tryDownload can take more than 500ms. Therefore, to avoid ANRs,
                 // we need to run it in a different thread.
-                val gamePreview = OnlineMultiplayer().tryDownloadGamePreview(gameId.trim())
+                val gamePreview = OnlineMultiplayerGameSaver().tryDownloadGamePreview(gameId.trim())
                 if (gameName == "")
                     GameSaver.saveGame(gamePreview, gamePreview.gameId)
                 else
@@ -160,7 +160,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
             } catch (ex: FileNotFoundException) {
                 // Game is so old that a preview could not be found on dropbox lets try the real gameInfo instead
                 try {
-                    val gamePreview = OnlineMultiplayer().tryDownloadGame(gameId.trim()).asPreview()
+                    val gamePreview = OnlineMultiplayerGameSaver().tryDownloadGame(gameId.trim()).asPreview()
                     if (gameName == "")
                         GameSaver.saveGame(gamePreview, gamePreview.gameId)
                     else
@@ -197,7 +197,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
         crashHandlingThread(name = "JoinMultiplayerGame") {
             try {
                 val gameId = multiplayerGames[selectedGameFile]!!.gameId
-                val gameInfo = OnlineMultiplayer().tryDownloadGame(gameId)
+                val gameInfo = OnlineMultiplayerGameSaver().tryDownloadGame(gameId)
                 postCrashHandlingRunnable { game.loadGame(gameInfo) }
             } catch (ex: FileStorageRateLimitReached) {
                 postCrashHandlingRunnable {
@@ -335,7 +335,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
             for ((fileHandle, gameInfo) in multiplayerGames) {
                 try {
                     // Update game without overriding multiplayer settings
-                    val game = gameInfo.updateCurrentTurn(OnlineMultiplayer().tryDownloadGamePreview(gameInfo.gameId))
+                    val game = gameInfo.updateCurrentTurn(OnlineMultiplayerGameSaver().tryDownloadGamePreview(gameInfo.gameId))
                     GameSaver.saveGame(game, fileHandle.name())
                     multiplayerGames[fileHandle] = game
 
@@ -343,7 +343,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
                     // Game is so old that a preview could not be found on dropbox lets try the real gameInfo instead
                     try {
                         // Update game without overriding multiplayer settings
-                        val game = gameInfo.updateCurrentTurn(OnlineMultiplayer().tryDownloadGame(gameInfo.gameId))
+                        val game = gameInfo.updateCurrentTurn(OnlineMultiplayerGameSaver().tryDownloadGame(gameInfo.gameId))
                         GameSaver.saveGame(game, fileHandle.name())
                         multiplayerGames[fileHandle] = game
 

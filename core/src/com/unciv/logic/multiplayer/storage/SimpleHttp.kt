@@ -1,4 +1,4 @@
-package com.unciv.logic.multiplayer
+package com.unciv.logic.multiplayer.storage
 
 import com.badlogic.gdx.Net
 import com.unciv.UncivGame

@@ -19,7 +19,7 @@ import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.PlayerReadyScreen
 import com.unciv.ui.worldscreen.WorldScreen
-import com.unciv.logic.multiplayer.OnlineMultiplayer
+import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
 import com.unciv.ui.audio.Sounds
 import com.unciv.ui.crashhandling.crashHandlingThread
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
@@ -172,7 +172,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     fun tryLoadDeepLinkedGame() {
         if (deepLinkedMultiplayerGame != null) {
             try {
-                val onlineGame = OnlineMultiplayer().tryDownloadGame(deepLinkedMultiplayerGame!!)
+                val onlineGame = OnlineMultiplayerGameSaver().tryDownloadGame(deepLinkedMultiplayerGame!!)
                 loadGame(onlineGame)
             } catch (ex: Exception) {
                 setScreen(MainMenuScreen())

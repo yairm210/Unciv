@@ -21,7 +21,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapVisualization
-import com.unciv.logic.multiplayer.FileStorageRateLimitReached
+import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.Tutorial
 import com.unciv.models.UncivSound
@@ -40,7 +40,7 @@ import com.unciv.ui.utils.UncivDateFormat.formatDate
 import com.unciv.ui.victoryscreen.VictoryScreen
 import com.unciv.ui.worldscreen.bottombar.BattleTable
 import com.unciv.ui.worldscreen.bottombar.TileInfoTable
-import com.unciv.logic.multiplayer.OnlineMultiplayer
+import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
 import com.unciv.ui.crashhandling.crashHandlingThread
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
@@ -349,7 +349,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         }
 
         try {
-            val latestGame = OnlineMultiplayer().tryDownloadGame(gameInfo.gameId)
+            val latestGame = OnlineMultiplayerGameSaver().tryDownloadGame(gameInfo.gameId)
 
             // if we find the current player didn't change, don't update
             // Additionally, check if we are the current player, and in that case always stop
@@ -674,7 +674,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
             if (originalGameInfo.gameParameters.isOnlineMultiplayer) {
                 try {
-                    OnlineMultiplayer().tryUploadGame(gameInfoClone, withPreview = true)
+                    OnlineMultiplayerGameSaver().tryUploadGame(gameInfoClone, withPreview = true)
                 } catch (ex: FileStorageRateLimitReached) {
                     postCrashHandlingRunnable {
                         val cantUploadNewGamePopup = Popup(this)

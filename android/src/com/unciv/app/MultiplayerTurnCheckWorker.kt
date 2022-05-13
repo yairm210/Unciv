@@ -15,9 +15,9 @@ import androidx.work.*
 import com.badlogic.gdx.backends.android.AndroidApplication
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
-import com.unciv.logic.multiplayer.FileStorageRateLimitReached
+import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.models.metadata.GameSettings
-import com.unciv.logic.multiplayer.OnlineMultiplayer
+import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
 import java.io.FileNotFoundException
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -253,7 +253,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                     continue
 
                 try {
-                    val gamePreview = OnlineMultiplayer(fileStorage).tryDownloadGamePreview(gameId)
+                    val gamePreview = OnlineMultiplayerGameSaver(fileStorage).tryDownloadGamePreview(gameId)
                     val currentTurnPlayer = gamePreview.getCivilization(gamePreview.currentPlayer)
 
                     //Save game so MultiplayerScreen gets updated

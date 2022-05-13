@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
 import com.unciv.json.json
-import com.unciv.logic.multiplayer.OnlineMultiplayer
+import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.crashhandling.crashHandlingThread
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
@@ -71,7 +71,7 @@ object GameSaver {
         return if (forceZip ?: saveZipped) Gzip.zip(plainJson) else plainJson
     }
 
-    /** Returns gzipped serialization of preview [game] - only called from [OnlineMultiplayer] */
+    /** Returns gzipped serialization of preview [game] - only called from [OnlineMultiplayerGameSaver] */
     fun gameInfoToString(game: GameInfoPreview): String {
         return Gzip.zip(json().toJson(game))
     }
@@ -121,7 +121,7 @@ object GameSaver {
         }
     }
 
-    /** Parses [gameData] as gzipped serialization of a [GameInfoPreview] - only called from [OnlineMultiplayer] */
+    /** Parses [gameData] as gzipped serialization of a [GameInfoPreview] - only called from [OnlineMultiplayerGameSaver] */
     fun gameInfoPreviewFromString(gameData: String): GameInfoPreview {
         return json().fromJson(GameInfoPreview::class.java, Gzip.unzip(gameData))
     }

@@ -13,7 +13,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameSaver
 import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.PlayerType
-import com.unciv.logic.multiplayer.SimpleHttp
+import com.unciv.logic.multiplayer.storage.SimpleHttp
 import com.unciv.models.UncivSound
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.Ruleset
