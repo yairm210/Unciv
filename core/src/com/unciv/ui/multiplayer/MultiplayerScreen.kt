@@ -172,13 +172,13 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
                         popup.reuseWith("Could not download game!", true)
                     }
                 }
-            } catch (ex: FileStorageRateLimitReached) {
-                postCrashHandlingRunnable {
-                    popup.reuseWith("Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds", true)
-                }
             } catch (ex: Exception) {
                 postCrashHandlingRunnable {
-                    popup.reuseWith("Could not download game!", true)
+                    val message = when (ex) {
+                        is FileStorageRateLimitReached -> "Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds"
+                        else -> "Could not download game!"
+                    }
+                    popup.reuseWith(message, true)
                 }
             }
             postCrashHandlingRunnable {
@@ -199,13 +199,13 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
                 val gameId = multiplayerGames[selectedGameFile]!!.gameId
                 val gameInfo = OnlineMultiplayerGameSaver().tryDownloadGame(gameId)
                 postCrashHandlingRunnable { game.loadGame(gameInfo) }
-            } catch (ex: FileStorageRateLimitReached) {
-                postCrashHandlingRunnable {
-                    loadingGamePopup.reuseWith("Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds", true)
-                }
             } catch (ex: Exception) {
+                val message = when (ex) {
+                    is FileStorageRateLimitReached -> "Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds"
+                    else -> "Could not download game!"
+                }
                 postCrashHandlingRunnable {
-                    loadingGamePopup.reuseWith("Could not download game!", true)
+                    loadingGamePopup.reuseWith(message, true)
                 }
             }
         }
