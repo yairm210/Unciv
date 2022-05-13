@@ -55,9 +55,18 @@ object GameSaver {
     //endregion
     //region Saving
 
-    fun saveGame(game: GameInfo, GameName: String, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }) {
+    fun saveGame(game: GameInfo, GameName: String, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }): FileHandle {
+        val file = getSave(GameName)
+        saveGame(game, file, saveCompletionCallback)
+        return file
+    }
+
+    /**
+     * Only use this with a [FileHandle] obtained by [getSaves]!
+     */
+    fun saveGame(game: GameInfo, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }) {
         try {
-            getSave(GameName).writeString(gameInfoToString(game), false)
+            file.writeString(gameInfoToString(game), false)
             saveCompletionCallback(null)
         } catch (ex: Exception) {
             saveCompletionCallback(ex)
@@ -78,9 +87,18 @@ object GameSaver {
     /**
      * Overload of function saveGame to save a GameInfoPreview in the MultiplayerGames folder
      */
-    fun saveGame(game: GameInfoPreview, GameName: String, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }) {
+    fun saveGame(game: GameInfoPreview, GameName: String, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }): FileHandle {
+        val file = getSave(GameName, true)
+        saveGame(game, file, saveCompletionCallback)
+        return file
+    }
+
+    /**
+     * Only use this with a [FileHandle] obtained by [getSaves]!
+     */
+    fun saveGame(game: GameInfoPreview, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }) {
         try {
-            json().toJson(game, getSave(GameName, true))
+            json().toJson(game, file)
             saveCompletionCallback(null)
         } catch (ex: Exception) {
             saveCompletionCallback(ex)
