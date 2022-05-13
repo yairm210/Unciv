@@ -1,11 +1,13 @@
 package com.unciv.logic.multiplayer.storage
 
 import com.badlogic.gdx.Net
+import java.io.FileNotFoundException
 import java.lang.Exception
 
 class UncivServerFileStorage(val serverUrl:String): FileStorage {
     override fun saveFileData(fileName: String, data: String, overwrite: Boolean) {
-        SimpleHttp.sendRequest(Net.HttpMethods.PUT, "$serverUrl/files/$fileName", data) { success: Boolean, result: String ->
+        SimpleHttp.sendRequest(Net.HttpMethods.PUT, "$serverUrl/files/$fileName", data) {
+                success, result, code ->
             if (!success) {
                 println(result)
                 throw Exception(result)
@@ -15,12 +17,17 @@ class UncivServerFileStorage(val serverUrl:String): FileStorage {
 
     override fun loadFileData(fileName: String): String {
         var fileData = ""
-        SimpleHttp.sendGetRequest("$serverUrl/files/$fileName") { success: Boolean, result: String ->
+        SimpleHttp.sendGetRequest("$serverUrl/files/$fileName"){
+                success, result, code ->
             if (!success) {
                 println(result)
-                throw Exception(result)
+                when (code) {
+                    404 -> throw FileNotFoundException(result)
+                    else -> throw Exception(result)
+                }
+
             }
-            fileData = result
+            else fileData = result
         }
         return fileData
     }
@@ -30,8 +37,14 @@ class UncivServerFileStorage(val serverUrl:String): FileStorage {
     }
 
     override fun deleteFile(fileName: String) {
-        SimpleHttp.sendRequest(Net.HttpMethods.DELETE, "$serverUrl/files/$fileName", "") { success: Boolean, result: String ->
-            if (!success) throw Exception(result)
+        SimpleHttp.sendRequest(Net.HttpMethods.DELETE, "$serverUrl/files/$fileName", "") {
+                success, result, code ->
+            if (!success) {
+                when (code) {
+                    404 -> throw FileNotFoundException(result)
+                    else -> throw Exception(result)
+                }
+            }
         }
     }
 

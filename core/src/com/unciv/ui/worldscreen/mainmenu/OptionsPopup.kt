@@ -136,7 +136,7 @@ class OptionsPopup(
         (previousScreen.game.screen as BaseScreen).openOptionsPopup(tabs.activePage)
     }
 
-    private fun successfullyConnectedToServer(action: (Boolean, String)->Unit){
+    private fun successfullyConnectedToServer(action: (Boolean, String, Int?) -> Unit){
         SimpleHttp.sendGetRequest("${settings.multiplayerServer}/isalive", action)
     }
 
@@ -300,7 +300,7 @@ class OptionsPopup(
             }
             popup.open(true)
 
-            successfullyConnectedToServer { success: Boolean, _: String ->
+            successfullyConnectedToServer { success, _, _ ->
                 popup.addGoodSizedLabel(if (success) "Success!" else "Failed!").row()
                 popup.addCloseButton()
             }
