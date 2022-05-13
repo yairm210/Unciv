@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
 import com.unciv.json.json
-import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.crashhandling.crashHandlingThread
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
@@ -56,12 +55,12 @@ object GameSaver {
     //endregion
     //region Saving
 
-    fun saveGame(game: GameInfo, GameName: String, saveCompletionCallback: ((Exception?) -> Unit)? = null) {
+    fun saveGame(game: GameInfo, GameName: String, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }) {
         try {
             getSave(GameName).writeString(gameInfoToString(game), false)
-            saveCompletionCallback?.invoke(null)
+            saveCompletionCallback(null)
         } catch (ex: Exception) {
-            saveCompletionCallback?.invoke(ex)
+            saveCompletionCallback(ex)
         }
     }
 
@@ -79,12 +78,12 @@ object GameSaver {
     /**
      * Overload of function saveGame to save a GameInfoPreview in the MultiplayerGames folder
      */
-    fun saveGame(game: GameInfoPreview, GameName: String, saveCompletionCallback: ((Exception?) -> Unit)? = null) {
+    fun saveGame(game: GameInfoPreview, GameName: String, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }) {
         try {
             json().toJson(game, getSave(GameName, true))
-            saveCompletionCallback?.invoke(null)
+            saveCompletionCallback(null)
         } catch (ex: Exception) {
-            saveCompletionCallback?.invoke(ex)
+            saveCompletionCallback(ex)
         }
     }
 
