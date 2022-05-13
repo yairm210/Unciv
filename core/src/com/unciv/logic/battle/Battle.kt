@@ -635,16 +635,11 @@ object Battle {
             }
         }
 
-        val blastRadius =
-            if (!attacker.hasUnique(UniqueType.BlastRadius)) 2
-            // Don't check conditionals as there are not supported
-            else attacker.unit.getMatchingUniques(UniqueType.BlastRadius).first().params[0].toInt()
+        val strength = attacker.unit.getMatchingUniques(UniqueType.NuclearWeapon)
+            .firstOrNull()?.params?.get(0)?.toInt() ?: return
 
-        val strength = when {
-            (attacker.unit.hasUnique("Nuclear weapon of Strength []")) ->
-                attacker.unit.getMatchingUniques("Nuclear weapon of Strength []").first().params[0].toInt()
-            else -> return
-        }
+        val blastRadius = attacker.unit.getMatchingUniques(UniqueType.BlastRadius)
+            .firstOrNull()?.params?.get(0)?.toInt() ?: 2
 
         // Calculate the tiles that are hit
         val hitTiles = targetTile.getTilesInDistance(blastRadius)
@@ -792,7 +787,7 @@ object Battle {
     }
     
     private fun tryInterceptAirAttack(attacker: MapUnitCombatant, attackedTile: TileInfo, interceptingCiv: CivilizationInfo, defender: ICombatant?) {
-        if (attacker.unit.hasUnique("Cannot be intercepted")) return
+        if (attacker.unit.hasUnique(UniqueType.CannotBeIntercepted)) return
         // Pick highest chance interceptor
         for (interceptor in interceptingCiv.getCivUnits()
                 .filter { it.canIntercept(attackedTile) }

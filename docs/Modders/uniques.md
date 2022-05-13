@@ -1050,6 +1050,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Can move after attacking"
 	Applicable to: Unit
 
+??? example  "Transfer Movement to [unit]"
+	Example: "Transfer Movement to [Musketman]"
+
+	Applicable to: Unit
+
 ??? example  "Can move immediately once bought"
 	Applicable to: Unit
 
@@ -1064,6 +1069,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "All adjacent units heal [amount] HP when healing"
 	Example: "All adjacent units heal [3] HP when healing"
 
+	Applicable to: Unit
+
+??? example  "Doing so will consume this opportunity to choose a Promotion"
 	Applicable to: Unit
 
 ??? example  "Eliminates combat penalty for attacking across a coast"
@@ -1104,6 +1112,19 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Damage taken from interception reduced by [relativeAmount]%"
 	Example: "Damage taken from interception reduced by [+20]%"
 
+	Applicable to: Unit
+
+??? example  "[relativeAmount]% Damage when intercepting"
+	Example: "[+20]% Damage when intercepting"
+
+	Applicable to: Unit
+
+??? example  "[amount] extra interceptions may be made per turn"
+	Example: "[3] extra interceptions may be made per turn"
+
+	Applicable to: Unit
+
+??? example  "Cannot be intercepted"
 	Applicable to: Unit
 
 ??? example  "May capture killed [mapUnitFilter] units"

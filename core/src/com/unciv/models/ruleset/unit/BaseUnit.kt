@@ -480,7 +480,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         // If this unit has special abilities that need to be kept track of, start doing so here
         if (unit.hasUnique(UniqueType.ReligiousUnit) && civInfo.gameInfo.isReligionEnabled()) {
             unit.religion =  
-                if (unit.hasUnique("Takes your religion over the one in their birth city"))
+                if (unit.hasUnique(UniqueType.TakeReligionOverBirthCity))
                     civInfo.religionManager.religion?.name
                 else cityConstructions.cityInfo.religion.getMajorityReligionName()
             
@@ -575,9 +575,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
     }
 
-    fun isGreatPerson() = hasUnique("Great Person - []")
+    fun isGreatPerson() = hasUnique(UniqueType.GreatPerson)
 
-    fun isNuclearWeapon() = hasUnique("Nuclear weapon of Strength []")
+    fun isNuclearWeapon() = hasUnique(UniqueType.NuclearWeapon)
 
     fun movesLikeAirUnits() = getType().getMovementType() == UnitMovementType.Air
 
@@ -651,29 +651,34 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 .flatMap { it.uniqueObjects }
 
         for (unique in allUniques) {
-            when {
-                unique.isOfType(UniqueType.Strength) && unique.params[0].toInt() > 0 -> {
-                    if (unique.conditionals.any { it.isOfType(UniqueType.ConditionalVsUnits) } ) { // Bonus vs some units - a quarter of the bonus
-                        power *= (unique.params[0].toInt() / 4f).toPercent()
-                    } else if (
-                        unique.conditionals.any {
-                            it.isOfType(UniqueType.ConditionalVsCity) // City Attack - half the bonus
-                            || it.isOfType(UniqueType.ConditionalAttacking) // Attack - half the bonus
-                            || it.isOfType(UniqueType.ConditionalDefending) // Defense - half the bonus 
-                            || it.isOfType(UniqueType.ConditionalFightingInTiles) } // Bonus in terrain or feature - half the bonus
-                    ) {
-                        power *= (unique.params[0].toInt() / 2f).toPercent()
+            when (unique.type) {
+                UniqueType.Strength -> {
+                    if (unique.params[0].toInt() > 0) {
+                        if (unique.conditionals.any { it.isOfType(UniqueType.ConditionalVsUnits) }) { // Bonus vs some units - a quarter of the bonus
+                            power *= (unique.params[0].toInt() / 4f).toPercent()
+                        } else if (
+                            unique.conditionals.any {
+                                it.isOfType(UniqueType.ConditionalVsCity) // City Attack - half the bonus
+                                        || it.isOfType(UniqueType.ConditionalAttacking) // Attack - half the bonus
+                                        || it.isOfType(UniqueType.ConditionalDefending) // Defense - half the bonus
+                                        || it.isOfType(UniqueType.ConditionalFightingInTiles)
+                            } // Bonus in terrain or feature - half the bonus
+                        ) {
+                            power *= (unique.params[0].toInt() / 2f).toPercent()
+                        }
                     }
                 }
-                unique.isOfType(UniqueType.StrengthNearCapital) && unique.params[0].toInt() > 0 ->
-                    power *= (unique.params[0].toInt() / 4f).toPercent()  // Bonus decreasing with distance from capital - not worth much most of the map???
+                UniqueType.StrengthNearCapital ->
+                    if (unique.params[0].toInt() > 0)
+                        power *= (unique.params[0].toInt() / 4f).toPercent()  // Bonus decreasing with distance from capital - not worth much most of the map???
 
-                unique.placeholderText == "May Paradrop up to [] tiles from inside friendly territory" // Paradrop - 25% bonus
+                UniqueType.MayParadrop // Paradrop - 25% bonus
                     -> power += power / 4
-                unique.isOfType(UniqueType.MustSetUp) // Must set up - 20 % penalty
+                UniqueType.MustSetUp // Must set up - 20 % penalty
                     -> power -= power / 5
-                unique.isOfType(UniqueType.AdditionalAttacks) // Extra attacks - 20% bonus per extra attack
+                UniqueType.AdditionalAttacks // Extra attacks - 20% bonus per extra attack
                     -> power += (power * unique.params[0].toInt()) / 5
+                else -> {}
             }
         }
 
