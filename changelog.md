@@ -1,3 +1,31 @@
+## 4.0.16
+
+Resolved  - AI will not declare war if it definitely can't take a city 
+
+Create config.yml
+
+4.0.15-patch1
+
+4.0.15-patch1
+
+Fastlane descriptions
+
+Pedia from mainmenu  - By SomeTroglodyte
+
+Missing typed uniques for the units - part 2  - By JackRainy
+
+Rate limit handling for Dropbox  - By GGGuenni
+
+By OptimizedForDensity:
+- Use ranged strength when defending against ranged attacks 
+- Hide cities where wonders are built until city is explored 
+
+By xlenstra:
+- Fixed a bug where improvements could no longer be built by workers 
+- Fixed a bug where roads seemingly removed improvements 
+
+Proposal to add the current HexaRealm tileset as the built-in tileset. (for serious this time.)  - By GeneralWadaling
+
 ## 4.0.15
 
 Fixed proxy issues when starting new multiplayer games - By alexban011
