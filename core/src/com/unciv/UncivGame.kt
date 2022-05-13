@@ -21,7 +21,8 @@ import com.unciv.ui.worldscreen.PlayerReadyScreen
 import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
 import com.unciv.ui.audio.Sounds
-import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.crashhandling.closeExecutors
+import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import java.util.*
@@ -114,7 +115,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
         Gdx.graphics.isContinuousRendering = settings.continuousRendering
 
-        crashHandlingThread(name = "LoadJSON") {
+        launchCrashHandling("LoadJSON") {
             RulesetCache.loadRulesets(printOutput = true)
             translations.tryReadTranslationForCurrentLanguage()
             translations.loadPercentageCompleteOfLanguages()
@@ -210,6 +211,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         cancelDiscordEvent?.invoke()
         Sounds.clearCache()
         if (::musicController.isInitialized) musicController.gracefulShutdown()  // Do allow fade-out
+        closeExecutors()
 
         // Log still running threads (on desktop that should be only this one and "DestroyJavaVM")
         val numThreads = Thread.activeCount()

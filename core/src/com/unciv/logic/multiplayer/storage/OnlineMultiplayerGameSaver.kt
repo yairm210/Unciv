@@ -5,8 +5,6 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.GameSaver
-import java.util.*
-
 
 /**
  * Allows access to games stored on a server for multiplayer purposes.
@@ -16,6 +14,7 @@ import java.util.*
  * @see FileStorage
  * @see UncivGame.Current.settings.multiplayerServer
  */
+@Suppress("RedundantSuspendModifier") // Methods can take a long time, so force users to use them in a coroutine to not get ANRs on Android
 class OnlineMultiplayerGameSaver(
     private var fileStorageIdentifier: String? = null
 ) {
@@ -25,7 +24,7 @@ class OnlineMultiplayerGameSaver(
         return if (identifier == Constants.dropboxMultiplayerServer) DropBox else UncivServerFileStorage(identifier!!)
     }
 
-    fun tryUploadGame(gameInfo: GameInfo, withPreview: Boolean) {
+    suspend fun tryUploadGame(gameInfo: GameInfo, withPreview: Boolean) {
         // We upload the gamePreview before we upload the game as this
         // seems to be necessary for the kick functionality
         if (withPreview) {
@@ -42,17 +41,17 @@ class OnlineMultiplayerGameSaver(
      * @see tryUploadGame
      * @see GameInfo.asPreview
      */
-    fun tryUploadGamePreview(gameInfo: GameInfoPreview) {
+    suspend fun tryUploadGamePreview(gameInfo: GameInfoPreview) {
         val zippedGameInfo = GameSaver.gameInfoToString(gameInfo)
         fileStorage().saveFileData("${gameInfo.gameId}_Preview", zippedGameInfo, true)
     }
 
-    fun tryDownloadGame(gameId: String): GameInfo {
-        val zippedGameInfo = fileStorage.loadFileData(gameId)
+    suspend fun tryDownloadGame(gameId: String): GameInfo {
+        val zippedGameInfo = fileStorage().loadFileData(gameId)
         return GameSaver.gameInfoFromString(zippedGameInfo)
     }
 
-    fun tryDownloadGamePreview(gameId: String): GameInfoPreview {
+    suspend fun tryDownloadGamePreview(gameId: String): GameInfoPreview {
         val zippedGameInfo = fileStorage().loadFileData("${gameId}_Preview")
         return GameSaver.gameInfoPreviewFromString(zippedGameInfo)
     }

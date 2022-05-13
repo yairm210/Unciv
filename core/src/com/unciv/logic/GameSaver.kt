@@ -5,7 +5,7 @@ import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
 import com.unciv.json.json
 import com.unciv.models.metadata.GameSettings
-import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.saves.Gzip
 import java.io.File
@@ -201,7 +201,7 @@ object GameSaver {
 
     fun autoSaveUnCloned(gameInfo: GameInfo, postRunnable: () -> Unit = {}) {
         // This is used when returning from WorldScreen to MainMenuScreen - no clone since UI access to it should be gone
-        crashHandlingThread(name = autoSaveFileName) {
+        launchCrashHandling(autoSaveFileName, runAsDaemon = false) {
             autoSaveSingleThreaded(gameInfo)
             // do this on main thread
             postCrashHandlingRunnable ( postRunnable )

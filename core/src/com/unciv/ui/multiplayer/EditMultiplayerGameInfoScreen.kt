@@ -6,11 +6,11 @@ import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
+import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
-import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
-import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.YesNoPopup
@@ -83,7 +83,7 @@ class EditMultiplayerGameInfoScreen(val gameInfo: GameInfoPreview?, gameName: St
         popup.addGoodSizedLabel("Working...").row()
         popup.open()
 
-        crashHandlingThread {
+        launchCrashHandling("Resign", runAsDaemon = false) {
             try {
                 //download to work with newest game state
                 val gameInfo = OnlineMultiplayerGameSaver().tryDownloadGame(gameId)
@@ -106,7 +106,7 @@ class EditMultiplayerGameInfoScreen(val gameInfo: GameInfoPreview?, gameName: St
                     }
 
                     //save game so multiplayer list stays up to date but do not override multiplayer settings
-                    val updatedSave = this.gameInfo!!.updateCurrentTurn(gameInfo)
+                    val updatedSave = this@EditMultiplayerGameInfoScreen.gameInfo!!.updateCurrentTurn(gameInfo)
                     GameSaver.saveGame(updatedSave, gameName)
                     OnlineMultiplayerGameSaver().tryUploadGame(gameInfo, withPreview = true)
 

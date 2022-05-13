@@ -29,7 +29,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.MarkupRenderer
-import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.newgamescreen.TranslatedSelectBox
@@ -387,7 +387,7 @@ class OptionsPopup(
         modCheckResultTable.add("Checking mods for errors...".toLabel()).row()
         modCheckBaseSelect!!.isDisabled = true
 
-        crashHandlingThread(name="ModChecker") {
+        launchCrashHandling("ModChecker") {
             for (mod in RulesetCache.values.sortedBy { it.name }) {
                 if (base != modCheckWithoutBase && mod.modOptions.isBaseRuleset) continue
 
@@ -800,7 +800,7 @@ class OptionsPopup(
             errorTable.add("Downloading...".toLabel())
 
             // So the whole game doesn't get stuck while downloading the file
-            crashHandlingThread(name = "Music") {
+            launchCrashHandling("Music") {
                 try {
                     previousScreen.game.musicController.downloadDefaultFile()
                     postCrashHandlingRunnable {
@@ -917,7 +917,7 @@ class OptionsPopup(
             }
         }
 
-        crashHandlingThread(name = "Add Font Select") {
+        launchCrashHandling("Add Font Select") {
             // This is a heavy operation and causes ANRs
             val fonts = GdxArray<FontFamilyData>().apply {
                 add(FontFamilyData.default)
@@ -936,7 +936,7 @@ class OptionsPopup(
         val generateAction: ()->Unit = {
             tabs.selectPage("Advanced")
             generateTranslationsButton.setText("Working...".tr())
-            crashHandlingThread {
+            launchCrashHandling("WriteTranslations") {
                 val result = TranslationFileWriter.writeNewTranslationFiles()
                 postCrashHandlingRunnable {
                     // notify about completion

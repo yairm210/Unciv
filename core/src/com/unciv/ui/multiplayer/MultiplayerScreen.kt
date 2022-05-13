@@ -5,11 +5,11 @@ import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.logic.*
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
+import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
-import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
-import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.Popup
@@ -146,10 +146,9 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
 
         addGameButton.setText("Working...".tr())
         addGameButton.disable()
-        crashHandlingThread(name = "MultiplayerDownload") {
+
+        launchCrashHandling("MultiplayerDownload", runAsDaemon = false) {
             try {
-                // The tryDownload can take more than 500ms. Therefore, to avoid ANRs,
-                // we need to run it in a different thread.
                 val gamePreview = OnlineMultiplayerGameSaver().tryDownloadGamePreview(gameId.trim())
                 if (gameName == "")
                     GameSaver.saveGame(gamePreview, gamePreview.gameId)
@@ -194,7 +193,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
         loadingGamePopup.add("Loading latest game state...".tr())
         loadingGamePopup.open()
 
-        crashHandlingThread(name = "JoinMultiplayerGame") {
+        launchCrashHandling("JoinMultiplayerGame") {
             try {
                 val gameId = multiplayerGames[selectedGameFile]!!.gameId
                 val gameInfo = OnlineMultiplayerGameSaver().tryDownloadGame(gameId)
@@ -280,7 +279,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
                 continue
             }
 
-            crashHandlingThread(name = "loadGameFile") {
+            launchCrashHandling("loadGameFile") {
                 try {
                     val game = gameSaver.loadGamePreviewFromFile(gameSaveFile)
 
@@ -301,7 +300,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
                 } catch (usx: UncivShowableException) {
                     //Gets thrown when mods are not installed
                     postCrashHandlingRunnable {
-                        val popup = Popup(this)
+                        val popup = Popup(this@MultiplayerScreen)
                         popup.addGoodSizedLabel(usx.message!! + " in ${gameSaveFile.name()}").row()
                         popup.addCloseButton()
                         popup.open(true)
@@ -311,7 +310,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
                     }
                 } catch (ex: Exception) {
                     postCrashHandlingRunnable {
-                        ToastPopup("Could not refresh!", this)
+                        ToastPopup("Could not refresh!", this@MultiplayerScreen)
                         turnIndicator.clear()
                         turnIndicator.add(ImageGetter.getImage("StatIcons/Malcontent")).size(50f)
                     }
@@ -330,8 +329,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
         refreshButton.setText("Working...".tr())
         refreshButton.disable()
 
-        //One thread for all downloads
-        crashHandlingThread(name = "multiplayerGameDownload") {
+        launchCrashHandling("multiplayerGameDownload") {
             for ((fileHandle, gameInfo) in multiplayerGames) {
                 try {
                     // Update game without overriding multiplayer settings
@@ -349,19 +347,19 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
 
                     } catch (ex: Exception) {
                         postCrashHandlingRunnable {
-                            ToastPopup("Could not download game!" + " ${fileHandle.name()}", this)
+                            ToastPopup("Could not download game!" + " ${fileHandle.name()}", this@MultiplayerScreen)
                         }
                     }
                 } catch (ex: FileStorageRateLimitReached) {
                     postCrashHandlingRunnable {
-                        ToastPopup("Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds", this)
+                        ToastPopup("Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds", this@MultiplayerScreen)
                     }
                     break // No need to keep trying if rate limit is reached
                 } catch (ex: Exception) {
                     //skipping one is not fatal
                     //Trying to use as many prev. used strings as possible
                     postCrashHandlingRunnable {
-                        ToastPopup("Could not download game!" + " ${fileHandle.name()}", this)
+                        ToastPopup("Could not download game!" + " ${fileHandle.name()}", this@MultiplayerScreen)
                     }
                 }
             }

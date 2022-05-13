@@ -16,7 +16,7 @@ import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.pickerscreens.PickerScreen
@@ -160,9 +160,9 @@ class NewGameScreen(
             rightSideButton.disable()
             rightSideButton.setText("Working...".tr())
 
-            crashHandlingThread(name = "NewGame") {
-                // Creating a new game can take a while and we don't want ANRs
-                newGameThread()
+            // Creating a new game can take a while and we don't want ANRs
+            launchCrashHandling("NewGame", runAsDaemon = false) {
+                startNewGame()
             }
         }
     }
@@ -226,7 +226,7 @@ class NewGameScreen(
         }
     }
 
-    private fun newGameThread() {
+    suspend private fun startNewGame() {
         val popup = Popup(this)
         postCrashHandlingRunnable {
             popup.addGoodSizedLabel("Working...").row()
