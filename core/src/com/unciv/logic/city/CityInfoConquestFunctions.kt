@@ -279,8 +279,9 @@ class CityInfoConquestFunctions(val city: CityInfo){
             // Place palace for newCiv if this is the only city they have
             // This needs to happen _before_ free buildings are added, as somtimes these should 
             // only be placed in the capital, and then there needs to be a capital.
-            if (city.isOriginalCapital && city.foundingCiv == newCivInfo.civName)
+            if (newCivInfo.cities.count() == 1) {
                 newCivInfo.moveCapitalTo(city)
+            }
 
             // Add our free buildings to this city and add free buildings provided by the city to other cities
             civInfo.civConstructions.tryAddFreeBuildings()
