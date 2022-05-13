@@ -31,20 +31,20 @@ object GameSaver {
     //endregion
     //region Helpers
 
-    private fun getSubfolder(multiplayer: Boolean = false) = if (multiplayer) multiplayerFilesFolder else saveFilesFolder
+    private fun getSavefolder(multiplayer: Boolean = false) = if (multiplayer) multiplayerFilesFolder else saveFilesFolder
 
     fun getSave(GameName: String, multiplayer: Boolean = false): FileHandle {
-        val localFile = Gdx.files.local("${getSubfolder(multiplayer)}/$GameName")
+        val localFile = Gdx.files.local("${getSavefolder(multiplayer)}/$GameName")
         if (externalFilesDirForAndroid == "" || !Gdx.files.isExternalStorageAvailable) return localFile
-        val externalFile = Gdx.files.absolute(externalFilesDirForAndroid + "/${getSubfolder(multiplayer)}/$GameName")
+        val externalFile = Gdx.files.absolute(externalFilesDirForAndroid + "/${getSavefolder(multiplayer)}/$GameName")
         if (localFile.exists() && !externalFile.exists()) return localFile
         return externalFile
     }
 
     fun getSaves(multiplayer: Boolean = false): Sequence<FileHandle> {
-        val localSaves = Gdx.files.local(getSubfolder(multiplayer)).list().asSequence()
+        val localSaves = Gdx.files.local(getSavefolder(multiplayer)).list().asSequence()
         if (externalFilesDirForAndroid == "" || !Gdx.files.isExternalStorageAvailable) return localSaves
-        return localSaves + Gdx.files.absolute(externalFilesDirForAndroid + "/${getSubfolder(multiplayer)}").list().asSequence()
+        return localSaves + Gdx.files.absolute(externalFilesDirForAndroid + "/${getSavefolder(multiplayer)}").list().asSequence()
     }
 
     fun canLoadFromCustomSaveLocation() = customSaveLocationHelper != null
