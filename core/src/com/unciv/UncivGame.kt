@@ -25,6 +25,8 @@ import com.unciv.ui.crashhandling.closeExecutors
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.multiplayer.LoadDeepLinkScreen
+import com.unciv.ui.popup.Popup
 import java.util.*
 
 class UncivGame(parameters: UncivGameParameters) : Game() {
@@ -170,13 +172,26 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         Gdx.graphics.requestRendering()
     }
 
-    fun tryLoadDeepLinkedGame() {
+    fun tryLoadDeepLinkedGame() = launchCrashHandling("LoadDeepLinkedGame") {
         if (deepLinkedMultiplayerGame != null) {
+            postCrashHandlingRunnable {
+                setScreen(LoadDeepLinkScreen())
+            }
             try {
                 val onlineGame = OnlineMultiplayerGameSaver().tryDownloadGame(deepLinkedMultiplayerGame!!)
-                loadGame(onlineGame)
+                postCrashHandlingRunnable {
+                    loadGame(onlineGame)
+                }
             } catch (ex: Exception) {
-                setScreen(MainMenuScreen())
+                postCrashHandlingRunnable {
+                    val mainMenu = MainMenuScreen()
+                    setScreen(mainMenu)
+                    val popup = Popup(mainMenu)
+                    popup.addGoodSizedLabel("Failed to load multiplayer game: ${ex.message ?: ex::class.simpleName}")
+                    popup.row()
+                    popup.addCloseButton()
+                    popup.open()
+                }
             }
         }
     }
