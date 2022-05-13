@@ -1,0 +1,22 @@
+name: Releases
+
+on: 
+  push:
+    tags:
+    - '*'
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build Desktop Jar
+      run: ./gradlew desktop:build
+    - uses: ncipollo/release-action@v1
+      with:
+        tag: ${{ date -u +%s%N }}
+        artifacts: "desktop/build/libs/*"
+        token: ${{ secrets.GITHUB_TOKEN }}
