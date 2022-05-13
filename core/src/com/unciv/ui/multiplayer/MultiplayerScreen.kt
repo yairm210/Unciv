@@ -33,12 +33,14 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
     private val copyGameIdText = "Copy game ID"
     private val copyUserIdText = "Copy user ID"
     private val refreshText = "Refresh list"
+    private val friendsListText = "Friends List"
 
     private val editButton = editButtonText.toTextButton().apply { disable() }
     private val addGameButton = addGameText.toTextButton()
     private val copyGameIdButton = copyGameIdText.toTextButton().apply { disable() }
     private val copyUserIdButton = copyUserIdText.toTextButton()
     private val refreshButton = refreshText.toTextButton()
+    private val friendsListButton = friendsListText.toTextButton()
 
     init {
         setDefaultCloseAction(previousScreen)
@@ -111,6 +113,11 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
             game.setScreen(AddMultiplayerGameScreen(this))
         }
         rightSideTable.add(addGameButton).padBottom(30f).row()
+
+        friendsListButton.onClick {
+            game.setScreen(ViewFriendsListScreen(this))
+        }
+        rightSideTable.add(friendsListButton).padBottom(30f).row()
 
         refreshButton.onClick {
             redownloadAllGames()
