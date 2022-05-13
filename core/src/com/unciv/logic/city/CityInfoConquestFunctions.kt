@@ -202,7 +202,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
 
             conquerCity(conqueringCiv, oldCiv, foundingCiv)
 
-            if (foundingCiv.cities.size == 1 && !city.isOriginalCapital) cityConstructions.addBuilding(capitalCityIndicator()) // Resurrection! (if we haven't already moved the capital)
+            if (foundingCiv.cities.size == 1) cityConstructions.addBuilding(capitalCityIndicator()) // Resurrection! (if we haven't already moved the capital)
             isPuppet = false
             cityStats.update()
 
