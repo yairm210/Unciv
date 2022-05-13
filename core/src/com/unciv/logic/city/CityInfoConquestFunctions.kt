@@ -255,7 +255,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
 
             // Remove/relocate palace for old Civ - need to do this BEFORE we move the cities between
             //  civs so the capitalCityIndicator recognizes the unique buildings of the conquered civ
-            if (oldCiv.getCapital() == city)  oldCiv.moveCapitalToNextLargest()
+            if (oldCiv.getCapital() == this)  oldCiv.moveCapitalToNextLargest()
 
             civInfo.cities = civInfo.cities.toMutableList().apply { remove(city) }
             newCivInfo.cities = newCivInfo.cities.toMutableList().apply { add(city) }

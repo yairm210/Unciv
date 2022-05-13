@@ -1317,7 +1317,9 @@ class CivilizationInfo {
     }
 
     fun moveCapitalToNextLargest() {
-        moveCapitalTo(cities.maxByOrNull { it.population.population })
+        moveCapitalTo(cities
+            .filterNot { it == getCapital() }
+            .maxByOrNull { it.population.population})
     }
 
     //////////////////////// City State wrapper functions ////////////////////////
