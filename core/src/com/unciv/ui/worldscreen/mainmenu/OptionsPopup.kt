@@ -971,7 +971,7 @@ class OptionsPopup(
 
     private fun fixTextFieldUrlOnType(TextField: TextField) {
         var text: String = TextField.text
-        var cursor: Int = TextField.cursorPosition
+        var cursor: Int = minOf(TextField.cursorPosition, text.length)
 
         // if text is 'http:' or 'https:' auto append '//'
         if (Regex("^https?:$").containsMatchIn(text)) {
