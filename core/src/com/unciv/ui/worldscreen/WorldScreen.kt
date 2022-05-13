@@ -277,7 +277,12 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
             if (!mapHolder.setCenterPosition(capital.location))
                 game.setScreen(CityScreen(capital))
         }
-        keyPressDispatcher[KeyCharAndCode.ctrl('O')] = { this.openOptionsPopup() }    //   Game Options
+        keyPressDispatcher[KeyCharAndCode.ctrl('O')] = { // Game Options
+            this.openOptionsPopup(onClose = {
+                mapHolder.reloadMaxZoom()
+                nextTurnButton.update(hasOpenPopups(), isPlayersTurn, waitingForAutosave)
+            })
+        }
         keyPressDispatcher[KeyCharAndCode.ctrl('S')] = { game.setScreen(SaveGameScreen(gameInfo)) }    //   Save
         keyPressDispatcher[KeyCharAndCode.ctrl('L')] = { game.setScreen(LoadGameScreen(this)) }    //   Load
         keyPressDispatcher[KeyCharAndCode.ctrl('Q')] = { ExitGamePopup(this, true) }    //   Quit
@@ -721,14 +726,6 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         nextTurnButton.setPosition(stage.width - nextTurnButton.width - 10f, topBar.y - nextTurnButton.height - 10f)
     }
 
-    /**
-     * Used by [OptionsPopup][com.unciv.ui.worldscreen.mainmenu.OptionsPopup]
-     * to re-enable the next turn button within its Close button action
-     */
-    fun enableNextTurnButtonAfterOptions() {
-        mapHolder.reloadMaxZoom()
-        nextTurnButton.isEnabled = isPlayersTurn && !waitingForAutosave
-    }
 
     private fun getNextTurnAction(): NextTurnAction {
         return when {

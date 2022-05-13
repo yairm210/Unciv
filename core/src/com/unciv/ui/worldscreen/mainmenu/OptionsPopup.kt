@@ -52,7 +52,8 @@ import com.badlogic.gdx.utils.Array as GdxArray
 //region Fields
 class OptionsPopup(
     private val previousScreen: BaseScreen,
-    private val selectPage: Int = defaultPage
+    private val selectPage: Int = defaultPage,
+    private val onClose: () -> Unit = {}
 ) : Popup(previousScreen) {
     private val settings = previousScreen.game.settings
     private val tabs: TabbedPager
@@ -109,8 +110,7 @@ class OptionsPopup(
         addCloseButton {
             previousScreen.game.musicController.onChange(null)
             previousScreen.game.platformSpecificHelper?.allowPortrait(settings.allowAndroidPortrait)
-            if (previousScreen is WorldScreen)
-                previousScreen.enableNextTurnButtonAfterOptions()
+            onClose()
         }.padBottom(10f)
 
         pack() // Needed to show the background.
