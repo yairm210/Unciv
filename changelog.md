@@ -1,18 +1,8 @@
 ## 4.0.16
 
-Resolved  - AI will not declare war if it definitely can't take a city 
+AI will not declare war if it definitely can't take a city 
 
-Create config.yml
-
-4.0.15-patch1
-
-4.0.15-patch1
-
-Fastlane descriptions
-
-Pedia from mainmenu  - By SomeTroglodyte
-
-Missing typed uniques for the units - part 2  - By JackRainy
+Civilooedia from mainmenu  - By SomeTroglodyte
 
 Rate limit handling for Dropbox  - By GGGuenni
 
@@ -21,10 +11,10 @@ By OptimizedForDensity:
 - Hide cities where wonders are built until city is explored 
 
 By xlenstra:
-- Fixed a bug where improvements could no longer be built by workers 
-- Fixed a bug where roads seemingly removed improvements 
+- Fixed "improvements could no longer be built by workers" bug
+- Fixed "roads seemingly remove improvements" bug 
 
-Proposal to add the current HexaRealm tileset as the built-in tileset. (for serious this time.)  - By GeneralWadaling
+Hexarealm tileset added to base game - By GeneralWadaling
 
 ## 4.0.15
 

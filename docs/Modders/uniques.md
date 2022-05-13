@@ -1071,9 +1071,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Unit
 
-??? example  "Doing so will consume this opportunity to choose a Promotion"
-	Applicable to: Unit
-
 ??? example  "Eliminates combat penalty for attacking across a coast"
 	Applicable to: Unit
 
@@ -1235,6 +1232,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Heal this unit by [amount] HP"
 	Example: "Heal this unit by [3] HP"
 
+	Applicable to: Promotion
+
+??? example  "Doing so will consume this opportunity to choose a Promotion"
 	Applicable to: Promotion
 
 ## Terrain uniques
