@@ -73,8 +73,8 @@ object BattleDamage {
                     modifiers["Missing resource"] = -25  //todo ModConstants
 
             val greatGeneralModifier = GreatGeneralImplementation.getGreatGeneralBonus(combatant.unit)
-            if (greatGeneralModifier != 0)
-                modifiers["Great General"] = greatGeneralModifier
+            if (greatGeneralModifier.second != 0)
+                modifiers[greatGeneralModifier.first] = greatGeneralModifier.second
 
             for (unique in combatant.unit.getMatchingUniques(UniqueType.StrengthWhenStacked)) {
                 var stackedUnitsBonus = 0

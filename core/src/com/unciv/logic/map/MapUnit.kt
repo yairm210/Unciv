@@ -345,8 +345,7 @@ class MapUnit {
         canEnterForeignTerrain = hasUnique(UniqueType.CanEnterForeignTiles)
             || hasUnique(UniqueType.CanEnterForeignTilesButLosesReligiousStrength)
 
-        hasGreatGeneralUnique = hasUnique(UniqueType.GreatGeneralAura) ||
-                hasUnique(UniqueType.BonusForUnitsInRadius)
+        hasGreatGeneralUnique = hasUnique(UniqueType.StrengthBonusInRadius)
         hasCitadelPlacementUnique = getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
             .mapNotNull { civInfo.gameInfo.ruleSet.tileImprovements[it.params[0]] }
             .any { it.hasUnique(UniqueType.TakeOverTilesAroundWhenBuilt) }

@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 
 
 object GreatGeneralImplementation {
+
     private data class GeneralBonusData(val general: MapUnit, val radius: Int, val filter: String, val bonus: Int) {
         constructor(general: MapUnit, unique: Unique) : this(
             general,
@@ -16,31 +17,27 @@ object GreatGeneralImplementation {
             filter = unique.params[1],
             bonus = unique.params[0].toIntOrNull() ?: 0
         )
-        @Deprecated("Remove with UniqueType.BonusForUnitsInRadius")
-        constructor(general: MapUnit) : this(general, 2, "Military", 15)
     }
 
     /**
-     * Determine the "Great General" bonus for [unit] by searching for units carrying the [UniqueType.GreatGeneralAura] in the vicinity.
+     * Determine the "Great General" bonus for [unit] by searching for units carrying the [UniqueType.StrengthBonusInRadius] in the vicinity.
      *
      * Used by [BattleDamage.getGeneralModifiers].
      *
-     * @return Percentage bonus as Int (typically 15), or 0 if no applicable Great General equivalents found 
+     * @return Percentage a pair of unit's name and bonus as Int (typically 15), or 0 if no applicable Great General equivalents found
      */
-    fun getGreatGeneralBonus(unit: MapUnit): Int {
+    fun getGreatGeneralBonus(unit: MapUnit): Pair<String, Int> {
         val civInfo = unit.civInfo
         val nearbyGenerals = unit.getTile()
             .getTilesInDistance(civInfo.maxGreatGeneralBonusRadius)
             .flatMap { it.getUnits() }
             .filter { it.civInfo == civInfo && it.hasGreatGeneralUnique }
-        if (nearbyGenerals.none()) return 0
+        if (nearbyGenerals.none()) return Pair("", 0)
 
-        val greatGeneralModifier = nearbyGenerals
+        val greatGeneral = nearbyGenerals
             .flatMap { general ->
-                general.getMatchingUniques(UniqueType.GreatGeneralAura)
-                    .map { GeneralBonusData(general, it) } +
-                general.getMatchingUniques(UniqueType.BonusForUnitsInRadius)
-                    .map { GeneralBonusData(general) }
+                general.getMatchingUniques(UniqueType.StrengthBonusInRadius)
+                    .map { GeneralBonusData(general, it) }
             }.filter {
                 // Support the border case when a mod unit has several
                 // GreatGeneralAura uniques (e.g. +50% as radius 1, +25% at radius 2, +5% at radius 3)
@@ -48,10 +45,13 @@ object GreatGeneralImplementation {
                 // optimization for the most common case, as this function is only called for `MapUnitCombatant`s
                 it.general.currentTile.aerialDistanceTo(unit.getTile()) <= it.radius
                         && (it.filter == "Military" || unit.matchesFilter(it.filter))
-            }.maxOfOrNull { it.bonus } ?: 0
-        if (unit.hasUnique(UniqueType.GreatGeneralProvidesDoubleCombatBonus, checkCivInfoUniques = true))
-            return greatGeneralModifier * 2
-        return greatGeneralModifier
+            }
+        val greatGeneralModifier = greatGeneral.maxByOrNull { it.bonus } ?: return Pair("",0)
+
+        if (unit.hasUnique(UniqueType.GreatGeneralProvidesDoubleCombatBonus, checkCivInfoUniques = true)
+            && greatGeneralModifier.general.isGreatPersonOfType("War")) // apply only on "true" generals
+            return Pair(greatGeneralModifier.general.name, greatGeneralModifier.bonus * 2)
+        return Pair(greatGeneralModifier.general.name, greatGeneralModifier.bonus)
     }
 
     /**
@@ -65,8 +65,7 @@ object GreatGeneralImplementation {
 
         // Map out the uniques sorted by bonus, as later only the best bonus will apply.
         val generalBonusData = (
-                general.getMatchingUniques(UniqueType.GreatGeneralAura).map { GeneralBonusData(general, it) } +
-                general.getMatchingUniques(UniqueType.BonusForUnitsInRadius).map { GeneralBonusData(general) }
+                general.getMatchingUniques(UniqueType.StrengthBonusInRadius).map { GeneralBonusData(general, it) }
             ).sortedWith(compareByDescending<GeneralBonusData> { it.bonus }.thenBy { it.radius })
             .toList()
 
@@ -109,11 +108,9 @@ object GreatGeneralImplementation {
         val unitTypes = civInfo.gameInfo.ruleSet.unitTypes.values.asSequence()
         civInfo.maxGreatGeneralBonusRadiusBase = (civBaseUnits + unitTypes)
             .flatMap {
-                it.getMatchingUniques(UniqueType.GreatGeneralAura) +
-                it.getMatchingUniques(UniqueType.BonusForUnitsInRadius)
+                it.getMatchingUniques(UniqueType.StrengthBonusInRadius)
             }.maxOfOrNull {
-                if (it.type == UniqueType.BonusForUnitsInRadius) 2
-                else it.params[2].toIntOrNull() ?: 0
+                it.params[2].toIntOrNull() ?: 0
             } ?: 0
         updateMaxGreatGeneralBonusRadius(civInfo)
     }
@@ -136,7 +133,7 @@ object GreatGeneralImplementation {
                     promotion.name in unit.promotions.promotions
                 }
             }.flatMap {
-                it.getMatchingUniques(UniqueType.GreatGeneralAura)
+                it.getMatchingUniques(UniqueType.StrengthBonusInRadius)
             }.maxOfOrNull {
                 it.params[2].toIntOrNull() ?: 0
             } ?: 0

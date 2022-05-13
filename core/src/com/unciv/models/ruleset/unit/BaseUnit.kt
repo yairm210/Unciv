@@ -617,11 +617,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 }
         )
 
-    /** Checks whether this [BaseUnit] is a Great Geenral equivalent - not to be confused with [MapUnit.hasGreatGeneralUnique], which can be gained by modded Promotions */
-    // Only exists for Ruleset.checkModLinks readability, once the deprecated unique is gone consider folding this away
-    fun isGreatGeneral() = hasUnique(UniqueType.GreatGeneralAura) ||
-            hasUnique(UniqueType.BonusForUnitsInRadius)
-
     fun getForceEvaluation(): Int {
         if (cachedForceEvaluation < 0)    evaluateForce()
         return  cachedForceEvaluation
