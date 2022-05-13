@@ -280,7 +280,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
             // This needs to happen _before_ free buildings are added, as somtimes these should 
             // only be placed in the capital, and then there needs to be a capital.
             if (newCivInfo.cities.count() == 1) {
-                newCivInfo.moveCapitalTo(city)
+                newCivInfo.moveCapitalTo(this)
             }
 
             // Add our free buildings to this city and add free buildings provided by the city to other cities
