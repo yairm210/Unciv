@@ -164,10 +164,10 @@ object UnitAutomation {
             if (unit.hasUnique(UniqueType.ConstructImprovementConsumingUnit))
                 return SpecificUnitAutomation.automateImprovementPlacer(unit) // includes great people plus moddable units
 
-            if (unit.getMatchingUniques("Can [] [] times").any{ it.params[0] == "Spread Religion" })
+            if (unit.getMatchingUniques(UniqueType.CanActionSeveralTimes).any{ it.params[0] == "Spread Religion" })
                 return SpecificUnitAutomation.automateMissionary(unit)
 
-            if (unit.hasUnique("Prevents spreading of religion to the city it is next to"))
+            if (unit.hasUnique(UniqueType.PreventSpreadingReligion))
                 return SpecificUnitAutomation.automateInquisitor(unit)
 
 
@@ -356,9 +356,10 @@ object UnitAutomation {
                 tilesToCheck = unit.getTile().getTilesInDistance(CLOSE_ENEMY_TILES_AWAY_LIMIT).toList()
         ).filter {
             // Ignore units that would 1-shot you if you attacked. Account for taking terrain damage after the fact.
-            BattleDamage.calculateDamageToAttacker(MapUnitCombatant(unit),
-                    it.tileToAttackFrom,
-                    Battle.getMapCombatantOfTile(it.tileToAttack)!!)
+            BattleDamage.calculateDamageToAttacker(
+                MapUnitCombatant(unit),
+                Battle.getMapCombatantOfTile(it.tileToAttack)!!
+            )
                     + unit.getDamageFromTerrain(it.tileToAttackFrom) < unit.health
         }
 
@@ -413,25 +414,13 @@ object UnitAutomation {
 
         // only focus on *attacking* 1 enemy at a time otherwise you'll lose on both fronts
 
-        val enemies = unit.civInfo.getKnownCivs().filter { unit.civInfo.isAtWarWith(it) && it.cities.isNotEmpty() }
+        val enemies = unit.civInfo.getKnownCivs()
+            .filter { unit.civInfo.isAtWarWith(it) && it.cities.isNotEmpty() }
 
-        val ourCities = unit.civInfo.cities
-
-        var closestEnemyCity:CityInfo?=null
-        var closestDistance = 10000
-        for (enemy in enemies) {
-            val knownEnemyCities = enemy.cities.filter { it.location in unit.civInfo.exploredTiles }
-            if (knownEnemyCities.isEmpty()) continue
-            for(enemyCity in knownEnemyCities) {
-                val distanceToClosestCityOfOurs = ourCities.minOf {
-                    it.getCenterTile().aerialDistanceTo(enemyCity.getCenterTile())
-                }
-                if (distanceToClosestCityOfOurs < closestDistance){
-                    closestDistance = distanceToClosestCityOfOurs
-                    closestEnemyCity = enemyCity
-                }
-            }
-        }
+        val closestEnemyCity = enemies
+            .map { NextTurnAutomation.getClosestCities(unit.civInfo, it) }
+            .minByOrNull { it.aerialDistance }?.city2
+        
         if (closestEnemyCity==null) return false // no attackable cities found
 
         // Our main attack target is the closest city, but we're fine with deviating from that a bit
@@ -451,6 +440,7 @@ object UnitAutomation {
         }
         return false
     }
+    
 
     private fun headTowardsEnemyCity(unit: MapUnit, closestReachableEnemyCity: TileInfo): Boolean {
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()

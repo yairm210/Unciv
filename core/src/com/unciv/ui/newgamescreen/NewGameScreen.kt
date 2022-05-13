@@ -11,6 +11,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.*
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapType
+import com.unciv.logic.multiplayer.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.RulesetCache
@@ -45,7 +46,7 @@ class NewGameScreen(
 
         if (gameSetupInfo.gameParameters.victoryTypes.isEmpty())
             gameSetupInfo.gameParameters.victoryTypes.addAll(ruleset.victories.keys)
-        
+
         playerPickerTable = PlayerPickerTable(
             this, gameSetupInfo.gameParameters,
             if (isNarrowerThan4to3()) stage.width - 20f else 0f
@@ -107,7 +108,7 @@ class NewGameScreen(
                 noHumanPlayersPopup.open()
                 return@onClick
             }
-            
+
             if (gameSetupInfo.gameParameters.victoryTypes.isEmpty()) {
                 val noVictoryTypesPopup = Popup(this)
                 noVictoryTypesPopup.addGoodSizedLabel("No victory conditions were selected!".tr()).row()
@@ -226,17 +227,23 @@ class NewGameScreen(
     }
 
     private fun newGameThread() {
+        val popup = Popup(this)
+        postCrashHandlingRunnable {
+            popup.addGoodSizedLabel("Working...").row()
+            popup.open()
+        }
+
         val newGame:GameInfo
         try {
             newGame = GameStarter.startNewGame(gameSetupInfo)
         } catch (exception: Exception) {
             exception.printStackTrace()
             postCrashHandlingRunnable {
-                Popup(this).apply {
-                    addGoodSizedLabel("It looks like we can't make a map with the parameters you requested!".tr()).row()
-                    addGoodSizedLabel("Maybe you put too many players into too small a map?".tr()).row()
+                popup.apply {
+                    reuseWith("It looks like we can't make a map with the parameters you requested!")
+                    row()
+                    addGoodSizedLabel("Maybe you put too many players into too small a map?").row()
                     addCloseButton()
-                    open()
                 }
                 Gdx.input.inputProcessor = stage
                 rightSideButton.enable()
@@ -255,15 +262,21 @@ class NewGameScreen(
                 // Saved as Multiplayer game to show up in the session browser
                 val newGamePreview = newGame.asPreview()
                 GameSaver.saveGame(newGamePreview, newGamePreview.gameId)
+            } catch (ex: FileStorageRateLimitReached) {
+                postCrashHandlingRunnable {
+                    popup.reuseWith("Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds", true)
+                }
+                Gdx.input.inputProcessor = stage
+                rightSideButton.enable()
+                rightSideButton.setText("Start game!".tr())
+                return
             } catch (ex: Exception) {
                 postCrashHandlingRunnable {
-                    Popup(this).apply {
-                        addGoodSizedLabel("Could not upload game!").row()
-                        Gdx.input.inputProcessor = stage
-                        addCloseButton()
-                        open()
-                    }
+                    popup.reuseWith("Could not upload game!", true)
                 }
+                Gdx.input.inputProcessor = stage
+                rightSideButton.enable()
+                rightSideButton.setText("Start game!".tr())
                 return
             }
         }

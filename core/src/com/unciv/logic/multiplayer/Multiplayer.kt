@@ -6,12 +6,29 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.GameSaver
+import java.io.FileNotFoundException
 import java.util.*
 
 interface IFileStorage {
-    fun saveFileData(fileName: String, data: String)
+    /**
+     * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
+     * @throws FileStorageConflictException if the file already exists and [overwrite] is false
+     */
+    fun saveFileData(fileName: String, data: String, overwrite: Boolean)
+    /**
+     * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
+     * @throws FileNotFoundException if the file can't be found
+     */
     fun loadFileData(fileName: String): String
+    /**
+     * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
+     * @throws FileNotFoundException if the file can't be found
+     */
     fun getFileMetaData(fileName: String): IFileMetaData
+    /**
+     * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
+     * @throws FileNotFoundException if the file can't be found
+     */
     fun deleteFile(fileName: String)
 }
 
@@ -22,7 +39,7 @@ interface IFileMetaData {
 
 
 class UncivServerFileStorage(val serverUrl:String):IFileStorage {
-    override fun saveFileData(fileName: String, data: String) {
+    override fun saveFileData(fileName: String, data: String, overwrite: Boolean) {
         SimpleHttp.sendRequest(Net.HttpMethods.PUT, "$serverUrl/files/$fileName", data){
             success: Boolean, result: String ->
             if (!success) {
@@ -59,6 +76,7 @@ class UncivServerFileStorage(val serverUrl:String):IFileStorage {
 }
 
 class FileStorageConflictException: Exception()
+class FileStorageRateLimitReached(val limitRemainingSeconds: Int): Exception()
 
 /**
  * Allows access to games stored on a server for multiplayer purposes.
@@ -74,7 +92,7 @@ class OnlineMultiplayer(var fileStorageIdentifier: String? = null) {
         if (fileStorageIdentifier == null)
             fileStorageIdentifier = UncivGame.Current.settings.multiplayerServer
         fileStorage = if (fileStorageIdentifier == Constants.dropboxMultiplayerServer)
-            DropboxFileStorage()
+            DropBox
         else UncivServerFileStorage(fileStorageIdentifier!!)
     }
 
@@ -86,7 +104,7 @@ class OnlineMultiplayer(var fileStorageIdentifier: String? = null) {
         }
 
         val zippedGameInfo = GameSaver.gameInfoToString(gameInfo, forceZip = true)
-        fileStorage.saveFileData(gameInfo.gameId, zippedGameInfo)
+        fileStorage.saveFileData(gameInfo.gameId, zippedGameInfo, true)
     }
 
     /**
@@ -97,7 +115,7 @@ class OnlineMultiplayer(var fileStorageIdentifier: String? = null) {
      */
     fun tryUploadGamePreview(gameInfo: GameInfoPreview) {
         val zippedGameInfo = GameSaver.gameInfoToString(gameInfo)
-        fileStorage.saveFileData("${gameInfo.gameId}_Preview", zippedGameInfo)
+        fileStorage.saveFileData("${gameInfo.gameId}_Preview", zippedGameInfo, true)
     }
 
     fun tryDownloadGame(gameId: String): GameInfo {

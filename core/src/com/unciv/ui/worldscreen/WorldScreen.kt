@@ -21,6 +21,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapVisualization
+import com.unciv.logic.multiplayer.FileStorageRateLimitReached
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.Tutorial
 import com.unciv.models.UncivSound
@@ -370,14 +371,24 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                 postCrashHandlingRunnable { createNewWorldScreen(latestGame) }
             }
 
+        } catch (ex: FileStorageRateLimitReached) {
+            postCrashHandlingRunnable {
+                loadingGamePopup.reuseWith("Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds", true)
+            }
+            // stop refresher to not spam user with "Server limit reached!"
+            // popups and restart after limit timer is over
+            stopMultiPlayerRefresher()
+            val restartAfter : Long = ex.limitRemainingSeconds.toLong() * 1000
+
+            timer("RestartTimerTimer", true, restartAfter, 0 ) {
+                multiPlayerRefresher = timer("multiPlayerRefresh", true, period = 10000) {
+                    loadLatestMultiplayerState()
+                }
+            }
         } catch (ex: Throwable) {
             postCrashHandlingRunnable {
-                val couldntDownloadLatestGame = Popup(this)
-                couldntDownloadLatestGame.addGoodSizedLabel("Couldn't download the latest game state!").row()
-                couldntDownloadLatestGame.addCloseButton()
-                couldntDownloadLatestGame.addAction(Actions.delay(5f, Actions.run { couldntDownloadLatestGame.close() }))
-                loadingGamePopup.close()
-                couldntDownloadLatestGame.open()
+                loadingGamePopup.reuseWith("Couldn't download the latest game state!", true)
+                loadingGamePopup.addAction(Actions.delay(5f, Actions.run { loadingGamePopup.close() }))
             }
         }
     }
@@ -664,6 +675,13 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
             if (originalGameInfo.gameParameters.isOnlineMultiplayer) {
                 try {
                     OnlineMultiplayer().tryUploadGame(gameInfoClone, withPreview = true)
+                } catch (ex: FileStorageRateLimitReached) {
+                    postCrashHandlingRunnable {
+                        val cantUploadNewGamePopup = Popup(this)
+                        cantUploadNewGamePopup.addGoodSizedLabel("Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds").row()
+                        cantUploadNewGamePopup.addCloseButton()
+                        cantUploadNewGamePopup.open()
+                    }
                 } catch (ex: Exception) {
                     postCrashHandlingRunnable { // Since we're changing the UI, that should be done on the main thread
                         val cantUploadNewGamePopup = Popup(this)

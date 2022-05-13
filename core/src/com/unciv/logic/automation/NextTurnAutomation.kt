@@ -1,6 +1,9 @@
 package com.unciv.logic.automation
 
 import com.unciv.Constants
+import com.unciv.logic.battle.BattleDamage
+import com.unciv.logic.battle.CityCombatant
+import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.PerpetualConstruction
@@ -687,16 +690,32 @@ object NextTurnAutomation {
     }
 
     private fun motivationToAttack(civInfo: CivilizationInfo, otherCiv: CivilizationInfo): Int {
+        if(civInfo.cities.isEmpty() || otherCiv.cities.isEmpty()) return 0
         val baseForce = 30f
+        
         val ourCombatStrength = civInfo.getStatForRanking(RankingType.Force).toFloat() + baseForce
         var theirCombatStrength = otherCiv.getStatForRanking(RankingType.Force).toFloat() + baseForce
 
         //for city-states, also consider there protectors
-        if(otherCiv.isCityState() and otherCiv.getProtectorCivs().isNotEmpty()) {
+        if (otherCiv.isCityState() and otherCiv.getProtectorCivs().isNotEmpty()) {
             theirCombatStrength += otherCiv.getProtectorCivs().sumOf{it.getStatForRanking(RankingType.Force)}
         }
 
         if (theirCombatStrength > ourCombatStrength) return 0
+
+        val closestCities = getClosestCities(civInfo, otherCiv)
+        val ourCity = closestCities.city1
+        val theirCity = closestCities.city2
+        
+        if (civInfo.getCivUnits().filter { it.isMilitary() }.none {
+                val damageRecievedWhenAttacking = 
+                    BattleDamage.calculateDamageToAttacker(
+                        MapUnitCombatant(it),
+                        CityCombatant(theirCity)
+                    )
+                damageRecievedWhenAttacking < 100
+            })
+                return 0 // You don't have any units that can attack this city without dying, don't declare war.
 
         fun isTileCanMoveThrough(tileInfo: TileInfo): Boolean {
             val owner = tileInfo.getOwner()
@@ -721,9 +740,6 @@ object NextTurnAutomation {
         }
         modifierMap["Relative combat strength"] = combatStrengthModifier
 
-        val closestCities = getClosestCities(civInfo, otherCiv)
-        val ourCity = closestCities.city1
-        val theirCity = closestCities.city2
 
         if (closestCities.aerialDistance > 7)
             modifierMap["Far away cities"] = -10

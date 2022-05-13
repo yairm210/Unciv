@@ -18,7 +18,7 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     override fun isDefeated(): Boolean = unit.health <= 0
     override fun isInvisible(to: CivilizationInfo): Boolean = unit.isInvisible(to)
     override fun canAttack(): Boolean = unit.canAttack()
-    override fun matchesCategory(category:String) = unit.matchesFilter(category)
+    override fun matchesCategory(category: String) = unit.matchesFilter(category)
     override fun getAttackSound() = unit.baseUnit.attackSound.let { 
         if (it==null) UncivSound.Click else UncivSound.custom(it)
     }
@@ -34,9 +34,11 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
         else unit.baseUnit().strength
     }
 
-    override fun getDefendingStrength(): Int {
+    override fun getDefendingStrength(attackedByRanged: Boolean): Int {
         return if (unit.isEmbarked() && !isCivilian())
             unit.civInfo.getEra().embarkDefense
+        else if (isRanged() && attackedByRanged)
+            unit.baseUnit().rangedStrength
         else unit.baseUnit().strength
     }
 

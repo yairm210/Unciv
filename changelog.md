@@ -1,3 +1,21 @@
+## 4.0.16
+
+AI will not declare war if it definitely can't take a city 
+
+Civilooedia from mainmenu  - By SomeTroglodyte
+
+Rate limit handling for Dropbox  - By GGGuenni
+
+By OptimizedForDensity:
+- Use ranged strength when defending against ranged attacks 
+- Hide cities where wonders are built until city is explored 
+
+By xlenstra:
+- Fixed "improvements could no longer be built by workers" bug
+- Fixed "roads seemingly remove improvements" bug 
+
+Hexarealm tileset added to base game - By GeneralWadaling
+
 ## 4.0.15
 
 Fixed proxy issues when starting new multiplayer games - By alexban011

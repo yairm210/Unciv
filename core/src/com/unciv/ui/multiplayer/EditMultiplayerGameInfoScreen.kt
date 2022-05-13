@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.multiplayer.FileStorageRateLimitReached
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
@@ -117,18 +118,16 @@ class EditMultiplayerGameInfoScreen(val gameInfo: GameInfoPreview?, gameName: St
                     }
                 } else {
                     postCrashHandlingRunnable {
-                        //change popup text
-                        popup.innerTable.clear()
-                        popup.addGoodSizedLabel("You can only resign if it's your turn").row()
-                        popup.addCloseButton()
+                        popup.reuseWith("You can only resign if it's your turn", true)
                     }
+                }
+            } catch (ex: FileStorageRateLimitReached) {
+                postCrashHandlingRunnable {
+                    popup.reuseWith("Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds", true)
                 }
             } catch (ex: Exception) {
                 postCrashHandlingRunnable {
-                    //change popup text
-                    popup.innerTable.clear()
-                    popup.addGoodSizedLabel("Could not upload game!").row()
-                    popup.addCloseButton()
+                    popup.reuseWith("Could not upload game!", true)
                 }
             }
         }
