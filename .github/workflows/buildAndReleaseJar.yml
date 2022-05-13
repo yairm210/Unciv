@@ -1,9 +1,6 @@
-name: Releases
+name: Release Jar
 
-on: 
-  push:
-    tags:
-    - '*'
+on: [workflow_dispatch]
 
 jobs:
 
