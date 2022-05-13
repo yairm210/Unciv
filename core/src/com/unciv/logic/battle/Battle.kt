@@ -504,16 +504,27 @@ object Battle {
             return
         }
 
-        if (attackerCiv.isPlayerCivilization()) {
-            attackerCiv.popupAlerts.add(PopupAlert(AlertType.CityConquered, city.id))
-            UncivGame.Current.settings.addCompletedTutorialTask("Conquer a city")
-        } else {
+        if (city.isOriginalCapital && city.foundingCiv == attackerCiv.civName) {
+            // retaking old capital
             city.puppetCity(attackerCiv)
-            if (city.population.population < 4 && city.canBeDestroyed(justCaptured = true)) {
+            city.annexCity()
+        } else if (attackerCiv.isPlayerCivilization()) {
+            // we're not taking our former capital
+            attackerCiv.popupAlerts.add(PopupAlert(AlertType.CityConquered, city.id))
+        } else {
+            // ideally here we would do some AI thinking for liberation vs. razing
+            // e.g., valueCityStateAlliance() > 0 to determine if we should liberate a city-state
+            city.puppetCity(attackerCiv)
+            if ((city.population.population < 4 || attackerCiv.isCityState())
+                && city.canBeDestroyed(justCaptured = true)) {
+                // raze if attacker is a city state
                 city.annexCity()
                 city.isBeingRazed = true
             }
         }
+
+        if (attackerCiv.isPlayerCivilization())
+            UncivGame.Current.settings.addCompletedTutorialTask("Conquer a city")
     }
 
     fun getMapCombatantOfTile(tile: TileInfo): ICombatant? {

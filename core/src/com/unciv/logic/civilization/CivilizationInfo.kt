@@ -1302,6 +1302,24 @@ class CivilizationInfo {
         return proximity
     }
 
+    /**
+     * Removes current capital then moves capital to argument city if not null
+     */
+    fun moveCapitalTo(city: CityInfo?) {
+        if (cities.isNotEmpty()) {
+            getCapital().cityConstructions.removeBuilding(getCapital().capitalCityIndicator())
+        }
+
+        if (city == null) return // can't move a non-existent city but we can always remove our old capital
+        // move new capital
+        city.cityConstructions.addBuilding(city.capitalCityIndicator())
+        city.isBeingRazed = false // stop razing the new capital if it was being razed
+    }
+
+    fun moveCapitalToNextLargest() {
+        moveCapitalTo(cities.maxByOrNull { it.population.population })
+    }
+
     //////////////////////// City State wrapper functions ////////////////////////
 
     fun receiveGoldGift(donorCiv: CivilizationInfo, giftAmount: Int) =
