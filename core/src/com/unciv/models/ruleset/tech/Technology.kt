@@ -52,14 +52,14 @@ class Technology: RulesetObject() {
         }
 
         val viewingCiv = UncivGame.Current.worldScreen.viewingCiv
-        val enabledUnits = getEnabledUnits(viewingCiv)
+        val enabledUnits = getEnabledUnits(ruleset, viewingCiv)
         if (enabledUnits.any()) {
             lineList += "{Units enabled}: "
             for (unit in enabledUnits)
                 lineList += " * " + unit.name.tr() + " (" + unit.getShortDescription() + ")"
         }
 
-        val enabledBuildings = getEnabledBuildings(viewingCiv)
+        val enabledBuildings = getEnabledBuildings(ruleset, viewingCiv)
 
         val regularBuildings = enabledBuildings.filter { !it.isAnyWonder() }
         if (regularBuildings.any()) {
@@ -75,7 +75,7 @@ class Technology: RulesetObject() {
                 lineList += " * " + wonder.name.tr() + " (" + wonder.getShortDescription() + ")"
         }
 
-        for (obj in getObsoletedObjects(viewingCiv))
+        for (obj in getObsoletedObjects(ruleset, viewingCiv))
             lineList += "[${obj.name}] obsoleted"
 
         for (resource in ruleset.tileResources.values.asSequence().filter { it.revealedBy == name }
@@ -94,7 +94,7 @@ class Technology: RulesetObject() {
      * nuclear weapons and religion settings, and without those expressly hidden from Civilopedia.
      */
     // Used for Civilopedia, Alert and Picker, so if any of these decide to ignore the "Will not be displayed in Civilopedia" unique this needs refactoring
-    fun getEnabledBuildings(civInfo: CivilizationInfo) = getFilteredBuildings(civInfo)
+    fun getEnabledBuildings(ruleset: Ruleset, civInfo: CivilizationInfo?) = getFilteredBuildings(ruleset, civInfo)
         { it.requiredTech == name }
 
     /**
@@ -103,26 +103,35 @@ class Technology: RulesetObject() {
      */
     // Used for Civilopedia, Alert and Picker, so if any of these decide to ignore the "Will not be displayed in Civilopedia" unique this needs refactoring
 
-    fun getObsoletedObjects(civInfo: CivilizationInfo): Sequence<RulesetStatsObject> =
-        (getFilteredBuildings(civInfo){true}
-                + civInfo.gameInfo.ruleSet.tileResources.values.asSequence()
-                + civInfo.gameInfo.ruleSet.tileImprovements.values.filter {
-                    it.uniqueTo==null || it.uniqueTo == civInfo.civName
-        }).filter { it.getMatchingUniques(UniqueType.ObsoleteWith).any { it.params[0] == name } }
+    fun getObsoletedObjects(ruleset: Ruleset, civInfo: CivilizationInfo?): Sequence<RulesetStatsObject> =
+        (getFilteredBuildings(ruleset, civInfo){true}
+                + ruleset.tileResources.values.asSequence()
+                + ruleset.tileImprovements.values.filter {
+                    it.uniqueTo == null || it.uniqueTo == civInfo?.civName
+        }).filter { obj: RulesetStatsObject ->
+            obj.getMatchingUniques(UniqueType.ObsoleteWith).any { it.params[0] == name }
+        }
 
     // Helper: common filtering for both getEnabledBuildings and getObsoletedBuildings, difference via predicate parameter
-    private fun getFilteredBuildings(civInfo: CivilizationInfo, predicate: (Building)->Boolean): Sequence<Building> {
-        val nuclearWeaponsEnabled = civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled
-        val religionEnabled = civInfo.gameInfo.isReligionEnabled()
-
-        return civInfo.gameInfo.ruleSet.buildings.values.asSequence()
+    private fun getFilteredBuildings(
+        ruleset: Ruleset,
+        civInfo: CivilizationInfo?,
+        predicate: (Building)->Boolean
+    ): Sequence<Building> {
+        val (nuclearWeaponsEnabled, religionEnabled) = getNukeAndReligionSwitches(civInfo)
+        return ruleset.buildings.values.asSequence()
             .filter {
                 predicate(it)   // expected to be the most selective, thus tested first
-                && (it.uniqueTo == civInfo.civName || it.uniqueTo==null && civInfo.getEquivalentBuilding(it) == it)
+                && (it.uniqueTo == civInfo?.civName || it.uniqueTo == null && civInfo?.getEquivalentBuilding(it) == it)
                 && (nuclearWeaponsEnabled || !it.hasUnique(UniqueType.EnablesNuclearWeapons))
                 && (religionEnabled || !it.hasUnique(UniqueType.HiddenWithoutReligion))
                 && !it.hasUnique(UniqueType.HiddenFromCivilopedia)
             }
+    }
+
+    private fun getNukeAndReligionSwitches(civInfo: CivilizationInfo?): Pair<Boolean, Boolean> {
+        if (civInfo == null) return true to true
+        return civInfo.gameInfo.run { gameParameters.nuclearWeaponsEnabled to isReligionEnabled() }
     }
 
     /**
@@ -130,14 +139,12 @@ class Technology: RulesetObject() {
      * nuclear weapons and religion settings, and without those expressly hidden from Civilopedia.
      */
     // Used for Civilopedia, Alert and Picker, so if any of these decide to ignore the "Will not be displayed in Civilopedia"/HiddenFromCivilopedia unique this needs refactoring
-    fun getEnabledUnits(civInfo: CivilizationInfo): Sequence<BaseUnit> {
-        val nuclearWeaponsEnabled = civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled
-        val religionEnabled = civInfo.gameInfo.isReligionEnabled()
-
-        return civInfo.gameInfo.ruleSet.units.values.asSequence()
+    fun getEnabledUnits(ruleset: Ruleset, civInfo: CivilizationInfo?): Sequence<BaseUnit> {
+        val (nuclearWeaponsEnabled, religionEnabled) = getNukeAndReligionSwitches(civInfo)
+        return ruleset.units.values.asSequence()
             .filter {
                 it.requiredTech == name
-                && (it.uniqueTo == civInfo.civName || it.uniqueTo==null && civInfo.getEquivalentUnit(it) == it)
+                && (it.uniqueTo == civInfo?.civName || it.uniqueTo == null && civInfo?.getEquivalentUnit(it) == it)
                 && (nuclearWeaponsEnabled || !it.isNuclearWeapon())
                 && (religionEnabled || !it.hasUnique(UniqueType.HiddenWithoutReligion))
                 && !it.hasUnique(UniqueType.HiddenFromCivilopedia)
@@ -218,8 +225,8 @@ class Technology: RulesetObject() {
                 }
             }
 
-        val viewingCiv = UncivGame.Current.worldScreen.viewingCiv
-        val enabledUnits = getEnabledUnits(viewingCiv)
+        val viewingCiv = UncivGame.Current.getWorldScreenOrNull()?.viewingCiv
+        val enabledUnits = getEnabledUnits(ruleset, viewingCiv)
         if (enabledUnits.any()) {
             lineList += FormattedLine()
             lineList += FormattedLine("{Units enabled}:")
@@ -227,7 +234,7 @@ class Technology: RulesetObject() {
                 lineList += FormattedLine(unit.name.tr() + " (" + unit.getShortDescription() + ")", link = unit.makeLink())
         }
 
-        val enabledBuildings = getEnabledBuildings(viewingCiv)
+        val enabledBuildings = getEnabledBuildings(ruleset, viewingCiv)
             .partition { it.isAnyWonder() }
         if (enabledBuildings.first.isNotEmpty()) {
             lineList += FormattedLine()
@@ -242,7 +249,7 @@ class Technology: RulesetObject() {
                 lineList += FormattedLine(building.name.tr() + " (" + building.getShortDescription() + ")", link = building.makeLink())
         }
 
-        val obsoletedObjects = getObsoletedObjects(viewingCiv)
+        val obsoletedObjects = getObsoletedObjects(ruleset, viewingCiv)
         if (obsoletedObjects.any()) {
             lineList += FormattedLine()
             obsoletedObjects.forEach {

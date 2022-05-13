@@ -461,7 +461,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
         for (unique in uniqueObjects) {
             @Suppress("NON_EXHAUSTIVE_WHEN")
-            when (unique.type) { // TODO: Lots of typification…
+            when (unique.type) {
                 UniqueType.OnlyAvailableWhen->
                     if (!unique.conditionalsApply(civInfo, cityConstructions.cityInfo))
                         rejectionReasons.add(RejectionReason.ShouldNotBeDisplayed)
