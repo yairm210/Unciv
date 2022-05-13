@@ -1,5 +1,7 @@
 package com.unciv.ui.worldscreen
 
+import com.unciv.ui.worldscreen.status.NextTurnAction
+import com.unciv.ui.worldscreen.status.NextTurnButton
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
@@ -90,8 +92,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     private val techButtonHolder = Table()
     private val diplomacyButtonHolder = Table()
     private val fogOfWarButton = createFogOfWarButton()
-    private val nextTurnButton = createNextTurnButton()
-    private var nextTurnAction: () -> Unit = {}
+    private val nextTurnButton = NextTurnButton(keyPressDispatcher)
     private val tutorialTaskTable = Table().apply { background = ImageGetter.getBackground(
         ImageGetter.getBlue().darken(0.5f)) }
 
@@ -622,20 +623,6 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
     }
 
-    private fun createNextTurnButton(): TextButton {
-
-        val nextTurnButton = TextButton("", skin) // text is set in update()
-        nextTurnButton.label.setFontSize(30)
-        nextTurnButton.labelCell.pad(10f)
-        val nextTurnActionWrapped = { nextTurnAction() }
-        nextTurnButton.onClick(nextTurnActionWrapped)
-        keyPressDispatcher[Input.Keys.SPACE] = nextTurnActionWrapped
-        keyPressDispatcher['n'] = nextTurnActionWrapped
-
-        return nextTurnButton
-    }
-
-
     private fun createNewWorldScreen(gameInfo: GameInfo) {
 
         game.gameInfo = gameInfo
@@ -729,16 +716,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         }
     }
 
-    private class NextTurnAction(val text: String, val color: Color, val action: () -> Unit)
-
     private fun updateNextTurnButton(isSomethingOpen: Boolean) {
-        val action: NextTurnAction = getNextTurnAction()
-        nextTurnAction = action.action
-
-        nextTurnButton.setText(action.text.tr())
-        nextTurnButton.label.color = action.color
-        nextTurnButton.pack()
-        nextTurnButton.isEnabled = !isSomethingOpen && isPlayersTurn && !waitingForAutosave
+        nextTurnButton.update(isSomethingOpen, isPlayersTurn, waitingForAutosave, getNextTurnAction())
         nextTurnButton.setPosition(stage.width - nextTurnButton.width - 10f, topBar.y - nextTurnButton.height - 10f)
     }
 
