@@ -982,11 +982,19 @@ class OptionsPopup(
         val textBeforeCursor: String = text.substring(0, cursor)
 
         // replace multiple slash with a single one
-        val multipleSlashes = Regex("(?<!(^https?:))/{2,}")
+        val multipleSlashes = Regex("/{2,}")
         text = multipleSlashes.replace(text, "/")
 
         // calculate updated cursor
         cursor = multipleSlashes.replace(textBeforeCursor, "/").length
+
+        // operations above makes 'https://' -> 'https:/'
+        // fix that if available and update cursor
+        val i: Int = text.indexOf(":/")
+        if (i > -1) {
+            text = text.replaceRange(i..i+1, "://")
+            if (cursor > i + 1) ++cursor
+        }
 
         // update TextField
         if (text != TextField.text) {
