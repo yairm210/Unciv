@@ -7,7 +7,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.UnitAction
 import com.unciv.ui.audio.Sounds
-import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.KeyPressDispatcher.Companion.keyboardAvailable
@@ -44,7 +44,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
             actionButton.onClick(unitAction.uncivSound, action)
             if (key != KeyCharAndCode.UNKNOWN)
                 worldScreen.keyPressDispatcher[key] = {
-                    crashHandlingThread(name = "Sound") { Sounds.play(unitAction.uncivSound) }
+                    launchCrashHandling("UnitSound") { Sounds.play(unitAction.uncivSound) }
                     action()
                     worldScreen.mapHolder.removeUnitActionOverlay()
                 }

@@ -59,7 +59,7 @@ After that you should put its folder to the file `local.properties` by adding th
 
 `sdk.dir = /path/to/android/sdk` which can be `/usr/lib/android-sdk` or something other.
 
-If during the first launch it throws an error that the JDK version is wrong try [this JDK installation](https://www.azul.com/downloads/zulu-community/?package=jdk).
+If during the first launch it throws an error that the JDK version is wrong try to install JDK from [here](https://adoptium.net/temurin/releases/).
 
 Gradle may take up to several minutes to download files. Be patient.
 After building, the output .JAR file should be in /desktop/build/libs/Unciv.jar
