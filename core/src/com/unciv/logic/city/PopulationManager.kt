@@ -112,12 +112,15 @@ class PopulationManager {
     internal fun autoAssignPopulation() {
         for (i in 1..getFreePopulation()) {
             //evaluate tiles
-            val bestTile: TileInfo? = cityInfo.getTiles()
+            val (bestTile, valueBestTile) = cityInfo.getTiles()
                     .filter { it.aerialDistanceTo(cityInfo.getCenterTile()) <= 3 }
                     .filterNot { it.providesYield() }
-                    .maxByOrNull { Automation.rankTileForCityWork(it, cityInfo) }
-            val valueBestTile = if (bestTile == null) 0f
-            else Automation.rankTileForCityWork(bestTile, cityInfo)
+                    .associateWith { Automation.rankTileForCityWork(it, cityInfo) }
+                    .maxByOrNull { it.value }
+                    ?: object : Map.Entry<TileInfo?, Float> {
+                        override val key: TileInfo? = null
+                        override val value = 0f
+                    }
 
             val bestJob: String? = if (cityInfo.manualSpecialists) null else getMaxSpecialists()
                     .filter { specialistAllocations[it.key]!! < it.value }

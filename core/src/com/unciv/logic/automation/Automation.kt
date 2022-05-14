@@ -81,7 +81,7 @@ object Automation {
         
         if (city.population.population < 5) {
             // "small city" - we care more about food and less about global problems like gold science and culture 
-            // Food already handled above. Gold/Culture have low weights in Stats already
+            // Food already handled above. Science/Culture have low weights in Stats already
             yieldStats.gold /= 2 // it's barely worth anything at this point
         } else {
             if (city.civInfo.gold < 0 && city.civInfo.statsForNextTurn.gold <= 0)
