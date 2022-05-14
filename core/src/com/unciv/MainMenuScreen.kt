@@ -20,7 +20,7 @@ import com.unciv.ui.MultiplayerScreen
 import com.unciv.ui.mapeditor.*
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.ui.civilopedia.CivilopediaScreen
-import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.newgamescreen.NewGameScreen
@@ -73,12 +73,12 @@ class MainMenuScreen: BaseScreen() {
         // will not exist unless we reset the ruleset and images
         ImageGetter.ruleset = RulesetCache.getVanillaRuleset()
 
-        crashHandlingThread(name = "ShowMapBackground") {
+        launchCrashHandling("ShowMapBackground") {
             val newMap = MapGenerator(RulesetCache.getVanillaRuleset())
                     .generateMap(MapParameters().apply { mapSize = MapSizeNew(MapSize.Small); type = MapType.default })
             postCrashHandlingRunnable { // for GL context
                 ImageGetter.setNewRuleset(RulesetCache.getVanillaRuleset())
-                val mapHolder = EditorMapHolder(this, newMap) {}
+                val mapHolder = EditorMapHolder(this@MainMenuScreen, newMap) {}
                 backgroundTable.addAction(Actions.sequence(
                         Actions.fadeOut(0f),
                         Actions.run {
@@ -167,12 +167,12 @@ class MainMenuScreen: BaseScreen() {
         val loadingPopup = Popup(this)
         loadingPopup.addGoodSizedLabel("Loading...")
         loadingPopup.open()
-        crashHandlingThread {
+        launchCrashHandling("autoLoadGame") {
             // Load game from file to class on separate thread to avoid ANR...
             fun outOfMemory() {
                 postCrashHandlingRunnable {
                     loadingPopup.close()
-                    ToastPopup("Not enough memory on phone to load game!", this)
+                    ToastPopup("Not enough memory on phone to load game!", this@MainMenuScreen)
                 }
             }
 
@@ -181,7 +181,7 @@ class MainMenuScreen: BaseScreen() {
                 savedGame = GameSaver.loadGameByName(GameSaver.autoSaveFileName)
             } catch (oom: OutOfMemoryError) {
                 outOfMemory()
-                return@crashHandlingThread
+                return@launchCrashHandling
             } catch (ex: Exception) { // silent fail if we can't read the autosave for any reason - try to load the last autosave by turn number first
                 // This can help for situations when the autosave is corrupted
                 try {
@@ -191,13 +191,13 @@ class MainMenuScreen: BaseScreen() {
                         GameSaver.loadGameFromFile(autosaves.maxByOrNull { it.lastModified() }!!)
                 } catch (oom: OutOfMemoryError) { // The autosave could have oom problems as well... smh
                     outOfMemory()
-                    return@crashHandlingThread
+                    return@launchCrashHandling
                 } catch (ex: Exception) {
                     postCrashHandlingRunnable {
                         loadingPopup.close()
-                        ToastPopup("Cannot resume game!", this)
+                        ToastPopup("Cannot resume game!", this@MainMenuScreen)
                     }
-                    return@crashHandlingThread
+                    return@launchCrashHandling
                 }
             }
 
@@ -215,14 +215,14 @@ class MainMenuScreen: BaseScreen() {
     private fun quickstartNewGame() {
         ToastPopup("Working...", this)
         val errorText = "Cannot start game with the default new game parameters!"
-        crashHandlingThread {
+        launchCrashHandling("QuickStart") {
             val newGame: GameInfo
             // Can fail when starting the game...
             try {
                 newGame = GameStarter.startNewGame(GameSetupInfo.fromSettings("Chieftain"))
             } catch (ex: Exception) {
-                postCrashHandlingRunnable { ToastPopup(errorText, this) }
-                return@crashHandlingThread
+                postCrashHandlingRunnable { ToastPopup(errorText, this@MainMenuScreen) }
+                return@launchCrashHandling
             }
 
             // ...or when loading the game
@@ -230,9 +230,9 @@ class MainMenuScreen: BaseScreen() {
                 try {
                     game.loadGame(newGame)
                 } catch (outOfMemory: OutOfMemoryError) {
-                    ToastPopup("Not enough memory on phone to load game!", this)
+                    ToastPopup("Not enough memory on phone to load game!", this@MainMenuScreen)
                 } catch (ex: Exception) {
-                    ToastPopup(errorText, this)
+                    ToastPopup(errorText, this@MainMenuScreen)
                 }
             }
         }
