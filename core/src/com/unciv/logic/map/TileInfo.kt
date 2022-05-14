@@ -914,8 +914,8 @@ open class TileInfo {
      * 
      * [resourceAmount] is determined by [MapParameters.mapResources] and [majorDeposit], and
      * if the latter is `null` a random choice between major and minor deposit is made, approximating
-     * the frequency [MapRegions] would use. A randomness source ([rng]) can optionally be provided
-     * for that step (not used otherwise).
+     * the frequency [MapRegions][com.unciv.logic.map.mapgenerator.MapRegions] would use.
+     * A randomness source ([rng]) can optionally be provided for that step (not used otherwise).
      */
     fun setTileResource(newResource: TileResource, majorDeposit: Boolean? = null, rng: Random = Random.Default) {
         resource = newResource.name
@@ -941,15 +941,15 @@ open class TileInfo {
     private fun approximateMajorDepositDistribution(): Double {
         // We can't replicate the MapRegions resource distributor, so let's try to get
         // a close probability of major deposits per tile
-        return getAllTerrains()
-            .flatMap {
-                it.getMatchingUniques(UniqueType.MajorStrategicFrequency)
-            }.sumOf {
-                // The unique param is literally "every N tiles", so to get a probability p=1/f
-                // The null hoops are so we can sum without exceptions no matter what a mod may put there 
-                it.params[0].toIntOrNull()?.run { if (this <= 0) null else 1.0 / this }
-                    ?: 0.0
-            }.takeUnless { it == 0.0 } ?: 0.04  // This is the default of 1 per 25 tiles
+        var probability = 0.0
+        for (unique in getAllTerrains().flatMap { it.getMatchingUniques(UniqueType.MajorStrategicFrequency) }) {
+            val frequency = unique.params[0].toIntOrNull() ?: continue
+            if (frequency <= 0) continue
+            // The unique param is literally "every N tiles", so to get a probability p=1/f
+            probability += 1.0 / frequency
+        }
+        return if (probability == 0.0) 0.04  // This is the default of 1 per 25 tiles
+            else probability
     }
 
     fun setTerrainFeatures(terrainFeatureList:List<String>) {

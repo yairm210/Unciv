@@ -2,7 +2,6 @@ package com.unciv.ui.mapeditor
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
@@ -37,7 +36,7 @@ import com.unciv.ui.utils.*
 //todo Nat Wonder step generator: Needs tweaks to avoid placing duplicates or wonders too close together
 //todo Music? Different suffix? Off? 20% Volume?
 //todo See #6694 - allow placing Barbarian encampments (problem: dead on game start - BarbarianManager.encampments)
-//todo See #6694 - allow adding tiles to a map (1 cell all around on hex? worldwrapped hex?? all around on rectangular? top bottom only on worldwrapped??)
+//todo See #6694 - allow adding tiles to a map (1 cell all around on hex? world-wrapped hex?? all around on rectangular? top bottom only on world-wrapped??)
 //todo move map copy&paste to save/load??
 
 class MapEditorScreen(map: TileMap? = null): BaseScreen() {
@@ -101,7 +100,7 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen() {
                 ?: return MapParameters()
             return lastSetup.mapParameters.clone().apply {
                 reseed()
-                mods.removeAll(RulesetCache.getSortedBaseRulesets())
+                mods.removeAll(RulesetCache.getSortedBaseRulesets().toSet())
             }
         }
         fun saveDefaultParameters(parameters: MapParameters) {
