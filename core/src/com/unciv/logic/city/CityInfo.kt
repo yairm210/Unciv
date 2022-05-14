@@ -35,28 +35,29 @@ enum class CityFlags {
     Resistance
 }
 
-enum class CityFocus(val stat: Stat? = null) {
-    NoFocus (null){
+// if tableEnabled == true, then Stat != null
+enum class CityFocus(val label: String, val tableEnabled: Boolean, val stat: Stat? = null) {
+    NoFocus("Default Focus", true, null) {
         override fun getStatMultiplier(stat: Stat) = 1f  // actually redundant, but that's two steps to see
     },
-    FoodFocus(Stat.Food),
-    ProductionFocus(Stat.Production),
-    GoldFocus(Stat.Gold),
-    ScienceFocus(Stat.Science),
-    CultureFocus(Stat.Culture),
-    GoldGrowthFocus {
-        override fun getStatMultiplier(stat: Stat) = when(stat) {
+    FoodFocus("${Stat.Food.name} Focus", true, Stat.Food),
+    ProductionFocus("${Stat.Production.name} Focus", true, Stat.Production),
+    GoldFocus("${Stat.Gold.name} Focus", true, Stat.Gold),
+    ScienceFocus("${Stat.Science.name} Focus", true, Stat.Science),
+    CultureFocus("${Stat.Culture.name} Focus", true, Stat.Culture),
+    GoldGrowthFocus("Gold Growth Focus", false) {
+        override fun getStatMultiplier(stat: Stat) = when (stat) {
             Stat.Production, Stat.Food -> 2f
             else -> 1f
         }
     },
-    ProductionGrowthFocus {
-        override fun getStatMultiplier(stat: Stat) = when(stat) {
+    ProductionGrowthFocus("Production Growth Focus", false) {
+        override fun getStatMultiplier(stat: Stat) = when (stat) {
             Stat.Production, Stat.Food -> 2f
             else -> 1f
         }
     },
-    FaithFocus(Stat.Faith);
+    FaithFocus("${Stat.Faith.name} Focus", true, Stat.Faith);
     //GreatPersonFocus;
 
     open fun getStatMultiplier(stat: Stat) = when (this.stat) {
@@ -69,18 +70,12 @@ enum class CityFocus(val stat: Stat? = null) {
             stats[stat] *= getStatMultiplier(stat)
         }
     }
-}
 
-fun statToFocus(stat: Stat): CityFocus{
-    return when(stat){
-        Stat.Food -> CityFocus.FoodFocus
-        Stat.Production -> CityFocus.ProductionFocus
-        Stat.Gold -> CityFocus.GoldFocus
-        Stat.Science -> CityFocus.ScienceFocus
-        Stat.Culture -> CityFocus.CultureFocus
-        else -> CityFocus.NoFocus
+    fun safeValueOf(stat: Stat): CityFocus {
+        return values().firstOrNull { it.stat == stat } ?: NoFocus
     }
 }
+
 
 class CityInfo {
     @Suppress("JoinDeclarationAndAssignment")

@@ -28,33 +28,23 @@ class CitizenManagementTable(val cityScreen: CityScreen): Table() {
         }
         isVisible = true
 
-        val focusLabel = "Default Focus".toLabel().addBorder(5f, Color.CLEAR)
-        val defaultCell = Table()
-        defaultCell.add(focusLabel)
-        defaultCell.touchable = Touchable.enabled
-        defaultCell.onClick { city.cityAIFocus = CityFocus.NoFocus; city.reassignPopulation(); cityScreen.update() }
-        if (city.cityAIFocus == CityFocus.NoFocus)
-            defaultCell.background = ImageGetter.getBackground(BaseScreen.skin.get("selection", Color::class.java))
-        else
-            defaultCell.background = ImageGetter.getBackground(BaseScreen.skin.get("color", Color::class.java))
-        innerTable.add(defaultCell).growX().pad(3f).row()
         val colorSelected = BaseScreen.skin.get("selection", Color::class.java)
         val colorButton = BaseScreen.skin.get("color", Color::class.java)
-        for (stat in CityFocus.values()) {
-            if (stat.stat == null) continue
-            if (stat == CityFocus.FaithFocus && !city.civInfo.gameInfo.isReligionEnabled()) continue
-            val label = "${stat.stat.name} Focus".toLabel().addBorder(5f, Color.CLEAR)
+        // effectively a button, but didn't want to rewrite TextButton style
+        // and much more compact
+        for (focus in CityFocus.values()) {
+            if (!focus.tableEnabled) continue
+            if (focus == CityFocus.FaithFocus && !city.civInfo.gameInfo.isReligionEnabled()) continue
+            val label = focus.label.toLabel()
             val cell = Table()
             cell.touchable = Touchable.enabled
-            cell.add(label)
-            cell.onClick { city.cityAIFocus = stat; city.reassignPopulation(); cityScreen.update() }
+            cell.add(label).pad(5f)
+            cell.onClick { city.cityAIFocus = focus; city.reassignPopulation(); cityScreen.update() }
 
-            if (city.cityAIFocus == stat)
-                cell.background = ImageGetter.getBackground(colorSelected)
-            else
-                cell.background = ImageGetter.getBackground(colorButton)
+            cell.background = ImageGetter.getBackground(if (city.cityAIFocus == focus) colorSelected else colorButton)
             innerTable.add(cell).growX().pad(3f)
-            innerTable.add(ImageGetter.getStatIcon(stat.stat.name)).size(20f).padRight(5f)
+            if (focus.stat != null)
+                innerTable.add(ImageGetter.getStatIcon(focus.stat.name)).size(20f).padRight(5f)
             innerTable.row()
         }
 

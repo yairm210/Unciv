@@ -39,19 +39,17 @@ object Automation {
         
         if (cityAIFocus != CityFocus.NoFocus && cityAIFocus != CityFocus.FoodFocus && cityAIFocus != CityFocus.ProductionGrowthFocus && cityAIFocus != CityFocus.GoldGrowthFocus){
             // Focus on non-food/growth
-            if (surplusFood < 0){
+            if (surplusFood < 0)
                 // Starving, need Food, get to 0
                 yieldStats.food *= 8
-            } else {
+            else
                 yieldStats.food /= 2
-            }
         } else {
             // NoFocus or Food/Growth Focus. Target +2 Food Surplus
-            if (surplusFood < 2) {
-                yieldStats.food * 8
-            } else if (cityAIFocus != CityFocus.FoodFocus) {
+            if (surplusFood < 2)
+                yieldStats.food *= 8
+            else if (cityAIFocus != CityFocus.FoodFocus)
                 yieldStats.food /= 2
-            }
         }
         
         if (city.population.population < 5) {
@@ -107,18 +105,16 @@ object Automation {
 
         if (cityAIFocus != CityFocus.NoFocus && cityAIFocus != CityFocus.FoodFocus && cityAIFocus != CityFocus.ProductionGrowthFocus && cityAIFocus != CityFocus.GoldGrowthFocus){
             // Starving, need Food, get to 0
-            if (surplusFood < 0){
+            if (surplusFood < 0)
                 yieldStats.food *= 8
-            } else {
+            else
                 yieldStats.food /= 2
-            }
         } else {
             // Target +2 Food Surplus
-            if (surplusFood < 2) {
+            if (surplusFood < 2)
                 yieldStats.food *= 8
-            } else if (cityAIFocus != CityFocus.FoodFocus) {
+            else if (cityAIFocus != CityFocus.FoodFocus)
                 yieldStats.food /= 2
-            }
         }
 
         if (city.population.population < 5) {

@@ -8,7 +8,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityFlags
 import com.unciv.logic.city.CityFocus
-import com.unciv.logic.city.statToFocus
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
@@ -47,15 +46,14 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
                     cityInfo.cityAIFocus = CityFocus.NoFocus
                     cityInfo.reassignPopulation(); cityScreen.update()
                 }
-                miniStatsTable.add(icon).size(27f).padRight(5f)
             } else {
-                icon.add(ImageGetter.getStatIcon(stat.name))
+                icon.add(ImageGetter.getStatIcon(stat.name).surroundWithCircle(27f, false, color = Color.CLEAR))
                 icon.onClick {
-                    cityInfo.cityAIFocus = statToFocus(stat)
+                    cityInfo.cityAIFocus = cityInfo.cityAIFocus.safeValueOf(stat)
                     cityInfo.reassignPopulation(); cityScreen.update()
                 }
-                miniStatsTable.add(icon).size(20f).padRight(5f)
             }
+            miniStatsTable.add(icon).size(27f).padRight(5f)
             val valueToDisplay = if (stat == Stat.Happiness) cityInfo.cityStats.happinessList.values.sum() else amount
             miniStatsTable.add(round(valueToDisplay).toInt().toLabel()).padRight(10f)
         }
