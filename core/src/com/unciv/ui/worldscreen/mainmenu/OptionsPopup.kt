@@ -800,7 +800,7 @@ class OptionsPopup(
             errorTable.add("Downloading...".toLabel())
 
             // So the whole game doesn't get stuck while downloading the file
-            launchCrashHandling("Music") {
+            launchCrashHandling("MusicDownload") {
                 try {
                     previousScreen.game.musicController.downloadDefaultFile()
                     postCrashHandlingRunnable {
