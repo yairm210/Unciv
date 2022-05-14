@@ -522,12 +522,12 @@ open class TileInfo {
             // First we handle a few special improvements
             // Can only cancel if there is actually an improvement being built
             improvement.name == Constants.cancelImprovementOrder -> (this.improvementInProgress != null)
-            // Can only remove if the feature is actually there
+            // Can only remove roads if that road is actually there
+            RoadStatus.values().any { it.removeAction == improvement.name } -> roadStatus.removeAction == improvement.name
+            // Can only remove features if that feature is actually there
             improvement.name.startsWith(Constants.remove) -> terrainFeatures.any { it == improvement.name.removePrefix(Constants.remove) }
             // Can only build roads if on land and they are better than the current road
             RoadStatus.values().any { it.name == improvement.name } -> !isWater && RoadStatus.valueOf(improvement.name) > roadStatus
-            // Can always build road removal improvements
-            improvement.name == roadStatus.removeAction -> true
             
             // Then we check if there is any reason to not allow this improvement to be build
             
