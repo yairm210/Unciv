@@ -122,13 +122,12 @@ class PopulationManager {
             val bestJob: String? = if (cityInfo.manualSpecialists) null else getMaxSpecialists()
                     .filter { specialistAllocations[it.key]!! < it.value }
                     .map { it.key }
-                    .maxByOrNull { Automation.rankSpecialist(getStatsOfSpecialist(it), cityInfo) }
+                    .maxByOrNull { Automation.rankSpecialist(it, cityInfo) }
 
 
             var valueBestSpecialist = 0f
             if (bestJob != null) {
-                val specialistStats = getStatsOfSpecialist(bestJob)
-                valueBestSpecialist = Automation.rankSpecialist(specialistStats, cityInfo)
+                valueBestSpecialist = Automation.rankSpecialist(bestJob, cityInfo)
             }
 
             //assign population
@@ -173,10 +172,10 @@ class PopulationManager {
 
             //evaluate specialists
             val worstJob: String? = if (cityInfo.manualSpecialists) null else specialistAllocations.keys
-                    .minByOrNull { Automation.rankSpecialist(getStatsOfSpecialist(it), cityInfo) }
+                    .minByOrNull { Automation.rankSpecialist(it, cityInfo) }
             var valueWorstSpecialist = 0f
             if (worstJob != null)
-                valueWorstSpecialist = Automation.rankSpecialist(getStatsOfSpecialist(worstJob), cityInfo)
+                valueWorstSpecialist = Automation.rankSpecialist(worstJob, cityInfo)
 
 
             //un-assign population

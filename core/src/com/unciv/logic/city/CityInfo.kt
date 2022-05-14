@@ -131,6 +131,7 @@ class CityInfo {
     var isPuppet = false
     var updateCitizens = false  // flag so that on endTurn() the Governor reassigns Citizens
     var cityAIFocus: CityFocus = CityFocus.NoFocus
+    var avoidGrowth: Boolean = false
 
     /** The very first found city is the _original_ capital,
      * while the _current_ capital can be any other city after the original one is captured.

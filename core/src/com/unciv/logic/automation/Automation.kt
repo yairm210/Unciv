@@ -9,7 +9,6 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.Victory.Focus
 import com.unciv.models.ruleset.tile.ResourceType
@@ -25,117 +24,75 @@ object Automation {
         return rankStatsForCityWork(stats, city)
     }
 
-    private fun rankStatsForCityWork(stats: Stats, city: CityInfo): Float {
+    fun rankSpecialist(specialist: String, cityInfo: CityInfo): Float {
+        val stats = cityInfo.cityStats.getStatsOfSpecialist(specialist)
+        var rank = rankStatsForCityWork(stats, cityInfo, true)
+        // derive GPP score
+        var gpp = 0
+        if (cityInfo.getRuleset().specialists.containsKey(specialist)) { // To solve problems in total remake mods
+            val specialistInfo = cityInfo.getRuleset().specialists[specialist]!!
+            gpp = specialistInfo.greatPersonPoints.sumValues()
+        }
+        rank += gpp * 3 // GPP weight
+        return rank
+    }
+
+    private fun rankStatsForCityWork(stats: Stats, city: CityInfo, specialist: Boolean = false): Float {
         val cityAIFocus = city.cityAIFocus
 
         val yieldStats = stats.clone()
-        //var happinessYield = stats.happiness  // TODO: count happiness?
-        //if (city.civInfo.getHappiness() < 0) happinessYield *= 2  // double weight for unhappy civilization
-        // var GPPYield = stats.GPP * 3 // TODO: rework GPP Yield
+
+        if (specialist) {
+            // If you have the Food Bonus, count as 1 extra food production (base is 2food)
+            for (unique in city.getMatchingUniques(UniqueType.FoodConsumptionBySpecialists))
+                if (city.matchesFilter(unique.params[1]))
+                    yieldStats.food += 1
+            // Specialist Happiness Percentage Change 0f-1f
+            for (unique in city.getMatchingUniques(UniqueType.UnhappinessFromPopulationTypePercentageChange))
+                if (city.matchesFilter(unique.params[2]) && unique.params[1] == "Specialists")
+                    yieldStats.happiness += -(unique.params[0].toFloat() / 100f)  // relative val is negative, make positive
+            if (city.civInfo.getHappiness() < 0) yieldStats.happiness *= 2  // double weight for unhappy civilization
+        }
 
         val surplusFood = city.foodForNextTurn() // intensive to calc based on Excess Food?
         // Apply base weights
         yieldStats.applyRankingWeights()
-        
-        if (cityAIFocus != CityFocus.NoFocus && cityAIFocus != CityFocus.FoodFocus && cityAIFocus != CityFocus.ProductionGrowthFocus && cityAIFocus != CityFocus.GoldGrowthFocus){
-            // Focus on non-food/growth
-            if (surplusFood < 0)
-                // Starving, need Food, get to 0
-                yieldStats.food *= 8
-            else
-                yieldStats.food /= 2
+
+        if (surplusFood > 0 && city.avoidGrowth) {
+            yieldStats.food = 0f // don't need more food!
         } else {
-            // NoFocus or Food/Growth Focus. Target +2 Food Surplus
-            if (surplusFood < 2)
-                yieldStats.food *= 8
-            else if (cityAIFocus != CityFocus.FoodFocus)
-                yieldStats.food /= 2
+            if (cityAIFocus != CityFocus.NoFocus && cityAIFocus != CityFocus.FoodFocus && cityAIFocus != CityFocus.ProductionGrowthFocus && cityAIFocus != CityFocus.GoldGrowthFocus) {
+                // Focus on non-food/growth
+                if (surplusFood < 0)
+                    yieldStats.food *= 8 // Starving, need Food, get to 0
+                else
+                    yieldStats.food /= 2
+            } else if (!city.avoidGrowth) {
+                // NoFocus or Food/Growth Focus. Target +2 Food Surplus
+                if (surplusFood < 2)
+                    yieldStats.food *= 8
+                else if (cityAIFocus != CityFocus.FoodFocus)
+                    yieldStats.food /= 2
+                if (city.population.population < 5 && cityAIFocus != CityFocus.FoodFocus)
+                    // NoFocus or GoldGrow or ProdGrow, not Avoid Growth, pop < 5. FoodFocus already does this up
+                    yieldStats.food *= 3
+            }
         }
         
         if (city.population.population < 5) {
-            // "small city" - we care more about food and less about global problems like gold science and culture
-            //yieldStats.food *= 1.2f
-            yieldStats.science /= 2
-            yieldStats.culture /= 2
-            yieldStats.gold /= 5 // it's barely worth anything at this point
+            // "small city" - we care more about food and less about global problems like gold science and culture 
+            // Food already handled above. Gold/Culture have low weights in Stats already
+            yieldStats.gold /= 2 // it's barely worth anything at this point
         } else {
-            //if (stats.food <= 2 || city.civInfo.getHappiness() > 5) yieldStats.food *= 1.2f // food get more value to keep city growing
-            //else yieldStats.food = (2.4f + (stats.food - 2) / 2) // 1.2 point for each food up to 2, from there on half a point
-
             if (city.civInfo.gold < 0 && city.civInfo.statsForNextTurn.gold <= 0)
-                yieldStats.gold *= 3 // 3 gold is worse than 2 production
+                yieldStats.gold *= 3 // We have a global problem
 
-            if (city.tiles.size < 12 || city.civInfo.wantsToFocusOn(Victory.Focus.Culture))
+            if (city.tiles.size < 12 || city.civInfo.wantsToFocusOn(Focus.Culture))
                 yieldStats.culture *= 2
         }
 
         // Apply City focus
         cityAIFocus.applyWeightTo(yieldStats)
-        
-        //rank += happinessYield
-        return yieldStats.values.sum()
-    }
-
-    internal fun rankSpecialist(stats: Stats, cityInfo: CityInfo): Float {
-        var rank = rankSpecialistForCityWork(stats, cityInfo)
-        rank += 0.3f //GPP bonus
-        return rank
-    }
-
-    private fun rankSpecialistForCityWork(stats: Stats, city: CityInfo): Float {
-        val cityAIFocus = city.cityAIFocus
-
-        // For now, no base weights
-        val yieldStats = stats.clone()
-        
-        // If you have the Food Bonus, count as 1 extra food production (base is 2food)
-        for (unique in city.getMatchingUniques(UniqueType.FoodConsumptionBySpecialists))
-            if (city.matchesFilter(unique.params[1]))
-                yieldStats.food += 1
-        for (unique in city.getMatchingUniques(UniqueType.UnhappinessFromPopulationTypePercentageChange))
-            if (city.matchesFilter(unique.params[2]) && unique.params[1] == "Specialists")
-                yieldStats.happiness += -(unique.params[0].toFloat() / 100f)  // relative val is negative, make positive
-        if (city.civInfo.getHappiness() < 0) yieldStats.happiness *= 2  // double weight for unhappy civilization
-        // var GPPYield = stats.GPP * 3 // TODO: rework GPP Yield
-
-        val surplusFood = city.foodForNextTurn() // intensive to calc based on Excess Food?
-        
-        // Apply City focus
-        cityAIFocus.applyWeightTo(yieldStats)
-
-        if (cityAIFocus != CityFocus.NoFocus && cityAIFocus != CityFocus.FoodFocus && cityAIFocus != CityFocus.ProductionGrowthFocus && cityAIFocus != CityFocus.GoldGrowthFocus){
-            // Starving, need Food, get to 0
-            if (surplusFood < 0)
-                yieldStats.food *= 8
-            else
-                yieldStats.food /= 2
-        } else {
-            // Target +2 Food Surplus
-            if (surplusFood < 2)
-                yieldStats.food *= 8
-            else if (cityAIFocus != CityFocus.FoodFocus)
-                yieldStats.food /= 2
-        }
-
-        if (city.population.population < 5) {
-            // "small city" - we care more about food and less about global problems like gold science and culture
-            yieldStats.food *= 1.2f
-            yieldStats.science /= 2
-            yieldStats.culture /= 2
-            yieldStats.gold /= 5 // it's barely worth anything at this point
-        } else {
-            if (stats.food <= 2 || city.civInfo.getHappiness() > 5) yieldStats.food *= 1.2f // food get more value to keep city growing
-            else yieldStats.food = (2.4f + (stats.food - 2) / 2) // 1.2 point for each food up to 2, from there on half a point
-
-            if (!(city.civInfo.gold < 0 && city.civInfo.statsForNextTurn.gold <= 0))
-                yieldStats.gold /= 3 // 3 gold is worse than 2 production
-
-            if (!(city.tiles.size < 12 || city.civInfo.wantsToFocusOn(Victory.Focus.Culture)))
-                yieldStats.culture /= 2
-        }
-        // do this late due to potential override assignment
-        if (cityAIFocus == CityFocus.FoodFocus)
-            yieldStats.food *= 3
         
         return yieldStats.values.sum()
     }
