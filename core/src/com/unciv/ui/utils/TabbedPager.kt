@@ -453,12 +453,12 @@ open class TabbedPager(
      *  Caller is responsible for cleanup if necessary. */
     fun bindArrowKeys() {
         if (keyPressDispatcher == null) return
-        fun cyclePage(direction: Int) {
-            if (activePage == -1) return
-            selectPage((activePage + direction).coerceIn(0 until pages.size))
+        fun cyclePageFactory(direction: Int): ()->Unit = {
+            if (activePage != -1 && (stage.keyboardFocus == null || hasKeyboardFocus()))
+                selectPage((activePage + direction).coerceIn(pages.indices))
         }
-        keyPressDispatcher[KeyCharAndCode(Input.Keys.LEFT)] = { cyclePage(-1) }
-        keyPressDispatcher[KeyCharAndCode(Input.Keys.RIGHT)] = { cyclePage(1) }
+        keyPressDispatcher[KeyCharAndCode(Input.Keys.LEFT)] = cyclePageFactory(-1)
+        keyPressDispatcher[KeyCharAndCode(Input.Keys.RIGHT)] = cyclePageFactory(1)
     }
 
     /** Remove a page by its index.
