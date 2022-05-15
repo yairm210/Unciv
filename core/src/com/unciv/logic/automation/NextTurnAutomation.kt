@@ -244,7 +244,7 @@ object NextTurnAutomation {
 
     private fun tryGainInfluence(civInfo: CivilizationInfo, cityState: CivilizationInfo) {
         if (civInfo.gold < 250) return // save up
-        if (cityState.getDiplomacyManager(civInfo).influence < 20) {
+        if (cityState.getDiplomacyManager(civInfo).getInfluence() < 20) {
             cityState.receiveGoldGift(civInfo, 250)
             return
         }
@@ -267,7 +267,7 @@ object NextTurnAutomation {
             for (cityState in civInfo.getKnownCivs()
                     .filter { it.isCityState() && it.cityStateType == CityStateType.Cultured }) {
                 val diploManager = cityState.getDiplomacyManager(civInfo)
-                if (diploManager.influence < 40) { // we want to gain influence with them
+                if (diploManager.getInfluence() < 40) { // we want to gain influence with them
                     tryGainInfluence(civInfo, cityState)
                     return
                 }
@@ -329,7 +329,7 @@ object NextTurnAutomation {
         }
         if (cityState.getAllyCiv() != null && cityState.getAllyCiv() != civInfo.civName) {
             // easier not to compete if a third civ has this locked down
-            val thirdCivInfluence = cityState.getDiplomacyManager(cityState.getAllyCiv()!!).influence.toInt()
+            val thirdCivInfluence = cityState.getDiplomacyManager(cityState.getAllyCiv()!!).getInfluence().toInt()
             value -= (thirdCivInfluence - 60) / 10
         }
 
