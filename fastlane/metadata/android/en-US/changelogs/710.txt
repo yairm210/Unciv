@@ -1,33 +1,16 @@
-## 4.0.17
+Upgraded to libGDX 1.11.0 - enables Unciv on M1 chips
 
-Revert "Use kotlin coroutines instead of raw threads (+ refactorings) "
+Allow Android Unciv more memory than standard apps - By Azzurite
 
-Revert "Use kotlin coroutines instead of raw threads (+ refactorings) "
-
-Upgraded to libGDX 1.11.0 - resolves , resolves #5679
-
-By Azzurite:
-- Mark Unciv as an application that may use more memory than usual 
-- Use kotlin coroutines instead of raw threads (+ refactorings) 
-- Bump kotlin language version to latest 1.6.21 
-
-Possibility to liberate a traded city  - By JackRainy
+Allow liberating a traded city - By JackRainy
 
 By xlenstra:
 - Disabled CS buttons when at war; CS keep influence when at war with ally 
-- Fixed a bug where roads could no longer be removed 
+- Fixed bug where roads could not be removed 
 
 By SomeTroglodyte:
-- Accelerate custom map selection a tiny bit 
-- Allow editor to generate rectangular Deciv redux maps 
-- Minor Map Editor improvements 
-- Fix TabbedPager stealing arrow keys from TextFields 
-- Crash Report omits GameInfo stuff when crashing from MainMenu, MapEditor or Options 
-- Notifications not scrollable far enough after in-turn notifications got added 
-
-By touhidurrr:
-- Suggest Temurin Instead of Zulu 
-- Enable gradle caching for faster CI runs 
+- Accelerate custom map selection
+- Map Editor improvements 
+- Notifications no longer become unscrollable past a point
 
 Capital movement tweaks  - By OptimizedForDensity
-
