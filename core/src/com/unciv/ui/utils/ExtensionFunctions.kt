@@ -17,6 +17,8 @@ import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import java.text.SimpleDateFormat
+import java.time.Duration
+import java.time.Instant
 import java.util.*
 import kotlin.random.Random
 
@@ -157,6 +159,24 @@ fun <T : Actor> Table.addCell(actor: T): Table {
 /** Shortcut for [Cell].[pad][com.badlogic.gdx.scenes.scene2d.ui.Cell.pad] with top=bottom and left=right */
 fun <T : Actor> Cell<T>.pad(vertical: Float, horizontal: Float): Cell<T> {
     return pad(vertical, horizontal, vertical, horizontal)
+}
+
+/**
+ * Sets the width & height of the image to [size], including its drawable.
+ */
+fun Image.setSizeForced(size: Float) {
+    setSizeForced(size, size)
+}
+/**
+ * Sets the width & height of the image, including its drawable.
+ *
+ * Either [Image] or [com.badlogic.gdx.scenes.scene2d.utils.Drawable] is badly written, as the [Image.drawable] always has its texture size as min size,
+ * and [Image] pref size is always equal to its [Image.drawable]'s min size.
+ */
+fun Image.setSizeForced(width: Float, height: Float) {
+    setSize(width, height)
+    drawable?.minWidth = width
+    drawable?.minHeight = height
 }
 
 /** Gets a clone of an [ArrayList] with an additional item
@@ -312,6 +332,12 @@ object UncivDateFormat {
     fun String.parseDate(): Date = utcFormat.parse(this)
 }
 
+fun Duration.isLargerThan(other: Duration): Boolean {
+    return compareTo(other) > 0
+}
+fun Instant.isLargerThan(other: Instant): Boolean {
+    return compareTo(other) > 0
+}
 
 /**
  * Returns a wrapped version of a function that safely crashes the game to [CrashScreen] if an exception or error is thrown.

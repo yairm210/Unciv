@@ -19,7 +19,7 @@ import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.PlayerReadyScreen
 import com.unciv.ui.worldscreen.WorldScreen
-import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
+import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.ui.audio.Sounds
 import com.unciv.ui.crashhandling.closeExecutors
 import com.unciv.ui.crashhandling.launchCrashHandling
@@ -47,6 +47,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     fun isGameInfoInitialized() = this::gameInfo.isInitialized
     lateinit var settings: GameSettings
     lateinit var musicController: MusicController
+    lateinit var onlineMultiplayer: OnlineMultiplayer
 
     /**
      * This exists so that when debugging we can see the entire map.
@@ -106,6 +107,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             musicController.getAudioLoopCallback(),
             musicController.getAudioExceptionHandler()
         )
+        onlineMultiplayer = OnlineMultiplayer()
 
         ImageGetter.resetAtlases()
         ImageGetter.setNewRuleset(ImageGetter.ruleset)  // This needs to come after the settings, since we may have default visual mods
@@ -178,10 +180,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
                 setScreen(LoadDeepLinkScreen())
             }
             try {
-                val onlineGame = OnlineMultiplayerGameSaver().tryDownloadGame(deepLinkedMultiplayerGame!!)
-                postCrashHandlingRunnable {
-                    loadGame(onlineGame)
-                }
+                onlineMultiplayer.loadGame(deepLinkedMultiplayerGame!!)
             } catch (ex: Exception) {
                 postCrashHandlingRunnable {
                     val mainMenu = MainMenuScreen()

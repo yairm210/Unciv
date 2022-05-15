@@ -52,6 +52,13 @@ object GameSaver {
         getSave(GameName, multiplayer).delete()
     }
 
+    /**
+     * Only use this with a [FileHandle] returned by [getSaves]!
+     */
+    fun deleteSave(file: FileHandle) {
+        file.delete()
+    }
+
     //endregion
     //region Saving
 
@@ -138,7 +145,10 @@ object GameSaver {
         }
     }
 
-    /** Parses [gameData] as gzipped serialization of a [GameInfoPreview] - only called from [OnlineMultiplayerGameSaver] */
+    /**
+     * Parses [gameData] as gzipped serialization of a [GameInfoPreview] - only called from [OnlineMultiplayerGameSaver]
+     * @throws SerializationException
+     */
     fun gameInfoPreviewFromString(gameData: String): GameInfoPreview {
         return json().fromJson(GameInfoPreview::class.java, Gzip.unzip(gameData))
     }
@@ -147,6 +157,8 @@ object GameSaver {
      * WARNING! transitive GameInfo data not initialized
      * The returned GameInfo can not be used for most circumstances because its not initialized!
      * It is therefore stateless and save to call for Multiplayer Turn Notifier, unlike gameInfoFromString().
+     *
+     * @throws SerializationException
      */
     private fun gameInfoFromStringWithoutTransients(gameData: String): GameInfo {
         val unzippedJson = try {
