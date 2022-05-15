@@ -1,4 +1,4 @@
-package com.unciv.logic.multiplayer
+package com.unciv.logic.multiplayer.storage
 
 import com.badlogic.gdx.Net
 import com.unciv.UncivGame
@@ -9,11 +9,11 @@ import java.net.*
 import java.nio.charset.Charset
 
 object SimpleHttp {
-    fun sendGetRequest(url: String, action: (success: Boolean, result: String)->Unit) {
+    fun sendGetRequest(url: String, action: (success: Boolean, result: String, code: Int?)->Unit) {
         sendRequest(Net.HttpMethods.GET, url, "", action)
     }
 
-    fun sendRequest(method: String, url: String, content: String, action: (success: Boolean, result: String)->Unit) {
+    fun sendRequest(method: String, url: String, content: String, action: (success: Boolean, result: String, code: Int?)->Unit) {
         var uri = URI(url)
         if (uri.host == null) uri = URI("http://$url")
 
@@ -21,7 +21,7 @@ object SimpleHttp {
         try {
             urlObj = uri.toURL()
         } catch (t:Throwable){
-            action(false, "Bad URL")
+            action(false, "Bad URL", null)
             return
         }
         
@@ -43,14 +43,14 @@ object SimpleHttp {
                 }
 
                 val text = BufferedReader(InputStreamReader(inputStream)).readText()
-                action(true, text)
+                action(true, text, responseCode)
             } catch (t: Throwable) {
                 println(t.message)
                 val errorMessageToReturn =
                     if (errorStream != null) BufferedReader(InputStreamReader(errorStream)).readText()
                     else t.message!!
                 println(errorMessageToReturn)
-                action(false, errorMessageToReturn)
+                action(false, errorMessageToReturn, if (errorStream != null) responseCode else null)
             }
         }
     }

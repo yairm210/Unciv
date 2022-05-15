@@ -1,9 +1,10 @@
 package com.unciv.ui.popup
 
+import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.crashhandling.crashHandlingThread
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
+import kotlinx.coroutines.delay
 
 /**
  * This is an unobtrusive popup which will close itself after a given amount of time.
@@ -23,9 +24,9 @@ class ToastPopup (message: String, screen: BaseScreen, val time: Long = 2000) : 
     }
 
     private fun startTimer(){
-        crashHandlingThread(name = "ResponsePopup") {
-            Thread.sleep(time)
-            postCrashHandlingRunnable { this.close() }
+        launchCrashHandling("ResponsePopup") {
+            delay(time)
+            postCrashHandlingRunnable { this@ToastPopup.close() }
         }
     }
 
