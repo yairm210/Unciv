@@ -653,16 +653,19 @@ class QuestManager {
                 when (personality) {
                     CityStatePersonality.Friendly -> weight *= 2f
                     CityStatePersonality.Hostile -> weight *= .2f
+                    else -> {}
                 }
                 when (trait) {
                     CityStateType.Maritime -> weight *= 1.2f
                     CityStateType.Mercantile -> weight *= 1.5f
+                    else -> {}
                 }
             }
             QuestName.ConnectResource.value -> {
                 when (trait) {
                     CityStateType.Maritime -> weight *= 2f
                     CityStateType.Mercantile -> weight *= 3f
+                    else -> {}
                 }
             }
             QuestName.ConstructWonder.value -> {
@@ -679,12 +682,14 @@ class QuestManager {
                 when (personality) {
                     CityStatePersonality.Hostile -> weight *= 2f
                     CityStatePersonality.Neutral -> weight *= .4f
+                    else -> {}
                 }
             }
             QuestName.FindPlayer.value -> {
                 when (trait) {
                     CityStateType.Maritime -> weight *= 3f
                     CityStateType.Mercantile -> weight *= 2f
+                    else -> {}
                 }
             }
             QuestName.FindNaturalWonder.value -> {
@@ -717,6 +722,7 @@ class QuestManager {
                     CityStatePersonality.Hostile -> weight *= 2f
                     CityStatePersonality.Irrational -> weight *= 1.5f
                     CityStatePersonality.Friendly -> weight *= .3f
+                    CityStatePersonality.Neutral -> {}
                 }
             }
             QuestName.DenounceCiv.value -> {

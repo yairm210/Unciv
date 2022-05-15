@@ -15,8 +15,10 @@ import androidx.work.*
 import com.badlogic.gdx.backends.android.AndroidApplication
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
+import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.models.metadata.GameSettings
-import com.unciv.logic.multiplayer.OnlineMultiplayer
+import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
+import kotlinx.coroutines.runBlocking
 import java.io.FileNotFoundException
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -233,7 +235,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
         }
     }
 
-    override fun doWork(): Result {
+    override fun doWork(): Result = runBlocking {
         val showPersistNotific = inputData.getBoolean(PERSISTENT_NOTIFICATION_ENABLED, true)
         val configuredDelay = inputData.getInt(CONFIGURED_DELAY, 5)
         val fileStorage = inputData.getString(FILE_STORAGE)
@@ -252,7 +254,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                     continue
 
                 try {
-                    val gamePreview = OnlineMultiplayer(fileStorage).tryDownloadGamePreview(gameId)
+                    val gamePreview = OnlineMultiplayerGameSaver(fileStorage).tryDownloadGamePreview(gameId)
                     val currentTurnPlayer = gamePreview.getCivilization(gamePreview.currentPlayer)
 
                     //Save game so MultiplayerScreen gets updated
@@ -269,6 +271,9 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                         foundGame = Pair(gameNames[arrayIndex], gameIds[arrayIndex])
                     }
                     arrayIndex++
+                } catch (ex: FileStorageRateLimitReached) {
+                    // We just break here as configuredDelay is probably enough to wait for the rate limit anyway
+                    break
                 } catch (ex: FileNotFoundException){
                     // FileNotFoundException is thrown by OnlineMultiplayer().tryDownloadGamePreview(gameId)
                     // and indicates that there is no game preview present for this game
@@ -298,7 +303,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                 with(NotificationManagerCompat.from(applicationContext)) {
                     cancel(NOTIFICATION_ID_SERVICE)
                 }
-                return Result.failure()
+                return@runBlocking Result.failure()
             } else {
                 if (showPersistNotific) { showPersistentNotification(applicationContext,
                         applicationContext.resources.getString(R.string.Notify_Error_Retrying), configuredDelay.toString()) }
@@ -309,9 +314,9 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                 enqueue(applicationContext, 1, inputDataFailIncrease)
             }
         } catch (outOfMemory: OutOfMemoryError){ // no point in trying multiple times if this was an oom error
-            return Result.failure()
+            return@runBlocking Result.failure()
         }
-        return Result.success()
+        return@runBlocking Result.success()
     }
 
     private fun getStackTraceString(ex: Exception): String {

@@ -237,6 +237,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                     buttons.add(getMilestoneButton(milestoneText, milestoneMet))
                 }
             }
+            null -> {}
         }
         return buttons
     }

@@ -57,18 +57,18 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
 
         val tech = ruleset.technologies[techName]!!
 
-        for (unit in tech.getEnabledUnits(techManager.civInfo))
+        for (unit in tech.getEnabledUnits(ruleset, techManager.civInfo))
             techEnabledIcons.add(ImageGetter.getConstructionImage(unit.name).surroundWithCircle(techIconSize))
 
-        for (building in tech.getEnabledBuildings(techManager.civInfo))
+        for (building in tech.getEnabledBuildings(ruleset, techManager.civInfo))
             techEnabledIcons.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(techIconSize))
 
-        for (obj in tech.getObsoletedObjects(techManager.civInfo)) {
-            val obsoletedIcon = when {
-                obj is Building -> ImageGetter.getConstructionImage(obj.name)
+        for (obj in tech.getObsoletedObjects(ruleset, techManager.civInfo)) {
+            val obsoletedIcon = when (obj) {
+                is Building -> ImageGetter.getConstructionImage(obj.name)
                     .surroundWithCircle(techIconSize)
-                obj is TileResource -> ImageGetter.getResourceImage(obj.name, techIconSize)
-                obj is TileImprovement -> ImageGetter.getImprovementIcon(obj.name, techIconSize)
+                is TileResource -> ImageGetter.getResourceImage(obj.name, techIconSize)
+                is TileImprovement -> ImageGetter.getImprovementIcon(obj.name, techIconSize)
                 else -> continue
             }.also {
                 val closeImage = ImageGetter.getRedCross(techIconSize / 2, 1f)

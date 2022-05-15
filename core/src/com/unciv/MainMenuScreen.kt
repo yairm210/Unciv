@@ -1,9 +1,11 @@
 ﻿package com.unciv
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
@@ -12,11 +14,13 @@ import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.mapgenerator.MapGenerator
+import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.MultiplayerScreen
 import com.unciv.ui.mapeditor.*
 import com.unciv.models.metadata.GameSetupInfo
-import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.civilopedia.CivilopediaScreen
+import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.newgamescreen.NewGameScreen
@@ -56,7 +60,7 @@ class MainMenuScreen: BaseScreen() {
                 keyPressDispatcher[key] = function
             table.addTooltip(key, 32f)
         }
-        
+
         table.pack()
         return table
     }
@@ -69,12 +73,12 @@ class MainMenuScreen: BaseScreen() {
         // will not exist unless we reset the ruleset and images
         ImageGetter.ruleset = RulesetCache.getVanillaRuleset()
 
-        crashHandlingThread(name = "ShowMapBackground") {
+        launchCrashHandling("ShowMapBackground") {
             val newMap = MapGenerator(RulesetCache.getVanillaRuleset())
                     .generateMap(MapParameters().apply { mapSize = MapSizeNew(MapSize.Small); type = MapType.default })
             postCrashHandlingRunnable { // for GL context
                 ImageGetter.setNewRuleset(RulesetCache.getVanillaRuleset())
-                val mapHolder = EditorMapHolder(this, newMap) {}
+                val mapHolder = EditorMapHolder(this@MainMenuScreen, newMap) {}
                 backgroundTable.addAction(Actions.sequence(
                         Actions.fadeOut(0f),
                         Actions.run {
@@ -87,7 +91,7 @@ class MainMenuScreen: BaseScreen() {
         }
 
         val column1 = Table().apply { defaults().pad(10f).fillX() }
-        val column2 = if(singleColumn) column1 else Table().apply { defaults().pad(10f).fillX() }
+        val column2 = if (singleColumn) column1 else Table().apply { defaults().pad(10f).fillX() }
 
         val autosaveGame = GameSaver.getSave(GameSaver.autoSaveFileName, false)
         if (autosaveGame.exists()) {
@@ -127,7 +131,7 @@ class MainMenuScreen: BaseScreen() {
         column2.add(optionsTable).row()
 
 
-        val table=Table().apply { defaults().pad(10f) }
+        val table = Table().apply { defaults().pad(10f) }
         table.add(column1)
         if (!singleColumn) table.add(column2)
         table.pack()
@@ -144,6 +148,18 @@ class MainMenuScreen: BaseScreen() {
             }
             ExitGamePopup(this)
         }
+
+        val helpButton = "?".toLabel(fontSize = 32)
+            .apply { setAlignment(Align.center) }
+            .surroundWithCircle(40f, color = ImageGetter.getBlue())
+            .apply { actor.y -= 2.5f } // compensate font baseline (empirical)
+            .surroundWithCircle(42f, resizeActor = false)
+        helpButton.touchable = Touchable.enabled
+        helpButton.onClick { openCivilopedia() }
+        keyPressDispatcher[Input.Keys.F1] = { openCivilopedia() }
+        helpButton.addTooltip(KeyCharAndCode(Input.Keys.F1), 20f)
+        helpButton.setPosition(20f, 20f)
+        stage.addActor(helpButton)
     }
 
 
@@ -151,12 +167,12 @@ class MainMenuScreen: BaseScreen() {
         val loadingPopup = Popup(this)
         loadingPopup.addGoodSizedLabel("Loading...")
         loadingPopup.open()
-        crashHandlingThread {
+        launchCrashHandling("autoLoadGame") {
             // Load game from file to class on separate thread to avoid ANR...
             fun outOfMemory() {
                 postCrashHandlingRunnable {
                     loadingPopup.close()
-                    ToastPopup("Not enough memory on phone to load game!", this)
+                    ToastPopup("Not enough memory on phone to load game!", this@MainMenuScreen)
                 }
             }
 
@@ -165,7 +181,7 @@ class MainMenuScreen: BaseScreen() {
                 savedGame = GameSaver.loadGameByName(GameSaver.autoSaveFileName)
             } catch (oom: OutOfMemoryError) {
                 outOfMemory()
-                return@crashHandlingThread
+                return@launchCrashHandling
             } catch (ex: Exception) { // silent fail if we can't read the autosave for any reason - try to load the last autosave by turn number first
                 // This can help for situations when the autosave is corrupted
                 try {
@@ -175,13 +191,13 @@ class MainMenuScreen: BaseScreen() {
                         GameSaver.loadGameFromFile(autosaves.maxByOrNull { it.lastModified() }!!)
                 } catch (oom: OutOfMemoryError) { // The autosave could have oom problems as well... smh
                     outOfMemory()
-                    return@crashHandlingThread
+                    return@launchCrashHandling
                 } catch (ex: Exception) {
                     postCrashHandlingRunnable {
                         loadingPopup.close()
-                        ToastPopup("Cannot resume game!", this)
+                        ToastPopup("Cannot resume game!", this@MainMenuScreen)
                     }
-                    return@crashHandlingThread
+                    return@launchCrashHandling
                 }
             }
 
@@ -199,14 +215,14 @@ class MainMenuScreen: BaseScreen() {
     private fun quickstartNewGame() {
         ToastPopup("Working...", this)
         val errorText = "Cannot start game with the default new game parameters!"
-        crashHandlingThread {
+        launchCrashHandling("QuickStart") {
             val newGame: GameInfo
             // Can fail when starting the game...
             try {
                 newGame = GameStarter.startNewGame(GameSetupInfo.fromSettings("Chieftain"))
             } catch (ex: Exception) {
-                postCrashHandlingRunnable { ToastPopup(errorText, this) }
-                return@crashHandlingThread
+                postCrashHandlingRunnable { ToastPopup(errorText, this@MainMenuScreen) }
+                return@launchCrashHandling
             }
 
             // ...or when loading the game
@@ -214,12 +230,19 @@ class MainMenuScreen: BaseScreen() {
                 try {
                     game.loadGame(newGame)
                 } catch (outOfMemory: OutOfMemoryError) {
-                    ToastPopup("Not enough memory on phone to load game!", this)
+                    ToastPopup("Not enough memory on phone to load game!", this@MainMenuScreen)
                 } catch (ex: Exception) {
-                    ToastPopup(errorText, this)
+                    ToastPopup(errorText, this@MainMenuScreen)
                 }
             }
         }
+    }
+
+    private fun openCivilopedia() {
+        val ruleset =RulesetCache[game.settings.lastGameSetup?.gameParameters?.baseRuleset]
+            ?: RulesetCache[BaseRuleset.Civ_V_GnK.fullName]
+            ?: return
+        game.setScreen(CivilopediaScreen(ruleset, this))
     }
 
     override fun resize(width: Int, height: Int) {
