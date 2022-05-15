@@ -20,6 +20,7 @@ import com.unciv.ui.utils.*
 
 //todo normalize properly
 
+//todo Remove "Area: [amount] tiles, [amount2] continents/islands = " after 2022-07-01
 //todo Direct Strategic Resource abundance control
 //todo functional Tab for Units (empty Tab is prepared but commented out in MapEditorEditTab.AllEditSubTabs)
 //todo copy/paste tile areas? (As tool tab, brush sized, floodfill forbidden, tab displays copied area)
