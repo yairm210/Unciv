@@ -95,16 +95,16 @@ class TileMap {
     /** creates a hexagonal map of given radius (filled with grassland) */
     constructor(radius: Int, ruleset: Ruleset, worldWrap: Boolean = false) {
         startingLocations.clear()
-        val firstAvailableLandTerrain = ruleset.terrains.values.firstOrNull { it.type==TerrainType.Land }
-            ?: throw Exception("Cannot create map - no land terrains found!")
+        val firstAvailableLandTerrain = getInitializationTerrain(ruleset)
         for (vector in HexMath.getVectorsInDistance(Vector2.Zero, radius, worldWrap))
-            tileList.add(TileInfo().apply { position = vector; baseTerrain = firstAvailableLandTerrain.name })
+            tileList.add(TileInfo().apply { position = vector; baseTerrain = firstAvailableLandTerrain })
         setTransients(ruleset)
     }
 
     /** creates a rectangular map of given width and height (filled with grassland) */
     constructor(width: Int, height: Int, ruleset: Ruleset, worldWrap: Boolean = false) {
         startingLocations.clear()
+        val firstAvailableLandTerrain = getInitializationTerrain(ruleset)
 
         // world-wrap maps must always have an even width, so round down
         val wrapAdjustedWidth = if (worldWrap && width % 2 != 0) width -1 else width
@@ -115,11 +115,15 @@ class TileMap {
             for (y in -height / 2 .. (height-1) / 2)
                 tileList.add(TileInfo().apply {
                     position = HexMath.evenQ2HexCoords(Vector2(x.toFloat(), y.toFloat()))
-                    baseTerrain = Constants.grassland
+                    baseTerrain = firstAvailableLandTerrain
                 })
 
         setTransients(ruleset)
     }
+
+    private fun getInitializationTerrain(ruleset: Ruleset) =
+        ruleset.terrains.values.firstOrNull { it.type == TerrainType.Land }?.name
+            ?: throw Exception("Cannot create map - no land terrains found!")
 
     //endregion
     //region Operators and Standards
