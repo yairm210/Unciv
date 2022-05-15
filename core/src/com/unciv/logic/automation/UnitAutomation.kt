@@ -160,11 +160,11 @@ object UnitAutomation {
 
             //todo this now supports "Great General"-like mod units not combining 'aura' and citadel
             // abilities, but not additional capabilities if automation finds no use for those two
-            if (unit.hasGreatGeneralUnique && SpecificUnitAutomation.automateGreatGeneral(unit))
+            if (unit.hasStrengthBonusInRadiusUnique && SpecificUnitAutomation.automateGreatGeneral(unit))
                 return
             if (unit.hasCitadelPlacementUnique && SpecificUnitAutomation.automateCitadelPlacer(unit))
                 return
-            if (unit.hasCitadelPlacementUnique || unit.hasGreatGeneralUnique)
+            if (unit.hasCitadelPlacementUnique || unit.hasStrengthBonusInRadiusUnique)
                 return SpecificUnitAutomation.automateGreatGeneralFallback(unit)
 
             if (unit.hasUnique(UniqueType.ConstructImprovementConsumingUnit))

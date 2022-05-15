@@ -120,7 +120,7 @@ class MapUnit {
     var hasUniqueToBuildImprovements = false    // not canBuildImprovements to avoid confusion
 
     @Transient
-    var hasGreatGeneralUnique = false
+    var hasStrengthBonusInRadiusUnique = false
     @Transient
     var hasCitadelPlacementUnique = false
 
@@ -345,7 +345,7 @@ class MapUnit {
         canEnterForeignTerrain = hasUnique(UniqueType.CanEnterForeignTiles)
             || hasUnique(UniqueType.CanEnterForeignTilesButLosesReligiousStrength)
 
-        hasGreatGeneralUnique = hasUnique(UniqueType.StrengthBonusInRadius)
+        hasStrengthBonusInRadiusUnique = hasUnique(UniqueType.StrengthBonusInRadius)
         hasCitadelPlacementUnique = getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
             .mapNotNull { civInfo.gameInfo.ruleSet.tileImprovements[it.params[0]] }
             .any { it.hasUnique(UniqueType.TakeOverTilesAroundWhenBuilt) }
