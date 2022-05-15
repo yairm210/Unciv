@@ -28,13 +28,11 @@ object GreatGeneralImplementation {
      */
     fun getGreatGeneralBonus(unit: MapUnit): Pair<String, Int> {
         val civInfo = unit.civInfo
-        val nearbyGenerals = unit.getTile()
-            .getTilesInDistance(civInfo.maxGreatGeneralBonusRadius)
-            .flatMap { it.getUnits() }
-            .filter { it.civInfo == civInfo && it.hasGreatGeneralUnique }
-        if (nearbyGenerals.none()) return Pair("", 0)
+        val allGenerals = civInfo.getCivUnits()
+            .filter { it.hasGreatGeneralUnique }
+        if (allGenerals.none()) return Pair("", 0)
 
-        val greatGeneral = nearbyGenerals
+        val greatGeneral = allGenerals
             .flatMap { general ->
                 general.getMatchingUniques(UniqueType.StrengthBonusInRadius)
                     .map { GeneralBonusData(general, it) }
@@ -97,47 +95,5 @@ object GreatGeneralImplementation {
                     }?.bonus ?: 0
                 }
             }
-    }
-
-    /** Find and cache the maximum Great General _Radius_ for a [civInfo]'s _BaseUnits_ */
-    fun setMaxGreatGeneralBonusRadiusBase(civInfo: CivilizationInfo) {
-        val civBaseUnits = civInfo.gameInfo.ruleSet.units.values.asSequence()
-            .filter {
-                    it.uniqueTo == civInfo.civName || it.uniqueTo == null && civInfo.getEquivalentUnit(it) == it
-            }
-        val unitTypes = civInfo.gameInfo.ruleSet.unitTypes.values.asSequence()
-        civInfo.maxGreatGeneralBonusRadiusBase = (civBaseUnits + unitTypes)
-            .flatMap {
-                it.getMatchingUniques(UniqueType.StrengthBonusInRadius)
-            }.maxOfOrNull {
-                it.params[2].toIntOrNull() ?: 0
-            } ?: 0
-        updateMaxGreatGeneralBonusRadius(civInfo)
-    }
-
-    /** Update [CivilizationInfo.maxGreatGeneralBonusRadius] from [CivilizationInfo.maxGreatGeneralBonusRadiusBase]
-     *  and all units having a promotion granting Great General abilities. Should be called whenever
-     *  a unit is destroyed or otherwise removed from the civ, or a unit gains a promotion. */
-    fun updateMaxGreatGeneralBonusRadius(civInfo: CivilizationInfo) {
-        // If there are no promotions granting a Great General power, then we don't need to scan the actual MapUnits
-        val promotionsGrantingGeneralBonus = civInfo.gameInfo.promotionsGrantingGeneralBonus
-        if (promotionsGrantingGeneralBonus.isEmpty()) {
-            civInfo.maxGreatGeneralBonusRadius = civInfo.maxGreatGeneralBonusRadiusBase
-            return
-        }
-
-        // Need to scan the units - might be faster looping getCivUnits only once, but far less readable
-        val maxPromotionGeneralBonusRadius = promotionsGrantingGeneralBonus.asSequence()
-            .filter { promotion ->
-                civInfo.getCivUnits().any { unit->
-                    promotion.name in unit.promotions.promotions
-                }
-            }.flatMap {
-                it.getMatchingUniques(UniqueType.StrengthBonusInRadius)
-            }.maxOfOrNull {
-                it.params[2].toIntOrNull() ?: 0
-            } ?: 0
-        civInfo.maxGreatGeneralBonusRadius = civInfo.maxGreatGeneralBonusRadiusBase
-            .coerceAtLeast(maxPromotionGeneralBonusRadius)
     }
 }

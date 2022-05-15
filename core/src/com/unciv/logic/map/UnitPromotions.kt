@@ -76,8 +76,6 @@ class UnitPromotions {
 
         unit.updateUniques(ruleset)
 
-        unit.civInfo.updateMaxGreatGeneralBonusRadius()  // In case a mod has promotions granting GG uniques
-
         // Since some units get promotions upon construction, they will get the addPromotion from the unit.postBuildEvent
         // upon creation, BEFORE they are assigned to a tile, so the updateVisibleTiles() would crash.
         // So, if the addPromotion was triggered from there, simply don't update

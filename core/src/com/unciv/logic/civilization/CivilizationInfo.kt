@@ -122,13 +122,6 @@ class CivilizationInfo {
     @Transient
     var thingsToFocusOnForVictory = setOf<Victory.Focus>()
 
-    @Transient
-    /** Maximum radius of Great General or equivalent effect, from BaseUnit Uniques _only_. */
-    var maxGreatGeneralBonusRadiusBase = 0
-    @Transient
-    /** Maximum radius of Great General or equivalent effect, from BaseUnit Uniques _or_ Promotion Uniques. 0 if none found!! */
-    var maxGreatGeneralBonusRadius = 0
-
     var playerType = PlayerType.AI
 
     /** Used in online multiplayer for human players */
@@ -810,7 +803,6 @@ class CivilizationInfo {
 
         hasLongCountDisplayUnique = hasUnique(UniqueType.MayanCalendarDisplay)
 
-        GreatGeneralImplementation.setMaxGreatGeneralBonusRadiusBase(this)
     }
 
     fun updateSightAndResources() {
@@ -828,7 +820,6 @@ class CivilizationInfo {
     fun updateHasActiveGreatWall() = transients().updateHasActiveGreatWall()
     fun updateViewableTiles() = transients().updateViewableTiles()
     fun updateDetailedCivResources() = transients().updateCivResources()
-    fun updateMaxGreatGeneralBonusRadius() = GreatGeneralImplementation.updateMaxGreatGeneralBonusRadius(this)
 
     fun startTurn() {
         civConstructions.startTurn()

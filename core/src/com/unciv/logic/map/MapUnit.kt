@@ -847,7 +847,6 @@ class MapUnit {
         removeFromTile()
         civInfo.removeUnit(this)
         civInfo.updateViewableTiles()
-        civInfo.updateMaxGreatGeneralBonusRadius()
         // all transported units should be destroyed as well
         currentTile.getUnits().filter { it.isTransported && isTransportTypeOf(it) }
             .toList() // because we're changing the list
