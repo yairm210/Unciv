@@ -17,7 +17,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.Sounds
-import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.Popup
@@ -207,7 +207,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             availableConstructionsTable.add("Loading...".toLabel()).pad(10f)
         }
 
-        crashHandlingThread(name = "Construction info gathering - ${cityScreen.city.name}") {
+        launchCrashHandling("Construction info gathering - ${cityScreen.city.name}") {
             // Since this can be a heavy operation and leads to many ANRs on older phones we put the metadata-gathering in another thread.
             val constructionButtonDTOList = getConstructionButtonDTOs()
             postCrashHandlingRunnable {

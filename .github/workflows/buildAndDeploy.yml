@@ -30,9 +30,11 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      - uses: actions/setup-java@v1
+      - uses: actions/setup-java@v3
         with:
+          distribution: 'temurin'
           java-version: '11'
+          cache: 'gradle'
 
       - name: Compile kotlin and build classes
         run: ./gradlew classes
@@ -160,7 +162,17 @@ jobs:
           ./butler push deploy/Unciv-Windows64.zip yairm210/unciv:Windows64 --userversion ${{steps.tag.outputs.tag}}
 
           mv desktop/build/libs/Unciv.jar deploy/Unciv.jar
-          
+
+## Server
+
+      - name: Build UncivServer.jar
+        continue-on-error: true
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+        run: |
+          ./gradlew server:dist
+          mv server/build/libs/UncivServer.jar deploy/UncivServer.jar
+
+## Finalize
 
       - name: Upload binaries to Github release
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')

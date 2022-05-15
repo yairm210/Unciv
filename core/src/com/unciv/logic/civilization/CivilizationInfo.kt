@@ -1173,7 +1173,7 @@ class CivilizationInfo {
         if (placedUnit.hasUnique(UniqueType.ReligiousUnit) && gameInfo.isReligionEnabled()) {
             placedUnit.religion = 
                 when {
-                    placedUnit.hasUnique("Takes your religion over the one in their birth city")
+                    placedUnit.hasUnique(UniqueType.TakeReligionOverBirthCity)
                     && religionManager.religion?.isMajorReligion() == true ->
                         religionManager.religion!!.name
                     city != null -> city.cityConstructions.cityInfo.religion.getMajorityReligionName()
@@ -1300,6 +1300,26 @@ class CivilizationInfo {
         this.proximity[otherCiv.civName] = proximity
 
         return proximity
+    }
+
+    /**
+     * Removes current capital then moves capital to argument city if not null
+     */
+    fun moveCapitalTo(city: CityInfo?) {
+        if (cities.isNotEmpty()) {
+            getCapital().cityConstructions.removeBuilding(getCapital().capitalCityIndicator())
+        }
+
+        if (city == null) return // can't move a non-existent city but we can always remove our old capital
+        // move new capital
+        city.cityConstructions.addBuilding(city.capitalCityIndicator())
+        city.isBeingRazed = false // stop razing the new capital if it was being razed
+    }
+
+    fun moveCapitalToNextLargest() {
+        moveCapitalTo(cities
+            .filterNot { it == getCapital() }
+            .maxByOrNull { it.population.population})
     }
 
     //////////////////////// City State wrapper functions ////////////////////////

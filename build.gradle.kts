@@ -12,13 +12,11 @@ buildscript {
 
     repositories {
         // Chinese mirrors for quicker loading for chinese devs - uncomment if you're chinese
-        // maven{ url = uri("https://maven.aliyun.com/repository/jcenter") }
+        // maven{ url = uri("https://maven.aliyun.com/repository/public") }
         // maven{ url = uri("https://maven.aliyun.com/repository/google") }
         // maven{ url = uri("https://maven.aliyun.com/repository/gradle-plugin") }
-        // maven{ url = uri("https://maven.aliyun.com/repository/public") }
-        google()
-        mavenLocal()
         mavenCentral()
+        google()  // needed for com.android.tools.build:gradle
         maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots/") }
         gradlePluginPortal()
         maven { url = uri("https://jitpack.io") } // for the anuken packr
@@ -43,14 +41,10 @@ allprojects {
 
     repositories {
         // Chinese mirrors for quicker loading for chinese devs - uncomment if you're chinese
-        // maven{ url = uri("https://maven.aliyun.com/repository/jcenter") }
         // maven{ url = uri("https://maven.aliyun.com/repository/google") }
-        // maven{ url = uri("https://maven.aliyun.com/repository/gradle-plugin") }
         // maven{ url = uri("https://maven.aliyun.com/repository/public") }
-        google()
-        gradlePluginPortal()
-        mavenLocal()
         mavenCentral()
+        google()
         maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots/") }
         maven { url = uri("https://oss.sonatype.org/content/repositories/releases/") }
         maven { url = uri("https://jitpack.io") } // for java-discord-rpc
@@ -99,6 +93,7 @@ project(":android") {
     dependencies {
         "implementation"(project(":core"))
         "implementation"("com.badlogicgames.gdx:gdx-backend-android:$gdxVersion")
+        "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1")
         natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a")
         natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a")
         natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86")
@@ -125,6 +120,7 @@ project(":core") {
 
     dependencies {
         "implementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
+        "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
     }
 
 

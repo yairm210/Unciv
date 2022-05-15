@@ -430,7 +430,9 @@ interface ICivilopediaText {
 
     /** Generate automatic lines from object metadata.
      *
-     * Please do not rely on a UncivGame.Current.gameInfo being initialized, this should be able to run from the main menu.
+     * This function ***MUST not rely*** on [UncivGame.Current.gameInfo][UncivGame.gameInfo]
+     * **or** [UncivGame.Current.worldScreen][UncivGame.worldScreen] being initialized,
+     * this should be able to run from the main menu.
      * (And the info displayed should be about the **ruleset**, not the player situation)
      * 
      * Default implementation is empty - no need to call super in overrides.

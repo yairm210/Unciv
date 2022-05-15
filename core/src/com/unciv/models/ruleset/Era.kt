@@ -3,9 +3,9 @@ package com.unciv.models.ruleset
 import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.civilization.CityStateType
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
-import com.unciv.models.ruleset.unique.IHasUniques
-import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueTarget
+import com.unciv.models.ruleset.unique.*
+import com.unciv.ui.civilopedia.FormattedLine
+import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.colorFromRGB
 
 class Era : RulesetObject(), IHasUniques {
@@ -32,8 +32,52 @@ class Era : RulesetObject(), IHasUniques {
     val allyBonusObjects: Map<CityStateType, List<Unique>> by lazy { initBonuses(allyBonus) }
 
     var iconRGB: List<Int>? = null
+
+    companion object {
+        private val eraConditionals = setOf(UniqueType.ConditionalBeforeEra, UniqueType.ConditionalDuringEra, UniqueType.ConditionalStartingFromEra)
+    }
+
     override fun getUniqueTarget() = UniqueTarget.Era
-    override fun makeLink() = "" // No own category on Civilopedia screen
+
+    override fun makeLink() = "Era/$name"
+    override fun getCivilopediaTextHeader() = FormattedLine(name, header = 2, color = getHexColor())
+    override fun getCivilopediaTextLines(ruleset: Ruleset) = sequence {
+        yield(FormattedLine("Embarked strength: [$embarkDefense]${Fonts.strength}"))
+        yield(FormattedLine("Base unit buy cost: [$baseUnitBuyCost]${Fonts.gold}"))
+        yield(FormattedLine("Research agreement cost: [$researchAgreementCost]${Fonts.gold}"))
+        yield(FormattedLine())
+        yieldAll(ruleset.technologies.values.asSequence()
+            .filter { it.era() == name }
+            .map { FormattedLine(it.name, it.makeLink()) })
+
+        if (uniques.isNotEmpty()) yield(FormattedLine())
+        yieldAll(uniqueObjects.asSequence().map { FormattedLine(it) })
+
+        val eraGatedObjects = getEraGatedObjects(ruleset).toList()
+        if (eraGatedObjects.isEmpty()) return@sequence
+        yield(FormattedLine())
+        yield(FormattedLine("{See also}:"))
+        yieldAll(eraGatedObjects.map { FormattedLine(it.name, it.makeLink()) })
+    }.toList()
+
+    private fun getEraGatedObjects(ruleset: Ruleset): Sequence<IRulesetObject> {
+        val policyBranches = ruleset.policyBranches.values.asSequence()
+            .filter { it.era == name }
+        return policyBranches +
+            // This second part is empty in our base rulesets, yes
+            ruleset.allRulesetObjects()
+            .flatMap { obj ->
+                obj.getMatchingUniques(
+                    UniqueType.OnlyAvailableWhen,
+                    StateForConditionals.IgnoreConditionals
+                )
+                .map { unique -> obj to unique }
+            }.filter { (_, unique) ->
+                unique.conditionals.any {
+                    it.type in eraConditionals
+                }
+            }.map { it.first }.distinct()
+    }
 
     private fun initBonuses(bonusMap: Map<String, List<String>>): Map<CityStateType, List<Unique>> {
         val objectMap = HashMap<CityStateType, List<Unique>>()

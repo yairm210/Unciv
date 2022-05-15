@@ -205,6 +205,7 @@ class CivilopediaScreen(
                 CivilopediaCategories.Difficulty -> ruleset.difficulties.values
                 CivilopediaCategories.Belief -> (ruleset.beliefs.values.asSequence() +
                         Belief.getCivilopediaReligionEntry(ruleset)).toList()
+                CivilopediaCategories.Era -> ruleset.eras.values
             }
 
         for (loopCategory in CivilopediaCategories.values()) {
@@ -312,7 +313,7 @@ class CivilopediaScreen(
 
     override fun resize(width: Int, height: Int) {
         if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
-            game.setScreen(CivilopediaScreen(game.worldScreen.gameInfo.ruleSet, previousScreen, currentCategory, currentEntry))
+            game.setScreen(CivilopediaScreen(ruleset, previousScreen, currentCategory, currentEntry))
         }
     }
 }

@@ -10,9 +10,10 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
+import com.unciv.logic.GameSaver
 import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.PlayerType
-import com.unciv.logic.multiplayer.SimpleHttp
+import com.unciv.logic.multiplayer.storage.SimpleHttp
 import com.unciv.models.UncivSound
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.Ruleset
@@ -28,7 +29,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.MarkupRenderer
-import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.newgamescreen.TranslatedSelectBox
@@ -41,6 +42,7 @@ import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.UUID
 import kotlin.math.floor
+import kotlin.text.Regex
 import com.badlogic.gdx.utils.Array as GdxArray
 
 /**
@@ -50,7 +52,8 @@ import com.badlogic.gdx.utils.Array as GdxArray
 //region Fields
 class OptionsPopup(
     private val previousScreen: BaseScreen,
-    private val selectPage: Int = defaultPage
+    private val selectPage: Int = defaultPage,
+    private val onClose: () -> Unit = {}
 ) : Popup(previousScreen) {
     private val settings = previousScreen.game.settings
     private val tabs: TabbedPager
@@ -107,8 +110,7 @@ class OptionsPopup(
         addCloseButton {
             previousScreen.game.musicController.onChange(null)
             previousScreen.game.platformSpecificHelper?.allowPortrait(settings.allowAndroidPortrait)
-            if (previousScreen is WorldScreen)
-                previousScreen.enableNextTurnButtonAfterOptions()
+            onClose()
         }.padBottom(10f)
 
         pack() // Needed to show the background.
@@ -134,7 +136,7 @@ class OptionsPopup(
         (previousScreen.game.screen as BaseScreen).openOptionsPopup(tabs.activePage)
     }
 
-    private fun successfullyConnectedToServer(action: (Boolean, String)->Unit){
+    private fun successfullyConnectedToServer(action: (Boolean, String, Int?) -> Unit){
         SimpleHttp.sendGetRequest("${settings.multiplayerServer}/isalive", action)
     }
 
@@ -280,6 +282,7 @@ class OptionsPopup(
             multiplayerServerTextField.text = Gdx.app.clipboard.contents
         }).row()
         multiplayerServerTextField.onChange {
+            multiplayerServerTextField.text = formatMultiplayerUrlInput(multiplayerServerTextField.text)
             settings.multiplayerServer = multiplayerServerTextField.text
             settings.save()
             connectionToServerButton.isEnabled = multiplayerServerTextField.text != Constants.dropboxMultiplayerServer
@@ -297,7 +300,7 @@ class OptionsPopup(
             }
             popup.open(true)
 
-            successfullyConnectedToServer { success: Boolean, _: String ->
+            successfullyConnectedToServer { success, _, _ ->
                 popup.addGoodSizedLabel(if (success) "Success!" else "Failed!").row()
                 popup.addCloseButton()
             }
@@ -384,7 +387,7 @@ class OptionsPopup(
         modCheckResultTable.add("Checking mods for errors...".toLabel()).row()
         modCheckBaseSelect!!.isDisabled = true
 
-        crashHandlingThread(name="ModChecker") {
+        launchCrashHandling("ModChecker") {
             for (mod in RulesetCache.values.sortedBy { it.name }) {
                 if (base != modCheckWithoutBase && mod.modOptions.isBaseRuleset) continue
 
@@ -551,8 +554,8 @@ class OptionsPopup(
     private fun getDebugTab() = Table(BaseScreen.skin).apply {
         pad(10f)
         defaults().pad(5f)
-
         val game = UncivGame.Current
+
         val simulateButton = "Simulate until turn:".toTextButton()
         val simulateTextField = TextField(game.simulateUntilTurnForDebug.toString(), BaseScreen.skin)
         val invalidInputLabel = "This is not a valid integer!".toLabel().also { it.isVisible = false }
@@ -569,6 +572,7 @@ class OptionsPopup(
         add(simulateButton)
         add(simulateTextField).row()
         add(invalidInputLabel).colspan(2).row()
+
         add("Supercharged".toCheckBox(game.superchargedForDebug) {
             game.superchargedForDebug = it
         }).colspan(2).row()
@@ -580,9 +584,13 @@ class OptionsPopup(
                 game.gameInfo.gameParameters.godMode = it
             }).colspan(2).row()
         }
+        add("Save games compressed".toCheckBox(GameSaver.saveZipped) {
+            GameSaver.saveZipped = it
+        }).colspan(2).row()
         add("Save maps compressed".toCheckBox(MapSaver.saveZipped) {
             MapSaver.saveZipped = it
         }).colspan(2).row()
+
         add("Gdx Scene2D debug".toCheckBox(BaseScreen.enableSceneDebug) {
             BaseScreen.enableSceneDebug = it
         }).colspan(2).row()
@@ -792,7 +800,7 @@ class OptionsPopup(
             errorTable.add("Downloading...".toLabel())
 
             // So the whole game doesn't get stuck while downloading the file
-            crashHandlingThread(name = "Music") {
+            launchCrashHandling("MusicDownload") {
                 try {
                     previousScreen.game.musicController.downloadDefaultFile()
                     postCrashHandlingRunnable {
@@ -909,7 +917,7 @@ class OptionsPopup(
             }
         }
 
-        crashHandlingThread(name = "Add Font Select") {
+        launchCrashHandling("Add Font Select") {
             // This is a heavy operation and causes ANRs
             val fonts = GdxArray<FontFamilyData>().apply {
                 add(FontFamilyData.default)
@@ -928,7 +936,7 @@ class OptionsPopup(
         val generateAction: ()->Unit = {
             tabs.selectPage("Advanced")
             generateTranslationsButton.setText("Working...".tr())
-            crashHandlingThread {
+            launchCrashHandling("WriteTranslations") {
                 val result = TranslationFileWriter.writeNewTranslationFiles()
                 postCrashHandlingRunnable {
                     // notify about completion
@@ -952,6 +960,22 @@ class OptionsPopup(
                 previousScreen.shouldUpdate = true
         }
         add(checkbox).colspan(2).left().row()
+    }
+
+    private fun formatMultiplayerUrlInput(input: String): String {
+        var result : String
+
+        // remove all whitespaces
+        result = Regex("\\s+").replace(input, "")
+
+        // replace multiple slash with a single one
+        result = Regex("/{2,}").replace(result, "/")
+
+        // remove trailing slash, reinstate protocol & return
+        // all the formatting above makes "https://" -> "http:/"
+        // also people might leave a slash at end my mistake
+        // so we need to fix those before returning
+        return result.trimEnd('/').replaceFirst(":/", "://")
     }
 
     //endregion

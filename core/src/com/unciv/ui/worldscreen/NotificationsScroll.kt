@@ -52,6 +52,8 @@ class NotificationsScroll(
         notificationsHash = notifications.hashCode()
 
         notificationsTable.clearChildren()
+        endOfTableSpacerCell = null
+
         for (notification in notifications.asReversed().toList()) { // toList to avoid concurrency problems
             val listItem = Table()
             listItem.background = ImageGetter.getRoundedEdgeRectangle()
