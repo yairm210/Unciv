@@ -59,7 +59,11 @@ tasks.register<Jar>("dist") { // Compiles the jar file
     from(files(sourceSets.main.get().output.resourcesDir))
     from(files(sourceSets.main.get().output.classesDirs))
     // see Laurent1967's comment on https://github.com/libgdx/libgdx/issues/5491
-    from({ configurations.compileClasspath.get().resolve().map { if (it.isDirectory) it else zipTree(it) } })
+    from({
+        (
+            configurations.runtimeClasspath.get().resolve() // kotlin coroutine classes live here, thanks https://stackoverflow.com/a/59021222
+            + configurations.compileClasspath.get().resolve()
+        ).map { if (it.isDirectory) it else zipTree(it) }})
     from(files(assetsDir))
     // This is for the .dll and .so files to make the Discord RPC work on all desktops
     from(files(discordDir))
