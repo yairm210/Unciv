@@ -26,7 +26,7 @@ import com.unciv.models.*
 import com.unciv.models.helpers.MapArrowType
 import com.unciv.models.helpers.MiscArrowTypes
 import com.unciv.ui.audio.Sounds
-import com.unciv.ui.crashhandling.launchCrashHandling
+import com.unciv.ui.crashhandling.crashHandlingThread
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.map.TileGroupMap
@@ -115,7 +115,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                 override fun clicked(event: InputEvent?, x: Float, y: Float) {
                     val unit = worldScreen.bottomUnitTable.selectedUnit
                         ?: return
-                    launchCrashHandling("WorldScreenClick") {
+                    crashHandlingThread {
                         val tile = tileGroup.tileInfo
 
                         if (worldScreen.bottomUnitTable.selectedUnitIsSwapping) {
@@ -123,7 +123,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                                 swapMoveUnitToTargetTile(unit, tile)
                             }
                             // If we are in unit-swapping mode, we don't want to move or attack
-                            return@launchCrashHandling
+                            return@crashHandlingThread
                         }
 
                         val attackableTile = BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
@@ -131,13 +131,13 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                         if (unit.canAttack() && attackableTile != null) {
                             Battle.moveAndAttack(MapUnitCombatant(unit), attackableTile)
                             worldScreen.shouldUpdate = true
-                            return@launchCrashHandling
+                            return@crashHandlingThread
                         }
 
                         val canUnitReachTile = unit.movement.canReach(tile)
                         if (canUnitReachTile) {
                             moveUnitToTargetTile(listOf(unit), tile)
-                            return@launchCrashHandling
+                            return@crashHandlingThread
                         }
                     }
                 }
@@ -214,7 +214,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
         val selectedUnit = selectedUnits.first()
 
-        launchCrashHandling("TileToMoveTo") {
+        crashHandlingThread(name = "TileToMoveTo") {
             // these are the heavy parts, finding where we want to go
             // Since this runs in a different thread, even if we check movement.canReach()
             // then it might change until we get to the getTileToMoveTo, so we just try/catch it
@@ -224,7 +224,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             } catch (ex: Exception) {
                 println("Exception in getTileToMoveToThisTurn: ${ex.message}")
                 ex.printStackTrace()
-                return@launchCrashHandling
+                return@crashHandlingThread
             } // can't move here
 
             postCrashHandlingRunnable {
@@ -270,7 +270,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     }
 
     private fun addTileOverlaysWithUnitMovement(selectedUnits: List<MapUnit>, tileInfo: TileInfo) {
-        launchCrashHandling("TurnsToGetThere") {
+        crashHandlingThread(name = "TurnsToGetThere") {
             /** LibGdx sometimes has these weird errors when you try to edit the UI layout from 2 separate threads.
              * And so, all UI editing will be done on the main thread.
              * The only "heavy lifting" that needs to be done is getting the turns to get there,

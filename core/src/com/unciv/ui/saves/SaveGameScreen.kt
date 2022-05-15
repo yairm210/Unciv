@@ -9,7 +9,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.models.translations.tr
-import com.unciv.ui.crashhandling.launchCrashHandling
+import com.unciv.ui.crashhandling.crashHandlingThread
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.ToastPopup
@@ -60,7 +60,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen(disableScroll = true
                 errorLabel.setText("")
                 saveToCustomLocation.setText("Saving...".tr())
                 saveToCustomLocation.disable()
-                launchCrashHandling("SaveGame", runAsDaemon = false) {
+                crashHandlingThread(name = "SaveGame") {
                     GameSaver.saveGameToCustomLocation(gameInfo, gameNameTextField.text) { e ->
                         if (e == null) {
                             postCrashHandlingRunnable { game.setWorldScreen() }
@@ -97,10 +97,10 @@ class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen(disableScroll = true
 
     private fun saveGame() {
         rightSideButton.setText("Saving...".tr())
-        launchCrashHandling("SaveGame", runAsDaemon = false) {
+        crashHandlingThread(name = "SaveGame") {
             GameSaver.saveGame(gameInfo, gameNameTextField.text) {
                 postCrashHandlingRunnable {
-                    if (it != null) ToastPopup("Could not save game!", this@SaveGameScreen)
+                    if (it != null) ToastPopup("Could not save game!", this)
                     else UncivGame.Current.setWorldScreen()
                 }
             }

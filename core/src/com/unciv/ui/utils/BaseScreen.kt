@@ -124,7 +124,7 @@ abstract class BaseScreen : Screen {
     /** @return `true` if the screen is narrower than 4:3 landscape */
     fun isNarrowerThan4to3() = stage.viewport.screenHeight * 4 > stage.viewport.screenWidth * 3
 
-    fun openOptionsPopup(startingPage: Int = OptionsPopup.defaultPage, onClose: () -> Unit = {}) {
-        OptionsPopup(this, startingPage, onClose).open(force = true)
+    fun openOptionsPopup(startingPage: Int = OptionsPopup.defaultPage) {
+        OptionsPopup(this, startingPage).open(force = true)
     }
 }

@@ -1,4 +1,4 @@
-package com.unciv.logic.multiplayer.storage
+package com.unciv.logic.multiplayer
 
 import com.unciv.json.json
 import com.unciv.logic.GameInfo
@@ -49,7 +49,7 @@ class ServerMutex(val gameInfo: GameInfoPreview) {
         // We have to check if the lock file already exists before we try to upload a new
         // lock file to not overuse the dropbox file upload limit else it will return an error
         try {
-            val metaData = OnlineMultiplayerGameSaver().fileStorage().getFileMetaData(fileName)
+            val metaData = OnlineMultiplayer().fileStorage.getFileMetaData(fileName)
 
             val date = metaData.getLastModified()
             // 30 seconds should be more than sufficient for everything lock related
@@ -57,7 +57,7 @@ class ServerMutex(val gameInfo: GameInfoPreview) {
             if (date != null && System.currentTimeMillis() - date.time < 30000) {
                 return locked
             } else {
-                OnlineMultiplayerGameSaver().fileStorage().deleteFile(fileName)
+                OnlineMultiplayer().fileStorage.deleteFile(fileName)
             }
         } catch (ex: FileNotFoundException) {
             // Catching this exception means no lock file is present
@@ -65,7 +65,7 @@ class ServerMutex(val gameInfo: GameInfoPreview) {
         }
 
         try {
-            OnlineMultiplayerGameSaver().fileStorage().saveFileData(fileName, Gzip.zip(json().toJson(LockFile())), false)
+            OnlineMultiplayer().fileStorage.saveFileData(fileName, Gzip.zip(json().toJson(LockFile())), false)
         } catch (ex: FileStorageConflictException) {
             return locked
         }
@@ -116,7 +116,7 @@ class ServerMutex(val gameInfo: GameInfoPreview) {
         if (!locked)
             return
 
-        OnlineMultiplayerGameSaver().fileStorage().deleteFile("${gameInfo.gameId}_Lock")
+        OnlineMultiplayer().fileStorage.deleteFile("${gameInfo.gameId}_Lock")
         locked = false
     }
 

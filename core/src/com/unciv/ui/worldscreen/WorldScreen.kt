@@ -1,7 +1,5 @@
 package com.unciv.ui.worldscreen
 
-import com.unciv.ui.worldscreen.status.NextTurnAction
-import com.unciv.ui.worldscreen.status.NextTurnButton
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
@@ -23,6 +21,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapVisualization
+import com.unciv.logic.multiplayer.FileStorageRateLimitReached
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.Tutorial
 import com.unciv.models.UncivSound
@@ -41,10 +40,8 @@ import com.unciv.ui.utils.UncivDateFormat.formatDate
 import com.unciv.ui.victoryscreen.VictoryScreen
 import com.unciv.ui.worldscreen.bottombar.BattleTable
 import com.unciv.ui.worldscreen.bottombar.TileInfoTable
-import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
-import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
-import com.unciv.ui.crashhandling.CRASH_HANDLING_DAEMON_SCOPE
-import com.unciv.ui.crashhandling.launchCrashHandling
+import com.unciv.logic.multiplayer.OnlineMultiplayer
+import com.unciv.ui.crashhandling.crashHandlingThread
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.ExitGamePopup
@@ -54,11 +51,6 @@ import com.unciv.ui.popup.hasOpenPopups
 import com.unciv.ui.worldscreen.minimap.MinimapHolder
 import com.unciv.ui.worldscreen.unit.UnitActionsTable
 import com.unciv.ui.worldscreen.unit.UnitTable
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.launchIn
 import java.util.*
 import kotlin.concurrent.timer
 
@@ -98,7 +90,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     private val techButtonHolder = Table()
     private val diplomacyButtonHolder = Table()
     private val fogOfWarButton = createFogOfWarButton()
-    private val nextTurnButton = NextTurnButton(keyPressDispatcher)
+    private val nextTurnButton = createNextTurnButton()
+    private var nextTurnAction: () -> Unit = {}
     private val tutorialTaskTable = Table().apply { background = ImageGetter.getBackground(
         ImageGetter.getBlue().darken(0.5f)) }
 
@@ -109,9 +102,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         /** Switch for console logging of next turn duration */
         private const val consoleLog = false
 
-        private lateinit var multiPlayerRefresher: Flow<Unit>
         // this object must not be created multiple times
-        private var multiPlayerRefresherJob: Job? = null
+        private var multiPlayerRefresher: Timer? = null
     }
 
     init {
@@ -203,13 +195,11 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
             // restart the timer
             stopMultiPlayerRefresher()
 
-            multiPlayerRefresher = flow {
-                while (true) {
-                    loadLatestMultiplayerState()
-                    delay(10000)
-                }
+            // isDaemon = true, in order to not block the app closing
+            // DO NOT use Timer() since this seems to (maybe?) translate to com.badlogic.gdx.utils.Timer? Not sure about this.
+            multiPlayerRefresher = timer("multiPlayerRefresh", true, period = 10000) {
+                loadLatestMultiplayerState()
             }
-            multiPlayerRefresherJob = multiPlayerRefresher.launchIn(CRASH_HANDLING_DAEMON_SCOPE)
         }
 
         // don't run update() directly, because the UncivGame.worldScreen should be set so that the city buttons and tile groups
@@ -218,8 +208,9 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     }
 
     private fun stopMultiPlayerRefresher() {
-        if (multiPlayerRefresherJob != null) {
-            multiPlayerRefresherJob?.cancel()
+        if (multiPlayerRefresher != null) {
+            multiPlayerRefresher?.cancel()
+            multiPlayerRefresher?.purge()
         }
     }
 
@@ -228,14 +219,14 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         // GameSaver.autoSave, SaveGameScreen.saveGame, LoadGameScreen.rightSideButton.onClick,...
         val quickSave = {
             val toast = ToastPopup("Quicksaving...", this)
-            launchCrashHandling("SaveGame", runAsDaemon = false) {
+            crashHandlingThread(name = "SaveGame") {
                 GameSaver.saveGame(gameInfo, "QuickSave") {
                     postCrashHandlingRunnable {
                         toast.close()
                         if (it != null)
-                            ToastPopup("Could not save game!", this@WorldScreen)
+                            ToastPopup("Could not save game!", this)
                         else {
-                            ToastPopup("Quicksave successful.", this@WorldScreen)
+                            ToastPopup("Quicksave successful.", this)
                         }
                     }
                 }
@@ -244,17 +235,17 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         }
         val quickLoad = {
             val toast = ToastPopup("Quickloading...", this)
-            launchCrashHandling("LoadGame") {
+            crashHandlingThread(name = "SaveGame") {
                 try {
                     val loadedGame = GameSaver.loadGameByName("QuickSave")
                     postCrashHandlingRunnable {
                         toast.close()
                         UncivGame.Current.loadGame(loadedGame)
-                        ToastPopup("Quickload successful.", this@WorldScreen)
+                        ToastPopup("Quickload successful.", this)
                     }
                 } catch (ex: Exception) {
                     postCrashHandlingRunnable {
-                        ToastPopup("Could not load game!", this@WorldScreen)
+                        ToastPopup("Could not load game!", this)
                     }
                 }
             }
@@ -285,12 +276,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
             if (!mapHolder.setCenterPosition(capital.location))
                 game.setScreen(CityScreen(capital))
         }
-        keyPressDispatcher[KeyCharAndCode.ctrl('O')] = { // Game Options
-            this.openOptionsPopup(onClose = {
-                mapHolder.reloadMaxZoom()
-                nextTurnButton.update(hasOpenPopups(), isPlayersTurn, waitingForAutosave)
-            })
-        }
+        keyPressDispatcher[KeyCharAndCode.ctrl('O')] = { this.openOptionsPopup() }    //   Game Options
         keyPressDispatcher[KeyCharAndCode.ctrl('S')] = { game.setScreen(SaveGameScreen(gameInfo)) }    //   Save
         keyPressDispatcher[KeyCharAndCode.ctrl('L')] = { game.setScreen(LoadGameScreen(this)) }    //   Load
         keyPressDispatcher[KeyCharAndCode.ctrl('Q')] = { ExitGamePopup(this, true) }    //   Quit
@@ -353,7 +339,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
     }
 
-    private suspend fun loadLatestMultiplayerState() {
+    private fun loadLatestMultiplayerState() {
         // Since we're on a background thread, all the UI calls in this func need to run from the
         // main thread which has a GL context
         val loadingGamePopup = Popup(this)
@@ -363,13 +349,13 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         }
 
         try {
-            val latestGame = OnlineMultiplayerGameSaver().tryDownloadGame(gameInfo.gameId)
+            val latestGame = OnlineMultiplayer().tryDownloadGame(gameInfo.gameId)
 
             // if we find the current player didn't change, don't update
             // Additionally, check if we are the current player, and in that case always stop
             // This fixes a bug where for some reason players were waiting for themselves.
-            if (gameInfo.currentPlayer == latestGame.currentPlayer
-                && gameInfo.turns == latestGame.turns
+            if (gameInfo.currentPlayer == latestGame.currentPlayer 
+                && gameInfo.turns == latestGame.turns 
                 && latestGame.currentPlayer != gameInfo.getPlayerToViewAs().civName
             ) {
                 postCrashHandlingRunnable { loadingGamePopup.close() }
@@ -394,8 +380,10 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
             stopMultiPlayerRefresher()
             val restartAfter : Long = ex.limitRemainingSeconds.toLong() * 1000
 
-            timer("RestartTimerTimer", true, restartAfter, 0) {
-                multiPlayerRefresherJob = multiPlayerRefresher.launchIn(CRASH_HANDLING_DAEMON_SCOPE)
+            timer("RestartTimerTimer", true, restartAfter, 0 ) {
+                multiPlayerRefresher = timer("multiPlayerRefresh", true, period = 10000) {
+                    loadLatestMultiplayerState()
+                }
             }
         } catch (ex: Throwable) {
             postCrashHandlingRunnable {
@@ -634,6 +622,20 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
     }
 
+    private fun createNextTurnButton(): TextButton {
+
+        val nextTurnButton = TextButton("", skin) // text is set in update()
+        nextTurnButton.label.setFontSize(30)
+        nextTurnButton.labelCell.pad(10f)
+        val nextTurnActionWrapped = { nextTurnAction() }
+        nextTurnButton.onClick(nextTurnActionWrapped)
+        keyPressDispatcher[Input.Keys.SPACE] = nextTurnActionWrapped
+        keyPressDispatcher['n'] = nextTurnActionWrapped
+
+        return nextTurnButton
+    }
+
+
     private fun createNewWorldScreen(gameInfo: GameInfo) {
 
         game.gameInfo = gameInfo
@@ -659,8 +661,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         isPlayersTurn = false
         shouldUpdate = true
 
-        // on a separate thread so the user can explore their world while we're passing the turn
-        launchCrashHandling("NextTurn", runAsDaemon = false) {
+
+        crashHandlingThread(name = "NextTurn") { // on a separate thread so the user can explore their world while we're passing the turn
             if (consoleLog)
                 println("\nNext turn starting " + Date().formatDate())
             val startTime = System.currentTimeMillis()
@@ -672,31 +674,31 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
             if (originalGameInfo.gameParameters.isOnlineMultiplayer) {
                 try {
-                    OnlineMultiplayerGameSaver().tryUploadGame(gameInfoClone, withPreview = true)
+                    OnlineMultiplayer().tryUploadGame(gameInfoClone, withPreview = true)
                 } catch (ex: FileStorageRateLimitReached) {
                     postCrashHandlingRunnable {
-                        val cantUploadNewGamePopup = Popup(this@WorldScreen)
+                        val cantUploadNewGamePopup = Popup(this)
                         cantUploadNewGamePopup.addGoodSizedLabel("Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds").row()
                         cantUploadNewGamePopup.addCloseButton()
                         cantUploadNewGamePopup.open()
                     }
                 } catch (ex: Exception) {
                     postCrashHandlingRunnable { // Since we're changing the UI, that should be done on the main thread
-                        val cantUploadNewGamePopup = Popup(this@WorldScreen)
+                        val cantUploadNewGamePopup = Popup(this)
                         cantUploadNewGamePopup.addGoodSizedLabel("Could not upload game!").row()
                         cantUploadNewGamePopup.addCloseButton()
                         cantUploadNewGamePopup.open()
                     }
-                    this@WorldScreen.isPlayersTurn = true // Since we couldn't push the new game clone, then it's like we never clicked the "next turn" button
-                    this@WorldScreen.shouldUpdate = true
-                    return@launchCrashHandling
+                    isPlayersTurn = true // Since we couldn't push the new game clone, then it's like we never clicked the "next turn" button
+                    shouldUpdate = true
+                    return@crashHandlingThread
                 }
             }
 
             if (game.gameInfo != originalGameInfo) // while this was turning we loaded another game
-                return@launchCrashHandling
+                return@crashHandlingThread
 
-            this@WorldScreen.game.gameInfo = gameInfoClone
+            game.gameInfo = gameInfoClone
             if (consoleLog)
                 println("Next turn took ${System.currentTimeMillis()-startTime}ms")
 
@@ -714,7 +716,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                 }
 
                 if (shouldAutoSave) {
-                    val newWorldScreen = this@WorldScreen.game.worldScreen
+                    val newWorldScreen = game.worldScreen
                     newWorldScreen.waitingForAutosave = true
                     newWorldScreen.shouldUpdate = true
                     GameSaver.autoSave(gameInfoClone) {
@@ -727,11 +729,27 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         }
     }
 
+    private class NextTurnAction(val text: String, val color: Color, val action: () -> Unit)
+
     private fun updateNextTurnButton(isSomethingOpen: Boolean) {
-        nextTurnButton.update(isSomethingOpen, isPlayersTurn, waitingForAutosave, getNextTurnAction())
+        val action: NextTurnAction = getNextTurnAction()
+        nextTurnAction = action.action
+
+        nextTurnButton.setText(action.text.tr())
+        nextTurnButton.label.color = action.color
+        nextTurnButton.pack()
+        nextTurnButton.isEnabled = !isSomethingOpen && isPlayersTurn && !waitingForAutosave
         nextTurnButton.setPosition(stage.width - nextTurnButton.width - 10f, topBar.y - nextTurnButton.height - 10f)
     }
 
+    /**
+     * Used by [OptionsPopup][com.unciv.ui.worldscreen.mainmenu.OptionsPopup]
+     * to re-enable the next turn button within its Close button action
+     */
+    fun enableNextTurnButtonAfterOptions() {
+        mapHolder.reloadMaxZoom()
+        nextTurnButton.isEnabled = isPlayersTurn && !waitingForAutosave
+    }
 
     private fun getNextTurnAction(): NextTurnAction {
         return when {
@@ -814,7 +832,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                     viewingCiv.hasMovedAutomatedUnits = true
                     isPlayersTurn = false // Disable state changes
                     nextTurnButton.disable()
-                    launchCrashHandling("Move automated units") {
+                    crashHandlingThread(name="Move automated units") {
                         for (unit in viewingCiv.getCivUnits())
                             unit.doAction()
                         postCrashHandlingRunnable {

@@ -4,8 +4,9 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
 import com.unciv.json.json
+import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.models.metadata.GameSettings
-import com.unciv.ui.crashhandling.launchCrashHandling
+import com.unciv.ui.crashhandling.crashHandlingThread
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.saves.Gzip
 import java.io.File
@@ -30,20 +31,20 @@ object GameSaver {
     //endregion
     //region Helpers
 
-    private fun getSavefolder(multiplayer: Boolean = false) = if (multiplayer) multiplayerFilesFolder else saveFilesFolder
+    private fun getSubfolder(multiplayer: Boolean = false) = if (multiplayer) multiplayerFilesFolder else saveFilesFolder
 
     fun getSave(GameName: String, multiplayer: Boolean = false): FileHandle {
-        val localFile = Gdx.files.local("${getSavefolder(multiplayer)}/$GameName")
+        val localFile = Gdx.files.local("${getSubfolder(multiplayer)}/$GameName")
         if (externalFilesDirForAndroid == "" || !Gdx.files.isExternalStorageAvailable) return localFile
-        val externalFile = Gdx.files.absolute(externalFilesDirForAndroid + "/${getSavefolder(multiplayer)}/$GameName")
+        val externalFile = Gdx.files.absolute(externalFilesDirForAndroid + "/${getSubfolder(multiplayer)}/$GameName")
         if (localFile.exists() && !externalFile.exists()) return localFile
         return externalFile
     }
 
     fun getSaves(multiplayer: Boolean = false): Sequence<FileHandle> {
-        val localSaves = Gdx.files.local(getSavefolder(multiplayer)).list().asSequence()
+        val localSaves = Gdx.files.local(getSubfolder(multiplayer)).list().asSequence()
         if (externalFilesDirForAndroid == "" || !Gdx.files.isExternalStorageAvailable) return localSaves
-        return localSaves + Gdx.files.absolute(externalFilesDirForAndroid + "/${getSavefolder(multiplayer)}").list().asSequence()
+        return localSaves + Gdx.files.absolute(externalFilesDirForAndroid + "/${getSubfolder(multiplayer)}").list().asSequence()
     }
 
     fun canLoadFromCustomSaveLocation() = customSaveLocationHelper != null
@@ -55,21 +56,12 @@ object GameSaver {
     //endregion
     //region Saving
 
-    fun saveGame(game: GameInfo, GameName: String, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }): FileHandle {
-        val file = getSave(GameName)
-        saveGame(game, file, saveCompletionCallback)
-        return file
-    }
-
-    /**
-     * Only use this with a [FileHandle] obtained by [getSaves]!
-     */
-    fun saveGame(game: GameInfo, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }) {
+    fun saveGame(game: GameInfo, GameName: String, saveCompletionCallback: ((Exception?) -> Unit)? = null) {
         try {
-            file.writeString(gameInfoToString(game), false)
-            saveCompletionCallback(null)
+            getSave(GameName).writeString(gameInfoToString(game), false)
+            saveCompletionCallback?.invoke(null)
         } catch (ex: Exception) {
-            saveCompletionCallback(ex)
+            saveCompletionCallback?.invoke(ex)
         }
     }
 
@@ -79,7 +71,7 @@ object GameSaver {
         return if (forceZip ?: saveZipped) Gzip.zip(plainJson) else plainJson
     }
 
-    /** Returns gzipped serialization of preview [game] - only called from [OnlineMultiplayerGameSaver] */
+    /** Returns gzipped serialization of preview [game] - only called from [OnlineMultiplayer] */
     fun gameInfoToString(game: GameInfoPreview): String {
         return Gzip.zip(json().toJson(game))
     }
@@ -87,21 +79,12 @@ object GameSaver {
     /**
      * Overload of function saveGame to save a GameInfoPreview in the MultiplayerGames folder
      */
-    fun saveGame(game: GameInfoPreview, GameName: String, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }): FileHandle {
-        val file = getSave(GameName, true)
-        saveGame(game, file, saveCompletionCallback)
-        return file
-    }
-
-    /**
-     * Only use this with a [FileHandle] obtained by [getSaves]!
-     */
-    fun saveGame(game: GameInfoPreview, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }) {
+    fun saveGame(game: GameInfoPreview, GameName: String, saveCompletionCallback: ((Exception?) -> Unit)? = null) {
         try {
-            json().toJson(game, file)
-            saveCompletionCallback(null)
+            json().toJson(game, getSave(GameName, true))
+            saveCompletionCallback?.invoke(null)
         } catch (ex: Exception) {
-            saveCompletionCallback(ex)
+            saveCompletionCallback?.invoke(ex)
         }
     }
 
@@ -138,7 +121,7 @@ object GameSaver {
         }
     }
 
-    /** Parses [gameData] as gzipped serialization of a [GameInfoPreview] - only called from [OnlineMultiplayerGameSaver] */
+    /** Parses [gameData] as gzipped serialization of a [GameInfoPreview] - only called from [OnlineMultiplayer] */
     fun gameInfoPreviewFromString(gameData: String): GameInfoPreview {
         return json().fromJson(GameInfoPreview::class.java, Gzip.unzip(gameData))
     }
@@ -201,7 +184,7 @@ object GameSaver {
 
     fun autoSaveUnCloned(gameInfo: GameInfo, postRunnable: () -> Unit = {}) {
         // This is used when returning from WorldScreen to MainMenuScreen - no clone since UI access to it should be gone
-        launchCrashHandling(autoSaveFileName, runAsDaemon = false) {
+        crashHandlingThread(name = autoSaveFileName) {
             autoSaveSingleThreaded(gameInfo)
             // do this on main thread
             postCrashHandlingRunnable ( postRunnable )
