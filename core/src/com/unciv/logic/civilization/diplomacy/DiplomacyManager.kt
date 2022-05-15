@@ -115,7 +115,9 @@ class DiplomacyManager() {
     var diplomaticModifiers = HashMap<String, Float>()
 
     /** For city-states. Influence is saved in the CITY STATE -> major civ Diplomacy, NOT in the major civ -> city state diplomacy.
-     *  Won't go below [MINIMUM_INFLUENCE]. Note this declaration leads to Major Civs getting MINIMUM_INFLUENCE serialized, but that is ignored. */
+     * Access via getInfluence() and setInfluence() unless you know what you're doing.
+     * Note that not using the setter skips recalculating the ally and bounds checks, 
+     * and skipping the getter bypasses the modified value when at war */
     private var influence = 0f
 
     /** Total of each turn Science during Research Agreement */
