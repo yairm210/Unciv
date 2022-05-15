@@ -619,8 +619,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     CanBuildJustOutsideBorders("Can be built just outside your borders", UniqueTarget.Improvement),
     CanOnlyBeBuiltOnTile("Can only be built on [tileFilter] tiles", UniqueTarget.Improvement),
     CannotBuildOnTile("Cannot be built on [tileFilter] tiles", UniqueTarget.Improvement),
-    NoFeatureRemovalNeeded("Does not need removal of [tileFilter]", UniqueTarget.Improvement),
     CanOnlyImproveResource("Can only be built to improve a resource", UniqueTarget.Improvement),
+    NoFeatureRemovalNeeded("Does not need removal of [tileFilter]", UniqueTarget.Improvement),
+    RemovesFeaturesIfBuilt("Removes removable features when built", UniqueTarget.Improvement),
 
     DefensiveBonus("Gives a defensive bonus of [relativeAmount]%", UniqueTarget.Improvement),
     ImprovementMaintenance("Costs [amount] gold per turn when in your territory", UniqueTarget.Improvement), // Unused

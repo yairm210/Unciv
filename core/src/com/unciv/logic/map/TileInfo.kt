@@ -482,9 +482,16 @@ open class TileInfo {
     /** Returns true if the [improvement] can be built on this [TileInfo] */
     fun canBuildImprovement(improvement: TileImprovement, civInfo: CivilizationInfo): Boolean {
         val stateForConditionals = StateForConditionals(civInfo, tile=this)
+        val topTerrain = getLastTerrain()
+
         return when {
+            // Can't build if this improvement is unique to a nation other than us
             improvement.uniqueTo != null && improvement.uniqueTo != civInfo.civName -> false
+            // Can't build if we haven't researched the tech for this improvement
             improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!) -> false
+            // Can't build if the unique can't be build
+            improvement.hasUnique(UniqueType.Unbuildable, stateForConditionals) -> false
+            // Can't be build outside our borders, unless we can
             getOwner() != civInfo && !(
                 improvement.hasUnique(UniqueType.CanBuildOutsideBorders, stateForConditionals)
                 || ( // citadel can be built only next to or within own borders
@@ -492,16 +499,34 @@ open class TileInfo {
                     && neighbors.any { it.getOwner() == civInfo }
                 )
             ) -> false
+            // Can't be built if there is some other condition that we haven't met yet
             improvement.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals).any {
                 !it.conditionalsApply(stateForConditionals)
             } -> false
+            // Can't build if we've obsoleted this unique
             improvement.getMatchingUniques(UniqueType.ObsoleteWith, stateForConditionals).any {
                 civInfo.tech.isResearched(it.params[0])
             } -> false
+            // Can't build if this improvement consumes resources that we don't have
             improvement.getMatchingUniques(UniqueType.ConsumesResources, stateForConditionals).any {
                 civInfo.getCivResourcesByName()[it.params[1]]!! < it.params[0].toInt()
             } -> false
-            improvement.hasUnique(UniqueType.Unbuildable, stateForConditionals) -> false
+            
+            // Can't build if the top feature is unbuildable, EXCEPT when
+            // - we specifically allow building on that feature regardless; or
+            // - we remove that feature when built, have the tech to remove the feature AND can build after removing the feature.
+            topTerrain.unbuildable
+                && !improvement.isAllowedOnFeature(topTerrain.name)
+                && !(improvement.hasUnique(UniqueType.RemovesFeaturesIfBuilt, stateForConditionals)
+                    && Constants.remove + topTerrain.name in ruleset.tileImprovements 
+                    && ruleset.tileImprovements[Constants.remove + topTerrain.name]!!
+                        .let { it.techRequired == null || civInfo.tech.isResearched(it.techRequired!!) }
+                    && clone()
+                        .apply { this.terrainFeatures = this.terrainFeatures.filter { it != topTerrain.name } }
+                        .canBuildImprovement(improvement, civInfo)
+                ) -> false
+            
+            // Otherwise, there might be a reason this improvement isn't allowed that isn't specific to this civ
             else -> canImprovementBeBuiltHere(improvement, hasViewableResource(civInfo), stateForConditionals)
         }
     }
@@ -514,12 +539,13 @@ open class TileInfo {
         resourceIsVisible: Boolean = resource != null,
         stateForConditionals: StateForConditionals = StateForConditionals(tile=this)
     ): Boolean {
-        val topTerrain = getLastTerrain()
 
         return when {
             improvement.name == this.improvement -> false
             isCityCenter() -> false
+            
             // First we handle a few special improvements
+            
             // Can only cancel if there is actually an improvement being built
             improvement.name == Constants.cancelImprovementOrder -> (this.improvementInProgress != null)
             // Can only remove roads if that road is actually there
@@ -554,9 +580,6 @@ open class TileInfo {
             improvement.getMatchingUniques(UniqueType.MustBeNextTo, stateForConditionals).any {
                 !isAdjacentTo(it.params[0])
             } -> false
-
-            // Can't build on unbuildable terrains - EXCEPT when specifically allowed to
-            topTerrain.unbuildable && !improvement.isAllowedOnFeature(topTerrain.name) -> false
             
             // Can't build it if it is only allowed to improve resources and it doesn't improve this reousrce
             improvement.hasUnique(UniqueType.CanOnlyImproveResource, stateForConditionals) && (
@@ -564,17 +587,20 @@ open class TileInfo {
             ) -> false
 
             // At this point we know this is a normal improvement and that there is no reason not to allow it to be built.
+            
             // Lastly we check if the improvement may be built on this terrain or resource 
-            improvement.canBeBuiltOn(topTerrain.name) -> true
+            improvement.canBeBuiltOn(getLastTerrain().name) -> true
             isLand && improvement.canBeBuiltOn("Land") -> true
             isWater && improvement.canBeBuiltOn("Water") -> true
             // DO NOT reverse this &&. isAdjacentToFreshwater() is a lazy which calls a function, and reversing it breaks the tests.
             improvement.hasUnique(UniqueType.ImprovementBuildableByFreshWater, stateForConditionals) 
                 && isAdjacentTo(Constants.freshWater) -> true
+            
             // I don't particularly like this check, but it is required to build mines on non-hill resources
             resourceIsVisible && tileResource.isImprovedBy(improvement.name) -> true
             // DEPRECATED since 4.0.14, REMOVE SOON:
             isLand && improvement.terrainsCanBeBuiltOn.isEmpty() && !improvement.hasUnique(UniqueType.CanOnlyImproveResource) -> true
+            // No reason this improvement should be built here, so can't build it 
             else -> false
         }
     }
