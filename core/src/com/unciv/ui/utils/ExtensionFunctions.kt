@@ -13,7 +13,7 @@ import com.unciv.UncivGame
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.Sounds
-import com.unciv.ui.crashhandling.launchCrashHandling
+import com.unciv.ui.crashhandling.crashHandlingThread
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import java.text.SimpleDateFormat
@@ -67,7 +67,7 @@ fun Actor.center(parent: Stage){ centerX(parent); centerY(parent)}
 fun Actor.onClickEvent(sound: UncivSound = UncivSound.Click, function: (event: InputEvent?, x: Float, y: Float) -> Unit) {
     this.addListener(object : ClickListener() {
         override fun clicked(event: InputEvent?, x: Float, y: Float) {
-            launchCrashHandling("Sound") { Sounds.play(sound) }
+            crashHandlingThread(name = "Sound") { Sounds.play(sound) }
             function(event, x, y)
         }
     })
