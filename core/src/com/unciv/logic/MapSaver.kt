@@ -3,6 +3,7 @@ package com.unciv.logic
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.json.json
+import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.TileMap
 import com.unciv.ui.saves.Gzip
 
@@ -41,11 +42,27 @@ object MapSaver {
         getMap(mapName).writeString(mapToSavedString(tileMap), false)
     }
 
-    fun loadMap(mapFile:FileHandle, checkSizeErrors: Boolean = true):TileMap {
+    fun loadMap(mapFile: FileHandle, checkSizeErrors: Boolean = true): TileMap {
         return mapFromSavedString(mapFile.readString(), checkSizeErrors)
     }
 
     fun getMaps(): Array<FileHandle> = Gdx.files.local(mapsFolder).list()
 
-    private fun mapFromJson(json:String): TileMap = json().fromJson(TileMap::class.java, json)
+    private fun mapFromJson(json: String): TileMap = json().fromJson(TileMap::class.java, json)
+
+    /** Class to parse only the parameters out of a map file */
+    private class TileMapPreview {
+        val mapParameters = MapParameters()
+    }
+    fun loadMapParameters(mapFile: FileHandle): MapParameters {
+        return mapParametersFromSavedString(mapFile.readString())
+    }
+    fun mapParametersFromSavedString(mapString: String): MapParameters {
+        val unzippedJson = try {
+            Gzip.unzip(mapString.trim())
+        } catch (ex: Exception) {
+            mapString
+        }
+        return json().fromJson(TileMapPreview::class.java, unzippedJson).mapParameters
+    }
 }

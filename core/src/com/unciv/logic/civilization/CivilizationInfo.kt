@@ -598,11 +598,15 @@ class CivilizationInfo {
     fun getEraNumber(): Int = getEra().eraNumber
 
     fun isAtWarWith(otherCiv: CivilizationInfo): Boolean {
-        if (otherCiv == this) return false // never at war with itself
-        if (otherCiv.isBarbarian() || isBarbarian()) return true
-        val diplomacyManager = diplomacy[otherCiv.civName]
-            ?: return false // not encountered yet
-        return diplomacyManager.diplomaticStatus == DiplomaticStatus.War
+        return when {
+            otherCiv == this -> false
+            otherCiv.isBarbarian() || isBarbarian() -> true
+            else -> {
+                val diplomacyManager = diplomacy[otherCiv.civName]
+                    ?: return false // not encountered yet
+                return diplomacyManager.diplomaticStatus == DiplomaticStatus.War
+            }
+        }
     }
 
     fun isAtWar() = diplomacy.values.any { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv().isDefeated() }
