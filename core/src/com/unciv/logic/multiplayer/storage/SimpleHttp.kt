@@ -9,11 +9,13 @@ import java.net.*
 import java.nio.charset.Charset
 
 object SimpleHttp {
-    fun sendGetRequest(url: String, action: (success: Boolean, result: String, code: Int?)->Unit) {
-        sendRequest(Net.HttpMethods.GET, url, "", action)
+    fun sendGetRequest(url: String, timeout: Int = 5000,
+                       action: (success: Boolean, result: String, code: Int?)->Unit) {
+        sendRequest(Net.HttpMethods.GET, url, "", timeout, action)
     }
 
-    fun sendRequest(method: String, url: String, content: String, action: (success: Boolean, result: String, code: Int?)->Unit) {
+    fun sendRequest(method: String, url: String, content: String, timeout: Int = 5000,
+                    action: (success: Boolean, result: String, code: Int?)->Unit) {
         var uri = URI(url)
         if (uri.host == null) uri = URI("http://$url")
 
@@ -24,9 +26,10 @@ object SimpleHttp {
             action(false, "Bad URL", null)
             return
         }
-        
+
         with(urlObj.openConnection() as HttpURLConnection) {
             requestMethod = method  // default is GET
+            connectTimeout = timeout
             if (UncivGame.isCurrentInitialized())
                 setRequestProperty("User-Agent", "Unciv/${UncivGame.Current.version}-GNU-Terry-Pratchett")
             else
