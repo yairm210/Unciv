@@ -58,7 +58,10 @@ android {
 
     }
     lint {
-        disable.add("MissingTranslation")
+        disable += "MissingTranslation"   // meaning res/values/strings.xml
+        disable += "UnusedAttribute"      // since we're targeting a range of API levels, it's OK e.g. appCategory="game" will be ignored by OLD devices
+        disable += "GradleDependency"     // meaning the androidx implementations in dependencies: Need to stay that level with targetApi = 30
+        disable += "IconDensities"        // complains about banner which supplies only one density _following documentation_
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
