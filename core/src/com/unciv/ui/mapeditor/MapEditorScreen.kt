@@ -2,7 +2,6 @@ package com.unciv.ui.mapeditor
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
@@ -18,18 +17,16 @@ import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.utils.*
 
+
 //todo normalize properly
 
+//todo Direct Strategic Resource abundance control
 //todo functional Tab for Units (empty Tab is prepared but commented out in MapEditorEditTab.AllEditSubTabs)
 //todo copy/paste tile areas? (As tool tab, brush sized, floodfill forbidden, tab displays copied area)
 //todo Synergy with Civilopedia for drawing loose tiles / terrain icons
 //todo left-align everything so a half-open drawer is more useful
 //todo combined brush
 //todo New function `convertTerrains` is auto-run after rivers the right decision for step-wise generation? Will paintRiverFromTo need the same? Will painting manually need the conversion?
-//todo work in Simon's changes to continent/landmass
-//todo work in Simon's regions - check whether generate and store or discard is the way
-//todo Regions: If relevant, view and possibly work in Simon's colored visualization
-//todo Strategic Resource abundance control
 //todo Tooltips for Edit items with info on placeability? Place this info as Brush description? In Expander?
 //todo Civilopedia links from edit items by right-click/long-tap?
 //todo Mod tab change base ruleset - disableAllCheckboxes - instead some intelligence to leave those mods on that stay compatible?
@@ -38,7 +35,9 @@ import com.unciv.ui.utils.*
 //todo "random nation" starting location (maybe no new internal representation = all major nations)
 //todo Nat Wonder step generator: Needs tweaks to avoid placing duplicates or wonders too close together
 //todo Music? Different suffix? Off? 20% Volume?
-//todo See #6610 - re-layout after the map size dropdown changes to custom and new widgets are inserted - can reach "Create" only by dragging the _header_ of the sub-TabbedPager
+//todo See #6694 - allow placing Barbarian encampments (problem: dead on game start - BarbarianManager.encampments)
+//todo See #6694 - allow adding tiles to a map (1 cell all around on hex? world-wrapped hex?? all around on rectangular? top bottom only on world-wrapped??)
+//todo move map copy&paste to save/load??
 
 class MapEditorScreen(map: TileMap? = null): BaseScreen() {
     /** The map being edited, with mod list for that map */
@@ -101,7 +100,7 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen() {
                 ?: return MapParameters()
             return lastSetup.mapParameters.clone().apply {
                 reseed()
-                mods.removeAll(RulesetCache.getSortedBaseRulesets())
+                mods.removeAll(RulesetCache.getSortedBaseRulesets().toSet())
             }
         }
         fun saveDefaultParameters(parameters: MapParameters) {

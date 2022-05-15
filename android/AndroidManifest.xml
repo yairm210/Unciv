@@ -16,6 +16,7 @@
         android:roundIcon="@mipmap/uncivicon_round"
         android:label="@string/app_name"
         android:isGame="true"
+        android:largeHeap="true"
         android:appCategory="game"
         android:banner="@drawable/banner"
         android:theme="@style/GdxTheme" >

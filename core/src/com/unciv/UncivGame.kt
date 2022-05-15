@@ -19,14 +19,11 @@ import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.PlayerReadyScreen
 import com.unciv.ui.worldscreen.WorldScreen
-import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
+import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.ui.audio.Sounds
-import com.unciv.ui.crashhandling.closeExecutors
-import com.unciv.ui.crashhandling.launchCrashHandling
+import com.unciv.ui.crashhandling.crashHandlingThread
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.multiplayer.LoadDeepLinkScreen
-import com.unciv.ui.popup.Popup
 import java.util.*
 
 class UncivGame(parameters: UncivGameParameters) : Game() {
@@ -117,7 +114,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
         Gdx.graphics.isContinuousRendering = settings.continuousRendering
 
-        launchCrashHandling("LoadJSON") {
+        crashHandlingThread(name = "LoadJSON") {
             RulesetCache.loadRulesets(printOutput = true)
             translations.tryReadTranslationForCurrentLanguage()
             translations.loadPercentageCompleteOfLanguages()
@@ -172,26 +169,13 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         Gdx.graphics.requestRendering()
     }
 
-    fun tryLoadDeepLinkedGame() = launchCrashHandling("LoadDeepLinkedGame") {
+    fun tryLoadDeepLinkedGame() {
         if (deepLinkedMultiplayerGame != null) {
-            postCrashHandlingRunnable {
-                setScreen(LoadDeepLinkScreen())
-            }
             try {
-                val onlineGame = OnlineMultiplayerGameSaver().tryDownloadGame(deepLinkedMultiplayerGame!!)
-                postCrashHandlingRunnable {
-                    loadGame(onlineGame)
-                }
+                val onlineGame = OnlineMultiplayer().tryDownloadGame(deepLinkedMultiplayerGame!!)
+                loadGame(onlineGame)
             } catch (ex: Exception) {
-                postCrashHandlingRunnable {
-                    val mainMenu = MainMenuScreen()
-                    setScreen(mainMenu)
-                    val popup = Popup(mainMenu)
-                    popup.addGoodSizedLabel("Failed to load multiplayer game: ${ex.message ?: ex::class.simpleName}")
-                    popup.row()
-                    popup.addCloseButton()
-                    popup.open()
-                }
+                setScreen(MainMenuScreen())
             }
         }
     }
@@ -226,7 +210,6 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         cancelDiscordEvent?.invoke()
         Sounds.clearCache()
         if (::musicController.isInitialized) musicController.gracefulShutdown()  // Do allow fade-out
-        closeExecutors()
 
         // Log still running threads (on desktop that should be only this one and "DestroyJavaVM")
         val numThreads = Thread.activeCount()

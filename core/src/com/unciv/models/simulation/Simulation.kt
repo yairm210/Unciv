@@ -5,9 +5,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameStarter
 import com.unciv.models.metadata.GameSetupInfo
-import com.unciv.ui.crashhandling.launchCrashHandling
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.runBlocking
+import com.unciv.ui.crashhandling.crashHandlingThread
 import kotlin.time.Duration
 import kotlin.math.max
 import kotlin.time.ExperimentalTime
@@ -42,12 +40,12 @@ class Simulation(
         }
     }
 
-    fun start() = runBlocking {
+    fun start() {
 
         startTime = System.currentTimeMillis()
-        val jobs: ArrayList<Job> = ArrayList()
+        val threads: ArrayList<Thread> = ArrayList()
         for (threadId in 1..threadsNumber) {
-            jobs.add(launchCrashHandling("simulation-${threadId}") {
+            threads.add(crashHandlingThread {
                 for (i in 1..simulationsPerThread) {
                     val gameInfo = GameStarter.startNewGame(GameSetupInfo(newGameInfo))
                     gameInfo.simulateMaxTurns = maxTurns
@@ -68,8 +66,8 @@ class Simulation(
                 }
             })
         }
-        // wait for all to finish
-        for (job in jobs) job.join()
+        // wait for all threads to finish
+        for (thread in threads) thread.join()
         endTime = System.currentTimeMillis()
     }
 

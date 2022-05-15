@@ -93,7 +93,6 @@ project(":android") {
     dependencies {
         "implementation"(project(":core"))
         "implementation"("com.badlogicgames.gdx:gdx-backend-android:$gdxVersion")
-        "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1")
         natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a")
         natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a")
         natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86")
@@ -120,7 +119,6 @@ project(":core") {
 
     dependencies {
         "implementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
-        "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
     }
 
 

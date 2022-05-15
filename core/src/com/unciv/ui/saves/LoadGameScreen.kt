@@ -14,7 +14,7 @@ import com.unciv.logic.MissingModsException
 import com.unciv.logic.UncivShowableException
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.crashhandling.launchCrashHandling
+import com.unciv.ui.crashhandling.crashHandlingThread
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.pickerscreens.Github
@@ -51,7 +51,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
             val loadingPopup = Popup( this)
             loadingPopup.addGoodSizedLabel("Loading...")
             loadingPopup.open()
-            launchCrashHandling("Load Game") {
+            crashHandlingThread(name = "Load Game") {
                 try {
                     // This is what can lead to ANRs - reading the file and setting the transients, that's why this is in another thread
                     val loadedGame = GameSaver.loadGameByName(selectedSave)
@@ -59,7 +59,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
                 } catch (ex: Exception) {
                     postCrashHandlingRunnable {
                         loadingPopup.close()
-                        val cantLoadGamePopup = Popup(this@LoadGameScreen)
+                        val cantLoadGamePopup = Popup(this)
                         cantLoadGamePopup.addGoodSizedLabel("It looks like your saved game can't be loaded!").row()
                         if (ex is UncivShowableException && ex.localizedMessage != null) {
                             // thrown exceptions are our own tests and can be shown to the user
@@ -155,7 +155,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
     private fun loadMissingMods() {
         loadMissingModsButton.isEnabled = false
         descriptionLabel.setText("Loading...".tr())
-        launchCrashHandling("DownloadMods", runAsDaemon = false) {
+        crashHandlingThread(name="DownloadMods") {
             try {
                 val mods = missingModsToLoad.replace(' ', '-').lowercase().splitToSequence(",-")
                 for (modName in mods) {
@@ -175,7 +175,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
                     missingModsToLoad = ""
                     loadMissingModsButton.isVisible = false
                     errorLabel.setText("")
-                    ToastPopup("Missing mods are downloaded successfully.", this@LoadGameScreen)
+                    ToastPopup("Missing mods are downloaded successfully.", this)
                 }
             } catch (ex: Exception) {
                 handleLoadGameException("Could not load the missing mods!", ex)
@@ -205,9 +205,8 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
         loadImage.addAction(Actions.rotateBy(360f, 2f))
         saveTable.add(loadImage).size(50f)
 
-        // Apparently, even just getting the list of saves can cause ANRs -
-        // not sure how many saves these guys had but Google Play reports this to have happened hundreds of times
-        launchCrashHandling("GetSaves") {
+        crashHandlingThread { // Apparently, even jut getting the list of saves can cause ANRs -
+            // not sure how many saves these guys had but Google Play reports this to have happened hundreds of times
             // .toList() because otherwise the lastModified will only be checked inside the postRunnable
             val saves = GameSaver.getSaves().sortedByDescending { it.lastModified() }.toList()
 
@@ -236,7 +235,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
 
         val savedAt = Date(save.lastModified())
         var textToSet = save.name() + "\n${"Saved at".tr()}: " + savedAt.formatDate()
-        launchCrashHandling("LoadMetaData") { // Even loading the game to get its metadata can take a long time on older phones
+        crashHandlingThread { // Even loading the game to get its metadata can take a long time on older phones
             try {
                 val game = GameSaver.loadGamePreviewFromFile(save)
                 val playerCivNames = game.civilizations.filter { it.isPlayerCivilization() }.joinToString { it.civName.tr() }

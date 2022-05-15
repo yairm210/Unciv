@@ -10,6 +10,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.*
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.MarkupRenderer
@@ -18,6 +19,7 @@ import com.unciv.ui.mapeditor.MapEditorEditTab.BrushHandlerType
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.*
+import kotlin.random.Random
 
 internal interface IMapEditorEditSubTabs {
     fun isDisabled(): Boolean
@@ -146,15 +148,16 @@ class MapEditorEditResourcesTab(
         add(MarkupRenderer.render(
             getResources(),
             iconDisplay = FormattedLine.IconDisplay.NoLink
-        ) {
-            editTab.setBrush(it, "Resource/$it") { tile ->
-                tile.resource = it
+        ) { resourceName ->
+            val resource = ruleset.tileResources[resourceName]!!
+            editTab.setBrush(resourceName, resource.makeLink()) {
+                it.setTileResource(resource, rng = editTab.randomness.RNG)
             }
         }).padTop(0f).row()
     }
 
     private fun allowedResources() = ruleset.tileResources.values.asSequence()
-        .filter { !it.hasUnique("Can only be created by Mercantile City-States") }  //todo type-i-fy
+        .filter { !it.hasUnique(UniqueType.CityStateOnlyResource) }
     private fun getResources(): List<FormattedLine> = sequence {
         var lastGroup = ResourceType.Bonus
         for (resource in allowedResources()) {

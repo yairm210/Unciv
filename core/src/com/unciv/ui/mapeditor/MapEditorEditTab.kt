@@ -28,7 +28,7 @@ class MapEditorEditTab(
     private val brushCell: Cell<Actor>
 
     private var ruleset = editorScreen.ruleset
-    private val randomness = MapGenerationRandomness()  // for auto river
+    internal val randomness = MapGenerationRandomness()  // for auto river
 
     enum class BrushHandlerType { None, Direct, Tile, Road, River, RiverFromTo }
     private var brushHandlerType = BrushHandlerType.None
