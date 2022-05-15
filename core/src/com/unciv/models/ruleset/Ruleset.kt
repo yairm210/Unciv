@@ -631,7 +631,8 @@ class Ruleset {
                 val improvementName = unique.params[0]
                 if (tileImprovements[improvementName]==null) continue // this will be caught in the checkUniques
                 if ((tileImprovements[improvementName] as Stats).none() &&
-                        unit.isCivilian() && !unit.isGreatGeneral()) {
+                        unit.isCivilian() &&
+                        !unit.isGreatPersonOfType("War")) {
                     lines.add("${unit.name} can place improvement $improvementName which has no stats, preventing unit automation!",
                         RulesetErrorSeverity.Warning)
                 }

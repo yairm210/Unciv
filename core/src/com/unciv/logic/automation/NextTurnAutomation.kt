@@ -830,7 +830,7 @@ object NextTurnAutomation {
             when {
                 unit.baseUnit.isRanged() -> rangedUnits.add(unit)
                 unit.baseUnit.isMelee() -> meleeUnits.add(unit)
-                unit.hasGreatGeneralUnique
+                unit.isGreatPersonOfType("War")
                     -> generals.add(unit) // Generals move after military units
                 else -> civilianUnits.add(unit)
             }

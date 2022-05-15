@@ -988,6 +988,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "May create improvements on water resources"
 	Applicable to: Unit
 
+??? example  "[relativeAmount]% Strength bonus for [mapUnitFilter] units in [amount] tiles"
+	Example: "[+20]% Strength bonus for [Wounded] units in [3] tiles"
+
+	Applicable to: Unit
+
 ??? example  "[relativeAmount]% Strength for enemy [combatantFilter] units in adjacent [tileFilter] tiles"
 	Example: "[+20]% Strength for enemy [City] units in adjacent [Farm] tiles"
 
@@ -1212,9 +1217,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Can [action] [amount] times"
 	Example: "Can [Spread Religion] [3] times"
 
-	Applicable to: Unit
-
-??? example  "Bonus for units in 2 tile radius 15%"
 	Applicable to: Unit
 
 ??? example  "Can speed up construction of a building"
