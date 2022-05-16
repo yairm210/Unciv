@@ -1,7 +1,9 @@
 package com.unciv.logic.trade
 
 import com.unciv.Constants
+import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.tile.ResourceType
@@ -102,6 +104,13 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                     }
                     to.updateViewableTiles()
                     from.updateViewableTiles()
+
+                    // suggest an option to liberate the city
+                    if (to.isPlayerCivilization()
+                        && city.foundingCiv != ""
+                        && from.civName != city.foundingCiv // can't liberate if the city actually belongs to those guys
+                        && to.civName != city.foundingCiv)  // can't liberate if it's our city
+                      to.popupAlerts.add(PopupAlert(AlertType.CityTraded, city.id))
                 }
                 if (offer.type == TradeType.Treaty) {
                     if (offer.name == Constants.peaceTreaty) to.getDiplomacyManager(from).makePeace()

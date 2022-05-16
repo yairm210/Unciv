@@ -247,6 +247,8 @@ class GameInfo {
             }
             switchTurn()
         }
+        if (turns == UncivGame.Current.simulateUntilTurnForDebug)
+            UncivGame.Current.simulateUntilTurnForDebug = 0
 
         currentTurnStartTime = System.currentTimeMillis()
         currentPlayer = thisPlayer.civName

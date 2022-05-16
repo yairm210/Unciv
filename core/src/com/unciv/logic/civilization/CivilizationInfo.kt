@@ -598,11 +598,15 @@ class CivilizationInfo {
     fun getEraNumber(): Int = getEra().eraNumber
 
     fun isAtWarWith(otherCiv: CivilizationInfo): Boolean {
-        if (otherCiv == this) return false // never at war with itself
-        if (otherCiv.isBarbarian() || isBarbarian()) return true
-        val diplomacyManager = diplomacy[otherCiv.civName]
-            ?: return false // not encountered yet
-        return diplomacyManager.diplomaticStatus == DiplomaticStatus.War
+        return when {
+            otherCiv == this -> false
+            otherCiv.isBarbarian() || isBarbarian() -> true
+            else -> {
+                val diplomacyManager = diplomacy[otherCiv.civName]
+                    ?: return false // not encountered yet
+                return diplomacyManager.diplomaticStatus == DiplomaticStatus.War
+            }
+        }
     }
 
     fun isAtWar() = diplomacy.values.any { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv().isDefeated() }
@@ -1300,6 +1304,26 @@ class CivilizationInfo {
         this.proximity[otherCiv.civName] = proximity
 
         return proximity
+    }
+
+    /**
+     * Removes current capital then moves capital to argument city if not null
+     */
+    fun moveCapitalTo(city: CityInfo?) {
+        if (cities.isNotEmpty()) {
+            getCapital().cityConstructions.removeBuilding(getCapital().capitalCityIndicator())
+        }
+
+        if (city == null) return // can't move a non-existent city but we can always remove our old capital
+        // move new capital
+        city.cityConstructions.addBuilding(city.capitalCityIndicator())
+        city.isBeingRazed = false // stop razing the new capital if it was being razed
+    }
+
+    fun moveCapitalToNextLargest() {
+        moveCapitalTo(cities
+            .filterNot { it == getCapital() }
+            .maxByOrNull { it.population.population})
     }
 
     //////////////////////// City State wrapper functions ////////////////////////

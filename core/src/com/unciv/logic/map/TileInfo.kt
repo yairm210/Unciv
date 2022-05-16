@@ -20,6 +20,7 @@ import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.toPercent
 import kotlin.math.abs
 import kotlin.math.min
+import kotlin.random.Random
 
 open class TileInfo {
     @Transient
@@ -69,6 +70,10 @@ open class TileInfo {
 
     var naturalWonder: String? = null
     var resource: String? = null
+        set(value) {
+            tileResourceCache = null
+            field = value
+        }
     var resourceAmount: Int = 0
     var improvement: String? = null
     var improvementInProgress: String? = null
@@ -162,12 +167,17 @@ open class TileInfo {
         else -> getBaseTerrain()
     }
 
-    @delegate:Transient
-    val tileResource: TileResource by lazy {
-        if (resource == null) throw Exception("No resource exists for this tile!")
-        else if (!ruleset.tileResources.containsKey(resource!!)) throw Exception("Resource $resource does not exist in this ruleset!")
-        else ruleset.tileResources[resource!!]!!
-    }
+    @Transient
+    private var tileResourceCache: TileResource? = null
+    val tileResource: TileResource
+        get() {
+            if (tileResourceCache == null) {
+                if (resource == null) throw Exception("No resource exists for this tile!")
+                if (!ruleset.tileResources.containsKey(resource!!)) throw Exception("Resource $resource does not exist in this ruleset!")
+                tileResourceCache = ruleset.tileResources[resource!!]!!
+            }
+            return tileResourceCache!!
+        }
 
     private fun getNaturalWonder(): Terrain =
             if (naturalWonder == null) throw Exception("No natural wonder exists for this tile!")
@@ -243,7 +253,7 @@ open class TileInfo {
 
     fun isRoughTerrain() = getAllTerrains().any{ it.isRough() }
 
-    /** Checks whether any of the TERRAINS of this tile has a certain unqiue */
+    /** Checks whether any of the TERRAINS of this tile has a certain unique */
     fun terrainHasUnique(uniqueType: UniqueType) = getAllTerrains().any { it.hasUnique(uniqueType) }
     /** Get all uniques of this type that any TERRAIN on this tile has */
     fun getTerrainMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(tile=this) ): Sequence<Unique> {
@@ -530,15 +540,15 @@ open class TileInfo {
             RoadStatus.values().any { it.name == improvement.name } -> !isWater && RoadStatus.valueOf(improvement.name) > roadStatus
             
             // Then we check if there is any reason to not allow this improvement to be build
-            
+
             // Can't build if there is already an irremovable improvement here
             this.improvement != null && getTileImprovement()!!.hasUnique(UniqueType.Irremovable, stateForConditionals) -> false
-            
+
             // Can't build if any terrain specifically prevents building this improvement
             getTerrainMatchingUniques(UniqueType.RestrictedBuildableImprovements, stateForConditionals).any {
                 unique -> !improvement.matchesFilter(unique.params[0])
             } -> false
-            
+
             // Can't build if the improvement specifically prevents building on some present feature
             improvement.getMatchingUniques(UniqueType.CannotBuildOnTile, stateForConditionals).any {
                 unique -> matchesTerrainFilter(unique.params[0])
@@ -549,7 +559,7 @@ open class TileInfo {
             improvement.getMatchingUniques(UniqueType.CanOnlyBeBuiltOnTile, stateForConditionals).let {
                 it.any() && it.any { unique -> !matchesTerrainFilter(unique.params[0]) }
             } -> false
-            
+
             // Can't build if the improvement requires an adjacent terrain that is not present
             improvement.getMatchingUniques(UniqueType.MustBeNextTo, stateForConditionals).any {
                 !isAdjacentTo(it.params[0])
@@ -557,8 +567,8 @@ open class TileInfo {
 
             // Can't build on unbuildable terrains - EXCEPT when specifically allowed to
             topTerrain.unbuildable && !improvement.isAllowedOnFeature(topTerrain.name) -> false
-            
-            // Can't build it if it is only allowed to improve resources and it doesn't improve this reousrce
+
+            // Can't build it if it is only allowed to improve resources and it doesn't improve this resource
             improvement.hasUnique(UniqueType.CanOnlyImproveResource, stateForConditionals) && (
                 !resourceIsVisible || !tileResource.isImprovedBy(improvement.name)
             ) -> false
@@ -899,7 +909,15 @@ open class TileInfo {
         for (unit in this.getUnits()) removeUnit(unit)
     }
 
-    fun setTileResource(newResource: TileResource, majorDeposit: Boolean = false) {
+    /**
+     * Sets this tile's [resource] and, if [newResource] is a Strategic resource, [resourceAmount] fields.
+     * 
+     * [resourceAmount] is determined by [MapParameters.mapResources] and [majorDeposit], and
+     * if the latter is `null` a random choice between major and minor deposit is made, approximating
+     * the frequency [MapRegions][com.unciv.logic.map.mapgenerator.MapRegions] would use.
+     * A randomness source ([rng]) can optionally be provided for that step (not used otherwise).
+     */
+    fun setTileResource(newResource: TileResource, majorDeposit: Boolean? = null, rng: Random = Random.Default) {
         resource = newResource.name
 
         if (newResource.resourceType != ResourceType.Strategic) return
@@ -911,20 +929,27 @@ open class TileInfo {
             }
         }
 
+        val majorDepositFinal = majorDeposit ?: (rng.nextDouble() < approximateMajorDepositDistribution())
+        val depositAmounts = if (majorDepositFinal) newResource.majorDepositAmount else newResource.minorDepositAmount
         resourceAmount = when (tileMap.mapParameters.mapResources) {
-            MapResources.sparse -> {
-                if (majorDeposit) newResource.majorDepositAmount.sparse
-                else newResource.minorDepositAmount.sparse
-            }
-            MapResources.abundant -> {
-                if (majorDeposit) newResource.majorDepositAmount.abundant
-                else newResource.minorDepositAmount.abundant
-            }
-            else -> {
-                if (majorDeposit) newResource.majorDepositAmount.default
-                else newResource.minorDepositAmount.default
-            }
+            MapResources.sparse -> depositAmounts.sparse
+            MapResources.abundant -> depositAmounts.abundant
+            else -> depositAmounts.default
         }
+    }
+
+    private fun approximateMajorDepositDistribution(): Double {
+        // We can't replicate the MapRegions resource distributor, so let's try to get
+        // a close probability of major deposits per tile
+        var probability = 0.0
+        for (unique in getAllTerrains().flatMap { it.getMatchingUniques(UniqueType.MajorStrategicFrequency) }) {
+            val frequency = unique.params[0].toIntOrNull() ?: continue
+            if (frequency <= 0) continue
+            // The unique param is literally "every N tiles", so to get a probability p=1/f
+            probability += 1.0 / frequency
+        }
+        return if (probability == 0.0) 0.04  // This is the default of 1 per 25 tiles
+            else probability
     }
 
     fun setTerrainFeatures(terrainFeatureList:List<String>) {
