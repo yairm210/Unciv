@@ -19,7 +19,6 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.*
 import java.util.*
@@ -129,8 +128,7 @@ class CityScreen(
         val citizenManagementButton = "Citizen Management".tr().toTextButton()
         citizenManagementButton.labelCell.pad(5f)
         citizenManagementButton.onClick {
-            selectedTile = null
-            selectedConstruction = null
+            clearSelection()
             citizenManagementVisible = true
             update()
         }
@@ -331,8 +329,7 @@ class CityScreen(
 
         for (tileGroup in cityTileGroups) {
             tileGroup.onClick {
-                tileGroupOnClick(tileGroup, cityInfo)  // TODO rework
-                citizenManagementVisible = false
+                tileGroupOnClick(tileGroup, cityInfo)
             }
             tileGroups.add(tileGroup)
         }
@@ -390,9 +387,12 @@ class CityScreen(
         if (tileGroup.isWorkable && canChangeState) {
             if (!tileInfo.providesYield() && cityInfo.population.getFreePopulation() > 0) {
                 cityInfo.workedTiles.add(tileInfo.position)
+                cityInfo.lockedTiles.add(tileInfo.position)
                 game.settings.addCompletedTutorialTask("Reassign worked tiles")
-            } else if (tileInfo.isWorked() && !tileInfo.isLocked())
+            } else if (tileInfo.isWorked()) {
                 cityInfo.workedTiles.remove(tileInfo.position)
+                cityInfo.lockedTiles.remove(tileInfo.position)
+            }
             cityInfo.cityStats.update()
         }
         update()
@@ -412,11 +412,13 @@ class CityScreen(
             pickTileData = null
         }
         selectedTile = null
+        citizenManagementVisible = false
     }
     private fun selectTile(newTile: TileInfo?) {
         selectedConstruction = null
         selectedQueueEntryTargetTile = null
         pickTileData = null
+        citizenManagementVisible = false
         selectedTile = newTile
     }
     fun clearSelection() = selectTile(null)
