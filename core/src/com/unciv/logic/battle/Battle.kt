@@ -77,7 +77,7 @@ object Battle {
         // Withdraw from melee ability
         if (attacker is MapUnitCombatant && attacker.isMelee() && defender is MapUnitCombatant) {
             val withdrawUniques = defender.unit.getMatchingUniques(UniqueType.MayWithdraw)
-            val baseWithdrawChance = 100-withdrawUniques.fold(100) { probability, unique -> probability * (100-unique.params[0].toInt()) }
+            val baseWithdrawChance = 100-withdrawUniques.fold(100) { probability, unique -> probability * (100-unique.params[0].toInt()) / 100 }
             // If a mod allows multiple withdraw properties, they stack multiplicatively
             if (baseWithdrawChance != 0 && doWithdrawFromMeleeAbility(attacker, defender, baseWithdrawChance)) return
         }
