@@ -191,26 +191,19 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         statMap["Unit upkeep"] = Stats(gold = -getUnitMaintenance().toFloat())
 
         if (civInfo.religionManager.religion != null) {
-            for (unique in civInfo.religionManager.religion!!.getBeliefs(BeliefType.Founder)
-                .flatMap { it.uniqueObjects }
-            ) {
-                if (unique.type == UniqueType.StatsFromGlobalCitiesFollowingReligion) {
+            for (unique in civInfo.religionManager.religion!!.getFounderUniques()) {
+                if (unique.isOfType(UniqueType.StatsFromGlobalCitiesFollowingReligion)) {
                     statMap.add(
                         "Religion",
                         unique.stats.times(civInfo.religionManager.numberOfCitiesFollowingThisReligion())
                     )
                 }
-            }
-            for (unique in civInfo.religionManager.religion!!.getFounderUniques())
-                if (unique.placeholderText == "[] for every [] global followers []")
+                if (unique.isOfType(UniqueType.StatsFromGlobalFollowers))
                     statMap.add(
                         "Religion",
-                        unique.stats *
-                                civInfo.religionManager.numberOfFollowersFollowingThisReligion(
-                                    unique.params[2]
-                                ).toFloat() /
-                                unique.params[1].toFloat()
+                        unique.stats * civInfo.religionManager.numberOfFollowersFollowingThisReligion(unique.params[2]).toFloat() / unique.params[1].toFloat()
                     )
+            }
         }
 
         if (civInfo.getHappiness() > 0) {
