@@ -5,6 +5,11 @@
 *.ear
 hs_err_pid*
 
+## Build Artifacts
+*.jar
+*.zip
+*.tar.gz
+
 ## Robovm
 /ios/robovm-build/
 
