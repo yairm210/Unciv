@@ -131,11 +131,11 @@ open class Stats(
     fun applyRankingWeights(){
         food *= 14
         production *= 12
-        gold *= 4 // BNW thinks 8, but we have the *3 multiplier
+        gold *= 8 // 3 gold worth about 2 production
         science *= 7
-        culture *= 5 // BNW had this at 15?
+        culture *= 6
         happiness *= 10 // base
-        faith *= 5 // BNW had at 5
+        faith *= 5
     }
 
     /** ***Not*** only a debug helper. It returns a string representing the content, already _translated_.

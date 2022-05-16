@@ -41,7 +41,6 @@ object Automation {
 
     private fun rankStatsForCityWork(stats: Stats, city: CityInfo, specialist: Boolean = false): Float {
         val cityAIFocus = city.cityAIFocus
-
         val yieldStats = stats.clone()
 
         if (specialist) {
@@ -76,18 +75,18 @@ object Automation {
                 else if (cityAIFocus != CityFocus.FoodFocus)
                     yieldStats.food /= 2
                 if (city.population.population < 5 && cityAIFocus != CityFocus.FoodFocus)
-                    // NoFocus or GoldGrow or ProdGrow, not Avoid Growth, pop < 5. FoodFocus already does this up
+                // NoFocus or GoldGrow or ProdGrow, not Avoid Growth, pop < 5. FoodFocus already does this up
                     yieldStats.food *= 3
             }
         }
-        
+
         if (city.population.population < 5) {
             // "small city" - we care more about food and less about global problems like gold science and culture 
             // Food already handled above. Science/Culture have low weights in Stats already
             yieldStats.gold /= 2 // it's barely worth anything at this point
         } else {
             if (city.civInfo.gold < 0 && city.civInfo.statsForNextTurn.gold <= 0)
-                yieldStats.gold *= 3 // We have a global problem
+                yieldStats.gold *= 2 // We have a global problem
 
             if (city.tiles.size < 12 || city.civInfo.wantsToFocusOn(Focus.Culture))
                 yieldStats.culture *= 2
@@ -95,7 +94,7 @@ object Automation {
 
         // Apply City focus
         cityAIFocus.applyWeightTo(yieldStats)
-        
+
         return yieldStats.values.sum()
     }
 
