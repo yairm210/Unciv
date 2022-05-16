@@ -1,6 +1,5 @@
 package com.unciv.logic.map.mapgenerator
 
-import com.unciv.Constants
 import com.unciv.logic.HexMath
 import com.unciv.logic.map.*
 import com.unciv.models.ruleset.Ruleset
@@ -11,18 +10,28 @@ import kotlin.math.pow
 
 class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRandomness) {
     //region _Fields
-    private val firstLandTerrain = ruleset.terrains.values.first { it.type==TerrainType.Land }
-    private val landTerrainName = firstLandTerrain.name
-    private val firstWaterTerrain = ruleset.terrains.values.firstOrNull { it.type==TerrainType.Water }
-    private val waterTerrainName = firstWaterTerrain?.name ?: ""
+    private val landTerrainName = getInitializationTerrain(ruleset, TerrainType.Land)
+    private val waterTerrainName: String = try {
+        getInitializationTerrain(ruleset, TerrainType.Water)
+    } catch (_: Exception) {
+        landTerrainName
+    }
+    private val landOnlyMod: Boolean = waterTerrainName == landTerrainName
     private var waterThreshold = 0.0
     //endregion
 
+    companion object {
+        // this is called from TileMap constructors as well
+        internal fun getInitializationTerrain(ruleset: Ruleset, type: TerrainType) =
+            ruleset.terrains.values.firstOrNull { it.type == type }?.name
+                ?: throw Exception("Cannot create map - no $type terrains found!")
+    }
+
     fun generateLand(tileMap: TileMap) {
         // This is to accommodate land-only mods
-        if (firstWaterTerrain==null) {
+        if (landOnlyMod) {
             for (tile in tileMap.values)
-                tile.baseTerrain = firstLandTerrain.name
+                tile.baseTerrain = landTerrainName
             return
         }
 
@@ -53,11 +62,11 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
             if (randomness.RNG.nextFloat() > threshold)
                 continue
 
-            val numberOfLandNeighbors = tileInfo.neighbors.count { it.baseTerrain == Constants.grassland }
+            val numberOfLandNeighbors = tileInfo.neighbors.count { it.baseTerrain == landTerrainName }
             if (numberOfLandNeighbors > 3)
-                tileInfo.baseTerrain = Constants.grassland
+                tileInfo.baseTerrain = landTerrainName
             else if (numberOfLandNeighbors < 3)
-                tileInfo.baseTerrain = Constants.ocean
+                tileInfo.baseTerrain = waterTerrainName
         }
     }
 
@@ -189,11 +198,12 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
     }
 
     private fun generateLandCellularAutomata(tileMap: TileMap) {
+        // Empiric nice looking range: 0.37..0.72 giving ~15%-85% water
+        // The old code had 0.55 (inverted) hard-coded, so to get the same we need waterThreshold = -0.055 for the MainMenu background.
+        waterThreshold = 0.545 + 1.75 * waterThreshold
 
         for (tile in tileMap.values) {
-            tile.baseTerrain =
-                if (randomness.RNG.nextDouble() < 0.55) Constants.grassland else Constants.ocean
-
+            spawnLandOrWater(tile, randomness.RNG.nextDouble())
             tile.setTransients()
         }
 

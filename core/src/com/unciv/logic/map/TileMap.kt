@@ -2,10 +2,10 @@ package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
-import com.unciv.Constants
 import com.unciv.logic.GameInfo
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.map.mapgenerator.MapLandmassGenerator
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
@@ -95,7 +95,7 @@ class TileMap {
     /** creates a hexagonal map of given radius (filled with grassland) */
     constructor(radius: Int, ruleset: Ruleset, worldWrap: Boolean = false) {
         startingLocations.clear()
-        val firstAvailableLandTerrain = getInitializationTerrain(ruleset)
+        val firstAvailableLandTerrain = MapLandmassGenerator.getInitializationTerrain(ruleset, TerrainType.Land)
         for (vector in HexMath.getVectorsInDistance(Vector2.Zero, radius, worldWrap))
             tileList.add(TileInfo().apply { position = vector; baseTerrain = firstAvailableLandTerrain })
         setTransients(ruleset)
@@ -104,7 +104,7 @@ class TileMap {
     /** creates a rectangular map of given width and height (filled with grassland) */
     constructor(width: Int, height: Int, ruleset: Ruleset, worldWrap: Boolean = false) {
         startingLocations.clear()
-        val firstAvailableLandTerrain = getInitializationTerrain(ruleset)
+        val firstAvailableLandTerrain = MapLandmassGenerator.getInitializationTerrain(ruleset, TerrainType.Land)
 
         // world-wrap maps must always have an even width, so round down
         val wrapAdjustedWidth = if (worldWrap && width % 2 != 0) width -1 else width
@@ -120,10 +120,6 @@ class TileMap {
 
         setTransients(ruleset)
     }
-
-    private fun getInitializationTerrain(ruleset: Ruleset) =
-        ruleset.terrains.values.firstOrNull { it.type == TerrainType.Land }?.name
-            ?: throw Exception("Cannot create map - no land terrains found!")
 
     //endregion
     //region Operators and Standards

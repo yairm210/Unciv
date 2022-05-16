@@ -75,7 +75,11 @@ class MainMenuScreen: BaseScreen() {
 
         crashHandlingThread(name = "ShowMapBackground") {
             val newMap = MapGenerator(RulesetCache.getVanillaRuleset())
-                    .generateMap(MapParameters().apply { mapSize = MapSizeNew(MapSize.Small); type = MapType.default })
+                    .generateMap(MapParameters().apply {
+                        mapSize = MapSizeNew(MapSize.Small)
+                        type = MapType.default
+                        waterThreshold = -0.055f // Gives the same level as when waterThreshold was unused in MapType.default
+                    })
             postCrashHandlingRunnable { // for GL context
                 ImageGetter.setNewRuleset(RulesetCache.getVanillaRuleset())
                 val mapHolder = EditorMapHolder(this, newMap) {}
