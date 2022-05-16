@@ -109,9 +109,6 @@ class TileMap {
         // world-wrap maps must always have an even width, so round down
         val wrapAdjustedWidth = if (worldWrap && width % 2 != 0) width -1 else width
 
-        val firstAvailableLandTerrain = ruleset.terrains.values.firstOrNull { it.type == TerrainType.Land }
-            ?: throw Exception("Cannot create map - no land terrains found!")
-
         // Even widths will have coordinates ranging -x..(x-1), not -x..x, which is always an odd-sized range
         // e.g. w=4 -> -2..1, w=5 -> -2..2, w=6 -> -3..2, w=7 -> -3..3
         for (x in -wrapAdjustedWidth / 2 .. (wrapAdjustedWidth-1) / 2)
