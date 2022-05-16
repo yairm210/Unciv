@@ -7,6 +7,7 @@ enum class AlertType {
     WarDeclaration,
     FirstContact,
     CityConquered,
+    CityTraded,
     BorderConflict,
     DemandToStopSettlingCitiesNear,
     CitySettledNearOtherCivDespiteOurPromise,

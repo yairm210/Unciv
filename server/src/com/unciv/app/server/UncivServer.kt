@@ -1,4 +1,4 @@
-package com.unciv.app.desktop
+package com.unciv.app.server
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.options.default
@@ -43,6 +43,7 @@ private class UncivServerRunner : CliktCommand() {
         embeddedServer(Netty, port = serverPort) {
             routing {
                 get("/isalive") {
+                    println("Received isalive request from ${call.request.local.remoteHost}")
                     call.respondText("true")
                 }
                 put("/files/{fileName}") {

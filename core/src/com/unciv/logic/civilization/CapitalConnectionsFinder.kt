@@ -11,7 +11,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
     private var citiesToCheck = mutableListOf(civInfo.getCapital())
     private lateinit var newCitiesToCheck: MutableList<CityInfo>
 
-    private val openBordersCivCities = civInfo.gameInfo.getCities().filter { civInfo.hasOpenBordersTo(it.civInfo) }
+    private val openBordersCivCities = civInfo.gameInfo.getCities().filter { civInfo.canEnterBordersOf(it.civInfo) }
 
     private val harbor = "Harbor"   // hardcoding at least centralized for this class for now
     private val road = RoadStatus.Road.name
@@ -94,7 +94,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
 
         val bfs = BFS(cityToConnectFrom.getCenterTile()) {
               val owner = it.getOwner()
-              (it.isCityCenter() || tileFilter(it)) && (owner == null || civInfo.hasOpenBordersTo(owner))
+              (it.isCityCenter() || tileFilter(it)) && (owner == null || civInfo.canEnterBordersOf(owner))
         }
         bfs.stepToEnd()
         val reachedCities = openBordersCivCities.filter {

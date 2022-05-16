@@ -4,10 +4,12 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
-import com.unciv.JsonParser
+import com.unciv.json.fromJsonFile
+import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.updateDeprecations
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.map.MapParameters
+import com.unciv.logic.map.RoadStatus
 import com.unciv.models.Counter
 import com.unciv.models.ModConstants
 import com.unciv.models.metadata.BaseRuleset
@@ -72,7 +74,6 @@ class ModOptions : IHasUniques {
 
 class Ruleset {
 
-    private val jsonParser = JsonParser()
     var folderLocation:FileHandle?=null
 
     var name = ""
@@ -197,7 +198,7 @@ class Ruleset {
         val modOptionsFile = folderHandle.child("ModOptions.json")
         if (modOptionsFile.exists()) {
             try {
-                modOptions = jsonParser.getFromJson(ModOptions::class.java, modOptionsFile)
+                modOptions = json().fromJsonFile(ModOptions::class.java, modOptionsFile)
                 modOptions.updateDeprecations()
             } catch (ex: Exception) {}
             modOptions.uniqueObjects = modOptions.uniques.map { Unique(it, UniqueTarget.ModOptions) }
@@ -206,7 +207,7 @@ class Ruleset {
 
         val techFile = folderHandle.child("Techs.json")
         if (techFile.exists()) {
-            val techColumns = jsonParser.getFromJson(Array<TechColumn>::class.java, techFile)
+            val techColumns = json().fromJsonFile(Array<TechColumn>::class.java, techFile)
             for (techColumn in techColumns) {
                 for (tech in techColumn.techs) {
                     if (tech.cost == 0) tech.cost = techColumn.techCost
@@ -217,49 +218,49 @@ class Ruleset {
         }
 
         val buildingsFile = folderHandle.child("Buildings.json")
-        if (buildingsFile.exists()) buildings += createHashmap(jsonParser.getFromJson(Array<Building>::class.java, buildingsFile))
+        if (buildingsFile.exists()) buildings += createHashmap(json().fromJsonFile(Array<Building>::class.java, buildingsFile))
         for(building in buildings.values)
             if(building.requiredBuildingInAllCities != null)
                 building.uniques.add(UniqueType.RequiresBuildingInAllCities.text.fillPlaceholders(building.requiredBuildingInAllCities!!))
 
         val terrainsFile = folderHandle.child("Terrains.json")
         if (terrainsFile.exists()) {
-            terrains += createHashmap(jsonParser.getFromJson(Array<Terrain>::class.java, terrainsFile))
+            terrains += createHashmap(json().fromJsonFile(Array<Terrain>::class.java, terrainsFile))
             for (terrain in terrains.values) terrain.setTransients()
         }
 
         val resourcesFile = folderHandle.child("TileResources.json")
-        if (resourcesFile.exists()) tileResources += createHashmap(jsonParser.getFromJson(Array<TileResource>::class.java, resourcesFile))
+        if (resourcesFile.exists()) tileResources += createHashmap(json().fromJsonFile(Array<TileResource>::class.java, resourcesFile))
 
         val improvementsFile = folderHandle.child("TileImprovements.json")
-        if (improvementsFile.exists()) tileImprovements += createHashmap(jsonParser.getFromJson(Array<TileImprovement>::class.java, improvementsFile))
+        if (improvementsFile.exists()) tileImprovements += createHashmap(json().fromJsonFile(Array<TileImprovement>::class.java, improvementsFile))
 
         val erasFile = folderHandle.child("Eras.json")
-        if (erasFile.exists()) eras += createHashmap(jsonParser.getFromJson(Array<Era>::class.java, erasFile))
+        if (erasFile.exists()) eras += createHashmap(json().fromJsonFile(Array<Era>::class.java, erasFile))
         // While `eras.values.toList()` might seem more logical, eras.values is a MutableCollection and
         // therefore does not guarantee keeping the order of elements like a LinkedHashMap does.
         // Using map{} sidesteps this problem
         eras.map { it.value }.withIndex().forEach { it.value.eraNumber = it.index }
 
         val unitTypesFile = folderHandle.child("UnitTypes.json")
-        if (unitTypesFile.exists()) unitTypes += createHashmap(jsonParser.getFromJson(Array<UnitType>::class.java, unitTypesFile))
+        if (unitTypesFile.exists()) unitTypes += createHashmap(json().fromJsonFile(Array<UnitType>::class.java, unitTypesFile))
 
         val unitsFile = folderHandle.child("Units.json")
-        if (unitsFile.exists()) units += createHashmap(jsonParser.getFromJson(Array<BaseUnit>::class.java, unitsFile))
+        if (unitsFile.exists()) units += createHashmap(json().fromJsonFile(Array<BaseUnit>::class.java, unitsFile))
 
         val promotionsFile = folderHandle.child("UnitPromotions.json")
-        if (promotionsFile.exists()) unitPromotions += createHashmap(jsonParser.getFromJson(Array<Promotion>::class.java, promotionsFile))
+        if (promotionsFile.exists()) unitPromotions += createHashmap(json().fromJsonFile(Array<Promotion>::class.java, promotionsFile))
 
         val questsFile = folderHandle.child("Quests.json")
-        if (questsFile.exists()) quests += createHashmap(jsonParser.getFromJson(Array<Quest>::class.java, questsFile))
+        if (questsFile.exists()) quests += createHashmap(json().fromJsonFile(Array<Quest>::class.java, questsFile))
 
         val specialistsFile = folderHandle.child("Specialists.json")
-        if (specialistsFile.exists()) specialists += createHashmap(jsonParser.getFromJson(Array<Specialist>::class.java, specialistsFile))
+        if (specialistsFile.exists()) specialists += createHashmap(json().fromJsonFile(Array<Specialist>::class.java, specialistsFile))
 
         val policiesFile = folderHandle.child("Policies.json")
         if (policiesFile.exists()) {
             policyBranches += createHashmap(
-                jsonParser.getFromJson(Array<PolicyBranch>::class.java, policiesFile)
+                json().fromJsonFile(Array<PolicyBranch>::class.java, policiesFile)
             )
             for (branch in policyBranches.values) {
                 // Setup this branch
@@ -289,34 +290,34 @@ class Ruleset {
 
         val beliefsFile = folderHandle.child("Beliefs.json")
         if (beliefsFile.exists())
-            beliefs += createHashmap(jsonParser.getFromJson(Array<Belief>::class.java, beliefsFile))
+            beliefs += createHashmap(json().fromJsonFile(Array<Belief>::class.java, beliefsFile))
 
         val religionsFile = folderHandle.child("Religions.json")
         if (religionsFile.exists())
-            religions += jsonParser.getFromJson(Array<String>::class.java, religionsFile).toList()
+            religions += json().fromJsonFile(Array<String>::class.java, religionsFile).toList()
 
         val ruinRewardsFile = folderHandle.child("Ruins.json")
         if (ruinRewardsFile.exists())
-            ruinRewards += createHashmap(jsonParser.getFromJson(Array<RuinReward>::class.java, ruinRewardsFile))
+            ruinRewards += createHashmap(json().fromJsonFile(Array<RuinReward>::class.java, ruinRewardsFile))
 
         val nationsFile = folderHandle.child("Nations.json")
         if (nationsFile.exists()) {
-            nations += createHashmap(jsonParser.getFromJson(Array<Nation>::class.java, nationsFile))
+            nations += createHashmap(json().fromJsonFile(Array<Nation>::class.java, nationsFile))
             for (nation in nations.values) nation.setTransients()
         }
 
         val difficultiesFile = folderHandle.child("Difficulties.json")
         if (difficultiesFile.exists()) 
-            difficulties += createHashmap(jsonParser.getFromJson(Array<Difficulty>::class.java, difficultiesFile))
+            difficulties += createHashmap(json().fromJsonFile(Array<Difficulty>::class.java, difficultiesFile))
 
         val globalUniquesFile = folderHandle.child("GlobalUniques.json")
         if (globalUniquesFile.exists()) {
-            globalUniques = jsonParser.getFromJson(GlobalUniques::class.java, globalUniquesFile)
+            globalUniques = json().fromJsonFile(GlobalUniques::class.java, globalUniquesFile)
         }
         
         val victoryTypesFiles = folderHandle.child("VictoryTypes.json")
         if (victoryTypesFiles.exists()) {
-            victories += createHashmap(jsonParser.getFromJson(Array<Victory>::class.java, victoryTypesFiles))
+            victories += createHashmap(json().fromJsonFile(Array<Victory>::class.java, victoryTypesFiles))
         }
 
         
@@ -657,9 +658,6 @@ class Ruleset {
             if (building.requiredBuildingInAllCities != null)
                 lines.add("${building.name} contains 'requiredBuildingInAllCities' - please convert to a \"" +
                         UniqueType.RequiresBuildingInAllCities.text.fillPlaceholders(building.requiredBuildingInAllCities!!)+"\" unique", RulesetErrorSeverity.Warning)
-            for (unique in building.getMatchingUniques("Creates a [] improvement on a specific tile"))
-                if (!tileImprovements.containsKey(unique.params[0]))
-                    lines += "${building.name} creates a ${unique.params[0]} improvement which does not exist!"
             checkUniques(building, lines, rulesetSpecific, forOptionsPopup)
         }
 
@@ -668,6 +666,9 @@ class Ruleset {
                 lines += "${resource.name} revealed by tech ${resource.revealedBy} which does not exist!"
             if (resource.improvement != null && !tileImprovements.containsKey(resource.improvement!!))
                 lines += "${resource.name} improved by improvement ${resource.improvement} which does not exist!"
+            for (improvement in resource.improvedBy)
+                if (!tileImprovements.containsKey(improvement))
+                    lines += "${resource.name} improved by improvement $improvement which does not exist!"
             for (terrain in resource.terrainsCanBeFoundOn)
                 if (!terrains.containsKey(terrain))
                     lines += "${resource.name} can be found on terrain $terrain which does not exist!"
@@ -678,8 +679,20 @@ class Ruleset {
             if (improvement.techRequired != null && !technologies.containsKey(improvement.techRequired!!))
                 lines += "${improvement.name} requires tech ${improvement.techRequired} which does not exist!"
             for (terrain in improvement.terrainsCanBeBuiltOn)
-                if (!terrains.containsKey(terrain))
+                if (!terrains.containsKey(terrain) && terrain != "Land" && terrain != "Water")
                     lines += "${improvement.name} can be built on terrain $terrain which does not exist!"
+            if (improvement.terrainsCanBeBuiltOn.isEmpty() 
+                && !improvement.hasUnique(UniqueType.CanOnlyImproveResource) 
+                && !improvement.hasUnique(UniqueType.Unbuildable) 
+                && !improvement.name.startsWith(Constants.remove) 
+                && improvement.name !in RoadStatus.values().map { it.removeAction }
+                && improvement.name != Constants.cancelImprovementOrder
+            ) {
+                lines.add(
+                    "${improvement.name} has an empty `terrainsCanBeBuiltOn`, isn't allowed to only improve resources and isn't unbuildable! Support for this will soon end. Either give this the unique \"Unbuildable\", \"Can only be built to improve a resource\" or add \"Land\", \"Water\" or any other value to `terrainsCanBeBuiltOn`.",
+                    RulesetErrorSeverity.Warning
+                )
+            }
             checkUniques(improvement, lines, rulesetSpecific, forOptionsPopup)
         }
 
@@ -965,11 +978,11 @@ object RulesetCache : HashMap<String,Ruleset>() {
             val newRuleset = getComplexRuleset(mods, baseRuleset)
             newRuleset.modOptions.isBaseRuleset = true // This is so the checkModLinks finds all connections
             newRuleset.checkModLinks(forOptionsPopup)
-        } catch (ex: Exception) {
+        } catch (ex: UncivShowableException) {
             // This happens if a building is dependent on a tech not in the base ruleset
             //  because newRuleset.updateBuildingCosts() in getComplexRuleset() throws an error
             Ruleset.RulesetErrorList()
-                .apply { add(ex.localizedMessage, Ruleset.RulesetErrorSeverity.Error) }
+                .apply { add(ex.message!!.tr(), Ruleset.RulesetErrorSeverity.Error) }
         }
     }
 

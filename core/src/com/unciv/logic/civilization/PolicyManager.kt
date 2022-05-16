@@ -112,9 +112,8 @@ class PolicyManager {
             // Should be deprecated together with TimedAttackStrength so
             // I'm putting this here so the compiler will complain if we don't
             val rememberToDeprecate = UniqueType.TimedAttackStrength
-            if (!unique.text.contains(turnCountRegex) && unique.conditionals.none { it.type == UniqueType.ConditionalTimedUnique }) policyUniques.addUnique(
-                unique
-            )
+            if (!unique.text.contains(turnCountRegex)) 
+                policyUniques.addUnique(unique)
         }
     }
 

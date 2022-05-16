@@ -73,8 +73,10 @@ class CapitalConnectionsFinderTests {
     @After
     fun tearDown() {
         (tilesMap.values as ArrayList<TileInfo>).clear()
-        for (civ in civilizations.values)
+        for (civ in civilizations.values) {
             civ.cities = emptyList()
+            civ.diplomacy.clear()
+        }
     }
 
     private fun createLand(from: Int, to: Int) {
@@ -230,6 +232,41 @@ class CapitalConnectionsFinderTests {
         val res = connectionsFinder.find()
 
         Assert.assertTrue(res.keys.any { it.name == "Connected" } && !res.keys.any { it.name.startsWith("Not connected") } )
+    }
+
+    @Test
+    fun `Cities are connected by roads via City-States`() {
+        // Map: N=X-A=O-C
+        createLand(-4,4)
+        ourCiv.cities = listOf( createCity(ourCiv, Vector2(0f, 0f), "Capital", true),
+            createCity(ourCiv, Vector2(0f, -4f), "Not connected"),
+            createCity(ourCiv, Vector2(0f, 4f), "Connected"))
+
+        val openCiv = civilizations["Germany"]!!
+        openCiv.nation.cityStateType = CityStateType.Cultured
+        openCiv.cities = listOf( createCity(openCiv, Vector2(0f, 2f), "Berlin", true))
+        ourCiv.diplomacy["Germany"] = DiplomacyManager(ourCiv, "Germany")
+            .apply { diplomaticStatus = DiplomaticStatus.Peace }
+
+        val closedCiv = civilizations["Greece"]!!
+        closedCiv.nation.cityStateType = CityStateType.Cultured
+        closedCiv.cities = listOf( createCity(closedCiv, Vector2(0f, -2f), "Athens", true))
+        ourCiv.diplomacy["Greece"] = DiplomacyManager(ourCiv, "Greece")
+            .apply { diplomaticStatus = DiplomaticStatus.War }
+
+
+        createMedium(-4,-2, RoadStatus.Railroad)
+        createMedium(-2,0, RoadStatus.Road)
+        createMedium(0,2, RoadStatus.Railroad)
+        createMedium(2,4, RoadStatus.Road)
+        // part of the railroad (Berlin-Connected) goes through other civilization territory
+        tilesMap.tileMatrix[0][7]!!.setOwningCity(openCiv.cities.first())
+
+
+        val connectionsFinder = CapitalConnectionsFinder(ourCiv)
+        val res = connectionsFinder.find()
+
+        Assert.assertTrue(res.keys.any { it.name == "Connected" } && !res.keys.any { it.name == "Not connected" }  )
 
     }
 }

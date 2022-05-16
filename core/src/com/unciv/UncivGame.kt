@@ -33,7 +33,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     val version = parameters.version
     val crashReportSysInfo = parameters.crashReportSysInfo
     val cancelDiscordEvent = parameters.cancelDiscordEvent
-    val fontImplementation = parameters.fontImplementation
+    var fontImplementation = parameters.fontImplementation
     val consoleMode = parameters.consoleMode
     val customSaveLocationHelper = parameters.customSaveLocationHelper
     val platformSpecificHelper = parameters.platformSpecificHelper
@@ -57,13 +57,14 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
      *  Does not update World View changes until finished.
      *  Set to 0 to disable.
      */
-    val simulateUntilTurnForDebug: Int = 0
+    var simulateUntilTurnForDebug: Int = 0
 
     /** Console log battles
      */
     val alertBattle = false
 
     lateinit var worldScreen: WorldScreen
+    fun getWorldScreenOrNull() = if (this::worldScreen.isInitialized) worldScreen else null
 
     var isInitialized = false
 
@@ -216,7 +217,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         Thread.enumerate(threadList)
 
         if (isGameInfoInitialized()) {
-            val autoSaveThread = threadList.firstOrNull { it.name == "Autosave" }
+            val autoSaveThread = threadList.firstOrNull { it.name == GameSaver.autoSaveFileName }
             if (autoSaveThread != null && autoSaveThread.isAlive) {
                 // auto save is already in progress (e.g. started by onPause() event)
                 // let's allow it to finish and do not try to autosave second time

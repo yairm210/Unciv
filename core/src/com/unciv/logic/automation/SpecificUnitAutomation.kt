@@ -38,8 +38,8 @@ object SpecificUnitAutomation {
                 unit.movement.headTowards(closestReachableResource)
 
                 // could be either fishing boats or oil well
-                val improvement = closestReachableResource.tileResource.improvement
-                if (unit.currentTile == closestReachableResource && improvement != null)
+                val isImprovable = closestReachableResource.tileResource.getImprovements().any()
+                if (isImprovable && unit.currentTile == closestReachableResource)
                     UnitActions.getWaterImprovementAction(unit)?.action?.invoke()
             }
         }
@@ -284,9 +284,10 @@ object SpecificUnitAutomation {
 
     fun automateAddInCapital(unit: MapUnit) {
         val capitalTile = unit.civInfo.getCapital().getCenterTile()
-        val unitTile = unit.movement.headTowards(capitalTile)
-        if (unitTile == capitalTile) {
-            UnitActions.getAddInCapitalAction(unit, unitTile).action!!()
+        if (unit.movement.canReach(capitalTile))
+            unit.movement.headTowards(capitalTile)
+        if (unit.getTile() == capitalTile) {
+            UnitActions.getAddInCapitalAction(unit, capitalTile).action!!()
             return
         }
     }

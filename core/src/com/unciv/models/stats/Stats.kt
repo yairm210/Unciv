@@ -20,25 +20,27 @@ open class Stats(
     var happiness: Float = 0f,
     var faith: Float = 0f
 ): Iterable<Stats.StatValuePair> {
+    
     // This is what facilitates indexed access by [Stat] or add(Stat,Float)
     // without additional memory allocation or expensive conditionals
-    @delegate:Transient
-    private val mapView: Map<Stat, KMutableProperty0<Float>> by lazy {
-        mapOf(
-            Stat.Production to ::production,
-            Stat.Food to ::food,
-            Stat.Gold to ::gold,
-            Stat.Science to ::science,
-            Stat.Culture to ::culture,
-            Stat.Happiness to ::happiness,
-            Stat.Faith to ::faith
-        )
+    private fun statToProperty(stat: Stat):KMutableProperty0<Float>{
+        return when(stat){
+            Stat.Production -> ::production
+            Stat.Food -> ::food
+            Stat.Gold -> ::gold
+            Stat.Science -> ::science
+            Stat.Culture -> ::culture
+            Stat.Happiness -> ::happiness
+            Stat.Faith -> ::faith
+        }
     }
 
     /** Indexed read of a value for a given [Stat], e.g. `this.gold == this[Stat.Gold]` */
-    operator fun get(stat: Stat) = mapView[stat]!!.get()
+    operator fun get(stat: Stat): Float {
+        return statToProperty(stat).get()
+    }
     /** Indexed write of a value for a given [Stat], e.g. `this.gold += 1f` is equivalent to `this[Stat.Gold] += 1f` */
-    operator fun set(stat: Stat, value: Float) = mapView[stat]!!.set(value)
+    operator fun set(stat: Stat, value: Float) = statToProperty(stat).set(value)
 
     /** Compares two instances. Not callable via `==`. */
     // This is an overload, not an override conforming to the kotlin conventions of `equals(Any?)`,
@@ -95,7 +97,7 @@ open class Stats(
     /** Adds the [value] parameter to the instance value specified by [stat] in place
      * @return `this` to allow chaining */
     fun add(stat: Stat, value: Float): Stats {
-        mapView[stat]!!.set(value + mapView[stat]!!.get())
+        set(stat, value + get(stat))
         return this
     }
 

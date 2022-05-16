@@ -1,5 +1,7 @@
 package com.unciv.models.ruleset.tile
 
+import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetStatsObject
@@ -15,12 +17,21 @@ class TileResource : RulesetStatsObject() {
     var improvement: String? = null
     var improvementStats: Stats? = null
     var revealedBy: String? = null
+    var improvedBy: List<String> = listOf()
     var majorDepositAmount: DepositAmount = DepositAmount()
     var minorDepositAmount: DepositAmount = DepositAmount()
     
+    val _allImprovements by lazy {
+        if (improvement == null) improvedBy
+        else improvedBy + improvement!!
+    }
+    
+    fun getImprovements(): List<String> {
+        return _allImprovements
+    }
+    
     override fun getUniqueTarget() = UniqueTarget.Resource
-
-
+    
     override fun makeLink() = "Resource/$name"
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
@@ -45,7 +56,7 @@ class TileResource : RulesetStatsObject() {
             }
         }
 
-        if (improvement != null) {
+        for (improvement in getImprovements()) {
             textList += FormattedLine()
             textList += FormattedLine("Improved by [$improvement]", link = "Improvement/$improvement")
             if (improvementStats != null && !improvementStats!!.isEmpty())
@@ -114,6 +125,16 @@ class TileResource : RulesetStatsObject() {
         return textList
     }
 
+    fun isImprovedBy(improvementName: String): Boolean {
+        return getImprovements().contains(improvementName)
+    }
+    
+    fun getImprovingImprovement(tile: TileInfo, civInfo: CivilizationInfo): String? {
+        return getImprovements().firstOrNull { 
+            tile.canBuildImprovement(civInfo.gameInfo.ruleSet.tileImprovements[it]!!, civInfo) 
+        }
+    }
+    
     class DepositAmount {
         var sparse: Int = 1
         var default: Int = 2

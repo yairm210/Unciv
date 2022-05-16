@@ -1,6 +1,6 @@
 package com.unciv.logic.multiplayer
 
-import com.unciv.logic.GameSaver
+import com.unciv.json.json
 import com.unciv.ui.utils.UncivDateFormat.parseDate
 import java.io.*
 import java.net.HttpURLConnection
@@ -8,10 +8,17 @@ import java.net.URL
 import java.nio.charset.Charset
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.concurrent.timer
 
 
-object DropBox {
-    fun dropboxApi(url: String, data: String = "", contentType: String = "", dropboxApiArg: String = ""): InputStream? {
+object DropBox: IFileStorage {
+    private var remainingRateLimitSeconds = 0
+    private var rateLimitTimer: Timer? = null
+
+    private fun dropboxApi(url: String, data: String = "", contentType: String = "", dropboxApiArg: String = ""): InputStream? {
+
+        if (remainingRateLimitSeconds > 0)
+            throw FileStorageRateLimitReached(remainingRateLimitSeconds)
 
         with(URL(url).openConnection() as HttpURLConnection) {
             requestMethod = "POST"  // default is GET
@@ -40,11 +47,13 @@ object DropBox {
                 val responseString = reader.readText()
                 println(responseString)
 
+                val error = json().fromJson(ErrorResponse::class.java, responseString)
                 // Throw Exceptions based on the HTTP response from dropbox
-                if (responseString.contains("path/not_found/"))
-                    throw FileNotFoundException()
-                if (responseString.contains("path/conflict/file"))
-                    throw FileStorageConflictException()
+                when {
+                    error.error_summary.startsWith("too_many_requests/") -> triggerRateLimit(error)
+                    error.error_summary.startsWith("path/not_found/") -> throw FileNotFoundException()
+                    error.error_summary.startsWith("path/conflict/file") -> throw FileStorageConflictException()
+                }
                 
                 return null
             } catch (error: Error) {
@@ -56,22 +65,40 @@ object DropBox {
         }
     }
 
-    fun getFolderList(folder: String): ArrayList<DropboxMetaData> {
-        val folderList = ArrayList<DropboxMetaData>()
-        // The DropBox API returns only partial file listings from one request. list_folder and
-        // list_folder/continue return similar responses, but list_folder/continue requires a cursor
-        // instead of the path.
-        val response = dropboxApi("https://api.dropboxapi.com/2/files/list_folder",
-                "{\"path\":\"$folder\"}", "application/json")
-        var currentFolderListChunk = GameSaver.json().fromJson(FolderList::class.java, response)
-        folderList.addAll(currentFolderListChunk.entries)
-        while (currentFolderListChunk.has_more) {
-            val continuationResponse = dropboxApi("https://api.dropboxapi.com/2/files/list_folder/continue",
-                    "{\"cursor\":\"${currentFolderListChunk.cursor}\"}", "application/json")
-            currentFolderListChunk = GameSaver.json().fromJson(FolderList::class.java, continuationResponse)
-            folderList.addAll(currentFolderListChunk.entries)
-        }
-        return folderList
+    // This is the location in Dropbox only
+    private fun getLocalGameLocation(fileName: String) = "/MultiplayerGames/$fileName"
+
+    override fun deleteFile(fileName: String){
+        dropboxApi(
+            url="https://api.dropboxapi.com/2/files/delete_v2",
+            data="{\"path\":\"${getLocalGameLocation(fileName)}\"}",
+            contentType="application/json"
+        )
+    }
+
+    override fun getFileMetaData(fileName: String): IFileMetaData {
+        val stream = dropboxApi(
+            url="https://api.dropboxapi.com/2/files/get_metadata",
+            data="{\"path\":\"${getLocalGameLocation(fileName)}\"}",
+            contentType="application/json"
+        )!!
+        val reader = BufferedReader(InputStreamReader(stream))
+        return json().fromJson(MetaData::class.java, reader.readText())
+    }
+
+    override fun saveFileData(fileName: String, data: String, overwrite: Boolean) {
+        val overwriteModeString = if(!overwrite) "" else ""","mode":{".tag":"overwrite"}"""
+        dropboxApi(
+            url="https://content.dropboxapi.com/2/files/upload",
+            data=data,
+            contentType="application/octet-stream",
+            dropboxApiArg = """{"path":"${getLocalGameLocation(fileName)}"$overwriteModeString}"""
+        )
+    }
+
+    override fun loadFileData(fileName: String): String {
+        val inputStream = downloadFile(getLocalGameLocation(fileName))
+        return BufferedReader(InputStreamReader(inputStream)).readText()
     }
 
     fun downloadFile(fileName: String): InputStream {
@@ -80,25 +107,39 @@ object DropBox {
         return response!!
     }
 
-    fun downloadFileAsString(fileName: String): String {
-        val inputStream = downloadFile(fileName)
-        return BufferedReader(InputStreamReader(inputStream)).readText()
-    }
-
     /**
-     * @param overwrite set to true to avoid DropBoxFileConflictException
-     * @throws DropBoxFileConflictException when overwrite is false and a file with the
-     * same name already exists
+     * If the dropbox rate limit is reached for this bearer token we strictly have to wait for the
+     * specified retry_after seconds before trying again. If non is supplied or can not be parsed
+     * the default value of 5 minutes will be used.
+     * Any attempt before the rate limit is dropped again will also contribute to the rate limit
      */
-    fun uploadFile(fileName: String, data: String, overwrite: Boolean = false) {
-        val overwriteModeString = if(!overwrite) "" else ""","mode":{".tag":"overwrite"}"""
-        dropboxApi("https://content.dropboxapi.com/2/files/upload",
-                data, "application/octet-stream", """{"path":"$fileName"$overwriteModeString}""")
+    private fun triggerRateLimit(response: ErrorResponse) {
+        remainingRateLimitSeconds = response.error?.retry_after?.toIntOrNull() ?: 300
+
+        rateLimitTimer = timer("RateLimitTimer", true, 0, 1000) {
+            remainingRateLimitSeconds--
+            if (remainingRateLimitSeconds == 0)
+                rateLimitTimer?.cancel()
+        }
+        throw FileStorageRateLimitReached(remainingRateLimitSeconds)
     }
 
-    fun deleteFile(fileName: String){
-        dropboxApi("https://api.dropboxapi.com/2/files/delete_v2",
-                "{\"path\":\"$fileName\"}", "application/json")
+    fun getFolderList(folder: String): ArrayList<IFileMetaData> {
+        val folderList = ArrayList<IFileMetaData>()
+        // The DropBox API returns only partial file listings from one request. list_folder and
+        // list_folder/continue return similar responses, but list_folder/continue requires a cursor
+        // instead of the path.
+        val response = dropboxApi("https://api.dropboxapi.com/2/files/list_folder",
+                "{\"path\":\"$folder\"}", "application/json")
+        var currentFolderListChunk = json().fromJson(FolderList::class.java, response)
+        folderList.addAll(currentFolderListChunk.entries)
+        while (currentFolderListChunk.has_more) {
+            val continuationResponse = dropboxApi("https://api.dropboxapi.com/2/files/list_folder/continue",
+                    "{\"cursor\":\"${currentFolderListChunk.cursor}\"}", "application/json")
+            currentFolderListChunk = json().fromJson(FolderList::class.java, continuationResponse)
+            folderList.addAll(currentFolderListChunk.entries)
+        }
+        return folderList
     }
 
     fun fileExists(fileName: String): Boolean {
@@ -111,13 +152,6 @@ object DropBox {
         }
     }
 
-    fun getFileMetaData(fileName: String): IFileMetaData {
-        val stream = dropboxApi("https://api.dropboxapi.com/2/files/get_metadata",
-                "{\"path\":\"$fileName\"}", "application/json")!!
-        val reader = BufferedReader(InputStreamReader(stream))
-        return GameSaver.json().fromJson(DropboxMetaData::class.java, reader.readText())
-    }
-
 //
 //    fun createTemplate(): String {
 //        val result =  dropboxApi("https://api.dropboxapi.com/2/file_properties/templates/add_for_user",
@@ -127,14 +161,14 @@ object DropBox {
 //    }
 
     @Suppress("PropertyName")
-    class FolderList{
-        var entries = ArrayList<DropboxMetaData>()
+    private class FolderList{
+        var entries = ArrayList<MetaData>()
         var cursor = ""
         var has_more = false
     }
 
     @Suppress("PropertyName")
-    class DropboxMetaData: IFileMetaData {
+    private class MetaData: IFileMetaData {
         var name = ""
         private var server_modified = ""
 
@@ -142,27 +176,14 @@ object DropBox {
             return server_modified.parseDate()
         }
     }
-}
 
-class DropboxFileStorage: IFileStorage {
-    // This is the location in Dropbox only
-    fun getLocalGameLocation(fileName: String) = "/MultiplayerGames/$fileName"
+    @Suppress("PropertyName")
+    private class ErrorResponse {
+        var error_summary = ""
+        var error: Details? = null
 
-    override fun saveFileData(fileName: String, data: String) {
-        val fileLocationDropbox = getLocalGameLocation(fileName)
-        DropBox.uploadFile(fileLocationDropbox, data, true)
+        class Details {
+            var retry_after = ""
+        }
     }
-
-    override fun loadFileData(fileName: String): String {
-        return DropBox.downloadFileAsString(getLocalGameLocation(fileName))
-    }
-
-    override fun getFileMetaData(fileName: String): IFileMetaData {
-        return DropBox.getFileMetaData(getLocalGameLocation(fileName))
-    }
-
-    override fun deleteFile(fileName: String) {
-        DropBox.deleteFile(getLocalGameLocation(fileName))
-    }
-
 }

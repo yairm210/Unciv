@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
+import com.unciv.logic.GameSaver
 import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.multiplayer.SimpleHttp
@@ -41,6 +42,8 @@ import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.UUID
 import kotlin.math.floor
+import kotlin.text.Regex
+import kotlin.text.substring
 import com.badlogic.gdx.utils.Array as GdxArray
 
 /**
@@ -48,7 +51,10 @@ import com.badlogic.gdx.utils.Array as GdxArray
  * @param previousScreen The caller - note if this is a [WorldScreen] or [MainMenuScreen] they will be rebuilt when major options change.
  */
 //region Fields
-class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
+class OptionsPopup(
+    private val previousScreen: BaseScreen,
+    private val selectPage: Int = defaultPage
+) : Popup(previousScreen) {
     private val settings = previousScreen.game.settings
     private val tabs: TabbedPager
     private val resolutionArray = com.badlogic.gdx.utils.Array(arrayOf("750x500", "900x600", "1050x700", "1200x800", "1500x1000"))
@@ -60,6 +66,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     //endregion
 
     companion object {
+        const val defaultPage = 2  // Gameplay
         private const val modCheckWithoutBase = "-none-"
     }
 
@@ -115,10 +122,10 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         super.setVisible(visible)
         if (!visible) return
         tabs.askForPassword(secretHashCode = 2747985)
-        if (tabs.activePage < 0) tabs.selectPage(2)
+        if (tabs.activePage < 0) tabs.selectPage(selectPage)
     }
 
-    /** Reload this Popup after major changes (resolution, tileset, language) */
+    /** Reload this Popup after major changes (resolution, tileset, language, font) */
     private fun reloadWorldAndOptions() {
         settings.save()
         if (previousScreen is WorldScreen) {
@@ -127,7 +134,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         } else if (previousScreen is MainMenuScreen) {
             previousScreen.game.setScreen(MainMenuScreen())
         }
-        (previousScreen.game.screen as BaseScreen).openOptionsPopup()
+        (previousScreen.game.screen as BaseScreen).openOptionsPopup(tabs.activePage)
     }
 
     private fun successfullyConnectedToServer(action: (Boolean, String)->Unit){
@@ -186,7 +193,8 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         addCheckbox("Show tutorials", settings.showTutorials, true) { settings.showTutorials = it }
         addCheckbox("Show pixel units", settings.showPixelUnits, true) { settings.showPixelUnits = it }
         addCheckbox("Show pixel improvements", settings.showPixelImprovements, true) { settings.showPixelImprovements = it }
-
+        addCheckbox("Experimental Demographics scoreboard", settings.useDemographics, true) { settings.useDemographics = it }
+        
         addMinimapSizeSlider()
 
         addResolutionSelectBox()
@@ -268,6 +276,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             if (settings.multiplayerServer != Constants.dropboxMultiplayerServer) settings.multiplayerServer
         else "https://..."
         val multiplayerServerTextField = TextField(textToShowForMultiplayerAddress, BaseScreen.skin)
+        multiplayerServerTextField.setTextFieldFilter { _, c -> c !in " \r\n\t\\" }
         multiplayerServerTextField.programmaticChangeEvents = true
         val serverIpTable = Table()
 
@@ -275,9 +284,15 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             multiplayerServerTextField.text = Gdx.app.clipboard.contents
         }).row()
         multiplayerServerTextField.onChange {
-            settings.multiplayerServer = multiplayerServerTextField.text
-            settings.save()
             connectionToServerButton.isEnabled = multiplayerServerTextField.text != Constants.dropboxMultiplayerServer
+            if (connectionToServerButton.isEnabled) {
+                fixTextFieldUrlOnType(multiplayerServerTextField)
+                // we can't trim on 'fixTextFieldUrlOnType' for reasons
+                settings.multiplayerServer = multiplayerServerTextField.text.trimEnd('/')
+            } else {
+                settings.multiplayerServer = multiplayerServerTextField.text
+            }
+            settings.save()
         }
         serverIpTable.add(multiplayerServerTextField).minWidth(screen.stage.width / 2).growX()
         add(serverIpTable).fillX().row()
@@ -515,9 +530,6 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
     private fun autoUpdateUniques(mod: Ruleset, replaceableUniques: HashMap<String, String>) {
 
-        if (mod.name.contains("mod"))
-            println("mod")
-
         val filesToReplace = listOf(
             "Beliefs.json",
             "Buildings.json",
@@ -549,29 +561,50 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     private fun getDebugTab() = Table(BaseScreen.skin).apply {
         pad(10f)
         defaults().pad(5f)
-
         val game = UncivGame.Current
+
+        val simulateButton = "Simulate until turn:".toTextButton()
+        val simulateTextField = TextField(game.simulateUntilTurnForDebug.toString(), BaseScreen.skin)
+        val invalidInputLabel = "This is not a valid integer!".toLabel().also { it.isVisible = false }
+        simulateButton.onClick {
+            val simulateUntilTurns = simulateTextField.text.toIntOrNull() 
+            if (simulateUntilTurns == null) {
+                invalidInputLabel.isVisible = true
+                return@onClick
+            }
+            game.simulateUntilTurnForDebug = simulateUntilTurns
+            invalidInputLabel.isVisible = false
+            game.worldScreen.nextTurn()
+        }
+        add(simulateButton)
+        add(simulateTextField).row()
+        add(invalidInputLabel).colspan(2).row()
+
         add("Supercharged".toCheckBox(game.superchargedForDebug) {
             game.superchargedForDebug = it
-        }).row()
+        }).colspan(2).row()
         add("View entire map".toCheckBox(game.viewEntireMapForDebug) {
             game.viewEntireMapForDebug = it
-        }).row()
+        }).colspan(2).row()
         if (game.isGameInfoInitialized()) {
             add("God mode (current game)".toCheckBox(game.gameInfo.gameParameters.godMode) {
                 game.gameInfo.gameParameters.godMode = it
-            }).row()
+            }).colspan(2).row()
         }
+        add("Save games compressed".toCheckBox(GameSaver.saveZipped) {
+            GameSaver.saveZipped = it
+        }).colspan(2).row()
         add("Save maps compressed".toCheckBox(MapSaver.saveZipped) {
             MapSaver.saveZipped = it
-        }).row()
+        }).colspan(2).row()
+
         add("Gdx Scene2D debug".toCheckBox(BaseScreen.enableSceneDebug) {
             BaseScreen.enableSceneDebug = it
-        }).row()
+        }).colspan(2).row()
 
         add("Allow untyped Uniques in mod checker".toCheckBox(RulesetCache.modCheckerAllowUntypedUniques) {
             RulesetCache.modCheckerAllowUntypedUniques = it
-        }).row()
+        }).colspan(2).row()
 
         add(Table().apply {
             add("Unique misspelling threshold".toLabel()).left().fillX()
@@ -580,7 +613,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
                     RulesetCache.uniqueMisspellingThreshold = it.toDouble()
                 }
             ).minWidth(120f).pad(5f)
-        }).row()
+        }).colspan(2).row()
 
         val unlockTechsButton = "Unlock all techs".toTextButton()
         unlockTechsButton.onClick {
@@ -595,9 +628,9 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             game.gameInfo.getCurrentPlayerCivilization().updateSightAndResources()
             game.worldScreen.shouldUpdate = true
         }
-        add(unlockTechsButton).row()
+        add(unlockTechsButton).colspan(2).row()
 
-        val giveResourcesButton = "Give all strategic resources".toTextButton()
+        val giveResourcesButton = "Get all strategic resources".toTextButton()
         giveResourcesButton.onClick {
             if (!game.isGameInfoInitialized())
                 return@onClick
@@ -606,12 +639,14 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             for ((tile, resource) in ownedTiles zip resourceTypes) {
                 tile.resource = resource.name
                 tile.resourceAmount = 999
-                tile.improvement = resource.improvement
+                // Debug option, so if it crashes on this that's relatively fine
+                // If this becomes a problem, check if such an improvement exists and otherwise plop down a great improvement or so
+                tile.improvement = resource.getImprovements().first() 
             }
             game.gameInfo.getCurrentPlayerCivilization().updateSightAndResources()
             game.worldScreen.shouldUpdate = true
         }
-        add(giveResourcesButton).row()
+        add(giveResourcesButton).colspan(2).row()
     }
 
     //endregion
@@ -862,34 +897,40 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         val selectCell = add()
         row()
 
-        fun loadFontSelect(fonts: Collection<FontData>, selectCell: Cell<Actor>) {
-            if (fonts.isEmpty()) return
+        fun loadFontSelect(fonts: GdxArray<FontFamilyData>, selectCell: Cell<Actor>) {
+            if (fonts.isEmpty) return
 
-            val fontSelectBox = SelectBox<String>(skin)
-            val fontsLocalName = GdxArray<String>().apply { add("Default Font".tr()) }
-            val fontsEnName = GdxArray<String>().apply { add("") }
-            for (font in fonts) {
-                fontsLocalName.add(font.localName)
-                fontsEnName.add(font.enName)
-            }
+            val fontSelectBox = SelectBox<FontFamilyData>(skin)
+            fontSelectBox.items = fonts
 
-            val selectedIndex = fontsEnName.indexOf(settings.fontFamily).let { if (it == -1) 0 else it }
-
-            fontSelectBox.items = fontsLocalName
-            fontSelectBox.selected = fontsLocalName[selectedIndex]
+            // `FontFamilyData` implements kotlin equality contract such that _only_ the invariantName field is compared.
+            // The Gdx SelectBox should honor that - but it doesn't, as it is a _kotlin_ thing to implement
+            // `==` by calling `equals`, and there's precompiled _Java_ `==` in the widget code.
+            // `setSelected` first calls a `contains` which can switch between using `==` and `equals` (set to `equals`)
+            // but just one step later (where it re-checks whether the new selection is equal to the old one)
+            // it does a hard `==`. Also, setSelection copies its argument to the selection var, it doesn't pull a match from `items`.
+            // Therefore, _selecting_ an item in a `SelectBox` by an instance of `FontFamilyData` where only the `invariantName` is valid won't work properly.
+            //
+            // This is why it's _not_ `fontSelectBox.selected = FontFamilyData(settings.fontFamily)`
+            val fontToSelect = settings.fontFamily
+            fontSelectBox.selected = fonts.firstOrNull { it.invariantName == fontToSelect } // will default to first entry if `null` is passed
 
             selectCell.setActor(fontSelectBox).minWidth(selectBoxMinWidth).pad(10f)
 
             fontSelectBox.onChange {
-                settings.fontFamily = fontsEnName[fontSelectBox.selectedIndex]
-                ToastPopup(
-                    "You need to restart the game for this change to take effect.", previousScreen
-                )
+                settings.fontFamily = fontSelectBox.selected.invariantName
+                Fonts.resetFont(settings.fontFamily)
+                reloadWorldAndOptions()
             }
         }
 
-        crashHandlingThread(name="Add Font Select") {
-            val fonts = Fonts.getAvailableFontFamilyNames() // This is a heavy operation and causes ANRs
+        crashHandlingThread(name = "Add Font Select") {
+            // This is a heavy operation and causes ANRs
+            val fonts = GdxArray<FontFamilyData>().apply {
+                add(FontFamilyData.default)
+                for (font in Fonts.getAvailableFontFamilyNames())
+                    add(font)
+            }
             postCrashHandlingRunnable { loadFontSelect(fonts, selectCell) }
         }
     }
@@ -926,6 +967,40 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
                 previousScreen.shouldUpdate = true
         }
         add(checkbox).colspan(2).left().row()
+    }
+
+    private fun fixTextFieldUrlOnType(TextField: TextField) {
+        var text: String = TextField.text
+        var cursor: Int = minOf(TextField.cursorPosition, text.length)
+
+        // if text is 'http:' or 'https:' auto append '//'
+        if (Regex("^https?:$").containsMatchIn(text)) {
+            TextField.appendText("//")
+            return
+        }
+
+        val textBeforeCursor: String = text.substring(0, cursor)
+
+        // replace multiple slash with a single one
+        val multipleSlashes = Regex("/{2,}")
+        text = multipleSlashes.replace(text, "/")
+
+        // calculate updated cursor
+        cursor = multipleSlashes.replace(textBeforeCursor, "/").length
+
+        // operations above makes 'https://' -> 'https:/'
+        // fix that if available and update cursor
+        val i: Int = text.indexOf(":/")
+        if (i > -1) {
+            text = text.replaceRange(i..i+1, "://")
+            if (cursor > i + 1) ++cursor
+        }
+
+        // update TextField
+        if (text != TextField.text) {
+            TextField.text = text
+            TextField.cursorPosition = cursor
+        }
     }
 
     //endregion

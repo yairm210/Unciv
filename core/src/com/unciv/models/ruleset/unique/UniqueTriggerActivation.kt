@@ -39,7 +39,6 @@ object UniqueTriggerActivation {
             else Random(-550) // Very random indeed
         val ruleSet = civInfo.gameInfo.ruleSet
 
-        @Suppress("NON_EXHAUSTIVE_WHEN")  // Yes we're not treating all types here
         when (unique.type) {
             OneTimeFreeUnit -> {
                 val unitName = unique.params[0]
@@ -465,6 +464,8 @@ object UniqueTriggerActivation {
 
             FreeStatBuildings, FreeSpecificBuildings ->
                 civInfo.civConstructions.tryAddFreeBuildings()
+
+            else -> {}
         }
         return false
     }
@@ -475,7 +476,6 @@ object UniqueTriggerActivation {
         unit: MapUnit,
         notification: String? = null
     ): Boolean {
-        @Suppress("NON_EXHAUSTIVE_WHEN")  // Yes we're not treating all types here
         when (unique.type) {
             OneTimeUnitHeal -> {
                 unit.healBy(unique.params[0].toInt())
@@ -515,7 +515,7 @@ object UniqueTriggerActivation {
                     unit.civInfo.addNotification(notification, unit.getTile().position, unit.name)
                 return true
             }
+            else -> return false
         }
-        return false
     }
 }

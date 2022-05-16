@@ -6,14 +6,13 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
-import com.badlogic.gdx.utils.Json
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.GameSaver
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.saves.Gzip
 import com.unciv.ui.utils.*
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -52,24 +51,28 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
         private set
 
     /** @return The last active save game serialized as a compressed string if any, or an informational note otherwise. */
-    private fun tryGetSaveGame()
-        = try {
-            UncivGame.Current.gameInfo.let { gameInfo ->
-                Json().toJson(gameInfo).let {
-                    jsonString -> Gzip.zip(jsonString)
-                }
-            } // Taken from old CrashController().buildReport().
-        } catch (e: Throwable) {
-            "No save data: $e" // In theory .toString() could still error here.
-        }
+    private fun tryGetSaveGame(): String {
+        if (!UncivGame.isCurrentInitialized() || !UncivGame.Current.isGameInfoInitialized())
+            return ""
+        return "\n**Save Data:**\n<details><summary>Show Saved Game</summary>\n\n```" +
+            try {
+                GameSaver.gameInfoToString(UncivGame.Current.gameInfo, forceZip = true)
+            } catch (e: Throwable) {
+                "No save data: $e" // In theory .toString() could still error here.
+            } + "\n```\n</details>\n"
+    }
 
     /** @return Mods from the last active save game if any, or an informational note otherwise. */
-    private fun tryGetSaveMods()
-        = try { // Also from old CrashController().buildReport(), also could still error at .toString().
-            LinkedHashSet(UncivGame.Current.gameInfo.gameParameters.getModsAndBaseRuleset()).toString()
-        } catch (e: Throwable) {
-            "No mod data: $e"
-        }
+    private fun tryGetSaveMods(): String {
+        if (!UncivGame.isCurrentInitialized() || !UncivGame.Current.isGameInfoInitialized())
+            return ""
+        return "\n**Save Mods:**\n```\n" +
+            try { // Also from old CrashController().buildReport(), also could still error at .toString().
+                LinkedHashSet(UncivGame.Current.gameInfo.gameParameters.getModsAndBaseRuleset()).toString()
+            } catch (e: Throwable) {
+                "No mod data: $e"
+            } + "\n```\n"
+    }
 
 
     /**
@@ -88,32 +91,19 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
             **Version:** ${UncivGame.Current.version.prependIndentToOnlyNewLines(subIndent)}
             **Rulesets:** ${RulesetCache.keys.toString().prependIndentToOnlyNewLines(subIndent)}
             **Last Screen:** `$lastScreenType`
-            
+
             --------------------------------
-            
+
             ${UncivGame.Current.crashReportSysInfo?.getInfo().toString().prependIndentToOnlyNewLines(baseIndent)}
-            
+
             --------------------------------
-            
-            
+
+
             **Message:**
             ```
             ${message.prependIndentToOnlyNewLines(baseIndent)}
             ```
-            
-            **Save Mods:**
-            ```
-            ${tryGetSaveMods().prependIndentToOnlyNewLines(baseIndent)}
-            ```
-            
-            **Save Data:**
-            <details><summary>Show Saved Game</summary>
-            
-            ```
-            ${tryGetSaveGame().prependIndentToOnlyNewLines(baseIndent)}
-            ```
-            </details>
-            """.trimIndent()
+            """.trimIndent() + tryGetSaveMods() + tryGetSaveGame()
     }
 
     init {

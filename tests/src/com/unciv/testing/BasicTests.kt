@@ -9,6 +9,7 @@ import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.RulesetStatsObject
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueType
@@ -16,6 +17,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.getPlaceholderParameters
+import com.unciv.models.translations.getPlaceholderText
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -123,6 +125,69 @@ class BasicTests {
             }
         }
         Assert.assertTrue("This test succeeds only if all UniqueTypes have at least one UniqueTarget", allOK)
+    }
+
+    @Test
+    fun allUnitsUniquesHaveTheirUniqueTypes() {
+        val units: Collection<BaseUnit> = ruleset.units.values
+        var allOK = true
+        for (unit in units) {
+            for (unique in unit.uniques) {
+                if (!UniqueType.values().any { it.placeholderText == unique.getPlaceholderText() }) {
+                    println("${unit.name}: $unique")
+                    allOK = false
+                }
+            }
+        }
+        Assert.assertTrue("This test succeeds only if all uniques of units are presented in UniqueType.values()", allOK)
+    }
+
+    @Test
+    fun allBuildingsUniquesHaveTheirUniqueTypes() {
+        val buildings = ruleset.buildings.values
+        var allOK = true
+        for (building in buildings) {
+            for (unique in building.uniques) {
+                if (!UniqueType.values().any { it.placeholderText == unique.getPlaceholderText() }) {
+                    println("${building.name}: $unique")
+                    allOK = false
+                }
+            }
+        }
+        Assert.assertTrue("This test succeeds only if all uniques of buildings are presented in UniqueType.values()", allOK)
+    }
+
+    @Test
+    fun allPromotionsUniquesHaveTheirUniqueTypes() {
+        val promotions = ruleset.unitPromotions.values
+        var allOK = true
+        for (promotion in promotions) {
+            for (unique in promotion.uniques) {
+                if (!UniqueType.values().any { it.placeholderText == unique.getPlaceholderText() }) {
+                    println("${promotion.name}: $unique")
+                    allOK = false
+                }
+            }
+        }
+        Assert.assertTrue("This test succeeds only if all uniques of promotions are presented in UniqueType.values()", allOK)
+    }
+
+    @Test
+    fun allTerrainRelatedUniquesHaveTheirUniqueTypes() {
+        val objects : MutableCollection<RulesetStatsObject> = mutableListOf()
+        objects.addAll(ruleset.tileImprovements.values)
+        objects.addAll(ruleset.tileResources.values)
+        objects.addAll(ruleset.terrains.values)
+        var allOK = true
+        for (obj in objects) {
+            for (unique in obj.uniques) {
+                if (!UniqueType.values().any { it.placeholderText == unique.getPlaceholderText() }) {
+                    println("${obj.name}: $unique")
+                    allOK = false
+                }
+            }
+        }
+        Assert.assertTrue("This test succeeds only if all uniques are presented in UniqueType.values()", allOK)
     }
 
     @Test

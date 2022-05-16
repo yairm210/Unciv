@@ -127,7 +127,8 @@ class TileGroupIcons(val tileGroup: TileGroup) {
     private fun updateYieldIcon(showTileYields: Boolean, viewingCiv: CivilizationInfo) {
 
         // Hiding yield icons (in order to update)
-        tileGroup.tileYieldGroup.isVisible = false
+        if (tileGroup.tileYieldGroupInitialized)
+            tileGroup.tileYieldGroup.isVisible = false
 
 
         if (showTileYields) {
@@ -139,6 +140,7 @@ class TileGroupIcons(val tileGroup: TileGroup) {
             tileGroup.tileYieldGroup.centerX(tileGroup)
             tileGroup.tileYieldGroup.y = tileGroup.height * 0.25f - tileGroup.tileYieldGroup.height / 2
             tileGroup.tileYieldGroup.isVisible = true
+            tileGroup.tileYieldGroupInitialized = true
 
             // Adding YieldGroup to miscLayerGroup
             tileGroup.miscLayerGroup.addActor(tileGroup.tileYieldGroup)

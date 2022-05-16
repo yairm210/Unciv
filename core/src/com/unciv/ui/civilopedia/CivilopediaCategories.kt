@@ -183,6 +183,11 @@ enum class CivilopediaCategories (
         getImage = null,
         KeyCharAndCode('D'),
         "OtherIcons/Quickstart"
+    ),
+    Era ("Eras", false,
+        getImage = null,
+        KeyCharAndCode('D'),
+        "OtherIcons/Tyrannosaurus"
     );
 
     fun getByOffset(offset: Int) = values()[(ordinal + count + offset) % count]

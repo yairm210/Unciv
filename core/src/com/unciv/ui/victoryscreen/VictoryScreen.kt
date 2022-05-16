@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.translations.tr
 import com.unciv.models.metadata.GameSetupInfo
@@ -32,7 +33,9 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         if (!playerCivInfo.isSpectator()) tabsTable.add(setMyVictoryButton)
         val setGlobalVictoryButton = "Global status".toTextButton().onClick { setGlobalVictoryTable() }
         tabsTable.add(setGlobalVictoryButton)
-        val setCivRankingsButton = "Rankings".toTextButton().onClick { setCivRankingsTable() }
+
+        val rankingLabel = if (UncivGame.Current.settings.useDemographics) "Demographics" else "Rankings"
+        val setCivRankingsButton = rankingLabel.toTextButton().onClick { setCivRankingsTable() }
         tabsTable.add(setCivRankingsButton)
         topTable.add(tabsTable)
         topTable.addSeparator()
@@ -175,22 +178,73 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
     private fun setCivRankingsTable() {
         val majorCivs = gameInfo.civilizations.filter { it.isMajorCiv() }
-        val civRankingsTable = Table().apply { defaults().pad(5f) }
+        contentsTable.clear()
+        
+        if (UncivGame.Current.settings.useDemographics) contentsTable.add(buildDemographicsTable(majorCivs))
+        else contentsTable.add(buildRankingsTable(majorCivs))
+    }
+
+    enum class RankLabels { Rank, Value, Best, Average, Worst}
+    private fun buildDemographicsTable(majorCivs: List<CivilizationInfo>): Table {
+        val demographicsTable = Table().apply { defaults().pad(5f) }
+        buildDemographicsHeaders(demographicsTable)
+        
+        for (rankLabel in RankLabels.values())   {
+            demographicsTable.row()
+            demographicsTable.add(rankLabel.name.toLabel())
+
+            for (category in RankingType.values()) {
+                val aliveMajorCivsSorted = majorCivs.filter{ it.isAlive() }.sortedByDescending { it.getStatForRanking(category) }
+                
+                fun addRankCivGroup(civ: CivilizationInfo) { // local function for reuse of getting and formatting civ stats
+                    demographicsTable.add(getCivGroup(civ, ": " + civ.getStatForRanking(category).toString(), playerCivInfo)).fillX()
+                }
+
+                @Suppress("NON_EXHAUSTIVE_WHEN") // RankLabels.Demographic treated above
+                when (rankLabel) {
+                    RankLabels.Rank -> demographicsTable.add((aliveMajorCivsSorted.indexOfFirst { it == worldScreen.viewingCiv } + 1).toLabel())
+                    RankLabels.Value -> addRankCivGroup(worldScreen.viewingCiv)
+                    RankLabels.Best -> addRankCivGroup(aliveMajorCivsSorted.firstOrNull()!!)
+                    RankLabels.Average -> demographicsTable.add((aliveMajorCivsSorted.sumOf { it.getStatForRanking(category) } / aliveMajorCivsSorted.count()).toLabel())
+                    RankLabels.Worst -> addRankCivGroup(aliveMajorCivsSorted.lastOrNull()!!)
+                }
+            }
+        }
+
+        return demographicsTable
+    }
+    
+    private fun buildDemographicsHeaders(demographicsTable: Table) {
+        val demoLabel = Table().apply { defaults().pad(5f) }
+
+        demoLabel.add("Demographic".toLabel()).row()
+        demoLabel.addSeparator().fillX()
+        demographicsTable.add(demoLabel)
+
+        for (category in RankingType.values()) {
+            val headers = Table().apply { defaults().pad(5f) }
+            headers.add(category.name.replace('_', ' ').toLabel()).row()
+            headers.addSeparator().fillX()
+            demographicsTable.add(headers)
+        }
+    }
+
+    private fun buildRankingsTable(majorCivs: List<CivilizationInfo>): Table {
+        val rankingsTable = Table().apply { defaults().pad(5f) }
 
         for (category in RankingType.values()) {
             val column = Table().apply { defaults().pad(5f) }
-            column.add(category.name.replace('_',' ').toLabel()).row()
+            column.add(category.name.replace('_' , ' ').toLabel()).row()
             column.addSeparator()
 
             for (civ in majorCivs.sortedByDescending { it.getStatForRanking(category) }) {
                 column.add(getCivGroup(civ, ": " + civ.getStatForRanking(category).toString(), playerCivInfo)).fillX().row()
             }
 
-            civRankingsTable.add(column)
+            rankingsTable.add(column)
         }
 
-        contentsTable.clear()
-        contentsTable.add(civRankingsTable)
+        return rankingsTable
     }
 
     private fun getCivGroup(civ: CivilizationInfo, afterCivNameText: String, currentPlayer: CivilizationInfo): Table {
@@ -205,8 +259,8 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
             backgroundColor = Color.LIGHT_GRAY
             labelColor = Color.BLACK
         } else if (currentPlayer == civ // || game.viewEntireMapForDebug
-            || currentPlayer.knows(civ) 
-            || currentPlayer.isDefeated() 
+            || currentPlayer.knows(civ)
+            || currentPlayer.isDefeated()
             || currentPlayer.victoryManager.hasWon()
         ) {
             civGroup.add(ImageGetter.getNationIndicator(civ.nation, 30f))
@@ -217,7 +271,6 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
             backgroundColor = Color.DARK_GRAY
             labelText = Constants.unknownNationName
         }
-        
 
         civGroup.background = ImageGetter.getRoundedEdgeRectangle(backgroundColor)
         val label = labelText.toLabel(labelColor)

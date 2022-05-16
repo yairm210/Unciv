@@ -381,7 +381,10 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         while (allowedTile == null && distance < 5) {
             distance++
             allowedTile = unit.getTile().getTilesAtDistance(distance)
-                    .firstOrNull { canMoveTo(it) }
+                // can the unit be placed safely there?
+                .filter { canMoveTo(it) }
+                // out of those where it can be placed, can it reach them in any meaningful way?
+                .firstOrNull { getPathBetweenTiles(unit.currentTile, it).size > 1 }
         }
 
         // No tile within 4 spaces? move him to a city.
@@ -654,13 +657,17 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
 
         if (!unit.canEnterForeignTerrain && !tile.canCivPassThrough(unit.civInfo)) return false
 
+        // The first unit is:
+        //   1. Either military unit
+        //   2. or unprotected civilian
+        //   3. or unprotected air unit while no civilians on tile
         val firstUnit = tile.getFirstUnit()
         // Moving to non-empty tile
         if (firstUnit != null && unit.civInfo != firstUnit.civInfo) {
             // Allow movement through unguarded, at-war Civilian Unit. Capture on the way 
             // But not for Embarked Units capturing on Water
             if (!(unit.isEmbarked() && tile.isWater)
-                    && tile.getUnguardedCivilian() != null && unit.civInfo.isAtWarWith(tile.civilianUnit!!.civInfo))
+                    && firstUnit.isCivilian() && unit.civInfo.isAtWarWith(firstUnit.civInfo))
                 return true
             // Cannot enter hostile tile with any unit in there
             if (unit.civInfo.isAtWarWith(firstUnit.civInfo))
@@ -713,6 +720,21 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         pathsToCities.remove(startingTile)
         return pathsToCities
     }
+
+    /**
+     * @returns the set of [TileInfo] between [from] and [to] tiles.
+     * It takes into account the terrain and units possibilities of entering the terrain,
+     * however ignores the diplomatic aspects of such movement like crossing closed borders.
+     */
+    private fun getPathBetweenTiles(from: TileInfo, to: TileInfo): MutableSet<TileInfo> {
+        val tmp = unit.canEnterForeignTerrain
+        unit.canEnterForeignTerrain = true // the trick to ignore tiles owners
+        val bfs = BFS(from) { canMoveTo(it) }
+        bfs.stepUntilDestination(to)
+        unit.canEnterForeignTerrain = tmp
+        return bfs.getReachedTiles()
+    }
+
 }
 
 class PathsToTilesWithinTurn : LinkedHashMap<TileInfo, UnitMovementAlgorithms.ParentTileAndTotalDistance>() {

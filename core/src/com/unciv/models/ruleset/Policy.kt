@@ -54,8 +54,10 @@ open class Policy : RulesetObject() {
         val lineList = ArrayList<FormattedLine>()
 
         lineList += if (this is PolicyBranch) {
-            val eraColor = ruleset.eras[era]?.getHexColor() ?: ""
-            FormattedLine("{Unlocked at} {${branch.era}}", header = 4, color = eraColor)
+            val era = ruleset.eras[era]
+            val eraColor = era?.getHexColor() ?: ""
+            val eraLink = era?.makeLink() ?: ""
+            FormattedLine("{Unlocked at} {${branch.era}}", header = 4, color = eraColor, link = eraLink)
         } else {
             FormattedLine("Policy branch: [${branch.name}]", link = branch.makeLink())
         }

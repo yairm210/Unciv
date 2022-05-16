@@ -1,3 +1,95 @@
+## 4.1.0
+
+Upgraded to libGDX 1.11.0 - enables Unciv on M1 chips
+
+Allow Android Unciv more memory than standard apps - By Azzurite
+
+Allow liberating a traded city - By JackRainy
+
+By xlenstra:
+- Disabled CS buttons when at war; CS keep influence when at war with ally 
+- Fixed bug where roads could not be removed 
+
+By SomeTroglodyte:
+- Accelerate custom map selection
+- Map Editor improvements 
+- Notifications no longer become unscrollable past a point
+
+Capital movement tweaks  - By OptimizedForDensity
+
+## 4.0.16
+
+AI will not declare war if it definitely can't take a city 
+
+Civilooedia from mainmenu  - By SomeTroglodyte
+
+Rate limit handling for Dropbox  - By GGGuenni
+
+By OptimizedForDensity:
+- Use ranged strength when defending against ranged attacks 
+- Hide cities where wonders are built until city is explored 
+
+By xlenstra:
+- Fixed "improvements could no longer be built by workers" bug
+- Fixed "roads seemingly remove improvements" bug 
+
+Hexarealm tileset added to base game - By GeneralWadaling
+
+## 4.0.15
+
+Fixed proxy issues when starting new multiplayer games - By alexban011
+
+By SomeTroglodyte:
+- Optional gzipping of saved games 
+- Modding: Typed unit promotion effects
+
+By Azzurite:
+- Add UncivServer.jar to github release
+- Improvements and city buttons visible to Spectator
+
+By touhidurrr:
+- Autofix Multiplayer Server URL on input 
+
+Hide Unmet Civ and Capital Names in Victory Screen - By OptimizedForDensity
+
+Improved clarity & moddability of building improvements  - By xlenstra
+
+## 4.0.14
+
+Performance improvements
+
+By SomeTroglodyte:
+- Move UncivServer to own module
+- Font choice rework 
+- Reworked "Creates improvement on a specific tile" Unique
+
+By Azzurite:
+- Fixed Barbarian Camps revealed by Honor not showing immediately in multiplayer
+
+By JackRainy:
+- Auto-downloading missing mods for save files
+- Typed missing uniques 
+
+## 4.0.13
+
+Extensive performance work
+
+Can no longer gift units to enemy City States
+
+Can now have owner-style-specific improvement images (e.g. Mine-Medieval-European)
+
+Resolved rare crashes
+
+By Azzurite:
+- Create turn notifier for when the game is running for Windows
+- Fix Sweden not being able to gift great people to city states
+
+By Jack Rainy:
+- Allow trade routes via city-states
+- Better unit expulsion when declaring war/after open borders ended
+
+New Demographics Scoreboard  - By letstalkaboutdune
+
 ## 4.0.12
 
 By SomeTroglodyte:

@@ -77,13 +77,13 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         unassignedPopLabel.onClick { cityInfo.reassignPopulation(); cityScreen.update() }
 
         var turnsToExpansionString =
-                if (cityInfo.cityStats.currentCityStats.culture > 0 && cityInfo.expansion.chooseNewTileToOwn() != null) {
+                if (cityInfo.cityStats.currentCityStats.culture > 0 && cityInfo.expansion.getChoosableTiles().any()) {
                     val remainingCulture = cityInfo.expansion.getCultureToNextTile() - cityInfo.expansion.cultureStored
                     var turnsToExpansion = ceil(remainingCulture / cityInfo.cityStats.currentCityStats.culture).toInt()
                     if (turnsToExpansion < 1) turnsToExpansion = 1
                     "[$turnsToExpansion] turns to expansion".tr()
                 } else "Stopped expansion".tr()
-        if (cityInfo.expansion.chooseNewTileToOwn() != null)
+        if (cityInfo.expansion.getChoosableTiles().any())
             turnsToExpansionString +=
                     " (${cityInfo.expansion.cultureStored}${Fonts.culture}/${cityInfo.expansion.getCultureToNextTile()}${Fonts.culture})"
 

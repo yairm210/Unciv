@@ -11,7 +11,10 @@ interface GeneralPlatformSpecificHelpers {
      *  @param allow `true`: allow all orientations (follows sensor as limited by OS settings)
      *          `false`: allow only landscape orientations (both if supported, otherwise default landscape only)
      */
-    fun allowPortrait(allow: Boolean)
+    fun allowPortrait(allow: Boolean) {}
 
-    fun isInternetConnected(): Boolean
+    /**
+     * Notifies the user that it's their turn while the game is running
+     */
+    fun notifyTurnStarted() {}
 }

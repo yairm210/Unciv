@@ -1,8 +1,15 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.utils.Json
+import com.badlogic.gdx.utils.Json.Serializer
+import com.badlogic.gdx.utils.JsonValue
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.json.HashMapVector2
+import com.unciv.json.json
+import com.unciv.logic.BarbarianManager
+import com.unciv.logic.Encampment
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.automation.NextTurnAutomation
@@ -32,9 +39,6 @@ import com.unciv.ui.utils.toPercent
 import com.unciv.ui.utils.withItem
 import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
-import kotlin.NoSuchElementException
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -166,13 +170,11 @@ class CivilizationInfo {
     var citiesCreated = 0
     var exploredTiles = HashSet<Vector2>()
 
-    // This double construction because for some reason the game wants to load a
-    // map<Vector2, String> as a map<String, String> causing all sorts of type problems.
-    // So we let the game have its map<String, String> and remap it in setTransients,
-    // everyone's happy. Sort of.
+    @Deprecated("Only for backward compatibility, will have no values after GameInfo.setTransients",
+        ReplaceWith("lastSeenImprovement"))
     var lastSeenImprovementSaved = HashMap<String, String>()
-    @Transient
-    var lastSeenImprovement = HashMap<Vector2, String>()
+
+    var lastSeenImprovement = HashMapVector2<String>()
 
     // To correctly determine "game over" condition as clarified in #4707
     // Nullable type meant to be deprecated and converted to non-nullable,
@@ -251,7 +253,7 @@ class CivilizationInfo {
         // Cloning it by-pointer is a horrific move, since the serialization would go over it ANYWAY and still lead to concurrency problems.
         // Cloning it by iterating on the tilemap values may seem ridiculous, but it's a perfectly thread-safe way to go about it, unlike the other solutions.
         toReturn.exploredTiles.addAll(gameInfo.tileMap.values.asSequence().map { it.position }.filter { it in exploredTiles })
-        toReturn.lastSeenImprovementSaved.putAll(lastSeenImprovement.mapKeys { it.key.toString() })
+        toReturn.lastSeenImprovement.putAll(lastSeenImprovement)
         toReturn.notifications.addAll(notifications)
         toReturn.citiesCreated = citiesCreated
         toReturn.popupAlerts.addAll(popupAlerts)
@@ -427,10 +429,11 @@ class CivilizationInfo {
         )
         yieldAll(policies.policyUniques.getMatchingUniques(uniqueType, stateForConditionals))
         yieldAll(tech.techUniques.getMatchingUniques(uniqueType, stateForConditionals))
-        yieldAll(temporaryUniques.asSequence()
-            .map { it.uniqueObject }
-            .filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) }
-        )
+        if (temporaryUniques.isNotEmpty())
+            yieldAll(temporaryUniques.asSequence()
+                .map { it.uniqueObject }
+                .filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) }
+            )
         yieldAll(getEra().getMatchingUniques(uniqueType, stateForConditionals))
         if (religionManager.religion != null)
             yieldAll(religionManager.religion!!.getFounderUniques()
@@ -546,7 +549,7 @@ class CivilizationInfo {
         // For now, it might be overkill though.
         var meetString = "[${civName}] has given us [${giftAmount}] as a token of goodwill for meeting us"
         val religionMeetString = "[${civName}] has also given us [${faithAmount}]"
-        if (diplomacy.filter { it.value.otherCiv().isMajorCiv() }.count() == 1) {
+        if (diplomacy.filter { it.value.otherCiv().isMajorCiv() }.size == 1) {
             giftAmount.timesInPlace(2f)
             meetString = "[${civName}] has given us [${giftAmount}] as we are the first major civ to meet them"
         }
@@ -595,20 +598,25 @@ class CivilizationInfo {
     fun getEraNumber(): Int = getEra().eraNumber
 
     fun isAtWarWith(otherCiv: CivilizationInfo): Boolean {
-        if (otherCiv == this) return false // never at war with itself
-        if (otherCiv.isBarbarian() || isBarbarian()) return true
-        val diplomacyManager = diplomacy[otherCiv.civName]
-            ?: return false // not encountered yet
-        return diplomacyManager.diplomaticStatus == DiplomaticStatus.War
+        return when {
+            otherCiv == this -> false
+            otherCiv.isBarbarian() || isBarbarian() -> true
+            else -> {
+                val diplomacyManager = diplomacy[otherCiv.civName]
+                    ?: return false // not encountered yet
+                return diplomacyManager.diplomaticStatus == DiplomaticStatus.War
+            }
+        }
     }
 
     fun isAtWar() = diplomacy.values.any { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv().isDefeated() }
 
-    fun hasOpenBordersTo(otherCiv: CivilizationInfo): Boolean {
+    fun canEnterBordersOf(otherCiv: CivilizationInfo): Boolean {
         if (otherCiv == this) return true // own borders are always open
         if (otherCiv.isBarbarian() || isBarbarian()) return false // barbarians blocks the routes
         val diplomacyManager = diplomacy[otherCiv.civName]
             ?: return false // not encountered yet
+        if (otherCiv.isCityState() && diplomacyManager.diplomaticStatus != DiplomaticStatus.War) return true
         return diplomacyManager.hasOpenBorders
     }
 
@@ -652,17 +660,18 @@ class CivilizationInfo {
     }
 
     fun getStatForRanking(category: RankingType): Int {
-        return when (category) {
-            RankingType.Score -> calculateTotalScore().toInt()
-            RankingType.Population -> cities.sumOf { it.population.population }
-            RankingType.Crop_Yield -> statsForNextTurn.food.roundToInt()
-            RankingType.Production -> statsForNextTurn.production.roundToInt()
-            RankingType.Gold -> gold
-            RankingType.Territory -> cities.sumOf { it.tiles.size }
-            RankingType.Force -> getMilitaryMight()
-            RankingType.Happiness -> getHappiness()
-            RankingType.Technologies -> tech.researchedTechnologies.size
-            RankingType.Culture -> policies.adoptedPolicies.count { !Policy.isBranchCompleteByName(it) }
+        return if (isDefeated()) 0
+        else when (category) {
+                RankingType.Score -> calculateTotalScore().toInt()
+                RankingType.Population -> cities.sumOf { it.population.population }
+                RankingType.Crop_Yield -> statsForNextTurn.food.roundToInt()
+                RankingType.Production -> statsForNextTurn.production.roundToInt()
+                RankingType.Gold -> gold
+                RankingType.Territory -> cities.sumOf { it.tiles.size }
+                RankingType.Force -> getMilitaryMight()
+                RankingType.Happiness -> getHappiness()
+                RankingType.Technologies -> tech.researchedTechnologies.size
+                RankingType.Culture -> policies.adoptedPolicies.count { !Policy.isBranchCompleteByName(it) }
         }
     }
 
@@ -716,12 +725,12 @@ class CivilizationInfo {
         if (mapSizeModifier > 1)
             mapSizeModifier = (mapSizeModifier - 1) / 3 + 1
 
-        scoreBreakdown["Cities"] = cities.count() * 10 * mapSizeModifier
+        scoreBreakdown["Cities"] = cities.size * 10 * mapSizeModifier
         scoreBreakdown["Population"] = cities.sumOf { it.population.population } * 3 * mapSizeModifier
         scoreBreakdown["Tiles"] = cities.sumOf { city -> city.getTiles().filter { !it.isWater}.count() } * 1 * mapSizeModifier
         scoreBreakdown["Wonders"] = 40 * cities
             .sumOf { city -> city.cityConstructions.builtBuildings
-                .filter { gameInfo.ruleSet.buildings[it]!!.isWonder }.count() 
+                .filter { gameInfo.ruleSet.buildings[it]!!.isWonder }.size
             }.toDouble()
         scoreBreakdown["Techs"] = tech.getNumberOfTechsResearched() * 4.toDouble()
         scoreBreakdown["Future Tech"] = tech.repeatingTechsResearched * 10.toDouble()
@@ -758,7 +767,7 @@ class CivilizationInfo {
         questManager.setTransients()
 
         if (citiesCreated == 0 && cities.any())
-            citiesCreated = cities.filter { it.name in nation.cities }.count()
+            citiesCreated = cities.filter { it.name in nation.cities }.size
 
         religionManager.civInfo = this // needs to be before tech, since tech setTransients looks at all uniques
         religionManager.setTransients()
@@ -802,8 +811,6 @@ class CivilizationInfo {
         }
 
         hasLongCountDisplayUnique = hasUnique(UniqueType.MayanCalendarDisplay)
-
-        lastSeenImprovement.putAll(lastSeenImprovementSaved.mapKeys { Vector2().fromString(it.key) })
     }
 
     fun updateSightAndResources() {
@@ -1170,7 +1177,7 @@ class CivilizationInfo {
         if (placedUnit.hasUnique(UniqueType.ReligiousUnit) && gameInfo.isReligionEnabled()) {
             placedUnit.religion = 
                 when {
-                    placedUnit.hasUnique("Takes your religion over the one in their birth city")
+                    placedUnit.hasUnique(UniqueType.TakeReligionOverBirthCity)
                     && religionManager.religion?.isMajorReligion() == true ->
                         religionManager.religion!!.name
                     city != null -> city.cityConstructions.cityInfo.religion.getMajorityReligionName()
@@ -1288,7 +1295,7 @@ class CivilizationInfo {
         }
 
         // If there aren't many players (left) we can't be that far
-        val numMajors = gameInfo.getAliveMajorCivs().count()
+        val numMajors = gameInfo.getAliveMajorCivs().size
         if (numMajors <= 2 && proximity > Proximity.Close)
             proximity = Proximity.Close
         if (numMajors <= 4 && proximity > Proximity.Far)
@@ -1297,6 +1304,26 @@ class CivilizationInfo {
         this.proximity[otherCiv.civName] = proximity
 
         return proximity
+    }
+
+    /**
+     * Removes current capital then moves capital to argument city if not null
+     */
+    fun moveCapitalTo(city: CityInfo?) {
+        if (cities.isNotEmpty()) {
+            getCapital().cityConstructions.removeBuilding(getCapital().capitalCityIndicator())
+        }
+
+        if (city == null) return // can't move a non-existent city but we can always remove our old capital
+        // move new capital
+        city.cityConstructions.addBuilding(city.capitalCityIndicator())
+        city.isBeingRazed = false // stop razing the new capital if it was being razed
+    }
+
+    fun moveCapitalToNextLargest() {
+        moveCapitalTo(cities
+            .filterNot { it == getCapital() }
+            .maxByOrNull { it.population.population})
     }
 
     //////////////////////// City State wrapper functions ////////////////////////

@@ -12,13 +12,11 @@ buildscript {
 
     repositories {
         // Chinese mirrors for quicker loading for chinese devs - uncomment if you're chinese
-        // maven{ url = uri("https://maven.aliyun.com/repository/jcenter") }
+        // maven{ url = uri("https://maven.aliyun.com/repository/public") }
         // maven{ url = uri("https://maven.aliyun.com/repository/google") }
         // maven{ url = uri("https://maven.aliyun.com/repository/gradle-plugin") }
-        // maven{ url = uri("https://maven.aliyun.com/repository/public") }
-        google()
-        mavenLocal()
         mavenCentral()
+        google()  // needed for com.android.tools.build:gradle
         maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots/") }
         gradlePluginPortal()
         maven { url = uri("https://jitpack.io") } // for the anuken packr
@@ -43,14 +41,10 @@ allprojects {
 
     repositories {
         // Chinese mirrors for quicker loading for chinese devs - uncomment if you're chinese
-        // maven{ url = uri("https://maven.aliyun.com/repository/jcenter") }
         // maven{ url = uri("https://maven.aliyun.com/repository/google") }
-        // maven{ url = uri("https://maven.aliyun.com/repository/gradle-plugin") }
         // maven{ url = uri("https://maven.aliyun.com/repository/public") }
-        google()
-        gradlePluginPortal()
-        mavenLocal()
         mavenCentral()
+        google()
         maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots/") }
         maven { url = uri("https://oss.sonatype.org/content/repositories/releases/") }
         maven { url = uri("https://jitpack.io") } // for java-discord-rpc
@@ -70,9 +64,18 @@ project(":desktop") {
         }
 
         "implementation"("com.github.MinnDevelopment:java-discord-rpc:v2.0.1")
+    
+        "implementation"("net.java.dev.jna:jna:5.11.0")
+        "implementation"("net.java.dev.jna:jna-platform:5.11.0")
+    }
+}
 
+// For server-side
+project(":server") {
+    apply(plugin = "kotlin")
+
+    dependencies {
         // For server-side
-
         "implementation"("io.ktor:ktor-server-core:1.6.8")
         "implementation"("io.ktor:ktor-server-netty:1.6.8")
         "implementation"("ch.qos.logback:logback-classic:1.2.5")

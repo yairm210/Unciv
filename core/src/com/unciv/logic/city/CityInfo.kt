@@ -459,12 +459,14 @@ class CityInfo {
         if (resource.revealedBy != null && !civInfo.tech.isResearched(resource.revealedBy!!)) return 0
 
         // Even if the improvement exists (we conquered an enemy city or somesuch) or we have a city on it, we won't get the resource until the correct tech is researched
-        if (resource.improvement != null) {
-            val improvement = getRuleset().tileImprovements[resource.improvement!!]!!
-            if (improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!)) return 0
+        if (resource.getImprovements().any()) {
+            if (!resource.getImprovements().any { improvementString ->
+                val improvement = getRuleset().tileImprovements[improvementString]!!
+                improvement.techRequired == null || civInfo.tech.isResearched(improvement.techRequired!!)
+            }) return 0
         }
 
-        if (resource.improvement == tileInfo.improvement || tileInfo.isCityCenter()
+        if ((tileInfo.improvement != null && resource.isImprovedBy(tileInfo.improvement!!)) || tileInfo.isCityCenter()
             // Per https://gaming.stackexchange.com/questions/53155/do-manufactories-and-customs-houses-sacrifice-the-strategic-or-luxury-resources
             || resource.resourceType == ResourceType.Strategic && tileInfo.containsGreatImprovement()
         ) {
@@ -682,12 +684,16 @@ class CityInfo {
     fun setFlag(flag: CityFlags, amount: Int) {
         flagsCountdown[flag.name] = amount
     }
+
+    fun removeFlag(flag: CityFlags) {
+        flagsCountdown.remove(flag.name)
+    }
     
     fun resetWLTKD() {
         // Removes the flags for we love the king & resource demand
         // The resource demand flag will automatically be readded with 15 turns remaining, see startTurn()
-        flagsCountdown.remove(CityFlags.WeLoveTheKing.name)
-        flagsCountdown.remove(CityFlags.ResourceDemand.name)
+        removeFlag(CityFlags.WeLoveTheKing)
+        removeFlag(CityFlags.ResourceDemand)
         demandedResource = ""
     }
 
@@ -753,7 +759,9 @@ class CityInfo {
 
         // The relinquish ownership MUST come before removing the city,
         // because it updates the city stats which assumes there is a capital, so if you remove the capital it crashes
-        getTiles().forEach { expansion.relinquishOwnership(it) }
+        for (tile in getTiles()) {
+            expansion.relinquishOwnership(tile)
+        }
         civInfo.cities = civInfo.cities.toMutableList().apply { remove(this@CityInfo) }
         getCenterTile().improvement = "City ruins"
 
@@ -765,7 +773,7 @@ class CityInfo {
         }
 
         if (isCapital() && civInfo.cities.isNotEmpty()) { // Move the capital if destroyed (by a nuke or by razing)
-            civInfo.cities.first().cityConstructions.addBuilding(capitalCityIndicator())
+            civInfo.moveCapitalToNextLargest()
         }
 
         // Update proximity rankings for all civs

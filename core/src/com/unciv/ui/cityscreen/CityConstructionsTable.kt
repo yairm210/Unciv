@@ -9,8 +9,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.logic.city.*
+import com.unciv.logic.map.TileInfo
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
@@ -37,7 +39,6 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     /* -1 = Nothing, >= 0 queue entry (0 = current construction) */
     private var selectedQueueEntry = -1 // None
     private var preferredBuyStat = Stat.Gold  // Used for keyboard buy
-    var improvementBuildingToConstruct: Building? = null
 
     private val upperTable = Table(BaseScreen.skin)
     private val showCityInfoTableButton = "Show stats drilldown".toTextButton()
@@ -91,7 +92,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     /** Forces layout calculation and returns the lower Table's (available constructions) width
      *  - or - the upper Table's width, whichever is greater (in case the former only contains "Loading...")
      */
-    fun getLowerWidth() = max(lowerTable.packIfNeeded().width, getUpperWidth())  // 
+    fun getLowerWidth() = max(lowerTable.packIfNeeded().width, getUpperWidth())
 
     fun addActorsToStage() {
         cityScreen.stage.addActor(upperTable)
@@ -105,7 +106,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         upperTable.pack()
         // This should work when set once only in addActorsToStage, but it doesn't (table invisible - why?)
         upperTable.setPosition(posFromEdge, stageHeight - posFromEdge, Align.topLeft)
-        
+
         updateAvailableConstructions()
         lowerTableScrollCell.maxHeight(stageHeight - upperTable.height - 2 * posFromEdge)
     }
@@ -173,15 +174,12 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             val useStoredProduction = entry is Building || !cityConstructions.isBeingConstructedOrEnqueued(entry.name)
             var buttonText = entry.name.tr() + cityConstructions.getTurnsToConstructionString(entry.name, useStoredProduction)
             for ((resource, amount) in entry.getResourceRequirements()) {
-                buttonText += "\n" + (
-                    if (amount == 1) "Consumes 1 [$resource]"
-                    else "Consumes [$amount] [$resource]"
-                ).tr()
+                buttonText += "\n" + resource.getConsumesAmountString(amount).tr()
             }
 
             constructionButtonDTOList.add(
                 ConstructionButtonDTO(
-                    entry, 
+                    entry,
                     buttonText,
                     entry.getRejectionReasons(cityConstructions).getMostImportantRejectionReason()
                 )
@@ -236,7 +234,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                     maxButtonWidth = max(maxButtonWidth, constructionButton.packIfNeeded().width)
                 }
 
-                availableConstructionsTable.apply { 
+                availableConstructionsTable.apply {
                     clear()
                     defaults().left().bottom()
                     addCategory("Units", units, maxButtonWidth)
@@ -247,7 +245,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                     pack()
                 }
 
-                availableConstructionsScrollPane.apply { 
+                availableConstructionsScrollPane.apply {
                     setSize(maxButtonWidth, min(availableConstructionsTable.prefHeight, lowerTableScrollCell.maxHeight))
                     layout()
                     scrollY = constructionsScrollY
@@ -277,8 +275,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         val constructionResource = cityConstructions.getConstruction(constructionName).getResourceRequirements()
         for ((resource, amount) in constructionResource)
-            text += if (amount == 1) "\n" + "Consumes 1 [$resource]".tr()
-                else "\n" + "Consumes [$amount] [$resource]".tr()
+            text += "\n" + resource.getConsumesAmountString(amount).tr()
 
         table.defaults().pad(2f).minWidth(40f)
         if (isFirstConstructionOfItsKind) table.add(getProgressBar(constructionName)).minWidth(5f)
@@ -296,8 +293,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         table.touchable = Touchable.enabled
         table.onClick {
-            cityScreen.selectedConstruction = cityConstructions.getConstruction(constructionName)
-            cityScreen.selectedTile = null
+            cityScreen.selectConstruction(constructionName)
             selectedQueueEntry = constructionQueueIndex
             cityScreen.update()
         }
@@ -326,7 +322,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         pickConstructionButton.background = ImageGetter.getBackground(Color.BLACK)
         pickConstructionButton.touchable = Touchable.enabled
 
-        if (!isSelectedQueueEntry() && cityScreen.selectedConstruction != null && cityScreen.selectedConstruction == construction) {
+        if (!isSelectedQueueEntry() && cityScreen.selectedConstruction == construction) {
             pickConstructionButton.background = ImageGetter.getBackground(Color.GREEN.darken(0.5f))
         }
 
@@ -336,7 +332,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         if (!cannotAddConstructionToQueue(construction, cityScreen.city, cityScreen.city.cityConstructions)) {
             val addToQueueButton = ImageGetter.getImage("OtherIcons/New").apply { color = Color.BLACK }.surroundWithCircle(40f)
-            addToQueueButton.onClick(getConstructionSound(construction)) {
+            addToQueueButton.onClick(UncivSound.Silent) {
                 addConstructionToQueue(construction, cityScreen.city.cityConstructions)
             }
             pickConstructionButton.add(addToQueueButton)
@@ -350,8 +346,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                     .colspan(pickConstructionButton.columns).fillX().left().padTop(2f)
         }
         pickConstructionButton.onClick {
-            cityScreen.selectedConstruction = construction
-            cityScreen.selectedTile = null
+            cityScreen.selectConstruction(construction)
             cityScreen.citizenManagementVisible = false
             selectedQueueEntry = -1
             cityScreen.update()
@@ -382,7 +377,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             else {
                 button.onClick {
                     cityConstructions.removeFromQueue(selectedQueueEntry, false)
-                    cityScreen.selectedConstruction = null
+                    cityScreen.clearSelection()
                     selectedQueueEntry = -1
                     cityScreen.update()
                 }
@@ -393,7 +388,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                     || cannotAddConstructionToQueue(construction, city, cityConstructions)) {
                 button.disable()
             } else {
-                button.onClick(getConstructionSound(construction)) {
+                button.onClick(UncivSound.Silent) {
                     addConstructionToQueue(construction, cityConstructions)
                 }
             }
@@ -405,17 +400,21 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
     private fun addConstructionToQueue(construction: IConstruction, cityConstructions: CityConstructions) {
         // Some evil person decided to double tap real fast - #4977
-        if (cannotAddConstructionToQueue(construction, cityScreen.city, cityScreen.city.cityConstructions))
+        if (cannotAddConstructionToQueue(construction, cityScreen.city, cityConstructions))
             return
-        if (construction is Building && construction.uniqueObjects.any { it.placeholderText == "Creates a [] improvement on a specific tile" }) {
-            cityScreen.selectedTile
-            improvementBuildingToConstruct = construction
+
+        // UniqueType.CreatesOneImprovement support - don't add yet, postpone until target tile for the improvement is selected
+        if (construction is Building && construction.hasCreateOneImprovementUnique()) {
+            cityScreen.startPickTileForCreatesOneImprovement(construction, Stat.Gold, false)
             return
         }
+        cityScreen.stopPickTileForCreatesOneImprovement()
+
+        Sounds.play(getConstructionSound(construction))
 
         cityConstructions.addToQueue(construction.name)
         if (!construction.shouldBeDisplayed(cityConstructions)) // For buildings - unlike units which can be queued multiple times
-            cityScreen.selectedConstruction = null
+            cityScreen.clearSelection()
         cityScreen.update()
         cityScreen.game.settings.addCompletedTutorialTask("Pick construction")
     }
@@ -455,7 +454,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
             button.onClick {
                 button.disable()
-                askToBuyConstruction(construction, stat)
+                buyButtonOnClick(construction, stat)
             }
             button.isEnabled = isConstructionPurchaseAllowed(construction, stat, constructionBuyCost)
             button.addTooltip('B')  // The key binding is done in CityScreen constructor
@@ -466,13 +465,29 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         return button
     }
-    
+
+    private fun buyButtonOnClick(construction: INonPerpetualConstruction, stat: Stat = preferredBuyStat) {
+        if (construction !is Building || !construction.hasCreateOneImprovementUnique())
+            return askToBuyConstruction(construction, stat)
+        if (selectedQueueEntry < 0)
+            return cityScreen.startPickTileForCreatesOneImprovement(construction, stat, true)
+        // Buying a UniqueType.CreatesOneImprovement building from queue must pass down
+        // the already selected tile, otherwise a new one is chosen from Automation code.
+        val improvement = construction.getImprovementToCreate(cityScreen.city.getRuleset())!!
+        val tileForImprovement = cityScreen.city.cityConstructions.getTileForImprovement(improvement.name)
+        askToBuyConstruction(construction, stat, tileForImprovement)
+    }
+
     /** Ask whether user wants to buy [construction] for [stat].
      *
      * Used from onClick and keyboard dispatch, thus only minimal parameters are passed,
      * and it needs to do all checks and the sound as appropriate.
      */
-    fun askToBuyConstruction(construction: INonPerpetualConstruction, stat: Stat = preferredBuyStat) {
+    fun askToBuyConstruction(
+        construction: INonPerpetualConstruction,
+        stat: Stat = preferredBuyStat,
+        tile: TileInfo? = null
+    ) {
         if (!isConstructionPurchaseShown(construction, stat)) return
         val city = cityScreen.city
         val constructionBuyCost = construction.getStatBuyCost(city, stat)!!
@@ -484,7 +499,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 "Would you like to purchase [${construction.name}] for [$constructionBuyCost] [${stat.character}]?".tr()
         YesNoPopup(
             purchasePrompt,
-            action = { purchaseConstruction(construction, stat) },
+            action = { purchaseConstruction(construction, stat, tile) },
             screen = cityScreen,
             restoreDefault = { cityScreen.update() }
         ).open()
@@ -511,11 +526,17 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         }
 }
 
-    // called only by askToBuyConstruction's Yes answer
-    private fun purchaseConstruction(construction: INonPerpetualConstruction, stat: Stat = Stat.Gold) {
+    /** Called only by askToBuyConstruction's Yes answer - not to be confused with [CityConstructions.purchaseConstruction]
+     * @param tile supports [UniqueType.CreatesOneImprovement]
+     */
+    private fun purchaseConstruction(
+        construction: INonPerpetualConstruction,
+        stat: Stat = Stat.Gold,
+        tile: TileInfo? = null
+    ) {
         Sounds.play(stat.purchaseSound)
         val city = cityScreen.city
-        if (!city.cityConstructions.purchaseConstruction(construction.name, selectedQueueEntry, false, stat)) {
+        if (!city.cityConstructions.purchaseConstruction(construction.name, selectedQueueEntry, false, stat, tile)) {
             Popup(cityScreen).apply {
                 add("No space available to place [${construction.name}] near [${city.name}]".tr()).row()
                 addCloseButton()
@@ -525,16 +546,19 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         }
         if (isSelectedQueueEntry() || cityScreen.selectedConstruction?.isBuildable(city.cityConstructions) != true) {
             selectedQueueEntry = -1
-            cityScreen.selectedConstruction = null
-            
+            cityScreen.clearSelection()
+
             // Allow buying next queued or auto-assigned construction right away
             city.cityConstructions.chooseNextConstruction()
-            if (city.cityConstructions.currentConstructionFromQueue.isNotEmpty())
-                cityScreen.selectedConstruction = city.cityConstructions.getCurrentConstruction().takeIf { it is INonPerpetualConstruction }
+            if (city.cityConstructions.currentConstructionFromQueue.isNotEmpty()) {
+                val newConstruction = city.cityConstructions.getCurrentConstruction()
+                if (newConstruction is INonPerpetualConstruction)
+                    cityScreen.selectConstruction(newConstruction)
+            }
         }
         cityScreen.update()
     }
-    
+
     private fun getRaisePriorityButton(constructionQueueIndex: Int, name: String, city: CityInfo): Table {
         val tab = Table()
         tab.add(ImageGetter.getArrowImage(Align.top).apply { color = Color.BLACK }.surroundWithCircle(40f))
@@ -543,8 +567,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             tab.onClick {
                 tab.touchable = Touchable.disabled
                 city.cityConstructions.raisePriority(constructionQueueIndex)
-                cityScreen.selectedConstruction = cityScreen.city.cityConstructions.getConstruction(name)
-                cityScreen.selectedTile = null
+                cityScreen.selectConstruction(name)
                 selectedQueueEntry = constructionQueueIndex - 1
                 cityScreen.update()
             }
@@ -560,8 +583,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             tab.onClick {
                 tab.touchable = Touchable.disabled
                 city.cityConstructions.lowerPriority(constructionQueueIndex)
-                cityScreen.selectedConstruction = cityScreen.city.cityConstructions.getConstruction(name)
-                cityScreen.selectedTile = null
+                cityScreen.selectConstruction(name)
                 selectedQueueEntry = constructionQueueIndex + 1
                 cityScreen.update()
             }
@@ -577,7 +599,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             tab.onClick {
                 tab.touchable = Touchable.disabled
                 city.cityConstructions.removeFromQueue(constructionQueueIndex, false)
-                cityScreen.selectedConstruction = null
+                cityScreen.clearSelection()
                 cityScreen.update()
             }
         }

@@ -111,7 +111,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
                 Sounds.play(UncivSound.Coin)
                 city.expansion.buyTile(selectedTile)
                 // preselect the next tile on city screen rebuild so bulk buying can go faster
-                UncivGame.Current.setScreen(CityScreen(city, selectedTile = city.expansion.chooseNewTileToOwn()))
+                UncivGame.Current.setScreen(CityScreen(city, initSelectedTile = city.expansion.chooseNewTileToOwn()))
             },
             screen = cityScreen,
             restoreDefault = { cityScreen.update() }

@@ -3,6 +3,8 @@ package com.unciv.logic
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
+import com.unciv.logic.BackwardCompatibility.migrateBarbarianCamps
+import com.unciv.logic.BackwardCompatibility.migrateSeenImprovements
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.civilization.*
@@ -19,7 +21,8 @@ import com.unciv.ui.audio.MusicTrackChooserFlags
 import java.util.*
 
 
-class UncivShowableException(missingMods: String) : Exception(missingMods)
+class MissingModsException(val missingMods: String) : UncivShowableException("Missing mods: [$missingMods]")
+open class UncivShowableException(errorText: String) : Exception(errorText)
 
 class GameInfo {
     //region Fields - Serialized
@@ -207,6 +210,8 @@ class GameInfo {
             currentPlayerIndex = (currentPlayerIndex + 1) % civilizations.size
             if (currentPlayerIndex == 0) {
                 turns++
+                if (UncivGame.Current.simulateUntilTurnForDebug != 0)
+                    println("Starting simulation of turn $turns")
             }
             thisPlayer = civilizations[currentPlayerIndex]
             thisPlayer.startTurn()
@@ -242,6 +247,8 @@ class GameInfo {
             }
             switchTurn()
         }
+        if (turns == UncivGame.Current.simulateUntilTurnForDebug)
+            UncivGame.Current.simulateUntilTurnForDebug = 0
 
         currentTurnStartTime = System.currentTimeMillis()
         currentPlayer = thisPlayer.civName
@@ -392,6 +399,9 @@ class GameInfo {
             gameParameters.baseRuleset = baseRulesetInMods
             gameParameters.mods = LinkedHashSet(gameParameters.mods.filter { it != baseRulesetInMods })
         }
+        // [TEMPORARY] Convert old saves to remove json workaround
+        for (civInfo in civilizations) civInfo.migrateSeenImprovements()
+        barbarians.migrateBarbarianCamps()
 
         ruleSet = RulesetCache.getComplexRuleset(gameParameters)
 
@@ -402,7 +412,7 @@ class GameInfo {
             .filterNot { it in ruleSet.mods }
             .joinToString(limit = 120) { it }
         if (missingMods.isNotEmpty()) {
-            throw UncivShowableException("Missing mods: [$missingMods]")
+            throw MissingModsException(missingMods)
         }
 
         removeMissingModReferences()

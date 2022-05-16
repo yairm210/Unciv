@@ -202,7 +202,7 @@ class DiplomacyScreen(
         otherCiv.updateAllyCivForCityState()
         val ally = otherCiv.getAllyCiv()
         if (ally != null) {
-            val allyInfluence = otherCiv.getDiplomacyManager(ally).influence.toInt()
+            val allyInfluence = otherCiv.getDiplomacyManager(ally).getInfluence().toInt()
             diplomacyTable
                 .add("Ally: [$ally] with [$allyInfluence] Influence".toLabel())
                 .row()
@@ -214,8 +214,11 @@ class DiplomacyScreen(
             diplomacyTable.add(protectorString.toLabel()).row()
         }
 
+        val atWar = otherCiv.isAtWarWith(viewingCiv)
+        
         val nextLevelString = when {
-            otherCivDiplomacyManager.influence.toInt() < 30 -> "Reach 30 for friendship."
+            atWar -> ""
+            otherCivDiplomacyManager.getInfluence().toInt() < 30 -> "Reach 30 for friendship."
             ally == viewingCiv.civName -> ""
             else -> "Reach highest influence above 60 for alliance."
         }
@@ -322,7 +325,7 @@ class DiplomacyScreen(
             rightSideTable.add(ScrollPane(getGoldGiftTable(otherCiv)))
         }
         diplomacyTable.add(giveGiftButton).row()
-        if (isNotPlayersTurn()) giveGiftButton.disable()
+        if (isNotPlayersTurn() || viewingCiv.isAtWarWith(otherCiv)) giveGiftButton.disable()
 
         val improveTileButton = getImproveTilesButton(otherCiv, otherCivDiplomacyManager)
         if (improveTileButton != null) diplomacyTable.add(improveTileButton).row()
@@ -357,7 +360,7 @@ class DiplomacyScreen(
             rightSideTable.add(ScrollPane(getDemandTributeTable(otherCiv)))
         }
         diplomacyTable.add(demandTributeButton).row()
-        if (isNotPlayersTurn()) demandTributeButton.disable()
+        if (isNotPlayersTurn() || viewingCiv.isAtWarWith(otherCiv)) demandTributeButton.disable()
 
         val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)
         if (!viewingCiv.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
@@ -425,10 +428,8 @@ class DiplomacyScreen(
 
         for (improvableTile in improvableResourceTiles)
             for (tileImprovement in improvements.values)
-                if (improvableTile.canBuildImprovement(
-                        tileImprovement,
-                        otherCiv
-                    ) && improvableTile.tileResource.improvement == tileImprovement.name
+                if (improvableTile.tileResource.isImprovedBy(tileImprovement.name) 
+                    && improvableTile.canBuildImprovement(tileImprovement, otherCiv)
                 )
                     needsImprovements = true
 
@@ -442,7 +443,7 @@ class DiplomacyScreen(
         }
 
 
-        if (isNotPlayersTurn() || otherCivDiplomacyManager.influence < 60 || !needsImprovements)
+        if (isNotPlayersTurn() || otherCivDiplomacyManager.getInfluence() < 60 || !needsImprovements)
             improveTileButton.disable()
         return improveTileButton
     }
@@ -490,9 +491,11 @@ class DiplomacyScreen(
         return diplomacyTable
     }
 
-    fun getImprovableResourceTiles(otherCiv:CivilizationInfo) =  otherCiv.getCapital().getTiles()
-        .filter { it.hasViewableResource(otherCiv) && it.tileResource.resourceType!=ResourceType.Bonus
-                && it.tileResource.improvement != it.improvement }
+    fun getImprovableResourceTiles(otherCiv:CivilizationInfo) = otherCiv.getCapital().getTiles().filter { 
+        it.hasViewableResource(otherCiv) 
+        && it.tileResource.resourceType != ResourceType.Bonus
+        && (it.improvement == null || !it.tileResource.isImprovedBy(it.improvement!!))
+    }
 
     private fun getImprovementGiftTable(otherCiv: CivilizationInfo): Table {
         val improvementGiftTable = getCityStateDiplomacyTableHeader(otherCiv)
@@ -504,7 +507,7 @@ class DiplomacyScreen(
 
         for (improvableTile in improvableResourceTiles) {
             for (tileImprovement in tileImprovements.values) {
-                if (improvableTile.tileResource.improvement == tileImprovement.name
+                if (improvableTile.tileResource.isImprovedBy(tileImprovement.name)
                     && improvableTile.canBuildImprovement(tileImprovement, otherCiv)
                 ) {
                     val improveTileButton =
@@ -857,7 +860,7 @@ class DiplomacyScreen(
         val relationshipTable = Table()
 
         val opinionOfUs =
-            if (otherCivDiplomacyManager.civInfo.isCityState()) otherCivDiplomacyManager.influence.toInt()
+            if (otherCivDiplomacyManager.civInfo.isCityState()) otherCivDiplomacyManager.getInfluence().toInt()
             else otherCivDiplomacyManager.opinionOfOtherCiv().toInt()
 
         relationshipTable.add("{Our relationship}: ".toLabel())
@@ -875,8 +878,8 @@ class DiplomacyScreen(
         if (otherCivDiplomacyManager.civInfo.isCityState())
             relationshipTable.add(
                 CityButton.getInfluenceBar(
-                    otherCivDiplomacyManager.influence,
-                    otherCivDiplomacyManager.relationshipLevel(),
+                    otherCivDiplomacyManager.getInfluence(),
+                    relationshipLevel,
                     200f, 10f
                 )
             ).colspan(2).pad(5f)
@@ -930,9 +933,9 @@ class DiplomacyScreen(
         rightSideTable.clear()
         rightSideTable.add(diplomacyTable)
     }
-    
+
     private fun getGoToOnMapButton(civilization: CivilizationInfo): TextButton {
-        val goToOnMapButton = TextButton("Go to on map", skin)
+        val goToOnMapButton = "Go to on map".toTextButton()
         goToOnMapButton.onClick {
             UncivGame.Current.setWorldScreen()
             UncivGame.Current.worldScreen.mapHolder.setCenterPosition(civilization.getCapital().location, selectUnit = false)

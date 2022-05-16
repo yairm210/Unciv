@@ -1,12 +1,10 @@
 package com.unciv.logic.multiplayer
 
+import com.unciv.json.json
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
-import com.unciv.logic.GameSaver
 import com.unciv.ui.saves.Gzip
-import java.io.BufferedReader
 import java.io.FileNotFoundException
-import java.io.InputStreamReader
 import java.util.*
 import kotlin.math.pow
 
@@ -67,7 +65,7 @@ class ServerMutex(val gameInfo: GameInfoPreview) {
         }
 
         try {
-            OnlineMultiplayer().fileStorage.saveFileData(fileName, Gzip.zip(GameSaver.json().toJson(LockFile())))
+            OnlineMultiplayer().fileStorage.saveFileData(fileName, Gzip.zip(json().toJson(LockFile())), false)
         } catch (ex: FileStorageConflictException) {
             return locked
         }
