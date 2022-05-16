@@ -21,7 +21,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.headless.HeadlessApplication;
 import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
 import com.badlogic.gdx.graphics.GL20;
-
+import com.unciv.logic.GameSaver;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
@@ -46,6 +46,7 @@ public class GdxTestRunner extends BlockJUnit4ClassRunner implements Application
 
 	@Override
 	public void create() {
+		GameSaver.INSTANCE.init(Gdx.files, null);
 	}
 
 	@Override

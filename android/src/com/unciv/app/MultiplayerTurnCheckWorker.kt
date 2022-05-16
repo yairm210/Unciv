@@ -4,6 +4,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
@@ -14,6 +15,7 @@ import androidx.core.app.NotificationCompat.DEFAULT_VIBRATE
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.*
 import com.badlogic.gdx.backends.android.AndroidApplication
+import com.badlogic.gdx.backends.android.DefaultAndroidFiles
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.multiplayer.FileStorageRateLimitReached
@@ -170,16 +172,16 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
             }
         }
 
-        fun startTurnChecker(applicationContext: Context, currentGameInfo: GameInfo, settings: GameSettings) {
+        fun startTurnChecker(applicationContext: Context, gameSaver: GameSaver, currentGameInfo: GameInfo, settings: GameSettings) {
             Log.i(LOG_TAG, "startTurnChecker")
-            val gameFiles = GameSaver.getSaves(true)
+            val gameFiles = gameSaver.getSaves(true)
             val gameIds = Array(gameFiles.count()) {""}
             val gameNames = Array(gameFiles.count()) {""}
 
             var count = 0
             for (gameFile in gameFiles) {
                 try {
-                    val gamePreview = GameSaver.loadGamePreviewFromFile(gameFile)
+                    val gamePreview = gameSaver.loadGamePreviewFromFile(gameFile)
                     if (gamePreview.turnNotification) {
                         gameIds[count] = gamePreview.gameId
                         gameNames[count] = gameFile.name()
@@ -242,6 +244,14 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
         }
     }
 
+    private val gameSaver = GameSaver
+    init {
+        // We can't use Gdx.files since that is only initialized within a com.badlogic.gdx.backends.android.AndroidApplication.
+        // Worker instances may be stopped & recreated by the Android WorkManager, so no AndroidApplication and thus no Gdx.files available
+        val files = DefaultAndroidFiles(applicationContext.assets, ContextWrapper(applicationContext), false)
+        gameSaver.init(files, null)
+    }
+
     override fun doWork(): Result {
         Log.i(LOG_TAG, "doWork")
         val showPersistNotific = inputData.getBoolean(PERSISTENT_NOTIFICATION_ENABLED, true)
@@ -277,7 +287,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                     Lets hope it works with gamePreview as they are a lot smaller and faster to save
                      */
                     Log.i(LOG_TAG, "doWork save gameName: ${gameNames[arrayIndex]}")
-                    GameSaver.saveGame(gamePreview, gameNames[arrayIndex])
+                    gameSaver.saveGame(gamePreview, gameNames[arrayIndex])
                     Log.i(LOG_TAG, "doWork save ${gameNames[arrayIndex]} done")
 
                     if (currentTurnPlayer.playerId == inputData.getString(USER_ID)!! && foundGame == null) {
@@ -293,9 +303,9 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                     // FileNotFoundException is thrown by OnlineMultiplayer().tryDownloadGamePreview(gameId)
                     // and indicates that there is no game preview present for this game
                     // in the dropbox so we should not check for this game in the future anymore
-                    val currentGamePreview = GameSaver.loadGamePreviewByName(gameNames[arrayIndex])
+                    val currentGamePreview = gameSaver.loadGamePreviewByName(gameNames[arrayIndex])
                     currentGamePreview.turnNotification = false
-                    GameSaver.saveGame(currentGamePreview, gameNames[arrayIndex])
+                    gameSaver.saveGame(currentGamePreview, gameNames[arrayIndex])
                 }
             }
 
