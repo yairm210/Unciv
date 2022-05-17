@@ -4,7 +4,6 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
-import com.unciv.logic.GameSaver
 
 /**
  * Allows access to games stored on a server for multiplayer purposes.
@@ -20,6 +19,7 @@ import com.unciv.logic.GameSaver
 class OnlineMultiplayerGameSaver(
     private var fileStorageIdentifier: String? = null
 ) {
+    private val gameSaver = UncivGame.Current.gameSaver
     fun fileStorage(): FileStorage {
         val identifier = if (fileStorageIdentifier == null) UncivGame.Current.settings.multiplayerServer else fileStorageIdentifier
 
@@ -34,7 +34,7 @@ class OnlineMultiplayerGameSaver(
             tryUploadGamePreview(gameInfo.asPreview())
         }
 
-        val zippedGameInfo = GameSaver.gameInfoToString(gameInfo, forceZip = true)
+        val zippedGameInfo = gameSaver.gameInfoToString(gameInfo, forceZip = true)
         fileStorage().saveFileData(gameInfo.gameId, zippedGameInfo, true)
     }
 
@@ -49,7 +49,7 @@ class OnlineMultiplayerGameSaver(
      * @see GameInfo.asPreview
      */
     suspend fun tryUploadGamePreview(gameInfo: GameInfoPreview) {
-        val zippedGameInfo = GameSaver.gameInfoToString(gameInfo)
+        val zippedGameInfo = gameSaver.gameInfoToString(gameInfo)
         fileStorage().saveFileData("${gameInfo.gameId}_Preview", zippedGameInfo, true)
     }
 
@@ -59,7 +59,7 @@ class OnlineMultiplayerGameSaver(
      */
     suspend fun tryDownloadGame(gameId: String): GameInfo {
         val zippedGameInfo = fileStorage().loadFileData(gameId)
-        return GameSaver.gameInfoFromString(zippedGameInfo)
+        return gameSaver.gameInfoFromString(zippedGameInfo)
     }
 
     /**
@@ -68,6 +68,6 @@ class OnlineMultiplayerGameSaver(
      */
     suspend fun tryDownloadGamePreview(gameId: String): GameInfoPreview {
         val zippedGameInfo = fileStorage().loadFileData("${gameId}_Preview")
-        return GameSaver.gameInfoPreviewFromString(zippedGameInfo)
+        return gameSaver.gameInfoPreviewFromString(zippedGameInfo)
     }
 }

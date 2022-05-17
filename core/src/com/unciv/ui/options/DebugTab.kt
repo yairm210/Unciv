@@ -42,8 +42,8 @@ fun debugTab() = Table(BaseScreen.skin).apply {
             game.gameInfo.gameParameters.godMode = it
         }).colspan(2).row()
     }
-    add("Save games compressed".toCheckBox(GameSaver.saveZipped) {
-        GameSaver.saveZipped = it
+    add("Save games compressed".toCheckBox(game.gameSaver.saveZipped) {
+        game.gameSaver.saveZipped = it
     }).colspan(2).row()
     add("Save maps compressed".toCheckBox(MapSaver.saveZipped) {
         MapSaver.saveZipped = it

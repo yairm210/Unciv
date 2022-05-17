@@ -4,7 +4,6 @@ import com.badlogic.gdx.files.FileHandle
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfoPreview
-import com.unciv.logic.GameSaver
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
@@ -51,7 +50,7 @@ class OnlineMultiplayerGame(
     }
 
     private fun loadPreviewFromFile(): GameInfoPreview {
-        val previewFromFile = GameSaver.loadGamePreviewFromFile(fileHandle)
+        val previewFromFile = UncivGame.Current.gameSaver.loadGamePreviewFromFile(fileHandle)
         preview = previewFromFile
         return previewFromFile
     }
@@ -91,7 +90,7 @@ class OnlineMultiplayerGame(
         val curPreview = if (preview != null) preview!! else loadPreviewFromFile()
         val newPreview = OnlineMultiplayerGameSaver().tryDownloadGamePreview(curPreview.gameId)
         if (newPreview.turns == curPreview.turns && newPreview.currentPlayer == curPreview.currentPlayer) return GameUpdateResult.UNCHANGED
-        GameSaver.saveGame(newPreview, fileHandle)
+        UncivGame.Current.gameSaver.saveGame(newPreview, fileHandle)
         preview = newPreview
         return GameUpdateResult.CHANGED
     }

@@ -7,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
-import com.unciv.logic.GameSaver
 import com.unciv.models.translations.tr
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
@@ -44,7 +43,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen(disableScroll = true
         copyJsonButton.onClick {
             thread(name="Copy to clipboard") { // the Gzip rarely leads to ANRs
                 try {
-                    Gdx.app.clipboard.contents = GameSaver.gameInfoToString(gameInfo, forceZip = true)
+                    Gdx.app.clipboard.contents = game.gameSaver.gameInfoToString(gameInfo, forceZip = true)
                 } catch (OOM: OutOfMemoryError) {
                     // you don't get a special toast, this isn't nearly common enough, this is a total edge-case
                 }
@@ -52,7 +51,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen(disableScroll = true
         }
         newSave.add(copyJsonButton).row()
 
-        if (GameSaver.canLoadFromCustomSaveLocation()) {
+        if (game.gameSaver.canLoadFromCustomSaveLocation()) {
             val saveToCustomLocation = "Save to custom location".toTextButton()
             val errorLabel = "".toLabel(Color.RED)
             saveToCustomLocation.enable()
@@ -61,7 +60,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen(disableScroll = true
                 saveToCustomLocation.setText("Saving...".tr())
                 saveToCustomLocation.disable()
                 launchCrashHandling("SaveGame", runAsDaemon = false) {
-                    GameSaver.saveGameToCustomLocation(gameInfo, gameNameTextField.text) { e ->
+                    game.gameSaver.saveGameToCustomLocation(gameInfo, gameNameTextField.text) { e ->
                         if (e == null) {
                             postCrashHandlingRunnable { game.resetToWorldScreen() }
                         } else if (e !is CancellationException) {
@@ -88,7 +87,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen(disableScroll = true
 
         rightSideButton.setText("Save game".tr())
         rightSideButton.onClick {
-            if (GameSaver.getSave(gameNameTextField.text).exists())
+            if (game.gameSaver.getSave(gameNameTextField.text).exists())
                 YesNoPopup("Overwrite existing file?", { saveGame() }, this).open()
             else saveGame()
         }
@@ -98,7 +97,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen(disableScroll = true
     private fun saveGame() {
         rightSideButton.setText("Saving...".tr())
         launchCrashHandling("SaveGame", runAsDaemon = false) {
-            GameSaver.saveGame(gameInfo, gameNameTextField.text) {
+            game.gameSaver.saveGame(gameInfo, gameNameTextField.text) {
                 postCrashHandlingRunnable {
                     if (it != null) ToastPopup("Could not save game!", this@SaveGameScreen)
                     else UncivGame.Current.resetToWorldScreen()
@@ -109,10 +108,9 @@ class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen(disableScroll = true
 
     private fun updateShownSaves(showAutosaves: Boolean) {
         currentSaves.clear()
-        val saves = GameSaver.getSaves()
+        val saves = game.gameSaver.getSaves(autoSaves = showAutosaves)
                 .sortedByDescending { it.lastModified() }
         for (saveGameFile in saves) {
-            if (saveGameFile.name().startsWith(GameSaver.autoSaveFileName) && !showAutosaves) continue
             val textButton = saveGameFile.name().toTextButton()
             textButton.onClick {
                 gameNameTextField.text = saveGameFile.name()
