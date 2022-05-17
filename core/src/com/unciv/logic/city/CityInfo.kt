@@ -858,6 +858,7 @@ class CityInfo {
                 && !civInfo.isAtWarWith(viewingCiv)
             "in foreign cities" -> viewingCiv != civInfo
             "in annexed cities" -> foundingCiv != civInfo.civName && !isPuppet
+            "in puppeted cities" -> isPuppet
             "in holy cities" -> religion.religionThisIsTheHolyCityOf != null
             "in City-State cities" -> civInfo.isCityState()
             // This is only used in communication to the user indicating that only in cities with this
