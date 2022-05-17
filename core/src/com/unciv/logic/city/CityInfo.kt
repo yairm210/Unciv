@@ -311,7 +311,7 @@ class CityInfo {
     fun getWorkableTiles() = tilesInRange.asSequence().filter { it.getOwner() == civInfo }
     fun isWorked(tileInfo: TileInfo) = workedTiles.contains(tileInfo.position)
 
-    fun isCapital(): Boolean = cityConstructions.builtBuildings.any { getRuleset().buildings[it]!!.hasUnique(UniqueType.IndicatesCapital) }
+    fun isCapital(): Boolean = cityConstructions.builtBuildings.contains(capitalCityIndicator())
     fun isCoastal(): Boolean = centerTileInfo.isCoastalTile()
     fun capitalCityIndicator(): String {
         val indicatorBuildings = getRuleset().buildings.values

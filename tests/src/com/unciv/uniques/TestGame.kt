@@ -74,7 +74,7 @@ class TestGame {
         gameInfo.tileMap = newTileMap
     }
     
-    fun getTile(position: Vector2) = setTileFeatures(position)
+    fun getTile(position: Vector2) = tileMap[position]
     
     /** Sets the [terrain] and [features] of the tile at [position], and then returns it */
     fun setTileFeatures(position: Vector2, terrain: String = Constants.desert, features: List<String> = listOf()): TileInfo {
@@ -123,7 +123,7 @@ class TestGame {
     }
     
     fun addTileToCity(city: CityInfo, tile: TileInfo) {
-        city.tiles = city.tiles.withItem(tile.position)
+        city.tiles.add(tile.position)
     }
 
     fun addUnit(name: String, civInfo: CivilizationInfo, tile: TileInfo): MapUnit {

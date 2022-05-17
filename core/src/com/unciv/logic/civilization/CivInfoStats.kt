@@ -195,7 +195,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                 if (unique.isOfType(UniqueType.StatsFromGlobalCitiesFollowingReligion)) {
                     statMap.add(
                         "Religion",
-                        unique.stats.times(civInfo.religionManager.numberOfCitiesFollowingThisReligion())
+                        unique.stats * civInfo.religionManager.numberOfCitiesFollowingThisReligion()
                     )
                 }
                 if (unique.isOfType(UniqueType.StatsFromGlobalFollowers))
