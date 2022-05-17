@@ -1,4 +1,4 @@
-package com.unciv.logic.multiplayer
+package com.unciv.logic.multiplayer.storage
 
 import com.unciv.json.json
 import com.unciv.ui.utils.UncivDateFormat.parseDate
@@ -11,7 +11,7 @@ import kotlin.collections.ArrayList
 import kotlin.concurrent.timer
 
 
-object DropBox: IFileStorage {
+object DropBox: FileStorage {
     private var remainingRateLimitSeconds = 0
     private var rateLimitTimer: Timer? = null
 
@@ -76,7 +76,7 @@ object DropBox: IFileStorage {
         )
     }
 
-    override fun getFileMetaData(fileName: String): IFileMetaData {
+    override fun getFileMetaData(fileName: String): FileMetaData {
         val stream = dropboxApi(
             url="https://api.dropboxapi.com/2/files/get_metadata",
             data="{\"path\":\"${getLocalGameLocation(fileName)}\"}",
@@ -124,8 +124,8 @@ object DropBox: IFileStorage {
         throw FileStorageRateLimitReached(remainingRateLimitSeconds)
     }
 
-    fun getFolderList(folder: String): ArrayList<IFileMetaData> {
-        val folderList = ArrayList<IFileMetaData>()
+    fun getFolderList(folder: String): ArrayList<FileMetaData> {
+        val folderList = ArrayList<FileMetaData>()
         // The DropBox API returns only partial file listings from one request. list_folder and
         // list_folder/continue return similar responses, but list_folder/continue requires a cursor
         // instead of the path.
@@ -168,7 +168,7 @@ object DropBox: IFileStorage {
     }
 
     @Suppress("PropertyName")
-    private class MetaData: IFileMetaData {
+    private class MetaData: FileMetaData {
         var name = ""
         private var server_modified = ""
 

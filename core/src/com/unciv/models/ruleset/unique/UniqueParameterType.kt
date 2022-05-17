@@ -188,6 +188,7 @@ enum class UniqueParameterType(
             "in non-enemy foreign cities",
             "in foreign cities",
             "in annexed cities",
+            "in puppeted cities",
             "in holy cities",
             "in City-State cities",
             "in cities following this religion",
