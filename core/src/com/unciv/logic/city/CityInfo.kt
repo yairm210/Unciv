@@ -58,7 +58,7 @@ enum class CityFocus(val label: String, val tableEnabled: Boolean, val stat: Sta
         }
     },
     FaithFocus("${Stat.Faith.name} Focus", true, Stat.Faith),
-    HappinessFocus("${Stat.Happiness.name} Focus", true, Stat.Happiness);
+    HappinessFocus("${Stat.Happiness.name} Focus", false, Stat.Happiness);
     //GreatPersonFocus;
 
     open fun getStatMultiplier(stat: Stat) = when (this.stat) {
