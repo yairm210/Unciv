@@ -498,12 +498,11 @@ open class TileInfo {
             if (isAllowedOnFeature(topTerrain.name)) return true
 
             // Otherwise, we can if this improvement removes the top terrain
-            if (!hasUnique(UniqueType.RemovesFeaturesIfBuilt, stateForConditionals)) return true
-            val removeAction = ruleset.tileImprovements[Constants.remove + topTerrain.name] ?: return true
-            // and have the tech to do so
-            if (removeAction.techRequired == null) return true
-            if (!civInfo.tech.isResearched(removeAction.techRequired!!)) return true
-            // and we can build on the tile without the top terrain
+            if (!hasUnique(UniqueType.RemovesFeaturesIfBuilt, stateForConditionals)) return false
+            val removeAction = ruleset.tileImprovements[Constants.remove + topTerrain.name] ?: return false
+            // and we have the tech to remove that top terrain
+            if (removeAction.techRequired != null && !civInfo.tech.isResearched(removeAction.techRequired!!)) return false
+            // and we can build it on the tile without the top terrain
             val clonedTile = this@TileInfo.clone()
             clonedTile.removeTerrainFeature(topTerrain.name)
             return clonedTile.canBuildImprovement(this, civInfo)
