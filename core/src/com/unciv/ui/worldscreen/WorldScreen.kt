@@ -53,6 +53,7 @@ import com.unciv.ui.worldscreen.unit.UnitActionsTable
 import com.unciv.ui.worldscreen.unit.UnitTable
 import java.util.*
 import kotlin.concurrent.timer
+import kotlin.concurrent.timerTask
 
 /**
  * Unciv's world screen
@@ -380,11 +381,11 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
             stopMultiPlayerRefresher()
             val restartAfter : Long = ex.limitRemainingSeconds.toLong() * 1000
 
-            timer("RestartTimerTimer", true, restartAfter, 0 ) {
+            Timer("RestartTimerTimer", true).schedule(timerTask {
                 multiPlayerRefresher = timer("multiPlayerRefresh", true, period = 10000) {
                     loadLatestMultiplayerState()
                 }
-            }
+            }, restartAfter)
         } catch (ex: Throwable) {
             postCrashHandlingRunnable {
                 loadingGamePopup.reuseWith("Couldn't download the latest game state!", true)
