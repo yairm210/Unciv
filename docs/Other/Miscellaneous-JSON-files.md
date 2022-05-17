@@ -89,6 +89,8 @@ The file can have the following attributes, including the values Unciv sets (no 
 ### ModConstants
 
 Stored in ModOptions.constants, this is a collection of constants used internally in Unciv.
+This is the only structure that is _merged_ field by field from mods, not overwritten, so you can change XP from Barbarians in one mod
+and city distance in another. In case of conflicts, there is no guarantee which mod wins, only that _default_ values are ignored.
 
 | Attribute | Type | Optional | Notes |
 | --------- | ---- | -------- | ----- |
@@ -102,6 +104,7 @@ Stored in ModOptions.constants, this is a collection of constants used internall
 | unitSupplyPerPopulation| Float | 0.5 | [^C] |
 | minimalCityDistance| Int | 3 | [^D] |
 | minimalCityDistanceOnDifferentContinents| Int | 2 | [^D] |
+| unitUpgradeCost | Object | see below | [^J] |
 | naturalWonderCountMultiplier| Float | 0.124 | [^E] |
 | naturalWonderCountAddedConstant| Float | 0.1 | [^E] |
 | ancientRuinCountMultiplier| Float | 0.02 | [^F] |
@@ -134,6 +137,26 @@ Legend:
 -   [^F]: MapGenerator.spreadAncientRuins: number of ruins = suitable tile count * this
 -   [^H]: MapGenerator.spawnLakesAndCoasts: Water bodies up to this tile count become Lakes
 -   [^I]: RiverGenerator: river frequency and length bounds
+-   [^J]: A [UnitUpgradeCost](#UnitUpgradeCost) sub-structure.
+
+#### UnitUpgradeCost
+
+These values are not merged individually, only the entire sub-structure is.
+
+| Attribute | Type | Optional | Notes |
+| --------- | ---- | -------- | ----- |
+| base | Float | 10 |  |
+| perProduction | Float | 2 |  |
+| eraMultiplier | Float | 0 |  |
+| exponent | Float | 1 |  |
+| roundTo | Int | 5 |  |
+
+The formula for the gold cost of a unit upgrade is (rounded down to a multiple of `roundTo`):
+        ( max((`base` + `perProduction` * (new_unit_cost - old_unit_cost)), 0)
+            * (1 + eraNumber * `eraMultiplier`) * `civModifier`
+        ) ^ `exponent`
+With `civModifier` being the multiplicative aggregate of ["\[relativeAmount\]% Gold cost of upgrading"](../uniques.md#global_uniques) uniques that apply.
+
 
 ## VictoryTypes.json
 

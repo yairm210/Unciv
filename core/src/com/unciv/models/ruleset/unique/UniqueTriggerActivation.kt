@@ -17,7 +17,7 @@ import kotlin.random.Random
 
 // Buildings, techs, policies, ancient ruins and promotions can have 'triggered' effects
 object UniqueTriggerActivation {
-    /** @return boolean whether an action was successfully preformed */
+    /** @return boolean whether an action was successfully performed */
     fun triggerCivwideUnique(
         unique: Unique,
         civInfo: CivilizationInfo,
@@ -43,7 +43,7 @@ object UniqueTriggerActivation {
             OneTimeFreeUnit -> {
                 val unitName = unique.params[0]
                 val unit = ruleSet.units[unitName]
-                if (chosenCity == null || unit == null || (unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger()))
+                if (chosenCity == null || unit == null || (unit.hasUnique(FoundCity) && civInfo.isOneCityChallenger()))
                     return false
 
                 val placedUnit = civInfo.addUnit(unitName, chosenCity)
@@ -59,7 +59,7 @@ object UniqueTriggerActivation {
             OneTimeAmountFreeUnits -> {
                 val unitName = unique.params[1]
                 val unit = ruleSet.units[unitName]
-                if (chosenCity == null || unit == null || (unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger()))
+                if (chosenCity == null || unit == null || (unit.hasUnique(FoundCity) && civInfo.isOneCityChallenger()))
                     return false
 
                 val tilesUnitsWerePlacedOn: MutableList<Vector2> = mutableListOf()
@@ -470,7 +470,7 @@ object UniqueTriggerActivation {
         return false
     }
 
-    /** @return boolean whether an action was successfully preformed */
+    /** @return boolean whether an action was successfully performed */
     fun triggerUnitwideUnique(
         unique: Unique,
         unit: MapUnit,
