@@ -412,7 +412,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     StrengthBonusVsCityStates("+30% Strength when fighting City-State units and cities", UniqueTarget.Global),
     StrengthForAdjacentEnemies("[relativeAmount]% Strength for enemy [combatantFilter] units in adjacent [tileFilter] tiles", UniqueTarget.Unit),
     StrengthWhenStacked("[relativeAmount]% Strength when stacked with [mapUnitFilter]", UniqueTarget.Unit),  // candidate for conditional!
-    StrengthBonusInRadius("[relativeAmount]% Strength bonus for [mapUnitFilter] units in [amount] tiles", UniqueTarget.Unit),
+    StrengthBonusInRadius("[relativeAmount]% Strength bonus for [mapUnitFilter] units within [amount] tiles", UniqueTarget.Unit),
 
     AdditionalAttacks("[amount] additional attacks per turn", UniqueTarget.Unit, UniqueTarget.Global),
     Movement("[amount] Movement", UniqueTarget.Unit, UniqueTarget.Global),
@@ -758,7 +758,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     // region DEPRECATED AND REMOVED
 
-    @Deprecated("as of 4.1.0", ReplaceWith("[+15]% Strength bonus for [Military] units in [2] tiles"), DeprecationLevel.ERROR)
+    @Deprecated("as of 4.1.0", ReplaceWith("[+15]% Strength bonus for [Military] units within [2] tiles"), DeprecationLevel.ERROR)
     BonusForUnitsInRadius("Bonus for units in 2 tile radius 15%", UniqueTarget.Unit),
     @Deprecated("as of 4.0.15", ReplaceWith("Irremovable"), DeprecationLevel.ERROR)
     Indestructible("Indestructible", UniqueTarget.Improvement),
