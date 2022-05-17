@@ -758,6 +758,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     // region DEPRECATED AND REMOVED
 
+    @Deprecated("as of 4.1.0", ReplaceWith("[+15]% Strength bonus for [Military] units in [2] tiles"), DeprecationLevel.ERROR)
+    BonusForUnitsInRadius("Bonus for units in 2 tile radius 15%", UniqueTarget.Unit),
     @Deprecated("as of 4.0.15", ReplaceWith("Irremovable"), DeprecationLevel.ERROR)
     Indestructible("Indestructible", UniqueTarget.Improvement),
     
