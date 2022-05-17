@@ -198,7 +198,7 @@ class GlobalUniquesTests {
         val tile2 = game.setTileFeatures(Vector2(0f,2f), Constants.desert)
         tile.roadStatus = RoadStatus.Road
         tile2.roadStatus = RoadStatus.Road
-        val cityInfo = game.addCity(civInfo, tile, true)
+        val cityInfo = game.addCity(civInfo, tile)
         val city2 = game.addCity(civInfo, tile2)
         val inBetweenTile = game.setTileFeatures(Vector2(0f, 1f), Constants.desert)
         inBetweenTile.roadStatus = RoadStatus.Road
