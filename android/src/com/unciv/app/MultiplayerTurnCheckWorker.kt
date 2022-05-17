@@ -18,9 +18,10 @@ import com.badlogic.gdx.backends.android.AndroidApplication
 import com.badlogic.gdx.backends.android.DefaultAndroidFiles
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
-import com.unciv.logic.multiplayer.FileStorageRateLimitReached
+import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.models.metadata.GameSettings
-import com.unciv.logic.multiplayer.OnlineMultiplayer
+import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
+import kotlinx.coroutines.runBlocking
 import java.io.FileNotFoundException
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -252,7 +253,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
         gameSaver.init(files, null)
     }
 
-    override fun doWork(): Result {
+    override fun doWork(): Result = runBlocking {
         Log.i(LOG_TAG, "doWork")
         val showPersistNotific = inputData.getBoolean(PERSISTENT_NOTIFICATION_ENABLED, true)
         val configuredDelay = inputData.getInt(CONFIGURED_DELAY, 5)
@@ -274,7 +275,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
 
                 try {
                     Log.d(LOG_TAG, "doWork download ${gameId}")
-                    val gamePreview = OnlineMultiplayer(fileStorage).tryDownloadGamePreview(gameId)
+                    val gamePreview = OnlineMultiplayerGameSaver(fileStorage).tryDownloadGamePreview(gameId)
                     Log.d(LOG_TAG, "doWork download ${gameId} done")
                     val currentTurnPlayer = gamePreview.getCivilization(gamePreview.currentPlayer)
 
@@ -330,7 +331,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                 with(NotificationManagerCompat.from(applicationContext)) {
                     cancel(NOTIFICATION_ID_SERVICE)
                 }
-                return Result.failure()
+                return@runBlocking Result.failure()
             } else {
                 if (showPersistNotific) { showPersistentNotification(applicationContext,
                         applicationContext.resources.getString(R.string.Notify_Error_Retrying), configuredDelay.toString()) }
@@ -341,9 +342,9 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                 enqueue(applicationContext, 1, inputDataFailIncrease)
             }
         } catch (outOfMemory: OutOfMemoryError){ // no point in trying multiple times if this was an oom error
-            return Result.failure()
+            return@runBlocking Result.failure()
         }
-        return Result.success()
+        return@runBlocking Result.success()
     }
 
     private fun getStackTraceString(ex: Exception): String {

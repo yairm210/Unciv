@@ -13,7 +13,7 @@ import com.unciv.models.ruleset.ModOptions
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.*
@@ -23,6 +23,8 @@ import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.utils.UncivDateFormat.formatDate
 import com.unciv.ui.utils.UncivDateFormat.parseDate
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.isActive
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.math.max
@@ -67,11 +69,11 @@ class ModManagementScreen(
     private var onlineScrollCurrentY = -1f
 
     // cleanup - background processing needs to be stopped on exit and memory freed
-    private var runningSearchThread: Thread? = null
+    private var runningSearchJob: Job? = null
     private var stopBackgroundTasks = false
     override fun dispose() {
         // make sure the worker threads will not continue trying their time-intensive job
-        runningSearchThread?.interrupt()
+        runningSearchJob?.cancel()
         stopBackgroundTasks = true
         super.dispose()
     }
@@ -189,20 +191,24 @@ class ModManagementScreen(
      *  calls itself for the next page of search results
      */
     private fun tryDownloadPage(pageNum: Int) {
-        runningSearchThread = crashHandlingThread(name="GitHubSearch") {
+        runningSearchJob = launchCrashHandling("GitHubSearch") {
             val repoSearch: Github.RepoSearch
             try {
                 repoSearch = Github.tryGetGithubReposWithTopic(amountPerPage, pageNum)!!
             } catch (ex: Exception) {
                 postCrashHandlingRunnable {
-                    ToastPopup("Could not download mod list", this)
+                    ToastPopup("Could not download mod list", this@ModManagementScreen)
                 }
-                runningSearchThread = null
-                return@crashHandlingThread
+                runningSearchJob = null
+                return@launchCrashHandling
+            }
+
+            if (!isActive) {
+                return@launchCrashHandling
             }
 
             postCrashHandlingRunnable { addModInfoFromRepoSearch(repoSearch, pageNum) }
-            runningSearchThread = null
+            runningSearchJob = null
         }
     }
 
@@ -389,14 +395,14 @@ class ModManagementScreen(
 
     /** Download and install a mod in the background, called both from the right-bottom button and the URL entry popup */
     private fun downloadMod(repo: Github.Repo, postAction: () -> Unit = {}) {
-        crashHandlingThread(name="DownloadMod") { // to avoid ANRs - we've learnt our lesson from previous download-related actions
+        launchCrashHandling("DownloadMod") { // to avoid ANRs - we've learnt our lesson from previous download-related actions
             try {
                 val modFolder = Github.downloadAndExtract(repo.html_url, repo.default_branch,
                     Gdx.files.local("mods"))
                     ?: throw Exception()    // downloadAndExtract returns null for 404 errors and the like -> display something!
                 Github.rewriteModOptions(repo, modFolder)
                 postCrashHandlingRunnable {
-                    ToastPopup("[${repo.name}] Downloaded!", this)
+                    ToastPopup("[${repo.name}] Downloaded!", this@ModManagementScreen)
                     RulesetCache.loadRulesets()
                     RulesetCache[repo.name]?.let { 
                         installedModInfo[repo.name] = ModUIData(it)
@@ -408,7 +414,7 @@ class ModManagementScreen(
                 }
             } catch (ex: Exception) {
                 postCrashHandlingRunnable {
-                    ToastPopup("Could not download [${repo.name}]", this)
+                    ToastPopup("Could not download [${repo.name}]", this@ModManagementScreen)
                     postAction()
                 }
             }
@@ -538,7 +544,7 @@ class ModManagementScreen(
     }
 
     internal fun refreshOnlineModTable() {
-        if (runningSearchThread != null) return  // cowardice: prevent concurrent modification, avoid a manager layer
+        if (runningSearchJob != null) return  // cowardice: prevent concurrent modification, avoid a manager layer
 
         val newHeaderText = optionsManager.getOnlineHeader()
         onlineHeaderLabel?.setText(newHeaderText)
