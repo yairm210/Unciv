@@ -491,55 +491,52 @@ open class TileInfo {
 
     /** Returns true if the [improvement] can be built on this [TileInfo] */
     fun canBuildImprovement(improvement: TileImprovement, civInfo: CivilizationInfo): Boolean {
+
+        fun TileImprovement.canBeBuildOnThisUnbuildableTerrain(civInfo: CivilizationInfo, stateForConditionals: StateForConditionals): Boolean {
+            val topTerrain = getLastTerrain()
+            // We can build if we are specifically allowed to build on this terrain
+            if (isAllowedOnFeature(topTerrain.name)) return true
+
+            // Otherwise, we can if this improvement removes the top terrain
+            if (!hasUnique(UniqueType.RemovesFeaturesIfBuilt, stateForConditionals)) return true
+            val removeAction = ruleset.tileImprovements[Constants.remove + topTerrain.name] ?: return true
+            // and have the tech to do so
+            if (removeAction.techRequired == null) return true
+            if (!civInfo.tech.isResearched(removeAction.techRequired!!)) return true
+            // and we can build on the tile without the top terrain
+            val clonedTile = this@TileInfo.clone()
+            clonedTile.removeTerrainFeature(topTerrain.name)
+            return clonedTile.canBuildImprovement(this, civInfo)
+        }
+
         val stateForConditionals = StateForConditionals(civInfo, tile=this)
-        val topTerrain = getLastTerrain()
+        
 
         return when {
-            // Can't build if this improvement is unique to a nation other than us
             improvement.uniqueTo != null && improvement.uniqueTo != civInfo.civName -> false
-            // Can't build if we haven't researched the tech for this improvement
             improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!) -> false
-            // Can't build if the unique can't be build
             improvement.hasUnique(UniqueType.Unbuildable, stateForConditionals) -> false
-            // Can't be build outside our borders, unless we can
             getOwner() != civInfo && !(
                 improvement.hasUnique(UniqueType.CanBuildOutsideBorders, stateForConditionals)
-                || ( // citadel can be built only next to or within own borders
+                || (
                     improvement.hasUnique(UniqueType.CanBuildJustOutsideBorders, stateForConditionals)
                     && neighbors.any { it.getOwner() == civInfo }
                 )
             ) -> false
-            // Can't be built if there is some other condition that we haven't met yet
             improvement.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals).any {
                 !it.conditionalsApply(stateForConditionals)
             } -> false
-            // Can't build if we've obsoleted this unique
             improvement.getMatchingUniques(UniqueType.ObsoleteWith, stateForConditionals).any {
                 civInfo.tech.isResearched(it.params[0])
             } -> false
-            // Can't build if this improvement consumes resources that we don't have
             improvement.getMatchingUniques(UniqueType.ConsumesResources, stateForConditionals).any {
                 civInfo.getCivResourcesByName()[it.params[1]]!! < it.params[0].toInt()
             } -> false
-            
-            // Can't build if the top feature is unbuildable, EXCEPT when
-            // - we specifically allow building on that feature regardless; or
-            // - we remove that feature when built, have the tech to remove the feature AND can build after removing the feature.
-            topTerrain.unbuildable
-                && !improvement.isAllowedOnFeature(topTerrain.name)
-                && !(improvement.hasUnique(UniqueType.RemovesFeaturesIfBuilt, stateForConditionals)
-                    && Constants.remove + topTerrain.name in ruleset.tileImprovements 
-                    && ruleset.tileImprovements[Constants.remove + topTerrain.name]!!
-                        .let { it.techRequired == null || civInfo.tech.isResearched(it.techRequired!!) }
-                    && clone()
-                        .apply { this.terrainFeatures = this.terrainFeatures.filter { it != topTerrain.name } }
-                        .canBuildImprovement(improvement, civInfo)
-                ) -> false
-            
-            // Otherwise, there might be a reason this improvement isn't allowed that isn't specific to this civ
+            getLastTerrain().unbuildable && !improvement.canBeBuildOnThisUnbuildableTerrain(civInfo, stateForConditionals) -> false
             else -> canImprovementBeBuiltHere(improvement, hasViewableResource(civInfo), stateForConditionals)
         }
     }
+    
 
     /** Without regards to what CivInfo it is, a lot of the checks are just for the improvement on the tile.
      *  Doubles as a check for the map editor.
