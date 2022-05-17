@@ -72,9 +72,9 @@ object BattleDamage {
                 if (civResources[resource]!! < 0 && !civInfo.isBarbarian())
                     modifiers["Missing resource"] = -25  //todo ModConstants
 
-            val greatGeneralModifier = GreatGeneralImplementation.getGreatGeneralBonus(combatant.unit)
-            if (greatGeneralModifier.second != 0)
-                modifiers[greatGeneralModifier.first] = greatGeneralModifier.second
+            val (greatGeneralName, greatGeneralBonus) = GreatGeneralImplementation.getGreatGeneralBonus(combatant.unit)
+            if (greatGeneralBonus != 0)
+                modifiers[greatGeneralName] = greatGeneralBonus
 
             for (unique in combatant.unit.getMatchingUniques(UniqueType.StrengthWhenStacked)) {
                 var stackedUnitsBonus = 0

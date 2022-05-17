@@ -23,7 +23,7 @@ object GreatGeneralImplementation {
      *
      * Used by [BattleDamage.getGeneralModifiers].
      *
-     * @return Percentage a pair of unit's name and bonus as Int (typically 15), or 0 if no applicable Great General equivalents found
+     * @return A pair of unit's name and bonus (percentage) as Int (typically 15), or 0 if no applicable Great General equivalents found
      */
     fun getGreatGeneralBonus(unit: MapUnit): Pair<String, Int> {
         val civInfo = unit.civInfo
