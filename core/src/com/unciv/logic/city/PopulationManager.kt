@@ -2,9 +2,11 @@ package com.unciv.logic.city
 
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.stats.Stat
 import com.unciv.ui.utils.withItem
 import com.unciv.ui.utils.withoutItem
 import kotlin.math.floor
@@ -110,6 +112,28 @@ class PopulationManager {
     }
 
     internal fun autoAssignPopulation() {
+        cityInfo.cityStats.update()  // calculate current stats with current assignments
+        // save temporaries
+        cityInfo.currentSurplusFood = cityInfo.foodForNextTurn().toFloat()  // save temporary for calculations
+        cityInfo.currentGPPBonus = 0
+        for (unique in cityInfo.getMatchingUniques(UniqueType.GreatPersonPointPercentage))
+            if (cityInfo.matchesFilter(unique.params[1]))
+                cityInfo.currentGPPBonus += unique.params[0].toInt()
+        // Sweden UP
+        for (otherCiv in cityInfo.civInfo.getKnownCivs()) {
+            if (!cityInfo.civInfo.getDiplomacyManager(otherCiv).hasFlag(DiplomacyFlags.DeclarationOfFriendship))
+                continue
+
+            for (ourUnique in cityInfo.civInfo.getMatchingUniques(UniqueType.GreatPersonBoostWithFriendship))
+                cityInfo.currentGPPBonus += ourUnique.params[0].toInt()
+            for (theirUnique in otherCiv.getMatchingUniques(UniqueType.GreatPersonBoostWithFriendship))
+                cityInfo.currentGPPBonus += theirUnique.params[0].toInt()
+        }
+        var specialistFoodBonus = 0f
+        for (unique in cityInfo.getMatchingUniques(UniqueType.FoodConsumptionBySpecialists))
+            if (cityInfo.matchesFilter(unique.params[1]))
+                specialistFoodBonus = -(unique.params[0].toFloat() / 100f) * 2f // base 2 food per Pop, and need to inverse negative
+        
         for (i in 1..getFreePopulation()) {
             //evaluate tiles
             val (bestTile, valueBestTile) = cityInfo.getTiles()
@@ -127,7 +151,6 @@ class PopulationManager {
                     .map { it.key }
                     .maxByOrNull { Automation.rankSpecialist(it, cityInfo) }
 
-
             var valueBestSpecialist = 0f
             if (bestJob != null) {
                 valueBestSpecialist = Automation.rankSpecialist(bestJob, cityInfo)
@@ -135,12 +158,16 @@ class PopulationManager {
 
             //assign population
             if (valueBestTile > valueBestSpecialist) {
-                if (bestTile != null)
+                if (bestTile != null) {
                     cityInfo.workedTiles = cityInfo.workedTiles.withItem(bestTile.position)
-            } else if (bestJob != null) specialistAllocations.add(bestJob, 1)
-            
-            cityInfo.cityStats.update()
+                    cityInfo.currentSurplusFood += bestTile.getTileStats(cityInfo, cityInfo.civInfo)[Stat.Food]
+                }
+            } else if (bestJob != null) {
+                specialistAllocations.add(bestJob, 1)
+                cityInfo.currentSurplusFood -= specialistFoodBonus
+            }
         }
+        cityInfo.cityStats.update()
     }
 
     fun unassignExtraPopulation() {

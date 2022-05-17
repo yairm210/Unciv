@@ -133,6 +133,8 @@ class CityInfo {
     var updateCitizens = false  // flag so that on endTurn() the Governor reassigns Citizens
     var cityAIFocus: CityFocus = CityFocus.NoFocus
     var avoidGrowth: Boolean = false
+    @Transient var currentSurplusFood: Float = 0f  // temporary variable saved for rankStatsForCityWork()
+    @Transient var currentGPPBonus: Int = 0  // temporary variable saved for rankSpecialist()
 
     /** The very first found city is the _original_ capital,
      * while the _current_ capital can be any other city after the original one is captured.
@@ -196,7 +198,6 @@ class CityInfo {
         }
 
         population.autoAssignPopulation()
-        cityStats.update()
 
         // Update proximity rankings for all civs
         for (otherCiv in civInfo.gameInfo.getAliveMajorCivs()) {
