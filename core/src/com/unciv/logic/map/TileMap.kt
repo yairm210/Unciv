@@ -65,10 +65,10 @@ class TileMap {
     var bottomY = 0
 
     @delegate:Transient
-    val maxLatitude: Float by lazy { if (values.isEmpty()) 0f else values.map { abs(it.latitude) }.maxOrNull()!! }
+    val maxLatitude: Float by lazy { if (values.isEmpty()) 0f else values.maxOf { abs(it.latitude) } }
 
     @delegate:Transient
-    val maxLongitude: Float by lazy { if (values.isEmpty()) 0f else values.map { abs(it.longitude) }.maxOrNull()!! }
+    val maxLongitude: Float by lazy { if (values.isEmpty()) 0f else values.maxOf { abs(it.longitude) } }
 
     @delegate:Transient
     val naturalWonders: List<String> by lazy { tileList.asSequence().filter { it.isNaturalWonder() }.map { it.naturalWonder!! }.distinct().toList() }
