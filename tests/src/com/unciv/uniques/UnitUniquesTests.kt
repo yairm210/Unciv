@@ -25,8 +25,9 @@ class UnitUniquesTests {
     @Test
     fun `Sweden can gift Great Persons to City States`() {
         // when
+        game.makeHexagonalMap(1)
         val cityState = game.addCiv(cityState = CityStateType.Cultured)
-        val cityStateCapitalTile = game.addTile(Constants.grassland, Vector2(0f, 0f))
+        val cityStateCapitalTile = game.getTile(Vector2(0f, 0f))
         val cityStateCapital = game.addCity(cityState, cityStateCapitalTile)
 
         val mainCiv = game.addCiv(
@@ -35,7 +36,7 @@ class UnitUniquesTests {
         )
         game.gameInfo.currentPlayerCiv = mainCiv
 
-        val unitTile = game.addTile(Constants.grassland, Vector2(1f, 0f))
+        val unitTile = game.getTile(Vector2(1f, 0f))
         cityStateCapital.expansion.takeOwnership(unitTile)
 
         val greatPerson = game.addUnit("Great Scientist", mainCiv, unitTile)

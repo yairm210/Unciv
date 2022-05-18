@@ -1,15 +1,9 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.utils.Json
-import com.badlogic.gdx.utils.Json.Serializer
-import com.badlogic.gdx.utils.JsonValue
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.json.HashMapVector2
-import com.unciv.json.json
-import com.unciv.logic.BarbarianManager
-import com.unciv.logic.Encampment
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.automation.NextTurnAutomation
@@ -123,7 +117,7 @@ class CivilizationInfo {
 
     @Transient
     val lastEraResourceUsedForUnit = HashMap<String, Int>()
-    
+
     @Transient
     var thingsToFocusOnForVictory = setOf<Victory.Focus>()
 
@@ -598,11 +592,15 @@ class CivilizationInfo {
     fun getEraNumber(): Int = getEra().eraNumber
 
     fun isAtWarWith(otherCiv: CivilizationInfo): Boolean {
-        if (otherCiv == this) return false // never at war with itself
-        if (otherCiv.isBarbarian() || isBarbarian()) return true
-        val diplomacyManager = diplomacy[otherCiv.civName]
-            ?: return false // not encountered yet
-        return diplomacyManager.diplomaticStatus == DiplomaticStatus.War
+        return when {
+            otherCiv == this -> false
+            otherCiv.isBarbarian() || isBarbarian() -> true
+            else -> {
+                val diplomacyManager = diplomacy[otherCiv.civName]
+                    ?: return false // not encountered yet
+                return diplomacyManager.diplomaticStatus == DiplomaticStatus.War
+            }
+        }
     }
 
     fun isAtWar() = diplomacy.values.any { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv().isDefeated() }
@@ -753,7 +751,7 @@ class CivilizationInfo {
         goldenAges.civInfo = this
 
         civConstructions.setTransients(civInfo = this)
-        
+
         policies.civInfo = this
         if (policies.adoptedPolicies.size > 0 && policies.numberOfAdoptedPolicies == 0)
             policies.numberOfAdoptedPolicies = policies.adoptedPolicies.count { !Policy.isBranchCompleteByName(it) }
@@ -772,14 +770,14 @@ class CivilizationInfo {
         tech.setTransients()
 
         ruinsManager.setTransients(this)
-        
+
         for (diplomacyManager in diplomacy.values) {
             diplomacyManager.civInfo = this
             diplomacyManager.updateHasOpenBorders()
         }
 
         victoryManager.civInfo = this
-        
+
         thingsToFocusOnForVictory = getPreferredVictoryTypeObject()?.getThingsToFocus(this) ?: setOf()
 
         for (cityInfo in cities) {
@@ -807,6 +805,7 @@ class CivilizationInfo {
         }
 
         hasLongCountDisplayUnique = hasUnique(UniqueType.MayanCalendarDisplay)
+
     }
 
     fun updateSightAndResources() {
@@ -1300,6 +1299,26 @@ class CivilizationInfo {
         this.proximity[otherCiv.civName] = proximity
 
         return proximity
+    }
+
+    /**
+     * Removes current capital then moves capital to argument city if not null
+     */
+    fun moveCapitalTo(city: CityInfo?) {
+        if (cities.isNotEmpty()) {
+            getCapital().cityConstructions.removeBuilding(getCapital().capitalCityIndicator())
+        }
+
+        if (city == null) return // can't move a non-existent city but we can always remove our old capital
+        // move new capital
+        city.cityConstructions.addBuilding(city.capitalCityIndicator())
+        city.isBeingRazed = false // stop razing the new capital if it was being razed
+    }
+
+    fun moveCapitalToNextLargest() {
+        moveCapitalTo(cities
+            .filterNot { it == getCapital() }
+            .maxByOrNull { it.population.population})
     }
 
     //////////////////////// City State wrapper functions ////////////////////////

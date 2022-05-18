@@ -77,7 +77,8 @@ object Battle {
         // Withdraw from melee ability
         if (attacker is MapUnitCombatant && attacker.isMelee() && defender is MapUnitCombatant) {
             val withdrawUniques = defender.unit.getMatchingUniques(UniqueType.MayWithdraw)
-            val baseWithdrawChance = 100-withdrawUniques.fold(100) { probability, unique -> probability * (100-unique.params[0].toInt()) }
+            val combinedProbabilityToStayPut = withdrawUniques.fold(100) { probabilityToStayPut, unique -> probabilityToStayPut * (100-unique.params[0].toInt()) / 100 }
+            val baseWithdrawChance = 100 - combinedProbabilityToStayPut
             // If a mod allows multiple withdraw properties, they stack multiplicatively
             if (baseWithdrawChance != 0 && doWithdrawFromMeleeAbility(attacker, defender, baseWithdrawChance)) return
         }
@@ -504,16 +505,27 @@ object Battle {
             return
         }
 
-        if (attackerCiv.isPlayerCivilization()) {
-            attackerCiv.popupAlerts.add(PopupAlert(AlertType.CityConquered, city.id))
-            UncivGame.Current.settings.addCompletedTutorialTask("Conquer a city")
-        } else {
+        if (city.isOriginalCapital && city.foundingCiv == attackerCiv.civName) {
+            // retaking old capital
             city.puppetCity(attackerCiv)
-            if (city.population.population < 4 && city.canBeDestroyed(justCaptured = true)) {
+            city.annexCity()
+        } else if (attackerCiv.isPlayerCivilization()) {
+            // we're not taking our former capital
+            attackerCiv.popupAlerts.add(PopupAlert(AlertType.CityConquered, city.id))
+        } else {
+            // ideally here we would do some AI thinking for liberation vs. razing
+            // e.g., valueCityStateAlliance() > 0 to determine if we should liberate a city-state
+            city.puppetCity(attackerCiv)
+            if ((city.population.population < 4 || attackerCiv.isCityState())
+                && city.canBeDestroyed(justCaptured = true)) {
+                // raze if attacker is a city state
                 city.annexCity()
                 city.isBeingRazed = true
             }
         }
+
+        if (attackerCiv.isPlayerCivilization())
+            UncivGame.Current.settings.addCompletedTutorialTask("Conquer a city")
     }
 
     fun getMapCombatantOfTile(tile: TileInfo): ICombatant? {

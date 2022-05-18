@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.tile
 
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
@@ -72,14 +73,30 @@ class TileImprovement : RulesetStatsObject() {
     }
     
     fun handleImprovementCompletion(builder: MapUnit) {
+        val tile = builder.getTile()
         if (hasUnique(UniqueType.TakesOverAdjacentTiles))
             UnitActions.takeOverTilesAround(builder)
-        if (builder.getTile().resource != null) {
+        if (tile.resource != null) {
             val city = builder.getTile().getCity()
             if (city != null) {
                 city.cityStats.update()
                 city.civInfo.updateDetailedCivResources()
             }
+        }
+        if (hasUnique(UniqueType.RemovesFeaturesIfBuilt)) {
+            // Remove terrainFeatures that a Worker can remove
+            // and that aren't explicitly allowed under the improvement
+            val removableTerrainFeatures = tile.terrainFeatures.filter { feature ->
+                val removingAction = "${Constants.remove}$feature"
+                
+                removingAction in tile.ruleset.tileImprovements
+                && !isAllowedOnFeature(feature)
+                && tile.ruleset.tileImprovements[removingAction]!!.let {
+                    it.techRequired == null || builder.civInfo.tech.isResearched(it.techRequired!!)
+                }
+            }
+            
+            tile.setTerrainFeatures(tile.terrainFeatures.filterNot { it in removableTerrainFeatures })
         }
     }
     

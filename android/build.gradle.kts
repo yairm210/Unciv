@@ -20,7 +20,9 @@ android {
         }
     }
     packagingOptions {
-        resources.excludes.add("META-INF/robovm/ios/robovm.xml")
+        resources.excludes += "META-INF/robovm/ios/robovm.xml"
+        // part of kotlinx-coroutines-android, should not go into the apk
+        resources.excludes += "DebugProbesKt.bin"
     }
     defaultConfig {
         applicationId = "com.unciv.app"

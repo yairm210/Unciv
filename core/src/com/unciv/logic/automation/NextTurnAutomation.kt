@@ -163,8 +163,7 @@ object NextTurnAutomation {
         while (delta > 0) {
             // Now remove the best offer valued below delta until the deal is barely acceptable
             val offerToRemove = counterofferAsks.filter { it.value <= delta }.maxByOrNull { it.value }
-            if (offerToRemove == null)
-                break // Nothing more can be removed, at least en bloc
+                ?: break  // Nothing more can be removed, at least en bloc
             delta -= offerToRemove.value
             counterofferAsks.remove(offerToRemove.key)
         }
@@ -244,7 +243,7 @@ object NextTurnAutomation {
 
     private fun tryGainInfluence(civInfo: CivilizationInfo, cityState: CivilizationInfo) {
         if (civInfo.gold < 250) return // save up
-        if (cityState.getDiplomacyManager(civInfo).influence < 20) {
+        if (cityState.getDiplomacyManager(civInfo).getInfluence() < 20) {
             cityState.receiveGoldGift(civInfo, 250)
             return
         }
@@ -267,7 +266,7 @@ object NextTurnAutomation {
             for (cityState in civInfo.getKnownCivs()
                     .filter { it.isCityState() && it.cityStateType == CityStateType.Cultured }) {
                 val diploManager = cityState.getDiplomacyManager(civInfo)
-                if (diploManager.influence < 40) { // we want to gain influence with them
+                if (diploManager.getInfluence() < 40) { // we want to gain influence with them
                     tryGainInfluence(civInfo, cityState)
                     return
                 }
@@ -329,7 +328,7 @@ object NextTurnAutomation {
         }
         if (cityState.getAllyCiv() != null && cityState.getAllyCiv() != civInfo.civName) {
             // easier not to compete if a third civ has this locked down
-            val thirdCivInfluence = cityState.getDiplomacyManager(cityState.getAllyCiv()!!).influence.toInt()
+            val thirdCivInfluence = cityState.getDiplomacyManager(cityState.getAllyCiv()!!).getInfluence().toInt()
             value -= (thirdCivInfluence - 60) / 10
         }
 
@@ -831,7 +830,7 @@ object NextTurnAutomation {
             when {
                 unit.baseUnit.isRanged() -> rangedUnits.add(unit)
                 unit.baseUnit.isMelee() -> meleeUnits.add(unit)
-                unit.hasUnique("Bonus for units in 2 tile radius 15%")
+                unit.isGreatPersonOfType("War")
                     -> generals.add(unit) // Generals move after military units
                 else -> civilianUnits.add(unit)
             }

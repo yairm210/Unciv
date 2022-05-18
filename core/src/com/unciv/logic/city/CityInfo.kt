@@ -631,12 +631,16 @@ class CityInfo {
     fun setFlag(flag: CityFlags, amount: Int) {
         flagsCountdown[flag.name] = amount
     }
+
+    fun removeFlag(flag: CityFlags) {
+        flagsCountdown.remove(flag.name)
+    }
     
     fun resetWLTKD() {
         // Removes the flags for we love the king & resource demand
         // The resource demand flag will automatically be readded with 15 turns remaining, see startTurn()
-        flagsCountdown.remove(CityFlags.WeLoveTheKing.name)
-        flagsCountdown.remove(CityFlags.ResourceDemand.name)
+        removeFlag(CityFlags.WeLoveTheKing)
+        removeFlag(CityFlags.ResourceDemand)
         demandedResource = ""
     }
 
@@ -712,7 +716,7 @@ class CityInfo {
         }
 
         if (isCapital() && civInfo.cities.isNotEmpty()) { // Move the capital if destroyed (by a nuke or by razing)
-            civInfo.cities.first().cityConstructions.addBuilding(capitalCityIndicator())
+            civInfo.moveCapitalToNextLargest()
         }
 
         // Update proximity rankings for all civs
@@ -854,6 +858,7 @@ class CityInfo {
                 && !civInfo.isAtWarWith(viewingCiv)
             "in foreign cities" -> viewingCiv != civInfo
             "in annexed cities" -> foundingCiv != civInfo.civName && !isPuppet
+            "in puppeted cities" -> isPuppet
             "in holy cities" -> religion.religionThisIsTheHolyCityOf != null
             "in City-State cities" -> civInfo.isCityState()
             // This is only used in communication to the user indicating that only in cities with this

@@ -216,6 +216,11 @@ class EditorMapHolder(
         val positionalCoords = tileGroupMap.getPositionalVector(stageCoords)
         val hexPosition = HexMath.world2HexCoords(positionalCoords)
         val rounded = HexMath.roundHexCoords(hexPosition)
-        return tileMap.getOrNull(rounded)
+
+        if (!tileMap.mapParameters.worldWrap)
+            return tileMap.getOrNull(rounded)
+        val wrapped = HexMath.getUnwrappedNearestTo(rounded, Vector2.Zero, tileMap.maxLongitude)
+        //todo this works, but means getUnwrappedNearestTo fails - on the x-y == maxLongitude vertical
+        return tileMap.getOrNull(wrapped) ?: tileMap.getOrNull(rounded)
     }
 }

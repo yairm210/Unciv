@@ -54,7 +54,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
 
         if (city.civInfo.isCityState() && city.civInfo.knows(worldScreen.viewingCiv)) {
             val diplomacyManager = city.civInfo.getDiplomacyManager(worldScreen.viewingCiv)
-            val influenceBar = getInfluenceBar(diplomacyManager.influence, diplomacyManager.relationshipLevel())
+            val influenceBar = getInfluenceBar(diplomacyManager.getInfluence(), diplomacyManager.relationshipLevel())
             add(influenceBar).row()
         }
 

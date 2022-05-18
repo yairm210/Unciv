@@ -6,6 +6,7 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.int
 import com.github.ajalt.clikt.parameters.types.restrictTo
 import io.ktor.application.*
+import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.server.engine.*
@@ -14,6 +15,7 @@ import io.ktor.utils.io.jvm.javaio.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.FileNotFoundException
 
 
 internal object UncivServer {
@@ -60,7 +62,10 @@ private class UncivServerRunner : CliktCommand() {
                     val fileName = call.parameters["fileName"] ?: throw Exception("No fileName!")
                     println("Get file: $fileName")
                     val file = File(fileFolderName, fileName)
-                    if (!file.exists()) throw Exception("File does not exist!")
+                    if (!file.exists()) {
+                        call.respond(HttpStatusCode.NotFound, "File does not exist")
+                        return@get
+                    }
                     val fileText = file.readText()
                     println("Text read: $fileText")
                     call.respondText(fileText)
@@ -68,7 +73,10 @@ private class UncivServerRunner : CliktCommand() {
                 delete("/files/{fileName}") {
                     val fileName = call.parameters["fileName"] ?: throw Exception("No fileName!")
                     val file = File(fileFolderName, fileName)
-                    if (!file.exists()) throw Exception("File does not exist!")
+                    if (!file.exists()) {
+                        call.respond(HttpStatusCode.NotFound, "File does not exist")
+                        return@delete
+                    }
                     file.delete()
                 }
             }

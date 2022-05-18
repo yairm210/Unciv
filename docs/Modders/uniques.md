@@ -458,7 +458,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global
 
 ??? example  "Great General provides double combat bonus"
-	Applicable to: Global
+	Applicable to: Global, Unit
 
 ??? example  "Receive a tech boost when scientific buildings/wonders are built in capital"
 	Applicable to: Global
@@ -998,6 +998,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Unit
 
+??? example  "[relativeAmount]% Strength bonus for [mapUnitFilter] units in [amount] tiles"
+	Example: "[+20]% Strength bonus for [Wounded] units in [3] tiles"
+
+	Applicable to: Unit
+
 ??? example  "May found a religion"
 	Applicable to: Unit
 
@@ -1214,9 +1219,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Unit
 
-??? example  "Bonus for units in 2 tile radius 15%"
-	Applicable to: Unit
-
 ??? example  "Can speed up construction of a building"
 	Applicable to: Unit
 
@@ -1430,12 +1432,15 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Improvement
 
+??? example  "Can only be built to improve a resource"
+	Applicable to: Improvement
+
 ??? example  "Does not need removal of [tileFilter]"
 	Example: "Does not need removal of [Farm]"
 
 	Applicable to: Improvement
 
-??? example  "Can only be built to improve a resource"
+??? example  "Removes removable features when built"
 	Applicable to: Improvement
 
 ??? example  "Gives a defensive bonus of [relativeAmount]%"
