@@ -85,7 +85,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             viewEntireMapForDebug = false
         }
         Current = this
-        GameSaver.customSaveLocationHelper = customSaveLocationHelper
+        GameSaver.init(Gdx.files, customSaveLocationHelper)
 
         // If this takes too long players, especially with older phones, get ANR problems.
         // Whatever needs graphics needs to be done on the main thread,
