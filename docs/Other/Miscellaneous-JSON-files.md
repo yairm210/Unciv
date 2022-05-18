@@ -92,7 +92,7 @@ Stored in ModOptions.constants, this is a collection of constants used internall
 This is the only structure that is _merged_ field by field from mods, not overwritten, so you can change XP from Barbarians in one mod
 and city distance in another. In case of conflicts, there is no guarantee which mod wins, only that _default_ values are ignored.
 
-| Attribute | Type | Optional | Notes |
+| Attribute | Type | Default | Notes |
 | --------- | ---- | -------- | ----- |
 | maxXPfromBarbarians | Int | 30 | [^A] |
 | cityStrengthBase| Float | 8.0 | [^B] |
@@ -143,7 +143,7 @@ Legend:
 
 These values are not merged individually, only the entire sub-structure is.
 
-| Attribute | Type | Optional | Notes |
+| Attribute | Type | Default | Notes |
 | --------- | ---- | -------- | ----- |
 | base | Float | 10 |  |
 | perProduction | Float | 2 |  |

@@ -95,12 +95,12 @@ class RejectionReasons: HashSet<RejectionReasonInstance>() {
     ): Boolean {
         if (!ignoreTechPolicyEraWonderRequirements && !ignoreResources) return isEmpty()
         if (!ignoreTechPolicyEraWonderRequirements)
-            return none { it.rejectionReason != RejectionReason.ConsumesResources }
+            return all { it.rejectionReason == RejectionReason.ConsumesResources }
         if (!ignoreResources)
-            return none { it.rejectionReason !in techPolicyEraWonderRequirements }
-        return none {
-            it.rejectionReason != RejectionReason.ConsumesResources &&
-            it.rejectionReason !in techPolicyEraWonderRequirements
+            return all { it.rejectionReason in techPolicyEraWonderRequirements }
+        return all {
+            it.rejectionReason == RejectionReason.ConsumesResources ||
+            it.rejectionReason in techPolicyEraWonderRequirements
         }
     }
 

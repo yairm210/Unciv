@@ -501,12 +501,16 @@ class MapUnit {
         return false
     }
 
-    /** Follow the upgrade chain, stopping when a tech is not researched.
-     *  Call [predicate] for each allowed upgrade and abort (and don't count) it it returns `true`.
-     *  @return Number of allowed upgrade steps */
+    /**
+     *  Follow the upgrade chain, stopping when there is no [BaseUnit.upgradesTo] or a tech is not researched.
+     *  @param  [actionAllowStep] Will be called for each upgrade allowed by tech and has a double purpose:
+     *          Side effects, e.g. for aggregation, are allowed, and
+     *          returning `false` will abort the upgrade chain and not include the step in the final count.
+     *  @return Number of allowed upgrade steps
+     */
     private fun followUpgradePath(
         maxSteps: Int = Int.MAX_VALUE,
-        predicate: (oldUnit: BaseUnit, newUnit: BaseUnit)->Boolean
+        actionAllowStep: (oldUnit: BaseUnit, newUnit: BaseUnit)->Boolean
     ): Int {
         var unit = baseUnit()
         var steps = 0
@@ -517,7 +521,7 @@ class MapUnit {
             val newUnit = unit.getDirectUpgradeUnit(civInfo)
             val techName = newUnit.requiredTech
             if (techName != null && !civInfo.tech.isResearched(techName)) break
-            if (predicate(unit, newUnit)) break
+            if (!actionAllowStep(unit, newUnit)) break
             unit = newUnit
             steps++
         }
@@ -533,7 +537,7 @@ class MapUnit {
         var unit = baseUnit()
         followUpgradePath(maxSteps) { _, newUnit ->
             unit = newUnit
-            false
+            true
         }
         return unit
     }
@@ -541,7 +545,7 @@ class MapUnit {
     /** Check if the default upgrade would do more than one step
      *  - to avoid showing both the single step and normal upgrades in UnitActions */
     fun canUpgradeMultipleSteps(): Boolean {
-        return 1 < followUpgradePath(2) { _, _ -> false }
+        return 1 < followUpgradePath(2) { _, _ -> true }
     }
 
     /** Check whether this unit can upgrade to [unitToUpgradeTo]. This does not check or follow the
@@ -562,32 +566,37 @@ class MapUnit {
         val rejectionReasons = unitToUpgradeTo.getRejectionReasons(civInfo)
         if (rejectionReasons.isOKIgnoringRequirements(ignoreRequirements, ignoreResources)) return true
 
-        if (rejectionReasons.contains(RejectionReason.ConsumesResources)) {
-            // We need to remove the unit from the civ for this check,
-            // because if the unit requires, say, horses, and so does its upgrade,
-            // and the civ currently has 0 horses, we need to see if the upgrade will be buildable
-            // WHEN THE CURRENT UNIT IS NOT HERE
-            civInfo.removeUnit(this)
-            val canUpgrade =
-                if (ignoreRequirements) unitToUpgradeTo.isBuildableIgnoringTechs(civInfo)
-                else unitToUpgradeTo.isBuildable(civInfo)
-            civInfo.addUnit(this)
-            return canUpgrade
-        }
-        return false
+        // The resource requirements check above did not consider that the resources
+        // this unit currently "consumes" are available for an upgrade too - if that's one of the
+        // reasons, repeat the check with those resources in the pool.
+        if (!rejectionReasons.contains(RejectionReason.ConsumesResources))
+            return false
+
+        //TODO redesign without kludge: Inform getRejectionReasons about 'virtually available' resources somehow
+
+        // We need to remove the unit from the civ for this check,
+        // because if the unit requires, say, horses, and so does its upgrade,
+        // and the civ currently has 0 horses, we need to see if the upgrade will be buildable
+        // WHEN THE CURRENT UNIT IS NOT HERE
+        civInfo.removeUnit(this)
+        val canUpgrade = unitToUpgradeTo.getRejectionReasons(civInfo)
+            .isOKIgnoringRequirements(ignoreTechPolicyEraWonderRequirements = ignoreRequirements)
+        civInfo.addUnit(this)
+        return canUpgrade
     }
 
     /** Determine gold cost of a Unit Upgrade, potentially over several steps.
      *  @param unitToUpgradeTo the final BaseUnit. Must be reachable via normal upgrades or else
      *         the function will return the cost to upgrade to the last possible and researched normal upgrade.
      *  @return Gold cost in increments of 5, never negative. Will return 0 for invalid inputs (unit can't upgrade or is is already a [unitToUpgradeTo])
+     *  @see   <a href="https://github.com/dmnd/CvGameCoreSource/blob/6501d2398113a5100ffa854c146fb6f113992898/CvGameCoreDLL_Expansion1/CvUnit.cpp#L7728">CvUnit::upgradePrice</a>
      */
     // Only one use from getUpgradeAction at the moment, so AI-specific rules omitted
     //todo Does the AI never buy upgrades???
     fun getCostOfUpgrade(unitToUpgradeTo: BaseUnit): Int {
-        // Reference: CvUnit.cpp Line 9357 (https://sourceforge.net/p/faerun/code-0/670/tree/Faerun%20DLL/CvGameCoreDLL_Expansion2/CvUnit.cpp)
         // Source rounds to int every step, we don't
-        // From the source, this should apply _Production_ modifiers (Temple of Artemis? GameSpeed! StartEra!), at the moment it doesn't
+        //TODO From the source, this should apply _Production_ modifiers (Temple of Artemis? GameSpeed! StartEra!), at the moment it doesn't
+
         var goldCostOfUpgrade = 0
 
         val ruleset = civInfo.gameInfo.ruleSet
@@ -600,7 +609,7 @@ class MapUnit {
         for (unique in civInfo.getMatchingUniques(UniqueType.UnitUpgradeCost, stateForConditionals))
             civModifier *= unique.params[0].toPercent()
 
-        followUpgradePath { oldUnit, newUnit ->
+        followUpgradePath(actionAllowStep = fun(oldUnit: BaseUnit, newUnit: BaseUnit): Boolean {
             // do clamping and rounding here so upgrading stepwise costs the same as upgrading far down the chain
             var stepCost = constants.base
             stepCost += (constants.perProduction * (newUnit.cost - oldUnit.cost)).coerceAtLeast(0f)
@@ -609,8 +618,9 @@ class MapUnit {
                 stepCost *= (1f + era.eraNumber * constants.eraMultiplier)
             stepCost = (stepCost * civModifier).pow(constants.exponent)
             goldCostOfUpgrade += (stepCost / constants.roundTo).toInt() * constants.roundTo
-            newUnit == unitToUpgradeTo // stop following upgrade path if...
-        }
+            return newUnit != unitToUpgradeTo  // stop at requested BaseUnit to upgrade to
+        })
+
         return goldCostOfUpgrade
     }
 

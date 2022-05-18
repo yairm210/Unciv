@@ -336,18 +336,22 @@ object UnitActions {
 
         // Check _new_ resource requirements (display only - yes even for free or special upgrades)
         // Using Counter to aggregate is a bit exaggerated, but - respect the mad modder.
-        val delta = Counter<String>()
+        val resourceRequirementsDelta = Counter<String>()
+        for ((resource, amount) in unit.baseUnit().getResourceRequirements())
+            resourceRequirementsDelta.add(resource, -amount)
         for ((resource, amount) in upgradedUnit.getResourceRequirements())
-            delta.add(resource, amount)
-        val deltaStr = if (delta.all { it.value == 0 }) ""
-        else delta.map { "${it.value} {${it.key}}" }.joinToString { it.tr() }
+            resourceRequirementsDelta.add(resource, amount)
+        val newResourceRequirementsString = resourceRequirementsDelta.entries
+            .filter { it.value > 0 }
+            .joinToString { "${it.value} {${it.key}}".tr() }
 
         val goldCostOfUpgrade = if (isFree) 0 else unit.getCostOfUpgrade(upgradedUnit)
 
         // No string for "FREE" variants, these are never shown to the user.
         // The free actions are only triggered via OneTimeUnitUpgrade or OneTimeUnitSpecialUpgrade in UniqueTriggerActivation.
-        val title = if (deltaStr.isEmpty()) "Upgrade to [${upgradedUnit.name}] ([$goldCostOfUpgrade] gold)"
-            else "Upgrade to [${upgradedUnit.name}]\n([$goldCostOfUpgrade] gold, [$deltaStr])"
+        val title = if (newResourceRequirementsString.isEmpty())
+                 "Upgrade to [${upgradedUnit.name}] ([$goldCostOfUpgrade] gold)"
+            else "Upgrade to [${upgradedUnit.name}]\n([$goldCostOfUpgrade] gold, [$newResourceRequirementsString])"
 
         return UnitAction(UnitActionType.Upgrade,
             title = title,
