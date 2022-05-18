@@ -154,14 +154,14 @@ object Automation {
             multiplier /= 2
 
         // If we have a lot of, or no cities we are not afraid
-        if (civInfo.cities.isEmpty() || civInfo.cities.count() >= 4 * multiplier)
+        if (civInfo.cities.isEmpty() || civInfo.cities.size >= 4 * multiplier)
             return false
 
         // If we have vision of our entire starting continent (ish) we are not afraid
         civInfo.gameInfo.tileMap.assignContinents(TileMap.AssignContinentsMode.Ensure)
         val startingContinent = civInfo.getCapital().getCenterTile().getContinent()
         val startingContinentSize = civInfo.gameInfo.tileMap.continentSizes[startingContinent]
-        if (startingContinentSize != null && startingContinentSize < civInfo.viewableTiles.count() * multiplier)
+        if (startingContinentSize != null && startingContinentSize < civInfo.viewableTiles.size * multiplier)
             return false
 
         // Otherwise we're afraid

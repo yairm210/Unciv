@@ -205,7 +205,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
                     RankLabels.Rank -> demographicsTable.add((aliveMajorCivsSorted.indexOfFirst { it == worldScreen.viewingCiv } + 1).toLabel())
                     RankLabels.Value -> addRankCivGroup(worldScreen.viewingCiv)
                     RankLabels.Best -> addRankCivGroup(aliveMajorCivsSorted.firstOrNull()!!)
-                    RankLabels.Average -> demographicsTable.add((aliveMajorCivsSorted.sumOf { it.getStatForRanking(category) } / aliveMajorCivsSorted.count()).toLabel())
+                    RankLabels.Average -> demographicsTable.add((aliveMajorCivsSorted.sumOf { it.getStatForRanking(category) } / aliveMajorCivsSorted.size).toLabel())
                     RankLabels.Worst -> addRankCivGroup(aliveMajorCivsSorted.lastOrNull()!!)
                 }
             }

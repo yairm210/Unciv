@@ -406,7 +406,7 @@ class TileMap {
     fun isWaterMap(): Boolean {
         assignContinents(AssignContinentsMode.Ensure)
         val bigIslands = continentSizes.count { it.value > 20 }
-        val players = gameInfo.gameParameters.players.count()
+        val players = gameInfo.gameParameters.players.size
         return bigIslands >= players
     }
 
