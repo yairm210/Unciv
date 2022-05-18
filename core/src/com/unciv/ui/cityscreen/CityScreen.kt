@@ -18,10 +18,8 @@ import com.unciv.models.stats.Stat
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.*
-import java.util.*
 
 class CityScreen(
     internal val city: CityInfo,

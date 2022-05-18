@@ -1,11 +1,9 @@
 package com.unciv.logic.civilization.RuinsManager
 
-import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.ruleset.RuinReward
-import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.random.Random

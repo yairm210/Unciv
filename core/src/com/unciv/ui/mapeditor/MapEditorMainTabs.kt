@@ -1,6 +1,5 @@
 package com.unciv.ui.mapeditor
 
-import com.unciv.logic.MapSaver
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.TabbedPager

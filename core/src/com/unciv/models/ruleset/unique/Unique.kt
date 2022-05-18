@@ -4,13 +4,13 @@ import com.unciv.Constants
 import com.unciv.logic.battle.CombatAction
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
-import com.unciv.models.stats.Stats
-import com.unciv.models.translations.*
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Ruleset
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
+import com.unciv.models.stats.Stats
+import com.unciv.models.translations.getConditionals
+import com.unciv.models.translations.getPlaceholderParameters
+import com.unciv.models.translations.getPlaceholderText
+import com.unciv.models.translations.removeConditionals
 import kotlin.random.Random
 
 

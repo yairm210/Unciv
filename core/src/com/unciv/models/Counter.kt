@@ -1,9 +1,5 @@
 package com.unciv.models
 
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.LinkedHashMap
-
 open class Counter<K> : LinkedHashMap<K, Int>() {
 
     override operator fun get(key: K): Int? { // don't return null if empty

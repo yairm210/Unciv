@@ -8,9 +8,7 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.Victory
-import com.unciv.models.ruleset.Victory.Focus
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.LocalUniqueCache

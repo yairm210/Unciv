@@ -2,7 +2,6 @@ package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.Files
 import com.badlogic.gdx.files.FileHandle
-import com.badlogic.gdx.utils.Json
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.updateDeprecations
