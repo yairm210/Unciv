@@ -10,7 +10,6 @@ import com.unciv.logic.map.BFS
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.Victory
-import com.unciv.models.ruleset.Victory.Focus
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -112,10 +111,9 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
         if (civInfo.isPlayerCivilization()) return // don't want the ai to control what a player uses faith for
 
-        val chosenItem = faithConstruction.asSequence()
-            .filterNotNull()
-            .filter { it.getStatBuyCost(cityInfo, stat = Stat.Faith)!! <= civInfo.religionManager.storedFaith }
-            .firstOrNull() ?: return
+        val chosenItem = faithConstruction.firstOrNull {
+            it.getStatBuyCost(cityInfo, stat = Stat.Faith)!! <= civInfo.religionManager.storedFaith
+        } ?: return
 
         cityConstructions.purchaseConstruction(chosenItem.name, -1, false, stat=Stat.Faith)
     }
@@ -268,7 +266,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         val unitTrainingBuilding = buildableNotWonders.asSequence()
                 .filter { it.hasUnique(UniqueType.UnitStartingExperience)
                         && Automation.allowAutomatedConstruction(civInfo, cityInfo, it) }.minByOrNull { it.cost }
-        if (unitTrainingBuilding != null && (!civInfo.wantsToFocusOn(Focus.Culture) || isAtWar)) {
+        if (unitTrainingBuilding != null && (!civInfo.wantsToFocusOn(Victory.Focus.Culture) || isAtWar)) {
             var modifier = if (cityIsOverAverageProduction) 0.5f else 0.1f // You shouldn't be cranking out units anytime soon
             if (isAtWar) modifier *= 2
             if (civInfo.wantsToFocusOn(Victory.Focus.Military))

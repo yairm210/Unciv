@@ -126,7 +126,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         val victoryObject = gameInfo.ruleSet.victories[victory]!!
         val table = Table()
         table.defaults().pad(5f)
-        var firstIncomplete: Boolean = true
+        var firstIncomplete = true
         for (milestone in victoryObject.milestoneObjects) {
             val completionStatus =
                 when {

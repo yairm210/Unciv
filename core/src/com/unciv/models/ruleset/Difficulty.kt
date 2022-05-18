@@ -55,7 +55,7 @@ class Difficulty: INamed, ICivilopediaText {
         lines += FormattedLine("{Policy cost modifier}: ${policyCostModifier.toPercent()}% ${Fonts.culture}", indent = 1)
         lines += FormattedLine("{Unhappiness modifier}: ${unhappinessModifier.toPercent()}%", indent = 1)
         lines += FormattedLine("{Bonus vs. Barbarians}: ${barbarianBonus.toPercent()}% ${Fonts.strength}", indent = 1)
-        lines += FormattedLine("{Barbarian spawning delay}: ${barbarianSpawnDelay}", indent = 1)
+        lines += FormattedLine("{Barbarian spawning delay}: $barbarianSpawnDelay", indent = 1)
 
         if (playerBonusStartingUnits.isNotEmpty()) {
             lines += FormattedLine()

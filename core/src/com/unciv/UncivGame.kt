@@ -230,7 +230,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
         // Log still running threads (on desktop that should be only this one and "DestroyJavaVM")
         val numThreads = Thread.activeCount()
-        val threadList = Array(numThreads) { _ -> Thread() }
+        val threadList = Array(numThreads) { Thread() }
         Thread.enumerate(threadList)
 
         if (isGameInfoInitialized()) {

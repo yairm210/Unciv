@@ -22,7 +22,7 @@ class GameOptionsTable(
     val ruleset = previousScreen.ruleset
     var locked = false
     var modCheckboxes: ModCheckboxTable? = null
-    private set;
+    private set
 
     init {
         getGameOptionsTable()
