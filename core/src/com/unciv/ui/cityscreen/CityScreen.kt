@@ -119,13 +119,13 @@ class CityScreen(
 
         //stage.setDebugTableUnderMouse(true)
         stage.addActor(cityStatsTable)
-        val resetCitizensButton = "Reset Citizens".tr().toTextButton()
+        val resetCitizensButton = "Reset Citizens".toTextButton()
         resetCitizensButton.labelCell.pad(5f)
         resetCitizensButton.onClick { city.reassignPopulation(resetLocked = true); update() }
         resetCitizensButtonHolder.add(resetCitizensButton)
         resetCitizensButtonHolder.pack()
         stage.addActor(resetCitizensButtonHolder)
-        val citizenManagementButton = "Citizen Management".tr().toTextButton()
+        val citizenManagementButton = "Citizen Management".toTextButton()
         citizenManagementButton.labelCell.pad(5f)
         citizenManagementButton.onClick {
             clearSelection()

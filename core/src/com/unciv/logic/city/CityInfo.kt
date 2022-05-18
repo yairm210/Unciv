@@ -45,13 +45,13 @@ enum class CityFocus(val label: String, val tableEnabled: Boolean, val stat: Sta
     GoldFocus("${Stat.Gold.name} Focus", true, Stat.Gold),
     ScienceFocus("${Stat.Science.name} Focus", true, Stat.Science),
     CultureFocus("${Stat.Culture.name} Focus", true, Stat.Culture),
-    GoldGrowthFocus("Gold Growth Focus", false) {
+    GoldGrowthFocus("Gold & Food Focus", false) {
         override fun getStatMultiplier(stat: Stat) = when (stat) {
             Stat.Production, Stat.Food -> 2f
             else -> 1f
         }
     },
-    ProductionGrowthFocus("Production Growth Focus", false) {
+    ProductionGrowthFocus("Production & Food Focus", false) {
         override fun getStatMultiplier(stat: Stat) = when (stat) {
             Stat.Production, Stat.Food -> 2f
             else -> 1f
@@ -133,7 +133,6 @@ class CityInfo {
     var updateCitizens = false  // flag so that on endTurn() the Governor reassigns Citizens
     var cityAIFocus: CityFocus = CityFocus.NoFocus
     var avoidGrowth: Boolean = false
-    @Transient var currentSurplusFood: Float = 0f  // temporary variable saved for rankStatsForCityWork()
     @Transient var currentGPPBonus: Int = 0  // temporary variable saved for rankSpecialist()
 
     /** The very first found city is the _original_ capital,
@@ -353,6 +352,7 @@ class CityInfo {
         toReturn.demandedResource = demandedResource
         toReturn.updateCitizens = updateCitizens
         toReturn.cityAIFocus = cityAIFocus
+        toReturn.avoidGrowth = avoidGrowth
         return toReturn
     }
 
@@ -508,6 +508,28 @@ class CityInfo {
     fun containsBuildingUnique(uniqueType: UniqueType) =
         cityConstructions.getBuiltBuildings().flatMap { it.uniqueObjects }.any { it.isOfType(uniqueType) }
 
+    fun getGreatPersonPercentageBonus(): Int{
+        var allGppPercentageBonus = 0
+        for (unique in getMatchingUniques(UniqueType.GreatPersonPointPercentage)
+            + getMatchingUniques(UniqueType.GreatPersonPointPercentageDeprecated)
+        ) {
+            if (!matchesFilter(unique.params[1])) continue
+            allGppPercentageBonus += unique.params[0].toInt()
+        }
+
+        // Sweden UP
+        for (otherCiv in civInfo.getKnownCivs()) {
+            if (!civInfo.getDiplomacyManager(otherCiv).hasFlag(DiplomacyFlags.DeclarationOfFriendship))
+                continue
+
+            for (ourUnique in civInfo.getMatchingUniques(UniqueType.GreatPersonBoostWithFriendship))
+                allGppPercentageBonus += ourUnique.params[0].toInt()
+            for (theirUnique in otherCiv.getMatchingUniques(UniqueType.GreatPersonBoostWithFriendship))
+                allGppPercentageBonus += theirUnique.params[0].toInt()
+        }
+        return allGppPercentageBonus
+    }
+    
     fun getGreatPersonPointsForNextTurn(): HashMap<String, Counter<String>> {
         val sourceToGPP = HashMap<String, Counter<String>>()
 
@@ -532,24 +554,7 @@ class CityInfo {
                 gppCounter.add(unitName, gppCounter[unitName]!! * unique.params[1].toInt() / 100)
             }
 
-            var allGppPercentageBonus = 0
-            for (unique in getMatchingUniques(UniqueType.GreatPersonPointPercentage) 
-                + getMatchingUniques(UniqueType.GreatPersonPointPercentageDeprecated)
-            ) {
-                if (!matchesFilter(unique.params[1])) continue
-                allGppPercentageBonus += unique.params[0].toInt()
-            }
-
-            // Sweden UP
-            for (otherCiv in civInfo.getKnownCivs()) {
-                if (!civInfo.getDiplomacyManager(otherCiv).hasFlag(DiplomacyFlags.DeclarationOfFriendship)) 
-                    continue
-
-                for (ourUnique in civInfo.getMatchingUniques(UniqueType.GreatPersonBoostWithFriendship))
-                    allGppPercentageBonus += ourUnique.params[0].toInt()
-                for (theirUnique in otherCiv.getMatchingUniques(UniqueType.GreatPersonBoostWithFriendship))
-                    allGppPercentageBonus += theirUnique.params[0].toInt()
-            }
+            val allGppPercentageBonus = getGreatPersonPercentageBonus()
 
             for (unitName in gppCounter.keys)
                 gppCounter.add(unitName, gppCounter[unitName]!! * allGppPercentageBonus / 100)
@@ -637,7 +642,7 @@ class CityInfo {
         attackedThisTurn = false
 
         if (isPuppet) reassignAllPopulation()
-        if (updateCitizens){
+        else if (updateCitizens){
             reassignPopulation()
             updateCitizens = false
         }

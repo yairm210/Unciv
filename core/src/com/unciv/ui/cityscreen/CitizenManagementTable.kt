@@ -7,7 +7,7 @@ import com.unciv.logic.city.CityFocus
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.*
 
-class CitizenManagementTable(val cityScreen: CityScreen): Table() {
+class CitizenManagementTable(val cityScreen: CityScreen) : Table() {
     private val innerTable = Table()
     val city = cityScreen.city
 
@@ -39,7 +39,7 @@ class CitizenManagementTable(val cityScreen: CityScreen): Table() {
         avoidCell.background = ImageGetter.getBackground(if (city.avoidGrowth) colorSelected else colorButton)
         innerTable.add(avoidCell).colspan(2).growX().pad(3f)
         innerTable.row()
-        
+
         for (focus in CityFocus.values()) {
             if (!focus.tableEnabled) continue
             if (focus == CityFocus.FaithFocus && !city.civInfo.gameInfo.isReligionEnabled()) continue

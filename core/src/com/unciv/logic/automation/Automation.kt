@@ -16,6 +16,7 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.victoryscreen.RankingType
 
@@ -56,7 +57,7 @@ object Automation {
             if (city.civInfo.getHappiness() < 0) yieldStats.happiness *= 2  // double weight for unhappy civilization
         }
 
-        val surplusFood = city.currentSurplusFood
+        val surplusFood = city.cityStats.currentCityStats[Stat.Food]
         // Apply base weights
         yieldStats.applyRankingWeights()
 
@@ -91,6 +92,12 @@ object Automation {
 
             if (city.tiles.size < 12 || city.civInfo.wantsToFocusOn(Focus.Culture))
                 yieldStats.culture *= 2
+
+            if (city.civInfo.getHappiness() < 0 && city.cityStats.currentCityStats[Stat.Happiness] < 0)
+                yieldStats.happiness *= 2
+
+            if (city.civInfo.wantsToFocusOn(Focus.Science))
+                yieldStats.science *= 2
         }
 
         // Apply City focus
@@ -112,15 +119,15 @@ object Automation {
 
         fun getCarryAmount(mapUnit: MapUnit): Int {
             val mapUnitCarryUnique =
-                    mapUnit.getMatchingUniques(UniqueType.CarryAirUnits).firstOrNull() ?: return 0
+                mapUnit.getMatchingUniques(UniqueType.CarryAirUnits).firstOrNull() ?: return 0
             if (mapUnitCarryUnique.params[1] != carryFilter) return 0 //Carries a different type of unit
             return mapUnitCarryUnique.params[0].toInt() +
-                    mapUnit.getMatchingUniques(UniqueType.CarryExtraAirUnits)
-                            .filter { it.params[1] == carryFilter }.sumOf { it.params[0].toInt() }
+                mapUnit.getMatchingUniques(UniqueType.CarryExtraAirUnits)
+                    .filter { it.params[1] == carryFilter }.sumOf { it.params[0].toInt() }
         }
 
         val totalCarriableUnits =
-                civInfo.getCivUnits().count { it.matchesFilter(carryFilter) }
+            civInfo.getCivUnits().count { it.matchesFilter(carryFilter) }
         val totalCarryingSlots = civInfo.getCivUnits().sumOf { getCarryAmount(it) }
         return totalCarriableUnits < totalCarryingSlots
     }
@@ -130,22 +137,22 @@ object Automation {
         if (currentChoice is BaseUnit && !currentChoice.isCivilian()) return city.cityConstructions.currentConstructionFromQueue
 
         var militaryUnits = city.getRuleset().units.values.asSequence()
-                .filter { !it.isCivilian() }
-                .filter { allowSpendingResource(city.civInfo, it) }
+            .filter { !it.isCivilian() }
+            .filter { allowSpendingResource(city.civInfo, it) }
 
         val findWaterConnectedCitiesAndEnemies =
-                BFS(city.getCenterTile()) { it.isWater || it.isCityCenter() }
+            BFS(city.getCenterTile()) { it.isWater || it.isCityCenter() }
         findWaterConnectedCitiesAndEnemies.stepToEnd()
         if (findWaterConnectedCitiesAndEnemies.getReachedTiles().none {
-                    (it.isCityCenter() && it.getOwner() != city.civInfo)
-                            || (it.militaryUnit != null && it.militaryUnit!!.civInfo != city.civInfo)
-                }) // there is absolutely no reason for you to make water units on this body of water.
+                (it.isCityCenter() && it.getOwner() != city.civInfo)
+                    || (it.militaryUnit != null && it.militaryUnit!!.civInfo != city.civInfo)
+            }) // there is absolutely no reason for you to make water units on this body of water.
             militaryUnits = militaryUnits.filter { !it.isWaterUnit() }
 
 
         val carryingOnlyUnits = militaryUnits.filter {
             it.hasUnique(UniqueType.CarryAirUnits)
-                    && it.hasUnique(UniqueType.CannotAttack)
+                && it.hasUnique(UniqueType.CannotAttack)
         }.toList()
 
         for (unit in carryingOnlyUnits)
@@ -157,21 +164,21 @@ object Automation {
 
         val chosenUnit: BaseUnit
         if (!city.civInfo.isAtWar()
-                && city.civInfo.cities.any { it.getCenterTile().militaryUnit == null }
-                && militaryUnits.any { it.isRanged() } // this is for city defence so get a ranged unit if we can
+            && city.civInfo.cities.any { it.getCenterTile().militaryUnit == null }
+            && militaryUnits.any { it.isRanged() } // this is for city defence so get a ranged unit if we can
         ) {
             chosenUnit = militaryUnits
-                    .filter { it.isRanged() }
-                    .maxByOrNull { it.cost }!!
+                .filter { it.isRanged() }
+                .maxByOrNull { it.cost }!!
         } else { // randomize type of unit and take the most expensive of its kind
             val availableTypes = militaryUnits
-                    .map { it.unitType }
-                    .distinct()
+                .map { it.unitType }
+                .distinct()
             if (availableTypes.none()) return null
             val bestUnitsForType = availableTypes.map { type ->
                 militaryUnits
-                        .filter { unit -> unit.unitType == type }
-                        .maxByOrNull { unit -> unit.cost }!!
+                    .filter { unit -> unit.unitType == type }
+                    .maxByOrNull { unit -> unit.cost }!!
             }
             // Check the maximum force evaluation for the shortlist so we can prune useless ones (ie scouts)
             val bestForce = bestUnitsForType.maxOf { it.getForceEvaluation() }
@@ -219,20 +226,20 @@ object Automation {
      *  and resource scarcity making a construction undesirable.
      */
     fun allowAutomatedConstruction(
-            civInfo: CivilizationInfo,
-            cityInfo: CityInfo,
-            construction: INonPerpetualConstruction
+        civInfo: CivilizationInfo,
+        cityInfo: CityInfo,
+        construction: INonPerpetualConstruction
     ): Boolean {
         return allowCreateImprovementBuildings(civInfo, cityInfo, construction)
-                && allowSpendingResource(civInfo, construction)
+            && allowSpendingResource(civInfo, construction)
     }
 
     /** Checks both feasibility of Buildings with a [UniqueType.CreatesOneImprovement] unique (appropriate tile available).
      *  Constructions without pass uncontested. */
     fun allowCreateImprovementBuildings(
-            civInfo: CivilizationInfo,
-            cityInfo: CityInfo,
-            construction: INonPerpetualConstruction
+        civInfo: CivilizationInfo,
+        cityInfo: CityInfo,
+        construction: INonPerpetualConstruction
     ): Boolean {
         if (construction !is Building) return true
         if (!construction.hasCreateOneImprovementUnique()) return true  // redundant but faster???
@@ -278,7 +285,7 @@ object Automation {
 
             // Make sure we have some for space
             if (resource in civInfo.gameInfo.spaceResources && civResources[resource]!! - amount - futureForBuildings - futureForUnits
-                    < getReservedSpaceResourceAmount(civInfo)) {
+                < getReservedSpaceResourceAmount(civInfo)) {
                 return false
             }
 
@@ -286,7 +293,7 @@ object Automation {
             val neededForBuilding = civInfo.lastEraResourceUsedForBuilding[resource] != null
             // Don't care about old units
             val neededForUnits = civInfo.lastEraResourceUsedForUnit[resource] != null
-                    && civInfo.lastEraResourceUsedForUnit[resource]!! >= civInfo.getEraNumber()
+                && civInfo.lastEraResourceUsedForUnit[resource]!! >= civInfo.getEraNumber()
 
             // No need to save for both
             if (!neededForBuilding || !neededForUnits) {
@@ -317,7 +324,7 @@ object Automation {
 
     fun threatAssessment(assessor: CivilizationInfo, assessed: CivilizationInfo): ThreatLevel {
         val powerLevelComparison =
-                assessed.getStatForRanking(RankingType.Force) / assessor.getStatForRanking(RankingType.Force).toFloat()
+            assessed.getStatForRanking(RankingType.Force) / assessor.getStatForRanking(RankingType.Force).toFloat()
         return when {
             powerLevelComparison > 2 -> ThreatLevel.VeryHigh
             powerLevelComparison > 1.5f -> ThreatLevel.High
@@ -379,7 +386,7 @@ object Automation {
 
         // Improvements are good: less points
         if (tile.improvement != null &&
-                tile.getImprovementStats(tile.getTileImprovement()!!, cityInfo.civInfo, cityInfo).values.sum() > 0f
+            tile.getImprovementStats(tile.getTileImprovement()!!, cityInfo.civInfo, cityInfo).values.sum() > 0f
         ) score -= 5
 
         if (tile.naturalWonder != null) score -= 105
@@ -393,9 +400,9 @@ object Automation {
         for (adjacentTile in tile.neighbors.filter { it.getOwner() == null }) {
             val adjacentDistance = cityInfo.getCenterTile().aerialDistanceTo(adjacentTile)
             if (adjacentTile.hasViewableResource(cityInfo.civInfo) &&
-                    (adjacentDistance < 3 ||
-                            adjacentTile.tileResource.resourceType != ResourceType.Bonus
-                            )
+                (adjacentDistance < 3 ||
+                    adjacentTile.tileResource.resourceType != ResourceType.Bonus
+                    )
             ) score -= 1
             if (adjacentTile.naturalWonder != null) {
                 if (adjacentDistance < 3) adjacentNaturalWonder = true
