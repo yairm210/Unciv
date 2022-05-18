@@ -361,7 +361,7 @@ class QuestManager {
             return false
 
         val mostRecentBully = getMostRecentBully()
-        val playerReligion = civInfo.gameInfo.religions.values.firstOrNull() { it.foundingCivName == challenger.civName && it.isMajorReligion() }?.name
+        val playerReligion = civInfo.gameInfo.religions.values.firstOrNull { it.foundingCivName == challenger.civName && it.isMajorReligion() }?.name
 
         return when (quest.name) {
             QuestName.ClearBarbarianCamp.value -> getBarbarianEncampmentForQuest() != null
