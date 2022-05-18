@@ -1,26 +1,15 @@
-## 4.1.1
+HexaRealm update - By GeneralWadaling
 
-Version rollout 
+Performance improvements - By Azzurite
 
-HexaRealm update  - By GeneralWadaling
+Great General typed uniques and improved moddability - By JackRainy
 
-By Azzurite:
-- Fix Gdx.files being garbage collected in MultiplayerTurnCheckWorker 
-- Fix coroutines not being added to desktop:dist 
-- Fix uniques.md being generated with wrong line endings 
+Great improvements can again be constructed on forest - By xlenstra
 
-Great General typed uniques and improved moddability  - By JackRainy
+Fixed MP refresher not working after rate limit - By GGGuenni
 
-By xlenstra:
-- Great improvements can again be constructed on forest 
-- Added 'in puppeted cities' cityFilter 
-- Added more unit tests for uniques 
+Fix "May Withdraw" modifier calculation - By OptimizedForDensity
 
-Fixed MP refresher not working after rate limit  - By GGGuenni
+Allow generation of "Default" Deciv redux maps - By SomeTroglodyte
 
-Fix MayWithdraw modifier calculation  - By OptimizedForDensity
-
-Allow generation of "Default" Deciv redux maps  - By SomeTroglodyte
-
-Fix and improve real time autofix while typing on multipleServer URL  - By touhidurrr
-
+Improve autofix when typing multiplayer server URL - By touhidurrr

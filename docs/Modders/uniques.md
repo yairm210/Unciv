@@ -811,6 +811,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: FounderBelief
 
+??? example  "[stats] from every [amount] global followers [cityFilter]"
+	Example: "[+1 Gold, +2 Production] from every [3] global followers [in all cities]"
+
+	Applicable to: FounderBelief
+
 ## FollowerBelief uniques
 ??? example  "[relativeAmount]% [stat] from every follower, up to [relativeAmount]%"
 	Example: "[+20]% [Culture] from every follower, up to [+20]%"
@@ -998,8 +1003,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Unit
 
-??? example  "[relativeAmount]% Strength bonus for [mapUnitFilter] units in [amount] tiles"
-	Example: "[+20]% Strength bonus for [Wounded] units in [3] tiles"
+??? example  "[relativeAmount]% Strength bonus for [mapUnitFilter] units within [amount] tiles"
+	Example: "[+20]% Strength bonus for [Wounded] units within [3] tiles"
 
 	Applicable to: Unit
 
