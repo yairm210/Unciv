@@ -13,9 +13,6 @@ import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
 import com.unciv.ui.crashhandling.CRASH_HANDLING_DAEMON_SCOPE
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
-import com.unciv.ui.popup.Popup
-import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.isLargerThan
 import java.util.*
 import java.util.concurrent.atomic.AtomicReference
@@ -63,7 +60,7 @@ class OnlineMultiplayer {
      *
      * Use [forceUpdate] = true to circumvent this throttling.
      *
-     * Fires: [MultiplayerGameUpdateStarted], [MultiplayerGameUpdated], [MultiplayerGameUpdateUnchanged], [MultiplayerGameUpdateErrored]
+     * Fires: [MultiplayerGameUpdateStarted], [MultiplayerGameUpdated], [MultiplayerGameUpdateUnchanged], [MultiplayerGameUpdateFailed]
      */
     fun requestUpdate(forceUpdate: Boolean = false) = launchCrashHandling("Update all multiplayer games") {
         fun alwaysUpdate(instant: Instant?): Boolean = true

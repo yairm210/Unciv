@@ -322,7 +322,7 @@ private class GameDisplay(
             updateErrorIndicator(false)
             refreshIndicator.remove()
         }
-        events.receive(MultiplayerGameUpdateErrored::class, { it.name == gameName }) {
+        events.receive(MultiplayerGameUpdateFailed::class, { it.name == gameName }) {
             updateErrorIndicator(true)
             refreshIndicator.remove()
         }

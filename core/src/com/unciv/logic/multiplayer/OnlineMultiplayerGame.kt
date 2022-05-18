@@ -60,7 +60,7 @@ class OnlineMultiplayerGame(
         preview == null || error != null || lastUpdateTime == null || Duration.between(lastUpdateTime, Instant.now()).isLargerThan(getUpdateThrottleInterval())
 
     /**
-     * Fires: [MultiplayerGameUpdateStarted], [MultiplayerGameUpdated], [MultiplayerGameUpdateUnchanged], [MultiplayerGameUpdateErrored]
+     * Fires: [MultiplayerGameUpdateStarted], [MultiplayerGameUpdated], [MultiplayerGameUpdateUnchanged], [MultiplayerGameUpdateFailed]
      *
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
      * @throws FileNotFoundException if the file can't be found
@@ -81,7 +81,7 @@ class OnlineMultiplayerGame(
         }
         val updateEvent = when (updateResult) {
             GameUpdateResult.CHANGED -> MultiplayerGameUpdated(name, preview!!)
-            GameUpdateResult.FAILURE -> MultiplayerGameUpdateErrored(name, error!!)
+            GameUpdateResult.FAILURE -> MultiplayerGameUpdateFailed(name, error!!)
             GameUpdateResult.UNCHANGED -> MultiplayerGameUpdateUnchanged(name)
         }
         postCrashHandlingRunnable { EventBus.send(updateEvent) }

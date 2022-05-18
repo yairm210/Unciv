@@ -20,7 +20,7 @@ class MultiplayerGameUpdated(
 /**
  * Gets sent when a game errored while updating
  */
-class MultiplayerGameUpdateErrored(
+class MultiplayerGameUpdateFailed(
     val name: String,
     val error: Exception
 ) : Event
