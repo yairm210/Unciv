@@ -1,4 +1,4 @@
-package com.unciv.ui.worldscreen.mainmenu
+package com.unciv.ui.options
 
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
@@ -274,7 +274,7 @@ class OptionsPopup(
 
         val textToShowForMultiplayerAddress =
             if (settings.multiplayerServer != Constants.dropboxMultiplayerServer) settings.multiplayerServer
-        else "https://..."
+            else "https://..."
         val multiplayerServerTextField = TextField(textToShowForMultiplayerAddress, BaseScreen.skin)
         multiplayerServerTextField.setTextFieldFilter { _, c -> c !in " \r\n\t\\" }
         multiplayerServerTextField.programmaticChangeEvents = true
