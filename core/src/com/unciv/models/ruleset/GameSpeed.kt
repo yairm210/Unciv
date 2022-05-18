@@ -34,7 +34,6 @@ class GameSpeed : RulesetObject(), IHasUniques {
     var spyRatePercent: Float = 1f
     var peaceDealDuration: Int = 10
     var relationshipDuration: Int = 50
-    //var turnIncrements: HashMap<String, List<Int>> = HashMap<String, List<Int>>()
     var turnIncrements: ArrayList<HashMap<String, Float>> = ArrayList<HashMap<String, Float>>()
 
     val yearsToTurnObject: ArrayList<YearsPerTurn> by lazy { initYearsToTurn(turnIncrements) }
@@ -49,9 +48,9 @@ class GameSpeed : RulesetObject(), IHasUniques {
         val yptList = ArrayList<YearsPerTurn>()
 
         for (incrementMap: HashMap<String, Float> in yearsToTurn) {
-            if (incrementMap == null || incrementMap["turnsPerIncrement"] == null || incrementMap["yearsPerIncrement"] == null) continue
+            if (incrementMap == null || incrementMap["turnsPerIncrement"] == null || incrementMap["yearsPerTurn"] == null) continue
             val runningSum = incrementMap["turnsPerIncrement"]!!.toInt() + if (yptList.size > 0) yptList.last().toTurn else 0
-            yptList.add(YearsPerTurn(incrementMap["yearsPerIncrement"]!!, runningSum))
+            yptList.add(YearsPerTurn(incrementMap["yearsPerTurn"]!!, runningSum))
         }
         return yptList
     }
@@ -87,8 +86,8 @@ class YearsPerTurn {
     var yearInterval: Float = 0f
     var toTurn: Int = 0
 
-    constructor(unitsPerIncrement: Float, turnsPerIncrement: Int) {
-        this.yearInterval = unitsPerIncrement
+    constructor(yearsPerTurn: Float, turnsPerIncrement: Int) {
+        this.yearInterval = yearsPerTurn
         this.toTurn = turnsPerIncrement
     }
 }

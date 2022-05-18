@@ -36,14 +36,14 @@
       "peaceDealDuration": 10,
       "relationshipDuration": 50,
       "turnIncrements": [
-        {"yearsPerIncrement": 60, "turnsPerIncrement": 50},
-        {"yearsPerIncrement": 40, "turnsPerIncrement": 30},
-        {"yearsPerIncrement": 30, "turnsPerIncrement": 20},
-        {"yearsPerIncrement": 20, "turnsPerIncrement": 30},
-        {"yearsPerIncrement": 10, "turnsPerIncrement": 25},
-        {"yearsPerIncrement":  5, "turnsPerIncrement": 40},
-        {"yearsPerIncrement":  2, "turnsPerIncrement": 65},
-        {"yearsPerIncrement":  1, "turnsPerIncrement": 70}
+        {"yearsPerTurn": 60, "turnsPerIncrement": 50},
+        {"yearsPerTurn": 40, "turnsPerIncrement": 30},
+        {"yearsPerTurn": 30, "turnsPerIncrement": 20},
+        {"yearsPerTurn": 20, "turnsPerIncrement": 30},
+        {"yearsPerTurn": 10, "turnsPerIncrement": 25},
+        {"yearsPerTurn":  5, "turnsPerIncrement": 40},
+        {"yearsPerTurn":  2, "turnsPerIncrement": 65},
+        {"yearsPerTurn":  1, "turnsPerIncrement": 70}
       ]
     },
     {
@@ -79,14 +79,14 @@
       "peaceDealDuration": 10,
       "relationshipDuration": 50,
       "turnIncrements": [
-          {"yearsPerIncrement":  40, "turnsPerIncrement":  75},
-          {"yearsPerIncrement":  25, "turnsPerIncrement":  60},
-          {"yearsPerIncrement":  20, "turnsPerIncrement":  25},
-          {"yearsPerIncrement":  10, "turnsPerIncrement":  50},
-          {"yearsPerIncrement":   5, "turnsPerIncrement":  60},
-          {"yearsPerIncrement":   2, "turnsPerIncrement":  50},
-          {"yearsPerIncrement":   1, "turnsPerIncrement": 120},
-          {"yearsPerIncrement": 0.5, "turnsPerIncrement":  60}
+          {"yearsPerTurn":  40, "turnsPerIncrement":  75},
+          {"yearsPerTurn":  25, "turnsPerIncrement":  60},
+          {"yearsPerTurn":  20, "turnsPerIncrement":  25},
+          {"yearsPerTurn":  10, "turnsPerIncrement":  50},
+          {"yearsPerTurn":   5, "turnsPerIncrement":  60},
+          {"yearsPerTurn":   2, "turnsPerIncrement":  50},
+          {"yearsPerTurn":   1, "turnsPerIncrement": 120},
+          {"yearsPerTurn": 0.5, "turnsPerIncrement":  60}
       ]
     },
     {
@@ -122,13 +122,13 @@
       "peaceDealDuration": 15,
       "relationshipDuration": 75,
       "turnIncrements": [
-        {"yearsPerIncrement":  25, "turnsPerIncrement": 140},
-        {"yearsPerIncrement":  15, "turnsPerIncrement":  90},
-        {"yearsPerIncrement":  10, "turnsPerIncrement":  40},
-        {"yearsPerIncrement":   5, "turnsPerIncrement":  90},
-        {"yearsPerIncrement":   2, "turnsPerIncrement":  70},
-        {"yearsPerIncrement":   1, "turnsPerIncrement": 100},
-        {"yearsPerIncrement": 0.5, "turnsPerIncrement": 220}
+        {"yearsPerTurn":  25, "turnsPerIncrement": 140},
+        {"yearsPerTurn":  15, "turnsPerIncrement":  90},
+        {"yearsPerTurn":  10, "turnsPerIncrement":  40},
+        {"yearsPerTurn":   5, "turnsPerIncrement":  90},
+        {"yearsPerTurn":   2, "turnsPerIncrement":  70},
+        {"yearsPerTurn":   1, "turnsPerIncrement": 100},
+        {"yearsPerTurn": 0.5, "turnsPerIncrement": 220}
       ]
     },
     {
@@ -164,14 +164,14 @@
       "peaceDealDuration": 30,
       "relationshipDuration": 150,
       "turnIncrements": [
-        {"yearsPerIncrement":   15, "turnsPerIncrement": 100},
-        {"yearsPerIncrement":   10, "turnsPerIncrement": 300},
-        {"yearsPerIncrement":    5, "turnsPerIncrement": 170},
-        {"yearsPerIncrement":    2, "turnsPerIncrement": 201},
-        {"yearsPerIncrement":    1, "turnsPerIncrement": 129},
-        {"yearsPerIncrement":  0.5, "turnsPerIncrement": 180},
-        {"yearsPerIncrement": 0.25, "turnsPerIncrement": 264},
-        {"yearsPerIncrement": 0.83333, "turnsPerIncrement": 156}
+        {"yearsPerTurn":   15, "turnsPerIncrement": 100},
+        {"yearsPerTurn":   10, "turnsPerIncrement": 300},
+        {"yearsPerTurn":    5, "turnsPerIncrement": 170},
+        {"yearsPerTurn":    2, "turnsPerIncrement": 201},
+        {"yearsPerTurn":    1, "turnsPerIncrement": 129},
+        {"yearsPerTurn":  0.5, "turnsPerIncrement": 180},
+        {"yearsPerTurn": 0.25, "turnsPerIncrement": 264},
+        {"yearsPerTurn": 0.83333, "turnsPerIncrement": 156}
       ]
     }
 ]
