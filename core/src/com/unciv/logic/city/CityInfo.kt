@@ -353,6 +353,7 @@ class CityInfo {
         toReturn.updateCitizens = updateCitizens
         toReturn.cityAIFocus = cityAIFocus
         toReturn.avoidGrowth = avoidGrowth
+        toReturn.manualSpecialists = manualSpecialists
         return toReturn
     }
 
