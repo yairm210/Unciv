@@ -3,7 +3,6 @@
     // values that end in "Duration" are in number of turns
     // values that end in "Percent" are float percentages (67% = 0.67f)
 
-    // currently unused:
     {
       "name": "Quick",
       "modifier": 0.67,

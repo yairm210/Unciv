@@ -2,7 +2,6 @@ package com.unciv.logic.civilization
 
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.civilization.diplomacy.*
-import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.unique.Unique
@@ -136,7 +135,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         val gameSpeed = civInfo.gameInfo.getGameSpeed()
         val gameProgressApproximate = min(civInfo.gameInfo.turns / (400f * gameSpeed.modifier), 1f) //TODO: according to source, denominator should probably just be number of turns in the game
         influenceGained *= 1 - (2/3f) * gameProgressApproximate
-        influenceGained *= gameSpeed.goldGiftMod / 100
+        influenceGained *= gameSpeed.goldGiftMod
         for (unique in donorCiv.getMatchingUniques(UniqueType.CityStateGoldGiftsProvideMoreInfluence))
             influenceGained *= 1f + unique.params[0].toFloat() / 100f
 
@@ -388,7 +387,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
 
     fun goldGainedByTribute(): Int {
         // These values are close enough, linear increase throughout the game
-        var gold = (civInfo.gameInfo.getGameSpeed().goldGiftMod / 2f).toInt()
+        var gold = (50 * civInfo.gameInfo.getGameSpeed().goldGiftMod).toInt() // approximates old when block
         val turnsToIncrement = when (civInfo.gameInfo.getGameSpeed().name) {
             "Quick" -> 5f
             "Standard" -> 6.5f

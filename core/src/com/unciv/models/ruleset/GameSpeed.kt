@@ -53,12 +53,6 @@ class GameSpeed : RulesetObject(), IHasUniques {
             val runningSum = incrementMap["turnsPerIncrement"]!!.toInt() + if (yptList.size > 0) yptList.last().toTurn else 0
             yptList.add(YearsPerTurn(incrementMap["yearsPerIncrement"]!!, runningSum))
         }
-
-        //for ((str, increment) in yearsToTurn) {
-        //    val runningSum = increment[1] + if (yptList.size > 0) yptList.last().toTurn else 0
-        //    yptList.add(YearsPerTurn(increment[0] as Float, runningSum))
-        //}
-
         return yptList
     }
 

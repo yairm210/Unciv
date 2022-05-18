@@ -1,6 +1,5 @@
 package com.unciv.logic
 
-import com.badlogic.gdx.Game
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
@@ -159,20 +158,20 @@ class GameInfo {
     }
 
     private fun getEquivalentTurn(): Int {
-        val totalTurns = ruleSet.speeds[gameParameters.gameSpeed]!!.numTotalTurns()
+        val totalTurns = getGameSpeed().numTotalTurns()
         val startPercent = ruleSet.eras[gameParameters.startingEra]!!.startPercent
         return turns + ((totalTurns * startPercent).toInt() / 100)
     }
  
     fun getYear(turnOffset: Int = 0): Int {
         val turn = getEquivalentTurn() + turnOffset
-        var yearsToTurn = getGameSpeed().yearsToTurnObject
+        val yearsToTurn = getGameSpeed().yearsToTurnObject
         var year: Float = -4000f
         var i = 0
         var yearsPerTurn: Float
 
         while (i < turn) {
-            yearsPerTurn = (yearsToTurn.firstOrNull { i < it.toTurn }?.yearInterval ?: 0.5f) as Float
+            yearsPerTurn = (yearsToTurn.firstOrNull { i < it.toTurn }?.yearInterval ?: 0.5f)
             year += yearsPerTurn
             ++i
         }
