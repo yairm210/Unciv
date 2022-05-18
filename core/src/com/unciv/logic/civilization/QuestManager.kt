@@ -253,15 +253,7 @@ class QuestManager {
     }
 
     private fun handleIndividualQuests() {
-        val toRemove = ArrayList<AssignedQuest>()
-
-        for (assignedQuest in assignedQuests.filter { it.isIndividual() }) {
-            val shouldRemove = handleIndividualQuest(assignedQuest)
-            if (shouldRemove)
-                toRemove.add(assignedQuest)
-        }
-
-        assignedQuests.removeAll(toRemove)
+        assignedQuests.removeAll { it.isIndividual() && handleIndividualQuest(it) }
     }
 
     /** If quest is complete, it gives the influence reward to the player.

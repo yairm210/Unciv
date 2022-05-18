@@ -554,7 +554,7 @@ class TileMap {
         tileList.forEach {
             for (unit in it.getUnits()) if (unit.owner == player.chosenCiv) unit.removeFromTile()
         }
-        startingLocations.removeAll(startingLocations.filter { it.nation == player.chosenCiv }) // filter creates a copy, no concurrent modification
+        startingLocations.removeAll { it.nation == player.chosenCiv } // filter creates a copy, no concurrent modification
         startingLocationsByNation.remove(player.chosenCiv)
     }
 
@@ -640,7 +640,7 @@ class TileMap {
 
     /** Removes all starting positions for [position], rebuilding the transients */
     fun removeStartingLocations(position: Vector2) {
-        startingLocations.removeAll(startingLocations.filter { it.position == position })
+        startingLocations.removeAll { it.position == position }
         setStartingLocationsTransients()
     }
 

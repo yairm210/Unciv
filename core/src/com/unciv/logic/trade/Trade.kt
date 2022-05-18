@@ -17,7 +17,8 @@ class Trade{
         return newTrade
     }
 
-    fun equals(trade: Trade):Boolean{
+    fun equalTrade(trade: Any?):Boolean{
+       if (trade !is Trade) return false
        if(trade.ourOffers.size!=ourOffers.size
            || trade.theirOffers.size!=theirOffers.size) return false
 

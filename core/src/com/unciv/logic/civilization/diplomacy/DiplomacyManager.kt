@@ -347,7 +347,7 @@ class DiplomacyManager() {
     }
 
     /** Returns the [civilizations][CivilizationInfo] that know about both sides ([civInfo] and [otherCiv]) */
-    fun getCommonKnownCivs(): Set<CivilizationInfo> = civInfo.getKnownCivs().intersect(otherCiv().getKnownCivs())
+    fun getCommonKnownCivs(): Set<CivilizationInfo> = civInfo.getKnownCivs().intersect(otherCiv().getKnownCivs().toSet())
 
     /** Returns true when the [civInfo]'s territory is considered allied for [otherCiv].
      *  This includes friendly and allied city-states and the open border treaties.
@@ -376,7 +376,7 @@ class DiplomacyManager() {
                     
                     trades.remove(trade)
                     val otherCivTrades = otherCiv().getDiplomacyManager(civInfo).trades
-                    otherCivTrades.removeAll { it.equals(trade.reverse()) }
+                    otherCivTrades.removeAll { it.equalTrade(trade.reverse()) }
 
                     // Can't cut short peace treaties!
                     if (trade.theirOffers.any { it.name == Constants.peaceTreaty }) {
