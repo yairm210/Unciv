@@ -203,6 +203,9 @@
 	"Desert+Stone+Quarry": ["Desert","StoneD+Quarry"],
 	"Desert+Flood plains+Stone+Quarry": ["Desert","Flood plains","StoneD+Quarry"],
 	"Desert+Hill+Stone+Quarry": ["Desert+Hill","StoneD+Quarry"],
+	"Tundra+Stone+Quarry": ["Tundra","Stone+QuarryT"],
+	"Tundra+Hill+Stone+Quarry": ["Tundra+Hill","Stone+QuarryT"],
+	"Tundra+Hill+Marble+Quarry": ["Tundra+Hill","Marble+QuarryT"],
 
 	//Bananas
 	"Grassland+Jungle+Bananas": ["Grassland","JungleGUp","Bananas", "JungleGLow"],
@@ -267,6 +270,9 @@
 	//Oil Well
 	"Coast+Oil well": ["Coast","Oil WellC"],
 	"Coast+Oil+Oil well": ["Coast","Oil WellC"],
+
+	//Offshore Platform
+	"Coast+Oil+Offshore Platform": ["Coast","Offshore Platform"],
 
 	//Academy
 	"Tundra+Academy": ["Tundra","AcademyT"],
@@ -703,6 +709,36 @@
 	"Tundra+Hill+Truffles+Forest+Lumber mill": ["Tundra+Hill","Truffles","ForestTH","Lumber millT"],
 	"Tundra+Hill+Sheep+Forest+Lumber mill": ["Tundra+Hill","Sheep","ForestTH","Lumber millT"],
 	"Tundra+Hill+Horses+Forest+Lumber mill": ["Tundra+Hill","Horses","ForestTH","Lumber millT"],
+
+	//Mine
+	"Tundra+Mine": ["Tundra","MineT"],
+	"Tundra+Iron+Mine": ["Tundra","Iron","MineT"],
+	"Tundra+Aluminum+Mine": ["Tundra","Aluminum","MineT"],
+	"Tundra+Uranium+Mine": ["Tundra","Uranium","MineT"],
+	"Tundra+Silver+Mine": ["Tundra","Silver","MineT"],
+	"Tundra+Copper+Mine": ["Tundra","Copper","MineT"],
+	"Tundra+Salt+Mine": ["Tundra","Salt","MineT"],
+	"Tundra+Coal+Mine": ["Tundra","Coal","MineT"],
+	"Tundra+Gems+Mine": ["Tundra","Gems","MineT"],
+	"Tundra+Gold Ore+Mine": ["Tundra","Gold Ore","MineT"],
+	"Tundra+Hill+Mine": ["Tundra+Hill","MineT"],
+	"Tundra+Hill+Iron+Mine": ["Tundra+Hill","Iron","MineT"],
+	"Tundra+Hill+Aluminum+Mine": ["Tundra+Hill","Aluminum","MineT"],
+	"Tundra+Hill+Uranium+Mine": ["Tundra+Hill","Uranium","MineT"],
+	"Tundra+Hill+Silver+Mine": ["Tundra+Hill","Silver","MineT"],
+	"Tundra+Hill+Copper+Mine": ["Tundra+Hill","Copper","MineT"],
+	"Tundra+Hill+Salt+Mine": ["Tundra+Hill","Salt","MineT"],
+	"Tundra+Hill+Coal+Mine": ["Tundra+Hill","Coal","MineT"],
+	"Tundra+Hill+Gems+Mine": ["Tundra+Hill","Gems","MineT"],
+	"Tundra+Hill+Gold Ore+Mine": ["Tundra+Hill","Gold Ore","MineT"],
+	"Snow+Iron+Mine": ["Snow","Iron","MineT"],
+	"Snow+Aluminum+Mine": ["Snow","Aluminum","MineT"],
+	"Snow+Uranium+Mine": ["Snow","Uranium","MineT"],
+	"Snow+Hill+Iron+Mine": ["Snow+Hill","Iron","MineT"],
+	"Snow+Hill+Aluminum+Mine": ["Snow+Hill","Aluminum","MineT"],
+	"Snow+Hill+Uranium+Mine": ["Snow+Hill","Uranium","MineT"],
+	"Snow+Mine": ["Snow","MineT"],
+	"Snow+Hill+Mine": ["Snow+Hill","MineT"],
 
 	//GI
 	"Tundra+GI": ["Tundra","GIT"],
