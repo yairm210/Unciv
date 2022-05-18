@@ -3,10 +3,10 @@ package com.unciv.models
 open class Counter<K> : LinkedHashMap<K, Int>() {
 
     override operator fun get(key: K): Int? { // don't return null if empty
-        if (containsKey(key))
+        return if (containsKey(key))
         // .toInt(), because GDX deserializes Counter values as *floats* for some reason
-            return super.get(key)!!.toInt()
-        else return 0
+            super.get(key)!!.toInt()
+        else 0
     }
 
     fun add(key: K, value: Int) {

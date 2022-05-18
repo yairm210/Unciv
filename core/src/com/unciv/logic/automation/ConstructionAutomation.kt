@@ -236,12 +236,12 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
             return 3f
         if (wonder.isStatRelated(Stat.Science)) {
             if (allTechsAreResearched) return .5f
-            if (civInfo.wantsToFocusOn(Victory.Focus.Science)) return 1.5f
-            else return 1.3f
+            return if (civInfo.wantsToFocusOn(Victory.Focus.Science)) 1.5f
+            else 1.3f
         }
         if (wonder.name == "Manhattan Project") {
-            if (civInfo.wantsToFocusOn(Victory.Focus.Military)) return 2f
-            else return 1.3f
+            return if (civInfo.wantsToFocusOn(Victory.Focus.Military)) 2f
+            else 1.3f
         }
         if (wonder.isStatRelated(Stat.Happiness)) return 1.2f
         if (wonder.isStatRelated(Stat.Production)) return 1.1f

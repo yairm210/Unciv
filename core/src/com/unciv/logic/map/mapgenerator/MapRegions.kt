@@ -347,14 +347,14 @@ class MapRegions (val ruleset: Ruleset){
     private fun getRegionPriority(terrain: Terrain?): Int? {
         if (terrain == null) // ie "hybrid"
             return 99999 // a big number
-        if (!terrain.hasUnique(UniqueType.RegionRequirePercentSingleType) &&
-            !terrain.hasUnique(UniqueType.RegionRequirePercentTwoTypes))
-                return null
+        return if (!terrain.hasUnique(UniqueType.RegionRequirePercentSingleType)
+                   && !terrain.hasUnique(UniqueType.RegionRequirePercentTwoTypes))
+            null
         else
-            return if (terrain.hasUnique(UniqueType.RegionRequirePercentSingleType))
-                    terrain.getMatchingUniques(UniqueType.RegionRequirePercentSingleType).first().params[2].toInt()
-                else
-                    terrain.getMatchingUniques(UniqueType.RegionRequirePercentTwoTypes).first().params[3].toInt()
+            if (terrain.hasUnique(UniqueType.RegionRequirePercentSingleType))
+                terrain.getMatchingUniques(UniqueType.RegionRequirePercentSingleType).first().params[2].toInt()
+            else
+                terrain.getMatchingUniques(UniqueType.RegionRequirePercentTwoTypes).first().params[3].toInt()
     }
 
     private fun assignCivToRegion(civInfo: CivilizationInfo, region: Region) {

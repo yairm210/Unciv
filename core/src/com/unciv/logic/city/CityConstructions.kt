@@ -620,11 +620,11 @@ class CityConstructions {
             }
         }
 
-        if (constructionQueue.isEmpty()) {
+        currentConstructionIsUserSet = if (constructionQueue.isEmpty()) {
             if (automatic) chooseNextConstruction()
             else constructionQueue.add("Nothing") // To prevent Construction Automation
-            currentConstructionIsUserSet = false
-        } else currentConstructionIsUserSet = true // we're just continuing the regular queue
+            false
+        } else true // we're just continuing the regular queue
     }
 
     fun raisePriority(constructionQueueIndex: Int) {
@@ -678,10 +678,10 @@ class CityConstructions {
 
         constructionQueue.removeAt(indexToRemove)
 
-        if (constructionQueue.isEmpty()) {
+        currentConstructionIsUserSet = if (constructionQueue.isEmpty()) {
             constructionQueue.add("Nothing")
-            currentConstructionIsUserSet = false
-        } else currentConstructionIsUserSet = true
+            false
+        } else true
     }
 
     /** Support for [UniqueType.CreatesOneImprovement]:

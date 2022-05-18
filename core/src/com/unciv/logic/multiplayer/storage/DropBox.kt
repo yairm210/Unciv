@@ -124,15 +124,13 @@ object DropBox: FileStorage {
         throw FileStorageRateLimitReached(remainingRateLimitSeconds)
     }
 
-    fun fileExists(fileName: String): Boolean {
-        try {
+    fun fileExists(fileName: String): Boolean = try {
             dropboxApi("https://api.dropboxapi.com/2/files/get_metadata",
-                    "{\"path\":\"$fileName\"}", "application/json")
-            return true
+                "{\"path\":\"$fileName\"}", "application/json")
+            true
         } catch (ex: FileNotFoundException) {
-            return false
+            false
         }
-    }
 
 //
 //    fun createTemplate(): String {
@@ -141,13 +139,6 @@ object DropBox: FileStorage {
 //                ,"application/json")
 //        return BufferedReader(InputStreamReader(result)).readText()
 //    }
-
-    @Suppress("PropertyName")
-    private class FolderList{
-        var entries = ArrayList<MetaData>()
-        var cursor = ""
-        var has_more = false
-    }
 
     @Suppress("PropertyName")
     private class MetaData: FileMetaData {

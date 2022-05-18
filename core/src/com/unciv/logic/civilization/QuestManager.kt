@@ -695,17 +695,17 @@ class QuestManager {
                     weight *= 3f
             }
             QuestName.GiveGold.value -> {
-                when (trait) {
-                    CityStateType.Militaristic -> weight *= 2f
-                    CityStateType.Mercantile -> weight *= 3.5f
-                    else -> weight *= 3f
+                weight *= when (trait) {
+                    CityStateType.Militaristic -> 2f
+                    CityStateType.Mercantile -> 3.5f
+                    else -> 3f
                 }
             }
             QuestName.PledgeToProtect.value -> {
-                when (trait) {
-                    CityStateType.Militaristic -> weight *= 2f
-                    CityStateType.Cultured -> weight *= 3.5f
-                    else -> weight *= 3f
+                weight *= when (trait) {
+                    CityStateType.Militaristic -> 2f
+                    CityStateType.Cultured -> 3.5f
+                    else -> 3f
                 }
             }
             QuestName.BullyCityState.value -> {
@@ -717,10 +717,10 @@ class QuestManager {
                 }
             }
             QuestName.DenounceCiv.value -> {
-                when (trait) {
-                    CityStateType.Religious -> weight *= 2.5f
-                    CityStateType.Maritime -> weight *= 2f
-                    else -> weight *= 1.5f
+                weight *= when (trait) {
+                    CityStateType.Religious -> 2.5f
+                    CityStateType.Maritime -> 2f
+                    else -> 1.5f
                 }
             }
             QuestName.SpreadReligion.value -> {
@@ -732,9 +732,9 @@ class QuestManager {
                     weight *= 2f
             }
             QuestName.ContestFaith.value -> {
-                when (trait) {
-                    CityStateType.Religious -> weight *= 2f
-                    else -> weight *= .5f
+                weight *= when (trait) {
+                    CityStateType.Religious -> 2f
+                    else -> .5f
                 }
             }
             QuestName.ContestTech.value -> {

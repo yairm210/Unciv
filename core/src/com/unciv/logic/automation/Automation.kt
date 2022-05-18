@@ -34,18 +34,22 @@ object Automation {
             rank += stats.culture / 2
             rank += stats.gold / 5 // it's barely worth anything at this point
         } else {
-            if (stats.food <= 2 || city.civInfo.getHappiness() > 5) rank += stats.food * 1.2f * foodWeight // food get more value to keep city growing
-            else rank += (2.4f + (stats.food - 2) / 2) * foodWeight // 1.2 point for each food up to 2, from there on half a point
+            rank += if (stats.food <= 2 || city.civInfo.getHappiness() > 5)
+                        stats.food * 1.2f * foodWeight // food get more value to keep city growing
+                    else
+                        (2.4f + (stats.food - 2) / 2) * foodWeight // 1.2 point for each food up to 2, from there on half a point
 
-            if (city.civInfo.gold < 0 && city.civInfo.statsForNextTurn.gold <= 0)
-                rank += stats.gold // we have a global problem
-            else rank += stats.gold / 3 // 3 gold is worse than 2 production
+            rank += if (city.civInfo.gold < 0 && city.civInfo.statsForNextTurn.gold <= 0)
+                        stats.gold // we have a global problem
+                    else
+                        stats.gold / 3 // 3 gold is worse than 2 production
 
             rank += stats.production
             rank += stats.science
-            if (city.tiles.size < 12 || city.civInfo.wantsToFocusOn(Victory.Focus.Culture)) {
-                rank += stats.culture
-            } else rank += stats.culture / 2
+            rank += if (city.tiles.size < 12 || city.civInfo.wantsToFocusOn(Victory.Focus.Culture))
+                        stats.culture
+                    else
+                        stats.culture / 2
         }
         return rank
     }
@@ -366,11 +370,15 @@ object Automation {
 
     fun rankStatsValue(stats: Stats, civInfo: CivilizationInfo): Float {
         var rank = 0.0f
-        if (stats.food <= 2) rank += (stats.food * 1.2f) //food get more value to keep city growing
-        else rank += (2.4f + (stats.food - 2) / 2) // 1.2 point for each food up to 2, from there on half a point
+        rank += if (stats.food <= 2)
+                    (stats.food * 1.2f) //food get more value to keep city growing
+                else
+                    (2.4f + (stats.food - 2) / 2) // 1.2 point for each food up to 2, from there on half a point
 
-        if (civInfo.gold < 0 && civInfo.statsForNextTurn.gold <= 0) rank += stats.gold
-        else rank += stats.gold / 3 // 3 gold is much worse than 2 production
+        rank += if (civInfo.gold < 0 && civInfo.statsForNextTurn.gold <= 0)
+                    stats.gold
+                else
+                    stats.gold / 3 // 3 gold is much worse than 2 production
 
         rank += stats.production
         rank += stats.science
