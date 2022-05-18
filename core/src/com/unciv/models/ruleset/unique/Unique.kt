@@ -113,7 +113,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         }
         if (uniquesWithNoErrors.size == 1) return uniquesWithNoErrors.first()
 
-        val uniquesToUnify = if (uniquesWithNoErrors.isNotEmpty()) uniquesWithNoErrors else possibleUniques
+        val uniquesToUnify = uniquesWithNoErrors.ifEmpty { possibleUniques }
         return uniquesToUnify.joinToString("\", \"")
     }
 

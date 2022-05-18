@@ -110,8 +110,7 @@ class TechManager {
     }
 
     fun currentTechnology(): Technology? {
-        val currentTechnologyName = currentTechnologyName()
-        if (currentTechnologyName == null) return null
+        val currentTechnologyName = currentTechnologyName() ?: return null
         return getRuleset().technologies[currentTechnologyName]
     }
 
@@ -221,8 +220,7 @@ class TechManager {
     }
 
     fun addScience(scienceGet: Int) {
-        val currentTechnology = currentTechnologyName()
-        if (currentTechnology == null) return
+        val currentTechnology = currentTechnologyName() ?: return
         techsInProgress[currentTechnology] = researchOfTech(currentTechnology) + scienceGet
         if (techsInProgress[currentTechnology]!! < costOfTech(currentTechnology))
             return

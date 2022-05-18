@@ -458,8 +458,7 @@ class QuestManager {
     /** Returns a string with the leading civ and their score for [questName] */
     fun getLeaderStringForQuest(questName: String): String {
         val leadingQuest = assignedQuests.filter { it.questName == questName }.maxByOrNull { getScoreForQuest(it) }
-        if (leadingQuest == null)
-            return ""
+            ?: return ""
 
         return when (questName){
             QuestName.ContestCulture.value -> "Current leader is [${leadingQuest.assignee}] with [${getScoreForQuest(leadingQuest)}] [Culture] generated."

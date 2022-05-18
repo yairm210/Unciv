@@ -426,8 +426,7 @@ object UnitAutomation {
         val closestEnemyCity = enemies
             .map { NextTurnAutomation.getClosestCities(unit.civInfo, it) }
             .minByOrNull { it.aerialDistance }?.city2
-        
-        if (closestEnemyCity==null) return false // no attackable cities found
+          ?: return false // no attackable cities found
 
         // Our main attack target is the closest city, but we're fine with deviating from that a bit
         var enemyCitiesByPriority = closestEnemyCity.civInfo.cities
@@ -498,8 +497,7 @@ object UnitAutomation {
             .asSequence()
             .sortedBy { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
             .firstOrNull { unit.movement.canReach(it.getCenterTile()) }
-        
-        if (closestCity == null) return false // Panic!
+          ?: return false // Panic!
         
         unit.movement.headTowards(closestCity.getCenterTile())
         return true

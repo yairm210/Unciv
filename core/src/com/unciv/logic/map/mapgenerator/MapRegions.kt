@@ -1426,7 +1426,7 @@ class MapRegions (val ruleset: Ruleset){
                 val simpleRule = anonymizeUnique(rule)
                 val list = ruleLists.filterKeys { it.text == simpleRule.text }.values.firstOrNull()
                 // If there is no matching list, it is because the rule was determined to be impossible and so can be safely skipped
-                if (list == null) continue
+                    ?: continue
                 // Place the resources
                 placeResourcesInTiles((rule.params[0].toFloat() * bonusMultiplier).toInt(), list, listOf(resource), 0 + extraImpact, 2 + extraImpact, false)
             }

@@ -278,7 +278,7 @@ class TradeEvaluation {
 
     private fun introductionValue(ruleSet: Ruleset): Int {
         val unique = ruleSet.modOptions.getMatchingUniques(ModOptionsConstants.tradeCivIntroductions).firstOrNull()
-        if (unique == null) return 0
+            ?: return 0
         return unique.params[0].toInt()
     }
 }
