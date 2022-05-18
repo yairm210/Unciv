@@ -1,5 +1,6 @@
 package com.unciv.logic
 
+import com.badlogic.gdx.Files
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
@@ -20,12 +21,23 @@ object GameSaver {
     const val settingsFileName = "GameSettings.json"
     var saveZipped = false
 
-    @Volatile
-    var customSaveLocationHelper: CustomSaveLocationHelper? = null
+    /**
+     * This is necessary because the Android turn check background worker does not hold any reference to the actual [com.badlogic.gdx.Application],
+     * which is normally responsible for keeping the [Gdx] static variables from being garbage collected.
+     */
+    private lateinit var files: Files
+
+    private var customSaveLocationHelper: CustomSaveLocationHelper? = null
 
     /** When set, we know we're on Android and can save to the app's personal external file directory
      * See https://developer.android.com/training/data-storage/app-specific#external-access-files */
     var externalFilesDirForAndroid = ""
+
+    /** Needs to be called before the class can be used */
+    fun init(files: Files, customSaveLocationHelper: CustomSaveLocationHelper?) {
+        this.files = files
+        this.customSaveLocationHelper = customSaveLocationHelper
+    }
 
     //endregion
     //region Helpers
@@ -33,17 +45,17 @@ object GameSaver {
     private fun getSavefolder(multiplayer: Boolean = false) = if (multiplayer) multiplayerFilesFolder else saveFilesFolder
 
     fun getSave(GameName: String, multiplayer: Boolean = false): FileHandle {
-        val localFile = Gdx.files.local("${getSavefolder(multiplayer)}/$GameName")
-        if (externalFilesDirForAndroid == "" || !Gdx.files.isExternalStorageAvailable) return localFile
-        val externalFile = Gdx.files.absolute(externalFilesDirForAndroid + "/${getSavefolder(multiplayer)}/$GameName")
+        val localFile = files.local("${getSavefolder(multiplayer)}/$GameName")
+        if (externalFilesDirForAndroid == "" || !files.isExternalStorageAvailable) return localFile
+        val externalFile = files.absolute(externalFilesDirForAndroid + "/${getSavefolder(multiplayer)}/$GameName")
         if (localFile.exists() && !externalFile.exists()) return localFile
         return externalFile
     }
 
     fun getSaves(multiplayer: Boolean = false): Sequence<FileHandle> {
-        val localSaves = Gdx.files.local(getSavefolder(multiplayer)).list().asSequence()
-        if (externalFilesDirForAndroid == "" || !Gdx.files.isExternalStorageAvailable) return localSaves
-        return localSaves + Gdx.files.absolute(externalFilesDirForAndroid + "/${getSavefolder(multiplayer)}").list().asSequence()
+        val localSaves = files.local(getSavefolder(multiplayer)).list().asSequence()
+        if (externalFilesDirForAndroid == "" || !files.isExternalStorageAvailable) return localSaves
+        return localSaves + files.absolute(externalFilesDirForAndroid + "/${getSavefolder(multiplayer)}").list().asSequence()
     }
 
     fun canLoadFromCustomSaveLocation() = customSaveLocationHelper != null
@@ -162,7 +174,7 @@ object GameSaver {
 
     private fun getGeneralSettingsFile(): FileHandle {
         return if (UncivGame.Current.consoleMode) FileHandle(settingsFileName)
-        else Gdx.files.local(settingsFileName)
+        else files.local(settingsFileName)
     }
 
     fun getGeneralSettings(): GameSettings {
@@ -218,7 +230,7 @@ object GameSaver {
         // keep auto-saves for the last 10 turns for debugging purposes
         val newAutosaveFilename =
             saveFilesFolder + File.separator + autoSaveFileName + "-${gameInfo.currentPlayer}-${gameInfo.turns}"
-        getSave(autoSaveFileName).copyTo(Gdx.files.local(newAutosaveFilename))
+        getSave(autoSaveFileName).copyTo(files.local(newAutosaveFilename))
 
         fun getAutosaves(): Sequence<FileHandle> {
             return getSaves().filter { it.name().startsWith(autoSaveFileName) }
