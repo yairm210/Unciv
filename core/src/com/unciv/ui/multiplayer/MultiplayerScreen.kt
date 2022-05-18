@@ -375,31 +375,6 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
         }
     }
 
-    //Adds a Button to add the currently running game to multiplayerGameList
-    private fun addCurrentGameButton() {
-        val currentlyRunningGame = game.gameInfo
-        if (!currentlyRunningGame.gameParameters.isOnlineMultiplayer || gameIsAlreadySavedAsMultiplayer(currentlyRunningGame.gameId))
-            return
-
-        val currentGameButton = "Add Currently Running Game".toTextButton()
-        currentGameButton.onClick {
-            if (gameIsAlreadySavedAsMultiplayer(currentlyRunningGame.gameId))
-                return@onClick
-            try {
-                GameSaver.saveGame(currentlyRunningGame, currentlyRunningGame.gameId)
-                reloadGameListUI()
-            } catch (ex: Exception) {
-                val errorPopup = Popup(this)
-                errorPopup.addGoodSizedLabel("Could not save game!")
-                errorPopup.row()
-                errorPopup.addCloseButton()
-                errorPopup.open()
-            }
-        }
-
-        topTable.add(currentGameButton)
-    }
-
     //It doesn't really unselect the game because selectedGame cant be null
     //It just disables everything a selected game has set
     private fun unselectGame() {

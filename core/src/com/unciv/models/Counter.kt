@@ -41,14 +41,3 @@ open class Counter<K> : LinkedHashMap<K, Int>() {
         return newCounter
     }
 }
-
-class MultiHashMap<K, V> : LinkedHashMap<K, ArrayList<V>>() {
-    fun add(key: K, value: V) {
-        var existingList = get(key)
-        if (existingList == null) {
-            existingList = ArrayList()
-            this[key] = existingList
-        }
-        existingList.add(value)
-    }
-}

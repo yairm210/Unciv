@@ -167,12 +167,6 @@ class MapGenerator(val ruleset: Ruleset) {
         println("MapGenerator.$text took ${delta/1000000L}.${(delta/10000L).rem(100)}ms")
     }
 
-    //todo: Why is this unused?
-    private fun seedRNG(seed: Long) {
-        randomness.RNG = Random(seed)
-        if (consoleOutput) println("RNG seeded with $seed")
-    }
-
     private fun convertTerrains(map: TileMap, ruleset: Ruleset) {
         for (tile in map.values) {
             val conversionUnique =

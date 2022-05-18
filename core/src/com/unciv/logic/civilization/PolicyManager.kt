@@ -42,9 +42,6 @@ class PolicyManager {
             }
             return value
         }
-    /** A [Set] of adopted [PolicyBranch]es regardless of its completeness. */
-    val adoptedBranches: Set<PolicyBranch>
-        get() = branches.filter { isAdopted(it.name) }.toSet()
     /** A [Set] of newly adoptable [PolicyBranch]es. */
     val adoptableBranches: Set<PolicyBranch>
         get() = branches.filter { isAdoptable(it) }.toSet()

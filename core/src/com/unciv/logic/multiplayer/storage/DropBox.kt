@@ -124,24 +124,6 @@ object DropBox: FileStorage {
         throw FileStorageRateLimitReached(remainingRateLimitSeconds)
     }
 
-    fun getFolderList(folder: String): ArrayList<FileMetaData> {
-        val folderList = ArrayList<FileMetaData>()
-        // The DropBox API returns only partial file listings from one request. list_folder and
-        // list_folder/continue return similar responses, but list_folder/continue requires a cursor
-        // instead of the path.
-        val response = dropboxApi("https://api.dropboxapi.com/2/files/list_folder",
-                "{\"path\":\"$folder\"}", "application/json")
-        var currentFolderListChunk = json().fromJson(FolderList::class.java, response)
-        folderList.addAll(currentFolderListChunk.entries)
-        while (currentFolderListChunk.has_more) {
-            val continuationResponse = dropboxApi("https://api.dropboxapi.com/2/files/list_folder/continue",
-                    "{\"cursor\":\"${currentFolderListChunk.cursor}\"}", "application/json")
-            currentFolderListChunk = json().fromJson(FolderList::class.java, continuationResponse)
-            folderList.addAll(currentFolderListChunk.entries)
-        }
-        return folderList
-    }
-
     fun fileExists(fileName: String): Boolean {
         try {
             dropboxApi("https://api.dropboxapi.com/2/files/get_metadata",
@@ -169,7 +151,6 @@ object DropBox: FileStorage {
 
     @Suppress("PropertyName")
     private class MetaData: FileMetaData {
-        var name = ""
         private var server_modified = ""
 
         override fun getLastModified(): Date {
