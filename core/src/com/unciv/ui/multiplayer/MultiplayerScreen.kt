@@ -1,4 +1,4 @@
-package com.unciv.ui
+package com.unciv.ui.multiplayer
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
