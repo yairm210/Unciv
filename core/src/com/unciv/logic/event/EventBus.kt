@@ -1,9 +1,5 @@
 package com.unciv.logic.event
 
-import com.badlogic.gdx.Gdx
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
-import com.unciv.ui.utils.wrapCrashHandlingUnit
-import kotlinx.coroutines.*
 import java.lang.ref.WeakReference
 import kotlin.reflect.KClass
 

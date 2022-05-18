@@ -8,14 +8,14 @@ import com.unciv.logic.event.Event
  */
 class MultiplayerGameAdded(
     val name: String
-) : Event()
+) : Event
 /**
  * Gets sent when a game successfully updated
  */
 class MultiplayerGameUpdated(
     val name: String,
     val preview: GameInfoPreview,
-) : Event()
+) : Event
 
 /**
  * Gets sent when a game errored while updating
@@ -23,20 +23,20 @@ class MultiplayerGameUpdated(
 class MultiplayerGameUpdateErrored(
     val name: String,
     val error: Exception
-) : Event()
+) : Event
 /**
  * Gets sent when a game updated successfully, but nothing changed
  */
 class MultiplayerGameUpdateUnchanged(
     val name: String
-) : Event()
+) : Event
 
 /**
  * Gets sent when a game starts updating
  */
 class MultiplayerGameUpdateStarted(
     val name: String
-) : Event()
+) : Event
 
 /**
  * Gets sent when a game's name got changed
@@ -44,11 +44,11 @@ class MultiplayerGameUpdateStarted(
 class MultiplayerGameNameChanged(
     val name: String,
     val oldName: String
-) : Event()
+) : Event
 
 /**
  * Gets sent when a game is deleted
  */
 class MultiplayerGameDeleted(
     val name: String
-) : Event()
+) : Event
