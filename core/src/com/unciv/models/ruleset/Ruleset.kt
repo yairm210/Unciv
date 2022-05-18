@@ -81,6 +81,7 @@ class Ruleset {
     val buildings = LinkedHashMap<String, Building>()
     val difficulties = LinkedHashMap<String, Difficulty>()
     val eras = LinkedHashMap<String, Era>()
+    val speeds = LinkedHashMap<String, GameSpeed>()
     var globalUniques = GlobalUniques()
     val nations = LinkedHashMap<String, Nation>()
     val policies = LinkedHashMap<String, Policy>()
@@ -120,6 +121,7 @@ class Ruleset {
         for (buildingToRemove in ruleset.modOptions.buildingsToRemove) buildings.remove(buildingToRemove)
         difficulties.putAll(ruleset.difficulties)
         eras.putAll(ruleset.eras)
+        speeds.putAll(ruleset.speeds)
         globalUniques = GlobalUniques().apply { uniques.addAll(globalUniques.uniques); uniques.addAll(ruleset.globalUniques.uniques) }
         nations.putAll(ruleset.nations)
         for (nationToRemove in ruleset.modOptions.nationsToRemove) nations.remove(nationToRemove)
@@ -149,6 +151,7 @@ class Ruleset {
         buildings.clear()
         difficulties.clear()
         eras.clear()
+        speeds.clear()
         globalUniques = GlobalUniques()
         mods.clear()
         nations.clear()
@@ -173,6 +176,7 @@ class Ruleset {
             buildings.values.asSequence() +
             //difficulties is only INamed
             eras.values.asSequence() +
+            speeds.values.asSequence() +
             sequenceOf(globalUniques) +
             nations.values.asSequence() +
             policies.values.asSequence() +
@@ -241,6 +245,12 @@ class Ruleset {
         // therefore does not guarantee keeping the order of elements like a LinkedHashMap does.
         // Using map{} sidesteps this problem
         eras.map { it.value }.withIndex().forEach { it.value.eraNumber = it.index }
+
+        val speedsFile = folderHandle.child("GameSpeeds.json")
+        if (speedsFile.exists()) {
+            speeds += createHashmap(json().fromJsonFile(Array<GameSpeed>::class.java, speedsFile))
+            speeds.forEach { it.value.initDefaultPercents() }
+        }
 
         val unitTypesFile = folderHandle.child("UnitTypes.json")
         if (unitTypesFile.exists()) unitTypes += createHashmap(json().fromJsonFile(Array<UnitType>::class.java, unitTypesFile))

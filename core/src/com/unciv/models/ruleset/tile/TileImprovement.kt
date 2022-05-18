@@ -31,7 +31,7 @@ class TileImprovement : RulesetStatsObject() {
     fun getTurnsToBuild(civInfo: CivilizationInfo, unit: MapUnit): Int {
         val state = StateForConditionals(civInfo, unit = unit)
         return unit.getMatchingUniques(UniqueType.TileImprovementTime, state, checkCivInfoUniques = true)
-            .fold(turnsToBuild.toFloat() * civInfo.gameInfo.gameParameters.gameSpeed.modifier) { it, unique ->
+            .fold(turnsToBuild.toFloat() * civInfo.gameInfo.getGameSpeed().improvementPercent) { it, unique ->
                 it * unique.params[0].toPercent()
             }.roundToInt()
             .coerceAtLeast(1)

@@ -983,7 +983,7 @@ class CivilizationInfo {
     fun removeFlag(flag: String) = flagsCountdown.remove(flag)
     fun hasFlag(flag: String) = flagsCountdown.contains(flag)
 
-    fun getTurnsBetweenDiplomaticVotes() = (15 * gameInfo.gameParameters.gameSpeed.modifier).toInt() // Dunno the exact calculation, hidden in Lua files
+    fun getTurnsBetweenDiplomaticVotes() = (15 * gameInfo.getGameSpeed().modifier).toInt() // Dunno the exact calculation, hidden in Lua files
 
     fun getTurnsTillNextDiplomaticVote() = flagsCountdown[CivFlags.TurnsTillNextDiplomaticVote.name]
 
@@ -1079,7 +1079,7 @@ class CivilizationInfo {
     }
 
     private fun getTurnsBeforeRevolt() =
-        ((4 + Random().nextInt(3)) * max(gameInfo.gameParameters.gameSpeed.modifier, 1f)).toInt()
+        ((4 + Random().nextInt(3)) * max(gameInfo.getGameSpeed().modifier, 1f)).toInt()
 
     /** Modify gold by a given amount making sure it does neither overflow nor underflow.
      * @param delta the amount to add (can be negative)
@@ -1229,7 +1229,7 @@ class CivilizationInfo {
     fun getResearchAgreementCost(): Int {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
         return (
-            getEra().researchAgreementCost * gameInfo.gameParameters.gameSpeed.modifier
+            getEra().researchAgreementCost * gameInfo.getGameSpeed().goldPercent
         ).toInt()
     }
 
@@ -1330,7 +1330,7 @@ class CivilizationInfo {
 
     fun receiveGoldGift(donorCiv: CivilizationInfo, giftAmount: Int) =
         cityStateFunctions.receiveGoldGift(donorCiv, giftAmount)
-    fun turnsForGreatPersonFromCityState(): Int = ((37 + Random().nextInt(7)) * gameInfo.gameParameters.gameSpeed.modifier).toInt()
+    fun turnsForGreatPersonFromCityState(): Int = ((37 + Random().nextInt(7)) * gameInfo.getGameSpeed().greatPeoplePercent).toInt()
 
     fun getProtectorCivs() = cityStateFunctions.getProtectorCivs()
     fun addProtectorCiv(otherCiv: CivilizationInfo) = cityStateFunctions.addProtectorCiv(otherCiv)

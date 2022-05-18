@@ -118,7 +118,7 @@ class TradeEvaluation {
 
             TradeType.Technology -> // Currently unused
                 return (sqrt(civInfo.gameInfo.ruleSet.technologies[offer.name]!!.cost.toDouble())
-                        * civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt() * 20
+                        * civInfo.gameInfo.getGameSpeed().researchPercent).toInt() * 20
             TradeType.Introduction -> return introductionValue(civInfo.gameInfo.ruleSet)
             TradeType.WarDeclaration -> {
                 val civToDeclareWarOn = civInfo.gameInfo.getCivilization(offer.name)

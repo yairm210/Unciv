@@ -88,7 +88,7 @@ class TechManager {
         var techCost = getRuleset().technologies[techName]!!.cost.toFloat()
         if (civInfo.isPlayerCivilization())
             techCost *= civInfo.getDifficulty().researchCostModifier
-        techCost *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
+        techCost *= civInfo.gameInfo.getGameSpeed().researchPercent
         val techsResearchedKnownCivs = civInfo.getKnownCivs()
                 .count { it.isMajorCiv() && it.tech.isResearched(techName) }
         val undefeatedCivs = civInfo.gameInfo.civilizations
@@ -166,7 +166,7 @@ class TechManager {
 
     fun getScienceFromGreatScientist(): Int {
         // https://civilization.fandom.com/wiki/Great_Scientist_(Civ5)
-        return (scienceOfLast8Turns.sum() * civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt()
+        return (scienceOfLast8Turns.sum() * civInfo.gameInfo.getGameSpeed().researchPercent).toInt()
     }
 
     private fun addCurrentScienceToScienceOfLast8Turns() {

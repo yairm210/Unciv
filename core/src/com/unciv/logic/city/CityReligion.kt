@@ -23,15 +23,8 @@ class CityInfoReligionManager {
     private val followers: Counter<String> = Counter()
     
     @delegate:Transient
-    private val pressureFromAdjacentCities: Int by lazy {
-        when (cityInfo.civInfo.gameInfo.gameParameters.gameSpeed) {
-            GameSpeed.Quick -> 9
-            GameSpeed.Standard -> 6
-            GameSpeed.Epic -> 4
-            GameSpeed.Marathon -> 2
-        }
-    }
-    
+    private val pressureFromAdjacentCities: Int by lazy { cityInfo.civInfo.gameInfo.getGameSpeed().religiousPressureAdjacentCity }
+
     var religionThisIsTheHolyCityOf: String? = null 
     
     init {

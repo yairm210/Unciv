@@ -61,7 +61,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         val numberOfUnitsToPayFor = max(0.0, costsToPay.asSequence().drop(freeUnits).sumOf { it.toDouble() } ).toFloat()
 
         // as game progresses Maintenance cost rises
-        val turnLimit = BASE_GAME_DURATION_TURNS * civInfo.gameInfo.gameParameters.gameSpeed.modifier
+        val turnLimit = civInfo.gameInfo.getGameSpeed().numTotalTurns().toFloat()
         val gameProgress = min(civInfo.gameInfo.turns / turnLimit, 1f)
         
         var cost = baseUnitCost * numberOfUnitsToPayFor * (1 + gameProgress)

@@ -67,7 +67,7 @@ internal object ConsoleLauncher {
     private fun getGameParameters(civilization1: String, civilization2: String): GameParameters {
         return GameParameters().apply {
             difficulty = "Chieftain"
-            gameSpeed = GameSpeed.Quick
+            gameSpeed = "Quick"
             noBarbarians = true
             players = ArrayList<Player>().apply {
                 add(Player().apply {

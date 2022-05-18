@@ -290,12 +290,6 @@ class Encampment() {
         // Quicker if this camp has already spawned units
         countdown -= min(3, spawnedUnits)
 
-        countdown *= when (gameInfo.gameParameters.gameSpeed) {
-            GameSpeed.Quick -> 67
-            GameSpeed.Standard -> 100
-            GameSpeed.Epic -> 150
-            GameSpeed.Marathon -> 400 // sic!
-        }
-        countdown /= 100
+        countdown = (countdown * gameInfo.getGameSpeed().barbPercent).toInt()
     }
 }
