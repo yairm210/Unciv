@@ -130,7 +130,7 @@ object Github {
      */
     object RateLimit {
         // https://docs.github.com/en/rest/reference/search#rate-limit
-        const val maxRequestsPerInterval = 10
+        private const val maxRequestsPerInterval = 10
         const val intervalInMilliSeconds = 60000L
         private const val maxWaitLoop = 3
 
@@ -249,7 +249,7 @@ object Github {
      */
     @Suppress("PropertyName")
     class RepoSearch {
-        var total_count = 0
+        private var total_count = 0
         var incomplete_results = false
         var items = ArrayList<Repo>()
     }

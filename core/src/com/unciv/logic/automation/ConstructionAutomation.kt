@@ -22,7 +22,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     val cityInfo = cityConstructions.cityInfo
     val civInfo = cityInfo.civInfo
 
-    val buildableBuildings = cityConstructions.getBuildableBuildings().toList()
+    private val buildableBuildings = cityConstructions.getBuildableBuildings().toList()
     val buildableNotWonders = buildableBuildings
             .filterNot { it.isAnyWonder() }
     private val buildableWonders = buildableBuildings
@@ -34,7 +34,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     val militaryUnits = civUnits.count { it.baseUnit.isMilitary() }
     val workers = civUnits.count { it.hasUniqueToBuildImprovements && it.isCivilian() }.toFloat()
     val cities = civInfo.cities.size
-    val allTechsAreResearched = civInfo.tech.getNumberOfTechsResearched() >= civInfo.gameInfo.ruleSet.technologies.size
+    private val allTechsAreResearched = civInfo.tech.getNumberOfTechsResearched() >= civInfo.gameInfo.ruleSet.technologies.size
 
     val isAtWar = civInfo.isAtWar()
     private val buildingsForVictory = civInfo.gameInfo.getEnabledVictories().values
@@ -46,7 +46,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     
     private val averageProduction = civInfo.cities.map { it.cityStats.currentCityStats.production }.average()
-    val cityIsOverAverageProduction = cityInfo.cityStats.currentCityStats.production >= averageProduction
+    private val cityIsOverAverageProduction = cityInfo.cityStats.currentCityStats.production >= averageProduction
 
     val relativeCostEffectiveness = ArrayList<ConstructionChoice>()
 

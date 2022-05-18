@@ -600,7 +600,7 @@ object UnitAutomation {
     }
     
     /** Returns whether the civilian spends its turn hiding and not moving */
-    fun tryRunAwayIfNeccessary(unit: MapUnit): Boolean {
+    private fun tryRunAwayIfNeccessary(unit: MapUnit): Boolean {
         // This is a little 'Bugblatter Beast of Traal': Run if we can attack an enemy
         // Cheaper than determining which enemies could attack us next turn
         //todo - stay when we're stacked with a good military unit???

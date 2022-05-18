@@ -246,7 +246,7 @@ object ImageGetter {
     fun wonderImageExists(wonderName: String) = imageExists("WonderImages/$wonderName")
     fun getWonderImage(wonderName: String) = getImage("WonderImages/$wonderName")
 
-    val foodCircleColor = colorFromRGB(129, 199, 132)
+    private val foodCircleColor = colorFromRGB(129, 199, 132)
     private val productionCircleColor = Color.BROWN.brighten(0.5f)
     private val goldCircleColor = Color.GOLD.brighten(0.5f)
     private val cultureCircleColor = Color.PURPLE.brighten(0.5f)

@@ -96,7 +96,7 @@ class PolicyManager {
 
     private fun getRulesetPolicies() = civInfo.gameInfo.ruleSet.policies
 
-    fun getPolicyByName(name: String): Policy = getRulesetPolicies()[name]!!
+    private fun getPolicyByName(name: String): Policy = getRulesetPolicies()[name]!!
 
     fun setTransients() {
         for (policyName in adoptedPolicies) addPolicyToTransients(
@@ -104,7 +104,7 @@ class PolicyManager {
         )
     }
 
-    fun addPolicyToTransients(policy: Policy) {
+    private fun addPolicyToTransients(policy: Policy) {
         for (unique in policy.uniqueObjects) {
             // Should be deprecated together with TimedAttackStrength so
             // I'm putting this here so the compiler will complain if we don't

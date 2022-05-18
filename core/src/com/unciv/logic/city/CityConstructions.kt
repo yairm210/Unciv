@@ -93,7 +93,7 @@ class CityConstructions {
     fun getConstructableUnits() = cityInfo.getRuleset().units.values
         .asSequence().filter { it.isBuildable(this) }
 
-    fun getBasicStatBuildings(stat: Stat) = cityInfo.getRuleset().buildings.values
+    private fun getBasicStatBuildings(stat: Stat) = cityInfo.getRuleset().buildings.values
         .asSequence()
         .filter { !it.isAnyWonder() && it.replaces == null && it[stat] > 0f }
 
@@ -177,7 +177,7 @@ class CityConstructions {
     fun getCurrentConstruction(): IConstruction = getConstruction(currentConstructionFromQueue)
 
     fun isBuilt(buildingName: String): Boolean = builtBuildings.contains(buildingName)
-    fun isBeingConstructed(constructionName: String): Boolean = currentConstructionFromQueue == constructionName
+    private fun isBeingConstructed(constructionName: String): Boolean = currentConstructionFromQueue == constructionName
     fun isEnqueued(constructionName: String): Boolean = constructionQueue.contains(constructionName)
     fun isBeingConstructedOrEnqueued(constructionName: String): Boolean = isBeingConstructed(constructionName) || isEnqueued(constructionName)
 

@@ -22,7 +22,7 @@ open class YesNoPopup (
     ) : Popup(screen) {
 
     /** The [Label][com.badlogic.gdx.scenes.scene2d.ui.Label] created for parameter `question` for optional layout tweaking */
-    val promptLabel = question.toLabel()
+    private val promptLabel = question.toLabel()
 
     init {
         promptLabel.setAlignment(Align.center)

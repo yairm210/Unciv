@@ -38,7 +38,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     val cancelDiscordEvent = parameters.cancelDiscordEvent
     var fontImplementation = parameters.fontImplementation
     val consoleMode = parameters.consoleMode
-    val customSaveLocationHelper = parameters.customSaveLocationHelper
+    private val customSaveLocationHelper = parameters.customSaveLocationHelper
     val platformSpecificHelper = parameters.platformSpecificHelper
     private val audioExceptionHelper = parameters.audioExceptionHelper
 
@@ -172,7 +172,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         Gdx.graphics.requestRendering()
     }
 
-    fun tryLoadDeepLinkedGame() = launchCrashHandling("LoadDeepLinkedGame") {
+    private fun tryLoadDeepLinkedGame() = launchCrashHandling("LoadDeepLinkedGame") {
         if (deepLinkedMultiplayerGame != null) {
             postCrashHandlingRunnable {
                 setScreen(LoadDeepLinkScreen())

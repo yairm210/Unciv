@@ -92,14 +92,14 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, fallb
      * @param fallbackImage A lambda function that will be run with the [fallback] as its receiver if the original image does not exist according to [ImageGetter.imageExists].
      * @return The original image path string if its image exists, or the return result of the [fallbackImage] lambda if the original image does not exist.
      * */
-    fun orFallback(image: String, fallbackImage: TileSetStrings.() -> String): String {
+    private fun orFallback(image: String, fallbackImage: TileSetStrings.() -> String): String {
         return if (fallback == null || ImageGetter.imageExists(image))
             image
         else
             fallback!!.run(fallbackImage)
     }
     /** @see orFallback */
-    fun orFallback(image: TileSetStrings.() -> String, fallbackImage: TileSetStrings.() -> String)
+    private fun orFallback(image: TileSetStrings.() -> String, fallbackImage: TileSetStrings.() -> String)
             = orFallback(this.run(image), fallbackImage)
     /** @see orFallback */
     fun orFallback(image: TileSetStrings.() -> String)

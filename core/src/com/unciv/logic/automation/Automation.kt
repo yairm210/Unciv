@@ -62,7 +62,7 @@ object Automation {
             city.cityConstructions.currentConstructionFromQueue = chosenUnitName
     }
 
-    fun providesUnneededCarryingSlots(baseUnit: BaseUnit, civInfo: CivilizationInfo): Boolean {
+    private fun providesUnneededCarryingSlots(baseUnit: BaseUnit, civInfo: CivilizationInfo): Boolean {
         // Simplified, will not work for crazy mods with more than one carrying filter for a unit
         val carryUnique = baseUnit.getMatchingUniques(UniqueType.CarryAirUnits).first()
         val carryFilter = carryUnique.params[1]
@@ -182,7 +182,7 @@ object Automation {
 
     /** Checks both feasibility of Buildings with a [UniqueType.CreatesOneImprovement] unique (appropriate tile available).
      *  Constructions without pass uncontested. */
-    fun allowCreateImprovementBuildings(
+    private fun allowCreateImprovementBuildings(
         civInfo: CivilizationInfo,
         cityInfo: CityInfo,
         construction: INonPerpetualConstruction

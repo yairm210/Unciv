@@ -902,9 +902,9 @@ class AssignedQuest(val questName: String = "",
 
     fun isIndividual(): Boolean = !isGlobal()
     fun isGlobal(): Boolean = gameInfo.ruleSet.quests[questName]!!.isGlobal()
-    fun doesExpire(): Boolean = gameInfo.ruleSet.quests[questName]!!.duration > 0
+    private fun doesExpire(): Boolean = gameInfo.ruleSet.quests[questName]!!.duration > 0
     fun isExpired(): Boolean = doesExpire() && getRemainingTurns() == 0
-    fun getDuration(): Int = (gameInfo.gameParameters.gameSpeed.modifier * gameInfo.ruleSet.quests[questName]!!.duration).toInt()
+    private fun getDuration(): Int = (gameInfo.gameParameters.gameSpeed.modifier * gameInfo.ruleSet.quests[questName]!!.duration).toInt()
     fun getRemainingTurns(): Int = max(0, (assignedOnTurn + getDuration()) - gameInfo.turns)
 
     fun getDescription(): String {

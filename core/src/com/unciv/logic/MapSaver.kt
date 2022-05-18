@@ -57,7 +57,7 @@ object MapSaver {
     fun loadMapParameters(mapFile: FileHandle): MapParameters {
         return mapParametersFromSavedString(mapFile.readString())
     }
-    fun mapParametersFromSavedString(mapString: String): MapParameters {
+    private fun mapParametersFromSavedString(mapString: String): MapParameters {
         val unzippedJson = try {
             Gzip.unzip(mapString.trim())
         } catch (ex: Exception) {

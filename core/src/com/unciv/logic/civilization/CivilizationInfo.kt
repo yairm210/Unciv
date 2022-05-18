@@ -338,7 +338,7 @@ class CivilizationInfo {
                else Constants.neutralVictoryType
     }
     
-    fun getPreferredVictoryTypeObject(): Victory? {
+    private fun getPreferredVictoryTypeObject(): Victory? {
         val preferredVictoryType = getPreferredVictoryType()
         return if (preferredVictoryType == Constants.neutralVictoryType) null
                else gameInfo.ruleSet.victories[getPreferredVictoryType()]!!

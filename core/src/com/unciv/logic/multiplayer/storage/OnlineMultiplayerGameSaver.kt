@@ -41,7 +41,7 @@ class OnlineMultiplayerGameSaver(
      * @see tryUploadGame
      * @see GameInfo.asPreview
      */
-    suspend fun tryUploadGamePreview(gameInfo: GameInfoPreview) {
+    private suspend fun tryUploadGamePreview(gameInfo: GameInfoPreview) {
         val zippedGameInfo = GameSaver.gameInfoToString(gameInfo)
         fileStorage().saveFileData("${gameInfo.gameId}_Preview", zippedGameInfo, true)
     }

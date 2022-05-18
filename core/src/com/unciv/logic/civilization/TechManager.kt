@@ -365,7 +365,7 @@ class TechManager {
         else minEra
     }
 
-    fun addTechToTransients(tech: Technology) {
+    private fun addTechToTransients(tech: Technology) {
         techUniques.addUniques(tech.uniqueObjects)
     }
 

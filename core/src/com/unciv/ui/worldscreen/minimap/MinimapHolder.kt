@@ -22,7 +22,7 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         backgroundColor = Color.GREEN
     )
     /** Button, next to the minimap, to toggle the tile yield map overlay. */
-    val yieldImageButton = MapOverlayToggleButton(
+    private val yieldImageButton = MapOverlayToggleButton(
         ImageGetter.getImage("StatIcons/Food"),
         // This is a use in the UI that has little to do with the stat… These buttons have more in common with each other than they do with other uses of getStatIcon().
         getter = { UncivGame.Current.settings.showTileYields },

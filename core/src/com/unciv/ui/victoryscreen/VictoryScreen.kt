@@ -19,7 +19,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
     val gameInfo = worldScreen.gameInfo
     private val playerCivInfo = worldScreen.viewingCiv
-    val enabledVictoryTypes = gameInfo.gameParameters.victoryTypes
+    private val enabledVictoryTypes = gameInfo.gameParameters.victoryTypes
 
     private val contentsTable = Table()
 
