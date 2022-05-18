@@ -387,7 +387,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
 
     fun goldGainedByTribute(): Int {
         // These values are close enough, linear increase throughout the game
-        var gold = (50 * civInfo.gameInfo.getGameSpeed().goldGiftMod).toInt() // approximates old when block
+        var gold = (10 * civInfo.gameInfo.getGameSpeed().goldGiftMod).toInt() * 5 // rounding down to nearest 5
         val turnsToIncrement = when (civInfo.gameInfo.getGameSpeed().name) {
             "Quick" -> 5f
             "Standard" -> 6.5f
