@@ -311,20 +311,19 @@ private class GameDisplay(
         add(gameButton)
         onClick { onSelected(gameName) }
 
-        events.receive(MultiplayerGameUpdateStarted::class, { it.name == gameName }, {
+        val isOurGame: (HasMultiplayerGameName) -> Boolean = { it.name == gameName }
+        events.receive(MultiplayerGameUpdateStarted::class, isOurGame, {
             statusIndicators.addActor(refreshIndicator)
         })
-        events.receive(MultiplayerGameUpdateUnchanged::class, { it.name == gameName }, {
-            refreshIndicator.remove()
-        })
-        events.receive(MultiplayerGameUpdated::class, { it.name == gameName }) {
-            updateTurnIndicator(it.preview)
-            updateErrorIndicator(false)
+        events.receive(MultiplayerGameUpdateEnded::class, isOurGame) {
             refreshIndicator.remove()
         }
-        events.receive(MultiplayerGameUpdateFailed::class, { it.name == gameName }) {
+        events.receive(MultiplayerGameUpdated::class, isOurGame) {
+            updateTurnIndicator(it.preview)
+            updateErrorIndicator(false)
+        }
+        events.receive(MultiplayerGameUpdateFailed::class, isOurGame) {
             updateErrorIndicator(true)
-            refreshIndicator.remove()
         }
     }
 
