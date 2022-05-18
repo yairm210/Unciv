@@ -93,7 +93,7 @@ object Automation {
             if (city.tiles.size < 12 || city.civInfo.wantsToFocusOn(Focus.Culture))
                 yieldStats.culture *= 2
 
-            if (city.civInfo.getHappiness() < 0 && city.cityStats.currentCityStats[Stat.Happiness] < 0)
+            if (city.civInfo.getHappiness() < 0 && !specialist) // since this doesn't get updated, may overshoot
                 yieldStats.happiness *= 2
 
             if (city.civInfo.wantsToFocusOn(Focus.Science))
