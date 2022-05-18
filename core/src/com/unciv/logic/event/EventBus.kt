@@ -72,7 +72,8 @@ object EventBus {
      */
     class EventReceiver {
 
-        val listeners: MutableList<Any> = mutableListOf()
+        val eventHandlers: MutableList<Any> = mutableListOf()
+        val filters: MutableList<Any> = mutableListOf()
 
         /**
          * The listeners will always be called on the main GDX render thread.
@@ -80,7 +81,10 @@ object EventBus {
          * @param T The event class holding the data of the event, or simply [Event].
          */
         fun <T: Event> receive(eventClass: KClass<T>, filter: ((T) -> Boolean)? = null, eventHandler: (T) -> Unit) {
-            listeners.add(eventHandler)
+            if (filter != null) {
+                filters.add(filter)
+            }
+            eventHandlers.add(eventHandler)
             EventBus.receive(eventClass, filter, eventHandler)
         }
     }
