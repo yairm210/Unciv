@@ -58,12 +58,7 @@ android {
 
     }
     lint {
-        disable += "MissingTranslation"   // meaning res/values/strings.xml
-        /* Result of #6827: Keep these lint warnings.
-        disable += "UnusedAttribute"      // since we're targeting a range of API levels, it's OK e.g. appCategory="game" will be ignored by OLD devices
-        disable += "GradleDependency"     // meaning the androidx implementations in dependencies: Need to stay that level with targetApi = 30
-        disable += "IconDensities"        // complains about banner which supplies only one density _following documentation_
-        */
+        disable += "MissingTranslation"   // see res/values/strings.xml
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -128,6 +123,7 @@ tasks.register<JavaExec>("run") {
 dependencies {
     // Updating to latest version would require upgrading sourceCompatibility and targetCompatibility to 1_8, and targetSdk to 31 -
     //   run `./gradlew build --scan` to see details
+    // Known Android Lint warning: "GradleDependency"
     implementation("androidx.core:core-ktx:1.6.0")
     implementation("androidx.work:work-runtime-ktx:2.6.0")
 }

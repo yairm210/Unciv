@@ -10,7 +10,11 @@
     <uses-feature android:name="android.software.leanback" android:required="false" />
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
 
-    <!-- see https://developer.android.com/training/tv/start/start#banner for the banner attribute -->
+    <!--
+        Known Lint warnings:
+            UnusedAttribute: Since we're targeting a range of API levels, it's OK that e.g. appCategory will be ignored by OLD devices
+            IconDensities: See https://developer.android.com/training/tv/start/start#banner for the banner attribute, where they recommend supplying only one density.
+    -->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/uncivicon"
