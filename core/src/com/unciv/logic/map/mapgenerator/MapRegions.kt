@@ -976,7 +976,7 @@ class MapRegions (val ruleset: Ruleset){
                 regions.count { other -> other.luxury == it.luxury } >= 3
             }
             // assign one civ each to regions with common luxuries if there are enough to go around
-            if (regionsWithCommonLuxuries.size > 0 &&
+            if (regionsWithCommonLuxuries.isNotEmpty() &&
                             regionsWithCommonLuxuries.size <= unassignedCivs.size
             ) {
                 regionsWithCommonLuxuries.forEach {

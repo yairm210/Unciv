@@ -43,8 +43,8 @@ class RuinsManager {
         for (possibleReward in possibleRewards) {
             if (civInfo.gameInfo.difficulty in possibleReward.excludedDifficulties) continue
             if (possibleReward.hasUnique(UniqueType.HiddenWithoutReligion) && !civInfo.gameInfo.isReligionEnabled()) continue
-            if (possibleReward.hasUnique(UniqueType.HiddenAfterGreatProphet) 
-                && civInfo.civConstructions.boughtItemsWithIncreasingPrice[civInfo.religionManager.getGreatProphetEquivalent()] ?: 0 > 0
+            if (possibleReward.hasUnique(UniqueType.HiddenAfterGreatProphet)
+                && (civInfo.civConstructions.boughtItemsWithIncreasingPrice[civInfo.religionManager.getGreatProphetEquivalent()] ?: 0) > 0
             ) continue
             if (possibleReward.hasUnique(UniqueType.HiddenAfterPantheon) && civInfo.religionManager.religionState >= ReligionState.Pantheon)
                 continue

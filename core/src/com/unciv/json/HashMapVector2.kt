@@ -12,9 +12,8 @@ class HashMapVector2<T> : HashMap<Vector2, T>() {
             val mapClass = HashMapVector2::class.java as Class<MutableMap<Vector2, Any>>
             return NonStringKeyMapSerializer(
                 mapClass,
-                Vector2::class.java,
-                { HashMapVector2() }
-            )
+                Vector2::class.java
+            ) { HashMapVector2() }
         }
 
         fun getSerializerClass(): Class<MutableMap<Vector2, Any>> {

@@ -216,9 +216,8 @@ class TradeEvaluation {
             TradeType.Introduction -> return introductionValue(civInfo.gameInfo.ruleSet)
             TradeType.WarDeclaration -> {
                 val civToDeclareWarOn = civInfo.gameInfo.getCivilization(offer.name)
-                val threatToUs = Automation.threatAssessment(civInfo, civToDeclareWarOn)
 
-                return when (threatToUs) {
+                return when (Automation.threatAssessment(civInfo, civToDeclareWarOn)) {
                     ThreatLevel.VeryLow -> 100
                     ThreatLevel.Low -> 250
                     ThreatLevel.Medium -> 500
