@@ -49,7 +49,7 @@ class MultiplayerGameUpdateStarted(
  */
 class MultiplayerGameNameChanged(
     override val name: String,
-    val oldName: String
+    val newName: String
 ) : Event, HasMultiplayerGameName
 
 /**

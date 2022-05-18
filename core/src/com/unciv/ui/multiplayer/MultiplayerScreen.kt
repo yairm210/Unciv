@@ -262,10 +262,10 @@ private class GameList(
             addGame(it.name, multiplayerGame.preview, multiplayerGame.error, onSelected)
         }
         events.receive(MultiplayerGameNameChanged::class) {
-            val gameDisplay = gameDisplays.remove(it.oldName)
+            val gameDisplay = gameDisplays.remove(it.name)
             if (gameDisplay == null) return@receive
-            gameDisplay.changeName(it.name)
-            gameDisplays[it.name] = gameDisplay
+            gameDisplay.changeName(it.newName)
+            gameDisplays[it.newName] = gameDisplay
             children.sort()
         }
         events.receive(MultiplayerGameDeleted::class) {

@@ -230,7 +230,7 @@ class OnlineMultiplayer() {
 
         val newGame = OnlineMultiplayerGame(newFileHandle, oldPreview, oldLastUpdate)
         savedGames[newFileHandle] = newGame
-        EventBus.send(MultiplayerGameNameChanged(newName, oldName))
+        EventBus.send(MultiplayerGameNameChanged(oldName, newName))
     }
 }
 
