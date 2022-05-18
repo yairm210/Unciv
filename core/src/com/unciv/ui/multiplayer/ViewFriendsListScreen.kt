@@ -1,22 +1,24 @@
 package com.unciv.ui
 
-import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.unciv.ui.multiplayer.FriendList
 import com.unciv.ui.pickerscreens.PickerScreen
-import com.unciv.ui.utils.*
 import com.unciv.ui.popup.Popup
-import java.util.*
-import java.util.concurrent.ConcurrentHashMap
+import com.unciv.ui.utils.*
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
+
 class ViewFriendsListScreen(previousScreen: BaseScreen) : PickerScreen() {
-    // Concurrent because we can get concurrent modification errors if we change things around while running redownloadAllGames() in another thread
     private val rightSideTable = Table()
     private val leftSideTable = Table()
 
     private val addFriendText = "Add friend"
-
+    private val friendName = "Friend"
+    var friendsListList = mutableListOf<String>()
+    val listOfFriends = arrayOf(friendName.toTextButton(),friendName.toTextButton())
     private val addFriendButton = addFriendText.toTextButton()
+    val friendlist = FriendList()
+
 
     init {
         setDefaultCloseAction(previousScreen)
@@ -41,8 +43,6 @@ class ViewFriendsListScreen(previousScreen: BaseScreen) : PickerScreen() {
         tab.y = (stage.height - helpButton.height)
         stage.addActor(tab)
 
-        //TopTable Setup
-        //Have to put it into a separate Table to be able to add another copyGameID button
         val mainTable = Table()
         mainTable.add(ScrollPane(leftSideTable).apply { setScrollingDisabled(true, false) }).height(stage.height * 2 / 3)
         mainTable.add(rightSideTable)
@@ -51,13 +51,19 @@ class ViewFriendsListScreen(previousScreen: BaseScreen) : PickerScreen() {
 
         rightSideTable.defaults().uniformX()
         rightSideTable.defaults().fillX()
-        rightSideTable.defaults().pad(10.0f)
+        rightSideTable.defaults().pad(20.0f)
 
         addFriendButton.onClick {
             game.setScreen(AddFriendScreen(this))
         }
         rightSideTable.add(addFriendButton).padBottom(30f).row()
 
-    }
+        for (index in listOfFriends.indices) {
+            listOfFriends[index].onClick {
 
+            }
+            leftSideTable.add(listOfFriends[index]).padBottom(20f).row()
+        }
+
+    }
 }
