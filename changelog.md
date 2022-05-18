@@ -1,3 +1,29 @@
+## 4.1.1
+
+Version rollout 
+
+HexaRealm update  - By GeneralWadaling
+
+By Azzurite:
+- Fix Gdx.files being garbage collected in MultiplayerTurnCheckWorker 
+- Fix coroutines not being added to desktop:dist 
+- Fix uniques.md being generated with wrong line endings 
+
+Great General typed uniques and improved moddability  - By JackRainy
+
+By xlenstra:
+- Great improvements can again be constructed on forest 
+- Added 'in puppeted cities' cityFilter 
+- Added more unit tests for uniques 
+
+Fixed MP refresher not working after rate limit  - By GGGuenni
+
+Fix MayWithdraw modifier calculation  - By OptimizedForDensity
+
+Allow generation of "Default" Deciv redux maps  - By SomeTroglodyte
+
+Fix and improve real time autofix while typing on multipleServer URL  - By touhidurrr
+
 ## 4.1.0
 
 Upgraded to libGDX 1.11.0 - enables Unciv on M1 chips
