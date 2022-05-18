@@ -117,7 +117,6 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
          * The persistent notification is purely for informational reasons.
          * It is not technically necessary for the Worker, since it is not a Service.
          */
-        //@SuppressLint("UnspecifiedImmutableFlag")
         fun showPersistentNotification(appContext: Context, lastTimeChecked: String, checkPeriod: String) {
             val flags = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) FLAG_IMMUTABLE else 0) or
                 FLAG_UPDATE_CURRENT
