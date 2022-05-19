@@ -6,6 +6,7 @@ import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
 import com.unciv.logic.BackwardCompatibility.migrateBarbarianCamps
 import com.unciv.logic.BackwardCompatibility.migrateSeenImprovements
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
+import com.unciv.logic.BackwardCompatibility.updateGreatGeneralUniques
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.civilization.*
 import com.unciv.logic.city.CityInfo
@@ -417,6 +418,7 @@ class GameInfo {
 
         removeMissingModReferences()
 
+        updateGreatGeneralUniques()
 
         for (baseUnit in ruleSet.units.values)
             baseUnit.ruleset = ruleSet

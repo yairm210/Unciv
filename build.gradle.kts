@@ -24,7 +24,7 @@ buildscript {
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${com.unciv.build.BuildConfig.kotlinVersion}")
         classpath("de.richsource.gradle.plugins:gwt-gradle-plugin:0.6")
-        classpath("com.android.tools.build:gradle:7.1.0")
+        classpath("com.android.tools.build:gradle:7.1.3")
         classpath("com.mobidevelop.robovm:robovm-gradle-plugin:2.3.1")
 
         // This is for wrapping the .jar file into a standalone executable
@@ -93,6 +93,7 @@ project(":android") {
     dependencies {
         "implementation"(project(":core"))
         "implementation"("com.badlogicgames.gdx:gdx-backend-android:$gdxVersion")
+        "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1")
         natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a")
         natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a")
         natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86")
@@ -119,6 +120,7 @@ project(":core") {
 
     dependencies {
         "implementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
+        "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
     }
 
 

@@ -20,7 +20,9 @@ android {
         }
     }
     packagingOptions {
-        resources.excludes.add("META-INF/robovm/ios/robovm.xml")
+        resources.excludes += "META-INF/robovm/ios/robovm.xml"
+        // part of kotlinx-coroutines-android, should not go into the apk
+        resources.excludes += "DebugProbesKt.bin"
     }
     defaultConfig {
         applicationId = "com.unciv.app"
@@ -29,7 +31,7 @@ android {
         versionCode = BuildConfig.appCodeNumber
         versionName = BuildConfig.appVersion
 
-        base.archivesBaseName = "Unciv"
+        base.archivesName.set("Unciv")
     }
 
     // necessary for Android Work lib
@@ -51,14 +53,14 @@ android {
 
     buildTypes {
         getByName("release") {
-            // If you make this true you get a version of the game that just flat-out does't run
+            // If you make this true you get a version of the game that just flat-out doesn't run
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
         }
 
     }
     lint {
-        disable.add("MissingTranslation")
+        disable += "MissingTranslation"   // see res/values/strings.xml
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -121,8 +123,9 @@ tasks.register<JavaExec>("run") {
 }
 
 dependencies {
-    // Updating to latest version would require upgrading sourceCompatability and targetCompatability to 1_8 -
+    // Updating to latest version would require upgrading sourceCompatibility and targetCompatibility to 1_8, and targetSdk to 31 -
     //   run `./gradlew build --scan` to see details
+    // Known Android Lint warning: "GradleDependency"
     implementation("androidx.core:core-ktx:1.6.0")
     implementation("androidx.work:work-runtime-ktx:2.6.0")
 }

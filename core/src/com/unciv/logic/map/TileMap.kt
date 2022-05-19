@@ -699,6 +699,5 @@ class TileMap {
             landTiles = landTiles.filter { it !in continent }
         }
     }
-
     //endregion
 }
