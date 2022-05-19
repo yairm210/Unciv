@@ -131,7 +131,7 @@ class ImprovementPickerScreen(
 
             regularImprovements.add(statIcons).align(Align.right)
 
-            val improvementButton = getPickerOptionButton(image, labelText)
+            val improvementButton = PickerPane.getPickerOptionButton(image, labelText)
             improvementButton.onClick {
                 selectedImprovement = improvement
                 pick(improvement.name.tr())
