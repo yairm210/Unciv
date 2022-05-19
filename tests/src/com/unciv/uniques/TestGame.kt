@@ -1,26 +1,34 @@
 package com.unciv.uniques
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CityStateType
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.models.Religion
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.utils.withItem
+import kotlin.math.abs
+import kotlin.math.max
 
 class TestGame {
 
     private var objectsCreated = 0
     val ruleset: Ruleset
     val gameInfo = GameInfo()
-    val tileMap = TileMap()
+    /** [tileMap] has a default size of 1 tile, use [makeHexagonalMap] or [makeRectangularMap] to change that */
+    val tileMap
+        get() = gameInfo.tileMap
 
     init {
         // Set UncivGame.Current so that debug variables are initialized
@@ -35,29 +43,50 @@ class TestGame {
         gameInfo.difficultyObject = ruleset.difficulties["Prince"]!!
 
         // Create a tilemap, needed for city centers
-        gameInfo.tileMap = tileMap
+        gameInfo.tileMap = TileMap(1, ruleset, false)
+        tileMap.mapParameters.mapSize = MapSizeNew(0, 0)
+        tileMap.ruleset = ruleset
     }
 
-    fun addTile(terrain: String, position: Vector2 = Vector2.Zero, features: List<String> = listOf()): TileInfo {
-        val tile = TileInfo()
-        tile.ruleset = ruleset
+    /** Makes a new rectangular tileMap and sets it in gameInfo. Removes all existing tiles. All new tiles have terrain [baseTerrain] */
+    fun makeRectangularMap(newHeight: Int, newWidth: Int, baseTerrain: String = Constants.desert) {
+        val newTileMap = TileMap(newWidth, newHeight, ruleset, tileMap.mapParameters.worldWrap)
+        newTileMap.mapParameters.mapSize = MapSizeNew(newWidth, newHeight)
+
+        for (row in tileMap.tileMatrix)
+            for (tile in row)
+                if (tile != null)
+                    tile.baseTerrain = baseTerrain
+        
+        gameInfo.tileMap = newTileMap
+    }
+
+    /** Makes a new hexagonal tileMap and sets it in gameInfo. Removes all existing tiles. All new tiles have terrain [baseTerrain] */
+    fun makeHexagonalMap(newRadius: Int, baseTerrain: String = Constants.desert) {
+        val newTileMap = TileMap(newRadius, ruleset, tileMap.mapParameters.worldWrap)
+        newTileMap.mapParameters.mapSize = MapSizeNew(newRadius)
+        
+        for (row in tileMap.tileMatrix)
+            for (tile in row)
+                if (tile != null)
+                    tile.baseTerrain = baseTerrain
+
+        gameInfo.tileMap = newTileMap
+    }
+    
+    fun getTile(position: Vector2) = tileMap[position]
+    
+    /** Sets the [terrain] and [features] of the tile at [position], and then returns it */
+    fun setTileFeatures(position: Vector2, terrain: String = Constants.desert, features: List<String> = listOf()): TileInfo {
+        val tile = tileMap[position]
         tile.baseTerrain = terrain
         for (feature in features) {
             tile.addTerrainFeature(feature)
         }
-        tile.tileMap = tileMap
-        tile.position = position
-        tile.setTransients()
-        while (tileMap.tileMatrix.size < position.x + 1)
-            tileMap.tileMatrix.add(ArrayList())
-        while (tileMap.tileMatrix[position.x.toInt()].size < position.y + 1)
-            tileMap.tileMatrix[position.x.toInt()].add(null)
-        tileMap.tileMatrix[position.x.toInt()][position.y.toInt()] = tile
         return tile
-    }
-
+    }    
+    
     fun addCiv(uniques: List<String> = emptyList(), isPlayer: Boolean = false, cityState: CityStateType? = null): CivilizationInfo {
-
         val nationName = "Nation-${objectsCreated++}"
         ruleset.nations[nationName] = Nation().apply {
             name = nationName
@@ -92,6 +121,10 @@ class TestGame {
         }
         return cityInfo
     }
+    
+    fun addTileToCity(city: CityInfo, tile: TileInfo) {
+        city.tiles.add(tile.position)
+    }
 
     fun addUnit(name: String, civInfo: CivilizationInfo, tile: TileInfo): MapUnit {
         val baseUnit = ruleset.units[name]!!
@@ -119,4 +152,20 @@ class TestGame {
         return building
     }
 
+    fun addReligion(foundingCiv: CivilizationInfo): Religion {
+        gameInfo.gameParameters.religionEnabled = true
+        val religion = Religion("Religion-${objectsCreated++}", gameInfo, foundingCiv.civName)
+        foundingCiv.religionManager.religion = religion
+        gameInfo.religions[religion.name] = religion
+        return religion
+    }
+    
+    fun addBelief(type: BeliefType = BeliefType.Any, vararg uniques: String): Belief {
+        val belief = Belief()
+        belief.name = "Belief-${objectsCreated++}"
+        belief.type = type
+        belief.uniques = arrayListOf<String>(*uniques)
+        ruleset.beliefs[belief.name] = belief
+        return belief
+    }
 }

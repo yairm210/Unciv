@@ -71,7 +71,7 @@ class UniqueDocsWriter {
                     // `val paramExamples = uniqueType.parameterTypeMap.map { it.joinToString("/") { pt -> pt.docExample } }.toTypedArray()`
                     // Might confuse modders to think "/" can go into the _actual_ unique and mean "or", so better show just one ("Farm" in the example above):
                     val paramExamples = uniqueType.parameterTypeMap.map { it.first().docExample }.toTypedArray()
-                    lines += "\tExample: \"${uniqueText.fillPlaceholders(*paramExamples)}\"\r\n"
+                    lines += "\tExample: \"${uniqueText.fillPlaceholders(*paramExamples)}\"\n"
                 }
                 lines += "\tApplicable to: " + uniqueType.allTargets().sorted().joinToString()
                 lines += ""
@@ -87,7 +87,6 @@ class UniqueDocsWriter {
             lines += "*[${paramType.parameterName}]: ${paramType.docDescription}$punctuation"
         }
 
-        // Let's use CRLF ending same as in all other files
-        File("../../docs/Modders/uniques.md").writeText(lines.joinToString("\r\n"))
+        File("../../docs/Modders/uniques.md").writeText(lines.joinToString("\n"))
     }
 }

@@ -109,8 +109,10 @@ class MapEditorGenerateTab(
                 when (step) {
                     MapGeneratorSteps.All -> {
                         val generatedMap = generator!!.generateMap(mapParameters)
+                        val savedScale = editorScreen.mapHolder.scaleX
                         Gdx.app.postRunnable {
                             freshMapCompleted(generatedMap, mapParameters, newRuleset!!, selectPage = 0)
+                            editorScreen.mapHolder.zoom(savedScale)
                         }
                     }
                     MapGeneratorSteps.Landmass -> {

@@ -42,6 +42,8 @@ import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.UUID
 import kotlin.math.floor
+import kotlin.text.Regex
+import kotlin.text.substring
 import com.badlogic.gdx.utils.Array as GdxArray
 
 /**
@@ -281,6 +283,7 @@ class OptionsPopup(
             if (settings.multiplayerServer != Constants.dropboxMultiplayerServer) settings.multiplayerServer
         else "https://..."
         val multiplayerServerTextField = TextField(textToShowForMultiplayerAddress, BaseScreen.skin)
+        multiplayerServerTextField.setTextFieldFilter { _, c -> c !in " \r\n\t\\" }
         multiplayerServerTextField.programmaticChangeEvents = true
         val serverIpTable = Table()
 
@@ -288,10 +291,15 @@ class OptionsPopup(
             multiplayerServerTextField.text = Gdx.app.clipboard.contents
         }).row()
         multiplayerServerTextField.onChange {
-            multiplayerServerTextField.text = formatMultiplayerUrlInput(multiplayerServerTextField.text)
-            settings.multiplayerServer = multiplayerServerTextField.text
-            settings.save()
             connectionToServerButton.isEnabled = multiplayerServerTextField.text != Constants.dropboxMultiplayerServer
+            if (connectionToServerButton.isEnabled) {
+                fixTextFieldUrlOnType(multiplayerServerTextField)
+                // we can't trim on 'fixTextFieldUrlOnType' for reasons
+                settings.multiplayerServer = multiplayerServerTextField.text.trimEnd('/')
+            } else {
+                settings.multiplayerServer = multiplayerServerTextField.text
+            }
+            settings.save()
         }
         serverIpTable.add(multiplayerServerTextField).minWidth(screen.stage.width / 2).growX()
         add(serverIpTable).fillX().row()
@@ -968,20 +976,38 @@ class OptionsPopup(
         add(checkbox).colspan(2).left().row()
     }
 
-    private fun formatMultiplayerUrlInput(input: String): String {
-        var result : String
+    private fun fixTextFieldUrlOnType(TextField: TextField) {
+        var text: String = TextField.text
+        var cursor: Int = minOf(TextField.cursorPosition, text.length)
 
-        // remove all whitespaces
-        result = Regex("\\s+").replace(input, "")
+        // if text is 'http:' or 'https:' auto append '//'
+        if (Regex("^https?:$").containsMatchIn(text)) {
+            TextField.appendText("//")
+            return
+        }
+
+        val textBeforeCursor: String = text.substring(0, cursor)
 
         // replace multiple slash with a single one
-        result = Regex("/{2,}").replace(result, "/")
+        val multipleSlashes = Regex("/{2,}")
+        text = multipleSlashes.replace(text, "/")
 
-        // remove trailing slash, reinstate protocol & return
-        // all the formatting above makes "https://" -> "http:/"
-        // also people might leave a slash at end my mistake
-        // so we need to fix those before returning
-        return result.trimEnd('/').replaceFirst(":/", "://")
+        // calculate updated cursor
+        cursor = multipleSlashes.replace(textBeforeCursor, "/").length
+
+        // operations above makes 'https://' -> 'https:/'
+        // fix that if available and update cursor
+        val i: Int = text.indexOf(":/")
+        if (i > -1) {
+            text = text.replaceRange(i..i+1, "://")
+            if (cursor > i + 1) ++cursor
+        }
+
+        // update TextField
+        if (text != TextField.text) {
+            TextField.text = text
+            TextField.cursorPosition = cursor
+        }
     }
 
     //endregion
