@@ -1229,7 +1229,7 @@ class CivilizationInfo {
     fun getResearchAgreementCost(): Int {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
         return (
-            getEra().researchAgreementCost * gameInfo.getGameSpeed().goldPercent
+            getEra().researchAgreementCost * gameInfo.getGameSpeed().modifier
         ).toInt()
     }
 
@@ -1330,7 +1330,7 @@ class CivilizationInfo {
 
     fun receiveGoldGift(donorCiv: CivilizationInfo, giftAmount: Int) =
         cityStateFunctions.receiveGoldGift(donorCiv, giftAmount)
-    fun turnsForGreatPersonFromCityState(): Int = ((37 + Random().nextInt(7)) * gameInfo.getGameSpeed().greatPeoplePercent).toInt()
+    fun turnsForGreatPersonFromCityState(): Int = ((37 + Random().nextInt(7)) * gameInfo.getGameSpeed().modifier).toInt()
 
     fun getProtectorCivs() = cityStateFunctions.getProtectorCivs()
     fun addProtectorCiv(otherCiv: CivilizationInfo) = cityStateFunctions.addProtectorCiv(otherCiv)

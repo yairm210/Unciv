@@ -109,7 +109,7 @@ class ReligionManager {
         
         var faithCost = 
             (200 + 100 * greatProphetsEarned * (greatProphetsEarned + 1) / 2f) * 
-            civInfo.gameInfo.getGameSpeed().faithPercent
+            civInfo.gameInfo.getGameSpeed().modifier
 
         for (unique in civInfo.getMatchingUniques(UniqueType.FaithCostOfGreatProphetChange))
             faithCost *= unique.params[0].toPercent()

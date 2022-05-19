@@ -33,6 +33,7 @@ class TestGame {
         ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!
         gameInfo.ruleSet = ruleset
         gameInfo.difficultyObject = ruleset.difficulties["Prince"]!!
+        gameInfo.setGameSpeed(ruleset.gameSpeeds[GameSpeed.DEFAULTFORSIMULATION]!!)
 
         // Create a tilemap, needed for city centers
         gameInfo.tileMap = tileMap

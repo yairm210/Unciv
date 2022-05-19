@@ -1,6 +1,7 @@
 package com.unciv.models.metadata
 
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.models.ruleset.GameSpeed
 
 enum class BaseRuleset(val fullName:String){
     Civ_V_Vanilla("Civ V - Vanilla"),
@@ -9,7 +10,7 @@ enum class BaseRuleset(val fullName:String){
 
 class GameParameters { // Default values are the default new game
     var difficulty = "Prince"
-    var gameSpeed = "Standard"
+    var gameSpeed = GameSpeed.DEFAULT
     var players = ArrayList<Player>().apply {
         add(Player().apply { playerType = PlayerType.Human })
         for (i in 1..3) add(Player())

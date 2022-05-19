@@ -267,7 +267,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
 
     fun getDiplomaticMarriageCost(): Int {
         // https://github.com/Gedemon/Civ5-DLL/blob/master/CvGameCoreDLL_Expansion1/CvMinorCivAI.cpp, line 7812
-        var cost = (500 * civInfo.gameInfo.getGameSpeed().goldPercent).toInt()
+        var cost = (500 * civInfo.gameInfo.getGameSpeed().modifier).toInt()
         // Plus disband value of all units
         for (unit in civInfo.getCivUnits()) {
             cost += unit.baseUnit.getDisbandGold(civInfo)

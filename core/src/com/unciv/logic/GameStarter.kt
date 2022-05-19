@@ -202,8 +202,8 @@ object GameStarter {
         val startingEra = gameInfo.gameParameters.startingEra
         val era = ruleSet.eras[startingEra]!!
         for (civInfo in gameInfo.civilizations.filter { !it.isBarbarian() }) {
-            civInfo.addGold((era.startingGold * gameInfo.getGameSpeed().goldPercent).toInt())
-            civInfo.policies.addCulture((era.startingCulture * gameInfo.getGameSpeed().culturePercent).toInt())
+            civInfo.addGold((era.startingGold * gameInfo.getGameSpeed().modifier).toInt())
+            civInfo.policies.addCulture((era.startingCulture * gameInfo.getGameSpeed().modifier).toInt())
         }
     }
 

@@ -18,6 +18,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import java.util.*
+import kotlin.NoSuchElementException
 
 
 class MissingModsException(val missingMods: String) : UncivShowableException("Missing mods: [$missingMods]")
@@ -58,7 +59,7 @@ class GameInfo {
     lateinit var difficultyObject: Difficulty // Since this is static game-wide, and was taking a large part of nextTurn
 
     @Transient
-    lateinit var gameSpeedObject: GameSpeed
+    private lateinit var gameSpeedObject: GameSpeed
 
     @Transient
     lateinit var currentPlayerCiv: CivilizationInfo // this is called thousands of times, no reason to search for it with a find{} every time
@@ -131,10 +132,15 @@ class GameInfo {
      *  @throws NoSuchElementException in no-barbarians games! */
     fun getBarbarianCivilization() = getCivilization(Constants.barbarians)
     fun getDifficulty() = difficultyObject
-    fun getGameSpeed() = gameSpeedObject
     fun getCities() = civilizations.asSequence().flatMap { it.cities }
     fun getAliveCityStates() = civilizations.filter { it.isAlive() && it.isCityState() }
     fun getAliveMajorCivs() = civilizations.filter { it.isAlive() && it.isMajorCiv() }
+
+    fun getGameSpeed() = gameSpeedObject
+    fun setGameSpeed(newGameSpeed: GameSpeed) {
+        gameSpeedObject = newGameSpeed
+        gameParameters.gameSpeed = newGameSpeed.name
+    }
 
     /** Returns the first spectator for a [playerId] or creates one if none found */
     fun getSpectator(playerId: String) =
@@ -416,7 +422,7 @@ class GameInfo {
 
         difficultyObject = ruleSet.difficulties[difficulty]!!
 
-        gameSpeedObject = ruleSet.speeds[gameParameters.gameSpeed]!!
+        gameSpeedObject = ruleSet.gameSpeeds[gameParameters.gameSpeed]!!
 
         for (religion in religions.values) religion.setTransients(this)
 

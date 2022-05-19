@@ -212,7 +212,7 @@ class GameOptionsTable(
     }
 
     private fun Table.addGameSpeedSelectBox() {
-        addSelectBox("{Game Speed}:", ruleset.speeds.values.map { it.name }, gameParameters.gameSpeed)
+        addSelectBox("{Game Speed}:", ruleset.gameSpeeds.values.map { it.name }, gameParameters.gameSpeed)
         { gameParameters.gameSpeed = it; null }
     }
 

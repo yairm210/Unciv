@@ -81,7 +81,7 @@ class Ruleset {
     val buildings = LinkedHashMap<String, Building>()
     val difficulties = LinkedHashMap<String, Difficulty>()
     val eras = LinkedHashMap<String, Era>()
-    val speeds = LinkedHashMap<String, GameSpeed>()
+    val gameSpeeds = LinkedHashMap<String, GameSpeed>()
     var globalUniques = GlobalUniques()
     val nations = LinkedHashMap<String, Nation>()
     val policies = LinkedHashMap<String, Policy>()
@@ -121,7 +121,7 @@ class Ruleset {
         for (buildingToRemove in ruleset.modOptions.buildingsToRemove) buildings.remove(buildingToRemove)
         difficulties.putAll(ruleset.difficulties)
         eras.putAll(ruleset.eras)
-        speeds.putAll(ruleset.speeds)
+        gameSpeeds.putAll(ruleset.gameSpeeds)
         globalUniques = GlobalUniques().apply { uniques.addAll(globalUniques.uniques); uniques.addAll(ruleset.globalUniques.uniques) }
         nations.putAll(ruleset.nations)
         for (nationToRemove in ruleset.modOptions.nationsToRemove) nations.remove(nationToRemove)
@@ -151,7 +151,7 @@ class Ruleset {
         buildings.clear()
         difficulties.clear()
         eras.clear()
-        speeds.clear()
+        gameSpeeds.clear()
         globalUniques = GlobalUniques()
         mods.clear()
         nations.clear()
@@ -176,7 +176,7 @@ class Ruleset {
             buildings.values.asSequence() +
             //difficulties is only INamed
             eras.values.asSequence() +
-            speeds.values.asSequence() +
+            gameSpeeds.values.asSequence() +
             sequenceOf(globalUniques) +
             nations.values.asSequence() +
             policies.values.asSequence() +
@@ -248,8 +248,8 @@ class Ruleset {
 
         val speedsFile = folderHandle.child("GameSpeeds.json")
         if (speedsFile.exists()) {
-            speeds += createHashmap(json().fromJsonFile(Array<GameSpeed>::class.java, speedsFile))
-            speeds.forEach { it.value.initDefaultPercents() }
+            gameSpeeds += createHashmap(json().fromJsonFile(Array<GameSpeed>::class.java, speedsFile))
+            gameSpeeds.forEach { it.value.initDefaultPercents() }
         }
 
         val unitTypesFile = folderHandle.child("UnitTypes.json")
@@ -349,6 +349,10 @@ class Ruleset {
             // If we have no victories, add all the default victories
             if (victories.isEmpty()) {
                 victories.putAll(RulesetCache.getVanillaRuleset().victories)
+            }
+            
+            if (gameSpeeds.isEmpty()) {
+                gameSpeeds.putAll(RulesetCache.getVanillaRuleset().gameSpeeds)
             }
         }
 
@@ -783,6 +787,10 @@ class Ruleset {
 
 
             checkUniques(era, lines, rulesetSpecific, forOptionsPopup)
+        }
+
+        if (gameSpeeds.isEmpty()) {
+            lines += "Game speeds file is empty! Loaded default game speeds!"
         }
 
         for (belief in beliefs.values) {
