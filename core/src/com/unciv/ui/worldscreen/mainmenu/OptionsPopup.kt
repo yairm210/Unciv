@@ -129,8 +129,7 @@ class OptionsPopup(
     private fun reloadWorldAndOptions() {
         settings.save()
         if (previousScreen is WorldScreen) {
-            previousScreen.game.worldScreen = WorldScreen(previousScreen.gameInfo, previousScreen.viewingCiv)
-            previousScreen.game.setWorldScreen()
+            previousScreen.game.resetToWorldScreen(WorldScreen(previousScreen.gameInfo, previousScreen.viewingCiv))
         } else if (previousScreen is MainMenuScreen) {
             previousScreen.game.setScreen(MainMenuScreen())
         }
@@ -201,7 +200,7 @@ class OptionsPopup(
         addCheckbox("Show pixel units", settings.showPixelUnits, true) { settings.showPixelUnits = it }
         addCheckbox("Show pixel improvements", settings.showPixelImprovements, true) { settings.showPixelImprovements = it }
         addCheckbox("Experimental Demographics scoreboard", settings.useDemographics, true) { settings.useDemographics = it }
-        
+
         addMinimapSizeSlider()
 
         addResolutionSelectBox()
@@ -574,7 +573,7 @@ class OptionsPopup(
         val simulateTextField = TextField(game.simulateUntilTurnForDebug.toString(), BaseScreen.skin)
         val invalidInputLabel = "This is not a valid integer!".toLabel().also { it.isVisible = false }
         simulateButton.onClick {
-            val simulateUntilTurns = simulateTextField.text.toIntOrNull() 
+            val simulateUntilTurns = simulateTextField.text.toIntOrNull()
             if (simulateUntilTurns == null) {
                 invalidInputLabel.isVisible = true
                 return@onClick
@@ -648,7 +647,7 @@ class OptionsPopup(
                 tile.resourceAmount = 999
                 // Debug option, so if it crashes on this that's relatively fine
                 // If this becomes a problem, check if such an improvement exists and otherwise plop down a great improvement or so
-                tile.improvement = resource.getImprovements().first() 
+                tile.improvement = resource.getImprovements().first()
             }
             game.gameInfo.getCurrentPlayerCivilization().updateSightAndResources()
             game.worldScreen.shouldUpdate = true

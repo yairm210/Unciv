@@ -67,7 +67,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
             wonOrLost("", null, false)
         } else if (!someoneHasWon) {
             setDefaultCloseAction()
-            onBackButtonClicked { game.setWorldScreen() }
+            onBackButtonClicked { game.resetToWorldScreen() }
         }
     }
 
@@ -95,7 +95,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         closeButton.setText("One more turn...!".tr())
         closeButton.onClick {
             gameInfo.oneMoreTurnMode = true
-            game.setWorldScreen()
+            game.resetToWorldScreen()
         }
     }
 

@@ -40,7 +40,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         if (policies.freePolicies > 0 && policies.canAdoptPolicy())
             closeButton.disable()
         else
-            onBackButtonClicked { UncivGame.Current.setWorldScreen() }
+            onBackButtonClicked { UncivGame.Current.resetToWorldScreen() }
 
         rightSideButton.onClick(UncivSound.Policy) {
             val policy = pickedPolicy!!
@@ -52,7 +52,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
 
             // If we've moved to another screen in the meantime (great person pick, victory screen) ignore this
             if (game.screen !is PolicyPickerScreen || !policies.canAdoptPolicy()) {
-                game.setWorldScreen()
+                game.resetToWorldScreen()
                 dispose()
             } else {
                 val policyScreen = PolicyPickerScreen(worldScreen)

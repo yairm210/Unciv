@@ -102,7 +102,7 @@ class CityScreen(
     private val nextTileToOwn = city.expansion.chooseNewTileToOwn()
 
     init {
-        onBackButtonClicked { game.setWorldScreen() }
+        onBackButtonClicked { game.resetToWorldScreen() }
         UncivGame.Current.settings.addCompletedTutorialTask("Enter city screen")
 
         addTiles()
@@ -387,7 +387,7 @@ class CityScreen(
     }
 
     fun exit() {
-        game.setWorldScreen()
+        game.resetToWorldScreen()
         game.worldScreen.mapHolder.setCenterPosition(city.location)
         game.worldScreen.bottomUnitTable.selectUnit()
     }
