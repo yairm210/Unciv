@@ -70,7 +70,7 @@ internal object DesktopLauncher {
              This is because if there's a crash when the instance initializes on a similar line,
               it's not within the bounds of the try/catch and thus the app will crash.
              */
-            Native.loadLibrary("discord-rpc", DiscordRPC::class.java)
+            Native.load("discord-rpc", DiscordRPC::class.java)
             val handlers = DiscordEventHandlers()
             DiscordRPC.INSTANCE.Discord_Initialize("647066573147996161", handlers, true, null)
 

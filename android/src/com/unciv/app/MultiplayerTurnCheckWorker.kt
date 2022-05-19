@@ -3,6 +3,8 @@ package com.unciv.app
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.app.PendingIntent.FLAG_IMMUTABLE
+import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
@@ -121,9 +123,11 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
          * It is not technically necessary for the Worker, since it is not a Service.
          */
         fun showPersistentNotification(appContext: Context, lastTimeChecked: String, checkPeriod: String) {
+            val flags = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) FLAG_IMMUTABLE else 0) or
+                FLAG_UPDATE_CURRENT
             val pendingIntent: PendingIntent =
                     Intent(appContext, AndroidLauncher::class.java).let { notificationIntent ->
-                        PendingIntent.getActivity(appContext, 0, notificationIntent, 0)
+                        PendingIntent.getActivity(appContext, 0, notificationIntent, flags)
                     }
 
             val notification: NotificationCompat.Builder = NotificationCompat.Builder(appContext, NOTIFICATION_CHANNEL_ID_SERVICE)
@@ -152,7 +156,9 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                 action = Intent.ACTION_VIEW
                 data = Uri.parse("https://unciv.app/multiplayer?id=${game.second}")
             }
-            val pendingIntent = PendingIntent.getActivity(applicationContext, 0, intent, 0)
+            val flags = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) FLAG_IMMUTABLE else 0) or
+                    FLAG_UPDATE_CURRENT
+            val pendingIntent = PendingIntent.getActivity(applicationContext, 0, intent, flags)
 
             val contentTitle = applicationContext.resources.getString(R.string.Notify_YourTurn_Short)
             val notification: NotificationCompat.Builder = NotificationCompat.Builder(applicationContext, NOTIFICATION_CHANNEL_ID_INFO)
@@ -367,14 +373,16 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
     }
 
     private fun showErrorNotification(stackTraceString: String) {
+        val flags = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) FLAG_IMMUTABLE else 0) or
+                FLAG_UPDATE_CURRENT
         val pendingLaunchGameIntent: PendingIntent =
                 Intent(applicationContext, AndroidLauncher::class.java).let { notificationIntent ->
-                    PendingIntent.getActivity(applicationContext, 0, notificationIntent, 0)
+                    PendingIntent.getActivity(applicationContext, 0, notificationIntent, flags)
                 }
 
         val pendingCopyClipboardIntent: PendingIntent =
                 Intent(applicationContext, CopyToClipboardReceiver::class.java).putExtra(CLIPBOARD_EXTRA, stackTraceString)
-                        .let { notificationIntent -> PendingIntent.getBroadcast(applicationContext,0, notificationIntent, 0)
+                        .let { notificationIntent -> PendingIntent.getBroadcast(applicationContext,0, notificationIntent, flags)
                 }
 
         val notification: NotificationCompat.Builder = NotificationCompat.Builder(applicationContext, NOTIFICATION_CHANNEL_ID_INFO)
