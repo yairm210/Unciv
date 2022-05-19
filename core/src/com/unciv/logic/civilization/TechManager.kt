@@ -257,6 +257,9 @@ class TechManager {
             UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
         }
         updateTransientBooleans()
+        for (city in civInfo.cities) {
+            city.updateCitizens = true
+        }
 
         civInfo.addNotification("Research of [$techName] has completed!", TechAction(techName), NotificationIcon.Science, techName)
         civInfo.popupAlerts.add(PopupAlert(AlertType.TechResearched, techName))
