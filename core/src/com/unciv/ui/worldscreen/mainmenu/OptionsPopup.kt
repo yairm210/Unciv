@@ -137,8 +137,15 @@ class OptionsPopup(
         (previousScreen.game.screen as BaseScreen).openOptionsPopup(tabs.activePage)
     }
 
-    private fun successfullyConnectedToServer(action: (Boolean, String, Int?) -> Unit){
-        SimpleHttp.sendGetRequest("${settings.multiplayerServer}/isalive", action)
+    private fun successfullyConnectedToServer(action: (Boolean) -> Unit) {
+        launchCrashHandling("TestIsAlive") {
+            SimpleHttp.sendGetRequest("${settings.multiplayerServer}/isalive") {
+                success, _, _ ->
+                postCrashHandlingRunnable {
+                    action(success)
+                }
+            }
+        }
     }
 
     //region Page builders
@@ -307,7 +314,7 @@ class OptionsPopup(
             }
             popup.open(true)
 
-            successfullyConnectedToServer { success, _, _ ->
+            successfullyConnectedToServer { success ->
                 popup.addGoodSizedLabel(if (success) "Success!" else "Failed!").row()
                 popup.addCloseButton()
             }
