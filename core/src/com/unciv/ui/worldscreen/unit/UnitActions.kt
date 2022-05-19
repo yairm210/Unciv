@@ -645,14 +645,6 @@ object UnitActions {
                 title = "Create [$improvementName]",
                 action = {
                     val unitTile = unit.getTile()
-                    unitTile.setTerrainFeatures(
-                        // Remove terrainFeatures that a Worker can remove
-                        // and that aren't explicitly allowed under the improvement
-                        unitTile.terrainFeatures.filter {
-                            "Remove $it" !in unitTile.ruleset.tileImprovements ||
-                            it in improvement.terrainsCanBeBuiltOn
-                        }
-                    )
                     unitTile.removeCreatesOneImprovementMarker()
                     unitTile.improvement = improvementName
                     unitTile.stopWorkingOnImprovement()

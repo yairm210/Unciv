@@ -157,9 +157,15 @@ object UnitAutomation {
             // For now its a simple option to allow AI to win a science victory again
             if (unit.hasUnique(UniqueType.AddInCapital))
                 return SpecificUnitAutomation.automateAddInCapital(unit)
-            
-            if (unit.hasUnique("Bonus for units in 2 tile radius 15%"))
-                return SpecificUnitAutomation.automateGreatGeneral(unit)
+
+            //todo this now supports "Great General"-like mod units not combining 'aura' and citadel
+            // abilities, but not additional capabilities if automation finds no use for those two
+            if (unit.hasStrengthBonusInRadiusUnique && SpecificUnitAutomation.automateGreatGeneral(unit))
+                return
+            if (unit.hasCitadelPlacementUnique && SpecificUnitAutomation.automateCitadelPlacer(unit))
+                return
+            if (unit.hasCitadelPlacementUnique || unit.hasStrengthBonusInRadiusUnique)
+                return SpecificUnitAutomation.automateGreatGeneralFallback(unit)
 
             if (unit.hasUnique(UniqueType.ConstructImprovementConsumingUnit))
                 return SpecificUnitAutomation.automateImprovementPlacer(unit) // includes great people plus moddable units

@@ -5,9 +5,12 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameStarter
 import com.unciv.models.metadata.GameSetupInfo
-import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.crashhandling.launchCrashHandling
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.runBlocking
 import kotlin.time.Duration
 import kotlin.math.max
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.ExperimentalTime
 
 @ExperimentalTime
@@ -40,12 +43,12 @@ class Simulation(
         }
     }
 
-    fun start() {
+    fun start() = runBlocking {
 
         startTime = System.currentTimeMillis()
-        val threads: ArrayList<Thread> = ArrayList()
+        val jobs: ArrayList<Job> = ArrayList()
         for (threadId in 1..threadsNumber) {
-            threads.add(crashHandlingThread {
+            jobs.add(launchCrashHandling("simulation-${threadId}") {
                 for (i in 1..simulationsPerThread) {
                     val gameInfo = GameStarter.startNewGame(GameSetupInfo(newGameInfo))
                     gameInfo.simulateMaxTurns = maxTurns
@@ -66,8 +69,8 @@ class Simulation(
                 }
             })
         }
-        // wait for all threads to finish
-        for (thread in threads) thread.join()
+        // wait for all to finish
+        for (job in jobs) job.join()
         endTime = System.currentTimeMillis()
     }
 
@@ -107,7 +110,7 @@ class Simulation(
             }
         }
         totalTurns = steps.sumOf { it.turns }
-        totalDuration = Duration.milliseconds(endTime - startTime)
+        totalDuration = (endTime - startTime).milliseconds
         avgSpeed = totalTurns.toFloat() / totalDuration.inWholeSeconds
         avgDuration = totalDuration / steps.size
     }

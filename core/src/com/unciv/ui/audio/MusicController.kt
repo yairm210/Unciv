@@ -6,7 +6,7 @@ import com.badlogic.gdx.audio.Music
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
-import com.unciv.logic.multiplayer.DropBox
+import com.unciv.logic.multiplayer.storage.DropBox
 import java.util.*
 import kotlin.concurrent.thread
 import kotlin.concurrent.timer
