@@ -678,6 +678,7 @@ class MapUnit {
         }
         
         tile.improvementInProgress = null
+        tile.getCity()?.updateCitizens = true
     }
 
 

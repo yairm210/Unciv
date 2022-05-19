@@ -853,7 +853,7 @@ object NextTurnAutomation {
                 city.annexCity()
             }
 
-            city.reassignPopulation()
+            city.reassignAllPopulation()
 
             city.cityConstructions.chooseNextConstruction()
             if (city.health < city.getMaxHealth())

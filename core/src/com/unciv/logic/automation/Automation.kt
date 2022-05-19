@@ -1,5 +1,6 @@
 package com.unciv.logic.automation
 
+import com.unciv.logic.city.CityFocus
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.civilization.CivilizationInfo
@@ -14,50 +15,94 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.victoryscreen.RankingType
 
 object Automation {
 
-    fun rankTileForCityWork(tile: TileInfo, city: CityInfo, foodWeight: Float = 1f): Float {
+    fun rankTileForCityWork(tile: TileInfo, city: CityInfo, cityStats: Stats): Float {
         val stats = tile.getTileStats(city, city.civInfo)
-        return rankStatsForCityWork(stats, city, foodWeight)
+        return rankStatsForCityWork(stats, city, cityStats)
     }
 
-    private fun rankStatsForCityWork(stats: Stats, city: CityInfo, foodWeight: Float = 1f): Float {
-        var rank = 0f
+    fun rankSpecialist(specialist: String, cityInfo: CityInfo, cityStats: Stats): Float {
+        val stats = cityInfo.cityStats.getStatsOfSpecialist(specialist)
+        var rank = rankStatsForCityWork(stats, cityInfo, cityStats, true)
+        // derive GPP score
+        var gpp = 0f
+        if (cityInfo.getRuleset().specialists.containsKey(specialist)) { // To solve problems in total remake mods
+            val specialistInfo = cityInfo.getRuleset().specialists[specialist]!!
+            gpp = specialistInfo.greatPersonPoints.sumValues().toFloat()
+        }
+        gpp = gpp * (100 + cityInfo.currentGPPBonus) / 100
+        rank += gpp * 3 // GPP weight
+        return rank
+    }
+
+    private fun rankStatsForCityWork(stats: Stats, city: CityInfo, cityStats: Stats, specialist: Boolean = false): Float {
+        val cityAIFocus = city.cityAIFocus
+        val yieldStats = stats.clone()
+
+        if (specialist) {
+            // If you have the Food Bonus, count as 1 extra food production (base is 2food)
+            for (unique in city.getMatchingUniques(UniqueType.FoodConsumptionBySpecialists))
+                if (city.matchesFilter(unique.params[1]))
+                    yieldStats.food -= (unique.params[0].toFloat() / 100f) * 2f // base 2 food per Pop
+            // Specialist Happiness Percentage Change 0f-1f
+            for (unique in city.getMatchingUniques(UniqueType.UnhappinessFromPopulationTypePercentageChange))
+                if (city.matchesFilter(unique.params[2]) && unique.params[1] == "Specialists")
+                    yieldStats.happiness -= (unique.params[0].toFloat() / 100f)  // relative val is negative, make positive
+            if (city.civInfo.getHappiness() < 0) yieldStats.happiness *= 2  // double weight for unhappy civilization
+        }
+
+        val surplusFood = cityStats[Stat.Food]
+        // Apply base weights
+        yieldStats.applyRankingWeights()
+
+        if (surplusFood > 0 && city.avoidGrowth) {
+            yieldStats.food = 0f // don't need more food!
+        } else {
+            if (cityAIFocus != CityFocus.NoFocus && cityAIFocus != CityFocus.FoodFocus && cityAIFocus != CityFocus.ProductionGrowthFocus && cityAIFocus != CityFocus.GoldGrowthFocus) {
+                // Focus on non-food/growth
+                if (surplusFood < 0)
+                    yieldStats.food *= 8 // Starving, need Food, get to 0
+                else
+                    yieldStats.food /= 2
+            } else if (!city.avoidGrowth) {
+                // NoFocus or Food/Growth Focus. Target +2 Food Surplus
+                if (surplusFood < 2)
+                    yieldStats.food *= 8
+                else if (cityAIFocus != CityFocus.FoodFocus)
+                    yieldStats.food /= 2
+                if (city.population.population < 5 && cityAIFocus != CityFocus.FoodFocus)
+                // NoFocus or GoldGrow or ProdGrow, not Avoid Growth, pop < 5. FoodFocus already does this up
+                    yieldStats.food *= 3
+            }
+        }
+
         if (city.population.population < 5) {
             // "small city" - we care more about food and less about global problems like gold science and culture
-            rank += stats.food * 1.2f * foodWeight
-            rank += stats.production
-            rank += stats.science / 2
-            rank += stats.culture / 2
-            rank += stats.gold / 5 // it's barely worth anything at this point
+            // Food already handled above. Science/Culture have low weights in Stats already
+            yieldStats.gold /= 2 // it's barely worth anything at this point
         } else {
-            rank += if (stats.food <= 2 || city.civInfo.getHappiness() > 5)
-                        stats.food * 1.2f * foodWeight // food get more value to keep city growing
-                    else
-                        (2.4f + (stats.food - 2) / 2) * foodWeight // 1.2 point for each food up to 2, from there on half a point
+            if (city.civInfo.gold < 0 && city.civInfo.statsForNextTurn.gold <= 0)
+                yieldStats.gold *= 2 // We have a global problem
 
-            rank += if (city.civInfo.gold < 0 && city.civInfo.statsForNextTurn.gold <= 0)
-                        stats.gold // we have a global problem
-                    else
-                        stats.gold / 3 // 3 gold is worse than 2 production
+            if (city.tiles.size < 12 || city.civInfo.wantsToFocusOn(Focus.Culture))
+                yieldStats.culture *= 2
 
-            rank += stats.production
-            rank += stats.science
-            rank += if (city.tiles.size < 12 || city.civInfo.wantsToFocusOn(Victory.Focus.Culture))
-                        stats.culture
-                    else
-                        stats.culture / 2
+            if (city.civInfo.getHappiness() < 0 && !specialist) // since this doesn't get updated, may overshoot
+                yieldStats.happiness *= 2
+
+            if (city.civInfo.wantsToFocusOn(Focus.Science))
+                yieldStats.science *= 2
         }
-        return rank
-    }
 
-    internal fun rankSpecialist(stats: Stats, cityInfo: CityInfo): Float {
-        var rank = rankStatsForCityWork(stats, cityInfo)
-        rank += 0.3f //GPP bonus
-        return rank
+        // Apply City focus
+        cityAIFocus.applyWeightTo(yieldStats)
+
+        return yieldStats.values.sum()
     }
 
     fun tryTrainMilitaryUnit(city: CityInfo) {
@@ -105,8 +150,10 @@ object Automation {
             militaryUnits = militaryUnits.filter { !it.isWaterUnit() }
 
 
-        val carryingOnlyUnits = militaryUnits.filter { it.hasUnique(UniqueType.CarryAirUnits)
-                && it.hasUnique(UniqueType.CannotAttack) }.toList()
+        val carryingOnlyUnits = militaryUnits.filter {
+            it.hasUnique(UniqueType.CarryAirUnits)
+                && it.hasUnique(UniqueType.CannotAttack)
+        }.toList()
 
         for (unit in carryingOnlyUnits)
             if (providesUnneededCarryingSlots(unit, city.civInfo))
@@ -128,9 +175,11 @@ object Automation {
                 .map { it.unitType }
                 .distinct()
             if (availableTypes.none()) return null
-            val bestUnitsForType = availableTypes.map { type -> militaryUnits
+            val bestUnitsForType = availableTypes.map { type ->
+                militaryUnits
                     .filter { unit -> unit.unitType == type }
-                    .maxByOrNull { unit -> unit.cost }!! }
+                    .maxByOrNull { unit -> unit.cost }!!
+            }
             // Check the maximum force evaluation for the shortlist so we can prune useless ones (ie scouts)
             val bestForce = bestUnitsForType.maxOf { it.getForceEvaluation() }
             chosenUnit = bestUnitsForType.filter { it.uniqueTo != null || it.getForceEvaluation() > bestForce / 3 }.toList().random()
@@ -291,7 +340,7 @@ object Automation {
         return cityInfo.getTiles().filter {
             it.canBuildImprovement(improvement, cityInfo.civInfo)
         }.maxByOrNull {
-            rankTileForCityWork(it, cityInfo)
+            rankTileForCityWork(it, cityInfo, cityInfo.cityStats.currentCityStats)
         }
     }
 
