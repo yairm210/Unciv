@@ -16,6 +16,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.DEFAULT_VIBRATE
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.*
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.backends.android.AndroidApplication
 import com.badlogic.gdx.backends.android.DefaultAndroidFiles
 import com.unciv.logic.GameInfo
@@ -256,6 +257,8 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
         // We can't use Gdx.files since that is only initialized within a com.badlogic.gdx.backends.android.AndroidApplication.
         // Worker instances may be stopped & recreated by the Android WorkManager, so no AndroidApplication and thus no Gdx.files available
         val files = DefaultAndroidFiles(applicationContext.assets, ContextWrapper(applicationContext), false)
+        // GDX's AndroidFileHandle uses Gdx.files internally, so we need to set that to our new instance
+        Gdx.files = files
         gameSaver.init(files, null)
     }
 
