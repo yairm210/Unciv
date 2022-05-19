@@ -13,12 +13,15 @@ class ViewFriendsListScreen(previousScreen: BaseScreen) : PickerScreen() {
     private val leftSideTable = Table()
 
     private val addFriendText = "Add friend"
-    private val friendName = "Friend"
-    var friendsListList = mutableListOf<String>()
-    val listOfFriends = arrayOf(friendName.toTextButton(),friendName.toTextButton())
-    private val addFriendButton = addFriendText.toTextButton()
-    val friendlist = FriendList()
+    private val refreshText = "Refresh"
 
+    private val addFriendButton = addFriendText.toTextButton()
+    private val refreshButton = refreshText.toTextButton()
+
+    val friendsList = FriendList()
+    //val listOfFriends = friendsList.getFriendsList()
+    var listOfFriends: MutableList<FriendList.Friend> = mutableListOf()
+    var listOfFriendsButtons = arrayListOf<TextButton>()
 
     init {
         setDefaultCloseAction(previousScreen)
@@ -58,12 +61,32 @@ class ViewFriendsListScreen(previousScreen: BaseScreen) : PickerScreen() {
         }
         rightSideTable.add(addFriendButton).padBottom(30f).row()
 
+        refreshButton.onClick {
+            leftSideTable.reset()
+            friendsList.load()
+            listOfFriends = friendsList.getFriendsList()
+            for (index in listOfFriends.indices) {
+                listOfFriendsButtons.add(listOfFriends[index].name.toTextButton())
+
+                listOfFriendsButtons[index].onClick {
+
+                }
+                leftSideTable.add(listOfFriendsButtons[index]).padBottom(20f).row()
+            }
+        }
+        rightSideTable.add(refreshButton).padBottom(30f).row()
+
+        friendsList.load()
+        listOfFriends = friendsList.getFriendsList()
         for (index in listOfFriends.indices) {
-            listOfFriends[index].onClick {
+            listOfFriendsButtons.add(listOfFriends[index].name.toTextButton())
+
+            listOfFriendsButtons[index].onClick {
 
             }
-            leftSideTable.add(listOfFriends[index]).padBottom(20f).row()
+            leftSideTable.add(listOfFriendsButtons[index]).padBottom(20f).row()
         }
-
+        println(listOfFriends)
+//        println(listOfFriendsButtons)
     }
 }

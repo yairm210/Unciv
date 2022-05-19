@@ -1,28 +1,47 @@
 package com.unciv.ui.multiplayer
 
 import com.badlogic.gdx.files.FileHandle
-import com.badlogic.gdx.utils.Json
+import com.unciv.json.fromJsonFile
+import com.unciv.json.json
 
 
 class FriendList {
     private val friendsListFileName = "FriendsList.json"
     private val friendsListFileHandle = FileHandle(friendsListFileName)
+    var friendList: MutableList<Friend> = mutableListOf()
+
+    companion object {
+        private const val friendsListFileName = "FriendsList.json"
+        private fun friendsListFileHandle() = FileHandle(friendsListFileName)
+    }
+
+    data class Friend(val name: String, val playerID: String) {
+        constructor() : this("", "")
+    }
 
     fun addNewFriend(friendName: String, playerID: String) {
-        val friend = Friend(friendName, playerID)
+        load()
+        friendList.add(Friend(friendName, playerID))
+        println(friendList)
+        save()
+    }
 
-        val json = Json()
+    fun save() {
+        json().toJson(friendList, friendsListFileHandle())
+    }
 
-        var friendList: List<*>
+    fun load() {
+        if(friendsListFileHandle.exists()){
+            if (json().fromJsonFile(Array<Friend>::class.java, friendsListFileName) == null) {
+                friendsListFileHandle.writeString("[]", false)
+            }
+            val newFriends = json().fromJsonFile(Array<Friend>::class.java, friendsListFileName)
 
-        friendList = json.fromJson(MutableList::class.java, Friend::class.java, friendsListFileHandle)
+            friendList.addAll(newFriends)
+        }
+    }
 
-        friendList.plus(friend)
-
-        val serializedFriendListWithNewFriendAdded: String = json.prettyPrint(friendList)
-
-        friendsListFileHandle.writeString(serializedFriendListWithNewFriendAdded, false)
+    fun getFriendsList(): MutableList<Friend> {
+        return friendList
     }
 }
-
-class Friend(val name: String, val playerID: String)
