@@ -8,21 +8,21 @@ import java.io.InputStreamReader
 import java.net.*
 import java.nio.charset.Charset
 
+private typealias SendRequestCallback = (success: Boolean, result: String, code: Int?)->Unit
+
 object SimpleHttp {
-    fun sendGetRequest(url: String, timeout: Int = 5000,
-                       action: (success: Boolean, result: String, code: Int?)->Unit) {
+    fun sendGetRequest(url: String, timeout: Int = 5000, action: SendRequestCallback) {
         sendRequest(Net.HttpMethods.GET, url, "", timeout, action)
     }
 
-    fun sendRequest(method: String, url: String, content: String, timeout: Int = 5000,
-                    action: (success: Boolean, result: String, code: Int?)->Unit) {
+    fun sendRequest(method: String, url: String, content: String, timeout: Int = 5000, action: SendRequestCallback) {
         var uri = URI(url)
         if (uri.host == null) uri = URI("http://$url")
 
         val urlObj: URL
         try {
             urlObj = uri.toURL()
-        } catch (t:Throwable){
+        } catch (t: Throwable) {
             action(false, "Bad URL", null)
             return
         }
