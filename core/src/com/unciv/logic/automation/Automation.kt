@@ -89,13 +89,13 @@ object Automation {
             if (city.civInfo.gold < 0 && city.civInfo.statsForNextTurn.gold <= 0)
                 yieldStats.gold *= 2 // We have a global problem
 
-            if (city.tiles.size < 12 || city.civInfo.wantsToFocusOn(Focus.Culture))
+            if (city.tiles.size < 12 || city.civInfo.wantsToFocusOn(Victory.Focus.Culture))
                 yieldStats.culture *= 2
 
             if (city.civInfo.getHappiness() < 0 && !specialist) // since this doesn't get updated, may overshoot
                 yieldStats.happiness *= 2
 
-            if (city.civInfo.wantsToFocusOn(Focus.Science))
+            if (city.civInfo.wantsToFocusOn(Victory.Focus.Science))
                 yieldStats.science *= 2
         }
 
