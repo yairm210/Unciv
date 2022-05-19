@@ -484,16 +484,18 @@ object TranslationFileWriter {
      *  @param [translations] A [Translations] instance with all languages loaded.
      *  @return Success or error message.
      */
-    private fun writeTranslatedFastlaneFiles(translations: Translations): String = try {
+    private fun writeTranslatedFastlaneFiles(translations: Translations): String {
+        try {
             writeFastlaneFiles(shortDescriptionFile, translations[shortDescriptionKey], false)
             writeFastlaneFiles(fullDescriptionFile, translations[fullDescriptionKey], true)
             updateFastlaneChangelog()
 
-            "Fastlane files are generated successfully."
+            return "Fastlane files are generated successfully."
         } catch (ex: Throwable) {
             ex.printStackTrace()
-            ex.localizedMessage ?: ex.javaClass.simpleName
+            return ex.localizedMessage ?: ex.javaClass.simpleName
         }
+    }
 
     private fun writeFastlaneFiles(fileName: String, translationEntry: TranslationEntry?, endWithNewline: Boolean) {
         if (translationEntry == null) return

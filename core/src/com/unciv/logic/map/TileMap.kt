@@ -554,7 +554,7 @@ class TileMap {
         tileList.forEach {
             for (unit in it.getUnits()) if (unit.owner == player.chosenCiv) unit.removeFromTile()
         }
-        startingLocations.removeAll { it.nation == player.chosenCiv } // filter creates a copy, no concurrent modification
+        startingLocations.removeAll { it.nation == player.chosenCiv }
         startingLocationsByNation.remove(player.chosenCiv)
     }
 
