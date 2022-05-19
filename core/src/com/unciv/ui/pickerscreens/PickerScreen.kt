@@ -23,8 +23,6 @@ open class PickerScreen(disableScroll: Boolean = false) : BaseScreen() {
 
     /** @see PickerPane.topTable */
     val topTable by pickerPane::topTable
-    /** @see PickerPane.bottomTable */
-    val bottomTable by pickerPane::bottomTable
     /** @see PickerPane.scrollPane */
     val scrollPane by pickerPane::scrollPane
     /** @see PickerPane.splitPane */
