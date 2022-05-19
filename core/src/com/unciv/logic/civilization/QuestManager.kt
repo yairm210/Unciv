@@ -366,7 +366,7 @@ class QuestManager {
         return when (quest.name) {
             QuestName.ClearBarbarianCamp.value -> getBarbarianEncampmentForQuest() != null
             QuestName.Route.value -> !challenger.cities.none()
-                    && !civInfo.isCapitalConnectedToCity(challenger.getCapital())
+                    && !challenger.isCapitalConnectedToCity(civInfo.getCapital())
                     // Need to have a city within 7 tiles on the same continent
                     && challenger.cities.any { it.getCenterTile().aerialDistanceTo(civInfo.getCapital().getCenterTile()) <= 7
                         && it.getCenterTile().getContinent() == civInfo.getCapital().getCenterTile().getContinent() }
@@ -393,7 +393,7 @@ class QuestManager {
     private fun isComplete(assignedQuest: AssignedQuest): Boolean {
         val assignee = civInfo.gameInfo.getCivilization(assignedQuest.assignee)
         return when (assignedQuest.questName) {
-            QuestName.Route.value -> civInfo.isCapitalConnectedToCity(assignee.getCapital())
+            QuestName.Route.value -> assignee.isCapitalConnectedToCity(civInfo.getCapital())
             QuestName.ConnectResource.value -> assignee.detailedCivResources.map { it.resource }.contains(civInfo.gameInfo.ruleSet.tileResources[assignedQuest.data1])
             QuestName.ConstructWonder.value -> assignee.cities.any { it.cityConstructions.isBuilt(assignedQuest.data1) }
             QuestName.GreatPerson.value -> assignee.getCivGreatPeople().any { it.baseUnit.getReplacedUnit(civInfo.gameInfo.ruleSet).name == assignedQuest.data1 }
