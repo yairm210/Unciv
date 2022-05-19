@@ -22,14 +22,14 @@ import com.unciv.ui.victoryscreen.RankingType
 
 object Automation {
 
-    fun rankTileForCityWork(tile: TileInfo, city: CityInfo): Float {
+    fun rankTileForCityWork(tile: TileInfo, city: CityInfo, cityStats: Stats): Float {
         val stats = tile.getTileStats(city, city.civInfo)
-        return rankStatsForCityWork(stats, city)
+        return rankStatsForCityWork(stats, city, cityStats)
     }
 
-    fun rankSpecialist(specialist: String, cityInfo: CityInfo): Float {
+    fun rankSpecialist(specialist: String, cityInfo: CityInfo, cityStats: Stats): Float {
         val stats = cityInfo.cityStats.getStatsOfSpecialist(specialist)
-        var rank = rankStatsForCityWork(stats, cityInfo, true)
+        var rank = rankStatsForCityWork(stats, cityInfo, cityStats, true)
         // derive GPP score
         var gpp = 0f
         if (cityInfo.getRuleset().specialists.containsKey(specialist)) { // To solve problems in total remake mods
@@ -41,7 +41,7 @@ object Automation {
         return rank
     }
 
-    private fun rankStatsForCityWork(stats: Stats, city: CityInfo, specialist: Boolean = false): Float {
+    private fun rankStatsForCityWork(stats: Stats, city: CityInfo, cityStats: Stats, specialist: Boolean = false): Float {
         val cityAIFocus = city.cityAIFocus
         val yieldStats = stats.clone()
 
@@ -57,7 +57,7 @@ object Automation {
             if (city.civInfo.getHappiness() < 0) yieldStats.happiness *= 2  // double weight for unhappy civilization
         }
 
-        val surplusFood = city.cityStats.currentCityStats[Stat.Food]
+        val surplusFood = cityStats[Stat.Food]
         // Apply base weights
         yieldStats.applyRankingWeights()
 
@@ -339,7 +339,7 @@ object Automation {
         return cityInfo.getTiles().filter {
             it.canBuildImprovement(improvement, cityInfo.civInfo)
         }.maxByOrNull {
-            rankTileForCityWork(it, cityInfo)
+            rankTileForCityWork(it, cityInfo, cityInfo.cityStats.currentCityStats)
         }
     }
 

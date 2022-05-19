@@ -45,13 +45,13 @@ enum class CityFocus(val label: String, val tableEnabled: Boolean, val stat: Sta
     GoldFocus("${Stat.Gold.name} Focus", true, Stat.Gold),
     ScienceFocus("${Stat.Science.name} Focus", true, Stat.Science),
     CultureFocus("${Stat.Culture.name} Focus", true, Stat.Culture),
-    GoldGrowthFocus("Gold & Food Focus", false) {
+    GoldGrowthFocus("Gold Growth Focus", false) {
         override fun getStatMultiplier(stat: Stat) = when (stat) {
-            Stat.Production, Stat.Food -> 2f
+            Stat.Gold, Stat.Food -> 2f
             else -> 1f
         }
     },
-    ProductionGrowthFocus("Production & Food Focus", false) {
+    ProductionGrowthFocus("Production Growth Focus", false) {
         override fun getStatMultiplier(stat: Stat) = when (stat) {
             Stat.Production, Stat.Food -> 2f
             else -> 1f
