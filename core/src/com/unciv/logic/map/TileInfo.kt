@@ -488,28 +488,17 @@ open class TileInfo {
         if (terrainFilter == Constants.freshWater && isAdjacentToRiver()) return true
         return (neighbors + this).any { neighbor -> neighbor.matchesFilter(terrainFilter) }
     }
-
+    
     /** Returns true if the [improvement] can be built on this [TileInfo] */
     fun canBuildImprovement(improvement: TileImprovement, civInfo: CivilizationInfo): Boolean {
-
-        fun TileImprovement.canBeBuildOnThisUnbuildableTerrain(civInfo: CivilizationInfo, stateForConditionals: StateForConditionals): Boolean {
-            val topTerrain = getLastTerrain()
-            // We can build if we are specifically allowed to build on this terrain
-            if (isAllowedOnFeature(topTerrain.name)) return true
-
-            // Otherwise, we can if this improvement removes the top terrain
-            if (!hasUnique(UniqueType.RemovesFeaturesIfBuilt, stateForConditionals)) return false
-            val removeAction = ruleset.tileImprovements[Constants.remove + topTerrain.name] ?: return false
-            // and we have the tech to remove that top terrain
-            if (removeAction.techRequired != null && !civInfo.tech.isResearched(removeAction.techRequired!!)) return false
-            // and we can build it on the tile without the top terrain
-            val clonedTile = this@TileInfo.clone()
-            clonedTile.removeTerrainFeature(topTerrain.name)
-            return clonedTile.canBuildImprovement(this, civInfo)
-        }
-
-        val stateForConditionals = StateForConditionals(civInfo, tile=this)
         
+        val stateForConditionals = StateForConditionals(civInfo, tile=this)
+        val knownFeatureRemovals = ruleset.tileImprovements.values
+            .filter { rulesetImprovement ->
+                rulesetImprovement.name.startsWith(Constants.remove)
+                && RoadStatus.values().none { it.removeAction == rulesetImprovement.name }
+                && (rulesetImprovement.techRequired == null || civInfo.tech.isResearched(rulesetImprovement.techRequired!!))
+            }
 
         return when {
             improvement.uniqueTo != null && improvement.uniqueTo != civInfo.civName -> false
@@ -531,21 +520,38 @@ open class TileInfo {
             improvement.getMatchingUniques(UniqueType.ConsumesResources, stateForConditionals).any {
                 civInfo.getCivResourcesByName()[it.params[1]]!! < it.params[0].toInt()
             } -> false
-            getLastTerrain().unbuildable && !improvement.canBeBuildOnThisUnbuildableTerrain(civInfo, stateForConditionals) -> false
-            else -> canImprovementBeBuiltHere(improvement, hasViewableResource(civInfo), stateForConditionals)
+            else -> canImprovementBeBuiltHere(improvement, hasViewableResource(civInfo), knownFeatureRemovals, stateForConditionals)
         }
     }
     
-
     /** Without regards to what CivInfo it is, a lot of the checks are just for the improvement on the tile.
      *  Doubles as a check for the map editor.
      */
     private fun canImprovementBeBuiltHere(
         improvement: TileImprovement,
         resourceIsVisible: Boolean = resource != null,
+        knownFeatureRemovals: List<TileImprovement>? = null,
         stateForConditionals: StateForConditionals = StateForConditionals(tile=this)
     ): Boolean {
 
+        fun TileImprovement.canBeBuildOnThisUnbuildableTerrain(
+            knownFeatureRemovals: List<TileImprovement>? = null,
+        ): Boolean {
+            val topTerrain = getLastTerrain()
+            // We can build if we are specifically allowed to build on this terrain
+            if (isAllowedOnFeature(topTerrain.name)) return true
+
+            // Otherwise, we can if this improvement removes the top terrain
+            if (!hasUnique(UniqueType.RemovesFeaturesIfBuilt, stateForConditionals)) return false
+            val removeAction = ruleset.tileImprovements[Constants.remove + topTerrain.name] ?: return false
+            // and we have the tech to remove that top terrain
+            if (removeAction.techRequired != null && (knownFeatureRemovals == null || removeAction !in knownFeatureRemovals)) return false
+            // and we can build it on the tile without the top terrain
+            val clonedTile = this@TileInfo.clone()
+            clonedTile.removeTerrainFeature(topTerrain.name)
+            return clonedTile.canImprovementBeBuiltHere(improvement, resourceIsVisible, knownFeatureRemovals, stateForConditionals)
+        }
+        
         return when {
             improvement.name == this.improvement -> false
             isCityCenter() -> false
@@ -566,6 +572,9 @@ open class TileInfo {
             // Can't build if there is already an irremovable improvement here
             this.improvement != null && getTileImprovement()!!.hasUnique(UniqueType.Irremovable, stateForConditionals) -> false
 
+            // Can't build if this terrain is unbuildable, except when we are specifically allowed to
+            getLastTerrain().unbuildable && !improvement.canBeBuildOnThisUnbuildableTerrain(knownFeatureRemovals) -> false
+            
             // Can't build if any terrain specifically prevents building this improvement
             getTerrainMatchingUniques(UniqueType.RestrictedBuildableImprovements, stateForConditionals).any {
                 unique -> !improvement.matchesFilter(unique.params[0])
