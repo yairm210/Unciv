@@ -66,7 +66,8 @@ object Automation {
             city.cityConstructions.currentConstructionFromQueue = chosenUnitName
     }
 
-    private fun providesUnneededCarryingSlots(baseUnit: BaseUnit, civInfo: CivilizationInfo): Boolean {
+    @Suppress("MemberVisibilityCanBePrivate")
+    fun providesUnneededCarryingSlots(baseUnit: BaseUnit, civInfo: CivilizationInfo): Boolean {
         // Simplified, will not work for crazy mods with more than one carrying filter for a unit
         val carryUnique = baseUnit.getMatchingUniques(UniqueType.CarryAirUnits).first()
         val carryFilter = carryUnique.params[1]
@@ -184,9 +185,10 @@ object Automation {
                 && allowSpendingResource(civInfo, construction)
     }
 
+    @Suppress("MemberVisibilityCanBePrivate")
     /** Checks both feasibility of Buildings with a [UniqueType.CreatesOneImprovement] unique (appropriate tile available).
      *  Constructions without pass uncontested. */
-    private fun allowCreateImprovementBuildings(
+    fun allowCreateImprovementBuildings(
         civInfo: CivilizationInfo,
         cityInfo: CityInfo,
         construction: INonPerpetualConstruction

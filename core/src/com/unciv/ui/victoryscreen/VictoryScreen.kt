@@ -17,7 +17,7 @@ import com.unciv.ui.worldscreen.WorldScreen
 
 class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
-    val gameInfo = worldScreen.gameInfo
+    private val gameInfo = worldScreen.gameInfo
     private val playerCivInfo = worldScreen.viewingCiv
     private val enabledVictoryTypes = gameInfo.gameParameters.victoryTypes
 

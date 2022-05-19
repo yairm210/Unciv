@@ -204,7 +204,7 @@ class ModUIData(
 class ModStateImages (
     isVisual: Boolean = false,
     isUpdated: Boolean = false,
-    val visualImage: Image = ImageGetter.getImage("UnitPromotionIcons/Scouting"),
+    private val visualImage: Image = ImageGetter.getImage("UnitPromotionIcons/Scouting"),
     private val hasUpdateImage: Image = ImageGetter.getImage("OtherIcons/Mods")
 ) {
     /** The table containing the indicators (one per mod, narrow, arranges up to three indicators vertically) */

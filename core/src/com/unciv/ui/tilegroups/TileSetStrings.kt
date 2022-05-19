@@ -91,19 +91,22 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, fallb
         else
             TileSetStrings(tileSetConfig.fallbackTileSet!!, fallbackDepth-1)
     }
+
+    @Suppress("MemberVisibilityCanBePrivate")
     /**
      * @param image An image path string, such as returned from an instance of [TileSetStrings].
      * @param fallbackImage A lambda function that will be run with the [fallback] as its receiver if the original image does not exist according to [ImageGetter.imageExists].
      * @return The original image path string if its image exists, or the return result of the [fallbackImage] lambda if the original image does not exist.
      * */
-    private fun orFallback(image: String, fallbackImage: TileSetStrings.() -> String): String {
+    fun orFallback(image: String, fallbackImage: TileSetStrings.() -> String): String {
         return if (fallback == null || ImageGetter.imageExists(image))
             image
         else
             fallback!!.run(fallbackImage)
     }
     /** @see orFallback */
-    private fun orFallback(image: TileSetStrings.() -> String, fallbackImage: TileSetStrings.() -> String)
+    @Suppress("MemberVisibilityCanBePrivate")
+    fun orFallback(image: TileSetStrings.() -> String, fallbackImage: TileSetStrings.() -> String)
             = orFallback(this.run(image), fallbackImage)
     /** @see orFallback */
     fun orFallback(image: TileSetStrings.() -> String)

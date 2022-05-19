@@ -28,8 +28,10 @@ class Era : RulesetObject(), IHasUniques {
 
     var friendBonus = HashMap<String, List<String>>()
     var allyBonus = HashMap<String, List<String>>()
-    private val friendBonusObjects: Map<CityStateType, List<Unique>> by lazy { initBonuses(friendBonus) }
-    private val allyBonusObjects: Map<CityStateType, List<Unique>> by lazy { initBonuses(allyBonus) }
+    @Suppress("MemberVisibilityCanBePrivate")
+    val friendBonusObjects: Map<CityStateType, List<Unique>> by lazy { initBonuses(friendBonus) }
+    @Suppress("MemberVisibilityCanBePrivate")
+    val allyBonusObjects: Map<CityStateType, List<Unique>> by lazy { initBonuses(allyBonus) }
 
     private var iconRGB: List<Int>? = null
 

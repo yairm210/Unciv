@@ -337,8 +337,9 @@ class CivilizationInfo {
         return if (victoryType in gameInfo.ruleSet.victories) victoryType
                else Constants.neutralVictoryType
     }
-    
-    private fun getPreferredVictoryTypeObject(): Victory? {
+
+    @Suppress("MemberVisibilityCanBePrivate")
+    fun getPreferredVictoryTypeObject(): Victory? {
         val preferredVictoryType = getPreferredVictoryType()
         return if (preferredVictoryType == Constants.neutralVictoryType) null
                else gameInfo.ruleSet.victories[getPreferredVictoryType()]!!

@@ -18,9 +18,9 @@ class TileGroupMap<T: TileGroup>(
     tileGroupsToUnwrap: Collection<T>? = null
 ): Group() {
     private var topX = -Float.MAX_VALUE
-    var topY = -Float.MAX_VALUE
+    private var topY = -Float.MAX_VALUE
     private var bottomX = Float.MAX_VALUE
-    var bottomY = Float.MAX_VALUE
+    private var bottomY = Float.MAX_VALUE
     private val groupSize = 50
     private val mirrorTileGroups = HashMap<TileInfo, Pair<T, T>>()
 

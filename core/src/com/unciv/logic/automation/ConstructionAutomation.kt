@@ -19,24 +19,24 @@ import kotlin.math.sqrt
 
 class ConstructionAutomation(val cityConstructions: CityConstructions){
 
-    val cityInfo = cityConstructions.cityInfo
-    val civInfo = cityInfo.civInfo
+    private val cityInfo = cityConstructions.cityInfo
+    private val civInfo = cityInfo.civInfo
 
     private val buildableBuildings = cityConstructions.getBuildableBuildings().toList()
-    val buildableNotWonders = buildableBuildings
+    private val buildableNotWonders = buildableBuildings
             .filterNot { it.isAnyWonder() }
     private val buildableWonders = buildableBuildings
             .filter { it.isAnyWonder() }
     
-    val buildableUnits = cityConstructions.getConstructableUnits()
+    private val buildableUnits = cityConstructions.getConstructableUnits()
 
-    val civUnits = civInfo.getCivUnits()
-    val militaryUnits = civUnits.count { it.baseUnit.isMilitary() }
-    val workers = civUnits.count { it.hasUniqueToBuildImprovements && it.isCivilian() }.toFloat()
-    val cities = civInfo.cities.size
+    private val civUnits = civInfo.getCivUnits()
+    private val militaryUnits = civUnits.count { it.baseUnit.isMilitary() }
+    private val workers = civUnits.count { it.hasUniqueToBuildImprovements && it.isCivilian() }.toFloat()
+    private val cities = civInfo.cities.size
     private val allTechsAreResearched = civInfo.tech.getNumberOfTechsResearched() >= civInfo.gameInfo.ruleSet.technologies.size
 
-    val isAtWar = civInfo.isAtWar()
+    private val isAtWar = civInfo.isAtWar()
     private val buildingsForVictory = civInfo.gameInfo.getEnabledVictories().values
             .mapNotNull { civInfo.victoryManager.getNextMilestone(it.name) }
             .filter { it.type == MilestoneType.BuiltBuilding || it.type == MilestoneType.BuildingBuiltGlobally }
@@ -48,11 +48,11 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     private val averageProduction = civInfo.cities.map { it.cityStats.currentCityStats.production }.average()
     private val cityIsOverAverageProduction = cityInfo.cityStats.currentCityStats.production >= averageProduction
 
-    val relativeCostEffectiveness = ArrayList<ConstructionChoice>()
+    private val relativeCostEffectiveness = ArrayList<ConstructionChoice>()
 
     private val faithConstruction = arrayListOf<BaseUnit>()
 
-    data class ConstructionChoice(val choice: String, var choiceModifier: Float, val remainingWork: Int)
+    private data class ConstructionChoice(val choice: String, var choiceModifier: Float, val remainingWork: Int)
 
     private fun addChoice(choices: ArrayList<ConstructionChoice>, choice: String, choiceModifier: Float) {
         choices.add(ConstructionChoice(choice, choiceModifier, cityConstructions.getRemainingWork(choice)))

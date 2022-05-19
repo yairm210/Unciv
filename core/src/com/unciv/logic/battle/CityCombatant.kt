@@ -38,7 +38,8 @@ class CityCombatant(val city: CityInfo) : ICombatant {
         return getCityStrength()
     }
 
-    private fun getCityStrength(combatAction: CombatAction = CombatAction.Defend): Int { // Civ fanatics forum, from a modder who went through the original code
+    @Suppress("MemberVisibilityCanBePrivate")
+    fun getCityStrength(combatAction: CombatAction = CombatAction.Defend): Int { // Civ fanatics forum, from a modder who went through the original code
         val modConstants = getCivInfo().gameInfo.ruleSet.modOptions.constants
         var strength = modConstants.cityStrengthBase
         strength += (city.population.population * modConstants.cityStrengthPerPop) // Each 5 pop gives 2 defence

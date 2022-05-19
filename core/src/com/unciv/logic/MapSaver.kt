@@ -54,10 +54,13 @@ object MapSaver {
     private class TileMapPreview {
         val mapParameters = MapParameters()
     }
+
     fun loadMapParameters(mapFile: FileHandle): MapParameters {
         return mapParametersFromSavedString(mapFile.readString())
     }
-    private fun mapParametersFromSavedString(mapString: String): MapParameters {
+
+    @Suppress("MemberVisibilityCanBePrivate")
+    fun mapParametersFromSavedString(mapString: String): MapParameters {
         val unzippedJson = try {
             Gzip.unzip(mapString.trim())
         } catch (ex: Exception) {

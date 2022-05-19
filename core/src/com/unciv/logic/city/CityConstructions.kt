@@ -177,7 +177,8 @@ class CityConstructions {
     fun getCurrentConstruction(): IConstruction = getConstruction(currentConstructionFromQueue)
 
     fun isBuilt(buildingName: String): Boolean = builtBuildings.contains(buildingName)
-    private fun isBeingConstructed(constructionName: String): Boolean = currentConstructionFromQueue == constructionName
+    @Suppress("MemberVisibilityCanBePrivate")
+    fun isBeingConstructed(constructionName: String): Boolean = currentConstructionFromQueue == constructionName
     fun isEnqueued(constructionName: String): Boolean = constructionQueue.contains(constructionName)
     fun isBeingConstructedOrEnqueued(constructionName: String): Boolean = isBeingConstructed(constructionName) || isEnqueued(constructionName)
 

@@ -96,7 +96,8 @@ class PolicyManager {
 
     private fun getRulesetPolicies() = civInfo.gameInfo.ruleSet.policies
 
-    private fun getPolicyByName(name: String): Policy = getRulesetPolicies()[name]!!
+    @Suppress("MemberVisibilityCanBePrivate")
+    fun getPolicyByName(name: String): Policy = getRulesetPolicies()[name]!!
 
     fun setTransients() {
         for (policyName in adoptedPolicies) addPolicyToTransients(
