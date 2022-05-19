@@ -551,7 +551,9 @@ class MapGenerator(val ruleset: Ruleset) {
             }.flatMap { terrain ->
                 val conditions = terrain.getGenerationConditions()
                 if (conditions.any()) conditions
-                else sequenceOf(TerrainOccursRange(terrain, -1f, -0.8f, 0f, 1f))
+                else sequenceOf(TerrainOccursRange(terrain,
+                    -1f, ruleset.modOptions.constants.spawnIceBelowTemperature,
+                    0f, 1f))
             }.toList()
         if (iceEquivalents.isEmpty()) return
 

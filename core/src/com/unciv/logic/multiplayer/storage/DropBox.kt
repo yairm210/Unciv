@@ -7,7 +7,6 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.Charset
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.concurrent.timer
 
 
@@ -140,8 +139,15 @@ object DropBox: FileStorage {
 //        return BufferedReader(InputStreamReader(result)).readText()
 //    }
 
+//    private class FolderList{
+//        var entries = ArrayList<MetaData>()
+//        var cursor = ""
+//        var has_more = false
+//    }
+
     @Suppress("PropertyName")
     private class MetaData: FileMetaData {
+//        var name = ""
         private var server_modified = ""
 
         override fun getLastModified(): Date {
