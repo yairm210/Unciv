@@ -335,15 +335,15 @@ open class TileInfo {
         }
 
         if (isAdjacentToRiver()) stats.gold++
-        
+
         if (observingCiv != null) {
             // resource base
             if (hasViewableResource(observingCiv)) stats.add(tileResource)
-            
+
             val improvement = getTileImprovement()
             if (improvement != null)
                 stats.add(getImprovementStats(improvement, observingCiv, city))
-                
+
             if (stats.gold != 0f && observingCiv.goldenAges.isGoldenAge())
                 stats.gold++
         }
@@ -351,14 +351,14 @@ open class TileInfo {
             if (stats.food < 2) stats.food = 2f
             if (stats.production < 1) stats.production = 1f
         }
-        
+
         for ((stat, value) in stats)
             if (value < 0f) stats[stat] = 0f
 
         for ((stat, value) in getTilePercentageStats(observingCiv, city)) {
             stats[stat] *= value.toPercent()
         }
-        
+
         return stats
     }
     
@@ -552,8 +552,8 @@ open class TileInfo {
                 stats[stat] += unique.params[0].toFloat()
             }
         }
-        
-        return stats;
+
+        return stats
     }
 
     // This should be the only adjacency function
