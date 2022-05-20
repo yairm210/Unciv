@@ -26,6 +26,13 @@ open class PickerScreen(disableScroll: Boolean = false) : BaseScreen() {
     init {
         pickerPane.setFillParent(true)
         stage.addActor(pickerPane)
+        ensureLayout() 
+    }
+
+    /** Make sure that anyone relying on sizes of the tables within this class during construction gets correct size readings.
+     * (see [com.unciv.ui.pickerscreens.PolicyPickerScreen]) */
+    private fun ensureLayout() {
+        pickerPane.validate()
     }
 
     /**
