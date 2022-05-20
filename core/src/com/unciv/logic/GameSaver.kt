@@ -47,7 +47,7 @@ class GameSaver(
 
     private fun getSave(saveFolder: String, gameName: String): FileHandle {
         val localFile = files.local("${saveFolder}/$gameName")
-        if (externalFilesDirForAndroid == "" || !files.isExternalStorageAvailable) return localFile
+        if (externalFilesDirForAndroid == null || externalFilesDirForAndroid.isBlank() || !files.isExternalStorageAvailable) return localFile
         val externalFile = files.absolute(externalFilesDirForAndroid + "/${saveFolder}/$gameName")
         if (localFile.exists() && !externalFile.exists()) return localFile
         return externalFile
@@ -65,7 +65,7 @@ class GameSaver(
 
     private fun getSaves(saveFolder: String): Sequence<FileHandle> {
         val localSaves = files.local(saveFolder).list().asSequence()
-        if (externalFilesDirForAndroid == "" || !files.isExternalStorageAvailable) return localSaves
+        if (externalFilesDirForAndroid == null || externalFilesDirForAndroid.isBlank() || !files.isExternalStorageAvailable) return localSaves
         return localSaves + files.absolute(externalFilesDirForAndroid + "/${saveFolder}").list().asSequence()
     }
 
