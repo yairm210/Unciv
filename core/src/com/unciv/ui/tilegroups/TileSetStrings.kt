@@ -72,10 +72,14 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, fallb
     fun getTerrainFeatureOverlay(terrainFeature: String) = getString(tileSetLocation, terrainFeature, overlay)
 
     fun getCityTile(baseTerrain: String?, era: String?): String {
-        if (baseTerrain != null && era != null) return getString(tilesLocation, baseTerrain, city, tag, era)
-        if (era != null) return getString(tilesLocation, city, tag, era)
-        if (baseTerrain != null) return getString(tilesLocation, baseTerrain, "+", city)
-        else return cityTile
+        if (baseTerrain != null && era != null)
+            return getString(tilesLocation, baseTerrain, city, tag, era)
+        if (era != null)
+            return getString(tilesLocation, city, tag, era)
+        if (baseTerrain != null)
+            return getString(tilesLocation, baseTerrain, "+", city)
+        else
+            return cityTile
     }
 
     fun getBorder(borderShapeString: String, innerOrOuter:String) = getString(bordersLocation, borderShapeString, innerOrOuter)
@@ -87,6 +91,8 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, fallb
         else
             TileSetStrings(tileSetConfig.fallbackTileSet!!, fallbackDepth-1)
     }
+
+    @Suppress("MemberVisibilityCanBePrivate")
     /**
      * @param image An image path string, such as returned from an instance of [TileSetStrings].
      * @param fallbackImage A lambda function that will be run with the [fallback] as its receiver if the original image does not exist according to [ImageGetter.imageExists].
@@ -99,6 +105,7 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, fallb
             fallback!!.run(fallbackImage)
     }
     /** @see orFallback */
+    @Suppress("MemberVisibilityCanBePrivate")
     fun orFallback(image: TileSetStrings.() -> String, fallbackImage: TileSetStrings.() -> String)
             = orFallback(this.run(image), fallbackImage)
     /** @see orFallback */

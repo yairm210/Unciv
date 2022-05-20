@@ -19,7 +19,6 @@ import com.unciv.ui.mapeditor.MapEditorEditTab.BrushHandlerType
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.*
-import kotlin.random.Random
 
 internal interface IMapEditorEditSubTabs {
     fun isDisabled(): Boolean

@@ -207,8 +207,8 @@ class TradeEvaluation {
 
                 // I know it's confusing, you're welcome to change to a more understandable way of counting if you can think of one...
                 for (numberOfResource in (amountLeft - offer.amount + 1)..amountLeft) {
-                    if (numberOfResource > 5) totalCost += 100
-                    else totalCost += (6 - numberOfResource) * 100
+                    totalCost += if (numberOfResource > 5) 100
+                                else (6 - numberOfResource) * 100
                 }
                 return totalCost
             }
@@ -216,9 +216,8 @@ class TradeEvaluation {
             TradeType.Introduction -> return introductionValue(civInfo.gameInfo.ruleSet)
             TradeType.WarDeclaration -> {
                 val civToDeclareWarOn = civInfo.gameInfo.getCivilization(offer.name)
-                val threatToUs = Automation.threatAssessment(civInfo, civToDeclareWarOn)
 
-                return when (threatToUs) {
+                return when (Automation.threatAssessment(civInfo, civToDeclareWarOn)) {
                     ThreatLevel.VeryLow -> 100
                     ThreatLevel.Low -> 250
                     ThreatLevel.Medium -> 500
@@ -278,7 +277,7 @@ class TradeEvaluation {
 
     private fun introductionValue(ruleSet: Ruleset): Int {
         val unique = ruleSet.modOptions.getMatchingUniques(ModOptionsConstants.tradeCivIntroductions).firstOrNull()
-        if (unique == null) return 0
+            ?: return 0
         return unique.params[0].toInt()
     }
 }

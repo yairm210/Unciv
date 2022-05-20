@@ -10,7 +10,6 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Victory
-import com.unciv.models.ruleset.Victory.Focus
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.LocalUniqueCache
@@ -90,13 +89,13 @@ object Automation {
             if (city.civInfo.gold < 0 && city.civInfo.statsForNextTurn.gold <= 0)
                 yieldStats.gold *= 2 // We have a global problem
 
-            if (city.tiles.size < 12 || city.civInfo.wantsToFocusOn(Focus.Culture))
+            if (city.tiles.size < 12 || city.civInfo.wantsToFocusOn(Victory.Focus.Culture))
                 yieldStats.culture *= 2
 
             if (city.civInfo.getHappiness() < 0 && !specialist) // since this doesn't get updated, may overshoot
                 yieldStats.happiness *= 2
 
-            if (city.civInfo.wantsToFocusOn(Focus.Science))
+            if (city.civInfo.wantsToFocusOn(Victory.Focus.Science))
                 yieldStats.science *= 2
         }
 
@@ -112,6 +111,7 @@ object Automation {
             city.cityConstructions.currentConstructionFromQueue = chosenUnitName
     }
 
+    @Suppress("MemberVisibilityCanBePrivate")
     fun providesUnneededCarryingSlots(baseUnit: BaseUnit, civInfo: CivilizationInfo): Boolean {
         // Simplified, will not work for crazy mods with more than one carrying filter for a unit
         val carryUnique = baseUnit.getMatchingUniques(UniqueType.CarryAirUnits).first()
@@ -122,8 +122,8 @@ object Automation {
                 mapUnit.getMatchingUniques(UniqueType.CarryAirUnits).firstOrNull() ?: return 0
             if (mapUnitCarryUnique.params[1] != carryFilter) return 0 //Carries a different type of unit
             return mapUnitCarryUnique.params[0].toInt() +
-                mapUnit.getMatchingUniques(UniqueType.CarryExtraAirUnits)
-                    .filter { it.params[1] == carryFilter }.sumOf { it.params[0].toInt() }
+                    mapUnit.getMatchingUniques(UniqueType.CarryExtraAirUnits)
+                        .filter { it.params[1] == carryFilter }.sumOf { it.params[0].toInt() }
         }
 
         val totalCarriableUnits =
@@ -145,7 +145,7 @@ object Automation {
         findWaterConnectedCitiesAndEnemies.stepToEnd()
         if (findWaterConnectedCitiesAndEnemies.getReachedTiles().none {
                 (it.isCityCenter() && it.getOwner() != city.civInfo)
-                    || (it.militaryUnit != null && it.militaryUnit!!.civInfo != city.civInfo)
+                        || (it.militaryUnit != null && it.militaryUnit!!.civInfo != city.civInfo)
             }) // there is absolutely no reason for you to make water units on this body of water.
             militaryUnits = militaryUnits.filter { !it.isWaterUnit() }
 
@@ -208,14 +208,14 @@ object Automation {
             multiplier /= 2
 
         // If we have a lot of, or no cities we are not afraid
-        if (civInfo.cities.isEmpty() || civInfo.cities.count() >= 4 * multiplier)
+        if (civInfo.cities.isEmpty() || civInfo.cities.size >= 4 * multiplier)
             return false
 
         // If we have vision of our entire starting continent (ish) we are not afraid
         civInfo.gameInfo.tileMap.assignContinents(TileMap.AssignContinentsMode.Ensure)
         val startingContinent = civInfo.getCapital()!!.getCenterTile().getContinent()
         val startingContinentSize = civInfo.gameInfo.tileMap.continentSizes[startingContinent]
-        if (startingContinentSize != null && startingContinentSize < civInfo.viewableTiles.count() * multiplier)
+        if (startingContinentSize != null && startingContinentSize < civInfo.viewableTiles.size * multiplier)
             return false
 
         // Otherwise we're afraid
@@ -231,9 +231,10 @@ object Automation {
         construction: INonPerpetualConstruction
     ): Boolean {
         return allowCreateImprovementBuildings(civInfo, cityInfo, construction)
-            && allowSpendingResource(civInfo, construction)
+                && allowSpendingResource(civInfo, construction)
     }
 
+    @Suppress("MemberVisibilityCanBePrivate")
     /** Checks both feasibility of Buildings with a [UniqueType.CreatesOneImprovement] unique (appropriate tile available).
      *  Constructions without pass uncontested. */
     fun allowCreateImprovementBuildings(
@@ -293,7 +294,7 @@ object Automation {
             val neededForBuilding = civInfo.lastEraResourceUsedForBuilding[resource] != null
             // Don't care about old units
             val neededForUnits = civInfo.lastEraResourceUsedForUnit[resource] != null
-                && civInfo.lastEraResourceUsedForUnit[resource]!! >= civInfo.getEraNumber()
+                    && civInfo.lastEraResourceUsedForUnit[resource]!! >= civInfo.getEraNumber()
 
             // No need to save for both
             if (!neededForBuilding || !neededForUnits) {
@@ -335,7 +336,7 @@ object Automation {
     }
 
     /** Support [UniqueType.CreatesOneImprovement] unique - find best tile for placement automation */
-    fun getTileForConstructionImprovement(cityInfo: CityInfo, improvement: TileImprovement): TileInfo? {
+    fun getTileForConstructionImprovement(cityInfo: CityInfo,  improvement: TileImprovement): TileInfo? {
         return cityInfo.getTiles().filter {
             it.canBuildImprovement(improvement, cityInfo.civInfo)
         }.maxByOrNull {
@@ -402,7 +403,7 @@ object Automation {
             if (adjacentTile.hasViewableResource(cityInfo.civInfo) &&
                 (adjacentDistance < 3 ||
                     adjacentTile.tileResource.resourceType != ResourceType.Bonus
-                    )
+                )
             ) score -= 1
             if (adjacentTile.naturalWonder != null) {
                 if (adjacentDistance < 3) adjacentNaturalWonder = true
@@ -420,11 +421,15 @@ object Automation {
 
     fun rankStatsValue(stats: Stats, civInfo: CivilizationInfo): Float {
         var rank = 0.0f
-        if (stats.food <= 2) rank += (stats.food * 1.2f) //food get more value to keep city growing
-        else rank += (2.4f + (stats.food - 2) / 2) // 1.2 point for each food up to 2, from there on half a point
+        rank += if (stats.food <= 2)
+                    (stats.food * 1.2f) //food get more value to keep city growing
+                else
+                    (2.4f + (stats.food - 2) / 2) // 1.2 point for each food up to 2, from there on half a point
 
-        if (civInfo.gold < 0 && civInfo.statsForNextTurn.gold <= 0) rank += stats.gold
-        else rank += stats.gold / 3 // 3 gold is much worse than 2 production
+        rank += if (civInfo.gold < 0 && civInfo.statsForNextTurn.gold <= 0)
+                    stats.gold
+                else
+                    stats.gold / 3 // 3 gold is much worse than 2 production
 
         rank += stats.production
         rank += stats.science

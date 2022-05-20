@@ -7,10 +7,7 @@ import com.unciv.ui.utils.*
 
 
 /** Stage that safely brings the game to a [CrashScreen] if any event handlers throw an exception or an error that doesn't get otherwise handled. */
-class CrashHandlingStage: Stage {
-    constructor(): super()
-    constructor(viewport: Viewport): super(viewport)
-    constructor(viewport: Viewport, batch: Batch) : super(viewport, batch)
+class CrashHandlingStage(viewport: Viewport, batch: Batch) : Stage(viewport, batch) {
 
     override fun draw() = { super.draw() }.wrapCrashHandlingUnit()()
     override fun act() = { super.act() }.wrapCrashHandlingUnit()()

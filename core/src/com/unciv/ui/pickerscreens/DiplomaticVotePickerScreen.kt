@@ -19,7 +19,7 @@ class DiplomaticVotePickerScreen(private val votingCiv: CivilizationInfo) : Pick
         val choosableCivs = votingCiv.gameInfo.civilizations.filter { it.isMajorCiv() && it != votingCiv && !it.isDefeated() }
         for (civ in choosableCivs)
         {
-            val button = getPickerOptionButton(ImageGetter.getNationIndicator(civ.nation, pickerOptionIconSize), civ.civName)
+            val button = PickerPane.getPickerOptionButton(ImageGetter.getNationIndicator(civ.nation, PickerPane.pickerOptionIconSize), civ.civName)
             button.pack()
             button.onClick {
                 chosenCiv = civ.civName
