@@ -8,11 +8,9 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.tile.*
-import com.unciv.models.ruleset.unique.LocalUniqueCache
-import com.unciv.models.ruleset.unique.StateForConditionals
-import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.*
+import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
@@ -319,7 +317,6 @@ open class TileInfo {
             tileUniques += city.getMatchingUniques(UniqueType.StatsFromObject, stateForConditionals)
             for (unique in localUniqueCache.get("StatsFromTilesAndObjects", tileUniques)) {
                 val tileType = unique.params[1]
-                if (tileType == improvement) continue // This is added to the calculation in getImprovementStats. we don't want to add it twice
                 if (matchesTerrainFilter(tileType, observingCiv)) 
                     stats.add(unique.stats)
                 if (tileType == "Natural Wonder" && naturalWonder != null && city.civInfo.hasUnique(UniqueType.DoubleStatsFromNaturalWonders)) {
@@ -338,26 +335,76 @@ open class TileInfo {
         }
 
         if (isAdjacentToRiver()) stats.gold++
-
+        
         if (observingCiv != null) {
             // resource base
             if (hasViewableResource(observingCiv)) stats.add(tileResource)
-
+            
             val improvement = getTileImprovement()
             if (improvement != null)
                 stats.add(getImprovementStats(improvement, observingCiv, city))
-
-            if (isCityCenter()) {
-                if (stats.food < 2) stats.food = 2f
-                if (stats.production < 1) stats.production = 1f
-            }
-
+                
             if (stats.gold != 0f && observingCiv.goldenAges.isGoldenAge())
                 stats.gold++
         }
+        if (isCityCenter()) {
+            if (stats.food < 2) stats.food = 2f
+            if (stats.production < 1) stats.production = 1f
+        }
+        
         for ((stat, value) in stats)
             if (value < 0f) stats[stat] = 0f
 
+        for ((stat, value) in getTilePercentageStats(observingCiv, city)) {
+            stats[stat] *= value.toPercent()
+        }
+        
+        return stats
+    }
+    
+    // Also gets percentile tile improvement stats
+    @Suppress("MemberVisibilityCanBePrivate")
+    fun getTilePercentageStats(observingCiv: CivilizationInfo?, city: CityInfo?): Stats {
+        val stats = Stats()
+        val stateForConditionals = StateForConditionals(civInfo = observingCiv, cityInfo = city, tile = this)
+        
+        if (city != null) {
+            for (unique in city.getMatchingUniques(UniqueType.StatPercentFromObject, stateForConditionals)) {
+                val tileFilter = unique.params[2]
+                if (matchesTerrainFilter(tileFilter, observingCiv))
+                    stats[Stat.valueOf(unique.params[1])] += unique.params[0].toFloat()
+            }
+            
+            for (unique in city.getMatchingUniques(UniqueType.AllStatsPercentFromObject, stateForConditionals)) {
+                val tileFilter = unique.params[1]
+                if (!matchesTerrainFilter(tileFilter, observingCiv)) continue
+                val statPercentage = unique.params[0].toFloat()
+                for (stat in Stat.values())
+                    stats[stat] += statPercentage
+            }
+            
+        } else if (observingCiv != null) {
+            for (unique in observingCiv.getMatchingUniques(UniqueType.StatPercentFromObject, stateForConditionals)) {
+                val tileFilter = unique.params[2]
+                if (matchesTerrainFilter(tileFilter, observingCiv))
+                    stats[Stat.valueOf(unique.params[1])] += unique.params[0].toFloat()
+            }
+
+            for (unique in observingCiv.getMatchingUniques(UniqueType.AllStatsPercentFromObject, stateForConditionals)) {
+                val tileFilter = unique.params[1]
+                if (!matchesTerrainFilter(tileFilter, observingCiv)) continue
+                val statPercentage = unique.params[0].toFloat()
+                for (stat in Stat.values())
+                    stats[stat] += statPercentage
+            }
+        }
+        
+        if (observingCiv != null) {
+            val improvement = getTileImprovement()
+            if (improvement != null)
+                stats.add(getImprovementPercentageStats(improvement, observingCiv, city))
+        }
+        
         return stats
     }
 
@@ -464,21 +511,49 @@ open class TileInfo {
                     stats.add(unique.stats)
                 }
             }
-
-            for (unique in city.getMatchingUniques(UniqueType.AllStatsPercentFromObject, conditionalState)) {
-                if (improvement.matchesFilter(unique.params[1]))
-                    stats.timesInPlace(unique.params[0].toPercent())
-            }
-        }
-
-        if (city == null) { // As otherwise we already got this above
-            for (unique in observingCiv.getMatchingUniques(UniqueType.AllStatsPercentFromObject, conditionalState)) {
-                if (improvement.matchesFilter(unique.params[1]))
-                    stats.timesInPlace(unique.params[0].toPercent())
-            }
         }
 
         return stats
+    }
+    
+    @Suppress("MemberVisibilityCanBePrivate")
+    fun getImprovementPercentageStats(improvement: TileImprovement, observingCiv: CivilizationInfo, city: CityInfo?): Stats {
+        val stats = Stats()
+        val conditionalState = StateForConditionals(civInfo = observingCiv, cityInfo = city, tile = this)
+        
+        // I would love to make an interface 'canCallMatchingUniques' 
+        // from which both cityInfo and CivilizationInfo derive, so I don't have to duplicate all this code
+        // But something something too much for this PR.
+        
+        if (city != null) {
+            for (unique in city.getMatchingUniques(UniqueType.AllStatsPercentFromObject, conditionalState)) {
+                if (!improvement.matchesFilter(unique.params[1])) continue
+                for (stat in Stat.values()) {
+                    stats[stat] += unique.params[0].toFloat()   
+                }
+            }
+
+            for (unique in city.getMatchingUniques(UniqueType.StatPercentFromObject, conditionalState)) {
+                if (!improvement.matchesFilter(unique.params[2])) continue
+                val stat = Stat.valueOf(unique.params[1])
+                stats[stat] += unique.params[0].toFloat()
+            }
+            
+        } else {
+            for (unique in observingCiv.getMatchingUniques(UniqueType.AllStatsPercentFromObject, conditionalState)) {
+                if (!improvement.matchesFilter(unique.params[1])) continue
+                for (stat in Stat.values()) {
+                    stats[stat] += unique.params[0].toFloat()
+                }
+            }
+            for (unique in observingCiv.getMatchingUniques(UniqueType.StatPercentFromObject, conditionalState)) {
+                if (!improvement.matchesFilter(unique.params[2])) continue
+                val stat = Stat.valueOf(unique.params[1])
+                stats[stat] += unique.params[0].toFloat()
+            }
+        }
+        
+        return stats;
     }
 
     // This should be the only adjacency function

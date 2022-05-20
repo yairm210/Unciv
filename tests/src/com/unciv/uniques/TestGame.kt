@@ -16,6 +16,7 @@ import com.unciv.models.Religion
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.*
+import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.utils.withItem
 import kotlin.math.abs
@@ -61,7 +62,9 @@ class TestGame {
         gameInfo.tileMap = newTileMap
     }
 
-    /** Makes a new hexagonal tileMap and sets it in gameInfo. Removes all existing tiles. All new tiles have terrain [baseTerrain] */
+    /** Makes a new hexagonal tileMap with radius [newRadius] and sets it in gameInfo. 
+     * Removes all existing tiles. All new tiles have terrain [baseTerrain] 
+     */
     fun makeHexagonalMap(newRadius: Int, baseTerrain: String = Constants.desert) {
         val newTileMap = TileMap(newRadius, ruleset, tileMap.mapParameters.worldWrap)
         newTileMap.mapParameters.mapSize = MapSizeNew(newRadius)
@@ -84,7 +87,7 @@ class TestGame {
             tile.addTerrainFeature(feature)
         }
         return tile
-    }    
+    }
     
     fun addCiv(uniques: List<String> = emptyList(), isPlayer: Boolean = false, cityState: CityStateType? = null): CivilizationInfo {
         val nationName = "Nation-${objectsCreated++}"

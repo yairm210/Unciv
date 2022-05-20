@@ -84,7 +84,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     StatsFromCitiesOnSpecificTiles("[stats] in cities on [terrainFilter] tiles", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatsFromBuildings("[stats] from all [buildingFilter] buildings", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    StatsSpendingGreatPeople("[stats] whenever a Great Person is expended", UniqueTarget.Global),
     StatsFromTiles("[stats] from [tileFilter] tiles [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatsFromTilesWithout("[stats] from [tileFilter] tiles without [tileFilter] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     // This is a doozy
@@ -96,8 +95,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     // Stat percentage boosts
     StatPercentBonus("[relativeAmount]% [stat]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatPercentBonusCities("[relativeAmount]% [stat] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    StatPercentFromObject("[relativeAmount]% [stat] from every [tileFilter/specialist/buildingName]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    AllStatsPercentFromObject("[relativeAmount]% Yield from every [tileFilter]", UniqueTarget.FollowerBelief, UniqueTarget.Global),
+    // Todo: Add support for specialist next to buildingName
+    StatPercentFromObject("[relativeAmount]% [stat] from every [buildingFilter/tileFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    AllStatsPercentFromObject("[relativeAmount]% Yield from every [buildingFilter/tileFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatPercentFromReligionFollowers("[relativeAmount]% [stat] from every follower, up to [relativeAmount]%", UniqueTarget.FollowerBelief),
     BonusStatsFromCityStates("[relativeAmount]% [stat] from City-States", UniqueTarget.Global),
     StatPercentFromTradeRoutes("[relativeAmount]% [stat] from Trade Routes", UniqueTarget.Global),
@@ -165,6 +165,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     FreeExtraAnyBeliefs("May choose [amount] additional belief(s) of any type when [foundingOrEnhancing] a religion", UniqueTarget.Global),
     StatsWhenAdoptingReligionSpeed("[stats] when a city adopts this religion for the first time (modified by game speed)", UniqueTarget.Global),
     StatsWhenAdoptingReligion("[stats] when a city adopts this religion for the first time", UniqueTarget.Global),
+    StatsSpendingGreatPeople("[stats] whenever a Great Person is expended", UniqueTarget.Global),
 
     UnhappinessFromPopulationTypePercentageChange("[relativeAmount]% Unhappiness from [populationFilter] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     @Deprecated("As of 3.19.19", ReplaceWith("[relativeAmount]% Unhappiness from [Population] [cityFilter]"))

@@ -98,11 +98,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "[stats] whenever a Great Person is expended"
-	Example: "[+1 Gold, +2 Production] whenever a Great Person is expended"
-
-	Applicable to: Global
-
 ??? example  "[stats] from [tileFilter] tiles [cityFilter]"
 	Example: "[+1 Gold, +2 Production] from [Farm] tiles [in all cities]"
 
@@ -133,13 +128,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "[relativeAmount]% [stat] from every [tileFilter/specialist/buildingName]"
-	Example: "[+20]% [Culture] from every [Farm]"
+??? example  "[relativeAmount]% [stat] from every [buildingFilter/tileFilter]"
+	Example: "[+20]% [Culture] from every [Culture]"
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "[relativeAmount]% Yield from every [tileFilter]"
-	Example: "[+20]% Yield from every [Farm]"
+??? example  "[relativeAmount]% Yield from every [buildingFilter/tileFilter]"
+	Example: "[+20]% Yield from every [Culture]"
 
 	Applicable to: Global, FollowerBelief
 
@@ -287,6 +282,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "[stats] when a city adopts this religion for the first time"
 	Example: "[+1 Gold, +2 Production] when a city adopts this religion for the first time"
+
+	Applicable to: Global
+
+??? example  "[stats] whenever a Great Person is expended"
+	Example: "[+1 Gold, +2 Production] whenever a Great Person is expended"
 
 	Applicable to: Global
 
@@ -808,6 +808,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ## FounderBelief uniques
 ??? example  "[stats] for each global city following this religion"
 	Example: "[+1 Gold, +2 Production] for each global city following this religion"
+
+	Applicable to: FounderBelief
+
+??? example  "[stats] from every [amount] global followers [cityFilter]"
+	Example: "[+1 Gold, +2 Production] from every [3] global followers [in all cities]"
 
 	Applicable to: FounderBelief
 
