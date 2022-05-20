@@ -11,17 +11,21 @@ import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 class ViewFriendsListScreen(previousScreen: BaseScreen) : PickerScreen() {
     private val rightSideTable = Table()
     private val leftSideTable = Table()
+    private var friendsTable = Table()
 
     private val addFriendText = "Add friend"
+    private val editFriendText = "Edit friend"
     private val refreshText = "Refresh"
 
     private val addFriendButton = addFriendText.toTextButton()
+    private val editFriendButton = editFriendText.toTextButton()
     private val refreshButton = refreshText.toTextButton()
 
-    val friendsList = FriendList()
-    //val listOfFriends = friendsList.getFriendsList()
-    var listOfFriends: MutableList<FriendList.Friend> = mutableListOf()
-    var listOfFriendsButtons = arrayListOf<TextButton>()
+    private val friendsList = FriendList()
+    private var listOfFriends: MutableList<FriendList.Friend> = mutableListOf()
+    private var listOfFriendsButtons = arrayListOf<TextButton>()
+
+    private lateinit var selectedFriend: FriendList.Friend
 
     init {
         setDefaultCloseAction(previousScreen)
@@ -59,34 +63,38 @@ class ViewFriendsListScreen(previousScreen: BaseScreen) : PickerScreen() {
         addFriendButton.onClick {
             game.setScreen(AddFriendScreen(this))
         }
-        rightSideTable.add(addFriendButton).padBottom(30f).row()
+        rightSideTable.add(addFriendButton).padBottom(10f).row()
+
+        editFriendButton.onClick {
+            game.setScreen(EditFriendScreen(selectedFriend,this))
+            editFriendButton.disable()
+        }
+        rightSideTable.add(editFriendButton).padBottom(30f).row()
+        editFriendButton.disable()
 
         refreshButton.onClick {
-            leftSideTable.reset()
-            friendsList.load()
-            listOfFriends = friendsList.getFriendsList()
-            for (index in listOfFriends.indices) {
-                listOfFriendsButtons.add(listOfFriends[index].name.toTextButton())
-
-                listOfFriendsButtons[index].onClick {
-
-                }
-                leftSideTable.add(listOfFriendsButtons[index]).padBottom(20f).row()
-            }
+            refreshFriendsList()
         }
         rightSideTable.add(refreshButton).padBottom(30f).row()
 
-        friendsList.load()
+        refreshFriendsList()
+    }
+
+    fun refreshFriendsList() {
+        listOfFriendsButtons.clear()
         listOfFriends = friendsList.getFriendsList()
+        friendsTable.clear()
+
         for (index in listOfFriends.indices) {
             listOfFriendsButtons.add(listOfFriends[index].name.toTextButton())
 
             listOfFriendsButtons[index].onClick {
-
+                selectedFriend = listOfFriends[index]
+                editFriendButton.enable()
             }
-            leftSideTable.add(listOfFriendsButtons[index]).padBottom(20f).row()
+            friendsTable.add(listOfFriendsButtons[index]).padBottom(20f).row()
         }
-        println(listOfFriends)
-//        println(listOfFriendsButtons)
+        leftSideTable.clear()
+        leftSideTable.add(friendsTable)
     }
 }

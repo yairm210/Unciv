@@ -1,18 +1,21 @@
 package com.unciv.ui
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.models.translations.tr
 import com.unciv.ui.multiplayer.FriendList
 import com.unciv.ui.pickerscreens.PickerScreen
+import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.utils.*
 
-class AddFriendScreen(backScreen: ViewFriendsListScreen) : PickerScreen(){
+class EditFriendScreen(selectedFriend: FriendList.Friend, backScreen: ViewFriendsListScreen) : PickerScreen(){
     init {
-        val friendNameTextField = TextField("", skin)
+        val friendNameTextField = TextField(selectedFriend.name, skin)
         val pasteGameIDButton = "Paste playerID from clipboard".toTextButton()
-        val playerIDTextField = TextField("", skin)
+        val playerIDTextField = TextField(selectedFriend.playerID, skin)
+        val deleteFriendButton = "Delete".toTextButton()
         val friendlist = FriendList()
 
 
@@ -29,6 +32,16 @@ class AddFriendScreen(backScreen: ViewFriendsListScreen) : PickerScreen(){
         gameIDTable.add(pasteGameIDButton)
         topTable.add(gameIDTable).padBottom(30f).row()
 
+        deleteFriendButton.onClick {
+            val askPopup = YesNoPopup("Are you sure you want to this friend?", {
+                friendlist.deleteFriend(selectedFriend)
+                backScreen.game.setScreen(backScreen)
+                backScreen.refreshFriendsList()
+            }, this)
+            askPopup.open()
+        }.apply { color = Color.RED }
+        topTable.add(deleteFriendButton)
+
         //CloseButton Setup
         closeButton.setText("Back".tr())
         closeButton.onClick {
@@ -36,10 +49,12 @@ class AddFriendScreen(backScreen: ViewFriendsListScreen) : PickerScreen(){
         }
 
         //RightSideButton Setup
-        rightSideButton.setText("Add friend".tr())
+        rightSideButton.setText("Save".tr())
         rightSideButton.enable()
         rightSideButton.onClick {
-            friendlist.addNewFriend(friendNameTextField.text, playerIDTextField.text)
+            //friendlist.addNewFriend(friendNameTextField.text, playerIDTextField.text)
+            // TODO Change friend settings
+            friendlist.editFriend(selectedFriend, friendNameTextField.text, playerIDTextField.text)
             backScreen.game.setScreen(backScreen)
             backScreen.refreshFriendsList()
         }

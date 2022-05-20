@@ -36,12 +36,27 @@ class FriendList {
                 friendsListFileHandle.writeString("[]", false)
             }
             val newFriends = json().fromJsonFile(Array<Friend>::class.java, friendsListFileName)
-
+            friendList.clear()
             friendList.addAll(newFriends)
         }
     }
 
+    fun editFriend(friend: Friend, name: String, playerID: String) {
+        load()
+        friendList.remove(friend)
+        val editedFriend = Friend(name,playerID)
+        friendList.add(editedFriend)
+        save()
+    }
+
+    fun deleteFriend(friend: Friend) {
+        load()
+        friendList.remove(friend)
+        save()
+    }
+
     fun getFriendsList(): MutableList<Friend> {
+        load()
         return friendList
     }
 }
