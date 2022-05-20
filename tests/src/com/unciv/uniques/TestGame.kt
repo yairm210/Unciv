@@ -16,11 +16,7 @@ import com.unciv.models.Religion
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.*
-import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.utils.withItem
-import kotlin.math.abs
-import kotlin.math.max
 
 class TestGame {
 
