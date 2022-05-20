@@ -1305,11 +1305,9 @@ class CivilizationInfo {
      * Removes current capital then moves capital to argument city if not null
      */
     fun moveCapitalTo(city: CityInfo?) {
-        if (cities.isNotEmpty()) {
-            val oldCapital = getCapital()
-            if (oldCapital != null) {
-                oldCapital.cityConstructions.removeBuilding(oldCapital.capitalCityIndicator())
-            }
+        if (cities.isNotEmpty() && getCapital() != null) {
+            val oldCapital = getCapital()!!
+            oldCapital.cityConstructions.removeBuilding(oldCapital.capitalCityIndicator())
         }
 
         if (city == null) return // can't move a non-existent city but we can always remove our old capital
