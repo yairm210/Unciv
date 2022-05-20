@@ -38,6 +38,7 @@ class CityCombatant(val city: CityInfo) : ICombatant {
         return getCityStrength()
     }
 
+    @Suppress("MemberVisibilityCanBePrivate")
     fun getCityStrength(combatAction: CombatAction = CombatAction.Defend): Int { // Civ fanatics forum, from a modder who went through the original code
         val modConstants = getCivInfo().gameInfo.ruleSet.modOptions.constants
         var strength = modConstants.cityStrengthBase
@@ -46,8 +47,8 @@ class CityCombatant(val city: CityInfo) : ICombatant {
         for (unique in cityTile.getAllTerrains().flatMap { it.getMatchingUniques(UniqueType.GrantsCityStrength) })
             strength += unique.params[0].toInt()
         // as tech progresses so does city strength
-        val techCount = getCivInfo().gameInfo.ruleSet.technologies.count()
-        val techsPercentKnown: Float = if (techCount > 0) city.civInfo.tech.techsResearched.count().toFloat() / techCount else 0.5f // for mods with no tech
+        val techCount = getCivInfo().gameInfo.ruleSet.technologies.size
+        val techsPercentKnown: Float = if (techCount > 0) city.civInfo.tech.techsResearched.size.toFloat() / techCount else 0.5f // for mods with no tech
         strength += (techsPercentKnown * modConstants.cityStrengthFromTechsMultiplier).pow(modConstants.cityStrengthFromTechsExponent) * modConstants.cityStrengthFromTechsFullMultiplier
 
         // The way all of this adds up...

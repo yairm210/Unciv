@@ -2,7 +2,6 @@ package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.Files
 import com.badlogic.gdx.files.FileHandle
-import com.badlogic.gdx.utils.Json
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.updateDeprecations
@@ -131,8 +130,8 @@ object Github {
      */
     object RateLimit {
         // https://docs.github.com/en/rest/reference/search#rate-limit
-        const val maxRequestsPerInterval = 10
-        const val intervalInMilliSeconds = 60000L
+        private const val maxRequestsPerInterval = 10
+        private const val intervalInMilliSeconds = 60000L
         private const val maxWaitLoop = 3
 
         private var account = 0         // used requests
@@ -250,6 +249,7 @@ object Github {
      */
     @Suppress("PropertyName")
     class RepoSearch {
+        @Suppress("MemberVisibilityCanBePrivate")
         var total_count = 0
         var incomplete_results = false
         var items = ArrayList<Repo>()
