@@ -4,6 +4,7 @@ import com.unciv.Constants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.logic.city.IConstruction  // Kdoc only
 
+
 /** Container helps aggregating supply and demand of [resources][ResourceSupply.resource], categorized by [origin][ResourceSupply.origin].
  *
  *  @param keepZeroAmounts If `false`, entries with [amount][ResourceSupply.amount] 0 are eliminated 
@@ -19,12 +20,22 @@ class ResourceSupplyList(
     }
 
     /** Fetch a [ResourceSupply] entry or `null` if no match found */
-    fun get(resource: TileResource, origin: String) =
-        firstOrNull { it.resource == resource && it.origin == origin }
+    fun get(resource: TileResource, origin: String): ResourceSupply? {
+        var result: ResourceSupply? = null
+        Instrumentation.get.measure {
+            result = firstOrNull { it.resource == resource && it.origin == origin }
+        }
+        return result
+    }
 
     /** Get the total amount for a resource by [resourceName] */
-    fun sumBy(resourceName: String) =
-        asSequence().filter { it.resource.name == resourceName }.sumOf { it.amount }
+    fun sumBy(resourceName: String) : Int {
+        var result = 0
+        Instrumentation.sumBy.measure {
+            result = asSequence().filter { it.resource.name == resourceName }.sumOf { it.amount }
+        }
+        return result
+    }
 
     /**
      *  Add [element] unless one for [resource][ResourceSupply.resource]/[origin][ResourceSupply.origin] already exists,
@@ -32,34 +43,46 @@ class ResourceSupplyList(
      *  @return `true` if the length of the list changed.
      */
     override fun add(element: ResourceSupply): Boolean {
-        val existingResourceSupply = get(element.resource, element.origin)
-        if (existingResourceSupply != null) {
-            existingResourceSupply.amount += element.amount
-            if (keepZeroAmounts || existingResourceSupply.amount != 0) return false
-            remove(existingResourceSupply)
-        } else {
-            if (!keepZeroAmounts && element.amount == 0) return false
-            super.add(element)
+        var result = false
+        Instrumentation.add.measure {
+            result = fun(): Boolean {
+                val existingResourceSupply = get(element.resource, element.origin)
+                if (existingResourceSupply != null) {
+                    existingResourceSupply.amount += element.amount
+                    if (keepZeroAmounts || existingResourceSupply.amount != 0) return false
+                    remove(existingResourceSupply)
+                } else {
+                    if (!keepZeroAmounts && element.amount == 0) return false
+                    super.add(element)
+                }
+                return true
+            }()
         }
-        return true
+        return result
     }
 
     /** Add [amount] to the [entry][ResourceSupply] for [resource]/[origin] or create a new one. */
     fun add(resource: TileResource, origin: String, amount: Int = 1) {
-        add(ResourceSupply(resource, origin, amount))
+        Instrumentation.add_params.measure {
+            add(ResourceSupply(resource, origin, amount))
+        }
     }
 
     /** Add all [entries][ResourceSupply] from [resourceSupplyList] to this one. */
     fun add(resourceSupplyList: ResourceSupplyList) {
-        for (resourceSupply in resourceSupplyList)
-            add(resourceSupply)
+        Instrumentation.add_list.measure {
+            for (resourceSupply in resourceSupplyList)
+                add(resourceSupply)
+        }
     }
 
     /** Add entries from a requirements list (as produced by [IConstruction.getResourceRequirements]), expressing requirement as negative supply. */
     fun subtractResourceRequirements(resourceRequirements: HashMap<String, Int>, ruleset: Ruleset, origin: String) {
-        for ((resourceName, amount) in resourceRequirements) {
-            val resource = ruleset.tileResources[resourceName] ?: continue
-            add(resource, origin, -amount)
+        Instrumentation.subtractResourceRequirements.measure {
+            for ((resourceName, amount) in resourceRequirements) {
+                val resource = ruleset.tileResources[resourceName] ?: continue
+                add(resource, origin, -amount)
+            }
         }
     }
 
@@ -68,34 +91,89 @@ class ResourceSupplyList(
      *  @return `this`, allowing chaining
      */
     fun addByResource(fromList: ResourceSupplyList, newOrigin: String): ResourceSupplyList {
-        for (resourceSupply in fromList)
-            add(resourceSupply.resource, newOrigin, resourceSupply.amount)
+        Instrumentation.addByResource.measure {
+            for (resourceSupply in fromList)
+                add(resourceSupply.resource, newOrigin, resourceSupply.amount)
+        }
         return this
     }
 
     /** Same as [addByResource] but ignores negative amounts */
     fun addPositiveByResource(fromList: ResourceSupplyList, newOrigin: String) {
-        for (resourceSupply in fromList)
-            if (resourceSupply.amount > 0)
-                add(resourceSupply.resource, newOrigin, resourceSupply.amount)
+        Instrumentation.addPositiveByResource.measure {
+            for (resourceSupply in fromList)
+                if (resourceSupply.amount > 0)
+                    add(resourceSupply.resource, newOrigin, resourceSupply.amount)
+        }
     }
 
     /** Create a new [ResourceSupplyList] aggregating resources over all origins */
-    fun sumByResource(newOrigin: String) = ResourceSupplyList(keepZeroAmounts).addByResource(this, newOrigin)
+    fun sumByResource(newOrigin: String): ResourceSupplyList {
+        lateinit var result: ResourceSupplyList
+        Instrumentation.sumByResource.measure {
+            result = ResourceSupplyList(keepZeroAmounts).addByResource(this, newOrigin)
+        }
+        return result
+    }
 
     /**
      *  Remove all entries from a specific [origin]
      *  @return `this`, allowing chaining
      */
     fun removeAll(origin: String): ResourceSupplyList {
-        // The filter creates a separate list so the iteration does not modify concurrently
-        filter { it.origin == origin }.forEach {
-            remove(it)
+        Instrumentation.removeAll.measure {
+            // The filter creates a separate list so the iteration does not modify concurrently
+            filter { it.origin == origin }.forEach { remove(it) }
         }
         return this
     }
 
     companion object {
         val emptyList = ResourceSupplyList()
+        fun printInstrumentation() = Instrumentation.print()
+
+        @Suppress("EnumEntryName")
+        private enum class Instrumentation(
+            val calls: Instrumentation? = null
+        ) {
+            get,
+            sumBy,
+            add,
+            add_params(add),
+            add_list,
+            subtractResourceRequirements,
+            addByResource,
+            sumByResource(addByResource),
+            addPositiveByResource,
+            removeAll,
+            ;
+            var count: Int = 0
+            var totalTime: Long = 0L
+            private var entryTime: Long = 0L
+
+            fun measure(runnable: ()->Unit) {
+                entryTime = System.nanoTime()
+                runnable()
+                totalTime += System.nanoTime() - entryTime
+                count++
+            }
+            fun averageTime() = if (count == 0) 0 else totalTime / count
+            fun calledBy() = values().firstOrNull { it.calls == this }
+
+            companion object {
+                fun print() {
+                    println("ResourceSupplyList<Map>:")
+                    for (entry in values()) {
+                        val correctedCount = entry.count - (entry.calledBy()?.count ?: 0)
+                        val correctedTime = entry.averageTime() - (entry.calls?.averageTime() ?: 0L)
+                        println(
+                            "\t${entry.name}: $correctedCount calls @ ${correctedTime}ns" +
+                                    (entry.calledBy()?.run { ", called by $name which ran $count times, total ${entry.count} times" } ?: "") +
+                                    (entry.calls?.run { ", calling $name @ ${averageTime()}ns, inclusive avg: ${entry.averageTime()}" } ?: "")
+                        )
+                    }
+                }
+            }
+        }
     }
 }
