@@ -163,11 +163,11 @@ object ImageGetter {
         // loading screen and Tutorial.WorldScreen quite a bit. More anisotropy barely helps.
         val texture = Texture("ExtraImages/$fileName")
         texture.setFilter(TextureFilter.Linear, TextureFilter.Linear)
-        return Image(TextureRegion(texture))
+        return ImageWithCustomSize(TextureRegion(texture))
     }
 
     fun getImage(fileName: String?): Image {
-        return Image(getDrawable(fileName))
+        return ImageWithCustomSize(getDrawable(fileName))
     }
 
     fun getDrawable(fileName: String?): TextureRegionDrawable {
