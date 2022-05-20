@@ -16,9 +16,9 @@ import java.util.concurrent.atomic.AtomicReference
 
 
 /** @see getUpdateThrottleInterval */
-private const val DROPBOX_THROTTLE_INTERVAL = 8L
+private const val DROPBOX_THROTTLE_PERIOD = 8L
 /** @see getUpdateThrottleInterval */
-private const val CUSTOM_SERVER_THROTTLE_INTERVAL = 1L
+private const val CUSTOM_SERVER_THROTTLE_PERIOD = 1L
 
 class OnlineMultiplayerGame(
     val fileHandle: FileHandle,
@@ -55,8 +55,7 @@ class OnlineMultiplayerGame(
         return previewFromFile
     }
 
-    private fun shouldUpdate(lastUpdateTime: Instant?): Boolean =
-        preview == null || error != null || lastUpdateTime == null || Duration.between(lastUpdateTime, Instant.now()).isLargerThan(getUpdateThrottleInterval())
+    private fun needsUpdate(): Boolean = preview == null || error != null
 
     /**
      * Fires: [MultiplayerGameUpdateStarted], [MultiplayerGameUpdated], [MultiplayerGameUpdateUnchanged], [MultiplayerGameUpdateFailed]
@@ -65,15 +64,18 @@ class OnlineMultiplayerGame(
      * @throws FileNotFoundException if the file can't be found
      */
     suspend fun requestUpdate(forceUpdate: Boolean = false) {
-        fun alwaysUpdate(instant: Instant?): Boolean = true
-        val shouldUpdateFun = if (forceUpdate) ::alwaysUpdate else ::shouldUpdate
         val onUnchanged = { GameUpdateResult.UNCHANGED }
         val onError = { e: Exception ->
             error = e
             GameUpdateResult.FAILURE
         }
         postCrashHandlingRunnable { EventBus.send(MultiplayerGameUpdateStarted(name)) }
-        val updateResult = safeUpdateIf(lastOnlineUpdate, shouldUpdateFun, ::update, onUnchanged, onError)
+        val throttleInterval = if (forceUpdate) Duration.ZERO else getUpdateThrottleInterval()
+        val updateResult = if (forceUpdate || needsUpdate()) {
+            attemptAction(lastOnlineUpdate, onUnchanged, onError, ::update)
+        } else {
+            throttle(lastOnlineUpdate, throttleInterval, onUnchanged, onError, ::update)
+        }
         when (updateResult) {
             GameUpdateResult.UNCHANGED, GameUpdateResult.CHANGED -> error = null
             else -> {}
@@ -114,5 +116,5 @@ private enum class GameUpdateResult {
  */
 private fun getUpdateThrottleInterval(): Duration {
     val isDropbox = UncivGame.Current.settings.multiplayerServer == Constants.dropboxMultiplayerServer
-    return Duration.ofSeconds(if (isDropbox) DROPBOX_THROTTLE_INTERVAL else CUSTOM_SERVER_THROTTLE_INTERVAL)
+    return Duration.ofSeconds(if (isDropbox) DROPBOX_THROTTLE_PERIOD else CUSTOM_SERVER_THROTTLE_PERIOD)
 }

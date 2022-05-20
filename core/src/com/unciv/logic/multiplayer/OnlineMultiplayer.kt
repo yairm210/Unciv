@@ -31,7 +31,7 @@ private const val CUSTOM_SERVER_REFRESH_INTERVAL = 30L
  * How often files can be checked for new multiplayer games (could be that the user modified their file system directly). More checks within this time period
  * will do nothing.
  */
-private val FILE_UPDATE_THROTTLE_INTERVAL = Duration.ofSeconds(60)
+private val FILE_UPDATE_THROTTLE_PERIOD = Duration.ofSeconds(60)
 
 /**
  * Provides multiplayer functionality to the rest of the game.
@@ -63,26 +63,24 @@ class OnlineMultiplayer() {
      *
      * Fires: [MultiplayerGameUpdateStarted], [MultiplayerGameUpdated], [MultiplayerGameUpdateUnchanged], [MultiplayerGameUpdateFailed]
      */
-    fun requestUpdate(forceUpdate: Boolean = false) = launchCrashHandling("Update all multiplayer games") {
-        fun alwaysUpdate(instant: Instant?): Boolean = true
+    fun requestUpdate(forceUpdate: Boolean = false, doNotUpdate: List<OnlineMultiplayerGame> = listOf()) {
+        launchCrashHandling("Update all multiplayer games") {
+            val fileThrottleInterval = if (forceUpdate) Duration.ZERO else FILE_UPDATE_THROTTLE_PERIOD
+            // An exception only happens here if the files can't be listed, should basically never happen
+            throttle(lastFileUpdate, fileThrottleInterval, {}, action = ::updateSavesFromFiles)
 
-        safeUpdateIf(lastFileUpdate, if (forceUpdate) ::alwaysUpdate else ::fileUpdateNeeded, ::updateSavesFromFiles, {}) {
-            // only happens if the files can't be listed, should basically never happen
-            throw it
-        }
-
-        for (game in savedGames.values) {
-            launch {
-                game.requestUpdate(forceUpdate)
+            for (game in savedGames.values) {
+                if (game in doNotUpdate) continue
+                launch {
+                    game.requestUpdate(forceUpdate)
+                }
             }
         }
     }
 
-    private fun fileUpdateNeeded(it: Instant?) = it == null || Duration.between(it, Instant.now()).isLargerThan(FILE_UPDATE_THROTTLE_INTERVAL)
-
     private fun updateSavesFromFiles() {
         val saves = gameSaver.getMultiplayerSaves()
-        val removedSaves = savedGames.keys - saves
+        val removedSaves = savedGames.keys - saves.toSet()
         removedSaves.forEach(savedGames::remove)
         val newSaves = saves - savedGames.keys
         for (saveFile in newSaves) {
@@ -235,32 +233,52 @@ class OnlineMultiplayer() {
 }
 
 /**
- * Calls the given [updateFun] only when [shouldUpdate] called with the current value of [lastUpdate] returns true.
+ * Calls the given [action] when [lastSuccessfulExecution] lies further in the past than [throttleInterval].
  *
- * Also updates [lastUpdate] to [Instant.now], but only when [updateFun] did not result in an exception.
+ * Also updates [lastSuccessfulExecution] to [Instant.now], but only when [action] did not result in an exception.
  *
- * Any exception thrown by [updateFun] is propagated.
+ * Any exception thrown by [action] is propagated.
  *
  * @return true if the update happened
  */
-suspend fun <T> safeUpdateIf(
-    lastUpdate: AtomicReference<Instant?>,
-    shouldUpdate: (Instant?) -> Boolean,
-    updateFun: suspend () -> T,
-    onUnchanged: () -> T,
-    onFailed: (Exception) -> T
+suspend fun <T> throttle(
+    lastSuccessfulExecution: AtomicReference<Instant?>,
+    throttleInterval: Duration,
+    onNoExecution: () -> T,
+    onFailed: (Exception) -> T = { throw it },
+    action: suspend () -> T
 ): T {
-    val lastUpdateTime = lastUpdate.get()
+    val lastExecution = lastSuccessfulExecution.get()
     val now = Instant.now()
-    if (shouldUpdate(lastUpdateTime) && lastUpdate.compareAndSet(lastUpdateTime, now)) {
+    val shouldRunAction = lastExecution == null || Duration.between(lastExecution, now).isLargerThan(throttleInterval)
+    return if (shouldRunAction) {
+        attemptAction(lastSuccessfulExecution, onNoExecution, onFailed, action)
+    } else {
+        onNoExecution()
+    }
+}
+
+/**
+ * Attempts to run the [action], changing [lastSuccessfulExecution], but only if no other thread changed [lastSuccessfulExecution] in the meantime
+ * and [action] did not throw an exception.
+ */
+suspend fun <T> attemptAction(
+    lastSuccessfulExecution: AtomicReference<Instant?>,
+    onNoExecution: () -> T,
+    onFailed: (Exception) -> T = { throw it },
+    action: suspend () -> T
+): T {
+    val lastExecution = lastSuccessfulExecution.get()
+    val now = Instant.now()
+    return if (lastSuccessfulExecution.compareAndSet(lastExecution, now)) {
         try {
-            return updateFun()
+            action()
         } catch (e: Exception) {
-            lastUpdate.compareAndSet(now, lastUpdateTime)
-            return onFailed(e)
+            lastSuccessfulExecution.compareAndSet(now, lastExecution)
+            onFailed(e)
         }
     } else {
-        return onUnchanged()
+        onNoExecution()
     }
 }
 
