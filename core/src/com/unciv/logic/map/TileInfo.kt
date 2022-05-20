@@ -317,21 +317,29 @@ open class TileInfo {
             tileUniques += city.getMatchingUniques(UniqueType.StatsFromObject, stateForConditionals)
             for (unique in localUniqueCache.get("StatsFromTilesAndObjects", tileUniques)) {
                 val tileType = unique.params[1]
-                if (matchesTerrainFilter(tileType, observingCiv)) 
-                    stats.add(unique.stats)
-                if (tileType == "Natural Wonder" && naturalWonder != null && city.civInfo.hasUnique(UniqueType.DoubleStatsFromNaturalWonders)) {
+                // First check is just a small optimization, as we don't test improvements here.
+                // I'm uncertain as to whether this is worth the time, as string comparison is slow,
+                // and it could be that in many cases the equality doesn't hold anyways, and we only lost time checking.
+                if (tileType == improvement || !matchesTerrainFilter(tileType, observingCiv)) continue 
+                stats.add(unique.stats)
+                if (naturalWonder != null 
+                    && tileType == "Natural Wonder" 
+                    && city.civInfo.hasUnique(UniqueType.DoubleStatsFromNaturalWonders)
+                ) {
                     stats.add(unique.stats)
                 }
             }
 
             for (unique in localUniqueCache.get("StatsFromTilesWithout", 
-                city.getMatchingUniques(UniqueType.StatsFromTilesWithout, stateForConditionals)))
+                city.getMatchingUniques(UniqueType.StatsFromTilesWithout, stateForConditionals))
+            ) {
                 if (
                     matchesTerrainFilter(unique.params[1]) &&
                     !matchesTerrainFilter(unique.params[2]) &&
                     city.matchesFilter(unique.params[3])
                 )
                     stats.add(unique.stats)
+            }
         }
 
         if (isAdjacentToRiver()) stats.gold++
