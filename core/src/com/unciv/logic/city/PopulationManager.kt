@@ -2,9 +2,12 @@ package com.unciv.logic.city
 
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.stats.Stat
+import com.unciv.ui.utils.toPercent
 import com.unciv.ui.utils.withItem
 import com.unciv.ui.utils.withoutItem
 import kotlin.math.floor
@@ -82,7 +85,7 @@ class PopulationManager {
             if (percentOfFoodCarriedOver > 95) percentOfFoodCarriedOver = 95 
             foodStored += (getFoodToNextPopulation() * percentOfFoodCarriedOver / 100f).toInt()
             addPopulation(1)
-            autoAssignPopulation()
+            cityInfo.updateCitizens = true
             cityInfo.civInfo.addNotification("[${cityInfo.name}] has grown!", cityInfo.location, NotificationIcon.Growth)
         }
     }
@@ -109,34 +112,50 @@ class PopulationManager {
         addPopulation(-population + count)
     }
 
-    internal fun autoAssignPopulation(foodWeight: Float = 1f) {
+    internal fun autoAssignPopulation() {
+        cityInfo.cityStats.update()  // calculate current stats with current assignments
+        val cityStats = cityInfo.cityStats.currentCityStats
+        cityInfo.currentGPPBonus = cityInfo.getGreatPersonPercentageBonus()  // pre-calculate
+        var specialistFoodBonus = 2f  // See CityStats.calcFoodEaten()
+        for (unique in cityInfo.getMatchingUniques(UniqueType.FoodConsumptionBySpecialists))
+            if (cityInfo.matchesFilter(unique.params[1]))
+                specialistFoodBonus *= unique.params[0].toPercent()
+        specialistFoodBonus = 2f - specialistFoodBonus
+        
         for (i in 1..getFreePopulation()) {
             //evaluate tiles
-            val bestTile: TileInfo? = cityInfo.getTiles()
+            val (bestTile, valueBestTile) = cityInfo.getTiles()
                     .filter { it.aerialDistanceTo(cityInfo.getCenterTile()) <= 3 }
                     .filterNot { it.providesYield() }
-                    .maxByOrNull { Automation.rankTileForCityWork(it, cityInfo, foodWeight) }
-            val valueBestTile = if (bestTile == null) 0f
-            else Automation.rankTileForCityWork(bestTile, cityInfo, foodWeight)
+                    .associateWith { Automation.rankTileForCityWork(it, cityInfo, cityStats) }
+                    .maxByOrNull { it.value }
+                    ?: object : Map.Entry<TileInfo?, Float> {
+                        override val key: TileInfo? = null
+                        override val value = 0f
+                    }
 
-            val bestJob: String? = getMaxSpecialists()
+            val bestJob: String? = if (cityInfo.manualSpecialists) null else getMaxSpecialists()
                     .filter { specialistAllocations[it.key]!! < it.value }
                     .map { it.key }
-                    .maxByOrNull { Automation.rankSpecialist(getStatsOfSpecialist(it), cityInfo) }
-
+                    .maxByOrNull { Automation.rankSpecialist(it, cityInfo, cityStats) }
 
             var valueBestSpecialist = 0f
             if (bestJob != null) {
-                val specialistStats = getStatsOfSpecialist(bestJob)
-                valueBestSpecialist = Automation.rankSpecialist(specialistStats, cityInfo)
+                valueBestSpecialist = Automation.rankSpecialist(bestJob, cityInfo, cityStats)
             }
 
             //assign population
             if (valueBestTile > valueBestSpecialist) {
-                if (bestTile != null)
+                if (bestTile != null) {
                     cityInfo.workedTiles = cityInfo.workedTiles.withItem(bestTile.position)
-            } else if (bestJob != null) specialistAllocations.add(bestJob, 1)
+                    cityStats[Stat.Food] += bestTile.getTileStats(cityInfo, cityInfo.civInfo)[Stat.Food]
+                }
+            } else if (bestJob != null) {
+                specialistAllocations.add(bestJob, 1)
+                cityStats[Stat.Food] += specialistFoodBonus
+            }
         }
+        cityInfo.cityStats.update()
     }
 
     fun unassignExtraPopulation() {
@@ -162,19 +181,19 @@ class PopulationManager {
                 cityInfo.workedTiles.asSequence()
                         .map { cityInfo.tileMap[it] }
                         .minByOrNull {
-                            Automation.rankTileForCityWork(it, cityInfo)
+                            Automation.rankTileForCityWork(it, cityInfo, cityInfo.cityStats.currentCityStats)
                             +(if (it.isLocked()) 10 else 0)
                         }!!
             }
             val valueWorstTile = if (worstWorkedTile == null) 0f
-            else Automation.rankTileForCityWork(worstWorkedTile, cityInfo)
+            else Automation.rankTileForCityWork(worstWorkedTile, cityInfo, cityInfo.cityStats.currentCityStats)
 
             //evaluate specialists
-            val worstJob: String? = specialistAllocations.keys
-                    .minByOrNull { Automation.rankSpecialist(getStatsOfSpecialist(it), cityInfo) }
+            val worstJob: String? = if (cityInfo.manualSpecialists) null else specialistAllocations.keys
+                    .minByOrNull { Automation.rankSpecialist(it, cityInfo, cityInfo.cityStats.currentCityStats) }
             var valueWorstSpecialist = 0f
             if (worstJob != null)
-                valueWorstSpecialist = Automation.rankSpecialist(getStatsOfSpecialist(worstJob), cityInfo)
+                valueWorstSpecialist = Automation.rankSpecialist(worstJob, cityInfo, cityInfo.cityStats.currentCityStats)
 
 
             //un-assign population

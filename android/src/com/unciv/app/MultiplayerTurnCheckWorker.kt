@@ -3,6 +3,8 @@ package com.unciv.app
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.app.PendingIntent.FLAG_IMMUTABLE
+import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
@@ -14,6 +16,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.DEFAULT_VIBRATE
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.*
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.backends.android.AndroidApplication
 import com.badlogic.gdx.backends.android.DefaultAndroidFiles
 import com.unciv.logic.GameInfo
@@ -121,9 +124,11 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
          * It is not technically necessary for the Worker, since it is not a Service.
          */
         fun showPersistentNotification(appContext: Context, lastTimeChecked: String, checkPeriod: String) {
+            val flags = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) FLAG_IMMUTABLE else 0) or
+                FLAG_UPDATE_CURRENT
             val pendingIntent: PendingIntent =
                     Intent(appContext, AndroidLauncher::class.java).let { notificationIntent ->
-                        PendingIntent.getActivity(appContext, 0, notificationIntent, 0)
+                        PendingIntent.getActivity(appContext, 0, notificationIntent, flags)
                     }
 
             val notification: NotificationCompat.Builder = NotificationCompat.Builder(appContext, NOTIFICATION_CHANNEL_ID_SERVICE)
@@ -152,7 +157,9 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                 action = Intent.ACTION_VIEW
                 data = Uri.parse("https://unciv.app/multiplayer?id=${game.second}")
             }
-            val pendingIntent = PendingIntent.getActivity(applicationContext, 0, intent, 0)
+            val flags = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) FLAG_IMMUTABLE else 0) or
+                    FLAG_UPDATE_CURRENT
+            val pendingIntent = PendingIntent.getActivity(applicationContext, 0, intent, flags)
 
             val contentTitle = applicationContext.resources.getString(R.string.Notify_YourTurn_Short)
             val notification: NotificationCompat.Builder = NotificationCompat.Builder(applicationContext, NOTIFICATION_CHANNEL_ID_INFO)
@@ -250,6 +257,8 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
         // We can't use Gdx.files since that is only initialized within a com.badlogic.gdx.backends.android.AndroidApplication.
         // Worker instances may be stopped & recreated by the Android WorkManager, so no AndroidApplication and thus no Gdx.files available
         val files = DefaultAndroidFiles(applicationContext.assets, ContextWrapper(applicationContext), false)
+        // GDX's AndroidFileHandle uses Gdx.files internally, so we need to set that to our new instance
+        Gdx.files = files
         gameSaver.init(files, null)
     }
 
@@ -367,14 +376,16 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
     }
 
     private fun showErrorNotification(stackTraceString: String) {
+        val flags = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) FLAG_IMMUTABLE else 0) or
+                FLAG_UPDATE_CURRENT
         val pendingLaunchGameIntent: PendingIntent =
                 Intent(applicationContext, AndroidLauncher::class.java).let { notificationIntent ->
-                    PendingIntent.getActivity(applicationContext, 0, notificationIntent, 0)
+                    PendingIntent.getActivity(applicationContext, 0, notificationIntent, flags)
                 }
 
         val pendingCopyClipboardIntent: PendingIntent =
                 Intent(applicationContext, CopyToClipboardReceiver::class.java).putExtra(CLIPBOARD_EXTRA, stackTraceString)
-                        .let { notificationIntent -> PendingIntent.getBroadcast(applicationContext,0, notificationIntent, 0)
+                        .let { notificationIntent -> PendingIntent.getBroadcast(applicationContext,0, notificationIntent, flags)
                 }
 
         val notification: NotificationCompat.Builder = NotificationCompat.Builder(applicationContext, NOTIFICATION_CHANNEL_ID_INFO)

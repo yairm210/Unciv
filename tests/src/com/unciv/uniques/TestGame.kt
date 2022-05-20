@@ -80,9 +80,11 @@ class TestGame {
     fun setTileFeatures(position: Vector2, terrain: String = Constants.desert, features: List<String> = listOf()): TileInfo {
         val tile = tileMap[position]
         tile.baseTerrain = terrain
+        tile.setTerrainFeatures(listOf())
         for (feature in features) {
             tile.addTerrainFeature(feature)
         }
+        tile.setTerrainTransients()
         return tile
     }    
     

@@ -9,6 +9,8 @@ import com.badlogic.gdx.utils.Array
 import com.unciv.Constants
 import com.unciv.logic.multiplayer.storage.SimpleHttp
 import com.unciv.models.metadata.GameSettings
+import com.unciv.ui.crashhandling.launchCrashHandling
+import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.*
 
@@ -88,7 +90,14 @@ fun multiplayerTab(
 }
 
 private fun successfullyConnectedToServer(settings: GameSettings, action: (Boolean, String, Int?) -> Unit) {
-    SimpleHttp.sendGetRequest("${settings.multiplayerServer}/isalive", action)
+    launchCrashHandling("TestIsAlive") {
+        SimpleHttp.sendGetRequest("${settings.multiplayerServer}/isalive") {
+                success, result, code ->
+            postCrashHandlingRunnable {
+                action(success, result, code)
+            }
+        }
+    }
 }
 
 private fun fixTextFieldUrlOnType(TextField: TextField) {
