@@ -224,7 +224,7 @@ object Automation {
 
     /** Checks both feasibility of Buildings with a CreatesOneImprovement unique
      *  and resource scarcity making a construction undesirable.
-      */
+     */
     fun allowAutomatedConstruction(
         civInfo: CivilizationInfo,
         cityInfo: CityInfo,
@@ -438,7 +438,7 @@ object Automation {
     }
 }
 
-enum class ThreatLevel{
+enum class ThreatLevel {
     VeryLow,
     Low,
     Medium,
