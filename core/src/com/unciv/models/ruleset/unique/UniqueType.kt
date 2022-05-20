@@ -96,8 +96,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     StatPercentBonus("[relativeAmount]% [stat]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatPercentBonusCities("[relativeAmount]% [stat] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     // Todo: Add support for specialist next to buildingName
-    StatPercentFromObject("[relativeAmount]% [stat] from every [buildingFilter/tileFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    AllStatsPercentFromObject("[relativeAmount]% Yield from every [buildingFilter/tileFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    StatPercentFromObject("[relativeAmount]% [stat] from every [tileFilter/buildingFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    AllStatsPercentFromObject("[relativeAmount]% Yield from every [tileFilter/buildingFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatPercentFromReligionFollowers("[relativeAmount]% [stat] from every follower, up to [relativeAmount]%", UniqueTarget.FollowerBelief),
     BonusStatsFromCityStates("[relativeAmount]% [stat] from City-States", UniqueTarget.Global),
     StatPercentFromTradeRoutes("[relativeAmount]% [stat] from Trade Routes", UniqueTarget.Global),

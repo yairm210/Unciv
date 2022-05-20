@@ -128,13 +128,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "[relativeAmount]% [stat] from every [buildingFilter/tileFilter]"
-	Example: "[+20]% [Culture] from every [Culture]"
+??? example  "[relativeAmount]% [stat] from every [tileFilter/buildingFilter]"
+	Example: "[+20]% [Culture] from every [Farm]"
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "[relativeAmount]% Yield from every [buildingFilter/tileFilter]"
-	Example: "[+20]% Yield from every [Culture]"
+??? example  "[relativeAmount]% Yield from every [tileFilter/buildingFilter]"
+	Example: "[+20]% Yield from every [Farm]"
 
 	Applicable to: Global, FollowerBelief
 
