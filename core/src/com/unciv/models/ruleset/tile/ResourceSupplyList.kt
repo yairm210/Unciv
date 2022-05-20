@@ -1,8 +1,10 @@
 package com.unciv.models.ruleset.tile
 
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.logic.city.IConstruction  // Kdoc only
+import com.unciv.models.ruleset.tile.ResourceSupplyList.ResourceSupply
 
 
 /** Container helps aggregating supply and demand of [resources][ResourceSupply.resource], categorized by [origin][ResourceSupply.origin].
@@ -11,7 +13,13 @@ import com.unciv.logic.city.IConstruction  // Kdoc only
  */
 class ResourceSupplyList(
     private val keepZeroAmounts: Boolean = false
-) : ArrayList<ResourceSupplyList.ResourceSupply>(28) {
+) : Iterable<ResourceSupply>  {
+        /**
+         * Nested maps to support indexing by resource first, then origin
+         * This duplicates the resource and origin references, but that should be cheaper than re-instantiating ResourceSupply all the time (if using a Map<String<Map<String,Int>>)
+         */
+        private val map = mutableMapOf<TileResource, MutableMap<String, ResourceSupply>>()
+        private var ruleset: Ruleset? = null
 
     /** Holds one "data row", [resource] and [origin] function as keys while [amount] is the 'value' */
     data class ResourceSupply(val resource: TileResource, val origin: String, var amount: Int) {
@@ -20,19 +28,43 @@ class ResourceSupplyList(
     }
 
     /** Fetch a [ResourceSupply] entry or `null` if no match found */
-    fun get(resource: TileResource, origin: String): ResourceSupply? {
+    operator fun get(resource: TileResource, origin: String): ResourceSupply? {
         var result: ResourceSupply? = null
         Instrumentation.get.measure {
-            result = firstOrNull { it.resource == resource && it.origin == origin }
+            result = map[resource]?.get(origin)
         }
         return result
+    }
+
+    private operator fun set(resource: TileResource, origin: String, value: ResourceSupply) {
+        val node = map[resource] ?: run {
+            val newNode = mutableMapOf<String, ResourceSupply>()
+            map[resource] = newNode
+            newNode
+        }
+        node[origin] = value
+    }
+
+    private fun remove(element: ResourceSupply) {
+        map[element.resource]!!.remove(element.origin)
+    }
+
+    override fun iterator(): Iterator<ResourceSupply> =
+        map.asSequence().flatMap { it.value.values }.iterator()
+
+    private fun getRuleset(): Ruleset {
+        if (ruleset != null) return ruleset!!
+        ruleset = UncivGame.Current.gameInfo.ruleSet
+        return ruleset!!
     }
 
     /** Get the total amount for a resource by [resourceName] */
     fun sumBy(resourceName: String) : Int {
         var result = 0
         Instrumentation.sumBy.measure {
-            result = asSequence().filter { it.resource.name == resourceName }.sumOf { it.amount }
+            val entries = map[getRuleset().tileResources[resourceName]]
+                ?: return@measure
+            result = entries.values.sumOf { it.amount }
         }
         return result
     }
@@ -42,7 +74,7 @@ class ResourceSupplyList(
      *  in which case the amounts are added up. Ensures the list contains no entries with [amount][ResourceSupply.amount] 0 unless [keepZeroAmounts] is on.
      *  @return `true` if the length of the list changed.
      */
-    override fun add(element: ResourceSupply): Boolean {
+    fun add(element: ResourceSupply): Boolean {
         var result = false
         Instrumentation.add.measure {
             result = fun(): Boolean {
@@ -50,10 +82,10 @@ class ResourceSupplyList(
                 if (existingResourceSupply != null) {
                     existingResourceSupply.amount += element.amount
                     if (keepZeroAmounts || existingResourceSupply.amount != 0) return false
-                    remove(existingResourceSupply)
+                    remove(element)
                 } else {
                     if (!keepZeroAmounts && element.amount == 0) return false
-                    super.add(element)
+                    this[element.resource, element.origin] = element
                 }
                 return true
             }()
@@ -127,6 +159,8 @@ class ResourceSupplyList(
         }
         return this
     }
+
+    fun isEmpty() = map.all { it.value.isEmpty() }
 
     companion object {
         val emptyList = ResourceSupplyList()
