@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.toLabel
@@ -44,7 +43,6 @@ class ExitGamePopup(screen: BaseScreen, force: Boolean = false)
     ) {
     init {
         screen.game.musicController.pause()
-        ResourceSupplyList.printInstrumentation()
         open(force)
     }
 }
