@@ -74,6 +74,16 @@ object EventBus {
         }
         listeners[eventClass]!!.add(EventListenerWeakReference(eventHandler, filter))
     }
+    
+    private fun cleanUp(eventHandlers: Map<KClass<*>, MutableList<Any>>) {
+        for ((kClass, toRemove) in eventHandlers) {
+            val registeredListeners = listeners.get(kClass)
+            registeredListeners?.removeIf { 
+                val eventHandler = it.eventHandler.get()
+                eventHandler == null || (eventHandler as Any) in toRemove 
+            }
+        }
+    }
 
     /**
      * Used to receive events by the [EventBus].
@@ -89,8 +99,16 @@ object EventBus {
      *             // do something when the event is received.
      *         }
      *     }
+     *     
+     *     // Optional
+     *     cleanup() {
+     *         events.stopReceiving()
+     *     }
      * }
      * ```
+     * 
+     * The [stopReceiving] call is optional. Event listeners will be automatically garbage collected. However, garbage collection is non-deterministic, so it's
+     * possible that the events keep being received for quite a while even after a class is unused. [stopReceiving] immediately cleans up all listeners.
      *
      * To have event listeners automatically garbage collected, we need to use [WeakReference]s in the event bus. For that to work, though, the class
      * that wants to receive events needs to hold references to its own event listeners. [EventReceiver] allows to do that while also providing the
@@ -98,11 +116,11 @@ object EventBus {
      */
     class EventReceiver {
 
-        val eventHandlers: MutableList<Any> = mutableListOf()
+        val eventHandlers = mutableMapOf<KClass<*>, MutableList<Any>>()
         val filters: MutableList<Any> = mutableListOf()
 
         /**
-         * Listen to the event with the given [eventClass] and all events that subclass it.
+         * Listen to the event with the given [eventClass] and all events that subclass it. Use [stopReceiving] to stop listening to all events.
          *
          * The listeners will always be called on the main GDX render thread.
          *
@@ -112,8 +130,21 @@ object EventBus {
             if (filter != null) {
                 filters.add(filter)
             }
-            eventHandlers.add(eventHandler)
+            if (eventHandlers[eventClass] == null) {
+                eventHandlers[eventClass] = mutableListOf()
+            }
+            eventHandlers[eventClass]!!.add(eventHandler)
+            
             EventBus.receive(eventClass, filter, eventHandler)
+        }
+
+        /**
+         * Stops receiving all events, cleaning up all event listeners.
+         */
+        fun stopReceiving() {
+            cleanUp(eventHandlers)
+            eventHandlers.clear()
+            filters.clear()
         }
     }
 
