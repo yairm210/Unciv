@@ -61,6 +61,7 @@ abstract class ReligionPickerScreenCommon(
         rightSideButton.setText(buttonText.tr())
         rightSideButton.onClick(UncivSound.Choir) {
             choosingCiv.religionManager.action()
+            choosingCiv.updateStatsForNextTurn()  // a belief can have an immediate effect on stats
             UncivGame.Current.setWorldScreen()
             dispose()
         }
