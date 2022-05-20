@@ -102,8 +102,8 @@ class BarbarianManager {
         if (campsToAdd <= 0) return
 
         // Camps can't spawn within 7 tiles of each other or within 4 tiles of major civ capitals
-        val tooCloseToCapitals = gameInfo.civilizations.filterNot { it.isBarbarian() || it.isSpectator() || it.cities.isEmpty() || it.isCityState() }
-            .flatMap { it.getCapital().getCenterTile().getTilesInDistance(4) }.toSet()
+        val tooCloseToCapitals = gameInfo.civilizations.filterNot { it.isBarbarian() || it.isSpectator() || it.cities.isEmpty() || it.isCityState() || it.getCapital() == null }
+            .flatMap { it.getCapital()!!.getCenterTile().getTilesInDistance(4) }.toSet()
         val tooCloseToCamps = camps
             .flatMap { tileMap[it.key].getTilesInDistance(
                     if (it.value.destroyed) 4 else 7
@@ -134,7 +134,7 @@ class BarbarianManager {
                     tile = viableTiles.random()
             } else
                 tile = viableTiles.random()
-            
+
             tile.improvement = Constants.barbarianEncampment
             val newCamp = Encampment(tile.position)
             newCamp.gameInfo = gameInfo

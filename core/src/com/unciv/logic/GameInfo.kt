@@ -139,7 +139,7 @@ class GameInfo {
         civilizations.firstOrNull {
             it.isSpectator() && it.playerId == playerId
         } ?:
-        CivilizationInfo(Constants.spectator).also { 
+        CivilizationInfo(Constants.spectator).also {
             it.playerType = PlayerType.Human
             it.playerId = playerId
             civilizations.add(it)
@@ -179,14 +179,14 @@ class GameInfo {
             }
         }
     }
- 
+
     fun getYear(turnOffset: Int = 0): Int {
         val turn = getEquivalentTurn() + turnOffset
         val yearToTurnList = YearsToTurn.getList(gameParameters.gameSpeed)
         var year: Float = -4000f
         var i = 0
         var yearsPerTurn: Float
- 
+
         // if macros are ever added to kotlin, this is one hell of a place for em'
         while (i < turn) {
             yearsPerTurn = yearToTurnList.firstOrNull { i < it.toTurn }?.yearInterval ?: 0.5f
@@ -292,7 +292,7 @@ class GameInfo {
                 }
         )
     }
-    
+
     fun getEnabledVictories() = ruleSet.victories.filter { !it.value.hiddenInVictoryScreen && gameParameters.victoryTypes.contains(it.key) }
 
     fun processDiplomaticVictory() {
@@ -344,11 +344,11 @@ class GameInfo {
 
         val exploredRevealTiles: Sequence<TileInfo> =
             if (ruleSet.tileResources[resourceName]!!.hasUnique(UniqueType.CityStateOnlyResource)) {
-                // Look for matching mercantile CS centers 
+                // Look for matching mercantile CS centers
                 getAliveCityStates()
                     .asSequence()
                     .filter { it.cityStateResource == resourceName }
-                    .map { it.getCapital().getCenterTile() }
+                    .map { it.getCapital()!!.getCenterTile() }
             } else {
                 tileMap.values
                     .asSequence()
@@ -423,7 +423,7 @@ class GameInfo {
         for (baseUnit in ruleSet.units.values)
             baseUnit.ruleset = ruleSet
 
-        // This needs to go before tileMap.setTransients, as units need to access 
+        // This needs to go before tileMap.setTransients, as units need to access
         // the nation of their civilization when setting transients
         for (civInfo in civilizations) civInfo.gameInfo = this
         for (civInfo in civilizations) civInfo.setNationTransient()
@@ -479,7 +479,7 @@ class GameInfo {
         spaceResources.addAll(ruleSet.buildings.values.filter { it.hasUnique(UniqueType.SpaceshipPart) }
             .flatMap { it.getResourceRequirements().keys } )
         spaceResources.addAll(ruleSet.victories.values.flatMap { it.requiredSpaceshipParts })
-        
+
         barbarians.setTransients(this)
 
         guaranteeUnitPromotions()

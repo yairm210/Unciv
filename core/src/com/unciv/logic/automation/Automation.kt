@@ -83,7 +83,7 @@ object Automation {
         }
 
         if (city.population.population < 5) {
-            // "small city" - we care more about food and less about global problems like gold science and culture 
+            // "small city" - we care more about food and less about global problems like gold science and culture
             // Food already handled above. Science/Culture have low weights in Stats already
             yieldStats.gold /= 2 // it's barely worth anything at this point
         } else {
@@ -213,7 +213,7 @@ object Automation {
 
         // If we have vision of our entire starting continent (ish) we are not afraid
         civInfo.gameInfo.tileMap.assignContinents(TileMap.AssignContinentsMode.Ensure)
-        val startingContinent = civInfo.getCapital().getCenterTile().getContinent()
+        val startingContinent = civInfo.getCapital()!!.getCenterTile().getContinent()
         val startingContinentSize = civInfo.gameInfo.tileMap.continentSizes[startingContinent]
         if (startingContinentSize != null && startingContinentSize < civInfo.viewableTiles.count() * multiplier)
             return false
