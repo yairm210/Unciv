@@ -253,15 +253,7 @@ class QuestManager {
     }
 
     private fun handleIndividualQuests() {
-        val toRemove = ArrayList<AssignedQuest>()
-
-        for (assignedQuest in assignedQuests.filter { it.isIndividual() }) {
-            val shouldRemove = handleIndividualQuest(assignedQuest)
-            if (shouldRemove)
-                toRemove.add(assignedQuest)
-        }
-
-        assignedQuests.removeAll(toRemove)
+        assignedQuests.removeAll { it.isIndividual() && handleIndividualQuest(it) }
     }
 
     /** If quest is complete, it gives the influence reward to the player.
@@ -361,7 +353,7 @@ class QuestManager {
             return false
 
         val mostRecentBully = getMostRecentBully()
-        val playerReligion = civInfo.gameInfo.religions.values.firstOrNull() { it.foundingCivName == challenger.civName && it.isMajorReligion() }?.name
+        val playerReligion = civInfo.gameInfo.religions.values.firstOrNull { it.foundingCivName == challenger.civName && it.isMajorReligion() }?.name
 
         return when (quest.name) {
             QuestName.ClearBarbarianCamp.value -> getBarbarianEncampmentForQuest() != null
@@ -466,8 +458,7 @@ class QuestManager {
     /** Returns a string with the leading civ and their score for [questName] */
     fun getLeaderStringForQuest(questName: String): String {
         val leadingQuest = assignedQuests.filter { it.questName == questName }.maxByOrNull { getScoreForQuest(it) }
-        if (leadingQuest == null)
-            return ""
+            ?: return ""
 
         return when (questName){
             QuestName.ContestCulture.value -> "Current leader is [${leadingQuest.assignee}] with [${getScoreForQuest(leadingQuest)}] [Culture] generated."
@@ -704,17 +695,17 @@ class QuestManager {
                     weight *= 3f
             }
             QuestName.GiveGold.value -> {
-                when (trait) {
-                    CityStateType.Militaristic -> weight *= 2f
-                    CityStateType.Mercantile -> weight *= 3.5f
-                    else -> weight *= 3f
+                weight *= when (trait) {
+                    CityStateType.Militaristic -> 2f
+                    CityStateType.Mercantile -> 3.5f
+                    else -> 3f
                 }
             }
             QuestName.PledgeToProtect.value -> {
-                when (trait) {
-                    CityStateType.Militaristic -> weight *= 2f
-                    CityStateType.Cultured -> weight *= 3.5f
-                    else -> weight *= 3f
+                weight *= when (trait) {
+                    CityStateType.Militaristic -> 2f
+                    CityStateType.Cultured -> 3.5f
+                    else -> 3f
                 }
             }
             QuestName.BullyCityState.value -> {
@@ -726,10 +717,10 @@ class QuestManager {
                 }
             }
             QuestName.DenounceCiv.value -> {
-                when (trait) {
-                    CityStateType.Religious -> weight *= 2.5f
-                    CityStateType.Maritime -> weight *= 2f
-                    else -> weight *= 1.5f
+                weight *= when (trait) {
+                    CityStateType.Religious -> 2.5f
+                    CityStateType.Maritime -> 2f
+                    else -> 1.5f
                 }
             }
             QuestName.SpreadReligion.value -> {
@@ -741,9 +732,9 @@ class QuestManager {
                     weight *= 2f
             }
             QuestName.ContestFaith.value -> {
-                when (trait) {
-                    CityStateType.Religious -> weight *= 2f
-                    else -> weight *= .5f
+                weight *= when (trait) {
+                    CityStateType.Religious -> 2f
+                    else -> .5f
                 }
             }
             QuestName.ContestTech.value -> {
@@ -910,8 +901,10 @@ class AssignedQuest(val questName: String = "",
 
     fun isIndividual(): Boolean = !isGlobal()
     fun isGlobal(): Boolean = gameInfo.ruleSet.quests[questName]!!.isGlobal()
+    @Suppress("MemberVisibilityCanBePrivate")
     fun doesExpire(): Boolean = gameInfo.ruleSet.quests[questName]!!.duration > 0
     fun isExpired(): Boolean = doesExpire() && getRemainingTurns() == 0
+    @Suppress("MemberVisibilityCanBePrivate")
     fun getDuration(): Int = (gameInfo.gameParameters.gameSpeed.modifier * gameInfo.ruleSet.quests[questName]!!.duration).toInt()
     fun getRemainingTurns(): Int = max(0, (assignedOnTurn + getDuration()) - gameInfo.turns)
 

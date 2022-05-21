@@ -53,7 +53,7 @@ class GameParameters { // Default values are the default new game
     }
 
     // For debugging and GameStarter console output
-    override fun toString() = sequence<String> {
+    override fun toString() = sequence {
             yield("$difficulty $gameSpeed $startingEra")
             yield("${players.count { it.playerType == PlayerType.Human }} ${PlayerType.Human}")
             yield("${players.count { it.playerType == PlayerType.AI }} ${PlayerType.AI}")

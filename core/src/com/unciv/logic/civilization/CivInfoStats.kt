@@ -271,7 +271,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             .filter { !ownedLuxuries.contains(it) }
 
         statMap["Traded Luxuries"] =
-            luxuriesAllOfWhichAreTradedAway.count() * happinessPerUniqueLuxury *
+            luxuriesAllOfWhichAreTradedAway.size * happinessPerUniqueLuxury *
                     civInfo.getMatchingUniques(UniqueType.RetainHappinessFromLuxury)
                         .sumOf { it.params[0].toInt() } / 100f
 

@@ -9,7 +9,7 @@ import com.unciv.ui.utils.*
 class NextTurnButton(
     keyPressDispatcher: KeyPressDispatcher
 ) : TextButton("", BaseScreen.skin) {
-    lateinit var nextTurnAction: NextTurnAction
+    private lateinit var nextTurnAction: NextTurnAction
     init {
         label.setFontSize(30)
         labelCell.pad(10f)

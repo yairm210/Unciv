@@ -62,12 +62,14 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Group() {
         // Support rectangular maps with extreme aspect ratios by scaling to the larger coordinate with a slight weighting to make the bounding box 4:3
         val effectiveRadius = with(mapHolder.tileMap.mapParameters) {
             if (shape != MapShape.rectangular) mapSize.radius
-            else max(mapSize.height, mapSize.width * 3 / 4) * MapSize.Huge.radius / MapSize.Huge.height
+            else max(
+                mapSize.height,
+                mapSize.width * 3 / 4
+            ) * MapSize.Huge.radius / MapSize.Huge.height
         }
         val mapSizePercent = if (minimapSize < 22) minimapSize + 9 else minimapSize * 5 - 75
         val smallerWorldDimension = mapHolder.worldScreen.stage.let { min(it.width, it.height) }
-        val tileSize = smallerWorldDimension * mapSizePercent / 100 / effectiveRadius
-        return tileSize
+        return smallerWorldDimension * mapSizePercent / 100 / effectiveRadius
     }
 
     private fun createScrollPositionIndicators(): List<ClippingImage> {

@@ -130,8 +130,8 @@ class TileResource : RulesetStatsObject() {
     }
 
     fun getImprovingImprovement(tile: TileInfo, civInfo: CivilizationInfo): String? {
-        return getImprovements().firstOrNull { 
-            tile.canBuildImprovement(civInfo.gameInfo.ruleSet.tileImprovements[it]!!, civInfo) 
+        return getImprovements().firstOrNull {
+            tile.canBuildImprovement(civInfo.gameInfo.ruleSet.tileImprovements[it]!!, civInfo)
         }
     }
 
