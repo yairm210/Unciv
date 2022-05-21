@@ -834,10 +834,8 @@ object UnitActions {
     }
 
     private fun addWaitAction(unit: MapUnit, actionList: ArrayList<UnitAction>, worldScreen: WorldScreen) {
-        // This is only for idle units.
         if (!unit.isIdle()) return
-        // Don't add if there are no idle units we could switch to,
-        if (!worldScreen.viewingCiv.getDueUnits().any()) return
+        if (worldScreen.viewingCiv.getDueUnits().filter { it != unit }.none()) return
         actionList += UnitAction(
             type = UnitActionType.Wait,
             action = {

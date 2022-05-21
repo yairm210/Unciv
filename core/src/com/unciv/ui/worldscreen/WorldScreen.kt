@@ -184,11 +184,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         // Don't select unit and change selectedCiv when centering as spectator
         if (viewingCiv.isSpectator())
             mapHolder.setCenterPosition(tileToCenterOn, immediately = true, selectUnit = false)
-        else {
+        else
             mapHolder.setCenterPosition(tileToCenterOn, immediately = true, selectUnit = true)
-            if (viewingCiv.getNextDueUnit() == bottomUnitTable.selectedUnit)
-                viewingCiv.cycleThroughDueUnits()
-        }
 
         tutorialController.allTutorialsShowedCallback = { shouldUpdate = true }
 
@@ -730,7 +727,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     }
 
     fun switchToNextUnit() {
-        val nextDueUnit = viewingCiv.cycleThroughDueUnits()
+        // Try to select something new if we already have the next pending unit selected.
+        val nextDueUnit = viewingCiv.cycleThroughDueUnits(bottomUnitTable.selectedUnit)
         if (nextDueUnit != null) {
             mapHolder.setCenterPosition(
                 nextDueUnit.currentTile.position,
