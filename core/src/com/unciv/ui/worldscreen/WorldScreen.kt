@@ -353,16 +353,14 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     }
 
     private suspend fun loadLatestMultiplayerState() {
-        // Since we're on a background thread, all the UI calls in this func need to run from the
-        // main thread which has a GL context
         val loadingGamePopup = Popup(this)
         postCrashHandlingRunnable {
-            loadingGamePopup.add("Loading latest game state...".tr())
+            loadingGamePopup.addGoodSizedLabel("Loading latest game state...")
             loadingGamePopup.open()
         }
 
         try {
-            val latestGame = OnlineMultiplayerGameSaver().tryDownloadGame(gameInfo.gameId)
+            val latestGame = game.onlineMultiplayer.downloadGame(gameInfo.gameId)
 
             // if we find the current player didn't change, don't update
             // Additionally, check if we are the current player, and in that case always stop
@@ -377,7 +375,6 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
             } else { // if the game updated, even if it's not our turn, reload the world -
                 // stuff has changed and the "waiting for X" will now show the correct civ
                 stopMultiPlayerRefresher()
-                latestGame.isUpToDate = true
                 if (viewingCiv.civName == latestGame.currentPlayer || viewingCiv.civName == Constants.spectator) {
                     game.platformSpecificHelper?.notifyTurnStarted()
                 }

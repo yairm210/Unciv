@@ -137,7 +137,7 @@ class OnlineMultiplayer() {
     }
 
     /**
-     * Resigns from the given multiplayer [gameId]. Can only resign if it's currently the user's turn,
+     * Resigns from the given multiplayer [game]. Can only resign if it's currently the user's turn,
      * to ensure that no one else can upload the game in the meantime.
      *
      * Fires [MultiplayerGameUpdated]
@@ -191,9 +191,32 @@ class OnlineMultiplayer() {
      * @throws FileNotFoundException if the file can't be found
      */
     suspend fun loadGame(gameId: String) {
-        val gameInfo = OnlineMultiplayerGameSaver().tryDownloadGame(gameId)
-        gameInfo.isUpToDate = true
+        val gameInfo = downloadGame(gameId)
         postCrashHandlingRunnable { UncivGame.Current.loadGame(gameInfo) }
+    }
+
+    /**
+     * Checks if the given game is current and loads it, otherwise loads the game from the server
+     */
+    suspend fun loadGame(gameInfo: GameInfo) {
+        val gameId = gameInfo.gameId
+        val preview = onlineGameSaver.tryDownloadGamePreview(gameId)
+        if (hasLatestGameState(gameInfo, preview)) {
+            gameInfo.isUpToDate = true
+            postCrashHandlingRunnable { UncivGame.Current.loadGame(gameInfo) }
+        } else {
+            loadGame(gameId)
+        }
+    }
+
+    /**
+     * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
+     * @throws FileNotFoundException if the file can't be found
+     */
+    suspend fun downloadGame(gameId: String): GameInfo {
+        val latestGame = onlineGameSaver.tryDownloadGame(gameId)
+        latestGame.isUpToDate = true
+        return latestGame
     }
 
     /**
