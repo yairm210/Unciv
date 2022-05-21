@@ -157,17 +157,23 @@ object UnitAutomation {
             // For now its a simple option to allow AI to win a science victory again
             if (unit.hasUnique(UniqueType.AddInCapital))
                 return SpecificUnitAutomation.automateAddInCapital(unit)
-            
-            if (unit.hasUnique("Bonus for units in 2 tile radius 15%"))
-                return SpecificUnitAutomation.automateGreatGeneral(unit)
+
+            //todo this now supports "Great General"-like mod units not combining 'aura' and citadel
+            // abilities, but not additional capabilities if automation finds no use for those two
+            if (unit.hasStrengthBonusInRadiusUnique && SpecificUnitAutomation.automateGreatGeneral(unit))
+                return
+            if (unit.hasCitadelPlacementUnique && SpecificUnitAutomation.automateCitadelPlacer(unit))
+                return
+            if (unit.hasCitadelPlacementUnique || unit.hasStrengthBonusInRadiusUnique)
+                return SpecificUnitAutomation.automateGreatGeneralFallback(unit)
 
             if (unit.hasUnique(UniqueType.ConstructImprovementConsumingUnit))
                 return SpecificUnitAutomation.automateImprovementPlacer(unit) // includes great people plus moddable units
 
-            if (unit.getMatchingUniques("Can [] [] times").any{ it.params[0] == "Spread Religion" })
+            if (unit.getMatchingUniques(UniqueType.CanActionSeveralTimes).any{ it.params[0] == "Spread Religion" })
                 return SpecificUnitAutomation.automateMissionary(unit)
 
-            if (unit.hasUnique("Prevents spreading of religion to the city it is next to"))
+            if (unit.hasUnique(UniqueType.PreventSpreadingReligion))
                 return SpecificUnitAutomation.automateInquisitor(unit)
 
 
@@ -356,9 +362,10 @@ object UnitAutomation {
                 tilesToCheck = unit.getTile().getTilesInDistance(CLOSE_ENEMY_TILES_AWAY_LIMIT).toList()
         ).filter {
             // Ignore units that would 1-shot you if you attacked. Account for taking terrain damage after the fact.
-            BattleDamage.calculateDamageToAttacker(MapUnitCombatant(unit),
-                    it.tileToAttackFrom,
-                    Battle.getMapCombatantOfTile(it.tileToAttack)!!)
+            BattleDamage.calculateDamageToAttacker(
+                MapUnitCombatant(unit),
+                Battle.getMapCombatantOfTile(it.tileToAttack)!!
+            )
                     + unit.getDamageFromTerrain(it.tileToAttackFrom) < unit.health
         }
 
@@ -413,26 +420,13 @@ object UnitAutomation {
 
         // only focus on *attacking* 1 enemy at a time otherwise you'll lose on both fronts
 
-        val enemies = unit.civInfo.getKnownCivs().filter { unit.civInfo.isAtWarWith(it) && it.cities.isNotEmpty() }
+        val enemies = unit.civInfo.getKnownCivs()
+            .filter { unit.civInfo.isAtWarWith(it) && it.cities.isNotEmpty() }
 
-        val ourCities = unit.civInfo.cities
-
-        var closestEnemyCity:CityInfo?=null
-        var closestDistance = 10000
-        for (enemy in enemies) {
-            val knownEnemyCities = enemy.cities.filter { it.location in unit.civInfo.exploredTiles }
-            if (knownEnemyCities.isEmpty()) continue
-            for(enemyCity in knownEnemyCities) {
-                val distanceToClosestCityOfOurs = ourCities.minOf {
-                    it.getCenterTile().aerialDistanceTo(enemyCity.getCenterTile())
-                }
-                if (distanceToClosestCityOfOurs < closestDistance){
-                    closestDistance = distanceToClosestCityOfOurs
-                    closestEnemyCity = enemyCity
-                }
-            }
-        }
-        if (closestEnemyCity==null) return false // no attackable cities found
+        val closestEnemyCity = enemies
+            .map { NextTurnAutomation.getClosestCities(unit.civInfo, it) }
+            .minByOrNull { it.aerialDistance }?.city2
+          ?: return false // no attackable cities found
 
         // Our main attack target is the closest city, but we're fine with deviating from that a bit
         var enemyCitiesByPriority = closestEnemyCity.civInfo.cities
@@ -451,6 +445,7 @@ object UnitAutomation {
         }
         return false
     }
+    
 
     private fun headTowardsEnemyCity(unit: MapUnit, closestReachableEnemyCity: TileInfo): Boolean {
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
@@ -502,8 +497,7 @@ object UnitAutomation {
             .asSequence()
             .sortedBy { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
             .firstOrNull { unit.movement.canReach(it.getCenterTile()) }
-        
-        if (closestCity == null) return false // Panic!
+          ?: return false // Panic!
         
         unit.movement.headTowards(closestCity.getCenterTile())
         return true
@@ -604,7 +598,7 @@ object UnitAutomation {
     }
     
     /** Returns whether the civilian spends its turn hiding and not moving */
-    fun tryRunAwayIfNeccessary(unit: MapUnit): Boolean {
+    private fun tryRunAwayIfNeccessary(unit: MapUnit): Boolean {
         // This is a little 'Bugblatter Beast of Traal': Run if we can attack an enemy
         // Cheaper than determining which enemies could attack us next turn
         //todo - stay when we're stacked with a good military unit???

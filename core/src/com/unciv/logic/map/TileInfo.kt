@@ -20,6 +20,7 @@ import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.toPercent
 import kotlin.math.abs
 import kotlin.math.min
+import kotlin.random.Random
 
 open class TileInfo {
     @Transient
@@ -69,6 +70,10 @@ open class TileInfo {
 
     var naturalWonder: String? = null
     var resource: String? = null
+        set(value) {
+            tileResourceCache = null
+            field = value
+        }
     var resourceAmount: Int = 0
     var improvement: String? = null
     var improvementInProgress: String? = null
@@ -162,12 +167,17 @@ open class TileInfo {
         else -> getBaseTerrain()
     }
 
-    @delegate:Transient
-    val tileResource: TileResource by lazy {
-        if (resource == null) throw Exception("No resource exists for this tile!")
-        else if (!ruleset.tileResources.containsKey(resource!!)) throw Exception("Resource $resource does not exist in this ruleset!")
-        else ruleset.tileResources[resource!!]!!
-    }
+    @Transient
+    private var tileResourceCache: TileResource? = null
+    val tileResource: TileResource
+        get() {
+            if (tileResourceCache == null) {
+                if (resource == null) throw Exception("No resource exists for this tile!")
+                if (!ruleset.tileResources.containsKey(resource!!)) throw Exception("Resource $resource does not exist in this ruleset!")
+                tileResourceCache = ruleset.tileResources[resource!!]!!
+            }
+            return tileResourceCache!!
+        }
 
     private fun getNaturalWonder(): Terrain =
             if (naturalWonder == null) throw Exception("No natural wonder exists for this tile!")
@@ -243,7 +253,7 @@ open class TileInfo {
 
     fun isRoughTerrain() = getAllTerrains().any{ it.isRough() }
 
-    /** Checks whether any of the TERRAINS of this tile has a certain unqiue */
+    /** Checks whether any of the TERRAINS of this tile has a certain unique */
     fun terrainHasUnique(uniqueType: UniqueType) = getAllTerrains().any { it.hasUnique(uniqueType) }
     /** Get all uniques of this type that any TERRAIN on this tile has */
     fun getTerrainMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(tile=this) ): Sequence<Unique> {
@@ -478,16 +488,25 @@ open class TileInfo {
         if (terrainFilter == Constants.freshWater && isAdjacentToRiver()) return true
         return (neighbors + this).any { neighbor -> neighbor.matchesFilter(terrainFilter) }
     }
-
+    
     /** Returns true if the [improvement] can be built on this [TileInfo] */
     fun canBuildImprovement(improvement: TileImprovement, civInfo: CivilizationInfo): Boolean {
+        
         val stateForConditionals = StateForConditionals(civInfo, tile=this)
+        val knownFeatureRemovals = ruleset.tileImprovements.values
+            .filter { rulesetImprovement ->
+                rulesetImprovement.name.startsWith(Constants.remove)
+                && RoadStatus.values().none { it.removeAction == rulesetImprovement.name }
+                && (rulesetImprovement.techRequired == null || civInfo.tech.isResearched(rulesetImprovement.techRequired!!))
+            }
+
         return when {
             improvement.uniqueTo != null && improvement.uniqueTo != civInfo.civName -> false
             improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!) -> false
+            improvement.hasUnique(UniqueType.Unbuildable, stateForConditionals) -> false
             getOwner() != civInfo && !(
                 improvement.hasUnique(UniqueType.CanBuildOutsideBorders, stateForConditionals)
-                || ( // citadel can be built only next to or within own borders
+                || (
                     improvement.hasUnique(UniqueType.CanBuildJustOutsideBorders, stateForConditionals)
                     && neighbors.any { it.getOwner() == civInfo }
                 )
@@ -501,44 +520,66 @@ open class TileInfo {
             improvement.getMatchingUniques(UniqueType.ConsumesResources, stateForConditionals).any {
                 civInfo.getCivResourcesByName()[it.params[1]]!! < it.params[0].toInt()
             } -> false
-            improvement.hasUnique(UniqueType.Unbuildable, stateForConditionals) -> false
-            else -> canImprovementBeBuiltHere(improvement, hasViewableResource(civInfo), stateForConditionals)
+            else -> canImprovementBeBuiltHere(improvement, hasViewableResource(civInfo), knownFeatureRemovals, stateForConditionals)
         }
     }
-
+    
     /** Without regards to what CivInfo it is, a lot of the checks are just for the improvement on the tile.
      *  Doubles as a check for the map editor.
      */
     private fun canImprovementBeBuiltHere(
         improvement: TileImprovement,
         resourceIsVisible: Boolean = resource != null,
+        knownFeatureRemovals: List<TileImprovement>? = null,
         stateForConditionals: StateForConditionals = StateForConditionals(tile=this)
     ): Boolean {
-        val topTerrain = getLastTerrain()
 
+        fun TileImprovement.canBeBuildOnThisUnbuildableTerrain(
+            knownFeatureRemovals: List<TileImprovement>? = null,
+        ): Boolean {
+            val topTerrain = getLastTerrain()
+            // We can build if we are specifically allowed to build on this terrain
+            if (isAllowedOnFeature(topTerrain.name)) return true
+
+            // Otherwise, we can if this improvement removes the top terrain
+            if (!hasUnique(UniqueType.RemovesFeaturesIfBuilt, stateForConditionals)) return false
+            val removeAction = ruleset.tileImprovements[Constants.remove + topTerrain.name] ?: return false
+            // and we have the tech to remove that top terrain
+            if (removeAction.techRequired != null && (knownFeatureRemovals == null || removeAction !in knownFeatureRemovals)) return false
+            // and we can build it on the tile without the top terrain
+            val clonedTile = this@TileInfo.clone()
+            clonedTile.removeTerrainFeature(topTerrain.name)
+            return clonedTile.canImprovementBeBuiltHere(improvement, resourceIsVisible, knownFeatureRemovals, stateForConditionals)
+        }
+        
         return when {
             improvement.name == this.improvement -> false
             isCityCenter() -> false
+            
             // First we handle a few special improvements
+            
             // Can only cancel if there is actually an improvement being built
             improvement.name == Constants.cancelImprovementOrder -> (this.improvementInProgress != null)
-            // Can only remove if the feature is actually there
+            // Can only remove roads if that road is actually there
+            RoadStatus.values().any { it.removeAction == improvement.name } -> roadStatus.removeAction == improvement.name
+            // Can only remove features if that feature is actually there
             improvement.name.startsWith(Constants.remove) -> terrainFeatures.any { it == improvement.name.removePrefix(Constants.remove) }
             // Can only build roads if on land and they are better than the current road
             RoadStatus.values().any { it.name == improvement.name } -> !isWater && RoadStatus.valueOf(improvement.name) > roadStatus
-            // Can always build road removal improvements
-            improvement.name == roadStatus.removeAction -> true
             
             // Then we check if there is any reason to not allow this improvement to be build
-            
+
             // Can't build if there is already an irremovable improvement here
             this.improvement != null && getTileImprovement()!!.hasUnique(UniqueType.Irremovable, stateForConditionals) -> false
+
+            // Can't build if this terrain is unbuildable, except when we are specifically allowed to
+            getLastTerrain().unbuildable && !improvement.canBeBuildOnThisUnbuildableTerrain(knownFeatureRemovals) -> false
             
             // Can't build if any terrain specifically prevents building this improvement
             getTerrainMatchingUniques(UniqueType.RestrictedBuildableImprovements, stateForConditionals).any {
                 unique -> !improvement.matchesFilter(unique.params[0])
             } -> false
-            
+
             // Can't build if the improvement specifically prevents building on some present feature
             improvement.getMatchingUniques(UniqueType.CannotBuildOnTile, stateForConditionals).any {
                 unique -> matchesTerrainFilter(unique.params[0])
@@ -549,32 +590,32 @@ open class TileInfo {
             improvement.getMatchingUniques(UniqueType.CanOnlyBeBuiltOnTile, stateForConditionals).let {
                 it.any() && it.any { unique -> !matchesTerrainFilter(unique.params[0]) }
             } -> false
-            
+
             // Can't build if the improvement requires an adjacent terrain that is not present
             improvement.getMatchingUniques(UniqueType.MustBeNextTo, stateForConditionals).any {
                 !isAdjacentTo(it.params[0])
             } -> false
 
-            // Can't build on unbuildable terrains - EXCEPT when specifically allowed to
-            topTerrain.unbuildable && !improvement.isAllowedOnFeature(topTerrain.name) -> false
-            
-            // Can't build it if it is only allowed to improve resources and it doesn't improve this reousrce
+            // Can't build it if it is only allowed to improve resources and it doesn't improve this resource
             improvement.hasUnique(UniqueType.CanOnlyImproveResource, stateForConditionals) && (
                 !resourceIsVisible || !tileResource.isImprovedBy(improvement.name)
             ) -> false
 
             // At this point we know this is a normal improvement and that there is no reason not to allow it to be built.
+            
             // Lastly we check if the improvement may be built on this terrain or resource 
-            improvement.canBeBuiltOn(topTerrain.name) -> true
+            improvement.canBeBuiltOn(getLastTerrain().name) -> true
             isLand && improvement.canBeBuiltOn("Land") -> true
             isWater && improvement.canBeBuiltOn("Water") -> true
             // DO NOT reverse this &&. isAdjacentToFreshwater() is a lazy which calls a function, and reversing it breaks the tests.
             improvement.hasUnique(UniqueType.ImprovementBuildableByFreshWater, stateForConditionals) 
                 && isAdjacentTo(Constants.freshWater) -> true
+            
             // I don't particularly like this check, but it is required to build mines on non-hill resources
             resourceIsVisible && tileResource.isImprovedBy(improvement.name) -> true
             // DEPRECATED since 4.0.14, REMOVE SOON:
             isLand && improvement.terrainsCanBeBuiltOn.isEmpty() && !improvement.hasUnique(UniqueType.CanOnlyImproveResource) -> true
+            // No reason this improvement should be built here, so can't build it 
             else -> false
         }
     }
@@ -899,7 +940,15 @@ open class TileInfo {
         for (unit in this.getUnits()) removeUnit(unit)
     }
 
-    fun setTileResource(newResource: TileResource, majorDeposit: Boolean = false) {
+    /**
+     * Sets this tile's [resource] and, if [newResource] is a Strategic resource, [resourceAmount] fields.
+     * 
+     * [resourceAmount] is determined by [MapParameters.mapResources] and [majorDeposit], and
+     * if the latter is `null` a random choice between major and minor deposit is made, approximating
+     * the frequency [MapRegions][com.unciv.logic.map.mapgenerator.MapRegions] would use.
+     * A randomness source ([rng]) can optionally be provided for that step (not used otherwise).
+     */
+    fun setTileResource(newResource: TileResource, majorDeposit: Boolean? = null, rng: Random = Random.Default) {
         resource = newResource.name
 
         if (newResource.resourceType != ResourceType.Strategic) return
@@ -911,20 +960,27 @@ open class TileInfo {
             }
         }
 
+        val majorDepositFinal = majorDeposit ?: (rng.nextDouble() < approximateMajorDepositDistribution())
+        val depositAmounts = if (majorDepositFinal) newResource.majorDepositAmount else newResource.minorDepositAmount
         resourceAmount = when (tileMap.mapParameters.mapResources) {
-            MapResources.sparse -> {
-                if (majorDeposit) newResource.majorDepositAmount.sparse
-                else newResource.minorDepositAmount.sparse
-            }
-            MapResources.abundant -> {
-                if (majorDeposit) newResource.majorDepositAmount.abundant
-                else newResource.minorDepositAmount.abundant
-            }
-            else -> {
-                if (majorDeposit) newResource.majorDepositAmount.default
-                else newResource.minorDepositAmount.default
-            }
+            MapResources.sparse -> depositAmounts.sparse
+            MapResources.abundant -> depositAmounts.abundant
+            else -> depositAmounts.default
         }
+    }
+
+    private fun approximateMajorDepositDistribution(): Double {
+        // We can't replicate the MapRegions resource distributor, so let's try to get
+        // a close probability of major deposits per tile
+        var probability = 0.0
+        for (unique in getAllTerrains().flatMap { it.getMatchingUniques(UniqueType.MajorStrategicFrequency) }) {
+            val frequency = unique.params[0].toIntOrNull() ?: continue
+            if (frequency <= 0) continue
+            // The unique param is literally "every N tiles", so to get a probability p=1/f
+            probability += 1.0 / frequency
+        }
+        return if (probability == 0.0) 0.04  // This is the default of 1 per 25 tiles
+            else probability
     }
 
     fun setTerrainFeatures(terrainFeatureList:List<String>) {

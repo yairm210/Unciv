@@ -137,7 +137,7 @@ enum class UniqueParameterType(
             parameterText: String,
             ruleset: Ruleset
         ): UniqueType.UniqueComplianceErrorSeverity? {
-            if (ruleset.units[parameterText]?.hasUnique("Great Person - []") == true) return null
+            if (ruleset.units[parameterText]?.hasUnique(UniqueType.GreatPerson) == true) return null
             return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
         }
     },
@@ -188,6 +188,7 @@ enum class UniqueParameterType(
             "in non-enemy foreign cities",
             "in foreign cities",
             "in annexed cities",
+            "in puppeted cities",
             "in holy cities",
             "in City-State cities",
             "in cities following this religion",

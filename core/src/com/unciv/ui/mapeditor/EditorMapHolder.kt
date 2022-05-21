@@ -1,6 +1,5 @@
 package com.unciv.ui.mapeditor
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
@@ -11,7 +10,10 @@ import com.unciv.logic.map.TileMap
 import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.ZoomableScrollPane
+import com.unciv.ui.utils.center
+import com.unciv.ui.utils.onClick
 
 
 /**
@@ -216,6 +218,11 @@ class EditorMapHolder(
         val positionalCoords = tileGroupMap.getPositionalVector(stageCoords)
         val hexPosition = HexMath.world2HexCoords(positionalCoords)
         val rounded = HexMath.roundHexCoords(hexPosition)
-        return tileMap.getOrNull(rounded)
+
+        if (!tileMap.mapParameters.worldWrap)
+            return tileMap.getOrNull(rounded)
+        val wrapped = HexMath.getUnwrappedNearestTo(rounded, Vector2.Zero, tileMap.maxLongitude)
+        //todo this works, but means getUnwrappedNearestTo fails - on the x-y == maxLongitude vertical
+        return tileMap.getOrNull(wrapped) ?: tileMap.getOrNull(rounded)
     }
 }

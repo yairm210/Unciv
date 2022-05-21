@@ -17,9 +17,9 @@ import com.unciv.ui.worldscreen.WorldScreen
 
 class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
-    val gameInfo = worldScreen.gameInfo
+    private val gameInfo = worldScreen.gameInfo
     private val playerCivInfo = worldScreen.viewingCiv
-    val enabledVictoryTypes = gameInfo.gameParameters.victoryTypes
+    private val enabledVictoryTypes = gameInfo.gameParameters.victoryTypes
 
     private val contentsTable = Table()
 
@@ -126,7 +126,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         val victoryObject = gameInfo.ruleSet.victories[victory]!!
         val table = Table()
         table.defaults().pad(5f)
-        var firstIncomplete: Boolean = true
+        var firstIncomplete = true
         for (milestone in victoryObject.milestoneObjects) {
             val completionStatus =
                 when {
@@ -205,7 +205,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
                     RankLabels.Rank -> demographicsTable.add((aliveMajorCivsSorted.indexOfFirst { it == worldScreen.viewingCiv } + 1).toLabel())
                     RankLabels.Value -> addRankCivGroup(worldScreen.viewingCiv)
                     RankLabels.Best -> addRankCivGroup(aliveMajorCivsSorted.firstOrNull()!!)
-                    RankLabels.Average -> demographicsTable.add((aliveMajorCivsSorted.sumOf { it.getStatForRanking(category) } / aliveMajorCivsSorted.count()).toLabel())
+                    RankLabels.Average -> demographicsTable.add((aliveMajorCivsSorted.sumOf { it.getStatForRanking(category) } / aliveMajorCivsSorted.size).toLabel())
                     RankLabels.Worst -> addRankCivGroup(aliveMajorCivsSorted.lastOrNull()!!)
                 }
             }

@@ -19,6 +19,7 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
+import com.unciv.models.stats.Stats
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -33,6 +34,49 @@ enum class CityFlags {
     ResourceDemand,
     Resistance
 }
+
+// if tableEnabled == true, then Stat != null
+enum class CityFocus(val label: String, val tableEnabled: Boolean, val stat: Stat? = null) {
+    NoFocus("Default Focus", true, null) {
+        override fun getStatMultiplier(stat: Stat) = 1f  // actually redundant, but that's two steps to see
+    },
+    FoodFocus("${Stat.Food.name} Focus", true, Stat.Food),
+    ProductionFocus("${Stat.Production.name} Focus", true, Stat.Production),
+    GoldFocus("${Stat.Gold.name} Focus", true, Stat.Gold),
+    ScienceFocus("${Stat.Science.name} Focus", true, Stat.Science),
+    CultureFocus("${Stat.Culture.name} Focus", true, Stat.Culture),
+    GoldGrowthFocus("Gold Growth Focus", false) {
+        override fun getStatMultiplier(stat: Stat) = when (stat) {
+            Stat.Gold, Stat.Food -> 2f
+            else -> 1f
+        }
+    },
+    ProductionGrowthFocus("Production Growth Focus", false) {
+        override fun getStatMultiplier(stat: Stat) = when (stat) {
+            Stat.Production, Stat.Food -> 2f
+            else -> 1f
+        }
+    },
+    FaithFocus("${Stat.Faith.name} Focus", true, Stat.Faith),
+    HappinessFocus("${Stat.Happiness.name} Focus", false, Stat.Happiness);
+    //GreatPersonFocus;
+
+    open fun getStatMultiplier(stat: Stat) = when (this.stat) {
+        stat -> 3f
+        else -> 1f
+    }
+
+    fun applyWeightTo(stats: Stats) {
+        for (stat in Stat.values()) {
+            stats[stat] *= getStatMultiplier(stat)
+        }
+    }
+
+    fun safeValueOf(stat: Stat): CityFocus {
+        return values().firstOrNull { it.stat == stat } ?: NoFocus
+    }
+}
+
 
 class CityInfo {
     @Suppress("JoinDeclarationAndAssignment")
@@ -81,10 +125,15 @@ class CityInfo {
 
     /** Tiles that the population in them won't be reassigned */
     var lockedTiles = HashSet<Vector2>()
+    var manualSpecialists = false
     var isBeingRazed = false
     var attackedThisTurn = false
     var hasSoldBuildingThisTurn = false
     var isPuppet = false
+    var updateCitizens = false  // flag so that on endTurn() the Governor reassigns Citizens
+    var cityAIFocus: CityFocus = CityFocus.NoFocus
+    var avoidGrowth: Boolean = false
+    @Transient var currentGPPBonus: Int = 0  // temporary variable saved for rankSpecialist()
 
     /** The very first found city is the _original_ capital,
      * while the _current_ capital can be any other city after the original one is captured.
@@ -148,7 +197,6 @@ class CityInfo {
         }
 
         population.autoAssignPopulation()
-        cityStats.update()
 
         // Update proximity rankings for all civs
         for (otherCiv in civInfo.gameInfo.getAliveMajorCivs()) {
@@ -302,6 +350,10 @@ class CityInfo {
         toReturn.isOriginalCapital = isOriginalCapital
         toReturn.flagsCountdown.putAll(flagsCountdown)
         toReturn.demandedResource = demandedResource
+        toReturn.updateCitizens = updateCitizens
+        toReturn.cityAIFocus = cityAIFocus
+        toReturn.avoidGrowth = avoidGrowth
+        toReturn.manualSpecialists = manualSpecialists
         return toReturn
     }
 
@@ -436,7 +488,7 @@ class CityInfo {
     fun isGrowing() = foodForNextTurn() > 0
     fun isStarving() = foodForNextTurn() < 0
 
-    private fun foodForNextTurn() = cityStats.currentCityStats.food.roundToInt()
+    fun foodForNextTurn() = cityStats.currentCityStats.food.roundToInt()
 
     /** Take null to mean infinity. */
     fun getNumTurnsToNewPopulation(): Int? {
@@ -453,10 +505,32 @@ class CityInfo {
         if (!isStarving()) return null
         return population.foodStored / -foodForNextTurn() + 1
     }
-
+    
     fun containsBuildingUnique(uniqueType: UniqueType) =
         cityConstructions.getBuiltBuildings().flatMap { it.uniqueObjects }.any { it.isOfType(uniqueType) }
 
+    fun getGreatPersonPercentageBonus(): Int{
+        var allGppPercentageBonus = 0
+        for (unique in getMatchingUniques(UniqueType.GreatPersonPointPercentage)
+            + getMatchingUniques(UniqueType.GreatPersonPointPercentageDeprecated)
+        ) {
+            if (!matchesFilter(unique.params[1])) continue
+            allGppPercentageBonus += unique.params[0].toInt()
+        }
+
+        // Sweden UP
+        for (otherCiv in civInfo.getKnownCivs()) {
+            if (!civInfo.getDiplomacyManager(otherCiv).hasFlag(DiplomacyFlags.DeclarationOfFriendship))
+                continue
+
+            for (ourUnique in civInfo.getMatchingUniques(UniqueType.GreatPersonBoostWithFriendship))
+                allGppPercentageBonus += ourUnique.params[0].toInt()
+            for (theirUnique in otherCiv.getMatchingUniques(UniqueType.GreatPersonBoostWithFriendship))
+                allGppPercentageBonus += theirUnique.params[0].toInt()
+        }
+        return allGppPercentageBonus
+    }
+    
     fun getGreatPersonPointsForNextTurn(): HashMap<String, Counter<String>> {
         val sourceToGPP = HashMap<String, Counter<String>>()
 
@@ -481,24 +555,7 @@ class CityInfo {
                 gppCounter.add(unitName, gppCounter[unitName]!! * unique.params[1].toInt() / 100)
             }
 
-            var allGppPercentageBonus = 0
-            for (unique in getMatchingUniques(UniqueType.GreatPersonPointPercentage) 
-                + getMatchingUniques(UniqueType.GreatPersonPointPercentageDeprecated)
-            ) {
-                if (!matchesFilter(unique.params[1])) continue
-                allGppPercentageBonus += unique.params[0].toInt()
-            }
-
-            // Sweden UP
-            for (otherCiv in civInfo.getKnownCivs()) {
-                if (!civInfo.getDiplomacyManager(otherCiv).hasFlag(DiplomacyFlags.DeclarationOfFriendship)) 
-                    continue
-
-                for (ourUnique in civInfo.getMatchingUniques(UniqueType.GreatPersonBoostWithFriendship))
-                    allGppPercentageBonus += ourUnique.params[0].toInt()
-                for (theirUnique in otherCiv.getMatchingUniques(UniqueType.GreatPersonBoostWithFriendship))
-                    allGppPercentageBonus += theirUnique.params[0].toInt()
-            }
+            val allGppPercentageBonus = getGreatPersonPercentageBonus()
 
             for (unitName in gppCounter.keys)
                 gppCounter.add(unitName, gppCounter[unitName]!! * allGppPercentageBonus / 100)
@@ -585,7 +642,11 @@ class CityInfo {
         tryUpdateRoadStatus()
         attackedThisTurn = false
 
-        if (isPuppet) reassignPopulation()
+        if (isPuppet) reassignAllPopulation()
+        else if (updateCitizens){
+            reassignPopulation()
+            updateCitizens = false
+        }
 
         // The ordering is intentional - you get a turn without WLTKD even if you have the next resource already
         if (!hasFlag(CityFlags.WeLoveTheKing))
@@ -631,28 +692,36 @@ class CityInfo {
     fun setFlag(flag: CityFlags, amount: Int) {
         flagsCountdown[flag.name] = amount
     }
+
+    fun removeFlag(flag: CityFlags) {
+        flagsCountdown.remove(flag.name)
+    }
     
     fun resetWLTKD() {
         // Removes the flags for we love the king & resource demand
         // The resource demand flag will automatically be readded with 15 turns remaining, see startTurn()
-        flagsCountdown.remove(CityFlags.WeLoveTheKing.name)
-        flagsCountdown.remove(CityFlags.ResourceDemand.name)
+        removeFlag(CityFlags.WeLoveTheKing)
+        removeFlag(CityFlags.ResourceDemand)
         demandedResource = ""
     }
 
-    fun reassignPopulation() {
-        var foodWeight = 1f
-        var foodPerTurn = 0f
-        while (foodWeight < 3 && foodPerTurn <= 0) {
-            workedTiles = hashSetOf()
-            population.specialistAllocations.clear()
-            for (i in 0..population.population)
-                population.autoAssignPopulation(foodWeight)
-            cityStats.update()
+    // Reassign all Specialists and Unlock all tiles
+    // Mainly for automated cities, Puppets, just captured
+    fun reassignAllPopulation() {
+        manualSpecialists = false
+        reassignPopulation(resetLocked = true)
+    }
 
-            foodPerTurn = foodForNextTurn().toFloat()
-            foodWeight += 0.5f
+    fun reassignPopulation(resetLocked: Boolean = false) {
+        if (resetLocked) {
+            workedTiles = hashSetOf()
+            lockedTiles = hashSetOf()
+        } else {
+            workedTiles = lockedTiles
         }
+        if (!manualSpecialists)
+            population.specialistAllocations.clear()
+        population.autoAssignPopulation()
     }
 
     fun endTurn() {
@@ -712,7 +781,7 @@ class CityInfo {
         }
 
         if (isCapital() && civInfo.cities.isNotEmpty()) { // Move the capital if destroyed (by a nuke or by razing)
-            civInfo.cities.first().cityConstructions.addBuilding(capitalCityIndicator())
+            civInfo.moveCapitalToNextLargest()
         }
 
         // Update proximity rankings for all civs
@@ -854,6 +923,7 @@ class CityInfo {
                 && !civInfo.isAtWarWith(viewingCiv)
             "in foreign cities" -> viewingCiv != civInfo
             "in annexed cities" -> foundingCiv != civInfo.civName && !isPuppet
+            "in puppeted cities" -> isPuppet
             "in holy cities" -> religion.religionThisIsTheHolyCityOf != null
             "in City-State cities" -> civInfo.isCityState()
             // This is only used in communication to the user indicating that only in cities with this

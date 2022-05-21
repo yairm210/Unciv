@@ -1,4 +1,4 @@
-package com.unciv.logic.multiplayer
+package com.unciv.logic.multiplayer.storage
 
 import com.badlogic.gdx.Net
 import com.unciv.UncivGame
@@ -8,25 +8,28 @@ import java.io.InputStreamReader
 import java.net.*
 import java.nio.charset.Charset
 
+private typealias SendRequestCallback = (success: Boolean, result: String, code: Int?)->Unit
+
 object SimpleHttp {
-    fun sendGetRequest(url: String, action: (success: Boolean, result: String)->Unit) {
-        sendRequest(Net.HttpMethods.GET, url, "", action)
+    fun sendGetRequest(url: String, timeout: Int = 5000, action: SendRequestCallback) {
+        sendRequest(Net.HttpMethods.GET, url, "", timeout, action)
     }
 
-    fun sendRequest(method: String, url: String, content: String, action: (success: Boolean, result: String)->Unit) {
+    fun sendRequest(method: String, url: String, content: String, timeout: Int = 5000, action: SendRequestCallback) {
         var uri = URI(url)
         if (uri.host == null) uri = URI("http://$url")
 
         val urlObj: URL
         try {
             urlObj = uri.toURL()
-        } catch (t:Throwable){
-            action(false, "Bad URL")
+        } catch (t: Throwable) {
+            action(false, "Bad URL", null)
             return
         }
-        
+
         with(urlObj.openConnection() as HttpURLConnection) {
             requestMethod = method  // default is GET
+            connectTimeout = timeout
             if (UncivGame.isCurrentInitialized())
                 setRequestProperty("User-Agent", "Unciv/${UncivGame.Current.version}-GNU-Terry-Pratchett")
             else
@@ -43,14 +46,14 @@ object SimpleHttp {
                 }
 
                 val text = BufferedReader(InputStreamReader(inputStream)).readText()
-                action(true, text)
+                action(true, text, responseCode)
             } catch (t: Throwable) {
                 println(t.message)
                 val errorMessageToReturn =
                     if (errorStream != null) BufferedReader(InputStreamReader(errorStream)).readText()
                     else t.message!!
                 println(errorMessageToReturn)
-                action(false, errorMessageToReturn)
+                action(false, errorMessageToReturn, if (errorStream != null) responseCode else null)
             }
         }
     }

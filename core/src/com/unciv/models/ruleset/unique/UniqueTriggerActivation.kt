@@ -39,12 +39,11 @@ object UniqueTriggerActivation {
             else Random(-550) // Very random indeed
         val ruleSet = civInfo.gameInfo.ruleSet
 
-        @Suppress("NON_EXHAUSTIVE_WHEN")  // Yes we're not treating all types here
         when (unique.type) {
             OneTimeFreeUnit -> {
                 val unitName = unique.params[0]
                 val unit = ruleSet.units[unitName]
-                if (chosenCity == null || unit == null || (unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger()))
+                if (chosenCity == null || unit == null || (unit.hasUnique(FoundCity) && civInfo.isOneCityChallenger()))
                     return false
 
                 val placedUnit = civInfo.addUnit(unitName, chosenCity)
@@ -60,7 +59,7 @@ object UniqueTriggerActivation {
             OneTimeAmountFreeUnits -> {
                 val unitName = unique.params[1]
                 val unit = ruleSet.units[unitName]
-                if (chosenCity == null || unit == null || (unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger()))
+                if (chosenCity == null || unit == null || (unit.hasUnique(FoundCity) && civInfo.isOneCityChallenger()))
                     return false
 
                 val tilesUnitsWerePlacedOn: MutableList<Vector2> = mutableListOf()
@@ -465,6 +464,8 @@ object UniqueTriggerActivation {
 
             FreeStatBuildings, FreeSpecificBuildings ->
                 civInfo.civConstructions.tryAddFreeBuildings()
+
+            else -> {}
         }
         return false
     }
@@ -475,7 +476,6 @@ object UniqueTriggerActivation {
         unit: MapUnit,
         notification: String? = null
     ): Boolean {
-        @Suppress("NON_EXHAUSTIVE_WHEN")  // Yes we're not treating all types here
         when (unique.type) {
             OneTimeUnitHeal -> {
                 unit.healBy(unique.params[0].toInt())
@@ -515,7 +515,7 @@ object UniqueTriggerActivation {
                     unit.civInfo.addNotification(notification, unit.getTile().position, unit.name)
                 return true
             }
+            else -> return false
         }
-        return false
     }
 }

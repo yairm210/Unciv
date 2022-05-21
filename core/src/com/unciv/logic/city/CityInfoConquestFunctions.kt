@@ -1,4 +1,4 @@
-package com.unciv.logic.city
+﻿package com.unciv.logic.city
 
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -12,7 +12,6 @@ import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.utils.withoutItem
-import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -109,12 +108,19 @@ class CityInfoConquestFunctions(val city: CityInfo){
 
             health = getMaxHealth() / 2 // I think that cities recover to half health when conquered?
             if (population.population > 1) population.addPopulation(-1 - population.population / 4) // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
-            reassignPopulation()
+            reassignAllPopulation()
 
-            setFlag(CityFlags.Resistance,
-                if (reconqueredCityWhileStillInResistance || foundingCiv == receivingCiv.civName) 0
-                else population.population // I checked, and even if you puppet there's resistance for conquering
-            )
+            if (!reconqueredCityWhileStillInResistance && foundingCiv != receivingCiv.civName) {
+                // add resistance
+                setFlag(
+                    CityFlags.Resistance,
+                    population.population // I checked, and even if you puppet there's resistance for conquering
+                )
+            } else {
+                // reconquering or liberating city in resistance so eliminate it
+                removeFlag(CityFlags.Resistance)
+            }
+
         }
         conqueringCiv.updateViewableTiles() // Might see new tiles from this city
     }
@@ -249,15 +255,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
 
             // Remove/relocate palace for old Civ - need to do this BEFORE we move the cities between
             //  civs so the capitalCityIndicator recognizes the unique buildings of the conquered civ
-            val capitalCityIndicator = capitalCityIndicator()
-            if (cityConstructions.isBuilt(capitalCityIndicator)) {
-                cityConstructions.removeBuilding(capitalCityIndicator)
-                val firstOtherCity = oldCiv.cities.firstOrNull { it != this }
-                if (firstOtherCity != null) {
-                    firstOtherCity.cityConstructions.addBuilding(capitalCityIndicator) // relocate palace
-                    firstOtherCity.isBeingRazed = false // Do not allow it to continue being razed if it was!
-                }
-            }
+            if (oldCiv.getCapital() == this)  oldCiv.moveCapitalToNextLargest()
 
             civInfo.cities = civInfo.cities.toMutableList().apply { remove(city) }
             newCivInfo.cities = newCivInfo.cities.toMutableList().apply { add(city) }
@@ -281,8 +279,8 @@ class CityInfoConquestFunctions(val city: CityInfo){
             // Place palace for newCiv if this is the only city they have
             // This needs to happen _before_ free buildings are added, as somtimes these should 
             // only be placed in the capital, and then there needs to be a capital.
-            if (newCivInfo.cities.count() == 1) {
-                cityConstructions.addBuilding(capitalCityIndicator)
+            if (newCivInfo.cities.size == 1) {
+                newCivInfo.moveCapitalTo(this)
             }
 
             // Add our free buildings to this city and add free buildings provided by the city to other cities

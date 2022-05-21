@@ -58,7 +58,6 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
         /** Automatically assigned for [RETURN] */
         val NUMPAD_ENTER = KeyCharAndCode(Input.Keys.NUMPAD_ENTER)
         val SPACE = KeyCharAndCode(Input.Keys.SPACE)
-        val BACKSPACE= KeyCharAndCode(Input.Keys.BACKSPACE)
         val DEL = KeyCharAndCode(Input.Keys.FORWARD_DEL)        // Gdx "DEL" is just plain wrong!
         /** Guaranteed to be ignored by [KeyPressDispatcher.set] and never to be generated for an actual event, used as fallback to ensure no action is taken */
         val UNKNOWN = KeyCharAndCode(Input.Keys.UNKNOWN)

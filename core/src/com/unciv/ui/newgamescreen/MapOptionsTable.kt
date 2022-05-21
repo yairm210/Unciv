@@ -8,7 +8,6 @@ import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.map.MapType
-import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.BaseScreen
@@ -91,9 +90,8 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
         val mapFileSelectBox = SelectBox<FileHandleWrapper>(BaseScreen.skin)
         mapFileSelectBox.onChange {
             val mapFile = mapFileSelectBox.selected.fileHandle
-            val map: TileMap
-            try {
-                map = MapSaver.loadMap(mapFile)
+            val mapParams = try {
+                MapSaver.loadMapParameters(mapFile)
             } catch (ex:Exception){
                 ex.printStackTrace()
                 Popup(newGameScreen).apply {
@@ -107,9 +105,9 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
             }
             mapParameters.name = mapFile.name()
             newGameScreen.gameSetupInfo.mapFile = mapFile
-            val mapMods = map.mapParameters.mods.partition { RulesetCache[it]?.modOptions?.isBaseRuleset == true }
+            val mapMods = mapParams.mods.partition { RulesetCache[it]?.modOptions?.isBaseRuleset == true }
             newGameScreen.gameSetupInfo.gameParameters.mods = LinkedHashSet(mapMods.second)
-            newGameScreen.gameSetupInfo.gameParameters.baseRuleset = mapMods.first.firstOrNull() ?: map.mapParameters.baseRuleset
+            newGameScreen.gameSetupInfo.gameParameters.baseRuleset = mapMods.first.firstOrNull() ?: mapParams.baseRuleset
             newGameScreen.updateRuleset()
             newGameScreen.updateTables()
         }

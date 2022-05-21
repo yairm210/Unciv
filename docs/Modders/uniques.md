@@ -458,7 +458,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global
 
 ??? example  "Great General provides double combat bonus"
-	Applicable to: Global
+	Applicable to: Global, Unit
 
 ??? example  "Receive a tech boost when scientific buildings/wonders are built in capital"
 	Applicable to: Global
@@ -811,6 +811,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: FounderBelief
 
+??? example  "[stats] from every [amount] global followers [cityFilter]"
+	Example: "[+1 Gold, +2 Production] from every [3] global followers [in all cities]"
+
+	Applicable to: FounderBelief
+
 ## FollowerBelief uniques
 ??? example  "[relativeAmount]% [stat] from every follower, up to [relativeAmount]%"
 	Example: "[+20]% [Culture] from every follower, up to [+20]%"
@@ -998,6 +1003,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Unit
 
+??? example  "[relativeAmount]% Strength bonus for [mapUnitFilter] units within [amount] tiles"
+	Example: "[+20]% Strength bonus for [Wounded] units within [3] tiles"
+
+	Applicable to: Unit
+
 ??? example  "May found a religion"
 	Applicable to: Unit
 
@@ -1048,6 +1058,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "Can move after attacking"
+	Applicable to: Unit
+
+??? example  "Transfer Movement to [unit]"
+	Example: "Transfer Movement to [Musketman]"
+
 	Applicable to: Unit
 
 ??? example  "Can move immediately once bought"
@@ -1104,6 +1119,19 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Damage taken from interception reduced by [relativeAmount]%"
 	Example: "Damage taken from interception reduced by [+20]%"
 
+	Applicable to: Unit
+
+??? example  "[relativeAmount]% Damage when intercepting"
+	Example: "[+20]% Damage when intercepting"
+
+	Applicable to: Unit
+
+??? example  "[amount] extra interceptions may be made per turn"
+	Example: "[3] extra interceptions may be made per turn"
+
+	Applicable to: Unit
+
+??? example  "Cannot be intercepted"
 	Applicable to: Unit
 
 ??? example  "May capture killed [mapUnitFilter] units"
@@ -1196,9 +1224,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Unit
 
-??? example  "Bonus for units in 2 tile radius 15%"
-	Applicable to: Unit
-
 ??? example  "Can speed up construction of a building"
 	Applicable to: Unit
 
@@ -1214,6 +1239,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Heal this unit by [amount] HP"
 	Example: "Heal this unit by [3] HP"
 
+	Applicable to: Promotion
+
+??? example  "Doing so will consume this opportunity to choose a Promotion"
 	Applicable to: Promotion
 
 ## Terrain uniques
@@ -1409,12 +1437,15 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Improvement
 
+??? example  "Can only be built to improve a resource"
+	Applicable to: Improvement
+
 ??? example  "Does not need removal of [tileFilter]"
 	Example: "Does not need removal of [Farm]"
 
 	Applicable to: Improvement
 
-??? example  "Can only be built to improve a resource"
+??? example  "Removes removable features when built"
 	Applicable to: Improvement
 
 ??? example  "Gives a defensive bonus of [relativeAmount]%"

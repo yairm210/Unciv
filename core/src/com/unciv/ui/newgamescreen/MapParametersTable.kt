@@ -13,11 +13,12 @@ import com.unciv.ui.utils.*
  *
  *  This is a separate class, because it should be in use both in the New Game screen and the Map Editor screen
  *
- *  @param isEmptyMapAllowed whether the [MapType.empty] option should be present. Is used by the Map Editor, but should **never** be used with the New Game
+ *  @param forMapEditor whether the [MapType.empty] option should be present. Is used by the Map Editor, but should **never** be used with the New Game
  * */
 class MapParametersTable(
     private val mapParameters: MapParameters,
-    private val isEmptyMapAllowed: Boolean = false
+    private val forMapEditor: Boolean = false,
+    private val sizeChangedCallback: (()->Unit)? = null
 ) : Table() {
     // These are accessed fom outside the class to read _and_ write values,
     // namely from MapOptionsTable, NewMapScreen and NewGameScreen
@@ -84,7 +85,7 @@ class MapParametersTable(
             MapType.perlin,
             MapType.archipelago,
             MapType.innerSea,
-            if (isEmptyMapAllowed) MapType.empty else null
+            if (forMapEditor) MapType.empty else null
         )
 
         mapTypeSelectBox = TranslatedSelectBox(mapTypes, mapParameters.type, skin)
@@ -166,15 +167,21 @@ class MapParametersTable(
             customWorldSizeTable.add(rectangularSizeTable).grow().row()
         else
             mapParameters.mapSize = MapSizeNew(worldSizeSelectBox.selected.value)
+
+        sizeChangedCallback?.invoke()
     }
 
     private fun addResourceSelectBox() {
-        val mapTypes = listOfNotNull(
-                MapResources.sparse,
-                MapResources.default,
-                MapResources.abundant,
-                MapResources.strategicBalance,
-                MapResources.legendaryStart
+        val mapTypes = if (forMapEditor) listOf(
+            MapResources.sparse,
+            MapResources.default,
+            MapResources.abundant,
+        ) else listOf(
+            MapResources.sparse,
+            MapResources.default,
+            MapResources.abundant,
+            MapResources.strategicBalance,
+            MapResources.legendaryStart
         )
 
         resourceSelectBox = TranslatedSelectBox(mapTypes, mapParameters.mapResources, skin)

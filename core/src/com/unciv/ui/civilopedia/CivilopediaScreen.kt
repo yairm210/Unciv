@@ -109,10 +109,9 @@ class CivilopediaScreen(
             // Alphabetical order of localized names, using system default locale
             entries = entries.sortedWith(
                 compareBy<CivilopediaEntry>{ it.sortBy }
-                    .thenBy (UncivGame.Current.settings.getCollatorFromLocale(), {
+                    .thenBy (UncivGame.Current.settings.getCollatorFromLocale()) {
                         // In order for the extra icons on Happiness and Faith to not affect sort order
                         it.name.tr().replace(Fonts.happiness.toString(),"").replace(Fonts.faith.toString(),"") })
-            )
 
         var currentY = -1f
 
@@ -205,6 +204,7 @@ class CivilopediaScreen(
                 CivilopediaCategories.Difficulty -> ruleset.difficulties.values
                 CivilopediaCategories.Belief -> (ruleset.beliefs.values.asSequence() +
                         Belief.getCivilopediaReligionEntry(ruleset)).toList()
+                CivilopediaCategories.Era -> ruleset.eras.values
             }
 
         for (loopCategory in CivilopediaCategories.values()) {
@@ -312,7 +312,7 @@ class CivilopediaScreen(
 
     override fun resize(width: Int, height: Int) {
         if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
-            game.setScreen(CivilopediaScreen(game.worldScreen.gameInfo.ruleSet, previousScreen, currentCategory, currentEntry))
+            game.setScreen(CivilopediaScreen(ruleset, previousScreen, currentCategory, currentEntry))
         }
     }
 }

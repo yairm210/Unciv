@@ -2,10 +2,10 @@ package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
-import com.unciv.Constants
 import com.unciv.logic.GameInfo
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.map.mapgenerator.MapLandmassGenerator
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
@@ -65,10 +65,10 @@ class TileMap {
     var bottomY = 0
 
     @delegate:Transient
-    val maxLatitude: Float by lazy { if (values.isEmpty()) 0f else values.map { abs(it.latitude) }.maxOrNull()!! }
+    val maxLatitude: Float by lazy { if (values.isEmpty()) 0f else values.maxOf { abs(it.latitude) } }
 
     @delegate:Transient
-    val maxLongitude: Float by lazy { if (values.isEmpty()) 0f else values.map { abs(it.longitude) }.maxOrNull()!! }
+    val maxLongitude: Float by lazy { if (values.isEmpty()) 0f else values.maxOf { abs(it.longitude) } }
 
     @delegate:Transient
     val naturalWonders: List<String> by lazy { tileList.asSequence().filter { it.isNaturalWonder() }.map { it.naturalWonder!! }.distinct().toList() }
@@ -95,16 +95,16 @@ class TileMap {
     /** creates a hexagonal map of given radius (filled with grassland) */
     constructor(radius: Int, ruleset: Ruleset, worldWrap: Boolean = false) {
         startingLocations.clear()
-        val firstAvailableLandTerrain = ruleset.terrains.values.firstOrNull { it.type==TerrainType.Land }
-            ?: throw Exception("Cannot create map - no land terrains found!")
+        val firstAvailableLandTerrain = MapLandmassGenerator.getInitializationTerrain(ruleset, TerrainType.Land)
         for (vector in HexMath.getVectorsInDistance(Vector2.Zero, radius, worldWrap))
-            tileList.add(TileInfo().apply { position = vector; baseTerrain = firstAvailableLandTerrain.name })
+            tileList.add(TileInfo().apply { position = vector; baseTerrain = firstAvailableLandTerrain })
         setTransients(ruleset)
     }
 
     /** creates a rectangular map of given width and height (filled with grassland) */
     constructor(width: Int, height: Int, ruleset: Ruleset, worldWrap: Boolean = false) {
         startingLocations.clear()
+        val firstAvailableLandTerrain = MapLandmassGenerator.getInitializationTerrain(ruleset, TerrainType.Land)
 
         // world-wrap maps must always have an even width, so round down
         val wrapAdjustedWidth = if (worldWrap && width % 2 != 0) width -1 else width
@@ -115,7 +115,7 @@ class TileMap {
             for (y in -height / 2 .. (height-1) / 2)
                 tileList.add(TileInfo().apply {
                     position = HexMath.evenQ2HexCoords(Vector2(x.toFloat(), y.toFloat()))
-                    baseTerrain = Constants.grassland
+                    baseTerrain = firstAvailableLandTerrain
                 })
 
         setTransients(ruleset)
@@ -406,7 +406,7 @@ class TileMap {
     fun isWaterMap(): Boolean {
         assignContinents(AssignContinentsMode.Ensure)
         val bigIslands = continentSizes.count { it.value > 20 }
-        val players = gameInfo.gameParameters.players.count()
+        val players = gameInfo.gameParameters.players.size
         return bigIslands >= players
     }
 
@@ -554,7 +554,7 @@ class TileMap {
         tileList.forEach {
             for (unit in it.getUnits()) if (unit.owner == player.chosenCiv) unit.removeFromTile()
         }
-        startingLocations.removeAll(startingLocations.filter { it.nation == player.chosenCiv }) // filter creates a copy, no concurrent modification
+        startingLocations.removeAll { it.nation == player.chosenCiv }
         startingLocationsByNation.remove(player.chosenCiv)
     }
 
@@ -640,7 +640,7 @@ class TileMap {
 
     /** Removes all starting positions for [position], rebuilding the transients */
     fun removeStartingLocations(position: Vector2) {
-        startingLocations.removeAll(startingLocations.filter { it.position == position })
+        startingLocations.removeAll { it.position == position }
         setStartingLocationsTransients()
     }
 
@@ -699,6 +699,5 @@ class TileMap {
             landTiles = landTiles.filter { it !in continent }
         }
     }
-
     //endregion
 }

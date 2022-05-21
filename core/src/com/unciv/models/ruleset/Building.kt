@@ -322,7 +322,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         var productionCost = cost.toFloat()
 
         for (unique in uniqueObjects.filter { it.isOfType(UniqueType.CostIncreasesPerCity) })
-            productionCost += civInfo.cities.count() * unique.params[0].toInt()
+            productionCost += civInfo.cities.size * unique.params[0].toInt()
 
         if (civInfo.isCityState())
             productionCost *= 1.5f
@@ -461,7 +461,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
         for (unique in uniqueObjects) {
             @Suppress("NON_EXHAUSTIVE_WHEN")
-            when (unique.type) { // TODO: Lots of typification…
+            when (unique.type) {
                 UniqueType.OnlyAvailableWhen->
                     if (!unique.conditionalsApply(civInfo, cityConstructions.cityInfo))
                         rejectionReasons.add(RejectionReason.ShouldNotBeDisplayed)
@@ -600,6 +600,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     if (!civInfo.gameInfo.gameParameters.victoryTypes.contains(unique.params[0]))
                         rejectionReasons.add(RejectionReason.HiddenWithoutVictory.toInstance(unique.text))
                 }
+
+                else -> {}
             }
         }
 

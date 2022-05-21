@@ -122,7 +122,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         addSeparator().pad(0f)
 
         val attackIcon = if (attacker.isRanged()) Fonts.rangedStrength else Fonts.strength
-        var defenceIcon =
+        val defenceIcon =
             if (attacker.isRanged() && defender.isRanged() && !defender.isCity() && !(defender is MapUnitCombatant && defender.unit.isEmbarked()))
                 Fonts.rangedStrength
             else Fonts.strength // use strength icon if attacker is melee, defender is melee, defender is a city, or defender is embarked
@@ -180,8 +180,8 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             row()
         }
 
-        var damageToDefender = BattleDamage.calculateDamageToDefender(attacker, null, defender, true)
-        var damageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, null, defender, true)
+        var damageToDefender = BattleDamage.calculateDamageToDefender(attacker, defender, true)
+        var damageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, defender, true)
 
 
         if (damageToAttacker>attacker.getHealth() && damageToDefender>defender.getHealth()) // when damage exceeds health, we don't want to show negative health numbers

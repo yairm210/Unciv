@@ -140,7 +140,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                 val amountToDo = civInfo.gameInfo.civilizations.count { it.isMajorCiv() } - 1  // Don't count yourself
                 val amountDone =
                     if (completed) amountToDo
-                    else amountToDo - (civInfo.gameInfo.getAliveMajorCivs().filter { it != civInfo }.count())
+                    else amountToDo - (civInfo.gameInfo.getAliveMajorCivs().filter { it != civInfo }.size)
                 "{$uniqueDescription} ($amountDone/$amountToDo)"
             }
             MilestoneType.AddedSSPartsInCapital -> {
@@ -237,6 +237,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                     buttons.add(getMilestoneButton(milestoneText, milestoneMet))
                 }
             }
+            null -> {}
         }
         return buttons
     }

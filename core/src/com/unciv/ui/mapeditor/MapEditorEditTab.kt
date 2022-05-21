@@ -28,7 +28,7 @@ class MapEditorEditTab(
     private val brushCell: Cell<Actor>
 
     private var ruleset = editorScreen.ruleset
-    private val randomness = MapGenerationRandomness()  // for auto river
+    internal val randomness = MapGenerationRandomness()  // for auto river
 
     enum class BrushHandlerType { None, Direct, Tile, Road, River, RiverFromTo }
     private var brushHandlerType = BrushHandlerType.None
@@ -227,12 +227,12 @@ class MapEditorEditTab(
                 tile.getTilesInDistance(brushSize - 1)
             }
         tiles.forEach {
-            @Suppress("NON_EXHAUSTIVE_WHEN") // other cases can't reach here
             when (brushHandlerType) {
                 BrushHandlerType.Direct -> directPaintTile(it)
                 BrushHandlerType.Tile -> paintTile(it)
                 BrushHandlerType.Road -> roadPaintTile(it)
                 BrushHandlerType.River -> riverPaintTile(it)
+                else -> {} // other cases can't reach here
             }
         }
     }

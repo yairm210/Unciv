@@ -159,9 +159,9 @@ class NewGameScreen(
             rightSideButton.disable()
             rightSideButton.setText("Working...".tr())
 
-            crashHandlingThread(name = "NewGame") {
-                // Creating a new game can take a while and we don't want ANRs
-                newGameThread()
+            // Creating a new game can take a while and we don't want ANRs
+            launchCrashHandling("NewGame", runAsDaemon = false) {
+                startNewGame()
             }
         }
     }
@@ -225,7 +225,7 @@ class NewGameScreen(
         }
     }
 
-    private fun newGameThread() {
+    private suspend fun startNewGame() {
         val popup = Popup(this)
         postCrashHandlingRunnable {
             popup.addGoodSizedLabel("Working...").row()
@@ -254,7 +254,7 @@ class NewGameScreen(
         if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
             newGame.isUpToDate = true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
             try {
-                OnlineMultiplayer().tryUploadGame(newGame, withPreview = true)
+                OnlineMultiplayerGameSaver().tryUploadGame(newGame, withPreview = true)
 
                 GameSaver.autoSave(newGame)
 

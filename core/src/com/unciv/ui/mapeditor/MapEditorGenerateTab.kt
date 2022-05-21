@@ -109,8 +109,10 @@ class MapEditorGenerateTab(
                 when (step) {
                     MapGeneratorSteps.All -> {
                         val generatedMap = generator!!.generateMap(mapParameters)
+                        val savedScale = editorScreen.mapHolder.scaleX
                         Gdx.app.postRunnable {
                             freshMapCompleted(generatedMap, mapParameters, newRuleset!!, selectPage = 0)
+                            editorScreen.mapHolder.zoom(savedScale)
                         }
                     }
                     MapGeneratorSteps.Landmass -> {
@@ -152,7 +154,9 @@ class MapEditorGenerateTab(
         private val parent: MapEditorGenerateTab
     ): Table(BaseScreen.skin) {
         val generateButton = "".toTextButton()
-        val mapParametersTable = MapParametersTable(parent.editorScreen.newMapParameters, isEmptyMapAllowed = true)
+        val mapParametersTable = MapParametersTable(parent.editorScreen.newMapParameters, forMapEditor = true) {
+            parent.replacePage(0, this)  // A kludge to get the ScrollPanes to recognize changes in vertical layout??
+        }
 
         init {
             top()
@@ -161,6 +165,12 @@ class MapEditorGenerateTab(
             add(mapParametersTable).row()
             add(generateButton).padTop(15f).row()
             generateButton.onClick { parent.generate(MapGeneratorSteps.All) }
+            mapParametersTable.resourceSelectBox.onChange {
+                parent.editorScreen.run {
+                    // normally the 'new map' parameters are independent, this needs to be an exception so strategic resource painting will use it
+                    tileMap.mapParameters.mapResources = newMapParameters.mapResources
+                }
+            }
         }
     }
 

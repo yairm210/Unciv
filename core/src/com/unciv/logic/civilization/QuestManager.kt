@@ -253,15 +253,7 @@ class QuestManager {
     }
 
     private fun handleIndividualQuests() {
-        val toRemove = ArrayList<AssignedQuest>()
-
-        for (assignedQuest in assignedQuests.filter { it.isIndividual() }) {
-            val shouldRemove = handleIndividualQuest(assignedQuest)
-            if (shouldRemove)
-                toRemove.add(assignedQuest)
-        }
-
-        assignedQuests.removeAll(toRemove)
+        assignedQuests.removeAll { it.isIndividual() && handleIndividualQuest(it) }
     }
 
     /** If quest is complete, it gives the influence reward to the player.
@@ -361,12 +353,12 @@ class QuestManager {
             return false
 
         val mostRecentBully = getMostRecentBully()
-        val playerReligion = civInfo.gameInfo.religions.values.firstOrNull() { it.foundingCivName == challenger.civName && it.isMajorReligion() }?.name
+        val playerReligion = civInfo.gameInfo.religions.values.firstOrNull { it.foundingCivName == challenger.civName && it.isMajorReligion() }?.name
 
         return when (quest.name) {
             QuestName.ClearBarbarianCamp.value -> getBarbarianEncampmentForQuest() != null
             QuestName.Route.value -> !challenger.cities.none()
-                    && !civInfo.isCapitalConnectedToCity(challenger.getCapital())
+                    && !challenger.isCapitalConnectedToCity(civInfo.getCapital())
                     // Need to have a city within 7 tiles on the same continent
                     && challenger.cities.any { it.getCenterTile().aerialDistanceTo(civInfo.getCapital().getCenterTile()) <= 7
                         && it.getCenterTile().getContinent() == civInfo.getCapital().getCenterTile().getContinent() }
@@ -393,7 +385,7 @@ class QuestManager {
     private fun isComplete(assignedQuest: AssignedQuest): Boolean {
         val assignee = civInfo.gameInfo.getCivilization(assignedQuest.assignee)
         return when (assignedQuest.questName) {
-            QuestName.Route.value -> civInfo.isCapitalConnectedToCity(assignee.getCapital())
+            QuestName.Route.value -> assignee.isCapitalConnectedToCity(civInfo.getCapital())
             QuestName.ConnectResource.value -> assignee.detailedCivResources.map { it.resource }.contains(civInfo.gameInfo.ruleSet.tileResources[assignedQuest.data1])
             QuestName.ConstructWonder.value -> assignee.cities.any { it.cityConstructions.isBuilt(assignedQuest.data1) }
             QuestName.GreatPerson.value -> assignee.getCivGreatPeople().any { it.baseUnit.getReplacedUnit(civInfo.gameInfo.ruleSet).name == assignedQuest.data1 }
@@ -466,8 +458,7 @@ class QuestManager {
     /** Returns a string with the leading civ and their score for [questName] */
     fun getLeaderStringForQuest(questName: String): String {
         val leadingQuest = assignedQuests.filter { it.questName == questName }.maxByOrNull { getScoreForQuest(it) }
-        if (leadingQuest == null)
-            return ""
+            ?: return ""
 
         return when (questName){
             QuestName.ContestCulture.value -> "Current leader is [${leadingQuest.assignee}] with [${getScoreForQuest(leadingQuest)}] [Culture] generated."
@@ -653,16 +644,19 @@ class QuestManager {
                 when (personality) {
                     CityStatePersonality.Friendly -> weight *= 2f
                     CityStatePersonality.Hostile -> weight *= .2f
+                    else -> {}
                 }
                 when (trait) {
                     CityStateType.Maritime -> weight *= 1.2f
                     CityStateType.Mercantile -> weight *= 1.5f
+                    else -> {}
                 }
             }
             QuestName.ConnectResource.value -> {
                 when (trait) {
                     CityStateType.Maritime -> weight *= 2f
                     CityStateType.Mercantile -> weight *= 3f
+                    else -> {}
                 }
             }
             QuestName.ConstructWonder.value -> {
@@ -679,12 +673,14 @@ class QuestManager {
                 when (personality) {
                     CityStatePersonality.Hostile -> weight *= 2f
                     CityStatePersonality.Neutral -> weight *= .4f
+                    else -> {}
                 }
             }
             QuestName.FindPlayer.value -> {
                 when (trait) {
                     CityStateType.Maritime -> weight *= 3f
                     CityStateType.Mercantile -> weight *= 2f
+                    else -> {}
                 }
             }
             QuestName.FindNaturalWonder.value -> {
@@ -699,17 +695,17 @@ class QuestManager {
                     weight *= 3f
             }
             QuestName.GiveGold.value -> {
-                when (trait) {
-                    CityStateType.Militaristic -> weight *= 2f
-                    CityStateType.Mercantile -> weight *= 3.5f
-                    else -> weight *= 3f
+                weight *= when (trait) {
+                    CityStateType.Militaristic -> 2f
+                    CityStateType.Mercantile -> 3.5f
+                    else -> 3f
                 }
             }
             QuestName.PledgeToProtect.value -> {
-                when (trait) {
-                    CityStateType.Militaristic -> weight *= 2f
-                    CityStateType.Cultured -> weight *= 3.5f
-                    else -> weight *= 3f
+                weight *= when (trait) {
+                    CityStateType.Militaristic -> 2f
+                    CityStateType.Cultured -> 3.5f
+                    else -> 3f
                 }
             }
             QuestName.BullyCityState.value -> {
@@ -717,13 +713,14 @@ class QuestManager {
                     CityStatePersonality.Hostile -> weight *= 2f
                     CityStatePersonality.Irrational -> weight *= 1.5f
                     CityStatePersonality.Friendly -> weight *= .3f
+                    CityStatePersonality.Neutral -> {}
                 }
             }
             QuestName.DenounceCiv.value -> {
-                when (trait) {
-                    CityStateType.Religious -> weight *= 2.5f
-                    CityStateType.Maritime -> weight *= 2f
-                    else -> weight *= 1.5f
+                weight *= when (trait) {
+                    CityStateType.Religious -> 2.5f
+                    CityStateType.Maritime -> 2f
+                    else -> 1.5f
                 }
             }
             QuestName.SpreadReligion.value -> {
@@ -735,9 +732,9 @@ class QuestManager {
                     weight *= 2f
             }
             QuestName.ContestFaith.value -> {
-                when (trait) {
-                    CityStateType.Religious -> weight *= 2f
-                    else -> weight *= .5f
+                weight *= when (trait) {
+                    CityStateType.Religious -> 2f
+                    else -> .5f
                 }
             }
             QuestName.ContestTech.value -> {
@@ -904,8 +901,10 @@ class AssignedQuest(val questName: String = "",
 
     fun isIndividual(): Boolean = !isGlobal()
     fun isGlobal(): Boolean = gameInfo.ruleSet.quests[questName]!!.isGlobal()
+    @Suppress("MemberVisibilityCanBePrivate")
     fun doesExpire(): Boolean = gameInfo.ruleSet.quests[questName]!!.duration > 0
     fun isExpired(): Boolean = doesExpire() && getRemainingTurns() == 0
+    @Suppress("MemberVisibilityCanBePrivate")
     fun getDuration(): Int = (gameInfo.gameParameters.gameSpeed.modifier * gameInfo.ruleSet.quests[questName]!!.duration).toInt()
     fun getRemainingTurns(): Int = max(0, (assignedOnTurn + getDuration()) - gameInfo.turns)
 

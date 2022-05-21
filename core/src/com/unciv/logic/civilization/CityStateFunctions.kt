@@ -177,7 +177,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
     }
 
     fun removeProtectorCiv(otherCiv: CivilizationInfo, forced: Boolean = false) {
-        if(!otherCivCanWithdrawProtection(otherCiv) && !forced)
+        if(!forced && !otherCivCanWithdrawProtection(otherCiv))
             return
 
         val diplomacy = civInfo.getDiplomacyManager(otherCiv)
@@ -195,7 +195,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         if (diplomacy.hasFlag(DiplomacyFlags.RecentlyWithdrewProtection))
             return false
         // Must have at least 0 influence
-        if (diplomacy.influence < 0)
+        if (diplomacy.getInfluence() < 0)
             return false
         // can't be at war
         if (civInfo.isAtWarWith(otherCiv))
@@ -225,8 +225,8 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         if (!civInfo.isCityState()) return
         val maxInfluence = civInfo.diplomacy
             .filter { !it.value.otherCiv().isCityState() && !it.value.otherCiv().isDefeated() }
-            .maxByOrNull { it.value.influence }
-        if (maxInfluence != null && maxInfluence.value.influence >= 60) {
+            .maxByOrNull { it.value.getInfluence() }
+        if (maxInfluence != null && maxInfluence.value.getInfluence() >= 60) {
             newAllyName = maxInfluence.key
         }
 
@@ -350,7 +350,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             modifiers["Very recently paid tribute"] = -300
         else if (recentBullying != null)
             modifiers["Recently paid tribute"] = -40
-        if (civInfo.getDiplomacyManager(demandingCiv).influence < -30)
+        if (civInfo.getDiplomacyManager(demandingCiv).getInfluence() < -30)
             modifiers["Influence below -30"] = -300
 
         // Slight optimization, we don't do the expensive stuff if we have no chance of getting a >= 0 result
@@ -484,7 +484,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             .filter { civInfo.tech.canBeResearched(it) }
         for (tech in researchableTechs) {
             val aliveMajorCivs = civInfo.gameInfo.getAliveMajorCivs()
-            if (aliveMajorCivs.count { it.tech.isResearched(tech) } >= aliveMajorCivs.count() / 2)
+            if (aliveMajorCivs.count { it.tech.isResearched(tech) } >= aliveMajorCivs.size / 2)
                 civInfo.tech.addTechnology(tech)
         }
         return

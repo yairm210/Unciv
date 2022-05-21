@@ -23,7 +23,6 @@ import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.filterAndLogic
 import com.unciv.ui.utils.toPercent
-import com.unciv.ui.worldscreen.unit.UnitActions
 import java.text.DecimalFormat
 import kotlin.math.pow
 
@@ -119,6 +118,11 @@ class MapUnit {
 
     @Transient
     var hasUniqueToBuildImprovements = false    // not canBuildImprovements to avoid confusion
+
+    @Transient
+    var hasStrengthBonusInRadiusUnique = false
+    @Transient
+    var hasCitadelPlacementUnique = false
 
     /** civName owning the unit */
     lateinit var owner: String
@@ -259,10 +263,6 @@ class MapUnit {
 
     fun getUniques(): ArrayList<Unique> = tempUniques
 
-    // TODO typify usages and remove this function
-    fun getMatchingUniques(placeholderText: String): Sequence<Unique> =
-        tempUniquesMap.getUniques(placeholderText)
-
     fun getMatchingUniques(
         uniqueType: UniqueType,
         stateForConditionals: StateForConditionals = StateForConditionals(civInfo, unit=this),
@@ -275,8 +275,10 @@ class MapUnit {
             yieldAll(civInfo.getMatchingUniques(uniqueType, stateForConditionals))
     }
 
+    // TODO typify usages and remove this function
+    @Deprecated("as of 4.0.15", ReplaceWith("hasUnique(uniqueType: UniqueType, ...)"))
     fun hasUnique(unique: String): Boolean {
-        return getMatchingUniques(unique).any()
+        return tempUniquesMap.getUniques(unique).any()
     }
 
     fun hasUnique(
@@ -342,6 +344,11 @@ class MapUnit {
         hasUniqueToBuildImprovements = hasUnique(UniqueType.BuildImprovements)
         canEnterForeignTerrain = hasUnique(UniqueType.CanEnterForeignTiles)
             || hasUnique(UniqueType.CanEnterForeignTilesButLosesReligiousStrength)
+
+        hasStrengthBonusInRadiusUnique = hasUnique(UniqueType.StrengthBonusInRadius)
+        hasCitadelPlacementUnique = getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
+            .mapNotNull { civInfo.gameInfo.ruleSet.tileImprovements[it.params[0]] }
+            .any { it.hasUnique(UniqueType.TakeOverTilesAroundWhenBuilt) }
     }
 
     fun copyStatisticsTo(newUnit: MapUnit) {
@@ -570,6 +577,7 @@ class MapUnit {
     fun canGarrison() = isMilitary() && baseUnit.isLandUnit()
 
     fun isGreatPerson() = baseUnit.isGreatPerson()
+    fun isGreatPersonOfType(type: String) = baseUnit.isGreatPersonOfType(type)
 
     //endregion
 
@@ -670,6 +678,7 @@ class MapUnit {
         }
         
         tile.improvementInProgress = null
+        tile.getCity()?.updateCitizens = true
     }
 
 
@@ -810,7 +819,8 @@ class MapUnit {
                 if (unit == this)
                     continue
 
-                if (unit.getMatchingUniques("Transfer Movement to []").any { matchesFilter(it.params[0]) } )
+                if (unit.getMatchingUniques(UniqueType.TransferMovement)
+                        .any { matchesFilter(it.params[0]) } )
                     currentMovement = maxOf(getMaxMovement().toFloat(), unit.getMaxMovement().toFloat())
             }
         }
@@ -1013,13 +1023,14 @@ class MapUnit {
         // Air Units can only Intercept if they didn't move this turn
         if (baseUnit.isAirUnit() && currentMovement == 0f) return false
         val maxAttacksPerTurn = 1 +
-            getMatchingUniques("[] extra interceptions may be made per turn").sumOf { it.params[0].toInt() }
+            getMatchingUniques(UniqueType.ExtraInterceptionsPerTurn)
+                .sumOf { it.params[0].toInt() }
         if (attacksThisTurn >= maxAttacksPerTurn) return false
         return true
     }
 
     fun interceptChance(): Int {
-        return getMatchingUniques("[]% chance to intercept air attacks").sumOf { it.params[0].toInt() }
+        return getMatchingUniques(UniqueType.ChanceInterceptAirAttacks).sumOf { it.params[0].toInt() }
     }
 
     fun isTransportTypeOf(mapUnit: MapUnit): Boolean {
@@ -1044,13 +1055,13 @@ class MapUnit {
     }
 
     fun interceptDamagePercentBonus(): Int {
-        return getMatchingUniques("[]% Damage when intercepting")
+        return getMatchingUniques(UniqueType.DamageWhenIntercepting)
             .sumOf { it.params[0].toInt() }
     }
 
     fun receivedInterceptDamageFactor(): Float {
         var damageFactor = 1f
-        for (unique in getMatchingUniques("Damage taken from interception reduced by []%"))
+        for (unique in getMatchingUniques(UniqueType.DamageFromInterceptionReduced))
             damageFactor *= 1f - unique.params[0].toFloat() / 100f
         return damageFactor
     }
@@ -1158,18 +1169,18 @@ class MapUnit {
     }
 
     fun religiousActionsUnitCanDo(): Sequence<String> {
-        return getMatchingUniques("Can [] [] times")
+        return getMatchingUniques(UniqueType.CanActionSeveralTimes)
             .map { it.params[0] }
     }
 
     fun canDoReligiousAction(action: String): Boolean {
-        return getMatchingUniques("Can [] [] times").any { it.params[0] == action }
+        return getMatchingUniques(UniqueType.CanActionSeveralTimes).any { it.params[0] == action }
     }
 
     /** For the actual value, check the member variable [maxAbilityUses]
      */
     fun getBaseMaxActionUses(action: String): Int {
-        return getMatchingUniques("Can [] [] times")
+        return getMatchingUniques(UniqueType.CanActionSeveralTimes)
             .filter { it.params[0] == action }
             .sumOf { it.params[1].toInt() }
     }

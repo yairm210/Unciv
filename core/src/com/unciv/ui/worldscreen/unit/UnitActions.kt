@@ -101,7 +101,7 @@ object UnitActions {
         // have the visual bug that the tile overlays for the eligible swap locations are drawn for
         // /all/ selected units instead of only the first one. This could be fixed, but again,
         // swapping makes little sense for multiselect anyway.
-        if (worldScreen.bottomUnitTable.selectedUnits.count() > 1) return
+        if (worldScreen.bottomUnitTable.selectedUnits.size > 1) return
         // Only show the swap action if there is at least one possible swap movement
         if (unit.movement.getUnitSwappableTiles().none()) return
         actionList += UnitAction(
@@ -245,7 +245,7 @@ object UnitActions {
 
     private fun addParadropAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
         val paradropUniques =
-            unit.getMatchingUniques("May Paradrop up to [] tiles from inside friendly territory")
+            unit.getMatchingUniques(UniqueType.MayParadrop)
         if (!paradropUniques.any() || unit.isEmbarked()) return
         unit.paradropRange = paradropUniques.maxOfOrNull { it.params[0] }!!.toInt()
         actionList += UnitAction(UnitActionType.Paradrop,
@@ -282,6 +282,7 @@ object UnitActions {
                     tile.setPillaged()
                     unit.civInfo.lastSeenImprovement.remove(tile.position)
                     if (tile.resource != null) tile.getOwner()?.updateDetailedCivResources()    // this might take away a resource
+                    tile.getCity()?.updateCitizens = true
 
                     val freePillage = unit.hasUnique(UniqueType.NoMovementToPillage, checkCivInfoUniques = true)
                     if (!freePillage) unit.useMovementPoints(1f)
@@ -588,7 +589,7 @@ object UnitActions {
                 .getTilesInDistance(1)
                 .flatMap { it.getUnits() }
                 .any {
-                    it.hasUnique("Prevents spreading of religion to the city it is next to")
+                    it.hasUnique(UniqueType.PreventSpreadingReligion)
                     && it.religion != unit.religion
                 }
         actionList += UnitAction(UnitActionType.SpreadReligion,
@@ -599,7 +600,7 @@ object UnitActions {
                     unit.civInfo.addStat(Stat.valueOf(unique.params[1]), followersOfOtherReligions * unique.params[0].toInt())
                 }
                 city.religion.addPressure(unit.religion!!, unit.getPressureAddedFromSpread())
-                if (unit.hasUnique("Removes other religions when spreading religion"))
+                if (unit.hasUnique(UniqueType.RemoveOtherReligions))
                     city.religion.removeAllPressuresExceptFor(unit.religion!!)
                 unit.currentMovement = 0f
                 useActionWithLimitedUses(unit, Constants.spreadReligionAbilityCount)
@@ -627,7 +628,7 @@ object UnitActions {
         val finalActions = ArrayList<UnitAction>()
         var uniquesToCheck = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
         if (unit.religiousActionsUnitCanDo().all { unit.abilityUsesLeft[it] == unit.maxAbilityUses[it] })
-            uniquesToCheck += unit.getMatchingUniques("Can construct [] if it hasn't used other actions yet")
+            uniquesToCheck += unit.getMatchingUniques(UniqueType.CanConstructIfNoOtherActions)
         val civResources = unit.civInfo.getCivResourcesByName()
 
         for (unique in uniquesToCheck) {
@@ -637,21 +638,13 @@ object UnitActions {
 
             val resourcesAvailable = improvement.uniqueObjects.none {
                 it.isOfType(UniqueType.ConsumesResources) &&
-                        civResources[unique.params[1]] ?: 0 < unique.params[0].toInt()
+                        (civResources[unique.params[1]] ?: 0) < unique.params[0].toInt()
             }
 
             finalActions += UnitAction(UnitActionType.Create,
                 title = "Create [$improvementName]",
                 action = {
                     val unitTile = unit.getTile()
-                    unitTile.setTerrainFeatures(
-                        // Remove terrainFeatures that a Worker can remove
-                        // and that aren't explicitly allowed under the improvement
-                        unitTile.terrainFeatures.filter {
-                            "Remove $it" !in unitTile.ruleset.tileImprovements ||
-                            it in improvement.terrainsCanBeBuiltOn
-                        }
-                    )
                     unitTile.removeCreatesOneImprovementMarker()
                     unitTile.improvement = improvementName
                     unitTile.stopWorkingOnImprovement()
