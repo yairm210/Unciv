@@ -322,7 +322,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         var productionCost = cost.toFloat()
 
         for (unique in uniqueObjects.filter { it.isOfType(UniqueType.CostIncreasesPerCity) })
-            productionCost += civInfo.cities.count() * unique.params[0].toInt()
+            productionCost += civInfo.cities.size * unique.params[0].toInt()
 
         if (civInfo.isCityState())
             productionCost *= 1.5f

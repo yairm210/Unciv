@@ -35,6 +35,7 @@ class OnlineMultiplayerGameSaver(
         fileStorage().saveFileData(gameInfo.gameId, zippedGameInfo, true)
     }
 
+    @Suppress("MemberVisibilityCanBePrivate")
     /**
      * Used to upload only the preview of a game. If the preview is uploaded together with (before/after)
      * the gameInfo, it is recommended to use tryUploadGame(gameInfo, withPreview = true)

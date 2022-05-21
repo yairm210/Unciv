@@ -13,8 +13,7 @@ package com.unciv.ui.images
  */
 class ImageAttempter<out T: Any>(val scope: T) {
     /** The first valid filename tried if any, or the last filename tried if none have succeeded. */
-    var lastTriedFileName: String? = null
-        private set
+    private var lastTriedFileName: String? = null
     /** Whether an valid image path has already been tried. Once this is true, no further calls to [tryImage] have any effect. */
     var imageFound = false
         private set
