@@ -21,7 +21,6 @@ import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.*
-import java.util.*
 
 class CityScreen(
     internal val city: CityInfo,

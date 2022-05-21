@@ -40,7 +40,7 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
     }
 
     /** Qualified class name of the game screen that was active at the construction of this instance, or an error note. */
-    val lastScreenType = try {
+    private val lastScreenType = try {
         UncivGame.Current.screen::class.qualifiedName.toString()
     } catch (e: Throwable) {
         "Could not get screen type: $e"

@@ -43,8 +43,8 @@ class ModConstants {
 
     // MapGenerator.spreadAncientRuins: number of ruins = suitable tile count * this
     var ancientRuinCountMultiplier = 0.02f
-    // MapGenerator.spawnIce: spawn Ice where T < this, with T calculated from temperatureExtremeness, latitude and perlin noise. 
-    val spawnIceBelowTemperature = -0.8f
+    // MapGenerator.spawnIce: spawn Ice where T < this, with T calculated from temperatureExtremeness, latitude and perlin noise.
+    var spawnIceBelowTemperature = -0.8f
     // MapGenerator.spawnLakesAndCoasts: Water bodies up to this tile count become Lakes
     var maxLakeSize = 10
     // RiverGenerator: river frequency and length bounds
@@ -66,6 +66,7 @@ class ModConstants {
         if (other.naturalWonderCountMultiplier != defaults.naturalWonderCountMultiplier) naturalWonderCountMultiplier = other.naturalWonderCountMultiplier
         if (other.naturalWonderCountAddedConstant != defaults.naturalWonderCountAddedConstant) naturalWonderCountAddedConstant = other.naturalWonderCountAddedConstant
         if (other.ancientRuinCountMultiplier != defaults.ancientRuinCountMultiplier) ancientRuinCountMultiplier = other.ancientRuinCountMultiplier
+        if (other.spawnIceBelowTemperature != defaults.spawnIceBelowTemperature) spawnIceBelowTemperature = other.spawnIceBelowTemperature
         if (other.maxLakeSize != defaults.maxLakeSize) maxLakeSize = other.maxLakeSize
         if (other.riverCountMultiplier != defaults.riverCountMultiplier) riverCountMultiplier = other.riverCountMultiplier
         if (other.minRiverLength != defaults.minRiverLength) minRiverLength = other.minRiverLength

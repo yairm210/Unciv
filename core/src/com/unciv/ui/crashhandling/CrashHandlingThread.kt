@@ -69,14 +69,6 @@ fun launchCrashHandling(name: String, runAsDaemon: Boolean = true,
                         flowBlock: suspend CoroutineScope.() -> Unit): Job {
     return getCoroutineContext(runAsDaemon).launch(CoroutineName(name)) { flowBlock(this) }
 }
-/**
- * Uses [async] to return a result from a new coroutine that brings the game loop to a [com.unciv.CrashScreen] if an exception occurs.
- * @see crashHandlingThread
- */
-fun <T> asyncCrashHandling(name: String, runAsDaemon: Boolean = true,
-                           flowBlock: suspend CoroutineScope.() -> T): Deferred<T> {
-    return getCoroutineContext(runAsDaemon).async(CoroutineName(name)) { flowBlock(this) }
-}
 
 private fun getCoroutineContext(runAsDaemon: Boolean): CoroutineScope {
     return if (runAsDaemon) CRASH_HANDLING_DAEMON_SCOPE else CRASH_HANDLING_SCOPE
