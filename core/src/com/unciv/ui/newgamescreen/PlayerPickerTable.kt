@@ -197,12 +197,17 @@ class PlayerPickerTable(
             }
             playerTable.add(copyFromClipboardButton).right().colspan(3).fillX().pad(5f).row()
 
-            val selectPlayerFromFriendsList = "Player ID from friends list".toTextButton()
-            selectPlayerFromFriendsList.onClick {
-                popupFriendPicker(player)
-                //onPlayerIdTextUpdated() won't update the checkmark
+            //check if friends list is empty before adding the select friend button
+            val friendList = FriendList()
+            friendList.load()
+            if (friendList.friendList.isNotEmpty()) {
+                val selectPlayerFromFriendsList = "Player ID from friends list".toTextButton()
+                selectPlayerFromFriendsList.onClick {
+                    popupFriendPicker(player)
+                    //onPlayerIdTextUpdated() won't update the checkmark
+                }
+                playerTable.add(selectPlayerFromFriendsList).left().colspan(3).fillX().pad(5f)
             }
-            playerTable.add(selectPlayerFromFriendsList).left().colspan(3).fillX().pad(5f)
         }
 
         return playerTable
@@ -216,8 +221,8 @@ class PlayerPickerTable(
      */
     private fun getNationTable(player: Player): Table {
         val nationTable = Table()
-        val nationImage = 
-            if (player.chosenCiv == Constants.random) 
+        val nationImage =
+            if (player.chosenCiv == Constants.random)
                 ImageGetter.getRandomNationIndicator(40f)
             else ImageGetter.getNationIndicator(previousScreen.ruleset.nations[player.chosenCiv]!!, 40f)
         nationTable.add(nationImage).pad(5f)
@@ -254,10 +259,10 @@ class PlayerPickerTable(
     /**
      * Returns a list of available civilization for all players, according
      * to current ruleset, with exception of city states nations, spectator and barbarians.
-     * 
+     *
      * Skips nations already chosen by a player, unless parameter [dontSkipNation] says to keep a
      * specific one. That is used so the picker can be used to inspect and confirm the current selection.
-     * 
+     *
      * @return [Sequence] of available [Nation]s
      */
     internal fun getAvailablePlayerCivs(dontSkipNation: String? = null) =
