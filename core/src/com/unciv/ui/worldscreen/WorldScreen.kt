@@ -651,8 +651,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         newWorldScreen.selectedCiv = gameInfo.getCivilization(selectedCiv.civName)
         newWorldScreen.fogOfWar = fogOfWar
 
-        game.worldScreen = newWorldScreen
-        game.setWorldScreen()
+        game.resetToWorldScreen(newWorldScreen)
     }
 
     fun nextTurn() {
@@ -673,17 +672,14 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
             if (originalGameInfo.gameParameters.isOnlineMultiplayer) {
                 try {
                     OnlineMultiplayerGameSaver().tryUploadGame(gameInfoClone, withPreview = true)
-                } catch (ex: FileStorageRateLimitReached) {
-                    postCrashHandlingRunnable {
-                        val cantUploadNewGamePopup = Popup(this@WorldScreen)
-                        cantUploadNewGamePopup.addGoodSizedLabel("Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds").row()
-                        cantUploadNewGamePopup.addCloseButton()
-                        cantUploadNewGamePopup.open()
-                    }
                 } catch (ex: Exception) {
+                    val message = when (ex) {
+                        is FileStorageRateLimitReached -> "Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds"
+                        else -> "Could not upload game!"
+                    }
                     postCrashHandlingRunnable { // Since we're changing the UI, that should be done on the main thread
                         val cantUploadNewGamePopup = Popup(this@WorldScreen)
-                        cantUploadNewGamePopup.addGoodSizedLabel("Could not upload game!").row()
+                        cantUploadNewGamePopup.addGoodSizedLabel(message).row()
                         cantUploadNewGamePopup.addCloseButton()
                         cantUploadNewGamePopup.open()
                     }

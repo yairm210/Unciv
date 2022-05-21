@@ -63,7 +63,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen(disableScroll = true
                 launchCrashHandling("SaveGame", runAsDaemon = false) {
                     GameSaver.saveGameToCustomLocation(gameInfo, gameNameTextField.text) { e ->
                         if (e == null) {
-                            postCrashHandlingRunnable { game.setWorldScreen() }
+                            postCrashHandlingRunnable { game.resetToWorldScreen() }
                         } else if (e !is CancellationException) {
                             errorLabel.setText("Could not save game to custom location!".tr())
                             e.printStackTrace()
@@ -101,7 +101,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen(disableScroll = true
             GameSaver.saveGame(gameInfo, gameNameTextField.text) {
                 postCrashHandlingRunnable {
                     if (it != null) ToastPopup("Could not save game!", this@SaveGameScreen)
-                    else UncivGame.Current.setWorldScreen()
+                    else UncivGame.Current.resetToWorldScreen()
                 }
             }
         }
