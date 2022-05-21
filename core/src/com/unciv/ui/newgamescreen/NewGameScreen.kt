@@ -11,12 +11,12 @@ import com.unciv.UncivGame
 import com.unciv.logic.*
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapType
-import com.unciv.logic.multiplayer.FileStorageRateLimitReached
-import com.unciv.logic.multiplayer.OnlineMultiplayer
+import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
+import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.pickerscreens.PickerScreen
@@ -27,7 +27,6 @@ import com.unciv.ui.utils.*
 import java.net.URL
 import java.util.*
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
-
 
 class NewGameScreen(
     private val previousScreen: BaseScreen,
