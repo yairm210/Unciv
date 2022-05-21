@@ -38,7 +38,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     val cancelDiscordEvent = parameters.cancelDiscordEvent
     var fontImplementation = parameters.fontImplementation
     val consoleMode = parameters.consoleMode
-    val customSaveLocationHelper = parameters.customSaveLocationHelper
+    private val customSaveLocationHelper = parameters.customSaveLocationHelper
     val platformSpecificHelper = parameters.platformSpecificHelper
     private val audioExceptionHelper = parameters.audioExceptionHelper
 
@@ -85,7 +85,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             viewEntireMapForDebug = false
         }
         Current = this
-        GameSaver.customSaveLocationHelper = customSaveLocationHelper
+        GameSaver.init(Gdx.files, customSaveLocationHelper)
 
         // If this takes too long players, especially with older phones, get ANR problems.
         // Whatever needs graphics needs to be done on the main thread,
@@ -172,7 +172,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         Gdx.graphics.requestRendering()
     }
 
-    fun tryLoadDeepLinkedGame() = launchCrashHandling("LoadDeepLinkedGame") {
+    private fun tryLoadDeepLinkedGame() = launchCrashHandling("LoadDeepLinkedGame") {
         if (deepLinkedMultiplayerGame != null) {
             postCrashHandlingRunnable {
                 setScreen(LoadDeepLinkScreen())
@@ -230,7 +230,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
         // Log still running threads (on desktop that should be only this one and "DestroyJavaVM")
         val numThreads = Thread.activeCount()
-        val threadList = Array(numThreads) { _ -> Thread() }
+        val threadList = Array(numThreads) { Thread() }
         Thread.enumerate(threadList)
 
         if (isGameInfoInitialized()) {

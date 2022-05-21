@@ -6,13 +6,9 @@ Flag Icons made by [Freepik](https://www.flaticon.com/authors/freepik) from [www
 
 New Unciv logo made by u-ndefined on Discord
 
-Base tile icons for the "Fantasy Hex" tileset belong to CuddlyClover @ https://cuddlyclover.itch.io/fantasy-hex-tiles with a few additions by me
+Base tile icons for the "Fantasy Hex" tileset belong to CuddlyClover @ https://cuddlyclover.itch.io/fantasy-hex-tiles with a few additions by various contributors
 
-Trees for the jungle tiles in the "Fantasy Hex" are extracted from [Desert Strike for the Amiga](http://eab.abime.net/showthread.php?t=67078&styleid=4)
-
-Almost all the improvements and units made by The Bucketeer on Discord
-
-Tile icons for the "ThorfMaps tileset belong to Thorfinn Tait and are licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License. Based on work at www.thorfmaps.com.
+Tile improvements and units, as well as the entire HexaRealm tileset, are made by The Bucketeer / @GeneralWadaling and are licenced under Creative Commons 3.0
 
 Unless otherwise specified, all the following are from [the Noun Project](https://thenounproject.com) licenced under either Creative Commons or Public Domain
 

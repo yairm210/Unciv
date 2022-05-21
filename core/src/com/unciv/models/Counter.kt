@@ -1,16 +1,12 @@
 package com.unciv.models
 
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.LinkedHashMap
-
 open class Counter<K> : LinkedHashMap<K, Int>() {
 
     override operator fun get(key: K): Int? { // don't return null if empty
-        if (containsKey(key))
+        return if (containsKey(key))
         // .toInt(), because GDX deserializes Counter values as *floats* for some reason
-            return super.get(key)!!.toInt()
-        else return 0
+            super.get(key)!!.toInt()
+        else 0
     }
 
     fun add(key: K, value: Int) {
@@ -43,16 +39,5 @@ open class Counter<K> : LinkedHashMap<K, Int>() {
         val newCounter = Counter<K>()
         newCounter.add(this)
         return newCounter
-    }
-}
-
-class MultiHashMap<K, V> : LinkedHashMap<K, ArrayList<V>>() {
-    fun add(key: K, value: V) {
-        var existingList = get(key)
-        if (existingList == null) {
-            existingList = ArrayList()
-            this[key] = existingList
-        }
-        existingList.add(value)
     }
 }

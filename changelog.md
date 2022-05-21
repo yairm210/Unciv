@@ -1,3 +1,21 @@
+## 4.1.1
+
+HexaRealm update - By GeneralWadaling
+
+Performance improvements - By Azzurite
+
+Great General typed uniques and improved moddability - By JackRainy
+
+Great improvements can again be constructed on forest - By xlenstra
+
+Fixed MP refresher not working after rate limit - By GGGuenni
+
+Fix "May Withdraw" modifier calculation - By OptimizedForDensity
+
+Allow generation of "Default" Deciv redux maps - By SomeTroglodyte
+
+Improve autofix when typing multiplayer server URL - By touhidurrr
+
 ## 4.1.0
 
 Upgraded to libGDX 1.11.0 - enables Unciv on M1 chips
