@@ -52,11 +52,10 @@ class GlobalUniquesTests {
     fun statsPerSpecialist() {
         val civInfo = game.addCiv()
         val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
-        val cityInfo = game.addCity(civInfo, tile, true)
+        val cityInfo = game.addCity(civInfo, tile, true, initialPopulation = 2)
         val building = game.createBuildingWithUnique("[+3 Gold] from every specialist [in this city]")
         val specialistName = game.addEmptySpecialist()
-        building.specialistSlots.add(specialistName,2)
-        cityInfo.population.addPopulation(2)
+        building.specialistSlots.add(specialistName, 2)
         cityInfo.population.specialistAllocations[specialistName] = 2
 
         cityInfo.cityConstructions.addBuilding(building.name)
@@ -68,9 +67,8 @@ class GlobalUniquesTests {
     fun statsPerPopulation() {
         val civInfo = game.addCiv()
         val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
-        val cityInfo = game.addCity(civInfo, tile, true)
+        val cityInfo = game.addCity(civInfo, tile, true, initialPopulation = 4)
         val building = game.createBuildingWithUnique("[+3 Gold] per [2] population [in this city]")
-        cityInfo.population.addPopulation(4)
 
         cityInfo.cityConstructions.addBuilding(building.name)
         cityInfo.cityStats.update()
@@ -81,10 +79,9 @@ class GlobalUniquesTests {
     fun statsPerXPopulation() {
         val civInfo = game.addCiv()
         val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
-        val cityInfo = game.addCity(civInfo, tile, true)
+        val cityInfo = game.addCity(civInfo, tile, true, initialPopulation = 2)
         val building = game.createBuildingWithUnique("[+3 Gold] in cities with [3] or more population")
 
-        cityInfo.population.addPopulation(2)
         cityInfo.cityConstructions.addBuilding(building.name)
 
         cityInfo.cityStats.update()
@@ -160,12 +157,11 @@ class GlobalUniquesTests {
         game.makeHexagonalMap(1)
         val civInfo = game.addCiv()
         val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
-        val cityInfo = game.addCity(civInfo, tile, true)
+        val cityInfo = game.addCity(civInfo, tile, true, initialPopulation = 2)
         val specialist = game.addEmptySpecialist()
         val building = game.createBuildingWithUnique("[+3 Faith] from every [${specialist}]")
 
         cityInfo.cityConstructions.addBuilding(building.name)
-        cityInfo.population.addPopulation(2)
         cityInfo.population.specialistAllocations[specialist] = 2
 
         cityInfo.cityStats.update()
@@ -218,8 +214,7 @@ class GlobalUniquesTests {
         religion.founderBeliefs.add(belief.name)
         val civ2 = game.addCiv()
         val tile = game.getTile(Vector2(0f,0f))
-        val cityOfCiv2 = game.addCity(civ2, tile)
-        cityOfCiv2.population.setPopulation(1) // Need someone to be converted
+        val cityOfCiv2 = game.addCity(civ2, tile, initialPopulation = 1) // Need someone to be converted
         cityOfCiv2.religion.addPressure(religion.name, 1000)
 
         Assert.assertTrue(cityOfCiv2.religion.getMajorityReligionName() == religion.name)
@@ -237,11 +232,8 @@ class GlobalUniquesTests {
         religion.founderBeliefs.add(belief.name)
         val civ2 = game.addCiv()
         val tile = game.getTile(Vector2(0f,0f))
-        val cityOfCiv2 = game.addCity(civ2, tile)
-        cityOfCiv2.population.setPopulation(1) // Need someone to be converted
+        val cityOfCiv2 = game.addCity(civ2, tile, initialPopulation = 1) // Need someone to be converted
         cityOfCiv2.religion.addPressure(religion.name, 1000)
-
-        Assert.assertTrue(cityOfCiv2.religion.getMajorityReligionName() == religion.name)
 
         civ1.updateStatsForNextTurn()
 
@@ -258,8 +250,7 @@ class GlobalUniquesTests {
         religion.founderBeliefs.add(belief.name)
         val civ2 = game.addCiv()
         val tile = game.getTile(Vector2(0f,0f))
-        val cityOfCiv2 = game.addCity(civ2, tile)
-        cityOfCiv2.population.setPopulation(9) // Need people to be converted
+        val cityOfCiv2 = game.addCity(civ2, tile, initialPopulation = 9) // Need people to be converted
         cityOfCiv2.religion.addPressure(religion.name, 1000000000) // To completely overwhelm the default atheism in a city
 
         civ1.updateStatsForNextTurn()
