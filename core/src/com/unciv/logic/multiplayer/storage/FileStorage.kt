@@ -1,6 +1,5 @@
 package com.unciv.logic.multiplayer.storage
 
-import java.io.FileNotFoundException
 import java.util.*
 
 class FileStorageConflictException : Exception()
