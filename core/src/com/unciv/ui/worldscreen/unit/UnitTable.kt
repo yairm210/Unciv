@@ -49,7 +49,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
     }
 
     var selectedCity : CityInfo? = null
-    val deselectUnitButton = Table()
+    private val deselectUnitButton = Table()
 
     // This is so that not on every update(), we will update the unit table.
     // Most of the time it's the same unit with the same stats so why waste precious time?

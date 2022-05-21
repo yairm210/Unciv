@@ -226,7 +226,7 @@ class NewGameScreen(
         }
     }
 
-    suspend private fun startNewGame() {
+    private suspend fun startNewGame() {
         val popup = Popup(this)
         postCrashHandlingRunnable {
             popup.addGoodSizedLabel("Working...").row()

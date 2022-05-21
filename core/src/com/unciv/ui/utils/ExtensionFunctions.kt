@@ -143,7 +143,7 @@ fun Table.addSeparator(color: Color = Color.WHITE, colSpan: Int = 0, height: Flo
 
 /**
  * Create a vertical separator as an empty Container with a colored background.
- * 
+ *
  * Note: Unlike the horizontal [addSeparator] this cannot automatically span several rows. Repeat the separator if needed.
  */
 fun Table.addSeparatorVertical(color: Color = Color.WHITE, width: Float = 2f): Cell<Image> {
@@ -161,22 +161,9 @@ fun <T : Actor> Cell<T>.pad(vertical: Float, horizontal: Float): Cell<T> {
     return pad(vertical, horizontal, vertical, horizontal)
 }
 
-/**
- * Sets the width & height of the image to [size], including its drawable.
- */
-fun Image.setSizeForced(size: Float) {
-    setSizeForced(size, size)
-}
-/**
- * Sets the width & height of the image, including its drawable.
- *
- * Either [Image] or [com.badlogic.gdx.scenes.scene2d.utils.Drawable] is badly written, as the [Image.drawable] always has its texture size as min size,
- * and [Image] pref size is always equal to its [Image.drawable]'s min size.
- */
-fun Image.setSizeForced(width: Float, height: Float) {
-    setSize(width, height)
-    drawable?.minWidth = width
-    drawable?.minHeight = height
+/** Sets both the width and height to [size] */
+fun Image.setSize(size: Float) {
+    setSize(size, size)
 }
 
 /** Gets a clone of an [ArrayList] with an additional item
@@ -256,11 +243,11 @@ fun String.toLabel(fontColor: Color = Color.WHITE, fontSize: Int = Constants.def
 fun String.toCheckBox(startsOutChecked: Boolean = false, changeAction: ((Boolean)->Unit)? = null)
     = CheckBox(this.tr(), BaseScreen.skin).apply {
         isChecked = startsOutChecked
-        if (changeAction != null) onChange { 
+        if (changeAction != null) onChange {
             changeAction(isChecked)
         }
         // Add a little distance between the icon and the text. 0 looks glued together,
-        // 5 is about half an uppercase letter, and 1 about the width of the vertical line in "P".  
+        // 5 is about half an uppercase letter, and 1 about the width of the vertical line in "P".
         imageCell.padRight(1f)
     }
 

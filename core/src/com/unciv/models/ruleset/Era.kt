@@ -28,10 +28,12 @@ class Era : RulesetObject(), IHasUniques {
 
     var friendBonus = HashMap<String, List<String>>()
     var allyBonus = HashMap<String, List<String>>()
+    @Suppress("MemberVisibilityCanBePrivate")
     val friendBonusObjects: Map<CityStateType, List<Unique>> by lazy { initBonuses(friendBonus) }
+    @Suppress("MemberVisibilityCanBePrivate")
     val allyBonusObjects: Map<CityStateType, List<Unique>> by lazy { initBonuses(allyBonus) }
 
-    var iconRGB: List<Int>? = null
+    private var iconRGB: List<Int>? = null
 
     companion object {
         private val eraConditionals = setOf(UniqueType.ConditionalBeforeEra, UniqueType.ConditionalDuringEra, UniqueType.ConditionalStartingFromEra)

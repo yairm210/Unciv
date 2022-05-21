@@ -10,6 +10,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.runBlocking
 import kotlin.time.Duration
 import kotlin.math.max
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.ExperimentalTime
 
 @ExperimentalTime
@@ -109,7 +110,7 @@ class Simulation(
             }
         }
         totalTurns = steps.sumOf { it.turns }
-        totalDuration = Duration.milliseconds(endTime - startTime)
+        totalDuration = (endTime - startTime).milliseconds
         avgSpeed = totalTurns.toFloat() / totalDuration.inWholeSeconds
         avgDuration = totalDuration / steps.size
     }

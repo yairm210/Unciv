@@ -1,0 +1,76 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+ij_any_keep_indents_on_empty_lines = false
+trim_trailing_whitespace = true
+
+[*.{kt,kts}]
+ij_kotlin_code_style_defaults = KOTLIN_OFFICIAL
+ij_kotlin_space_after_comma = true
+ij_kotlin_space_after_extend_colon = true
+ij_kotlin_space_after_type_colon = true
+ij_kotlin_space_before_comma = false
+ij_kotlin_space_before_extend_colon = true
+ij_kotlin_space_before_type_colon = false
+ij_kotlin_space_before_catch_parentheses = true
+ij_kotlin_space_before_for_parentheses = true
+ij_kotlin_space_before_if_parentheses = true
+ij_kotlin_space_before_lambda_arrow = true
+ij_kotlin_space_before_when_parentheses = true
+ij_kotlin_space_before_while_parentheses = true
+ij_kotlin_spaces_around_additive_operators = true
+ij_kotlin_spaces_around_assignment_operators = true
+ij_kotlin_spaces_around_equality_operators = true
+ij_kotlin_spaces_around_logical_operators = true
+ij_kotlin_spaces_around_multiplicative_operators = true
+ij_kotlin_spaces_around_range = false
+ij_kotlin_spaces_around_relational_operators = true
+ij_kotlin_spaces_around_unary_operator = false
+ij_kotlin_spaces_around_when_arrow = true
+ij_kotlin_keep_blank_lines_before_right_brace = 1
+ij_kotlin_keep_blank_lines_in_code = 2
+ij_kotlin_keep_blank_lines_in_declarations = 2
+ij_kotlin_block_comment_at_first_column = true
+ij_kotlin_line_comment_add_space = true
+ij_kotlin_name_count_to_use_star_import = 999
+ij_kotlin_name_count_to_use_star_import_for_members = 999
+ij_kotlin_continuation_indent_size = 8
+ij_kotlin_continuation_indent_for_chained_calls = false
+ij_kotlin_continuation_indent_for_expression_bodies = true
+ij_kotlin_continuation_indent_in_argument_lists = false
+ij_kotlin_continuation_indent_in_elvis = false
+ij_kotlin_continuation_indent_in_if_conditions = true
+ij_kotlin_continuation_indent_in_parameter_lists = false
+ij_kotlin_continuation_indent_in_supertype_lists = false
+
+[*.json]
+ij_json_keep_blank_lines_in_code = 0
+ij_json_keep_indents_on_empty_lines = false
+ij_json_keep_line_breaks = true
+ij_json_space_after_colon = true
+ij_json_space_after_comma = true
+ij_json_space_before_colon = false
+ij_json_space_before_comma = false
+ij_json_spaces_within_braces = false
+ij_json_spaces_within_brackets = false
+ij_json_wrap_long_lines = false
+
+[*.properties]
+trim_trailing_whitespace = false
+ij_properties_align_group_field_declarations = false
+ij_properties_keep_blank_lines = true
+ij_properties_key_value_delimiter = equals
+ij_properties_spaces_around_key_value_delimiter = true
+
+[gradle.properties]
+trim_trailing_whitespace = true
+ij_properties_keep_blank_lines = false
+ij_properties_spaces_around_key_value_delimiter = false
+
+[{*.yaml, *.yml}]
+indent_size = 2

@@ -162,11 +162,11 @@ object ImageGetter {
         // loading screen and Tutorial.WorldScreen quite a bit. More anisotropy barely helps.
         val texture = Texture("ExtraImages/$fileName")
         texture.setFilter(TextureFilter.Linear, TextureFilter.Linear)
-        return Image(TextureRegion(texture))
+        return ImageWithCustomSize(TextureRegion(texture))
     }
 
     fun getImage(fileName: String?): Image {
-        return Image(getDrawable(fileName))
+        return ImageWithCustomSize(getDrawable(fileName))
     }
 
     fun getDrawable(fileName: String?): TextureRegionDrawable {
@@ -246,7 +246,7 @@ object ImageGetter {
     fun wonderImageExists(wonderName: String) = imageExists("WonderImages/$wonderName")
     fun getWonderImage(wonderName: String) = getImage("WonderImages/$wonderName")
 
-    val foodCircleColor = colorFromRGB(129, 199, 132)
+    private val foodCircleColor = colorFromRGB(129, 199, 132)
     private val productionCircleColor = Color.BROWN.brighten(0.5f)
     private val goldCircleColor = Color.GOLD.brighten(0.5f)
     private val cultureCircleColor = Color.PURPLE.brighten(0.5f)

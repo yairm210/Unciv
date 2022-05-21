@@ -126,6 +126,17 @@ open class Stats(
     }
     
     operator fun div(number: Float) = times(1/number)
+    
+    /** Apply weighting for Production Ranking */
+    fun applyRankingWeights(){
+        food *= 14
+        production *= 12
+        gold *= 8 // 3 gold worth about 2 production
+        science *= 7
+        culture *= 6
+        happiness *= 10 // base
+        faith *= 5
+    }
 
     /** ***Not*** only a debug helper. It returns a string representing the content, already _translated_.
      * 

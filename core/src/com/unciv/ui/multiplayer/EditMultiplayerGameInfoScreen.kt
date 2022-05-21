@@ -1,4 +1,4 @@
-package com.unciv.ui
+package com.unciv.ui.multiplayer
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.TextField

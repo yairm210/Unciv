@@ -16,7 +16,7 @@ import com.unciv.models.Tutorial
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.hasOpenPopups
 import com.unciv.ui.tutorials.TutorialController
-import com.unciv.ui.worldscreen.mainmenu.OptionsPopup
+import com.unciv.ui.options.OptionsPopup
 
 abstract class BaseScreen : Screen {
 

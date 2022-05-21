@@ -1,4 +1,4 @@
-package com.unciv.ui
+package com.unciv.ui.multiplayer
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -351,7 +351,7 @@ private class GameDisplay(
 
     private fun createIndicator(imagePath: String): Actor {
         val image = ImageGetter.getImage(imagePath)
-        image.setSizeForced(50f)
+        image.setSize(50f)
         val container = Container(image)
         container.padRight(5f)
         return container
