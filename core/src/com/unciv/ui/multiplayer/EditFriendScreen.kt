@@ -1,11 +1,10 @@
-package com.unciv.ui
+package com.unciv.ui.multiplayer
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.models.translations.tr
-import com.unciv.ui.multiplayer.FriendList
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.utils.*
@@ -17,7 +16,6 @@ class EditFriendScreen(selectedFriend: FriendList.Friend, backScreen: ViewFriend
         val playerIDTextField = TextField(selectedFriend.playerID, skin)
         val deleteFriendButton = "Delete".toTextButton()
         val friendlist = FriendList()
-
 
         topTable.add("Friend name".toLabel()).row()
         topTable.add(friendNameTextField).pad(10f).padBottom(30f).width(stage.width/2).row()

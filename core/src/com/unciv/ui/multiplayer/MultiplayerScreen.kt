@@ -12,7 +12,6 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.ViewFriendsListScreen
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
 import java.io.FileNotFoundException
@@ -403,6 +402,5 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
         } catch (ex: Exception) {
             ToastPopup("Could not delete game!", this)
         }
-
     }
 }

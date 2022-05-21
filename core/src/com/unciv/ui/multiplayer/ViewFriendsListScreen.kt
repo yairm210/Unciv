@@ -1,12 +1,10 @@
-package com.unciv.ui
+package com.unciv.ui.multiplayer
 
 import com.badlogic.gdx.scenes.scene2d.ui.*
-import com.unciv.ui.multiplayer.FriendList
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
-
 
 class ViewFriendsListScreen(previousScreen: BaseScreen) : PickerScreen() {
     private val rightSideTable = Table()

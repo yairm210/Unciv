@@ -4,7 +4,6 @@ import com.badlogic.gdx.files.FileHandle
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 
-
 class FriendList {
     private val friendsListFileName = "FriendsList.json"
     private val friendsListFileHandle = FileHandle(friendsListFileName)
@@ -37,7 +36,6 @@ class FriendList {
         if (addFriendErrorType == ""){
             friendList.add(Friend(friendName, playerID))
         }
-
         save()
     }
 
