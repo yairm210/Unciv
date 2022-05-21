@@ -181,6 +181,7 @@ class PlayerPickerTable(
                     errorLabel.apply { setText("✘");setFontColor(Color.RED) }
                 }
             }
+            onPlayerIdTextUpdated()
 
             playerIdTextField.addListener { onPlayerIdTextUpdated(); true }
             val currentUserId = UncivGame.Current.settings.userId
