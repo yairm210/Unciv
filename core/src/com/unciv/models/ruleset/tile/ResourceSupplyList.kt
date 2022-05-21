@@ -6,15 +6,16 @@ import com.unciv.logic.city.IConstruction  // Kdoc only
 
 /** Container helps aggregating supply and demand of [resources][ResourceSupply.resource], categorized by [origin][ResourceSupply.origin].
  *
- *  @param keepZeroAmounts If `false`, entries with [amount][ResourceSupply.amount] 0 are eliminated 
+ *  @param keepZeroAmounts If `false`, entries with [amount][ResourceSupply.amount] 0 are eliminated
  */
 class ResourceSupplyList(
     private val keepZeroAmounts: Boolean = false
-) : ArrayList<ResourceSupplyList.ResourceSupply>(28) {
+) : ArrayList<ResourceSupplyList.ResourceSupply>(24) {
+    // initialCapacity 24: Allows all resources in G&K with just _one_ Array growth step (which is 50%)
 
     /** Holds one "data row", [resource] and [origin] function as keys while [amount] is the 'value' */
     data class ResourceSupply(val resource: TileResource, val origin: String, var amount: Int) {
-        fun isCityStateOrTrade() = (origin == Constants.cityStates || origin == "Trade") && amount > 0
+        fun isCityStateOrTradeOrigin() = (origin == Constants.cityStates || origin == "Trade") && amount > 0
         override fun toString() = "$amount ${resource.name} from $origin"
     }
 
