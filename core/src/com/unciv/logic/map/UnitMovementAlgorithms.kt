@@ -126,7 +126,6 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         // anyway.
         if (unit.ignoresZoneOfControl)
             return false
-        println("ZoC")
         return true
     }
 
