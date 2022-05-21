@@ -68,8 +68,9 @@ object UnitActions {
         addTriggerUniqueActions(unit, actionList)
         addAddInCapitalAction(unit, actionList, tile)
 
-
         addToggleActionsAction(unit, actionList, unitTable)
+
+        addWaitAction(unit, actionList, worldScreen);
 
         return actionList
     }
@@ -832,4 +833,17 @@ object UnitActions {
         )
     }
 
+    private fun addWaitAction(unit: MapUnit, actionList: ArrayList<UnitAction>, worldScreen: WorldScreen) {
+        // This is only for idle units.
+        if (!unit.isIdle()) return
+        // Don't add if there are no idle units we could switch to,
+        if (!worldScreen.viewingCiv.getDueUnits().any()) return
+        actionList += UnitAction(
+            type = UnitActionType.Wait,
+            action = {
+                unit.due = true
+                worldScreen.switchToNextUnit()
+            }
+        )
+    }
 }

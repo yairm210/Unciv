@@ -211,6 +211,12 @@ class CivilizationInfo {
      */
     var attacksSinceTurnStart = ArrayList<HistoricalAttackMemory>()
 
+    /**
+     * Queue of all civilization units that have their actions possibly pending. Internally
+     * might include e.g. non-idle units, so must be filtered before being given to any outside code.
+     * (Should be small enough that using ArrayList is fine.)
+     */
+    private var dueUnits = ArrayList<MapUnit>()
     var hasMovedAutomatedUnits = false
 
     @Transient
@@ -264,6 +270,7 @@ class CivilizationInfo {
         toReturn.totalCultureForContests = totalCultureForContests
         toReturn.totalFaithForContests = totalFaithForContests
         toReturn.attacksSinceTurnStart = attacksSinceTurnStart.copy()
+        toReturn.dueUnits = ArrayList<MapUnit>(dueUnits)
         toReturn.hasMovedAutomatedUnits = hasMovedAutomatedUnits
         return toReturn
     }
@@ -453,6 +460,8 @@ class CivilizationInfo {
         newList.add(mapUnit)
         units = newList
 
+        dueUnits.add(mapUnit)
+
         if (updateCivInfo) {
             // Not relevant when updating TileInfo transients, since some info of the civ itself isn't yet available,
             // and in any case it'll be updated once civ info transients are
@@ -471,18 +480,23 @@ class CivilizationInfo {
 
     fun getIdleUnits() = getCivUnits().filter { it.isIdle() }
 
-    private fun getDueUnits() = getCivUnits().filter { it.due && it.isIdle() }
+    // Drop all units that are not really 'due' anymore. We do it here to avoid caring how and where it happened.
+    fun getDueUnits() = dueUnits.filter { it.due && !it.isDestroyed && it.isIdle() }
 
     fun shouldGoToDueUnit() = UncivGame.Current.settings.checkForDueUnits && getDueUnits().any()
 
-    fun getNextDueUnit(): MapUnit? {
-        val dueUnits = getDueUnits()
-        if (dueUnits.any()) {
-            val unit = dueUnits.first()
-            unit.due = false
-            return unit
+    fun getNextDueUnit() = getDueUnits().firstOrNull()
+
+    fun cycleThroughDueUnits(): MapUnit? {
+        var realDueUnits = getDueUnits();
+        if (realDueUnits.any()) {
+            var unit = realDueUnits.first();
+            // We shift the unit to the back of the queue. However, the caller may clear its 'due' state if it wants.
+            dueUnits.remove(unit);
+            dueUnits.add(unit);
+            return unit;
         }
-        return null
+        else return null;
     }
     //endregion
 
@@ -828,6 +842,8 @@ class CivilizationInfo {
     fun startTurn() {
         civConstructions.startTurn()
         attacksSinceTurnStart.clear()
+        dueUnits.clear()
+        dueUnits.addAll(getCivUnits())
         updateStatsForNextTurn() // for things that change when turn passes e.g. golden age, city state influence
 
         // Do this after updateStatsForNextTurn but before cities.startTurn
