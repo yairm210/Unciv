@@ -1,12 +1,15 @@
 package com.unciv.ui.multiplayer
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
+import com.unciv.logic.IdChecker
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.*
+import java.util.*
 
 class AddFriendScreen(backScreen: ViewFriendsListScreen) : PickerScreen(){
     init {
@@ -38,6 +41,12 @@ class AddFriendScreen(backScreen: ViewFriendsListScreen) : PickerScreen(){
         rightSideButton.setText("Add friend".tr())
         rightSideButton.enable()
         rightSideButton.onClick {
+            try {
+                UUID.fromString(IdChecker.checkAndReturnPlayerUuid(playerIDTextField.text))
+            } catch (ex: Exception) {
+                ToastPopup("Player ID is incorrect", this)
+                return@onClick
+            }
             friendlist.addNewFriend(friendNameTextField.text, playerIDTextField.text)
             if (friendlist.addFriendErrorType == "name") {
                 ToastPopup("Friend name is already in your friends list!", this)
