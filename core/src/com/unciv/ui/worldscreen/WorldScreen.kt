@@ -1,7 +1,5 @@
 package com.unciv.ui.worldscreen
 
-import com.unciv.ui.worldscreen.status.NextTurnAction
-import com.unciv.ui.worldscreen.status.NextTurnButton
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
@@ -23,6 +21,8 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapVisualization
+import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
+import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.Tutorial
 import com.unciv.models.UncivSound
@@ -31,8 +31,16 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.civilopedia.CivilopediaScreen
+import com.unciv.ui.crashhandling.CRASH_HANDLING_DAEMON_SCOPE
+import com.unciv.ui.crashhandling.launchCrashHandling
+import com.unciv.ui.crashhandling.postCrashHandlingRunnable
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.pickerscreens.*
+import com.unciv.ui.popup.ExitGamePopup
+import com.unciv.ui.popup.Popup
+import com.unciv.ui.popup.ToastPopup
+import com.unciv.ui.popup.hasOpenPopups
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.saves.SaveGameScreen
 import com.unciv.ui.trade.DiplomacyScreen
@@ -41,17 +49,9 @@ import com.unciv.ui.utils.UncivDateFormat.formatDate
 import com.unciv.ui.victoryscreen.VictoryScreen
 import com.unciv.ui.worldscreen.bottombar.BattleTable
 import com.unciv.ui.worldscreen.bottombar.TileInfoTable
-import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
-import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
-import com.unciv.ui.crashhandling.CRASH_HANDLING_DAEMON_SCOPE
-import com.unciv.ui.crashhandling.launchCrashHandling
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popup.ExitGamePopup
-import com.unciv.ui.popup.Popup
-import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.popup.hasOpenPopups
 import com.unciv.ui.worldscreen.minimap.MinimapHolder
+import com.unciv.ui.worldscreen.status.NextTurnAction
+import com.unciv.ui.worldscreen.status.NextTurnButton
 import com.unciv.ui.worldscreen.unit.UnitActionsTable
 import com.unciv.ui.worldscreen.unit.UnitTable
 import kotlinx.coroutines.Job
@@ -60,7 +60,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import java.util.*
-import kotlin.concurrent.timer
 import kotlin.concurrent.timerTask
 
 /**

@@ -7,7 +7,7 @@ import com.unciv.ui.utils.enable
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.LanguageTable
 import com.unciv.ui.utils.LanguageTable.Companion.addLanguageTables
-import com.unciv.ui.worldscreen.mainmenu.OptionsPopup
+import com.unciv.ui.options.OptionsPopup
 
 /** A [PickerScreen] to select a language, used once on the initial run after a fresh install.
  *  After that, [OptionsPopup] provides the functionality.

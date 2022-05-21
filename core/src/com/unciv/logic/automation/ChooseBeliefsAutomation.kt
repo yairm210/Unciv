@@ -62,7 +62,7 @@ object ChooseBeliefsAutomation {
         var score = 0f
         val ruleSet = civInfo.gameInfo.ruleSet
         for (unique in belief.uniqueObjects) {
-            val modifier = 0.5f.pow(unique.conditionals.count())
+            val modifier = 0.5f.pow(unique.conditionals.size)
             // Multiply by 3/10 if has an obsoleted era
             // Multiply by 2 if enough pop/followers (best implemented with conditionals, so left open for now)
             // If obsoleted, continue

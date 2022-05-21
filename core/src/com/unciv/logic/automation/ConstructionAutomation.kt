@@ -10,7 +10,6 @@ import com.unciv.logic.map.BFS
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.Victory
-import com.unciv.models.ruleset.Victory.Focus
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -20,24 +19,24 @@ import kotlin.math.sqrt
 
 class ConstructionAutomation(val cityConstructions: CityConstructions){
 
-    val cityInfo = cityConstructions.cityInfo
-    val civInfo = cityInfo.civInfo
+    private val cityInfo = cityConstructions.cityInfo
+    private val civInfo = cityInfo.civInfo
 
-    val buildableBuildings = cityConstructions.getBuildableBuildings().toList()
-    val buildableNotWonders = buildableBuildings
+    private val buildableBuildings = cityConstructions.getBuildableBuildings().toList()
+    private val buildableNotWonders = buildableBuildings
             .filterNot { it.isAnyWonder() }
     private val buildableWonders = buildableBuildings
             .filter { it.isAnyWonder() }
     
-    val buildableUnits = cityConstructions.getConstructableUnits()
+    private val buildableUnits = cityConstructions.getConstructableUnits()
 
-    val civUnits = civInfo.getCivUnits()
-    val militaryUnits = civUnits.count { it.baseUnit.isMilitary() }
-    val workers = civUnits.count { it.hasUniqueToBuildImprovements && it.isCivilian() }.toFloat()
-    val cities = civInfo.cities.size
-    val allTechsAreResearched = civInfo.tech.getNumberOfTechsResearched() >= civInfo.gameInfo.ruleSet.technologies.size
+    private val civUnits = civInfo.getCivUnits()
+    private val militaryUnits = civUnits.count { it.baseUnit.isMilitary() }
+    private val workers = civUnits.count { it.hasUniqueToBuildImprovements && it.isCivilian() }.toFloat()
+    private val cities = civInfo.cities.size
+    private val allTechsAreResearched = civInfo.tech.getNumberOfTechsResearched() >= civInfo.gameInfo.ruleSet.technologies.size
 
-    val isAtWar = civInfo.isAtWar()
+    private val isAtWar = civInfo.isAtWar()
     private val buildingsForVictory = civInfo.gameInfo.getEnabledVictories().values
             .mapNotNull { civInfo.victoryManager.getNextMilestone(it.name) }
             .filter { it.type == MilestoneType.BuiltBuilding || it.type == MilestoneType.BuildingBuiltGlobally }
@@ -47,13 +46,13 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     
     private val averageProduction = civInfo.cities.map { it.cityStats.currentCityStats.production }.average()
-    val cityIsOverAverageProduction = cityInfo.cityStats.currentCityStats.production >= averageProduction
+    private val cityIsOverAverageProduction = cityInfo.cityStats.currentCityStats.production >= averageProduction
 
-    val relativeCostEffectiveness = ArrayList<ConstructionChoice>()
+    private val relativeCostEffectiveness = ArrayList<ConstructionChoice>()
 
     private val faithConstruction = arrayListOf<BaseUnit>()
 
-    data class ConstructionChoice(val choice: String, var choiceModifier: Float, val remainingWork: Int)
+    private data class ConstructionChoice(val choice: String, var choiceModifier: Float, val remainingWork: Int)
 
     private fun addChoice(choices: ArrayList<ConstructionChoice>, choice: String, choiceModifier: Float) {
         choices.add(ConstructionChoice(choice, choiceModifier, cityConstructions.getRemainingWork(choice)))
@@ -112,10 +111,9 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
         if (civInfo.isPlayerCivilization()) return // don't want the ai to control what a player uses faith for
 
-        val chosenItem = faithConstruction.asSequence()
-            .filterNotNull()
-            .filter { it.getStatBuyCost(cityInfo, stat = Stat.Faith)!! <= civInfo.religionManager.storedFaith }
-            .firstOrNull() ?: return
+        val chosenItem = faithConstruction.firstOrNull {
+            it.getStatBuyCost(cityInfo, stat = Stat.Faith)!! <= civInfo.religionManager.storedFaith
+        } ?: return
 
         cityConstructions.purchaseConstruction(chosenItem.name, -1, false, stat=Stat.Faith)
     }
@@ -238,12 +236,12 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
             return 3f
         if (wonder.isStatRelated(Stat.Science)) {
             if (allTechsAreResearched) return .5f
-            if (civInfo.wantsToFocusOn(Victory.Focus.Science)) return 1.5f
-            else return 1.3f
+            return if (civInfo.wantsToFocusOn(Victory.Focus.Science)) 1.5f
+            else 1.3f
         }
         if (wonder.name == "Manhattan Project") {
-            if (civInfo.wantsToFocusOn(Victory.Focus.Military)) return 2f
-            else return 1.3f
+            return if (civInfo.wantsToFocusOn(Victory.Focus.Military)) 2f
+            else 1.3f
         }
         if (wonder.isStatRelated(Stat.Happiness)) return 1.2f
         if (wonder.isStatRelated(Stat.Production)) return 1.1f
@@ -268,7 +266,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         val unitTrainingBuilding = buildableNotWonders.asSequence()
                 .filter { it.hasUnique(UniqueType.UnitStartingExperience)
                         && Automation.allowAutomatedConstruction(civInfo, cityInfo, it) }.minByOrNull { it.cost }
-        if (unitTrainingBuilding != null && (!civInfo.wantsToFocusOn(Focus.Culture) || isAtWar)) {
+        if (unitTrainingBuilding != null && (!civInfo.wantsToFocusOn(Victory.Focus.Culture) || isAtWar)) {
             var modifier = if (cityIsOverAverageProduction) 0.5f else 0.1f // You shouldn't be cranking out units anytime soon
             if (isAtWar) modifier *= 2
             if (civInfo.wantsToFocusOn(Victory.Focus.Military))

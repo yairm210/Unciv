@@ -73,6 +73,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         var rowChangeWidth = Float.MAX_VALUE
 
         // estimate how many branch boxes fit using average size (including pad)
+        // TODO If we'd want to use scene2d correctly, this is supposed to happen inside an overridden layout() method
         val numBranchesX = scrollPane.width / 242f
         val numBranchesY = scrollPane.height / 305f
         // plan a nice geometry
