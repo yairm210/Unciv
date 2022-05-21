@@ -12,10 +12,9 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.pickerscreens.PickerScreen
+import com.unciv.ui.ViewFriendsListScreen
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.utils.*
 import java.io.FileNotFoundException
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
