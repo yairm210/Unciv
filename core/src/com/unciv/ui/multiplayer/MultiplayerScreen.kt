@@ -1,25 +1,22 @@
 package com.unciv.ui.multiplayer
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.ui.*
-import com.unciv.UncivGame
-import com.unciv.logic.*
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.event.EventBus
-import com.unciv.logic.multiplayer.*
-import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
+import com.unciv.logic.multiplayer.MultiplayerGameDeleted
+import com.unciv.logic.multiplayer.OnlineMultiplayerGame
 import com.unciv.models.translations.tr
-import com.unciv.ui.pickerscreens.PickerScreen
-import com.unciv.ui.utils.*
-import com.unciv.ui.crashhandling.launchCrashHandling
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.multiplayer.GameList
+import com.unciv.ui.multiplayer.MultiplayerHelpers
+import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
-import java.io.FileNotFoundException
-import java.time.Duration
-import java.time.Instant
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.disable
+import com.unciv.ui.utils.enable
+import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.toTextButton
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
@@ -56,7 +53,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
 
         setupRightSideButton()
 
-        events.receive(MultiplayerGameDeleted::class, {it.name == selectedGame?.name}) {
+        events.receive(MultiplayerGameDeleted::class, { it.name == selectedGame?.name }) {
             unselectGame()
         }
 
@@ -65,7 +62,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
 
     private fun setupRightSideButton() {
         rightSideButton.setText("Join game".tr())
-        rightSideButton.onClick { joinMultiplayerGame(selectedGame!!) }
+        rightSideButton.onClick { MultiplayerHelpers.loadMultiplayerGame(this, selectedGame!!) }
     }
 
     private fun createRightSideTable(): Table {
@@ -160,23 +157,6 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
         stage.addActor(tab)
     }
 
-    fun joinMultiplayerGame(selectedGame: OnlineMultiplayerGame) {
-        val loadingGamePopup = Popup(this)
-        loadingGamePopup.addGoodSizedLabel("Loading latest game state...")
-        loadingGamePopup.open()
-
-        launchCrashHandling("JoinMultiplayerGame") {
-            try {
-                game.onlineMultiplayer.loadGame(selectedGame)
-            } catch (ex: Exception) {
-                val message = getLoadExceptionMessage(ex)
-                postCrashHandlingRunnable {
-                    loadingGamePopup.reuseWith(message, true)
-                }
-            }
-        }
-    }
-
     private fun unselectGame() {
         selectedGame = null
 
@@ -204,43 +184,6 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
         editButton.enable()
         rightSideButton.enable()
 
-        descriptionLabel.setText(buildDescriptionText(multiplayerGame))
-    }
-
-    private fun buildDescriptionText(multiplayerGame: OnlineMultiplayerGame): StringBuilder {
-        val descriptionText = StringBuilder()
-        val ex = multiplayerGame.error
-        if (ex != null) {
-            descriptionText.append("Error while refreshing:".tr()).append(' ')
-            val message = getLoadExceptionMessage(ex)
-            descriptionText.appendLine(message.tr())
-        }
-        val lastUpdate = multiplayerGame.lastUpdate
-        descriptionText.appendLine("Last refresh: ${formattedElapsedTime(lastUpdate)} ago".tr())
-        val preview = multiplayerGame.preview
-        if (preview?.currentPlayer != null) {
-            val currentTurnStartTime = Instant.ofEpochMilli(preview.currentTurnStartTime)
-            descriptionText.appendLine("Current Turn: [${preview.currentPlayer}] since ${formattedElapsedTime(currentTurnStartTime)} ago".tr())
-        }
-        return descriptionText
-    }
-
-    private fun formattedElapsedTime(lastUpdate: Instant): String {
-        val durationToNow = Duration.between(lastUpdate, Instant.now())
-        val elapsedMinutes = durationToNow.toMinutes()
-        if (elapsedMinutes < 120) return "[$elapsedMinutes] [Minutes]"
-        val elapsedHours = durationToNow.toHours()
-        if (elapsedHours < 48) {
-            return "[${elapsedHours}] [Hours]"
-        } else {
-            return "[${durationToNow.toDays()}] [Days]"
-        }
-    }
-
-    fun getLoadExceptionMessage(ex: Exception) = when (ex) {
-        is FileStorageRateLimitReached -> "Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds"
-        is FileNotFoundException -> "File could not be found on the multiplayer server"
-        is UncivShowableException -> ex.message!! // some of these seem to be translated already, but not all
-        else -> "Unhandled problem, [${ex::class.simpleName}] ${ex.message}"
+        descriptionLabel.setText(MultiplayerHelpers.buildDescriptionText(multiplayerGame))
     }
 }
