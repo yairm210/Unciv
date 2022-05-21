@@ -385,8 +385,13 @@ private class FriendPickerPopup(
     }
 
     fun returnSelected() {
-        close()
+        if (selectedFriend == null) {
+            close()
+            return
+        }
+
         player.playerId = selectedFriend?.playerID.toString()
+        close()
         playerPicker.update()
     }
 }
