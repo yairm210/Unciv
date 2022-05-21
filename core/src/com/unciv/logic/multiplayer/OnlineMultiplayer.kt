@@ -40,6 +40,8 @@ private val FILE_UPDATE_THROTTLE_PERIOD = Duration.ofSeconds(60)
  */
 class OnlineMultiplayer() {
     private val gameSaver = UncivGame.Current.gameSaver
+    private val onlineGameSaver = OnlineMultiplayerGameSaver()
+
     private val savedGames: MutableMap<FileHandle, OnlineMultiplayerGame> = Collections.synchronizedMap(mutableMapOf())
     private var lastFileUpdate: AtomicReference<Instant?> = AtomicReference()
 
@@ -96,7 +98,7 @@ class OnlineMultiplayer() {
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
      */
     suspend fun createGame(newGame: GameInfo) {
-        OnlineMultiplayerGameSaver().tryUploadGame(newGame, withPreview = true)
+        onlineGameSaver.tryUploadGame(newGame, withPreview = true)
         val newGamePreview = newGame.asPreview()
         val file = gameSaver.saveGame(newGamePreview, newGamePreview.gameId)
         val onlineMultiplayerGame = OnlineMultiplayerGame(file, newGamePreview, Instant.now())
@@ -117,11 +119,11 @@ class OnlineMultiplayer() {
         var gamePreview: GameInfoPreview
         var fileHandle: FileHandle
         try {
-            gamePreview = OnlineMultiplayerGameSaver().tryDownloadGamePreview(gameId)
+            gamePreview = onlineGameSaver.tryDownloadGamePreview(gameId)
             fileHandle = gameSaver.saveGame(gamePreview, saveFileName)
         } catch (ex: FileNotFoundException) {
             // Game is so old that a preview could not be found on dropbox lets try the real gameInfo instead
-            gamePreview = OnlineMultiplayerGameSaver().tryDownloadGame(gameId).asPreview()
+            gamePreview = onlineGameSaver.tryDownloadGame(gameId).asPreview()
             fileHandle = gameSaver.saveGame(gamePreview, saveFileName)
         }
         val game = OnlineMultiplayerGame(fileHandle, gamePreview, Instant.now())
@@ -150,7 +152,7 @@ class OnlineMultiplayer() {
             throw game.error!!
         }
         // download to work with the latest game state
-        val gameInfo = OnlineMultiplayerGameSaver().tryDownloadGame(preview.gameId)
+        val gameInfo = onlineGameSaver.tryDownloadGame(preview.gameId)
         val playerCiv = gameInfo.currentPlayerCiv
 
         if (!gameInfo.isUsersTurn()) {
@@ -172,7 +174,7 @@ class OnlineMultiplayer() {
 
         val newPreview = gameInfo.asPreview()
         gameSaver.saveGame(newPreview, game.fileHandle)
-        OnlineMultiplayerGameSaver().tryUploadGame(gameInfo, withPreview = true)
+        onlineGameSaver.tryUploadGame(gameInfo, withPreview = true)
         game.doManualUpdate(newPreview)
         postCrashHandlingRunnable { EventBus.send(MultiplayerGameUpdated(game.name, newPreview)) }
         return true
