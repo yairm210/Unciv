@@ -44,13 +44,13 @@ class ImprovementPickerScreen(
             unit.action = null // this is to "wake up" the worker if it's sleeping
             onAccept()
         }
-        game.setWorldScreen()
+        game.resetToWorldScreen()
         dispose()
     }
 
     init {
         setDefaultCloseAction()
-        onBackButtonClicked { UncivGame.Current.setWorldScreen() }
+        onBackButtonClicked { UncivGame.Current.resetToWorldScreen() }
 
         rightSideButton.setText("Pick improvement".tr())
         rightSideButton.onClick {

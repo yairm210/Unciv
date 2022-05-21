@@ -651,8 +651,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         newWorldScreen.selectedCiv = gameInfo.getCivilization(selectedCiv.civName)
         newWorldScreen.fogOfWar = fogOfWar
 
-        game.worldScreen = newWorldScreen
-        game.setWorldScreen()
+        game.resetToWorldScreen(newWorldScreen)
     }
 
     fun nextTurn() {
