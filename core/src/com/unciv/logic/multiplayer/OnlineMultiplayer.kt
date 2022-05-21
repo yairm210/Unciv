@@ -147,10 +147,7 @@ class OnlineMultiplayer() {
      * @return false if it's not the user's turn and thus resigning did not happen
      */
     suspend fun resign(game: OnlineMultiplayerGame): Boolean {
-        val preview = game.preview
-        if (preview == null) {
-            throw game.error!!
-        }
+        val preview = game.preview ?: throw game.error!!
         // download to work with the latest game state
         val gameInfo = onlineGameSaver.tryDownloadGame(preview.gameId)
         val playerCiv = gameInfo.currentPlayerCiv
@@ -185,10 +182,7 @@ class OnlineMultiplayer() {
      * @throws FileNotFoundException if the file can't be found
      */
     suspend fun loadGame(game: OnlineMultiplayerGame) {
-        val preview = game.preview
-        if (preview == null) {
-            throw game.error!!
-        }
+        val preview = game.preview ?: throw game.error!!
         loadGame(preview.gameId)
     }
 
@@ -217,10 +211,7 @@ class OnlineMultiplayer() {
      * Fires [MultiplayerGameNameChanged]
      */
     fun changeGameName(game: OnlineMultiplayerGame, newName: String) {
-        val oldPreview = game.preview
-        if (oldPreview == null) {
-            throw game.error!!
-        }
+        val oldPreview = game.preview ?: throw game.error!!
         val oldLastUpdate = game.lastUpdate
         val oldName = game.name
 
