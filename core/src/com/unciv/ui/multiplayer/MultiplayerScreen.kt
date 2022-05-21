@@ -2,18 +2,21 @@ package com.unciv.ui
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
-import com.badlogic.gdx.scenes.scene2d.ui.*
-import com.unciv.logic.*
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.logic.GameInfoPreview
+import com.unciv.logic.GameSaver
+import com.unciv.logic.IdChecker
+import com.unciv.logic.UncivShowableException
 import com.unciv.logic.multiplayer.FileStorageRateLimitReached
-import com.unciv.models.translations.tr
-import com.unciv.ui.pickerscreens.PickerScreen
-import com.unciv.ui.utils.*
 import com.unciv.logic.multiplayer.OnlineMultiplayer
+import com.unciv.models.translations.tr
 import com.unciv.ui.crashhandling.crashHandlingThread
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
+import com.unciv.ui.utils.*
 import java.io.FileNotFoundException
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
