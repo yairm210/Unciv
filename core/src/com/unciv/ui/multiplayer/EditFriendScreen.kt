@@ -18,6 +18,7 @@ class EditFriendScreen(selectedFriend: FriendList.Friend, backScreen: ViewFriend
         val friendlist = FriendList()
 
         topTable.add("Friend name".toLabel()).row()
+        friendNameTextField.messageText = "Please input a name for your friend!".tr()
         topTable.add(friendNameTextField).pad(10f).padBottom(30f).width(stage.width/2).row()
 
         pasteGameIDButton.onClick {
@@ -26,6 +27,7 @@ class EditFriendScreen(selectedFriend: FriendList.Friend, backScreen: ViewFriend
 
         topTable.add("PlayerID".toLabel()).row()
         val gameIDTable = Table()
+        playerIDTextField.messageText = "Please input a playerID for your friend!".tr()
         gameIDTable.add(playerIDTextField).pad(10f).width(2*stage.width/3 - pasteGameIDButton.width)
         gameIDTable.add(pasteGameIDButton)
         topTable.add(gameIDTable).padBottom(30f).row()
