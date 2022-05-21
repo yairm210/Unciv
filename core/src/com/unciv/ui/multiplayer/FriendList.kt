@@ -9,6 +9,7 @@ class FriendList {
     private val friendsListFileName = "FriendsList.json"
     private val friendsListFileHandle = FileHandle(friendsListFileName)
     var friendList: MutableList<Friend> = mutableListOf()
+    var addFriendErrorType = ""
 
     companion object {
         private const val friendsListFileName = "FriendsList.json"
@@ -21,8 +22,22 @@ class FriendList {
 
     fun addNewFriend(friendName: String, playerID: String) {
         load()
-        friendList.add(Friend(friendName, playerID))
-        println(friendList)
+        addFriendErrorType = ""
+        for(index in friendList.indices){
+            if (friendList[index].name == friendName) {
+                addFriendErrorType = "name"
+            } else if (friendList[index].playerID == playerID) {
+                addFriendErrorType = "id"
+            } else if (friendName == "") {
+                addFriendErrorType = "noName"
+            } else if (playerID == "") {
+                addFriendErrorType = "noID"
+            }
+        }
+        if (addFriendErrorType == ""){
+            friendList.add(Friend(friendName, playerID))
+        }
+
         save()
     }
 

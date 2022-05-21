@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.models.translations.tr
 import com.unciv.ui.multiplayer.FriendList
 import com.unciv.ui.pickerscreens.PickerScreen
+import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.*
 
 class AddFriendScreen(backScreen: ViewFriendsListScreen) : PickerScreen(){
@@ -40,8 +41,18 @@ class AddFriendScreen(backScreen: ViewFriendsListScreen) : PickerScreen(){
         rightSideButton.enable()
         rightSideButton.onClick {
             friendlist.addNewFriend(friendNameTextField.text, playerIDTextField.text)
-            backScreen.game.setScreen(backScreen)
-            backScreen.refreshFriendsList()
+            if (friendlist.addFriendErrorType == "name") {
+                ToastPopup("Friend name is already in your friends list!", this)
+            } else if (friendlist.addFriendErrorType == "id") {
+                ToastPopup("Player ID is already in your friends list!", this)
+            } else if (friendlist.addFriendErrorType == "noName") {
+                ToastPopup("You have to write a name for your friend!", this)
+            } else if (friendlist.addFriendErrorType == "noID") {
+                ToastPopup("You have to write an ID for your friend!", this)
+            } else {
+                backScreen.game.setScreen(backScreen)
+                backScreen.refreshFriendsList()
+            }
         }
     }
 
