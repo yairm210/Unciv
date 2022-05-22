@@ -190,11 +190,9 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
             for (gameFile in gameFiles) {
                 try {
                     val gamePreview = gameSaver.loadGamePreviewFromFile(gameFile)
-                    if (gamePreview.turnNotification) {
-                        gameIds[count] = gamePreview.gameId
-                        gameNames[count] = gameFile.name()
-                        count++
-                    }
+                    gameIds[count] = gamePreview.gameId
+                    gameNames[count] = gameFile.name()
+                    count++
                 } catch (ex: Throwable) {
                     //only loadGamePreviewFromFile can throw an exception
                     //nothing will be added to the arrays if it fails
@@ -207,9 +205,8 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
             if (currentGameInfo.currentPlayerCiv.playerId == settings.userId) {
                 // May be useful to remind a player that he forgot to complete his turn.
                 val gameIndex = gameIds.indexOf(currentGameInfo.gameId)
-                // Of the turnNotification is OFF, this will be -1 since we never saved this game in the array
-                // Or possibly reading the preview file returned an exception
-                if (gameIndex!=-1) {
+                // If reading the preview file threw an exception, gameIndex will be -1
+                if (gameIndex != -1) {
                     notifyUserAboutTurn(applicationContext, Pair(gameNames[gameIndex], gameIds[gameIndex]))
                 }
             } else {
@@ -252,6 +249,12 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
         }
     }
 
+    /**
+     * Contains gameIds that, if true is set for them, we will not check for updates again. The data here only lives until the user enters Unciv again,
+     * so if the user changes their remote server, this will be reset and we will check for turns again.
+     */
+    private val notFoundRemotely = mutableMapOf<String, Boolean>()
+
     private val gameSaver: GameSaver
     init {
         // We can't use Gdx.files since that is only initialized within a com.badlogic.gdx.backends.android.AndroidApplication.
@@ -281,6 +284,11 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                 //gameId could be an empty string if startTurnChecker fails to load all files
                 if (gameId.isEmpty())
                     continue
+
+                if (notFoundRemotely[gameId] == true) {
+                    // Since the save was not found on the remote server, we do not need to check again, it'll only fail again.
+                    continue
+                }
 
                 try {
                     Log.d(LOG_TAG, "doWork download ${gameId}")
@@ -313,9 +321,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                     // FileNotFoundException is thrown by OnlineMultiplayer().tryDownloadGamePreview(gameId)
                     // and indicates that there is no game preview present for this game
                     // in the dropbox so we should not check for this game in the future anymore
-                    val currentGamePreview = gameSaver.loadGamePreviewByName(gameNames[arrayIndex])
-                    currentGamePreview.turnNotification = false
-                    gameSaver.saveGame(currentGamePreview, gameNames[arrayIndex])
+                    notFoundRemotely[gameId] = true
                 }
             }
 

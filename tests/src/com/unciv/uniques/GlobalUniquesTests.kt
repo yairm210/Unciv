@@ -107,21 +107,6 @@ class GlobalUniquesTests {
     }
 
     @Test
-    fun statsSpendingGreatPeople() {
-        val civInfo = game.addCiv()
-        val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
-        val cityInfo = game.addCity(civInfo, tile, true)
-        val unit = game.addUnit("Great Engineer", civInfo, tile)
-        val building = game.createBuildingWithUnique("[+250 Gold] whenever a Great Person is expended")
-        cityInfo.cityConstructions.addBuilding(building.name)
-        civInfo.addGold(-civInfo.gold)
-
-        civInfo.addGold(-civInfo.gold) // reset gold just to be sure
-        unit.consume()
-        Assert.assertTrue(civInfo.gold == 250)
-    }
-
-    @Test
     fun statsFromTiles() {
         game.makeHexagonalMap(2)
         val civInfo = game.addCiv()
@@ -200,8 +185,6 @@ class GlobalUniquesTests {
         inBetweenTile.roadStatus = RoadStatus.Road
         civInfo.transients().updateCitiesConnectedToCapital()
         city2.cityStats.update()
-        println(city2.isConnectedToCapital())
-        println(city2.cityStats.finalStatList)
 
         Assert.assertTrue(city2.cityStats.finalStatList["Trade routes"]!!.science == 30f)
     }
@@ -255,8 +238,6 @@ class GlobalUniquesTests {
 
         civ1.updateStatsForNextTurn()
 
-        println(civ1.statsForNextTurn.science)
-
         Assert.assertTrue(civ1.statsForNextTurn.science == 90f)
     }
 
@@ -273,11 +254,92 @@ class GlobalUniquesTests {
         city.cityConstructions.addBuilding(building.name)
         city.cityStats.update()
 
-        println(city.cityStats.finalStatList)
+        Assert.assertTrue(city.cityStats.finalStatList["Buildings"]!!.science == 30f)
+    }
+
+    @Test
+    fun statPercentBonusCities() {
+        val civ = game.addCiv(uniques = listOf("[+200]% [Science] [in all cities]"))
+        val tile = game.getTile(Vector2(0f, 0f))
+        val city = game.addCity(civ, tile, true)
+        val building = game.createBuildingWithUniques(arrayListOf("[+10 Science]"))
+        city.cityConstructions.addBuilding(building.name)
+        city.cityStats.update()
 
         Assert.assertTrue(city.cityStats.finalStatList["Buildings"]!!.science == 30f)
     }
 
+    @Test
+    fun statPercentFromObject() {
+        game.makeHexagonalMap(1)
+        val emptyBuilding = game.createBuildingWithUniques()
+        val civInfo = game.addCiv(
+            uniques = listOf(
+                "[+3 Faith] from every [Farm]",
+                "[+200]% [Faith] from every [${emptyBuilding.name}]",
+                "[+200]% [Faith] from every [Farm]",
+            )
+        )
+        val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
+        val city = game.addCity(civInfo, tile, true)
+        val faithBuilding = game.createBuildingWithUniques()
+        faithBuilding.faith = 3f
+        city.cityConstructions.addBuilding(faithBuilding.name)
+
+        val tile2 = game.setTileFeatures(Vector2(0f,1f), Constants.grassland)
+        tile2.improvement = "Farm"
+        Assert.assertTrue(tile2.getTileStats(city, civInfo).faith == 9f)
+
+        city.cityConstructions.addBuilding(emptyBuilding.name)
+        city.cityStats.update()
+
+        Assert.assertTrue(city.cityStats.finalStatList["Buildings"]!!.faith == 9f)
+    }
+
+    @Test
+    fun allStatsPercentFromObject() {
+        game.makeHexagonalMap(1)
+        val emptyBuilding = game.createBuildingWithUniques()
+        val civInfo = game.addCiv(
+            uniques = listOf(
+                "[+3 Faith] from every [Farm]",
+                "[+200]% Yield from every [${emptyBuilding.name}]",
+                "[+200]% Yield from every [Farm]",
+            )
+        )
+        val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
+        val city = game.addCity(civInfo, tile, true)
+        val faithBuilding = game.createBuildingWithUniques()
+        faithBuilding.faith = 3f
+        city.cityConstructions.addBuilding(faithBuilding.name)
+
+        val tile2 = game.setTileFeatures(Vector2(0f,1f), Constants.grassland)
+        tile2.improvement = "Farm"
+        Assert.assertTrue(tile2.getTileStats(city, civInfo).faith == 9f)
+
+        city.cityConstructions.addBuilding(emptyBuilding.name)
+        city.cityStats.update()
+
+        Assert.assertTrue(city.cityStats.finalStatList["Buildings"]!!.faith == 9f)
+    }
+
 
     // endregion
+
+
+    @Test
+    fun statsSpendingGreatPeople() {
+        val civInfo = game.addCiv()
+        val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
+        val cityInfo = game.addCity(civInfo, tile, true)
+        val unit = game.addUnit("Great Engineer", civInfo, tile)
+        val building = game.createBuildingWithUnique("[+250 Gold] whenever a Great Person is expended")
+        cityInfo.cityConstructions.addBuilding(building.name)
+
+        civInfo.addGold(-civInfo.gold) // reset gold just to be sure
+
+        unit.consume()
+        Assert.assertTrue(civInfo.gold == 250)
+    }
+
 }

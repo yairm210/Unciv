@@ -16,7 +16,7 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 
 object BattleDamage {
-    
+
     private fun getModifierStringFromUnique(unique: Unique): String {
         val source = when (unique.sourceObjectType) {
             UniqueTarget.Unit -> "Unit ability"
@@ -49,9 +49,9 @@ object BattleDamage {
             for (unique in combatant.getMatchingUniques(
                 UniqueType.StrengthNearCapital, conditionalState, true
             )) {
-                if (civInfo.cities.isEmpty()) break
+                if (civInfo.cities.isEmpty() || civInfo.getCapital() == null) break
                 val distance =
-                    combatant.getTile().aerialDistanceTo(civInfo.getCapital().getCenterTile())
+                    combatant.getTile().aerialDistanceTo(civInfo.getCapital()!!.getCenterTile())
                 // https://steamcommunity.com/sharedfiles/filedetails/?id=326411722#464287
                 val effect = unique.params[0].toInt() - 3 * distance
                 if (effect <= 0) continue
@@ -168,7 +168,7 @@ object BattleDamage {
     fun getDefenceModifiers(attacker: ICombatant, defender: ICombatant): Counter<String> {
         val modifiers = getGeneralModifiers(defender, attacker, CombatAction.Defend)
         val tile = defender.getTile()
-    
+
         if (defender is MapUnitCombatant) {
 
             if (defender.unit.isEmbarked()) {
@@ -196,7 +196,7 @@ object BattleDamage {
 
         return modifiers
     }
-    
+
     @Deprecated("As of 4.0.3", level=DeprecationLevel.WARNING)
     private fun getTileSpecificModifiers(unit: MapUnitCombatant, tile: TileInfo): Counter<String> {
         val modifiers = Counter<String>()
@@ -225,7 +225,7 @@ object BattleDamage {
             1f
         }
         // Each 3 points of health reduces damage dealt by 1%
-        else 1 - (100 - combatant.getHealth()) / 300f 
+        else 1 - (100 - combatant.getHealth()) / 300f
     }
 
 

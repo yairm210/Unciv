@@ -154,7 +154,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
         stage.addActor(mapHolder)
         stage.scrollFocus = mapHolder
-        stage.addActor(notificationsScroll)  // very low in z-order, so we're free to let it extend _below_ tile info and minimap if we want 
+        stage.addActor(notificationsScroll)  // very low in z-order, so we're free to let it extend _below_ tile info and minimap if we want
         stage.addActor(minimapWrapper)
         stage.addActor(topBar)
         stage.addActor(nextTurnButton)
@@ -175,7 +175,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
         val tileToCenterOn: Vector2 =
                 when {
-                    viewingCiv.cities.isNotEmpty() -> viewingCiv.getCapital().location
+                    viewingCiv.cities.isNotEmpty() && viewingCiv.getCapital() != null -> viewingCiv.getCapital()!!.location
                     viewingCiv.getCivUnits().any() -> viewingCiv.getCivUnits().first().getTile().position
                     else -> Vector2.Zero
                 }
@@ -281,7 +281,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         keyPressDispatcher[Input.Keys.F12] = quickLoad    // Quick Load
         keyPressDispatcher[Input.Keys.HOME] = {    // Capital City View
             val capital = gameInfo.currentPlayerCiv.getCapital()
-            if (!mapHolder.setCenterPosition(capital.location))
+            if (capital != null && !mapHolder.setCenterPosition(capital.location))
                 game.setScreen(CityScreen(capital))
         }
         keyPressDispatcher[KeyCharAndCode.ctrl('O')] = { // Game Options

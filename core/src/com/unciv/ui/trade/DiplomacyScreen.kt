@@ -215,7 +215,7 @@ class DiplomacyScreen(
         }
 
         val atWar = otherCiv.isAtWarWith(viewingCiv)
-        
+
         val nextLevelString = when {
             atWar -> ""
             otherCivDiplomacyManager.getInfluence().toInt() < 30 -> "Reach 30 for friendship."
@@ -397,7 +397,7 @@ class DiplomacyScreen(
                 diplomacyTable.add(declareWarButton).row()
             }
         }
-        
+
         diplomacyTable.add(getGoToOnMapButton(otherCiv)).row()
 
         val diplomaticMarriageButton = getDiplomaticMarriageButton(otherCiv)
@@ -428,7 +428,7 @@ class DiplomacyScreen(
 
         for (improvableTile in improvableResourceTiles)
             for (tileImprovement in improvements.values)
-                if (improvableTile.tileResource.isImprovedBy(tileImprovement.name) 
+                if (improvableTile.tileResource.isImprovedBy(tileImprovement.name)
                     && improvableTile.canBuildImprovement(tileImprovement, otherCiv)
                 )
                     needsImprovements = true
@@ -491,8 +491,8 @@ class DiplomacyScreen(
         return diplomacyTable
     }
 
-    fun getImprovableResourceTiles(otherCiv:CivilizationInfo) = otherCiv.getCapital().getTiles().filter { 
-        it.hasViewableResource(otherCiv) 
+    fun getImprovableResourceTiles(otherCiv:CivilizationInfo) = otherCiv.getCapital()!!.getTiles().filter {
+        it.hasViewableResource(otherCiv)
         && it.tileResource.resourceType != ResourceType.Bonus
         && (it.improvement == null || !it.tileResource.isImprovedBy(it.improvement!!))
     }
@@ -751,9 +751,9 @@ class DiplomacyScreen(
         diplomacyTable.add(demandsButton).row()
         if (isNotPlayersTurn()) demandsButton.disable()
 
-        if (otherCiv.cities.isNotEmpty() && otherCiv.getCapital().location in viewingCiv.exploredTiles)
+        if (otherCiv.cities.isNotEmpty() && otherCiv.getCapital() != null && otherCiv.getCapital()!!.location in viewingCiv.exploredTiles)
             diplomacyTable.add(getGoToOnMapButton(otherCiv)).row()
-        
+
         if (!otherCiv.isPlayerCivilization()) { // human players make their own choices
             diplomacyTable.add(getRelationshipTable(otherCivDiplomacyManager)).row()
             diplomacyTable.add(getDiplomacyModifiersTable(otherCivDiplomacyManager)).row()
@@ -938,10 +938,10 @@ class DiplomacyScreen(
         val goToOnMapButton = "Go to on map".toTextButton()
         goToOnMapButton.onClick {
             UncivGame.Current.resetToWorldScreen()
-            UncivGame.Current.worldScreen.mapHolder.setCenterPosition(civilization.getCapital().location, selectUnit = false)
+            UncivGame.Current.worldScreen.mapHolder.setCenterPosition(civilization.getCapital()!!.location, selectUnit = false)
         }
         return goToOnMapButton
-    } 
+    }
 
     override fun resize(width: Int, height: Int) {
         super.resize(width, height)
