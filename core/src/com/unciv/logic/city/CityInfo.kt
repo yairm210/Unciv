@@ -40,11 +40,11 @@ enum class CityFocus(val label: String, val tableEnabled: Boolean, val stat: Sta
     NoFocus("Default Focus", true, null) {
         override fun getStatMultiplier(stat: Stat) = 1f  // actually redundant, but that's two steps to see
     },
-    FoodFocus("${Stat.Food.name} Focus", true, Stat.Food),
-    ProductionFocus("${Stat.Production.name} Focus", true, Stat.Production),
-    GoldFocus("${Stat.Gold.name} Focus", true, Stat.Gold),
-    ScienceFocus("${Stat.Science.name} Focus", true, Stat.Science),
-    CultureFocus("${Stat.Culture.name} Focus", true, Stat.Culture),
+    FoodFocus("[${Stat.Food.name}] Focus", true, Stat.Food),
+    ProductionFocus("[${Stat.Production.name}] Focus", true, Stat.Production),
+    GoldFocus("[${Stat.Gold.name}] Focus", true, Stat.Gold),
+    ScienceFocus("[${Stat.Science.name}] Focus", true, Stat.Science),
+    CultureFocus("[${Stat.Culture.name}] Focus", true, Stat.Culture),
     GoldGrowthFocus("Gold Growth Focus", false) {
         override fun getStatMultiplier(stat: Stat) = when (stat) {
             Stat.Gold, Stat.Food -> 2f
@@ -57,8 +57,8 @@ enum class CityFocus(val label: String, val tableEnabled: Boolean, val stat: Sta
             else -> 1f
         }
     },
-    FaithFocus("${Stat.Faith.name} Focus", true, Stat.Faith),
-    HappinessFocus("${Stat.Happiness.name} Focus", false, Stat.Happiness);
+    FaithFocus("[${Stat.Faith.name}] Focus", true, Stat.Faith),
+    HappinessFocus("[${Stat.Happiness.name}] Focus", false, Stat.Happiness);
     //GreatPersonFocus;
 
     open fun getStatMultiplier(stat: Stat) = when (this.stat) {
@@ -97,14 +97,14 @@ class CityInfo {
 
     @Transient
     // This is so that military units can enter the city, even before we decide what to do with it
-    var hasJustBeenConquered = false  
+    var hasJustBeenConquered = false
 
     var location: Vector2 = Vector2.Zero
     var id: String = UUID.randomUUID().toString()
     var name: String = ""
     var foundingCiv = ""
     // This is so that cities in resistance that are recaptured aren't in resistance anymore
-    var previousOwner = "" 
+    var previousOwner = ""
     var turnAcquired = 0
     var health = 200
 
@@ -399,9 +399,9 @@ class CityInfo {
             val amount = getTileResourceAmount(tileInfo) * civInfo.getResourceModifier(resource)
             if (amount > 0) cityResources.add(resource, amount, "Tiles")
         }
-        
-        
-        
+
+
+
         for (tileInfo in getTiles()) {
             val stateForConditionals = StateForConditionals(civInfo, this, tile = tileInfo)
             if (tileInfo.improvement == null) continue
@@ -439,8 +439,8 @@ class CityInfo {
             val resource = getRuleset().tileResources[unique.params[1]]
             if (resource != null) {
                 cityResources.add(
-                    resource, 
-                    unique.params[0].toInt() * civInfo.getResourceModifier(resource), 
+                    resource,
+                    unique.params[0].toInt() * civInfo.getResourceModifier(resource),
                     "Buildings+"
                 )
             }
@@ -505,7 +505,7 @@ class CityInfo {
         if (!isStarving()) return null
         return population.foodStored / -foodForNextTurn() + 1
     }
-    
+
     fun containsBuildingUnique(uniqueType: UniqueType) =
         cityConstructions.getBuiltBuildings().flatMap { it.uniqueObjects }.any { it.isOfType(uniqueType) }
 
@@ -530,7 +530,7 @@ class CityInfo {
         }
         return allGppPercentageBonus
     }
-    
+
     fun getGreatPersonPointsForNextTurn(): HashMap<String, Counter<String>> {
         val sourceToGPP = HashMap<String, Counter<String>>()
 
@@ -616,7 +616,7 @@ class CityInfo {
             .mapNotNull { it.getOwner()?.civName }
             .toSet()
     }
-    
+
     //endregion
 
     //region state-changing functions
@@ -637,7 +637,7 @@ class CityInfo {
         // so they won't be generated out in the open and vulnerable to enemy attacks before you can control them
         cityConstructions.constructIfEnough()
         cityConstructions.addFreeBuildings()
-        
+
         cityStats.update()
         tryUpdateRoadStatus()
         attackedThisTurn = false
@@ -696,7 +696,7 @@ class CityInfo {
     fun removeFlag(flag: CityFlags) {
         flagsCountdown.remove(flag.name)
     }
-    
+
     fun resetWLTKD() {
         // Removes the flags for we love the king & resource demand
         // The resource demand flag will automatically be readded with 15 turns remaining, see startTurn()
@@ -881,7 +881,7 @@ class CityInfo {
                 .filter { it.isMajorCiv() && it != civInfo }
                 .flatMap { it.cities }
                 .filter { it.getCenterTile().aerialDistanceTo(getCenterTile()) <= 6 }
-        val civsWithCloseCities = 
+        val civsWithCloseCities =
             citiesWithin6Tiles
                 .map { it.civInfo }
                 .distinct()
