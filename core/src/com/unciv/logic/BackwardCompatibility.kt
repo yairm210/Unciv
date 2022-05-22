@@ -74,6 +74,11 @@ object BackwardCompatibility {
                 if (!ruleSet.policies.containsKey(policy))
                     civInfo.policies.adoptedPolicies.remove(policy)
         }
+
+        // Fix game speed if deleted
+        if (!ruleSet.gameSpeeds.containsKey(gameParameters.gameSpeed)) {
+            gameParameters.gameSpeed = ruleSet.gameSpeeds.keys.first()
+        }
     }
 
     /**
