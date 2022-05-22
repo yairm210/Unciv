@@ -25,13 +25,13 @@ object UniqueTriggerActivation {
         tile: TileInfo? = null,
         notification: String? = null
     ): Boolean {
-        if (!unique.conditionalsApply(civInfo, cityInfo)) return false
-
         val timingConditional = unique.conditionals.firstOrNull{it.type == ConditionalTimedUnique}
-        if (timingConditional!=null) {
+        if (timingConditional != null) {
             civInfo.temporaryUniques.add(TemporaryUnique(unique, timingConditional.params[0].toInt()))
             return true
         }
+
+        if (!unique.conditionalsApply(civInfo, cityInfo)) return false
 
         val chosenCity = cityInfo ?: civInfo.cities.firstOrNull { it.isCapital() }
         val tileBasedRandom =
