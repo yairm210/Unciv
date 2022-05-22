@@ -16,6 +16,8 @@ import com.unciv.logic.multiplayer.MultiplayerGameNameChanged
 import com.unciv.logic.multiplayer.MultiplayerGameUpdateEnded
 import com.unciv.logic.multiplayer.MultiplayerGameUpdateFailed
 import com.unciv.logic.multiplayer.MultiplayerGameUpdateStarted
+import com.unciv.logic.multiplayer.MultiplayerGameUpdateSucceeded
+import com.unciv.logic.multiplayer.MultiplayerGameUpdateUnchanged
 import com.unciv.logic.multiplayer.MultiplayerGameUpdated
 import com.unciv.logic.multiplayer.isUsersTurn
 import com.unciv.ui.images.ImageGetter
@@ -100,6 +102,8 @@ private class GameDisplay(
         }
         events.receive(MultiplayerGameUpdated::class, isOurGame) {
             updateTurnIndicator(it.preview)
+        }
+        events.receive(MultiplayerGameUpdateSucceeded::class, isOurGame) {
             updateErrorIndicator(false)
         }
         events.receive(MultiplayerGameUpdateFailed::class, isOurGame) {
