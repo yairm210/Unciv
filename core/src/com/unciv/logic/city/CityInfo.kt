@@ -97,14 +97,14 @@ class CityInfo {
 
     @Transient
     // This is so that military units can enter the city, even before we decide what to do with it
-    var hasJustBeenConquered = false  
+    var hasJustBeenConquered = false
 
     var location: Vector2 = Vector2.Zero
     var id: String = UUID.randomUUID().toString()
     var name: String = ""
     var foundingCiv = ""
     // This is so that cities in resistance that are recaptured aren't in resistance anymore
-    var previousOwner = "" 
+    var previousOwner = ""
     var turnAcquired = 0
     var health = 200
 
@@ -393,11 +393,13 @@ class CityInfo {
 
     fun getRuleset() = civInfo.gameInfo.ruleSet
 
-    fun getCityResources() = ResourceSupplyList().apply {
+    fun getCityResources(): ResourceSupplyList {
+        val newResourceSupplyList = ResourceSupplyList()
+
         for (tileInfo in getTiles().filter { it.resource != null }) {
             val resource = tileInfo.tileResource
             val amount = getTileResourceAmount(tileInfo) * civInfo.getResourceModifier(resource)
-            if (amount > 0) add(resource, "Tiles", amount)
+            if (amount > 0) newResourceSupplyList.add(resource, "Tiles", amount)
         }
 
         for (tileInfo in getTiles()) {
@@ -406,14 +408,14 @@ class CityInfo {
             val tileImprovement = tileInfo.getTileImprovement()
             for (unique in tileImprovement!!.getMatchingUniques(UniqueType.ProvidesResources, stateForConditionals)) {
                 val resource = getRuleset().tileResources[unique.params[1]] ?: continue
-                add(
+                newResourceSupplyList.add(
                     resource, "Improvements",
                     unique.params[0].toInt() * civInfo.getResourceModifier(resource)
                 )
             }
             for (unique in tileImprovement.getMatchingUniques(UniqueType.ConsumesResources, stateForConditionals)) {
                 val resource = getRuleset().tileResources[unique.params[1]] ?: continue
-                add(
+                newResourceSupplyList.add(
                     resource, "Improvements",
                     -1 * unique.params[0].toInt()
                 )
@@ -424,14 +426,14 @@ class CityInfo {
         for (building in cityConstructions.getBuiltBuildings()) {
             // Free buildings cost no resources
             if (building.name in freeBuildings) continue
-            subtractResourceRequirements(building.getResourceRequirements(), getRuleset(), "Buildings")
+            newResourceSupplyList.subtractResourceRequirements(building.getResourceRequirements(), getRuleset(), "Buildings")
         }
 
         for (unique in getLocalMatchingUniques(UniqueType.ProvidesResources, StateForConditionals(civInfo, this@CityInfo))) { // E.G "Provides [1] [Iron]"
             if (!unique.conditionalsApply(civInfo, this@CityInfo)) continue
             val resource = getRuleset().tileResources[unique.params[1]]
             if (resource != null) {
-                add(
+                newResourceSupplyList.add(
                     resource, "Buildings+",
                     unique.params[0].toInt() * civInfo.getResourceModifier(resource)
                 )
@@ -439,11 +441,13 @@ class CityInfo {
         }
 
         if (civInfo.isCityState() && isCapital() && civInfo.cityStateResource != null) {
-            add(
+            newResourceSupplyList.add(
                 getRuleset().tileResources[civInfo.cityStateResource]!!,
                 "Mercantile City-State"
             )
         }
+
+        return newResourceSupplyList
     }
 
     fun getTileResourceAmount(tileInfo: TileInfo): Int {
@@ -495,7 +499,7 @@ class CityInfo {
         if (!isStarving()) return null
         return population.foodStored / -foodForNextTurn() + 1
     }
-    
+
     fun containsBuildingUnique(uniqueType: UniqueType) =
         cityConstructions.getBuiltBuildings().flatMap { it.uniqueObjects }.any { it.isOfType(uniqueType) }
 
@@ -520,7 +524,7 @@ class CityInfo {
         }
         return allGppPercentageBonus
     }
-    
+
     fun getGreatPersonPointsForNextTurn(): HashMap<String, Counter<String>> {
         val sourceToGPP = HashMap<String, Counter<String>>()
 
@@ -606,7 +610,7 @@ class CityInfo {
             .mapNotNull { it.getOwner()?.civName }
             .toSet()
     }
-    
+
     //endregion
 
     //region state-changing functions
@@ -627,7 +631,7 @@ class CityInfo {
         // so they won't be generated out in the open and vulnerable to enemy attacks before you can control them
         cityConstructions.constructIfEnough()
         cityConstructions.addFreeBuildings()
-        
+
         cityStats.update()
         tryUpdateRoadStatus()
         attackedThisTurn = false
@@ -686,7 +690,7 @@ class CityInfo {
     fun removeFlag(flag: CityFlags) {
         flagsCountdown.remove(flag.name)
     }
-    
+
     fun resetWLTKD() {
         // Removes the flags for we love the king & resource demand
         // The resource demand flag will automatically be readded with 15 turns remaining, see startTurn()
@@ -871,7 +875,7 @@ class CityInfo {
                 .filter { it.isMajorCiv() && it != civInfo }
                 .flatMap { it.cities }
                 .filter { it.getCenterTile().aerialDistanceTo(getCenterTile()) <= 6 }
-        val civsWithCloseCities = 
+        val civsWithCloseCities =
             citiesWithin6Tiles
                 .map { it.civInfo }
                 .distinct()

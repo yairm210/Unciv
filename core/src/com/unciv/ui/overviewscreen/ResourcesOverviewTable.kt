@@ -214,14 +214,15 @@ class ResourcesOverviewTab(
         overviewScreen.resizePage(this)  // Without the height is miscalculated - shouldn't be
     }
 
-    private fun getExtraDrilldown() = ResourceSupplyList().apply {
+    private fun getExtraDrilldown(): ResourceSupplyList {
+        val newResourceSupplyList = ResourceSupplyList()
         for (city in viewingPlayer.cities) {
             if (city.demandedResource.isEmpty()) continue
             val wltkResource = gameInfo.ruleSet.tileResources[city.demandedResource] ?: continue
             if (city.isWeLoveTheKingDayActive()) {
-                add(wltkResource, ExtraInfoOrigin.CelebratingWLKT.name)
+                newResourceSupplyList.add(wltkResource, ExtraInfoOrigin.CelebratingWLKT.name)
             } else {
-                add(wltkResource, ExtraInfoOrigin.DemandingWLTK.name)
+                newResourceSupplyList.add(wltkResource, ExtraInfoOrigin.DemandingWLTK.name)
             }
             for (tile in city.getTiles()) {
                 if (tile.isCityCenter()) continue
@@ -230,8 +231,9 @@ class ResourcesOverviewTab(
                 if (tileResource.resourceType == ResourceType.Bonus) continue
                 if (tile.improvement != null && tileResource.isImprovedBy(tile.improvement!!)) continue
                 if (tileResource.resourceType == ResourceType.Strategic && tile.getTileImprovement()?.isGreatImprovement() == true) continue
-                add(tileResource, ExtraInfoOrigin.Unimproved.name)
+                newResourceSupplyList.add(tileResource, ExtraInfoOrigin.Unimproved.name)
             }
         }
+        return newResourceSupplyList
     }
 }
