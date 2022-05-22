@@ -38,7 +38,8 @@ private val FILE_UPDATE_THROTTLE_INTERVAL = Duration.ofSeconds(60)
  *
  * See the file of [com.unciv.logic.multiplayer.MultiplayerGameAdded] for all available [EventBus] events.
  */
-class OnlineMultiplayer {
+class OnlineMultiplayer() {
+    private val gameSaver = UncivGame.Current.gameSaver
     private val savedGames: MutableMap<FileHandle, OnlineMultiplayerGame> = Collections.synchronizedMap(mutableMapOf())
     private var lastFileUpdate: AtomicReference<Instant?> = AtomicReference()
 
@@ -80,7 +81,7 @@ class OnlineMultiplayer {
     private fun fileUpdateNeeded(it: Instant?) = it == null || Duration.between(it, Instant.now()).isLargerThan(FILE_UPDATE_THROTTLE_INTERVAL)
 
     private fun updateSavesFromFiles() {
-        val saves = GameSaver.getSaves(true)
+        val saves = gameSaver.getMultiplayerSaves()
         val removedSaves = savedGames.keys - saves
         removedSaves.forEach(savedGames::remove)
         val newSaves = saves - savedGames.keys
@@ -99,7 +100,7 @@ class OnlineMultiplayer {
     suspend fun createGame(newGame: GameInfo) {
         OnlineMultiplayerGameSaver().tryUploadGame(newGame, withPreview = true)
         val newGamePreview = newGame.asPreview()
-        val file = GameSaver.saveGame(newGamePreview, newGamePreview.gameId)
+        val file = gameSaver.saveGame(newGamePreview, newGamePreview.gameId)
         val onlineMultiplayerGame = OnlineMultiplayerGame(file, newGamePreview, Instant.now())
         savedGames[file] = onlineMultiplayerGame
         postCrashHandlingRunnable { EventBus.send(MultiplayerGameAdded(onlineMultiplayerGame.name)) }
@@ -119,11 +120,11 @@ class OnlineMultiplayer {
         var fileHandle: FileHandle
         try {
             gamePreview = OnlineMultiplayerGameSaver().tryDownloadGamePreview(gameId)
-            fileHandle = GameSaver.saveGame(gamePreview, saveFileName)
+            fileHandle = gameSaver.saveGame(gamePreview, saveFileName)
         } catch (ex: FileNotFoundException) {
             // Game is so old that a preview could not be found on dropbox lets try the real gameInfo instead
             gamePreview = OnlineMultiplayerGameSaver().tryDownloadGame(gameId).asPreview()
-            fileHandle = GameSaver.saveGame(gamePreview, saveFileName)
+            fileHandle = gameSaver.saveGame(gamePreview, saveFileName)
         }
         val game = OnlineMultiplayerGame(fileHandle, gamePreview, Instant.now())
         savedGames[fileHandle] = game
@@ -172,7 +173,7 @@ class OnlineMultiplayer {
         }
 
         val newPreview = gameInfo.asPreview()
-        GameSaver.saveGame(newPreview, game.fileHandle)
+        gameSaver.saveGame(newPreview, game.fileHandle)
         OnlineMultiplayerGameSaver().tryUploadGame(gameInfo, withPreview = true)
         game.doManualUpdate(newPreview)
         postCrashHandlingRunnable { EventBus.send(MultiplayerGameUpdated(game.name, newPreview)) }
@@ -208,7 +209,7 @@ class OnlineMultiplayer {
      */
     fun deleteGame(multiplayerGame: OnlineMultiplayerGame) {
         val name = multiplayerGame.name
-        GameSaver.deleteSave(multiplayerGame.fileHandle)
+        gameSaver.deleteSave(multiplayerGame.fileHandle)
         EventBus.send(MultiplayerGameDeleted(name))
     }
 
@@ -224,8 +225,8 @@ class OnlineMultiplayer {
         val oldName = game.name
 
         savedGames.remove(game.fileHandle)
-        GameSaver.deleteSave(game.fileHandle)
-        val newFileHandle = GameSaver.saveGame(oldPreview, newName)
+        gameSaver.deleteSave(game.fileHandle)
+        val newFileHandle = gameSaver.saveGame(oldPreview, newName)
 
         val newGame = OnlineMultiplayerGame(newFileHandle, oldPreview, oldLastUpdate)
         savedGames[newFileHandle] = newGame

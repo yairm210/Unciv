@@ -16,7 +16,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
-import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -229,7 +228,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         val quickSave = {
             val toast = ToastPopup("Quicksaving...", this)
             launchCrashHandling("SaveGame", runAsDaemon = false) {
-                GameSaver.saveGame(gameInfo, "QuickSave") {
+                game.gameSaver.saveGame(gameInfo, "QuickSave") {
                     postCrashHandlingRunnable {
                         toast.close()
                         if (it != null)
@@ -246,7 +245,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
             val toast = ToastPopup("Quickloading...", this)
             launchCrashHandling("LoadGame") {
                 try {
-                    val loadedGame = GameSaver.loadGameByName("QuickSave")
+                    val loadedGame = game.gameSaver.loadGameByName("QuickSave")
                     postCrashHandlingRunnable {
                         toast.close()
                         UncivGame.Current.loadGame(loadedGame)
@@ -713,7 +712,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                     val newWorldScreen = this@WorldScreen.game.worldScreen
                     newWorldScreen.waitingForAutosave = true
                     newWorldScreen.shouldUpdate = true
-                    GameSaver.autoSave(gameInfoClone) {
+                    game.gameSaver.autoSave(gameInfoClone) {
                         // only enable the user to next turn once we've saved the current one
                         newWorldScreen.waitingForAutosave = false
                         newWorldScreen.shouldUpdate = true
