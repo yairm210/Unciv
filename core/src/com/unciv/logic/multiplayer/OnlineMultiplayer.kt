@@ -99,11 +99,7 @@ class OnlineMultiplayer() {
      */
     suspend fun createGame(newGame: GameInfo) {
         onlineGameSaver.tryUploadGame(newGame, withPreview = true)
-        val newGamePreview = newGame.asPreview()
-        val file = gameSaver.saveGame(newGamePreview, newGamePreview.gameId)
-        val onlineMultiplayerGame = OnlineMultiplayerGame(file, newGamePreview, Instant.now())
-        savedGames[file] = onlineMultiplayerGame
-        postCrashHandlingRunnable { EventBus.send(MultiplayerGameAdded(onlineMultiplayerGame.name)) }
+        addGame(newGame)
     }
 
     /**
@@ -117,16 +113,23 @@ class OnlineMultiplayer() {
     suspend fun addGame(gameId: String, gameName: String? = null): String {
         val saveFileName = if (gameName.isNullOrBlank()) gameId else gameName
         var gamePreview: GameInfoPreview
-        var fileHandle: FileHandle
         try {
             gamePreview = onlineGameSaver.tryDownloadGamePreview(gameId)
-            fileHandle = gameSaver.saveGame(gamePreview, saveFileName)
         } catch (ex: FileNotFoundException) {
             // Game is so old that a preview could not be found on dropbox lets try the real gameInfo instead
             gamePreview = onlineGameSaver.tryDownloadGame(gameId).asPreview()
-            fileHandle = gameSaver.saveGame(gamePreview, saveFileName)
         }
-        val game = OnlineMultiplayerGame(fileHandle, gamePreview, Instant.now())
+        return addGame(gamePreview, saveFileName)
+    }
+
+    private fun addGame(newGame: GameInfo) {
+        val newGamePreview = newGame.asPreview()
+        addGame(newGamePreview, newGamePreview.gameId)
+    }
+
+    private fun addGame(preview: GameInfoPreview, saveFileName: String): String {
+        val fileHandle = gameSaver.saveGame(preview, saveFileName)
+        val game = OnlineMultiplayerGame(fileHandle, preview, Instant.now())
         savedGames[fileHandle] = game
         postCrashHandlingRunnable { EventBus.send(MultiplayerGameAdded(game.name)) }
         return saveFileName
@@ -134,6 +137,10 @@ class OnlineMultiplayer() {
 
     fun getGameByName(name: String): OnlineMultiplayerGame? {
         return savedGames.values.firstOrNull { it.name == name }
+    }
+
+    fun getGameByGameId(gameId: String): OnlineMultiplayerGame? {
+        return savedGames.values.firstOrNull { it.preview?.gameId == gameId }
     }
 
     /**
@@ -173,7 +180,6 @@ class OnlineMultiplayer() {
         gameSaver.saveGame(newPreview, game.fileHandle)
         onlineGameSaver.tryUploadGame(gameInfo, withPreview = true)
         game.doManualUpdate(newPreview)
-        postCrashHandlingRunnable { EventBus.send(MultiplayerGameUpdated(game.name, newPreview)) }
         return true
     }
 
@@ -192,6 +198,14 @@ class OnlineMultiplayer() {
      */
     suspend fun loadGame(gameId: String) {
         val gameInfo = downloadGame(gameId)
+        val preview = gameInfo.asPreview()
+        val onlineGame = getGameByGameId(gameId)
+        val onlinePreview = onlineGame?.preview
+        if (onlineGame == null) {
+            createGame(gameInfo)
+        } else if (onlinePreview != null && hasNewerGameState(preview, onlinePreview)){
+            onlineGame.doManualUpdate(preview)
+        }
         postCrashHandlingRunnable { UncivGame.Current.loadGame(gameInfo) }
     }
 
@@ -246,6 +260,22 @@ class OnlineMultiplayer() {
         savedGames[newFileHandle] = newGame
         EventBus.send(MultiplayerGameNameChanged(oldName, newName))
     }
+    /**
+     * Checks if [gameInfo] and [preview] are up-to-date with each other.
+     */
+    fun hasLatestGameState(gameInfo: GameInfo, preview: GameInfoPreview): Boolean {
+        // TODO look into how to maybe extract interfaces to not make this take two different methods
+        return gameInfo.currentPlayer == preview.currentPlayer
+                && gameInfo.turns == preview.turns
+    }
+
+    /**
+     * Checks if [preview1] has a more recent game state than [preview2]
+     */
+    private fun hasNewerGameState(preview1: GameInfoPreview, preview2: GameInfoPreview): Boolean {
+        return preview1.turns > preview2.turns
+    }
+
 }
 
 /**

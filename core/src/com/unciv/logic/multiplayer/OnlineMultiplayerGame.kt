@@ -101,6 +101,7 @@ class OnlineMultiplayerGame(
         lastOnlineUpdate.set(Instant.now())
         error = null
         preview = gameInfo
+        postCrashHandlingRunnable { EventBus.send(MultiplayerGameUpdated(name, gameInfo)) }
     }
 
     override fun equals(other: Any?): Boolean = other is OnlineMultiplayerGame && fileHandle == other.fileHandle
