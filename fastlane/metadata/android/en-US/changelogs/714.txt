@@ -1,0 +1,40 @@
+welp these tests kind of existed before
+
+Added test that improvements can be built on their tiles
+
+4.1.1-patch2
+
+4.1.1-patch1
+
+By Azzurite:
+- Refactor: change GameSaver from singleton to single instance pattern & move autosave logic into GameSaver 
+- Fix multiplayer turn checker potentially stopping turn checks for everyone that plays that game if a file was not found remotely 
+- Initial Event Bus implementation & Event-based multiplayer updates 
+- Fix screens not correctly being dispose()d 
+- Refactor: Split options into multiple files 
+- Fix images not being able to have their size set 
+- Refactor: Extract PickerPane from PickerScreen 
+- Fix turn check worker exception 
+
+By SomeTroglodyte:
+- Fix Autocracy Complete including unit test 
+- Refactor UncivShowableException 
+- Fix effect of new Beliefs not immediately visible in top bar 
+- Unify editor style settings 
+- SimpleHttp gets a connection timeout 
+- Build warnings cleanup 
+
+Fix crashes when a civ does not have a capital  - By OptimizedForDensity
+
+By xlenstra:
+- Added more unit tests for uniques; added missing unique implementations 
+- Fixed a bug blocking special improvements on removable terrain features 
+
+By itanasi:
+- Fix Zone of Control 
+- Assign Population Improvements 
+- Add more comments on Editor Settings 
+
+By JackRainy:
+- A lot of smaller code/performance improvements 
+- Correct check for the city connection quest
