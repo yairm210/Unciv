@@ -373,7 +373,7 @@ class CivilizationInfo {
         for (resourceSupply in detailedCivResources) {
             // If we got it from another trade or from a CS, preserve the origin
             if (resourceSupply.isCityStateOrTradeOrigin()) {
-                newResourceSupplyList.add(resourceSupply)
+                newResourceSupplyList.add(resourceSupply.copy())
                 newResourceSupplyList.add(resourceSupply.resource, Constants.tradable, 0) // Still add an empty "tradable" entry so it shows up in the list
             }
             else

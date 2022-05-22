@@ -13,7 +13,11 @@ class ResourceSupplyList(
 ) : ArrayList<ResourceSupplyList.ResourceSupply>(24) {
     // initialCapacity 24: Allows all resources in G&K with just _one_ Array growth step (which is 50%)
 
-    /** Holds one "data row", [resource] and [origin] function as keys while [amount] is the 'value' */
+    /**
+     * Holds one "data row", [resource] and [origin] function as keys while [amount] is the 'value'
+     * This is not technically immutable, but **no** code outside [ResourceSupplyList] should update the value.
+     * [ResourceSupplyList.add] will update the value in existing instances, and should remain the only place.
+     */
     data class ResourceSupply(val resource: TileResource, val origin: String, var amount: Int) {
         fun isCityStateOrTradeOrigin() = (origin == Constants.cityStates || origin == "Trade") && amount > 0
         override fun toString() = "$amount ${resource.name} from $origin"
@@ -35,6 +39,8 @@ class ResourceSupplyList(
     override fun add(element: ResourceSupply): Boolean {
         val existingResourceSupply = get(element.resource, element.origin)
         if (existingResourceSupply != null) {
+            // This is at the time of writing the _only_ place updating the field.
+            // To check: Change to val, comment out this line, compile, revert.
             existingResourceSupply.amount += element.amount
             if (keepZeroAmounts || existingResourceSupply.amount != 0) return false
             remove(existingResourceSupply)

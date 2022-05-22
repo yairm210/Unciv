@@ -175,9 +175,8 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
                 resourceBonusPercentage += unique.params[0].toFloat() / 100
             for (cityStateAlly in civInfo.getKnownCivs().filter { it.getAllyCiv() == civInfo.civName }) {
                 for (resourceSupply in cityStateAlly.cityStateFunctions.getCityStateResourcesForAlly()) {
-                    cityStateProvidedResources.add(
-                        resourceSupply.copy(amount = amount * resourceBonusPercentage).toInt())
-                    )
+                    val newAmount = (resourceSupply.amount * resourceBonusPercentage).toInt()
+                    cityStateProvidedResources.add(resourceSupply.copy(amount = newAmount))
                 }
             }
             // Then we combine these into one
