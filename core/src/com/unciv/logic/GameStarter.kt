@@ -46,6 +46,11 @@ object GameStarter {
         val ruleset = RulesetCache.getComplexRuleset(gameInfo.gameParameters)
         val mapGen = MapGenerator(ruleset)
 
+        // Make sure that a valid game speed is loaded (catches a base ruleset not using the default game speed)
+        if (!ruleset.gameSpeeds.containsKey(gameSetupInfo.gameParameters.gameSpeed)) {
+            gameSetupInfo.gameParameters.gameSpeed = ruleset.gameSpeeds.keys.first()
+        }
+
         if (gameSetupInfo.mapParameters.name != "") runAndMeasure("loadMap") {
             tileMap = MapSaver.loadMap(gameSetupInfo.mapFile!!)
             // Don't override the map parameters - this can include if we world wrap or not!
@@ -333,7 +338,7 @@ object GameStarter {
                 var unit = unitParam // We want to change it and this is the easiest way to do so
                 if (unit == Constants.eraSpecificUnit) unit = eraUnitReplacement
                 if (unit == Constants.settler && Constants.settler !in ruleSet.units) {
-                    val buildableSettlerLikeUnits = 
+                    val buildableSettlerLikeUnits =
                         settlerLikeUnits.filter {
                             it.value.isBuildable(civ)
                             && it.value.isCivilian()
@@ -352,7 +357,7 @@ object GameStarter {
                 return civ.getEquivalentUnit(unit).name
             }
 
-            // City states should only spawn with one settler regardless of difficulty, but this may be disabled in mods 
+            // City states should only spawn with one settler regardless of difficulty, but this may be disabled in mods
             if (civ.isCityState() && !ruleSet.modOptions.uniques.contains(ModOptionsConstants.allowCityStatesSpawnUnits)) {
                 val startingSettlers = startingUnits.filter { settlerLikeUnits.contains(it) }
 
