@@ -937,7 +937,7 @@ class DiplomacyScreen(
     private fun getGoToOnMapButton(civilization: CivilizationInfo): TextButton {
         val goToOnMapButton = "Go to on map".toTextButton()
         goToOnMapButton.onClick {
-            UncivGame.Current.resetWorldScreen()
+            UncivGame.Current.resetToWorldScreen()
             UncivGame.Current.worldScreen.mapHolder.setCenterPosition(civilization.getCapital()!!.location, selectUnit = false)
         }
         return goToOnMapButton
