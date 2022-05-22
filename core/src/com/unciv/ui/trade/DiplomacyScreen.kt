@@ -59,7 +59,7 @@ class DiplomacyScreen(
     private fun isNotPlayersTurn() = !UncivGame.Current.worldScreen.canChangeState
 
     init {
-        onBackButtonClicked { UncivGame.Current.setWorldScreen() }
+        onBackButtonClicked { UncivGame.Current.resetToWorldScreen() }
         val splitPane = SplitPane(leftSideScroll, rightSideTable, false, skin)
         splitPane.splitAmount = 0.2f
 
@@ -68,7 +68,7 @@ class DiplomacyScreen(
         splitPane.setFillParent(true)
         stage.addActor(splitPane)
 
-        closeButton.onClick { UncivGame.Current.setWorldScreen() }
+        closeButton.onClick { UncivGame.Current.resetToWorldScreen() }
         closeButton.label.setFontSize(Constants.headingFontSize)
         closeButton.labelCell.pad(10f)
         closeButton.pack()
@@ -457,7 +457,7 @@ class DiplomacyScreen(
         diplomaticMarriageButton.onClick {
             val newCities = otherCiv.cities
             otherCiv.cityStateFunctions.diplomaticMarriage(viewingCiv)
-            UncivGame.Current.setWorldScreen() // The other civ will no longer exist
+            UncivGame.Current.resetToWorldScreen() // The other civ will no longer exist
             for (city in newCities)
                 viewingCiv.popupAlerts.add(PopupAlert(AlertType.DiplomaticMarriage, city.id))   // Player gets to choose between annex and puppet
         }
@@ -937,7 +937,7 @@ class DiplomacyScreen(
     private fun getGoToOnMapButton(civilization: CivilizationInfo): TextButton {
         val goToOnMapButton = "Go to on map".toTextButton()
         goToOnMapButton.onClick {
-            UncivGame.Current.setWorldScreen()
+            UncivGame.Current.resetWorldScreen()
             UncivGame.Current.worldScreen.mapHolder.setCenterPosition(civilization.getCapital()!!.location, selectUnit = false)
         }
         return goToOnMapButton

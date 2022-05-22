@@ -22,9 +22,6 @@ import com.unciv.ui.audio.MusicTrackChooserFlags
 import java.util.*
 
 
-class MissingModsException(val missingMods: String) : UncivShowableException("Missing mods: [$missingMods]")
-open class UncivShowableException(errorText: String) : Exception(errorText)
-
 class GameInfo {
     //region Fields - Serialized
     var civilizations = mutableListOf<CivilizationInfo>()
@@ -502,7 +499,6 @@ class GameInfoPreview() {
     var gameId = ""
     var currentPlayer = ""
     var currentTurnStartTime = 0L
-    var turnNotification = true //used as setting in the MultiplayerScreen
 
     /**
      * Converts a GameInfo object (can be uninitialized) into a GameInfoPreview object.
@@ -519,32 +515,4 @@ class GameInfoPreview() {
     }
 
     fun getCivilization(civName: String) = civilizations.first { it.civName == civName }
-
-    /**
-     * Updates the current player and turn information in the GameInfoPreview object with the help of a
-     * GameInfo object (can be uninitialized).
-     */
-    fun updateCurrentTurn(gameInfo: GameInfo) : GameInfoPreview {
-        currentPlayer = gameInfo.currentPlayer
-        turns = gameInfo.turns
-        currentTurnStartTime = gameInfo.currentTurnStartTime
-        //We update the civilizations in case someone is removed from the game (resign/kick)
-        civilizations = gameInfo.getCivilizationsAsPreviews()
-
-        return this
-    }
-
-    /**
-     * Updates the current player and turn information in the GameInfoPreview object with the
-     * help of another GameInfoPreview object.
-     */
-    fun updateCurrentTurn(gameInfo: GameInfoPreview) : GameInfoPreview {
-        currentPlayer = gameInfo.currentPlayer
-        turns = gameInfo.turns
-        currentTurnStartTime = gameInfo.currentTurnStartTime
-        //We update the civilizations in case someone is removed from the game (resign/kick)
-        civilizations = gameInfo.civilizations
-
-        return this
-    }
 }

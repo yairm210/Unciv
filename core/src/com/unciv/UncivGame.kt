@@ -19,7 +19,7 @@ import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.PlayerReadyScreen
 import com.unciv.ui.worldscreen.WorldScreen
-import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
+import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.ui.audio.Sounds
 import com.unciv.ui.crashhandling.closeExecutors
 import com.unciv.ui.crashhandling.launchCrashHandling
@@ -47,6 +47,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     fun isGameInfoInitialized() = this::gameInfo.isInitialized
     lateinit var settings: GameSettings
     lateinit var musicController: MusicController
+    lateinit var onlineMultiplayer: OnlineMultiplayer
 
     /**
      * This exists so that when debugging we can see the entire map.
@@ -67,6 +68,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     val alertBattle = false
 
     lateinit var worldScreen: WorldScreen
+        private set
     fun getWorldScreenOrNull() = if (this::worldScreen.isInitialized) worldScreen else null
 
     var isInitialized = false
@@ -106,6 +108,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             musicController.getAudioLoopCallback(),
             musicController.getAudioExceptionHandler()
         )
+        onlineMultiplayer = OnlineMultiplayer()
 
         ImageGetter.resetAtlases()
         ImageGetter.setNewRuleset(ImageGetter.ruleset)  // This needs to come after the settings, since we may have default visual mods
@@ -155,18 +158,30 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         if (gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1 && !gameInfo.gameParameters.isOnlineMultiplayer)
             setScreen(PlayerReadyScreen(gameInfo, gameInfo.getPlayerToViewAs()))
         else {
-            worldScreen = WorldScreen(gameInfo, gameInfo.getPlayerToViewAs())
-            setWorldScreen()
+            resetToWorldScreen(WorldScreen(gameInfo, gameInfo.getPlayerToViewAs()))
         }
     }
 
     fun setScreen(screen: BaseScreen) {
+        val oldScreen = getScreen()
         Gdx.input.inputProcessor = screen.stage
         super.setScreen(screen)
+        if (oldScreen != getWorldScreenOrNull()) oldScreen.dispose()
     }
 
-    fun setWorldScreen() {
-        if (screen != null && screen != worldScreen) screen.dispose()
+    /**
+     * If called with null [newWorldScreen], disposes of the current screen and sets it to the current stored world screen. 
+     * If the current screen is already the world screen, the only thing that happens is that the world screen updates.
+     */
+    fun resetToWorldScreen(newWorldScreen: WorldScreen? = null) {
+        if (newWorldScreen != null) {
+            val oldWorldScreen = getWorldScreenOrNull()
+            worldScreen = newWorldScreen
+            // setScreen disposes the current screen, but the old world screen is not the current screen, so need to dispose here
+            if (screen != oldWorldScreen) {
+                oldWorldScreen?.dispose()
+            }
+        }
         setScreen(worldScreen)
         worldScreen.shouldUpdate = true // This can set the screen to the policy picker or tech picker screen, so the input processor must come before
         Gdx.graphics.requestRendering()
@@ -178,10 +193,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
                 setScreen(LoadDeepLinkScreen())
             }
             try {
-                val onlineGame = OnlineMultiplayerGameSaver().tryDownloadGame(deepLinkedMultiplayerGame!!)
-                postCrashHandlingRunnable {
-                    loadGame(onlineGame)
-                }
+                onlineMultiplayer.loadGame(deepLinkedMultiplayerGame!!)
             } catch (ex: Exception) {
                 postCrashHandlingRunnable {
                     val mainMenu = MainMenuScreen()

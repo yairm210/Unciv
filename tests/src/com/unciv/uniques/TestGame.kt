@@ -17,9 +17,6 @@ import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.utils.withItem
-import kotlin.math.abs
-import kotlin.math.max
 
 class TestGame {
 
@@ -57,15 +54,17 @@ class TestGame {
             for (tile in row)
                 if (tile != null)
                     tile.baseTerrain = baseTerrain
-        
+
         gameInfo.tileMap = newTileMap
     }
 
-    /** Makes a new hexagonal tileMap and sets it in gameInfo. Removes all existing tiles. All new tiles have terrain [baseTerrain] */
+    /** Makes a new hexagonal tileMap with radius [newRadius] and sets it in gameInfo.
+     * Removes all existing tiles. All new tiles have terrain [baseTerrain]
+     */
     fun makeHexagonalMap(newRadius: Int, baseTerrain: String = Constants.desert) {
         val newTileMap = TileMap(newRadius, ruleset, tileMap.mapParameters.worldWrap)
         newTileMap.mapParameters.mapSize = MapSizeNew(newRadius)
-        
+
         for (row in tileMap.tileMatrix)
             for (tile in row)
                 if (tile != null)
@@ -73,9 +72,9 @@ class TestGame {
 
         gameInfo.tileMap = newTileMap
     }
-    
+
     fun getTile(position: Vector2) = tileMap[position]
-    
+
     /** Sets the [terrain] and [features] of the tile at [position], and then returns it */
     fun setTileFeatures(position: Vector2, terrain: String = Constants.desert, features: List<String> = listOf()): TileInfo {
         val tile = tileMap[position]
@@ -86,8 +85,8 @@ class TestGame {
         }
         tile.setTerrainTransients()
         return tile
-    }    
-    
+    }
+
     fun addCiv(uniques: List<String> = emptyList(), isPlayer: Boolean = false, cityState: CityStateType? = null): CivilizationInfo {
         val nationName = "Nation-${objectsCreated++}"
         ruleset.nations[nationName] = Nation().apply {
@@ -111,9 +110,15 @@ class TestGame {
         return civInfo
     }
 
-    fun addCity(civInfo: CivilizationInfo, tile: TileInfo, replacePalace: Boolean = false): CityInfo {
+    fun addCity(
+        civInfo: CivilizationInfo,
+        tile: TileInfo,
+        replacePalace: Boolean = false,
+        initialPopulation: Int = 0
+    ): CityInfo {
         val cityInfo = CityInfo(civInfo, tile.position)
-        cityInfo.population.addPopulation(-1) // Remove population
+        if (initialPopulation != 1)
+            cityInfo.population.addPopulation(initialPopulation - 1) // With defaults this will remove population
 
         if (replacePalace && civInfo.cities.size == 1) {
             // Add a capital indicator without any other stats
@@ -123,7 +128,7 @@ class TestGame {
         }
         return cityInfo
     }
-    
+
     fun addTileToCity(city: CityInfo, tile: TileInfo) {
         city.tiles.add(tile.position)
     }
@@ -161,7 +166,7 @@ class TestGame {
         gameInfo.religions[religion.name] = religion
         return religion
     }
-    
+
     fun addBelief(type: BeliefType = BeliefType.Any, vararg uniques: String): Belief {
         val belief = Belief()
         belief.name = "Belief-${objectsCreated++}"

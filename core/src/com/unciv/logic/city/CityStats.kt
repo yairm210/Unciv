@@ -540,6 +540,7 @@ class CityStats(val cityInfo: CityInfo) {
             entry.gold *= statPercentBonusesSum.gold.toPercent()
             entry.culture *= statPercentBonusesSum.culture.toPercent()
             entry.food *= statPercentBonusesSum.food.toPercent()
+            entry.faith *= statPercentBonusesSum.faith.toPercent()
         }
 
         // AFTER we've gotten all the gold stats figured out, only THEN do we plonk that gold into Science

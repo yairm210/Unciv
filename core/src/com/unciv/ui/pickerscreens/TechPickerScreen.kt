@@ -57,7 +57,7 @@ class TechPickerScreen(
 
     init {
         setDefaultCloseAction()
-        onBackButtonClicked { UncivGame.Current.setWorldScreen() }
+        onBackButtonClicked { UncivGame.Current.resetToWorldScreen() }
         scrollPane.setOverscroll(false, false)
 
         descriptionLabel.onClick {
@@ -83,7 +83,7 @@ class TechPickerScreen(
 
             game.settings.addCompletedTutorialTask("Pick technology")
 
-            game.setWorldScreen()
+            game.resetToWorldScreen()
             game.worldScreen.shouldUpdate = true
             dispose()
         }

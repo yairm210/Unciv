@@ -44,7 +44,7 @@ class EmpireOverviewScreen(
             else game.settings.lastOverviewPage
         val iconSize = Constants.defaultFontSize.toFloat()
 
-        onBackButtonClicked { game.setWorldScreen() }
+        onBackButtonClicked { game.resetToWorldScreen() }
 
         tabbedPager = TabbedPager(
             stage.width, stage.width,
@@ -54,7 +54,7 @@ class EmpireOverviewScreen(
             capacity = EmpireOverviewCategories.values().size)
 
         tabbedPager.bindArrowKeys()
-        tabbedPager.addClosePage { game.setWorldScreen() }
+        tabbedPager.addClosePage { game.resetToWorldScreen() }
 
         for (category in EmpireOverviewCategories.values()) {
             val tabState = category.stateTester(viewingPlayer)
