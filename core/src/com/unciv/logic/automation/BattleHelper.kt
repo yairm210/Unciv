@@ -27,7 +27,7 @@ object BattleHelper {
         val enemyTileToAttack = chooseAttackTarget(unit, attackableEnemies)
 
         if (enemyTileToAttack != null) {
-            Battle.moveAndAttack(MapUnitCombatant(unit), enemyTileToAttack)
+            Battle.moveAndAttack(MapUnitCombatant(unit), enemyTileToAttack, silent = true)
             return true
         }
         return false
@@ -94,7 +94,7 @@ object BattleHelper {
     fun containsAttackableEnemy(tile: TileInfo, combatant: ICombatant): Boolean {
         if (combatant is MapUnitCombatant && combatant.unit.isEmbarked() && !combatant.hasUnique(UniqueType.AttackOnSea)) {
             // Can't attack water units while embarked, only land
-            if (tile.isWater || combatant.isRanged()) 
+            if (tile.isWater || combatant.isRanged())
                 return false
         }
 
@@ -102,7 +102,7 @@ object BattleHelper {
         if (tileCombatant.getCivInfo() == combatant.getCivInfo()) return false
         if (!combatant.getCivInfo().isAtWarWith(tileCombatant.getCivInfo())) return false
 
-        if (combatant is MapUnitCombatant && 
+        if (combatant is MapUnitCombatant &&
             combatant.unit.hasUnique(UniqueType.CanOnlyAttackUnits) &&
             combatant.unit.getMatchingUniques(UniqueType.CanOnlyAttackUnits).none { tileCombatant.matchesCategory(it.params[0]) }
         )
@@ -117,7 +117,7 @@ object BattleHelper {
         // Only units with the right unique can view submarines (or other invisible units) from more then one tile away.
         // Garrisoned invisible units can be attacked by anyone, as else the city will be in invincible.
         if (tileCombatant.isInvisible(combatant.getCivInfo()) && !tile.isCityCenter()) {
-            return combatant is MapUnitCombatant 
+            return combatant is MapUnitCombatant
                 && combatant.getCivInfo().viewableInvisibleUnitsTiles.map { it.position }.contains(tile.position)
         }
         return true

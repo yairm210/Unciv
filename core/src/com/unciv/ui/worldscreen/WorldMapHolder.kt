@@ -116,29 +116,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                     val unit = worldScreen.bottomUnitTable.selectedUnit
                         ?: return
                     launchCrashHandling("WorldScreenClick") {
-                        val tile = tileGroup.tileInfo
-
-                        if (worldScreen.bottomUnitTable.selectedUnitIsSwapping) {
-                            if (unit.movement.canUnitSwapTo(tile)) {
-                                swapMoveUnitToTargetTile(unit, tile)
-                            }
-                            // If we are in unit-swapping mode, we don't want to move or attack
-                            return@launchCrashHandling
-                        }
-
-                        val attackableTile = BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
-                                .firstOrNull { it.tileToAttack == tileGroup.tileInfo }
-                        if (unit.canAttack() && attackableTile != null) {
-                            Battle.moveAndAttack(MapUnitCombatant(unit), attackableTile)
-                            worldScreen.shouldUpdate = true
-                            return@launchCrashHandling
-                        }
-
-                        val canUnitReachTile = unit.movement.canReach(tile)
-                        if (canUnitReachTile) {
-                            moveUnitToTargetTile(listOf(unit), tile)
-                            return@launchCrashHandling
-                        }
+                        onTileRightClicked(unit, tileGroup.tileInfo)
                     }
                 }
             })
@@ -202,6 +180,29 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         worldScreen.shouldUpdate = true
     }
 
+    private fun onTileRightClicked(unit: MapUnit, tile: TileInfo) {
+        if (worldScreen.bottomUnitTable.selectedUnitIsSwapping) {
+            if (unit.movement.canUnitSwapTo(tile)) {
+                swapMoveUnitToTargetTile(unit, tile)
+            }
+            // If we are in unit-swapping mode, we don't want to move or attack
+            return
+        }
+
+        val attackableTile = BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
+            .firstOrNull { it.tileToAttack == tile }
+        if (unit.canAttack() && attackableTile != null) {
+            Battle.moveAndAttack(MapUnitCombatant(unit), attackableTile)
+            worldScreen.shouldUpdate = true
+            return
+        }
+
+        val canUnitReachTile = unit.movement.canReach(tile)
+        if (canUnitReachTile) {
+            moveUnitToTargetTile(listOf(unit), tile)
+            return
+        }
+    }
 
     private fun moveUnitToTargetTile(selectedUnits: List<MapUnit>, targetTile: TileInfo) {
         // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread

@@ -155,7 +155,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
         stage.addActor(mapHolder)
         stage.scrollFocus = mapHolder
-        stage.addActor(notificationsScroll)  // very low in z-order, so we're free to let it extend _below_ tile info and minimap if we want 
+        stage.addActor(notificationsScroll)  // very low in z-order, so we're free to let it extend _below_ tile info and minimap if we want
         stage.addActor(minimapWrapper)
         stage.addActor(topBar)
         stage.addActor(nextTurnButton)
@@ -408,7 +408,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     // This is private so that we will set the shouldUpdate to true instead.
     // That way, not only do we save a lot of unnecessary updates, we also ensure that all updates are called from the main GL thread
     // and we don't get any silly concurrency problems!
-    internal fun update() {
+    private fun update() {
 
         displayTutorialsOnUpdate()
 
