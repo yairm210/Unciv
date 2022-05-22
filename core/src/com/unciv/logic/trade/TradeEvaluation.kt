@@ -230,7 +230,7 @@ class TradeEvaluation {
                 val city = civInfo.cities.firstOrNull { it.id == offer.name }
                     ?: throw Exception("Got an offer to sell city id " + offer.name + " which does't seem to exist for this civ!")
 
-                val capitalcity = civInfo.getCapital()
+                val capitalcity = civInfo.getCapital()!!
                 val distanceCost = distanceCityTradeModifier(civInfo, capitalcity, city)
                 val stats = city.cityStats.currentCityStats
                 val sumOfStats =

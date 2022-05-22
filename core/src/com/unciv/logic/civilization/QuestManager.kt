@@ -117,7 +117,7 @@ class QuestManager {
 
         tryStartNewGlobalQuest()
         tryStartNewIndividualQuests()
-        
+
         tryBarbarianInvasion()
         tryEndWarWithMajorQuests()
     }
@@ -226,7 +226,7 @@ class QuestManager {
                     && !it.isAtWarWith(civInfo)
                     && it.getProximity(civInfo) <= Proximity.Far }) {
                 otherCiv.addNotification("[${civInfo.civName}] is being invaded by Barbarians! Destroy Barbarians near their territory to earn Influence.",
-                    civInfo.getCapital().location, civInfo.civName, NotificationIcon.War)
+                    civInfo.getCapital()!!.location, civInfo.civName, NotificationIcon.War)
             }
             civInfo.addFlag(CivFlags.TurnsTillCallForBarbHelp.name, 30)
         }
@@ -358,10 +358,10 @@ class QuestManager {
         return when (quest.name) {
             QuestName.ClearBarbarianCamp.value -> getBarbarianEncampmentForQuest() != null
             QuestName.Route.value -> !challenger.cities.none()
-                    && !challenger.isCapitalConnectedToCity(civInfo.getCapital())
+                    && !challenger.isCapitalConnectedToCity(civInfo.getCapital()!!)
                     // Need to have a city within 7 tiles on the same continent
-                    && challenger.cities.any { it.getCenterTile().aerialDistanceTo(civInfo.getCapital().getCenterTile()) <= 7
-                        && it.getCenterTile().getContinent() == civInfo.getCapital().getCenterTile().getContinent() }
+                    && challenger.cities.any { it.getCenterTile().aerialDistanceTo(civInfo.getCapital()!!.getCenterTile()) <= 7
+                        && it.getCenterTile().getContinent() == civInfo.getCapital()!!.getCenterTile().getContinent() }
             QuestName.ConnectResource.value -> getResourceForQuest(challenger) != null
             QuestName.ConstructWonder.value -> getWonderToBuildForQuest(challenger) != null
             QuestName.GreatPerson.value -> getGreatPersonForQuest(challenger) != null
@@ -373,7 +373,7 @@ class QuestManager {
                                             && !challenger.getDiplomacyManager(mostRecentBully).hasFlag(DiplomacyFlags.Denunciation)
                                             && challenger.getDiplomacyManager(mostRecentBully).diplomaticStatus != DiplomaticStatus.War
                                             && !( challenger.playerType == PlayerType.Human && civInfo.gameInfo.getCivilization(mostRecentBully).playerType == PlayerType.Human)
-            QuestName.SpreadReligion.value -> playerReligion != null && civInfo.getCapital().religion.getMajorityReligion()?.name != playerReligion
+            QuestName.SpreadReligion.value -> playerReligion != null && civInfo.getCapital()!!.religion.getMajorityReligion()?.name != playerReligion
             QuestName.ConquerCityState.value -> getCityStateTarget(challenger) != null && civInfo.cityStatePersonality != CityStatePersonality.Friendly
             QuestName.BullyCityState.value -> getCityStateTarget(challenger) != null
             QuestName.ContestFaith.value -> civInfo.gameInfo.isReligionEnabled()
@@ -385,7 +385,7 @@ class QuestManager {
     private fun isComplete(assignedQuest: AssignedQuest): Boolean {
         val assignee = civInfo.gameInfo.getCivilization(assignedQuest.assignee)
         return when (assignedQuest.questName) {
-            QuestName.Route.value -> assignee.isCapitalConnectedToCity(civInfo.getCapital())
+            QuestName.Route.value -> assignee.isCapitalConnectedToCity(civInfo.getCapital()!!)
             QuestName.ConnectResource.value -> assignee.detailedCivResources.map { it.resource }.contains(civInfo.gameInfo.ruleSet.tileResources[assignedQuest.data1])
             QuestName.ConstructWonder.value -> assignee.cities.any { it.cityConstructions.isBuilt(assignedQuest.data1) }
             QuestName.GreatPerson.value -> assignee.getCivGreatPeople().any { it.baseUnit.getReplacedUnit(civInfo.gameInfo.ruleSet).name == assignedQuest.data1 }
@@ -393,7 +393,7 @@ class QuestManager {
             QuestName.FindNaturalWonder.value -> assignee.naturalWonders.contains(assignedQuest.data1)
             QuestName.PledgeToProtect.value -> assignee in civInfo.getProtectorCivs()
             QuestName.DenounceCiv.value -> assignee.getDiplomacyManager(assignedQuest.data1).hasFlag(DiplomacyFlags.Denunciation)
-            QuestName.SpreadReligion.value -> civInfo.getCapital().religion.getMajorityReligion() == civInfo.gameInfo.religions[assignedQuest.data2]
+            QuestName.SpreadReligion.value -> civInfo.getCapital()!!.religion.getMajorityReligion() == civInfo.gameInfo.religions[assignedQuest.data2]
             else -> false
         }
     }
@@ -421,7 +421,7 @@ class QuestManager {
         if (rewardInfluence > 0)
             assignee.addNotification(
                 "[${civInfo.civName}] rewarded you with [${rewardInfluence.toInt()}] influence for completing the [${assignedQuest.questName}] quest.",
-                civInfo.getCapital().location, civInfo.civName, "OtherIcons/Quest"
+                civInfo.getCapital()!!.location, civInfo.civName, "OtherIcons/Quest"
             )
 
         // We may have received bonuses from city-state friend-ness or ally-ness
@@ -436,11 +436,11 @@ class QuestManager {
         if (winners.isEmpty()) {
             assignee.addNotification(
                     "[${civInfo.civName}] no longer needs your help with the [${assignedQuest.questName}] quest.",
-                    civInfo.getCapital().location, civInfo.civName, "OtherIcons/Quest")
+                    civInfo.getCapital()!!.location, civInfo.civName, "OtherIcons/Quest")
         } else {
             assignee.addNotification(
                     "The [${assignedQuest.questName}] quest for [${civInfo.civName}] has ended. It was won by [${winners.joinToString { it.assignee.tr() }}].",
-                    civInfo.getCapital().location, civInfo.civName, "OtherIcons/Quest")
+                    civInfo.getCapital()!!.location, civInfo.civName, "OtherIcons/Quest")
         }
     }
 
@@ -530,10 +530,10 @@ class QuestManager {
         val totalMilitaryUnits = attacker.getCivUnits().count { !it.isCivilian() }
         val unitsToKill = max(3, totalMilitaryUnits / 4)
         unitsToKillForCiv[attacker.civName] = unitsToKill
-        
 
-        val location = if (civInfo.cities.isEmpty()) null
-            else civInfo.getCapital().location
+
+        val location = if (civInfo.cities.isEmpty() || civInfo.getCapital() == null) null
+            else civInfo.getCapital()!!.location
 
         // Ask for assistance
         for (thirdCiv in civInfo.getKnownCivs().filter { it.isAlive() && !it.isAtWarWith(civInfo) && it.isMajorCiv() }) {
@@ -568,12 +568,12 @@ class QuestManager {
             endWarWithMajorQuest(killed)
         }
     }
-    
+
     /** Called when a major civ meets the city-state for the first time. Mainly for war with major pseudo-quest. */
     fun justMet(otherCiv: CivilizationInfo) {
-        val location = if (civInfo.cities.isEmpty()) null
-            else civInfo.getCapital().location
-        
+        val location = if (civInfo.cities.isEmpty() || civInfo.getCapital() == null) null
+            else civInfo.getCapital()!!.location
+
         for ((attackerName, unitsToKill) in unitsToKillForCiv) {
             if (location != null)
                 otherCiv.addNotification("[${civInfo.civName}] is being attacked by [$attackerName]! Kill [$unitsToKill] of the attacker's military units and they will be immensely grateful.",
@@ -604,15 +604,15 @@ class QuestManager {
         unitsToKillForCiv.remove(attacker.civName)
         unitsKilledFromCiv.remove(attacker.civName)
     }
-    
+
     fun warWithMajorActive(target: CivilizationInfo): Boolean {
         return unitsToKillForCiv.containsKey(target.civName)
     }
-    
+
     fun unitsToKill(target: CivilizationInfo): Int {
         return unitsToKillForCiv[target.civName] ?: 0
     }
-    
+
     fun unitsKilledSoFar(target: CivilizationInfo, viewingCiv: CivilizationInfo): Int {
         val killMap = unitsKilledFromCiv[target.civName] ?: return 0
         return killMap[viewingCiv.civName] ?: 0
@@ -755,7 +755,7 @@ class QuestManager {
      * to be destroyed
      */
     private fun getBarbarianEncampmentForQuest(): TileInfo? {
-        val encampments = civInfo.getCapital().getCenterTile().getTilesInDistance(8)
+        val encampments = civInfo.getCapital()!!.getCenterTile().getTilesInDistance(8)
                 .filter { it.improvement == Constants.barbarianEncampment }.toList()
 
         if (encampments.isNotEmpty())
@@ -923,7 +923,7 @@ class AssignedQuest(val questName: String = "",
             }
             QuestName.Route.value -> {
                 game.resetToWorldScreen()
-                game.worldScreen.mapHolder.setCenterPosition(gameInfo.getCivilization(assigner).getCapital().location, selectUnit = false)
+                game.worldScreen.mapHolder.setCenterPosition(gameInfo.getCivilization(assigner).getCapital()!!.location, selectUnit = false)
             }
         }
     }

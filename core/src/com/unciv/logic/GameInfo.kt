@@ -345,7 +345,7 @@ class GameInfo {
                 getAliveCityStates()
                     .asSequence()
                     .filter { it.cityStateResource == resourceName }
-                    .map { it.getCapital().getCenterTile() }
+                    .map { it.getCapital()!!.getCenterTile() }
             } else {
                 tileMap.values
                     .asSequence()
