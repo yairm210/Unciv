@@ -129,8 +129,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             translations.loadPercentageCompleteOfLanguages()
             TileSetCache.loadTileSetConfigs(printOutput = true)
 
-            if (settings.userId.isEmpty()) { // assign permanent user id
-                settings.userId = UUID.randomUUID().toString()
+            if (settings.multiplayer.userId.isEmpty()) { // assign permanent user id
+                settings.multiplayer.userId = UUID.randomUUID().toString()
                 settings.save()
             }
 

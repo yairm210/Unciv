@@ -337,9 +337,9 @@ fun GameInfo.isUsersTurn() = getCivilization(currentPlayer).playerId == UncivGam
  */
 private fun getRefreshInterval(): Duration {
     val settings = UncivGame.Current.settings
-    val isDropbox = settings.multiplayerServer == Constants.dropboxMultiplayerServer
+    val isDropbox = settings.multiplayer.server == Constants.dropboxMultiplayerServer
     return if (isDropbox) {
-        Duration.ofMinutes(settings.multiplayerTurnCheckerDelayInMinutes.toLong())
+        settings.multiplayer.turnCheckerDelay
     } else {
         Duration.ofSeconds(CUSTOM_SERVER_REFRESH_INTERVAL)
     }

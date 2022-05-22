@@ -21,7 +21,7 @@ class OnlineMultiplayerGameSaver(
 ) {
     private val gameSaver = UncivGame.Current.gameSaver
     fun fileStorage(): FileStorage {
-        val identifier = if (fileStorageIdentifier == null) UncivGame.Current.settings.multiplayerServer else fileStorageIdentifier
+        val identifier = if (fileStorageIdentifier == null) UncivGame.Current.settings.multiplayer.server else fileStorageIdentifier
 
         return if (identifier == Constants.dropboxMultiplayerServer) DropBox else UncivServerFileStorage(identifier!!)
     }

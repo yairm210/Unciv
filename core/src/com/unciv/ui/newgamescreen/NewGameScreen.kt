@@ -73,7 +73,7 @@ class NewGameScreen(
         rightSideButton.setText("Start game!".tr())
         rightSideButton.onClick {
             if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
-                val isDropbox = UncivGame.Current.settings.multiplayerServer == Constants.dropboxMultiplayerServer
+                val isDropbox = UncivGame.Current.settings.multiplayer.server == Constants.dropboxMultiplayerServer
                 if (!checkConnectionToMultiplayerServer()) {
                     val noInternetConnectionPopup = Popup(this)
                     val label = if (isDropbox) "Couldn't connect to Dropbox!" else "Couldn't connect to Multiplayer Server!"
@@ -100,7 +100,7 @@ class NewGameScreen(
                 it.playerType == PlayerType.Human &&
                     // do not allow multiplayer with only remote spectator(s) and AI(s) - non-MP that works
                     !(it.chosenCiv == Constants.spectator && gameSetupInfo.gameParameters.isOnlineMultiplayer &&
-                            it.playerId != UncivGame.Current.settings.userId)
+                            it.playerId != UncivGame.Current.settings.multiplayer.userId)
             }) {
                 val noHumanPlayersPopup = Popup(this)
                 noHumanPlayersPopup.addGoodSizedLabel("No human players selected!".tr()).row()
@@ -212,9 +212,9 @@ class NewGameScreen(
     }
 
     private fun checkConnectionToMultiplayerServer(): Boolean {
-        val isDropbox = UncivGame.Current.settings.multiplayerServer == Constants.dropboxMultiplayerServer
+        val isDropbox = UncivGame.Current.settings.multiplayer.server == Constants.dropboxMultiplayerServer
         return try {
-            val multiplayerServer = UncivGame.Current.settings.multiplayerServer
+            val multiplayerServer = UncivGame.Current.settings.multiplayer.server
             val u =  URL(if (isDropbox) "https://content.dropboxapi.com" else multiplayerServer)
             val con = u.openConnection()
             con.connectTimeout = 3000

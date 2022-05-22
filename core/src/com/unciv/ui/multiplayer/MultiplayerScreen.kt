@@ -115,7 +115,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
     private fun createCopyUserIdButton(): TextButton {
         val btn = copyUserIdText.toTextButton()
         btn.onClick {
-            Gdx.app.clipboard.contents = game.settings.userId
+            Gdx.app.clipboard.contents = game.settings.multiplayer.userId
             ToastPopup("UserID copied to clipboard", this)
         }
         return btn

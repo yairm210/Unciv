@@ -13,6 +13,7 @@ import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.*
+import java.time.Duration
 
 fun multiplayerTab(
     optionsPopup: OptionsPopup
@@ -26,27 +27,27 @@ fun multiplayerTab(
     if (Gdx.app.type == Application.ApplicationType.Android) {
         optionsPopup.addCheckbox(
             this, "Enable out-of-game turn notifications",
-            settings.multiplayerTurnCheckerEnabled
+            settings.multiplayer.turnCheckerEnabled
         ) {
-            settings.multiplayerTurnCheckerEnabled = it
+            settings.multiplayer.turnCheckerEnabled = it
             settings.save()
         }
 
-        if (settings.multiplayerTurnCheckerEnabled) {
+        if (settings.multiplayer.turnCheckerEnabled) {
             addMultiplayerTurnCheckerDelayBox(this, settings)
 
             optionsPopup.addCheckbox(
                 this, "Show persistent notification for turn notifier service",
-                settings.multiplayerTurnCheckerPersistentNotificationEnabled
+                settings.multiplayer.turnCheckerPersistentNotificationEnabled
             )
-            { settings.multiplayerTurnCheckerPersistentNotificationEnabled = it }
+            { settings.multiplayer.turnCheckerPersistentNotificationEnabled = it }
         }
     }
 
     val connectionToServerButton = "Check connection to server".toTextButton()
 
     val textToShowForMultiplayerAddress =
-        if (settings.multiplayerServer != Constants.dropboxMultiplayerServer) settings.multiplayerServer
+        if (settings.multiplayer.server != Constants.dropboxMultiplayerServer) settings.multiplayer.server
         else "https://..."
     val multiplayerServerTextField = TextField(textToShowForMultiplayerAddress, BaseScreen.skin)
     multiplayerServerTextField.setTextFieldFilter { _, c -> c !in " \r\n\t\\" }
@@ -61,9 +62,9 @@ fun multiplayerTab(
         if (connectionToServerButton.isEnabled) {
             fixTextFieldUrlOnType(multiplayerServerTextField)
             // we can't trim on 'fixTextFieldUrlOnType' for reasons
-            settings.multiplayerServer = multiplayerServerTextField.text.trimEnd('/')
+            settings.multiplayer.server = multiplayerServerTextField.text.trimEnd('/')
         } else {
-            settings.multiplayerServer = multiplayerServerTextField.text
+            settings.multiplayer.server = multiplayerServerTextField.text
         }
         settings.save()
     }
@@ -91,7 +92,7 @@ fun multiplayerTab(
 
 private fun successfullyConnectedToServer(settings: GameSettings, action: (Boolean, String, Int?) -> Unit) {
     launchCrashHandling("TestIsAlive") {
-        SimpleHttp.sendGetRequest("${settings.multiplayerServer}/isalive") {
+        SimpleHttp.sendGetRequest("${settings.multiplayer.server}/isalive") {
                 success, result, code ->
             postCrashHandlingRunnable {
                 action(success, result, code)
@@ -137,16 +138,16 @@ private fun fixTextFieldUrlOnType(TextField: TextField) {
 private fun addMultiplayerTurnCheckerDelayBox(table: Table, settings: GameSettings) {
     table.add("Time between turn checks out-of-game (in minutes)".toLabel()).left().fillX()
 
-    val checkDelaySelectBox = SelectBox<Int>(table.skin)
-    val possibleDelaysArray = Array<Int>()
+    val checkDelaySelectBox = SelectBox<Long>(table.skin)
+    val possibleDelaysArray = Array<Long>()
     possibleDelaysArray.addAll(1, 2, 5, 15)
     checkDelaySelectBox.items = possibleDelaysArray
-    checkDelaySelectBox.selected = settings.multiplayerTurnCheckerDelayInMinutes
+    checkDelaySelectBox.selected = settings.multiplayer.turnCheckerDelay.toMinutes()
 
     table.add(checkDelaySelectBox).pad(10f).row()
 
     checkDelaySelectBox.onChange {
-        settings.multiplayerTurnCheckerDelayInMinutes = checkDelaySelectBox.selected
+        settings.multiplayer.turnCheckerDelay = Duration.ofMinutes(checkDelaySelectBox.selected)
         settings.save()
     }
 }

@@ -116,6 +116,6 @@ private enum class GameUpdateResult {
  * How often games can be checked for remote updates. More attempted checks within this time period will do nothing.
  */
 private fun getUpdateThrottleInterval(): Duration {
-    val isDropbox = UncivGame.Current.settings.multiplayerServer == Constants.dropboxMultiplayerServer
+    val isDropbox = UncivGame.Current.settings.multiplayer.server == Constants.dropboxMultiplayerServer
     return Duration.ofSeconds(if (isDropbox) DROPBOX_THROTTLE_PERIOD else CUSTOM_SERVER_THROTTLE_PERIOD)
 }
