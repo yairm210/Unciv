@@ -262,7 +262,9 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
         val files = DefaultAndroidFiles(applicationContext.assets, ContextWrapper(applicationContext), false)
         // GDX's AndroidFileHandle uses Gdx.files internally, so we need to set that to our new instance
         Gdx.files = files
-        gameSaver = GameSaver(files, null, applicationContext.getExternalFilesDir(null)?.path)
+        val externalFilesDirForAndroid = applicationContext.getExternalFilesDir(null)?.path
+        Log.d(LOG_TAG, "Creating new GameSaver with externalFilesDir=[${externalFilesDirForAndroid}]")
+        gameSaver = GameSaver(files, null, externalFilesDirForAndroid)
     }
 
     override fun doWork(): Result = runBlocking {
