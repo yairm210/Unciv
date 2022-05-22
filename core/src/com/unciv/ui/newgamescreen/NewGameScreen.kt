@@ -11,8 +11,8 @@ import com.unciv.UncivGame
 import com.unciv.logic.*
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapType
+import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
-import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
@@ -254,13 +254,8 @@ class NewGameScreen(
         if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
             newGame.isUpToDate = true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
             try {
-                OnlineMultiplayerGameSaver().tryUploadGame(newGame, withPreview = true)
-
+                game.onlineMultiplayer.createGame(newGame)
                 GameSaver.autoSave(newGame)
-
-                // Saved as Multiplayer game to show up in the session browser
-                val newGamePreview = newGame.asPreview()
-                GameSaver.saveGame(newGamePreview, newGamePreview.gameId)
             } catch (ex: FileStorageRateLimitReached) {
                 postCrashHandlingRunnable {
                     popup.reuseWith("Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds", true)
@@ -328,11 +323,7 @@ class TranslatedSelectBox(values : Collection<String>, default:String, skin: Ski
         val translation = value.tr()
         override fun toString() = translation
         // Equality contract needs to be implemented else TranslatedSelectBox.setSelected won't work properly
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (javaClass != other?.javaClass) return false
-            return value == (other as TranslatedString).value
-        }
+        override fun equals(other: Any?): Boolean = other is TranslatedString && value == other.value
         override fun hashCode() = value.hashCode()
     }
 
