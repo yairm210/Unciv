@@ -160,4 +160,7 @@ class GameSettingsMultiplayer {
     var turnCheckerEnabled = true
     var turnCheckerPersistentNotificationEnabled = true
     var turnCheckerDelay = Duration.ofMinutes(5)
+    var statusButtonInSinglePlayer = false
+    var currentGameRefreshDelay = Duration.ofSeconds(10)
+    var allGameRefreshDelay = Duration.ofMinutes(5)
 }

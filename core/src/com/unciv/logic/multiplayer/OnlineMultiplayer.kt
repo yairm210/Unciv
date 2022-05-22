@@ -1,11 +1,9 @@
 package com.unciv.logic.multiplayer
 
 import com.badlogic.gdx.files.FileHandle
-import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
-import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
@@ -14,18 +12,16 @@ import com.unciv.ui.crashhandling.CRASH_HANDLING_DAEMON_SCOPE
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.utils.isLargerThan
-import java.util.*
-import java.util.concurrent.atomic.AtomicReference
-import kotlinx.coroutines.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.launch
 import java.io.FileNotFoundException
 import java.time.Duration
 import java.time.Instant
+import java.util.*
+import java.util.concurrent.atomic.AtomicReference
 
-
-/** @see getRefreshInterval */
-private const val CUSTOM_SERVER_REFRESH_INTERVAL = 30L
 
 /**
  * How often files can be checked for new multiplayer games (could be that the user modified their file system directly). More checks within this time period
@@ -38,24 +34,41 @@ private val FILE_UPDATE_THROTTLE_PERIOD = Duration.ofSeconds(60)
  *
  * See the file of [com.unciv.logic.multiplayer.MultiplayerGameAdded] for all available [EventBus] events.
  */
-class OnlineMultiplayer() {
+class OnlineMultiplayer {
     private val gameSaver = UncivGame.Current.gameSaver
     private val onlineGameSaver = OnlineMultiplayerGameSaver()
 
     private val savedGames: MutableMap<FileHandle, OnlineMultiplayerGame> = Collections.synchronizedMap(mutableMapOf())
-    private var lastFileUpdate: AtomicReference<Instant?> = AtomicReference()
+
+    private val lastFileUpdate: AtomicReference<Instant?> = AtomicReference()
+    private val lastAllGamesRefresh: AtomicReference<Instant?> = AtomicReference()
+    private val lastCurGameRefresh: AtomicReference<Instant?> = AtomicReference()
 
     val games: Set<OnlineMultiplayerGame> get() = savedGames.values.toSet()
 
     init {
         flow<Unit> {
             while (true) {
-                delay(getRefreshInterval().toMillis())
+                delay(500)
 
-                // TODO will be used later
-                // requestUpdate()
+                val currentGame = getCurrentGame()
+                val multiplayerSettings = UncivGame.Current.settings.multiplayer
+                if (currentGame != null) {
+                    throttle(lastCurGameRefresh, multiplayerSettings.currentGameRefreshDelay, {}) { currentGame.requestUpdate() }
+                }
+
+                val doNotUpdate = if (currentGame == null) listOf() else listOf(currentGame)
+                throttle(lastAllGamesRefresh, multiplayerSettings.allGameRefreshDelay, {}) { requestUpdate(doNotUpdate = doNotUpdate) }
             }
         }.launchIn(CRASH_HANDLING_DAEMON_SCOPE)
+    }
+
+    private fun getCurrentGame(): OnlineMultiplayerGame? {
+        if (UncivGame.isCurrentInitialized() && UncivGame.Current.isGameInfoInitialized()) {
+            return getGameByGameId(UncivGame.Current.gameInfo.gameId)
+        } else {
+            return null
+        }
     }
 
     /**
@@ -260,6 +273,15 @@ class OnlineMultiplayer() {
         savedGames[newFileHandle] = newGame
         EventBus.send(MultiplayerGameNameChanged(oldName, newName))
     }
+
+    /**
+     * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
+     * @throws FileNotFoundException if the file can't be found
+     */
+    suspend fun updateGame(gameInfo: GameInfo) {
+        onlineGameSaver.tryUploadGame(gameInfo, withPreview = true)
+    }
+
     /**
      * Checks if [gameInfo] and [preview] are up-to-date with each other.
      */
@@ -329,18 +351,6 @@ suspend fun <T> attemptAction(
 }
 
 
-fun GameInfoPreview.isUsersTurn() = getCivilization(currentPlayer).playerId == UncivGame.Current.settings.userId
-fun GameInfo.isUsersTurn() = getCivilization(currentPlayer).playerId == UncivGame.Current.settings.userId
+fun GameInfoPreview.isUsersTurn() = getCivilization(currentPlayer).playerId == UncivGame.Current.settings.multiplayer.userId
+fun GameInfo.isUsersTurn() = getCivilization(currentPlayer).playerId == UncivGame.Current.settings.multiplayer.userId
 
-/**
- * How often all multiplayer games are refreshed in the background
- */
-private fun getRefreshInterval(): Duration {
-    val settings = UncivGame.Current.settings
-    val isDropbox = settings.multiplayer.server == Constants.dropboxMultiplayerServer
-    return if (isDropbox) {
-        settings.multiplayer.turnCheckerDelay
-    } else {
-        Duration.ofSeconds(CUSTOM_SERVER_REFRESH_INTERVAL)
-    }
-}
