@@ -9,7 +9,6 @@ import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.math.abs
-import kotlin.math.round
 import kotlin.math.roundToInt
 
 class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGenerationRandomness) {

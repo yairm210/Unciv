@@ -2,13 +2,9 @@ package com.unciv.models.metadata
 
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.files.FileHandle
 import com.unciv.Constants
-import com.unciv.json.fromJsonFile
-import com.unciv.json.json
-import com.unciv.logic.GameSaver
+import com.unciv.UncivGame
 import com.unciv.ui.utils.Fonts
-import java.io.File
 import java.text.Collator
 import java.util.*
 import kotlin.collections.HashSet
@@ -86,7 +82,7 @@ class GameSettings {
         if (!isFreshlyCreated && Gdx.app?.type == Application.ApplicationType.Desktop) {
             windowState = WindowState(Gdx.graphics.width, Gdx.graphics.height)
         }
-        GameSaver.setGeneralSettings(this)
+        UncivGame.Current.gameSaver.setGeneralSettings(this)
     }
 
     fun addCompletedTutorialTask(tutorialTask: String) {
@@ -97,11 +93,11 @@ class GameSettings {
     fun updateLocaleFromLanguage() {
         val bannedCharacters = listOf(' ', '_', '-', '(', ')') // Things not to have in enum names
         val languageName = language.filterNot { it in bannedCharacters }
-        try {
+        locale = try {
             val code = LocaleCode.valueOf(languageName)
-            locale = Locale(code.language, code.country)
+            Locale(code.language, code.country)
         } catch (e: Exception) {
-            locale = Locale.getDefault()
+            Locale.getDefault()
         }
     }
 
@@ -113,24 +109,6 @@ class GameSettings {
 
     fun getCollatorFromLocale(): Collator {
         return Collator.getInstance(getCurrentLocale())
-    }
-
-    companion object {
-        /** Specialized function to access settings before Gdx is initialized.
-         *
-         * @param base Path to the directory where the file should be - if not set, the OS current directory is used (which is "/" on Android)
-         */
-        fun getSettingsForPlatformLaunchers(base: String = "."): GameSettings {
-            // FileHandle is Gdx, but the class and JsonParser are not dependent on app initialization
-            // In fact, at this point Gdx.app or Gdx.files are null but this still works.
-            val file = FileHandle(base + File.separator + GameSaver.settingsFileName)
-            return if (file.exists())
-                json().fromJsonFile(
-                    GameSettings::class.java,
-                    file
-                )
-            else GameSettings().apply { isFreshlyCreated = true }
-        }
     }
 }
 

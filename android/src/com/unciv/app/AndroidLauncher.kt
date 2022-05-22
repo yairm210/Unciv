@@ -10,7 +10,6 @@ import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
 import com.unciv.logic.GameSaver
-import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.utils.Fonts
 import java.io.File
 
@@ -24,14 +23,12 @@ open class AndroidLauncher : AndroidApplication() {
         MultiplayerTurnCheckWorker.createNotificationChannels(applicationContext)
 
         copyMods()
-        val externalFilesDir = getExternalFilesDir(null)
-        if (externalFilesDir != null) GameSaver.externalFilesDirForAndroid = externalFilesDir.path
 
         val config = AndroidApplicationConfiguration().apply {
             useImmersiveMode = true
         }
 
-        val settings = GameSettings.getSettingsForPlatformLaunchers(filesDir.path)
+        val settings = GameSaver.getSettingsForPlatformLaunchers(filesDir.path)
         val fontFamily = settings.fontFamily
 
         // Manage orientation lock
@@ -70,11 +67,11 @@ open class AndroidLauncher : AndroidApplication() {
     }
 
     override fun onPause() {
-        if (UncivGame.Companion.isCurrentInitialized()
+        if (UncivGame.isCurrentInitialized()
                 && UncivGame.Current.isGameInfoInitialized()
                 && UncivGame.Current.settings.multiplayerTurnCheckerEnabled
-                && GameSaver.getSaves(true).any()) {
-            MultiplayerTurnCheckWorker.startTurnChecker(applicationContext, UncivGame.Current.gameInfo, UncivGame.Current.settings)
+                && UncivGame.Current.gameSaver.getMultiplayerSaves().any()) {
+            MultiplayerTurnCheckWorker.startTurnChecker(applicationContext, UncivGame.Current.gameSaver, UncivGame.Current.gameInfo, UncivGame.Current.settings)
         }
         super.onPause()
     }

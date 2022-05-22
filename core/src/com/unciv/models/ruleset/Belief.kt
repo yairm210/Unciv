@@ -8,8 +8,12 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import kotlin.collections.ArrayList
 
-class Belief : RulesetObject() {
+class Belief() : RulesetObject() {
     var type: BeliefType = BeliefType.None
+
+    constructor(type: BeliefType) : this() {
+        this.type = type
+    }
 
     override fun getUniqueTarget() =
         if (type == BeliefType.Founder || type == BeliefType.Enhancer)  UniqueTarget.FounderBelief

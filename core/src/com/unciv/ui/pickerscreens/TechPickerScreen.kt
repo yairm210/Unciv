@@ -57,7 +57,7 @@ class TechPickerScreen(
 
     init {
         setDefaultCloseAction()
-        onBackButtonClicked { UncivGame.Current.setWorldScreen() }
+        onBackButtonClicked { UncivGame.Current.resetToWorldScreen() }
         scrollPane.setOverscroll(false, false)
 
         descriptionLabel.onClick {
@@ -83,7 +83,7 @@ class TechPickerScreen(
 
             game.settings.addCompletedTutorialTask("Pick technology")
 
-            game.setWorldScreen()
+            game.resetToWorldScreen()
             game.worldScreen.shouldUpdate = true
             dispose()
         }
@@ -109,8 +109,8 @@ class TechPickerScreen(
     private fun createTechTable() {
         val allTechs = civInfo.gameInfo.ruleSet.technologies.values
         if (allTechs.isEmpty()) return
-        val columns = allTechs.map { it.column!!.columnNumber }.maxOrNull()!! + 1
-        val rows = allTechs.map { it.row }.maxOrNull()!! + 1
+        val columns = allTechs.maxOf { it.column!!.columnNumber } + 1
+        val rows = allTechs.maxOf { it.row } + 1
         val techMatrix = Array<Array<Technology?>>(columns) { arrayOfNulls(rows) } // Divided into columns, then rows
 
         for (technology in allTechs) {

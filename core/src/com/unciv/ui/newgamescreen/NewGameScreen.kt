@@ -11,12 +11,12 @@ import com.unciv.UncivGame
 import com.unciv.logic.*
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapType
-import com.unciv.logic.multiplayer.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.OnlineMultiplayer
+import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.pickerscreens.PickerScreen
@@ -160,9 +160,9 @@ class NewGameScreen(
             rightSideButton.disable()
             rightSideButton.setText("Working...".tr())
 
-            crashHandlingThread(name = "NewGame") {
-                // Creating a new game can take a while and we don't want ANRs
-                newGameThread()
+            // Creating a new game can take a while and we don't want ANRs
+            launchCrashHandling("NewGame", runAsDaemon = false) {
+                startNewGame()
             }
         }
     }
@@ -226,7 +226,7 @@ class NewGameScreen(
         }
     }
 
-    private fun newGameThread() {
+    private suspend fun startNewGame() {
         val popup = Popup(this)
         postCrashHandlingRunnable {
             popup.addGoodSizedLabel("Working...").row()
@@ -255,13 +255,8 @@ class NewGameScreen(
         if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
             newGame.isUpToDate = true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
             try {
-                OnlineMultiplayer().tryUploadGame(newGame, withPreview = true)
-
-                GameSaver.autoSave(newGame)
-
-                // Saved as Multiplayer game to show up in the session browser
-                val newGamePreview = newGame.asPreview()
-                GameSaver.saveGame(newGamePreview, newGamePreview.gameId)
+                game.onlineMultiplayer.createGame(newGame)
+                game.gameSaver.autoSave(newGame)
             } catch (ex: FileStorageRateLimitReached) {
                 postCrashHandlingRunnable {
                     popup.reuseWith("Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds", true)
@@ -329,11 +324,7 @@ class TranslatedSelectBox(values : Collection<String>, default:String, skin: Ski
         val translation = value.tr()
         override fun toString() = translation
         // Equality contract needs to be implemented else TranslatedSelectBox.setSelected won't work properly
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (javaClass != other?.javaClass) return false
-            return value == (other as TranslatedString).value
-        }
+        override fun equals(other: Any?): Boolean = other is TranslatedString && value == other.value
         override fun hashCode() = value.hashCode()
     }
 

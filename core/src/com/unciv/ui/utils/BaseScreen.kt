@@ -16,7 +16,7 @@ import com.unciv.models.Tutorial
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.hasOpenPopups
 import com.unciv.ui.tutorials.TutorialController
-import com.unciv.ui.worldscreen.mainmenu.OptionsPopup
+import com.unciv.ui.options.OptionsPopup
 
 abstract class BaseScreen : Screen {
 
@@ -124,7 +124,7 @@ abstract class BaseScreen : Screen {
     /** @return `true` if the screen is narrower than 4:3 landscape */
     fun isNarrowerThan4to3() = stage.viewport.screenHeight * 4 > stage.viewport.screenWidth * 3
 
-    fun openOptionsPopup(startingPage: Int = OptionsPopup.defaultPage) {
-        OptionsPopup(this, startingPage).open(force = true)
+    fun openOptionsPopup(startingPage: Int = OptionsPopup.defaultPage, onClose: () -> Unit = {}) {
+        OptionsPopup(this, startingPage, onClose).open(force = true)
     }
 }

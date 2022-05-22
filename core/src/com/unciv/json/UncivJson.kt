@@ -2,9 +2,7 @@ package com.unciv.json
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
-import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Json
-import com.badlogic.gdx.utils.Json.Serializer
 
 
 /**
@@ -17,8 +15,14 @@ fun json() = Json().apply {
     setSerializer(HashMapVector2.getSerializerClass(), HashMapVector2.createSerializer())
 }
 
+/**
+ * @throws SerializationException
+ */
 fun <T> Json.fromJsonFile(tClass: Class<T>, filePath: String): T = fromJsonFile(tClass, Gdx.files.internal(filePath))
 
+/**
+ * @throws SerializationException
+ */
 fun <T> Json.fromJsonFile(tClass: Class<T>, file: FileHandle): T {
     try {
         val jsonText = file.readString(Charsets.UTF_8.name())

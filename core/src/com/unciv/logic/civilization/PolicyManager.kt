@@ -42,9 +42,6 @@ class PolicyManager {
             }
             return value
         }
-    /** A [Set] of adopted [PolicyBranch]es regardless of its completeness. */
-    val adoptedBranches: Set<PolicyBranch>
-        get() = branches.filter { isAdopted(it.name) }.toSet()
     /** A [Set] of newly adoptable [PolicyBranch]es. */
     val adoptableBranches: Set<PolicyBranch>
         get() = branches.filter { isAdoptable(it) }.toSet()
@@ -99,6 +96,7 @@ class PolicyManager {
 
     private fun getRulesetPolicies() = civInfo.gameInfo.ruleSet.policies
 
+    @Suppress("MemberVisibilityCanBePrivate")
     fun getPolicyByName(name: String): Policy = getRulesetPolicies()[name]!!
 
     fun setTransients() {
@@ -107,7 +105,7 @@ class PolicyManager {
         )
     }
 
-    fun addPolicyToTransients(policy: Policy) {
+    private fun addPolicyToTransients(policy: Policy) {
         for (unique in policy.uniqueObjects) {
             // Should be deprecated together with TimedAttackStrength so
             // I'm putting this here so the compiler will complain if we don't

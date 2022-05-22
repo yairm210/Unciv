@@ -27,14 +27,14 @@ class CustomSaveLocationHelperAndroid(private val activity: Activity) : CustomSa
     @GuardedBy("this")
     private val callbacks = ArrayList<IndexedCallback>()
 
-    override fun saveGame(gameInfo: GameInfo, gameName: String, forcePrompt: Boolean, saveCompleteCallback: ((Exception?) -> Unit)?) {
+    override fun saveGame(gameSaver: GameSaver, gameInfo: GameInfo, gameName: String, forcePrompt: Boolean, saveCompleteCallback: ((Exception?) -> Unit)?) {
         val callbackIndex = synchronized(this) {
             val index = callbackIndex++
             callbacks.add(IndexedCallback(
                     index,
                     { uri ->
                         if (uri != null) {
-                            saveGame(gameInfo, uri)
+                            saveGame(gameSaver, gameInfo, uri)
                             saveCompleteCallback?.invoke(null)
                         } else {
                             saveCompleteCallback?.invoke(RuntimeException("Uri was null"))
@@ -68,16 +68,16 @@ class CustomSaveLocationHelperAndroid(private val activity: Activity) : CustomSa
         }
     }
 
-    private fun saveGame(gameInfo: GameInfo, uri: Uri) {
+    private fun saveGame(gameSaver: GameSaver, gameInfo: GameInfo, uri: Uri) {
         gameInfo.customSaveLocation = uri.toString()
         activity.contentResolver.openOutputStream(uri, "rwt")
                 ?.writer()
                 ?.use {
-                    it.write(GameSaver.gameInfoToString(gameInfo))
+                    it.write(gameSaver.gameInfoToString(gameInfo))
                 }
     }
 
-    override fun loadGame(loadCompleteCallback: (GameInfo?, Exception?) -> Unit) {
+    override fun loadGame(gameSaver: GameSaver, loadCompleteCallback: (GameInfo?, Exception?) -> Unit) {
         val callbackIndex = synchronized(this) {
             val index = callbackIndex++
             callbacks.add(IndexedCallback(
@@ -90,7 +90,7 @@ class CustomSaveLocationHelperAndroid(private val activity: Activity) : CustomSa
                                     ?.reader()
                                     ?.readText()
                                     ?.run {
-                                        GameSaver.gameInfoFromString(this)
+                                        gameSaver.gameInfoFromString(this)
                                     }
                         } catch (e: Exception) {
                             exception = e

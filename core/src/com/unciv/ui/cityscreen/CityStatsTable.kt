@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityFlags
+import com.unciv.logic.city.CityFocus
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
@@ -35,9 +36,24 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         innerTable.clear()
 
         val miniStatsTable = Table()
+        val selected = BaseScreen.skin.get("selection", Color::class.java)
         for ((stat, amount) in cityInfo.cityStats.currentCityStats) {
             if (stat == Stat.Faith && !cityInfo.civInfo.gameInfo.isReligionEnabled()) continue
-            miniStatsTable.add(ImageGetter.getStatIcon(stat.name)).size(20f).padRight(5f)
+            val icon = Table()
+            if (cityInfo.cityAIFocus.stat == stat) {
+                icon.add(ImageGetter.getStatIcon(stat.name).surroundWithCircle(27f, false, color = selected))
+                icon.onClick {
+                    cityInfo.cityAIFocus = CityFocus.NoFocus
+                    cityInfo.reassignPopulation(); cityScreen.update()
+                }
+            } else {
+                icon.add(ImageGetter.getStatIcon(stat.name).surroundWithCircle(27f, false, color = Color.CLEAR))
+                icon.onClick {
+                    cityInfo.cityAIFocus = cityInfo.cityAIFocus.safeValueOf(stat)
+                    cityInfo.reassignPopulation(); cityScreen.update()
+                }
+            }
+            miniStatsTable.add(icon).size(27f).padRight(5f)
             val valueToDisplay = if (stat == Stat.Happiness) cityInfo.cityStats.happinessList.values.sum() else amount
             miniStatsTable.add(round(valueToDisplay).toInt().toLabel()).padRight(10f)
         }
@@ -57,6 +73,8 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
     private fun addText() {
         val unassignedPopString = "{Unassigned population}: ".tr() +
                 cityInfo.population.getFreePopulation().toString() + "/" + cityInfo.population.population
+        val unassignedPopLabel = unassignedPopString.toLabel()
+        unassignedPopLabel.onClick { cityInfo.reassignPopulation(); cityScreen.update() }
 
         var turnsToExpansionString =
                 if (cityInfo.cityStats.currentCityStats.culture > 0 && cityInfo.expansion.getChoosableTiles().any()) {
@@ -80,7 +98,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
                 }.tr()
         turnsToPopString += " (${cityInfo.population.foodStored}${Fonts.food}/${cityInfo.population.getFoodToNextPopulation()}${Fonts.food})"
 
-        innerTable.add(unassignedPopString.toLabel()).row()
+        innerTable.add(unassignedPopLabel).row()
         innerTable.add(turnsToExpansionString.toLabel()).row()
         innerTable.add(turnsToPopString.toLabel()).row()
 

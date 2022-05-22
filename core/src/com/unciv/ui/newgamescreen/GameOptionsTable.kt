@@ -21,7 +21,7 @@ class GameOptionsTable(
     val ruleset = previousScreen.ruleset
     var locked = false
     var modCheckboxes: ModCheckboxTable? = null
-    private set;
+    private set
 
     init {
         getGameOptionsTable()
@@ -260,7 +260,7 @@ class GameOptionsTable(
         UncivGame.Current.musicController.setModList(gameParameters.getModsAndBaseRuleset())
     }
 
-    fun getModCheckboxes(isPortrait: Boolean = false): ModCheckboxTable {
+    private fun getModCheckboxes(isPortrait: Boolean = false): ModCheckboxTable {
         return ModCheckboxTable(gameParameters.mods, gameParameters.baseRuleset, previousScreen as BaseScreen, isPortrait) {
             onChooseMod(it)
         }

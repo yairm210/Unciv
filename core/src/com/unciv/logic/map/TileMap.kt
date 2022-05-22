@@ -65,10 +65,10 @@ class TileMap {
     var bottomY = 0
 
     @delegate:Transient
-    val maxLatitude: Float by lazy { if (values.isEmpty()) 0f else values.map { abs(it.latitude) }.maxOrNull()!! }
+    val maxLatitude: Float by lazy { if (values.isEmpty()) 0f else values.maxOf { abs(it.latitude) } }
 
     @delegate:Transient
-    val maxLongitude: Float by lazy { if (values.isEmpty()) 0f else values.map { abs(it.longitude) }.maxOrNull()!! }
+    val maxLongitude: Float by lazy { if (values.isEmpty()) 0f else values.maxOf { abs(it.longitude) } }
 
     @delegate:Transient
     val naturalWonders: List<String> by lazy { tileList.asSequence().filter { it.isNaturalWonder() }.map { it.naturalWonder!! }.distinct().toList() }
@@ -406,7 +406,7 @@ class TileMap {
     fun isWaterMap(): Boolean {
         assignContinents(AssignContinentsMode.Ensure)
         val bigIslands = continentSizes.count { it.value > 20 }
-        val players = gameInfo.gameParameters.players.count()
+        val players = gameInfo.gameParameters.players.size
         return bigIslands >= players
     }
 
@@ -554,7 +554,7 @@ class TileMap {
         tileList.forEach {
             for (unit in it.getUnits()) if (unit.owner == player.chosenCiv) unit.removeFromTile()
         }
-        startingLocations.removeAll(startingLocations.filter { it.nation == player.chosenCiv }) // filter creates a copy, no concurrent modification
+        startingLocations.removeAll { it.nation == player.chosenCiv }
         startingLocationsByNation.remove(player.chosenCiv)
     }
 
@@ -640,7 +640,7 @@ class TileMap {
 
     /** Removes all starting positions for [position], rebuilding the transients */
     fun removeStartingLocations(position: Vector2) {
-        startingLocations.removeAll(startingLocations.filter { it.position == position })
+        startingLocations.removeAll { it.position == position }
         setStartingLocationsTransients()
     }
 
@@ -699,6 +699,5 @@ class TileMap {
             landTiles = landTiles.filter { it !in continent }
         }
     }
-
     //endregion
 }

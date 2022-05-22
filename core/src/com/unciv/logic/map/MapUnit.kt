@@ -23,7 +23,6 @@ import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.filterAndLogic
 import com.unciv.ui.utils.toPercent
-import com.unciv.ui.worldscreen.unit.UnitActions
 import java.text.DecimalFormat
 import kotlin.math.pow
 
@@ -119,6 +118,11 @@ class MapUnit {
 
     @Transient
     var hasUniqueToBuildImprovements = false    // not canBuildImprovements to avoid confusion
+
+    @Transient
+    var hasStrengthBonusInRadiusUnique = false
+    @Transient
+    var hasCitadelPlacementUnique = false
 
     /** civName owning the unit */
     lateinit var owner: String
@@ -340,6 +344,11 @@ class MapUnit {
         hasUniqueToBuildImprovements = hasUnique(UniqueType.BuildImprovements)
         canEnterForeignTerrain = hasUnique(UniqueType.CanEnterForeignTiles)
             || hasUnique(UniqueType.CanEnterForeignTilesButLosesReligiousStrength)
+
+        hasStrengthBonusInRadiusUnique = hasUnique(UniqueType.StrengthBonusInRadius)
+        hasCitadelPlacementUnique = getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
+            .mapNotNull { civInfo.gameInfo.ruleSet.tileImprovements[it.params[0]] }
+            .any { it.hasUnique(UniqueType.TakeOverTilesAroundWhenBuilt) }
     }
 
     fun copyStatisticsTo(newUnit: MapUnit) {
@@ -568,6 +577,7 @@ class MapUnit {
     fun canGarrison() = isMilitary() && baseUnit.isLandUnit()
 
     fun isGreatPerson() = baseUnit.isGreatPerson()
+    fun isGreatPersonOfType(type: String) = baseUnit.isGreatPersonOfType(type)
 
     //endregion
 
@@ -668,6 +678,7 @@ class MapUnit {
         }
         
         tile.improvementInProgress = null
+        tile.getCity()?.updateCitizens = true
     }
 
 

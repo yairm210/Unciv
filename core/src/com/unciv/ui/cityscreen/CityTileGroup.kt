@@ -26,7 +26,7 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
     }
 
     fun update() {
-        super.update(city.civInfo, true, false)
+        super.update(city.civInfo, showResourcesAndImprovements = true, showTileYields = false)
 
         fun dim(brightness: Float) {
             // Dimming with alpha looks weird with overlapping tiles— Can't just set group alpha.

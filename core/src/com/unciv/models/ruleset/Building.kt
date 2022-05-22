@@ -198,6 +198,13 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             if (matchesFilter(unique.params[2]))
                 stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
         }
+        
+        for (unique in localUniqueCache.get("AllStatsPercentFromObject", civInfo.getMatchingUniques(UniqueType.AllStatsPercentFromObject))) {
+            if (!matchesFilter(unique.params[1])) continue
+            for (stat in Stat.values()) {
+                stats.add(stat, unique.params[0].toFloat())
+            }
+        }
 
         return stats
     }
@@ -322,7 +329,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         var productionCost = cost.toFloat()
 
         for (unique in uniqueObjects.filter { it.isOfType(UniqueType.CostIncreasesPerCity) })
-            productionCost += civInfo.cities.count() * unique.params[0].toInt()
+            productionCost += civInfo.cities.size * unique.params[0].toInt()
 
         if (civInfo.isCityState())
             productionCost *= 1.5f

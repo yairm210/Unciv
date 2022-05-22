@@ -40,7 +40,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         if (policies.freePolicies > 0 && policies.canAdoptPolicy())
             closeButton.disable()
         else
-            onBackButtonClicked { UncivGame.Current.setWorldScreen() }
+            onBackButtonClicked { UncivGame.Current.resetToWorldScreen() }
 
         rightSideButton.onClick(UncivSound.Policy) {
             val policy = pickedPolicy!!
@@ -52,7 +52,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
 
             // If we've moved to another screen in the meantime (great person pick, victory screen) ignore this
             if (game.screen !is PolicyPickerScreen || !policies.canAdoptPolicy()) {
-                game.setWorldScreen()
+                game.resetToWorldScreen()
                 dispose()
             } else {
                 val policyScreen = PolicyPickerScreen(worldScreen)
@@ -73,6 +73,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         var rowChangeWidth = Float.MAX_VALUE
 
         // estimate how many branch boxes fit using average size (including pad)
+        // TODO If we'd want to use scene2d correctly, this is supposed to happen inside an overridden layout() method
         val numBranchesX = scrollPane.width / 242f
         val numBranchesY = scrollPane.height / 305f
         // plan a nice geometry

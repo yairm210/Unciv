@@ -12,14 +12,14 @@ import javax.swing.JFileChooser
 import javax.swing.JFrame
 
 class CustomSaveLocationHelperDesktop : CustomSaveLocationHelper {
-    override fun saveGame(gameInfo: GameInfo, gameName: String, forcePrompt: Boolean, saveCompleteCallback: ((Exception?) -> Unit)?) {
+    override fun saveGame(gameSaver: GameSaver, gameInfo: GameInfo, gameName: String, forcePrompt: Boolean, saveCompleteCallback: ((Exception?) -> Unit)?) {
         val customSaveLocation = gameInfo.customSaveLocation
         if (customSaveLocation != null && !forcePrompt) {
             try {
                 File(customSaveLocation).outputStream()
                         .writer()
                         .use { writer ->
-                            writer.write(GameSaver.gameInfoToString(gameInfo))
+                            writer.write(gameSaver.gameInfoToString(gameInfo))
                         }
                 saveCompleteCallback?.invoke(null)
             } catch (e: Exception) {
@@ -59,7 +59,7 @@ class CustomSaveLocationHelperDesktop : CustomSaveLocationHelper {
         saveCompleteCallback?.invoke(exception)
     }
 
-    override fun loadGame(loadCompleteCallback: (GameInfo?, Exception?) -> Unit) {
+    override fun loadGame(gameSaver: GameSaver, loadCompleteCallback: (GameInfo?, Exception?) -> Unit) {
         val fileChooser = JFileChooser().apply fileChooser@{
             currentDirectory = Gdx.files.local("").file()
         }
@@ -79,7 +79,7 @@ class CustomSaveLocationHelperDesktop : CustomSaveLocationHelper {
                 file.inputStream()
                         .reader()
                         .readText()
-                        .run { GameSaver.gameInfoFromString(this) }
+                        .run { gameSaver.gameInfoFromString(this) }
                         .apply {
                             // If the user has saved the game from another platform (like Android),
                             // then the save location might not be right so we have to correct for that

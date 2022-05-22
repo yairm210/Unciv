@@ -138,7 +138,7 @@ class WonderOverviewTab(
         val allWonderMap: Map<Int, String> =
             ruleSet.buildings.values.asSequence()
             .filter { it.isWonder }
-            .sortedWith(compareBy<Building> { wonderEraMap[it.name]!!.eraNumber }.thenBy(collator, { it.name.tr() }))
+            .sortedWith(compareBy<Building> { wonderEraMap[it.name]!!.eraNumber }.thenBy(collator) { it.name.tr() })
             .withIndex()
             .associate { it.index to it.value.name }
         val wonderCount = allWonderMap.size
@@ -238,7 +238,7 @@ class WonderOverviewTab(
                 val locationLabel = locationText.toLabel()
                 if (wonder.location != null)
                     locationLabel.onClick{
-                        UncivGame.Current.setWorldScreen()
+                        UncivGame.Current.resetToWorldScreen()
                         UncivGame.Current.worldScreen.mapHolder.setCenterPosition(wonder.location.position)
                     }
                 add(locationLabel).fillY()

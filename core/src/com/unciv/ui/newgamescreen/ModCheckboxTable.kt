@@ -60,7 +60,7 @@ class ModCheckboxTable(
     }
 
 
-    fun popupToastError(rulesetErrorList:Ruleset.RulesetErrorList) {
+    private fun popupToastError(rulesetErrorList:Ruleset.RulesetErrorList) {
         val initialText =
             if (rulesetErrorList.isError()) "The mod combination you selected is incorrectly defined!".tr()
             else "{The mod combination you selected has problems.}\n{You can play it, but don't expect everything to work!}".tr()

@@ -22,9 +22,9 @@ internal class MinimapTile(val tileInfo: TileInfo, tileSize: Float, val onClick:
     }
 
     val image: Image = ImageGetter.getImage("OtherIcons/Hexagon")
-    var cityCircleImage: IconCircleGroup? = null
+    private var cityCircleImage: IconCircleGroup? = null
     var owningCiv: CivilizationInfo? = null
-    var neighborToBorderImage = HashMap<TileInfo, Image>()
+    private var neighborToBorderImage = HashMap<TileInfo, Image>()
     val isUnrevealed get() = image.color == UNREVEALED_COLOR
 
     init {

@@ -13,10 +13,12 @@ import com.unciv.UncivGame
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.Sounds
-import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import java.text.SimpleDateFormat
+import java.time.Duration
+import java.time.Instant
 import java.util.*
 import kotlin.random.Random
 
@@ -67,7 +69,7 @@ fun Actor.center(parent: Stage){ centerX(parent); centerY(parent)}
 fun Actor.onClickEvent(sound: UncivSound = UncivSound.Click, function: (event: InputEvent?, x: Float, y: Float) -> Unit) {
     this.addListener(object : ClickListener() {
         override fun clicked(event: InputEvent?, x: Float, y: Float) {
-            crashHandlingThread(name = "Sound") { Sounds.play(sound) }
+            launchCrashHandling("Sound") { Sounds.play(sound) }
             function(event, x, y)
         }
     })
@@ -141,7 +143,7 @@ fun Table.addSeparator(color: Color = Color.WHITE, colSpan: Int = 0, height: Flo
 
 /**
  * Create a vertical separator as an empty Container with a colored background.
- * 
+ *
  * Note: Unlike the horizontal [addSeparator] this cannot automatically span several rows. Repeat the separator if needed.
  */
 fun Table.addSeparatorVertical(color: Color = Color.WHITE, width: Float = 2f): Cell<Image> {
@@ -157,6 +159,11 @@ fun <T : Actor> Table.addCell(actor: T): Table {
 /** Shortcut for [Cell].[pad][com.badlogic.gdx.scenes.scene2d.ui.Cell.pad] with top=bottom and left=right */
 fun <T : Actor> Cell<T>.pad(vertical: Float, horizontal: Float): Cell<T> {
     return pad(vertical, horizontal, vertical, horizontal)
+}
+
+/** Sets both the width and height to [size] */
+fun Image.setSize(size: Float) {
+    setSize(size, size)
 }
 
 /** Gets a clone of an [ArrayList] with an additional item
@@ -236,11 +243,11 @@ fun String.toLabel(fontColor: Color = Color.WHITE, fontSize: Int = Constants.def
 fun String.toCheckBox(startsOutChecked: Boolean = false, changeAction: ((Boolean)->Unit)? = null)
     = CheckBox(this.tr(), BaseScreen.skin).apply {
         isChecked = startsOutChecked
-        if (changeAction != null) onChange { 
+        if (changeAction != null) onChange {
             changeAction(isChecked)
         }
         // Add a little distance between the icon and the text. 0 looks glued together,
-        // 5 is about half an uppercase letter, and 1 about the width of the vertical line in "P".  
+        // 5 is about half an uppercase letter, and 1 about the width of the vertical line in "P".
         imageCell.padRight(1f)
     }
 
@@ -312,6 +319,12 @@ object UncivDateFormat {
     fun String.parseDate(): Date = utcFormat.parse(this)
 }
 
+fun Duration.isLargerThan(other: Duration): Boolean {
+    return compareTo(other) > 0
+}
+fun Instant.isLargerThan(other: Instant): Boolean {
+    return compareTo(other) > 0
+}
 
 /**
  * Returns a wrapped version of a function that safely crashes the game to [CrashScreen] if an exception or error is thrown.

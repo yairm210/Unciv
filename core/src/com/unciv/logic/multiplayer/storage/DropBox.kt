@@ -1,4 +1,4 @@
-package com.unciv.logic.multiplayer
+package com.unciv.logic.multiplayer.storage
 
 import com.unciv.json.json
 import com.unciv.ui.utils.UncivDateFormat.parseDate
@@ -7,11 +7,10 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.Charset
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.concurrent.timer
 
 
-object DropBox: IFileStorage {
+object DropBox: FileStorage {
     private var remainingRateLimitSeconds = 0
     private var rateLimitTimer: Timer? = null
 
@@ -76,7 +75,7 @@ object DropBox: IFileStorage {
         )
     }
 
-    override fun getFileMetaData(fileName: String): IFileMetaData {
+    override fun getFileMetaData(fileName: String): FileMetaData {
         val stream = dropboxApi(
             url="https://api.dropboxapi.com/2/files/get_metadata",
             data="{\"path\":\"${getLocalGameLocation(fileName)}\"}",
@@ -124,33 +123,13 @@ object DropBox: IFileStorage {
         throw FileStorageRateLimitReached(remainingRateLimitSeconds)
     }
 
-    fun getFolderList(folder: String): ArrayList<IFileMetaData> {
-        val folderList = ArrayList<IFileMetaData>()
-        // The DropBox API returns only partial file listings from one request. list_folder and
-        // list_folder/continue return similar responses, but list_folder/continue requires a cursor
-        // instead of the path.
-        val response = dropboxApi("https://api.dropboxapi.com/2/files/list_folder",
-                "{\"path\":\"$folder\"}", "application/json")
-        var currentFolderListChunk = json().fromJson(FolderList::class.java, response)
-        folderList.addAll(currentFolderListChunk.entries)
-        while (currentFolderListChunk.has_more) {
-            val continuationResponse = dropboxApi("https://api.dropboxapi.com/2/files/list_folder/continue",
-                    "{\"cursor\":\"${currentFolderListChunk.cursor}\"}", "application/json")
-            currentFolderListChunk = json().fromJson(FolderList::class.java, continuationResponse)
-            folderList.addAll(currentFolderListChunk.entries)
-        }
-        return folderList
-    }
-
-    fun fileExists(fileName: String): Boolean {
-        try {
+    fun fileExists(fileName: String): Boolean = try {
             dropboxApi("https://api.dropboxapi.com/2/files/get_metadata",
-                    "{\"path\":\"$fileName\"}", "application/json")
-            return true
+                "{\"path\":\"$fileName\"}", "application/json")
+            true
         } catch (ex: FileNotFoundException) {
-            return false
+            false
         }
-    }
 
 //
 //    fun createTemplate(): String {
@@ -160,16 +139,15 @@ object DropBox: IFileStorage {
 //        return BufferedReader(InputStreamReader(result)).readText()
 //    }
 
-    @Suppress("PropertyName")
-    private class FolderList{
-        var entries = ArrayList<MetaData>()
-        var cursor = ""
-        var has_more = false
-    }
+//    private class FolderList{
+//        var entries = ArrayList<MetaData>()
+//        var cursor = ""
+//        var has_more = false
+//    }
 
     @Suppress("PropertyName")
-    private class MetaData: IFileMetaData {
-        var name = ""
+    private class MetaData: FileMetaData {
+//        var name = ""
         private var server_modified = ""
 
         override fun getLastModified(): Date {

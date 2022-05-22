@@ -8,11 +8,9 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.tile.*
-import com.unciv.models.ruleset.unique.LocalUniqueCache
-import com.unciv.models.ruleset.unique.StateForConditionals
-import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.*
+import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
@@ -259,13 +257,13 @@ open class TileInfo {
     fun getTerrainMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(tile=this) ): Sequence<Unique> {
         return getAllTerrains().flatMap { it.getMatchingUniques(uniqueType, stateForConditionals) }
     }
-    
+
     /** Get all uniques of this type that any part of this tile has: terrains, improvement, resource */
-    fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(tile=this)) = 
+    fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(tile=this)) =
         getTerrainMatchingUniques(uniqueType, stateForConditionals) +
         (getTileImprovement()?.getMatchingUniques(uniqueType, stateForConditionals) ?: sequenceOf()) +
         if (resource == null) sequenceOf() else tileResource.getMatchingUniques(uniqueType, stateForConditionals)
-    
+
     fun getWorkingCity(): CityInfo? {
         val civInfo = getOwner() ?: return null
         return civInfo.cities.firstOrNull { it.isWorked(this) }
@@ -319,22 +317,26 @@ open class TileInfo {
             tileUniques += city.getMatchingUniques(UniqueType.StatsFromObject, stateForConditionals)
             for (unique in localUniqueCache.get("StatsFromTilesAndObjects", tileUniques)) {
                 val tileType = unique.params[1]
-                if (tileType == improvement) continue // This is added to the calculation in getImprovementStats. we don't want to add it twice
-                if (matchesTerrainFilter(tileType, observingCiv)) 
-                    stats.add(unique.stats)
-                if (tileType == "Natural Wonder" && naturalWonder != null && city.civInfo.hasUnique(UniqueType.DoubleStatsFromNaturalWonders)) {
+                if (!matchesTerrainFilter(tileType, observingCiv)) continue
+                stats.add(unique.stats)
+                if (naturalWonder != null
+                    && tileType == "Natural Wonder"
+                    && city.civInfo.hasUnique(UniqueType.DoubleStatsFromNaturalWonders)
+                ) {
                     stats.add(unique.stats)
                 }
             }
 
-            for (unique in localUniqueCache.get("StatsFromTilesWithout", 
-                city.getMatchingUniques(UniqueType.StatsFromTilesWithout, stateForConditionals)))
+            for (unique in localUniqueCache.get("StatsFromTilesWithout",
+                city.getMatchingUniques(UniqueType.StatsFromTilesWithout, stateForConditionals))
+            ) {
                 if (
                     matchesTerrainFilter(unique.params[1]) &&
                     !matchesTerrainFilter(unique.params[2]) &&
                     city.matchesFilter(unique.params[3])
                 )
                     stats.add(unique.stats)
+            }
         }
 
         if (isAdjacentToRiver()) stats.gold++
@@ -347,16 +349,60 @@ open class TileInfo {
             if (improvement != null)
                 stats.add(getImprovementStats(improvement, observingCiv, city))
 
-            if (isCityCenter()) {
-                if (stats.food < 2) stats.food = 2f
-                if (stats.production < 1) stats.production = 1f
-            }
-
             if (stats.gold != 0f && observingCiv.goldenAges.isGoldenAge())
                 stats.gold++
         }
+        if (isCityCenter()) {
+            if (stats.food < 2) stats.food = 2f
+            if (stats.production < 1) stats.production = 1f
+        }
+
         for ((stat, value) in stats)
             if (value < 0f) stats[stat] = 0f
+
+        for ((stat, value) in getTilePercentageStats(observingCiv, city)) {
+            stats[stat] *= value.toPercent()
+        }
+
+        return stats
+    }
+
+    // Only gets the tile percentage bonus, not the improvement percentage bonus
+    @Suppress("MemberVisibilityCanBePrivate")
+    fun getTilePercentageStats(observingCiv: CivilizationInfo?, city: CityInfo?): Stats {
+        val stats = Stats()
+        val stateForConditionals = StateForConditionals(civInfo = observingCiv, cityInfo = city, tile = this)
+
+        if (city != null) {
+            for (unique in city.getMatchingUniques(UniqueType.StatPercentFromObject, stateForConditionals)) {
+                val tileFilter = unique.params[2]
+                if (matchesTerrainFilter(tileFilter, observingCiv))
+                    stats[Stat.valueOf(unique.params[1])] += unique.params[0].toFloat()
+            }
+
+            for (unique in city.getMatchingUniques(UniqueType.AllStatsPercentFromObject, stateForConditionals)) {
+                val tileFilter = unique.params[1]
+                if (!matchesTerrainFilter(tileFilter, observingCiv)) continue
+                val statPercentage = unique.params[0].toFloat()
+                for (stat in Stat.values())
+                    stats[stat] += statPercentage
+            }
+
+        } else if (observingCiv != null) {
+            for (unique in observingCiv.getMatchingUniques(UniqueType.StatPercentFromObject, stateForConditionals)) {
+                val tileFilter = unique.params[2]
+                if (matchesTerrainFilter(tileFilter, observingCiv))
+                    stats[Stat.valueOf(unique.params[1])] += unique.params[0].toFloat()
+            }
+
+            for (unique in observingCiv.getMatchingUniques(UniqueType.AllStatsPercentFromObject, stateForConditionals)) {
+                val tileFilter = unique.params[1]
+                if (!matchesTerrainFilter(tileFilter, observingCiv)) continue
+                val statPercentage = unique.params[0].toFloat()
+                for (stat in Stat.values())
+                    stats[stat] += statPercentage
+            }
+        }
 
         return stats
     }
@@ -421,6 +467,7 @@ open class TileInfo {
         return fertility
     }
 
+    // Also multiplies the stats by the percentage bonus for improvements (but not for tiles)
     fun getImprovementStats(improvement: TileImprovement, observingCiv: CivilizationInfo, city: CityInfo?): Stats {
         val stats = improvement.cloneStats()
         if (hasViewableResource(observingCiv) && tileResource.isImprovedBy(improvement.name)
@@ -464,17 +511,49 @@ open class TileInfo {
                     stats.add(unique.stats)
                 }
             }
-
-            for (unique in city.getMatchingUniques(UniqueType.AllStatsPercentFromObject, conditionalState)) {
-                if (improvement.matchesFilter(unique.params[1]))
-                    stats.timesInPlace(unique.params[0].toPercent())
-            }
         }
 
-        if (city == null) { // As otherwise we already got this above
+        for ((stat, value) in getImprovementPercentageStats(improvement, observingCiv, city)) {
+            stats[stat] *= value.toPercent()
+        }
+
+        return stats
+    }
+
+    @Suppress("MemberVisibilityCanBePrivate")
+    fun getImprovementPercentageStats(improvement: TileImprovement, observingCiv: CivilizationInfo, city: CityInfo?): Stats {
+        val stats = Stats()
+        val conditionalState = StateForConditionals(civInfo = observingCiv, cityInfo = city, tile = this)
+
+        // I would love to make an interface 'canCallMatchingUniques'
+        // from which both cityInfo and CivilizationInfo derive, so I don't have to duplicate all this code
+        // But something something too much for this PR.
+
+        if (city != null) {
+            for (unique in city.getMatchingUniques(UniqueType.AllStatsPercentFromObject, conditionalState)) {
+                if (!improvement.matchesFilter(unique.params[1])) continue
+                for (stat in Stat.values()) {
+                    stats[stat] += unique.params[0].toFloat()
+                }
+            }
+
+            for (unique in city.getMatchingUniques(UniqueType.StatPercentFromObject, conditionalState)) {
+                if (!improvement.matchesFilter(unique.params[2])) continue
+                val stat = Stat.valueOf(unique.params[1])
+                stats[stat] += unique.params[0].toFloat()
+            }
+
+        } else {
             for (unique in observingCiv.getMatchingUniques(UniqueType.AllStatsPercentFromObject, conditionalState)) {
-                if (improvement.matchesFilter(unique.params[1]))
-                    stats.timesInPlace(unique.params[0].toPercent())
+                if (!improvement.matchesFilter(unique.params[1])) continue
+                for (stat in Stat.values()) {
+                    stats[stat] += unique.params[0].toFloat()
+                }
+            }
+            for (unique in observingCiv.getMatchingUniques(UniqueType.StatPercentFromObject, conditionalState)) {
+                if (!improvement.matchesFilter(unique.params[2])) continue
+                val stat = Stat.valueOf(unique.params[1])
+                stats[stat] += unique.params[0].toFloat()
             }
         }
 
@@ -491,13 +570,22 @@ open class TileInfo {
 
     /** Returns true if the [improvement] can be built on this [TileInfo] */
     fun canBuildImprovement(improvement: TileImprovement, civInfo: CivilizationInfo): Boolean {
+
         val stateForConditionals = StateForConditionals(civInfo, tile=this)
+        val knownFeatureRemovals = ruleset.tileImprovements.values
+            .filter { rulesetImprovement ->
+                rulesetImprovement.name.startsWith(Constants.remove)
+                && RoadStatus.values().none { it.removeAction == rulesetImprovement.name }
+                && (rulesetImprovement.techRequired == null || civInfo.tech.isResearched(rulesetImprovement.techRequired!!))
+            }
+
         return when {
             improvement.uniqueTo != null && improvement.uniqueTo != civInfo.civName -> false
             improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!) -> false
+            improvement.hasUnique(UniqueType.Unbuildable, stateForConditionals) -> false
             getOwner() != civInfo && !(
                 improvement.hasUnique(UniqueType.CanBuildOutsideBorders, stateForConditionals)
-                || ( // citadel can be built only next to or within own borders
+                || (
                     improvement.hasUnique(UniqueType.CanBuildJustOutsideBorders, stateForConditionals)
                     && neighbors.any { it.getOwner() == civInfo }
                 )
@@ -511,8 +599,7 @@ open class TileInfo {
             improvement.getMatchingUniques(UniqueType.ConsumesResources, stateForConditionals).any {
                 civInfo.getCivResourcesByName()[it.params[1]]!! < it.params[0].toInt()
             } -> false
-            improvement.hasUnique(UniqueType.Unbuildable, stateForConditionals) -> false
-            else -> canImprovementBeBuiltHere(improvement, hasViewableResource(civInfo), stateForConditionals)
+            else -> canImprovementBeBuiltHere(improvement, hasViewableResource(civInfo), knownFeatureRemovals, stateForConditionals)
         }
     }
 
@@ -522,14 +609,34 @@ open class TileInfo {
     private fun canImprovementBeBuiltHere(
         improvement: TileImprovement,
         resourceIsVisible: Boolean = resource != null,
+        knownFeatureRemovals: List<TileImprovement>? = null,
         stateForConditionals: StateForConditionals = StateForConditionals(tile=this)
     ): Boolean {
-        val topTerrain = getLastTerrain()
+
+        fun TileImprovement.canBeBuildOnThisUnbuildableTerrain(
+            knownFeatureRemovals: List<TileImprovement>? = null,
+        ): Boolean {
+            val topTerrain = getLastTerrain()
+            // We can build if we are specifically allowed to build on this terrain
+            if (isAllowedOnFeature(topTerrain.name)) return true
+
+            // Otherwise, we can if this improvement removes the top terrain
+            if (!hasUnique(UniqueType.RemovesFeaturesIfBuilt, stateForConditionals)) return false
+            val removeAction = ruleset.tileImprovements[Constants.remove + topTerrain.name] ?: return false
+            // and we have the tech to remove that top terrain
+            if (removeAction.techRequired != null && (knownFeatureRemovals == null || removeAction !in knownFeatureRemovals)) return false
+            // and we can build it on the tile without the top terrain
+            val clonedTile = this@TileInfo.clone()
+            clonedTile.removeTerrainFeature(topTerrain.name)
+            return clonedTile.canImprovementBeBuiltHere(improvement, resourceIsVisible, knownFeatureRemovals, stateForConditionals)
+        }
 
         return when {
             improvement.name == this.improvement -> false
             isCityCenter() -> false
+
             // First we handle a few special improvements
+
             // Can only cancel if there is actually an improvement being built
             improvement.name == Constants.cancelImprovementOrder -> (this.improvementInProgress != null)
             // Can only remove roads if that road is actually there
@@ -538,11 +645,14 @@ open class TileInfo {
             improvement.name.startsWith(Constants.remove) -> terrainFeatures.any { it == improvement.name.removePrefix(Constants.remove) }
             // Can only build roads if on land and they are better than the current road
             RoadStatus.values().any { it.name == improvement.name } -> !isWater && RoadStatus.valueOf(improvement.name) > roadStatus
-            
+
             // Then we check if there is any reason to not allow this improvement to be build
 
             // Can't build if there is already an irremovable improvement here
             this.improvement != null && getTileImprovement()!!.hasUnique(UniqueType.Irremovable, stateForConditionals) -> false
+
+            // Can't build if this terrain is unbuildable, except when we are specifically allowed to
+            getLastTerrain().unbuildable && !improvement.canBeBuildOnThisUnbuildableTerrain(knownFeatureRemovals) -> false
 
             // Can't build if any terrain specifically prevents building this improvement
             getTerrainMatchingUniques(UniqueType.RestrictedBuildableImprovements, stateForConditionals).any {
@@ -565,26 +675,26 @@ open class TileInfo {
                 !isAdjacentTo(it.params[0])
             } -> false
 
-            // Can't build on unbuildable terrains - EXCEPT when specifically allowed to
-            topTerrain.unbuildable && !improvement.isAllowedOnFeature(topTerrain.name) -> false
-
             // Can't build it if it is only allowed to improve resources and it doesn't improve this resource
             improvement.hasUnique(UniqueType.CanOnlyImproveResource, stateForConditionals) && (
                 !resourceIsVisible || !tileResource.isImprovedBy(improvement.name)
             ) -> false
 
             // At this point we know this is a normal improvement and that there is no reason not to allow it to be built.
-            // Lastly we check if the improvement may be built on this terrain or resource 
-            improvement.canBeBuiltOn(topTerrain.name) -> true
+
+            // Lastly we check if the improvement may be built on this terrain or resource
+            improvement.canBeBuiltOn(getLastTerrain().name) -> true
             isLand && improvement.canBeBuiltOn("Land") -> true
             isWater && improvement.canBeBuiltOn("Water") -> true
             // DO NOT reverse this &&. isAdjacentToFreshwater() is a lazy which calls a function, and reversing it breaks the tests.
-            improvement.hasUnique(UniqueType.ImprovementBuildableByFreshWater, stateForConditionals) 
+            improvement.hasUnique(UniqueType.ImprovementBuildableByFreshWater, stateForConditionals)
                 && isAdjacentTo(Constants.freshWater) -> true
+
             // I don't particularly like this check, but it is required to build mines on non-hill resources
             resourceIsVisible && tileResource.isImprovedBy(improvement.name) -> true
             // DEPRECATED since 4.0.14, REMOVE SOON:
             isLand && improvement.terrainsCanBeBuiltOn.isEmpty() && !improvement.hasUnique(UniqueType.CanOnlyImproveResource) -> true
+            // No reason this improvement should be built here, so can't build it
             else -> false
         }
     }
@@ -691,7 +801,7 @@ open class TileInfo {
         if (isWater || isImpassible())
             return false
         if (getTilesInDistance(modConstants.minimalCityDistanceOnDifferentContinents)
-                .any { it.isCityCenter() && it.getContinent() != getContinent() } 
+                .any { it.isCityCenter() && it.getContinent() != getContinent() }
             || getTilesInDistance(modConstants.minimalCityDistance)
                 .any { it.isCityCenter() && it.getContinent() == getContinent() }
         ) {
@@ -911,7 +1021,7 @@ open class TileInfo {
 
     /**
      * Sets this tile's [resource] and, if [newResource] is a Strategic resource, [resourceAmount] fields.
-     * 
+     *
      * [resourceAmount] is determined by [MapParameters.mapResources] and [majorDeposit], and
      * if the latter is `null` a random choice between major and minor deposit is made, approximating
      * the frequency [MapRegions][com.unciv.logic.map.mapgenerator.MapRegions] would use.

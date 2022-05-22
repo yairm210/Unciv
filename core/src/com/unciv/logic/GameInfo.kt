@@ -6,6 +6,7 @@ import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
 import com.unciv.logic.BackwardCompatibility.migrateBarbarianCamps
 import com.unciv.logic.BackwardCompatibility.migrateSeenImprovements
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
+import com.unciv.logic.BackwardCompatibility.updateGreatGeneralUniques
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.civilization.*
 import com.unciv.logic.city.CityInfo
@@ -20,9 +21,6 @@ import com.unciv.ui.audio.MusicTrackChooserFlags
 import java.util.*
 import kotlin.NoSuchElementException
 
-
-class MissingModsException(val missingMods: String) : UncivShowableException("Missing mods: [$missingMods]")
-open class UncivShowableException(errorText: String) : Exception(errorText)
 
 class GameInfo {
     //region Fields - Serialized
@@ -147,7 +145,7 @@ class GameInfo {
         civilizations.firstOrNull {
             it.isSpectator() && it.playerId == playerId
         } ?:
-        CivilizationInfo(Constants.spectator).also { 
+        CivilizationInfo(Constants.spectator).also {
             it.playerType = PlayerType.Human
             it.playerId = playerId
             civilizations.add(it)
@@ -280,7 +278,7 @@ class GameInfo {
                 }
         )
     }
-    
+
     fun getEnabledVictories() = ruleSet.victories.filter { !it.value.hiddenInVictoryScreen && gameParameters.victoryTypes.contains(it.key) }
 
     fun processDiplomaticVictory() {
@@ -332,11 +330,11 @@ class GameInfo {
 
         val exploredRevealTiles: Sequence<TileInfo> =
             if (ruleSet.tileResources[resourceName]!!.hasUnique(UniqueType.CityStateOnlyResource)) {
-                // Look for matching mercantile CS centers 
+                // Look for matching mercantile CS centers
                 getAliveCityStates()
                     .asSequence()
                     .filter { it.cityStateResource == resourceName }
-                    .map { it.getCapital().getCenterTile() }
+                    .map { it.getCapital()!!.getCenterTile() }
             } else {
                 tileMap.values
                     .asSequence()
@@ -406,11 +404,12 @@ class GameInfo {
 
         removeMissingModReferences()
 
+        updateGreatGeneralUniques()
 
         for (baseUnit in ruleSet.units.values)
             baseUnit.ruleset = ruleSet
 
-        // This needs to go before tileMap.setTransients, as units need to access 
+        // This needs to go before tileMap.setTransients, as units need to access
         // the nation of their civilization when setting transients
         for (civInfo in civilizations) civInfo.gameInfo = this
         for (civInfo in civilizations) civInfo.setNationTransient()
@@ -468,7 +467,7 @@ class GameInfo {
         spaceResources.addAll(ruleSet.buildings.values.filter { it.hasUnique(UniqueType.SpaceshipPart) }
             .flatMap { it.getResourceRequirements().keys } )
         spaceResources.addAll(ruleSet.victories.values.flatMap { it.requiredSpaceshipParts })
-        
+
         barbarians.setTransients(this)
 
         guaranteeUnitPromotions()
@@ -491,7 +490,6 @@ class GameInfoPreview() {
     var gameId = ""
     var currentPlayer = ""
     var currentTurnStartTime = 0L
-    var turnNotification = true //used as setting in the MultiplayerScreen
 
     /**
      * Converts a GameInfo object (can be uninitialized) into a GameInfoPreview object.
@@ -508,32 +506,4 @@ class GameInfoPreview() {
     }
 
     fun getCivilization(civName: String) = civilizations.first { it.civName == civName }
-
-    /**
-     * Updates the current player and turn information in the GameInfoPreview object with the help of a
-     * GameInfo object (can be uninitialized).
-     */
-    fun updateCurrentTurn(gameInfo: GameInfo) : GameInfoPreview {
-        currentPlayer = gameInfo.currentPlayer
-        turns = gameInfo.turns
-        currentTurnStartTime = gameInfo.currentTurnStartTime
-        //We update the civilizations in case someone is removed from the game (resign/kick)
-        civilizations = gameInfo.getCivilizationsAsPreviews()
-
-        return this
-    }
-
-    /**
-     * Updates the current player and turn information in the GameInfoPreview object with the
-     * help of another GameInfoPreview object.
-     */
-    fun updateCurrentTurn(gameInfo: GameInfoPreview) : GameInfoPreview {
-        currentPlayer = gameInfo.currentPlayer
-        turns = gameInfo.turns
-        currentTurnStartTime = gameInfo.currentTurnStartTime
-        //We update the civilizations in case someone is removed from the game (resign/kick)
-        civilizations = gameInfo.civilizations
-
-        return this
-    }
 }

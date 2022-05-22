@@ -43,7 +43,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         // Each of these two function calls `hasUnique(UniqueType.CityStateTerritoryAlwaysFriendly)`
         // when entering territory of a city state
         val areConnectedByRoad = from.hasConnection(civInfo) && to.hasConnection(civInfo)
-        
+
         val areConnectedByRiver = from.isAdjacentToRiver() && to.isAdjacentToRiver() && from.isConnectedByRiver(to)
 
         if (areConnectedByRoad && (!areConnectedByRiver || civInfo.tech.roadsConnectAcrossRivers))
@@ -77,7 +77,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
 
         if (unit.noFilteredDoubleMovementUniques)
             return terrainCost + extraCost
-        if (unit.doubleMovementInTerrain.any { 
+        if (unit.doubleMovementInTerrain.any {
             it.value == MapUnit.DoubleMovementTerrainTarget.Filter &&
                 to.matchesFilter(it.key)
         })
@@ -92,7 +92,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
                 yield(tile)
             }
             else if (tile.militaryUnit != null && civInfo.isAtWarWith(tile.militaryUnit!!.civInfo)) {
-                if (tile.militaryUnit!!.type.isWaterUnit() || (unit.type.isLandUnit() && tile.militaryUnit!!.isEmbarked()))
+                if (tile.militaryUnit!!.type.isWaterUnit() || (unit.type.isLandUnit() && !tile.militaryUnit!!.isEmbarked()))
                     yield(tile)
             }
         }
@@ -126,7 +126,6 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         // anyway.
         if (unit.ignoresZoneOfControl)
             return false
-
         return true
     }
 
@@ -455,7 +454,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         // Cache this in case something goes wrong
 
         var lastReachedEnterableTile = unit.getTile()
-        var previousTile = unit.getTile() 
+        var previousTile = unit.getTile()
         var passingMovementSpent = 0f // Movement points spent since last tile we could end our turn on
 
         unit.removeFromTile()
@@ -475,7 +474,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
             // This fixes a bug where tiles in the fog of war would always only cost 1 mp
             if (!unit.civInfo.gameInfo.gameParameters.godMode)
                 passingMovementSpent += getMovementCostBetweenAdjacentTiles(previousTile, tile, unit.civInfo)
-            
+
             // In case something goes wrong, cache the last tile we were able to end on
             // We can assume we can pass through this tile, as we would have broken earlier
             if (unit.movement.canMoveTo(tile, assumeCanPassThrough = true)) {
@@ -491,7 +490,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
                 break
             }
         }
-        
+
         val finalTileReached = lastReachedEnterableTile
 
         // Silly floats which are almost zero
@@ -664,7 +663,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         val firstUnit = tile.getFirstUnit()
         // Moving to non-empty tile
         if (firstUnit != null && unit.civInfo != firstUnit.civInfo) {
-            // Allow movement through unguarded, at-war Civilian Unit. Capture on the way 
+            // Allow movement through unguarded, at-war Civilian Unit. Capture on the way
             // But not for Embarked Units capturing on Water
             if (!(unit.isEmbarked() && tile.isWater)
                     && firstUnit.isCivilian() && unit.civInfo.isAtWarWith(firstUnit.civInfo))

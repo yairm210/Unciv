@@ -157,9 +157,15 @@ object UnitAutomation {
             // For now its a simple option to allow AI to win a science victory again
             if (unit.hasUnique(UniqueType.AddInCapital))
                 return SpecificUnitAutomation.automateAddInCapital(unit)
-            
-            if (unit.hasUnique("Bonus for units in 2 tile radius 15%"))
-                return SpecificUnitAutomation.automateGreatGeneral(unit)
+
+            //todo this now supports "Great General"-like mod units not combining 'aura' and citadel
+            // abilities, but not additional capabilities if automation finds no use for those two
+            if (unit.hasStrengthBonusInRadiusUnique && SpecificUnitAutomation.automateGreatGeneral(unit))
+                return
+            if (unit.hasCitadelPlacementUnique && SpecificUnitAutomation.automateCitadelPlacer(unit))
+                return
+            if (unit.hasCitadelPlacementUnique || unit.hasStrengthBonusInRadiusUnique)
+                return SpecificUnitAutomation.automateGreatGeneralFallback(unit)
 
             if (unit.hasUnique(UniqueType.ConstructImprovementConsumingUnit))
                 return SpecificUnitAutomation.automateImprovementPlacer(unit) // includes great people plus moddable units
@@ -420,8 +426,7 @@ object UnitAutomation {
         val closestEnemyCity = enemies
             .map { NextTurnAutomation.getClosestCities(unit.civInfo, it) }
             .minByOrNull { it.aerialDistance }?.city2
-        
-        if (closestEnemyCity==null) return false // no attackable cities found
+          ?: return false // no attackable cities found
 
         // Our main attack target is the closest city, but we're fine with deviating from that a bit
         var enemyCitiesByPriority = closestEnemyCity.civInfo.cities
@@ -492,8 +497,7 @@ object UnitAutomation {
             .asSequence()
             .sortedBy { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
             .firstOrNull { unit.movement.canReach(it.getCenterTile()) }
-        
-        if (closestCity == null) return false // Panic!
+          ?: return false // Panic!
         
         unit.movement.headTowards(closestCity.getCenterTile())
         return true
@@ -594,7 +598,7 @@ object UnitAutomation {
     }
     
     /** Returns whether the civilian spends its turn hiding and not moving */
-    fun tryRunAwayIfNeccessary(unit: MapUnit): Boolean {
+    private fun tryRunAwayIfNeccessary(unit: MapUnit): Boolean {
         // This is a little 'Bugblatter Beast of Traal': Run if we can attack an enemy
         // Cheaper than determining which enemies could attack us next turn
         //todo - stay when we're stacked with a good military unit???

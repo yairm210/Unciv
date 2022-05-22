@@ -282,6 +282,7 @@ object UnitActions {
                     tile.setPillaged()
                     unit.civInfo.lastSeenImprovement.remove(tile.position)
                     if (tile.resource != null) tile.getOwner()?.updateDetailedCivResources()    // this might take away a resource
+                    tile.getCity()?.updateCitizens = true
 
                     val freePillage = unit.hasUnique(UniqueType.NoMovementToPillage, checkCivInfoUniques = true)
                     if (!freePillage) unit.useMovementPoints(1f)
@@ -644,14 +645,6 @@ object UnitActions {
                 title = "Create [$improvementName]",
                 action = {
                     val unitTile = unit.getTile()
-                    unitTile.setTerrainFeatures(
-                        // Remove terrainFeatures that a Worker can remove
-                        // and that aren't explicitly allowed under the improvement
-                        unitTile.terrainFeatures.filter {
-                            "Remove $it" !in unitTile.ruleset.tileImprovements ||
-                            it in improvement.terrainsCanBeBuiltOn
-                        }
-                    )
                     unitTile.removeCreatesOneImprovementMarker()
                     unitTile.improvement = improvementName
                     unitTile.stopWorkingOnImprovement()

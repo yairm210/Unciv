@@ -21,7 +21,7 @@ class TileResource : RulesetStatsObject() {
     var majorDepositAmount: DepositAmount = DepositAmount()
     var minorDepositAmount: DepositAmount = DepositAmount()
     
-    val _allImprovements by lazy {
+    private val _allImprovements by lazy {
         if (improvement == null) improvedBy
         else improvedBy + improvement!!
     }

@@ -6,7 +6,8 @@ import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
 import com.unciv.models.UncivSound
-import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.crashhandling.launchCrashHandling
+import kotlinx.coroutines.delay
 import java.io.File
 
 /*
@@ -164,10 +165,10 @@ object Sounds {
         val initialDelay = if (isFresh && Gdx.app.type == Application.ApplicationType.Android) 40 else 0
 
         if (initialDelay > 0 || resource.play(volume) == -1L) {
-            crashHandlingThread(name = "DelayedSound") {
-                Thread.sleep(initialDelay.toLong())
+            launchCrashHandling("DelayedSound") {
+                delay(initialDelay.toLong())
                 while (resource.play(volume) == -1L) {
-                    Thread.sleep(20L)
+                    delay(20L)
                 }
             }
         }

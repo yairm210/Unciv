@@ -29,4 +29,8 @@ Sources for Info about current orientation in case need:
         // Comparison ensures ActivityTaskManager.getService().setRequestedOrientation isn't called unless necessary
         if (activity.requestedOrientation != orientation) activity.requestedOrientation = orientation
     }
+
+    override fun getExternalFilesDir(): String? {
+        return activity.getExternalFilesDir(null)?.path
+    }
 }

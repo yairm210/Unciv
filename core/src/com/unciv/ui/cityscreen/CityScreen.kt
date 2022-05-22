@@ -15,13 +15,12 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
+import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.*
-import java.util.*
 
 class CityScreen(
     internal val city: CityInfo,
@@ -56,6 +55,12 @@ class CityScreen(
     /** Displays raze city button - sits on TOP CENTER */
     private var razeCityButtonHolder = Table()
 
+    /** Displays reset locks button - sits on BOT RIGHT */
+    private var resetCitizensButtonHolder = Table()
+
+    /** Displays reset locks button - sits on BOT RIGHT */
+    private var citizenManagementButtonHolder = Table()
+
     /** Displays city stats info */
     private var cityStatsTable = CityStatsTable(this)
 
@@ -64,6 +69,10 @@ class CityScreen(
 
     /** Displays selected construction info, alternate with tileTable - sits on BOTTOM RIGHT */
     private var selectedConstructionTable = ConstructionInfoTable(this)
+
+    /** Displays selected construction info, alternate with tileTable - sits on BOTTOM RIGHT */
+    private var citizenManagementTable = CitizenManagementTable(this)
+    var citizenManagementVisible = false
 
     /** Displays city name, allows switching between cities - sits on BOTTOM CENTER */
     private var cityPickerTable = CityScreenCityPickerTable(this)
@@ -102,17 +111,34 @@ class CityScreen(
     private val nextTileToOwn = city.expansion.chooseNewTileToOwn()
 
     init {
-        onBackButtonClicked { game.setWorldScreen() }
+        onBackButtonClicked { game.resetToWorldScreen() }
         UncivGame.Current.settings.addCompletedTutorialTask("Enter city screen")
 
         addTiles()
 
         //stage.setDebugTableUnderMouse(true)
         stage.addActor(cityStatsTable)
+        val resetCitizensButton = "Reset Citizens".toTextButton()
+        resetCitizensButton.labelCell.pad(5f)
+        resetCitizensButton.onClick { city.reassignPopulation(resetLocked = true); update() }
+        resetCitizensButtonHolder.add(resetCitizensButton)
+        resetCitizensButtonHolder.pack()
+        stage.addActor(resetCitizensButtonHolder)
+        val citizenManagementButton = "Citizen Management".toTextButton()
+        citizenManagementButton.labelCell.pad(5f)
+        citizenManagementButton.onClick {
+            clearSelection()
+            citizenManagementVisible = true
+            update()
+        }
+        citizenManagementButtonHolder.add(citizenManagementButton)
+        citizenManagementButtonHolder.pack()
+        stage.addActor(citizenManagementButtonHolder)
         constructionsTable.addActorsToStage()
         stage.addActor(cityInfoTable)
         stage.addActor(selectedConstructionTable)
         stage.addActor(tileTable)
+        stage.addActor(citizenManagementTable)
         stage.addActor(cityPickerTable)  // add late so it's top in Z-order and doesn't get covered in cramped portrait
         stage.addActor(exitCityButton)
         update()
@@ -150,7 +176,24 @@ class CityScreen(
         tileTable.setPosition(stage.width - posFromEdge, posFromEdge, Align.bottomRight)
         selectedConstructionTable.update(selectedConstruction)
         selectedConstructionTable.setPosition(stage.width - posFromEdge, posFromEdge, Align.bottomRight)
-
+        citizenManagementTable.update(citizenManagementVisible)
+        citizenManagementTable.setPosition(stage.width - posFromEdge, posFromEdge, Align.bottomRight)
+        if (selectedTile == null && selectedConstruction == null && !citizenManagementVisible)
+            resetCitizensButtonHolder.setPosition(stage.width - posFromEdge,
+                    posFromEdge, Align.bottomRight)
+        else if (selectedConstruction != null)
+            resetCitizensButtonHolder.setPosition(stage.width - posFromEdge,
+                    posFromEdge + selectedConstructionTable.height + 10f, Align.bottomRight)
+        else if (selectedTile != null)
+            resetCitizensButtonHolder.setPosition(stage.width - posFromEdge,
+                    posFromEdge + tileTable.height + 10f, Align.bottomRight)
+        else
+            resetCitizensButtonHolder.setPosition(stage.width - posFromEdge,
+                    posFromEdge + citizenManagementTable.height + 10f, Align.bottomRight)
+        citizenManagementButtonHolder.isVisible = !citizenManagementVisible
+        citizenManagementButtonHolder.setPosition(stage.width - posFromEdge,
+                posFromEdge + resetCitizensButtonHolder.y + resetCitizensButtonHolder.height + 10f, Align.bottomRight)
+            
         // In portrait mode only: calculate already occupied horizontal space
         val rightMargin = when {
             !isPortrait() -> 0f
@@ -343,9 +386,12 @@ class CityScreen(
         if (tileGroup.isWorkable && canChangeState) {
             if (!tileInfo.providesYield() && cityInfo.population.getFreePopulation() > 0) {
                 cityInfo.workedTiles.add(tileInfo.position)
+                cityInfo.lockedTiles.add(tileInfo.position)
                 game.settings.addCompletedTutorialTask("Reassign worked tiles")
-            } else if (tileInfo.isWorked() && !tileInfo.isLocked())
+            } else if (tileInfo.isWorked()) {
                 cityInfo.workedTiles.remove(tileInfo.position)
+                cityInfo.lockedTiles.remove(tileInfo.position)
+            }
             cityInfo.cityStats.update()
         }
         update()
@@ -365,11 +411,13 @@ class CityScreen(
             pickTileData = null
         }
         selectedTile = null
+        citizenManagementVisible = false
     }
     private fun selectTile(newTile: TileInfo?) {
         selectedConstruction = null
         selectedQueueEntryTargetTile = null
         pickTileData = null
+        citizenManagementVisible = false
         selectedTile = newTile
     }
     fun clearSelection() = selectTile(null)
@@ -387,7 +435,7 @@ class CityScreen(
     }
 
     fun exit() {
-        game.setWorldScreen()
+        game.resetToWorldScreen()
         game.worldScreen.mapHolder.setCenterPosition(city.location)
         game.worldScreen.bottomUnitTable.selectUnit()
     }
