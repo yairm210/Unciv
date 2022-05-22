@@ -158,14 +158,12 @@ class MainMenuScreen: BaseScreen() {
     }
 
     private fun generateBackground(job: Job) {
-        println("generateBackground starting")
         val newMap = MapGenerator(RulesetCache.getVanillaRuleset(), job)
             .generateMap(MapParameters().apply {
                 mapSize = MapSizeNew(MapSize.Small)
                 type = MapType.default
                 waterThreshold = -0.055f // Gives the same level as when waterThreshold was unused in MapType.default
             })
-        println("generateBackground map done")
         if (!job.isActive) return
         var waitingForDisplay = true
         postCrashHandlingRunnable { // for GL context
@@ -182,7 +180,6 @@ class MainMenuScreen: BaseScreen() {
                 },
                 Actions.fadeIn(0.3f)
             ))
-            println("generateBackground finished")
             if (backgroundWorker == job)
                 backgroundWorker = null
             waitingForDisplay = false
@@ -281,7 +278,6 @@ class MainMenuScreen: BaseScreen() {
     override fun resize(width: Int, height: Int) {
         if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
             cancelGenerateBackground()
-            println("generateBackground cancelled")
             game.setScreen(MainMenuScreen())
         }
     }

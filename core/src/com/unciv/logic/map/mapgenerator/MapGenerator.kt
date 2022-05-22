@@ -21,7 +21,7 @@ import kotlin.random.Random
 class MapGenerator(val ruleset: Ruleset, private val job: Job? = null) {
     companion object {
         // temporary instrumentation while tuning/debugging
-        const val consoleOutput = true
+        const val consoleOutput = false
         private const val consoleTimings = false
     }
 
@@ -49,13 +49,7 @@ class MapGenerator(val ruleset: Ruleset, private val job: Job? = null) {
         getMatchingUniques(UniqueType.TileGenerationConditions)
             .map { unique -> TerrainOccursRange(this, unique) }
 
-    private fun wishToAbort(msg: String): Boolean {
-        if (job == null) return false
-        if (job.isActive) return false
-        if (consoleOutput)
-            println("MapGenerator abort at $msg")
-        return true
-    }
+    private fun wishToAbort() = job?.isActive == false
 
     fun generateMap(mapParameters: MapParameters, civilizations: List<CivilizationInfo> = emptyList()): TileMap {
         val mapSize = mapParameters.mapSize
@@ -74,7 +68,7 @@ class MapGenerator(val ruleset: Ruleset, private val job: Job? = null) {
         mapParameters.createdWithVersion = UncivGame.Current.version
         map.mapParameters = mapParameters
 
-        if (wishToAbort("MapLandmassGenerator")) return map
+        if (wishToAbort()) return map
 
         if (mapType == MapType.empty) {
             for (tile in map.values) {
@@ -89,41 +83,41 @@ class MapGenerator(val ruleset: Ruleset, private val job: Job? = null) {
         runAndMeasure("MapLandmassGenerator") {
             MapLandmassGenerator(ruleset, randomness).generateLand(map)
         }
-        if (wishToAbort("raiseMountainsAndHills")) return map
+        if (wishToAbort()) return map
         runAndMeasure("raiseMountainsAndHills") {
             raiseMountainsAndHills(map)
         }
-        if (wishToAbort("applyHumidityAndTemperature")) return map
+        if (wishToAbort()) return map
         runAndMeasure("applyHumidityAndTemperature") {
             applyHumidityAndTemperature(map)
         }
-        if (wishToAbort("spawnLakesAndCoasts")) return map
+        if (wishToAbort()) return map
         runAndMeasure("spawnLakesAndCoasts") {
             spawnLakesAndCoasts(map)
         }
-        if (wishToAbort("spawnVegetation")) return map
+        if (wishToAbort()) return map
         runAndMeasure("spawnVegetation") {
             spawnVegetation(map)
         }
-        if (wishToAbort("spawnRareFeatures")) return map
+        if (wishToAbort()) return map
         runAndMeasure("spawnRareFeatures") {
             spawnRareFeatures(map)
         }
-        if (wishToAbort("spawnIce")) return map
+        if (wishToAbort()) return map
         runAndMeasure("spawnIce") {
             spawnIce(map)
         }
-        if (wishToAbort("assignContinents")) return map
+        if (wishToAbort()) return map
         runAndMeasure("assignContinents") {
             map.assignContinents(TileMap.AssignContinentsMode.Assign)
         }
-        if (wishToAbort("RiverGenerator")) return map
+        if (wishToAbort()) return map
         runAndMeasure("RiverGenerator") {
             RiverGenerator(map, randomness, ruleset).spawnRivers()
         }
         convertTerrains(map, ruleset)
 
-        if (wishToAbort("spreadResources")) return map
+        if (wishToAbort()) return map
         // Region based map generation - not used when generating maps in map editor
         if (civilizations.isNotEmpty()) {
             val regions = MapRegions(ruleset)
@@ -143,11 +137,11 @@ class MapGenerator(val ruleset: Ruleset, private val job: Job? = null) {
             }
         }
 
-        if (wishToAbort("NaturalWonderGenerator")) return map
+        if (wishToAbort()) return map
         runAndMeasure("NaturalWonderGenerator") {
             NaturalWonderGenerator(ruleset, randomness).spawnNaturalWonders(map)
         }
-        if (wishToAbort("spreadAncientRuins")) return map
+        if (wishToAbort()) return map
         runAndMeasure("spreadAncientRuins") {
             spreadAncientRuins(map)
         }
