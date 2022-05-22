@@ -58,6 +58,8 @@ class AddFriendScreen(backScreen: ViewFriendsListScreen) : PickerScreen(){
                 ToastPopup("You have to write a name for your friend!", this)
             } else if (friendlist.addFriendErrorType == "noID") {
                 ToastPopup("You have to write an ID for your friend!", this)
+            } else if (friendlist.addFriendErrorType == "yourself") {
+                ToastPopup("You cannot add your user ID in your friend list!", this)
             } else {
                 backScreen.game.setScreen(backScreen)
                 backScreen.refreshFriendsList()

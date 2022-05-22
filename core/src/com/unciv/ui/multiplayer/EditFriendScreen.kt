@@ -4,10 +4,13 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
+import com.unciv.logic.IdChecker
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
+import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.utils.*
+import java.util.*
 
 class EditFriendScreen(selectedFriend: FriendList.Friend, backScreen: ViewFriendsListScreen) : PickerScreen(){
     init {
@@ -52,8 +55,16 @@ class EditFriendScreen(selectedFriend: FriendList.Friend, backScreen: ViewFriend
         rightSideButton.setText("Save".tr())
         rightSideButton.enable()
         rightSideButton.onClick {
-            //friendlist.addNewFriend(friendNameTextField.text, playerIDTextField.text)
-            // TODO Change friend settings
+            if (friendlist.isFriendInFriendList(friendNameTextField.text)) {
+                ToastPopup("Player name already used!", this)
+                return@onClick
+            }
+            try {
+                UUID.fromString(IdChecker.checkAndReturnPlayerUuid(playerIDTextField.text))
+            } catch (ex: Exception) {
+                ToastPopup("Player ID is incorrect", this)
+                return@onClick
+            }
             friendlist.editFriend(selectedFriend, friendNameTextField.text, playerIDTextField.text)
             backScreen.game.setScreen(backScreen)
             backScreen.refreshFriendsList()

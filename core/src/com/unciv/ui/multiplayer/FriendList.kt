@@ -1,6 +1,7 @@
 package com.unciv.ui.multiplayer
 
 import com.badlogic.gdx.files.FileHandle
+import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 
@@ -31,6 +32,8 @@ class FriendList {
                 addFriendErrorType = "noName"
             } else if (playerID == "") {
                 addFriendErrorType = "noID"
+            } else if (playerID == UncivGame.Current.settings.userId) {
+                addFriendErrorType = "yourself"
             }
         }
         if (addFriendErrorType == ""){
@@ -71,5 +74,15 @@ class FriendList {
     fun getFriendsList(): MutableList<Friend> {
         load()
         return friendList
+    }
+
+    fun isFriendInFriendList(name: String): Boolean {
+        load()
+        for (index in friendList.indices) {
+            if (name == friendList[index].name) {
+                return true
+            }
+        }
+        return false
     }
 }
