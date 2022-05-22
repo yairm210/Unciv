@@ -100,7 +100,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                 return null
             return uniqueUnit
         }
-        fun randomGiftableUnit() = 
+        fun randomGiftableUnit() =
                 city.cityConstructions.getConstructableUnits()
                 .filter { !it.isCivilian() && it.isLandUnit() && it.uniqueTo == null }
                 .toList().randomOrNull()
@@ -112,7 +112,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         val placedUnit = receivingCiv.placeUnitNearTile(city.location, militaryUnit.name) ?: return
 
         // The unit should have bonuses from Barracks, Alhambra etc as if it was built in the CS capital
-        militaryUnit.addConstructionBonuses(placedUnit, civInfo.getCapital().cityConstructions)
+        militaryUnit.addConstructionBonuses(placedUnit, civInfo.getCapital()!!.cityConstructions)
 
         // Siam gets +10 XP for all CS units
         for (unique in receivingCiv.getMatchingUniques(UniqueType.CityStateGiftedUnitsStartWithXp)) {
@@ -237,7 +237,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
 
             // If the city-state is captured by a civ, it stops being the ally of the civ it was previously an ally of.
             //  This means that it will NOT HAVE a capital at that time, so if we run getCapital we'll get a crash!
-            val capitalLocation = if (civInfo.cities.isNotEmpty()) civInfo.getCapital().location else null
+            val capitalLocation = if (civInfo.cities.isNotEmpty() && civInfo.getCapital() != null) civInfo.getCapital()!!.location else null
 
             if (newAllyName != null) {
                 val newAllyCiv = civInfo.gameInfo.getCivilization(newAllyName)
@@ -301,10 +301,10 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
 
         otherCiv.addGold(-getDiplomaticMarriageCost())
         otherCiv.addNotification("We have married into the ruling family of [${civInfo.civName}], bringing them under our control.",
-            civInfo.getCapital().location, civInfo.civName, NotificationIcon.Diplomacy, otherCiv.civName)
+            civInfo.getCapital()!!.location, civInfo.civName, NotificationIcon.Diplomacy, otherCiv.civName)
         for (civ in civInfo.gameInfo.civilizations.filter { it != otherCiv })
             civ.addNotification("[${otherCiv.civName}] has married into the ruling family of [${civInfo.civName}], bringing them under their control.",
-                civInfo.getCapital().location, civInfo.civName, NotificationIcon.Diplomacy, otherCiv.civName)
+                civInfo.getCapital()!!.location, civInfo.civName, NotificationIcon.Diplomacy, otherCiv.civName)
         for (unit in civInfo.getCivUnits())
             unit.gift(otherCiv)
         for (city in civInfo.cities) {
@@ -327,7 +327,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             modifiers["Major Civ"] = -999
             return modifiers
         }
-        if (civInfo.cities.isEmpty()) {
+        if (civInfo.cities.isEmpty() || civInfo.getCapital() == null) {
             modifiers["No Cities"] = -999
             return  modifiers
         }
@@ -344,7 +344,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             modifiers["Has Protector"] = -20
         if (demandingWorker)
             modifiers["Demanding a Worker"] = -30
-        if (demandingWorker && civInfo.getCapital().population.population < 4)
+        if (demandingWorker && civInfo.getCapital()!!.population.population < 4)
             modifiers["Demanding a Worker from small City-State"] = -300
         val recentBullying = civInfo.getRecentBullyingCountdown()
         if (recentBullying != null && recentBullying > 10)
@@ -366,13 +366,13 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             return modifiers
 
         val bullyRange = (civInfo.gameInfo.tileMap.tileMatrix.size / 10).coerceIn(5, 10)   // Longer range for larger maps
-        val inRangeTiles = civInfo.getCapital().getCenterTile().getTilesInDistanceRange(1..bullyRange)
+        val inRangeTiles = civInfo.getCapital()!!.getCenterTile().getTilesInDistanceRange(1..bullyRange)
         val forceNearCity = inRangeTiles
             .sumOf { if (it.militaryUnit?.civInfo == demandingCiv)
                     it.militaryUnit!!.getForceEvaluation()
                 else 0
             }
-        val csForce = civInfo.getCapital().getForceEvaluation() + inRangeTiles
+        val csForce = civInfo.getCapital()!!.getForceEvaluation() + inRangeTiles
             .sumOf { if (it.militaryUnit?.civInfo == civInfo)
                     it.militaryUnit!!.getForceEvaluation()
                 else 0
@@ -427,7 +427,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                 it.value.isCivilian() && it.value.isBuildable(civInfo)
         }
         if (buildableWorkerLikeUnits.isEmpty()) return  // Bad luck?
-        demandingCiv.placeUnitNearTile(civInfo.getCapital().location, buildableWorkerLikeUnits.keys.random())
+        demandingCiv.placeUnitNearTile(civInfo.getCapital()!!.location, buildableWorkerLikeUnits.keys.random())
 
         civInfo.getDiplomacyManager(demandingCiv).addInfluence(-50f)
         cityStateBullied(demandingCiv)
@@ -661,7 +661,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         ) {
             thirdCiv.addNotification(
                 "[${civInfo.civName}] is being attacked by [${attacker.civName}] and asks all major civilizations to help them out by gifting them military units.",
-                civInfo.getCapital().location,
+                civInfo.getCapital()!!.location,
                 civInfo.civName,
                 "OtherIcons/Present",
             )

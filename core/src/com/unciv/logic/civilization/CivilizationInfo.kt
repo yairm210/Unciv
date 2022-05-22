@@ -303,7 +303,7 @@ class CivilizationInfo {
             compareByDescending<CivilizationInfo> { it.isMajorCiv() }
                 .thenBy (UncivGame.Current.settings.getCollatorFromLocale()) { it.civName.tr() }
         )
-    fun getCapital() = cities.first { it.isCapital() }
+    fun getCapital() = cities.firstOrNull { it.isCapital() }
     fun isPlayerCivilization() = playerType == PlayerType.Human
     fun isOneCityChallenger() = (
             playerType == PlayerType.Human &&
@@ -368,16 +368,18 @@ class CivilizationInfo {
     fun getCivResources(): ResourceSupplyList = summarizedCivResources
 
     // Preserves some origins for resources so we can separate them for trades
-    fun getCivResourcesWithOriginsForTrade() = ResourceSupplyList(keepZeroAmounts = true).apply {
+    fun getCivResourcesWithOriginsForTrade(): ResourceSupplyList {
+        val newResourceSupplyList = ResourceSupplyList(keepZeroAmounts = true)
         for (resourceSupply in detailedCivResources) {
             // If we got it from another trade or from a CS, preserve the origin
             if (resourceSupply.isCityStateOrTradeOrigin()) {
-                add(resourceSupply)
-                add(resourceSupply.resource, Constants.tradable, 0) // Still add an empty "tradable" entry so it shows up in the list
+                newResourceSupplyList.add(resourceSupply)
+                newResourceSupplyList.add(resourceSupply.resource, Constants.tradable, 0) // Still add an empty "tradable" entry so it shows up in the list
             }
             else
-                add(resourceSupply.resource, Constants.tradable, resourceSupply.amount)
+                newResourceSupplyList.add(resourceSupply.resource, Constants.tradable, resourceSupply.amount)
         }
+        return newResourceSupplyList
     }
 
     fun isCapitalConnectedToCity(city: CityInfo): Boolean = citiesConnectedToCapitalToMediums.keys.contains(city)
@@ -534,7 +536,7 @@ class CivilizationInfo {
         if (!(isCityState() && otherCiv.isMajorCiv())) return
         if (warOnContact || otherCiv.isMinorCivAggressor()) return // No gift if they are bad people, or we are just about to be at war
 
-        val cityStateLocation = if (cities.isEmpty()) null else getCapital().location
+        val cityStateLocation = if (cities.isEmpty()) null else getCapital()!!.location
 
         val giftAmount = Stats(gold = 15f)
         val faithAmount = Stats(faith = 4f)
@@ -561,7 +563,7 @@ class CivilizationInfo {
             otherCiv.addStat(key, value.toInt())
 
         if (cities.isNotEmpty())
-            otherCiv.exploredTiles = otherCiv.exploredTiles.withItem(getCapital().location)
+            otherCiv.exploredTiles = otherCiv.exploredTiles.withItem(getCapital()!!.location)
 
         questManager.justMet(otherCiv) // Include them in war with major pseudo-quest
     }
@@ -998,6 +1000,7 @@ class CivilizationInfo {
          flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == 0
          && gameInfo.civilizations.any { it.isMajorCiv() && !it.isDefeated() && it != this }
 
+
     private fun updateRevolts() {
         if (gameInfo.civilizations.none { it.isBarbarian() }) {
             // Can't spawn revolts without barbarians ¯\_(ツ)_/¯
@@ -1270,7 +1273,7 @@ class CivilizationInfo {
 
         // Check if different continents (unless already max distance, or water map)
         if (connections > 0 && proximity != Proximity.Distant && !gameInfo.tileMap.isWaterMap()
-            && getCapital().getCenterTile().getContinent() != otherCiv.getCapital().getCenterTile().getContinent()
+            && getCapital()!!.getCenterTile().getContinent() != otherCiv.getCapital()!!.getCenterTile().getContinent()
         ) {
             // Different continents - increase separation by one step
             proximity = when (proximity) {
@@ -1297,8 +1300,9 @@ class CivilizationInfo {
      * Removes current capital then moves capital to argument city if not null
      */
     fun moveCapitalTo(city: CityInfo?) {
-        if (cities.isNotEmpty()) {
-            getCapital().cityConstructions.removeBuilding(getCapital().capitalCityIndicator())
+        if (cities.isNotEmpty() && getCapital() != null) {
+            val oldCapital = getCapital()!!
+            oldCapital.cityConstructions.removeBuilding(oldCapital.capitalCityIndicator())
         }
 
         if (city == null) return // can't move a non-existent city but we can always remove our old capital
@@ -1309,7 +1313,7 @@ class CivilizationInfo {
 
     fun moveCapitalToNextLargest() {
         moveCapitalTo(cities
-            .filterNot { it == getCapital() }
+            .filterNot { it.isCapital() }
             .maxByOrNull { it.population.population})
     }
 

@@ -74,7 +74,7 @@ class ResourcesOverviewTab(
         ImageGetter.getResourceImage(name, iconSize).apply {
             onClick {
                 if (viewingPlayer.gameInfo.notifyExploredResources(viewingPlayer, name, 0, true))
-                    overviewScreen.game.setWorldScreen()
+                    overviewScreen.game.resetToWorldScreen()
             }
         }
     private fun TileResource.getLabel() = name.toLabel().apply {

@@ -19,8 +19,7 @@ class PlayerReadyScreen(gameInfo: GameInfo, currentPlayerCiv: CivilizationInfo) 
 
         table.onClick {
             postCrashHandlingRunnable { // To avoid ANRs on Android when the creation of the worldscreen takes more than 500ms
-                game.worldScreen = WorldScreen(gameInfo, currentPlayerCiv)
-                game.setWorldScreen()
+                game.resetToWorldScreen(WorldScreen(gameInfo, currentPlayerCiv))
             }
         }
         table.setFillParent(true)
