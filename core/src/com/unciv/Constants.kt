@@ -51,7 +51,7 @@ object Constants {
     // Easter egg name. Is to avoid conflicts when players name their own religions.
     // This religion name should never be displayed.
     const val noReligionName = "The religion of TheLegend27"
-    
+
     const val neutralVictoryType = "Neutral"
 
     const val cancelImprovementOrder = "Cancel improvement order"
@@ -61,6 +61,7 @@ object Constants {
     const val close = "Close"
     const val yes = "Yes"
     const val no = "No"
+    const val loading = "Loading..."
 
     const val barbarians = "Barbarians"
     const val spectator = "Spectator"
@@ -70,7 +71,7 @@ object Constants {
     const val remove = "Remove "
 
     const val uniqueOrDelimiter = "\" OR \""
-    
+
     const val dropboxMultiplayerServer = "Dropbox"
 
     /**

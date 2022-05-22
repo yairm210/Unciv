@@ -167,7 +167,7 @@ class MainMenuScreen: BaseScreen() {
 
     private fun autoLoadGame() {
         val loadingPopup = Popup(this)
-        loadingPopup.addGoodSizedLabel("Loading...")
+        loadingPopup.addGoodSizedLabel(Constants.loading)
         loadingPopup.open()
         launchCrashHandling("autoLoadGame") {
             // Load game from file to class on separate thread to avoid ANR...
