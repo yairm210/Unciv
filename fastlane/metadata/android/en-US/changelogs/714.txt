@@ -1,5 +1,3 @@
-## 4.1.2
-
 welp these tests kind of existed before
 
 Added test that improvements can be built on their tiles
@@ -39,5 +37,4 @@ By itanasi:
 
 By JackRainy:
 - A lot of smaller code/performance improvements 
-- Correct check for the city connection quest 
-
+- Correct check for the city connection quest
