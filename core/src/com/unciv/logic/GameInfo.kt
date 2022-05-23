@@ -12,6 +12,7 @@ import com.unciv.logic.civilization.*
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.models.ModConstants
 import com.unciv.models.Religion
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.*
@@ -164,18 +165,18 @@ class GameInfo {
     private fun getEquivalentTurn(): Int {
         val totalTurns = getGameSpeed().numTotalTurns()
         val startPercent = ruleSet.eras[gameParameters.startingEra]!!.startPercent
-        return turns + ((totalTurns * startPercent).toInt() / 100)
+        return turns + (totalTurns * startPercent / 100)
     }
- 
+
     fun getYear(turnOffset: Int = 0): Int {
         val turn = getEquivalentTurn() + turnOffset
         val yearsToTurn = getGameSpeed().yearsToTurnObject
-        var year: Float = -4000f
+        var year: Float = ruleSet.modOptions.constants.startYear
         var i = 0
         var yearsPerTurn: Float
 
         while (i < turn) {
-            yearsPerTurn = (yearsToTurn.firstOrNull { i < it.toTurn }?.yearInterval ?: 0.5f)
+            yearsPerTurn = (yearsToTurn.firstOrNull { i < it.toTurn }?.yearInterval ?: yearsToTurn.last().yearInterval)
             year += yearsPerTurn
             ++i
         }

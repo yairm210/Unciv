@@ -6,9 +6,9 @@ class ModConstants {
     var maxXPfromBarbarians = 30
 
     // Formula for city Strength:
-    // Strength = baseStrength + strengthPerPop + strengthFromTiles + 
-    //            ((%techs * multiplier) ^ exponent) * fullMultiplier + 
-    //            (garrisonBonus * garrisonUnitStrength * garrisonUnitHealth/100) + 
+    // Strength = baseStrength + strengthPerPop + strengthFromTiles +
+    //            ((%techs * multiplier) ^ exponent) * fullMultiplier +
+    //            (garrisonBonus * garrisonUnitStrength * garrisonUnitHealth/100) +
     //            defensiveBuildingStrength
     // where %techs is the percentage of techs in the tech tree that are complete
     // If no techs exist in this ruleset, %techs = 0.5 (=50%)
@@ -18,10 +18,10 @@ class ModConstants {
     var cityStrengthFromTechsExponent = 2.8
     var cityStrengthFromTechsFullMultiplier = 1.0
     var cityStrengthFromGarrison = 0.2
- 
+
     // Formula for Unit Supply:
     // Supply = unitSupplyBase (difficulties.json)
-    //          unitSupplyPerCity * amountOfCities + (difficulties.json) 
+    //          unitSupplyPerCity * amountOfCities + (difficulties.json)
     //          unitSupplyPerPopulation * amountOfPopulationInAllCities
     // unitSupplyBase and unitSupplyPerCity can be found in difficulties.json
     // unitSupplyBase, unitSupplyPerCity and unitSupplyPerPopulation can also be increased through uniques
@@ -52,6 +52,8 @@ class ModConstants {
     var minRiverLength = 5
     var maxRiverLength = 666  // Do not set < max map radius
 
+    var startYear = -4000f
+
     fun merge(other: ModConstants) {
         if (other.maxXPfromBarbarians != defaults.maxXPfromBarbarians) maxXPfromBarbarians = other.maxXPfromBarbarians
         if (other.cityStrengthBase != defaults.cityStrengthBase) cityStrengthBase = other.cityStrengthBase
@@ -71,6 +73,7 @@ class ModConstants {
         if (other.riverCountMultiplier != defaults.riverCountMultiplier) riverCountMultiplier = other.riverCountMultiplier
         if (other.minRiverLength != defaults.minRiverLength) minRiverLength = other.minRiverLength
         if (other.maxRiverLength != defaults.maxRiverLength) maxRiverLength = other.maxRiverLength
+        if (other.startYear != defaults.startYear) startYear = other.startYear
     }
 
     companion object {

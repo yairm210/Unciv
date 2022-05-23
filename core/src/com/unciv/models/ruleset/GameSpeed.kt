@@ -23,7 +23,7 @@ class GameSpeed : RulesetObject() {
 
     override fun makeLink(): String = "GameSpeed/$name"
 
-    fun numTotalTurns(): Int = yearsToTurnObject.sumOf { it.toTurn }
+    fun numTotalTurns(): Int = yearsToTurnObject.last().toTurn
 
     private fun initYearsToTurn(yearsToTurn: ArrayList<HashMap<String, Float>>): ArrayList<YearsPerTurn> {
         val yptList = ArrayList<YearsPerTurn>()
