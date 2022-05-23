@@ -280,6 +280,12 @@ class OnlineMultiplayer {
      */
     suspend fun updateGame(gameInfo: GameInfo) {
         onlineGameSaver.tryUploadGame(gameInfo, withPreview = true)
+        val game = getGameByGameId(gameInfo.gameId)
+        if (game == null) {
+            addGame(gameInfo)
+        } else {
+            game.doManualUpdate(gameInfo.asPreview())
+        }
     }
 
     /**

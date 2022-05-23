@@ -37,7 +37,14 @@ import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.multiplayer.MultiplayerHelpers
 import com.unciv.ui.overviewscreen.EmpireOverviewScreen
-import com.unciv.ui.pickerscreens.*
+import com.unciv.ui.pickerscreens.DiplomaticVotePickerScreen
+import com.unciv.ui.pickerscreens.DiplomaticVoteResultScreen
+import com.unciv.ui.pickerscreens.GreatPersonPickerScreen
+import com.unciv.ui.pickerscreens.PantheonPickerScreen
+import com.unciv.ui.pickerscreens.PolicyPickerScreen
+import com.unciv.ui.pickerscreens.ReligiousBeliefsPickerScreen
+import com.unciv.ui.pickerscreens.TechButton
+import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.popup.ExitGamePopup
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
@@ -70,7 +77,6 @@ import com.unciv.ui.worldscreen.status.StatusButtons
 import com.unciv.ui.worldscreen.unit.UnitActionsTable
 import com.unciv.ui.worldscreen.unit.UnitTable
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.Flow
 import java.util.*
 
 /**
@@ -117,15 +123,13 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     private val notificationsScroll: NotificationsScroll
     var shouldUpdate = false
 
+    private var nextTurnUpdateJob: Job? = null
+
     private val events = EventBus.EventReceiver()
 
     companion object {
         /** Switch for console logging of next turn duration */
         private const val consoleLog = false
-
-        private lateinit var multiPlayerRefresher: Flow<Unit>
-        // this object must not be created multiple times
-        private var multiPlayerRefresherJob: Job? = null
     }
 
     init {
@@ -216,11 +220,10 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         if (gameInfo.gameParameters.isOnlineMultiplayer) {
             val gameId = gameInfo.gameId
             events.receive(MultiplayerGameUpdated::class, { it.preview.gameId == gameId }) {
+                if (isNextTurnUpdateRunning() || game.onlineMultiplayer.hasLatestGameState(gameInfo, it.preview)) {
+                    return@receive
+                }
                 launchCrashHandling("Load latest multiplayer state") {
-                    if (game.onlineMultiplayer.hasLatestGameState(gameInfo, it.preview)
-                            && it.preview.currentPlayer != gameInfo.getPlayerToViewAs().civName) {
-                        return@launchCrashHandling
-                    }
                     loadLatestMultiplayerState()
                 }
             }
@@ -301,7 +304,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         keyPressDispatcher[KeyCharAndCode.ctrl('O')] = { // Game Options
             this.openOptionsPopup(onClose = {
                 mapHolder.reloadMaxZoom()
-                nextTurnButton.update(hasOpenPopups(), isPlayersTurn, waitingForAutosave)
+                nextTurnButton.update(hasOpenPopups(), isPlayersTurn, waitingForAutosave, isNextTurnUpdateRunning())
             })
         }
         keyPressDispatcher[KeyCharAndCode.ctrl('S')] = { game.setScreen(SaveGameScreen(gameInfo)) }    //   Save
@@ -656,7 +659,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         shouldUpdate = true
 
         // on a separate thread so the user can explore their world while we're passing the turn
-        launchCrashHandling("NextTurn", runAsDaemon = false) {
+        nextTurnUpdateJob = launchCrashHandling("NextTurn", runAsDaemon = false) {
             if (consoleLog)
                 println("\nNext turn starting " + Date().formatDate())
             val startTime = System.currentTimeMillis()
@@ -720,8 +723,13 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         }
     }
 
+    private fun isNextTurnUpdateRunning(): Boolean {
+        val job = nextTurnUpdateJob
+        return job != null && job.isActive
+    }
+
     private fun updateGameplayButtons() {
-        nextTurnButton.update(hasOpenPopups(), isPlayersTurn, waitingForAutosave, getNextTurnAction())
+        nextTurnButton.update(hasOpenPopups(), isPlayersTurn, waitingForAutosave, isNextTurnUpdateRunning(), getNextTurnAction())
 
         updateMultiplayerStatusButton()
 

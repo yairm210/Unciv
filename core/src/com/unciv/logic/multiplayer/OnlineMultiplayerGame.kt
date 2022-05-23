@@ -83,7 +83,7 @@ class OnlineMultiplayerGame(
         val updateEvent = when (updateResult) {
             GameUpdateResult.CHANGED -> MultiplayerGameUpdated(name, preview!!)
             GameUpdateResult.FAILURE -> MultiplayerGameUpdateFailed(name, error!!)
-            GameUpdateResult.UNCHANGED -> MultiplayerGameUpdateUnchanged(name)
+            GameUpdateResult.UNCHANGED -> MultiplayerGameUpdateUnchanged(name, preview!!)
         }
         postCrashHandlingRunnable { EventBus.send(updateEvent) }
     }

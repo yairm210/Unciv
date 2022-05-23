@@ -8,7 +8,9 @@ interface HasMultiplayerGameName {
 }
 
 interface MultiplayerGameUpdateEnded : Event, HasMultiplayerGameName
-interface MultiplayerGameUpdateSucceeded : Event, HasMultiplayerGameName
+interface MultiplayerGameUpdateSucceeded : Event, HasMultiplayerGameName {
+    val preview: GameInfoPreview
+}
 
 /**
  * Gets sent when a game was added.
@@ -21,7 +23,7 @@ class MultiplayerGameAdded(
  */
 class MultiplayerGameUpdated(
     override val name: String,
-    val preview: GameInfoPreview,
+    override val preview: GameInfoPreview,
 ) : MultiplayerGameUpdateEnded, MultiplayerGameUpdateSucceeded
 
 /**
@@ -35,7 +37,8 @@ class MultiplayerGameUpdateFailed(
  * Gets sent when a game updated successfully, but nothing changed
  */
 class MultiplayerGameUpdateUnchanged(
-    override val name: String
+    override val name: String,
+    override val preview: GameInfoPreview
 ) : MultiplayerGameUpdateEnded, MultiplayerGameUpdateSucceeded
 
 /**
