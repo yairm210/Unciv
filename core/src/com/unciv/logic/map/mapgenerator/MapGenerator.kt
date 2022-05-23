@@ -14,11 +14,10 @@ import com.unciv.models.ruleset.unique.Unique
 import kotlin.math.*
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.mapeditor.MapGeneratorSteps
-import kotlinx.coroutines.Job
 import kotlin.random.Random
 
 
-class MapGenerator(val ruleset: Ruleset, private val job: Job? = null) {
+class MapGenerator(val ruleset: Ruleset) {
     companion object {
         // temporary instrumentation while tuning/debugging
         const val consoleOutput = false
@@ -26,7 +25,7 @@ class MapGenerator(val ruleset: Ruleset, private val job: Job? = null) {
     }
 
     private var randomness = MapGenerationRandomness()
-    private val firstLandTerrain = ruleset.terrains.values.first { it.type == TerrainType.Land }
+    private val firstLandTerrain = ruleset.terrains.values.first { it.type==TerrainType.Land }
 
     /** Associates [terrain] with a range of temperatures and a range of humidities (both open to closed) */
     private class TerrainOccursRange(
@@ -49,8 +48,6 @@ class MapGenerator(val ruleset: Ruleset, private val job: Job? = null) {
         getMatchingUniques(UniqueType.TileGenerationConditions)
             .map { unique -> TerrainOccursRange(this, unique) }
 
-    private fun wishToAbort() = job?.isActive == false
-
     fun generateMap(mapParameters: MapParameters, civilizations: List<CivilizationInfo> = emptyList()): TileMap {
         val mapSize = mapParameters.mapSize
         val mapType = mapParameters.type
@@ -68,8 +65,6 @@ class MapGenerator(val ruleset: Ruleset, private val job: Job? = null) {
         mapParameters.createdWithVersion = UncivGame.Current.version
         map.mapParameters = mapParameters
 
-        if (wishToAbort()) return map
-
         if (mapType == MapType.empty) {
             for (tile in map.values) {
                 tile.baseTerrain = Constants.ocean
@@ -83,41 +78,32 @@ class MapGenerator(val ruleset: Ruleset, private val job: Job? = null) {
         runAndMeasure("MapLandmassGenerator") {
             MapLandmassGenerator(ruleset, randomness).generateLand(map)
         }
-        if (wishToAbort()) return map
         runAndMeasure("raiseMountainsAndHills") {
             raiseMountainsAndHills(map)
         }
-        if (wishToAbort()) return map
         runAndMeasure("applyHumidityAndTemperature") {
             applyHumidityAndTemperature(map)
         }
-        if (wishToAbort()) return map
         runAndMeasure("spawnLakesAndCoasts") {
             spawnLakesAndCoasts(map)
         }
-        if (wishToAbort()) return map
         runAndMeasure("spawnVegetation") {
             spawnVegetation(map)
         }
-        if (wishToAbort()) return map
         runAndMeasure("spawnRareFeatures") {
             spawnRareFeatures(map)
         }
-        if (wishToAbort()) return map
         runAndMeasure("spawnIce") {
             spawnIce(map)
         }
-        if (wishToAbort()) return map
         runAndMeasure("assignContinents") {
             map.assignContinents(TileMap.AssignContinentsMode.Assign)
         }
-        if (wishToAbort()) return map
         runAndMeasure("RiverGenerator") {
             RiverGenerator(map, randomness, ruleset).spawnRivers()
         }
         convertTerrains(map, ruleset)
 
-        if (wishToAbort()) return map
         // Region based map generation - not used when generating maps in map editor
         if (civilizations.isNotEmpty()) {
             val regions = MapRegions(ruleset)
@@ -136,12 +122,9 @@ class MapGenerator(val ruleset: Ruleset, private val job: Job? = null) {
                 spreadResources(map)
             }
         }
-
-        if (wishToAbort()) return map
         runAndMeasure("NaturalWonderGenerator") {
             NaturalWonderGenerator(ruleset, randomness).spawnNaturalWonders(map)
         }
-        if (wishToAbort()) return map
         runAndMeasure("spreadAncientRuins") {
             spreadAncientRuins(map)
         }
@@ -329,8 +312,8 @@ class MapGenerator(val ruleset: Ruleset, private val job: Job? = null) {
     private fun raiseMountainsAndHills(tileMap: TileMap) {
         val mountain = ruleset.terrains.values.firstOrNull { it.hasUnique(UniqueType.OccursInChains) }?.name
         val hill = ruleset.terrains.values.firstOrNull { it.hasUnique(UniqueType.OccursInGroups) }?.name
-        val flat = ruleset.terrains.values.firstOrNull {
-            !it.impassable && it.type == TerrainType.Land && !it.hasUnique(UniqueType.RoughTerrain)
+        val flat = ruleset.terrains.values.firstOrNull { 
+            !it.impassable && it.type == TerrainType.Land && !it.hasUnique(UniqueType.RoughTerrain) 
         }?.name
 
         if (flat == null) {
@@ -559,7 +542,7 @@ class MapGenerator(val ruleset: Ruleset, private val job: Job? = null) {
             ruleset.terrains.values.asSequence()
             .filter { it.type == TerrainType.Water }
             .map { it.name }.toSet()
-        val iceEquivalents: List<TerrainOccursRange> =
+        val iceEquivalents: List<TerrainOccursRange> = 
             ruleset.terrains.values.asSequence()
             .filter { terrain ->
                 terrain.type == TerrainType.TerrainFeature &&
@@ -599,7 +582,6 @@ class MapGenerator(val ruleset: Ruleset, private val job: Job? = null) {
 }
 
 class MapGenerationRandomness {
-    @Suppress("PropertyName")  // It's an abbreviation
     var RNG = Random(42)
 
     fun seedRNG(seed: Long = 42) {

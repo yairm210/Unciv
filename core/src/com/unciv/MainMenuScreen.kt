@@ -29,13 +29,10 @@ import com.unciv.ui.popup.*
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.job
 
 class MainMenuScreen: BaseScreen() {
     private val backgroundTable = Table().apply { background= ImageGetter.getBackground(Color.WHITE) }
     private val singleColumn = isCrampedPortrait()
-    private var backgroundWorker: Job? = null
 
     /** Create one **Main Menu Button** including onClick/key binding
      *  @param text      The text to display on the button
@@ -47,6 +44,7 @@ class MainMenuScreen: BaseScreen() {
         text: String,
         icon: String,
         key: Char? = null,
+        keyVisualOnly: Boolean = false,
         function: () -> Unit
     ): Table {
         val table = Table().pad(15f, 30f, 15f, 30f)
@@ -55,14 +53,11 @@ class MainMenuScreen: BaseScreen() {
         table.add(text.toLabel().setFontSize(30)).minWidth(200f)
 
         table.touchable = Touchable.enabled
-        val onClickAction = {
-            cancelGenerateBackground()
-            function()
-        }
-        table.onClick(onClickAction)
+        table.onClick(function)
 
         if (key != null) {
-            keyPressDispatcher[key] = onClickAction
+            if (!keyVisualOnly)
+                keyPressDispatcher[key] = function
             table.addTooltip(key, 32f)
         }
 
@@ -78,8 +73,25 @@ class MainMenuScreen: BaseScreen() {
         // will not exist unless we reset the ruleset and images
         ImageGetter.ruleset = RulesetCache.getVanillaRuleset()
 
-        backgroundWorker = launchCrashHandling("ShowMapBackground") {
-            generateBackground(coroutineContext.job)
+        launchCrashHandling("ShowMapBackground") {
+            val newMap = MapGenerator(RulesetCache.getVanillaRuleset())
+                    .generateMap(MapParameters().apply {
+                        mapSize = MapSizeNew(MapSize.Small)
+                        type = MapType.default
+                        waterThreshold = -0.055f // Gives the same level as when waterThreshold was unused in MapType.default
+                    })
+            postCrashHandlingRunnable { // for GL context
+                ImageGetter.setNewRuleset(RulesetCache.getVanillaRuleset())
+                val mapHolder = EditorMapHolder(this@MainMenuScreen, newMap) {}
+                backgroundTable.addAction(Actions.sequence(
+                        Actions.fadeOut(0f),
+                        Actions.run {
+                            backgroundTable.addActor(mapHolder)
+                            mapHolder.center(backgroundTable)
+                        },
+                        Actions.fadeIn(0.3f)
+                ))
+            }
         }
 
         val column1 = Table().apply { defaults().pad(10f).fillX() }
@@ -147,51 +159,13 @@ class MainMenuScreen: BaseScreen() {
             .apply { actor.y -= 2.5f } // compensate font baseline (empirical)
             .surroundWithCircle(42f, resizeActor = false)
         helpButton.touchable = Touchable.enabled
-        helpButton.onClick {
-            cancelGenerateBackground()
-            openCivilopedia()
-        }
+        helpButton.onClick { openCivilopedia() }
         keyPressDispatcher[Input.Keys.F1] = { openCivilopedia() }
         helpButton.addTooltip(KeyCharAndCode(Input.Keys.F1), 20f)
         helpButton.setPosition(20f, 20f)
         stage.addActor(helpButton)
     }
 
-    private fun generateBackground(job: Job) {
-        val newMap = MapGenerator(RulesetCache.getVanillaRuleset(), job)
-            .generateMap(MapParameters().apply {
-                mapSize = MapSizeNew(MapSize.Small)
-                type = MapType.default
-                waterThreshold = -0.055f // Gives the same level as when waterThreshold was unused in MapType.default
-            })
-        if (!job.isActive) return
-        var waitingForDisplay = true
-        postCrashHandlingRunnable { // for GL context
-            if (!job.isActive) return@postCrashHandlingRunnable
-            ImageGetter.setNewRuleset(RulesetCache.getVanillaRuleset())
-            if (!job.isActive) return@postCrashHandlingRunnable
-            val mapHolder = EditorMapHolder(this@MainMenuScreen, newMap) {}
-            if (!job.isActive) return@postCrashHandlingRunnable
-            backgroundTable.addAction(Actions.sequence(
-                Actions.fadeOut(0f),
-                Actions.run {
-                    backgroundTable.addActor(mapHolder)
-                    mapHolder.center(backgroundTable)
-                },
-                Actions.fadeIn(0.3f)
-            ))
-            if (backgroundWorker == job)
-                backgroundWorker = null
-            waitingForDisplay = false
-        }
-        while(waitingForDisplay) Unit
-    }
-
-    private fun cancelGenerateBackground() {
-        val worker = backgroundWorker
-        backgroundWorker = null
-        worker?.cancel()
-    }
 
     private fun autoLoadGame() {
         val loadingPopup = Popup(this)
@@ -277,7 +251,6 @@ class MainMenuScreen: BaseScreen() {
 
     override fun resize(width: Int, height: Int) {
         if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
-            cancelGenerateBackground()
             game.setScreen(MainMenuScreen())
         }
     }
