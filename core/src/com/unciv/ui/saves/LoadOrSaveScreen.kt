@@ -21,14 +21,6 @@ import com.unciv.ui.utils.toTextButton
 import java.util.Date
 
 
-//todo inconsistent "Loading..." display (Toast, Popup or descriptionLabel)
-    // loadMissingMods: descriptionLabel - ?
-    // showSaveInfo: descriptionLabel - OK
-    // onLoadGame: Popup
-//todo Load-file != Load-clipboard error handling
-//todo No "load missing mods" from normal load file?
-//todo move all other save/load code here (QuickSave, MainMenuScreen resume) + synergies
-
 abstract class LoadOrSaveScreen(
     fileListHeaderText: String? = null
 ) : PickerScreen(disableScroll = true) {
@@ -54,10 +46,7 @@ abstract class LoadOrSaveScreen(
         }
 
         deleteSaveButton.disable()
-        deleteSaveButton.onClick {
-            game.gameSaver.deleteSave(selectedSave)
-            resetWindowState()
-        }
+        deleteSaveButton.onClick(::onDeleteClicked)
 
         if (fileListHeaderText != null)
             topTable.add(fileListHeaderText.toLabel()).pad(10f).row()
@@ -67,13 +56,26 @@ abstract class LoadOrSaveScreen(
         topTable.add(savesScrollPane)
         topTable.add(rightSideTable)
         topTable.pack()
-
     }
 
     open fun resetWindowState() {
         updateShownSaves(showAutosavesCheckbox.isChecked)
         deleteSaveButton.disable()
         descriptionLabel.setText("")
+    }
+
+    private fun onDeleteClicked() {
+        val result = try {
+            if (game.gameSaver.deleteSave(selectedSave)) {
+                resetWindowState()
+                "[$selectedSave] deleted successfully."
+            } else "Failed to delete [$selectedSave]."
+        } catch (ex: SecurityException) {
+            "Insufficient permissions to delete [$selectedSave]."
+        } catch (ex: Throwable) {
+            "Failed to delete [$selectedSave]."
+        }
+        descriptionLabel.setText(result)
     }
 
     private fun updateShownSaves(showAutosaves: Boolean) {

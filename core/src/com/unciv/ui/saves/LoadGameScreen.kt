@@ -5,6 +5,7 @@ import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.utils.SerializationException
 import com.unciv.Constants
 import com.unciv.logic.MissingModsException
 import com.unciv.logic.UncivShowableException
@@ -16,6 +17,7 @@ import com.unciv.ui.pickerscreens.Github
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.*
+import java.io.FileNotFoundException
 import java.util.concurrent.CancellationException
 
 class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
@@ -75,9 +77,17 @@ class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
             } catch (ex: Exception) {
                 postCrashHandlingRunnable {
                     loadingPopup.close()
+                    if (ex is MissingModsException) {
+                        handleLoadGameException("Could not load game", ex)
+                        return@postCrashHandlingRunnable
+                    }
                     val cantLoadGamePopup = Popup(this@LoadGameScreen)
                     cantLoadGamePopup.addGoodSizedLabel("It looks like your saved game can't be loaded!").row()
-                    if (ex is UncivShowableException) {
+                    if (ex is SerializationException)
+                        cantLoadGamePopup.addGoodSizedLabel("The file data seems to be corrupted.").row()
+                    if (ex.cause is FileNotFoundException && (ex.cause as FileNotFoundException).message?.contains("Permission denied") == true) {
+                        cantLoadGamePopup.addGoodSizedLabel("You do not have sufficient permissions to access the file.").row()
+                    } else if (ex is UncivShowableException) {
                         // thrown exceptions are our own tests and can be shown to the user
                         cantLoadGamePopup.addGoodSizedLabel(ex.message).row()
                     } else {
@@ -111,16 +121,21 @@ class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
 
     private fun Table.addLoadFromCustomLocationButton() {
         if (!game.gameSaver.canLoadFromCustomSaveLocation()) return
-        val button = loadFromCustomLocation.toTextButton()
-        button.onClick {
-            game.gameSaver.loadGameFromCustomLocation { loadedGame, exception ->
-                if (loadedGame != null) {
-                    postCrashHandlingRunnable { game.loadGame(loadedGame) }
-                } else if (exception !is CancellationException)
-                    handleLoadGameException("Could not load game from custom location!", exception)
+        val loadFromCustomLocation = loadFromCustomLocation.toTextButton()
+        loadFromCustomLocation.onClick {
+            errorLabel.isVisible = false
+            loadFromCustomLocation.setText(Constants.loading.tr())
+            loadFromCustomLocation.disable()
+            launchCrashHandling(Companion.loadFromCustomLocation) {
+                game.gameSaver.loadGameFromCustomLocation { loadedGame, exception ->
+                    if (loadedGame != null) {
+                        postCrashHandlingRunnable { game.loadGame(loadedGame) }
+                    } else if (exception !is CancellationException)
+                        handleLoadGameException("Could not load game from custom location!", exception)
+                }
             }
         }
-        add(button).row()
+        add(loadFromCustomLocation).row()
     }
 
     private fun getCopyExistingSaveToClipboardButton(): TextButton {
@@ -130,7 +145,9 @@ class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
                 try {
                     val gameText = game.gameSaver.getSave(selectedSave).readString()
                     Gdx.app.clipboard.contents = if (gameText[0] == '{') Gzip.zip(gameText) else gameText
-                } catch (_: Throwable) {
+                } catch (ex: Throwable) {
+                    ex.printStackTrace()
+                    ToastPopup("Could not save game to clipboard!", this@LoadGameScreen)
                 }
             }
         }
@@ -149,13 +166,15 @@ class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
 
     private fun handleLoadGameException(primaryText: String, ex: Exception?) {
         var errorText = primaryText.tr()
-        if (ex is UncivShowableException) errorText += "\n${ex.message}"
-        errorLabel.setText(errorText)
-        errorLabel.isVisible = true
+        if (ex is UncivShowableException) errorText += "\n${ex.localizedMessage}"
         ex?.printStackTrace()
-        if (ex is MissingModsException) {
-            loadMissingModsButton.isVisible = true
-            missingModsToLoad = ex.missingMods
+        postCrashHandlingRunnable {
+            errorLabel.setText(errorText)
+            errorLabel.isVisible = true
+            if (ex is MissingModsException) {
+                loadMissingModsButton.isVisible = true
+                missingModsToLoad = ex.missingMods
+            }
         }
     }
 
@@ -167,21 +186,26 @@ class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
                 val mods = missingModsToLoad.replace(' ', '-').lowercase().splitToSequence(",-")
                 for (modName in mods) {
                     val repos = Github.tryGetGithubReposWithTopic(10, 1, modName)
-                        ?: throw UncivShowableException("Could not download mod list.".tr())
+                        ?: throw UncivShowableException("Could not download mod list.")
                     val repo = repos.items.firstOrNull { it.name.lowercase() == modName }
-                        ?: throw UncivShowableException("Could not find a mod named \"[$modName]\".".tr())
+                        ?: throw UncivShowableException("Could not find a mod named \"[$modName]\".")
                     val modFolder = Github.downloadAndExtract(
                         repo.html_url, repo.default_branch,
                         Gdx.files.local("mods")
                     )
                         ?: throw Exception() // downloadAndExtract returns null for 404 errors and the like -> display something!
                     Github.rewriteModOptions(repo, modFolder)
+                    val labelText = descriptionLabel.text // Surprise - a StringBuilder
+                    labelText.appendLine()
+                    labelText.append("[${repo.name}] Downloaded!".tr())
+                    postCrashHandlingRunnable { descriptionLabel.setText(labelText) }
                 }
                 postCrashHandlingRunnable {
                     RulesetCache.loadRulesets()
                     missingModsToLoad = ""
                     loadMissingModsButton.isVisible = false
                     errorLabel.isVisible = false
+                    rightSideTable.pack()
                     ToastPopup("Missing mods are downloaded successfully.", this@LoadGameScreen)
                 }
             } catch (ex: Exception) {

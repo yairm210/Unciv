@@ -70,8 +70,9 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
             // the Gzip rarely leads to ANRs
             try {
                 Gdx.app.clipboard.contents = GameSaver.gameInfoToString(gameInfo, forceZip = true)
-            } catch (_: Throwable) {
-                // you don't get a special toast, this isn't nearly common enough, this is a total edge-case
+            } catch (ex: Throwable) {
+                ex.printStackTrace()
+                ToastPopup("Could not save game to clipboard!", this@SaveGameScreen)
             }
         }
     }
@@ -80,12 +81,11 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
         if (!game.gameSaver.canLoadFromCustomSaveLocation()) return
         val saveToCustomLocation = "Save to custom location".toTextButton()
         val errorLabel = "".toLabel(Color.RED)
-        saveToCustomLocation.enable()
         saveToCustomLocation.onClick {
             errorLabel.setText("")
             saveToCustomLocation.setText("Saving...".tr())
             saveToCustomLocation.disable()
-            launchCrashHandling("SaveGame", runAsDaemon = false) {
+            launchCrashHandling("Save to custom location", runAsDaemon = false) {
                 game.gameSaver.saveGameToCustomLocation(gameInfo, gameNameTextField.text) { e ->
                     if (e == null) {
                         postCrashHandlingRunnable { game.resetToWorldScreen() }
