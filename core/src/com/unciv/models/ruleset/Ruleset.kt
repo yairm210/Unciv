@@ -350,7 +350,7 @@ class Ruleset {
             if (victories.isEmpty()) {
                 victories.putAll(RulesetCache.getVanillaRuleset().victories)
             }
-            
+
             if (gameSpeeds.isEmpty()) {
                 gameSpeeds.putAll(RulesetCache.getVanillaRuleset().gameSpeeds)
             }
@@ -789,8 +789,11 @@ class Ruleset {
             checkUniques(era, lines, rulesetSpecific, forOptionsPopup)
         }
 
-        if (gameSpeeds.isEmpty()) {
-            lines += "Game speeds file is empty! Loaded default game speeds!"
+        for (speed in gameSpeeds.values) {
+            if (speed.modifier < 0f)
+                lines += "Negative speed modifier for game speed ${speed.name}"
+            if (speed.yearsToTurnObject.isEmpty())
+                lines += "Empty turn increment list for game speed ${speed.name}"
         }
 
         for (belief in beliefs.values) {

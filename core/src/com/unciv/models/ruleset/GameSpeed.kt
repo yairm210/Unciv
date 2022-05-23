@@ -1,6 +1,5 @@
 package com.unciv.models.ruleset
 
-import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.UniqueTarget
 
 class GameSpeed : RulesetObject() {
@@ -38,7 +37,8 @@ class GameSpeed : RulesetObject() {
     }
 
     fun initDefaultPercents() {
-        assert(modifier > 0f)
+        // checks for a non-negative modifier value when loading a mod ruleset
+        // this way the user should see an error popup
         if (goldGiftMod < 0f) goldGiftMod = modifier
         if (barbPercent < 0f) barbPercent = modifier
         if (goldenAgePercent < 0f) goldenAgePercent = modifier
