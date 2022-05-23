@@ -17,7 +17,6 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
-import com.unciv.ui.audio.Sounds
 import com.unciv.ui.utils.toPercent
 import java.util.*
 import kotlin.math.max
@@ -29,41 +28,51 @@ import kotlin.math.min
 object Battle {
 
     /**
+     * Moves [attacker] to [attackableTile], handles siege setup then attacks if still possible
+     * (by calling [attack] or [NUKE]). Does _not_ play the attack sound!
      *
-     * Used by [com.unciv.ui.worldscreen.bottombar.BattleTable.simulateBattle] (in the attackButton.onClick handler),
-     * [com.unciv.ui.worldscreen.WorldMapHolder.onTileRightClicked]
-     * and [com.unciv.logic.automation.BattleHelper.tryAttackNearbyEnemy]
+     * Used by [com.unciv.logic.automation.BattleHelper.tryAttackNearbyEnemy] - automation.
      */
-    fun moveAndAttack(attacker: ICombatant, attackableTile: AttackableTile, silent: Boolean = false) {
-        if (attacker is MapUnitCombatant) {
-            attacker.unit.movement.moveToTile(attackableTile.tileToAttackFrom)
-            /**
-             * When calculating movement distance, we assume that a hidden tile is 1 movement point,
-             * which can lead to EXCEEDINGLY RARE edge cases where you think
-             * that you can attack a tile by passing through a HIDDEN TILE,
-             * but the hidden tile is actually IMPASSIBLE so you stop halfway!
-             */
-            if (attacker.getTile() != attackableTile.tileToAttackFrom) return
-            /** Alternatively, maybe we DID reach that tile, but it turned out to be a hill or something,
-             * so we expended all of our movement points!
-             */
-            if (attacker.hasUnique(UniqueType.MustSetUp)
-                    && !attacker.unit.isSetUpForSiege()
-                    && attacker.unit.currentMovement > 0f
-            ) {
-                attacker.unit.action = UnitActionType.SetUp.value
-                attacker.unit.useMovementPoints(1f)
-            }
-            if (attacker.unit.currentMovement == 0f)
-                return
+    fun moveAndAttack(attacker: ICombatant, attackableTile: AttackableTile) {
+        if (!movePreparingAttack(attacker, attackableTile)) return
+        attackOrNuke(attacker, attackableTile)
+    }
+
+    /**
+     * Moves [attacker] to [attackableTile], handles siege setup and returns `true` if an attack is still possible.
+     *
+     * This is a logic function, not UI, so e.g. sound needs to be handled after calling this.
+     * Used by [com.unciv.ui.worldscreen.bottombar.BattleTable.onAttackButtonClicked]
+     * and [com.unciv.ui.worldscreen.WorldMapHolder.onTileRightClicked]
+     */
+    fun movePreparingAttack(attacker: ICombatant, attackableTile: AttackableTile): Boolean {
+        if (attacker !is MapUnitCombatant) return true
+        attacker.unit.movement.moveToTile(attackableTile.tileToAttackFrom)
+        /**
+         * When calculating movement distance, we assume that a hidden tile is 1 movement point,
+         * which can lead to EXCEEDINGLY RARE edge cases where you think
+         * that you can attack a tile by passing through a HIDDEN TILE,
+         * but the hidden tile is actually IMPASSIBLE so you stop halfway!
+         */
+        if (attacker.getTile() != attackableTile.tileToAttackFrom) return false
+        /** Alternatively, maybe we DID reach that tile, but it turned out to be a hill or something,
+         * so we expended all of our movement points!
+         */
+        if (attacker.hasUnique(UniqueType.MustSetUp)
+                && !attacker.unit.isSetUpForSiege()
+                && attacker.unit.currentMovement > 0f
+        ) {
+            attacker.unit.action = UnitActionType.SetUp.value
+            attacker.unit.useMovementPoints(1f)
         }
+        return (attacker.unit.currentMovement > 0f)
+    }
 
-        if (!silent)
-            Sounds.play(attacker.getAttackSound())
-
+    fun attackOrNuke(attacker: ICombatant, attackableTile: AttackableTile) {
         if (attacker is MapUnitCombatant && attacker.unit.baseUnit.isNuclearWeapon())
-            return NUKE(attacker, attackableTile.tileToAttack)
-        attack(attacker, getMapCombatantOfTile(attackableTile.tileToAttack)!!)
+            NUKE(attacker, attackableTile.tileToAttack)
+        else
+            attack(attacker, getMapCombatantOfTile(attackableTile.tileToAttack)!!)
     }
 
     fun attack(attacker: ICombatant, defender: ICombatant) {

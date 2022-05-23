@@ -27,7 +27,7 @@ object BattleHelper {
         val enemyTileToAttack = chooseAttackTarget(unit, attackableEnemies)
 
         if (enemyTileToAttack != null) {
-            Battle.moveAndAttack(MapUnitCombatant(unit), enemyTileToAttack, silent = true)
+            Battle.moveAndAttack(MapUnitCombatant(unit), enemyTileToAttack)
             return true
         }
         return false

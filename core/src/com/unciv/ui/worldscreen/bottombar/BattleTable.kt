@@ -1,6 +1,5 @@
 package com.unciv.ui.worldscreen.bottombar
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -20,6 +19,7 @@ import com.unciv.models.AttackableTile
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
+import com.unciv.ui.audio.Sounds
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
@@ -253,7 +253,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         }
 
         else {
-            attackButton.onClick(UncivSound.Silent) {  // moveAndAttack will do the sound
+            attackButton.onClick(UncivSound.Silent) {  // onAttackButtonClicked will do the sound
                 onAttackButtonClicked(attacker, defender, attackableTile, damageToAttacker, damageToDefender)
             }
         }
@@ -272,12 +272,16 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         damageToAttacker: Int,
         damageToDefender: Int
     ) {
-        Battle.moveAndAttack(attacker, attackableTile)
+        val canStillAttack = Battle.movePreparingAttack(attacker, attackableTile)
         worldScreen.mapHolder.removeUnitActionOverlay() // the overlay was one of attacking
         // There was a direct worldScreen.update() call here, removing its 'private' but not the comment justifying the modifier.
         // My tests (desktop only) show the red-flash animations look just fine without.
         worldScreen.shouldUpdate = true
         //Gdx.graphics.requestRendering()  // Use this if immediate rendering is required
+
+        if (!canStillAttack) return
+        Sounds.play(attacker.getAttackSound())
+        Battle.attackOrNuke(attacker, attackableTile)
 
         val actorsToFlashRed = arrayListOf<Actor>()
 

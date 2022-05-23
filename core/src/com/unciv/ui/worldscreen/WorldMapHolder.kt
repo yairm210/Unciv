@@ -192,8 +192,11 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         val attackableTile = BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
             .firstOrNull { it.tileToAttack == tile }
         if (unit.canAttack() && attackableTile != null) {
-            Battle.moveAndAttack(MapUnitCombatant(unit), attackableTile)
             worldScreen.shouldUpdate = true
+            val attacker = MapUnitCombatant(unit)
+            if (!Battle.movePreparingAttack(attacker, attackableTile)) return
+            Sounds.play(attacker.getAttackSound())
+            Battle.attackOrNuke(attacker, attackableTile)
             return
         }
 
@@ -551,7 +554,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             }
         }
 
-        // Same as below - randomly, tileGroups doesn't seem to contain the selected tile, and this doesn't seem duplicatable
+        // Same as below - randomly, tileGroups doesn't seem to contain the selected tile, and this doesn't seem reproducible
         val worldTileGroupsForSelectedTile = tileGroups[selectedTile]
         if (worldTileGroupsForSelectedTile != null)
             for (group in worldTileGroupsForSelectedTile)
@@ -682,7 +685,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         val originalScrollX = scrollX
         val originalScrollY = scrollY
 
-        // We want to center on the middle of the tilegroup (TG.getX()+TG.getWidth()/2)
+        // We want to center on the middle of the TileGroup (TG.getX()+TG.getWidth()/2)
         // and so the scroll position (== filter the screen starts) needs to be half the ScrollMap away
         val finalScrollX = tileGroup.x + tileGroup.width / 2 - width / 2
 
