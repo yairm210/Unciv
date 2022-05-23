@@ -2,7 +2,6 @@ package com.unciv.logic.civilization
 
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.RoadStatus
-import com.unciv.models.metadata.BASE_GAME_DURATION_TURNS
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.unique.UniqueType
@@ -63,10 +62,10 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         // as game progresses Maintenance cost rises
         val turnLimit = civInfo.gameInfo.getGameSpeed().numTotalTurns().toFloat()
         val gameProgress = min(civInfo.gameInfo.turns / turnLimit, 1f)
-        
+
         var cost = baseUnitCost * numberOfUnitsToPayFor * (1 + gameProgress)
         cost = cost.pow(1 + gameProgress / 3) // Why 3? To spread 1 to 1.33
-        
+
         if (!civInfo.isPlayerCivilization())
             cost *= civInfo.gameInfo.getDifficulty().aiUnitMaintenanceModifier
 
@@ -109,16 +108,16 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
     }
 
     fun getBaseUnitSupply(): Int {
-        return civInfo.getDifficulty().unitSupplyBase + 
+        return civInfo.getDifficulty().unitSupplyBase +
             civInfo.getMatchingUniques(UniqueType.BaseUnitSupply).sumOf { it.params[0].toInt() }
     }
     fun getUnitSupplyFromCities(): Int {
-        return civInfo.cities.size * 
-            (civInfo.getDifficulty().unitSupplyPerCity + civInfo.getMatchingUniques(UniqueType.UnitSupplyPerCity).sumOf { it.params[0].toInt() }) 
-    } 
+        return civInfo.cities.size *
+            (civInfo.getDifficulty().unitSupplyPerCity + civInfo.getMatchingUniques(UniqueType.UnitSupplyPerCity).sumOf { it.params[0].toInt() })
+    }
     fun getUnitSupplyFromPop(): Int {
         var totalSupply = civInfo.cities.sumOf { it.population.population } * civInfo.gameInfo.ruleSet.modOptions.constants.unitSupplyPerPopulation
-        
+
         for (unique in civInfo.getMatchingUniques(UniqueType.UnitSupplyPerPop)) {
             val applicablePopulation = civInfo.cities
                 .filter { it.matchesFilter(unique.params[1]) }
