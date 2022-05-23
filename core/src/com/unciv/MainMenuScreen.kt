@@ -19,7 +19,6 @@ import com.unciv.ui.multiplayer.MultiplayerScreen
 import com.unciv.ui.mapeditor.*
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.translations.Translations
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
