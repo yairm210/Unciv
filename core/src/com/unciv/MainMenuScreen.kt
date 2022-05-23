@@ -233,6 +233,7 @@ class MainMenuScreen: BaseScreen() {
         val ruleset =RulesetCache[game.settings.lastGameSetup?.gameParameters?.baseRuleset]
             ?: RulesetCache[BaseRuleset.Civ_V_GnK.fullName]
             ?: return
+        ImageGetter.setNewRuleset(ruleset)
         game.setScreen(CivilopediaScreen(ruleset, this))
     }
 
