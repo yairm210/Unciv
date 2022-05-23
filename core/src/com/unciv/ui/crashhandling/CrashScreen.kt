@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.GameSaver
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
@@ -55,7 +56,7 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
             return ""
         return "\n**Save Data:**\n<details><summary>Show Saved Game</summary>\n\n```" +
             try {
-                game.gameSaver.gameInfoToString(UncivGame.Current.gameInfo, forceZip = true)
+                GameSaver.gameInfoToString(UncivGame.Current.gameInfo, forceZip = true)
             } catch (e: Throwable) {
                 "No save data: $e" // In theory .toString() could still error here.
             } + "\n```\n</details>\n"
