@@ -231,13 +231,11 @@ class MainMenuScreen: BaseScreen() {
     }
 
     private fun openCivilopedia() {
-        var ruleset: Ruleset? = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]
         val rulesetParameters = game.settings.lastGameSetup?.gameParameters
-        if (rulesetParameters != null) {
-            ruleset = RulesetCache.getComplexRuleset(rulesetParameters)
-            UncivGame.Current.translations.translationActiveMods = LinkedHashSet(rulesetParameters.getModsAndBaseRuleset())
-        }
-        if (ruleset == null) return
+        val ruleset = if (rulesetParameters == null)
+                RulesetCache[BaseRuleset.Civ_V_GnK.fullName] ?: return
+                else RulesetCache.getComplexRuleset(rulesetParameters)
+        UncivGame.Current.translations.translationActiveMods = ruleset.mods
         ImageGetter.setNewRuleset(ruleset)
         setSkin()
         game.setScreen(CivilopediaScreen(ruleset, this))
