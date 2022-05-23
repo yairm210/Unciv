@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
+import com.unciv.logic.GameSaver
 import com.unciv.logic.MissingModsException
 import com.unciv.logic.UncivShowableException
 import com.unciv.models.ruleset.RulesetCache
@@ -88,7 +89,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
         loadFromClipboardButton.onClick {
             try {
                 val clipboardContentsString = Gdx.app.clipboard.contents.trim()
-                val loadedGame = game.gameSaver.gameInfoFromString(clipboardContentsString)
+                val loadedGame = GameSaver.gameInfoFromString(clipboardContentsString)
                 UncivGame.Current.loadGame(loadedGame)
             } catch (ex: Exception) {
                 handleLoadGameException("Could not load game from clipboard!", ex)

@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
+import com.unciv.logic.GameSaver
 import com.unciv.models.translations.tr
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
@@ -43,7 +44,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen(disableScroll = true
         copyJsonButton.onClick {
             thread(name="Copy to clipboard") { // the Gzip rarely leads to ANRs
                 try {
-                    Gdx.app.clipboard.contents = game.gameSaver.gameInfoToString(gameInfo, forceZip = true)
+                    Gdx.app.clipboard.contents = GameSaver.gameInfoToString(gameInfo, forceZip = true)
                 } catch (OOM: OutOfMemoryError) {
                     // you don't get a special toast, this isn't nearly common enough, this is a total edge-case
                 }

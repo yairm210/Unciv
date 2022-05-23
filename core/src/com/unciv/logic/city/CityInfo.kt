@@ -40,11 +40,11 @@ enum class CityFocus(val label: String, val tableEnabled: Boolean, val stat: Sta
     NoFocus("Default Focus", true, null) {
         override fun getStatMultiplier(stat: Stat) = 1f  // actually redundant, but that's two steps to see
     },
-    FoodFocus("${Stat.Food.name} Focus", true, Stat.Food),
-    ProductionFocus("${Stat.Production.name} Focus", true, Stat.Production),
-    GoldFocus("${Stat.Gold.name} Focus", true, Stat.Gold),
-    ScienceFocus("${Stat.Science.name} Focus", true, Stat.Science),
-    CultureFocus("${Stat.Culture.name} Focus", true, Stat.Culture),
+    FoodFocus("[${Stat.Food.name}] Focus", true, Stat.Food),
+    ProductionFocus("[${Stat.Production.name}] Focus", true, Stat.Production),
+    GoldFocus("[${Stat.Gold.name}] Focus", true, Stat.Gold),
+    ScienceFocus("[${Stat.Science.name}] Focus", true, Stat.Science),
+    CultureFocus("[${Stat.Culture.name}] Focus", true, Stat.Culture),
     GoldGrowthFocus("Gold Growth Focus", false) {
         override fun getStatMultiplier(stat: Stat) = when (stat) {
             Stat.Gold, Stat.Food -> 2f
@@ -57,8 +57,8 @@ enum class CityFocus(val label: String, val tableEnabled: Boolean, val stat: Sta
             else -> 1f
         }
     },
-    FaithFocus("${Stat.Faith.name} Focus", true, Stat.Faith),
-    HappinessFocus("${Stat.Happiness.name} Focus", false, Stat.Happiness);
+    FaithFocus("[${Stat.Faith.name}] Focus", true, Stat.Faith),
+    HappinessFocus("[${Stat.Happiness.name}] Focus", false, Stat.Happiness);
     //GreatPersonFocus;
 
     open fun getStatMultiplier(stat: Stat) = when (this.stat) {
@@ -394,28 +394,28 @@ class CityInfo {
     fun getRuleset() = civInfo.gameInfo.ruleSet
 
     fun getCityResources(): ResourceSupplyList {
-        val newResourceSupplyList = ResourceSupplyList()
+        val cityResources = ResourceSupplyList()
 
         for (tileInfo in getTiles().filter { it.resource != null }) {
             val resource = tileInfo.tileResource
             val amount = getTileResourceAmount(tileInfo) * civInfo.getResourceModifier(resource)
-            if (amount > 0) newResourceSupplyList.add(resource, "Tiles", amount)
+            if (amount > 0) cityResources.add(resource, "Tiles", amount)
         }
 
         for (tileInfo in getTiles()) {
-            val stateForConditionals = StateForConditionals(civInfo, this@CityInfo, tile = tileInfo)
+            val stateForConditionals = StateForConditionals(civInfo, this, tile = tileInfo)
             if (tileInfo.improvement == null) continue
             val tileImprovement = tileInfo.getTileImprovement()
             for (unique in tileImprovement!!.getMatchingUniques(UniqueType.ProvidesResources, stateForConditionals)) {
                 val resource = getRuleset().tileResources[unique.params[1]] ?: continue
-                newResourceSupplyList.add(
+                cityResources.add(
                     resource, "Improvements",
                     unique.params[0].toInt() * civInfo.getResourceModifier(resource)
                 )
             }
             for (unique in tileImprovement.getMatchingUniques(UniqueType.ConsumesResources, stateForConditionals)) {
                 val resource = getRuleset().tileResources[unique.params[1]] ?: continue
-                newResourceSupplyList.add(
+                cityResources.add(
                     resource, "Improvements",
                     -1 * unique.params[0].toInt()
                 )
@@ -426,28 +426,26 @@ class CityInfo {
         for (building in cityConstructions.getBuiltBuildings()) {
             // Free buildings cost no resources
             if (building.name in freeBuildings) continue
-            newResourceSupplyList.subtractResourceRequirements(building.getResourceRequirements(), getRuleset(), "Buildings")
+            cityResources.subtractResourceRequirements(building.getResourceRequirements(), getRuleset(), "Buildings")
         }
 
-        for (unique in getLocalMatchingUniques(UniqueType.ProvidesResources, StateForConditionals(civInfo, this@CityInfo))) { // E.G "Provides [1] [Iron]"
-            if (!unique.conditionalsApply(civInfo, this@CityInfo)) continue
+        for (unique in getLocalMatchingUniques(UniqueType.ProvidesResources, StateForConditionals(civInfo, this))) { // E.G "Provides [1] [Iron]"
             val resource = getRuleset().tileResources[unique.params[1]]
-            if (resource != null) {
-                newResourceSupplyList.add(
-                    resource, "Buildings+",
-                    unique.params[0].toInt() * civInfo.getResourceModifier(resource)
-                )
-            }
+                ?: continue
+            cityResources.add(
+                resource, "Buildings+",
+                unique.params[0].toInt() * civInfo.getResourceModifier(resource)
+            )
         }
 
         if (civInfo.isCityState() && isCapital() && civInfo.cityStateResource != null) {
-            newResourceSupplyList.add(
+            cityResources.add(
                 getRuleset().tileResources[civInfo.cityStateResource]!!,
                 "Mercantile City-State"
             )
         }
 
-        return newResourceSupplyList
+        return cityResources
     }
 
     fun getTileResourceAmount(tileInfo: TileInfo): Int {
