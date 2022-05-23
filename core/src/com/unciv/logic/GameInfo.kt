@@ -22,9 +22,6 @@ import com.unciv.ui.audio.MusicTrackChooserFlags
 import java.util.*
 
 
-class MissingModsException(val missingMods: String) : UncivShowableException("Missing mods: [$missingMods]")
-open class UncivShowableException(errorText: String) : Exception(errorText)
-
 class GameInfo {
     //region Fields - Serialized
     var civilizations = mutableListOf<CivilizationInfo>()
@@ -348,7 +345,7 @@ class GameInfo {
                 getAliveCityStates()
                     .asSequence()
                     .filter { it.cityStateResource == resourceName }
-                    .map { it.getCapital().getCenterTile() }
+                    .map { it.getCapital()!!.getCenterTile() }
             } else {
                 tileMap.values
                     .asSequence()

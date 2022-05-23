@@ -8,7 +8,7 @@ import kotlin.collections.set
 
 class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
     private val citiesReachedToMediums = HashMap<CityInfo, MutableSet<String>>()
-    private var citiesToCheck = mutableListOf(civInfo.getCapital())
+    private var citiesToCheck = mutableListOf(civInfo.getCapital()!!)
     private lateinit var newCitiesToCheck: MutableList<CityInfo>
 
     private val openBordersCivCities = civInfo.gameInfo.getCities().filter { civInfo.canEnterBordersOf(it.civInfo) }
@@ -24,7 +24,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
     private val railroadIsResearched = ruleset.tileImprovements.containsKey(railroad) && civInfo.tech.isResearched(ruleset.tileImprovements[railroad]!!.techRequired!!)
 
     init {
-        citiesReachedToMediums[civInfo.getCapital()] = hashSetOf("Start")
+        citiesReachedToMediums[civInfo.getCapital()!!] = hashSetOf("Start")
     }
 
     fun find(): Map<CityInfo, Set<String>> {

@@ -16,7 +16,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
-import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -155,7 +154,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
         stage.addActor(mapHolder)
         stage.scrollFocus = mapHolder
-        stage.addActor(notificationsScroll)  // very low in z-order, so we're free to let it extend _below_ tile info and minimap if we want 
+        stage.addActor(notificationsScroll)  // very low in z-order, so we're free to let it extend _below_ tile info and minimap if we want
         stage.addActor(minimapWrapper)
         stage.addActor(topBar)
         stage.addActor(nextTurnButton)
@@ -176,7 +175,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
         val tileToCenterOn: Vector2 =
                 when {
-                    viewingCiv.cities.isNotEmpty() -> viewingCiv.getCapital().location
+                    viewingCiv.cities.isNotEmpty() && viewingCiv.getCapital() != null -> viewingCiv.getCapital()!!.location
                     viewingCiv.getCivUnits().any() -> viewingCiv.getCivUnits().first().getTile().position
                     else -> Vector2.Zero
                 }
@@ -229,7 +228,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         val quickSave = {
             val toast = ToastPopup("Quicksaving...", this)
             launchCrashHandling("SaveGame", runAsDaemon = false) {
-                GameSaver.saveGame(gameInfo, "QuickSave") {
+                game.gameSaver.saveGame(gameInfo, "QuickSave") {
                     postCrashHandlingRunnable {
                         toast.close()
                         if (it != null)
@@ -246,7 +245,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
             val toast = ToastPopup("Quickloading...", this)
             launchCrashHandling("LoadGame") {
                 try {
-                    val loadedGame = GameSaver.loadGameByName("QuickSave")
+                    val loadedGame = game.gameSaver.loadGameByName("QuickSave")
                     postCrashHandlingRunnable {
                         toast.close()
                         UncivGame.Current.loadGame(loadedGame)
@@ -282,7 +281,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         keyPressDispatcher[Input.Keys.F12] = quickLoad    // Quick Load
         keyPressDispatcher[Input.Keys.HOME] = {    // Capital City View
             val capital = gameInfo.currentPlayerCiv.getCapital()
-            if (!mapHolder.setCenterPosition(capital.location))
+            if (capital != null && !mapHolder.setCenterPosition(capital.location))
                 game.setScreen(CityScreen(capital))
         }
         keyPressDispatcher[KeyCharAndCode.ctrl('O')] = { // Game Options
@@ -713,7 +712,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                     val newWorldScreen = this@WorldScreen.game.worldScreen
                     newWorldScreen.waitingForAutosave = true
                     newWorldScreen.shouldUpdate = true
-                    GameSaver.autoSave(gameInfoClone) {
+                    game.gameSaver.autoSave(gameInfoClone) {
                         // only enable the user to next turn once we've saved the current one
                         newWorldScreen.waitingForAutosave = false
                         newWorldScreen.shouldUpdate = true

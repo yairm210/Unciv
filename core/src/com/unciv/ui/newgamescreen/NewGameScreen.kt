@@ -256,7 +256,7 @@ class NewGameScreen(
             newGame.isUpToDate = true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
             try {
                 game.onlineMultiplayer.createGame(newGame)
-                GameSaver.autoSave(newGame)
+                game.gameSaver.autoSave(newGame)
             } catch (ex: FileStorageRateLimitReached) {
                 postCrashHandlingRunnable {
                     popup.reuseWith("Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds", true)

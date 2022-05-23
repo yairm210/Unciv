@@ -27,6 +27,7 @@ import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.multiplayer.LoadDeepLinkScreen
 import com.unciv.ui.popup.Popup
+import kotlinx.coroutines.runBlocking
 import java.util.*
 
 class UncivGame(parameters: UncivGameParameters) : Game() {
@@ -48,6 +49,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     lateinit var settings: GameSettings
     lateinit var musicController: MusicController
     lateinit var onlineMultiplayer: OnlineMultiplayer
+    lateinit var gameSaver: GameSaver
 
     /**
      * This exists so that when debugging we can see the entire map.
@@ -87,7 +89,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             viewEntireMapForDebug = false
         }
         Current = this
-        GameSaver.init(Gdx.files, customSaveLocationHelper)
+        gameSaver = GameSaver(Gdx.files, customSaveLocationHelper, platformSpecificHelper?.getExternalFilesDir())
 
         // If this takes too long players, especially with older phones, get ANR problems.
         // Whatever needs graphics needs to be done on the main thread,
@@ -101,7 +103,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
          * - Skin (hence BaseScreen.setSkin())
          * - Font (hence Fonts.resetFont() inside setSkin())
          */
-        settings = GameSaver.getGeneralSettings() // needed for the screen
+        settings = gameSaver.getGeneralSettings() // needed for the screen
         screen = LoadingScreen()  // NOT dependent on any atlas or skin
         musicController = MusicController()  // early, but at this point does only copy volume from settings
         audioExceptionHelper?.installHooks(
@@ -170,7 +172,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     }
 
     /**
-     * If called with null [newWorldScreen], disposes of the current screen and sets it to the current stored world screen. 
+     * If called with null [newWorldScreen], disposes of the current screen and sets it to the current stored world screen.
      * If the current screen is already the world screen, the only thing that happens is that the world screen updates.
      */
     fun resetToWorldScreen(newWorldScreen: WorldScreen? = null) {
@@ -221,7 +223,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     }
 
     override fun pause() {
-        if (isGameInfoInitialized()) GameSaver.autoSave(this.gameInfo)
+        if (isGameInfoInitialized()) gameSaver.autoSave(this.gameInfo)
         musicController.pause()
         super.pause()
     }
@@ -232,7 +234,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     override fun render() = wrappedCrashHandlingRender()
 
-    override fun dispose() {
+    override fun dispose() = runBlocking {
         Gdx.input.inputProcessor = null // don't allow ANRs when shutting down, that's silly
 
         cancelDiscordEvent?.invoke()
@@ -240,24 +242,28 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         if (::musicController.isInitialized) musicController.gracefulShutdown()  // Do allow fade-out
         closeExecutors()
 
-        // Log still running threads (on desktop that should be only this one and "DestroyJavaVM")
-        val numThreads = Thread.activeCount()
-        val threadList = Array(numThreads) { Thread() }
-        Thread.enumerate(threadList)
-
         if (isGameInfoInitialized()) {
-            val autoSaveThread = threadList.firstOrNull { it.name == GameSaver.autoSaveFileName }
-            if (autoSaveThread != null && autoSaveThread.isAlive) {
+            val autoSaveJob = gameSaver.autoSaveJob
+            if (autoSaveJob != null && autoSaveJob.isActive) {
                 // auto save is already in progress (e.g. started by onPause() event)
                 // let's allow it to finish and do not try to autosave second time
-                autoSaveThread.join()
-            } else
-                GameSaver.autoSaveSingleThreaded(gameInfo)      // NO new thread
+                autoSaveJob.join()
+            } else {
+                gameSaver.autoSaveSingleThreaded(gameInfo)      // NO new thread
+            }
         }
         settings.save()
 
-        threadList.filter { it !== Thread.currentThread() && it.name != "DestroyJavaVM"}.forEach {
-            println ("    Thread ${it.name} still running in UncivGame.dispose().")
+        // On desktop this should only be this one and "DestroyJavaVM"
+        logRunningThreads()
+    }
+
+    private fun logRunningThreads() {
+        val numThreads = Thread.activeCount()
+        val threadList = Array(numThreads) { _ -> Thread() }
+        Thread.enumerate(threadList)
+        threadList.filter { it !== Thread.currentThread() && it.name != "DestroyJavaVM" }.forEach {
+            println("    Thread ${it.name} still running in UncivGame.dispose().")
         }
     }
 

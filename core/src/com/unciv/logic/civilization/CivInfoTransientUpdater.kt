@@ -145,13 +145,13 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
     }
 
     fun updateCitiesConnectedToCapital(initialSetup: Boolean = false) {
-        if (civInfo.cities.isEmpty()) return // eg barbarians
+        if (civInfo.cities.isEmpty() || civInfo.getCapital() == null) return // eg barbarians
 
         val citiesReachedToMediums = CapitalConnectionsFinder(civInfo).find()
 
         if (!initialSetup) { // In the initial setup we're loading an old game state, so it doesn't really count
             for (city in citiesReachedToMediums.keys)
-                if (city !in civInfo.citiesConnectedToCapitalToMediums && city.civInfo == civInfo && city != civInfo.getCapital())
+                if (city !in civInfo.citiesConnectedToCapitalToMediums && city.civInfo == civInfo && city != civInfo.getCapital()!!)
                     civInfo.addNotification("[${city.name}] has been connected to your capital!", city.location, NotificationIcon.Gold)
 
             // This may still contain cities that have just been destroyed by razing - thus the population test
@@ -166,7 +166,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
     fun updateCivResources() {
         val newDetailedCivResources = ResourceSupplyList()
         for (city in civInfo.cities) newDetailedCivResources.add(city.getCityResources())
-        
+
         if (!civInfo.isCityState()) {
             // First we get all these resources of each city state separately
             val cityStateProvidedResources = ResourceSupplyList()
@@ -192,10 +192,10 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         for (unit in civInfo.getCivUnits())
             for ((resource, amount) in unit.baseUnit.getResourceRequirements())
                 newDetailedCivResources.add(civInfo.gameInfo.ruleSet.tileResources[resource]!!, -amount, "Units")
-        
+
         // Check if anything has actually changed so we don't update stats for no reason - this uses List equality which means it checks the elements
         if (civInfo.detailedCivResources == newDetailedCivResources) return
-        
+
         civInfo.detailedCivResources = newDetailedCivResources
 
         val newSummarizedCivResources = ResourceSupplyList()
