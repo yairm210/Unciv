@@ -823,17 +823,20 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
             else ->
                 NextTurnAction("${Fonts.turn}{Next turn}", Color.WHITE) {
-                    if(game.settings.confirmNextTurn) {
+                    if (game.settings.confirmNextTurn) {
                         YesNoPopup("Confirm next turn", {
-                            game.settings.addCompletedTutorialTask("Pass a turn")
-                            nextTurn()
+                            executeNextTurn()
                         }, UncivGame.Current.worldScreen).open()
                     } else {
-                        game.settings.addCompletedTutorialTask("Pass a turn")
-                        nextTurn()
+                        executeNextTurn()
                     }
                 }
         }
+    }
+
+    private fun executeNextTurn() {
+        game.settings.addCompletedTutorialTask("Pass a turn")
+        nextTurn()
     }
 
     override fun resize(width: Int, height: Int) {
