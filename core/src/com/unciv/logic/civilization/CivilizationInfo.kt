@@ -74,6 +74,12 @@ class CivilizationInfo {
     @Transient
     private var units = listOf<MapUnit>()
 
+    /**
+     * Index in the unit list above of the unit that is potentially due and is next up for button "Next unit".
+     */
+    @Transient
+    private var nextPotentiallyDueAt = 0
+
     @Transient
     var viewableTiles = setOf<TileInfo>()
 
@@ -211,13 +217,6 @@ class CivilizationInfo {
      */
     var attacksSinceTurnStart = ArrayList<HistoricalAttackMemory>()
 
-    /**
-     * Queue of all civilization units that have their actions possibly pending. Internally
-     * might include e.g. non-idle units, so must be filtered before being given to any outside code.
-     * (Should be small enough that using ArrayList is fine.)
-     */
-    @Transient
-    private var dueUnits = mutableListOf<MapUnit>()
     var hasMovedAutomatedUnits = false
 
     @Transient
@@ -271,7 +270,6 @@ class CivilizationInfo {
         toReturn.totalCultureForContests = totalCultureForContests
         toReturn.totalFaithForContests = totalFaithForContests
         toReturn.attacksSinceTurnStart = attacksSinceTurnStart.copy()
-        toReturn.dueUnits = dueUnits.toMutableList()
         toReturn.hasMovedAutomatedUnits = hasMovedAutomatedUnits
         return toReturn
     }
@@ -456,14 +454,18 @@ class CivilizationInfo {
     fun getCivUnits(): Sequence<MapUnit> = units.asSequence()
     fun getCivGreatPeople(): Sequence<MapUnit> = getCivUnits().filter { mapUnit -> mapUnit.isGreatPerson() }
 
+    // Similar to getCivUnits(), but the returned list is rotated so that the
+    // 'nextPotentiallyDueAt' unit is first here.
+    private fun getCivUnitsStartingAtNexDue() = units.subList(nextPotentiallyDueAt, units.size) + units.subList(0, nextPotentiallyDueAt)
+
     fun addUnit(mapUnit: MapUnit, updateCivInfo: Boolean = true) {
-        val newList = ArrayList(units)
+        // Since we create a new list anyway, also rearrange existing units so that
+        // 'nextPotentiallyDueAt' becomes 0.  This way new units are always last to be due
+        // (can be changed as wanted, just have a predictable place).
+        var newList = ArrayList(getCivUnitsStartingAtNexDue())
         newList.add(mapUnit)
         units = newList
-
-        // Make sure it is initialized.
-        getDueUnits()
-        dueUnits.add(mapUnit)
+        nextPotentiallyDueAt = 0
 
         if (updateCivInfo) {
             // Not relevant when updating TileInfo transients, since some info of the civ itself isn't yet available,
@@ -474,46 +476,47 @@ class CivilizationInfo {
     }
 
     fun removeUnit(mapUnit: MapUnit) {
-        val newList = ArrayList(units)
+        // See comment in addUnit().
+        var newList = ArrayList(getCivUnitsStartingAtNexDue())
         newList.remove(mapUnit)
         units = newList
-        dueUnits.remove(mapUnit)
+        nextPotentiallyDueAt = 0
+
         updateStatsForNextTurn() // unit upkeep
         updateDetailedCivResources()
     }
 
     fun getIdleUnits() = getCivUnits().filter { it.isIdle() }
 
-    // Drop all units that are not really 'due' anymore. We do it here to avoid caring how and where it happened.
-    // Internal side effect: if 'dueUnits' has never been initialized (new game, load game), do it here.
-    fun getDueUnits(): List<MapUnit> {
-        if (dueUnits.none())
-            dueUnits.addAll(units)
-        return dueUnits.filter { it.due && it.isIdle() }
-    }
+    fun getDueUnits(): List<MapUnit> = getCivUnitsStartingAtNexDue().filter { it.due && it.isIdle() }
 
     fun shouldGoToDueUnit() = UncivGame.Current.settings.checkForDueUnits && getDueUnits().any()
 
     // Callers should consider if cycleThroughDueUnits() is not a better choice.
     fun getNextDueUnit() = getDueUnits().firstOrNull()
 
-    fun cycleThroughDueUnits(unitToSkip: MapUnit?): MapUnit? {
-        var realDueUnits = getDueUnits();
-        if (realDueUnits.any()) {
-            var unit = realDueUnits.first();
-            // We shift the unit to the back of the queue. However, the caller may clear its 'due' state if it wants.
-            dueUnits.remove(unit);
-            dueUnits.add(unit);
+    // Return the next due unit, but preferably not 'unitToSkip': this is returned only if it is the only remaining due unit.
+    fun cycleThroughDueUnits(unitToSkip: MapUnit? = null): MapUnit? {
+        var returnAt = nextPotentiallyDueAt;
+        var fallbackAt = -1;
 
-            if (unit == unitToSkip && realDueUnits.size > 1) {
-                unit = realDueUnits[1];
-                dueUnits.remove(unit);
-                dueUnits.add(unit);
+        do {
+            if (units[returnAt].due && units[returnAt].isIdle()) {
+                if (units[returnAt] != unitToSkip) {
+                    nextPotentiallyDueAt = (returnAt + 1) % units.size
+                    return units[returnAt]
+                }
+                else fallbackAt = returnAt
             }
 
-            return unit;
+            returnAt = (returnAt + 1) % units.size
+        } while (returnAt != nextPotentiallyDueAt)
+
+        if (fallbackAt >= 0) {
+            nextPotentiallyDueAt = (fallbackAt + 1) % units.size
+            return units[fallbackAt]
         }
-        else return null;
+        else return null
     }
     //endregion
 
