@@ -16,7 +16,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
-import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -176,7 +175,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
         val tileToCenterOn: Vector2 =
                 when {
-                    viewingCiv.cities.isNotEmpty() -> viewingCiv.getCapital().location
+                    viewingCiv.cities.isNotEmpty() && viewingCiv.getCapital() != null -> viewingCiv.getCapital()!!.location
                     viewingCiv.getCivUnits().any() -> viewingCiv.getCivUnits().first().getTile().position
                     else -> Vector2.Zero
                 }
@@ -229,7 +228,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         val quickSave = {
             val toast = ToastPopup("Quicksaving...", this)
             launchCrashHandling("SaveGame", runAsDaemon = false) {
-                GameSaver.saveGame(gameInfo, "QuickSave") {
+                game.gameSaver.saveGame(gameInfo, "QuickSave") {
                     postCrashHandlingRunnable {
                         toast.close()
                         if (it != null)
@@ -246,7 +245,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
             val toast = ToastPopup("Quickloading...", this)
             launchCrashHandling("LoadGame") {
                 try {
-                    val loadedGame = GameSaver.loadGameByName("QuickSave")
+                    val loadedGame = game.gameSaver.loadGameByName("QuickSave")
                     postCrashHandlingRunnable {
                         toast.close()
                         UncivGame.Current.loadGame(loadedGame)
@@ -282,7 +281,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         keyPressDispatcher[Input.Keys.F12] = quickLoad    // Quick Load
         keyPressDispatcher[Input.Keys.HOME] = {    // Capital City View
             val capital = gameInfo.currentPlayerCiv.getCapital()
-            if (!mapHolder.setCenterPosition(capital.location))
+            if (capital != null && !mapHolder.setCenterPosition(capital.location))
                 game.setScreen(CityScreen(capital))
         }
         keyPressDispatcher[KeyCharAndCode.ctrl('O')] = { // Game Options
@@ -651,8 +650,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         newWorldScreen.selectedCiv = gameInfo.getCivilization(selectedCiv.civName)
         newWorldScreen.fogOfWar = fogOfWar
 
-        game.worldScreen = newWorldScreen
-        game.setWorldScreen()
+        game.resetToWorldScreen(newWorldScreen)
     }
 
     fun nextTurn() {
@@ -673,17 +671,14 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
             if (originalGameInfo.gameParameters.isOnlineMultiplayer) {
                 try {
                     OnlineMultiplayerGameSaver().tryUploadGame(gameInfoClone, withPreview = true)
-                } catch (ex: FileStorageRateLimitReached) {
-                    postCrashHandlingRunnable {
-                        val cantUploadNewGamePopup = Popup(this@WorldScreen)
-                        cantUploadNewGamePopup.addGoodSizedLabel("Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds").row()
-                        cantUploadNewGamePopup.addCloseButton()
-                        cantUploadNewGamePopup.open()
-                    }
                 } catch (ex: Exception) {
+                    val message = when (ex) {
+                        is FileStorageRateLimitReached -> "Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds"
+                        else -> "Could not upload game!"
+                    }
                     postCrashHandlingRunnable { // Since we're changing the UI, that should be done on the main thread
                         val cantUploadNewGamePopup = Popup(this@WorldScreen)
-                        cantUploadNewGamePopup.addGoodSizedLabel("Could not upload game!").row()
+                        cantUploadNewGamePopup.addGoodSizedLabel(message).row()
                         cantUploadNewGamePopup.addCloseButton()
                         cantUploadNewGamePopup.open()
                     }
@@ -717,7 +712,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                     val newWorldScreen = this@WorldScreen.game.worldScreen
                     newWorldScreen.waitingForAutosave = true
                     newWorldScreen.shouldUpdate = true
-                    GameSaver.autoSave(gameInfoClone) {
+                    game.gameSaver.autoSave(gameInfoClone) {
                         // only enable the user to next turn once we've saved the current one
                         newWorldScreen.waitingForAutosave = false
                         newWorldScreen.shouldUpdate = true

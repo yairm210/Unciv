@@ -59,7 +59,7 @@ class DiplomacyScreen(
     private fun isNotPlayersTurn() = !UncivGame.Current.worldScreen.canChangeState
 
     init {
-        onBackButtonClicked { UncivGame.Current.setWorldScreen() }
+        onBackButtonClicked { UncivGame.Current.resetToWorldScreen() }
         val splitPane = SplitPane(leftSideScroll, rightSideTable, false, skin)
         splitPane.splitAmount = 0.2f
 
@@ -68,7 +68,7 @@ class DiplomacyScreen(
         splitPane.setFillParent(true)
         stage.addActor(splitPane)
 
-        closeButton.onClick { UncivGame.Current.setWorldScreen() }
+        closeButton.onClick { UncivGame.Current.resetToWorldScreen() }
         closeButton.label.setFontSize(Constants.headingFontSize)
         closeButton.labelCell.pad(10f)
         closeButton.pack()
@@ -215,7 +215,7 @@ class DiplomacyScreen(
         }
 
         val atWar = otherCiv.isAtWarWith(viewingCiv)
-        
+
         val nextLevelString = when {
             atWar -> ""
             otherCivDiplomacyManager.getInfluence().toInt() < 30 -> "Reach 30 for friendship."
@@ -397,7 +397,7 @@ class DiplomacyScreen(
                 diplomacyTable.add(declareWarButton).row()
             }
         }
-        
+
         diplomacyTable.add(getGoToOnMapButton(otherCiv)).row()
 
         val diplomaticMarriageButton = getDiplomaticMarriageButton(otherCiv)
@@ -428,7 +428,7 @@ class DiplomacyScreen(
 
         for (improvableTile in improvableResourceTiles)
             for (tileImprovement in improvements.values)
-                if (improvableTile.tileResource.isImprovedBy(tileImprovement.name) 
+                if (improvableTile.tileResource.isImprovedBy(tileImprovement.name)
                     && improvableTile.canBuildImprovement(tileImprovement, otherCiv)
                 )
                     needsImprovements = true
@@ -457,7 +457,7 @@ class DiplomacyScreen(
         diplomaticMarriageButton.onClick {
             val newCities = otherCiv.cities
             otherCiv.cityStateFunctions.diplomaticMarriage(viewingCiv)
-            UncivGame.Current.setWorldScreen() // The other civ will no longer exist
+            UncivGame.Current.resetToWorldScreen() // The other civ will no longer exist
             for (city in newCities)
                 viewingCiv.popupAlerts.add(PopupAlert(AlertType.DiplomaticMarriage, city.id))   // Player gets to choose between annex and puppet
         }
@@ -491,8 +491,8 @@ class DiplomacyScreen(
         return diplomacyTable
     }
 
-    fun getImprovableResourceTiles(otherCiv:CivilizationInfo) = otherCiv.getCapital().getTiles().filter { 
-        it.hasViewableResource(otherCiv) 
+    fun getImprovableResourceTiles(otherCiv:CivilizationInfo) = otherCiv.getCapital()!!.getTiles().filter {
+        it.hasViewableResource(otherCiv)
         && it.tileResource.resourceType != ResourceType.Bonus
         && (it.improvement == null || !it.tileResource.isImprovedBy(it.improvement!!))
     }
@@ -751,9 +751,9 @@ class DiplomacyScreen(
         diplomacyTable.add(demandsButton).row()
         if (isNotPlayersTurn()) demandsButton.disable()
 
-        if (otherCiv.cities.isNotEmpty() && otherCiv.getCapital().location in viewingCiv.exploredTiles)
+        if (otherCiv.cities.isNotEmpty() && otherCiv.getCapital() != null && otherCiv.getCapital()!!.location in viewingCiv.exploredTiles)
             diplomacyTable.add(getGoToOnMapButton(otherCiv)).row()
-        
+
         if (!otherCiv.isPlayerCivilization()) { // human players make their own choices
             diplomacyTable.add(getRelationshipTable(otherCivDiplomacyManager)).row()
             diplomacyTable.add(getDiplomacyModifiersTable(otherCivDiplomacyManager)).row()
@@ -937,11 +937,11 @@ class DiplomacyScreen(
     private fun getGoToOnMapButton(civilization: CivilizationInfo): TextButton {
         val goToOnMapButton = "Go to on map".toTextButton()
         goToOnMapButton.onClick {
-            UncivGame.Current.setWorldScreen()
-            UncivGame.Current.worldScreen.mapHolder.setCenterPosition(civilization.getCapital().location, selectUnit = false)
+            UncivGame.Current.resetToWorldScreen()
+            UncivGame.Current.worldScreen.mapHolder.setCenterPosition(civilization.getCapital()!!.location, selectUnit = false)
         }
         return goToOnMapButton
-    } 
+    }
 
     override fun resize(width: Int, height: Int) {
         super.resize(width, height)

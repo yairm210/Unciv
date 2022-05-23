@@ -120,8 +120,7 @@ class OptionsPopup(
     private fun reloadWorldAndOptions() {
         settings.save()
         if (screen is WorldScreen) {
-            screen.game.worldScreen = WorldScreen(screen.gameInfo, screen.viewingCiv)
-            screen.game.setWorldScreen()
+            screen.game.resetToWorldScreen(WorldScreen(screen.gameInfo, screen.viewingCiv))
         } else if (screen is MainMenuScreen) {
             screen.game.setScreen(MainMenuScreen())
         }

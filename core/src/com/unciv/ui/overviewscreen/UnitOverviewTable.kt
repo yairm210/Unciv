@@ -68,7 +68,7 @@ class UnitOverviewTab(
 
     private fun showWorldScreenAt(position: Vector2, unit: MapUnit?) {
         val game = overviewScreen.game
-        game.setWorldScreen()
+        game.resetToWorldScreen()
         game.worldScreen.mapHolder.setCenterPosition(position, forceSelectUnit = unit)
     }
     private fun showWorldScreenAt(unit: MapUnit) = showWorldScreenAt(unit.currentTile.position, unit)
