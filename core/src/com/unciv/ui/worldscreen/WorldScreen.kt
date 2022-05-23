@@ -749,6 +749,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
     private fun getNextTurnAction(): NextTurnAction {
         return when {
+            isNextTurnUpdateRunning() ->
+                NextTurnAction("Working...", Color.GRAY) {}
             !isPlayersTurn && gameInfo.gameParameters.isOnlineMultiplayer ->
                 NextTurnAction("Waiting for [${gameInfo.currentPlayerCiv}]...", Color.GRAY) {}
             !isPlayersTurn && !gameInfo.gameParameters.isOnlineMultiplayer ->
