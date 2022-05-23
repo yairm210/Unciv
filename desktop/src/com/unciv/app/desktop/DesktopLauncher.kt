@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.glutils.HdpiMode
 import com.sun.jna.Native
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
+import com.unciv.logic.GameSaver
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.utils.Fonts
 import java.util.*
@@ -35,7 +36,7 @@ internal object DesktopLauncher {
         // Note that means config.setAudioConfig() would be ignored too, those would need to go into the HardenedGdxAudio constructor.
         config.disableAudio(true)
 
-        val settings = GameSettings.getSettingsForPlatformLaunchers()
+        val settings = GameSaver.getSettingsForPlatformLaunchers()
         if (!settings.isFreshlyCreated) {
             config.setWindowedMode(settings.windowState.width.coerceAtLeast(120), settings.windowState.height.coerceAtLeast(80))
         }
@@ -70,7 +71,7 @@ internal object DesktopLauncher {
              This is because if there's a crash when the instance initializes on a similar line,
               it's not within the bounds of the try/catch and thus the app will crash.
              */
-            Native.loadLibrary("discord-rpc", DiscordRPC::class.java)
+            Native.load("discord-rpc", DiscordRPC::class.java)
             val handlers = DiscordEventHandlers()
             DiscordRPC.INSTANCE.Discord_Initialize("647066573147996161", handlers, true, null)
 

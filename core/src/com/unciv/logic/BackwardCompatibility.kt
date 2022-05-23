@@ -166,7 +166,7 @@ object BackwardCompatibility {
      */
     @Suppress("DEPRECATION")
     fun CivilizationInfo.migrateSeenImprovements() {
-        if (lastSeenImprovementSaved.isEmpty()) return;
+        if (lastSeenImprovementSaved.isEmpty()) return
         lastSeenImprovement.putAll(lastSeenImprovementSaved.mapKeys { Vector2().fromString(it.key) })
         lastSeenImprovementSaved.clear()
     }

@@ -473,7 +473,7 @@ object NextTurnAutomation {
 
         for (resource in civInfo.gameInfo.spaceResources) {
             // Have enough resources already
-            val resourceCount = civInfo.getCivResourcesByName()[resource] ?: 0 
+            val resourceCount = civInfo.getCivResourcesByName()[resource] ?: 0
             if (resourceCount >= Automation.getReservedSpaceResourceAmount(civInfo))
                 continue
 
@@ -691,7 +691,7 @@ object NextTurnAutomation {
     private fun motivationToAttack(civInfo: CivilizationInfo, otherCiv: CivilizationInfo): Int {
         if(civInfo.cities.isEmpty() || otherCiv.cities.isEmpty()) return 0
         val baseForce = 30f
-        
+
         val ourCombatStrength = civInfo.getStatForRanking(RankingType.Force).toFloat() + baseForce
         var theirCombatStrength = otherCiv.getStatForRanking(RankingType.Force).toFloat() + baseForce
 
@@ -705,9 +705,9 @@ object NextTurnAutomation {
         val closestCities = getClosestCities(civInfo, otherCiv)
         val ourCity = closestCities.city1
         val theirCity = closestCities.city2
-        
+
         if (civInfo.getCivUnits().filter { it.isMilitary() }.none {
-                val damageRecievedWhenAttacking = 
+                val damageRecievedWhenAttacking =
                     BattleDamage.calculateDamageToAttacker(
                         MapUnitCombatant(it),
                         CityCombatant(theirCity)
@@ -722,7 +722,7 @@ object NextTurnAutomation {
                     && (owner == otherCiv || owner == null || civInfo.canPassThroughTiles(owner))
         }
 
-        val reachableEnemyCitiesBfs = BFS(civInfo.getCapital().getCenterTile()) { isTileCanMoveThrough(it) }
+        val reachableEnemyCitiesBfs = BFS(civInfo.getCapital()!!.getCenterTile()) { isTileCanMoveThrough(it) }
         reachableEnemyCitiesBfs.stepToEnd()
         val reachableEnemyCities = otherCiv.cities.filter { reachableEnemyCitiesBfs.hasReachedTile(it.getCenterTile()) }
         if (reachableEnemyCities.isEmpty()) return 0 // Can't even reach the enemy city, no point in war.
@@ -853,7 +853,7 @@ object NextTurnAutomation {
                 city.annexCity()
             }
 
-            city.reassignPopulation()
+            city.reassignAllPopulation()
 
             city.cityConstructions.chooseNextConstruction()
             if (city.health < city.getMaxHealth())

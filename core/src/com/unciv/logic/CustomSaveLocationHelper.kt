@@ -20,10 +20,10 @@ interface CustomSaveLocationHelper {
      *  @param  saveCompleteCallback Action to call upon completion (success _and_ failure)
      */
     fun saveGame(
-            gameInfo: GameInfo,
-            gameName: String,
-            forcePrompt: Boolean = false,
-            saveCompleteCallback: ((Exception?) -> Unit)? = null
+        gameInfo: GameInfo,
+        gameName: String,
+        forcePrompt: Boolean = false,
+        saveCompleteCallback: ((Exception?) -> Unit)? = null
     )
 
     /**### Load from custom location

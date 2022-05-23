@@ -17,4 +17,9 @@ interface GeneralPlatformSpecificHelpers {
      * Notifies the user that it's their turn while the game is running
      */
     fun notifyTurnStarted() {}
+
+    /**
+     * @return an additional external directory for save files, if applicable on the platform
+     */
+    fun getExternalFilesDir(): String? { return null }
 }

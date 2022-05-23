@@ -279,7 +279,8 @@ object SpecificUnitAutomation {
     }
 
     fun automateAddInCapital(unit: MapUnit) {
-        val capitalTile = unit.civInfo.getCapital().getCenterTile()
+        if (unit.civInfo.getCapital() == null) return // safeguard
+        val capitalTile = unit.civInfo.getCapital()!!.getCenterTile()
         if (unit.movement.canReach(capitalTile))
             unit.movement.headTowards(capitalTile)
         if (unit.getTile() == capitalTile) {
@@ -287,7 +288,7 @@ object SpecificUnitAutomation {
             return
         }
     }
-    
+
     fun automateMissionary(unit: MapUnit) {
         if (unit.religion != unit.civInfo.religionManager.religion?.name)
             return unit.destroy()
@@ -425,7 +426,7 @@ object SpecificUnitAutomation {
         val firstStepInPath = pathsToCities[closestCityThatCanAttackFrom]!!.first()
         airUnit.movement.moveToTile(firstStepInPath)
     }
-    
+
     fun automateNukes(unit: MapUnit) {
         val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange())
         for (tile in tilesInRange) {
@@ -443,7 +444,7 @@ object SpecificUnitAutomation {
         if (BattleHelper.tryAttackNearbyEnemy(unit)) return
         tryRelocateToNearbyAttackableCities(unit)
     }
-    
+
     private fun tryRelocateToNearbyAttackableCities(unit: MapUnit) {
         val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange())
         val immediatelyReachableCities = tilesInRange
@@ -455,7 +456,7 @@ object SpecificUnitAutomation {
             unit.movement.moveToTile(city)
             return
         }
-        
+
         if (unit.baseUnit.isAirUnit()) {
             val pathsToCities = unit.movement.getAerialPathsToCities()
             if (pathsToCities.isEmpty()) return // can't actually move anywhere else
@@ -479,7 +480,7 @@ object SpecificUnitAutomation {
 
     fun foundReligion(unit: MapUnit) {
         val cityToFoundReligionAt =
-            if (unit.getTile().isCityCenter() && !unit.getTile().owningCity!!.isHolyCity()) unit.getTile().owningCity 
+            if (unit.getTile().isCityCenter() && !unit.getTile().owningCity!!.isHolyCity()) unit.getTile().owningCity
             else unit.civInfo.cities.firstOrNull {
                 !it.isHolyCity()
                 && unit.movement.canMoveTo(it.getCenterTile())
@@ -493,16 +494,16 @@ object SpecificUnitAutomation {
 
         UnitActions.getFoundReligionAction(unit)()
     }
-    
+
     fun enhanceReligion(unit: MapUnit) {
         // Try go to a nearby city
         if (!unit.getTile().isCityCenter())
             UnitAutomation.tryEnterOwnClosestCity(unit)
-        
+
         // If we were unable to go there this turn, unable to do anything else
         if (!unit.getTile().isCityCenter())
             return
-        
+
         UnitActions.getEnhanceReligionAction(unit)()
     }
 

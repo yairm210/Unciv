@@ -1,3 +1,42 @@
+## 4.1.2
+
+Fixed multiplayer bugs (double files, turn checker problems) - By Azzurite
+
+By SomeTroglodyte:
+- Fix Autocracy Complete bug
+- Fix effect of new Beliefs not immediately visible
+
+Fix crashes when a civ does not have a capital - By OptimizedForDensity
+
+By xlenstra:
+- Great improvements buildable on removable terrain features
+
+By itanasi:
+- Fix Zone of Control
+- Assign Population Improvements
+
+By JackRainy:
+- Performance improvements
+- Better city connection quest check
+
+## 4.1.1
+
+HexaRealm update - By GeneralWadaling
+
+Performance improvements - By Azzurite
+
+Great General typed uniques and improved moddability - By JackRainy
+
+Great improvements can again be constructed on forest - By xlenstra
+
+Fixed MP refresher not working after rate limit - By GGGuenni
+
+Fix "May Withdraw" modifier calculation - By OptimizedForDensity
+
+Allow generation of "Default" Deciv redux maps - By SomeTroglodyte
+
+Improve autofix when typing multiplayer server URL - By touhidurrr
+
 ## 4.1.0
 
 Upgraded to libGDX 1.11.0 - enables Unciv on M1 chips
@@ -7,31 +46,31 @@ Allow Android Unciv more memory than standard apps - By Azzurite
 Allow liberating a traded city - By JackRainy
 
 By xlenstra:
-- Disabled CS buttons when at war; CS keep influence when at war with ally 
-- Fixed bug where roads could not be removed 
+- Disabled CS buttons when at war; CS keep influence when at war with ally
+- Fixed bug where roads could not be removed
 
 By SomeTroglodyte:
 - Accelerate custom map selection
-- Map Editor improvements 
+- Map Editor improvements
 - Notifications no longer become unscrollable past a point
 
 Capital movement tweaks  - By OptimizedForDensity
 
 ## 4.0.16
 
-AI will not declare war if it definitely can't take a city 
+AI will not declare war if it definitely can't take a city
 
 Civilooedia from mainmenu  - By SomeTroglodyte
 
 Rate limit handling for Dropbox  - By GGGuenni
 
 By OptimizedForDensity:
-- Use ranged strength when defending against ranged attacks 
-- Hide cities where wonders are built until city is explored 
+- Use ranged strength when defending against ranged attacks
+- Hide cities where wonders are built until city is explored
 
 By xlenstra:
 - Fixed "improvements could no longer be built by workers" bug
-- Fixed "roads seemingly remove improvements" bug 
+- Fixed "roads seemingly remove improvements" bug
 
 Hexarealm tileset added to base game - By GeneralWadaling
 
@@ -40,7 +79,7 @@ Hexarealm tileset added to base game - By GeneralWadaling
 Fixed proxy issues when starting new multiplayer games - By alexban011
 
 By SomeTroglodyte:
-- Optional gzipping of saved games 
+- Optional gzipping of saved games
 - Modding: Typed unit promotion effects
 
 By Azzurite:
@@ -48,7 +87,7 @@ By Azzurite:
 - Improvements and city buttons visible to Spectator
 
 By touhidurrr:
-- Autofix Multiplayer Server URL on input 
+- Autofix Multiplayer Server URL on input
 
 Hide Unmet Civ and Capital Names in Victory Screen - By OptimizedForDensity
 
@@ -60,7 +99,7 @@ Performance improvements
 
 By SomeTroglodyte:
 - Move UncivServer to own module
-- Font choice rework 
+- Font choice rework
 - Reworked "Creates improvement on a specific tile" Unique
 
 By Azzurite:
@@ -68,7 +107,7 @@ By Azzurite:
 
 By JackRainy:
 - Auto-downloading missing mods for save files
-- Typed missing uniques 
+- Typed missing uniques
 
 ## 4.0.13
 
@@ -94,16 +133,16 @@ New Demographics Scoreboard  - By letstalkaboutdune
 
 By SomeTroglodyte:
 - Show available resources from CityScreen
-- F-droid integration improvements! 
+- F-droid integration improvements!
 
 By JackRainy:
-- Allow city connections via open borders and own harbors only 
+- Allow city connections via open borders and own harbors only
 - Enable scrolling for the oversized popups
 
 Performance improvements - By Azzurite
 
 By xlenstra:
-- Fixed `provides [amount] [resource]` on buildings not accepting conditionals 
+- Fixed `provides [amount] [resource]` on buildings not accepting conditionals
 - Implemented most things for moddable victory conditions
 
 Check internet before starting mp game to avoid freeze - By alexban011
@@ -115,27 +154,27 @@ Enabled nested translations!
 Don't allow trade routes through enemy cities
 
 By JackRainy:
-- Protect the cities from the fallout spawning 
-- Correct swap of the full-loaded carriers 
+- Protect the cities from the fallout spawning
+- Correct swap of the full-loaded carriers
 
 By SomeTroglodyte:
 - Map editor2.2
-- Show number of global followers in Religion Overview 
+- Show number of global followers in Religion Overview
 
 By xlenstra:
-- Fixed improvements with unfulfilled 'Only Available' still buildable 
+- Fixed improvements with unfulfilled 'Only Available' still buildable
 - Fixed a crash when a plane tried to enter a full city
 
 ## 4.0.10
 
 By JackRainy:
-- Correct calculation of production for Settlers 
-- Fixed swapping carriers with payloads 
-- Display wonders built in other civs correctly 
+- Correct calculation of production for Settlers
+- Fixed swapping carriers with payloads
+- Display wonders built in other civs correctly
 
 By SomeTroglodyte:
-- Resources UI 
-- Some improvements to Map Editor - step 1 
+- Resources UI
+- Some improvements to Map Editor - step 1
 - Implement fastlane step 1 - minimal framework
 
 Made Specialist allocation table expandable  - By ultradian
@@ -147,7 +186,7 @@ Healing values per Civ V - By letstalkaboutdune
 ## 4.0.9
 
 By xlenstra: Moddable victories!
-  
+
 Fixed crashing bug with aircraft rejection reasons
 
 Mod land units with missile and nuke uniques no longer crash the game
@@ -175,8 +214,8 @@ AIs don't add double agreements to counteroffers
 Clearer "owned" resource on AI trade offer
 
 By xlenstra:
-- Made 'go to on map' translatable & fixed crash 
-- Fixed two small bugs 
+- Made 'go to on map' translatable & fixed crash
+- Fixed two small bugs
 
 ## 4.0.7
 
@@ -184,13 +223,13 @@ Resolved problems in hosting Unciv server
 
 By xlenstra:
 - Added 'unit upgrades for free' unique
-- Added a 'go to capital'-button in diplomacy screen 
-- Fixed vanilla policies regression 
+- Added a 'go to capital'-button in diplomacy screen
+- Fixed vanilla policies regression
 
 By itanasi:
-- Air Units take damage in Combat 
-- Updating XP Rewards. Interception now gives XP 
-- When capturing Civilian, stop current action 
+- Air Units take damage in Combat
+- Updating XP Rewards. Interception now gives XP
+- When capturing Civilian, stop current action
 
 Fixed TurnChecker crash when using custom server  - By GGGuenni
 
@@ -212,15 +251,15 @@ Fixed a bug where production would not be retained when changing from an obsolet
 
 ## 4.0.5
 
-Added borders to minimap 
+Added borders to minimap
 
 Resolved Diplomatic Victory check not triggering for human player
 
 Cities that become capital no longer continue being razed
 
 By SomeTroglodyte:
-- Make Icons clickable in religions per city display 
-- Nicer NotificationScroll 
+- Make Icons clickable in religions per city display
+- Nicer NotificationScroll
 
 Fixed a bug where crosshairs are everywhere with the 'attack when embarked' unique  - By xlenstra
 
@@ -236,23 +275,23 @@ Solved 'check server connection' errors on Android
 
 By SomeTroglodyte:
 - Fix Goddess of Protection error
-- Tabbed pager architecture update 
+- Tabbed pager architecture update
 
 ## 4.0.3
 
 Changed server connection to URL-based to allow connection to uncivserver.xyz
 
 By xlenstra:
-- Added a unique for attacking when embarked 
-- Generalized Denmark's unique 
+- Added a unique for attacking when embarked
+- Generalized Denmark's unique
 
 By HaneulCheong:
-- Improved city name generation 
-- Fixed the official wiki 
+- Improved city name generation
+- Fixed the official wiki
 
 By SomeTroglodyte:
-- Remove re-orientation for OptionsPopup 
-- Fix enabled buildings not displaying in games without nukes 
+- Remove re-orientation for OptionsPopup
+- Fix enabled buildings not displaying in games without nukes
 
 ## 4.0.2
 
@@ -261,8 +300,8 @@ Solved out of memory errors for modded base rulesets
 By SomeTroglodyte:
 - City Info Table Expanders improvements
 - Empire Overview tweaks
-- Translation writer improvements 
-- Reactivate Worldscreen Ctrl key bindings 
+- Translation writer improvements
+- Reactivate Worldscreen Ctrl key bindings
 
 Generalized a few nation uniques  - By xlenstra
 
@@ -273,26 +312,26 @@ Custom server port  - By HAHH9527
 Add Moddable Policy Priorities  - By HaneulCheong
 
 By SomeTroglodyte:
-- Enable ModOptions uniques and ModConstants from non-base mods 
-- Improved Widgets - Fixing Tabbed Pager Scrolling 
+- Enable ModOptions uniques and ModConstants from non-base mods
+- Improved Widgets - Fixing Tabbed Pager Scrolling
 - Make max Zoom out a setting
-- More thorough workaround for Char.code and Char(Int) crashing 
+- More thorough workaround for Char.code and Char(Int) crashing
 - Fix crashes and better crash info
 
 ## 4.0.0
 
-Can now host your own Unciv server for Multiplayer - details in the wiki! 
+Can now host your own Unciv server for Multiplayer - details in the wiki!
 
 By SomeTroglodyte:
-- Prevent Char-to-code crash 
-- Moddable Ice generation 
+- Prevent Char-to-code crash
+- Moddable Ice generation
 - Empire Overview improvements
-- Fix CS unit gift crash 
+- Fix CS unit gift crash
 
 By xlenstra:
 - Split 6 tiles visible unique into its parts, making it more moddable
 - Fixed a bug where the resource supply overview would not add up
-- Added an AI for building & using spaceship parts 
+- Added an AI for building & using spaceship parts
 - Unified & generalized a few uniques
 
 Custom desktop font - by HAHH9527
@@ -303,18 +342,18 @@ Double Zoom Out Range  - By itanasi
 
 By SomeTroglodyte:
 - Redesign of Empire Overview Screen - more info saves, better portrait display, and many more changes!
-- World Screen unit supply deficit icon now updates properly 
-- Close little loophole allowing promoting a unit after moving or attacking 
+- World Screen unit supply deficit icon now updates properly
+- Close little loophole allowing promoting a unit after moving or attacking
 
 ## 3.19.17
 
 Better displaying of units that cannot be built
 
 By SomeTroglodyte:
-- Support more freely modded Worker-like units 
+- Support more freely modded Worker-like units
 - Religion overview improved
-- Mod checker minor improvements 
-- Fixed Spectator & AI games in seemingly endless loop  
+- Mod checker minor improvements
+- Fixed Spectator & AI games in seemingly endless loop
 
 Multiplayer code cleanup  - By GGGuenni
 
@@ -325,8 +364,8 @@ Wiki improvements
 Unique units abilities that should be inherited by upgrades  - By SomeTroglodyte
 
 By SpacedOutChicken:
-- Add Amphibious promotion to Songhai units 
-- Petra fix 
+- Add Amphibious promotion to Songhai units
+- Petra fix
 
 ## 3.19.15
 
@@ -512,7 +551,7 @@ Fix art for farms on hills  - By SpacedOutChicken
 
 ## 3.19.3
 
-Huge performance improvements to "next turn" 
+Huge performance improvements to "next turn"
 
 Removed mod dependency on specific terrains and resources
 
@@ -849,7 +888,7 @@ By xlenstra:
 
 Performance improvements!
 
-Upgraded Desktop to new rendering methods, solving many existing problems 
+Upgraded Desktop to new rendering methods, solving many existing problems
 
 Can upgrade/promote units as per Civ V rules
 
@@ -906,7 +945,7 @@ Improved multiplayer screen performance - By GGGuenni
 By SimonCeder:
 - Improve AI performance vs barbarians & AI settlers
 - Conquistadors only settle other continents
-- Fixed contest quests bug 
+- Fixed contest quests bug
 
 By xlenstra:
 - Religion UI improvements
@@ -1102,7 +1141,7 @@ By xlenstra:
 Type-checking for Unique parameters in mods, basis for new Unique management
 
 By xlenstra:
-- Many bugfixes 
+- Many bugfixes
 - Added "conditionals" to increase unique moddability
 - Embarked units only have 1 vision (except marines)
 
@@ -1194,7 +1233,7 @@ By SimonCeder:
 
 By SomeTroglodyte
 - Options displays well for portrait mode
-- Fixed rare map generation crash 
+- Fixed rare map generation crash
 
 ## 3.16.11
 
@@ -1346,26 +1385,26 @@ Fixed diplomacy screen crash for city-states with no cities
 
 Added mod check for units whose unitType is not defined
 
-Fixed crash when selecting certain buildings in the civilopedia - by xlenstra 
+Fixed crash when selecting certain buildings in the civilopedia - by xlenstra
 
 ## 3.16.2
 
 Fixed crashing Diplomatic victory bug
 
 By xlenstra:
-- Added follower beliefs for buying religious buildings 
-- Hides 'automate' unit action and unhides 'stop exploring' unit action 
-- Ruins now have their own file 
-- Architecture is now a prerequiste of Archaeology 
-- Fixed bug where units could still be purchased if they used a depleted resource 
-- Fixed crash when borrowing names 
-- Fixes bug where Russia's unique no longer works 
-- One with nature yield for spain is now doubled 
+- Added follower beliefs for buying religious buildings
+- Hides 'automate' unit action and unhides 'stop exploring' unit action
+- Ruins now have their own file
+- Architecture is now a prerequiste of Archaeology
+- Fixed bug where units could still be purchased if they used a depleted resource
+- Fixed crash when borrowing names
+- Fixes bug where Russia's unique no longer works
+- One with nature yield for spain is now doubled
 
 By SomeTroglodyte:
-- MapGenerator optimization 
-- Diplomacy: City State resource UI, improvement gift effect 
-- Mod description translation 
+- MapGenerator optimization
+- Diplomacy: City State resource UI, improvement gift effect
+- Mod description translation
 
 Pikeman upgrades only to Lancer  - By ravignir
 
@@ -1376,24 +1415,24 @@ City state resources  - By Interdice
 ## 3.16.1
 
 By xlenstra:
-- Added missionairy units, which can spread religion and bought with faith 
-- Replaced the last promotion effects with uniques 
-- Removed $ signs from translatable strings 
+- Added missionairy units, which can spread religion and bought with faith
+- Replaced the last promotion effects with uniques
+- Removed $ signs from translatable strings
 
 By SomeTroglodyte:
-- Bring `allUnitActionsHaveTranslation` test up to date 
-- Change defeat conditions 
+- Bring `allUnitActionsHaveTranslation` test up to date
+- Change defeat conditions
 
 By ravignir:
-- Minor fix to Great Prophets cost not increasing 
+- Minor fix to Great Prophets cost not increasing
 
 ## 3.16.0-patch1
 
 Bugfixes from unitTypes so promotions work again  - By xlenstra
 
 By SomeTroglodyte:
-- Allow civ-unique buildings to be created by startingEra 
-- Mod manager concurrency 
+- Allow civ-unique buildings to be created by startingEra
+- Mod manager concurrency
 
 Randomize Plains/Grasslands around deserts  - By ravignir
 
@@ -1410,8 +1449,8 @@ Atomic bomb interception works as intended
 Ai now cares about city distances   - By Interdice
 
 By SomeTroglodyte:
-- Civilopedia phase 9 - Technologies 
-- Harden map editor map loader against most bad maps 
+- Civilopedia phase 9 - Technologies
+- Harden map editor map loader against most bad maps
 - UI improvements
 
 General fixes - By lishaoxia1985
@@ -1423,17 +1462,17 @@ General fixes - By lishaoxia1985
 Solved crash where city states would try to gift great people without cities
 
 By avdstaaij:
-- Fixed captured units not tp-ing out of illegal tiles 
+- Fixed captured units not tp-ing out of illegal tiles
 
 By SomeTroglodyte:
-- TranslationFileWriter support for CivilopediaText 
-- Fix Civilopedia Unique auto-linking when Ruleset changes 
-- Reduce atlas - The Huns was 4x larger than the other nations, and a dirty Hexagon dupe 
-- Better crude maps - zero uncovered tiles impossible 
+- TranslationFileWriter support for CivilopediaText
+- Fix Civilopedia Unique auto-linking when Ruleset changes
+- Reduce atlas - The Huns was 4x larger than the other nations, and a dirty Hexagon dupe
+- Better crude maps - zero uncovered tiles impossible
 
 By xlenstra:
-- Added modoptions unique for disabling city-state spawning with only a settler 
-- Fixed bug where production from cutting down forests could apply to perpetual constructions 
+- Added modoptions unique for disabling city-state spawning with only a settler
+- Fixed bug where production from cutting down forests could apply to perpetual constructions
 
 Improve River for FantasyHex  - By AdityaMH
 
@@ -1452,8 +1491,8 @@ AI accepts research agreement offers
 Buildings from era are applied before buildings from policies
 
 By SomeTroglodyte:
-- Civilopedia phase 8 - Nations and Promotions 
-- UnitActionType now knows keys, sounds and most icons 
+- Civilopedia phase 8 - Nations and Promotions
+- UnitActionType now knows keys, sounds and most icons
 
 And new unit pixel and some improvement - By AdityaMH
 
@@ -1480,37 +1519,37 @@ By SomeTroglodyte:
 - Unit name translation
 - Rename Railroad tech to Railroads
 - Fix canImprovementBeBuiltHere regression
-- Newgame screen overhaul for portrait mode 
-- Deprecate "Can only be built on coastal tiles" unique 
-- A Civilopedia category for Religion 
+- Newgame screen overhaul for portrait mode
+- Deprecate "Can only be built on coastal tiles" unique
+- A Civilopedia category for Religion
 
 By SimonCeder:
 - Optimized spawn placement algorithm
-- City states adjustments 
+- City states adjustments
 
 Resolved #4394 - corrected misspelled city names
 
 ## 3.15.14
 
 By xlenstra:
-- Fixed bug where "[All] units" would not apply to city combatants 
-- Fixed comodification errors under certain circumstances 
-- Fixed a crash in badly defined mods 
-- Implemented temples 
-- Hide lesser used action buttons to free up space 
-- Fixed bug where 'remove road' would also remove other improvements under specific circumstances 
-- Fixed units not being removed from open borders area after declaring war 
-- Fixed bug where all great people suddenly were scientists 
-- Fix autocracy bonus accidentally being disabled 
+- Fixed bug where "[All] units" would not apply to city combatants
+- Fixed comodification errors under certain circumstances
+- Fixed a crash in badly defined mods
+- Implemented temples
+- Hide lesser used action buttons to free up space
+- Fixed bug where 'remove road' would also remove other improvements under specific circumstances
+- Fixed units not being removed from open borders area after declaring war
+- Fixed bug where all great people suddenly were scientists
+- Fix autocracy bonus accidentally being disabled
 
 By SomeTroglodyte:
-- Resolve #4589 
-- Spruced up Civilopedia - phase 6 - uniques 
-- City construction Civilopedia-linked 
+- Resolve #4589
+- Spruced up Civilopedia - phase 6 - uniques
+- City construction Civilopedia-linked
 
 By SimonCeder:
-- Map generation and start locations 
-- Added Sweden Civ 
+- Map generation and start locations
+- Added Sweden Civ
 
 Performance boost - should resolve some ANRs
 
@@ -1519,12 +1558,12 @@ Performance boost - should resolve some ANRs
 By SomeTroglodyte:
 - Fix for missing Farm images
 - Better keyboard shortcuts
-- Rewritten Tooltip class 
-- Sort Civilopedia entries using locale 
-- Spruced up Civilopedia - phase 5 - buildings 
+- Rewritten Tooltip class
+- Sort Civilopedia entries using locale
+- Spruced up Civilopedia - phase 5 - buildings
 
 By xlenstra:
-- Implemented Follower beliefs for religions 
+- Implemented Follower beliefs for religions
 - Fixed unique of Persian immortal not working
 
 Unit gifting - By SimonCeder
@@ -1534,17 +1573,17 @@ Added Polder image
 ## 3.15.12
 
 By xlenstra:
-- Founding Religions 
-- Updated the tile choosing algorithm for city expansion 
-- Disabled city state diplomacy buttons when it is not your turn 
-- Fixed bug where great prophets could be given when religion was disabled 
-- Fixed bug where effects of all aquaducts nationwide stacked in each city 
+- Founding Religions
+- Updated the tile choosing algorithm for city expansion
+- Disabled city state diplomacy buttons when it is not your turn
+- Fixed bug where great prophets could be given when religion was disabled
+- Fixed bug where effects of all aquaducts nationwide stacked in each city
 
 Wonder build screens redux - By SimonCeder
 
 By SomeTroglodyte:
 - Better Slider UI
-- 'Swap units' sound replaced 
+- 'Swap units' sound replaced
 
 ## 3.15.11
 
@@ -1553,13 +1592,13 @@ Civs with no cities can no longer pick policies
 Spectator no longer appears on Diplomacy overview
 
 By xlenstra:
-- Fixed crashes on loading save games with religion 
-- Fixed bug where submarines could not attack embarked units 
-- Fixed bug where tile construction time was increased instead of decreased 
+- Fixed crashes on loading save games with religion
+- Fixed bug where submarines could not attack embarked units
+- Fixed bug where tile construction time was increased instead of decreased
 
 By lishaoxia1985:
-- Fix worldSizeModifier in TechManager 
-- Make map symmetrical if it's not wrapped 
+- Fix worldSizeModifier in TechManager
+- Make map symmetrical if it's not wrapped
 
 Fix Hun city names - By freddyhayward
 
@@ -1571,13 +1610,13 @@ Fix for placeholder parameters changing names and becoming out of sync with exis
 
 By xlenstra:
 - Add missing pantheons
-- City states give gold when met; updates to city state gold gifts 
+- City states give gold when met; updates to city state gold gifts
 - Fixed many bugs
-- City Centers can no longer be removed by nukes 
-- Added a simplified version of great prophets, implemented a basic city religion UI 
-- Updated TranslationFileWriter to include the new values that filters can have 
-- Fixed a bug where one city challengers could capture enemy cities 
-- Refactored the way cities determine what uniques should apply when 
+- City Centers can no longer be removed by nukes
+- Added a simplified version of great prophets, implemented a basic city religion UI
+- Updated TranslationFileWriter to include the new values that filters can have
+- Fixed a bug where one city challengers could capture enemy cities
+- Refactored the way cities determine what uniques should apply when
 
 Fixed spurious notifications of revealed resources too far away or in foreign territory  - By freddyhayward
 
@@ -1586,17 +1625,17 @@ Quick salvage of some lost translations  - By SomeTroglodyte
 ## 3.15.9
 
 By SomeTroglodyte:
-- Better mod download and error display 
-- Spruced up Civilopedia - phase 4 - Visual candy, Units 
-- 'Swap units' sound and more attack sounds 
-- Unified separators, CheckBox helper 
+- Better mod download and error display
+- Spruced up Civilopedia - phase 4 - Visual candy, Units
+- 'Swap units' sound and more attack sounds
+- Unified separators, CheckBox helper
 - ExpanderTab UI update
 
 By xlenstra:
-- Fixed crash when a city had negative population due to faster razing 
-- Fixed bug where logistics _still_ did not work 
-- Fixed bug where city-states would not share their science income even if the player had the right policy 
-- Added the nation of the Netherlands 
+- Fixed crash when a city had negative population due to faster razing
+- Fixed bug where logistics _still_ did not work
+- Fixed bug where city-states would not share their science income even if the player had the right policy
+- Added the nation of the Netherlands
 
 Fixed Denmark's unique
 
@@ -1606,12 +1645,12 @@ More concurrency problem fixes in nuke effects
 
 By xlenstra:
 - Made eras more moddable
-- Updated and generalized more promotions 
-- Added Privateer unit; updated Coastal Raider promotion 
+- Updated and generalized more promotions
+- Added Privateer unit; updated Coastal Raider promotion
 
 By SomeTroglodyte:
-- Fix mod custom maps unavailable when no local ones exist 
-- Spruced up Civilopedia - phase 3 - Interface, flavour text, new Tutorial 
+- Fix mod custom maps unavailable when no local ones exist
+- Spruced up Civilopedia - phase 3 - Interface, flavour text, new Tutorial
 
 ## 3.15.7-announcementTest
 
@@ -1624,10 +1663,10 @@ Resolved 'getting stuck when there are no more pickable Pantheon beliefs'
 Removed final vestiges of old Bonus/Penalty effects.
 
 By xlenstra:
-- Fixed bug where all units could move after attacking 
-- Fix a few bugs related to nukes 
-- Research Tech Button shows progress; Small bug fix 
-- Updated promotions - make more generalizable, update to G&K 
+- Fixed bug where all units could move after attacking
+- Fix a few bugs related to nukes
+- Research Tech Button shows progress; Small bug fix
+- Updated promotions - make more generalizable, update to G&K
 
 By SomeTroglodyte:
 - Translate nested placeholders for English
@@ -1639,19 +1678,19 @@ Faster 'false' results for isStats, as proposed by @SomeTroglodyte  in #4259
 
 By SomeTroglodyte:
 - Hide notifications for incompatible policy branches
-- Nicer distribution of policy picker branches 
-- Fix "National Wonder is being built elsewhere" not displayed 
+- Nicer distribution of policy picker branches
+- Fix "National Wonder is being built elsewhere" not displayed
 - Respect visualMods for Sound - CheckBox, formats, modchange detect
 
 By xlenstra:
-- Added Shrine, option for enabling religion 
-- Added Nuclear Submarines & Missile Cruisers, capable of transporting missiles 
-- Fixed crash when selecting worker 
+- Added Shrine, option for enabling religion
+- Added Nuclear Submarines & Missile Cruisers, capable of transporting missiles
+- Fixed crash when selecting worker
 - Fixed bug where on quick game speed, educated elite would yield a great person every turn
 
 By avdstaaij:
-- Added Stealth tech and Stealth Bombers 
-- Added Drama and Poetry tech and replaced Temples with Amphitheaters 
+- Added Stealth tech and Stealth Bombers
+- Added Drama and Poetry tech and replaced Temples with Amphitheaters
 
 ## 3.15.5
 
@@ -1662,9 +1701,9 @@ Resolved #4200 - Cities in resistance cannot bombard
 More generic "gain stat" for some uniques
 
 By xlenstra:
-- Generalized building of improvements 
+- Generalized building of improvements
 - Added Telecommunications tech
-- Added Advanced Ballistics Tech, Atomic Bomb Unit, Updated how nukes work 
+- Added Advanced Ballistics Tech, Atomic Bomb Unit, Updated how nukes work
 - Fixed rare bug where building improvements would increase tile base yield
 
 Promotion picker keeps vertical scroll pos on promote or resize  - By SomeTroglodyte
@@ -1674,23 +1713,23 @@ Promotion picker keeps vertical scroll pos on promote or resize  - By SomeTroglo
 Deprecated 'download map' in favor of mod-based map sharing
 
 By xlenstra:
-- Created Patronage policy branch 
-- Fixed a bug where excess food would not be converted to production for settlers 
+- Created Patronage policy branch
+- Fixed a bug where excess food would not be converted to production for settlers
 
 By avdstaaij:
-- Added Nuclear Fusion tech and Giant Death Robot 
-- Fixed open terrain bonus working in rough terrain 
-- Fixed captured units not tp-ing out of liberated cities 
-- Fixed naval units not tp-ing out of razed cities 
+- Added Nuclear Fusion tech and Giant Death Robot
+- Fixed open terrain bonus working in rough terrain
+- Fixed captured units not tp-ing out of liberated cities
+- Fixed naval units not tp-ing out of razed cities
 
 Split off all individual OverviewScreen panes  - By SomeTroglodyte
 
 ## 3.15.3
 
 By xlenstra:
-- Created Order branch with G&K policies 
+- Created Order branch with G&K policies
 - Fixed bug where coastal buildings cannot be built
-- Stop AI from pillaging their own tiles. Fixes #4203 
+- Stop AI from pillaging their own tiles. Fixes #4203
 - Fixed autocracy complete bonus not continuing after updating
 
 Corrected many building production costs, tech requirements and wonder effects  - By avdstaaij
@@ -1702,15 +1741,15 @@ Resolved #4209 - AI city-founding no longer plays music
 ## 3.15.2
 
 By xlenstra:
-- Updated Autocracy and Freedom branches to G&K 
-- Fixed honor policy not adding bonus vs barbarians 
-- Fixed old worker speed improvement uniques no longer working 
+- Updated Autocracy and Freedom branches to G&K
+- Fixed honor policy not adding bonus vs barbarians
+- Fixed old worker speed improvement uniques no longer working
 
 Wake up units when enemy sighted or displaced or attacked  - By SomeTroglodyte
 
 By avdstaaij:
-- Made atlas textures use mipmaps again 
-- Fixed units not teleporting out of sold city tiles 
+- Made atlas textures use mipmaps again
+- Fixed units not teleporting out of sold city tiles
 
 Resolved #4170 - updated deprecated Polynesian unique - By SpacedOutChicken
 
@@ -1719,12 +1758,12 @@ Unitfilter now accepts multiple filters (see wiki/uniques for details)
 ## 3.15.1
 
 By xlenstra:
-- Updated the culture victory so it now requires the Utopia Project to be built 
-- Updated Commerce and Commerce branches to G&K 
+- Updated the culture victory so it now requires the Utopia Project to be built
+- Updated Commerce and Commerce branches to G&K
 
 By SomeTroglodyte:
 - Show promises not to settle
-- Shortcut tooltips indicators 
+- Shortcut tooltips indicators
 
 Map RNG reproducibility fix - By r3versi
 
@@ -1748,15 +1787,15 @@ Better button images - By lishaoxia1985
 Cities in resistance cannot bombard, as per Civ V - #663
 
 By SomeTroglodyte:
-- Hopefully fixed F-Droid missing libgdx.so problem 
+- Hopefully fixed F-Droid missing libgdx.so problem
 - Trade UI improvements - Leader portraits, keys, layout
-- Nations spellchecking 
+- Nations spellchecking
 
 Implemented production overflow - By Thyrum
 
 By r3versi:
-- Map Generation Seedable 
-- Map Generation Fixes and Tweaks 
+- Map Generation Seedable
+- Map Generation Fixes and Tweaks
 
 ## 3.14.15
 
@@ -1766,9 +1805,9 @@ Refund wasted production as gold  - By Thyrum
 
 By SomeTroglodyte:
 - More power to improvement uniques
-- Fix gold able to over- and underflow 
-- Map editor save / load / download keys 
-- TileInfoTable translation and padding 
+- Fix gold able to over- and underflow
+- Map editor save / load / download keys
+- TileInfoTable translation and padding
 
 Paratrooper bugfixes - By xlenstra
 
@@ -1798,8 +1837,8 @@ City construction queue: Subsequent units no longer displays construction progre
 By SomeTroglodyte:
 - Sound upgrade - enabled custom unit attack sounds
 - Spruced up ModManagementScreen
-- Patch ModManager exit to allow deactivating a selected tileset 
-- Spruced up Civilopedia - phase 2 - external links 
+- Patch ModManager exit to allow deactivating a selected tileset
+- Spruced up Civilopedia - phase 2 - external links
 
 Declare & Revoke protection for city-states - By ninjatao
 
@@ -1817,7 +1856,7 @@ Better camera square image
 
 By SomeTroglodyte:
 - Added key shortcuts to popups
-- Improved location notifications 
+- Improved location notifications
 
 ## 3.14.11
 
@@ -1869,14 +1908,14 @@ More FantasyHex combinations (both mine and GGGuenni's)
 Fixed terrace farm's 'fresh water' bonus - kudos @1.7.4
 
 By GGGuenni:
-- Fixed inconsistent map size 
+- Fixed inconsistent map size
 - Fixed Forest on Hill visibility
 
 By SomeTroglodyte:
-- Accelerate Load Game Screen Info 
-- Save game UI patch 
+- Accelerate Load Game Screen Info
+- Save game UI patch
 
-Translations update 
+Translations update
 
 ## 3.14.7
 
@@ -1899,8 +1938,8 @@ Genericized "No Maintenance costs for improvements in [] tiles", tile city-stren
 Show tech progress for next turn in tech button
 
 By SomeTroglodyte:
-- Resource revealed notification point to all reveals 
-- Worldscreen key bindings 
+- Resource revealed notification point to all reveals
+- Worldscreen key bindings
 - City overview force consistent row height
 
 ## 3.14.6
@@ -1914,7 +1953,7 @@ Resolved #3865 - Kudos @SomeTroglodyte
 Great general unique no longer restricted to civilian units
 
 By SomeTroglodyte:
-- Overview screen category decoration + key hint 
+- Overview screen category decoration + key hint
 - Fixed shortcuts for improvements
 - Option Screen choices visible on minimap toggle buttons immediately
 
@@ -1932,7 +1971,7 @@ Added "Self-destructs when attacking" unique
 
 By SomeTroglodyte:
 - City expansion notification points to acquired tile
-- Visual improvements for the City Overview 
+- Visual improvements for the City Overview
 
 Fix screen bugs when you don't use splitpane in pickscreen  - By lishaoxia1985
 
@@ -1996,12 +2035,12 @@ Modding:
 - Added "Friendly Land" and "Foreign Land" as tile filter options
 
 By SomeTroglodyte:
-- Fix Citadel not buildable where it should be 
+- Fix Citadel not buildable where it should be
 
 By GGGuenni:
-- Fixed Multiplayer bugs 
+- Fixed Multiplayer bugs
 - Preparation for hill as terrain feature
-- Added TileSetConfigs 
+- Added TileSetConfigs
 
 ## 3.14.0
 
@@ -2278,13 +2317,13 @@ Added mutually exclusive tech paths using "Incompatible with [otherTech]" unique
 Translation updates for new cityFilter
 
 By GGGuenni:
-- Refactoring of MultiplayerScreen 
-- Avoid overflow of the construction bar 
-- Adding resign function for multiplayer 
+- Refactoring of MultiplayerScreen
+- Avoid overflow of the construction bar
+- Adding resign function for multiplayer
 
 By SpacedOutChicken:
-- Add "Land" as possible input to tile-related uniques 
-- New uniques for border expansion - "-[]% Gold cost of acquiring tiles []" and "-[]% Culture cost of acquiring tiles []" 
+- Add "Land" as possible input to tile-related uniques
+- New uniques for border expansion - "-[]% Gold cost of acquiring tiles []" and "-[]% Culture cost of acquiring tiles []"
 
 ## 3.12.11
 
@@ -2391,7 +2430,7 @@ Solved ANRs when loading big maps in editor screen
 By 9kgsofrice:
 
 - Modded buildings never lead cities to negative production
-- "happiness from garrison" effect was duplicated 
+- "happiness from garrison" effect was duplicated
 
 ## 3.12.5
 
@@ -2494,8 +2533,8 @@ Fixed crash when nuking Barbarian units
 
 By 9kgsofrice:
 
-- GG bonus generation now checks for civinfo uniques 
-- City-state resources from all sources shared with ally civ 
+- GG bonus generation now checks for civinfo uniques
+- City-state resources from all sources shared with ally civ
 
 ## 3.11.19
 
@@ -2512,8 +2551,8 @@ Selected unit stays selected when single-tap moved into a tile with another unit
 
 By 9kgsofrice:
 
-- resources can be added by tile improvement with unique "Provides [] []" 
-- Specialists can add happiness 
+- resources can be added by tile improvement with unique "Provides [] []"
+- Specialists can add happiness
 - "Should not be displayed without []" unique for constructions accomodates resources and buildings
 
 ## 3.11.18
@@ -2540,12 +2579,12 @@ First attempt at making Unciv Android-TV-compatible
 
 By 9kgsofrice:
 
-- adds val to modoptions and check to battle.kt to adjust max xp from barbarians 
-- "Uncapturable" unique 
-- unique "[] units gain the [] promotion" affects exisiting units 
-- Hide build menu constructions requiring resources with unique 
-- Nation "style" can define unit appearance 
-- Changes check to remove national wonders on city ownership changes to rely on building.isNationalWonder 
+- adds val to modoptions and check to battle.kt to adjust max xp from barbarians
+- "Uncapturable" unique
+- unique "[] units gain the [] promotion" affects exisiting units
+- Hide build menu constructions requiring resources with unique
+- Nation "style" can define unit appearance
+- Changes check to remove national wonders on city ownership changes to rely on building.isNationalWonder
 
 Translation updates
 
@@ -2721,8 +2760,8 @@ Can now move around the world screen with the arrow keys as well as WASD
 
 By r3versi:
 
-- Diplomacy Screen right table is scrollable 
-- Fix for barbarian quest 
+- Diplomacy Screen right table is scrollable
+- Fix for barbarian quest
 
 Translation updates
 
@@ -2934,8 +2973,8 @@ Resolved #3065 - Ottomans' unique is now according to Vanilla
 By HadeanLake:
 
 - Added Aztecs nation
-- A Few UI fixes 
-- New uniques and stuff for mods 
+- A Few UI fixes
+- New uniques and stuff for mods
 
 UI fixes - By lishaoxia1985
 
@@ -3206,12 +3245,12 @@ Resolved #2820 - resurrected civs are at peace with everyone
 
  By alkorolyov:
 
-- Fixed two empty mods checkbox in game options 
+- Fixed two empty mods checkbox in game options
 - Two experimental switches: Spectator mode & Extended Map Editor
 
  By ninjatao:
 
-- Do not generate fallout on impasssible terran. 
+- Do not generate fallout on impasssible terran.
 - Fix AI nuke radius
 
 Translation updates
@@ -3293,7 +3332,7 @@ Fixed coast tiles around natural wonders spawning land-type layers
 By lyrjie:
 
 - Map generation speedup
-- Fixed strategic resources generation 
+- Fixed strategic resources generation
 
 By alkorolyov:
 
@@ -3372,9 +3411,9 @@ Translation updates
 
 By dbaelz:
 
-- Minor UI improvements construction menu 
-- Evaluate translations for mods only when the mod is active in a game. Fixes #2622 
-- Add remove button for construction queue items 
+- Minor UI improvements construction menu
+- Evaluate translations for mods only when the mod is active in a game. Fixes #2622
+- Add remove button for construction queue items
 
 Resolved #2647 - Automated workers run away from enemy military units
 
@@ -3432,7 +3471,7 @@ Years per turn normalized to game speed - By AcridBrimistic
 
 By JackRainy:
 
-- Civilian units no longer move when bought 
+- Civilian units no longer move when bought
 - Fixed translation for civ start biases
 
 Translation updates
@@ -3507,12 +3546,12 @@ Translation updates
 
 ## 3.8.3
 
-Performance improvement - by vainiovano 
+Performance improvement - by vainiovano
 
 By SomeTroglodyte:
 
-- Terrace Farms: Bonus resource restriction 
-- Map editor: Placed improvement check updated, resolves #2489 
+- Terrace Farms: Bonus resource restriction
+- Map editor: Placed improvement check updated, resolves #2489
 
 Fixed 'auto assign production' not working when changing from manual to auto assign
 
@@ -3582,7 +3621,7 @@ Translation updates
 
 ## 3.7.6
 
-Can specify a mod as a 'base ruleset' - 
+Can specify a mod as a 'base ruleset' -
 supports mods with no techs, alternate tech trees, No Barbarians, no workers
 
 Unique units need not replace existing ones
@@ -3591,14 +3630,14 @@ Tile variants!
 
 By SomeTroglodyte:
 
-- Fix minimap mouse dragging 
+- Fix minimap mouse dragging
 - Fixed modded strategic resource without tech prerequisite
 
 By JackRainy:
 
-- Highlight unique offer suggestions 
-- Sort trades by expiration 
-- Citadel improvements + improved AI for forts 
+- Highlight unique offer suggestions
+- Sort trades by expiration
+- Citadel improvements + improved AI for forts
 - Map Editor UI improvements
 
 ## 3.7.5
@@ -3698,7 +3737,7 @@ By Jack Rainy:
 - Better colors for Katmandu and Almaty
 - Autosize of the tech buttons
 - Display the crosshair in alternate color for distant targets
-- Display price for unavailable purchases 
+- Display price for unavailable purchases
 
 By rh-github-2015:
 - Fortify until healed disabled if no more movement
@@ -3748,7 +3787,7 @@ Revealed resources near cities generate notifications
 
 Cities in unit overview are translated
 
-Resolved #1885 - Both sides of per-turn trades end at the same time, resources offered in trade requests are not considered 
+Resolved #1885 - Both sides of per-turn trades end at the same time, resources offered in trade requests are not considered
 yours for that turn
 
 Resoved #1869 - added WASD support for map panning
@@ -3801,7 +3840,7 @@ Translation updates
 ## 3.6.11
 
 By rh-github-2015:
- - More civilopedia info for nations and improvements - 
+ - More civilopedia info for nations and improvements -
  - Better error handling for Mods
 
 Fixed "other civ doesn't get duration on timed trades" bug
@@ -3835,7 +3874,7 @@ Translation updates
 ## 3.6.9
 
 By rh-github-2015:
-- Trade offers better sorting with user choice 
+- Trade offers better sorting with user choice
 - Resources always stay up-to-date
 - Promotion and health columns in units overview
 
@@ -3930,7 +3969,7 @@ Fixed wrong placement of purchased/upgraded units - by Jack Rainy
 
 Tile stats in city now shown in a row - by reversi
 
-Refactor for unit actions - by Kentalot 
+Refactor for unit actions - by Kentalot
 
 Resolved #1986 - research agreement cost consistency
 
@@ -4016,7 +4055,7 @@ Translation updates
 Moai no longer buildable on terrain features - by lyrjie
 
 Resolved #1902 - buildings requiring worked resources can be built in cities that are built on that resource
- 
+
 Resolved #1841 - Legalism grants enqueued buildings - by reversi
 
 Minimap can show the whole worldscreen and display cities better - by lishaoxia1985

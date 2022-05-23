@@ -43,7 +43,7 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
         isTransform = false // performance helper - nothing here is rotated or scaled
     }
 
-    fun getBackgroundImageForUnit(): Image {
+    private fun getBackgroundImageForUnit(): Image {
         return when {
             unit.isEmbarked() -> ImageGetter.getImage("OtherIcons/Banner")
             unit.isFortified() -> ImageGetter.getImage("OtherIcons/Shield")

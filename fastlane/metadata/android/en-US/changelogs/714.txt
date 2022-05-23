@@ -1,0 +1,18 @@
+Fixed multiplayer bugs (double files, turn checker problems) - By Azzurite
+
+By SomeTroglodyte:
+- Fix Autocracy Complete bug
+- Fix effect of new Beliefs not immediately visible
+
+Fix crashes when a civ does not have a capital - By OptimizedForDensity
+
+By xlenstra:
+- Great improvements buildable on removable terrain features
+
+By itanasi:
+- Fix Zone of Control
+- Assign Population Improvements
+
+By JackRainy:
+- Performance improvements
+- Better city connection quest check

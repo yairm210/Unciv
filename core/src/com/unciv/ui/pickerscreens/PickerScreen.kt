@@ -1,64 +1,38 @@
 package com.unciv.ui.pickerscreens
 
-import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.ui.*
-import com.unciv.Constants
-import com.unciv.UncivGame
-import com.unciv.ui.images.IconTextButton
-import com.unciv.ui.utils.*
-import com.unciv.ui.utils.AutoScrollPane as ScrollPane
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.onClick
 
 open class PickerScreen(disableScroll: Boolean = false) : BaseScreen() {
-    /** The close button on the lower left of [bottomTable], see [setDefaultCloseAction] */
-    protected var closeButton: TextButton = Constants.close.toTextButton()
-    /** A scrollable wrapped Label you can use to show descriptions in the [bottomTable], starts empty */
-    protected var descriptionLabel: Label
-    /** A wrapper containing [rightSideButton]. You can add buttons, they will be arranged vertically */
-    protected var rightSideGroup = VerticalGroup()
-    /** A button on the lower right of [bottomTable] you can use for a "OK"-type action, starts disabled */
-    protected var rightSideButton: TextButton
 
-    private val screenSplit = 0.85f
-    private val maxBottomTableHeight = 150f     // about 7 lines of normal text
+    val pickerPane = PickerPane(disableScroll = disableScroll)
 
-    /**
-     * The table displaying the choices from which to pick (usually).
-     * Also the element which most of the screen real estate is devoted to displaying.
-     */
-    protected var topTable: Table
-    /** Holds the [Close button][closeButton], a [description label][descriptionLabel] and an [action button][rightSideButton] */
-    protected var bottomTable:Table = Table()
-    /** A fixed SplitPane holds [scrollPane] and [bottomTable] */
-    protected var splitPane: SplitPane
-    /** A ScrollPane scrolling [topTable], disabled by the disableScroll parameter */
-    protected var scrollPane: ScrollPane
+    /** @see PickerPane.closeButton */
+    val closeButton by pickerPane::closeButton
+    /** @see PickerPane.descriptionLabel */
+    val descriptionLabel by pickerPane::descriptionLabel
+    /** @see PickerPane.rightSideGroup */
+    val rightSideGroup by pickerPane::rightSideGroup
+    /** @see PickerPane.rightSideButton */
+    val rightSideButton by pickerPane::rightSideButton
+
+    /** @see PickerPane.topTable */
+    val topTable by pickerPane::topTable
+    /** @see PickerPane.scrollPane */
+    val scrollPane by pickerPane::scrollPane
+    /** @see PickerPane.splitPane */
+    val splitPane by pickerPane::splitPane
 
     init {
-        bottomTable.add(closeButton).pad(10f)
+        pickerPane.setFillParent(true)
+        stage.addActor(pickerPane)
+        ensureLayout() 
+    }
 
-        descriptionLabel = "".toLabel()
-        descriptionLabel.wrap = true
-        val labelScroll = ScrollPane(descriptionLabel, skin)
-        bottomTable.add(labelScroll).pad(5f).fill().expand()
-
-        rightSideButton = "".toTextButton()
-        rightSideButton.disable()
-        rightSideGroup.addActor(rightSideButton)
-
-        bottomTable.add(rightSideGroup).pad(10f).right()
-        bottomTable.height = (stage.height * (1 - screenSplit)).coerceAtMost(maxBottomTableHeight)
-
-        topTable = Table()
-        scrollPane = ScrollPane(topTable)
-
-        scrollPane.setScrollingDisabled(disableScroll, disableScroll)  // lock scrollPane
-        if (disableScroll) scrollPane.clearListeners()  // remove focus capture of AutoScrollPane too
-        scrollPane.setSize(stage.width, stage.height - bottomTable.height)
-
-        splitPane = SplitPane(scrollPane, bottomTable, true, skin)
-        splitPane.splitAmount = scrollPane.height / stage.height
-        splitPane.setFillParent(true)
-        stage.addActor(splitPane)
+    /** Make sure that anyone relying on sizes of the tables within this class during construction gets correct size readings.
+     * (see [com.unciv.ui.pickerscreens.PolicyPickerScreen]) */
+    private fun ensureLayout() {
+        pickerPane.validate()
     }
 
     /**
@@ -68,38 +42,20 @@ open class PickerScreen(disableScroll: Boolean = false) : BaseScreen() {
     fun setDefaultCloseAction(previousScreen: BaseScreen?=null) {
         val closeAction = {
             if (previousScreen != null) game.setScreen(previousScreen)
-            else game.setWorldScreen()
+            else game.resetToWorldScreen()
             dispose()
         }
-        closeButton.onClick(closeAction)
+        pickerPane.closeButton.onClick(closeAction)
         onBackButtonClicked(closeAction)
     }
 
     /** Enables the [rightSideButton]. See [pick] for a way to set the text. */
     fun setRightSideButtonEnabled(enabled: Boolean) {
-        rightSideButton.isEnabled = enabled
+        pickerPane.setRightSideButtonEnabled(enabled)
     }
 
     /** Sets the text of the [rightSideButton] and enables it if it's the player's turn */
-    protected fun pick(rightButtonText: String) {
-        if (UncivGame.Current.worldScreen.isPlayersTurn) rightSideButton.enable()
-        rightSideButton.setText(rightButtonText)
-    }
-
-    /** Remove listeners from [rightSideButton] to prepare giving it a new onClick */
-    fun removeRightSideClickListeners() {
-        rightSideButton.clearListeners()
-    }
-
-    companion object {
-        /** Icon size used in [getPickerOptionButton]. */
-        const val pickerOptionIconSize = 30f
-        /** Return a button for picker screens that display a list of big buttons with icons and labels. */
-        fun getPickerOptionButton(icon: Actor, label: String): Button {
-            return IconTextButton(label, icon).apply {
-                iconCell!!.size(pickerOptionIconSize).pad(10f)
-                labelCell.pad(10f)
-            }
-        }
+    fun pick(rightButtonText: String) {
+        pickerPane.pick(rightButtonText)
     }
 }

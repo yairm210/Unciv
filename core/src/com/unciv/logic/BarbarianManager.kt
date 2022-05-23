@@ -3,7 +3,6 @@ package com.unciv.logic
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.json.HashMapVector2
-import com.unciv.json.json
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
@@ -11,7 +10,6 @@ import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.utils.randomWeighted
 import java.util.*
-import kotlin.collections.HashMap
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
@@ -102,8 +100,8 @@ class BarbarianManager {
         if (campsToAdd <= 0) return
 
         // Camps can't spawn within 7 tiles of each other or within 4 tiles of major civ capitals
-        val tooCloseToCapitals = gameInfo.civilizations.filterNot { it.isBarbarian() || it.isSpectator() || it.cities.isEmpty() || it.isCityState() }
-            .flatMap { it.getCapital().getCenterTile().getTilesInDistance(4) }.toSet()
+        val tooCloseToCapitals = gameInfo.civilizations.filterNot { it.isBarbarian() || it.isSpectator() || it.cities.isEmpty() || it.isCityState() || it.getCapital() == null }
+            .flatMap { it.getCapital()!!.getCenterTile().getTilesInDistance(4) }.toSet()
         val tooCloseToCamps = camps
             .flatMap { tileMap[it.key].getTilesInDistance(
                     if (it.value.destroyed) 4 else 7
@@ -134,7 +132,7 @@ class BarbarianManager {
                     tile = viableTiles.random()
             } else
                 tile = viableTiles.random()
-            
+
             tile.improvement = Constants.barbarianEncampment
             val newCamp = Encampment(tile.position)
             newCamp.gameInfo = gameInfo

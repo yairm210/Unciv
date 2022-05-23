@@ -98,11 +98,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "[stats] whenever a Great Person is expended"
-	Example: "[+1 Gold, +2 Production] whenever a Great Person is expended"
-
-	Applicable to: Global
-
 ??? example  "[stats] from [tileFilter] tiles [cityFilter]"
 	Example: "[+1 Gold, +2 Production] from [Farm] tiles [in all cities]"
 
@@ -133,12 +128,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "[relativeAmount]% [stat] from every [tileFilter/specialist/buildingName]"
+??? example  "[relativeAmount]% [stat] from every [tileFilter/buildingFilter]"
 	Example: "[+20]% [Culture] from every [Farm]"
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "[relativeAmount]% Yield from every [tileFilter]"
+??? example  "[relativeAmount]% Yield from every [tileFilter/buildingFilter]"
 	Example: "[+20]% Yield from every [Farm]"
 
 	Applicable to: Global, FollowerBelief
@@ -287,6 +282,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "[stats] when a city adopts this religion for the first time"
 	Example: "[+1 Gold, +2 Production] when a city adopts this religion for the first time"
+
+	Applicable to: Global
+
+??? example  "[stats] whenever a Great Person is expended"
+	Example: "[+1 Gold, +2 Production] whenever a Great Person is expended"
 
 	Applicable to: Global
 
@@ -811,6 +811,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: FounderBelief
 
+??? example  "[stats] from every [amount] global followers [cityFilter]"
+	Example: "[+1 Gold, +2 Production] from every [3] global followers [in all cities]"
+
+	Applicable to: FounderBelief
+
 ## FollowerBelief uniques
 ??? example  "[relativeAmount]% [stat] from every follower, up to [relativeAmount]%"
 	Example: "[+20]% [Culture] from every follower, up to [+20]%"
@@ -998,8 +1003,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Unit
 
-??? example  "[relativeAmount]% Strength bonus for [mapUnitFilter] units in [amount] tiles"
-	Example: "[+20]% Strength bonus for [Wounded] units in [3] tiles"
+??? example  "[relativeAmount]% Strength bonus for [mapUnitFilter] units within [amount] tiles"
+	Example: "[+20]% Strength bonus for [Wounded] units within [3] tiles"
 
 	Applicable to: Unit
 

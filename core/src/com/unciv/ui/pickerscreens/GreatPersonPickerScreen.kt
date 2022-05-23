@@ -19,7 +19,7 @@ class GreatPersonPickerScreen(val civInfo:CivilizationInfo) : PickerScreen() {
         val useMayaLongCount = civInfo.greatPeople.mayaLimitedFreeGP > 0
 
         for (unit in greatPersonUnits) {
-            val button = getPickerOptionButton(ImageGetter.getUnitIcon(unit.name), unit.name)
+            val button = PickerPane.getPickerOptionButton(ImageGetter.getUnitIcon(unit.name), unit.name)
             button.pack()
             button.isEnabled = !useMayaLongCount || unit.name in civInfo.greatPeople.longCountGPPool
             if (button.isEnabled) button.onClick {
@@ -37,7 +37,7 @@ class GreatPersonPickerScreen(val civInfo:CivilizationInfo) : PickerScreen() {
                 civInfo.greatPeople.mayaLimitedFreeGP--
                 civInfo.greatPeople.longCountGPPool.remove(theChosenOne!!.name)
             }
-            UncivGame.Current.setWorldScreen()
+            UncivGame.Current.resetToWorldScreen()
         }
 
     }

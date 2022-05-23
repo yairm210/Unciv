@@ -4,10 +4,10 @@ import com.badlogic.gdx.Net
 import java.io.FileNotFoundException
 import java.lang.Exception
 
-class UncivServerFileStorage(val serverUrl:String): FileStorage {
+class UncivServerFileStorage(val serverUrl: String, val timeout: Int = 30000) : FileStorage {
     override fun saveFileData(fileName: String, data: String, overwrite: Boolean) {
-        SimpleHttp.sendRequest(Net.HttpMethods.PUT, "$serverUrl/files/$fileName", data) {
-                success, result, code ->
+        SimpleHttp.sendRequest(Net.HttpMethods.PUT, fileUrl(fileName), data, timeout) {
+                success, result, _ ->
             if (!success) {
                 println(result)
                 throw Exception(result)
@@ -17,7 +17,7 @@ class UncivServerFileStorage(val serverUrl:String): FileStorage {
 
     override fun loadFileData(fileName: String): String {
         var fileData = ""
-        SimpleHttp.sendGetRequest("$serverUrl/files/$fileName"){
+        SimpleHttp.sendGetRequest(fileUrl(fileName), timeout = timeout){
                 success, result, code ->
             if (!success) {
                 println(result)
@@ -37,7 +37,7 @@ class UncivServerFileStorage(val serverUrl:String): FileStorage {
     }
 
     override fun deleteFile(fileName: String) {
-        SimpleHttp.sendRequest(Net.HttpMethods.DELETE, "$serverUrl/files/$fileName", "") {
+        SimpleHttp.sendRequest(Net.HttpMethods.DELETE, fileUrl(fileName), "", timeout) {
                 success, result, code ->
             if (!success) {
                 when (code) {
@@ -48,4 +48,5 @@ class UncivServerFileStorage(val serverUrl:String): FileStorage {
         }
     }
 
+    private fun fileUrl(fileName: String) = "$serverUrl/files/$fileName"
 }

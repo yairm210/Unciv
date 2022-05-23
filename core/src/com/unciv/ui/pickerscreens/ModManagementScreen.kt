@@ -375,7 +375,7 @@ class ModManagementScreen(
     private fun onlineButtonAction(repo: Github.Repo, button: Button) {
         syncOnlineSelected(repo.name, button)
         showModDescription(repo.name)
-        removeRightSideClickListeners()
+        rightSideButton.clearListeners()
         rightSideButton.enable()
         val label = if (installedModInfo[repo.name]?.state?.hasUpdate == true)
             "Update [${repo.name}]"
@@ -519,7 +519,7 @@ class ModManagementScreen(
         // Don't let the player think he can delete Vanilla and G&K rulesets
         rightSideButton.isEnabled = mod.ruleset.folderLocation!=null
         showModDescription(mod.name)
-        removeRightSideClickListeners()
+        rightSideButton.clearListeners()
         rightSideButton.onClick {
             rightSideButton.isEnabled = false
             YesNoPopup(

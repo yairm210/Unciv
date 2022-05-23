@@ -231,9 +231,6 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
 // The group may contain any number of any character except ] - pattern [^]]
 val squareBraceRegex = Regex("""\[([^]]*)\]""")
 
-// Just look for either [ or ]
-val eitherSquareBraceRegex = Regex("""\[|\]""")
-
 // Analogous as above: Expect a {} pair with any chars but } in between and capture that
 val curlyBraceRegex = Regex("""\{([^}]*)\}""")
 
