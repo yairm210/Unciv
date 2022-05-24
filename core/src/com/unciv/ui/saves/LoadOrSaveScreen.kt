@@ -10,7 +10,9 @@ import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.Fonts
+import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.UncivDateFormat.formatDate
+import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.disable
 import com.unciv.ui.utils.enable
 import com.unciv.ui.utils.onChange
@@ -44,9 +46,14 @@ abstract class LoadOrSaveScreen(
         showAutosavesCheckbox.onChange {
             updateShownSaves(showAutosavesCheckbox.isChecked)
         }
+        val ctrlA = KeyCharAndCode.ctrl('a')
+        keyPressDispatcher[ctrlA] = { showAutosavesCheckbox.toggle() }
+        showAutosavesCheckbox.addTooltip(ctrlA)
 
         deleteSaveButton.disable()
         deleteSaveButton.onClick(::onDeleteClicked)
+        keyPressDispatcher[KeyCharAndCode.DEL] = ::onDeleteClicked
+        deleteSaveButton.addTooltip(KeyCharAndCode.DEL)
 
         if (fileListHeaderText != null)
             topTable.add(fileListHeaderText.toLabel()).pad(10f).row()
@@ -65,6 +72,7 @@ abstract class LoadOrSaveScreen(
     }
 
     private fun onDeleteClicked() {
+        if (selectedSave.isEmpty()) return
         val result = try {
             if (game.gameSaver.deleteSave(selectedSave)) {
                 resetWindowState()

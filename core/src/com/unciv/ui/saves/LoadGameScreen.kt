@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.SerializationException
 import com.unciv.Constants
+import com.unciv.logic.GameSaver
 import com.unciv.logic.MissingModsException
 import com.unciv.logic.UncivShowableException
 import com.unciv.models.ruleset.RulesetCache
@@ -17,6 +18,7 @@ import com.unciv.ui.pickerscreens.Github
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.*
+import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import java.io.FileNotFoundException
 import java.util.concurrent.CancellationException
 
@@ -104,8 +106,8 @@ class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
     }
 
     private fun getLoadFromClipboardButton(): TextButton {
-        val button = loadFromClipboard.toTextButton()
-        button.onClick {
+        val pasteButton = loadFromClipboard.toTextButton()
+        val pasteHandler: ()->Unit = {
             launchCrashHandling(loadFromClipboard) {
                 try {
                     val clipboardContentsString = Gdx.app.clipboard.contents.trim()
@@ -116,7 +118,11 @@ class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
                 }
             }
         }
-        return button
+        pasteButton.onClick(pasteHandler)
+        val ctrlV = KeyCharAndCode.ctrl('v')
+        keyPressDispatcher[ctrlV] = pasteHandler
+        pasteButton.addTooltip(ctrlV)
+        return pasteButton
     }
 
     private fun Table.addLoadFromCustomLocationButton() {
@@ -139,8 +145,8 @@ class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
     }
 
     private fun getCopyExistingSaveToClipboardButton(): TextButton {
-        val button = copyExistingSaveToClipboard.toTextButton()
-        button.onClick {
+        val copyButton = copyExistingSaveToClipboard.toTextButton()
+        val copyHandler: ()->Unit = {
             launchCrashHandling(copyExistingSaveToClipboard) {
                 try {
                     val gameText = game.gameSaver.getSave(selectedSave).readString()
@@ -151,8 +157,12 @@ class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
                 }
             }
         }
-        button.disable()
-        return button
+        copyButton.onClick(copyHandler)
+        copyButton.disable()
+        val ctrlC = KeyCharAndCode.ctrl('c')
+        keyPressDispatcher[ctrlC] = copyHandler
+        copyButton.addTooltip(ctrlC)
+        return copyButton
     }
 
     private fun getLoadMissingModsButton(): TextButton {

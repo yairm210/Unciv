@@ -7,12 +7,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
+import com.unciv.logic.GameSaver
 import com.unciv.models.translations.tr
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.disable
 import com.unciv.ui.utils.enable
 import com.unciv.ui.utils.onClick
@@ -47,6 +49,9 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
 
         val copyJsonButton = "Copy to clipboard".toTextButton()
         copyJsonButton.onClick(::copyToClipboardHandler)
+        val ctrlC = KeyCharAndCode.ctrl('c')
+        keyPressDispatcher[ctrlC] = ::copyToClipboardHandler
+        copyJsonButton.addTooltip(ctrlC)
         add(copyJsonButton).row()
 
         addSaveToCustomLocation()
