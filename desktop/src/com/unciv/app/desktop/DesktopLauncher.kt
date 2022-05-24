@@ -23,6 +23,8 @@ internal object DesktopLauncher {
         // Solves a rendering problem in specific GPUs and drivers.
         // For more info see https://github.com/yairm210/Unciv/pull/3202 and https://github.com/LWJGL/lwjgl/issues/119
         System.setProperty("org.lwjgl.opengl.Display.allowSoftwareOpenGL", "true")
+        // This setting (default 64) limits clipboard transfers. Value in kB!
+        System.setProperty("org.lwjgl.system.stackSize", "384")
 
         ImagePacker.packImages()
 
