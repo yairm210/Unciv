@@ -456,13 +456,14 @@ class CivilizationInfo {
 
     // Similar to getCivUnits(), but the returned list is rotated so that the
     // 'nextPotentiallyDueAt' unit is first here.
-    private fun getCivUnitsStartingAtNexDue() = units.subList(nextPotentiallyDueAt, units.size) + units.subList(0, nextPotentiallyDueAt)
+    private fun getCivUnitsStartingAtNextDue(): Sequence<MapUnit> = sequenceOf(units.subList(nextPotentiallyDueAt, units.size) + units.subList(0, nextPotentiallyDueAt)).flatten()
 
     fun addUnit(mapUnit: MapUnit, updateCivInfo: Boolean = true) {
-        // Since we create a new list anyway, also rearrange existing units so that
+        // Since we create a new list anyway (otherwise some concurrent modification
+        // exception will happen), also rearrange existing units so that
         // 'nextPotentiallyDueAt' becomes 0.  This way new units are always last to be due
         // (can be changed as wanted, just have a predictable place).
-        var newList = ArrayList(getCivUnitsStartingAtNexDue())
+        var newList = getCivUnitsStartingAtNextDue().toMutableList()
         newList.add(mapUnit)
         units = newList
         nextPotentiallyDueAt = 0
@@ -477,7 +478,7 @@ class CivilizationInfo {
 
     fun removeUnit(mapUnit: MapUnit) {
         // See comment in addUnit().
-        var newList = ArrayList(getCivUnitsStartingAtNexDue())
+        var newList = getCivUnitsStartingAtNextDue().toMutableList()
         newList.remove(mapUnit)
         units = newList
         nextPotentiallyDueAt = 0
@@ -488,17 +489,16 @@ class CivilizationInfo {
 
     fun getIdleUnits() = getCivUnits().filter { it.isIdle() }
 
-    fun getDueUnits(): List<MapUnit> = getCivUnitsStartingAtNexDue().filter { it.due && it.isIdle() }
+    fun getDueUnits(): Sequence<MapUnit> = getCivUnitsStartingAtNextDue().filter { it.due && it.isIdle() }
 
     fun shouldGoToDueUnit() = UncivGame.Current.settings.checkForDueUnits && getDueUnits().any()
 
-    // Callers should consider if cycleThroughDueUnits() is not a better choice.
-    fun getNextDueUnit() = getDueUnits().firstOrNull()
-
     // Return the next due unit, but preferably not 'unitToSkip': this is returned only if it is the only remaining due unit.
     fun cycleThroughDueUnits(unitToSkip: MapUnit? = null): MapUnit? {
-        var returnAt = nextPotentiallyDueAt;
-        var fallbackAt = -1;
+        if (units.none()) return null
+
+        var returnAt = nextPotentiallyDueAt
+        var fallbackAt = -1
 
         do {
             if (units[returnAt].due && units[returnAt].isIdle()) {
