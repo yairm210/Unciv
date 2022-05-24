@@ -14,8 +14,6 @@ import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.*
-import java.io.PrintWriter
-import java.io.StringWriter
 import kotlin.concurrent.thread
 
 /*
@@ -33,9 +31,23 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
 
     private companion object {
         fun Throwable.stringify(): String {
-            val out = StringWriter()
-            this.printStackTrace(PrintWriter(out))
-            return out.toString()
+            val sb = StringBuilder()
+            sb.appendLine(this.toString())
+            var inUnciv = false
+            for (element in stackTrace) {
+                if (element.className.startsWith("com.unciv.ui.crashhandling")) break
+                sb.append("\tat ")
+                sb.appendLine(element.toString())
+                if (element.className.startsWith("com.unciv.")) inUnciv = true
+                else if (inUnciv) break
+            }
+            var nextNestedCause = this.cause
+            while (nextNestedCause != null) {
+                sb.append("Caused by: ")
+                sb.appendLine(nextNestedCause.toString())
+                nextNestedCause = nextNestedCause.cause
+            }
+            return sb.toString()
         }
     }
 
