@@ -261,13 +261,13 @@ class MapParametersTable(
             return slider
         }
 
-        addSlider("Map Elevation", {mapParameters.elevationExponent}, 0.6f,0.8f)
+        addSlider("Map Elevation", {mapParameters.elevationExponent}, 0.6f, 0.8f)
         { mapParameters.elevationExponent = it }
 
-        addSlider("Temperature extremeness", {mapParameters.temperatureExtremeness}, 0.4f,0.8f)
+        addSlider("Temperature extremeness", {mapParameters.temperatureExtremeness}, 0.4f, 0.8f)
         { mapParameters.temperatureExtremeness = it }
 
-        addSlider("Resource richness", {mapParameters.resourceRichness},0f,0.5f)
+        addSlider("Resource richness", {mapParameters.resourceRichness},0f, 0.5f)
         { mapParameters.resourceRichness = it }
 
         addSlider("Vegetation richness", {mapParameters.vegetationRichness}, 0f, 1f)
