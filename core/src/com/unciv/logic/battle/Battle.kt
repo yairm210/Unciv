@@ -30,8 +30,6 @@ object Battle {
     /**
      * Moves [attacker] to [attackableTile], handles siege setup then attacks if still possible
      * (by calling [attack] or [NUKE]). Does _not_ play the attack sound!
-     *
-     * Used by [com.unciv.logic.automation.BattleHelper.tryAttackNearbyEnemy] - automation.
      */
     fun moveAndAttack(attacker: ICombatant, attackableTile: AttackableTile) {
         if (!movePreparingAttack(attacker, attackableTile)) return
@@ -42,8 +40,6 @@ object Battle {
      * Moves [attacker] to [attackableTile], handles siege setup and returns `true` if an attack is still possible.
      *
      * This is a logic function, not UI, so e.g. sound needs to be handled after calling this.
-     * Used by [com.unciv.ui.worldscreen.bottombar.BattleTable.onAttackButtonClicked]
-     * and [com.unciv.ui.worldscreen.WorldMapHolder.onTileRightClicked]
      */
     fun movePreparingAttack(attacker: ICombatant, attackableTile: AttackableTile): Boolean {
         if (attacker !is MapUnitCombatant) return true
@@ -68,6 +64,9 @@ object Battle {
         return (attacker.unit.currentMovement > 0f)
     }
 
+    /**
+     * This is meant to be called only after all prerequisite checks have been done.
+     */
     fun attackOrNuke(attacker: ICombatant, attackableTile: AttackableTile) {
         if (attacker is MapUnitCombatant && attacker.unit.baseUnit.isNuclearWeapon())
             NUKE(attacker, attackableTile.tileToAttack)
@@ -75,7 +74,7 @@ object Battle {
             attack(attacker, getMapCombatantOfTile(attackableTile.tileToAttack)!!)
     }
 
-    fun attack(attacker: ICombatant, defender: ICombatant) {
+    private fun attack(attacker: ICombatant, defender: ICombatant) {
         if (UncivGame.Current.alertBattle) {
             println(attacker.getCivInfo().civName + " " + attacker.getName() + " attacked " +
                     defender.getCivInfo().civName + " " + defender.getName())
