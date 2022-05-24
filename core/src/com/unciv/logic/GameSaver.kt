@@ -34,8 +34,6 @@ class GameSaver(
 ) {
     //region Data
 
-    var saveZipped = false
-
     var autoSaveJob: Job? = null
 
     //endregion
@@ -110,17 +108,6 @@ class GameSaver(
         }
     }
 
-    /** Returns gzipped serialization of [game], optionally gzipped ([forceZip] overrides [saveZipped]) */
-    fun gameInfoToString(game: GameInfo, forceZip: Boolean? = null): String {
-        val plainJson = json().toJson(game)
-        return if (forceZip ?: saveZipped) Gzip.zip(plainJson) else plainJson
-    }
-
-    /** Returns gzipped serialization of preview [game] */
-    fun gameInfoToString(game: GameInfoPreview): String {
-        return Gzip.zip(json().toJson(game))
-    }
-
     /**
      * Overload of function saveGame to save a GameInfoPreview in the MultiplayerGames folder
      */
@@ -143,7 +130,7 @@ class GameSaver(
     }
 
     fun saveGameToCustomLocation(game: GameInfo, GameName: String, saveCompletionCallback: (Exception?) -> Unit) {
-        customSaveLocationHelper!!.saveGame(this, game, GameName, forcePrompt = true, saveCompleteCallback = saveCompletionCallback)
+        customSaveLocationHelper!!.saveGame(game, GameName, forcePrompt = true, saveCompleteCallback = saveCompletionCallback)
     }
 
     //endregion
@@ -164,40 +151,11 @@ class GameSaver(
     }
 
     fun loadGameFromCustomLocation(loadCompletionCallback: (GameInfo?, Exception?) -> Unit) {
-        customSaveLocationHelper!!.loadGame(this) { game, e ->
+        customSaveLocationHelper!!.loadGame { game, e ->
             loadCompletionCallback(game?.apply { setTransients() }, e)
         }
     }
 
-    fun gameInfoFromString(gameData: String): GameInfo {
-        return gameInfoFromStringWithoutTransients(gameData).apply {
-            setTransients()
-        }
-    }
-
-    /**
-     * Parses [gameData] as gzipped serialization of a [GameInfoPreview]
-     * @throws SerializationException
-     */
-    fun gameInfoPreviewFromString(gameData: String): GameInfoPreview {
-        return json().fromJson(GameInfoPreview::class.java, Gzip.unzip(gameData))
-    }
-
-    /**
-     * WARNING! transitive GameInfo data not initialized
-     * The returned GameInfo can not be used for most circumstances because its not initialized!
-     * It is therefore stateless and save to call for Multiplayer Turn Notifier, unlike gameInfoFromString().
-     *
-     * @throws SerializationException
-     */
-    private fun gameInfoFromStringWithoutTransients(gameData: String): GameInfo {
-        val unzippedJson = try {
-            Gzip.unzip(gameData)
-        } catch (ex: Exception) {
-            gameData
-        }
-        return json().fromJson(GameInfo::class.java, unzippedJson)
-    }
 
     //endregion
     //region Settings
@@ -233,6 +191,9 @@ class GameSaver(
     }
 
     companion object {
+
+        var saveZipped = false
+
         /** Specialized function to access settings before Gdx is initialized.
          *
          * @param base Path to the directory where the file should be - if not set, the OS current directory is used (which is "/" on Android)
@@ -248,6 +209,48 @@ class GameSaver(
                 )
             else GameSettings().apply { isFreshlyCreated = true }
         }
+
+        fun gameInfoFromString(gameData: String): GameInfo {
+            return gameInfoFromStringWithoutTransients(gameData).apply {
+                setTransients()
+            }
+        }
+
+        /**
+         * Parses [gameData] as gzipped serialization of a [GameInfoPreview]
+         * @throws SerializationException
+         */
+        fun gameInfoPreviewFromString(gameData: String): GameInfoPreview {
+            return json().fromJson(GameInfoPreview::class.java, Gzip.unzip(gameData))
+        }
+
+        /**
+         * WARNING! transitive GameInfo data not initialized
+         * The returned GameInfo can not be used for most circumstances because its not initialized!
+         * It is therefore stateless and save to call for Multiplayer Turn Notifier, unlike gameInfoFromString().
+         *
+         * @throws SerializationException
+         */
+        private fun gameInfoFromStringWithoutTransients(gameData: String): GameInfo {
+            val unzippedJson = try {
+                Gzip.unzip(gameData)
+            } catch (ex: Exception) {
+                gameData
+            }
+            return json().fromJson(GameInfo::class.java, unzippedJson)
+        }
+
+        /** Returns gzipped serialization of [game], optionally gzipped ([forceZip] overrides [saveZipped]) */
+        fun gameInfoToString(game: GameInfo, forceZip: Boolean? = null): String {
+            val plainJson = json().toJson(game)
+            return if (forceZip ?: saveZipped) Gzip.zip(plainJson) else plainJson
+        }
+
+        /** Returns gzipped serialization of preview [game] */
+        fun gameInfoToString(game: GameInfoPreview): String {
+            return Gzip.zip(json().toJson(game))
+        }
+
     }
 
     //endregion

@@ -45,6 +45,7 @@ class GameSettings {
     var showPixelImprovements: Boolean = true
     var continuousRendering = false
     var orderTradeOffersByAmount = true
+    var confirmNextTurn = false
     var windowState = WindowState()
     var isFreshlyCreated = false
     var visualMods = HashSet<String>()

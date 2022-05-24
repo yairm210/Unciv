@@ -48,6 +48,7 @@ import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.popup.ExitGamePopup
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
+import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.popup.hasOpenPopups
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.saves.SaveGameScreen
@@ -843,8 +844,15 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
             else ->
                 NextTurnAction("${Fonts.turn}{Next turn}", Color.WHITE) {
-                    game.settings.addCompletedTutorialTask("Pass a turn")
-                    nextTurn()
+                    val action = {
+                        game.settings.addCompletedTutorialTask("Pass a turn")
+                        nextTurn()
+                    }
+                    if (game.settings.confirmNextTurn) {
+                        YesNoPopup("Confirm next turn", action, this).open()
+                    } else {
+                        action()
+                    }
                 }
         }
     }

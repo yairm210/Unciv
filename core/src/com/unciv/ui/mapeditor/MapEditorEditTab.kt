@@ -73,7 +73,7 @@ class MapEditorEditTab(
             defaults().pad(10f).left()
             add(brushLabel)
             brushCell = add().padLeft(0f)
-            brushSlider = UncivSlider(1f,6f,1f, getTipText = { getBrushTip(it).tr() }) {
+            brushSlider = UncivSlider(1f,6f,1f, initial = 1f, getTipText = { getBrushTip(it).tr() }) {
                 brushSize = if (it > 5f) -1 else it.toInt()
                 brushLabel.setText("Brush ([${getBrushTip(it).take(1)}]):".tr())
             }
@@ -237,7 +237,7 @@ class MapEditorEditTab(
         }
     }
 
-    /** Used for starting locations - no temp tile as brushAction needs to access tile.tileMap */ 
+    /** Used for starting locations - no temp tile as brushAction needs to access tile.tileMap */
     private fun directPaintTile(tile: TileInfo) {
         brushAction(tile)
         editorScreen.isDirty = true
