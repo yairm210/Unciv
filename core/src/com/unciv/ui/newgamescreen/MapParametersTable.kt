@@ -253,8 +253,8 @@ class MapParametersTable(
         table.add("RNG Seed".toLabel()).left()
         table.add(seedTextField).fillX().padBottom(10f).row()
 
-        fun addSlider(text: String, getValue:()->Float, min:Float, max:Float, onChange: (value:Float)->Unit): UncivSlider {
-            val slider = UncivSlider(min, max, (max - min) / 20, onChange = onChange)
+        fun addSlider(text: String, getValue:()->Float, min:Float, max:Float, initial:Float, onChange: (value:Float)->Unit): UncivSlider {
+            val slider = UncivSlider(min, max, (max - min) / 20, onChange = onChange, initial = initial)
             slider.value = getValue()
             table.add(text.toLabel()).left()
             table.add(slider).fillX().row()
@@ -262,28 +262,28 @@ class MapParametersTable(
             return slider
         }
 
-        addSlider("Map Elevation", {mapParameters.elevationExponent}, 0.6f,0.8f)
+        addSlider("Map Elevation", {mapParameters.elevationExponent}, 0.6f,0.8f, 0.70f)
         { mapParameters.elevationExponent = it }
 
-        addSlider("Temperature extremeness", {mapParameters.temperatureExtremeness}, 0.4f,0.8f)
+        addSlider("Temperature extremeness", {mapParameters.temperatureExtremeness}, 0.4f,0.8f, 0.60f)
         { mapParameters.temperatureExtremeness = it }
 
-        addSlider("Resource richness", {mapParameters.resourceRichness},0f,0.5f)
+        addSlider("Resource richness", {mapParameters.resourceRichness},0f,0.5f, 0.1f)
         { mapParameters.resourceRichness = it }
 
-        addSlider("Vegetation richness", {mapParameters.vegetationRichness}, 0f, 1f)
+        addSlider("Vegetation richness", {mapParameters.vegetationRichness}, 0f, 1f, 0.4f)
         { mapParameters.vegetationRichness = it }
 
-        addSlider("Rare features richness", {mapParameters.rareFeaturesRichness}, 0f, 0.5f)
+        addSlider("Rare features richness", {mapParameters.rareFeaturesRichness}, 0f, 0.5f, 0.05f)
         { mapParameters.rareFeaturesRichness = it }
 
-        addSlider("Max Coast extension", {mapParameters.maxCoastExtension.toFloat()}, 0f, 5f)
+        addSlider("Max Coast extension", {mapParameters.maxCoastExtension.toFloat()}, 0f, 5f, 2f)
         { mapParameters.maxCoastExtension = it.toInt() }.apply { stepSize = 1f }
 
-        addSlider("Biome areas extension", {mapParameters.tilesPerBiomeArea.toFloat()}, 1f, 15f)
+        addSlider("Biome areas extension", {mapParameters.tilesPerBiomeArea.toFloat()}, 1f, 15f, 6f)
         { mapParameters.tilesPerBiomeArea = it.toInt() }.apply { stepSize = 1f }
 
-        addSlider("Water level", {mapParameters.waterThreshold}, -0.1f, 0.1f)
+        addSlider("Water level", {mapParameters.waterThreshold}, -0.1f, 0.1f, 0f)
         { mapParameters.waterThreshold = it }
 
         val resetToDefaultButton = "Reset to defaults".toTextButton()
