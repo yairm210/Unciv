@@ -15,7 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage
  *      (Exception: international keyboard AltGr-combos)
  * An update supporting easy declarations for any modifier combos would need to use Gdx.input.isKeyPressed()
  * Gdx seems to omit support for a modifier mask (e.g. Ctrl-Alt-Shift) so we would need to reinvent this
- * 
+ *
  * Note: It is important that KeyCharAndCode is an immutable data class to support usage as HashMap key
  */
 
@@ -203,12 +203,9 @@ class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (()
                         return super.keyDown(event, keycode)
                     }
 
-                    // try-catch mainly for debugging. Breakpoints in the vicinity can make the event fire twice in rapid succession, second time the context can be invalid
                     if (consoleLog)
                         println("${this@KeyPressDispatcher}: handling $key")
-                    try {
-                        this@KeyPressDispatcher[key]?.invoke()
-                    } catch (ex: Exception) {}
+                    this@KeyPressDispatcher[key]?.invoke()
                     return true
                 }
             }
