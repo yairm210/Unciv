@@ -26,6 +26,7 @@ import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.ModManagementScreen
 import com.unciv.ui.popup.*
 import com.unciv.ui.saves.LoadGameScreen
+import com.unciv.ui.saves.QuickSave
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 
@@ -98,7 +99,7 @@ class MainMenuScreen: BaseScreen() {
 
         if (game.gameSaver.autosaveExists()) {
             val resumeTable = getMenuButton("Resume","OtherIcons/Resume", 'r')
-                { autoLoadGame() }
+                { QuickSave.autoLoadGame(this) }
             column1.add(resumeTable).row()
         }
 
@@ -164,44 +165,6 @@ class MainMenuScreen: BaseScreen() {
         stage.addActor(helpButton)
     }
 
-
-    private fun autoLoadGame() {
-        val loadingPopup = Popup(this)
-        loadingPopup.addGoodSizedLabel(Constants.loading)
-        loadingPopup.open()
-        launchCrashHandling("autoLoadGame") {
-            // Load game from file to class on separate thread to avoid ANR...
-            fun outOfMemory() {
-                postCrashHandlingRunnable {
-                    loadingPopup.close()
-                    ToastPopup("Not enough memory on phone to load game!", this@MainMenuScreen)
-                }
-            }
-
-            val savedGame: GameInfo
-            try {
-                savedGame = game.gameSaver.loadLatestAutosave()
-            } catch (oom: OutOfMemoryError) {
-                outOfMemory()
-                return@launchCrashHandling
-            } catch (ex: Exception) {
-                postCrashHandlingRunnable {
-                    loadingPopup.close()
-                    ToastPopup("Cannot resume game!", this@MainMenuScreen)
-                }
-                return@launchCrashHandling
-            }
-
-            postCrashHandlingRunnable { /// ... and load it into the screen on main thread for GL context
-                try {
-                    game.loadGame(savedGame)
-                    dispose()
-                } catch (oom: OutOfMemoryError) {
-                    outOfMemory()
-                }
-            }
-        }
-    }
 
     private fun quickstartNewGame() {
         ToastPopup("Working...", this)
