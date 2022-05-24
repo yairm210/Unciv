@@ -34,6 +34,7 @@ fun displayTab(
     optionsPopup.addCheckbox(this, "Show pixel units", settings.showPixelUnits, true) { settings.showPixelUnits = it }
     optionsPopup.addCheckbox(this, "Show pixel improvements", settings.showPixelImprovements, true) { settings.showPixelImprovements = it }
     optionsPopup.addCheckbox(this, "Experimental Demographics scoreboard", settings.useDemographics, true) { settings.useDemographics = it }
+    optionsPopup.addCheckbox(this, "Show zoom buttons in world screen", settings.showZoomButtons, true) { settings.showZoomButtons = it }
 
     addMinimapSizeSlider(this, settings, optionsPopup.screen, optionsPopup.selectBoxMinWidth)
 

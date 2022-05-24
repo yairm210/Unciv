@@ -52,6 +52,7 @@ class GameSettings {
     var isFreshlyCreated = false
     var visualMods = HashSet<String>()
     var useDemographics: Boolean = false
+    var showZoomButtons: Boolean = false
 
 
     var multiplayerServer = Constants.dropboxMultiplayerServer
