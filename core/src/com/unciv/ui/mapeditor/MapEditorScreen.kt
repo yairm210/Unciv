@@ -16,6 +16,7 @@ import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.utils.*
+import com.unciv.ui.worldscreen.ZoomButton
 
 
 //todo normalize properly
@@ -65,6 +66,8 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen() {
     var mapHolder: EditorMapHolder
     val tabs: MapEditorMainTabs
     var tileClickHandler: ((tile: TileInfo)->Unit)? = null
+    private val zoomInButton:ZoomButton
+    private val zoomOutButton:ZoomButton
 
     private val highlightedTileGroups = mutableListOf<TileGroup>()
 
@@ -82,8 +85,17 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen() {
         mapHolder = newMapHolder() // will set up ImageGetter and translations, and all dirty flags
         isDirty = false
 
+        zoomInButton = ZoomButton("in", mapHolder, null)
+        zoomOutButton = ZoomButton("out", mapHolder, null)
+
         tabs = MapEditorMainTabs(this)
         MapEditorToolsDrawer(tabs, stage, mapHolder)
+
+        if (UncivGame.Current.settings.showZoomButtons) {
+            updateZoomButton()
+            stage.addActor(zoomInButton)
+            stage.addActor(zoomOutButton)
+        }
 
         // The top level pager assigns its own key bindings, but making nested TabbedPagers bind keys
         // so all levels select to show the tab in question is too complex. Sub-Tabs need to maintain
@@ -93,6 +105,22 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen() {
         keyPressDispatcher[KeyCharAndCode.ctrl('g')] = { selectGeneratePage(1) }
         keyPressDispatcher[KeyCharAndCode.BACK] = this::closeEditor
         keyPressDispatcher.setCheckpoint()
+    }
+
+    override fun render(delta: Float) {
+        updateZoomButton()
+        super.render(delta)
+    }
+
+    private fun updateZoomButton() {
+        zoomInButton.height = zoomInButton.width
+        zoomInButton.setPosition(10f, 10f)
+        zoomInButton.update()
+
+        zoomOutButton.height = zoomInButton.height
+        zoomOutButton.width = zoomOutButton.height
+        zoomOutButton.setPosition(zoomInButton.width + 20f, 10f)
+        zoomOutButton.update()
     }
 
     companion object {

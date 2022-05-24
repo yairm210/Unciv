@@ -104,6 +104,9 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     private val notificationsScroll: NotificationsScroll
     var shouldUpdate = false
 
+    private val zoomInButton = ZoomButton("in", null, mapHolder)
+    private val zoomOutButton = ZoomButton("out", null, mapHolder)
+
     companion object {
         /** Switch for console logging of next turn duration */
         private const val consoleLog = false
@@ -161,6 +164,11 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         stage.addActor(techPolicyAndVictoryHolder)
         stage.addActor(tutorialTaskTable)
 
+        if (UncivGame.Current.settings.showZoomButtons) {
+            updateZoomButton()
+            stage.addActor(zoomInButton)
+            stage.addActor(zoomOutButton)
+        }
 
         diplomacyButtonHolder.defaults().pad(5f)
         stage.addActor(fogOfWarButton)
@@ -497,6 +505,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         updateNextTurnButton(hasOpenPopups()) // This must be before the notifications update, since its position is based on it
         notificationsScroll.update(viewingCiv.notifications, bottomTileInfoTable.height)
         notificationsScroll.setTopRight(stage.width - 10f, nextTurnButton.y - 5f)
+
+        updateZoomButton()
     }
 
     private fun getCurrentTutorialTask(): String {
@@ -720,6 +730,17 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                 }
             }
         }
+    }
+
+    private fun updateZoomButton() {
+        zoomInButton.height = zoomInButton.width
+        zoomInButton.setPosition(stage.width - minimapWrapper.width - 10f - zoomOutButton.width -10f - zoomInButton.width, 10f)
+        zoomInButton.update()
+
+        zoomOutButton.height = zoomInButton.height
+        zoomOutButton.width = zoomOutButton.height
+        zoomOutButton.setPosition(stage.width - minimapWrapper.width - 10f - zoomOutButton.width, 10f)
+        zoomOutButton.update()
     }
 
     private fun updateNextTurnButton(isSomethingOpen: Boolean) {

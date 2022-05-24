@@ -7,8 +7,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.toTextButton
 import com.unciv.ui.worldscreen.WorldMapHolder
 
 class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
@@ -54,30 +52,10 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         minimapSize = newMinimapSize
         this.clear()
         minimap = Minimap(mapHolder, minimapSize)
-        if (UncivGame.Current.settings.showZoomButtons) {
-            add(getZoomButtons()).align(Align.bottom)
-        }
         add(getToggleIcons()).align(Align.bottom)
         add(getWrappedMinimap())
         pack()
         if (stage != null) x = stage.width - width
-    }
-
-    private fun getZoomButtons(): Table {
-        val zoomInButton = "+".toTextButton()
-        zoomInButton.label.setFontScale(1.3f,1.3f)
-        zoomInButton.labelCell.padTop(15f)
-        zoomInButton.onClick { mapHolder.zoomIn() }
-
-        val zoomOutButton = "-".toTextButton()
-        zoomOutButton.label.setFontScale(1.3f,1.3f)
-        zoomOutButton.labelCell.padTop(2f)
-        zoomOutButton.onClick { mapHolder.zoomOut() }
-
-        val zoomButtonsTable = Table()
-        zoomButtonsTable.add(zoomInButton).size(60f).padBottom(10f).padRight(10f)
-        zoomButtonsTable.add(zoomOutButton).size(60f).padBottom(10f).padRight(10f)
-        return zoomButtonsTable
     }
 
     private fun getWrappedMinimap(): Table {
