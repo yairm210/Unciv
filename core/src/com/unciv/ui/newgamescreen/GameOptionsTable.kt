@@ -122,13 +122,12 @@ class GameOptionsTable(
         if (maxCityStates == 0) return null
 
         add("{Number of City-States}:".toLabel()).left().expandX()
-        val slider = UncivSlider(0f, maxCityStates.toFloat(), 1f, initial = 6f) {
+        val slider = UncivSlider(0f, maxCityStates.toFloat(), 1f, initial = gameParameters.numberOfCityStates.toFloat()) {
             gameParameters.numberOfCityStates = it.toInt()
         }
         slider.permanentTip = true
         slider.isDisabled = locked
         add(slider).padTop(10f).row()
-        slider.value = gameParameters.numberOfCityStates.toFloat()
         return slider
     }
 
@@ -137,14 +136,13 @@ class GameOptionsTable(
             return null
 
         add("{Max Turns}:".toLabel()).left().expandX()
-        val slider = UncivSlider(250f, 1500f, 50f, initial = 500f) {
+        val slider = UncivSlider(250f, 1500f, 50f, initial = gameParameters.maxTurns.toFloat()) {
             gameParameters.maxTurns = it.toInt()
         }
         slider.permanentTip = true
         slider.isDisabled = locked
         val snapValues = floatArrayOf(250f,300f,350f,400f,450f,500f,550f,600f,650f,700f,750f,800f,900f,1000f,1250f,1500f)
         slider.setSnapToValues(snapValues, 250f)
-        slider.value = gameParameters.maxTurns.toFloat()
         return slider
     }
 
