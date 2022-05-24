@@ -74,7 +74,7 @@ object Battle {
             attack(attacker, getMapCombatantOfTile(attackableTile.tileToAttack)!!)
     }
 
-    private fun attack(attacker: ICombatant, defender: ICombatant) {
+    fun attack(attacker: ICombatant, defender: ICombatant) {
         if (UncivGame.Current.alertBattle) {
             println(attacker.getCivInfo().civName + " " + attacker.getName() + " attacked " +
                     defender.getCivInfo().civName + " " + defender.getName())
