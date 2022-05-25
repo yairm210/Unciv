@@ -4,8 +4,10 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaCategories
@@ -21,25 +23,24 @@ import com.unciv.ui.victoryscreen.VictoryScreen
 import com.unciv.ui.worldscreen.mainmenu.WorldScreenMenuPopup
 import kotlin.math.abs
 import kotlin.math.ceil
+import kotlin.math.max
 import kotlin.math.roundToInt
 
 
 /**
  * Table consisting of the menu button, current civ, some stats and the overview button for the top of [WorldScreen]
  */
+//region Fields
 class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
-
-    private var selectedCivLabel = worldScreen.selectedCiv.civName.toLabel()
-    private var selectedCivIconHolder = Container<Actor>()
 
     private val turnsLabel = "Turns: 0/400".toLabel()
     private val goldLabel = "0".toLabel(colorFromRGB(225, 217, 71))
     private val scienceLabel = "0".toLabel(colorFromRGB(78, 140, 151))
     private val happinessLabel = "0".toLabel()
     private val cultureLabel = "0".toLabel(colorFromRGB(210, 94, 210))
-    private val faithLabel = "0".toLabel(colorFromRGB(210, 94, 210)) // TODO: This colour should be changed at some point
-    private val resourceLabels = HashMap<String, Label>()
-    private val resourceImages = HashMap<String, Actor>()
+    private val faithLabel = "0".toLabel(colorFromRGB(168, 196, 241))
+    private data class ResourceActors(val resource: TileResource, val Label: Label, val icon: Group)
+    private val resourceActors = ArrayList<ResourceActors>(12)
     private val happinessImage = Group()
 
     // These are all to improve performance IE reduce update time (was 150 ms on my phone, which is a lot!)
@@ -48,27 +49,35 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     private val malcontentGroup = ImageGetter.getStatIcon("Malcontent")
     private val happinessGroup = ImageGetter.getStatIcon("Happiness")
 
-    val unitSupplyImage = ImageGetter.getImage("OtherIcons/ExclamationMark")
-        .apply { color = Color.FIREBRICK }
+    private val statsTable = getStatsTable()
+    private val resourcesWrapper = Table()
+    private val resourceTable = getResourceTable()
+    private val selectedCivTable = SelectedCivilizationTable(worldScreen)
+    private val overviewButton = OverviewAndSupplyTable(worldScreen)
+    private val leftFillerCell: Cell<Actor?>
+    private val rightFillerCell: Cell<Actor?>
+
+    //endregion
 
     init {
-        background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.5f))
-
-        add(getStatsTable()).row()
-        add(getResourceTable())
-
-        pad(5f)
+        val backColor = ImageGetter.getBlue().darken(0.5f)
+        val backgroundDrawable = ImageGetter.getBackground(backColor)
+        statsTable.background = backgroundDrawable
+        resourceTable.background = backgroundDrawable
+        add(statsTable).colspan(3).growX().row()
+        add(resourceTable).colspan(3).growX().row()
+        leftFillerCell = add(ImageGetter.getDot(backColor))
+        add().growX()
+        rightFillerCell = add(ImageGetter.getDot(backColor))
         pack()
-        addActor(getMenuButton()) // needs to be after pack
-
-        addActor(getSelectedCivilizationTable())
-
-        addActor(getOverviewAndSupplyButton())
     }
 
     private fun getResourceTable(): Table {
+        // Since cells with invisible actors still occupy the full actor dimensions, we only prepare
+        // the future contents for resourcesWrapper here, they're added to the Table in updateResourcesTable
         val resourceTable = Table()
-        resourceTable.defaults().pad(5f)
+        resourcesWrapper.defaults().pad(0f, 3f)
+
         turnsLabel.onClick {
             if (worldScreen.selectedCiv.isLongCountDisplay()) {
                 val gameInfo = worldScreen.selectedCiv.gameInfo
@@ -77,30 +86,28 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
                 worldScreen.game.setScreen(VictoryScreen(worldScreen))
             }
         }
-        resourceTable.add(turnsLabel).padRight(20f)
-        val revealedStrategicResources = worldScreen.gameInfo.ruleSet.tileResources.values
-                .filter { it.resourceType == ResourceType.Strategic } // && currentPlayerCivInfo.tech.isResearched(it.revealedBy!!) }
-        for (resource in revealedStrategicResources) {
-            val resourceImage = ImageGetter.getResourceImage(resource.name, 20f)
-            resourceImages[resource.name] = resourceImage
-            resourceTable.add(resourceImage).padRight(0f)
-            val resourceLabel = "0".toLabel()
-            resourceLabels[resource.name] = resourceLabel
-            resourceTable.add(resourceLabel)
-            val invokeResourcesPage = {
-                worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Resources"))
-            }
-            resourceLabel.onClick(invokeResourcesPage)
-            resourceImage.onClick(invokeResourcesPage)
+        resourcesWrapper.onClick {
+            worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Resources"))
         }
-        resourceTable.pack()
 
+        val strategicResources = worldScreen.gameInfo.ruleSet.tileResources.values
+                .filter { it.resourceType == ResourceType.Strategic }
+        for (resource in strategicResources) {
+            val resourceImage = ImageGetter.getResourceImage(resource.name, 20f)
+            val resourceLabel = "0".toLabel()
+            resourceActors += ResourceActors(resource, resourceLabel, resourceImage)
+        }
+
+        // in case the icons are configured higher than a label, we add a dummy - height will be measured once before it's updated
+        resourcesWrapper.add(resourceActors[0].icon)
+        resourceTable.add(turnsLabel).pad(5f, 3f, 8f, 20f)
+        resourceTable.add(resourcesWrapper).padRight(3f)
         return resourceTable
     }
 
     private fun getStatsTable(): Table {
         val statsTable = Table()
-        statsTable.defaults().pad(3f)//.align(Align.top)
+        statsTable.defaults().pad(8f, 3f)//.align(Align.top)
 
         statsTable.add(goldLabel)
         val goldImage = ImageGetter.getStatIcon("Gold")
@@ -141,11 +148,11 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
             statsTable.add(faithLabel).padLeft(20f)
             val faithImage = ImageGetter.getStatIcon("Faith")
             statsTable.add(faithImage).padBottom(6f).size(20f)
-            
+
             val invokeFaithOverview = {
                 worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Religion"))
             }
-            
+
             faithLabel.onClick(invokeFaithOverview)
             faithImage.onClick(invokeFaithOverview)
         } else {
@@ -153,93 +160,148 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         }
 
         statsTable.pack()
-        statsTable.width = worldScreen.stage.width - 20
+        //statsTable.width = worldScreen.stage.width - 20
         return statsTable
     }
 
-    private fun getMenuButton(): Image {
-        val menuButton = ImageGetter.getImage("OtherIcons/MenuIcon")
-                .apply { setSize(50f, 50f) }
-        menuButton.color = Color.WHITE
-        menuButton.onClick {
-            val worldScreenMenuPopup = worldScreen.popups.firstOrNull { it is WorldScreenMenuPopup }
-            if(worldScreenMenuPopup!=null)
-                worldScreenMenuPopup.close()
-            else WorldScreenMenuPopup(worldScreen).open(force = true)
+    private class OverviewAndSupplyTable(worldScreen: WorldScreen) : Table(BaseScreen.skin) {
+        val unitSupplyImage = ImageGetter.getImage("OtherIcons/ExclamationMark")
+            .apply { color = Color.FIREBRICK }
+        val unitSupplyCell: Cell<Actor?>
+
+        init {
+            unitSupplyImage.onClick {
+                worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Units"))
+            }
+
+            val overviewButton = "Overview".toTextButton()
+            overviewButton.addTooltip('e')
+            overviewButton.onClick { worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv)) }
+
+            unitSupplyCell = add()
+            add(overviewButton).pad(10f)
+            pack()
         }
-        menuButton.centerY(this)
-        menuButton.x = menuButton.y
-        return menuButton
+
+        fun update(worldScreen: WorldScreen) {
+            val newVisible = worldScreen.selectedCiv.stats().getUnitSupplyDeficit() > 0
+            if (newVisible == unitSupplyCell.hasActor()) return
+            if (newVisible) unitSupplyCell.setActor(unitSupplyImage)
+                .size(50f).padLeft(10f)
+            else unitSupplyCell.setActor(null).size(0f).pad(0f)
+            invalidate()
+            pack()
+        }
     }
 
-    private fun getOverviewAndSupplyButton(): Table {
-        val rightTable = Table(BaseScreen.skin).apply{ defaults().pad(10f) }
+    private class SelectedCivilizationTable(worldScreen: WorldScreen) : Table(BaseScreen.skin) {
+        private var selectedCiv = ""
+        private val selectedCivLabel = "".toLabel()
+        private val selectedCivIconHolder = Container<Actor>()
+        private val menuButton = ImageGetter.getImage("OtherIcons/MenuIcon")
 
-        unitSupplyImage.onClick {
-            worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Units"))
+        init {
+            left()
+            defaults().pad(10f)
+
+            menuButton.color = Color.WHITE
+            menuButton.onClick {
+                val worldScreenMenuPopup = worldScreen.popups.firstOrNull { it is WorldScreenMenuPopup }
+                if (worldScreenMenuPopup != null) worldScreenMenuPopup.close()
+                else WorldScreenMenuPopup(worldScreen).open(force = true)
+            }
+
+            selectedCivLabel.setFontSize(25)
+            selectedCivLabel.onClick {
+                val civilopediaScreen = CivilopediaScreen(
+                    worldScreen.selectedCiv.gameInfo.ruleSet,
+                    worldScreen,
+                    CivilopediaCategories.Nation,
+                    worldScreen.selectedCiv.civName
+                )
+                worldScreen.game.setScreen(civilopediaScreen)
+            }
+
+            selectedCivIconHolder.onClick {
+                worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv))
+            }
+
+            add(menuButton).size(50f).padRight(0f)
+            add(selectedCivLabel).padRight(0f)
+            add(selectedCivIconHolder).size(35f)
+            pack()
         }
-        unitSupplyImage.isVisible = worldScreen.selectedCiv.stats().getUnitSupplyDeficit() > 0
 
-        val overviewButton = "Overview".toTextButton()
-        overviewButton.addTooltip('e')
-        overviewButton.onClick { worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv)) }
+        fun update(worldScreen: WorldScreen) {
+            val newCiv = worldScreen.selectedCiv.civName
+            if (this.selectedCiv == newCiv) return
+            this.selectedCiv = newCiv
 
-        rightTable.add(unitSupplyImage).size(50f)
-        rightTable.add(overviewButton)
-
-        rightTable.pack()
-        rightTable.centerY(this)
-        rightTable.x = worldScreen.stage.width - rightTable.width - 10
-
-        return rightTable
+            selectedCivLabel.setText(newCiv.tr())
+            val nation = worldScreen.gameInfo.ruleSet.nations[worldScreen.selectedCiv.civName]!!
+            val selectedCivIcon = ImageGetter.getNationIndicator(nation, 35f)
+            selectedCivIconHolder.actor = selectedCivIcon
+            invalidate()
+            pack()
+        }
     }
 
-    private fun getSelectedCivilizationTable(): Table {
-        val selectedCivTable = Table()
-        selectedCivTable.centerY(this)
-        selectedCivTable.left()
-        selectedCivTable.x = getMenuButton().width + 20f
+    private fun layoutButtons() {
+        removeActor(selectedCivTable)
+        removeActor(overviewButton)
+        validate()
 
-        selectedCivLabel.setFontSize(25)
+        val statsWidth = statsTable.minWidth
+        val resourceWidth = resourceTable.minWidth
+        val overviewWidth = overviewButton.minWidth
+        val selectedCivWidth = selectedCivTable.minWidth
+        val leftRightNeeded = max(selectedCivWidth, overviewWidth)
+        val statsRowHeight = getRowHeight(0)
+        val baseHeight = statsRowHeight + getRowHeight(1)
 
-        selectedCivLabel.onClick {
-            val civilopeidaScreen = CivilopediaScreen(
-                worldScreen.selectedCiv.gameInfo.ruleSet,
-                worldScreen,
-                CivilopediaCategories.Nation,
-                worldScreen.selectedCiv.civName
-            )
-            worldScreen.game.setScreen(civilopeidaScreen)
+        // Check whether it gets cramped on narrow aspect ratios
+        val (fillerHeight: Float, buttonY: Float) = when {
+            leftRightNeeded * 2f > stage.width - resourceWidth ->
+                // Need to shift buttons down to below both stats and resources
+                baseHeight to overviewButton.minHeight / 2f
+            leftRightNeeded * 2f > stage.width - statsWidth ->
+                // Shifting buttons down to below stats row is enough
+                statsRowHeight to overviewButton.minHeight / 2f
+            else ->
+                // Enough space to keep buttons to the left and right of stats and resources
+                0f to baseHeight / 2f
         }
 
-        val nation = worldScreen.gameInfo.ruleSet.nations[worldScreen.selectedCiv.civName]!!
-        val selectedCivIcon = ImageGetter.getNationIndicator(nation, 35f)
-        selectedCivIconHolder.actor = selectedCivIcon
-        selectedCivIconHolder.onClick { worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv)) }
+        val leftFillerWidth = if (fillerHeight > 0f) selectedCivWidth else 0f
+        val rightFillerWidth = if (fillerHeight > 0f) overviewWidth else 0f
+        if (leftFillerCell.minHeight != fillerHeight
+                || leftFillerCell.minWidth != leftFillerWidth
+                || rightFillerCell.minWidth != rightFillerWidth) {
+            // Gdx fail: containing Table isn't invalidated when setting Cell size
+            leftFillerCell.width(leftFillerWidth).height(fillerHeight)
+            rightFillerCell.width(rightFillerWidth).height(fillerHeight)
+            invalidate()  // Without this all attempts to get a recalculated height are doomed
+            pack()  // neither validate nor layout will include the new row height in height
+        }
 
-        selectedCivTable.add(selectedCivLabel).padRight(10f)
-        selectedCivTable.add(selectedCivIconHolder)
-        return selectedCivTable
+        width = stage.width
+        setPosition(0f, stage.height, Align.topLeft)
 
+        selectedCivTable.setPosition(1f, buttonY, Align.left)
+        overviewButton.setPosition(stage.width, buttonY, Align.right)
+        addActor(selectedCivTable) // needs to be after pack
+        addActor(overviewButton)
     }
 
     internal fun update(civInfo: CivilizationInfo) {
-        val revealedStrategicResources = civInfo.gameInfo.ruleSet.tileResources.values
-                .filter { it.resourceType == ResourceType.Strategic }
-        val civResources = civInfo.getCivResources()
-        for (resource in revealedStrategicResources) {
-            val isRevealed = resource.revealedBy == null || civInfo.tech.isResearched(resource.revealedBy!!)
-            resourceLabels[resource.name]!!.isVisible = isRevealed
-            resourceImages[resource.name]!!.isVisible = isRevealed
-            val amountText = (civResources.get(resource, "All")?.amount ?: 0).toString()
-            resourceLabels[resource.name]!!.setText(amountText)
-        }
+        updateStatsTable(civInfo)
+        updateResourcesTable(civInfo)
+        selectedCivTable.update(worldScreen)
+        overviewButton.update(worldScreen)
+        layoutButtons()
+    }
 
-        val year = civInfo.gameInfo.getYear()
-        val yearText = if (civInfo.isLongCountDisplay()) MayaCalendar.yearToMayaDate(year)
-            else "[" + abs(year) + "] " + (if (year < 0) "BC" else "AD")
-        turnsLabel.setText(Fonts.turn + "" + civInfo.gameInfo.turns + " | " + yearText.tr())
-
+    private fun updateStatsTable(civInfo: CivilizationInfo) {
         val nextTurnStats = civInfo.statsForNextTurn
         val goldPerTurn = "(" + (if (nextTurnStats.gold > 0) "+" else "") + nextTurnStats.gold.roundToInt() + ")"
         goldLabel.setText(civInfo.gold.toString() + goldPerTurn)
@@ -260,19 +322,27 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
 
         cultureLabel.setText(getCultureText(civInfo, nextTurnStats))
         faithLabel.setText(civInfo.religionManager.storedFaith.toString() + "(+" + nextTurnStats.faith.roundToInt() + ")")
-
-        updateSelectedCivTable()
     }
 
-    private fun updateSelectedCivTable() {
-        if (selectedCivLabel.text.toString() == worldScreen.selectedCiv.civName.tr()) return
+    private fun updateResourcesTable(civInfo: CivilizationInfo) {
+        resourcesWrapper.clear()
 
-        selectedCivLabel.setText(worldScreen.selectedCiv.civName.tr())
+        val year = civInfo.gameInfo.getYear()
+        val yearText = if (civInfo.isLongCountDisplay()) MayaCalendar.yearToMayaDate(year)
+        else "[" + abs(year) + "] " + (if (year < 0) "BC" else "AD")
+        turnsLabel.setText(Fonts.turn + "" + civInfo.gameInfo.turns + " | " + yearText.tr())
 
-        val nation = worldScreen.gameInfo.ruleSet.nations[worldScreen.selectedCiv.civName]!!
-        val selectedCivIcon = ImageGetter.getNationIndicator(nation, 35f)
-        selectedCivIconHolder.actor = selectedCivIcon
-        selectedCivIconHolder.onClick { worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv)) }
+        val civResources = civInfo.getCivResources()
+        for ((resource, label, icon) in resourceActors) {
+            if (resource.revealedBy != null && !civInfo.tech.isResearched(resource.revealedBy!!))
+                continue
+            resourcesWrapper.add(icon).padRight(0f)
+            val amount = civResources.get(resource, "All")?.amount ?: 0
+            label.setText(amount)
+            resourcesWrapper.add(label)
+        }
+
+        resourceTable.pack()
     }
 
     private fun getCultureText(civInfo: CivilizationInfo, nextTurnStats: Stats): String {
@@ -288,7 +358,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     private fun getHappinessText(civInfo: CivilizationInfo): String {
         var happinessText = civInfo.getHappiness().toString()
         val goldenAges = civInfo.goldenAges
-        happinessText += 
+        happinessText +=
             if (goldenAges.isGoldenAge())
                 "    {GOLDEN AGE}(${goldenAges.turnsLeftForCurrentGoldenAge})".tr()
             else
