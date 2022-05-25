@@ -8,6 +8,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.tile.TileImprovement
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
@@ -23,6 +24,17 @@ class ImprovementPickerScreen(
     private val unit: MapUnit,
     private val onAccept: ()->Unit,
 ) : PickerScreen() {
+
+    companion object {
+        val specialCasedProblems = setOf(
+            TileInfo.ImprovementBuildingProblem.MissingTech,
+            TileInfo.ImprovementBuildingProblem.NotJustOutsideBorders,
+            TileInfo.ImprovementBuildingProblem.OutsideBorders,
+            TileInfo.ImprovementBuildingProblem.MissingResources)
+
+        fun isHopelesslyUnbuildable(problems: List<TileInfo.ImprovementBuildingProblem>?): Boolean = problems != null && problems.any { it !in specialCasedProblems }
+    }
+
     private var selectedImprovement: TileImprovement? = null
     private val gameInfo = tileInfo.tileMap.gameInfo
     private val ruleSet = gameInfo.ruleSet
@@ -72,10 +84,13 @@ class ImprovementPickerScreen(
             // canBuildImprovement() would allow e.g. great improvements thus we need to exclude them - except cancel
             if (improvement.turnsToBuild == 0 && improvement.name != Constants.cancelImprovementOrder) continue
             if (improvement.name == tileInfo.improvement) continue // also checked by canImprovementBeBuiltHere, but after more expensive tests
-            if (!tileInfo.canBuildImprovement(improvement, currentPlayerCiv)) {
-                // if there is an improvement that could remove that terrain
-                if (!tileInfoNoLast.canBuildImprovement(improvement, currentPlayerCiv)) continue
-                suggestRemoval = true
+
+            var unbuildableBecause = tileInfo.getImprovementBuildingProblems(improvement, currentPlayerCiv)
+            if (isHopelesslyUnbuildable(unbuildableBecause)) {
+                // Try after pretending to have removed the top terrain layer.
+                unbuildableBecause = tileInfoNoLast.getImprovementBuildingProblems(improvement, currentPlayerCiv)
+                if (isHopelesslyUnbuildable(unbuildableBecause)) continue
+                else suggestRemoval = true
             }
             if (!unit.canBuildImprovement(improvement)) continue
 
@@ -109,8 +124,26 @@ class ImprovementPickerScreen(
                     && improvement.name != Constants.cancelImprovementOrder)
             if (tileInfo.improvement != null && removeImprovement) labelText += "\n" + "Replaces [${tileInfo.improvement}]".tr()
 
-            val pickNow = when {
-                suggestRemoval -> "${Constants.remove}[${tileInfo.getLastTerrain().name}] first".toLabel()
+            var proposedSolutions = mutableListOf<String>()
+
+            if (suggestRemoval) proposedSolutions.add("${Constants.remove}[${tileInfo.getLastTerrain().name}] first")
+
+            if (unbuildableBecause != null) {
+                if (TileInfo.ImprovementBuildingProblem.MissingTech in unbuildableBecause)
+                    proposedSolutions.add("Research ${improvement.techRequired} first".tr())
+                if (TileInfo.ImprovementBuildingProblem.NotJustOutsideBorders in unbuildableBecause)
+                    proposedSolutions.add("Have this tile close to your borders".tr())
+                if (TileInfo.ImprovementBuildingProblem.OutsideBorders in unbuildableBecause)
+                    proposedSolutions.add("Have this tile inside your empire".tr())
+                if (TileInfo.ImprovementBuildingProblem.MissingResources in unbuildableBecause) {
+                    proposedSolutions.addAll(improvement.getMatchingUniques(UniqueType.ConsumesResources).filter {
+                        currentPlayerCiv.getCivResourcesByName()[it.params[1]]!! < it.params[0].toInt()
+                    }.map { "Acquire more ${it} first".tr() })
+                }
+            }
+
+            var explanationText = when {
+                proposedSolutions.any() -> proposedSolutions.joinToString("\n").toLabel()
                 tileInfo.improvementInProgress == improvement.name -> "Current construction".toLabel()
                 tileMarkedForCreatesOneImprovement -> null
                 else -> "Pick now!".toLabel().onClick { accept(improvement) }
@@ -140,7 +173,7 @@ class ImprovementPickerScreen(
             }
 
             if (improvement.name == tileInfo.improvementInProgress) improvementButton.color = Color.GREEN
-            if (suggestRemoval || tileMarkedForCreatesOneImprovement) {
+            if (unbuildableBecause != null || tileMarkedForCreatesOneImprovement) {
                 improvementButton.disable()
             } else if (shortcutKey != null) {
                 keyPressDispatcher[shortcutKey] = { accept(improvement) }
@@ -148,7 +181,7 @@ class ImprovementPickerScreen(
             }
 
             regularImprovements.add(improvementButton)
-            regularImprovements.add(pickNow).padLeft(10f).fillY()
+            regularImprovements.add(explanationText).padLeft(10f).fillY()
             regularImprovements.row()
         }
 
