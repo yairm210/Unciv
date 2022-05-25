@@ -3,10 +3,13 @@ package com.unciv.logic
 import com.badlogic.gdx.Files
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.utils.JsonReader
 import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.models.metadata.GameSettings
+import com.unciv.models.metadata.doMigrations
+import com.unciv.models.metadata.isMigrationNecessary
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.saves.Gzip
@@ -168,22 +171,23 @@ class GameSaver(
 
     fun getGeneralSettings(): GameSettings {
         val settingsFile = getGeneralSettingsFile()
-        val settings: GameSettings =
-                if (!settingsFile.exists())
-                    GameSettings().apply { isFreshlyCreated = true }
-                else try {
-                    json().fromJson(GameSettings::class.java, settingsFile)
-                } catch (ex: Exception) {
-                    // I'm not sure of the circumstances,
-                    // but some people were getting null settings, even though the file existed??? Very odd.
-                    // ...Json broken or otherwise unreadable is the only possible reason.
-                    println("Error reading settings file: ${ex.localizedMessage}")
-                    println("  cause: ${ex.cause}")
-                    GameSettings().apply { isFreshlyCreated = true }
+        var settings: GameSettings? = null
+        if (settingsFile.exists()) {
+            try {
+                settings = json().fromJson(GameSettings::class.java, settingsFile)
+                if (settings.isMigrationNecessary()) {
+                    settings.doMigrations(JsonReader().parse(settingsFile))
                 }
+            } catch (ex: Exception) {
+                // I'm not sure of the circumstances,
+                // but some people were getting null settings, even though the file existed??? Very odd.
+                // ...Json broken or otherwise unreadable is the only possible reason.
+                println("Error reading settings file: ${ex.localizedMessage}")
+                println("  cause: ${ex.cause}")
+            }
+        }
 
-
-        return settings
+        return settings ?: GameSettings().apply { isFreshlyCreated = true }
     }
 
     fun setGeneralSettings(gameSettings: GameSettings) {

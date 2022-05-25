@@ -175,6 +175,49 @@ class MainMenuScreen: BaseScreen() {
             return
         }
         QuickSave.autoLoadGame(this)
+
+        val loadingPopup = Popup(this)
+        loadingPopup.addGoodSizedLabel("Loading...")
+        loadingPopup.open()
+        launchCrashHandling("autoLoadGame") {
+            // Load game from file to class on separate thread to avoid ANR...
+            fun outOfMemory() {
+                postCrashHandlingRunnable {
+                    loadingPopup.close()
+                    ToastPopup("Not enough memory on phone to load game!", this@MainMenuScreen)
+                }
+            }
+
+            val savedGame: GameInfo
+            try {
+                savedGame = game.gameSaver.loadLatestAutosave()
+            } catch (oom: OutOfMemoryError) {
+                outOfMemory()
+                return@launchCrashHandling
+            } catch (ex: Exception) {
+                postCrashHandlingRunnable {
+                    loadingPopup.close()
+                    ToastPopup("Cannot resume game!", this@MainMenuScreen)
+                }
+                return@launchCrashHandling
+            }
+
+            if (savedGame.gameParameters.isOnlineMultiplayer) {
+                try {
+                    game.onlineMultiplayer.loadGame(savedGame)
+                } catch (oom: OutOfMemoryError) {
+                    outOfMemory()
+                }
+            } else {
+                postCrashHandlingRunnable { /// ... and load it into the screen on main thread for GL context
+                    try {
+                        game.loadGame(savedGame)
+                    } catch (oom: OutOfMemoryError) {
+                        outOfMemory()
+                    }
+                }
+            }
+        }
     }
 
     private fun quickstartNewGame() {
