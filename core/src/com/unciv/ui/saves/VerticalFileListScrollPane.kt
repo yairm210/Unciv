@@ -39,6 +39,8 @@ class VerticalFileListScrollPane(
             keyPressDispatcher[Input.Keys.DOWN] = { onArrowKey(1) }
             keyPressDispatcher[Input.Keys.PAGE_UP] = { onPageKey(-1) }
             keyPressDispatcher[Input.Keys.PAGE_DOWN] = { onPageKey(1) }
+            keyPressDispatcher[Input.Keys.HOME] = { onHomeEndKey(0) }
+            keyPressDispatcher[Input.Keys.END] = { onHomeEndKey(1) }
         }
     }
 
@@ -55,6 +57,7 @@ class VerticalFileListScrollPane(
     /** repopulate from a FileHandle Sequence - for other sources than saved games */
     fun update(files: Sequence<FileHandle>) {
         existingSavesTable.clear()
+        previousSelection = null
         val loadImage = ImageGetter.getImage("OtherIcons/Load")
         loadImage.setSize(50f, 50f) // So the origin sets correctly
         loadImage.setOrigin(Align.center)
@@ -104,6 +107,7 @@ class VerticalFileListScrollPane(
     private fun Table.getButtonAt(y: Float) = cells[getRow(height - y)].actor as TextButton
 
     private fun onArrowKey(direction: Int) {
+        if (existingSavesTable.rows == 0) return
         val rowIndex = if (previousSelection == null)
             if (direction == 1) -1 else 0
         else existingSavesTable.getCell(previousSelection).row
@@ -137,5 +141,11 @@ class VerticalFileListScrollPane(
         selectExistingSave(existingSavesTable.getButtonAt(newButtonY))
     }
 
+    private fun onHomeEndKey(direction: Int) {
+        scrollY = direction * maxY
+        if (existingSavesTable.rows == 0) return
+        val row =  (existingSavesTable.rows - 1) * direction
+        selectExistingSave(existingSavesTable.cells[row].actor as TextButton)
+    }
     //endregion
 }
