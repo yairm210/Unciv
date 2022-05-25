@@ -187,7 +187,6 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         else
             mapHolder.setCenterPosition(tileToCenterOn, immediately = true, selectUnit = true)
 
-
         tutorialController.allTutorialsShowedCallback = { shouldUpdate = true }
 
         onBackButtonClicked { backButtonAndESCHandler() }
@@ -723,6 +722,22 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         }
     }
 
+    fun switchToNextUnit() {
+        // Try to select something new if we already have the next pending unit selected.
+        val nextDueUnit = viewingCiv.cycleThroughDueUnits(bottomUnitTable.selectedUnit)
+        if (nextDueUnit != null) {
+            mapHolder.setCenterPosition(
+                nextDueUnit.currentTile.position,
+                immediately = false,
+                selectUnit = false
+            )
+            bottomUnitTable.selectUnit(nextDueUnit)
+            shouldUpdate = true
+            // Unless 'wait' action is chosen, the unit will not be considered due anymore.
+            nextDueUnit.due = false
+        }
+    }
+
     private fun updateNextTurnButton(isSomethingOpen: Boolean) {
         nextTurnButton.update(isSomethingOpen, isPlayersTurn, waitingForAutosave, getNextTurnAction())
         nextTurnButton.setPosition(stage.width - nextTurnButton.width - 10f, topBar.y - nextTurnButton.height - 10f)
@@ -737,18 +752,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                 NextTurnAction("Waiting for other players...",Color.GRAY) {}
 
             viewingCiv.shouldGoToDueUnit() ->
-                NextTurnAction("Next unit", Color.LIGHT_GRAY) {
-                    val nextDueUnit = viewingCiv.getNextDueUnit()
-                    if (nextDueUnit != null) {
-                        mapHolder.setCenterPosition(
-                            nextDueUnit.currentTile.position,
-                            immediately = false,
-                            selectUnit = false
-                        )
-                        bottomUnitTable.selectUnit(nextDueUnit)
-                        shouldUpdate = true
-                    }
-                }
+                NextTurnAction("Next unit", Color.LIGHT_GRAY) { switchToNextUnit() }
 
             viewingCiv.cities.any { it.cityConstructions.currentConstructionFromQueue == "" } ->
                 NextTurnAction("Pick construction", Color.CORAL) {

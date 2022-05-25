@@ -68,6 +68,7 @@ object UnitActions {
         addTriggerUniqueActions(unit, actionList)
         addAddInCapitalAction(unit, actionList, tile)
 
+        addWaitAction(unit, actionList, worldScreen);
 
         addToggleActionsAction(unit, actionList, unitTable)
 
@@ -821,6 +822,18 @@ object UnitActions {
         }
     }
 
+    private fun addWaitAction(unit: MapUnit, actionList: ArrayList<UnitAction>, worldScreen: WorldScreen) {
+        if (!unit.isIdle()) return
+        if (worldScreen.viewingCiv.getDueUnits().filter { it != unit }.none()) return
+        actionList += UnitAction(
+            type = UnitActionType.Wait,
+            action = {
+                unit.due = true
+                worldScreen.switchToNextUnit()
+            }
+        )
+    }
+
     private fun addToggleActionsAction(unit: MapUnit, actionList: ArrayList<UnitAction>, unitTable: UnitTable) {
         actionList += UnitAction(
             type = if (unit.showAdditionalActions) UnitActionType.HideAdditionalActions
@@ -831,5 +844,4 @@ object UnitActions {
             }
         )
     }
-
 }
