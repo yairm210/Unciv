@@ -407,7 +407,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     // This is private so that we will set the shouldUpdate to true instead.
     // That way, not only do we save a lot of unnecessary updates, we also ensure that all updates are called from the main GL thread
     // and we don't get any silly concurrency problems!
-    internal fun update() {
+    private fun update() {
 
         displayTutorialsOnUpdate()
 
