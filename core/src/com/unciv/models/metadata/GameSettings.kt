@@ -48,6 +48,7 @@ class GameSettings {
     var multiplayerTurnCheckerPersistentNotificationEnabled = true
     var multiplayerTurnCheckerDelayInMinutes = 5
     var orderTradeOffersByAmount = true
+    var confirmNextTurn = false
     var windowState = WindowState()
     var isFreshlyCreated = false
     var visualMods = HashSet<String>()

@@ -467,7 +467,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     fun isBuildableIgnoringTechs(civInfo: CivilizationInfo): Boolean {
         val rejectionReasons = getRejectionReasons(civInfo)
-        return rejectionReasons.filterTechPolicyEraWonderRequirements().isEmpty()
+        return rejectionReasons.isOKIgnoringRequirements(ignoreTechPolicyEraWonderRequirements = true)
     }
 
     override fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat?): Boolean {

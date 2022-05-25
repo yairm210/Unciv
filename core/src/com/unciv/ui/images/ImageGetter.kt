@@ -170,8 +170,7 @@ object ImageGetter {
     }
 
     fun getDrawable(fileName: String?): TextureRegionDrawable {
-        return if (fileName != null && textureRegionDrawables.containsKey(fileName)) textureRegionDrawables[fileName]!!
-        else textureRegionDrawables[whiteDotLocation]!!
+        return textureRegionDrawables[fileName] ?: textureRegionDrawables[whiteDotLocation]!!
     }
 
     fun getRoundedEdgeRectangle(tintColor: Color? = null): NinePatchDrawable {

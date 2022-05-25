@@ -39,6 +39,7 @@ import com.unciv.ui.pickerscreens.*
 import com.unciv.ui.popup.ExitGamePopup
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
+import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.popup.hasOpenPopups
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.saves.QuickSave
@@ -186,7 +187,6 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
             mapHolder.setCenterPosition(tileToCenterOn, immediately = true, selectUnit = false)
         else
             mapHolder.setCenterPosition(tileToCenterOn, immediately = true, selectUnit = true)
-
 
         tutorialController.allTutorialsShowedCallback = { shouldUpdate = true }
 
@@ -371,7 +371,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     // This is private so that we will set the shouldUpdate to true instead.
     // That way, not only do we save a lot of unnecessary updates, we also ensure that all updates are called from the main GL thread
     // and we don't get any silly concurrency problems!
-    internal fun update() {
+    private fun update() {
 
         displayTutorialsOnUpdate()
 
@@ -686,6 +686,22 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         }
     }
 
+    fun switchToNextUnit() {
+        // Try to select something new if we already have the next pending unit selected.
+        val nextDueUnit = viewingCiv.cycleThroughDueUnits(bottomUnitTable.selectedUnit)
+        if (nextDueUnit != null) {
+            mapHolder.setCenterPosition(
+                nextDueUnit.currentTile.position,
+                immediately = false,
+                selectUnit = false
+            )
+            bottomUnitTable.selectUnit(nextDueUnit)
+            shouldUpdate = true
+            // Unless 'wait' action is chosen, the unit will not be considered due anymore.
+            nextDueUnit.due = false
+        }
+    }
+
     private fun updateNextTurnButton(isSomethingOpen: Boolean) {
         nextTurnButton.update(isSomethingOpen, isPlayersTurn, waitingForAutosave, getNextTurnAction())
         nextTurnButton.setPosition(stage.width - nextTurnButton.width - 10f, topBar.y - nextTurnButton.height - 10f)
@@ -700,18 +716,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                 NextTurnAction("Waiting for other players...",Color.GRAY) {}
 
             viewingCiv.shouldGoToDueUnit() ->
-                NextTurnAction("Next unit", Color.LIGHT_GRAY) {
-                    val nextDueUnit = viewingCiv.getNextDueUnit()
-                    if (nextDueUnit != null) {
-                        mapHolder.setCenterPosition(
-                            nextDueUnit.currentTile.position,
-                            immediately = false,
-                            selectUnit = false
-                        )
-                        bottomUnitTable.selectUnit(nextDueUnit)
-                        shouldUpdate = true
-                    }
-                }
+                NextTurnAction("Next unit", Color.LIGHT_GRAY) { switchToNextUnit() }
 
             viewingCiv.cities.any { it.cityConstructions.currentConstructionFromQueue == "" } ->
                 NextTurnAction("Pick construction", Color.CORAL) {
@@ -786,8 +791,15 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
             else ->
                 NextTurnAction("${Fonts.turn}{Next turn}", Color.WHITE) {
-                    game.settings.addCompletedTutorialTask("Pass a turn")
-                    nextTurn()
+                    val action = {
+                        game.settings.addCompletedTutorialTask("Pass a turn")
+                        nextTurn()
+                    }
+                    if (game.settings.confirmNextTurn) {
+                        YesNoPopup("Confirm next turn", action, this).open()
+                    } else {
+                        action()
+                    }
                 }
         }
     }
