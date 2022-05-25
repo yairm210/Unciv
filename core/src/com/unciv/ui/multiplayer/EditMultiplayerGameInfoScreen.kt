@@ -8,6 +8,7 @@ import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
+import com.unciv.ui.multiplayer.MultiplayerHelpers
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.popup.YesNoPopup
@@ -96,7 +97,7 @@ class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame, 
                     }
                 }
             } catch (ex: Exception) {
-                val message = backScreen.getLoadExceptionMessage(ex)
+                val message = MultiplayerHelpers.getLoadExceptionMessage(ex)
                 postCrashHandlingRunnable {
                     popup.reuseWith(message, true)
                 }

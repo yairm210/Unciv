@@ -162,7 +162,7 @@ private fun addSetUserId(table: Table, settings: GameSettings, screen: BaseScree
                 YesNoPopup(
                     "Doing this will reset your current user ID to the clipboard contents - are you sure?",
                     {
-                        settings.userId = clipboardContents
+                        settings.multiplayer.userId = clipboardContents
                         settings.save()
                         idSetLabel.setFontColor(Color.WHITE).setText("ID successfully set!".tr())
                     },

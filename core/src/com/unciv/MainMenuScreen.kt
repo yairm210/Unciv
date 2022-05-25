@@ -201,12 +201,19 @@ class MainMenuScreen: BaseScreen() {
                 return@launchCrashHandling
             }
 
-            postCrashHandlingRunnable { /// ... and load it into the screen on main thread for GL context
+            if (savedGame.gameParameters.isOnlineMultiplayer) {
                 try {
-                    game.loadGame(savedGame)
-                    dispose()
+                    game.onlineMultiplayer.loadGame(savedGame)
                 } catch (oom: OutOfMemoryError) {
                     outOfMemory()
+                }
+            } else {
+                postCrashHandlingRunnable { /// ... and load it into the screen on main thread for GL context
+                    try {
+                        game.loadGame(savedGame)
+                    } catch (oom: OutOfMemoryError) {
+                        outOfMemory()
+                    }
                 }
             }
         }

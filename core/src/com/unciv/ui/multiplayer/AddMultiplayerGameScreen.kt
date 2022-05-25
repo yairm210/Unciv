@@ -7,6 +7,7 @@ import com.unciv.logic.IdChecker
 import com.unciv.models.translations.tr
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
+import com.unciv.ui.multiplayer.MultiplayerHelpers
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
@@ -60,7 +61,7 @@ class AddMultiplayerGameScreen(backScreen: MultiplayerScreen) : PickerScreen() {
                         game.setScreen(backScreen)
                     }
                 } catch (ex: Exception) {
-                    val message = backScreen.getLoadExceptionMessage(ex)
+                    val message = MultiplayerHelpers.getLoadExceptionMessage(ex)
                     postCrashHandlingRunnable {
                         popup.reuseWith(message, true)
                     }
