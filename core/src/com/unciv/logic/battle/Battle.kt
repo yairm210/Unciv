@@ -27,30 +27,51 @@ import kotlin.math.min
  */
 object Battle {
 
+    /**
+     * Moves [attacker] to [attackableTile], handles siege setup then attacks if still possible
+     * (by calling [attack] or [NUKE]). Does _not_ play the attack sound!
+     */
     fun moveAndAttack(attacker: ICombatant, attackableTile: AttackableTile) {
-        if (attacker is MapUnitCombatant) {
-            attacker.unit.movement.moveToTile(attackableTile.tileToAttackFrom)
-            /**
-             * When calculating movement distance, we assume that a hidden tile is 1 movement point,
-             * which can lead to EXCEEDINGLY RARE edge cases where you think
-             * that you can attack a tile by passing through a HIDDEN TILE,
-             * but the hidden tile is actually IMPASSIBLE so you stop halfway!
-             */
-            if (attacker.getTile() != attackableTile.tileToAttackFrom) return
-            /** Alternatively, maybe we DID reach that tile, but it turned out to be a hill or something,
-             * so we expended all of our movement points!
-             */
-            if (attacker.unit.currentMovement == 0f)
-                return
-            if (attacker.hasUnique(UniqueType.MustSetUp) && !attacker.unit.isSetUpForSiege()) {
-                attacker.unit.action = UnitActionType.SetUp.value
-                attacker.unit.useMovementPoints(1f)
-            }
-        }
+        if (!movePreparingAttack(attacker, attackableTile)) return
+        attackOrNuke(attacker, attackableTile)
+    }
 
+    /**
+     * Moves [attacker] to [attackableTile], handles siege setup and returns `true` if an attack is still possible.
+     *
+     * This is a logic function, not UI, so e.g. sound needs to be handled after calling this.
+     */
+    fun movePreparingAttack(attacker: ICombatant, attackableTile: AttackableTile): Boolean {
+        if (attacker !is MapUnitCombatant) return true
+        attacker.unit.movement.moveToTile(attackableTile.tileToAttackFrom)
+        /**
+         * When calculating movement distance, we assume that a hidden tile is 1 movement point,
+         * which can lead to EXCEEDINGLY RARE edge cases where you think
+         * that you can attack a tile by passing through a HIDDEN TILE,
+         * but the hidden tile is actually IMPASSIBLE so you stop halfway!
+         */
+        if (attacker.getTile() != attackableTile.tileToAttackFrom) return false
+        /** Alternatively, maybe we DID reach that tile, but it turned out to be a hill or something,
+         * so we expended all of our movement points!
+         */
+        if (attacker.hasUnique(UniqueType.MustSetUp)
+                && !attacker.unit.isSetUpForSiege()
+                && attacker.unit.currentMovement > 0f
+        ) {
+            attacker.unit.action = UnitActionType.SetUp.value
+            attacker.unit.useMovementPoints(1f)
+        }
+        return (attacker.unit.currentMovement > 0f)
+    }
+
+    /**
+     * This is meant to be called only after all prerequisite checks have been done.
+     */
+    fun attackOrNuke(attacker: ICombatant, attackableTile: AttackableTile) {
         if (attacker is MapUnitCombatant && attacker.unit.baseUnit.isNuclearWeapon())
-            return NUKE(attacker, attackableTile.tileToAttack)
-        attack(attacker, getMapCombatantOfTile(attackableTile.tileToAttack)!!)
+            NUKE(attacker, attackableTile.tileToAttack)
+        else
+            attack(attacker, getMapCombatantOfTile(attackableTile.tileToAttack)!!)
     }
 
     fun attack(attacker: ICombatant, defender: ICombatant) {
@@ -98,9 +119,9 @@ object Battle {
 
         if (defender.getCivInfo().isBarbarian() && attackedTile.improvement == Constants.barbarianEncampment)
             defender.getCivInfo().gameInfo.barbarians.campAttacked(attackedTile.position)
-            
+
         postBattleNationUniques(defender, attackedTile, attacker)
-        
+
         // This needs to come BEFORE the move-to-tile, because if we haven't conquered it we can't move there =)
         if (defender.isDefeated() && defender is CityCombatant && attacker is MapUnitCombatant
                 && attacker.isMelee() && !attacker.unit.hasUnique(UniqueType.CannotCaptureCities)) {
@@ -316,7 +337,7 @@ object Battle {
                 attacker.unit.healBy(amountToHeal)
             }
     }
-    
+
     /** Places a [unitName] unit near [tile] after being attacked by [attacker].
      * Adds a notification to [attacker]'s civInfo and returns whether the captured unit could be placed */
     private fun spawnCapturedUnit(unitName: String, attacker: ICombatant, tile: TileInfo, notification: String): Boolean {
@@ -332,19 +353,19 @@ object Battle {
 
     private fun postBattleNationUniques(defender: ICombatant, attackedTile: TileInfo, attacker: ICombatant) {
         if (!defender.isDefeated()) return
-        
+
         // Barbarians reduce spawn countdown after their camp was attacked "kicking the hornet's nest"
         if (defender.getCivInfo().isBarbarian() && attackedTile.improvement == Constants.barbarianEncampment) {
             var unitPlaced = false
             // German unique - needs to be checked before we try to move to the enemy tile, since the encampment disappears after we move in
             // Deprecated as of 4.0.3
-                if (attacker.getCivInfo().hasUnique(UniqueType.ChanceToRecruitBarbarianFromEncampment) 
+                if (attacker.getCivInfo().hasUnique(UniqueType.ChanceToRecruitBarbarianFromEncampment)
                     && Random().nextDouble() < 0.67
                 ) {
                     attacker.getCivInfo().addGold(25)
                     unitPlaced = spawnCapturedUnit(defender.getName(), attacker, attackedTile,"A barbarian [${defender.getName()}] has joined us!")
                 }
-            
+
                 // New version of unique
             //
             for (unique in attacker.getCivInfo().getMatchingUniques(UniqueType.GainFromEncampment)) {
@@ -353,7 +374,7 @@ object Battle {
                 unitPlaced = spawnCapturedUnit(defender.getName(), attacker, attackedTile,"A barbarian [${defender.getName()}] has joined us!")
             }
         }
-        
+
         // Similarly, Ottoman unique
         // Deprecated as of 4.0.3
             if (attacker.getCivInfo().hasUnique(UniqueType.ChanceToRecruitNavalBarbarian)
@@ -449,7 +470,7 @@ object Battle {
         ) {
             return
         }
-        
+
         val stateForConditionals = StateForConditionals(civInfo = thisCombatant.getCivInfo(), ourCombatant = thisCombatant, theirCombatant = otherCombatant)
 
         for (unique in thisCombatant.getMatchingUniques(UniqueType.FlatXPGain, stateForConditionals, true))
@@ -459,7 +480,7 @@ object Battle {
 
         for (unique in thisCombatant.getMatchingUniques(UniqueType.PercentageXPGain, stateForConditionals, true))
             xpModifier += unique.params[0].toFloat() / 100
-        
+
         val xpGained = (baseXP * xpModifier).toInt()
         thisCombatant.unit.promotions.XP += xpGained
 
@@ -481,8 +502,8 @@ object Battle {
 
     private fun conquerCity(city: CityInfo, attacker: MapUnitCombatant) {
         val attackerCiv = attacker.getCivInfo()
-        
-        
+
+
         attackerCiv.addNotification("We have conquered the city of [${city.name}]!", city.location, NotificationIcon.War)
 
         city.hasJustBeenConquered = true
@@ -610,13 +631,13 @@ object Battle {
             attacker.popupAlerts.add(PopupAlert(AlertType.Defeated, attackedCiv.civName))
         }
     }
-    
+
     fun mayUseNuke(nuke: MapUnitCombatant, targetTile: TileInfo): Boolean {
         val blastRadius =
             if (!nuke.hasUnique(UniqueType.BlastRadius)) 2
             // Don't check conditionals as these are not supported
             else nuke.unit.getMatchingUniques(UniqueType.BlastRadius).first().params[0].toInt()
-        
+
         var canNuke = true
         val attackerCiv = nuke.getCivInfo()
         for (tile in targetTile.getTilesInDistance(blastRadius)) {
@@ -761,7 +782,7 @@ object Battle {
                 tile.addTerrainFeature("Fallout")
             }
             if (!tile.terrainHasUnique(UniqueType.DestroyableByNukes)) return
-        
+
             // Deprecated as of 3.19.19 -- If removed, the two successive `if`s above should be merged
                 val destructionChance = if (tile.terrainHasUnique(UniqueType.ResistsNukes)) 0.25f
                 else 0.5f
@@ -797,13 +818,13 @@ object Battle {
         targetedCity.population.addPopulation(-populationLoss.toInt())
         if (targetedCity.population.population < 1) targetedCity.population.setPopulation(1)
     }
-    
+
     private fun tryInterceptAirAttack(attacker: MapUnitCombatant, attackedTile: TileInfo, interceptingCiv: CivilizationInfo, defender: ICombatant?) {
         if (attacker.unit.hasUnique(UniqueType.CannotBeIntercepted)) return
         // Pick highest chance interceptor
         for (interceptor in interceptingCiv.getCivUnits()
                 .filter { it.canIntercept(attackedTile) }
-                .sortedByDescending { it.interceptChance() }) { 
+                .sortedByDescending { it.interceptChance() }) {
             // defender can't also intercept
             if (defender != null && defender is MapUnitCombatant && interceptor == defender.unit) continue
             // Does Intercept happen? If not, exit

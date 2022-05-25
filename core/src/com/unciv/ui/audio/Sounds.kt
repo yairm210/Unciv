@@ -12,7 +12,7 @@ import java.io.File
 
 /*
  * Problems on Android
- * 
+ *
  * Essentially the freshly created Gdx Sound object from newSound() is not immediately usable, it
  * needs some preparation time - buffering, decoding, whatever. Calling play() immediately will result
  * in no sound, a logcat warning (not ready), and nothing else - specifically no exceptions. Also,
@@ -20,14 +20,14 @@ import java.io.File
  * (resource failed to clean up). Also, Gdx will attempt fast track, which will cause logcat entries,
  * and these will be warnings if the sound file's sample rate (not bitrate) does not match the device's
  * hardware preferred bitrate. On a Xiaomi Mi8 that is 48kHz, not 44.1kHz. Channel count also must match.
- * 
+ *
  * @see "https://github.com/libgdx/libgdx/issues/1775"
  * logcat entry "W/System: A resource failed to call end.":
  *  unavoidable as long as we cache Gdx Sound objects loaded from assets
  * logcat entry "W/SoundPool: sample X not READY":
  *  could be avoided by preloading the 'cache' or otherwise ensuring a minimum delay between
  *  newSound() and play() - there's no test function that does not trigger logcat warnings.
- * 
+ *
  * Current approach: Cache on demand as before, catch stream not ready and retry. This maximizes
  * logcat messages but user experience is acceptable. Empiric delay needed was measured a 40ms
  * so that is the minimum wait before attempting play when we know the sound is freshly cached
@@ -47,11 +47,11 @@ object Sounds {
 
     @Suppress("EnumEntryName")
     private enum class SupportedExtensions { mp3, ogg, wav }    // Per Gdx docs, no aac/m4a
-    
+
     private val soundMap = HashMap<UncivSound, Sound?>()
-    
+
     private val separator = File.separator      // just a shorthand for readability
-    
+
     private var modListHash = Int.MIN_VALUE
 
     /** Ensure cache is not outdated */
@@ -101,7 +101,7 @@ object Sounds {
         return modList.asSequence()
             .map { "mods$separator$it$separator" } +
             sequenceOf("")
-    } 
+    }
 
     /** Holds a Gdx Sound and a flag indicating the sound is freshly loaded and not from cache */
     private data class GetSoundResult(val resource: Sound, val isFresh: Boolean)
@@ -113,7 +113,7 @@ object Sounds {
     private fun get(sound: UncivSound): GetSoundResult? {
         checkCache()
         // Look for cached sound
-        if (sound in soundMap) 
+        if (sound in soundMap)
             return if(soundMap[sound] == null) null
             else GetSoundResult(soundMap[sound]!!, false)
 
@@ -124,7 +124,7 @@ object Sounds {
             // This is essentially a cross join. To operate on all combinations, we pack both lambda
             // parameters into a Pair (using `to`) and unwrap that in the loop using automatic data
             // class deconstruction `(,)`. All this avoids a double break when a match is found.
-            folder -> SupportedExtensions.values().asSequence().map { folder to it } 
+            folder -> SupportedExtensions.values().asSequence().map { folder to it }
         } ) {
             val path = "${modFolder}sounds$separator$fileName.${extension.name}"
             file = Gdx.files.local(path)
@@ -152,10 +152,10 @@ object Sounds {
      *
      * Sources are mods from a loaded game, then mods marked as permanent audiovisual,
      * and lastly Unciv's own assets/sounds. Will fail silently if the sound file cannot be found.
-     * 
+     *
      * This will wait for the Stream to become ready (Android issue) if necessary, and do so on a
      * separate thread. No new thread is created if the sound can be played immediately.
-     * 
+     *
      * @param sound The sound to play
      */
     fun play(sound: UncivSound) {
