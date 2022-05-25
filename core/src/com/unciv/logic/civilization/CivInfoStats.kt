@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization
 
+import com.unciv.Constants
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.metadata.BASE_GAME_DURATION_TURNS
@@ -169,7 +170,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                     cityStateBonus[Stat.valueOf(unique.params[1])] *= unique.params[0].toPercent()
                 }
 
-                statMap.add("City-States", cityStateBonus)
+                statMap.add(Constants.cityStates, cityStateBonus)
             }
 
             if (otherCiv.isCityState())
@@ -178,7 +179,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                             .relationshipLevel() != RelationshipLevel.Ally
                     ) continue
                     statMap.add(
-                        "City-States",
+                        Constants.cityStates,
                         Stats().add(
                             Stat.valueOf(unique.params[0]),
                             otherCiv.statsForNextTurn[Stat.valueOf(unique.params[0])] * unique.params[1].toFloat() / 100f
@@ -346,7 +347,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             }
         }
 
-        if (cityStatesHappiness > 0) statMap["City-States"] = cityStatesHappiness
+        if (cityStatesHappiness > 0) statMap[Constants.cityStates] = cityStatesHappiness
 
         return statMap
     }

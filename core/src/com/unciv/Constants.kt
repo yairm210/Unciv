@@ -41,6 +41,11 @@ object Constants {
     const val peaceTreaty = "Peace Treaty"
     const val researchAgreement = "Research Agreement"
     const val openBorders = "Open Borders"
+    /** Used as origin in StatMap or ResourceSupplyList, or the toggle button in DiplomacyOverviewTab */
+    const val cityStates = "City-States"
+    /** Used as origin in ResourceSupplyList */
+    const val tradable = "Tradable"
+
     const val random = "Random"
     const val unknownNationName = "???"
     const val unknownCityName = "???"
@@ -80,6 +85,7 @@ object Constants {
      * _Most_ checks do compare to 0!
      */
     const val minimumMovementEpsilon = 0.05f  // 0.1f was used previously, too - here for global searches
+
     const val defaultFontSize = 18
     const val headingFontSize = 24
 }
