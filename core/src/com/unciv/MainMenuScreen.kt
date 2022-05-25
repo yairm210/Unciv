@@ -18,6 +18,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.multiplayer.MultiplayerScreen
 import com.unciv.ui.mapeditor.*
 import com.unciv.models.metadata.GameSetupInfo
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
@@ -238,9 +239,13 @@ class MainMenuScreen: BaseScreen() {
     }
 
     private fun openCivilopedia() {
-        val ruleset =RulesetCache[game.settings.lastGameSetup?.gameParameters?.baseRuleset]
-            ?: RulesetCache[BaseRuleset.Civ_V_GnK.fullName]
-            ?: return
+        val rulesetParameters = game.settings.lastGameSetup?.gameParameters
+        val ruleset = if (rulesetParameters == null)
+                RulesetCache[BaseRuleset.Civ_V_GnK.fullName] ?: return
+                else RulesetCache.getComplexRuleset(rulesetParameters)
+        UncivGame.Current.translations.translationActiveMods = ruleset.mods
+        ImageGetter.setNewRuleset(ruleset)
+        setSkin()
         game.setScreen(CivilopediaScreen(ruleset, this))
     }
 
