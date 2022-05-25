@@ -18,7 +18,6 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.multiplayer.MultiplayerScreen
 import com.unciv.ui.mapeditor.*
 import com.unciv.models.metadata.GameSetupInfo
-import com.unciv.models.ruleset.Ruleset
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
@@ -175,42 +174,7 @@ class MainMenuScreen: BaseScreen() {
             curWorldScreen.popups.filterIsInstance(WorldScreenMenuPopup::class.java).forEach(Popup::close)
             return
         }
-
-        val loadingPopup = Popup(this)
-        loadingPopup.addGoodSizedLabel("Loading...")
-        loadingPopup.open()
-        launchCrashHandling("autoLoadGame") {
-            // Load game from file to class on separate thread to avoid ANR...
-            fun outOfMemory() {
-                postCrashHandlingRunnable {
-                    loadingPopup.close()
-                    ToastPopup("Not enough memory on phone to load game!", this@MainMenuScreen)
-                }
-            }
-
-            val savedGame: GameInfo
-            try {
-                savedGame = game.gameSaver.loadLatestAutosave()
-            } catch (oom: OutOfMemoryError) {
-                outOfMemory()
-                return@launchCrashHandling
-            } catch (ex: Exception) {
-                postCrashHandlingRunnable {
-                    loadingPopup.close()
-                    ToastPopup("Cannot resume game!", this@MainMenuScreen)
-                }
-                return@launchCrashHandling
-            }
-
-            postCrashHandlingRunnable { /// ... and load it into the screen on main thread for GL context
-                try {
-                    game.loadGame(savedGame)
-                    dispose()
-                } catch (oom: OutOfMemoryError) {
-                    outOfMemory()
-                }
-            }
-        }
+        QuickSave.autoLoadGame(this)
     }
 
     private fun quickstartNewGame() {
