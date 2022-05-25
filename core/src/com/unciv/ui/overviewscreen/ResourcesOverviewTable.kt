@@ -67,7 +67,7 @@ class ResourcesOverviewTab(
         .mapNotNull { ExtraInfoOrigin.safeValueOf(it.origin) }.distinct().toList()
 
     private fun ResourceSupplyList.getLabel(resource: TileResource, origin: String): Label? =
-        firstOrNull { it.resource == resource && it.origin == origin }?.amount?.toLabel()
+        get(resource, origin)?.amount?.toLabel()
     private fun ResourceSupplyList.getTotalLabel(resource: TileResource): Label =
         filter { it.resource == resource }.sumOf { it.amount }.toLabel()
     private fun getResourceImage(name: String) =
@@ -215,14 +215,14 @@ class ResourcesOverviewTab(
     }
 
     private fun getExtraDrilldown(): ResourceSupplyList {
-        val resourceSupplyList = ResourceSupplyList()
+        val newResourceSupplyList = ResourceSupplyList()
         for (city in viewingPlayer.cities) {
             if (city.demandedResource.isEmpty()) continue
             val wltkResource = gameInfo.ruleSet.tileResources[city.demandedResource] ?: continue
             if (city.isWeLoveTheKingDayActive()) {
-                resourceSupplyList.add(wltkResource, 1, ExtraInfoOrigin.CelebratingWLKT.name)
+                newResourceSupplyList.add(wltkResource, ExtraInfoOrigin.CelebratingWLKT.name)
             } else {
-                resourceSupplyList.add(wltkResource, 1, ExtraInfoOrigin.DemandingWLTK.name)
+                newResourceSupplyList.add(wltkResource, ExtraInfoOrigin.DemandingWLTK.name)
             }
             for (tile in city.getTiles()) {
                 if (tile.isCityCenter()) continue
@@ -231,9 +231,9 @@ class ResourcesOverviewTab(
                 if (tileResource.resourceType == ResourceType.Bonus) continue
                 if (tile.improvement != null && tileResource.isImprovedBy(tile.improvement!!)) continue
                 if (tileResource.resourceType == ResourceType.Strategic && tile.getTileImprovement()?.isGreatImprovement() == true) continue
-                resourceSupplyList.add(tileResource, 1, ExtraInfoOrigin.Unimproved.name)
+                newResourceSupplyList.add(tileResource, ExtraInfoOrigin.Unimproved.name)
             }
         }
-        return resourceSupplyList
+        return newResourceSupplyList
     }
 }
