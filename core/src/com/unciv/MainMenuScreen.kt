@@ -28,6 +28,7 @@ import com.unciv.ui.popup.*
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.worldscreen.mainmenu.WorldScreenMenuPopup
 
 class MainMenuScreen: BaseScreen() {
     private val backgroundTable = Table().apply { background= ImageGetter.getBackground(Color.WHITE) }
@@ -98,7 +99,7 @@ class MainMenuScreen: BaseScreen() {
 
         if (game.gameSaver.autosaveExists()) {
             val resumeTable = getMenuButton("Resume","OtherIcons/Resume", 'r')
-                { autoLoadGame() }
+                { resumeGame() }
             column1.add(resumeTable).row()
         }
 
@@ -165,7 +166,14 @@ class MainMenuScreen: BaseScreen() {
     }
 
 
-    private fun autoLoadGame() {
+    private fun resumeGame() {
+        val curWorldScreen = game.getWorldScreenOrNull()
+        if (curWorldScreen != null) {
+            game.resetToWorldScreen()
+            curWorldScreen.popups.filterIsInstance(WorldScreenMenuPopup::class.java).forEach(Popup::close)
+            return
+        }
+
         val loadingPopup = Popup(this)
         loadingPopup.addGoodSizedLabel("Loading...")
         loadingPopup.open()
