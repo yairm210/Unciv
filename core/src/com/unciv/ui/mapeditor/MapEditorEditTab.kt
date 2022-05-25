@@ -75,7 +75,7 @@ class MapEditorEditTab(
             brushCell = add().padLeft(0f)
             brushSlider = UncivSlider(1f,6f,1f, initial = 1f, getTipText = { getBrushTip(it).tr() }) {
                 brushSize = if (it > 5f) -1 else it.toInt()
-                brushLabel.setText("Brush ([${getBrushTip(it).take(1)}]):".tr())
+                brushLabel.setText("Brush ([${getBrushTip(it, true)}]):".tr())
             }
             add(brushSlider).padLeft(0f)
         }
@@ -320,6 +320,10 @@ class MapEditorEditTab(
     }
 
     companion object {
-        private fun getBrushTip(value: Float) = if (value > 5f) "Floodfill" else value.toInt().toString()
+        private fun getBrushTip(value: Float, abbreviate: Boolean = false) = when {
+            value <= 5f -> value.toInt().toString()
+            abbreviate -> "Floodfill_Abbreviation"
+            else -> "Floodfill"
+        }
     }
 }

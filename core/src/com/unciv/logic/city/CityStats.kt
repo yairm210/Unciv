@@ -1,5 +1,6 @@
 package com.unciv.logic.city
 
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CityStateType
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
@@ -465,7 +466,7 @@ class CityStats(val cityInfo: CityInfo) {
             getStatsFromSpecialists(cityInfo.population.getNewSpecialists())
         newBaseStatList["Trade routes"] = getStatsFromTradeRoute()
         newBaseStatTree.children["Buildings"] = statsFromBuildings
-        newBaseStatList["City-States"] = getStatsFromCityStates()
+        newBaseStatList[Constants.cityStates] = getStatsFromCityStates()
 
         for ((source, stats) in newBaseStatList)
             newBaseStatTree.addStats(stats, source)

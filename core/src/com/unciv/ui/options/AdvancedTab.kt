@@ -40,7 +40,7 @@ fun advancedTab(
     addMaxZoomSlider(this, settings)
 
     val screen = optionsPopup.screen
-    if (screen.game.platformSpecificHelper != null) {
+    if (screen.game.platformSpecificHelper != null && Gdx.app.type == Application.ApplicationType.Android) {
         optionsPopup.addCheckbox(this, "Enable portrait orientation", settings.allowAndroidPortrait) {
             settings.allowAndroidPortrait = it
             // Note the following might close the options screen indirectly and delayed
