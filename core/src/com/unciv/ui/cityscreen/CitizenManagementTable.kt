@@ -36,9 +36,9 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table() {
         avoidCell.touchable = Touchable.enabled
         avoidCell.add(avoidLabel).pad(5f)
         avoidCell.onClick {
-            if (!UncivGame.Current.gameInfo.currentPlayerCiv.isSpectator() && !city.isPuppet){
-                city.avoidGrowth = !city.avoidGrowth;
-                city.reassignPopulation();
+            if (!UncivGame.Current.gameInfo.currentPlayerCiv.isSpectator() && !city.isPuppet) {
+                city.avoidGrowth = !city.avoidGrowth
+                city.reassignPopulation()
                 cityScreen.update()
             }
         }
@@ -55,9 +55,9 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table() {
             cell.touchable = Touchable.enabled
             cell.add(label).pad(5f)
             cell.onClick {
-                if (!UncivGame.Current.gameInfo.currentPlayerCiv.isSpectator() && !city.isPuppet){
-                    city.cityAIFocus = focus;
-                    city.reassignPopulation();
+                if (!UncivGame.Current.gameInfo.currentPlayerCiv.isSpectator() && !city.isPuppet) {
+                    city.cityAIFocus = focus
+                    city.reassignPopulation()
                     cityScreen.update()
                 }
             }
