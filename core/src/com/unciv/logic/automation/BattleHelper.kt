@@ -102,11 +102,10 @@ object BattleHelper {
         if (tileCombatant.getCivInfo() == combatant.getCivInfo()) return false
         if (!combatant.getCivInfo().isAtWarWith(tileCombatant.getCivInfo())) return false
 
-        //don't let melee units attack water units
-        if (combatant is MapUnitCombatant && (!combatant.unit.baseUnit.unitType.contains("Water") && combatant.unit.baseUnit.isRanged())
-            && tileCombatant is MapUnitCombatant && tileCombatant.unit.baseUnit.unitType.contains("Water")) {
+        //don't let non-embarked melee units attack water units
+        if (combatant is MapUnitCombatant && !combatant.unit.baseUnit.unitType.contains("Water") && combatant.unit.baseUnit.isMelee() && !combatant.unit.isEmbarked() &&
+            tileCombatant is MapUnitCombatant && tileCombatant.unit.baseUnit.unitType.contains("Water"))
                 return false
-        }
 
         if (combatant is MapUnitCombatant &&
             combatant.unit.hasUnique(UniqueType.CanOnlyAttackUnits) &&
