@@ -3,6 +3,7 @@ package com.unciv.ui.cityscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.UncivGame
 import com.unciv.logic.city.CityFocus
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.*
@@ -34,7 +35,13 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table() {
         val avoidCell = Table()
         avoidCell.touchable = Touchable.enabled
         avoidCell.add(avoidLabel).pad(5f)
-        avoidCell.onClick { city.avoidGrowth = !city.avoidGrowth; city.reassignPopulation(); cityScreen.update() }
+        avoidCell.onClick {
+            if (!UncivGame.Current.gameInfo.currentPlayerCiv.isSpectator() && !city.isPuppet){
+                city.avoidGrowth = !city.avoidGrowth;
+                city.reassignPopulation();
+                cityScreen.update()
+            }
+        }
 
         avoidCell.background = ImageGetter.getBackground(if (city.avoidGrowth) colorSelected else colorButton)
         innerTable.add(avoidCell).colspan(2).growX().pad(3f)
@@ -47,7 +54,13 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table() {
             val cell = Table()
             cell.touchable = Touchable.enabled
             cell.add(label).pad(5f)
-            cell.onClick { city.cityAIFocus = focus; city.reassignPopulation(); cityScreen.update() }
+            cell.onClick {
+                if (!UncivGame.Current.gameInfo.currentPlayerCiv.isSpectator() && !city.isPuppet){
+                    city.cityAIFocus = focus;
+                    city.reassignPopulation();
+                    cityScreen.update()
+                }
+            }
 
             cell.background = ImageGetter.getBackground(if (city.cityAIFocus == focus) colorSelected else colorButton)
             innerTable.add(cell).growX().pad(3f)
