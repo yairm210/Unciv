@@ -104,8 +104,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     private val notificationsScroll: NotificationsScroll
     var shouldUpdate = false
 
-    private val zoomInButton = ZoomButton("in", null, mapHolder)
-    private val zoomOutButton = ZoomButton("out", null, mapHolder)
+    private val zoomInButton = ZoomButton("+")
+    private val zoomOutButton = ZoomButton("-")
 
     companion object {
         /** Switch for console logging of next turn duration */
@@ -735,12 +735,20 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     private fun updateZoomButton() {
         zoomInButton.height = zoomInButton.width
         zoomInButton.setPosition(stage.width - minimapWrapper.width - 10f - zoomOutButton.width -10f - zoomInButton.width, 10f)
-        zoomInButton.update()
+        zoomInButton.update(getZoomAction(zoomInButton))
 
         zoomOutButton.height = zoomInButton.height
         zoomOutButton.width = zoomOutButton.height
         zoomOutButton.setPosition(stage.width - minimapWrapper.width - 10f - zoomOutButton.width, 10f)
-        zoomOutButton.update()
+        zoomOutButton.update(getZoomAction(zoomOutButton))
+    }
+
+    private fun getZoomAction(zoomButton: ZoomButton): ZoomAction {
+        return when (zoomButton.label.text.toString()) {
+            "+" -> ZoomAction { mapHolder.zoomIn() }
+            "-" -> ZoomAction { mapHolder.zoomOut() }
+            else -> { ZoomAction { println("Wrong label for zoom button") } }
+        }
     }
 
     private fun updateNextTurnButton(isSomethingOpen: Boolean) {

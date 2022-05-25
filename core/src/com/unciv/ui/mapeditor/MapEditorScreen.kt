@@ -16,6 +16,7 @@ import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.utils.*
+import com.unciv.ui.worldscreen.ZoomAction
 import com.unciv.ui.worldscreen.ZoomButton
 
 
@@ -66,8 +67,8 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen() {
     var mapHolder: EditorMapHolder
     val tabs: MapEditorMainTabs
     var tileClickHandler: ((tile: TileInfo)->Unit)? = null
-    private val zoomInButton:ZoomButton
-    private val zoomOutButton:ZoomButton
+    private lateinit var zoomInButton:ZoomButton
+    private lateinit var zoomOutButton:ZoomButton
 
     private val highlightedTileGroups = mutableListOf<TileGroup>()
 
@@ -85,13 +86,12 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen() {
         mapHolder = newMapHolder() // will set up ImageGetter and translations, and all dirty flags
         isDirty = false
 
-        zoomInButton = ZoomButton("in", mapHolder, null)
-        zoomOutButton = ZoomButton("out", mapHolder, null)
-
         tabs = MapEditorMainTabs(this)
         MapEditorToolsDrawer(tabs, stage, mapHolder)
 
         if (UncivGame.Current.settings.showZoomButtons) {
+            zoomInButton = ZoomButton("+")
+            zoomOutButton = ZoomButton("-")
             updateZoomButton()
             stage.addActor(zoomInButton)
             stage.addActor(zoomOutButton)
@@ -113,14 +113,19 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen() {
     }
 
     private fun updateZoomButton() {
-        zoomInButton.height = zoomInButton.width
         zoomInButton.setPosition(10f, 10f)
-        zoomInButton.update()
+        zoomInButton.update(getZoomAction(zoomInButton))
 
-        zoomOutButton.height = zoomInButton.height
-        zoomOutButton.width = zoomOutButton.height
         zoomOutButton.setPosition(zoomInButton.width + 20f, 10f)
-        zoomOutButton.update()
+        zoomOutButton.update(getZoomAction(zoomOutButton))
+    }
+
+    private fun getZoomAction(zoomButton: ZoomButton): ZoomAction {
+        return when (zoomButton.label.text.toString()) {
+            "+" -> ZoomAction { mapHolder.zoomIn() }
+            "-" -> ZoomAction { mapHolder.zoomOut() }
+            else -> { ZoomAction { println("Wrong label for zoom button") } }
+        }
     }
 
     companion object {
