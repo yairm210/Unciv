@@ -1,3 +1,30 @@
+## 4.1.3
+
+4.1.2-patch1
+
+By SomeTroglodyte:
+- Resource supply list reorg 
+- Fix floodfill abbreviation translation showing on fortify key tooltips 
+- Re-hide Enable Portrait option on desktop 
+- Show required resource for upgrades, rework upgrade logic 
+- Fix Right-Click attacks made no sound 
+- ImageGetter.getDrawable a few ns faster 
+- KeyPressDispatcher no longer silently eats exceptions 
+- Implement a waiting command  ()
+
+Fix missing icons and translations in civilopedia accessed from main menu  - By OptimizedForDensity
+
+By Azzurite:
+- Go back to current game when you press "Resume" on the main menu 
+- Regenerate atlas for e672ca6bf49d5d31ef67f094f4cb3cd1db7f4cf3
+- Fix multiplayer turn check worker exception 
+
+By alexban011:
+- Fixed slider sound playing when opening NewGameScreen and MapEditor 
+- Added option for confirmation when clicking "next turn" button 
+
+Adding the missing spaceship parts unit sprites for FantasyHex tileset  - By GeneralWadaling
+
 ## 4.1.2
 
 Fixed multiplayer bugs (double files, turn checker problems) - By Azzurite
