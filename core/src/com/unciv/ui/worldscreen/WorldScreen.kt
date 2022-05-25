@@ -69,7 +69,7 @@ import kotlin.concurrent.timerTask
  * @property isPlayersTurn (readonly) Indicates it's the player's ([viewingCiv]) turn
  * @property selectedCiv Selected civilization, used in spectator and replay mode, equals viewingCiv in ordinary games
  * @property canChangeState (readonly) `true` when it's the player's turn unless he is a spectator
- * @property mapHolder A [MinimapHolder] instance
+ * @property mapHolder A [WorldMapHolder] instance
  * @property bottomUnitTable Bottom left widget holding information about a selected unit or city
  */
 class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : BaseScreen() {
@@ -104,8 +104,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     private val notificationsScroll: NotificationsScroll
     var shouldUpdate = false
 
-    private val zoomInButton = ZoomButton("+")
-    private val zoomOutButton = ZoomButton("-")
+    private val zoomController = ZoomButtonPair(mapHolder)
 
     companion object {
         /** Switch for console logging of next turn duration */
@@ -165,9 +164,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         stage.addActor(tutorialTaskTable)
 
         if (UncivGame.Current.settings.showZoomButtons) {
-            updateZoomButton()
-            stage.addActor(zoomInButton)
-            stage.addActor(zoomOutButton)
+            stage.addActor(zoomController)
         }
 
         diplomacyButtonHolder.defaults().pad(5f)
@@ -506,7 +503,9 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         notificationsScroll.update(viewingCiv.notifications, bottomTileInfoTable.height)
         notificationsScroll.setTopRight(stage.width - 10f, nextTurnButton.y - 5f)
 
-        updateZoomButton()
+        val posZoomFromRight = if (game.settings.showMinimap) minimapWrapper.width
+        else bottomTileInfoTable.width
+        zoomController.setPosition(stage.width - posZoomFromRight - 10f, 10f, Align.bottomRight)
     }
 
     private fun getCurrentTutorialTask(): String {
@@ -729,25 +728,6 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                     }
                 }
             }
-        }
-    }
-
-    private fun updateZoomButton() {
-        zoomInButton.height = zoomInButton.width
-        zoomInButton.setPosition(stage.width - minimapWrapper.width - 10f - zoomOutButton.width -10f - zoomInButton.width, 10f)
-        zoomInButton.update(getZoomAction(zoomInButton))
-
-        zoomOutButton.height = zoomInButton.height
-        zoomOutButton.width = zoomOutButton.height
-        zoomOutButton.setPosition(stage.width - minimapWrapper.width - 10f - zoomOutButton.width, 10f)
-        zoomOutButton.update(getZoomAction(zoomOutButton))
-    }
-
-    private fun getZoomAction(zoomButton: ZoomButton): ZoomAction {
-        return when (zoomButton.label.text.toString()) {
-            "+" -> ZoomAction { mapHolder.zoomIn() }
-            "-" -> ZoomAction { mapHolder.zoomOut() }
-            else -> { ZoomAction { println("Wrong label for zoom button") } }
         }
     }
 

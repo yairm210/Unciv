@@ -16,8 +16,7 @@ import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.utils.*
-import com.unciv.ui.worldscreen.ZoomAction
-import com.unciv.ui.worldscreen.ZoomButton
+import com.unciv.ui.worldscreen.ZoomButtonPair
 
 
 //todo normalize properly
@@ -67,8 +66,7 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen() {
     var mapHolder: EditorMapHolder
     val tabs: MapEditorMainTabs
     var tileClickHandler: ((tile: TileInfo)->Unit)? = null
-    private lateinit var zoomInButton:ZoomButton
-    private lateinit var zoomOutButton:ZoomButton
+    private var zoomController: ZoomButtonPair? = null
 
     private val highlightedTileGroups = mutableListOf<TileGroup>()
 
@@ -89,14 +87,6 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen() {
         tabs = MapEditorMainTabs(this)
         MapEditorToolsDrawer(tabs, stage, mapHolder)
 
-        if (UncivGame.Current.settings.showZoomButtons) {
-            zoomInButton = ZoomButton("+")
-            zoomOutButton = ZoomButton("-")
-            updateZoomButton()
-            stage.addActor(zoomInButton)
-            stage.addActor(zoomOutButton)
-        }
-
         // The top level pager assigns its own key bindings, but making nested TabbedPagers bind keys
         // so all levels select to show the tab in question is too complex. Sub-Tabs need to maintain
         // the key binding here and the used key in their `addPage`s again for the tooltips.
@@ -105,27 +95,6 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen() {
         keyPressDispatcher[KeyCharAndCode.ctrl('g')] = { selectGeneratePage(1) }
         keyPressDispatcher[KeyCharAndCode.BACK] = this::closeEditor
         keyPressDispatcher.setCheckpoint()
-    }
-
-    override fun render(delta: Float) {
-        updateZoomButton()
-        super.render(delta)
-    }
-
-    private fun updateZoomButton() {
-        zoomInButton.setPosition(10f, 10f)
-        zoomInButton.update(getZoomAction(zoomInButton))
-
-        zoomOutButton.setPosition(zoomInButton.width + 20f, 10f)
-        zoomOutButton.update(getZoomAction(zoomOutButton))
-    }
-
-    private fun getZoomAction(zoomButton: ZoomButton): ZoomAction {
-        return when (zoomButton.label.text.toString()) {
-            "+" -> ZoomAction { mapHolder.zoomIn() }
-            "-" -> ZoomAction { mapHolder.zoomOut() }
-            else -> { ZoomAction { println("Wrong label for zoom button") } }
-        }
     }
 
     companion object {
@@ -172,6 +141,13 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen() {
         modsTabNeedsRefresh = true
         editTabsNeedRefresh = true
         naturalWondersNeedRefresh = true
+
+        if (UncivGame.Current.settings.showZoomButtons) {
+            zoomController = ZoomButtonPair(result)
+            zoomController!!.setPosition(10f, 10f)
+            stage.addActor(zoomController)
+        }
+
         return result
     }
 
