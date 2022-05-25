@@ -634,8 +634,10 @@ class CityInfo {
         tryUpdateRoadStatus()
         attackedThisTurn = false
 
-        if (isPuppet) reassignAllPopulation()
-        else if (updateCitizens){
+        if (isPuppet) {
+            reassignAllPopulation()
+            cityAIFocus = CityFocus.GoldFocus
+        } else if (updateCitizens) {
             reassignPopulation()
             updateCitizens = false
         }
