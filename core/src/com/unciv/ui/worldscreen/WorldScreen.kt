@@ -134,9 +134,6 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     }
 
     init {
-        topBar.setPosition(0f, stage.height - topBar.height)
-        topBar.width = stage.width
-
         val maxNotificationsHeight = topBar.y - nextTurnButton.height -
                 (if (game.settings.showMinimap) minimapWrapper.height else 0f) - 25f
         notificationsScroll = NotificationsScroll(this, maxNotificationsHeight)
@@ -472,8 +469,6 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         techPolicyAndVictoryHolder.pack()
         techPolicyAndVictoryHolder.setPosition(10f, topBar.y - techPolicyAndVictoryHolder.height - 5f)
         updateDiplomacyButton(viewingCiv)
-
-        topBar.unitSupplyImage.isVisible = selectedCiv.stats().getUnitSupplyDeficit() > 0
 
         if (!hasOpenPopups() && isPlayersTurn) {
             when {
