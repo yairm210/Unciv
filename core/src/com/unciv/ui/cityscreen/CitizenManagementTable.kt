@@ -34,7 +34,8 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table() {
         val avoidCell = Table()
         avoidCell.touchable = Touchable.enabled
         avoidCell.add(avoidLabel).pad(5f)
-        avoidCell.onClick { city.avoidGrowth = !city.avoidGrowth; city.reassignPopulation(); cityScreen.update() }
+        if (cityScreen.canChangeState)
+            avoidCell.onClick { city.avoidGrowth = !city.avoidGrowth; city.reassignPopulation(); cityScreen.update() }
 
         avoidCell.background = ImageGetter.getBackground(if (city.avoidGrowth) colorSelected else colorButton)
         innerTable.add(avoidCell).colspan(2).growX().pad(3f)
@@ -47,7 +48,8 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table() {
             val cell = Table()
             cell.touchable = Touchable.enabled
             cell.add(label).pad(5f)
-            cell.onClick { city.cityAIFocus = focus; city.reassignPopulation(); cityScreen.update() }
+            if (cityScreen.canChangeState)
+                cell.onClick { city.cityAIFocus = focus; city.reassignPopulation(); cityScreen.update() }
 
             cell.background = ImageGetter.getBackground(if (city.cityAIFocus == focus) colorSelected else colorButton)
             innerTable.add(cell).growX().pad(3f)
