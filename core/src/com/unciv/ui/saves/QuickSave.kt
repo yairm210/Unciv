@@ -17,15 +17,14 @@ object QuickSave {
     fun save(gameInfo: GameInfo, screen: WorldScreen) {
         val gameSaver = UncivGame.Current.gameSaver
         val toast = ToastPopup("Quicksaving...", screen)
-        launchCrashHandling("SaveGame", runAsDaemon = false) {
+        launchCrashHandling("QuickSaveGame", runAsDaemon = false) {
             gameSaver.saveGame(gameInfo, "QuickSave") {
                 postCrashHandlingRunnable {
                     toast.close()
                     if (it != null)
                         ToastPopup("Could not save game!", screen)
-                    else {
+                    else
                         ToastPopup("Quicksave successful.", screen)
-                    }
                 }
             }
         }
@@ -34,7 +33,7 @@ object QuickSave {
     fun load(screen: WorldScreen) {
         val gameSaver = UncivGame.Current.gameSaver
         val toast = ToastPopup("Quickloading...", screen)
-        launchCrashHandling("LoadGame") {
+        launchCrashHandling("QuickLoadGame") {
             try {
                 val loadedGame = gameSaver.loadGameByName("QuickSave")
                 postCrashHandlingRunnable {
@@ -44,6 +43,7 @@ object QuickSave {
                 }
             } catch (ex: Exception) {
                 postCrashHandlingRunnable {
+                    toast.close()
                     ToastPopup("Could not load game!", screen)
                 }
             }
