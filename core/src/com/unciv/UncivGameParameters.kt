@@ -1,6 +1,6 @@
 package com.unciv
 
-import com.unciv.logic.CustomSaveLocationHelper
+import com.unciv.logic.CustomFileLocationHelper
 import com.unciv.ui.crashhandling.CrashReportSysInfo
 import com.unciv.ui.utils.AudioExceptionHelper
 import com.unciv.ui.utils.GeneralPlatformSpecificHelpers
@@ -11,7 +11,7 @@ class UncivGameParameters(val version: String,
                           val cancelDiscordEvent: (() -> Unit)? = null,
                           val fontImplementation: NativeFontImplementation? = null,
                           val consoleMode: Boolean = false,
-                          val customSaveLocationHelper: CustomSaveLocationHelper? = null,
+                          val customFileLocationHelper: CustomFileLocationHelper? = null,
                           val platformSpecificHelper: GeneralPlatformSpecificHelpers? = null,
                           val audioExceptionHelper: AudioExceptionHelper? = null
 )

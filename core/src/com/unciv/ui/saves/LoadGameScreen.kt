@@ -99,13 +99,12 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
         if (game.gameSaver.canLoadFromCustomSaveLocation()) {
             val loadFromCustomLocation = "Load from custom location".toTextButton()
             loadFromCustomLocation.onClick {
-                game.gameSaver.loadGameFromCustomLocation { gameInfo, exception ->
-                    if (gameInfo != null) {
-                        postCrashHandlingRunnable {
-                            game.loadGame(gameInfo)
-                        }
-                    } else if (exception !is CancellationException)
+                game.gameSaver.loadGameFromCustomLocation { gameInfo, exception  ->
+                    if (exception != null) {
                         handleLoadGameException("Could not load game from custom location!", exception)
+                    } else if (gameInfo != null) {
+                        game.loadGame(gameInfo)
+                    }
                 }
             }
             rightSideTable.add(loadFromCustomLocation).row()

@@ -62,11 +62,11 @@ class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen(disableScroll = true
                 saveToCustomLocation.disable()
                 launchCrashHandling("SaveGame", runAsDaemon = false) {
                     game.gameSaver.saveGameToCustomLocation(gameInfo, gameNameTextField.text) { e ->
-                        if (e == null) {
-                            postCrashHandlingRunnable { game.resetToWorldScreen() }
-                        } else if (e !is CancellationException) {
+                        if (e != null) {
                             errorLabel.setText("Could not save game to custom location!".tr())
                             e.printStackTrace()
+                        } else {
+                            game.resetToWorldScreen()
                         }
                         saveToCustomLocation.enable()
                     }
