@@ -123,6 +123,7 @@ class CityScreen(
         resetCitizensButton.onClick { city.reassignPopulation(resetLocked = true); update() }
         resetCitizensButtonHolder.add(resetCitizensButton)
         resetCitizensButtonHolder.pack()
+        if (!canChangeState) resetCitizensButton.disable()
         stage.addActor(resetCitizensButtonHolder)
         val citizenManagementButton = "Citizen Management".toTextButton()
         citizenManagementButton.labelCell.pad(5f)
@@ -131,6 +132,7 @@ class CityScreen(
             citizenManagementVisible = true
             update()
         }
+        if (!canChangeState) citizenManagementButton.disable()
         citizenManagementButtonHolder.add(citizenManagementButton)
         citizenManagementButtonHolder.pack()
         stage.addActor(citizenManagementButtonHolder)
@@ -193,7 +195,7 @@ class CityScreen(
         citizenManagementButtonHolder.isVisible = !citizenManagementVisible
         citizenManagementButtonHolder.setPosition(stage.width - posFromEdge,
                 posFromEdge + resetCitizensButtonHolder.y + resetCitizensButtonHolder.height + 10f, Align.bottomRight)
-            
+
         // In portrait mode only: calculate already occupied horizontal space
         val rightMargin = when {
             !isPortrait() -> 0f

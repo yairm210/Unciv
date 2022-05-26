@@ -42,16 +42,18 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
             val icon = Table()
             if (cityInfo.cityAIFocus.stat == stat) {
                 icon.add(ImageGetter.getStatIcon(stat.name).surroundWithCircle(27f, false, color = selected))
-                icon.onClick {
-                    cityInfo.cityAIFocus = CityFocus.NoFocus
-                    cityInfo.reassignPopulation(); cityScreen.update()
-                }
+                if (cityScreen.canChangeState)
+                    icon.onClick {
+                        cityInfo.cityAIFocus = CityFocus.NoFocus
+                        cityInfo.reassignPopulation(); cityScreen.update()
+                    }
             } else {
                 icon.add(ImageGetter.getStatIcon(stat.name).surroundWithCircle(27f, false, color = Color.CLEAR))
-                icon.onClick {
-                    cityInfo.cityAIFocus = cityInfo.cityAIFocus.safeValueOf(stat)
-                    cityInfo.reassignPopulation(); cityScreen.update()
-                }
+                if (cityScreen.canChangeState)
+                    icon.onClick {
+                        cityInfo.cityAIFocus = cityInfo.cityAIFocus.safeValueOf(stat)
+                        cityInfo.reassignPopulation(); cityScreen.update()
+                    }
             }
             miniStatsTable.add(icon).size(27f).padRight(5f)
             val valueToDisplay = if (stat == Stat.Happiness) cityInfo.cityStats.happinessList.values.sum() else amount
@@ -74,7 +76,8 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         val unassignedPopString = "{Unassigned population}: ".tr() +
                 cityInfo.population.getFreePopulation().toString() + "/" + cityInfo.population.population
         val unassignedPopLabel = unassignedPopString.toLabel()
-        unassignedPopLabel.onClick { cityInfo.reassignPopulation(); cityScreen.update() }
+        if (cityScreen.canChangeState)
+            unassignedPopLabel.onClick { cityInfo.reassignPopulation(); cityScreen.update() }
 
         var turnsToExpansionString =
                 if (cityInfo.cityStats.currentCityStats.culture > 0 && cityInfo.expansion.getChoosableTiles().any()) {
