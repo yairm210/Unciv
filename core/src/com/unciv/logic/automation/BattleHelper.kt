@@ -102,8 +102,9 @@ object BattleHelper {
         if (tileCombatant.getCivInfo() == combatant.getCivInfo()) return false
         if (!combatant.getCivInfo().isAtWarWith(tileCombatant.getCivInfo())) return false
 
-        //don't let non-embarked melee units attack water units
-        if (combatant is MapUnitCombatant && !combatant.unit.baseUnit.unitType.contains("Water") && combatant.unit.baseUnit.isMelee() && !combatant.unit.isEmbarked() &&
+        //don't let non-embarked melee units attack water units, unless they have Optics tech
+        if (combatant is MapUnitCombatant && !combatant.unit.baseUnit.unitType.contains("Water") &&
+            combatant.unit.baseUnit.isMelee() && !combatant.unit.isEmbarked() && !combatant.getCivInfo().hasTechOrPolicy("Optics") &&
             tileCombatant is MapUnitCombatant && tileCombatant.unit.baseUnit.unitType.contains("Water"))
                 return false
 
