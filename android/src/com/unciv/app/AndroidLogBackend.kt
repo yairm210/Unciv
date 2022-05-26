@@ -10,11 +10,11 @@ private const val TAG_MAX_LENGTH = 23
 class AndroidLogBackend : LogBackend {
 
     override fun debug(tag: Tag, curThreadName: String, msg: String) {
-        Log.d(limitTag(tag), "[$curThreadName] $msg")
+        Log.d(toAndroidTag(tag), "[$curThreadName] $msg")
     }
 
     override fun error(tag: Tag, curThreadName: String, msg: String) {
-        Log.e(limitTag(tag), "[$curThreadName] $msg")
+        Log.e(toAndroidTag(tag), "[$curThreadName] $msg")
     }
 
     override fun isRelease(): Boolean {
@@ -22,12 +22,14 @@ class AndroidLogBackend : LogBackend {
     }
 }
 
-private fun limitTag(tag: Tag): String {
+private fun toAndroidTag(tag: Tag): String {
+    // This allows easy filtering of logcat by tag "Unciv"
+    val withUncivPrefix = if (tag.name.contains("unciv", true)) tag.name else "Unciv ${tag.name}"
+
     // Limit was removed in Nougat
-    val finalTag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N || tag.name.length <= TAG_MAX_LENGTH) {
-        tag.name
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N || tag.name.length <= TAG_MAX_LENGTH) {
+        withUncivPrefix
     } else {
-        tag.name.substring(0, TAG_MAX_LENGTH)
+        withUncivPrefix.substring(0, TAG_MAX_LENGTH)
     }
-    return finalTag
 }

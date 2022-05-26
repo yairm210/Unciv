@@ -7,11 +7,11 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.work.WorkManager
 import com.badlogic.gdx.backends.android.AndroidApplication
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
-import com.unciv.Log
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
 import com.unciv.logic.GameSaver
 import com.unciv.ui.utils.Fonts
+import com.unciv.utils.Log
 import java.io.File
 
 open class AndroidLauncher : AndroidApplication() {
