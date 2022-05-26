@@ -19,7 +19,7 @@ class CustomFileLocationHelperDesktop : CustomFileLocationHelper {
     ) {
         pickFile(suggestedLocation) { file ->
             if (file == null) {
-                saveCompleteCallback?.invoke(null, null)
+                callSaveCallback(saveCompleteCallback)
                 return@pickFile
             }
 
@@ -35,20 +35,22 @@ class CustomFileLocationHelperDesktop : CustomFileLocationHelper {
             } catch (e: Exception) {
                 exception = e
             }
-            postCrashHandlingRunnable {
-                if (exception != null) {
-                    saveCompleteCallback?.invoke(null, exception)
-                } else if (saveLocation != null) {
-                    saveCompleteCallback?.invoke(saveLocation, null)
-                }
-            }
+            callSaveCallback(saveCompleteCallback, saveLocation, exception)
+        }
+    }
+
+    private fun callSaveCallback(saveCompleteCallback: ((String?, Exception?) -> Unit)?,
+                                 saveLocation: String? = null,
+                                 exception: Exception? = null) {
+        postCrashHandlingRunnable {
+            saveCompleteCallback?.invoke(saveLocation, exception)
         }
     }
 
     override fun loadGame(loadCompleteCallback: (SuccessfulLoadResult?, Exception?) -> Unit) {
         pickFile { file ->
             if (file == null) {
-                loadCompleteCallback(null, null)
+                callLoadCallback(loadCompleteCallback)
                 return@pickFile
             }
 
@@ -63,12 +65,21 @@ class CustomFileLocationHelperDesktop : CustomFileLocationHelper {
             } catch (e: Exception) {
                 exception = e
             }
-            postCrashHandlingRunnable {
-                if (exception != null) {
-                    loadCompleteCallback(null, exception)
-                } else if (gameData != null) {
-                    loadCompleteCallback(SuccessfulLoadResult(file.absolutePath, gameData!!), null)
-                }
+            callLoadCallback(loadCompleteCallback, file, gameData, exception)
+        }
+    }
+
+    private fun callLoadCallback(loadCompleteCallback: (SuccessfulLoadResult?, Exception?) -> Unit,
+                                 file: File? = null,
+                                 gameData: String? = null,
+                                 exception: Exception? = null) {
+        postCrashHandlingRunnable {
+            if (exception != null) {
+                loadCompleteCallback(null, exception)
+            } else if (file != null && gameData != null) {
+                loadCompleteCallback(SuccessfulLoadResult(file.absolutePath, gameData), null)
+            } else {
+                loadCompleteCallback(null, null)
             }
         }
     }
