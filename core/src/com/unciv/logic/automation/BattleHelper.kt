@@ -110,12 +110,6 @@ object BattleHelper {
                 }
         }
 
-        if (combatant is MapUnitCombatant && combatant.unit.isEmbarked()) {
-            if (tileCombatant is MapUnitCombatant && tile.isWater) {
-                return false
-            }
-        }
-
         if (combatant is MapUnitCombatant &&
             combatant.unit.hasUnique(UniqueType.CanOnlyAttackUnits) &&
             combatant.unit.getMatchingUniques(UniqueType.CanOnlyAttackUnits).none { tileCombatant.matchesCategory(it.params[0]) }
