@@ -87,6 +87,15 @@ class GameSaver(
         file.delete()
     }
 
+    interface ChooseLocationResult {
+        val location: String?
+        val exception: Exception?
+
+        fun isCanceled(): Boolean = location == null && exception == null
+        fun isError(): Boolean = exception != null
+        fun isSuccessful(): Boolean = location != null
+    }
+
     //endregion
     //region Saving
 
@@ -129,25 +138,30 @@ class GameSaver(
         }
     }
 
+    class CustomSaveResult(
+        override val location: String? = null,
+        override val exception: Exception? = null
+    ) : ChooseLocationResult
+
     /**
      * [gameName] is a suggested name for the file. If the file has already been saved to or loaded from a custom location,
      * this previous custom location will be used.
      *
      * Calls the [saveCompleteCallback] on the main thread with the save location on success, an [Exception] on error, or both null on cancel.
      */
-    fun saveGameToCustomLocation(game: GameInfo, gameName: String, saveCompletionCallback: (String?, Exception?) -> Unit) {
+    fun saveGameToCustomLocation(game: GameInfo, gameName: String, saveCompletionCallback: (CustomSaveResult) -> Unit) {
         val saveLocation = game.customSaveLocation ?: Gdx.files.local(gameName).path()
         val gameData = try {
             gameInfoToString(game)
         } catch (ex: Exception) {
-            postCrashHandlingRunnable { saveCompletionCallback(null, ex) }
+            postCrashHandlingRunnable { saveCompletionCallback(CustomSaveResult(exception = ex)) }
             return
         }
-        customFileLocationHelper!!.saveGame(gameData, saveLocation) { location, exception ->
-            if (location != null) {
-                game.customSaveLocation = location
+        customFileLocationHelper!!.saveGame(gameData, saveLocation) {
+            if (it.isSuccessful()) {
+                game.customSaveLocation = it.location
             }
-            saveCompletionCallback(location, exception)
+            saveCompletionCallback(it)
         }
     }
 
@@ -168,23 +182,33 @@ class GameSaver(
         return json().fromJson(GameInfoPreview::class.java, gameFile)
     }
 
+    class CustomLoadResult<T>(
+        private val locationAndGameData: Pair<String, T>? = null,
+        override val exception: Exception? = null
+    ) : ChooseLocationResult {
+        override val location: String? get() = locationAndGameData?.first
+        val gameData: T? get() = locationAndGameData?.second
+    }
+
     /**
      * Calls the [loadCompleteCallback] on the main thread with the [GameInfo] on success or the [Exception] on error or null in both on cancel.
      */
-    fun loadGameFromCustomLocation(loadCompletionCallback: (GameInfo?, Exception?) -> Unit) {
-        customFileLocationHelper!!.loadGame { result, ex ->
-            if (result == null) {
-                loadCompletionCallback(null, ex)
+    fun loadGameFromCustomLocation(loadCompletionCallback: (CustomLoadResult<GameInfo>) -> Unit) {
+        customFileLocationHelper!!.loadGame { result ->
+            val location = result.location
+            val gameData = result.gameData
+            if (location == null || gameData == null) {
+                loadCompletionCallback(CustomLoadResult(exception = result.exception))
                 return@loadGame
             }
 
             try {
-                val gameInfo = gameInfoFromString(result.gameData)
-                gameInfo.customSaveLocation = result.location
+                val gameInfo = gameInfoFromString(gameData)
+                gameInfo.customSaveLocation = location
                 gameInfo.setTransients()
-                loadCompletionCallback(gameInfo, null)
+                loadCompletionCallback(CustomLoadResult(location to gameInfo))
             } catch (ex: Exception) {
-                loadCompletionCallback(null, ex)
+                loadCompletionCallback(CustomLoadResult(exception = ex))
             }
         }
     }

@@ -7,39 +7,19 @@ import android.provider.DocumentsContract
 import android.provider.OpenableColumns
 import androidx.annotation.GuardedBy
 import com.unciv.logic.CustomFileLocationHelper
-import com.unciv.logic.SuccessfulLoadResult
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
+import java.io.InputStream
+import java.io.OutputStream
 
-class CustomFileLocationHelperAndroid(private val activity: Activity) : CustomFileLocationHelper {
+class CustomFileLocationHelperAndroid(private val activity: Activity) : CustomFileLocationHelper() {
 
     @GuardedBy("this")
     private val callbacks = mutableListOf<ActivityCallback>()
     @GuardedBy("this")
     private var curActivityRequestCode = 100
 
-    override fun saveGame(
-        gameData: String,
-        suggestedLocation: String,
-        saveCompleteCallback: ((String?, Exception?) -> Unit)?
-    ) {
-
-        val requestCode = createActivityCallback { uri ->
-            if (uri == null) {
-                saveCompleteCallback?.invoke(null, null)
-                return@createActivityCallback
-            }
-
-            try {
-                activity.contentResolver.openOutputStream(uri, "rwt")
-                    ?.writer()
-                    ?.use {
-                        it.write(gameData)
-                    }
-                saveCompleteCallback?.invoke(uri.toString(), null)
-            } catch (ex: Exception) {
-                saveCompleteCallback?.invoke(null, ex)
-            }
-        }
+    override fun createOutputStream(suggestedLocation: String, callback: (String?, OutputStream?, Exception?) -> Unit) {
+        val requestCode = createActivityCallback(callback) { activity.contentResolver.openOutputStream(it, "rwt") }
 
         // When we loaded, we returned a "content://" URI as file location.
         val uri = Uri.parse(suggestedLocation)
@@ -68,32 +48,8 @@ class CustomFileLocationHelperAndroid(private val activity: Activity) : CustomFi
         }
     }
 
-
-    override fun loadGame(loadCompleteCallback: (SuccessfulLoadResult?, Exception?) -> Unit) {
-        val callbackIndex = createActivityCallback { uri ->
-            if (uri == null) {
-                loadCompleteCallback(null, null)
-                return@createActivityCallback
-            }
-
-            var gameData: String? = null
-            var exception: Exception? = null
-            try {
-                activity.contentResolver.openInputStream(uri)
-                    ?.reader()
-                    ?.use {
-                        gameData = it.readText()
-                    }
-            } catch (e: Exception) {
-                exception = e
-            }
-
-            if (exception != null) {
-                loadCompleteCallback(null, Exception("Failed to load save game", exception))
-            } else if (gameData != null) {
-                loadCompleteCallback(SuccessfulLoadResult(uri.toString(), gameData!!), null)
-            }
-        }
+    override fun createInputStream(callback: (String?, InputStream?, Exception?) -> Unit) {
+        val callbackIndex = createActivityCallback(callback, activity.contentResolver::openInputStream)
 
         Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
             type = "*/*"
@@ -102,12 +58,23 @@ class CustomFileLocationHelperAndroid(private val activity: Activity) : CustomFi
         }
     }
 
-    private fun createActivityCallback(
-        callback: (Uri?) -> Unit
-    ): Int {
+    private fun <T> createActivityCallback(callback: (String?, T?, Exception?) -> Unit,
+                                           createValue: (Uri) -> T): Int {
         synchronized(this) {
             val requestCode = curActivityRequestCode++
-            val activityCallback = ActivityCallback(requestCode, callback)
+            val activityCallback = ActivityCallback(requestCode) { uri ->
+                if (uri == null) {
+                    callback(null, null, null)
+                    return@ActivityCallback
+                }
+
+                try {
+                    val outputStream = createValue(uri)
+                    callback(uri.toString(), outputStream, null)
+                } catch (ex: Exception) {
+                    callback(null, null, ex)
+                }
+            }
             callbacks.add(activityCallback)
             return requestCode
         }
