@@ -1,3 +1,22 @@
+## 4.1.3
+
+By SomeTroglodyte:
+- Implement 'wait' command
+- Re-hide Enable Portrait option on desktop
+- Show required resource for upgrades
+- Fix Right-Click attacks made no sound
+
+Fix missing icons in civilopedia from main menu - By OptimizedForDensity
+
+By Azzurite:
+- Return to current game from main menu "Resume"
+
+By alexban011:
+- Fixed slider sound when opening screens
+- Added confirmation option for "next turn"
+
+Adding spaceship sprites for FantasyHex tileset - By GeneralWadaling
+
 ## 4.1.2
 
 Fixed multiplayer bugs (double files, turn checker problems) - By Azzurite

@@ -253,22 +253,21 @@ class MapParametersTable(
         table.add("RNG Seed".toLabel()).left()
         table.add(seedTextField).fillX().padBottom(10f).row()
 
-        fun addSlider(text: String, getValue:()->Float, min:Float, max:Float, onChange: (value:Float)->Unit): UncivSlider {
-            val slider = UncivSlider(min, max, (max - min) / 20, onChange = onChange)
-            slider.value = getValue()
+        fun addSlider(text: String, getValue:()->Float, min: Float, max: Float, onChange: (value: Float)->Unit): UncivSlider {
+            val slider = UncivSlider(min, max, (max - min) / 20, onChange = onChange, initial = getValue())
             table.add(text.toLabel()).left()
             table.add(slider).fillX().row()
             advancedSliders[slider] = getValue
             return slider
         }
 
-        addSlider("Map Elevation", {mapParameters.elevationExponent}, 0.6f,0.8f)
+        addSlider("Map Elevation", {mapParameters.elevationExponent}, 0.6f, 0.8f)
         { mapParameters.elevationExponent = it }
 
-        addSlider("Temperature extremeness", {mapParameters.temperatureExtremeness}, 0.4f,0.8f)
+        addSlider("Temperature extremeness", {mapParameters.temperatureExtremeness}, 0.4f, 0.8f)
         { mapParameters.temperatureExtremeness = it }
 
-        addSlider("Resource richness", {mapParameters.resourceRichness},0f,0.5f)
+        addSlider("Resource richness", {mapParameters.resourceRichness},0f, 0.5f)
         { mapParameters.resourceRichness = it }
 
         addSlider("Vegetation richness", {mapParameters.vegetationRichness}, 0f, 1f)

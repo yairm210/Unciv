@@ -103,7 +103,7 @@ class GameInfo {
 
     fun getPlayerToViewAs(): CivilizationInfo {
         if (!gameParameters.isOnlineMultiplayer) return currentPlayerCiv // non-online, play as human player
-        val userId = UncivGame.Current.settings.userId
+        val userId = UncivGame.Current.settings.multiplayer.userId
 
         // Iterating on all civs, starting from the the current player, gives us the one that will have the next turn
         // This allows multiple civs from the same UserID
@@ -227,7 +227,7 @@ class GameInfo {
                 || turns < simulateMaxTurns && simulateUntilWin
                 // For multiplayer, if there are 3+ players and one is defeated or spectator,
                 // we'll want to skip over their turn
-                || gameParameters.isOnlineMultiplayer && (thisPlayer.isDefeated() || thisPlayer.isSpectator() && thisPlayer.playerId != UncivGame.Current.settings.userId)
+                || gameParameters.isOnlineMultiplayer && (thisPlayer.isDefeated() || thisPlayer.isSpectator() && thisPlayer.playerId != UncivGame.Current.settings.multiplayer.userId)
         ) {
             if (!thisPlayer.isDefeated() || thisPlayer.isBarbarian()) {
                 NextTurnAutomation.automateCivMoves(thisPlayer)

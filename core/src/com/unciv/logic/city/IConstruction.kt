@@ -84,13 +84,24 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
 
 
 class RejectionReasons: HashSet<RejectionReasonInstance>() {
-    
+
     fun add(rejectionReason: RejectionReason) = add(RejectionReasonInstance(rejectionReason))
-    
+
     fun contains(rejectionReason: RejectionReason) = any { it.rejectionReason == rejectionReason }
 
-    fun filterTechPolicyEraWonderRequirements(): List<RejectionReasonInstance> {
-        return filterNot { it.rejectionReason in techPolicyEraWonderRequirements }
+    fun isOKIgnoringRequirements(
+        ignoreTechPolicyEraWonderRequirements: Boolean = false,
+        ignoreResources: Boolean = false
+    ): Boolean {
+        if (!ignoreTechPolicyEraWonderRequirements && !ignoreResources) return isEmpty()
+        if (!ignoreTechPolicyEraWonderRequirements)
+            return all { it.rejectionReason == RejectionReason.ConsumesResources }
+        if (!ignoreResources)
+            return all { it.rejectionReason in techPolicyEraWonderRequirements }
+        return all {
+            it.rejectionReason == RejectionReason.ConsumesResources ||
+            it.rejectionReason in techPolicyEraWonderRequirements
+        }
     }
 
     fun hasAReasonToBeRemovedFromQueue(): Boolean {

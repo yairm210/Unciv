@@ -34,6 +34,16 @@ class ModConstants {
     var minimalCityDistance = 3
     var minimalCityDistanceOnDifferentContinents = 2
 
+    // Constants used to calculate Unit Upgrade gold Cost (can only be modded all-or-nothing)
+    class UnitUpgradeCost {
+        val base = 10f
+        val perProduction = 2f
+        val eraMultiplier = 0f  // 0.3 in Civ5 cpp sources but 0 in xml 
+        val exponent = 1f
+        val roundTo = 5
+    }
+    var unitUpgradeCost = UnitUpgradeCost()
+
     // NaturalWonderGenerator uses these to determine the number of Natural Wonders to spawn for a given map size.
     // With these values, radius * mul + add gives a 1-2-3-4-5 progression for Unciv predefined map sizes and a 2-3-4-5-6-7 progression for the original Civ5 map sizes.
     // 0.124 = (Civ5.Huge.getHexagonalRadiusForArea(w*h) - Civ5.Duel.getHexagonalRadiusForArea(w*h)) / 5 (if you do not round in the radius function)
@@ -63,6 +73,7 @@ class ModConstants {
         if (other.unitSupplyPerPopulation != defaults.unitSupplyPerPopulation) unitSupplyPerPopulation = other.unitSupplyPerPopulation
         if (other.minimalCityDistance != defaults.minimalCityDistance) minimalCityDistance = other.minimalCityDistance
         if (other.minimalCityDistanceOnDifferentContinents != defaults.minimalCityDistanceOnDifferentContinents) minimalCityDistanceOnDifferentContinents = other.minimalCityDistanceOnDifferentContinents
+        if (other.unitUpgradeCost != defaults.unitUpgradeCost) unitUpgradeCost = other.unitUpgradeCost
         if (other.naturalWonderCountMultiplier != defaults.naturalWonderCountMultiplier) naturalWonderCountMultiplier = other.naturalWonderCountMultiplier
         if (other.naturalWonderCountAddedConstant != defaults.naturalWonderCountAddedConstant) naturalWonderCountAddedConstant = other.naturalWonderCountAddedConstant
         if (other.ancientRuinCountMultiplier != defaults.ancientRuinCountMultiplier) ancientRuinCountMultiplier = other.ancientRuinCountMultiplier

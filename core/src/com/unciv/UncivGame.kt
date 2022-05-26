@@ -13,19 +13,20 @@ import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.Translations
-import com.unciv.ui.LanguagePickerScreen
 import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.PlayerReadyScreen
 import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.logic.multiplayer.OnlineMultiplayer
+import com.unciv.ui.LanguagePickerScreen
 import com.unciv.ui.audio.Sounds
 import com.unciv.ui.crashhandling.closeExecutors
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.multiplayer.LoadDeepLinkScreen
+import com.unciv.ui.multiplayer.MultiplayerHelpers
 import com.unciv.ui.popup.Popup
 import kotlinx.coroutines.runBlocking
 import java.util.*
@@ -128,8 +129,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             translations.loadPercentageCompleteOfLanguages()
             TileSetCache.loadTileSetConfigs(printOutput = true)
 
-            if (settings.userId.isEmpty()) { // assign permanent user id
-                settings.userId = UUID.randomUUID().toString()
+            if (settings.multiplayer.userId.isEmpty()) { // assign permanent user id
+                settings.multiplayer.userId = UUID.randomUUID().toString()
                 settings.save()
             }
 
@@ -201,7 +202,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
                     val mainMenu = MainMenuScreen()
                     setScreen(mainMenu)
                     val popup = Popup(mainMenu)
-                    popup.addGoodSizedLabel("Failed to load multiplayer game: ${ex.message ?: ex::class.simpleName}")
+                    popup.addGoodSizedLabel(MultiplayerHelpers.getLoadExceptionMessage(ex))
                     popup.row()
                     popup.addCloseButton()
                     popup.open()

@@ -7,7 +7,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.images.ImageGetter
 import com.unciv.Constants
-import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.ui.utils.darken
 
@@ -25,31 +24,28 @@ data class UnitAction(
 ) {
     fun getIcon(): Actor {
         if (type.imageGetter != null) return type.imageGetter.invoke()
-        return when {
-            type == UnitActionType.Upgrade 
-                    && title.equalsPlaceholderText("Upgrade to [] ([] gold)") -> {
+        return when (type) {
+            UnitActionType.Upgrade -> {
                 ImageGetter.getUnitIcon(title.getPlaceholderParameters()[0])
             }
-            type == UnitActionType.Create
-                    && title.equalsPlaceholderText("Create []") -> {
+            UnitActionType.Create -> {
                 ImageGetter.getImprovementIcon(title.getPlaceholderParameters()[0])
             }
-            type == UnitActionType.SpreadReligion
-                    && title.equalsPlaceholderText("Spread []") -> {
+            UnitActionType.SpreadReligion -> {
                 val religionName = title.getPlaceholderParameters()[0]
                 ImageGetter.getReligionImage(
-                    if (ImageGetter.religionIconExists(religionName)) religionName 
+                    if (ImageGetter.religionIconExists(religionName)) religionName
                     else "Pantheon"
                 ).apply { color = Color.BLACK }
             }
-            type == UnitActionType.Fortify || type == UnitActionType.FortifyUntilHealed -> {
+            UnitActionType.Fortify, UnitActionType.FortifyUntilHealed -> {
                 val match = fortificationRegex.matchEntire(title)
                 val percentFortified = match?.groups?.get(1)?.value?.toInt() ?: 0
-                ImageGetter.getImage("OtherIcons/Shield").apply { 
+                ImageGetter.getImage("OtherIcons/Shield").apply {
                     color = Color.GREEN.darken(1f - percentFortified / 80f)
                 }
             }
-            else -> ImageGetter.getImage("OtherIcons/Star")
+            else -> ImageGetter.getImage("OtherIcons/Star").apply { color = Color.BLACK }
         }
     }
     companion object {
@@ -137,6 +133,8 @@ enum class UnitActionType(
         { ImageGetter.getImage("OtherIcons/DisbandUnit") }, KeyCharAndCode.DEL),
     GiftUnit("Gift unit",
         { ImageGetter.getImage("OtherIcons/Present") }, UncivSound.Silent),
+    Wait("Wait",
+        null, 'z', UncivSound.Silent),
     ShowAdditionalActions("Show more",
         { imageGetShowMore() }, KeyCharAndCode(Input.Keys.PAGE_DOWN)),
     HideAdditionalActions("Back",

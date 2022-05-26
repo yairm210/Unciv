@@ -31,7 +31,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
 
         for (entry in civInfo.getCivResourcesWithOriginsForTrade()
             .filterNot { it.resource.resourceType == ResourceType.Bonus }
-            .filter { it.origin == "Tradable" }
+            .filter { it.origin == Constants.tradable }
         ) {
             val resourceTradeType = if (entry.resource.resourceType == ResourceType.Luxury) TradeType.Luxury_Resource
             else TradeType.Strategic_Resource

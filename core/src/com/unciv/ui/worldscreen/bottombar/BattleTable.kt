@@ -16,8 +16,10 @@ import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.battle.*
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
+import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
+import com.unciv.ui.audio.Sounds
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
@@ -84,7 +86,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         if (defender == null || (!includeFriendly && defender.getCivInfo() == attackerCiv))
             return null  // no enemy combatant in tile
 
-        val canSeeDefender = 
+        val canSeeDefender =
             if (UncivGame.Current.viewEntireMapForDebug) true
             else {
                 when {
@@ -251,29 +253,8 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         }
 
         else {
-            attackButton.onClick(attacker.getAttackSound()) {
-                Battle.moveAndAttack(attacker, attackableTile)
-                worldScreen.mapHolder.removeUnitActionOverlay() // the overlay was one of attacking
-                worldScreen.update()
-
-                val actorsToFlashRed = arrayListOf<Actor>()
-
-                if (damageToDefender != 0)
-                    actorsToFlashRed.addAll(getMapActorsForCombatant(defender))
-                if (damageToAttacker != 0)
-                    actorsToFlashRed.addAll(getMapActorsForCombatant(attacker))
-                fun updateRedPercent(percent: Float) {
-                    for (actor in actorsToFlashRed)
-                        actor.color = Color.WHITE.cpy().lerp(Color.RED, percent)
-                }
-                worldScreen.stage.addAction(Actions.sequence(
-                    object : FloatAction(0f, 1f, 0.3f, Interpolation.sine) {
-                        override fun update(percent: Float) = updateRedPercent(percent)
-                    },
-                    object : FloatAction(0f, 1f, 0.3f, Interpolation.sine) {
-                        override fun update(percent: Float) = updateRedPercent(1 - percent)
-                    }
-                ))
+            attackButton.onClick(UncivSound.Silent) {  // onAttackButtonClicked will do the sound
+                onAttackButtonClicked(attacker, defender, attackableTile, damageToAttacker, damageToDefender)
             }
         }
 
@@ -284,6 +265,43 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         setPosition(worldScreen.stage.width/2-width/2, 5f)
     }
 
+    private fun onAttackButtonClicked(
+        attacker: ICombatant,
+        defender: ICombatant,
+        attackableTile: AttackableTile,
+        damageToAttacker: Int,
+        damageToDefender: Int
+    ) {
+        val canStillAttack = Battle.movePreparingAttack(attacker, attackableTile)
+        worldScreen.mapHolder.removeUnitActionOverlay() // the overlay was one of attacking
+        // There was a direct worldScreen.update() call here, removing its 'private' but not the comment justifying the modifier.
+        // My tests (desktop only) show the red-flash animations look just fine without.
+        worldScreen.shouldUpdate = true
+        //Gdx.graphics.requestRendering()  // Use this if immediate rendering is required
+
+        if (!canStillAttack) return
+        Sounds.play(attacker.getAttackSound())
+        Battle.attackOrNuke(attacker, attackableTile)
+
+        val actorsToFlashRed = arrayListOf<Actor>()
+
+        if (damageToDefender != 0)
+            actorsToFlashRed.addAll(getMapActorsForCombatant(defender))
+        if (damageToAttacker != 0)
+            actorsToFlashRed.addAll(getMapActorsForCombatant(attacker))
+        fun updateRedPercent(percent: Float) {
+            for (actor in actorsToFlashRed)
+                actor.color = Color.WHITE.cpy().lerp(Color.RED, percent)
+        }
+        worldScreen.stage.addAction(Actions.sequence(
+            object : FloatAction(0f, 1f, 0.3f, Interpolation.sine) {
+                override fun update(percent: Float) = updateRedPercent(percent)
+            },
+            object : FloatAction(0f, 1f, 0.3f, Interpolation.sine) {
+                override fun update(percent: Float) = updateRedPercent(1 - percent)
+            }
+        ))
+    }
 
     fun getMapActorsForCombatant(combatant: ICombatant):Sequence<Actor> =
         sequence {
@@ -314,17 +332,17 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         attackerNameWrapper.add(getIcon(attacker)).padRight(5f)
         attackerNameWrapper.add(attackerLabel)
         add(attackerNameWrapper)
-        
+
         val canNuke = Battle.mayUseNuke(attacker, targetTile)
 
         val blastRadius =
             if (!attacker.unit.hasUnique(UniqueType.BlastRadius)) 2
             else attacker.unit.getMatchingUniques(UniqueType.BlastRadius).first().params[0].toInt()
-        
+
         val defenderNameWrapper = Table()
         for (tile in targetTile.getTilesInDistance(blastRadius)) {
             val defender = tryGetDefenderAtTile(tile, true) ?: continue
-            
+
             val defenderLabel = Label(defender.getName().tr(), skin)
             defenderNameWrapper.add(getIcon(defender)).padRight(5f)
             defenderNameWrapper.add(defenderLabel).row()

@@ -231,8 +231,8 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
             val isRevealed = resource.revealedBy == null || civInfo.tech.isResearched(resource.revealedBy!!)
             resourceLabels[resource.name]!!.isVisible = isRevealed
             resourceImages[resource.name]!!.isVisible = isRevealed
-            if (!civResources.any { it.resource == resource }) resourceLabels[resource.name]!!.setText("0")
-            else resourceLabels[resource.name]!!.setText(civResources.first { it.resource == resource }.amount.toString())
+            val amountText = (civResources.get(resource, "All")?.amount ?: 0).toString()
+            resourceLabels[resource.name]!!.setText(amountText)
         }
 
         val year = civInfo.gameInfo.getYear()

@@ -12,6 +12,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.Counter
 import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
@@ -68,6 +69,7 @@ object UnitActions {
         addTriggerUniqueActions(unit, actionList)
         addAddInCapitalAction(unit, actionList, tile)
 
+        addWaitAction(unit, actionList, worldScreen);
 
         addToggleActionsAction(unit, actionList, unitTable)
 
@@ -81,6 +83,9 @@ object UnitActions {
 
         addSleepActions(actionList, unit, true)
         addFortifyActions(actionList, unit, true)
+
+        if (unit.canUpgradeMultipleSteps())
+            addUnitUpgradeAction(unit, actionList, 1)
 
         addSwapAction(unit, actionList, worldScreen)
         addDisbandAction(actionList, unit, worldScreen)
@@ -300,96 +305,90 @@ object UnitActions {
         }
     }
 
-    private fun addUnitUpgradeAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
-        val upgradeAction = getUpgradeAction(unit)
+    private fun addUnitUpgradeAction(
+        unit: MapUnit,
+        actionList: ArrayList<UnitAction>,
+        maxSteps: Int = Int.MAX_VALUE
+    ) {
+        val upgradeAction = getUpgradeAction(unit, maxSteps)
         if (upgradeAction != null) actionList += upgradeAction
     }
 
-    fun getUpgradeAction(unit: MapUnit): UnitAction? {
-        val tile = unit.currentTile
+    /**  Common implementation for [getUpgradeAction], [getFreeUpgradeAction] and [getAncientRuinsUpgradeAction] */
+    private fun getUpgradeAction(
+        unit: MapUnit,
+        maxSteps: Int,
+        isFree: Boolean,
+        isSpecial: Boolean
+    ): UnitAction? {
         if (unit.baseUnit().upgradesTo == null) return null
-        if (!unit.canUpgrade()) return null
-        if (tile.getOwner() != unit.civInfo) return null
-        
-        val upgradedUnit = unit.getUnitToUpgradeTo()
-        val goldCostOfUpgrade = unit.getCostOfUpgrade()
+        val unitTile = unit.getTile()
+        val civInfo = unit.civInfo
+        if (!isFree && unitTile.getOwner() != civInfo) return null
+
+        val upgradesTo = unit.baseUnit().upgradesTo
+        val specialUpgradesTo = unit.baseUnit().specialUpgradesTo
+        val upgradedUnit = when {
+            isSpecial && specialUpgradesTo != null -> civInfo.getEquivalentUnit (specialUpgradesTo)
+            isFree && upgradesTo != null -> civInfo.getEquivalentUnit(upgradesTo)  // getUnitToUpgradeTo can't ignore tech
+            else -> unit.getUnitToUpgradeTo(maxSteps)
+        }
+        if (!unit.canUpgrade(unitToUpgradeTo = upgradedUnit, ignoreRequirements = isFree, ignoreResources = true))
+            return null
+
+        // Check _new_ resource requirements (display only - yes even for free or special upgrades)
+        // Using Counter to aggregate is a bit exaggerated, but - respect the mad modder.
+        val resourceRequirementsDelta = Counter<String>()
+        for ((resource, amount) in unit.baseUnit().getResourceRequirements())
+            resourceRequirementsDelta.add(resource, -amount)
+        for ((resource, amount) in upgradedUnit.getResourceRequirements())
+            resourceRequirementsDelta.add(resource, amount)
+        val newResourceRequirementsString = resourceRequirementsDelta.entries
+            .filter { it.value > 0 }
+            .joinToString { "${it.value} {${it.key}}".tr() }
+
+        val goldCostOfUpgrade = if (isFree) 0 else unit.getCostOfUpgrade(upgradedUnit)
+
+        // No string for "FREE" variants, these are never shown to the user.
+        // The free actions are only triggered via OneTimeUnitUpgrade or OneTimeUnitSpecialUpgrade in UniqueTriggerActivation.
+        val title = if (newResourceRequirementsString.isEmpty())
+                 "Upgrade to [${upgradedUnit.name}] ([$goldCostOfUpgrade] gold)"
+            else "Upgrade to [${upgradedUnit.name}]\n([$goldCostOfUpgrade] gold, [$newResourceRequirementsString])"
 
         return UnitAction(UnitActionType.Upgrade,
-            title = "Upgrade to [${upgradedUnit.name}] ([$goldCostOfUpgrade] gold)",
+            title = title,
             action = {
-                val unitTile = unit.getTile()
                 unit.destroy()
-                val newUnit = unit.civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name)
+                val newUnit = civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name)
 
                 /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
                  * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
                  */
                 if (newUnit == null) {
-                    val readdedUnit = unit.civInfo.placeUnitNearTile(unitTile.position, unit.name)
-                    unit.copyStatisticsTo(readdedUnit!!)
+                    val resurrectedUnit = civInfo.placeUnitNearTile(unitTile.position, unit.name)!!
+                    unit.copyStatisticsTo(resurrectedUnit)
                 } else { // Managed to upgrade
-                    unit.civInfo.addGold(-goldCostOfUpgrade)
+                    if (!isFree) civInfo.addGold(-goldCostOfUpgrade)
                     unit.copyStatisticsTo(newUnit)
                     newUnit.currentMovement = 0f
                 }
             }.takeIf {
-                unit.civInfo.gold >= goldCostOfUpgrade
-                && unit.currentMovement > 0
-                && !unit.isEmbarked()
-            }
-        )
-    }
-    
-    fun getFreeUpgradeAction(unit: MapUnit): UnitAction? {
-        if (unit.baseUnit().upgradesTo == null) return null
-        val upgradedUnit = unit.civInfo.getEquivalentUnit(unit.baseUnit().upgradesTo!!)
-        if (!unit.canUpgrade(upgradedUnit, true)) return null
-
-        return UnitAction(UnitActionType.Upgrade,
-            title = "Upgrade to [${upgradedUnit.name}] (FREE)",
-            action = {
-                val unitTile = unit.getTile()
-                unit.destroy()
-                val newUnit = unit.civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name)
-
-                /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
-                 * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
-                 */
-                if (newUnit == null) {
-                    val readdedUnit = unit.civInfo.placeUnitNearTile(unitTile.position, unit.name)
-                    unit.copyStatisticsTo(readdedUnit!!)
-                } else { // Managed to upgrade
-                    unit.copyStatisticsTo(newUnit)
-                    newUnit.currentMovement = 0f
-                }
+                isFree || (
+                    unit.civInfo.gold >= goldCostOfUpgrade
+                    && unit.currentMovement > 0
+                    && !unit.isEmbarked()
+                    && unit.canUpgrade(unitToUpgradeTo = upgradedUnit)
+                )
             }
         )
     }
 
-    fun getAncientRuinsUpgradeAction(unit: MapUnit): UnitAction? {
-        val upgradedUnitName =
-            when {
-                unit.baseUnit.specialUpgradesTo != null -> unit.baseUnit.specialUpgradesTo
-                unit.baseUnit.upgradesTo != null -> unit.baseUnit.upgradesTo
-                else -> return null
-            }
-        val upgradedUnit =
-            unit.civInfo.getEquivalentUnit(unit.civInfo.gameInfo.ruleSet.units[upgradedUnitName]!!)
-        
-        if (!unit.canUpgrade(upgradedUnit,true)) return null
-
-        return UnitAction(UnitActionType.Upgrade,
-            title = "Upgrade to [${upgradedUnit.name}] (free)",
-            action = {
-                val unitTile = unit.getTile()
-                unit.destroy()
-                val newUnit = unit.civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name)!!
-                unit.copyStatisticsTo(newUnit)
-
-                newUnit.currentMovement = 0f
-            }
-        )
-    }
+    fun getUpgradeAction(unit: MapUnit, maxSteps: Int = Int.MAX_VALUE) =
+        getUpgradeAction(unit, maxSteps, isFree = false, isSpecial = false)
+    fun getFreeUpgradeAction(unit: MapUnit) =
+        getUpgradeAction(unit, 1, isFree = true, isSpecial = false)
+    fun getAncientRuinsUpgradeAction(unit: MapUnit) =
+        getUpgradeAction(unit, 1, isFree = true, isSpecial = true)
 
     private fun addBuildingImprovementsAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo, worldScreen: WorldScreen, unitTable: UnitTable) {
         if (!unit.hasUniqueToBuildImprovements) return
@@ -821,6 +820,18 @@ object UnitActions {
         }
     }
 
+    private fun addWaitAction(unit: MapUnit, actionList: ArrayList<UnitAction>, worldScreen: WorldScreen) {
+        if (!unit.isIdle()) return
+        if (worldScreen.viewingCiv.getDueUnits().filter { it != unit }.none()) return
+        actionList += UnitAction(
+            type = UnitActionType.Wait,
+            action = {
+                unit.due = true
+                worldScreen.switchToNextUnit()
+            }
+        )
+    }
+
     private fun addToggleActionsAction(unit: MapUnit, actionList: ArrayList<UnitAction>, unitTable: UnitTable) {
         actionList += UnitAction(
             type = if (unit.showAdditionalActions) UnitActionType.HideAdditionalActions
@@ -831,5 +842,4 @@ object UnitActions {
             }
         )
     }
-
 }
