@@ -2,6 +2,7 @@ package com.unciv.logic
 
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.utils.debug
 import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
 import com.unciv.logic.BackwardCompatibility.migrateBarbarianCamps
 import com.unciv.logic.BackwardCompatibility.migrateSeenImprovements
@@ -209,7 +210,7 @@ class GameInfo {
             if (currentPlayerIndex == 0) {
                 turns++
                 if (UncivGame.Current.simulateUntilTurnForDebug != 0)
-                    println("Starting simulation of turn $turns")
+                    debug("Starting simulation of turn %s", turns)
             }
             thisPlayer = civilizations[currentPlayerIndex]
             thisPlayer.startTurn()

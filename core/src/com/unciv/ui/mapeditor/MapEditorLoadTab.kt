@@ -13,6 +13,7 @@ import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.utils.*
+import com.unciv.utils.Log
 import kotlin.concurrent.thread
 
 class MapEditorLoadTab(
@@ -134,7 +135,7 @@ class MapEditorLoadTab(
                 } catch (ex: Throwable) {
                     needPopup = false
                     popup?.close()
-                    println("Error displaying map \"$chosenMap\": ${ex.message}")
+                    Log.error("Error displaying map \"$chosenMap\"", ex)
                     Gdx.input.inputProcessor = editorScreen.stage
                     ToastPopup("Error loading map!", editorScreen)
                 }
@@ -143,7 +144,7 @@ class MapEditorLoadTab(
             needPopup = false
             Gdx.app.postRunnable {
                 popup?.close()
-                println("Error loading map \"$chosenMap\": ${ex.message}")
+                Log.error("Error loading map \"$chosenMap\"", ex)
                 ToastPopup("{Error loading map!}" +
                         (if (ex is UncivShowableException) "\n{${ex.message}}" else ""), editorScreen)
             }

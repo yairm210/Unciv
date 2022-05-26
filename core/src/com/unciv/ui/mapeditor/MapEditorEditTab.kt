@@ -16,6 +16,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.mapeditor.MapEditorOptionsTab.TileMatchFuzziness
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.*
+import com.unciv.utils.Log
 
 class MapEditorEditTab(
     private val editorScreen: MapEditorScreen,
@@ -208,7 +209,7 @@ class MapEditorEditTab(
             val riverGenerator = RiverGenerator(editorScreen.tileMap, randomness, ruleset)
             riverGenerator.spawnRiver(riverStartTile!!, riverEndTile!!, resultingTiles)
         } catch (ex: Exception) {
-            println(ex.message)
+            Log.error("Exception while generating rivers", ex)
             ToastPopup("River generation failed!", editorScreen)
         }
         riverStartTile = null

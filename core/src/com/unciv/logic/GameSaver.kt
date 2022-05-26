@@ -13,6 +13,7 @@ import com.unciv.models.metadata.isMigrationNecessary
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.saves.Gzip
+import com.unciv.utils.Log
 import kotlinx.coroutines.Job
 import java.io.File
 
@@ -178,8 +179,7 @@ class GameSaver(
                 // I'm not sure of the circumstances,
                 // but some people were getting null settings, even though the file existed??? Very odd.
                 // ...Json broken or otherwise unreadable is the only possible reason.
-                println("Error reading settings file: ${ex.localizedMessage}")
-                println("  cause: ${ex.cause}")
+                Log.error("Error reading settings file", ex)
             }
         }
 

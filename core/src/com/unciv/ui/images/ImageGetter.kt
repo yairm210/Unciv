@@ -25,6 +25,7 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stats
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.ui.utils.*
+import com.unciv.utils.debug
 import kotlin.math.atan2
 import kotlin.math.max
 import kotlin.math.min
@@ -88,7 +89,7 @@ object ImageGetter {
             val extraAtlas = if (mod.isEmpty()) fileName else if (fileName == "game") mod else "$mod/$fileName"
             var tempAtlas = atlases[extraAtlas]  // fetch if cached
             if (tempAtlas == null) {
-                println("Loading $extraAtlas = ${file.path()}")
+                debug("Loading %s = %s", extraAtlas, file.path())
                 tempAtlas = TextureAtlas(file)  // load if not
                 atlases[extraAtlas] = tempAtlas  // cache the freshly loaded
             }

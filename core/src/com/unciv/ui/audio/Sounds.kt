@@ -7,6 +7,7 @@ import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
 import com.unciv.models.UncivSound
 import com.unciv.ui.crashhandling.launchCrashHandling
+import com.unciv.utils.debug
 import kotlinx.coroutines.delay
 import java.io.File
 
@@ -43,8 +44,6 @@ import java.io.File
  * app lifetime - and we do dispose them when the app is disposed.
  */
 object Sounds {
-    private const val debugMessages = false
-
     @Suppress("EnumEntryName")
     private enum class SupportedExtensions { mp3, ogg, wav }    // Per Gdx docs, no aac/m4a
 
@@ -69,7 +68,7 @@ object Sounds {
         // Seems the mod list has changed - clear the cache
         clearCache()
         modListHash = newHash
-        if (debugMessages) println("Sound cache cleared")
+        debug("Sound cache cleared")
     }
 
     /** Release cached Sound resources */
@@ -135,12 +134,12 @@ object Sounds {
 
         @Suppress("LiftReturnOrAssignment")
         if (file == null || !file.exists()) {
-            if (debugMessages) println("Sound ${sound.value} not found!")
+            debug("Sound %s not found!", sound.value)
             // remember that the actual file is missing
             soundMap[sound] = null
             return null
         } else {
-            if (debugMessages) println("Sound ${sound.value} loaded from ${file.path()}")
+            debug("Sound %s loaded from %s", sound.value, file.path())
             val newSound = Gdx.audio.newSound(file)
             // Store Sound for reuse
             soundMap[sound] = newSound

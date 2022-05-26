@@ -7,6 +7,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.work.WorkManager
 import com.badlogic.gdx.backends.android.AndroidApplication
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
+import com.unciv.Log
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
 import com.unciv.logic.GameSaver
@@ -19,6 +20,7 @@ open class AndroidLauncher : AndroidApplication() {
     private var deepLinkedMultiplayerGame: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.backend = AndroidLogBackend()
         customSaveLocationHelper = CustomSaveLocationHelperAndroid(this)
         MultiplayerTurnCheckWorker.createNotificationChannels(applicationContext)
 
