@@ -3,7 +3,6 @@ package com.unciv.ui.cityscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.UncivGame
 import com.unciv.logic.city.CityFocus
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.*
@@ -35,7 +34,6 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table() {
         val avoidCell = Table()
         avoidCell.touchable = Touchable.enabled
         avoidCell.add(avoidLabel).pad(5f)
-
         if (cityScreen.canChangeState)
             avoidCell.onClick { city.avoidGrowth = !city.avoidGrowth; city.reassignPopulation(); cityScreen.update() }
 
@@ -50,7 +48,6 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table() {
             val cell = Table()
             cell.touchable = Touchable.enabled
             cell.add(label).pad(5f)
-
             if (cityScreen.canChangeState)
                 cell.onClick { city.cityAIFocus = focus; city.reassignPopulation(); cityScreen.update() }
 
