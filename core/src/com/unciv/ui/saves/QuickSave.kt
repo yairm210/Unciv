@@ -77,12 +77,19 @@ object QuickSave {
                 return@launchCrashHandling
             }
 
-            postCrashHandlingRunnable { /// ... and load it into the screen on main thread for GL context
+            if (savedGame.gameParameters.isOnlineMultiplayer) {
                 try {
-                    screen.game.loadGame(savedGame)
-                    screen.dispose()
+                    screen.game.onlineMultiplayer.loadGame(savedGame)
                 } catch (oom: OutOfMemoryError) {
                     outOfMemory()
+                }
+            } else {
+                postCrashHandlingRunnable { /// ... and load it into the screen on main thread for GL context
+                    try {
+                        screen.game.loadGame(savedGame)
+                    } catch (oom: OutOfMemoryError) {
+                        outOfMemory()
+                    }
                 }
             }
         }
