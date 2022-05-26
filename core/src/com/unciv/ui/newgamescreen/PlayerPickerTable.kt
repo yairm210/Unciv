@@ -176,7 +176,7 @@ class PlayerPickerTable(
             }
 
             playerIdTextField.addListener { onPlayerIdTextUpdated(); true }
-            val currentUserId = UncivGame.Current.settings.userId
+            val currentUserId = UncivGame.Current.settings.multiplayer.userId
             val setCurrentUserButton = "Set current user".toTextButton()
             setCurrentUserButton.onClick {
                 playerIdTextField.text = currentUserId
@@ -203,8 +203,8 @@ class PlayerPickerTable(
      */
     private fun getNationTable(player: Player): Table {
         val nationTable = Table()
-        val nationImage = 
-            if (player.chosenCiv == Constants.random) 
+        val nationImage =
+            if (player.chosenCiv == Constants.random)
                 ImageGetter.getRandomNationIndicator(40f)
             else ImageGetter.getNationIndicator(previousScreen.ruleset.nations[player.chosenCiv]!!, 40f)
         nationTable.add(nationImage).pad(5f)
@@ -230,10 +230,10 @@ class PlayerPickerTable(
     /**
      * Returns a list of available civilization for all players, according
      * to current ruleset, with exception of city states nations, spectator and barbarians.
-     * 
+     *
      * Skips nations already chosen by a player, unless parameter [dontSkipNation] says to keep a
      * specific one. That is used so the picker can be used to inspect and confirm the current selection.
-     * 
+     *
      * @return [Sequence] of available [Nation]s
      */
     internal fun getAvailablePlayerCivs(dontSkipNation: String? = null) =

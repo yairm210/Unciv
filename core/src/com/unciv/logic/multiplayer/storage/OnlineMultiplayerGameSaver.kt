@@ -21,21 +21,25 @@ class OnlineMultiplayerGameSaver(
     private var fileStorageIdentifier: String? = null
 ) {
     fun fileStorage(): FileStorage {
-        val identifier = if (fileStorageIdentifier == null) UncivGame.Current.settings.multiplayerServer else fileStorageIdentifier
+        val identifier = if (fileStorageIdentifier == null) UncivGame.Current.settings.multiplayer.server else fileStorageIdentifier
 
         return if (identifier == Constants.dropboxMultiplayerServer) DropBox else UncivServerFileStorage(identifier!!)
     }
 
     /** @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time */
     suspend fun tryUploadGame(gameInfo: GameInfo, withPreview: Boolean) {
-        // We upload the gamePreview before we upload the game as this
-        // seems to be necessary for the kick functionality
+        val zippedGameInfo = GameSaver.gameInfoToString(gameInfo, forceZip = true)
+        fileStorage().saveFileData(gameInfo.gameId, zippedGameInfo, true)
+
+        // We upload the preview after the game because otherwise the following race condition will happen:
+        // Current player ends turn -> Uploads Game Preview
+        // Other player checks for updates -> Downloads Game Preview
+        // Current player starts game upload
+        // Other player sees update in preview -> Downloads game, gets old state
+        // Current player finishes uploading game
         if (withPreview) {
             tryUploadGamePreview(gameInfo.asPreview())
         }
-
-        val zippedGameInfo = GameSaver.gameInfoToString(gameInfo, forceZip = true)
-        fileStorage().saveFileData(gameInfo.gameId, zippedGameInfo, true)
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
