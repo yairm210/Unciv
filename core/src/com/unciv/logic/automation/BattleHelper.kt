@@ -102,6 +102,13 @@ object BattleHelper {
         if (tileCombatant.getCivInfo() == combatant.getCivInfo()) return false
         if (!combatant.getCivInfo().isAtWarWith(tileCombatant.getCivInfo())) return false
 
+        if (combatant is MapUnitCombatant && combatant.unit.baseUnit.unitType.contains("Water") &&
+                combatant.unit.baseUnit.isMelee() && !combatant.unit.civInfo.hasUnique(UniqueType.LandUnitEmbarkation)){
+            if (tileCombatant is MapUnitCombatant && tileCombatant.unit.baseUnit.unitType.contains("Water")) {
+                return false
+            }
+        }
+
         if (combatant is MapUnitCombatant &&
             combatant.unit.hasUnique(UniqueType.CanOnlyAttackUnits) &&
             combatant.unit.getMatchingUniques(UniqueType.CanOnlyAttackUnits).none { tileCombatant.matchesCategory(it.params[0]) }
