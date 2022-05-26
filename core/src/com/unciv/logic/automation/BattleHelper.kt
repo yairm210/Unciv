@@ -71,8 +71,13 @@ object BattleHelper {
                 else reachableTile.getViewableTilesList(rangeOfAttack)
                     .asSequence()
 
+            // TODO: add unit.isPreparingAirSweep
             for (tile in tilesInAttackRange) {
-                if (tile in tilesWithEnemies) attackableTiles += AttackableTile(reachableTile, tile, movementLeft)
+                if (tile in tilesWithEnemies) attackableTiles += AttackableTile(
+                    reachableTile,
+                    tile,
+                    movementLeft
+                )
                 else if (tile in tilesWithoutEnemies) continue // avoid checking the same empty tile multiple times
                 else if (checkTile(unit, tile, tilesToCheck)) {
                     tilesWithEnemies += tile

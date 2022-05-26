@@ -57,6 +57,7 @@ object UnitActions {
         addUnitUpgradeAction(unit, actionList)
         addPillageAction(unit, actionList, worldScreen)
         addParadropAction(unit, actionList)
+        addAirSweepAction(unit, actionList)
         addSetupAction(unit, actionList)
         addFoundCityAction(unit, actionList, tile)
         addBuildingImprovementsAction(unit, actionList, tile, worldScreen, unitTable)
@@ -265,6 +266,21 @@ object UnitActions {
                         unit.currentTile.isFriendlyTerritory(unit.civInfo) &&
                         !unit.isEmbarked()
             })
+    }
+
+    private fun addAirSweepAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
+        val airsweepUniques =
+            unit.getMatchingUniques(UniqueType.CanAirsweep)
+        if (!airsweepUniques.any()) return
+        actionList += UnitAction(UnitActionType.AirSweep,
+            isCurrentAction = unit.isPreparingAirSweep(),
+            action = {
+                if (unit.isPreparingAirSweep()) unit.action = null
+                else unit.action = UnitActionType.AirSweep.value
+            }.takeIf {
+                unit.canAttack()
+            }
+        )
     }
 
     private fun addPillageAction(unit: MapUnit, actionList: ArrayList<UnitAction>, worldScreen: WorldScreen) {

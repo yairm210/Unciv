@@ -442,6 +442,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     DamageWhenIntercepting("[relativeAmount]% Damage when intercepting", UniqueTarget.Unit),
     ExtraInterceptionsPerTurn("[amount] extra interceptions may be made per turn", UniqueTarget.Unit),
     CannotBeIntercepted("Cannot be intercepted", UniqueTarget.Unit),
+    CanAirsweep("Can perform Air Sweep", UniqueTarget.Unit),
+    StrengthWhenAirsweep("[relativeAmount]% Strength bonus when performing air sweep", UniqueTarget.Unit),
 
     UnitMaintenanceDiscount("[relativeAmount]% maintenance costs", UniqueTarget.Unit, UniqueTarget.Global),
     UnitUpgradeCost("[relativeAmount]% Gold cost of upgrading", UniqueTarget.Unit, UniqueTarget.Global),
