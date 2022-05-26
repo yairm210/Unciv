@@ -635,8 +635,8 @@ class CityInfo {
         attackedThisTurn = false
 
         if (isPuppet) {
-            reassignAllPopulation()
             cityAIFocus = CityFocus.GoldFocus
+            reassignAllPopulation()
         } else if (updateCitizens) {
             reassignPopulation()
             updateCitizens = false
