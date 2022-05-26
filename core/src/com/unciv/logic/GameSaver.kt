@@ -133,21 +133,21 @@ class GameSaver(
      * [gameName] is a suggested name for the file. If the file has already been saved to or loaded from a custom location,
      * this previous custom location will be used.
      *
-     * Calls the [saveCompleteCallback] on the main thread with an [Exception] on error or null on success or cancel.
+     * Calls the [saveCompleteCallback] on the main thread with the save location on success, an [Exception] on error, or both null on cancel.
      */
-    fun saveGameToCustomLocation(game: GameInfo, gameName: String, saveCompletionCallback: (Exception?) -> Unit) {
+    fun saveGameToCustomLocation(game: GameInfo, gameName: String, saveCompletionCallback: (String?, Exception?) -> Unit) {
         val saveLocation = game.customSaveLocation ?: Gdx.files.local(gameName).path()
         val gameData = try {
             gameInfoToString(game)
         } catch (ex: Exception) {
-            postCrashHandlingRunnable { saveCompletionCallback(ex) }
+            postCrashHandlingRunnable { saveCompletionCallback(null, ex) }
             return
         }
         customFileLocationHelper!!.saveGame(gameData, saveLocation) { location, exception ->
             if (location != null) {
                 game.customSaveLocation = location
             }
-            saveCompletionCallback(exception)
+            saveCompletionCallback(location, exception)
         }
     }
 
