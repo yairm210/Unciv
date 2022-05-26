@@ -17,64 +17,64 @@ class CustomFileLocationHelperDesktop : CustomFileLocationHelper {
         suggestedLocation: String,
         saveCompleteCallback: ((String?, Exception?) -> Unit)?
     ) {
+        pickFile(suggestedLocation) { file ->
+            if (file == null) {
+                saveCompleteCallback?.invoke(null, null)
+                return@pickFile
+            }
 
-        val file = pickFile(suggestedLocation)
-        if (file == null) {
-            saveCompleteCallback?.invoke(null, null)
-            return
-        }
-
-        var saveLocation: String? = null
-        var exception: Exception? = null
-        try {
-            file.outputStream()
-                .writer()
-                .use {
-                    it.write(gameData)
+            var saveLocation: String? = null
+            var exception: Exception? = null
+            try {
+                file.outputStream()
+                    .writer()
+                    .use {
+                        it.write(gameData)
+                    }
+                saveLocation = file.absolutePath
+            } catch (e: Exception) {
+                exception = e
+            }
+            postCrashHandlingRunnable {
+                if (exception != null) {
+                    saveCompleteCallback?.invoke(null, exception)
+                } else if (saveLocation != null) {
+                    saveCompleteCallback?.invoke(saveLocation, null)
                 }
-            saveLocation = file.absolutePath
-        } catch (e: Exception) {
-            exception = e
-        }
-        postCrashHandlingRunnable {
-            if (exception != null) {
-                saveCompleteCallback?.invoke(null, exception)
-            } else if (saveLocation != null) {
-                saveCompleteCallback?.invoke(saveLocation, null)
             }
         }
     }
 
     override fun loadGame(loadCompleteCallback: (SuccessfulLoadResult?, Exception?) -> Unit) {
-        val file = pickFile()
-        if (file == null) {
-            loadCompleteCallback(null, null)
-            return
-        }
+        pickFile { file ->
+            if (file == null) {
+                loadCompleteCallback(null, null)
+                return@pickFile
+            }
 
-        var gameData: String? = null
-        var exception: Exception? = null
-        try {
-            file.inputStream()
-                .reader()
-                .use {
-                    gameData = it.readText()
+            var gameData: String? = null
+            var exception: Exception? = null
+            try {
+                file.inputStream()
+                    .reader()
+                    .use {
+                        gameData = it.readText()
+                    }
+            } catch (e: Exception) {
+                exception = e
+            }
+            postCrashHandlingRunnable {
+                if (exception != null) {
+                    loadCompleteCallback(null, exception)
+                } else if (gameData != null) {
+                    loadCompleteCallback(SuccessfulLoadResult(file.absolutePath, gameData!!), null)
                 }
-        } catch (e: Exception) {
-            exception = e
-        }
-        postCrashHandlingRunnable {
-            if (exception != null) {
-                loadCompleteCallback(null, exception)
-            } else if (gameData != null) {
-                loadCompleteCallback(SuccessfulLoadResult(file.absolutePath, gameData!!), null)
             }
         }
     }
 
-    private fun pickFile(suggestedLocation: String? = null): File? {
-        var file: File? = null
-        EventQueue.invokeAndWait {
+    private fun pickFile(suggestedLocation: String? = null, selectCallback: (File?) -> Unit) {
+        EventQueue.invokeLater {
             val fileChooser = JFileChooser().apply fileChooser@{
                 if (suggestedLocation == null) {
                     currentDirectory = Gdx.files.local("").file()
@@ -95,11 +95,11 @@ class CustomFileLocationHelperDesktop : CustomFileLocationHelper {
             frame.dispose()
 
             if (result == JFileChooser.CANCEL_OPTION) {
-                return@invokeAndWait
+                selectCallback(null)
+            } else {
+                selectCallback(fileChooser.selectedFile)
             }
 
-            file = fileChooser.selectedFile
         }
-        return file
     }
 }
