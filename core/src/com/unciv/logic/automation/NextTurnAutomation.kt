@@ -129,7 +129,7 @@ object NextTurnAutomation {
         val tradeLogic = TradeLogic(civInfo, otherCiv)
         tradeLogic.currentTrade.set(tradeRequest.trade.reverse())
 
-        // What do they have that we would want???
+        // What do they have that we would want?
         val potentialAsks = HashMap<TradeOffer, Int>()
         val counterofferAsks = HashMap<TradeOffer, Int>()
         val counterofferGifts = ArrayList<TradeOffer>()
@@ -142,8 +142,10 @@ object NextTurnAutomation {
                 continue // For example resources gained by trade or CS
             if (offer.type == TradeType.City)
                 continue // Players generally don't want to give up their cities, and they might misclick
-            if (offer.type == TradeType.Agreement && tradeLogic.currentTrade.theirOffers.contains(offer))
-                continue // So you don't get double offers of open borders etc.
+
+            if (tradeLogic.currentTrade.theirOffers.any { it.type == offer.type && it.name == offer.name })
+                continue // So you don't get double offers of open borders declarations of war etc.
+
             val value = evaluation.evaluateBuyCost(offer, civInfo, otherCiv)
             if (value > 0)
                 potentialAsks[offer] = value

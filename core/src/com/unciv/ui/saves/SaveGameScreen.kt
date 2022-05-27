@@ -91,12 +91,12 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
             saveToCustomLocation.setText("Saving...".tr())
             saveToCustomLocation.disable()
             launchCrashHandling("Save to custom location", runAsDaemon = false) {
-                game.gameSaver.saveGameToCustomLocation(gameInfo, gameNameTextField.text) { e ->
-                    if (e == null) {
-                        postCrashHandlingRunnable { game.resetToWorldScreen() }
-                    } else if (e !is CancellationException) {
+                game.gameSaver.saveGameToCustomLocation(gameInfo, gameNameTextField.text) { result ->
+                    if (result.isError()) {
                         errorLabel.setText("Could not save game to custom location!".tr())
-                        e.printStackTrace()
+                        result.exception?.printStackTrace()
+                    } else if (result.isSuccessful()) {
+                        game.resetToWorldScreen()
                     }
                     saveToCustomLocation.enable()
                 }

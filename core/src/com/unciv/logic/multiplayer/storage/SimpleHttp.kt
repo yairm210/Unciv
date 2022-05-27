@@ -2,6 +2,7 @@ package com.unciv.logic.multiplayer.storage
 
 import com.badlogic.gdx.Net
 import com.unciv.UncivGame
+import com.unciv.utils.debug
 import java.io.BufferedReader
 import java.io.DataOutputStream
 import java.io.InputStreamReader
@@ -48,11 +49,11 @@ object SimpleHttp {
                 val text = BufferedReader(InputStreamReader(inputStream)).readText()
                 action(true, text, responseCode)
             } catch (t: Throwable) {
-                println(t.message)
+                debug("Error during HTTP request", t)
                 val errorMessageToReturn =
                     if (errorStream != null) BufferedReader(InputStreamReader(errorStream)).readText()
                     else t.message!!
-                println(errorMessageToReturn)
+                debug("Returning error message [%s]", errorMessageToReturn)
                 action(false, errorMessageToReturn, if (errorStream != null) responseCode else null)
             }
         }

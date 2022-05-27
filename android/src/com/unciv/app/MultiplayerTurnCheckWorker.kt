@@ -281,13 +281,13 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
         try {
             val gameIds = inputData.getStringArray(GAME_ID)!!
             val gameNames = inputData.getStringArray(GAME_NAME)!!
-            var arrayIndex = 0
             Log.d(LOG_TAG, "doWork gameNames: ${Arrays.toString(gameNames)}")
             // We only want to notify the user or update persisted notification once but still want
             // to download all games to update the files so we save the first one we find
             var foundGame: Pair<String, String>? = null
 
-            for (gameId in gameIds){
+            for (idx in 0 until gameIds.size){
+                val gameId = gameIds[idx]
                 //gameId could be an empty string if startTurnChecker fails to load all files
                 if (gameId.isEmpty())
                     continue
@@ -311,17 +311,16 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                     while saves are getting saved right here.
                     Lets hope it works with gamePreview as they are a lot smaller and faster to save
                      */
-                    Log.i(LOG_TAG, "doWork save gameName: ${gameNames[arrayIndex]}")
-                    gameSaver.saveGame(gamePreview, gameNames[arrayIndex])
-                    Log.i(LOG_TAG, "doWork save ${gameNames[arrayIndex]} done")
+                    Log.i(LOG_TAG, "doWork save gameName: ${gameNames[idx]}")
+                    gameSaver.saveGame(gamePreview, gameNames[idx])
+                    Log.i(LOG_TAG, "doWork save ${gameNames[idx]} done")
 
                     if (currentTurnPlayer.playerId == inputData.getString(USER_ID)!! && foundGame == null) {
-                        foundGame = Pair(gameNames[arrayIndex], gameIds[arrayIndex])
+                        foundGame = Pair(gameNames[idx], gameIds[idx])
                     }
-                    arrayIndex++
                 } catch (ex: FileStorageRateLimitReached) {
                     Log.i(LOG_TAG, "doWork FileStorageRateLimitReached ${ex.message}")
-                    // We just break here as configuredDelay is probably enough to wait for the rate limit anyway
+                    // We just break here as the configured delay is probably enough to wait for the rate limit anyway
                     break
                 } catch (ex: FileNotFoundException){
                     Log.i(LOG_TAG, "doWork FileNotFoundException ${ex.message}")

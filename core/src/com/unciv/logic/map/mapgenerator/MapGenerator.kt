@@ -4,23 +4,32 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.*
+import com.unciv.logic.map.MapParameters
+import com.unciv.logic.map.MapShape
+import com.unciv.logic.map.MapType
+import com.unciv.logic.map.Perlin
+import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.TileMap
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.Unique
-import kotlin.math.*
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.mapeditor.MapGeneratorSteps
+import com.unciv.utils.Log
+import com.unciv.utils.debug
+import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.pow
+import kotlin.math.roundToInt
+import kotlin.math.sign
 import kotlin.random.Random
 
 
 class MapGenerator(val ruleset: Ruleset) {
     companion object {
-        // temporary instrumentation while tuning/debugging
-        const val consoleOutput = false
         private const val consoleTimings = false
     }
 
@@ -74,7 +83,7 @@ class MapGenerator(val ruleset: Ruleset) {
             return map
         }
 
-        if (consoleOutput || consoleTimings) println("\nMapGenerator run with parameters $mapParameters")
+        if (consoleTimings) debug("\nMapGenerator run with parameters %s", mapParameters)
         runAndMeasure("MapLandmassGenerator") {
             MapLandmassGenerator(ruleset, randomness).generateLand(map)
         }
@@ -164,7 +173,7 @@ class MapGenerator(val ruleset: Ruleset) {
         val startNanos = System.nanoTime()
         action()
         val delta = System.nanoTime() - startNanos
-        println("MapGenerator.$text took ${delta/1000000L}.${(delta/10000L).rem(100)}ms")
+        debug("MapGenerator.%s took %s.%sms", text, delta/1000000L, (delta/10000L).rem(100))
     }
 
     private fun convertTerrains(map: TileMap, ruleset: Ruleset) {
@@ -312,19 +321,19 @@ class MapGenerator(val ruleset: Ruleset) {
     private fun raiseMountainsAndHills(tileMap: TileMap) {
         val mountain = ruleset.terrains.values.firstOrNull { it.hasUnique(UniqueType.OccursInChains) }?.name
         val hill = ruleset.terrains.values.firstOrNull { it.hasUnique(UniqueType.OccursInGroups) }?.name
-        val flat = ruleset.terrains.values.firstOrNull { 
-            !it.impassable && it.type == TerrainType.Land && !it.hasUnique(UniqueType.RoughTerrain) 
+        val flat = ruleset.terrains.values.firstOrNull {
+            !it.impassable && it.type == TerrainType.Land && !it.hasUnique(UniqueType.RoughTerrain)
         }?.name
 
         if (flat == null) {
-            println("Ruleset seems to contain no flat terrain - can't generate heightmap")
+            debug("Ruleset seems to contain no flat terrain - can't generate heightmap")
             return
         }
 
-        if (consoleOutput && mountain != null)
-            println("Mountain-like generation for $mountain")
-        if (consoleOutput && hill != null)
-            println("Hill-like generation for $hill")
+        if (mountain != null)
+            debug("Mountain-like generation for %s", mountain)
+        if (hill != null)
+            debug("Hill-like generation for %s", mountain)
 
         val elevationSeed = randomness.RNG.nextInt().toDouble()
         tileMap.setTransients(ruleset)
@@ -478,7 +487,7 @@ class MapGenerator(val ruleset: Ruleset) {
                     temperature < 0.8 -> if (humidity < 0.5) Constants.plains else Constants.grassland
                     temperature <= 1.0 -> if (humidity < 0.7) Constants.desert else Constants.plains
                     else -> {
-                        println("applyHumidityAndTemperature: Invalid temperature $temperature")
+                        debug("applyHumidityAndTemperature: Invalid temperature %s", temperature)
                         firstLandTerrain.name
                     }
                 }
@@ -492,7 +501,7 @@ class MapGenerator(val ruleset: Ruleset) {
             if (matchingTerrain != null) tile.baseTerrain = matchingTerrain.terrain.name
             else {
                 tile.baseTerrain = firstLandTerrain.name
-                println("applyHumidityAndTemperature: No terrain found for temperature: $temperature, humidity: $humidity")
+                debug("applyHumidityAndTemperature: No terrain found for temperature: %s, humidity: %s", temperature, humidity)
             }
             tile.setTerrainTransients()
         }
@@ -542,7 +551,7 @@ class MapGenerator(val ruleset: Ruleset) {
             ruleset.terrains.values.asSequence()
             .filter { it.type == TerrainType.Water }
             .map { it.name }.toSet()
-        val iceEquivalents: List<TerrainOccursRange> = 
+        val iceEquivalents: List<TerrainOccursRange> =
             ruleset.terrains.values.asSequence()
             .filter { terrain ->
                 terrain.type == TerrainType.TerrainFeature &&
@@ -645,8 +654,8 @@ class MapGenerationRandomness {
             }
             if (chosenTiles.size == number || distanceBetweenResources == 1) {
                 // Either we got them all, or we're not going to get anything better
-                if (MapGenerator.consoleOutput && distanceBetweenResources < initialDistance)
-                    println("chooseSpreadOutLocations: distance $distanceBetweenResources < initial $initialDistance")
+                if (Log.shouldLog() && distanceBetweenResources < initialDistance)
+                    debug("chooseSpreadOutLocations: distance $distanceBetweenResources < initial $initialDistance")
                 return chosenTiles
             }
         }

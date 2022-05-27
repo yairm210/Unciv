@@ -133,11 +133,12 @@ class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
             loadFromCustomLocation.setText(Constants.loading.tr())
             loadFromCustomLocation.disable()
             launchCrashHandling(Companion.loadFromCustomLocation) {
-                game.gameSaver.loadGameFromCustomLocation { loadedGame, exception ->
-                    if (loadedGame != null) {
-                        postCrashHandlingRunnable { game.loadGame(loadedGame) }
-                    } else if (exception !is CancellationException)
-                        handleLoadGameException("Could not load game from custom location!", exception)
+                game.gameSaver.loadGameFromCustomLocation { result ->
+                    if (result.isError()) {
+                        handleLoadGameException("Could not load game from custom location!", result.exception)
+                    } else if (result.isSuccessful()) {
+                        game.loadGame(result.gameData!!)
+                    }
                 }
             }
         }

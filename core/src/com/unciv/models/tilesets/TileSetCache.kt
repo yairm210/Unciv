@@ -7,6 +7,7 @@ import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.images.ImageGetter
+import com.unciv.utils.debug
 
 object TileSetCache : HashMap<String, TileSetConfig>() {
     private data class TileSetAndMod(val tileSet: String, val mod: String)
@@ -36,7 +37,7 @@ object TileSetCache : HashMap<String, TileSetConfig>() {
         }
     }
 
-    fun loadTileSetConfigs(consoleMode: Boolean = false, printOutput: Boolean = false){
+    fun loadTileSetConfigs(consoleMode: Boolean = false){
         allConfigs.clear()
         var tileSetName = ""
 
@@ -51,21 +52,16 @@ object TileSetCache : HashMap<String, TileSetConfig>() {
                 val key = TileSetAndMod(tileSetName, "")
                 assert(key !in allConfigs)
                 allConfigs[key] = json().fromJsonFile(TileSetConfig::class.java, configFile)
-                if (printOutput) {
-                    println("TileSetConfig loaded successfully: ${configFile.name()}")
-                    println()
-                }
+                debug("TileSetConfig loaded successfully: %s", configFile.name())
             } catch (ex: Exception){
-                if (printOutput){
-                    println("Exception loading TileSetConfig '${configFile.path()}':")
-                    println("  ${ex.localizedMessage}")
-                    println("  (Source file ${ex.stackTrace[0].fileName} line ${ex.stackTrace[0].lineNumber})")
-                }
+                debug("Exception loading TileSetConfig '%s':", configFile.path())
+                debug("  %s", ex.localizedMessage)
+                debug("  (Source file %s line %s)", ex.stackTrace[0].fileName, ex.stackTrace[0].lineNumber)
             }
         }
 
         //load mod TileSets
-        val modsHandles = 
+        val modsHandles =
             if (consoleMode) FileHandle("mods").list().toList()
             else RulesetCache.values.mapNotNull { it.folderLocation }
 
@@ -80,17 +76,12 @@ object TileSetCache : HashMap<String, TileSetConfig>() {
                     val key = TileSetAndMod(tileSetName, modName)
                     assert(key !in allConfigs)
                     allConfigs[key] = json().fromJsonFile(TileSetConfig::class.java, configFile)
-                    if (printOutput) {
-                        println("TileSetConfig loaded successfully: ${configFile.path()}")
-                        println()
-                    }
+                    debug("TileSetConfig loaded successfully: %s", configFile.path())
                 }
             } catch (ex: Exception){
-                if (printOutput) {
-                    println("Exception loading TileSetConfig '${modFolder.name()}/jsons/TileSets/${tileSetName}':")
-                    println("  ${ex.localizedMessage}")
-                    println("  (Source file ${ex.stackTrace[0].fileName} line ${ex.stackTrace[0].lineNumber})")
-                }
+                debug("Exception loading TileSetConfig '%s/jsons/TileSets/%s':", modFolder.name(), tileSetName)
+                debug("  %s", ex.localizedMessage)
+                debug("  (Source file %s line %s)", ex.stackTrace[0].fileName, ex.stackTrace[0].lineNumber)
             }
         }
 

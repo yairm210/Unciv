@@ -7,6 +7,8 @@ import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
 import com.unciv.logic.multiplayer.storage.DropBox
+import com.unciv.utils.Log
+import com.unciv.utils.debug
 import java.util.*
 import kotlin.concurrent.thread
 import kotlin.concurrent.timer
@@ -15,7 +17,7 @@ import kotlin.math.roundToInt
 
 /**
  * Play, choose, fade-in/out and generally manage music track playback.
- * 
+ *
  * Main methods: [chooseTrack], [pause], [resume], [setModList], [isPlaying], [gracefulShutdown]
  */
 class MusicController {
@@ -34,8 +36,6 @@ class MusicController {
         private const val defaultFadingStepOwn = 1f / (defaultFadeDuration * ticksPerSecondOwn)
         private const val musicHistorySize = 8      // number of names to keep to avoid playing the same in short succession
         private val fileExtensions = listOf("mp3", "ogg", "wav")   // All Gdx formats
-
-        internal const val consoleLog = false
 
         private fun getFile(path: String) =
             if (musicLocation == FileType.External && Gdx.files.isExternalStorageAvailable)
@@ -232,8 +232,7 @@ class MusicController {
         clearNext()
         clearCurrent()
         musicHistory.clear()
-        if (consoleLog)
-            println("MusicController shut down.")
+        debug("MusicController shut down.")
     }
 
     private fun audioExceptionHandler(ex: Throwable, music: Music) {
@@ -247,12 +246,7 @@ class MusicController {
         if (music == next?.music) clearNext()
         if (music == current?.music) clearCurrent()
 
-        if (consoleLog) {
-            println("${ex.javaClass.simpleName} playing music: ${ex.message}")
-            if (ex.stackTrace != null) ex.printStackTrace()
-        } else {
-            println("Error playing music: ${ex.message ?: ""}")
-        }
+        Log.error("Error playing music", ex)
 
         // Since this is a rare emergency, go a simple way to reboot music later
         thread(isDaemon = true) {
@@ -303,7 +297,7 @@ class MusicController {
             // Then just pick the first one. Not as wasteful as it looks - need to check all names anyway
             )).firstOrNull()
         // Note: shuffled().sortedWith(), ***not*** .sortedWith(.., Random)
-        // the latter worked with older JVM's, current ones *crash* you when a compare is not transitive. 
+        // the latter worked with older JVM's, current ones *crash* you when a compare is not transitive.
     }
 
     private fun fireOnChange() {
@@ -324,8 +318,7 @@ class MusicController {
         try {
             onTrackChangeListener?.invoke(trackLabel)
         } catch (ex: Throwable) {
-            if (consoleLog)
-                println("onTrackChange event invoke failed: ${ex.message}")
+            debug("onTrackChange event invoke failed", ex)
             onTrackChangeListener = null
         }
     }
@@ -346,7 +339,7 @@ class MusicController {
      * Chooses and plays a music track using an adaptable approach - for details see the wiki.
      * Called without parameters it will choose a new ambient music track and start playing it with fade-in/out.
      * Will do nothing when no music files exist or the master volume is zero.
-     * 
+     *
      * @param prefix file name prefix, meant to represent **Context** - in most cases a Civ name
      * @param suffix file name suffix, meant to represent **Mood** - e.g. Peace, War, Theme, Defeat, Ambient
      * (Ambient is the default when a track ends and exists so War Peace and the others are not chosen in that case)
@@ -355,7 +348,7 @@ class MusicController {
      */
     fun chooseTrack (
         prefix: String = "",
-        suffix: String = "Ambient", 
+        suffix: String = "Ambient",
         flags: EnumSet<MusicTrackChooserFlags> = EnumSet.noneOf(MusicTrackChooserFlags::class.java)
     ): Boolean {
         if (baseVolume == 0f) return false
@@ -364,8 +357,7 @@ class MusicController {
 
         if (musicFile == null) {
             // MustMatch flags at work or Music folder empty
-            if (consoleLog)
-                println("No music found for prefix=$prefix, suffix=$suffix, flags=$flags")
+            debug("No music found for prefix=%s, suffix=%s, flags=%s", prefix, suffix, flags)
             return false
         }
         if (musicFile.path() == currentlyPlaying())
@@ -381,8 +373,7 @@ class MusicController {
             state = ControllerState.Silence // will retry after one silence period
             next = null
         }, onSuccess = {
-            if (consoleLog)
-                println("Music queued: ${musicFile.path()} for prefix=$prefix, suffix=$suffix, flags=$flags")
+            debug("Music queued: %s for prefix=%s, suffix=%s, flags=%s", musicFile.path(), prefix, suffix, flags)
 
             if (musicHistory.size >= musicHistorySize) musicHistory.removeFirst()
             musicHistory.addLast(musicFile.path())
@@ -407,7 +398,7 @@ class MusicController {
         startTimer()
         return true
     }
- 
+
     /** Variant of [chooseTrack] that tries several moods ([suffixes]) until a match is chosen */
     fun chooseTrack (
         prefix: String = "",
@@ -422,12 +413,11 @@ class MusicController {
 
     /**
      * Pause playback with fade-out
-     * 
+     *
      * @param speedFactor accelerate (>1) or slow down (<1) the fade-out. Clamped to 1/1000..1000.
      */
     fun pause(speedFactor: Float = 1f) {
-        if (consoleLog)
-            println("MusicTrackController.pause called")
+        debug("MusicTrackController.pause called")
         if ((state != ControllerState.Playing && state != ControllerState.PlaySingle) || current == null) return
         val fadingStep = defaultFadingStep * speedFactor.coerceIn(0.001f..1000f)
         current!!.startFade(MusicTrackController.State.FadeOut, fadingStep)
@@ -443,8 +433,7 @@ class MusicController {
      * @param speedFactor accelerate (>1) or slow down (<1) the fade-in. Clamped to 1/1000..1000.
      */
     fun resume(speedFactor: Float = 1f) {
-        if (consoleLog)
-            println("MusicTrackController.resume called")
+        debug("MusicTrackController.resume called")
         if (state == ControllerState.Pause && current != null) {
             val fadingStep = defaultFadingStep * speedFactor.coerceIn(0.001f..1000f)
             current!!.startFade(MusicTrackController.State.FadeIn, fadingStep)

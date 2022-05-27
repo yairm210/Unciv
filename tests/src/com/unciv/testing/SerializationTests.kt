@@ -16,6 +16,7 @@ import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.utils.debug
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -111,7 +112,7 @@ class SerializationTests {
         val pattern = """\{(\w+)\${'$'}delegate:\{class:kotlin.SynchronizedLazyImpl,"""
         val matches = Regex(pattern).findAll(json)
         matches.forEach {
-            println("Lazy missing `@delegate:Transient` annotation: " + it.groups[1]!!.value)
+            debug("Lazy missing `@delegate:Transient` annotation: " + it.groups[1]!!.value)
         }
         val result = matches.any()
         Assert.assertFalse("This test will only pass when no serializable lazy fields are found", result)

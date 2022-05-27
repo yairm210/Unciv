@@ -34,6 +34,7 @@ import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.tilegroups.WorldTileGroup
 import com.unciv.ui.utils.*
+import com.unciv.utils.Log
 
 
 class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap: TileMap): ZoomableScrollPane() {
@@ -226,8 +227,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             try {
                 tileToMoveTo = selectedUnit.movement.getTileToMoveToThisTurn(targetTile)
             } catch (ex: Exception) {
-                println("Exception in getTileToMoveToThisTurn: ${ex.message}")
-                ex.printStackTrace()
+                Log.error("Exception in getTileToMoveToThisTurn", ex)
                 return@launchCrashHandling
             } // can't move here
 
@@ -251,8 +251,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                         moveUnitToTargetTile(selectedUnits.subList(1, selectedUnits.size), targetTile)
                     } else removeUnitActionOverlay() //we're done here
                 } catch (ex: Exception) {
-                    println("Exception in moveUnitToTargetTile: ${ex.message}")
-                    ex.printStackTrace()
+                    Log.error("Exception in moveUnitToTargetTile", ex)
                 }
             }
         }
