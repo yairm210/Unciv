@@ -233,7 +233,6 @@ class BasicTests {
 
     @Test
     fun allEraRelatedUniquesHaveTheirUniqueTypes() {
-        val ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!.clone() // vanilla doesn't have beliefs
         val eras = ruleset.eras.values
         var allOK = true
         for (era in eras) {
