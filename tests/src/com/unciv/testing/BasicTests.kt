@@ -228,7 +228,7 @@ class BasicTests {
                 }
             }
         }
-        Assert.assertTrue("This test succeeds only if all policy and policy branch uniques are presented in UniqueType.values()", allOK)
+        Assert.assertTrue("This test succeeds only if all belief uniques are presented in UniqueType.values()", allOK)
     }
 
     @Test
