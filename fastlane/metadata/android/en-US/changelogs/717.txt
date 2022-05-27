@@ -1,0 +1,16 @@
+## 4.1.4
+
+AI counteroffers will no longer contain items already offered by the player for 'double declaration of war' etc 
+
+By itanasi:
+- Make Locked Tiles workable, and thus clickable 
+- Make so Citizen Management buttons don't work if Spectator 
+
+puppet cities only focus on gold  - By alexban011
+
+By Azzurite:
+- Add simple logging solution 
+-  Multiplayer Status Display 
+
+Fix piety complete faith discount  - By OptimizedForDensity
+
