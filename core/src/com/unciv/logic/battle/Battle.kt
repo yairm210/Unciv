@@ -3,6 +3,7 @@ package com.unciv.logic.battle
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.utils.debug
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
@@ -75,10 +76,7 @@ object Battle {
     }
 
     fun attack(attacker: ICombatant, defender: ICombatant) {
-        if (UncivGame.Current.alertBattle) {
-            println(attacker.getCivInfo().civName + " " + attacker.getName() + " attacked " +
-                    defender.getCivInfo().civName + " " + defender.getName())
-        }
+        debug("%s %s attacked %s %s", attacker.getCivInfo().civName, attacker.getName(), defender.getCivInfo().civName, defender.getName())
         val attackedTile = defender.getTile()
         if (attacker is MapUnitCombatant) {
             attacker.unit.attacksSinceTurnStart.add(Vector2(attackedTile.position))
