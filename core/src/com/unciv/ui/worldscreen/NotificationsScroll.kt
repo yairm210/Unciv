@@ -14,8 +14,7 @@ import kotlin.math.min
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class NotificationsScroll(
-    private val worldScreen: WorldScreen,
-    private val maxNotificationsHeight: Float
+    private val worldScreen: WorldScreen
 ) : ScrollPane(null) {
     private companion object {
         /** Scale the entire ScrollPane by this factor */
@@ -41,15 +40,26 @@ class NotificationsScroll(
         setScale(scaleFactor)
     }
 
-    internal fun update(notifications: MutableList<Notification>, tileInfoTableHeight: Float) {
+    /**
+     * Update widget contents if necessary and recalculate layout
+     * @param notifications Data to display
+     * @param maxNotificationsHeight Total height in world screen coordinates
+     * @param tileInfoTableHeight Height of the portion that may be covered on the bottom - make sure we can scroll up far enough so the bottom entry is visible above this
+     */
+    internal fun update(
+        notifications: MutableList<Notification>,
+        maxNotificationsHeight: Float,
+        tileInfoTableHeight: Float
+    ) {
+        updateContent(notifications)
+        updateLayout(maxNotificationsHeight, tileInfoTableHeight)
+    }
 
+    private fun updateContent(notifications: MutableList<Notification>) {
         // no news? - keep our list as it is, especially don't reset scroll position
-        if (notificationsHash == notifications.hashCode()) {
-            sizeScrollingSpacer(tileInfoTableHeight)
-            layout()
-            return
-        }
-        notificationsHash = notifications.hashCode()
+        val newHash = notifications.hashCode()
+        if (notificationsHash == newHash) return
+        notificationsHash = newHash
 
         notificationsTable.clearChildren()
         endOfTableSpacerCell = null
@@ -93,12 +103,17 @@ class NotificationsScroll(
         }
 
         notificationsTable.pack()  // needed to get height - prefHeight is set and close but not quite the same value
-        val filledHeight = notificationsTable.height
+    }
+
+    private fun updateLayout(maxNotificationsHeight: Float, tileInfoTableHeight: Float) {
+        val newHeight = min(notificationsTable.height, maxNotificationsHeight * inverseScaleFactor)
 
         sizeScrollingSpacer(tileInfoTableHeight)
 
         pack()
-        height = min(filledHeight, maxNotificationsHeight * inverseScaleFactor)  // after this, maxY is still incorrect until layout()
+        if (height == newHeight) return
+        height = newHeight  // after this, maxY is still incorrect until layout()
+        invalidateHierarchy()
     }
 
     /** Add some empty space that can be scrolled under the TileInfoTable which is covering our lower part */

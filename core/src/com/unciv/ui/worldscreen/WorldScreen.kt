@@ -16,7 +16,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
-import com.unciv.utils.debug
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.ReligionState
@@ -57,7 +56,6 @@ import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.KeyCharAndCode
-import com.unciv.ui.utils.UncivDateFormat.formatDate
 import com.unciv.ui.utils.centerX
 import com.unciv.ui.utils.colorFromRGB
 import com.unciv.ui.utils.darken
@@ -78,8 +76,8 @@ import com.unciv.ui.worldscreen.status.NextTurnButton
 import com.unciv.ui.worldscreen.status.StatusButtons
 import com.unciv.ui.worldscreen.unit.UnitActionsTable
 import com.unciv.ui.worldscreen.unit.UnitTable
+import com.unciv.utils.debug
 import kotlinx.coroutines.Job
-import java.util.*
 
 /**
  * Unciv's world screen
@@ -121,8 +119,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     private val statusButtons = StatusButtons(nextTurnButton)
     private val tutorialTaskTable = Table().apply { background = ImageGetter.getBackground(
         ImageGetter.getBlue().darken(0.5f)) }
+    private val notificationsScroll = NotificationsScroll(this)
 
-    private val notificationsScroll: NotificationsScroll
     var shouldUpdate = false
 
     private var nextTurnUpdateJob: Job? = null
@@ -131,9 +129,6 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
 
     init {
-        val maxNotificationsHeight = topBar.y - nextTurnButton.height -
-                (if (game.settings.showMinimap) minimapWrapper.height else 0f) - 25f
-        notificationsScroll = NotificationsScroll(this, maxNotificationsHeight)
         // notifications are right-aligned, they take up only as much space as necessary.
         notificationsScroll.width = stage.width / 2
 
@@ -491,8 +486,12 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                 }
             }
         }
+
         updateGameplayButtons()
-        notificationsScroll.update(viewingCiv.notifications, bottomTileInfoTable.height)
+
+        val maxNotificationsHeight = statusButtons.y -
+                (if (game.settings.showMinimap) minimapWrapper.height else 0f) - 5f
+        notificationsScroll.update(viewingCiv.notifications, maxNotificationsHeight, bottomTileInfoTable.height)
         notificationsScroll.setTopRight(stage.width - 10f, statusButtons.y - 5f)
     }
 
