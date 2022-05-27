@@ -18,6 +18,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
+import com.unciv.utils.debug
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -67,7 +68,7 @@ class BasicTests {
         var allObsoletingUnitsHaveUpgrades = true
         for (unit in units) {
             if (unit.obsoleteTech != null && unit.upgradesTo == null && unit.name !="Scout" ) {
-                println(unit.name + " obsoletes but has no upgrade")
+                debug(unit.name + " obsoletes but has no upgrade")
                 allObsoletingUnitsHaveUpgrades = false
             }
         }
@@ -93,7 +94,7 @@ class BasicTests {
             val ruleset = RulesetCache[baseRuleset.fullName]!!
             val modCheck = ruleset.checkModLinks()
             if (modCheck.isNotOK())
-                println(modCheck.getErrorText(true))
+                debug(modCheck.getErrorText(true))
             Assert.assertFalse(modCheck.isNotOK())
         }
     }
@@ -106,7 +107,7 @@ class BasicTests {
                 for (paramType in entry.value) {
                     if (paramType == UniqueParameterType.Unknown) {
                         val badParam = uniqueType.text.getPlaceholderParameters()[entry.index]
-                        println("${uniqueType.name} param[${entry.index}] type \"$badParam\" is unknown")
+                        debug("${uniqueType.name} param[${entry.index}] type \"$badParam\" is unknown")
                         noUnknownParameters = false
                     }
                 }
@@ -120,7 +121,7 @@ class BasicTests {
         var allOK = true
         for (uniqueType in UniqueType.values()) {
             if (uniqueType.targetTypes.isEmpty()) {
-                println("${uniqueType.name} has no targets.")
+                debug("${uniqueType.name} has no targets.")
                 allOK = false
             }
         }
@@ -134,7 +135,7 @@ class BasicTests {
         for (unit in units) {
             for (unique in unit.uniques) {
                 if (!UniqueType.values().any { it.placeholderText == unique.getPlaceholderText() }) {
-                    println("${unit.name}: $unique")
+                    debug("${unit.name}: $unique")
                     allOK = false
                 }
             }
@@ -149,7 +150,7 @@ class BasicTests {
         for (building in buildings) {
             for (unique in building.uniques) {
                 if (!UniqueType.values().any { it.placeholderText == unique.getPlaceholderText() }) {
-                    println("${building.name}: $unique")
+                    debug("${building.name}: $unique")
                     allOK = false
                 }
             }
@@ -164,7 +165,7 @@ class BasicTests {
         for (promotion in promotions) {
             for (unique in promotion.uniques) {
                 if (!UniqueType.values().any { it.placeholderText == unique.getPlaceholderText() }) {
-                    println("${promotion.name}: $unique")
+                    debug("${promotion.name}: $unique")
                     allOK = false
                 }
             }
@@ -182,7 +183,7 @@ class BasicTests {
         for (obj in objects) {
             for (unique in obj.uniques) {
                 if (!UniqueType.values().any { it.placeholderText == unique.getPlaceholderText() }) {
-                    println("${obj.name}: $unique")
+                    debug("${obj.name}: $unique")
                     allOK = false
                 }
             }
@@ -195,24 +196,24 @@ class BasicTests {
         var allOK = true
         for (uniqueType in UniqueType.values()) {
             val deprecationAnnotation = uniqueType.getDeprecationAnnotation() ?: continue
-            
+
             val uniquesToCheck = deprecationAnnotation.replaceWith.expression.split("\", \"", Constants.uniqueOrDelimiter)
-            
+
             for (uniqueText in uniquesToCheck) {
                 val replacementTextUnique = Unique(uniqueText)
 
 
                 if (replacementTextUnique.type == null) {
-                    println("${uniqueType.name}'s deprecation text \"$uniqueText\" does not match any existing type!")
+                    debug("${uniqueType.name}'s deprecation text \"$uniqueText\" does not match any existing type!")
                     allOK = false
                 }
                 if (replacementTextUnique.type == uniqueType) {
-                    println("${uniqueType.name}'s deprecation text references itself!")
+                    debug("${uniqueType.name}'s deprecation text references itself!")
                     allOK = false
                 }
                 for (conditional in replacementTextUnique.conditionals) {
                     if (conditional.type == null) {
-                        println("${uniqueType.name}'s deprecation text contains conditional \"${conditional.text}\" which does not match any existing type!")
+                        debug("${uniqueType.name}'s deprecation text contains conditional \"${conditional.text}\" which does not match any existing type!")
                         allOK = false
                     }
                 }
@@ -222,7 +223,7 @@ class BasicTests {
                 while (replacementUnique.getDeprecationAnnotation() != null) {
                     if (iteration == 10) {
                         allOK = false
-                        println("${uniqueType.name}'s deprecation text never references an undeprecated unique!")
+                        debug("${uniqueType.name}'s deprecation text never references an undeprecated unique!")
                         break
                     }
                     iteration++
@@ -240,7 +241,7 @@ class BasicTests {
         Thread.sleep(5000) // makes timings a little more repeatable
         val startTime = System.nanoTime()
         statMathRunner(iterations = 1_000_000)
-        println("statMathStressTest took ${(System.nanoTime()-startTime)/1000}µs")
+        debug("statMathStressTest took ${(System.nanoTime()-startTime)/1000}µs")
     }
 
     @Test

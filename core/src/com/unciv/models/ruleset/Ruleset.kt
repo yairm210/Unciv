@@ -34,6 +34,8 @@ import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.colorFromRGB
 import com.unciv.ui.utils.getRelativeTextDistance
+import com.unciv.utils.Log
+import com.unciv.utils.debug
 import kotlin.collections.set
 
 object ModOptionsConstants {
@@ -192,7 +194,7 @@ class Ruleset {
     fun allIHasUniques(): Sequence<IHasUniques> =
             allRulesetObjects() + sequenceOf(modOptions)
 
-    fun load(folderHandle: FileHandle, printOutput: Boolean) {
+    fun load(folderHandle: FileHandle) {
         val gameBasicsStartTime = System.currentTimeMillis()
 
         val modOptionsFile = folderHandle.child("ModOptions.json")
@@ -342,8 +344,7 @@ class Ruleset {
             }
         }
 
-        val gameBasicsLoadTime = System.currentTimeMillis() - gameBasicsStartTime
-        if (printOutput) println("Loading ruleset - " + gameBasicsLoadTime + "ms")
+        debug("Loading ruleset - %sms", System.currentTimeMillis() - gameBasicsStartTime)
     }
 
     /** Building costs are unique in that they are dependant on info in the technology part.
@@ -859,7 +860,7 @@ object RulesetCache : HashMap<String,Ruleset>() {
 
 
     /** Returns error lines from loading the rulesets, so we can display the errors to users */
-    fun loadRulesets(consoleMode: Boolean = false, printOutput: Boolean = false, noMods: Boolean = false) :List<String> {
+    fun loadRulesets(consoleMode: Boolean = false, noMods: Boolean = false) :List<String> {
         clear()
         for (ruleset in BaseRuleset.values()) {
             val fileName = "jsons/${ruleset.fullName}"
@@ -867,7 +868,7 @@ object RulesetCache : HashMap<String,Ruleset>() {
                 if (consoleMode) FileHandle(fileName)
                 else Gdx.files.internal(fileName)
             this[ruleset.fullName] = Ruleset().apply {
-                load(fileHandle, printOutput)
+                load(fileHandle)
                 name = ruleset.fullName
             }
         }
@@ -883,13 +884,16 @@ object RulesetCache : HashMap<String,Ruleset>() {
             if (!modFolder.isDirectory) continue
             try {
                 val modRuleset = Ruleset()
-                modRuleset.load(modFolder.child("jsons"), printOutput)
+                modRuleset.load(modFolder.child("jsons"))
                 modRuleset.name = modFolder.name()
                 modRuleset.folderLocation = modFolder
                 this[modRuleset.name] = modRuleset
-                if (printOutput) {
-                    println("Mod loaded successfully: " + modRuleset.name)
-                    println(modRuleset.checkModLinks().getErrorText())
+                debug("Mod loaded successfully: %s", modRuleset.name)
+                if (Log.shouldLog()) {
+                    val modLinksErrors = modRuleset.checkModLinks()
+                    if (modLinksErrors.any()) {
+                        debug("checkModLinks errors: %s", modLinksErrors.getErrorText())
+                    }
                 }
             } catch (ex: Exception) {
                 errorLines += "Exception loading mod '${modFolder.name()}':"
@@ -897,7 +901,7 @@ object RulesetCache : HashMap<String,Ruleset>() {
                 errorLines += "  ${ex.cause?.localizedMessage}"
             }
         }
-        if (printOutput) for (line in errorLines) println(line)
+        if (Log.shouldLog()) for (line in errorLines) debug(line)
         return errorLines
     }
 

@@ -11,6 +11,7 @@ import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
 import com.unciv.logic.GameSaver
 import com.unciv.ui.utils.Fonts
+import com.unciv.utils.Log
 import java.io.File
 
 open class AndroidLauncher : AndroidApplication() {
@@ -19,6 +20,7 @@ open class AndroidLauncher : AndroidApplication() {
     private var deepLinkedMultiplayerGame: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.backend = AndroidLogBackend()
         customSaveLocationHelper = CustomSaveLocationHelperAndroid(this)
         MultiplayerTurnCheckWorker.createNotificationChannels(applicationContext)
 

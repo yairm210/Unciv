@@ -1,6 +1,7 @@
 package com.unciv.logic.map.mapgenerator
 
 import com.unciv.Constants
+import com.unciv.utils.debug
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Ruleset
@@ -49,8 +50,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
             }
         }
 
-        if (MapGenerator.consoleOutput)
-            println("Natural Wonders for this game: $spawned")
+        debug("Natural Wonders for this game: %s", spawned)
     }
 
     private fun Unique.getIntParam(index: Int) = params[index].toInt()
@@ -156,15 +156,13 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
                         clearTile(tile)
                     }
                 }
-                if (MapGenerator.consoleOutput)
-                    println("Natural Wonder ${wonder.name} @${location.position}")
+                debug("Natural Wonder %s @%s", wonder.name, location.position)
 
                 return true
             }
         }
 
-        if (MapGenerator.consoleOutput)
-            println("No suitable location for ${wonder.name}")
+        debug("No suitable location for %s", wonder.name)
         return false
     }
 
