@@ -9,9 +9,11 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameStarter
 import com.unciv.logic.map.MapParameters
+import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.MapType
+import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.RulesetCache
@@ -77,7 +79,8 @@ class MainMenuScreen: BaseScreen() {
         launchCrashHandling("ShowMapBackground") {
             val newMap = MapGenerator(RulesetCache.getVanillaRuleset())
                     .generateMap(MapParameters().apply {
-                        mapSize = MapSizeNew(MapSize.Small)
+                        shape = MapShape.rectangular
+                        mapSize = MapSizeNew(MapSize.Small) //180-170 154
                         type = MapType.default
                         waterThreshold = -0.055f // Gives the same level as when waterThreshold was unused in MapType.default
                     })
