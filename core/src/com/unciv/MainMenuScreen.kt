@@ -80,7 +80,7 @@ class MainMenuScreen: BaseScreen() {
             val newMap = MapGenerator(RulesetCache.getVanillaRuleset())
                     .generateMap(MapParameters().apply {
                         shape = MapShape.rectangular
-                        mapSize = MapSizeNew(MapSize.Small) //180-170 154
+                        mapSize = MapSizeNew(MapSize.Small)
                         type = MapType.default
                         waterThreshold = -0.055f // Gives the same level as when waterThreshold was unused in MapType.default
                     })
