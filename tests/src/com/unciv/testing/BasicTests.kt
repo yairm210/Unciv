@@ -232,6 +232,22 @@ class BasicTests {
     }
 
     @Test
+    fun allEraRelatedUniquesHaveTheirUniqueTypes() {
+        val ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!.clone() // vanilla doesn't have beliefs
+        val eras = ruleset.eras.values
+        var allOK = true
+        for (era in eras) {
+            for (unique in era.uniques) {
+                if (!UniqueType.values().any { it.placeholderText == unique.getPlaceholderText() }) {
+                    println("${era.name}: $unique")
+                    allOK = false
+                }
+            }
+        }
+        Assert.assertTrue("This test succeeds only if all era uniques are presented in UniqueType.values()", allOK)
+    }
+
+    @Test
     fun allDeprecatedUniqueTypesHaveReplacewithThatMatchesOtherType() {
         var allOK = true
         for (uniqueType in UniqueType.values()) {
