@@ -2,7 +2,6 @@ package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -16,7 +15,6 @@ import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.*
 import kotlin.math.ceil
-import kotlin.math.min
 import kotlin.math.round
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
@@ -33,11 +31,10 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         innerTable.defaults().pad(2f)
         innerTable.background = ImageGetter.getBackground(Color.BLACK.cpy().apply { a = 0.8f })
 
-        //add(innerTable).fill()
         outerPane = ScrollPane(innerTable)
         outerPane.setOverscroll(false, false)
         outerPane.setScrollingDisabled(true, false)
-        add(outerPane).maxHeight(cityScreen.stage.height/2)
+        add(outerPane).maxHeight(cityScreen.stage.height / 2)
     }
 
     fun update() {
@@ -50,18 +47,20 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
             val icon = Table()
             if (cityInfo.cityAIFocus.stat == stat) {
                 icon.add(ImageGetter.getStatIcon(stat.name).surroundWithCircle(27f, false, color = selected))
-                if (cityScreen.canChangeState)
+                if (cityScreen.canChangeState) {
                     icon.onClick {
                         cityInfo.cityAIFocus = CityFocus.NoFocus
                         cityInfo.reassignPopulation(); cityScreen.update()
                     }
+                }
             } else {
                 icon.add(ImageGetter.getStatIcon(stat.name).surroundWithCircle(27f, false, color = Color.CLEAR))
-                if (cityScreen.canChangeState)
+                if (cityScreen.canChangeState) {
                     icon.onClick {
                         cityInfo.cityAIFocus = cityInfo.cityAIFocus.safeValueOf(stat)
                         cityInfo.reassignPopulation(); cityScreen.update()
                     }
+                }
             }
             miniStatsTable.add(icon).size(27f).padRight(5f)
             val valueToDisplay = if (stat == Stat.Happiness) cityInfo.cityStats.happinessList.values.sum() else amount
@@ -71,6 +70,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
 
         innerTable.addSeparator()
         addText()
+        addCitizenManagement()
         if (!cityInfo.population.getMaxSpecialists().isEmpty()) {
             addSpecialistInfo()
         }
@@ -141,6 +141,18 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         }
 
         innerTable.add(tableWithIcons).row()
+    }
+
+    private fun addCitizenManagement() {
+        val expanderTab = CitizenManagementTable(cityScreen).asExpander {
+            pack()
+            setPosition(
+                stage.width - CityScreen.posFromEdge,
+                stage.height - CityScreen.posFromEdge,
+                Align.topRight
+            )
+        }
+        innerTable.add(expanderTab).growX().row()
     }
 
     private fun addSpecialistInfo() {
