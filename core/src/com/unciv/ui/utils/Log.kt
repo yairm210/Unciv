@@ -4,21 +4,25 @@ import java.time.Instant
 import java.util.regex.Pattern
 
 
+/**
+ * If you wonder why something isn't logged, it's probably because it's in the [disableLogsFrom] field.
+ *
+ * To stop logging/start logging classes, you have these options:
+ *
+ * 1. Edit the set [disableLogsFrom] here in the source code
+ * 2. Use a Java system property `-DnoLog=<comma-separated-list-of-class-names>` to overwrite [disableLogsFrom] completely
+ *    (potentially copy/pasting the default class list from here and adjusting to your liking)
+ * 3. While the application is running, set a breakpoint somewhere and do a "Watch"/"Evaluate expression" with `Log.disableLogsFrom.add/remove("Something")`
+ */
 object Log {
 
     /** Add -DnoLog=<comma-separated-list-of-class-names> to not log these classes. */
     private val disabledLogsFromProperty = System.getProperty("noLog")?.split(',')?.toMutableSet() ?: mutableSetOf()
 
-    /** Log tags (= class names) **containing** the following Strings will not be logged.  */
+    /** Log tags (= class names) **containing** these Strings will not be logged.  */
     val disableLogsFrom = if (disabledLogsFromProperty.isEmpty()) {
-        mutableSetOf(
-            "Battle",
-            "KeyPressDispatcher",
-            "Music",
-            "Sounds",
-            "Translations",
-            "WorkerAutomation",
-        )
+        "Battle,KeyPressDispatcher,Music,Sounds,Translations,WorkerAutomation"
+            .split(',').toMutableSet()
     } else {
         disabledLogsFromProperty
     }
@@ -138,6 +142,7 @@ open class DefaultLogBackend : LogBackend {
     override fun debug(tag: Tag, curThreadName: String, msg: String) {
         println("${Instant.now()} [${curThreadName}] [${tag.name}] $msg")
     }
+
     override fun error(tag: Tag, curThreadName: String, msg: String) {
         println("${Instant.now()} [${curThreadName}] [${tag.name}] [ERROR] $msg")
     }
