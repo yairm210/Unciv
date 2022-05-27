@@ -55,7 +55,7 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
     private fun tryGetSaveGame(): String {
         if (!UncivGame.isCurrentInitialized() || !UncivGame.Current.isGameInfoInitialized())
             return ""
-        return "\n**Save Data:**\n<details><summary>Show Saved Game</summary>\n\n```" +
+        return "\n**Save Data:**\n<details><summary>Show Saved Game</summary>\n\n```\n" +
             try {
                 GameSaver.gameInfoToString(UncivGame.Current.gameInfo, forceZip = true)
             } catch (e: Throwable) {
