@@ -639,6 +639,9 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
                 && !tile.isCityCenter())
             return false
 
+        if(tile.getOwner() != null && !unit.civInfo.canEnterBordersOf(tile.getOwner()!!))
+            return false
+
         val unitSpecificAllowOcean: Boolean by lazy {
             unit.civInfo.tech.specificUnitsCanEnterOcean &&
                     unit.civInfo.getMatchingUniques(UniqueType.UnitsMayEnterOcean)
