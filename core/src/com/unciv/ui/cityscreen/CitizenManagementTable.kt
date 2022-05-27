@@ -21,7 +21,7 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
         val resetLabel = "Reset Citizens".toLabel()
         val resetCell = Table()
         resetCell.add(resetLabel).pad(5f)
-        if (cityScreen.canChangeState){
+        if (cityScreen.canChangeState) {
             resetCell.touchable = Touchable.enabled
             resetCell.onClick { city.reassignPopulation(true); cityScreen.update() }
         }
@@ -32,7 +32,7 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
         val avoidLabel = "Avoid Growth".toLabel()
         val avoidCell = Table()
         avoidCell.add(avoidLabel).pad(5f)
-        if (cityScreen.canChangeState){
+        if (cityScreen.canChangeState) {
             avoidCell.touchable = Touchable.enabled
             avoidCell.onClick { city.avoidGrowth = !city.avoidGrowth; city.reassignPopulation(); cityScreen.update() }
         }
