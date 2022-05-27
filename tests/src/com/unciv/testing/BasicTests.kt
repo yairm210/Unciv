@@ -2,6 +2,7 @@
 package com.unciv.testing
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.utils.compression.lzma.Base
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
@@ -208,6 +209,22 @@ class BasicTests {
             for (unique in policyBranch.uniques) {
                 if (!UniqueType.values().any { it.placeholderText == unique.getPlaceholderText() }) {
                     println("${policyBranch.name}: $unique")
+                    allOK = false
+                }
+            }
+        }
+        Assert.assertTrue("This test succeeds only if all policy and policy branch uniques are presented in UniqueType.values()", allOK)
+    }
+
+    @Test
+    fun allBeliefRelatedUniquesHaveTheirUniqueTypes() {
+        val ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!.clone() // vanilla doesn't have beliefs
+        val beliefs = ruleset.beliefs.values
+        var allOK = true
+        for (belief in beliefs) {
+            for (unique in belief.uniques) {
+                if (!UniqueType.values().any { it.placeholderText == unique.getPlaceholderText() }) {
+                    println("${belief.name}: $unique")
                     allOK = false
                 }
             }
