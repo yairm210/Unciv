@@ -2,6 +2,7 @@ package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -15,10 +16,13 @@ import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.*
 import kotlin.math.ceil
+import kotlin.math.min
 import kotlin.math.round
+import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class CityStatsTable(val cityScreen: CityScreen): Table() {
     private val innerTable = Table()
+    private val outerPane: ScrollPane
     private val cityInfo = cityScreen.city
 
     init {
@@ -29,7 +33,11 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         innerTable.defaults().pad(2f)
         innerTable.background = ImageGetter.getBackground(Color.BLACK.cpy().apply { a = 0.8f })
 
-        add(innerTable).fill()
+        //add(innerTable).fill()
+        outerPane = ScrollPane(innerTable)
+        outerPane.setOverscroll(false, false)
+        outerPane.setScrollingDisabled(true, false)
+        add(outerPane).maxHeight(cityScreen.stage.height/2)
     }
 
     fun update() {
@@ -69,6 +77,9 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         if (cityInfo.religion.getNumberOfFollowers().isNotEmpty() && cityInfo.civInfo.gameInfo.isReligionEnabled())
             addReligionInfo()
 
+        innerTable.pack()
+        outerPane.layout()
+        outerPane.updateVisualScroll()
         pack()
     }
 
