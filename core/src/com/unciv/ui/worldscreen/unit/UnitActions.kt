@@ -397,7 +397,7 @@ object UnitActions {
         val couldConstruct = unit.currentMovement > 0
             && !tile.isCityCenter()
             && unit.civInfo.gameInfo.ruleSet.tileImprovements.values.any { 
-                !ImprovementPickerScreen.isHopelesslyUnbuildable(tile.getImprovementBuildingProblems(it, unit.civInfo))
+                ImprovementPickerScreen.canReport(tile.getImprovementBuildingProblems(it, unit.civInfo).toSet())
                 && unit.canBuildImprovement(it)
             }
 
