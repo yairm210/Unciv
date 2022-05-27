@@ -193,7 +193,6 @@ class BasicTests {
     @Test
     fun allPolicyRelatedUniquesHaveTheirUniqueTypes() {
         val policies = ruleset.policies.values
-        val policyBranches = ruleset.policyBranches.values
         var allOK = true
         for (policy in policies) {
             for (unique in policy.uniques) {
@@ -203,16 +202,7 @@ class BasicTests {
                 }
             }
         }
-
-        for (policyBranch in policyBranches) {
-            for (unique in policyBranch.uniques) {
-                if (!UniqueType.values().any { it.placeholderText == unique.getPlaceholderText() }) {
-                    println("${policyBranch.name}: $unique")
-                    allOK = false
-                }
-            }
-        }
-        Assert.assertTrue("This test succeeds only if all policy and policy branch uniques are presented in UniqueType.values()", allOK)
+        Assert.assertTrue("This test succeeds only if all policy uniques are presented in UniqueType.values()", allOK)
     }
 
     @Test
