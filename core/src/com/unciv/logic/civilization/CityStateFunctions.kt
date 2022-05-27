@@ -393,7 +393,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             "Standard" -> 6.5f
             "Epic" -> 14f
             "Marathon" -> 32f
-            else -> 6.5f //TODO handle
+            else -> 12f * civInfo.gameInfo.getGameSpeed().modifier - 4.1f // linear approximation of above when branches
         }
         gold += 5 * (civInfo.gameInfo.turns / turnsToIncrement).toInt()
 
