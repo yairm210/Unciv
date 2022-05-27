@@ -1,6 +1,9 @@
 package com.unciv.models.ruleset
 
+import com.badlogic.gdx.graphics.Color
 import com.unciv.models.ruleset.unique.UniqueTarget
+import com.unciv.ui.civilopedia.FormattedLine
+import com.unciv.ui.utils.Fonts
 
 class GameSpeed : RulesetObject() {
     var modifier: Float = 1f
@@ -22,6 +25,16 @@ class GameSpeed : RulesetObject() {
     override fun getUniqueTarget(): UniqueTarget = UniqueTarget.Speed
 
     override fun makeLink(): String = "GameSpeed/$name"
+    override fun getCivilopediaTextHeader() = FormattedLine(name, header = 2)
+    override fun getCivilopediaTextLines(ruleset: Ruleset) = sequence {
+        yield(FormattedLine("General speed modifier: [${modifier * 100}]% ${Fonts.turn}"))
+        yield(FormattedLine("Diplomatic deal duration: [$dealDuration] turns ${Fonts.turn}"))
+        yield(FormattedLine("Gold gift influence gain modifier: [${goldGiftMod * 100}]% ${Fonts.gold}"))
+        yield(FormattedLine("Barbarian modifier: [${barbPercent * 100}]% ${Fonts.strength}"))
+        yield(FormattedLine("Golden age length modifier: [${goldenAgePercent * 100}]% ${Fonts.happiness}"))
+        yield(FormattedLine("Adjacent city religious pressure: [$religiousPressureAdjacentCity] ${Fonts.faith}"))
+        yield(FormattedLine("Peace deal duration: [$peaceDealDuration] turns ${Fonts.turn}"))
+    }.toList()
 
     fun numTotalTurns(): Int = yearsToTurnObject.last().toTurn
 

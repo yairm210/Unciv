@@ -205,6 +205,7 @@ class CivilopediaScreen(
                 CivilopediaCategories.Belief -> (ruleset.beliefs.values.asSequence() +
                         Belief.getCivilopediaReligionEntry(ruleset)).toList()
                 CivilopediaCategories.Era -> ruleset.eras.values
+                CivilopediaCategories.GameSpeed -> ruleset.gameSpeeds.values
             }
 
         for (loopCategory in CivilopediaCategories.values()) {
@@ -299,7 +300,7 @@ class CivilopediaScreen(
     }
 
     private fun navigateEntries(direction: Int) {
-        //todo this is abusing a Map as Array - there must be a collection allowing both easy positional and associative access 
+        //todo this is abusing a Map as Array - there must be a collection allowing both easy positional and associative access
         val index = entryIndex.keys.indexOf(currentEntry)
         if (index < 0) return selectEntry(entryIndex.keys.first(), true)
         val newIndex = when (direction) {
