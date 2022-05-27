@@ -81,14 +81,12 @@ class CustomFileLocationHelperAndroid(private val activity: Activity) : CustomFi
     }
 
     fun onActivityResult(requestCode: Int, data: Intent?) {
-        val callback = synchronized(this) {
+        val activityCallback = synchronized(this) {
             val index = callbacks.indexOfFirst { it.requestCode == requestCode }
             if (index == -1) return
             callbacks.removeAt(index)
         }
-        postCrashHandlingRunnable {
-            callback.callback(data?.data)
-        }
+        activityCallback.callback(data?.data)
     }
 }
 
