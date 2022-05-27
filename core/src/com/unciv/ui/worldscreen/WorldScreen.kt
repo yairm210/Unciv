@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
+import com.unciv.utils.debug
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.ReligionState
@@ -128,10 +129,6 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
     private val events = EventBus.EventReceiver()
 
-    companion object {
-        /** Switch for console logging of next turn duration */
-        private const val consoleLog = false
-    }
 
     init {
         val maxNotificationsHeight = topBar.y - nextTurnButton.height -
@@ -374,7 +371,11 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         }
 
         try {
+            debug("loadLatestMultiplayerState current game: gameId: %s, turn: %s, curCiv: %s",
+                game.worldScreen.gameInfo.gameId, game.worldScreen.gameInfo.turns, game.worldScreen.gameInfo.currentPlayer)
             val latestGame = game.onlineMultiplayer.downloadGame(gameInfo.gameId)
+            debug("loadLatestMultiplayerState downloaded game: gameId: %s, turn: %s, curCiv: %s",
+                latestGame.gameId, latestGame.turns, latestGame.currentPlayer)
             if (viewingCiv.civName == latestGame.currentPlayer || viewingCiv.civName == Constants.spectator) {
                 game.platformSpecificHelper?.notifyTurnStarted()
             }
@@ -655,8 +656,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
         // on a separate thread so the user can explore their world while we're passing the turn
         nextTurnUpdateJob = launchCrashHandling("NextTurn", runAsDaemon = false) {
-            if (consoleLog)
-                println("\nNext turn starting " + Date().formatDate())
+            debug("Next turn starting")
             val startTime = System.currentTimeMillis()
             val originalGameInfo = gameInfo
             val gameInfoClone = originalGameInfo.clone()
@@ -688,8 +688,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                 return@launchCrashHandling
 
             this@WorldScreen.game.gameInfo = gameInfoClone
-            if (consoleLog)
-                println("Next turn took ${System.currentTimeMillis()-startTime}ms")
+            debug("Next turn took %sms", System.currentTimeMillis() - startTime)
 
             val shouldAutoSave = gameInfoClone.turns % game.settings.turnsBetweenAutosaves == 0
 

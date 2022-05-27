@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
@@ -53,7 +54,8 @@ class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen(disableScroll = true
         newSave.add(copyJsonButton).row()
 
         if (game.gameSaver.canLoadFromCustomSaveLocation()) {
-            val saveToCustomLocation = "Save to custom location".toTextButton()
+            val saveText = "Save to custom location".tr()
+            val saveToCustomLocation = TextButton(saveText, BaseScreen.skin)
             val errorLabel = "".toLabel(Color.RED)
             saveToCustomLocation.enable()
             saveToCustomLocation.onClick {
@@ -61,14 +63,15 @@ class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen(disableScroll = true
                 saveToCustomLocation.setText("Saving...".tr())
                 saveToCustomLocation.disable()
                 launchCrashHandling("SaveGame", runAsDaemon = false) {
-                    game.gameSaver.saveGameToCustomLocation(gameInfo, gameNameTextField.text) { e ->
-                        if (e == null) {
-                            postCrashHandlingRunnable { game.resetToWorldScreen() }
-                        } else if (e !is CancellationException) {
+                    game.gameSaver.saveGameToCustomLocation(gameInfo, gameNameTextField.text) { result ->
+                        if (result.isError()) {
                             errorLabel.setText("Could not save game to custom location!".tr())
-                            e.printStackTrace()
+                            result.exception?.printStackTrace()
+                        } else if (result.isSuccessful()) {
+                            game.resetToWorldScreen()
                         }
                         saveToCustomLocation.enable()
+                        saveToCustomLocation.setText(saveText)
                     }
                 }
             }

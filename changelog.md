@@ -1,3 +1,18 @@
+## 4.1.4
+
+AI counteroffers will no longer contain items already offered by the player
+
+By itanasi:
+- Citizen management area expandable
+- Citizen Management buttons disabled if Spectator
+- Make Locked Tiles clickable
+
+Puppet cities only focus on gold - By alexban011
+
+Multiplayer Status Display - By Azzurite
+
+Fix piety complete faith discount - By OptimizedForDensity
+
 ## 4.1.3
 
 By SomeTroglodyte:
