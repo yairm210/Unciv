@@ -604,6 +604,9 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
                 return true // if city is free - no problem, get in
         } // let's check whether it enters city on carrier now...
 
+        if(tile.getOwner() != null && !unit.civInfo.canEnterBordersOf(tile.getOwner()!!))
+            return false
+
         if (tile.militaryUnit != null) {
             val unitAtDestination = tile.militaryUnit!!
             return unitAtDestination.canTransport(unit)
