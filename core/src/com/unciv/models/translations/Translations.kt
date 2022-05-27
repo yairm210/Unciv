@@ -8,9 +8,8 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.utils.Log
 import com.unciv.utils.debug
+import java.time.temporal.ChronoUnit
 import java.util.*
-import kotlin.collections.HashMap
-import kotlin.collections.LinkedHashSet
 
 /**
  *  This collection holds all translations for the game.
@@ -486,3 +485,6 @@ fun String.removeConditionals(): String {
         .trim()
 }
 
+fun ChronoUnit.tr(): String {
+    return toString().tr()
+}

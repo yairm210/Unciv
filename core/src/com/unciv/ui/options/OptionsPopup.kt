@@ -14,6 +14,8 @@ import com.unciv.ui.utils.TabbedPager
 import com.unciv.ui.utils.center
 import com.unciv.ui.utils.toCheckBox
 import com.unciv.ui.worldscreen.WorldScreen
+import java.time.Duration
+import kotlin.reflect.KMutableProperty0
 
 /**
  * The Options (Settings) Popup
@@ -135,6 +137,14 @@ class OptionsPopup(
                 screen.shouldUpdate = true
         }
         table.add(checkbox).colspan(2).left().row()
+    }
+
+    fun addCheckbox(table: Table,
+                    text: String,
+                    settingsProperty: KMutableProperty0<Boolean>,
+                    updateWorld: Boolean = false,
+                    action: (Boolean) -> Unit = {}) {
+        addCheckbox(table, text, settingsProperty.get(), updateWorld, action)
     }
 
 }
