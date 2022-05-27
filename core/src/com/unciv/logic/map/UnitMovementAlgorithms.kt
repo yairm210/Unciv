@@ -583,6 +583,9 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         if (!assumeCanPassThrough && !canPassThrough(tile))
             return false
 
+        if(tile.getOwner() != null && !unit.civInfo.canEnterBordersOf(tile.getOwner()!!))
+            return false
+
         // even if they'll let us pass through, we can't enter their city - unless we just captured it
         if (tile.isCityCenter() && tile.getOwner() != unit.civInfo && !tile.getCity()!!.hasJustBeenConquered)
             return false
