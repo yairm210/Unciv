@@ -15,13 +15,13 @@ import com.unciv.utils.Log
 import java.io.File
 
 open class AndroidLauncher : AndroidApplication() {
-    private var customSaveLocationHelper: CustomSaveLocationHelperAndroid? = null
+    private var customFileLocationHelper: CustomFileLocationHelperAndroid? = null
     private var game: UncivGame? = null
     private var deepLinkedMultiplayerGame: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.backend = AndroidLogBackend()
-        customSaveLocationHelper = CustomSaveLocationHelperAndroid(this)
+        customFileLocationHelper = CustomFileLocationHelperAndroid(this)
         MultiplayerTurnCheckWorker.createNotificationChannels(applicationContext)
 
         copyMods()
@@ -41,7 +41,7 @@ open class AndroidLauncher : AndroidApplication() {
             version = BuildConfig.VERSION_NAME,
             crashReportSysInfo = CrashReportSysInfoAndroid,
             fontImplementation = NativeFontAndroid(Fonts.ORIGINAL_FONT_SIZE.toInt(), fontFamily),
-            customSaveLocationHelper = customSaveLocationHelper,
+            customFileLocationHelper = customFileLocationHelper,
             platformSpecificHelper = platformSpecificHelper
         )
 
@@ -72,9 +72,12 @@ open class AndroidLauncher : AndroidApplication() {
         if (UncivGame.isCurrentInitialized()
                 && UncivGame.Current.isGameInfoInitialized()
                 && UncivGame.Current.settings.multiplayer.turnCheckerEnabled
-                && UncivGame.Current.gameSaver.getMultiplayerSaves().any()) {
-            MultiplayerTurnCheckWorker.startTurnChecker(applicationContext, UncivGame.Current.gameSaver,
-                UncivGame.Current.gameInfo, UncivGame.Current.settings.multiplayer)
+                && UncivGame.Current.gameSaver.getMultiplayerSaves().any()
+        ) {
+            MultiplayerTurnCheckWorker.startTurnChecker(
+                applicationContext, UncivGame.Current.gameSaver,
+                UncivGame.Current.gameInfo, UncivGame.Current.settings.multiplayer
+            )
         }
         super.onPause()
     }
@@ -115,7 +118,7 @@ open class AndroidLauncher : AndroidApplication() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        customSaveLocationHelper?.handleIntentData(requestCode, data?.data)
+        customFileLocationHelper?.onActivityResult(requestCode, data)
         super.onActivityResult(requestCode, resultCode, data)
     }
 }

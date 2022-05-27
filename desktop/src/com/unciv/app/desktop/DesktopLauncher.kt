@@ -54,7 +54,7 @@ internal object DesktopLauncher {
             versionFromJar,
             cancelDiscordEvent = { discordTimer?.cancel() },
             fontImplementation = NativeFontDesktop(Fonts.ORIGINAL_FONT_SIZE.toInt(), settings.fontFamily),
-            customSaveLocationHelper = CustomSaveLocationHelperDesktop(),
+            customFileLocationHelper = CustomFileLocationHelperDesktop(),
             crashReportSysInfo = CrashReportSysInfoDesktop(),
             platformSpecificHelper = platformSpecificHelper,
             audioExceptionHelper = HardenGdxAudio()

@@ -41,7 +41,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     val cancelDiscordEvent = parameters.cancelDiscordEvent
     var fontImplementation = parameters.fontImplementation
     val consoleMode = parameters.consoleMode
-    private val customSaveLocationHelper = parameters.customSaveLocationHelper
+    private val customSaveLocationHelper = parameters.customFileLocationHelper
     val platformSpecificHelper = parameters.platformSpecificHelper
     private val audioExceptionHelper = parameters.audioExceptionHelper
 
