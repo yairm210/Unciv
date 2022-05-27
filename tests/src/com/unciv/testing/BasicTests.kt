@@ -2,7 +2,6 @@
 package com.unciv.testing
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.utils.compression.lzma.Base
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
