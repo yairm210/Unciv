@@ -55,9 +55,6 @@ class CityScreen(
     /** Displays raze city button - sits on TOP CENTER */
     private var razeCityButtonHolder = Table()
 
-    /** Displays reset locks button - sits on BOT RIGHT */
-    private var resetCitizensButtonHolder = Table()
-
     /** Displays city stats info */
     private var cityStatsTable = CityStatsTable(this)
 
@@ -111,13 +108,6 @@ class CityScreen(
 
         //stage.setDebugTableUnderMouse(true)
         stage.addActor(cityStatsTable)
-        val resetCitizensButton = "Reset Citizens".toTextButton()
-        resetCitizensButton.labelCell.pad(5f)
-        resetCitizensButton.onClick { city.reassignPopulation(resetLocked = true); update() }
-        resetCitizensButtonHolder.add(resetCitizensButton)
-        resetCitizensButtonHolder.pack()
-        if (!canChangeState) resetCitizensButton.disable()
-        stage.addActor(resetCitizensButtonHolder)
         constructionsTable.addActorsToStage()
         stage.addActor(cityInfoTable)
         stage.addActor(selectedConstructionTable)
@@ -159,15 +149,6 @@ class CityScreen(
         tileTable.setPosition(stage.width - posFromEdge, posFromEdge, Align.bottomRight)
         selectedConstructionTable.update(selectedConstruction)
         selectedConstructionTable.setPosition(stage.width - posFromEdge, posFromEdge, Align.bottomRight)
-        if (selectedTile == null && selectedConstruction == null)
-            resetCitizensButtonHolder.setPosition(stage.width - posFromEdge,
-                    posFromEdge, Align.bottomRight)
-        else if (selectedConstruction != null)
-            resetCitizensButtonHolder.setPosition(stage.width - posFromEdge,
-                    posFromEdge + selectedConstructionTable.height + 10f, Align.bottomRight)
-        else
-            resetCitizensButtonHolder.setPosition(stage.width - posFromEdge,
-                    posFromEdge + tileTable.height + 10f, Align.bottomRight)
 
         // In portrait mode only: calculate already occupied horizontal space
         val rightMargin = when {

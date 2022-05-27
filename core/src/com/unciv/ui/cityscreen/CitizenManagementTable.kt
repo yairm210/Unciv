@@ -18,6 +18,17 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
         val colorButton = BaseScreen.skin.get("color", Color::class.java)
         // effectively a button, but didn't want to rewrite TextButton style
         // and much more compact and can control backgrounds easily based on settings
+        val resetLabel = "Reset Citizens".toLabel()
+        val resetCell = Table()
+        resetCell.add(resetLabel).pad(5f)
+        if (cityScreen.canChangeState){
+            resetCell.touchable = Touchable.enabled
+            resetCell.onClick { city.reassignPopulation(true); cityScreen.update() }
+        }
+        resetCell.background = ImageGetter.getBackground(colorButton)
+        add(resetCell).colspan(2).growX().pad(3f)
+        row()
+
         val avoidLabel = "Avoid Growth".toLabel()
         val avoidCell = Table()
         avoidCell.add(avoidLabel).pad(5f)
@@ -25,7 +36,6 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
             avoidCell.touchable = Touchable.enabled
             avoidCell.onClick { city.avoidGrowth = !city.avoidGrowth; city.reassignPopulation(); cityScreen.update() }
         }
-
         avoidCell.background = ImageGetter.getBackground(if (city.avoidGrowth) colorSelected else colorButton)
         add(avoidCell).colspan(2).growX().pad(3f)
         row()
