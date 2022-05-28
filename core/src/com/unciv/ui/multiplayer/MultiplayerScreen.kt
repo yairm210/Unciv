@@ -1,24 +1,22 @@
 package com.unciv.ui.multiplayer
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.ui.*
-import com.unciv.UncivGame
-import com.unciv.logic.*
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.event.EventBus
-import com.unciv.logic.multiplayer.*
-import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
+import com.unciv.logic.multiplayer.MultiplayerGameDeleted
+import com.unciv.logic.multiplayer.OnlineMultiplayerGame
 import com.unciv.models.translations.tr
+import com.unciv.ui.multiplayer.GameList
+import com.unciv.ui.multiplayer.MultiplayerHelpers
 import com.unciv.ui.pickerscreens.PickerScreen
-import com.unciv.ui.utils.*
-import com.unciv.ui.crashhandling.launchCrashHandling
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
-import java.io.FileNotFoundException
-import java.time.Duration
-import java.time.Instant
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.disable
+import com.unciv.ui.utils.enable
+import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.toTextButton
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
@@ -58,7 +56,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
 
         setupRightSideButton()
 
-        events.receive(MultiplayerGameDeleted::class, {it.name == selectedGame?.name}) {
+        events.receive(MultiplayerGameDeleted::class, { it.name == selectedGame?.name }) {
             unselectGame()
         }
 
@@ -67,7 +65,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
 
     private fun setupRightSideButton() {
         rightSideButton.setText("Join game".tr())
-        rightSideButton.onClick { joinMultiplayerGame(selectedGame!!) }
+        rightSideButton.onClick { MultiplayerHelpers.loadMultiplayerGame(this, selectedGame!!) }
     }
 
     private fun createRightSideTable(): Table {
@@ -129,7 +127,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
     private fun createCopyUserIdButton(): TextButton {
         val btn = copyUserIdText.toTextButton()
         btn.onClick {
-            Gdx.app.clipboard.contents = game.settings.userId
+            Gdx.app.clipboard.contents = game.settings.multiplayer.userId
             ToastPopup("UserID copied to clipboard", this)
         }
         return btn
@@ -171,23 +169,6 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
         stage.addActor(tab)
     }
 
-    fun joinMultiplayerGame(selectedGame: OnlineMultiplayerGame) {
-        val loadingGamePopup = Popup(this)
-        loadingGamePopup.addGoodSizedLabel("Loading latest game state...")
-        loadingGamePopup.open()
-
-        launchCrashHandling("JoinMultiplayerGame") {
-            try {
-                game.onlineMultiplayer.loadGame(selectedGame)
-            } catch (ex: Exception) {
-                val message = getLoadExceptionMessage(ex)
-                postCrashHandlingRunnable {
-                    loadingGamePopup.reuseWith(message, true)
-                }
-            }
-        }
-    }
-
     private fun unselectGame() {
         selectedGame = null
 
@@ -215,161 +196,6 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
         editButton.enable()
         rightSideButton.enable()
 
-        descriptionLabel.setText(buildDescriptionText(multiplayerGame))
+        descriptionLabel.setText(MultiplayerHelpers.buildDescriptionText(multiplayerGame))
     }
-
-    private fun buildDescriptionText(multiplayerGame: OnlineMultiplayerGame): StringBuilder {
-        val descriptionText = StringBuilder()
-        val ex = multiplayerGame.error
-        if (ex != null) {
-            descriptionText.append("Error while refreshing:".tr()).append(' ')
-            val message = getLoadExceptionMessage(ex)
-            descriptionText.appendLine(message.tr())
-        }
-        val lastUpdate = multiplayerGame.lastUpdate
-        descriptionText.appendLine("Last refresh: ${formattedElapsedTime(lastUpdate)} ago".tr())
-        val preview = multiplayerGame.preview
-        if (preview?.currentPlayer != null) {
-            val currentTurnStartTime = Instant.ofEpochMilli(preview.currentTurnStartTime)
-            descriptionText.appendLine("Current Turn: [${preview.currentPlayer}] since ${formattedElapsedTime(currentTurnStartTime)} ago".tr())
-        }
-        return descriptionText
-    }
-
-    private fun formattedElapsedTime(lastUpdate: Instant): String {
-        val durationToNow = Duration.between(lastUpdate, Instant.now())
-        val elapsedMinutes = durationToNow.toMinutes()
-        if (elapsedMinutes < 120) return "[$elapsedMinutes] [Minutes]"
-        val elapsedHours = durationToNow.toHours()
-        if (elapsedHours < 48) {
-            return "[${elapsedHours}] [Hours]"
-        } else {
-            return "[${durationToNow.toDays()}] [Days]"
-        }
-    }
-
-    fun getLoadExceptionMessage(ex: Exception) = when (ex) {
-        is FileStorageRateLimitReached -> "Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds"
-        is FileNotFoundException -> "File could not be found on the multiplayer server"
-        is UncivShowableException -> ex.message!! // some of these seem to be translated already, but not all
-        else -> "Unhandled problem, [${ex::class.simpleName}] ${ex.message}"
-    }
-}
-
-private class GameList(
-    onSelected: (String) -> Unit
-) : VerticalGroup() {
-
-    private val gameDisplays = mutableMapOf<String, GameDisplay>()
-
-    private val events = EventBus.EventReceiver()
-
-    init {
-        padTop(10f)
-        padBottom(10f)
-
-        events.receive(MultiplayerGameAdded::class) {
-            val multiplayerGame = UncivGame.Current.onlineMultiplayer.getGameByName(it.name)
-            if (multiplayerGame == null) return@receive
-            addGame(it.name, multiplayerGame.preview, multiplayerGame.error, onSelected)
-        }
-        events.receive(MultiplayerGameNameChanged::class) {
-            val gameDisplay = gameDisplays.remove(it.oldName)
-            if (gameDisplay == null) return@receive
-            gameDisplay.changeName(it.name)
-            gameDisplays[it.name] = gameDisplay
-            children.sort()
-        }
-        events.receive(MultiplayerGameDeleted::class) {
-            val gameDisplay = gameDisplays.remove(it.name)
-            if (gameDisplay == null) return@receive
-            gameDisplay.remove()
-        }
-        for (game in UncivGame.Current.onlineMultiplayer.games) {
-            addGame(game.name, game.preview, game.error, onSelected)
-        }
-    }
-
-    private fun addGame(name: String, preview: GameInfoPreview?, error: Exception?, onSelected: (String) -> Unit) {
-        val gameDisplay = GameDisplay(name, preview, error, onSelected)
-        gameDisplays[name] = gameDisplay
-        addActor(gameDisplay)
-        children.sort()
-    }
-}
-
-private class GameDisplay(
-    multiplayerGameName: String,
-    preview: GameInfoPreview?,
-    error: Exception?,
-    private val onSelected: (String) -> Unit
-) : Table(), Comparable<GameDisplay> {
-    var gameName: String = multiplayerGameName
-        private set
-    val gameButton = TextButton(gameName, BaseScreen.skin)
-    val turnIndicator = createIndicator("OtherIcons/ExclamationMark")
-    val errorIndicator = createIndicator("StatIcons/Malcontent")
-    val refreshIndicator = createIndicator("EmojiIcons/Turn")
-    val statusIndicators = HorizontalGroup()
-
-    val events = EventBus.EventReceiver()
-
-    init {
-        padBottom(5f)
-
-        updateTurnIndicator(preview)
-        updateErrorIndicator(error != null)
-        add(statusIndicators)
-        add(gameButton)
-        onClick { onSelected(gameName) }
-
-        events.receive(MultiplayerGameUpdateStarted::class, { it.name == gameName }, {
-            statusIndicators.addActor(refreshIndicator)
-        })
-        events.receive(MultiplayerGameUpdateUnchanged::class, { it.name == gameName }, {
-            refreshIndicator.remove()
-        })
-        events.receive(MultiplayerGameUpdated::class, { it.name == gameName }) {
-            updateTurnIndicator(it.preview)
-            updateErrorIndicator(false)
-            refreshIndicator.remove()
-        }
-        events.receive(MultiplayerGameUpdateFailed::class, { it.name == gameName }) {
-            updateErrorIndicator(true)
-            refreshIndicator.remove()
-        }
-    }
-
-    fun changeName(newName: String) {
-        gameName = newName
-        gameButton.setText(newName)
-    }
-
-    private fun updateTurnIndicator(preview: GameInfoPreview?) {
-        if (preview?.isUsersTurn() == true) {
-            statusIndicators.addActor(turnIndicator)
-        } else {
-            turnIndicator.remove()
-        }
-    }
-
-    private fun updateErrorIndicator(hasError: Boolean) {
-        if (hasError) {
-            statusIndicators.addActor(errorIndicator)
-        } else {
-            errorIndicator.remove()
-        }
-    }
-
-    private fun createIndicator(imagePath: String): Actor {
-        val image = ImageGetter.getImage(imagePath)
-        image.setSize(50f)
-        val container = Container(image)
-        container.padRight(5f)
-        return container
-    }
-
-    override fun compareTo(other: GameDisplay): Int = gameName.compareTo(other.gameName)
-    override fun equals(other: Any?): Boolean = (other is GameDisplay) && (gameName == other.gameName)
-    override fun hashCode(): Int = gameName.hashCode()
 }

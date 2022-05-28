@@ -16,6 +16,7 @@ import com.unciv.ui.newgamescreen.MapParametersTable
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.*
+import com.unciv.utils.Log
 import kotlin.concurrent.thread
 
 class MapEditorGenerateTab(
@@ -116,7 +117,7 @@ class MapEditorGenerateTab(
                         }
                     }
                     MapGeneratorSteps.Landmass -> {
-                        // This step _could_ run on an existing tileMap, but that opens a loophole where you get hills on water - fixing that is more expensive than always recreating 
+                        // This step _could_ run on an existing tileMap, but that opens a loophole where you get hills on water - fixing that is more expensive than always recreating
                         mapParameters.type = MapType.empty
                         val generatedMap = generator!!.generateMap(mapParameters)
                         mapParameters.type = editorScreen.newMapParameters.type
@@ -136,7 +137,7 @@ class MapEditorGenerateTab(
                     }
                 }
             } catch (exception: Exception) {
-                println("Map generator exception: ${exception.message}")
+                Log.error("Exception while generating map", exception)
                 Gdx.app.postRunnable {
                     setButtonsEnabled(true)
                     Gdx.input.inputProcessor = editorScreen.stage

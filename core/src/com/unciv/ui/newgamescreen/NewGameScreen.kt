@@ -72,7 +72,7 @@ class NewGameScreen(
         rightSideButton.setText("Start game!".tr())
         rightSideButton.onClick {
             if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
-                val isDropbox = UncivGame.Current.settings.multiplayerServer == Constants.dropboxMultiplayerServer
+                val isDropbox = UncivGame.Current.settings.multiplayer.server == Constants.dropboxMultiplayerServer
                 if (!checkConnectionToMultiplayerServer()) {
                     val noInternetConnectionPopup = Popup(this)
                     val label = if (isDropbox) "Couldn't connect to Dropbox!" else "Couldn't connect to Multiplayer Server!"
@@ -99,7 +99,7 @@ class NewGameScreen(
                 it.playerType == PlayerType.Human &&
                     // do not allow multiplayer with only remote spectator(s) and AI(s) - non-MP that works
                     !(it.chosenCiv == Constants.spectator && gameSetupInfo.gameParameters.isOnlineMultiplayer &&
-                            it.playerId != UncivGame.Current.settings.userId)
+                            it.playerId != UncivGame.Current.settings.multiplayer.userId)
             }) {
                 val noHumanPlayersPopup = Popup(this)
                 noHumanPlayersPopup.addGoodSizedLabel("No human players selected!".tr()).row()
@@ -187,7 +187,7 @@ class NewGameScreen(
         topTable.add(playerPickerTable)  // No ScrollPane, PlayerPickerTable has its own
                 .width(stage.width / 3).top()
     }
-    
+
     private fun initPortrait() {
         scrollPane.setScrollingDisabled(false,false)
 
@@ -198,7 +198,7 @@ class NewGameScreen(
 
         topTable.add(newGameOptionsTable.modCheckboxes).expandX().fillX().row()
         topTable.addSeparator(Color.DARK_GRAY, height = 1f)
-        
+
         topTable.add(ExpanderTab("Map Options") {
             it.add(mapOptionsTable).row()
         }).expandX().fillX().row()
@@ -211,9 +211,9 @@ class NewGameScreen(
     }
 
     private fun checkConnectionToMultiplayerServer(): Boolean {
-        val isDropbox = UncivGame.Current.settings.multiplayerServer == Constants.dropboxMultiplayerServer
+        val isDropbox = UncivGame.Current.settings.multiplayer.server == Constants.dropboxMultiplayerServer
         return try {
-            val multiplayerServer = UncivGame.Current.settings.multiplayerServer
+            val multiplayerServer = UncivGame.Current.settings.multiplayer.server
             val u =  URL(if (isDropbox) "https://content.dropboxapi.com" else multiplayerServer)
             val con = u.openConnection()
             con.connectTimeout = 3000
@@ -255,7 +255,7 @@ class NewGameScreen(
             newGame.isUpToDate = true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
             try {
                 game.onlineMultiplayer.createGame(newGame)
-                GameSaver.autoSave(newGame)
+                game.gameSaver.autoSave(newGame)
             } catch (ex: FileStorageRateLimitReached) {
                 postCrashHandlingRunnable {
                     popup.reuseWith("Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds", true)
@@ -333,7 +333,7 @@ class TranslatedSelectBox(values : Collection<String>, default:String, skin: Ski
         items = array
         selected = array.firstOrNull { it.value == default } ?: array.first()
     }
-    
+
     fun setSelected(newValue: String) {
         selected = items.firstOrNull { it == TranslatedString(newValue) } ?: return
     }

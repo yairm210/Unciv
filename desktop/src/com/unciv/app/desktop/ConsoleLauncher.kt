@@ -3,6 +3,7 @@ package com.unciv.app.desktop
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
+import com.unciv.utils.Log
 import com.unciv.logic.GameStarter
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapParameters
@@ -22,6 +23,7 @@ internal object ConsoleLauncher {
     @ExperimentalTime
     @JvmStatic
     fun main(arg: Array<String>) {
+        Log.backend = DesktopLogBackend()
 
         val version = "0.1"
         val consoleParameters = UncivGameParameters(

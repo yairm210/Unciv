@@ -39,8 +39,8 @@ class GameOptionsTable(
         defaults().pad(5f)
 
         // We assign this first to make sure addBaseRulesetSelectBox doesn't reference a null object
-        modCheckboxes = 
-            if (isPortrait) 
+        modCheckboxes =
+            if (isPortrait)
                 getModCheckboxes(isPortrait = true)
             else getModCheckboxes()
 
@@ -53,13 +53,13 @@ class GameOptionsTable(
             // align left and right edges with other SelectBoxes but allow independent dropdown width
             add(Table().apply {
                 val turnSlider = addMaxTurnsSlider()
-                if (turnSlider != null) 
+                if (turnSlider != null)
                     add(turnSlider).padTop(10f).row()
                 cityStateSlider = addCityStatesSlider()
             }).colspan(2).fillX().row()
         }).row()
         addVictoryTypeCheckboxes()
-        
+
 
         val checkboxTable = Table().apply { defaults().left().pad(2.5f) }
         checkboxTable.addNoBarbariansCheckbox()
@@ -97,7 +97,7 @@ class GameOptionsTable(
     private fun Table.addNuclearWeaponsCheckbox() =
             addCheckbox("Enable Nuclear Weapons", gameParameters.nuclearWeaponsEnabled)
             { gameParameters.nuclearWeaponsEnabled = it }
-    
+
     private fun Table.addIsOnlineMultiplayerCheckbox() =
             addCheckbox("Online Multiplayer", gameParameters.isOnlineMultiplayer)
             {
@@ -122,13 +122,12 @@ class GameOptionsTable(
         if (maxCityStates == 0) return null
 
         add("{Number of City-States}:".toLabel()).left().expandX()
-        val slider = UncivSlider(0f, maxCityStates.toFloat(), 1f) {
+        val slider = UncivSlider(0f, maxCityStates.toFloat(), 1f, initial = gameParameters.numberOfCityStates.toFloat()) {
             gameParameters.numberOfCityStates = it.toInt()
         }
         slider.permanentTip = true
         slider.isDisabled = locked
         add(slider).padTop(10f).row()
-        slider.value = gameParameters.numberOfCityStates.toFloat()
         return slider
     }
 
@@ -137,14 +136,13 @@ class GameOptionsTable(
             return null
 
         add("{Max Turns}:".toLabel()).left().expandX()
-        val slider = UncivSlider(250f, 1500f, 50f) {
+        val slider = UncivSlider(250f, 1500f, 50f, initial = gameParameters.maxTurns.toFloat()) {
             gameParameters.maxTurns = it.toInt()
         }
         slider.permanentTip = true
         slider.isDisabled = locked
         val snapValues = floatArrayOf(250f,300f,350f,400f,450f,500f,550f,600f,650f,700f,750f,800f,900f,1000f,1250f,1500f)
         slider.setSnapToValues(snapValues, 250f)
-        slider.value = gameParameters.maxTurns.toFloat()
         return slider
     }
 
@@ -152,8 +150,8 @@ class GameOptionsTable(
         add(text.toLabel()).left()
         val selectBox = TranslatedSelectBox(values, initialState, BaseScreen.skin)
         selectBox.isDisabled = locked
-        selectBox.onChange { 
-            val changedValue = onChange(selectBox.selected.value) 
+        selectBox.onChange {
+            val changedValue = onChange(selectBox.selected.value)
             if (changedValue != null) selectBox.setSelected(changedValue)
         }
         onChange(selectBox.selected.value)
@@ -168,7 +166,7 @@ class GameOptionsTable(
     private fun Table.addBaseRulesetSelectBox() {
         val sortedBaseRulesets = RulesetCache.getSortedBaseRulesets()
         if (sortedBaseRulesets.size < 2) return
-        
+
         addSelectBox(
             "{Base Ruleset}:",
             sortedBaseRulesets,
@@ -176,7 +174,7 @@ class GameOptionsTable(
         ) { newBaseRuleset ->
             val previousSelection = gameParameters.baseRuleset
             if (newBaseRuleset == gameParameters.baseRuleset) return@addSelectBox null
-            
+
             // Check if this mod is well-defined
             val baseRulesetErrors = RulesetCache[newBaseRuleset]!!.checkModLinks()
             if (baseRulesetErrors.isError()) {
@@ -184,7 +182,7 @@ class GameOptionsTable(
                 ToastPopup(toastMessage, previousScreen as BaseScreen, 5000L)
                 return@addSelectBox previousSelection
             }
-            
+
             // If so, add it to the current ruleset
             gameParameters.baseRuleset = newBaseRuleset
             onChooseMod(newBaseRuleset)
@@ -201,13 +199,13 @@ class GameOptionsTable(
                 modCheckboxes!!.disableAllCheckboxes()
             } else if (modLinkErrors.isWarnUser()) {
                 val toastMessage =
-                    "{The mod combination you selected has problems.}\n{You can play it, but don't expect everything to work!}".tr() + 
+                    "{The mod combination you selected has problems.}\n{You can play it, but don't expect everything to work!}".tr() +
                     "\n\n${modLinkErrors.getErrorText()}"
                 ToastPopup(toastMessage, previousScreen as BaseScreen, 5000L)
             }
-            
+
             modCheckboxes!!.setBaseRuleset(newBaseRuleset)
-            
+
             null
         }
     }
@@ -223,7 +221,7 @@ class GameOptionsTable(
         addSelectBox("{Starting Era}:", eras, gameParameters.startingEra)
         { gameParameters.startingEra = it; null }
     }
-    
+
     private fun addVictoryTypeCheckboxes() {
         add("{Victory Conditions}:".toLabel()).colspan(2).row()
 

@@ -129,7 +129,7 @@ object NextTurnAutomation {
         val tradeLogic = TradeLogic(civInfo, otherCiv)
         tradeLogic.currentTrade.set(tradeRequest.trade.reverse())
 
-        // What do they have that we would want???
+        // What do they have that we would want?
         val potentialAsks = HashMap<TradeOffer, Int>()
         val counterofferAsks = HashMap<TradeOffer, Int>()
         val counterofferGifts = ArrayList<TradeOffer>()
@@ -142,8 +142,10 @@ object NextTurnAutomation {
                 continue // For example resources gained by trade or CS
             if (offer.type == TradeType.City)
                 continue // Players generally don't want to give up their cities, and they might misclick
-            if (offer.type == TradeType.Agreement && tradeLogic.currentTrade.theirOffers.contains(offer))
-                continue // So you don't get double offers of open borders etc.
+
+            if (tradeLogic.currentTrade.theirOffers.any { it.type == offer.type && it.name == offer.name })
+                continue // So you don't get double offers of open borders declarations of war etc.
+
             val value = evaluation.evaluateBuyCost(offer, civInfo, otherCiv)
             if (value > 0)
                 potentialAsks[offer] = value
@@ -473,7 +475,7 @@ object NextTurnAutomation {
 
         for (resource in civInfo.gameInfo.spaceResources) {
             // Have enough resources already
-            val resourceCount = civInfo.getCivResourcesByName()[resource] ?: 0 
+            val resourceCount = civInfo.getCivResourcesByName()[resource] ?: 0
             if (resourceCount >= Automation.getReservedSpaceResourceAmount(civInfo))
                 continue
 
@@ -691,7 +693,7 @@ object NextTurnAutomation {
     private fun motivationToAttack(civInfo: CivilizationInfo, otherCiv: CivilizationInfo): Int {
         if(civInfo.cities.isEmpty() || otherCiv.cities.isEmpty()) return 0
         val baseForce = 30f
-        
+
         val ourCombatStrength = civInfo.getStatForRanking(RankingType.Force).toFloat() + baseForce
         var theirCombatStrength = otherCiv.getStatForRanking(RankingType.Force).toFloat() + baseForce
 
@@ -705,9 +707,9 @@ object NextTurnAutomation {
         val closestCities = getClosestCities(civInfo, otherCiv)
         val ourCity = closestCities.city1
         val theirCity = closestCities.city2
-        
+
         if (civInfo.getCivUnits().filter { it.isMilitary() }.none {
-                val damageRecievedWhenAttacking = 
+                val damageRecievedWhenAttacking =
                     BattleDamage.calculateDamageToAttacker(
                         MapUnitCombatant(it),
                         CityCombatant(theirCity)
@@ -722,7 +724,7 @@ object NextTurnAutomation {
                     && (owner == otherCiv || owner == null || civInfo.canPassThroughTiles(owner))
         }
 
-        val reachableEnemyCitiesBfs = BFS(civInfo.getCapital().getCenterTile()) { isTileCanMoveThrough(it) }
+        val reachableEnemyCitiesBfs = BFS(civInfo.getCapital()!!.getCenterTile()) { isTileCanMoveThrough(it) }
         reachableEnemyCitiesBfs.stepToEnd()
         val reachableEnemyCities = otherCiv.cities.filter { reachableEnemyCitiesBfs.hasReachedTile(it.getCenterTile()) }
         if (reachableEnemyCities.isEmpty()) return 0 // Can't even reach the enemy city, no point in war.

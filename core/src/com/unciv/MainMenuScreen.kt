@@ -7,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
-import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapSize
@@ -19,6 +18,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.multiplayer.MultiplayerScreen
 import com.unciv.ui.mapeditor.*
 import com.unciv.models.metadata.GameSetupInfo
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
@@ -29,6 +29,7 @@ import com.unciv.ui.popup.*
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.worldscreen.mainmenu.WorldScreenMenuPopup
 
 class MainMenuScreen: BaseScreen() {
     private val backgroundTable = Table().apply { background= ImageGetter.getBackground(Color.WHITE) }
@@ -97,10 +98,9 @@ class MainMenuScreen: BaseScreen() {
         val column1 = Table().apply { defaults().pad(10f).fillX() }
         val column2 = if (singleColumn) column1 else Table().apply { defaults().pad(10f).fillX() }
 
-        val autosaveGame = GameSaver.getSave(GameSaver.autoSaveFileName, false)
-        if (autosaveGame.exists()) {
+        if (game.gameSaver.autosaveExists()) {
             val resumeTable = getMenuButton("Resume","OtherIcons/Resume", 'r')
-                { autoLoadGame() }
+                { resumeGame() }
             column1.add(resumeTable).row()
         }
 
@@ -112,7 +112,7 @@ class MainMenuScreen: BaseScreen() {
             { game.setScreen(NewGameScreen(this)) }
         column1.add(newGameButton).row()
 
-        if (GameSaver.getSaves(false).any()) {
+        if (game.gameSaver.getSaves().any()) {
             val loadGameTable = getMenuButton("Load game", "OtherIcons/Load", 'l')
                 { game.setScreen(LoadGameScreen(this)) }
             column1.add(loadGameTable).row()
@@ -167,7 +167,14 @@ class MainMenuScreen: BaseScreen() {
     }
 
 
-    private fun autoLoadGame() {
+    private fun resumeGame() {
+        val curWorldScreen = game.getWorldScreenOrNull()
+        if (curWorldScreen != null) {
+            game.resetToWorldScreen()
+            curWorldScreen.popups.filterIsInstance(WorldScreenMenuPopup::class.java).forEach(Popup::close)
+            return
+        }
+
         val loadingPopup = Popup(this)
         loadingPopup.addGoodSizedLabel("Loading...")
         loadingPopup.open()
@@ -180,37 +187,33 @@ class MainMenuScreen: BaseScreen() {
                 }
             }
 
-            var savedGame: GameInfo
+            val savedGame: GameInfo
             try {
-                savedGame = GameSaver.loadGameByName(GameSaver.autoSaveFileName)
+                savedGame = game.gameSaver.loadLatestAutosave()
             } catch (oom: OutOfMemoryError) {
                 outOfMemory()
                 return@launchCrashHandling
-            } catch (ex: Exception) { // silent fail if we can't read the autosave for any reason - try to load the last autosave by turn number first
-                // This can help for situations when the autosave is corrupted
-                try {
-                    val autosaves = GameSaver.getSaves()
-                        .filter { it.name() != GameSaver.autoSaveFileName && it.name().startsWith(GameSaver.autoSaveFileName) }
-                    savedGame =
-                        GameSaver.loadGameFromFile(autosaves.maxByOrNull { it.lastModified() }!!)
-                } catch (oom: OutOfMemoryError) { // The autosave could have oom problems as well... smh
-                    outOfMemory()
-                    return@launchCrashHandling
-                } catch (ex: Exception) {
-                    postCrashHandlingRunnable {
-                        loadingPopup.close()
-                        ToastPopup("Cannot resume game!", this@MainMenuScreen)
-                    }
-                    return@launchCrashHandling
+            } catch (ex: Exception) {
+                postCrashHandlingRunnable {
+                    loadingPopup.close()
+                    ToastPopup("Cannot resume game!", this@MainMenuScreen)
                 }
+                return@launchCrashHandling
             }
 
-            postCrashHandlingRunnable { /// ... and load it into the screen on main thread for GL context
+            if (savedGame.gameParameters.isOnlineMultiplayer) {
                 try {
-                    game.loadGame(savedGame)
-                    dispose()
+                    game.onlineMultiplayer.loadGame(savedGame)
                 } catch (oom: OutOfMemoryError) {
                     outOfMemory()
+                }
+            } else {
+                postCrashHandlingRunnable { /// ... and load it into the screen on main thread for GL context
+                    try {
+                        game.loadGame(savedGame)
+                    } catch (oom: OutOfMemoryError) {
+                        outOfMemory()
+                    }
                 }
             }
         }
@@ -243,9 +246,13 @@ class MainMenuScreen: BaseScreen() {
     }
 
     private fun openCivilopedia() {
-        val ruleset =RulesetCache[game.settings.lastGameSetup?.gameParameters?.baseRuleset]
-            ?: RulesetCache[BaseRuleset.Civ_V_GnK.fullName]
-            ?: return
+        val rulesetParameters = game.settings.lastGameSetup?.gameParameters
+        val ruleset = if (rulesetParameters == null)
+                RulesetCache[BaseRuleset.Civ_V_GnK.fullName] ?: return
+                else RulesetCache.getComplexRuleset(rulesetParameters)
+        UncivGame.Current.translations.translationActiveMods = ruleset.mods
+        ImageGetter.setNewRuleset(ruleset)
+        setSkin()
         game.setScreen(CivilopediaScreen(ruleset, this))
     }
 

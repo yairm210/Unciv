@@ -14,6 +14,7 @@ import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.*
+import com.unciv.utils.Log
 import java.io.PrintWriter
 import java.io.StringWriter
 import kotlin.concurrent.thread
@@ -54,7 +55,7 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
     private fun tryGetSaveGame(): String {
         if (!UncivGame.isCurrentInitialized() || !UncivGame.Current.isGameInfoInitialized())
             return ""
-        return "\n**Save Data:**\n<details><summary>Show Saved Game</summary>\n\n```" +
+        return "\n**Save Data:**\n<details><summary>Show Saved Game</summary>\n\n```\n" +
             try {
                 GameSaver.gameInfoToString(UncivGame.Current.gameInfo, forceZip = true)
             } catch (e: Throwable) {
@@ -107,7 +108,7 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
     }
 
     init {
-        println(text) // Also print to system terminal.
+        Log.error(text) // Also print to system terminal.
         thread { throw exception } // this is so the GPC logs catch the exception
         stage.addActor(makeLayoutTable())
     }

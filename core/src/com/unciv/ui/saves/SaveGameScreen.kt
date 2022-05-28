@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
@@ -52,8 +53,9 @@ class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen(disableScroll = true
         }
         newSave.add(copyJsonButton).row()
 
-        if (GameSaver.canLoadFromCustomSaveLocation()) {
-            val saveToCustomLocation = "Save to custom location".toTextButton()
+        if (game.gameSaver.canLoadFromCustomSaveLocation()) {
+            val saveText = "Save to custom location".tr()
+            val saveToCustomLocation = TextButton(saveText, BaseScreen.skin)
             val errorLabel = "".toLabel(Color.RED)
             saveToCustomLocation.enable()
             saveToCustomLocation.onClick {
@@ -61,14 +63,15 @@ class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen(disableScroll = true
                 saveToCustomLocation.setText("Saving...".tr())
                 saveToCustomLocation.disable()
                 launchCrashHandling("SaveGame", runAsDaemon = false) {
-                    GameSaver.saveGameToCustomLocation(gameInfo, gameNameTextField.text) { e ->
-                        if (e == null) {
-                            postCrashHandlingRunnable { game.resetToWorldScreen() }
-                        } else if (e !is CancellationException) {
+                    game.gameSaver.saveGameToCustomLocation(gameInfo, gameNameTextField.text) { result ->
+                        if (result.isError()) {
                             errorLabel.setText("Could not save game to custom location!".tr())
-                            e.printStackTrace()
+                            result.exception?.printStackTrace()
+                        } else if (result.isSuccessful()) {
+                            game.resetToWorldScreen()
                         }
                         saveToCustomLocation.enable()
+                        saveToCustomLocation.setText(saveText)
                     }
                 }
             }
@@ -88,7 +91,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen(disableScroll = true
 
         rightSideButton.setText("Save game".tr())
         rightSideButton.onClick {
-            if (GameSaver.getSave(gameNameTextField.text).exists())
+            if (game.gameSaver.getSave(gameNameTextField.text).exists())
                 YesNoPopup("Overwrite existing file?", { saveGame() }, this).open()
             else saveGame()
         }
@@ -98,7 +101,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen(disableScroll = true
     private fun saveGame() {
         rightSideButton.setText("Saving...".tr())
         launchCrashHandling("SaveGame", runAsDaemon = false) {
-            GameSaver.saveGame(gameInfo, gameNameTextField.text) {
+            game.gameSaver.saveGame(gameInfo, gameNameTextField.text) {
                 postCrashHandlingRunnable {
                     if (it != null) ToastPopup("Could not save game!", this@SaveGameScreen)
                     else UncivGame.Current.resetToWorldScreen()
@@ -109,10 +112,9 @@ class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen(disableScroll = true
 
     private fun updateShownSaves(showAutosaves: Boolean) {
         currentSaves.clear()
-        val saves = GameSaver.getSaves()
+        val saves = game.gameSaver.getSaves(autoSaves = showAutosaves)
                 .sortedByDescending { it.lastModified() }
         for (saveGameFile in saves) {
-            if (saveGameFile.name().startsWith(GameSaver.autoSaveFileName) && !showAutosaves) continue
             val textButton = saveGameFile.name().toTextButton()
             textButton.onClick {
                 gameNameTextField.text = saveGameFile.name()

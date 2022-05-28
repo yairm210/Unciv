@@ -54,7 +54,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
             launchCrashHandling("Load Game") {
                 try {
                     // This is what can lead to ANRs - reading the file and setting the transients, that's why this is in another thread
-                    val loadedGame = GameSaver.loadGameByName(selectedSave)
+                    val loadedGame = game.gameSaver.loadGameByName(selectedSave)
                     postCrashHandlingRunnable { UncivGame.Current.loadGame(loadedGame) }
                 } catch (ex: Exception) {
                     postCrashHandlingRunnable {
@@ -96,16 +96,15 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
             }
         }
         rightSideTable.add(loadFromClipboardButton).row()
-        if (GameSaver.canLoadFromCustomSaveLocation()) {
+        if (game.gameSaver.canLoadFromCustomSaveLocation()) {
             val loadFromCustomLocation = "Load from custom location".toTextButton()
             loadFromCustomLocation.onClick {
-                GameSaver.loadGameFromCustomLocation { gameInfo, exception ->
-                    if (gameInfo != null) {
-                        postCrashHandlingRunnable {
-                            game.loadGame(gameInfo)
-                        }
-                    } else if (exception !is CancellationException)
-                        handleLoadGameException("Could not load game from custom location!", exception)
+                game.gameSaver.loadGameFromCustomLocation { result  ->
+                    if (result.isError()) {
+                        handleLoadGameException("Could not load game from custom location!", result.exception)
+                    } else if (result.isSuccessful()) {
+                        game.loadGame(result.gameData!!)
+                    }
                 }
             }
             rightSideTable.add(loadFromCustomLocation).row()
@@ -119,7 +118,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
         rightSideTable.add(loadMissingModsButton).row()
 
         deleteSaveButton.onClick {
-            GameSaver.deleteSave(selectedSave)
+            game.gameSaver.deleteSave(selectedSave)
             resetWindowState()
         }
         deleteSaveButton.disable()
@@ -127,7 +126,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
 
         copySavedGameToClipboardButton.disable()
         copySavedGameToClipboardButton.onClick {
-            val gameText = GameSaver.getSave(selectedSave).readString()
+            val gameText = game.gameSaver.getSave(selectedSave).readString()
             val gzippedGameText = Gzip.zip(gameText)
             Gdx.app.clipboard.contents = gzippedGameText
         }
@@ -209,12 +208,11 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
         // not sure how many saves these guys had but Google Play reports this to have happened hundreds of times
         launchCrashHandling("GetSaves") {
             // .toList() because otherwise the lastModified will only be checked inside the postRunnable
-            val saves = GameSaver.getSaves().sortedByDescending { it.lastModified() }.toList()
+            val saves = game.gameSaver.getSaves(autoSaves = showAutosaves).sortedByDescending { it.lastModified() }.toList()
 
             postCrashHandlingRunnable {
                 saveTable.clear()
                 for (save in saves) {
-                    if (save.name().startsWith(GameSaver.autoSaveFileName) && !showAutosaves) continue
                     val textButton = TextButton(save.name(), skin)
                     textButton.onClick { onSaveSelected(save) }
                     saveTable.add(textButton).pad(5f).row()
@@ -238,7 +236,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
         var textToSet = save.name() + "\n${"Saved at".tr()}: " + savedAt.formatDate()
         launchCrashHandling("LoadMetaData") { // Even loading the game to get its metadata can take a long time on older phones
             try {
-                val game = GameSaver.loadGamePreviewFromFile(save)
+                val game = game.gameSaver.loadGamePreviewFromFile(save)
                 val playerCivNames = game.civilizations.filter { it.isPlayerCivilization() }.joinToString { it.civName.tr() }
                 textToSet += "\n" + playerCivNames +
                         ", " + game.difficulty.tr() + ", ${Fonts.turn}" + game.turns

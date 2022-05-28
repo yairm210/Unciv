@@ -2,7 +2,6 @@ package com.unciv.ui.worldscreen.mainmenu
 
 import com.badlogic.gdx.Gdx
 import com.unciv.MainMenuScreen
-import com.unciv.logic.GameSaver
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.ui.newgamescreen.NewGameScreen
@@ -17,7 +16,7 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
         defaults().fillX()
 
         addButton("Main menu") {
-            GameSaver.autoSaveUnCloned(worldScreen.gameInfo)
+            worldScreen.game.gameSaver.autoSaveUnCloned(worldScreen.gameInfo)
             worldScreen.game.setScreen(MainMenuScreen())
         }
         addButton("Civilopedia") {
