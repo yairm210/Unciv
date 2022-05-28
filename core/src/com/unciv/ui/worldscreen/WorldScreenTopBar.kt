@@ -3,7 +3,10 @@ package com.unciv.ui.worldscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.ui.Cell
+import com.badlogic.gdx.scenes.scene2d.ui.Container
+import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.tile.ResourceType
@@ -17,8 +20,18 @@ import com.unciv.ui.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.popup.popups
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.Fonts
+import com.unciv.ui.utils.MayaCalendar
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.utils.colorFromRGB
+import com.unciv.ui.utils.darken
+import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.pad
+import com.unciv.ui.utils.setFontColor
+import com.unciv.ui.utils.setFontSize
+import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.toTextButton
 import com.unciv.ui.victoryscreen.VictoryScreen
 import com.unciv.ui.worldscreen.mainmenu.WorldScreenMenuPopup
 import kotlin.math.abs
@@ -54,8 +67,8 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     private val resourceTable = getResourceTable()
     private val selectedCivTable = SelectedCivilizationTable(worldScreen)
     private val overviewButton = OverviewAndSupplyTable(worldScreen)
-    private val leftFillerCell: Cell<Actor?>
-    private val rightFillerCell: Cell<Actor?>
+    private val leftFillerCell: Cell<BackgroundActor>
+    private val rightFillerCell: Cell<BackgroundActor>
 
     //endregion
 
@@ -66,9 +79,11 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         resourceTable.background = backgroundDrawable
         add(statsTable).colspan(3).growX().row()
         add(resourceTable).colspan(3).growX().row()
-        leftFillerCell = add(ImageGetter.getDot(backColor))
+        val leftFillerBG = BackgroundActor.getRoundedEdgeRectangle(backColor)
+        leftFillerCell = add(BackgroundActor(leftFillerBG, Align.topLeft))
         add().growX()
-        rightFillerCell = add(ImageGetter.getDot(backColor))
+        val rightFillerBG = BackgroundActor.getRoundedEdgeRectangle(backColor)
+        rightFillerCell = add(BackgroundActor(rightFillerBG, Align.topRight))
         pack()
     }
 
@@ -260,16 +275,24 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         val baseHeight = statsRowHeight + getRowHeight(1)
 
         // Check whether it gets cramped on narrow aspect ratios
-        val (fillerHeight: Float, buttonY: Float) = when {
-            leftRightNeeded * 2f > stage.width - resourceWidth ->
+        val fillerHeight: Float // Height of the background filler cells
+        val buttonY: Float      // Vertical center of Civ+Overview buttons relative to this.y
+        when {
+            leftRightNeeded * 2f > stage.width - resourceWidth -> {
                 // Need to shift buttons down to below both stats and resources
-                baseHeight to overviewButton.minHeight / 2f
-            leftRightNeeded * 2f > stage.width - statsWidth ->
+                fillerHeight = baseHeight
+                buttonY = overviewButton.minHeight / 2f
+            }
+            leftRightNeeded * 2f > stage.width - statsWidth -> {
                 // Shifting buttons down to below stats row is enough
-                statsRowHeight to overviewButton.minHeight / 2f
-            else ->
+                fillerHeight = statsRowHeight
+                buttonY = overviewButton.minHeight / 2f
+            }
+            else -> {
                 // Enough space to keep buttons to the left and right of stats and resources
-                0f to baseHeight / 2f
+                fillerHeight = 0f
+                buttonY = baseHeight / 2f
+            }
         }
 
         val leftFillerWidth = if (fillerHeight > 0f) selectedCivWidth else 0f
