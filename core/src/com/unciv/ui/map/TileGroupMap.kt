@@ -1,5 +1,6 @@
 package com.unciv.ui.map
 
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.unciv.logic.HexMath
@@ -163,6 +164,7 @@ class TileGroupMap<T: TileGroup>(
     fun getMirrorTiles(): HashMap<TileInfo, Pair<T, T>> = mirrorTileGroups
 
     // For debugging purposes
-//     override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
-//     override fun act(delta: Float) { super.act(delta) }
+     override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
+     @Suppress("RedundantOverride")
+     override fun act(delta: Float) { super.act(delta) }
 }

@@ -54,7 +54,7 @@ open class TileGroup(
     // clear on the stack of transformations that makes them work. But they are still exact ratios, AFAICT.
 
     // For recognizing the group in the profiler
-    class BaseLayerGroupClass(groupSize: Float) : ActionlessGroupSized(groupSize)
+    class BaseLayerGroupClass(groupSize: Float) : ActionlessGroup(groupSize)
     val baseLayerGroup = BaseLayerGroupClass(groupSize)
 
     val tileBaseImages: ArrayList<Image> = ArrayList()
@@ -65,7 +65,7 @@ open class TileGroup(
     private  var baseTerrainOverlayImage: Image? = null
     private  var baseTerrain: String = ""
 
-    class TerrainFeatureLayerGroupClass(groupSize: Float) : ActionlessGroupSized(groupSize)
+    class TerrainFeatureLayerGroupClass(groupSize: Float) : ActionlessGroup(groupSize)
     val terrainFeatureLayerGroup = TerrainFeatureLayerGroupClass(groupSize)
 
     // These are for OLD tiles - for instance the "forest" symbol on the forest
@@ -75,12 +75,12 @@ open class TileGroup(
     private var naturalWonderImage: Image? = null
 
     private var pixelMilitaryUnitImageLocation = ""
-    var pixelMilitaryUnitGroup = ActionlessGroupSized(groupSize)
+    var pixelMilitaryUnitGroup = ActionlessGroup(groupSize)
     private var pixelCivilianUnitImageLocation = ""
-    var pixelCivilianUnitGroup = ActionlessGroupSized(groupSize)
+    var pixelCivilianUnitGroup = ActionlessGroup(groupSize)
 
-    class MiscLayerGroupClass(groupSize: Float) : ActionlessGroupSized(groupSize) {
-        //override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
+    class MiscLayerGroupClass(groupSize: Float) : ActionlessGroup(groupSize) {
+        override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
     }
     val miscLayerGroup = MiscLayerGroupClass(groupSize)
 
@@ -108,16 +108,22 @@ open class TileGroup(
     @Suppress("LeakingThis")    // we trust TileGroupIcons not to use our `this` in its constructor except storing it for later
     val icons = TileGroupIcons(this)
 
-    class UnitLayerGroupClass(groupSize: Float) : GroupSizedTouchableDisabled(groupSize) {
-        //override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
+    class UnitLayerGroupClass(groupSize: Float) : Group() {
+        init {
+            isTransform = false
+            touchable = Touchable.disabled
+            setSize(groupSize, groupSize)
+        }
+
+        override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
         override fun act(delta: Float) { // No 'snapshotting' since we trust it will remain the same
             for (child in children)
                 child.act(delta)
         }
     }
 
-    class UnitImageLayerGroupClass(groupSize: Float) : ActionlessGroupSized(groupSize) {
-        //override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
+    class UnitImageLayerGroupClass(groupSize: Float) : ActionlessGroup(groupSize) {
+        override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
         init {
             touchable = Touchable.disabled
         }
@@ -149,7 +155,7 @@ open class TileGroup(
 
     val cityButtonLayerGroup = CityButtonLayerGroupClass(tileInfo, groupSize)
 
-    val highlightFogCrosshairLayerGroup = ActionlessGroupSized(groupSize)
+    val highlightFogCrosshairLayerGroup = ActionlessGroup(groupSize)
     val highlightImage = ImageGetter.getImage(tileSetStrings.highlight) // for blue and red circles/emphasis on the tile
     private val crosshairImage = ImageGetter.getImage(tileSetStrings.crosshair) // for when a unit is targeted
     private val fogImage = ImageGetter.getImage(tileSetStrings.crosshatchHexagon )
@@ -816,9 +822,7 @@ open class TileGroup(
     fun hideHighlight() { highlightImage.isVisible = false }
 
     /** This exists so we can easily find the TileGroup draw method in the android profiling, otherwise it's just a mass of Group.draw->drawChildren->Group.draw etc. */
-/*
     override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
     @Suppress("RedundantOverride")  // intentional
     override fun act(delta: Float) { super.act(delta) }
-*/
 }
