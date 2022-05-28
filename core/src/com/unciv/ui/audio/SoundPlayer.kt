@@ -117,7 +117,7 @@ object SoundPlayer {
             else GetSoundResult(soundMap[sound]!!, false)
 
         // Not cached - try loading it
-        val fileName = sound.value
+        val fileName = sound.fileName
         var file: FileHandle? = null
         for ( (modFolder, extension) in getFolders().flatMap {
             // This is essentially a cross join. To operate on all combinations, we pack both lambda
@@ -134,12 +134,12 @@ object SoundPlayer {
 
         @Suppress("LiftReturnOrAssignment")
         if (file == null || !file.exists()) {
-            debug("Sound %s not found!", sound.value)
+            debug("Sound %s not found!", sound.fileName)
             // remember that the actual file is missing
             soundMap[sound] = null
             return null
         } else {
-            debug("Sound %s loaded from %s", sound.value, file.path())
+            debug("Sound %s loaded from %s", sound.fileName, file.path())
             val newSound = Gdx.audio.newSound(file)
             // Store Sound for reuse
             soundMap[sound] = newSound
