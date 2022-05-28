@@ -3,6 +3,7 @@ package com.unciv.ui.worldscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.Label
@@ -27,7 +28,6 @@ import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.colorFromRGB
 import com.unciv.ui.utils.darken
 import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.pad
 import com.unciv.ui.utils.setFontColor
 import com.unciv.ui.utils.setFontSize
 import com.unciv.ui.utils.toLabel
@@ -73,6 +73,8 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     //endregion
 
     init {
+        // Not the Table, the Cells (all except one) have the background. To avoid gaps, _no_
+        // padding except inside the cell actors, and all actors need to _fill_ their cell.
         val backColor = ImageGetter.getBlue().darken(0.5f)
         val backgroundDrawable = ImageGetter.getBackground(backColor)
         statsTable.background = backgroundDrawable
@@ -87,11 +89,53 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         pack()
     }
 
+    private fun getStatsTable(): Table {
+        val statsTable = Table()
+        statsTable.defaults().pad(8f, 3f, 3f, 3f)
+
+        fun addStat(label: Label, icon: String, isLast: Boolean = false, screenFactory: ()->BaseScreen) {
+            val image = ImageGetter.getStatIcon(icon)
+            val action = {
+                worldScreen.game.setScreen(screenFactory())
+            }
+            label.onClick(action)
+            image.onClick(action)
+            statsTable.add(label)
+            statsTable.add(image).padBottom(6f).size(20f).apply {
+                if (!isLast) padRight(20f)
+            }
+        }
+        fun addStat(label: Label, icon: String, overviewPage: String, isLast: Boolean = false) =
+            addStat(label, icon, isLast) { EmpireOverviewScreen(worldScreen.selectedCiv, overviewPage) }
+
+        addStat(goldLabel, "Gold", "Stats")
+        addStat(scienceLabel, "Science") { TechPickerScreen(worldScreen.selectedCiv) }
+
+        statsTable.add(happinessImage).padBottom(6f).size(20f)
+        statsTable.add(happinessLabel).padRight(20f)
+        val invokeResourcesPage = {
+            worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Resources"))
+        }
+        happinessImage.onClick(invokeResourcesPage)
+        happinessLabel.onClick(invokeResourcesPage)
+
+        addStat(cultureLabel, "Culture") { PolicyPickerScreen(worldScreen, worldScreen.selectedCiv) }
+        if (worldScreen.gameInfo.isReligionEnabled()) {
+            addStat(faithLabel, "Faith", "Religion", isLast = true)
+        } else {
+            statsTable.add("Religion: Off".toLabel())
+        }
+
+        statsTable.pack()
+        return statsTable
+    }
+
     private fun getResourceTable(): Table {
         // Since cells with invisible actors still occupy the full actor dimensions, we only prepare
         // the future contents for resourcesWrapper here, they're added to the Table in updateResourcesTable
         val resourceTable = Table()
-        resourcesWrapper.defaults().pad(0f, 3f)
+        resourcesWrapper.defaults().pad(5f, 5f, 10f, 5f)
+        resourcesWrapper.touchable = Touchable.enabled
 
         turnsLabel.onClick {
             if (worldScreen.selectedCiv.isLongCountDisplay()) {
@@ -106,7 +150,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         }
 
         val strategicResources = worldScreen.gameInfo.ruleSet.tileResources.values
-                .filter { it.resourceType == ResourceType.Strategic }
+            .filter { it.resourceType == ResourceType.Strategic }
         for (resource in strategicResources) {
             val resourceImage = ImageGetter.getResourceImage(resource.name, 20f)
             val resourceLabel = "0".toLabel()
@@ -115,68 +159,9 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
 
         // in case the icons are configured higher than a label, we add a dummy - height will be measured once before it's updated
         resourcesWrapper.add(resourceActors[0].icon)
-        resourceTable.add(turnsLabel).pad(5f, 3f, 8f, 20f)
-        resourceTable.add(resourcesWrapper).padRight(3f)
+        resourceTable.add(turnsLabel).pad(5f, 5f, 10f, 5f)
+        resourceTable.add(resourcesWrapper)
         return resourceTable
-    }
-
-    private fun getStatsTable(): Table {
-        val statsTable = Table()
-        statsTable.defaults().pad(8f, 3f)//.align(Align.top)
-
-        statsTable.add(goldLabel)
-        val goldImage = ImageGetter.getStatIcon("Gold")
-        statsTable.add(goldImage).padRight(20f).padBottom(6f).size(20f)
-        val invokeStatsPage = {
-                worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Stats"))
-        }
-        goldLabel.onClick(invokeStatsPage)
-        goldImage.onClick(invokeStatsPage)
-
-        statsTable.add(scienceLabel) //.apply { setAlignment(Align.center) }).align(Align.top)
-        val scienceImage = ImageGetter.getStatIcon("Science")
-        statsTable.add(scienceImage).padRight(20f).padBottom(6f).size(20f)
-        val invokeTechScreen = {
-                worldScreen.game.setScreen(TechPickerScreen(worldScreen.selectedCiv))
-        }
-        scienceLabel.onClick(invokeTechScreen)
-        scienceImage.onClick(invokeTechScreen)
-
-        statsTable.add(happinessImage).padBottom(6f).size(20f)
-        statsTable.add(happinessLabel).padRight(20f)
-        val invokeResourcesPage = {
-                worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Resources"))
-        }
-        happinessImage.onClick(invokeResourcesPage)
-        happinessLabel.onClick(invokeResourcesPage)
-
-        statsTable.add(cultureLabel)
-        val cultureImage = ImageGetter.getStatIcon("Culture")
-        statsTable.add(cultureImage).padBottom(6f).size(20f)
-        val invokePoliciesPage = {
-                worldScreen.game.setScreen(PolicyPickerScreen(worldScreen, worldScreen.selectedCiv))
-        }
-        cultureLabel.onClick(invokePoliciesPage)
-        cultureImage.onClick(invokePoliciesPage)
-
-        if(worldScreen.gameInfo.isReligionEnabled()) {
-            statsTable.add(faithLabel).padLeft(20f)
-            val faithImage = ImageGetter.getStatIcon("Faith")
-            statsTable.add(faithImage).padBottom(6f).size(20f)
-
-            val invokeFaithOverview = {
-                worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Religion"))
-            }
-
-            faithLabel.onClick(invokeFaithOverview)
-            faithImage.onClick(invokeFaithOverview)
-        } else {
-            statsTable.add("Religion: Off".toLabel()).padLeft(20f)
-        }
-
-        statsTable.pack()
-        //statsTable.width = worldScreen.stage.width - 20
-        return statsTable
     }
 
     private class OverviewAndSupplyTable(worldScreen: WorldScreen) : Table(BaseScreen.skin) {
@@ -348,21 +333,22 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     }
 
     private fun updateResourcesTable(civInfo: CivilizationInfo) {
-        resourcesWrapper.clear()
-
         val year = civInfo.gameInfo.getYear()
         val yearText = if (civInfo.isLongCountDisplay()) MayaCalendar.yearToMayaDate(year)
         else "[" + abs(year) + "] " + (if (year < 0) "BC" else "AD")
         turnsLabel.setText(Fonts.turn + "" + civInfo.gameInfo.turns + " | " + yearText.tr())
 
+        resourcesWrapper.clearChildren()
+        var firstPadLeft = 20f  // We want a distance from the turns entry to the first resource, but only if any resource is displayed
         val civResources = civInfo.getCivResources()
         for ((resource, label, icon) in resourceActors) {
             if (resource.revealedBy != null && !civInfo.tech.isResearched(resource.revealedBy!!))
                 continue
-            resourcesWrapper.add(icon).padRight(0f)
+            resourcesWrapper.add(icon).padLeft(firstPadLeft).padRight(0f)
+            firstPadLeft = 5f
             val amount = civResources.get(resource, "All")?.amount ?: 0
             label.setText(amount)
-            resourcesWrapper.add(label)
+            resourcesWrapper.add(label).padTop(8f)  // digits don't have descenders, so push them down a little
         }
 
         resourceTable.pack()
