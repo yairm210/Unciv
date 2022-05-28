@@ -37,7 +37,6 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         outerPane.setOverscroll(false, false)
         outerPane.setScrollingDisabled(true, false)
         statsCell = add(outerPane)
-        statsCell.maxHeight(cityScreen.stage.height / 2)
     }
 
     fun update(height: Float) {
