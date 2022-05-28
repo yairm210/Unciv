@@ -575,8 +575,8 @@ open class TileInfo {
         WrongCiv, MissingTech, Unbuildable, NotJustOutsideBorders, OutsideBorders, UnmetConditional, Obsolete, MissingResources, Other
     }
 
-    /** Returns a list of reasons that prevent building given [improvement] or null if building it is immediately possible.
-     *  If [failFast] is set then don't actually find all problems, but return an unspecified non-null value if there are any.
+    /** Generates a sequence of reasons that prevent building given [improvement].
+     *  If the sequence is empty, improvement can be built immediately.
      */
     fun getImprovementBuildingProblems(improvement: TileImprovement, civInfo: CivilizationInfo, failFast: Boolean = false): Sequence<ImprovementBuildingProblem> = sequence {
         val stateForConditionals = StateForConditionals(civInfo, tile=this@TileInfo)
