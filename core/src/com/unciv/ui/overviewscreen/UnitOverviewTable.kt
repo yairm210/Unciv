@@ -9,7 +9,7 @@ import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
-import com.unciv.ui.audio.Sounds
+import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
@@ -202,7 +202,7 @@ class UnitOverviewTab(
                     if (enable) Color.GREEN else Color.GREEN.darken(0.5f))
                 if (enable) upgradeIcon.onClick {
                     showWorldScreenAt(unit)
-                    Sounds.play(unitAction!!.uncivSound)
+                    SoundPlayer.play(unitAction!!.uncivSound)
                     unitAction.action!!()
                 }
                 add(upgradeIcon).size(28f)

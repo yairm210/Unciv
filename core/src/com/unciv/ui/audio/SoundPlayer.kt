@@ -43,7 +43,7 @@ import java.io.File
  * a handful of them in memory we should be able to get away with keeping them alive for the
  * app lifetime - and we do dispose them when the app is disposed.
  */
-object Sounds {
+object SoundPlayer {
     @Suppress("EnumEntryName")
     private enum class SupportedExtensions { mp3, ogg, wav }    // Per Gdx docs, no aac/m4a
 
@@ -147,7 +147,8 @@ object Sounds {
         }
     }
 
-    /** Find, cache and play a Sound
+    /**
+     * Find, cache and play a Sound.
      *
      * Sources are mods from a loaded game, then mods marked as permanent audiovisual,
      * and lastly Unciv's own assets/sounds. Will fail silently if the sound file cannot be found.

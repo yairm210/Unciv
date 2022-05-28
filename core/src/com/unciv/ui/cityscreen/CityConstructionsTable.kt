@@ -16,7 +16,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
-import com.unciv.ui.audio.Sounds
+import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
@@ -409,7 +409,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         }
         cityScreen.stopPickTileForCreatesOneImprovement()
 
-        Sounds.play(getConstructionSound(construction))
+        SoundPlayer.play(getConstructionSound(construction))
 
         cityConstructions.addToQueue(construction.name)
         if (!construction.shouldBeDisplayed(cityConstructions)) // For buildings - unlike units which can be queued multiple times
@@ -533,7 +533,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         stat: Stat = Stat.Gold,
         tile: TileInfo? = null
     ) {
-        Sounds.play(stat.purchaseSound)
+        SoundPlayer.play(stat.purchaseSound)
         val city = cityScreen.city
         if (!city.cityConstructions.purchaseConstruction(construction.name, selectedQueueEntry, false, stat, tile)) {
             Popup(cityScreen).apply {

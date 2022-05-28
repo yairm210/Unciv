@@ -20,7 +20,7 @@ import com.unciv.ui.worldscreen.PlayerReadyScreen
 import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.ui.LanguagePickerScreen
-import com.unciv.ui.audio.Sounds
+import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.crashhandling.closeExecutors
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
@@ -242,7 +242,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         Gdx.input.inputProcessor = null // don't allow ANRs when shutting down, that's silly
 
         cancelDiscordEvent?.invoke()
-        Sounds.clearCache()
+        SoundPlayer.clearCache()
         if (::musicController.isInitialized) musicController.gracefulShutdown()  // Do allow fade-out
         closeExecutors()
 

@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.UnitAction
-import com.unciv.ui.audio.Sounds
+import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.utils.*
@@ -44,7 +44,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
             actionButton.onClick(unitAction.uncivSound, action)
             if (key != KeyCharAndCode.UNKNOWN)
                 worldScreen.keyPressDispatcher[key] = {
-                    launchCrashHandling("UnitSound") { Sounds.play(unitAction.uncivSound) }
+                    launchCrashHandling("UnitSound") { SoundPlayer.play(unitAction.uncivSound) }
                     action()
                     worldScreen.mapHolder.removeUnitActionOverlay()
                 }
