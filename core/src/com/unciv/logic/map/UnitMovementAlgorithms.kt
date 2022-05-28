@@ -583,8 +583,8 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         if (!assumeCanPassThrough && !canPassThrough(tile))
             return false
 
-        if(tile.getOwner() != null && !unit.civInfo.canEnterBordersOf(tile.getOwner()!!))
-            return false
+//         if(tile.getOwner() != null && !unit.civInfo.canEnterBordersOf(tile.getOwner()!!))
+//             return false
 
         // even if they'll let us pass through, we can't enter their city - unless we just captured it
         if (tile.isCityCenter() && tile.getOwner() != unit.civInfo && !tile.getCity()!!.hasJustBeenConquered)
@@ -604,8 +604,8 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
                 return true // if city is free - no problem, get in
         } // let's check whether it enters city on carrier now...
 
-        if(tile.getOwner() != null && !unit.civInfo.canEnterBordersOf(tile.getOwner()!!))
-            return false
+//         if(tile.getOwner() != null && !unit.civInfo.canEnterBordersOf(tile.getOwner()!!))
+//             return false
 
         if (tile.militaryUnit != null) {
             val unitAtDestination = tile.militaryUnit!!
@@ -645,8 +645,8 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
                 && !tile.isCityCenter())
             return false
 
-        if(tile.getOwner() != null && !unit.civInfo.canEnterBordersOf(tile.getOwner()!!))
-            return false
+//         if(tile.getOwner() != null && !unit.civInfo.canEnterBordersOf(tile.getOwner()!!))
+//             return false
 
         val unitSpecificAllowOcean: Boolean by lazy {
             unit.civInfo.tech.specificUnitsCanEnterOcean &&
