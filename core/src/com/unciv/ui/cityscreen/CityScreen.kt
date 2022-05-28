@@ -170,7 +170,12 @@ class CityScreen(
         cityPickerTable.setPosition(centeredX, exitCityButton.top + 10f, Align.bottom)
 
         // Top right of screen: Stats / Specialists
-        cityStatsTable.update()
+        var statsHeight = stage.height - posFromEdge * 2
+        if (selectedTile != null)
+            statsHeight -= tileTable.height + 10f
+        if (selectedConstruction != null)
+            statsHeight -= selectedConstructionTable.height + 10f
+        cityStatsTable.update(statsHeight)
         cityStatsTable.setPosition(stage.width - posFromEdge, stage.height - posFromEdge, Align.topRight)
 
         // Top center: Annex/Raze button

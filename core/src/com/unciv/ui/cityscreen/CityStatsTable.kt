@@ -2,6 +2,7 @@ package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -22,6 +23,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
     private val innerTable = Table()
     private val outerPane: ScrollPane
     private val cityInfo = cityScreen.city
+    private val statsCell: Cell<ScrollPane>
 
     init {
         pad(2f)
@@ -34,10 +36,11 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         outerPane = ScrollPane(innerTable)
         outerPane.setOverscroll(false, false)
         outerPane.setScrollingDisabled(true, false)
-        add(outerPane).maxHeight(cityScreen.stage.height / 2)
+        statsCell = add(outerPane)
+        statsCell.maxHeight(cityScreen.stage.height / 2)
     }
 
-    fun update() {
+    fun update(height: Float = cityScreen.stage.height / 2) {
         innerTable.clear()
 
         val miniStatsTable = Table()
@@ -80,6 +83,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         innerTable.pack()
         outerPane.layout()
         outerPane.updateVisualScroll()
+        statsCell.maxHeight(height)
         pack()
     }
 
