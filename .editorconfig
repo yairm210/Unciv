@@ -74,3 +74,6 @@ ij_properties_spaces_around_key_value_delimiter = false
 
 [{*.yaml, *.yml}]
 indent_size = 2
+
+[*.md]
+ij_markdown_force_one_space_after_list_bullet = false
