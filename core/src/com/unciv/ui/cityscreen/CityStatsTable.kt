@@ -40,7 +40,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         statsCell.maxHeight(cityScreen.stage.height / 2)
     }
 
-    fun update(height: Float = cityScreen.stage.height / 2) {
+    fun update(height: Float) {
         innerTable.clear()
 
         val miniStatsTable = Table()
