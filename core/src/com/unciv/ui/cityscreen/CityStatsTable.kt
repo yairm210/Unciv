@@ -47,7 +47,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
             val icon = Table()
             if (cityInfo.cityAIFocus.stat == stat) {
                 icon.add(ImageGetter.getStatIcon(stat.name).surroundWithCircle(27f, false, color = selected))
-                if (cityScreen.canChangeState) {
+                if (cityScreen.canChangeState && !cityInfo.isPuppet) {
                     icon.onClick {
                         cityInfo.cityAIFocus = CityFocus.NoFocus
                         cityInfo.reassignPopulation(); cityScreen.update()
@@ -55,7 +55,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
                 }
             } else {
                 icon.add(ImageGetter.getStatIcon(stat.name).surroundWithCircle(27f, false, color = Color.CLEAR))
-                if (cityScreen.canChangeState) {
+                if (cityScreen.canChangeState && !cityInfo.isPuppet) {
                     icon.onClick {
                         cityInfo.cityAIFocus = cityInfo.cityAIFocus.safeValueOf(stat)
                         cityInfo.reassignPopulation(); cityScreen.update()
