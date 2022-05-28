@@ -9,6 +9,7 @@ class FriendList {
     private val friendsListFileName = "FriendsList.json"
     private val friendsListFileHandle = FileHandle(friendsListFileName)
     var friendList: MutableList<Friend> = mutableListOf()
+    val settings = UncivGame.Current.settings
 
     enum class ErrorType {
         NOERROR,
@@ -36,13 +37,14 @@ class FriendList {
                 return ErrorType.NAME
             } else if (friendList[index].playerID == playerID) {
                 return ErrorType.ID
-            } else if (friendName == "") {
-                return ErrorType.NONAME
-            } else if (playerID == "") {
-                return ErrorType.NOID
-            } else if (playerID == UncivGame.Current.settings.userId) {
-                return ErrorType.YOURSELF
             }
+        }
+        if (friendName == "") {
+            return ErrorType.NONAME
+        } else if (playerID == "") {
+            return ErrorType.NOID
+        } else if (playerID == settings.userId) {
+            return ErrorType.YOURSELF
         }
         friendList.add(Friend(friendName, playerID))
         save()
