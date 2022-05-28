@@ -76,13 +76,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
         table.defaults().fillX()
         table.defaults().pad(10.0f)
         table.add(copyUserIdButton).padBottom(30f).row()
-        table.add(
-
-
-
-
-
-        ).row()
+        table.add(copyGameIdButton).row()
         table.add(editButton).row()
         table.add(addGameButton).padBottom(30f).row()
         table.add(friendsListButton).padBottom(30f).row()
