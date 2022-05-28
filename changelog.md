@@ -15,8 +15,9 @@ Fix piety complete faith discount - By OptimizedForDensity
 
 ## 4.1.3
 
+Implement 'wait' command - by doublep
+
 By SomeTroglodyte:
-- Implement 'wait' command
 - Re-hide Enable Portrait option on desktop
 - Show required resource for upgrades
 - Fix Right-Click attacks made no sound
