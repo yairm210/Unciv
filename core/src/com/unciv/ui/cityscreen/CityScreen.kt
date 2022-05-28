@@ -172,9 +172,9 @@ class CityScreen(
         // Top right of screen: Stats / Specialists
         var statsHeight = stage.height - posFromEdge * 2
         if (selectedTile != null)
-            statsHeight -= tileTable.height + 10f
+            statsHeight -= tileTable.height + 9f
         if (selectedConstruction != null)
-            statsHeight -= selectedConstructionTable.height + 10f
+            statsHeight -= selectedConstructionTable.height + 9f
         cityStatsTable.update(statsHeight)
         cityStatsTable.setPosition(stage.width - posFromEdge, stage.height - posFromEdge, Align.topRight)
 
