@@ -694,6 +694,12 @@ class Ruleset {
                     RulesetErrorSeverity.Warning
                 )
             }
+            if (improvement.pillageGold < 0) {
+                lines.add(
+                    "${improvement.name} cannot have a negative `pillageGold`!",
+                    RulesetErrorSeverity.Error
+                )
+            }
             checkUniques(improvement, lines, rulesetSpecific, forOptionsPopup)
         }
 

@@ -28,6 +28,7 @@ import com.unciv.ui.popup.hasOpenPopups
 import com.unciv.ui.utils.toPercent
 import com.unciv.ui.worldscreen.WorldScreen
 import kotlin.math.min
+import kotlin.random.Random
 
 object UnitActions {
 
@@ -41,7 +42,7 @@ object UnitActions {
         val unitTable = worldScreen.bottomUnitTable
         val actionList = ArrayList<UnitAction>()
 
-        if (unit.isMoving()) 
+        if (unit.isMoving())
             actionList += UnitAction(UnitActionType.StopMovement) { unit.action = null }
         if (unit.isExploring())
             actionList += UnitAction(UnitActionType.StopExploration) { unit.action = null }
@@ -284,6 +285,20 @@ object UnitActions {
 
         return UnitAction(UnitActionType.Pillage,
                 action = {
+                    // looting mechanic adapted from https://github.com/Gedemon/Civ5-DLL/blob/aa29e80751f541ae04858b6d2a2c7dcca454201e/CvGameCoreDLL_Expansion1/CvUnit.cpp#L5455
+                    val improvement = tile.ruleset.tileImprovements[tile.improvement]!!
+                    var pillageGold = 0
+                    pillageGold += Random.nextInt(improvement.pillageGold + 1)
+                    pillageGold += Random.nextInt(improvement.pillageGold + 1) // turn uniform distribution into a triangular one
+
+                    if (pillageGold > 0) {
+                        unit.civInfo.addGold(pillageGold)
+                        if (tile.getOwner() != null)
+                            unit.civInfo.addNotification("We have pillaged [${pillageGold}] gold from a [${improvement.name}]", tile.position, NotificationIcon.War, tile.getOwner()!!.civName)
+                        else
+                            unit.civInfo.addNotification("We have pillaged [${pillageGold}] gold from a [${improvement.name}]", tile.position, NotificationIcon.War)
+                    }
+
                     tile.setPillaged()
                     unit.civInfo.lastSeenImprovement.remove(tile.position)
                     if (tile.resource != null) tile.getOwner()?.updateDetailedCivResources()    // this might take away a resource
@@ -396,8 +411,8 @@ object UnitActions {
 
         val canConstruct = unit.currentMovement > 0
             && !tile.isCityCenter()
-            && unit.civInfo.gameInfo.ruleSet.tileImprovements.values.any { 
-                tile.canBuildImprovement(it, unit.civInfo) 
+            && unit.civInfo.gameInfo.ruleSet.tileImprovements.values.any {
+                tile.canBuildImprovement(it, unit.civInfo)
                 && unit.canBuildImprovement(it)
             }
 
@@ -808,7 +823,7 @@ object UnitActions {
 
         return UnitAction(UnitActionType.GiftUnit, action = giftAction)
     }
-    
+
     private fun addTriggerUniqueActions(unit: MapUnit, actionList: ArrayList<UnitAction>){
         for (unique in unit.getUniques()) {
             if (!unique.conditionals.any { it.type == UniqueType.ConditionalConsumeUnit }) continue
