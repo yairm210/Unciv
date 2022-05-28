@@ -55,8 +55,17 @@ class EditFriendScreen(selectedFriend: FriendList.Friend, backScreen: ViewFriend
         rightSideButton.setText("Save".tr())
         rightSideButton.enable()
         rightSideButton.onClick {
-            if (friendlist.isFriendInFriendList(friendNameTextField.text)) {
+            // if no edits have been made, go back to friends list
+            if (selectedFriend.name == friendNameTextField.text && selectedFriend.playerID == playerIDTextField.text) {
+                backScreen.game.setScreen(backScreen)
+                backScreen.refreshFriendsList()
+            }
+            if (friendlist.isFriendNameInFriendList(friendNameTextField.text) == FriendList.ErrorType.ALREADYINLIST) {
                 ToastPopup("Player name already used!", this)
+                return@onClick
+            }
+            if (friendlist.isFriendIDInFriendList(playerIDTextField.text) == FriendList.ErrorType.ALREADYINLIST) {
+                ToastPopup("Player ID already used!", this)
                 return@onClick
             }
             try {

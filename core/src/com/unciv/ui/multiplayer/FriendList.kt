@@ -9,7 +9,16 @@ class FriendList {
     private val friendsListFileName = "FriendsList.json"
     private val friendsListFileHandle = FileHandle(friendsListFileName)
     var friendList: MutableList<Friend> = mutableListOf()
-    var addFriendErrorType = ""
+
+    enum class ErrorType {
+        NOERROR,
+        NAME,
+        ID,
+        NONAME,
+        NOID,
+        YOURSELF,
+        ALREADYINLIST;
+    }
 
     companion object {
         private const val friendsListFileName = "FriendsList.json"
@@ -20,26 +29,24 @@ class FriendList {
         constructor() : this("", "")
     }
 
-    fun addNewFriend(friendName: String, playerID: String) {
+    fun addNewFriend(friendName: String, playerID: String): ErrorType {
         load()
-        addFriendErrorType = ""
         for(index in friendList.indices){
             if (friendList[index].name == friendName) {
-                addFriendErrorType = "name"
+                return ErrorType.NAME
             } else if (friendList[index].playerID == playerID) {
-                addFriendErrorType = "id"
+                return ErrorType.ID
             } else if (friendName == "") {
-                addFriendErrorType = "noName"
+                return ErrorType.NONAME
             } else if (playerID == "") {
-                addFriendErrorType = "noID"
+                return ErrorType.NOID
             } else if (playerID == UncivGame.Current.settings.userId) {
-                addFriendErrorType = "yourself"
+                return ErrorType.YOURSELF
             }
         }
-        if (addFriendErrorType == ""){
-            friendList.add(Friend(friendName, playerID))
-        }
+        friendList.add(Friend(friendName, playerID))
         save()
+        return ErrorType.NOERROR
     }
 
     fun save() {
@@ -76,13 +83,23 @@ class FriendList {
         return friendList
     }
 
-    fun isFriendInFriendList(name: String): Boolean {
+    fun isFriendNameInFriendList(name: String): ErrorType {
         load()
         for (index in friendList.indices) {
             if (name == friendList[index].name) {
-                return true
+                return ErrorType.ALREADYINLIST
             }
         }
-        return false
+        return ErrorType.NOERROR
+    }
+
+    fun isFriendIDInFriendList(id: String): ErrorType {
+        load()
+        for (index in friendList.indices) {
+            if (id == friendList[index].playerID) {
+                return ErrorType.ALREADYINLIST
+            }
+        }
+        return ErrorType.NOERROR
     }
 }

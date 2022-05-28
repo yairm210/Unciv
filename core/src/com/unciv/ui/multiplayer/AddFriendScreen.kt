@@ -49,20 +49,22 @@ class AddFriendScreen(backScreen: ViewFriendsListScreen) : PickerScreen(){
                 ToastPopup("Player ID is incorrect", this)
                 return@onClick
             }
-            friendlist.addNewFriend(friendNameTextField.text, playerIDTextField.text)
-            if (friendlist.addFriendErrorType == "name") {
-                ToastPopup("Friend name is already in your friends list!", this)
-            } else if (friendlist.addFriendErrorType == "id") {
-                ToastPopup("Player ID is already in your friends list!", this)
-            } else if (friendlist.addFriendErrorType == "noName") {
-                ToastPopup("You have to write a name for your friend!", this)
-            } else if (friendlist.addFriendErrorType == "noID") {
-                ToastPopup("You have to write an ID for your friend!", this)
-            } else if (friendlist.addFriendErrorType == "yourself") {
-                ToastPopup("You cannot add your user ID in your friend list!", this)
-            } else {
-                backScreen.game.setScreen(backScreen)
-                backScreen.refreshFriendsList()
+
+            when (friendlist.addNewFriend(friendNameTextField.text, playerIDTextField.text)) {
+                FriendList.ErrorType.NAME -> ToastPopup("Friend name is already in your friends list!", this)
+
+                FriendList.ErrorType.ID -> ToastPopup("Player ID is already in your friends list!", this)
+
+                FriendList.ErrorType.NONAME -> ToastPopup("You have to write a name for your friend!", this)
+
+                FriendList.ErrorType.NOID -> ToastPopup("You have to write an ID for your friend!", this)
+
+                FriendList.ErrorType.YOURSELF -> ToastPopup("You cannot add your user ID in your friend list!", this)
+
+                else -> {
+                    backScreen.game.setScreen(backScreen)
+                    backScreen.refreshFriendsList()
+                }
             }
         }
     }
