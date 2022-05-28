@@ -39,9 +39,9 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
     private val friendsListText = "Friends List"
     private val friendsListButton = createFriendsListButton()
 
-    private val refreshButton = createRefreshButton()
     private val refreshText = "Refresh list"
-    
+    private val refreshButton = createRefreshButton()
+
     private val rightSideTable = createRightSideTable()
     private val leftSideTable = GameList(::selectGame)
 
@@ -77,11 +77,11 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
         table.defaults().pad(10.0f)
         table.add(copyUserIdButton).padBottom(30f).row()
         table.add(
-        
-        
-        
-        
-        
+
+
+
+
+
         ).row()
         table.add(editButton).row()
         table.add(addGameButton).padBottom(30f).row()
@@ -123,7 +123,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
         }
         return btn
     }
-    
+
     fun createFriendsListButton(): TextButton {
         val btn = friendsListText.toTextButton()
         btn.onClick {
