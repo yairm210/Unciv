@@ -700,6 +700,12 @@ class Ruleset {
                     RulesetErrorSeverity.Error
                 )
             }
+            if (improvement.pillageGold > 0 && improvement.hasUnique(UniqueType.Unpillagable)) {
+                lines.add(
+                    "${improvement.name} has an `Unpillagable` unique type but has a non-zero `pillageGold` variable!",
+                    RulesetErrorSeverity.Warning
+                )
+            }
             checkUniques(improvement, lines, rulesetSpecific, forOptionsPopup)
         }
 
