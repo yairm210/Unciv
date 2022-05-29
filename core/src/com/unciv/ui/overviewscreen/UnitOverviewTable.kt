@@ -13,7 +13,16 @@ import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.ExpanderTab
+import com.unciv.ui.utils.Fonts
+import com.unciv.ui.utils.TabbedPager
+import com.unciv.ui.utils.UnitGroup
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.brighten
+import com.unciv.ui.utils.extensions.center
+import com.unciv.ui.utils.extensions.darken
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.worldscreen.unit.UnitActions
 import kotlin.math.abs
 

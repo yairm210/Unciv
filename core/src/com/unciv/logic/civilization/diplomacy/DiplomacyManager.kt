@@ -2,13 +2,19 @@ package com.unciv.logic.civilization.diplomacy
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
-import com.unciv.logic.civilization.*
+import com.unciv.logic.civilization.AlertType
+import com.unciv.logic.civilization.CityStatePersonality
+import com.unciv.logic.civilization.CityStateType
+import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
-import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
-import com.unciv.ui.utils.toPercent
+import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.utils.extensions.toPercent
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min

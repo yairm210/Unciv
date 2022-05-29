@@ -11,8 +11,8 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.TabbedPager
-import com.unciv.ui.utils.center
-import com.unciv.ui.utils.toCheckBox
+import com.unciv.ui.utils.extensions.center
+import com.unciv.ui.utils.extensions.toCheckBox
 import com.unciv.ui.worldscreen.WorldScreen
 import java.time.Duration
 import kotlin.reflect.KMutableProperty0

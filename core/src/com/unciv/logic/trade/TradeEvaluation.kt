@@ -9,7 +9,7 @@ import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.utils.toPercent
+import com.unciv.ui.utils.extensions.toPercent
 import com.unciv.ui.victoryscreen.RankingType
 import kotlin.math.min
 import kotlin.math.sqrt

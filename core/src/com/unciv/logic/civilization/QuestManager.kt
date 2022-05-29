@@ -17,8 +17,8 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.tr
-import com.unciv.ui.utils.randomWeighted
-import com.unciv.ui.utils.toPercent
+import com.unciv.ui.utils.extensions.randomWeighted
+import com.unciv.ui.utils.extensions.toPercent
 import kotlin.math.max
 import kotlin.random.Random
 

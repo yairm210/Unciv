@@ -1,7 +1,7 @@
 package com.unciv.ui.crashhandling
 
 import com.badlogic.gdx.Gdx
-import com.unciv.ui.utils.wrapCrashHandlingUnit
+import com.unciv.UncivGame
 import kotlinx.coroutines.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadFactory
@@ -72,4 +72,47 @@ fun launchCrashHandling(name: String, runAsDaemon: Boolean = true,
 
 private fun getCoroutineContext(runAsDaemon: Boolean): CoroutineScope {
     return if (runAsDaemon) CRASH_HANDLING_DAEMON_SCOPE else CRASH_HANDLING_SCOPE
+}
+/**
+ * Returns a wrapped version of a function that safely crashes the game to [CrashScreen] if an exception or error is thrown.
+ *
+ * In case an exception or error is thrown, the return will be null. Therefore the return type is always nullable.
+ *
+ * The game loop, threading, and event systems already use this to wrap nearly everything that can happen during the lifespan of the Unciv application.
+ *
+ * Therefore, it usually shouldn't be necessary to manually use this. See the note at the top of [CrashScreen].kt for details.
+ *
+ * @param postToMainThread Whether the [CrashScreen] should be opened by posting a runnable to the main thread, instead of directly. Set this to true if the function is going to run on any thread other than the main loop.
+ * @return Result from the function, or null if an exception is thrown.
+ * */
+fun <R> (() -> R).wrapCrashHandling(
+    postToMainThread: Boolean = false
+): () -> R?
+    = {
+        try {
+            this()
+        } catch (e: Throwable) {
+            if (postToMainThread) {
+                Gdx.app.postRunnable {
+                    UncivGame.Current.setScreen(CrashScreen(e))
+                }
+            } else UncivGame.Current.setScreen(CrashScreen(e))
+            null
+        }
+    }
+/**
+ * Returns a wrapped a version of a Unit-returning function which safely crashes the game to [CrashScreen] if an exception or error is thrown.
+ *
+ * The game loop, threading, and event systems already use this to wrap nearly everything that can happen during the lifespan of the Unciv application.
+ *
+ * Therefore, it usually shouldn't be necessary to manually use this. See the note at the top of [CrashScreen].kt for details.
+ *
+ * @param postToMainThread Whether the [CrashScreen] should be opened by posting a runnable to the main thread, instead of directly. Set this to true if the function is going to run on any thread other than the main loop.
+ * */
+fun (() -> Unit).wrapCrashHandlingUnit(
+    postToMainThread: Boolean = false
+): () -> Unit {
+    val wrappedReturning = this.wrapCrashHandling(postToMainThread)
+    // Don't instantiate a new lambda every time the return get called.
+    return { wrappedReturning() ?: Unit }
 }

@@ -3,7 +3,10 @@ package com.unciv.ui.worldscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.ui.Container
+import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stats
@@ -15,8 +18,18 @@ import com.unciv.ui.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.popup.popups
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.Fonts
+import com.unciv.ui.utils.MayaCalendar
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.utils.extensions.centerY
+import com.unciv.ui.utils.extensions.colorFromRGB
+import com.unciv.ui.utils.extensions.darken
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.setFontColor
+import com.unciv.ui.utils.extensions.setFontSize
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
 import com.unciv.ui.victoryscreen.VictoryScreen
 import com.unciv.ui.worldscreen.mainmenu.WorldScreenMenuPopup
 import kotlin.math.abs
@@ -141,11 +154,11 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
             statsTable.add(faithLabel).padLeft(20f)
             val faithImage = ImageGetter.getStatIcon("Faith")
             statsTable.add(faithImage).padBottom(6f).size(20f)
-            
+
             val invokeFaithOverview = {
                 worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Religion"))
             }
-            
+
             faithLabel.onClick(invokeFaithOverview)
             faithImage.onClick(invokeFaithOverview)
         } else {
@@ -288,7 +301,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     private fun getHappinessText(civInfo: CivilizationInfo): String {
         var happinessText = civInfo.getHappiness().toString()
         val goldenAges = civInfo.goldenAges
-        happinessText += 
+        happinessText +=
             if (goldenAges.isGoldenAge())
                 "    {GOLDEN AGE}(${goldenAges.turnsLeftForCurrentGoldenAge})".tr()
             else

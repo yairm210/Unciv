@@ -13,9 +13,8 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
-import com.unciv.ui.utils.toPercent
+import com.unciv.ui.utils.extensions.toPercent
 import com.unciv.ui.worldscreen.unit.UnitActions
-import java.util.*
 import kotlin.math.roundToInt
 
 class TileImprovement : RulesetStatsObject() {
@@ -26,7 +25,7 @@ class TileImprovement : RulesetStatsObject() {
     override fun getUniqueTarget() = UniqueTarget.Improvement
     val shortcutKey: Char? = null
     // This is the base cost. A cost of 0 means created instead of buildable.
-    val turnsToBuild: Int = 0 
+    val turnsToBuild: Int = 0
 
 
     fun getTurnsToBuild(civInfo: CivilizationInfo, unit: MapUnit): Int {
@@ -71,7 +70,7 @@ class TileImprovement : RulesetStatsObject() {
     fun canBeBuiltOn(terrain: String): Boolean {
         return terrain in terrainsCanBeBuiltOn
     }
-    
+
     fun handleImprovementCompletion(builder: MapUnit) {
         val tile = builder.getTile()
         if (hasUnique(UniqueType.TakesOverAdjacentTiles))
@@ -88,18 +87,18 @@ class TileImprovement : RulesetStatsObject() {
             // and that aren't explicitly allowed under the improvement
             val removableTerrainFeatures = tile.terrainFeatures.filter { feature ->
                 val removingAction = "${Constants.remove}$feature"
-                
+
                 removingAction in tile.ruleset.tileImprovements
                 && !isAllowedOnFeature(feature)
                 && tile.ruleset.tileImprovements[removingAction]!!.let {
                     it.techRequired == null || builder.civInfo.tech.isResearched(it.techRequired!!)
                 }
             }
-            
+
             tile.setTerrainFeatures(tile.terrainFeatures.filterNot { it in removableTerrainFeatures })
         }
     }
-    
+
     /**
      * Check: Is this improvement allowed on a [given][name] terrain feature?
      *
@@ -198,7 +197,7 @@ class TileImprovement : RulesetStatsObject() {
         }
 
         val unit = ruleset.units.asSequence().firstOrNull {
-            entry -> entry.value.uniques.any { 
+            entry -> entry.value.uniques.any {
                 it.startsWith("Can construct [$name]")
             }
         }?.key

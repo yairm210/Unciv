@@ -6,7 +6,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyCharAndCode
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.extensions.toLabel
 
 /** Variant of [Popup] pre-populated with one label, plus yes and no buttons
  * @param question The text for the label

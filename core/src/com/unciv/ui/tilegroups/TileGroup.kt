@@ -21,9 +21,12 @@ import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.ui.cityscreen.YieldGroup
 import com.unciv.ui.images.ImageAttempter
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.utils.*
-import java.lang.IllegalStateException
-import kotlin.math.*
+import com.unciv.ui.utils.extensions.center
+import kotlin.math.PI
+import kotlin.math.atan
+import kotlin.math.atan2
+import kotlin.math.pow
+import kotlin.math.sqrt
 import kotlin.random.Random
 
 /** A lot of the render time was spent on snapshot arrays of the TileGroupMap's groups, in the act() function.
@@ -544,7 +547,7 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
 
                 val sign = if (relativeWorldPosition.x < 0) -1 else 1
                 val angle = sign * (atan(sign * relativeWorldPosition.y / relativeWorldPosition.x) * 180 / PI - 90.0).toFloat()
-                
+
                 val innerBorderImage = ImageGetter.getImage(
                         tileSetStrings.orFallback { getBorder(borderShapeString,"Inner") }
                 )
@@ -568,7 +571,7 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
 
     /** Create and setup Actors for all arrows to be drawn from this tile. */
     private fun updateArrows() {
-        for (actorList in arrows.values) 
+        for (actorList in arrows.values)
             for (actor in actorList)
                 actor.remove()
         arrows.clear()

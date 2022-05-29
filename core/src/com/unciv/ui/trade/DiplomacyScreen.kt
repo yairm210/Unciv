@@ -7,9 +7,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.*
-import com.unciv.logic.civilization.diplomacy.*
+import com.unciv.logic.civilization.AlertType
+import com.unciv.logic.civilization.AssignedQuest
+import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.civilization.diplomacy.DiplomacyManager
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers.*
+import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
@@ -28,8 +35,18 @@ import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.tilegroups.CityButton
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.Fonts
+import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.setFontSize
+import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toPercent
+import com.unciv.ui.utils.extensions.toTextButton
 import kotlin.math.floor
 import kotlin.math.roundToInt
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
@@ -797,7 +814,7 @@ class DiplomacyScreen(
                 && otherCivDiplomacyManager.hasModifier(DestroyedProtectedMinor))
                 continue
 
-            var text = when (valueOf(modifier.key)) {
+            var text = when (DiplomaticModifiers.valueOf(modifier.key)) {
                 DeclaredWarOnUs -> "You declared war on us!"
                 WarMongerer -> "Your warmongering ways are unacceptable to us."
                 LiberatedCity -> "We applaud your liberation of conquered cities!"

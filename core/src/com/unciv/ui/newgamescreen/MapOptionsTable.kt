@@ -11,8 +11,8 @@ import com.unciv.logic.map.MapType
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.onChange
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.extensions.onChange
+import com.unciv.ui.utils.extensions.toLabel
 
 class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
 

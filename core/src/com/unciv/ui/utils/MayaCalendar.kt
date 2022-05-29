@@ -9,6 +9,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.KeyCharAndCode.Companion.makeChar
 import com.unciv.ui.utils.KeyCharAndCode.Companion.toCode
+import com.unciv.ui.utils.extensions.addSeparator
 import kotlin.math.abs
 
 object MayaCalendar {

@@ -21,10 +21,17 @@ import com.unciv.ui.pickerscreens.Github
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.utils.*
-import com.unciv.ui.utils.UncivDateFormat.formatDate
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.Fonts
+import com.unciv.ui.utils.extensions.UncivDateFormat.formatDate
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.enable
+import com.unciv.ui.utils.extensions.isEnabled
+import com.unciv.ui.utils.extensions.onChange
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
 import java.util.*
-import java.util.concurrent.CancellationException
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = true) {

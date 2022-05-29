@@ -10,8 +10,9 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
 import com.unciv.ui.images.ClippingImage
-import com.unciv.ui.utils.*
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.utils.*
+import com.unciv.ui.utils.extensions.*
 import com.unciv.ui.worldscreen.WorldMapHolder
 import kotlin.math.max
 import kotlin.math.min

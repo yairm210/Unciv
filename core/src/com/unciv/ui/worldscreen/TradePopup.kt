@@ -10,7 +10,10 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.trade.LeaderIntroTable
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.pad
+import com.unciv.ui.utils.extensions.toLabel
 import kotlin.math.max
 import kotlin.math.min
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
@@ -23,9 +26,9 @@ import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 /**
  * [Popup] communicating trade offers of others to the player.
- * 
+ *
  * Called in [WorldScreen].update, which checks if there are any in viewingCiv.tradeRequests.
- * 
+ *
  * @param worldScreen The parent screen
  */
 class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){

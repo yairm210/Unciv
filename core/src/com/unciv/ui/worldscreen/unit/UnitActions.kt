@@ -25,7 +25,7 @@ import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.popup.hasOpenPopups
-import com.unciv.ui.utils.toPercent
+import com.unciv.ui.utils.extensions.toPercent
 import com.unciv.ui.worldscreen.WorldScreen
 import kotlin.math.min
 
@@ -41,7 +41,7 @@ object UnitActions {
         val unitTable = worldScreen.bottomUnitTable
         val actionList = ArrayList<UnitAction>()
 
-        if (unit.isMoving()) 
+        if (unit.isMoving())
             actionList += UnitAction(UnitActionType.StopMovement) { unit.action = null }
         if (unit.isExploring())
             actionList += UnitAction(UnitActionType.StopExploration) { unit.action = null }
@@ -396,8 +396,8 @@ object UnitActions {
 
         val canConstruct = unit.currentMovement > 0
             && !tile.isCityCenter()
-            && unit.civInfo.gameInfo.ruleSet.tileImprovements.values.any { 
-                tile.canBuildImprovement(it, unit.civInfo) 
+            && unit.civInfo.gameInfo.ruleSet.tileImprovements.values.any {
+                tile.canBuildImprovement(it, unit.civInfo)
                 && unit.canBuildImprovement(it)
             }
 
@@ -808,7 +808,7 @@ object UnitActions {
 
         return UnitAction(UnitActionType.GiftUnit, action = giftAction)
     }
-    
+
     private fun addTriggerUniqueActions(unit: MapUnit, actionList: ArrayList<UnitAction>){
         for (unique in unit.getUniques()) {
             if (!unique.conditionals.any { it.type == UniqueType.ConditionalConsumeUnit }) continue

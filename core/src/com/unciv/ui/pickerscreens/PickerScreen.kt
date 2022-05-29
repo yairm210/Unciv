@@ -1,7 +1,7 @@
 package com.unciv.ui.pickerscreens
 
 import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.extensions.onClick
 
 open class PickerScreen(disableScroll: Boolean = false) : BaseScreen() {
 
@@ -26,7 +26,7 @@ open class PickerScreen(disableScroll: Boolean = false) : BaseScreen() {
     init {
         pickerPane.setFillParent(true)
         stage.addActor(pickerPane)
-        ensureLayout() 
+        ensureLayout()
     }
 
     /** Make sure that anyone relying on sizes of the tables within this class during construction gets correct size readings.

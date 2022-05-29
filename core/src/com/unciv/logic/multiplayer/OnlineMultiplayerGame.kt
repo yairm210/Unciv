@@ -8,7 +8,7 @@ import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
-import com.unciv.ui.utils.isLargerThan
+import com.unciv.ui.utils.extensions.isLargerThan
 import java.io.FileNotFoundException
 import java.time.Duration
 import java.time.Instant

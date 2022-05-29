@@ -12,17 +12,20 @@ import com.unciv.logic.city.RejectionReason
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationIcon
-import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.models.UnitActionType
+import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileImprovement
-import com.unciv.models.ruleset.unique.*
+import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueMap
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stats
-import com.unciv.ui.utils.filterAndLogic
-import com.unciv.ui.utils.toPercent
+import com.unciv.ui.utils.extensions.filterAndLogic
+import com.unciv.ui.utils.extensions.toPercent
 import java.text.DecimalFormat
 import kotlin.math.pow
 
@@ -106,10 +109,10 @@ class MapUnit {
 
     @Transient
     var canEnterForeignTerrain: Boolean = false
-    
+
     @Transient
     var costToDisembark: Float? = null
-    
+
     @Transient
     var costToEmbark: Float? = null
 
@@ -282,8 +285,8 @@ class MapUnit {
     }
 
     fun hasUnique(
-        uniqueType: UniqueType, 
-        stateForConditionals: StateForConditionals = StateForConditionals(civInfo, unit=this), 
+        uniqueType: UniqueType,
+        stateForConditionals: StateForConditionals = StateForConditionals(civInfo, unit=this),
         checkCivInfoUniques: Boolean = false
     ): Boolean {
         return getMatchingUniques(uniqueType, stateForConditionals, checkCivInfoUniques).any()
@@ -376,12 +379,12 @@ class MapUnit {
         movement += getMatchingUniques(UniqueType.Movement, checkCivInfoUniques = true)
             .sumOf { it.params[0].toInt() }
 
-        
+
         if (movement < 1) movement = 1
 
         return movement
     }
-    
+
     /**
      * Determines this (land or sea) unit's current maximum vision range from unit properties, civ uniques and terrain.
      * @return Maximum distance of tiles this unit may possibly see
@@ -394,18 +397,18 @@ class MapUnit {
         if (isEmbarked() && !hasUnique(UniqueType.NormalVisionWhenEmbarked, conditionalState, checkCivInfoUniques = true)) {
             return 1
         }
-        
+
         visibilityRange += getMatchingUniques(UniqueType.Sight, conditionalState, checkCivInfoUniques = true)
             .sumOf { it.params[0].toInt() }
 
         visibilityRange += getTile().getMatchingUniques(UniqueType.Sight, conditionalState)
             .sumOf { it.params[0].toInt() }
-        
+
         if (visibilityRange < 1) visibilityRange = 1
 
         return visibilityRange
     }
-    
+
     /**
      * Update this unit's cache of viewable tiles and its civ's as well.
      */
@@ -418,7 +421,7 @@ class MapUnit {
                 getTile().getTilesInDistance(getVisibilityRange()).toHashSet() // it's that simple
             else -> getTile().getViewableTilesList(getVisibilityRange()).toHashSet()
         }
-        
+
         // Set equality automatically determines if anything changed - https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-abstract-set/equals.html
         if (updateCivViewableTiles && oldViewableTiles != viewableTiles)
             civInfo.updateViewableTiles() // for the civ
@@ -551,7 +554,7 @@ class MapUnit {
     /** Check whether this unit can upgrade to [unitToUpgradeTo]. This does not check or follow the
      *  normal upgrade chain defined by [BaseUnit.upgradesTo], unless [unitToUpgradeTo] is left at default.
      *  @param maxSteps only used for default of [unitToUpgradeTo], ignored otherwise.
-     *  @param ignoreRequirements Ignore possible tech/policy/building requirements (e.g. resource requirements still count). 
+     *  @param ignoreRequirements Ignore possible tech/policy/building requirements (e.g. resource requirements still count).
      *          Used for upgrading units via ancient ruins.
      *  @param ignoreResources Ignore resource requirements (tech still counts)
      *          Used to display disabled Upgrade button
@@ -727,13 +730,13 @@ class MapUnit {
                 val removedFeatureName = tile.improvementInProgress!!.removePrefix(Constants.remove)
                 val tileImprovement = tile.getTileImprovement()
                 if (tileImprovement != null
-                    && tile.terrainFeatures.any { 
-                        tileImprovement.terrainsCanBeBuiltOn.contains(it) && it == removedFeatureName 
+                    && tile.terrainFeatures.any {
+                        tileImprovement.terrainsCanBeBuiltOn.contains(it) && it == removedFeatureName
                     }
                     && !tileImprovement.terrainsCanBeBuiltOn.contains(tile.baseTerrain)
                 ) {
                     // We removed a terrain (e.g. Forest) and the improvement (e.g. Lumber mill) requires it!
-                    tile.improvement = null 
+                    tile.improvement = null
                     if (tile.resource != null) civInfo.updateDetailedCivResources() // unlikely, but maybe a mod makes a resource improvement dependent on a terrain feature
                 }
                 if (RoadStatus.values().any { tile.improvementInProgress == it.removeAction })
@@ -754,7 +757,7 @@ class MapUnit {
                 tile.improvement = tile.improvementInProgress
             }
         }
-        
+
         tile.improvementInProgress = null
         tile.getCity()?.updateCitizens = true
     }
@@ -778,7 +781,7 @@ class MapUnit {
             )
         }
     }
-    
+
     private fun heal() {
         if (isEmbarked()) return // embarked units can't heal
         if (health >= 100) return // No need to heal if at max health
@@ -791,7 +794,7 @@ class MapUnit {
     }
 
     fun healBy(amount: Int) {
-        health += amount * 
+        health += amount *
             if (hasUnique(UniqueType.HealingEffectsDoubled, checkCivInfoUniques = true)) 2
             else 1
         if (health > 100) health = 100
@@ -814,7 +817,7 @@ class MapUnit {
         if (!mayHeal) return healing
 
         healing += getMatchingUniques(UniqueType.Heal, checkCivInfoUniques = true).sumOf { it.params[0].toInt() }
-        
+
         val healingCity = tileInfo.getTilesInDistance(1).firstOrNull {
             it.isCityCenter() && it.getCity()!!.getMatchingUniques(UniqueType.CityHealingUnits).any()
         }?.getCity()
@@ -943,7 +946,7 @@ class MapUnit {
         assignOwner(recipient)
         recipient.updateViewableTiles()
     }
-    
+
     /** Destroys the unit and gives stats if its a great person */
     fun consume() {
         addStatsPerGreatPersonUsage()
@@ -975,7 +978,7 @@ class MapUnit {
         // getAncientRuinBonus, if it places a new unit, does too
         currentTile = tile
 
-        if (civInfo.isMajorCiv() 
+        if (civInfo.isMajorCiv()
             && tile.improvement != null
             && tile.getTileImprovement()!!.isAncientRuinsEquivalent()
         ) {
@@ -1205,7 +1208,7 @@ class MapUnit {
         } else civInfo.addNotification(
             "An enemy [Citadel] has attacked our [$name]",
             locations,
-            NotificationIcon.Citadel, NotificationIcon.War, name 
+            NotificationIcon.Citadel, NotificationIcon.War, name
         )
     }
 
@@ -1232,8 +1235,8 @@ class MapUnit {
     fun canBuildImprovement(improvement: TileImprovement, tile: TileInfo = currentTile): Boolean {
         // Workers (and similar) should never be able to (instantly) construct things, only build them
         // HOWEVER, they should be able to repair such things if they are pillaged
-        if (improvement.turnsToBuild == 0 
-            && improvement.name != Constants.cancelImprovementOrder 
+        if (improvement.turnsToBuild == 0
+            && improvement.name != Constants.cancelImprovementOrder
             && tile.improvementInProgress != improvement.name
         ) return false
 

@@ -1,6 +1,5 @@
 package com.unciv.ui.newgamescreen
 
-import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Group
@@ -25,7 +24,9 @@ import com.unciv.ui.mapeditor.GameParametersScreen
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.*
+import com.unciv.ui.utils.extensions.*
 import java.util.*
+import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 /**
  * This [Table] is used to pick or edit players information for new game creation.

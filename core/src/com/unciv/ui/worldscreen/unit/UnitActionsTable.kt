@@ -9,9 +9,11 @@ import com.unciv.models.UnitAction
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.images.IconTextButton
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.KeyPressDispatcher.Companion.keyboardAvailable
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.worldscreen.WorldScreen
 
 class UnitActionsTable(val worldScreen: WorldScreen) : Table() {

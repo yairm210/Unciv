@@ -13,9 +13,9 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
-import com.unciv.ui.utils.disable
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
 import kotlin.math.roundToInt
 
 class ImprovementPickerScreen(
@@ -100,7 +100,7 @@ class ImprovementPickerScreen(
             var labelText = improvement.name.tr()
             val turnsToBuild = if (tileInfo.improvementInProgress == improvement.name) tileInfo.turnsToImprovement
             else improvement.getTurnsToBuild(currentPlayerCiv, unit)
-            
+
             if (turnsToBuild > 0) labelText += " - $turnsToBuild${Fonts.turn}"
             val provideResource = tileInfo.hasViewableResource(currentPlayerCiv) && tileInfo.tileResource.isImprovedBy(improvement.name)
             if (provideResource) labelText += "\n" + "Provides [${tileInfo.resource}]".tr()
