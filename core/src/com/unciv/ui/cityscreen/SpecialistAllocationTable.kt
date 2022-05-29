@@ -18,7 +18,7 @@ class SpecialistAllocationTable(val cityScreen: CityScreen) : Table(BaseScreen.s
         // Auto/Manual Specialists Toggle
         // Color of "color" coming from Skin.json that's loaded into BaseScreen
         // 5 columns: unassignButton, AllocationTable, assignButton, SeparatorVertical, SpecialistsStatsTabe
-        if (cityScreen.canChangeState &&  !cityInfo.isPuppet) {
+        if (cityScreen.canCityBeChanged()) {
             if (cityInfo.manualSpecialists) {
                 val manualSpecialists = "Manual Specialists".toLabel()
                     .addBorder(5f, BaseScreen.skin.get("color", Color::class.java))

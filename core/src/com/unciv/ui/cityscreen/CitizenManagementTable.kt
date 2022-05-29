@@ -21,7 +21,7 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
         val resetLabel = "Reset Citizens".toLabel()
         val resetCell = Table()
         resetCell.add(resetLabel).pad(5f)
-        if (cityScreen.canChangeState && !city.isPuppet) {
+        if (cityScreen.canCityBeChanged()) {
             resetCell.touchable = Touchable.enabled
             resetCell.onClick {
                 city.reassignPopulation(true)
@@ -35,7 +35,7 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
         val avoidLabel = "Avoid Growth".toLabel()
         val avoidCell = Table()
         avoidCell.add(avoidLabel).pad(5f)
-        if (cityScreen.canChangeState && !city.isPuppet) {
+        if (cityScreen.canCityBeChanged()) {
             avoidCell.touchable = Touchable.enabled
             avoidCell.onClick {
                 city.avoidGrowth = !city.avoidGrowth
@@ -54,7 +54,7 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
             val label = focus.label.toLabel()
             val cell = Table()
             cell.add(label).pad(5f)
-            if (cityScreen.canChangeState && !city.isPuppet) {
+            if (cityScreen.canCityBeChanged()) {
                 cell.touchable = Touchable.enabled
                 cell.onClick {
                     city.cityAIFocus = focus
