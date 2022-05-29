@@ -192,6 +192,67 @@ class BasicTests {
     }
 
     @Test
+    fun allPolicyRelatedUniquesHaveTheirUniqueTypes() {
+        val policies = ruleset.policies.values
+        var allOK = true
+        for (policy in policies) {
+            for (unique in policy.uniques) {
+                if (!UniqueType.values().any { it.placeholderText == unique.getPlaceholderText() }) {
+                    println("${policy.name}: $unique")
+                    allOK = false
+                }
+            }
+        }
+        Assert.assertTrue("This test succeeds only if all policy uniques are presented in UniqueType.values()", allOK)
+    }
+
+    @Test
+    fun allBeliefRelatedUniquesHaveTheirUniqueTypes() {
+        val ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!.clone() // vanilla doesn't have beliefs
+        val beliefs = ruleset.beliefs.values
+        var allOK = true
+        for (belief in beliefs) {
+            for (unique in belief.uniques) {
+                if (!UniqueType.values().any { it.placeholderText == unique.getPlaceholderText() }) {
+                    println("${belief.name}: $unique")
+                    allOK = false
+                }
+            }
+        }
+        Assert.assertTrue("This test succeeds only if all belief uniques are presented in UniqueType.values()", allOK)
+    }
+
+    @Test
+    fun allEraRelatedUniquesHaveTheirUniqueTypes() {
+        val eras = ruleset.eras.values
+        var allOK = true
+        for (era in eras) {
+            for (unique in era.uniques) {
+                if (!UniqueType.values().any { it.placeholderText == unique.getPlaceholderText() }) {
+                    println("${era.name}: $unique")
+                    allOK = false
+                }
+            }
+        }
+        Assert.assertTrue("This test succeeds only if all era uniques are presented in UniqueType.values()", allOK)
+    }
+
+    @Test
+    fun allRuinRelatedUniquesHaveTheirUniqueTypes() {
+        val ruinRewards = ruleset.ruinRewards.values
+        var allOK = true
+        for (reward in ruinRewards) {
+            for (unique in reward.uniques) {
+                if (!UniqueType.values().any { it.placeholderText == unique.getPlaceholderText() }) {
+                    println("${reward.name}: $unique")
+                    allOK = false
+                }
+            }
+        }
+        Assert.assertTrue("This test succeeds only if all ruin reward uniques are presented in UniqueType.values()", allOK)
+    }
+
+    @Test
     fun allDeprecatedUniqueTypesHaveReplacewithThatMatchesOtherType() {
         var allOK = true
         for (uniqueType in UniqueType.values()) {

@@ -161,6 +161,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     @Deprecated("As of 3.19.19", ReplaceWith("[relativeAmount]% Great Person generation [cityFilter]"))
     GreatPersonPointPercentageDeprecated("[relativeAmount]% great person generation [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
+    DisablesReligion("Starting in this era disables religion", UniqueTarget.Era),
     FreeExtraBeliefs("May choose [amount] additional [beliefType] beliefs when [foundingOrEnhancing] a religion", UniqueTarget.Global),
     FreeExtraAnyBeliefs("May choose [amount] additional belief(s) of any type when [foundingOrEnhancing] a religion", UniqueTarget.Global),
     StatsWhenAdoptingReligionSpeed("[stats] when a city adopts this religion for the first time (modified by game speed)", UniqueTarget.Global),
@@ -733,6 +734,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     OneTimeRevealSpecificMapTiles("Reveal up to [amount/'all'] [tileFilter] within a [amount] tile radius", UniqueTarget.Ruins),
     OneTimeRevealCrudeMap("From a randomly chosen tile [amount] tiles away from the ruins, reveal tiles up to [amount] tiles away with [amount]% chance", UniqueTarget.Ruins),
     OneTimeTriggerVoting("Triggers voting for the Diplomatic Victory", UniqueTarget.Triggerable),  // used in Building
+    OneTimeGlobalAlert("Triggers the following global alert: [comment]", UniqueTarget.Triggerable), // used in Policy
 
     OneTimeUnitHeal("Heal this unit by [amount] HP", UniqueTarget.Promotion),
     OneTimeUnitGainXP("This Unit gains [amount] XP", UniqueTarget.Ruins),
