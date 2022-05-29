@@ -76,9 +76,9 @@ class ImprovementPickerScreen(
 
         // clone tileInfo without "top" feature if it could be removed
         // Keep this copy around for speed
-        val tileInfoNoLast: TileInfo = tileInfo.clone()
-        if (Constants.remove + tileInfoNoLast.getLastTerrain().name in ruleSet.tileImprovements) {
-            tileInfoNoLast.removeTerrainFeature(tileInfoNoLast.getLastTerrain().name)
+        val tileInfoWithoutLastTerrain: TileInfo = tileInfo.clone()
+        if (Constants.remove + tileInfoWithoutLastTerrain.getLastTerrain().name in ruleSet.tileImprovements) {
+            tileInfoWithoutLastTerrain.removeTerrainFeature(tileInfoWithoutLastTerrain.getLastTerrain().name)
         }
 
         for (improvement in ruleSet.tileImprovements.values) {
@@ -91,7 +91,7 @@ class ImprovementPickerScreen(
             var unbuildableBecause = tileInfo.getImprovementBuildingProblems(improvement, currentPlayerCiv).toSet()
             if (!canReport(unbuildableBecause)) {
                 // Try after pretending to have removed the top terrain layer.
-                unbuildableBecause = tileInfoNoLast.getImprovementBuildingProblems(improvement, currentPlayerCiv).toSet()
+                unbuildableBecause = tileInfoWithoutLastTerrain.getImprovementBuildingProblems(improvement, currentPlayerCiv).toSet()
                 if (!canReport(unbuildableBecause)) continue
                 else suggestRemoval = true
             }
