@@ -24,8 +24,8 @@
     {
         "name": "Fertility Rites",
         "type": "Pantheon",
-        "uniques": ["[+10]% growth [in this city]"] 
-        // Preferably I would not have a cityFilter here, but doing so requires no additional implementation 
+        "uniques": ["[+10]% growth [in this city]"]
+        // Preferably I would not have a cityFilter here, but doing so requires no additional implementation
     },
     {
         "name": "God of Craftsman",
@@ -201,7 +201,7 @@
         "uniques": ["[+15]% growth [in this city] <when not at war>"]
     },
 ///////////////////////////////////////// Founder beliefs //////////////////////////////////////////
-    
+
     {
         "name": "Ceremonial Burial",
         "type": "Founder",
@@ -230,7 +230,7 @@
     {
         "name": "Peace Loving",
         "type": "Founder",
-        "uniques": ["[+1 Happiness] for every [5] global followers [in non-enemy foreign cities]"]
+        "uniques": ["[+1 Happiness] from every [5] global followers [in non-enemy foreign cities]"]
     },
     {
         "name": "Pilgrimage",
@@ -240,12 +240,12 @@
     {
         "name": "Tithe",
         "type": "Founder",
-        "uniques": ["[+1 Gold] for every [4] global followers [in all cities]"]
+        "uniques": ["[+1 Gold] from every [4] global followers [in all cities]"]
     },
     {
         "name": "World Church",
         "type": "Founder",
-        "uniques": ["[+1 Culture] for every [5] global followers [in foreign cities]"]
+        "uniques": ["[+1 Culture] from every [5] global followers [in foreign cities]"]
     },
 
     ////////////////////////////////////// Enhancer beliefs ///////////////////////////////////////
@@ -275,7 +275,7 @@
     {
         "name": "Messiah",
         "type": "Enhancer",
-        "uniques": ["[+25]% Spread Religion Strength <for [Great Prophet] units>", "[-25]% Faith cost of generating Great Prophet equivalents", "[Faith] cost for [Great Prophet] units [-25]%"]
+        "uniques": ["[+25]% Spread Religion Strength <for [Great Prophet] units>", "[-25]% Faith cost of generating Great Prophet equivalents"]
     },
     {
         "name": "Missionary Zeal",
