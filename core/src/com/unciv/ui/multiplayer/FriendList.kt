@@ -103,4 +103,24 @@ class FriendList {
         }
         return ErrorType.NOERROR
     }
+
+    fun getFriendWithId(id: String): Friend? {
+        load()
+        for (index in friendList.indices) {
+            if (id == friendList[index].playerID) {
+                return friendList[index]
+            }
+        }
+        return null
+    }
+
+    fun getFriendWithName(name: String): Friend? {
+        load()
+        for (index in friendList.indices) {
+            if (name == friendList[index].name) {
+                return friendList[index]
+            }
+        }
+        return null
+    }
 }

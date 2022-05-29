@@ -48,17 +48,16 @@ class PlayerPickerTable(
     val playerListTable = Table()
     val civBlocksWidth = if(blockWidth <= 10f) previousScreen.stage.width / 3 - 5f else blockWidth
 
-    val listOfSelectedFriends = mutableListOf<String>()
-
     /** Locks player table for editing, currently unused, was previously used for scenarios and could be useful in the future.*/
     var locked = false
 
     /** No random civilization is available, used during map editing.*/
     var noRandom = false
 
-    private val alreadyChosenFriends = mutableListOf<FriendList.Friend>()
+    val friendList = FriendList()
 
     init {
+        friendList.load()
         for (player in gameParameters.players)
             player.playerId = "" // This is to stop people from getting other users' IDs and cheating with them in multiplayer games
 
@@ -275,22 +274,18 @@ class PlayerPickerTable(
     /**
      * Returns a list of available friends.
      *
-     * TODO Skips friends already chosen.
+     * Skips friends already chosen.
      *
      * @return [Sequence] of available [FriendList.Friend]s
      */
     internal fun getAvailableFriends(): Sequence<FriendList.Friend> {
-        val friendList = FriendList()
-        friendList.load()
-        for (index in friendList.friendList.indices) {
-            for (index2 in listOfSelectedFriends.indices) {
-                if(friendList.friendList[index].playerID == listOfSelectedFriends[index2] ){
-                    alreadyChosenFriends.add(friendList.friendList[index])
-                }
-            }
+        val friendListWithRemovedFriends = FriendList()
+        friendListWithRemovedFriends.load()
+        for (index in gameParameters.players.indices) {
+            val currentFriendId = previousScreen.gameSetupInfo.gameParameters.players[index].playerId
+            friendListWithRemovedFriends.friendList.remove(friendList.getFriendWithId(currentFriendId))
         }
-        friendList.friendList.removeAll(alreadyChosenFriends)
-        return friendList.friendList.asSequence()
+        return friendListWithRemovedFriends.friendList.asSequence()
     }
 }
 
@@ -386,9 +381,7 @@ private class FriendPickerPopup(
             close()
             return
         }
-
         player.playerId = selectedFriend?.playerID.toString()
-        playerPicker.listOfSelectedFriends.add(player.playerId)
         close()
         playerPicker.update()
     }
