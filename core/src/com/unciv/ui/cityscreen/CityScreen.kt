@@ -187,7 +187,7 @@ class CityScreen(
     }
 
     fun canCityBeChanged(): Boolean {
-        return UncivGame.Current.worldScreen.canChangeState && !city.isPuppet
+        return canChangeState && !city.isPuppet
     }
 
     private fun updateTileGroups() {
