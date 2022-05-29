@@ -13,7 +13,7 @@ import java.util.*
 class AddFriendScreen(backScreen: ViewFriendsListScreen) : PickerScreen() {
     init {
         val friendNameTextField = TextField("", skin)
-        val pasteGameIDButton = "Paste player ID from clipboard".toTextButton()
+        val pastePlayerIDButton = "Paste player ID from clipboard".toTextButton()
         val playerIDTextField = TextField("", skin)
         val friendlist = FriendList()
 
@@ -21,15 +21,15 @@ class AddFriendScreen(backScreen: ViewFriendsListScreen) : PickerScreen() {
         friendNameTextField.messageText = "Please input a name for your friend!".tr()
         topTable.add(friendNameTextField).pad(10f).padBottom(30f).width(stage.width/2).row()
 
-        pasteGameIDButton.onClick {
+        pastePlayerIDButton.onClick {
             playerIDTextField.text = Gdx.app.clipboard.contents
         }
 
         topTable.add("Player ID".toLabel()).row()
         val gameIDTable = Table()
         playerIDTextField.messageText = "Please input a player ID for your friend!".tr()
-        gameIDTable.add(playerIDTextField).pad(10f).width(2*stage.width/3 - pasteGameIDButton.width)
-        gameIDTable.add(pasteGameIDButton)
+        gameIDTable.add(playerIDTextField).pad(10f).width(2*stage.width/3 - pastePlayerIDButton.width)
+        gameIDTable.add(pastePlayerIDButton)
         topTable.add(gameIDTable).padBottom(30f).row()
 
         //CloseButton Setup
