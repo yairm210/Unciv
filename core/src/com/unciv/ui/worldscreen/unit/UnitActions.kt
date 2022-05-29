@@ -17,8 +17,6 @@ import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.tile.TileImprovement
-import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
@@ -30,7 +28,6 @@ import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.popup.hasOpenPopups
 import com.unciv.ui.utils.toPercent
 import com.unciv.ui.worldscreen.WorldScreen
-import kotlin.math.absoluteValue
 import kotlin.math.min
 import kotlin.random.Random
 
@@ -304,6 +301,7 @@ object UnitActions {
 
     private fun pillageLooting(tile: TileInfo, unit: MapUnit) {
         // Stats objects for reporting pillage results in a notification
+        val pillageYield = Stats()
         val globalPillageYield = Stats()
         val toCityPillageYield = Stats()
         val closestCity = unit.civInfo.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
@@ -312,46 +310,28 @@ object UnitActions {
         for (unique in improvement.getMatchingUniques(UniqueType.PillageYieldRandom)) {
             for (stat in unique.stats) {
                 val looted = Random.nextInt((stat.value + 1).toInt()) + Random.nextInt((stat.value + 1).toInt())
-                // when statement handles different stat transactions
-                // gold, faith, culture, and science are given to the civ
-                // food and production are given to the nearest city
-                // happiness can't be pillaged
-                when (stat.key) {
-                    Stat.Gold, Stat.Faith, Stat.Science, Stat.Culture -> {
-                        unit.civInfo.addStat(stat.key, looted)
-                        globalPillageYield[stat.key] += looted.toFloat()
-                    }
-                    Stat.Food, Stat.Production -> {
-                        if (closestCity != null) {
-                            closestCity.addStat(stat.key, looted)
-                            toCityPillageYield[stat.key] += looted.toFloat()
-                        }
-                    }
-                    else -> {}
-                }
+                pillageYield.add(stat.key, looted.toFloat())
+            }
+        }
+        for (unique in improvement.getMatchingUniques(UniqueType.PillageYieldFixed)) {
+            for (stat in unique.stats) {
+                pillageYield.add(stat.key, stat.value)
             }
         }
 
-        for (unique in improvement.getMatchingUniques(UniqueType.PillageYieldFixed)) {
-            for (stat in unique.stats) {
-                val looted = stat.value
-                // when statement handles different stat transactions
-                // gold, faith, culture, and science are given to the civ
-                // food and production should be given to the nearest city but that is unimplemented
-                // happiness can't be pillaged
-                when (stat.key) {
-                    Stat.Gold, Stat.Faith, Stat.Science, Stat.Culture -> {
-                        unit.civInfo.addStat(stat.key, looted.toInt())
-                        globalPillageYield[stat.key] += looted
-                    }
-                    Stat.Food, Stat.Production -> {
-                        if (closestCity != null) {
-                            closestCity.addStat(stat.key, looted.toInt())
-                            toCityPillageYield[stat.key] += looted
-                        }
-                    }
-                    else -> {}
+        for (stat in pillageYield) {
+            when (stat.key) {
+                Stat.Gold, Stat.Faith, Stat.Science, Stat.Culture -> {
+                    unit.civInfo.addStat(stat.key, stat.value.toInt())
+                    globalPillageYield[stat.key] += stat.value
                 }
+                Stat.Food, Stat.Production -> {
+                    if (closestCity != null) {
+                        closestCity.addStat(stat.key, stat.value.toInt())
+                        toCityPillageYield[stat.key] += stat.value
+                    }
+                }
+                else -> {}
             }
         }
 
