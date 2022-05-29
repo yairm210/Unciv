@@ -352,7 +352,7 @@ class GlobalUniquesTests {
         cityInfo.population.foodStored = 0 // just to be sure
         civInfo.addGold(-civInfo.gold) // reset gold just to be sure
 
-        var testImprovement = game.createTileImprovement("Yields [+20 Gold, +11 Food] when pillaged")
+        val testImprovement = game.createTileImprovement("Pillaging this improvement yields [+20 Gold, +11 Food]")
         tile.improvement = testImprovement.name
         val unit = game.addUnit("Warrior", civInfo, tile)
         unit.currentMovement = 2f

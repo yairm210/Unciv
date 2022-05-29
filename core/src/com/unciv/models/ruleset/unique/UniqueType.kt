@@ -635,8 +635,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     TakesOverAdjacentTiles("Constructing it will take over the tiles around it and assign them to your closest city", UniqueTarget.Improvement),
 
     Unpillagable("Unpillagable", UniqueTarget.Improvement),
-    PillageYieldRandom("Yields on average [stats] when pillaged", UniqueTarget.Improvement),
-    PillageYieldFixed("Yields [stats] when pillaged", UniqueTarget.Improvement),
+    PillageYieldRandom("Pillaging this improvement yields approximately [stats]", UniqueTarget.Improvement),
+    PillageYieldFixed("Pillaging this improvement yields [stats]", UniqueTarget.Improvement),
     Irremovable("Irremovable", UniqueTarget.Improvement),
     //endregion
 
