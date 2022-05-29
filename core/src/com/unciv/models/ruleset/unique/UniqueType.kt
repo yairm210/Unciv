@@ -155,7 +155,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     GrowthPercentBonus("[relativeAmount]% growth [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     CarryOverFood("[relativeAmount]% Food is carried over after population increases [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    
+
     GainFreeBuildings("Gain a free [buildingName] [cityFilter]", UniqueTarget.Global),
     GreatPersonPointPercentage("[relativeAmount]% Great Person generation [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     @Deprecated("As of 3.19.19", ReplaceWith("[relativeAmount]% Great Person generation [cityFilter]"))
@@ -197,7 +197,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     BuyItemsDiscount("[stat] cost of purchasing items in cities [relativeAmount]%", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     BuyBuildingsDiscount("[stat] cost of purchasing [buildingFilter] buildings [relativeAmount]%", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     BuyUnitsDiscount("[stat] cost of purchasing [baseUnitFilter] units [relativeAmount]%", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    
+
     // Should be replaced with moddable improvements when roads become moddable
     RoadMovementSpeed("Improves movement speed on roads",UniqueTarget.Global),
     RoadsConnectAcrossRivers("Roads connect tiles across rivers", UniqueTarget.Global),
@@ -278,7 +278,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     GoldenAgeLength("[relativeAmount]% Golden Age length", UniqueTarget.Global),
 
     StrengthForCities("[relativeAmount]% Strength for cities", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    
+
     UnitStartingExperience("New [baseUnitFilter] units start with [amount] Experience [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     UnitStartingPromotions("All newly-trained [baseUnitFilter] units [cityFilter] receive the [promotion] promotion", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     UnitStartingActions("[baseUnitFilter] units built [cityFilter] can [action] [amount] extra times", UniqueTarget.Global, UniqueTarget.FollowerBelief),
@@ -291,7 +291,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     EmbarkAndEnterOcean("Can embark and move over Coasts and Oceans immediately", UniqueTarget.Global),
 
     PopulationLossFromNukes("Population loss from nuclear attacks [relativeAmount]% [cityFilter]", UniqueTarget.Global),
-  
+
     NaturalReligionSpreadStrength("[relativeAmount]% Natural religion spread [cityFilter]", UniqueTarget.FollowerBelief, UniqueTarget.Global),
     ReligionSpreadDistance("Religion naturally spreads to cities [amount] tiles away", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
@@ -634,6 +634,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     TakesOverAdjacentTiles("Constructing it will take over the tiles around it and assign them to your closest city", UniqueTarget.Improvement),
 
     Unpillagable("Unpillagable", UniqueTarget.Improvement),
+    PillageYieldRandom("Yields on average [stats] when pillaged", UniqueTarget.Improvement),
+    PillageYieldFixed("Yields [stats] when pillaged", UniqueTarget.Improvement),
     Irremovable("Irremovable", UniqueTarget.Improvement),
     //endregion
 
@@ -765,7 +767,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     BonusForUnitsInRadius("Bonus for units in 2 tile radius 15%", UniqueTarget.Unit),
     @Deprecated("as of 4.0.15", ReplaceWith("Irremovable"), DeprecationLevel.ERROR)
     Indestructible("Indestructible", UniqueTarget.Improvement),
-    
+
     @Deprecated("as of 3.19.1", ReplaceWith("[stats] from every [Wonder]"), DeprecationLevel.ERROR)
     StatsFromWondersDeprecated("[stats] from every Wonder", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     @Deprecated("as of 3.19.3", ReplaceWith("[stats] from every [buildingFilter] <in cities where this religion has at least [amount] followers>"), DeprecationLevel.ERROR)

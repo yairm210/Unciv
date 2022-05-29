@@ -17,9 +17,12 @@ import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.tile.TileImprovement
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
+import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
@@ -27,6 +30,7 @@ import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.popup.hasOpenPopups
 import com.unciv.ui.utils.toPercent
 import com.unciv.ui.worldscreen.WorldScreen
+import kotlin.math.absoluteValue
 import kotlin.math.min
 import kotlin.random.Random
 
@@ -285,20 +289,7 @@ object UnitActions {
 
         return UnitAction(UnitActionType.Pillage,
                 action = {
-                    // looting mechanic adapted from https://github.com/Gedemon/Civ5-DLL/blob/aa29e80751f541ae04858b6d2a2c7dcca454201e/CvGameCoreDLL_Expansion1/CvUnit.cpp#L5455
-                    val improvement = tile.ruleset.tileImprovements[tile.improvement]!!
-                    var pillageGold = 0
-                    pillageGold += Random.nextInt(improvement.pillageGold + 1)
-                    pillageGold += Random.nextInt(improvement.pillageGold + 1) // turn uniform distribution into a triangular one
-
-                    if (pillageGold > 0) {
-                        unit.civInfo.addGold(pillageGold)
-                        if (tile.getOwner() != null)
-                            unit.civInfo.addNotification("We have pillaged [${pillageGold}] gold from a [${improvement.name}]", tile.position, NotificationIcon.War, tile.getOwner()!!.civName)
-                        else
-                            unit.civInfo.addNotification("We have pillaged [${pillageGold}] gold from a [${improvement.name}]", tile.position, NotificationIcon.War)
-                    }
-
+                    pillageLooting(tile, unit)
                     tile.setPillaged()
                     unit.civInfo.lastSeenImprovement.remove(tile.position)
                     if (tile.resource != null) tile.getOwner()?.updateDetailedCivResources()    // this might take away a resource
@@ -309,6 +300,81 @@ object UnitActions {
 
                     unit.healBy(25)
                 }.takeIf { unit.currentMovement > 0 && canPillage(unit, tile) })
+    }
+
+    private fun pillageLooting(tile: TileInfo, unit: MapUnit) {
+        // Stats objects for reporting pillage results in a notification
+        val globalPillageYield = Stats()
+        val toCityPillageYield = Stats()
+        val closestCity = unit.civInfo.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
+        val improvement = tile.ruleset.tileImprovements[tile.improvement]!!
+
+        for (unique in improvement.getMatchingUniques(UniqueType.PillageYieldRandom)) {
+            for (stat in unique.stats) {
+                val looted = Random.nextInt((stat.value + 1).toInt()) + Random.nextInt((stat.value + 1).toInt())
+                // when statement handles different stat transactions
+                // gold, faith, culture, and science are given to the civ
+                // food and production are given to the nearest city
+                // happiness can't be pillaged
+                when (stat.key) {
+                    Stat.Gold, Stat.Faith, Stat.Science, Stat.Culture -> {
+                        unit.civInfo.addStat(stat.key, looted)
+                        globalPillageYield[stat.key] += looted.toFloat()
+                    }
+                    Stat.Food, Stat.Production -> {
+                        if (closestCity != null) {
+                            closestCity.addStat(stat.key, looted)
+                            toCityPillageYield[stat.key] += looted.toFloat()
+                        }
+                    }
+                    else -> {}
+                }
+            }
+        }
+
+        for (unique in improvement.getMatchingUniques(UniqueType.PillageYieldFixed)) {
+            for (stat in unique.stats) {
+                val looted = stat.value
+                // when statement handles different stat transactions
+                // gold, faith, culture, and science are given to the civ
+                // food and production should be given to the nearest city but that is unimplemented
+                // happiness can't be pillaged
+                when (stat.key) {
+                    Stat.Gold, Stat.Faith, Stat.Science, Stat.Culture -> {
+                        unit.civInfo.addStat(stat.key, looted.toInt())
+                        globalPillageYield[stat.key] += looted
+                    }
+                    Stat.Food, Stat.Production -> {
+                        if (closestCity != null) {
+                            closestCity.addStat(stat.key, looted.toInt())
+                            toCityPillageYield[stat.key] += looted
+                        }
+                    }
+                    else -> {}
+                }
+            }
+        }
+
+        if (toCityPillageYield.values.sum() > 0 && closestCity != null) {
+            if (tile.getOwner() != null)
+                unit.civInfo.addNotification("We have looted [${pillageYieldNotificationString(toCityPillageYield)}] from a [${improvement.name}] which has been sent to [${closestCity.name}]", tile.position, NotificationIcon.War, tile.getOwner()!!.civName)
+            else
+                unit.civInfo.addNotification("We have looted [${pillageYieldNotificationString(toCityPillageYield)}] from a [${improvement.name}] which has been sent to [${closestCity.name}]", tile.position, NotificationIcon.War)
+        }
+        if (globalPillageYield.values.sum() > 0) {
+            if (tile.getOwner() != null)
+                unit.civInfo.addNotification("We have looted [${pillageYieldNotificationString(globalPillageYield)}] from a [${improvement.name}]", tile.position, NotificationIcon.War, tile.getOwner()!!.civName)
+            else
+                unit.civInfo.addNotification("We have looted [${pillageYieldNotificationString(globalPillageYield)}] from a [${improvement.name}]", tile.position, NotificationIcon.War)
+        }
+    }
+
+    // function that removes the icon from the Stats object since the circular icons all appear the same
+    // delete this and replace above instances with toString() once the text-coloring-affecting-font-icons bug is fixed
+    private fun pillageYieldNotificationString(stats: Stats): String {
+        return stats.joinToString {
+            it.value.toInt().toString() + " " + it.key.name.tr().substring(startIndex = 1)
+        }
     }
 
     private fun addExplorationActions(unit: MapUnit, actionList: ArrayList<UnitAction>) {

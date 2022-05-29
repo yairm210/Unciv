@@ -694,15 +694,19 @@ class Ruleset {
                     RulesetErrorSeverity.Warning
                 )
             }
-            if (improvement.pillageGold < 0) {
-                lines.add(
-                    "${improvement.name} cannot have a negative `pillageGold`!",
-                    RulesetErrorSeverity.Error
-                )
+            for (unique in improvement.uniqueObjects) {
+                if (unique.type == UniqueType.PillageYieldRandom || unique.type == UniqueType.PillageYieldFixed) {
+                    val params = Stats.parse(unique.params[0])
+                    if (params.values.any { it < 0 }) lines.add(
+                        "${improvement.name} cannot have a negative value for a pillage yield!",
+                        RulesetErrorSeverity.Error
+                    )
+                }
             }
-            if (improvement.pillageGold > 0 && improvement.hasUnique(UniqueType.Unpillagable)) {
+            if ((improvement.hasUnique(UniqueType.PillageYieldRandom) || improvement.hasUnique(UniqueType.PillageYieldFixed))
+                    && improvement.hasUnique(UniqueType.Unpillagable)) {
                 lines.add(
-                    "${improvement.name} has an `Unpillagable` unique type but has a non-zero `pillageGold` variable!",
+                    "${improvement.name} has both an `Unpillagable` unique type and a `PillageYieldRandom` or `PillageYieldFixed` unique type!",
                     RulesetErrorSeverity.Warning
                 )
             }

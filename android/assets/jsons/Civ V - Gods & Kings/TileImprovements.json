@@ -5,11 +5,11 @@
 		"terrainsCanBeBuiltOn": ["Plains","Grassland","Desert","Flood plains"],
 		"food": 1,
 		"turnsToBuild": 7,
-        "pillageGold": 18,
 		"techRequired": "Agriculture",
 		"uniques": ["Can also be built on tiles adjacent to fresh water",
 			"[+1 Food] from [Fresh water] tiles <after discovering [Civil Service]>",
-			"[+1 Food] from [non-fresh water] tiles <after discovering [Fertilizer]>"],
+			"[+1 Food] from [non-fresh water] tiles <after discovering [Fertilizer]>",
+            "Yields on average [+18 Gold] when pillaged"],
 		"shortcutKey": "F"
 	},
 	{
@@ -17,9 +17,8 @@
 		"terrainsCanBeBuiltOn": ["Forest"],
 		"production": 1,
 		"turnsToBuild": 7,
-        "pillageGold": 10,
 		"techRequired": "Construction",
-		"uniques": ["[+1 Production] <after discovering [Scientific Theory]>"],
+		"uniques": ["[+1 Production] <after discovering [Scientific Theory]>", "Yields on average [+10 Gold] when pillaged"],
 		"shortcutKey": "L"
 	},
 	{
@@ -27,9 +26,8 @@
 		"terrainsCanBeBuiltOn": ["Hill"],
 		"production": 1,
 		"turnsToBuild": 7,
-        "pillageGold": 20,
 		"techRequired": "Mining",
-		"uniques": ["[+1 Production] <after discovering [Chemistry]>"],
+		"uniques": ["[+1 Production] <after discovering [Chemistry]>", "Yields on average [+20 Gold] when pillaged"],
 		"shortcutKey": "M"
 	},
 	{
@@ -37,9 +35,8 @@
 		"terrainsCanBeBuiltOn": ["Plains","Grassland","Desert","Hill","Tundra","Forest","Jungle","Flood plains"],
 		"gold": 1,
 		"turnsToBuild": 7,
-        "pillageGold": 20,
 		"techRequired": "Guilds",
-		"uniques": ["[+1 Gold] <after discovering [Economics]>"],
+		"uniques": ["[+1 Gold] <after discovering [Economics]>", "Yields on average [+20 Gold] when pillaged"],
 		"shortcutKey": "T"
 	},
 
@@ -47,58 +44,51 @@
 	{
 		"name": "Camp",
 		"turnsToBuild": 7,
-        "pillageGold": 10,
 		"techRequired": "Trapping",
-		"uniques": ["Does not need removal of [Forest]","Does not need removal of [Jungle]","[+1 Gold] <after discovering [Economics]>", "Can only be built to improve a resource"],
+		"uniques": ["Does not need removal of [Forest]","Does not need removal of [Jungle]","[+1 Gold] <after discovering [Economics]>", "Can only be built to improve a resource", "Yields on average [+10 Gold] when pillaged"],
 		"shortcutKey": "C"
 	},
 	{
 		"name": "Oil well",
 		"turnsToBuild": 9,
-        "pillageGold": 20,
 		"techRequired": "Biology",
-		"uniques": ["Can only be built to improve a resource", "Cannot be built on [Water] tiles"],
+		"uniques": ["Can only be built to improve a resource", "Cannot be built on [Water] tiles", "Yields on average [+20 Gold] when pillaged"],
 		"shortcutKey": "W"
 	},
 	{
 		"name": "Offshore Platform",
-        "pillageGold": 20,
 		"techRequired": "Refrigeration",
-		"uniques": ["Can only be built to improve a resource", "Can only be built on [Water] tiles"],
+		"uniques": ["Can only be built to improve a resource", "Can only be built on [Water] tiles", "Yields on average [+20 Gold] when pillaged"],
 		"shortcutKey": "P"
 	},
 	{
 		"name": "Pasture",
 		"turnsToBuild": 8,
-        "pillageGold": 10,
 		"techRequired": "Animal Husbandry",
-		"uniques": ["[+1 Food] <after discovering [Fertilizer]>", "Can only be built to improve a resource"],
+		"uniques": ["[+1 Food] <after discovering [Fertilizer]>", "Can only be built to improve a resource", "Yields on average [+10 Gold] when pillaged", "Yields [+10 Food, +10 Culture] when pillaged"],
 		"shortcutKey": "P"
 	},
 	{
 		"name": "Plantation",
 		"turnsToBuild": 6,
 		"gold": 1,
-        "pillageGold": 10,
 		"techRequired": "Calendar",
-		"uniques": ["[+1 Food] <after discovering [Fertilizer]>", "Can only be built to improve a resource"],
+		"uniques": ["[+1 Food] <after discovering [Fertilizer]>", "Can only be built to improve a resource", "Yields on average [+10 Gold] when pillaged"],
 		"shortcutKey": "P"
 	},
 	{
 		"name": "Quarry",
 		"turnsToBuild": 8,
-        "pillageGold": 20,
 		"techRequired": "Masonry",
-		"uniques": ["[+1 Production] <after discovering [Chemistry]>", "Can only be built to improve a resource"],
+		"uniques": ["[+1 Production] <after discovering [Chemistry]>", "Can only be built to improve a resource", "Yields on average [+20 Gold] when pillaged"],
 		"shortcutKey": "Q"
 	},
 	{
 		"name": "Fishing Boats",
 		"terrainsCanBeBuiltOn": ["Coast"],
 		"food": 1,
-        "pillageGold": 10,
 		"techRequired": "Sailing",
-		"uniques": ["[+1 Gold] <after discovering [Compass]>", "Can only be built to improve a resource"],
+		"uniques": ["[+1 Gold] <after discovering [Compass]>", "Can only be built to improve a resource", "Yields on average [+10 Gold] when pillaged"],
 		"shortcutKey": "F"
 	},
 
@@ -192,36 +182,31 @@
 		"name": "Academy",
 		"terrainsCanBeBuiltOn": ["Land"],
 		"science": 8,
-        "pillageGold": 20,
-		"uniques": ["Great Improvement", "[+2 Science] <after discovering [Scientific Theory]>", "[+2 Science] <after discovering [Atomic Theory]>", "Removes removable features when built"]
+		"uniques": ["Great Improvement", "[+2 Science] <after discovering [Scientific Theory]>", "[+2 Science] <after discovering [Atomic Theory]>", "Removes removable features when built", "Yields on average [+20 Gold] when pillaged"]
 	},
 	{
 		"name": "Landmark",
 		"terrainsCanBeBuiltOn": ["Land"],
 		"culture": 6,
-        "pillageGold": 20,
-		"uniques": ["Great Improvement", "Removes removable features when built"]
+		"uniques": ["Great Improvement", "Removes removable features when built", "Yields on average [+20 Gold] when pillaged"]
 	},
 	{
 		"name": "Manufactory",
 		"terrainsCanBeBuiltOn": ["Land"],
 		"production": 4,
-        "pillageGold": 20,
-		"uniques": ["Great Improvement", "[+1 Production] <after discovering [Chemistry]>", "Removes removable features when built"]
+		"uniques": ["Great Improvement", "[+1 Production] <after discovering [Chemistry]>", "Removes removable features when built", "Yields on average [+20 Gold] when pillaged"]
 	},
 	{
 		"name": "Customs house",
 		"terrainsCanBeBuiltOn": ["Land"],
 		"gold": 4,
-        "pillageGold": 20,
-		"uniques": ["Great Improvement", "[+1 Gold] <after discovering [Economics]>", "Removes removable features when built"]
+		"uniques": ["Great Improvement", "[+1 Gold] <after discovering [Economics]>", "Removes removable features when built", "Yields on average [+20 Gold] when pillaged"]
 	},
 	{
 		"name": "Holy site",
 		"terrainsCanBeBuiltOn": ["Land"],
 		"faith": 6,
-        "pillageGold": 20,
-		"uniques": ["Great Improvement", "Removes removable features when built"]
+		"uniques": ["Great Improvement", "Removes removable features when built", "Yields on average [+20 Gold] when pillaged"]
 	},
 	{
 		"name": "Citadel",
@@ -243,8 +228,7 @@
 		"terrainsCanBeBuiltOn": ["Land"],
 		"culture": 1,
 		"turnsToBuild": 4,
-        "pillageGold": 10,
-		"uniques": ["Can only be built on [Coastal] tiles", "[+1 Culture] for each adjacent [Moai]", "[+1 Gold] <after discovering [Flight]>"],
+		"uniques": ["Can only be built on [Coastal] tiles", "[+1 Culture] for each adjacent [Moai]", "[+1 Gold] <after discovering [Flight]>", "Yields on average [+10 Gold] when pillaged"],
 		"techRequired": "Construction",
 		"shortcutKey": "M"
 	},
@@ -254,11 +238,11 @@
 		"terrainsCanBeBuiltOn": ["Hill"],
 		"food": 1,
 		"turnsToBuild": 7,
-        "pillageGold": 18,
 		"uniques": ["Cannot be built on [Bonus resource] tiles",
 			"[+1 Food] for each adjacent [Mountain]",
 			"[+1 Food] from [Fresh water] tiles <after discovering [Civil Service]>",
-			"[+1 Food] from [non-fresh water] tiles <after discovering [Fertilizer]>"],
+			"[+1 Food] from [non-fresh water] tiles <after discovering [Fertilizer]>",
+            "Yields on average [+18 Gold] when pillaged"],
 		"techRequired": "Construction",
 		"shortcutKey": "F"
 	},
@@ -268,8 +252,7 @@
 		"food": 3,
 		"terrainsCanBeBuiltOn": ["Marsh", "Flood plains"],
 		"turnsToBuild": 7,
-        "pillageGold": 18,
-		"uniques": ["[+1 Production, +2 Gold] <after discovering [Economics]>"],
+		"uniques": ["[+1 Production, +2 Gold] <after discovering [Economics]>", "Yields on average [+18 Gold] when pillaged"],
 		"techRequired": "Guilds",
 		"shortcutKey": "F"
 	},

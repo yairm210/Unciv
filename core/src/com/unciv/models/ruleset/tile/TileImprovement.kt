@@ -27,7 +27,6 @@ class TileImprovement : RulesetStatsObject() {
     val shortcutKey: Char? = null
     // This is the base cost. A cost of 0 means created instead of buildable.
     val turnsToBuild: Int = 0
-    val pillageGold: Int = 0
 
 
     fun getTurnsToBuild(civInfo: CivilizationInfo, unit: MapUnit): Int {
@@ -132,10 +131,6 @@ class TileImprovement : RulesetStatsObject() {
 
         val statsDesc = cloneStats().toString()
         if (statsDesc.isNotEmpty()) textList += FormattedLine(statsDesc)
-
-        if (pillageGold > 0) {
-            textList += FormattedLine("Average pillageable gold: ¤[$pillageGold]", link="Tutorial/Pillaging")
-        }
 
         if (uniqueTo!=null) {
             textList += FormattedLine()
