@@ -1,7 +1,6 @@
 package com.unciv.ui.multiplayer
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.logic.IdChecker
@@ -11,7 +10,7 @@ import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.*
 import java.util.*
 
-class AddFriendScreen(backScreen: ViewFriendsListScreen) : PickerScreen(){
+class AddFriendScreen(backScreen: ViewFriendsListScreen) : PickerScreen() {
     init {
         val friendNameTextField = TextField("", skin)
         val pasteGameIDButton = "Paste playerID from clipboard".toTextButton()

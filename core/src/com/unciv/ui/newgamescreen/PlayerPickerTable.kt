@@ -105,8 +105,6 @@ class PlayerPickerTable(
         // enable start game when more than 1 active player
         val moreThanOnePlayer = 1 < gameParameters.players.count { it.chosenCiv != Constants.spectator }
         (previousScreen as? PickerScreen)?.setRightSideButtonEnabled(moreThanOnePlayer)
-
-
     }
 
     /**
@@ -206,7 +204,6 @@ class PlayerPickerTable(
                 val selectPlayerFromFriendsList = "Player ID from friends list".toTextButton()
                 selectPlayerFromFriendsList.onClick {
                     popupFriendPicker(player)
-                    //onPlayerIdTextUpdated() won't update the checkmark
                 }
                 playerTable.add(selectPlayerFromFriendsList).left().colspan(3).fillX().pad(5f)
             }
@@ -274,7 +271,6 @@ class PlayerPickerTable(
 
     /**
      * Returns a list of available friends.
-     *
      * Skips friends already chosen.
      *
      * @return [Sequence] of available [FriendList.Friend]s

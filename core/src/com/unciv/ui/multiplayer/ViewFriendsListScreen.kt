@@ -39,6 +39,9 @@ class ViewFriendsListScreen(previousScreen: BaseScreen) : PickerScreen() {
             helpPopup.addGoodSizedLabel("").row()
 
             helpPopup.addGoodSizedLabel("After that you will see him in your friends list").row()
+            helpPopup.addGoodSizedLabel("and a new button will appear when creating a new").row()
+            helpPopup.addGoodSizedLabel("multiplayer game, which allows you to select your friend.").row()
+            helpPopup.addGoodSizedLabel("").row()
 
             helpPopup.addCloseButton()
             helpPopup.open()

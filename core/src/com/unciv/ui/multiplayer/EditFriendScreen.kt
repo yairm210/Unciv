@@ -12,7 +12,7 @@ import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.utils.*
 import java.util.*
 
-class EditFriendScreen(selectedFriend: FriendList.Friend, backScreen: ViewFriendsListScreen) : PickerScreen(){
+class EditFriendScreen(selectedFriend: FriendList.Friend, backScreen: ViewFriendsListScreen) : PickerScreen() {
     init {
         val friendNameTextField = TextField(selectedFriend.name, skin)
         val pasteGameIDButton = "Paste playerID from clipboard".toTextButton()
@@ -80,6 +80,4 @@ class EditFriendScreen(selectedFriend: FriendList.Friend, backScreen: ViewFriend
             backScreen.refreshFriendsList()
         }
     }
-
-
 }

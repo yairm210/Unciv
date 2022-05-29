@@ -113,14 +113,4 @@ class FriendList {
         }
         return null
     }
-
-    fun getFriendWithName(name: String): Friend? {
-        load()
-        for (index in friendList.indices) {
-            if (name == friendList[index].name) {
-                return friendList[index]
-            }
-        }
-        return null
-    }
 }
