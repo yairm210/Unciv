@@ -19,7 +19,7 @@ import com.unciv.ui.images.ImageGetter
 class BackgroundActor(val background: Drawable, align: Int) : Actor() {
     private val widthMultiplier = if (Align.isCenterHorizontal(align)) 1f else 2f
     private val heightMultiplier = if (Align.isCenterVertical(align)) 1f else 2f
-    private val noClip = (align and Align.center.inv()) == 0
+    private val noClip = Align.isCenterHorizontal(align) && Align.isCenterVertical(align)
     private val xOffset = if (Align.isLeft(align)) 0.5f else 0f
     private val yOffset = if (Align.isBottom(align)) 0.5f else 0f
 
