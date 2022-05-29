@@ -25,6 +25,7 @@ import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.math.sign
+import kotlin.math.ulp
 import kotlin.random.Random
 
 
@@ -45,13 +46,26 @@ class MapGenerator(val ruleset: Ruleset) {
         /** builds a [TerrainOccursRange] for [terrain] from a [unique] (type [UniqueType.TileGenerationConditions]) */
         constructor(terrain: Terrain, unique: Unique)
                 : this(terrain,
-            unique.params[0].toFloat(), unique.params[1].toFloat(),
-            unique.params[2].toFloat(), unique.params[3].toFloat())
-        /** checks if both [temperature] and [humidity] satisfy their ranges (>From, <=To) */
+            unique.params[0].toFloatMakeInclusive(-1f), unique.params[1].toFloat(),
+            unique.params[2].toFloatMakeInclusive(0f), unique.params[3].toFloat())
+
+        /** Checks if both [temperature] and [humidity] satisfy their ranges (>From, <=To)
+         *  Note the lowest allowed limit has been made inclusive (temp -1 nudged down by 1 [Float.ulp], humidity at 0)
+         */
+
         // Yes this does implicit conversions Float/Double
         fun matches(temperature: Double, humidity: Double) =
             tempFrom < temperature && temperature <= tempTo &&
             humidFrom < humidity && humidity <= humidTo
+
+        companion object {
+            /** A [toFloat] that also nudges the value slightly down if it matches [limit] to make the resulting range inclusive on the lower end */
+            private fun String.toFloatMakeInclusive(limit: Float): Float {
+                val result = toFloat()
+                if (result != limit) return result
+                return result - result.ulp
+            }
+        }
     }
     private fun Terrain.getGenerationConditions() =
         getMatchingUniques(UniqueType.TileGenerationConditions)
@@ -463,11 +477,15 @@ class MapGenerator(val ruleset: Ruleset) {
 
         // List is OK here as it's only sequentially scanned
         val limitsMap: List<TerrainOccursRange> =
-            ruleset.terrains.values.flatMap {
-                it.getGenerationConditions()
-            }
+            ruleset.terrains.values.filter { it.type == TerrainType.Land }
+                .flatMap { it.getGenerationConditions() }
         val noTerrainUniques = limitsMap.isEmpty()
-        val elevationTerrains = arrayOf(Constants.mountain, Constants.hill)
+        val elevationTerrains = ruleset.terrains.values.asSequence()
+            .filter {
+                it.hasUnique(UniqueType.OccursInChains)
+            }.mapTo(mutableSetOf()) { it.name }
+        if (elevationTerrains.isEmpty())
+            elevationTerrains.add(Constants.mountain)
 
         for (tile in tileMap.values.asSequence()) {
             if (tile.isWater || tile.baseTerrain in elevationTerrains)
@@ -526,6 +544,7 @@ class MapGenerator(val ruleset: Ruleset) {
             }
         }
     }
+
     /**
      * [MapParameters.rareFeaturesRichness] is the probability of spawning a rare feature
      */
@@ -600,16 +619,21 @@ class MapGenerationRandomness {
     /**
      * Generates a perlin noise channel combining multiple octaves
      *
-     * [nOctaves] is the number of octaves
-     * [persistence] is the scaling factor of octave amplitudes
-     * [lacunarity] is the scaling factor of octave frequencies
-     * [scale] is the distance the noise is observed from
+     * @param tile Source for x / x coordinates.
+     * @param seed Misnomer: actually the z value the Perlin cloud is 'cut' on.
+     * @param nOctaves is the number of octaves.
+     * @param persistence is the scaling factor of octave amplitudes.
+     * @param lacunarity is the scaling factor of octave frequencies.
+     * @param scale is the distance the noise is observed from.
      */
-    fun getPerlinNoise(tile: TileInfo, seed: Double,
-                       nOctaves: Int = 6,
-                       persistence: Double = 0.5,
-                       lacunarity: Double = 2.0,
-                       scale: Double = 10.0): Double {
+    fun getPerlinNoise(
+        tile: TileInfo,
+        seed: Double,
+        nOctaves: Int = 6,
+        persistence: Double = 0.5,
+        lacunarity: Double = 2.0,
+        scale: Double = 10.0
+    ): Double {
         val worldCoords = HexMath.hex2WorldCoords(tile.position)
         return Perlin.noise3d(worldCoords.x.toDouble(), worldCoords.y.toDouble(), seed, nOctaves, persistence, lacunarity, scale)
     }
