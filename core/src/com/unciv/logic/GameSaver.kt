@@ -30,7 +30,7 @@ class GameSaver(
      */
     private val files: Files,
     private val customFileLocationHelper: CustomFileLocationHelper? = null,
-    private val preferExternalStorage: Boolean
+    private val preferExternalStorage: Boolean = false
 ) {
     init {
         debug("Creating GameSaver, localStoragePath: %s, externalStoragePath: %s, preferExternalStorage: %s",
