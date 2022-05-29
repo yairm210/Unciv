@@ -191,6 +191,10 @@ class CityScreen(
         }
     }
 
+    fun canCityBeChanged(): Boolean {
+        return canChangeState && !city.isPuppet
+    }
+
     private fun updateTileGroups() {
         fun isExistingImprovementValuable(tileInfo: TileInfo, improvementToPlace: TileImprovement): Boolean {
             if (tileInfo.improvement == null) return false
