@@ -65,7 +65,7 @@
 		"name": "Pasture",
 		"turnsToBuild": 8,
 		"techRequired": "Animal Husbandry",
-		"uniques": ["[+1 Food] <after discovering [Fertilizer]>", "Can only be built to improve a resource", "Yields on average [+10 Gold] when pillaged", "Yields [+10 Food, +10 Culture] when pillaged"],
+		"uniques": ["[+1 Food] <after discovering [Fertilizer]>", "Can only be built to improve a resource", "Yields on average [+10 Gold] when pillaged"],
 		"shortcutKey": "P"
 	},
 	{
