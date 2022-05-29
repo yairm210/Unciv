@@ -95,7 +95,7 @@ private fun createNotificationSoundOptions(): List<SelectItem<UncivSound>> = lis
     SelectItem("Bombard", UncivSound.Bombard)
 ) + buildUnitAttackSoundOptions()
 
-fun buildUnitAttackSoundOptions(): List<SelectItem<UncivSound>> {
+private fun buildUnitAttackSoundOptions(): List<SelectItem<UncivSound>> {
     return RulesetCache.getSortedBaseRulesets()
         .map(RulesetCache::get).filterNotNull()
         .map(Ruleset::units).map { it.values }
@@ -103,7 +103,7 @@ fun buildUnitAttackSoundOptions(): List<SelectItem<UncivSound>> {
         .filter { it.attackSound != null }
         .filter { it.attackSound != "nuke" } // much too long for a notification
         .distinctBy { it.attackSound }
-        .map { SelectItem("[${it.name}] Attack Sound".tr(), UncivSound(it.attackSound!!)) }
+        .map { SelectItem("[${it.name}] Attack Sound", UncivSound(it.attackSound!!)) }
 }
 
 private fun addMultiplayerServerOptions(
