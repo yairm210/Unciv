@@ -371,7 +371,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         if (isSelectedQueueEntry()) {
             button = "Remove from queue".toTextButton()
-            if (cityScreen.canCityBeChanged())
+            if (!cityScreen.canCityBeChanged())
                 button.disable()
             else {
                 button.onClick {
