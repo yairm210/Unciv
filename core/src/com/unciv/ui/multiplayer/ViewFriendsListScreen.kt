@@ -35,7 +35,7 @@ class ViewFriendsListScreen(previousScreen: BaseScreen) : PickerScreen() {
             val helpPopup = Popup(this)
             helpPopup.addGoodSizedLabel("To add a friend, ask him to send you his playerID.").row()
             helpPopup.addGoodSizedLabel("Then click the 'Add friend' button.").row()
-            helpPopup.addGoodSizedLabel("Insert his playerID, enter a name for him and click the 'Add friend' button").row()
+            helpPopup.addGoodSizedLabel("Insert his player ID, enter a name for him and click the 'Add friend' button").row()
             helpPopup.addGoodSizedLabel("").row()
 
             helpPopup.addGoodSizedLabel("After that you will see him in your friends list").row()

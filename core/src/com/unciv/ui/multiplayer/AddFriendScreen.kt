@@ -13,7 +13,7 @@ import java.util.*
 class AddFriendScreen(backScreen: ViewFriendsListScreen) : PickerScreen() {
     init {
         val friendNameTextField = TextField("", skin)
-        val pasteGameIDButton = "Paste playerID from clipboard".toTextButton()
+        val pasteGameIDButton = "Paste player ID from clipboard".toTextButton()
         val playerIDTextField = TextField("", skin)
         val friendlist = FriendList()
 
@@ -25,9 +25,9 @@ class AddFriendScreen(backScreen: ViewFriendsListScreen) : PickerScreen() {
             playerIDTextField.text = Gdx.app.clipboard.contents
         }
 
-        topTable.add("PlayerID".toLabel()).row()
+        topTable.add("Player ID".toLabel()).row()
         val gameIDTable = Table()
-        playerIDTextField.messageText = "Please input a playerID for your friend!".tr()
+        playerIDTextField.messageText = "Please input a player ID for your friend!".tr()
         gameIDTable.add(playerIDTextField).pad(10f).width(2*stage.width/3 - pasteGameIDButton.width)
         gameIDTable.add(pasteGameIDButton)
         topTable.add(gameIDTable).padBottom(30f).row()

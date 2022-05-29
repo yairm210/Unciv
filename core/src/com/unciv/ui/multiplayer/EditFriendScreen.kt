@@ -15,7 +15,7 @@ import java.util.*
 class EditFriendScreen(selectedFriend: FriendList.Friend, backScreen: ViewFriendsListScreen) : PickerScreen() {
     init {
         val friendNameTextField = TextField(selectedFriend.name, skin)
-        val pasteGameIDButton = "Paste playerID from clipboard".toTextButton()
+        val pastePlayerIDButton = "Player ID from clipboard".toTextButton()
         val playerIDTextField = TextField(selectedFriend.playerID, skin)
         val deleteFriendButton = "Delete".toTextButton()
         val friendlist = FriendList()
@@ -24,15 +24,15 @@ class EditFriendScreen(selectedFriend: FriendList.Friend, backScreen: ViewFriend
         friendNameTextField.messageText = "Please input a name for your friend!".tr()
         topTable.add(friendNameTextField).pad(10f).padBottom(30f).width(stage.width/2).row()
 
-        pasteGameIDButton.onClick {
+        pastePlayerIDButton.onClick {
             playerIDTextField.text = Gdx.app.clipboard.contents
         }
 
-        topTable.add("PlayerID".toLabel()).row()
+        topTable.add("Player ID".toLabel()).row()
         val gameIDTable = Table()
-        playerIDTextField.messageText = "Please input a playerID for your friend!".tr()
-        gameIDTable.add(playerIDTextField).pad(10f).width(2*stage.width/3 - pasteGameIDButton.width)
-        gameIDTable.add(pasteGameIDButton)
+        playerIDTextField.messageText = "Please input a player ID for your friend!".tr()
+        gameIDTable.add(playerIDTextField).pad(10f).width(2*stage.width/3 - pastePlayerIDButton.width)
+        gameIDTable.add(pastePlayerIDButton)
         topTable.add(gameIDTable).padBottom(30f).row()
 
         deleteFriendButton.onClick {
