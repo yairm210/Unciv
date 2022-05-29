@@ -5,17 +5,27 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.unciv.logic.HexMath
 import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.TileMap
+import com.unciv.ui.cityscreen.CityTileGroup
 import com.unciv.ui.tilegroups.ActionlessGroup
 import com.unciv.ui.tilegroups.TileGroup
+import com.unciv.ui.tilegroups.WorldTileGroup
 import kotlin.math.max
 import kotlin.math.min
 
+
+/**
+ * A (potentially partial) map view
+ * @param T [TileGroup] or a subclass ([WorldTileGroup], [CityTileGroup])
+ * @param tileGroups Source of [TileGroup]s to include, will be **iterated several times**.
+ * @param tileGroupsToUnwrap For these, coordinates will be unwrapped using [TileMap.getUnWrappedPosition]
+ */
 class TileGroupMap<T: TileGroup>(
-    tileGroups: Collection<T>,
+    tileGroups: Iterable<T>,
     private val leftAndRightPadding: Float,
     private val topAndBottomPadding: Float,
     worldWrap: Boolean = false,
-    tileGroupsToUnwrap: Collection<T>? = null
+    tileGroupsToUnwrap: Set<T>? = null
 ): Group() {
     private var topX = -Float.MAX_VALUE
     private var topY = -Float.MAX_VALUE
@@ -33,7 +43,7 @@ class TileGroupMap<T: TileGroup>(
         }
 
         for (tileGroup in tileGroups) {
-            val positionalVector = if (tileGroupsToUnwrap != null && tileGroupsToUnwrap.contains(tileGroup)) {
+            val positionalVector = if (tileGroupsToUnwrap?.contains(tileGroup) == true) {
                 HexMath.hex2WorldCoords(
                     tileGroup.tileInfo.tileMap.getUnWrappedPosition(tileGroup.tileInfo.position)
                 )
@@ -82,10 +92,11 @@ class TileGroupMap<T: TileGroup>(
         val baseLayers = ArrayList<ActionlessGroup>()
         val featureLayers = ArrayList<ActionlessGroup>()
         val miscLayers = ArrayList<ActionlessGroup>()
+        val pixelUnitLayers = ArrayList<ActionlessGroup>()
+        val circleFogCrosshairLayers = ArrayList<ActionlessGroup>()
         val unitLayers = ArrayList<Group>()
         val unitImageLayers = ArrayList<ActionlessGroup>()
         val cityButtonLayers = ArrayList<Group>()
-        val circleCrosshairFogLayers = ArrayList<ActionlessGroup>()
 
         // Apparently the sortedByDescending is kinda memory-intensive because it needs to sort ALL the tiles
         for (group in tileGroups.sortedByDescending { it.tileInfo.position.x + it.tileInfo.position.y }) {
@@ -93,27 +104,32 @@ class TileGroupMap<T: TileGroup>(
             baseLayers.add(group.baseLayerGroup.apply { setPosition(group.x,group.y) })
             featureLayers.add(group.terrainFeatureLayerGroup.apply { setPosition(group.x,group.y) })
             miscLayers.add(group.miscLayerGroup.apply { setPosition(group.x,group.y) })
+            pixelUnitLayers.add(group.pixelMilitaryUnitGroup.apply { setPosition(group.x,group.y) })
+            pixelUnitLayers.add(group.pixelCivilianUnitGroup.apply { setPosition(group.x,group.y) })
+            circleFogCrosshairLayers.add(group.highlightFogCrosshairLayerGroup.apply { setPosition(group.x,group.y) })
             unitLayers.add(group.unitLayerGroup.apply { setPosition(group.x,group.y) })
             unitImageLayers.add(group.unitImageLayerGroup.apply { setPosition(group.x,group.y) })
             cityButtonLayers.add(group.cityButtonLayerGroup.apply { setPosition(group.x,group.y) })
-            circleCrosshairFogLayers.add(group.highlightCrosshairFogLayerGroup.apply { setPosition(group.x,group.y) })
 
             if (worldWrap) {
                 for (mirrorTile in mirrorTileGroups[group.tileInfo]!!.toList()) {
                     baseLayers.add(mirrorTile.baseLayerGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
                     featureLayers.add(mirrorTile.terrainFeatureLayerGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
                     miscLayers.add(mirrorTile.miscLayerGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
+                    pixelUnitLayers.add(mirrorTile.pixelMilitaryUnitGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
+                    pixelUnitLayers.add(mirrorTile.pixelCivilianUnitGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
+                    circleFogCrosshairLayers.add(mirrorTile.highlightFogCrosshairLayerGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
                     unitLayers.add(mirrorTile.unitLayerGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
                     unitImageLayers.add(mirrorTile.unitImageLayerGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
                     cityButtonLayers.add(mirrorTile.cityButtonLayerGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
-                    circleCrosshairFogLayers.add(mirrorTile.highlightCrosshairFogLayerGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
                 }
             }
         }
         for (group in baseLayers) addActor(group)
         for (group in featureLayers) addActor(group)
         for (group in miscLayers) addActor(group)
-        for (group in circleCrosshairFogLayers) addActor(group)
+        for (group in pixelUnitLayers) addActor(group)
+        for (group in circleFogCrosshairLayers) addActor(group)
         for (group in tileGroups) addActor(group) // The above layers are for the visual layers, this is for the clickability of the tile
         if (worldWrap) {
             for (mirrorTiles in mirrorTileGroups.values) {
@@ -124,7 +140,6 @@ class TileGroupMap<T: TileGroup>(
         for (group in unitLayers) addActor(group) // Aaand units above everything else.
         for (group in unitImageLayers) addActor(group) // This is so the individual textures for the units are rendered together
         for (group in cityButtonLayers) addActor(group) // city buttons + clickability
-
 
         // there are tiles "below the zero",
         // so we zero out the starting position of the whole board so they will be displayed as well
@@ -149,6 +164,7 @@ class TileGroupMap<T: TileGroup>(
     fun getMirrorTiles(): HashMap<TileInfo, Pair<T, T>> = mirrorTileGroups
 
     // For debugging purposes
-    override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
-    override fun act(delta: Float) { super.act(delta) }
+     override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
+     @Suppress("RedundantOverride")
+     override fun act(delta: Float) { super.act(delta) }
 }

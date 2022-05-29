@@ -15,7 +15,6 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
-import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.popup.ToastPopup
@@ -298,7 +297,7 @@ class CityScreen(
             tileGroups.add(tileGroup)
         }
 
-        val tilesToUnwrap = ArrayList<CityTileGroup>()
+        val tilesToUnwrap = mutableSetOf<CityTileGroup>()
         for (tileGroup in tileGroups) {
             val xDifference = cityInfo.getCenterTile().position.x - tileGroup.tileInfo.position.x
             val yDifference = cityInfo.getCenterTile().position.y - tileGroup.tileInfo.position.y
