@@ -47,6 +47,7 @@ class PlayerPickerTable(
 ): Table() {
     val playerListTable = Table()
     val civBlocksWidth = if(blockWidth <= 10f) previousScreen.stage.width / 3 - 5f else blockWidth
+    val friendsBlocksWidth = if(blockWidth <= 10f) previousScreen.stage.width / 5 - 5f else blockWidth / 2
 
     /** Locks player table for editing, currently unused, was previously used for scenarios and could be useful in the future.*/
     var locked = false
@@ -303,8 +304,8 @@ private class FriendPickerPopup(
 
     // This Popup's body has two halves of same size, either side by side or arranged vertically
     // depending on screen proportions - determine height for one of those
-    private val partHeight = screen.stage.height * (if (screen.isNarrowerThan4to3()) 0.45f else 0.8f)
-    private val friendsBlocksWidth = playerPicker.civBlocksWidth
+    private val partHeight = screen.stage.height * (if (screen.isNarrowerThan4to3()) 0.3f else 0.4f)
+    private val friendsBlocksWidth = playerPicker.friendsBlocksWidth
     private val friendListTable = Table()
     private val friendListScroll = ScrollPane(friendListTable)
     private val friendDetailsTable = Table()
@@ -328,6 +329,7 @@ private class FriendPickerPopup(
         for (friend in friends) {
             val friendTable = FriendTable(friend, friendsBlocksWidth, 0f) // no need for min height
             val cell = friendListTable.add(friendTable)
+            cell.padTop(20f)
             currentY += cell.padBottom + cell.prefHeight + cell.padTop
             cell.row()
             friendTable.onClick {
