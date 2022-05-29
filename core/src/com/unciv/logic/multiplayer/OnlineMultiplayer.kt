@@ -95,15 +95,18 @@ class OnlineMultiplayer {
 
     private fun updateSavesFromFiles() {
         val saves = gameSaver.getMultiplayerSaves()
+
         val removedSaves = savedGames.keys - saves.toSet()
-        removedSaves.forEach(savedGames::remove)
+        for (saveFile in removedSaves) {
+            deleteGame(saveFile)
+        }
+
         val newSaves = saves - savedGames.keys
         for (saveFile in newSaves) {
-            val game = OnlineMultiplayerGame(saveFile)
-            savedGames[saveFile] = game
-            postCrashHandlingRunnable { EventBus.send(MultiplayerGameAdded(game.name)) }
+            addGame(saveFile)
         }
     }
+
 
     /**
      * Fires [MultiplayerGameAdded]
@@ -123,7 +126,7 @@ class OnlineMultiplayer {
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
      * @throws FileNotFoundException if the file can't be found
      */
-    suspend fun addGame(gameId: String, gameName: String? = null): String {
+    suspend fun addGame(gameId: String, gameName: String? = null) {
         val saveFileName = if (gameName.isNullOrBlank()) gameId else gameName
         var gamePreview: GameInfoPreview
         try {
@@ -132,7 +135,7 @@ class OnlineMultiplayer {
             // Game is so old that a preview could not be found on dropbox lets try the real gameInfo instead
             gamePreview = onlineGameSaver.tryDownloadGame(gameId).asPreview()
         }
-        return addGame(gamePreview, saveFileName)
+        addGame(gamePreview, saveFileName)
     }
 
     private fun addGame(newGame: GameInfo) {
@@ -140,12 +143,15 @@ class OnlineMultiplayer {
         addGame(newGamePreview, newGamePreview.gameId)
     }
 
-    private fun addGame(preview: GameInfoPreview, saveFileName: String): String {
+    private fun addGame(preview: GameInfoPreview, saveFileName: String) {
         val fileHandle = gameSaver.saveGame(preview, saveFileName)
+        return addGame(fileHandle, preview)
+    }
+
+    private fun addGame(fileHandle: FileHandle, preview: GameInfoPreview = gameSaver.loadGamePreviewFromFile(fileHandle)) {
         val game = OnlineMultiplayerGame(fileHandle, preview, Instant.now())
         savedGames[fileHandle] = game
         postCrashHandlingRunnable { EventBus.send(MultiplayerGameAdded(game.name)) }
-        return saveFileName
     }
 
     fun getGameByName(name: String): OnlineMultiplayerGame? {
@@ -252,9 +258,17 @@ class OnlineMultiplayer {
      * Fires [MultiplayerGameDeleted]
      */
     fun deleteGame(multiplayerGame: OnlineMultiplayerGame) {
-        val name = multiplayerGame.name
-        gameSaver.deleteSave(multiplayerGame.fileHandle)
-        EventBus.send(MultiplayerGameDeleted(name))
+        deleteGame(multiplayerGame.fileHandle)
+    }
+
+    private fun deleteGame(fileHandle: FileHandle) {
+        gameSaver.deleteSave(fileHandle)
+
+        val game = savedGames[fileHandle]
+        if (game == null) return
+
+        savedGames.remove(game.fileHandle)
+        postCrashHandlingRunnable { EventBus.send(MultiplayerGameDeleted(game.name)) }
     }
 
     /**
