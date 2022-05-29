@@ -2,18 +2,21 @@ package com.unciv.ui.options
 
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
-import com.badlogic.gdx.utils.Array
 import com.unciv.Constants
 import com.unciv.logic.multiplayer.storage.SimpleHttp
+import com.unciv.models.UncivSound
+import com.unciv.models.metadata.GameSetting
 import com.unciv.models.metadata.GameSettings
+import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.extensions.format
 import com.unciv.ui.utils.extensions.isEnabled
 import com.unciv.ui.utils.extensions.onChange
 import com.unciv.ui.utils.extensions.onClick
@@ -22,7 +25,6 @@ import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
 import java.time.Duration
 import java.time.temporal.ChronoUnit
-import kotlin.reflect.KMutableProperty0
 
 fun multiplayerTab(
     optionsPopup: OptionsPopup
@@ -42,7 +44,7 @@ fun multiplayerTab(
         "Update status of currently played game every:",
         createRefreshOptions(ChronoUnit.SECONDS, 3, 5),
         createRefreshOptions(ChronoUnit.SECONDS, 10, 20, 30, 60),
-        settings.multiplayer::currentGameRefreshDelay,
+        GameSetting.MULTIPLAYER_CURRENT_GAME_REFRESH_DELAY,
         settings
     )
     curRefreshSelect.addTo(tab)
@@ -51,16 +53,57 @@ fun multiplayerTab(
         "In-game, update status of all games every:",
         createRefreshOptions(ChronoUnit.SECONDS, 15, 30),
         createRefreshOptions(ChronoUnit.MINUTES, 1, 2, 5, 15),
-        settings.multiplayer::allGameRefreshDelay,
+        GameSetting.MULTIPLAYER_ALL_GAME_REFRESH_DELAY,
         settings
     )
     allRefreshSelect.addTo(tab)
 
     val turnCheckerSelect = addTurnCheckerOptions(tab, optionsPopup)
 
+    SettingsSelect("Sound notification for when it's your turn in your currently open game:",
+        createNotificationSoundOptions(),
+        GameSetting.MULTIPLAYER_CURRENT_GAME_TURN_NOTIFICATION_SOUND,
+        settings
+    ).addTo(tab)
+
+    SettingsSelect("Sound notification for when it's your turn in any other game:",
+        createNotificationSoundOptions(),
+        GameSetting.MULTIPLAYER_OTHER_GAME_TURN_NOTIFICATION_SOUND,
+        settings
+    ).addTo(tab)
+
     addMultiplayerServerOptions(tab, optionsPopup, listOf(curRefreshSelect, allRefreshSelect, turnCheckerSelect).filterNotNull())
 
     return tab
+}
+
+private fun createNotificationSoundOptions(): List<SelectItem<UncivSound>> = listOf(
+    SelectItem("None", UncivSound.Silent),
+    SelectItem("Notification [1]", UncivSound.Notification1),
+    SelectItem("Notification [2]", UncivSound.Notification2),
+    SelectItem("Chimes", UncivSound.Chimes),
+    SelectItem("Choir", UncivSound.Choir),
+    SelectItem("Buy", UncivSound.Coin),
+    SelectItem("Create", UncivSound.Construction),
+    SelectItem("Fortify", UncivSound.Fortify),
+    SelectItem("Pick a tech", UncivSound.Paper),
+    SelectItem("Adopt policy", UncivSound.Policy),
+    SelectItem("Promote", UncivSound.Promote),
+    SelectItem("Set up", UncivSound.Setup),
+    SelectItem("Swap units", UncivSound.Swap),
+    SelectItem("Upgrade", UncivSound.Upgrade),
+    SelectItem("Bombard", UncivSound.Bombard)
+) + buildUnitAttackSoundOptions()
+
+fun buildUnitAttackSoundOptions(): List<SelectItem<UncivSound>> {
+    return RulesetCache.getSortedBaseRulesets()
+        .map(RulesetCache::get).filterNotNull()
+        .map(Ruleset::units).map { it.values }
+        .flatMap { it }
+        .filter { it.attackSound != null }
+        .filter { it.attackSound != "nuke" } // much too long for a notification
+        .distinctBy { it.attackSound }
+        .map { SelectItem("[${it.name}] Attack Sound".tr(), UncivSound(it.attackSound!!)) }
 }
 
 private fun addMultiplayerServerOptions(
@@ -72,10 +115,10 @@ private fun addMultiplayerServerOptions(
 
     val connectionToServerButton = "Check connection to server".toTextButton()
 
-    val textToShowForMultiplayerAddress = if (usesDropbox(settings)) {
-        "https://"
-    } else {
+    val textToShowForMultiplayerAddress = if (isCustomServer(settings)) {
         settings.multiplayer.server
+    } else {
+        "https://"
     }
     val multiplayerServerTextField = TextField(textToShowForMultiplayerAddress, BaseScreen.skin)
     multiplayerServerTextField.setTextFieldFilter { _, c -> c !in " \r\n\t\\" }
@@ -141,7 +184,7 @@ private fun addTurnCheckerOptions(
         "Out-of-game, update status of all games every:",
         createRefreshOptions(ChronoUnit.SECONDS, 30),
         createRefreshOptions(ChronoUnit.MINUTES, 1, 2, 5, 15),
-        settings.multiplayer::turnCheckerDelay,
+        GameSetting.MULTIPLAYER_TURN_CHECKER_DELAY,
         settings
     )
     turnCheckerSelect.addTo(tab)
@@ -167,52 +210,29 @@ private fun successfullyConnectedToServer(settings: GameSettings, action: (Boole
 
 private class RefreshSelect(
     labelText: String,
-    extraCustomServerOptions: List<RefreshOptions>,
-    dropboxOptions: List<RefreshOptions>,
-    private val settingsProperty: KMutableProperty0<Duration>,
+    extraCustomServerOptions: List<SelectItem<Duration>>,
+    dropboxOptions: List<SelectItem<Duration>>,
+    setting: GameSetting,
     settings: GameSettings
 ) {
-    private val customServerOptions = (extraCustomServerOptions + dropboxOptions).toGdxArray()
-    private val dropboxOptions = dropboxOptions.toGdxArray()
-    private val refreshSelectBox = createSelectBox(settings)
-    private val label = labelText.toLabel()
+    private val customServerItems = (extraCustomServerOptions + dropboxOptions).toGdxArray()
+    private val dropboxItems = dropboxOptions.toGdxArray()
+    private val settingsSelect: SettingsSelect<Duration>
 
-    private fun createSelectBox(settings: GameSettings): SelectBox<RefreshOptions> {
-        val refreshSelectBox = SelectBox<RefreshOptions>(BaseScreen.skin)
-        val options = if (usesDropbox(settings)) {
-            dropboxOptions
-        } else {
-            customServerOptions
-        }
-        refreshSelectBox.items = options
-
-        refreshSelectBox.selected = options.firstOrNull() { it.delay == settingsProperty.get() } ?: options.first()
-        refreshSelectBox.onChange {
-            settingsProperty.set(refreshSelectBox.selected.delay)
-            settings.save()
-        }
-
-        return refreshSelectBox
-    }
-
-    fun addTo(table: Table) {
-        table.add(label).left()
-        table.add(refreshSelectBox).pad(10f).row()
+    init {
+        val initialOptions = if (isCustomServer(settings)) customServerItems else dropboxItems
+        settingsSelect = SettingsSelect(labelText, initialOptions, setting, settings)
     }
 
     fun update(isCustomServer: Boolean) {
-        if (isCustomServer && refreshSelectBox.items.size != customServerOptions.size) {
-            replaceItems(customServerOptions)
-        } else if (!isCustomServer && refreshSelectBox.items.size != dropboxOptions.size) {
-            replaceItems(dropboxOptions)
+        if (isCustomServer && settingsSelect.items.size != customServerItems.size) {
+            settingsSelect.replaceItems(customServerItems)
+        } else if (!isCustomServer && settingsSelect.items.size != dropboxItems.size) {
+            settingsSelect.replaceItems(dropboxItems)
         }
     }
 
-    private fun replaceItems(options: Array<RefreshOptions>) {
-        val prev = refreshSelectBox.selected
-        refreshSelectBox.items = options
-        refreshSelectBox.selected = prev
-    }
+    fun addTo(tab: Table) = settingsSelect.addTo(tab)
 }
 
 private fun fixTextFieldUrlOnType(TextField: TextField) {
@@ -249,23 +269,12 @@ private fun fixTextFieldUrlOnType(TextField: TextField) {
     }
 }
 
-private class RefreshOptions(val delay: Duration, val label: String) {
-    override fun toString(): String = label
-    override fun equals(other: Any?): Boolean = other is RefreshOptions && delay == other.delay
-    override fun hashCode(): Int = delay.hashCode()
-}
-
-private fun createRefreshOptions(unit: ChronoUnit, vararg options: Long): List<RefreshOptions> {
-    return options.map { RefreshOptions(Duration.of(it, unit), "$it " + unit.tr()) }
-}
-
-private fun <T> List<T>.toGdxArray(): Array<T> {
-    val arr = Array<T>(size)
-    for (it in this) {
-        arr.add(it)
+private fun createRefreshOptions(unit: ChronoUnit, vararg options: Long): List<SelectItem<Duration>> {
+    return options.map {
+        val duration = Duration.of(it, unit)
+        SelectItem(duration.format(), duration)
     }
-    return arr
 }
 
-private fun usesDropbox(settings: GameSettings) = settings.multiplayer.server == Constants.dropboxMultiplayerServer
+private fun isCustomServer(settings: GameSettings) = settings.multiplayer.server != Constants.dropboxMultiplayerServer
 

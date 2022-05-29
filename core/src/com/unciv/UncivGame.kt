@@ -198,23 +198,25 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     }
 
     private fun tryLoadDeepLinkedGame() = launchCrashHandling("LoadDeepLinkedGame") {
-        if (deepLinkedMultiplayerGame != null) {
+        if (deepLinkedMultiplayerGame == null) return@launchCrashHandling
+
+        postCrashHandlingRunnable {
+            setScreen(LoadDeepLinkScreen())
+        }
+        try {
+            onlineMultiplayer.loadGame(deepLinkedMultiplayerGame!!)
+        } catch (ex: Exception) {
             postCrashHandlingRunnable {
-                setScreen(LoadDeepLinkScreen())
+                val mainMenu = MainMenuScreen()
+                setScreen(mainMenu)
+                val popup = Popup(mainMenu)
+                popup.addGoodSizedLabel(MultiplayerHelpers.getLoadExceptionMessage(ex))
+                popup.row()
+                popup.addCloseButton()
+                popup.open()
             }
-            try {
-                onlineMultiplayer.loadGame(deepLinkedMultiplayerGame!!)
-            } catch (ex: Exception) {
-                postCrashHandlingRunnable {
-                    val mainMenu = MainMenuScreen()
-                    setScreen(mainMenu)
-                    val popup = Popup(mainMenu)
-                    popup.addGoodSizedLabel(MultiplayerHelpers.getLoadExceptionMessage(ex))
-                    popup.row()
-                    popup.addCloseButton()
-                    popup.open()
-                }
-            }
+        } finally {
+            deepLinkedMultiplayerGame = null
         }
     }
 
@@ -284,8 +286,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             } else {
                 false
             }
-
         }
+        fun isDeepLinkedGameLoading() = isCurrentInitialized() && Current.deepLinkedMultiplayerGame != null
     }
 }
 
