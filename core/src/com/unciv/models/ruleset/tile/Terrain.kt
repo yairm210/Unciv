@@ -24,7 +24,7 @@ class Terrain : RulesetStatsObject() {
     val occursOn = ArrayList<String>()
 
     /** Used by Natural Wonders: it is the baseTerrain on top of which the Natural Wonder is placed */
-    val turnsInto: String? = null
+    var turnsInto: String? = null
 
     override fun getUniqueTarget() = UniqueTarget.Terrain
 
@@ -43,7 +43,7 @@ class Terrain : RulesetStatsObject() {
 
     // Shouldn't this just be a lazy property so it's automatically cached?
     fun isRough(): Boolean = hasUnique(UniqueType.RoughTerrain)
-    
+
     /** Tests base terrains, features and natural wonders whether they should be treated as Land/Water.
      *  Currently only used for civilopedia display, as other code can test the tile itself.
      */

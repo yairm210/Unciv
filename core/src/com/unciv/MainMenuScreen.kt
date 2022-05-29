@@ -1,7 +1,7 @@
 ﻿package com.unciv
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -14,18 +14,22 @@ import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.models.metadata.BaseRuleset
-import com.unciv.models.ruleset.RulesetCache
-import com.unciv.ui.multiplayer.MultiplayerScreen
-import com.unciv.ui.mapeditor.*
 import com.unciv.models.metadata.GameSetupInfo
+import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.mapeditor.EditorMapHolder
+import com.unciv.ui.mapeditor.MapEditorScreen
+import com.unciv.ui.multiplayer.MultiplayerScreen
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.ModManagementScreen
 import com.unciv.ui.popup.*
 import com.unciv.ui.saves.LoadGameScreen
+import com.unciv.ui.tutorials.EasterEggRulesets
+import com.unciv.ui.tutorials.EasterEggRulesets.modifyForEasterEgg
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.mainmenu.WorldScreenMenuPopup
@@ -35,6 +39,7 @@ import kotlin.math.min
 class MainMenuScreen: BaseScreen() {
     private val backgroundTable = Table().apply { background= ImageGetter.getBackground(Color.WHITE) }
     private val singleColumn = isCrampedPortrait()
+    private var easterEggRuleset: Ruleset? = null  // Cache it so the next 'egg' can be found in Civilopedia
 
     /** Create one **Main Menu Button** including onClick/key binding
      *  @param text      The text to display on the button
@@ -86,13 +91,19 @@ class MainMenuScreen: BaseScreen() {
                 scale = min(scale, 20f)
             }
 
-            val mapRuleset = RulesetCache.getVanillaRuleset()
+            val baseRuleset = RulesetCache.getVanillaRuleset()
+            easterEggRuleset = EasterEggRulesets.getTodayEasterEggRuleset()?.let {
+                RulesetCache.getComplexRuleset(baseRuleset, listOf(it))
+            }
+            val mapRuleset = easterEggRuleset ?: baseRuleset
+
             val newMap = MapGenerator(mapRuleset)
                     .generateMap(MapParameters().apply {
                         shape = MapShape.rectangular
                         mapSize = MapSizeNew(mapWidth.toInt() + 1,mapHeight.toInt() + 1)
                         type = MapType.default
                         waterThreshold = -0.055f // Gives the same level as when waterThreshold was unused in MapType.default
+                        modifyForEasterEgg()
                     })
 
             postCrashHandlingRunnable { // for GL context
@@ -262,9 +273,10 @@ class MainMenuScreen: BaseScreen() {
 
     private fun openCivilopedia() {
         val rulesetParameters = game.settings.lastGameSetup?.gameParameters
-        val ruleset = if (rulesetParameters == null)
+        val ruleset = easterEggRuleset ?:
+            if (rulesetParameters == null)
                 RulesetCache[BaseRuleset.Civ_V_GnK.fullName] ?: return
-                else RulesetCache.getComplexRuleset(rulesetParameters)
+            else RulesetCache.getComplexRuleset(rulesetParameters)
         UncivGame.Current.translations.translationActiveMods = ruleset.mods
         ImageGetter.setNewRuleset(ruleset)
         setSkin()
