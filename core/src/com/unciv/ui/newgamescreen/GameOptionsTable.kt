@@ -106,10 +106,10 @@ class GameOptionsTable(
 
     private fun Table.addIsOnlineMultiplayerCheckbox() =
             addCheckbox("Online Multiplayer", gameParameters.isOnlineMultiplayer)
-            {
-                gameParameters.isOnlineMultiplayer = it
+            { shouldUseMultiplayer ->
+                gameParameters.isOnlineMultiplayer = shouldUseMultiplayer
                 updatePlayerPickerTable("")
-                if (it) {
+                if (shouldUseMultiplayer) {
                     MultiplayerHelpers.showDropboxWarning(previousScreen as BaseScreen)
                 }
             }
