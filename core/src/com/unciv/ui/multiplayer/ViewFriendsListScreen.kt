@@ -19,7 +19,7 @@ class ViewFriendsListScreen(previousScreen: BaseScreen) : PickerScreen() {
     private val editFriendButton = editFriendText.toTextButton()
     private val refreshButton = refreshText.toTextButton()
 
-    private val friendsList = FriendList()
+    private val friendsList = FriendList().getFriendsList()
     private var listOfFriends: MutableList<FriendList.Friend> = mutableListOf()
     private var listOfFriendsButtons = arrayListOf<TextButton>()
 
@@ -86,7 +86,7 @@ class ViewFriendsListScreen(previousScreen: BaseScreen) : PickerScreen() {
 
     fun refreshFriendsList() {
         listOfFriendsButtons.clear()
-        listOfFriends = friendsList.getFriendsList()
+        listOfFriends = friendsList
         friendsTable.clear()
 
         for (index in listOfFriends.indices) {

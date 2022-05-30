@@ -4,6 +4,7 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.ui.multiplayer.FriendList
 import com.unciv.ui.utils.Fonts
 import java.text.Collator
 import java.time.Duration
@@ -158,6 +159,7 @@ enum class LocaleCode(var language: String, var country: String) {
 class GameSettingsMultiplayer {
     var userId = ""
     var server = Constants.dropboxMultiplayerServer
+    var friendList: MutableList<FriendList.Friend> = mutableListOf()
     var turnCheckerEnabled = true
     var turnCheckerPersistentNotificationEnabled = true
     var turnCheckerDelay = Duration.ofMinutes(5)
