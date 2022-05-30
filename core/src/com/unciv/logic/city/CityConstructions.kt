@@ -3,9 +3,10 @@ package com.unciv.logic.city
 import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ConstructionAutomation
-import com.unciv.logic.civilization.AlertType
-import com.unciv.logic.civilization.NotificationIcon
-import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.event.ConstructionBegunNotification
+import com.unciv.logic.event.ConstructionCancelledNotification
+import com.unciv.logic.event.ConstructionCompletedNotification
+import com.unciv.logic.event.EventBus
 import com.unciv.logic.map.MapUnit  // for Kdoc only
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Building
@@ -360,10 +361,7 @@ class CityConstructions {
                     // Production put into wonders gets refunded
                     if (construction.isWonder && workDone != 0) {
                         cityInfo.civInfo.addGold(workDone)
-                        cityInfo.civInfo.addNotification(
-                            "Excess production for [$constructionName] converted to [$workDone] gold",
-                            cityInfo.location,
-                            NotificationIcon.Gold, "BuildingIcons/${constructionName}")
+                        EventBus.send(ConstructionCancelledNotification(cityInfo, construction, workDone))
                     }
                 } else if (construction is BaseUnit) {
                     // Production put into upgradable units gets put into upgraded version
@@ -380,20 +378,7 @@ class CityConstructions {
     private fun constructionBegun(construction: IConstruction) {
         if (construction !is Building) return
         if (!construction.hasUnique(UniqueType.TriggersAlertOnStart)) return
-        val buildingIcon = "BuildingIcons/${construction.name}"
-        for (otherCiv in cityInfo.civInfo.gameInfo.civilizations) {
-            if (otherCiv == cityInfo.civInfo) continue
-            when {
-                (otherCiv.exploredTiles.contains(cityInfo.location) && otherCiv != cityInfo.civInfo) ->
-                    otherCiv.addNotification("The city of [${cityInfo.name}] has started constructing [${construction.name}]!",
-                        cityInfo.location, NotificationIcon.Construction, buildingIcon)
-                (otherCiv.knows(cityInfo.civInfo)) ->
-                    otherCiv.addNotification("[${cityInfo.civInfo.civName}] has started constructing [${construction.name}]!",
-                        NotificationIcon.Construction, buildingIcon)
-                else -> otherCiv.addNotification("An unknown civilization has started constructing [${construction.name}]!",
-                    NotificationIcon.Construction, buildingIcon)
-            }
-        }
+        EventBus.send(ConstructionBegunNotification(cityInfo, construction))
     }
 
     private fun constructionComplete(construction: INonPerpetualConstruction) {
@@ -402,37 +387,8 @@ class CityConstructions {
             inProgressConstructions.remove(construction.name)
         if (construction.name == currentConstructionFromQueue)
             removeCurrentConstruction()
-
         validateConstructionQueue() // if we've build e.g. the Great Lighthouse, then Lighthouse is no longer relevant in the queue
-
-        val buildingIcon = "BuildingIcons/${construction.name}"
-        if (construction is Building && construction.isWonder) {
-            cityInfo.civInfo.popupAlerts.add(PopupAlert(AlertType.WonderBuilt, construction.name))
-            for (civ in cityInfo.civInfo.gameInfo.civilizations) {
-                if (civ.exploredTiles.contains(cityInfo.location))
-                    civ.addNotification("[${construction.name}] has been built in [${cityInfo.name}]",
-                            cityInfo.location, NotificationIcon.Construction, buildingIcon)
-                else
-                    civ.addNotification("[${construction.name}] has been built in a faraway land", buildingIcon)
-            }
-        } else {
-            val icon = if (construction is Building) buildingIcon else construction.name // could be a unit, in which case take the unit name.
-            cityInfo.civInfo.addNotification("[${construction.name}] has been built in [" + cityInfo.name + "]",
-                    cityInfo.location, NotificationIcon.Construction, icon)
-        }
-
-        if (construction is Building && construction.hasUnique(UniqueType.TriggersAlertOnCompletion,
-                StateForConditionals(cityInfo.civInfo, cityInfo)
-            )) {
-            for (otherCiv in cityInfo.civInfo.gameInfo.civilizations) {
-                // No need to notify ourself, since we already got the building notification anyway
-                if (otherCiv == cityInfo.civInfo) continue
-                val completingCivDescription =
-                    if (otherCiv.knows(cityInfo.civInfo)) "[${cityInfo.civInfo.civName}]" else "An unknown civilization"
-                otherCiv.addNotification("$completingCivDescription has completed [${construction.name}]!",
-                    NotificationIcon.Construction, buildingIcon)
-            }
-        }
+        EventBus.send(ConstructionCompletedNotification(cityInfo, construction))
     }
 
     fun addBuilding(buildingName: String) {

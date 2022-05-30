@@ -10,6 +10,8 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
+import com.unciv.logic.event.EventBus
+import com.unciv.logic.event.PillageNotification
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.Counter
@@ -41,7 +43,7 @@ object UnitActions {
         val unitTable = worldScreen.bottomUnitTable
         val actionList = ArrayList<UnitAction>()
 
-        if (unit.isMoving()) 
+        if (unit.isMoving())
             actionList += UnitAction(UnitActionType.StopMovement) { unit.action = null }
         if (unit.isExploring())
             actionList += UnitAction(UnitActionType.StopExploration) { unit.action = null }
@@ -284,6 +286,7 @@ object UnitActions {
 
         return UnitAction(UnitActionType.Pillage,
                 action = {
+                    EventBus.send(PillageNotification(unit, tile, tile.getTileImprovement()!!, null))
                     tile.setPillaged()
                     unit.civInfo.lastSeenImprovement.remove(tile.position)
                     if (tile.resource != null) tile.getOwner()?.updateDetailedCivResources()    // this might take away a resource
@@ -396,7 +399,7 @@ object UnitActions {
 
         val couldConstruct = unit.currentMovement > 0
             && !tile.isCityCenter()
-            && unit.civInfo.gameInfo.ruleSet.tileImprovements.values.any { 
+            && unit.civInfo.gameInfo.ruleSet.tileImprovements.values.any {
                 ImprovementPickerScreen.canReport(tile.getImprovementBuildingProblems(it, unit.civInfo).toSet())
                 && unit.canBuildImprovement(it)
             }
@@ -808,7 +811,7 @@ object UnitActions {
 
         return UnitAction(UnitActionType.GiftUnit, action = giftAction)
     }
-    
+
     private fun addTriggerUniqueActions(unit: MapUnit, actionList: ArrayList<UnitAction>){
         for (unique in unit.getUniques()) {
             if (!unique.conditionals.any { it.type == UniqueType.ConditionalConsumeUnit }) continue

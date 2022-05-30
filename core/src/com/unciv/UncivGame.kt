@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.event.NotificationManager
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
@@ -79,6 +80,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
 
     val translations = Translations()
+    lateinit var notificationManager: NotificationManager
 
     override fun create() {
         isInitialized = false // this could be on reload, therefore we need to keep setting this to false
@@ -146,6 +148,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
                 isInitialized = true
             }
         }
+
+        notificationManager = NotificationManager()
     }
 
     fun loadGame(gameInfo: GameInfo) {
@@ -260,6 +264,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
         // On desktop this should only be this one and "DestroyJavaVM"
         logRunningThreads()
+        notificationManager.cleanup()
     }
 
     private fun logRunningThreads() {
