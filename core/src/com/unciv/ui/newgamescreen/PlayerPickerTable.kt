@@ -55,7 +55,7 @@ class PlayerPickerTable(
     /** No random civilization is available, used during map editing.*/
     var noRandom = false
 
-    val friendList = FriendList()
+    private val friendList = FriendList()
 
     init {
         for (player in gameParameters.players)

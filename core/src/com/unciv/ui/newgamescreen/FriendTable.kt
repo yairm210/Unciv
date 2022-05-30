@@ -14,14 +14,13 @@ class FriendTable(val friend: FriendList.Friend, width: Float, minHeight: Float)
 
     init {
         val innerColor = Color(1F,1F,1F,1F) //because 0xFFFFFFFF doesn't work for some reason
-        val borderWidth = 5f
-        val totalPadding = 10f + 4 * borderWidth // pad*2 + innerTable.pad*2 + borderTable.pad*2
+        val totalPadding = 30f
         val internalWidth = width - totalPadding
 
         val titleTable = Table()
 
         val titleText = friend.name
-        val friendDisplayNameMaxWidth = internalWidth - 70f // for the nation indicator with padding
+        val friendDisplayNameMaxWidth = internalWidth - 70f // for the friend indicator with padding
         val friendDisplayLabel = WrappableLabel(titleText, friendDisplayNameMaxWidth, innerColor, Constants.headingFontSize)
         if (friendDisplayLabel.prefWidth > friendDisplayNameMaxWidth - 2f) {
             friendDisplayLabel.wrap = true

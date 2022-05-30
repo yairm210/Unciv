@@ -3,7 +3,7 @@ package com.unciv.ui.multiplayer
 import com.unciv.UncivGame
 
 class FriendList {
-    val settings = UncivGame.Current.settings
+    private val settings = UncivGame.Current.settings
     var friendList = settings.multiplayer.friendList
 
     enum class ErrorType {
@@ -18,10 +18,6 @@ class FriendList {
 
     data class Friend(val name: String, val playerID: String) {
         constructor() : this("", "")
-    }
-
-    fun saveFriendsList() {
-        settings.save()
     }
 
     fun addNewFriend(friendName: String, playerID: String): ErrorType {
@@ -40,7 +36,7 @@ class FriendList {
             return ErrorType.YOURSELF
         }
         friendList.add(Friend(friendName, playerID))
-        saveFriendsList()
+        settings.save()
         return ErrorType.NOERROR
     }
 
@@ -48,12 +44,12 @@ class FriendList {
         friendList.remove(friend)
         val editedFriend = Friend(name,playerID)
         friendList.add(editedFriend)
-        saveFriendsList()
+        settings.save()
     }
 
     fun deleteFriend(friend: Friend) {
         friendList.remove(friend)
-        saveFriendsList()
+        settings.save()
     }
 
     fun getFriendsList(): MutableList<Friend> {

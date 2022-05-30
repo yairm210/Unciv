@@ -11,16 +11,10 @@ class ViewFriendsListScreen(previousScreen: BaseScreen) : PickerScreen() {
     private val leftSideTable = Table()
     private var friendsTable = Table()
 
-    private val addFriendText = "Add friend"
-    private val editFriendText = "Edit friend"
-    private val refreshText = "Refresh"
-
-    private val addFriendButton = addFriendText.toTextButton()
-    private val editFriendButton = editFriendText.toTextButton()
-    private val refreshButton = refreshText.toTextButton()
+    private val addFriendButton = "Add friend".toTextButton()
+    private val editFriendButton = "Edit friend".toTextButton()
 
     private val friendsList = FriendList().getFriendsList()
-    private var listOfFriends: MutableList<FriendList.Friend> = mutableListOf()
     private var listOfFriendsButtons = arrayListOf<TextButton>()
 
     private lateinit var selectedFriend: FriendList.Friend
@@ -76,24 +70,18 @@ class ViewFriendsListScreen(previousScreen: BaseScreen) : PickerScreen() {
         rightSideTable.add(editFriendButton).padBottom(30f).row()
         editFriendButton.disable()
 
-        refreshButton.onClick {
-            refreshFriendsList()
-        }
-        rightSideTable.add(refreshButton).padBottom(30f).row()
-
         refreshFriendsList()
     }
 
     fun refreshFriendsList() {
         listOfFriendsButtons.clear()
-        listOfFriends = friendsList
         friendsTable.clear()
 
-        for (index in listOfFriends.indices) {
-            listOfFriendsButtons.add(listOfFriends[index].name.toTextButton())
+        for (index in friendsList.indices) {
+            listOfFriendsButtons.add(friendsList[index].name.toTextButton())
 
             listOfFriendsButtons[index].onClick {
-                selectedFriend = listOfFriends[index]
+                selectedFriend = friendsList[index]
                 editFriendButton.enable()
             }
             friendsTable.add(listOfFriendsButtons[index]).padBottom(20f).row()
