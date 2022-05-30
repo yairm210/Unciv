@@ -58,7 +58,7 @@ class PlayerPickerTable(
     val friendList = FriendList()
 
     init {
-        friendList.load()
+        friendList.loadFriendsList()
         for (player in gameParameters.players)
             player.playerId = "" // This is to stop people from getting other users' IDs and cheating with them in multiplayer games
 
@@ -198,8 +198,7 @@ class PlayerPickerTable(
             playerTable.add(copyFromClipboardButton).right().colspan(3).fillX().pad(5f).row()
 
             //check if friends list is empty before adding the select friend button
-            val friendList = FriendList()
-            friendList.load()
+            friendList.loadFriendsList()
             if (friendList.friendList.isNotEmpty()) {
                 val selectPlayerFromFriendsList = "Player ID from friends list".toTextButton()
                 selectPlayerFromFriendsList.onClick {
@@ -277,7 +276,7 @@ class PlayerPickerTable(
      */
     internal fun getAvailableFriends(): Sequence<FriendList.Friend> {
         val friendListWithRemovedFriends = FriendList()
-        friendListWithRemovedFriends.load()
+        friendListWithRemovedFriends.loadFriendsList()
         for (index in gameParameters.players.indices) {
             val currentFriendId = previousScreen.gameSetupInfo.gameParameters.players[index].playerId
             friendListWithRemovedFriends.friendList.remove(friendList.getFriendWithId(currentFriendId))

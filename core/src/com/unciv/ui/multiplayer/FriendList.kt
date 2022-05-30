@@ -30,7 +30,7 @@ class FriendList {
     }
 
     fun addNewFriend(friendName: String, playerID: String): ErrorType {
-        load()
+        loadFriendsList()
         for(index in friendList.indices){
             if (friendList[index].name == friendName) {
                 return ErrorType.NAME
@@ -46,15 +46,15 @@ class FriendList {
             return ErrorType.YOURSELF
         }
         friendList.add(Friend(friendName, playerID))
-        save()
+        saveFriendsList()
         return ErrorType.NOERROR
     }
 
-    fun save() {
+    fun saveFriendsList() {
         json().toJson(friendList, friendsListFileHandle())
     }
 
-    fun load() {
+    fun loadFriendsList() {
         if(friendsListFileHandle.exists()){
             if (json().fromJsonFile(Array<Friend>::class.java, friendsListFileName) == null) {
                 friendsListFileHandle.writeString("[]", false)
@@ -66,26 +66,26 @@ class FriendList {
     }
 
     fun editFriend(friend: Friend, name: String, playerID: String) {
-        load()
+        loadFriendsList()
         friendList.remove(friend)
         val editedFriend = Friend(name,playerID)
         friendList.add(editedFriend)
-        save()
+        saveFriendsList()
     }
 
     fun deleteFriend(friend: Friend) {
-        load()
+        loadFriendsList()
         friendList.remove(friend)
-        save()
+        saveFriendsList()
     }
 
     fun getFriendsList(): MutableList<Friend> {
-        load()
+        loadFriendsList()
         return friendList
     }
 
     fun isFriendNameInFriendList(name: String): ErrorType {
-        load()
+        loadFriendsList()
         for (index in friendList.indices) {
             if (name == friendList[index].name) {
                 return ErrorType.ALREADYINLIST
@@ -95,7 +95,7 @@ class FriendList {
     }
 
     fun isFriendIDInFriendList(id: String): ErrorType {
-        load()
+        loadFriendsList()
         for (index in friendList.indices) {
             if (id == friendList[index].playerID) {
                 return ErrorType.ALREADYINLIST
@@ -105,7 +105,7 @@ class FriendList {
     }
 
     fun getFriendWithId(id: String): Friend? {
-        load()
+        loadFriendsList()
         for (index in friendList.indices) {
             if (id == friendList[index].playerID) {
                 return friendList[index]
