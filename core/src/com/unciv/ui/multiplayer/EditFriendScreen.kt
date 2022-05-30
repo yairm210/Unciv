@@ -65,7 +65,8 @@ class EditFriendScreen(selectedFriend: FriendList.Friend, backScreen: ViewFriend
                 ToastPopup("Player name already used!", this)
                 return@onClick
             }
-            if (friendlist.isFriendIDInFriendList(playerIDTextField.text) == FriendList.ErrorType.ALREADYINLIST) {
+            if (friendlist.isFriendIDInFriendList(playerIDTextField.text) == FriendList.ErrorType.ALREADYINLIST
+                    && friendlist.isFriendNameInFriendList(friendNameTextField.text) == FriendList.ErrorType.ALREADYINLIST) {
                 ToastPopup("Player ID already used!", this)
                 return@onClick
             }
