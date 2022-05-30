@@ -286,6 +286,8 @@ object UnitActions {
 
         return UnitAction(UnitActionType.Pillage,
                 action = {
+                    if (tile.getOwner() != null)
+                        tile.getOwner()!!.addNotification("[${unit.owner}] has pillaged our [${tile.improvement}]", tile.position, NotificationIcon.War, unit.civInfo.civName)
                     pillageLooting(tile, unit)
                     tile.setPillaged()
                     unit.civInfo.lastSeenImprovement.remove(tile.position)
@@ -336,16 +338,18 @@ object UnitActions {
         }
 
         if (toCityPillageYield.values.sum() > 0 && closestCity != null) {
+            val pillagerLootLocal = "We have looted [${pillageYieldNotificationString(toCityPillageYield)}] from a [${improvement.name}] which has been sent to [${closestCity.name}]"
             if (tile.getOwner() != null)
-                unit.civInfo.addNotification("We have looted [${pillageYieldNotificationString(toCityPillageYield)}] from a [${improvement.name}] which has been sent to [${closestCity.name}]", tile.position, NotificationIcon.War, tile.getOwner()!!.civName)
+                unit.civInfo.addNotification(pillagerLootLocal, tile.position, NotificationIcon.War, tile.getOwner()!!.civName)
             else
-                unit.civInfo.addNotification("We have looted [${pillageYieldNotificationString(toCityPillageYield)}] from a [${improvement.name}] which has been sent to [${closestCity.name}]", tile.position, NotificationIcon.War)
+                unit.civInfo.addNotification(pillagerLootLocal, tile.position, NotificationIcon.War)
         }
         if (globalPillageYield.values.sum() > 0) {
+            val pillagerLootGlobal = "We have looted [${pillageYieldNotificationString(globalPillageYield)}] from a [${improvement.name}]"
             if (tile.getOwner() != null)
-                unit.civInfo.addNotification("We have looted [${pillageYieldNotificationString(globalPillageYield)}] from a [${improvement.name}]", tile.position, NotificationIcon.War, tile.getOwner()!!.civName)
+                unit.civInfo.addNotification(pillagerLootGlobal, tile.position, NotificationIcon.War, tile.getOwner()!!.civName)
             else
-                unit.civInfo.addNotification("We have looted [${pillageYieldNotificationString(globalPillageYield)}] from a [${improvement.name}]", tile.position, NotificationIcon.War)
+                unit.civInfo.addNotification(pillagerLootGlobal, tile.position, NotificationIcon.War)
         }
     }
 
