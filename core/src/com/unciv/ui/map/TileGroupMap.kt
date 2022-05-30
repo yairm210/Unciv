@@ -27,11 +27,25 @@ class TileGroupMap<T: TileGroup>(
     worldWrap: Boolean = false,
     tileGroupsToUnwrap: Set<T>? = null
 ): Group() {
+    companion object {
+        /** Vertical size of a hex in world coordinates, or the distance between the centers of any two opposing edges
+         *  (the hex is oriented so it has corners to the left and right of the center and its upper and lower bounds are horizontal edges) */
+        const val groupSize = 50f
+        /** Length of the diagonal of a hex, or distance between two opposing corners */
+        const val groupSizeDiagonal = groupSize * 1.1547005f  // groupSize * sqrt(4/3)
+        /** Horizontal displacement per hex, meaning the increase in overall map size (in world coordinates) when adding a column.
+         *  On the hex, this can be visualized as the horizontal distance between the leftmost corner and the
+         *  line connecting the two corners at 2 and 4 o'clock. */
+        const val groupHorizontalAdvance = groupSizeDiagonal * 3 / 4
+        //TODO magic numbers that **seem** like they might depend on these values can be found in
+        //   TileGroupMap.getPositionalVector, TileGroup.updateArrows, TileGroup.updateRoadImages
+        //   and other places. I can't understand them so I'm leaving cleanup of hardcoding to someone else.
+    }
+
     private var topX = -Float.MAX_VALUE
     private var topY = -Float.MAX_VALUE
     private var bottomX = Float.MAX_VALUE
     private var bottomY = Float.MAX_VALUE
-    private val groupSize = 50
     private val mirrorTileGroups = HashMap<TileInfo, Pair<T, T>>()
 
     init {
@@ -51,8 +65,8 @@ class TileGroupMap<T: TileGroup>(
                 HexMath.hex2WorldCoords(tileGroup.tileInfo.position)
             }
 
-            tileGroup.setPosition(positionalVector.x * 0.8f * groupSize.toFloat(),
-                    positionalVector.y * 0.8f * groupSize.toFloat())
+            tileGroup.setPosition(positionalVector.x * 0.8f * groupSize,
+                    positionalVector.y * 0.8f * groupSize)
 
             topX =
                 if (worldWrap)
@@ -79,12 +93,12 @@ class TileGroupMap<T: TileGroup>(
             for (mirrorTiles in mirrorTileGroups.values){
                 val positionalVector = HexMath.hex2WorldCoords(mirrorTiles.first.tileInfo.position)
 
-                mirrorTiles.first.setPosition(positionalVector.x * 0.8f * groupSize.toFloat(),
-                        positionalVector.y * 0.8f * groupSize.toFloat())
+                mirrorTiles.first.setPosition(positionalVector.x * 0.8f * groupSize,
+                        positionalVector.y * 0.8f * groupSize)
                 mirrorTiles.first.moveBy(-bottomX + leftAndRightPadding - bottomX * 2, -bottomY + topAndBottomPadding)
 
-                mirrorTiles.second.setPosition(positionalVector.x * 0.8f * groupSize.toFloat(),
-                        positionalVector.y * 0.8f * groupSize.toFloat())
+                mirrorTiles.second.setPosition(positionalVector.x * 0.8f * groupSize,
+                        positionalVector.y * 0.8f * groupSize)
                 mirrorTiles.second.moveBy(-bottomX + leftAndRightPadding + bottomX * 2, -bottomY + topAndBottomPadding)
             }
         }
@@ -154,10 +168,10 @@ class TileGroupMap<T: TileGroup>(
      * Returns the positional coordinates of the TileGroupMap center.
      */
     fun getPositionalVector(stageCoords: Vector2): Vector2 {
-        val trueGroupSize = 0.8f * groupSize.toFloat()
+        val trueGroupSize = 0.8f * groupSize
         return Vector2(bottomX - leftAndRightPadding, bottomY - topAndBottomPadding)
                 .add(stageCoords)
-                .sub(groupSize.toFloat() / 2f, groupSize.toFloat() / 2f)
+                .sub(groupSize / 2f, groupSize / 2f)
                 .scl(1f / trueGroupSize)
     }
 

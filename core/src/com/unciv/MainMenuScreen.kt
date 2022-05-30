@@ -22,6 +22,7 @@ import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.ModManagementScreen
 import com.unciv.ui.popup.*
@@ -77,8 +78,8 @@ class MainMenuScreen: BaseScreen() {
 
         launchCrashHandling("ShowMapBackground") {
             var scale = 1f
-            var mapWidth = stage.width / 57.735f  // TileGroupMap.groupSize * sqrt(4f/3f)
-            var mapHeight = stage.height / 50f  // TileGroupMap.groupSize
+            var mapWidth = stage.width / TileGroupMap.groupHorizontalAdvance
+            var mapHeight = stage.height / TileGroupMap.groupSize
             if (mapWidth * mapHeight > 3000f) {  // 3000 as max estimated number of tiles is arbitrary (we had typically 721 before)
                 scale = mapWidth * mapHeight / 3000f
                 mapWidth /= scale
@@ -90,7 +91,7 @@ class MainMenuScreen: BaseScreen() {
             val newMap = MapGenerator(mapRuleset)
                     .generateMap(MapParameters().apply {
                         shape = MapShape.rectangular
-                        mapSize = MapSizeNew(mapWidth.toInt() + 1,mapHeight.toInt() + 1)
+                        mapSize = MapSizeNew(mapWidth.toInt() + 1, mapHeight.toInt() + 1)
                         type = MapType.default
                         waterThreshold = -0.055f // Gives the same level as when waterThreshold was unused in MapType.default
                     })
