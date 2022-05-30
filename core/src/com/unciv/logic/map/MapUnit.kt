@@ -449,7 +449,7 @@ class MapUnit {
 
     fun getFortificationTurns(): Int {
         if (!isFortified()) return 0
-        println(action!!.split(" ").size)
+        // temporary backwards compatibility
         if (action!!.split(" ").size > 1 && action!!.split(" ")[1].toIntOrNull() != null)
             return action!!.split(" ")[1].toInt()
         return turnsFortified
@@ -844,11 +844,14 @@ class MapUnit {
             && getTile().improvementInProgress != null
             && canBuildImprovement(getTile().getTileImprovementInProgress()!!)
         ) workOnImprovement()
-        println(action!!)
-        println(action!!.split(" ").size)
-        println(action!!.split(" ")[1].toIntOrNull())
-        if (action!!.split(" ").size > 1 && action!!.split(" ")[1].toIntOrNull() != null)
+        // temporary backward compatibility
+        if (isFortified() && action!!.split(" ").size > 1 && action!!.split(" ")[1].toIntOrNull() != null){
             turnsFortified = action!!.split(" ")[1].toInt()
+            action = if (action!!.split(" ").size > 2)
+                "Fortify until healed"
+            else
+                "Fortify"
+        }
         if (currentMovement == getMaxMovement().toFloat() && isFortified() && turnsFortified < 2) {
             turnsFortified++
         }
