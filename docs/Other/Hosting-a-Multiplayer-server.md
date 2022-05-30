@@ -35,4 +35,4 @@ Please note:
     * The server will run on a specified port (`-p`, default `80`), writing files in a folder (`-f`, default `./MultiplayerGames/`), so it needs appropriate permissions.
 * Run it: `java -jar UncivServer.jar -p 8080 -f /some/folder/`
     * It basically just does simple file storage over HTTP.
-    * Files are not cleaned automatically if a game ends or is deleted on the clientund die
+    * Files are not cleaned automatically if a game ends or is deleted on the client-side
