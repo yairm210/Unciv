@@ -1,3 +1,33 @@
+## 4.1.5
+
+Better minimap buttons
+
+By SomeTroglodyte:
+- Reorder TileGroup layers to draw borders under Pixel Units 
+- Fix NextTurnButton lateinit crash 
+- Fix incorrect attribution 
+
+Improve suggestions when constructing an improvement is not possible  - By doublep
+
+By alexban011:
+- Disable state-changing buttons for puppet cities 
+- Add optional on-screen buttons to zoom in and out 
+- Land melee units can only attack water units once they are able to embark 
+- changed main menu world shape to rectangular 
+- Fix GitHub markdown of crash report save game 
+
+Add Catalan translation and provide some strings.  - By J0anJosep
+
+More UniqueType unit tests and correct some broken uniques in JSON files  - By OptimizedForDensity
+
+Dynamically adjust StatsTable height  - By itanasi
+
+By Azzurite:
+- Refactor: Remove superfluous postCrashHandlingRunnable 
+- 4.1.4-patch1
+- Fix multiplayer turn check worker writing game data to wrong locations 
+- Refactor: Extract all cross-platform code from CustomSaveLocationHelpers into core module 
+
 ## 4.1.4
 
 AI counteroffers will no longer contain items already offered by the player
