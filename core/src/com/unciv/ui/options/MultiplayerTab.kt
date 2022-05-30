@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Array
 import com.unciv.Constants
+import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.logic.multiplayer.storage.SimpleHttp
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.translations.tr
@@ -64,7 +65,7 @@ fun multiplayerTab(
     val connectionToServerButton = "Check connection to server".toTextButton()
 
     val textToShowForMultiplayerAddress =
-        if (!usesDropbox(settings)) settings.multiplayer.server
+        if (OnlineMultiplayer.usesCustomServer()) settings.multiplayer.server
         else "https://..."
     val multiplayerServerTextField = TextField(textToShowForMultiplayerAddress, BaseScreen.skin)
     multiplayerServerTextField.setTextFieldFilter { _, c -> c !in " \r\n\t\\" }
@@ -203,8 +204,6 @@ private fun <T> List<T>.toGdxArray(): Array<T> {
     return arr
 }
 
-private fun usesDropbox(settings: GameSettings) = settings.multiplayer.server == Constants.dropboxMultiplayerServer
-
 private fun addRefreshSelect(
     table: Table,
     settings: GameSettings,
@@ -216,10 +215,10 @@ private fun addRefreshSelect(
     table.add(label).left()
 
     val refreshSelectBox = SelectBox<RefreshOptions>(table.skin)
-    val options = if (usesDropbox(settings)) {
-        dropboxOptions
-    } else {
+    val options = if (OnlineMultiplayer.usesCustomServer()) {
         customServerOptions
+    } else {
+        dropboxOptions
     }
     refreshSelectBox.items = options
 
