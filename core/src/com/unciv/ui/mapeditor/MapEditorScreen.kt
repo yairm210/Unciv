@@ -16,6 +16,7 @@ import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.utils.*
+import com.unciv.ui.worldscreen.ZoomButtonPair
 
 
 //todo normalize properly
@@ -65,6 +66,7 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen() {
     var mapHolder: EditorMapHolder
     val tabs: MapEditorMainTabs
     var tileClickHandler: ((tile: TileInfo)->Unit)? = null
+    private var zoomController: ZoomButtonPair? = null
 
     private val highlightedTileGroups = mutableListOf<TileGroup>()
 
@@ -139,6 +141,13 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen() {
         modsTabNeedsRefresh = true
         editTabsNeedRefresh = true
         naturalWondersNeedRefresh = true
+
+        if (UncivGame.Current.settings.showZoomButtons) {
+            zoomController = ZoomButtonPair(result)
+            zoomController!!.setPosition(10f, 10f)
+            stage.addActor(zoomController)
+        }
+
         return result
     }
 

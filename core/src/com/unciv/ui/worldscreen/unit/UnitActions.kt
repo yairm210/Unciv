@@ -394,10 +394,10 @@ object UnitActions {
         if (!unit.hasUniqueToBuildImprovements) return
         if (unit.isEmbarked()) return
 
-        val canConstruct = unit.currentMovement > 0
+        val couldConstruct = unit.currentMovement > 0
             && !tile.isCityCenter()
-            && unit.civInfo.gameInfo.ruleSet.tileImprovements.values.any {
-                tile.canBuildImprovement(it, unit.civInfo)
+            && unit.civInfo.gameInfo.ruleSet.tileImprovements.values.any { 
+                ImprovementPickerScreen.canReport(tile.getImprovementBuildingProblems(it, unit.civInfo).toSet())
                 && unit.canBuildImprovement(it)
             }
 
@@ -405,7 +405,7 @@ object UnitActions {
             isCurrentAction = unit.currentTile.hasImprovementInProgress(),
             action = {
                 worldScreen.game.setScreen(ImprovementPickerScreen(tile, unit) { unitTable.selectUnit() })
-            }.takeIf { canConstruct }
+            }.takeIf { couldConstruct }
         )
     }
 
