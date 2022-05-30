@@ -71,6 +71,12 @@ interface ICityNotification : INotificationEvent {
     val city: CityInfo
 }
 
+class CapitalMovedNotification(override val city: CityInfo) : ICityNotification {
+    override fun createNotification() {
+        city.civInfo.addNotification("[${city.name}] is now your new capital", city.location, NotificationIcon.City)
+    }
+}
+
 abstract class CityConstructionNotification : ICityNotification {
     abstract val construction: IConstruction
 
