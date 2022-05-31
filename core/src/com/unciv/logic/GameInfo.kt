@@ -452,6 +452,7 @@ class GameInfo {
             for (cityInfo in civInfo.cities) cityInfo.cityStats.updateCityHappiness(
                 cityInfo.cityConstructions.getStats()
             )
+            civInfo.updateStatsForNextTurn()
 
             for (cityInfo in civInfo.cities) {
                 /** We remove constructions from the queue that aren't defined in the ruleset.

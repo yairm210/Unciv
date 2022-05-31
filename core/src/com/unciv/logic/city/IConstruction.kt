@@ -97,61 +97,37 @@ class RejectionReasons: HashSet<RejectionReasonInstance>() {
         if (!ignoreTechPolicyEraWonderRequirements)
             return all { it.rejectionReason == RejectionReason.ConsumesResources }
         if (!ignoreResources)
-            return all { it.rejectionReason in techPolicyEraWonderRequirements }
+            return all { it.rejectionReason.isTechPolicyEraWonderRequirement }
         return all {
             it.rejectionReason == RejectionReason.ConsumesResources ||
-            it.rejectionReason in techPolicyEraWonderRequirements
+            it.rejectionReason.isTechPolicyEraWonderRequirement
         }
     }
 
     fun hasAReasonToBeRemovedFromQueue(): Boolean {
-        return any { it.rejectionReason in reasonsToDefinitivelyRemoveFromQueue }
+        return any { it.rejectionReason.isReasonToDefinitivelyRemoveFromQueue }
     }
 
     fun getMostImportantRejectionReason(): String? {
-        for (rejectionReason in orderOfErrorMessages) {
-            val rejectionReasonInstance = firstOrNull { it.rejectionReason == rejectionReason }
-            if (rejectionReasonInstance != null) return rejectionReasonInstance.errorMessage
-        }
-        return null
+        return asSequence()
+            .sortedByDescending { it.rejectionReason.orderOfErrorMessages }
+            .firstOrNull()
+            ?.errorMessage
     }
-
-    // Used for constant variables in the functions above
-    companion object {
-        private val techPolicyEraWonderRequirements = hashSetOf(
-            RejectionReason.Obsoleted,
-            RejectionReason.RequiresTech,
-            RejectionReason.RequiresPolicy,
-            RejectionReason.MorePolicyBranches,
-            RejectionReason.RequiresBuildingInSomeCity,
-        )
-        private val reasonsToDefinitivelyRemoveFromQueue = hashSetOf(
-            RejectionReason.Obsoleted,
-            RejectionReason.WonderAlreadyBuilt,
-            RejectionReason.NationalWonderAlreadyBuilt,
-            RejectionReason.CannotBeBuiltWith,
-            RejectionReason.MaxNumberBuildable,
-        )
-        private val orderOfErrorMessages = listOf(
-            RejectionReason.WonderBeingBuiltElsewhere,
-            RejectionReason.NationalWonderBeingBuiltElsewhere,
-            RejectionReason.RequiresBuildingInAllCities,
-            RejectionReason.RequiresBuildingInThisCity,
-            RejectionReason.RequiresBuildingInSomeCity,
-            RejectionReason.PopulationRequirement,
-            RejectionReason.ConsumesResources,
-            RejectionReason.CanOnlyBePurchased,
-            RejectionReason.MaxNumberBuildable,
-            RejectionReason.NoPlaceToPutUnit,
-        )
-    }
-} 
+}
 
 
-enum class RejectionReason(val shouldShow: Boolean, val errorMessage: String) {
+enum class RejectionReason(
+    val shouldShow: Boolean,
+    val errorMessage: String,
+    val isTechPolicyEraWonderRequirement: Boolean = false,
+    val isReasonToDefinitivelyRemoveFromQueue: Boolean = false,
+    val orderOfErrorMessages: Int = 0
+) {
     AlreadyBuilt(false, "Building already built in this city"),
     Unbuildable(false, "Unbuildable"),
-    CanOnlyBePurchased(true, "Can only be purchased"),
+    CanOnlyBePurchased(true, "Can only be purchased",
+        orderOfErrorMessages = 30),
     ShouldNotBeDisplayed(false, "Should not be displayed"),
 
     DisabledBySetting(false, "Disabled by setting"),
@@ -164,40 +140,56 @@ enum class RejectionReason(val shouldShow: Boolean, val errorMessage: String) {
     MustOwnTile(false, "Must own a specific tile close by"),
     WaterUnitsInCoastalCities(false, "May only built water units in coastal cities"),
     CanOnlyBeBuiltInSpecificCities(false, "Can only be built in specific cities"),
-    MaxNumberBuildable(false, "Maximum number have been built or are being constructed"),
+    MaxNumberBuildable(false, "Maximum number have been built or are being constructed",
+        isReasonToDefinitivelyRemoveFromQueue = true, orderOfErrorMessages = 20),
 
     UniqueToOtherNation(false, "Unique to another nation"),
     ReplacedByOurUnique(false, "Our unique replaces this"),
     CannotBeBuilt(false, "Cannot be built by this nation"),
 
-    Obsoleted(false, "Obsolete"),
-    RequiresTech(false, "Required tech not researched"),
-    RequiresPolicy(false, "Requires a specific policy!"),
+    Obsoleted(false, "Obsolete",
+        isTechPolicyEraWonderRequirement = true, isReasonToDefinitivelyRemoveFromQueue = true),
+    RequiresTech(false, "Required tech not researched",
+        isTechPolicyEraWonderRequirement = true),
+    RequiresPolicy(false, "Requires a specific policy!",
+        isTechPolicyEraWonderRequirement = true),
     UnlockedWithEra(false, "Unlocked when reaching a specific era"),
-    MorePolicyBranches(false, "Hidden until more policy branches are fully adopted"),
+    MorePolicyBranches(false, "Hidden until more policy branches are fully adopted",
+        isTechPolicyEraWonderRequirement = true),
 
     RequiresNearbyResource(false, "Requires a certain resource being exploited nearby"),
-    CannotBeBuiltWith(false, "Cannot be built at the same time as another building already built"),
+    CannotBeBuiltWith(false, "Cannot be built at the same time as another building already built",
+        isReasonToDefinitivelyRemoveFromQueue = true),
 
-    RequiresBuildingInThisCity(true, "Requires a specific building in this city!"),
-    RequiresBuildingInAllCities(true, "Requires a specific building in all cities!"),
-    RequiresBuildingInSomeCity(true, "Requires a specific building anywhere in your empire!"),
+    RequiresBuildingInThisCity(true, "Requires a specific building in this city!",
+        orderOfErrorMessages = 62),
+    RequiresBuildingInAllCities(true, "Requires a specific building in all cities!",
+        orderOfErrorMessages = 63),
+    RequiresBuildingInSomeCity(true, "Requires a specific building anywhere in your empire!",
+        isTechPolicyEraWonderRequirement = true, orderOfErrorMessages = 61),
 
-    WonderAlreadyBuilt(false, "Wonder already built"),
-    NationalWonderAlreadyBuilt(false, "National Wonder already built"),
-    WonderBeingBuiltElsewhere(true, "Wonder is being built elsewhere"),
-    NationalWonderBeingBuiltElsewhere(true, "National Wonder is being built elsewhere"),
+    WonderAlreadyBuilt(false, "Wonder already built",
+        isReasonToDefinitivelyRemoveFromQueue = true),
+    NationalWonderAlreadyBuilt(false, "National Wonder already built",
+        isReasonToDefinitivelyRemoveFromQueue = true),
+    WonderBeingBuiltElsewhere(true, "Wonder is being built elsewhere",
+        orderOfErrorMessages = 72),
+    NationalWonderBeingBuiltElsewhere(true, "National Wonder is being built elsewhere",
+        orderOfErrorMessages = 71),
     CityStateWonder(false, "No Wonders for city-states"),
     CityStateNationalWonder(false, "No National Wonders for city-states"),
     WonderDisabledEra(false, "This Wonder is disabled when starting in this era"),
 
-    ConsumesResources(true, "Consumes resources which you are lacking"),
+    ConsumesResources(true, "Consumes resources which you are lacking",
+        orderOfErrorMessages = 40),
 
-    PopulationRequirement(true, "Requires more population"),
+    PopulationRequirement(true, "Requires more population",
+        orderOfErrorMessages = 50),
 
     NoSettlerForOneCityPlayers(false, "No settlers for city-states or one-city challengers"),
-    NoPlaceToPutUnit(true, "No space to place this unit");
-    
+    NoPlaceToPutUnit(true, "No space to place this unit",
+        orderOfErrorMessages = 10);
+
     fun toInstance(errorMessage: String = this.errorMessage,
         shouldShow: Boolean = this.shouldShow): RejectionReasonInstance {
         return RejectionReasonInstance(this, errorMessage, shouldShow)
