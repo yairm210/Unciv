@@ -10,7 +10,10 @@ import kotlin.math.sqrt
 open class ZoomableScrollPane : ScrollPane(null) {
     var continuousScrollingX = false
 
-    init{
+    var onPanStop: (() -> Unit)? = null
+    var onPanStart: (() -> Unit)? = null
+
+    init {
         addZoomListeners()
     }
 
@@ -57,7 +60,12 @@ open class ZoomableScrollPane : ScrollPane(null) {
         //This is mostly just Java code from the ScrollPane class reimplemented as Kotlin code
         //Had to change a few things to bypass private access modifiers
         return object : ActorGestureListener() {
+            private var wasPanning = false
             override fun pan(event: InputEvent, x: Float, y: Float, deltaX: Float, deltaY: Float) {
+                if (!wasPanning) {
+                    wasPanning = true
+                    onPanStart?.invoke()
+                }
                 setScrollbarsVisible(true)
                 scrollX -= deltaX
                 scrollY += deltaY
@@ -75,6 +83,11 @@ open class ZoomableScrollPane : ScrollPane(null) {
                 //clamp() call is missing here but it doesn't seem to make any big difference in this case
 
                 if ((isScrollX && deltaX != 0f || isScrollY && deltaY != 0f)) cancelTouchFocus()
+            }
+
+            override fun panStop(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
+                wasPanning = false
+                onPanStop?.invoke()
             }
         }
     }

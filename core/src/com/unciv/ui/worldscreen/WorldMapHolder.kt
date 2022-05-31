@@ -57,6 +57,28 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         if (Gdx.app.type == Application.ApplicationType.Desktop) this.setFlingTime(0f)
         continuousScrollingX = tileMap.mapParameters.worldWrap
         reloadMaxZoom()
+        disablePointerEventsAndActionsOnPan()
+    }
+
+    /**
+     * When scrolling the world map, there are two unnecessary (at least currently) things happening that take a decent amount of time:
+     *
+     * 1. Checking which [Actor]'s bounds the pointer (mouse/finger) entered+exited and sending appropriate events to these actors
+     * 2. Running all [Actor.act] methods of all child [Actor]s
+     *
+     * Disabling them while panning increases the frame rate while panning by approximately 100%.
+     */
+    private fun disablePointerEventsAndActionsOnPan() {
+        onPanStart = {
+            Log.debug("Disable pointer enter/exit events & TileGroupMap.act()")
+            (stage as UncivStage).performPointerEnterExitEvents = false
+            tileGroupMap.shouldAct = false
+        }
+        onPanStop = {
+            Log.debug("Enable pointer enter/exit events & TileGroupMap.act()")
+            (stage as UncivStage).performPointerEnterExitEvents = true
+            tileGroupMap.shouldAct = true
+        }
     }
 
     internal fun reloadMaxZoom() {

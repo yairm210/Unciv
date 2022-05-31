@@ -12,14 +12,18 @@ import com.unciv.ui.utils.wrapCrashHandlingUnit
 class UncivStage(viewport: Viewport, batch: Batch) : Stage(viewport, batch) {
 
     /**
-     * Enables/disables sending pointer enter/exit events to actors on this stage. May be disabled for performance reasons if enter/exit events are not needed temporarily.
+     * Enables/disables sending pointer enter/exit events to actors on this stage.
+     * Checking for the enter/exit bounds is a relatively expensive operation and may thus be disabled temporarily.
      */
     var performPointerEnterExitEvents: Boolean = false
 
     override fun draw() =
         { super.draw() }.wrapCrashHandlingUnit()()
+
+    /** libGDX has no built-in way to disable/enable pointer enter/exit events. It is simply being done in [Stage.act]. So to disable this, we have
+     * to replicate the [Stage.act] method without the code for pointer enter/exit events. This is of course inherently brittle, but the only way. */
     override fun act() = {
-        /** We're basically replicating [Stage.act], so this value is simply taken from there. */
+        /** We're replicating [Stage.act], so this value is simply taken from there */
         val delta = Gdx.graphics.deltaTime.coerceAtMost(1 / 30f)
 
         if (performPointerEnterExitEvents) {

@@ -27,6 +27,11 @@ class TileGroupMap<T: TileGroup>(
     worldWrap: Boolean = false,
     tileGroupsToUnwrap: Set<T>? = null
 ): Group() {
+    /** If the [act] method should be performed. If this is false, every child within this [TileGroupMap] will not get their [act] method called
+     * and thus not perform any [com.badlogic.gdx.scenes.scene2d.Action]s.
+     * Most children here already do not do anything in their [act] methods. However, even iterating through all of them */
+    var shouldAct = true
+
     private var topX = -Float.MAX_VALUE
     private var topY = -Float.MAX_VALUE
     private var bottomX = Float.MAX_VALUE
@@ -166,5 +171,9 @@ class TileGroupMap<T: TileGroup>(
     // For debugging purposes
      override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
      @Suppress("RedundantOverride")
-     override fun act(delta: Float) { super.act(delta) }
+     override fun act(delta: Float) {
+         if(shouldAct) {
+             super.act(delta)
+         }
+     }
 }
