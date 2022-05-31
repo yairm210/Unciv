@@ -23,7 +23,7 @@ class TestGame {
     private var objectsCreated = 0
     val ruleset: Ruleset
     val gameInfo = GameInfo()
-    /** [tileMap] has a default size of 1 tile, use [makeHexagonalMap] or [makeRectangularMap] to change that */
+    /** [tileMap] has a default radius of 1 (7 tiles), use [makeHexagonalMap] or [makeRectangularMap] to change that */
     val tileMap
         get() = gameInfo.tileMap
 
@@ -95,10 +95,13 @@ class TestGame {
         val nation = createRulesetObject(ruleset.nations, *uniques) {
             nationFactory()
         }
-        val civInfo = CivilizationInfo()
+        return addCiv(nation, isPlayer, cityState)
+    }
+
+    private fun addCiv(nation: Nation, isPlayer: Boolean, cityState: CityStateType?): CivilizationInfo {
+        val civInfo = CivilizationInfo(nation.name)
         civInfo.nation = nation
         civInfo.gameInfo = gameInfo
-        civInfo.civName = nation.name
         if (isPlayer) civInfo.playerType = PlayerType.Human
         civInfo.setTransients()
         if (cityState != null) {
@@ -106,6 +109,11 @@ class TestGame {
         }
         gameInfo.civilizations.add(civInfo)
         return civInfo
+    }
+
+    fun addBarbarians(): CivilizationInfo {
+        val nation = ruleset.nations[Constants.barbarians]!!
+        return addCiv(nation, false, null)
     }
 
     fun addCity(

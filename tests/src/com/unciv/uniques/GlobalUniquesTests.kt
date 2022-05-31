@@ -3,8 +3,11 @@ package com.unciv.uniques
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
+import com.unciv.logic.civilization.CivFlags
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.ruleset.BeliefType
+import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stats
 import com.unciv.testing.GdxTestRunner
 import org.junit.Assert
@@ -20,6 +23,12 @@ class GlobalUniquesTests {
     @Before
     fun initTheWorld() {
         game = TestGame()
+    }
+
+    fun setRulesetTransients() {
+        // TODO this shouldn't be here - OR in GameInfo.setTransients, but in ruleset code
+        for (baseUnit in game.ruleset.units.values)
+            baseUnit.ruleset = game.ruleset
     }
 
     // region stat uniques
@@ -190,6 +199,9 @@ class GlobalUniquesTests {
         Assert.assertTrue(city2.cityStats.finalStatList["Trade routes"]!!.science == 30f)
     }
 
+    // endregion
+    // region stat uniques - religion-specific
+
     @Test
     fun statsFromGlobalCitiesFollowingReligion() {
         val civ1 = game.addCiv()
@@ -243,7 +255,6 @@ class GlobalUniquesTests {
     }
 
     // endregion
-
     // region stat percentage bonus providing uniques
 
     @Test
@@ -320,9 +331,7 @@ class GlobalUniquesTests {
         Assert.assertTrue(city.cityStats.finalStatList["Buildings"]!!.faith == 9f)
     }
 
-
     // endregion
-
 
     @Test
     fun statsSpendingGreatPeople() {
@@ -339,4 +348,159 @@ class GlobalUniquesTests {
         Assert.assertTrue(civInfo.gold == 250)
     }
 
+    // region happiness uniques
+
+    @Test
+    fun testGrowthPercentBonus() {
+        val globalUniques = game.ruleset.globalUniques
+        val unique = globalUniques.getMatchingUniques(UniqueType.GrowthPercentBonus, StateForConditionals.IgnoreConditionals).firstOrNull()
+        val conditional = unique?.conditionals?.firstOrNull { it.type == UniqueType.ConditionalBetweenHappiness }
+        val mustHaveConditional = conditional != null
+        Assert.assertTrue("GrowthPercentBonus must exist in globalUniques and have a ConditionalBetweenHappiness", mustHaveConditional)
+
+        val civInfo = game.addCiv()
+        val stateForConditionals = StateForConditionals(civInfo)
+        civInfo.happinessForNextTurn = 0
+        val activeAtZero = globalUniques.getMatchingUniques(UniqueType.GrowthPercentBonus, stateForConditionals).any()
+        civInfo.happinessForNextTurn = -1
+        val activeAtMinus1 = globalUniques.getMatchingUniques(UniqueType.GrowthPercentBonus, stateForConditionals).any()
+        civInfo.happinessForNextTurn = -9
+        val activeAtMinus9 = globalUniques.getMatchingUniques(UniqueType.GrowthPercentBonus, stateForConditionals).any()
+        civInfo.happinessForNextTurn = -10
+        val activeAtMinus10 = globalUniques.getMatchingUniques(UniqueType.GrowthPercentBonus, stateForConditionals).any()
+
+        val success = !activeAtZero && activeAtMinus1 && activeAtMinus9 && !activeAtMinus10
+        Assert.assertTrue("GrowthPercentBonus must obey conditional (activeAtZero=$activeAtZero, activeAtMinus1=$activeAtMinus1, activeAtMinus9=$activeAtMinus9, activeAtMinus10=$activeAtMinus10)", success)
+
+        val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
+        val city = game.addCity(civInfo, tile, initialPopulation = 1)
+        civInfo.updateStatsForNextTurn()
+        // At this point the city will be working 1 Grassland giving a total of 4 food tile yield and consume 2 for 1 pop.
+        val foodAt1 = city.cityStats.currentCityStats.food
+        civInfo.happinessForNextTurn = -5
+        city.cityStats.update()
+        val foodAtMinus5 = city.cityStats.currentCityStats.food
+        val reduction = ((1f - foodAtMinus5 / foodAt1) * 100f).toInt()
+        Assert.assertTrue("GrowthPercentBonus effective reduction must be 75%, found $reduction%", reduction == 75)
+    }
+
+    @Test
+    fun testNullifiesGrowth() {
+        val globalUniques = game.ruleset.globalUniques
+        val unique = globalUniques.getMatchingUniques(UniqueType.NullifiesGrowth, StateForConditionals.IgnoreConditionals).firstOrNull()
+        val conditional = unique?.conditionals?.firstOrNull { it.type == UniqueType.ConditionalBelowHappiness }
+        val mustHaveConditional = conditional != null
+        Assert.assertTrue("NullifiesGrowth must exist in globalUniques and have a ConditionalBelowHappiness", mustHaveConditional)
+
+        val civInfo = game.addCiv()
+        val stateForConditionals = StateForConditionals(civInfo)
+        civInfo.happinessForNextTurn = -1
+        val activeAtMinus1 = globalUniques.getMatchingUniques(UniqueType.NullifiesGrowth, stateForConditionals).any()
+        civInfo.happinessForNextTurn = -9
+        val activeAtMinus9 = globalUniques.getMatchingUniques(UniqueType.NullifiesGrowth, stateForConditionals).any()
+        civInfo.happinessForNextTurn = -10
+        val activeAtMinus10 = globalUniques.getMatchingUniques(UniqueType.NullifiesGrowth, stateForConditionals).any()
+
+        val success = !activeAtMinus1 && !activeAtMinus9 && activeAtMinus10
+        Assert.assertTrue("NullifiesGrowth must obey conditional (activeAtMinus1=$activeAtMinus1, activeAtMinus9=$activeAtMinus9, activeAtMinus10=$activeAtMinus10)", success)
+
+        val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
+        game.setTileFeatures(Vector2(1f,1f), features = listOf("Oasis"))
+        game.setTileFeatures(Vector2(-1f,-1f), features = listOf("Oasis"))
+        val city = game.addCity(civInfo, tile, initialPopulation = 2)
+        civInfo.updateStatsForNextTurn()
+        // At this point the city will be working two oases giving a total of 8 food tile yield and consume 4 for 2 pop.
+        val foodAt1 = city.cityStats.currentCityStats.food
+        Assert.assertTrue("NullifiesGrowth must find >0 food at default happiness, found $foodAt1", foodAt1 > 0f)
+        civInfo.happinessForNextTurn = -15
+        city.cityStats.update()
+        val foodAtMinus15 = city.cityStats.currentCityStats.food
+        Assert.assertTrue("NullifiesGrowth must leave 0 food, found $foodAtMinus15", foodAtMinus15 == 0f)
+    }
+
+    @Test
+    fun testCannotBuildUnits() {
+        val unitName = "Settler"
+
+        val globalUniques = game.ruleset.globalUniques
+        val unique = globalUniques.getMatchingUniques(UniqueType.CannotBuildUnits, StateForConditionals.IgnoreConditionals).firstOrNull()
+        val conditional = unique?.conditionals?.firstOrNull { it.type == UniqueType.ConditionalBelowHappiness }
+        val mustHaveUnique = unique?.params?.get(0) == unitName && conditional != null
+        Assert.assertTrue("CannotBuildUnits must exist in globalUniques for the Settler unit with ConditionalBelowHappiness", mustHaveUnique)
+
+        val civInfo = game.addCiv()
+        val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
+        val city = game.addCity(civInfo, tile, initialPopulation = 6)
+        civInfo.updateStatsForNextTurn()
+
+        setRulesetTransients()
+        city.cityConstructions.addToQueue(unitName)
+        val isBuildingSettlerAtBase = city.cityConstructions.isBeingConstructed(unitName)
+
+        city.cityConstructions.constructionQueue.clear()
+        civInfo.happinessForNextTurn = -15
+        city.cityConstructions.addToQueue(unitName)
+        val isBuildingSettlerAtMinus15 = city.cityConstructions.isBeingConstructed(unitName)
+
+        val baseUnit = game.ruleset.units[unitName]
+        val message = baseUnit?.getRejectionReasons(city.cityConstructions)?.getMostImportantRejectionReason()
+        val displayOK = baseUnit?.shouldBeDisplayed(city.cityConstructions) == true && message?.contains(unitName) == true
+
+        val success = isBuildingSettlerAtBase && !isBuildingSettlerAtMinus15
+        Assert.assertTrue("CannotBuildUnits must prevent Settler from being queued at -15 happiness but allow otherwise", success)
+        Assert.assertTrue("Unbuildable Settler at -15 happiness should still be displayed with reason", displayOK == true)
+    }
+
+    @Test
+    fun testSpawnRebels() {
+        val globalUniques = game.ruleset.globalUniques
+        val unique = globalUniques.getMatchingUniques(UniqueType.SpawnRebels, StateForConditionals.IgnoreConditionals).firstOrNull()
+        val conditional = unique?.conditionals?.firstOrNull { it.type == UniqueType.ConditionalBelowHappiness }
+        val mustHaveUnique = conditional != null
+        Assert.assertTrue("SpawnRebels must exist in globalUniques with ConditionalBelowHappiness", mustHaveUnique)
+
+        val civInfo = game.addCiv(isPlayer = true)
+        val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
+        val city = game.addCity(civInfo, tile, initialPopulation = 1)
+        val barbarians = game.addBarbarians()
+
+        setRulesetTransients()
+        civInfo.startTurn()
+        val hasFlagAtBase = civInfo.hasFlag(CivFlags.RevoltSpawning.name)
+
+        city.population.addPopulation(80)  // Need happiness below -20, startTurn recalculates civInfo.happinessForNextTurn
+
+        civInfo.startTurn()
+        val hasFlagAtMinus25 = civInfo.hasFlag(CivFlags.RevoltSpawning.name)
+        Assert.assertTrue("SpawnRebels must set the RevoltSpawning flag at -25, but not at base happiness", !hasFlagAtBase && hasFlagAtMinus25)
+
+        civInfo.removeFlag(CivFlags.RevoltSpawning.name)
+        civInfo.addFlag(CivFlags.RevoltSpawning.name, 1)
+        game.tileMap.gameInfo = game.gameInfo
+        civInfo.startTurn()
+        val didRevolt = civInfo.notifications.any { "revolt" in it.text } && barbarians.getCivUnits().any()
+        Assert.assertTrue("SpawnRebels must cause actual rebels and a notification to appear", didRevolt)
+    }
+
+    @Test
+    fun testHappinessProductionMalus() {
+        val globalUniques = game.ruleset.globalUniques
+        val unique = globalUniques.getMatchingUniques(UniqueType.StatPercentBonusCities, StateForConditionals.IgnoreConditionals).firstOrNull()
+        val conditional = unique?.conditionals?.firstOrNull { it.type == UniqueType.ConditionalBelowHappiness }
+        val mustHaveUnique = conditional != null && unique?.params?.get(1) == "Production"
+        Assert.assertTrue("StatPercentBonusCities for Production must exist in globalUniques with ConditionalBelowHappiness", mustHaveUnique)
+
+        val civInfo = game.addCiv(isPlayer = true)
+        val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
+        val city = game.addCity(civInfo, tile, initialPopulation = 36)
+        civInfo.happinessForNextTurn = 0  // addCity updates this but we want the state after loading a game
+        game.gameInfo.setTransients()
+        val productionBefore = city.cityStats.currentCityStats.production
+        civInfo.updateStatsForNextTurn()
+        city.cityStats.update()
+        val productionAfter = city.cityStats.currentCityStats.production
+        Assert.assertTrue("Production after GameInfo.setTransients ($productionBefore) must equal Production after updating happiness and effects directly ($productionAfter)", productionBefore == productionAfter)
+    }
+
+    // endregion
 }
