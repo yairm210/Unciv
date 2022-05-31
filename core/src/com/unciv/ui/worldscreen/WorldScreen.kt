@@ -6,10 +6,8 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
-import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
-import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
@@ -26,10 +24,8 @@ import com.unciv.logic.multiplayer.MultiplayerGameUpdated
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.Tutorial
-import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.translations.tr
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.crashhandling.launchCrashHandling
@@ -43,7 +39,6 @@ import com.unciv.ui.pickerscreens.GreatPersonPickerScreen
 import com.unciv.ui.pickerscreens.PantheonPickerScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.ReligiousBeliefsPickerScreen
-import com.unciv.ui.pickerscreens.TechButton
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.popup.ExitGamePopup
 import com.unciv.ui.popup.Popup
@@ -53,12 +48,10 @@ import com.unciv.ui.popup.hasOpenPopups
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.saves.QuickSave
 import com.unciv.ui.saves.SaveGameScreen
-import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.centerX
-import com.unciv.ui.utils.colorFromRGB
 import com.unciv.ui.utils.darken
 import com.unciv.ui.utils.disable
 import com.unciv.ui.utils.enable
@@ -91,7 +84,7 @@ import kotlinx.coroutines.Job
  * @property mapHolder A [WorldMapHolder] instance
  * @property bottomUnitTable Bottom left widget holding information about a selected unit or city
  */
-class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : BaseScreen() {
+class WorldScreen(val gameInfo: GameInfo, val viewingCiv: CivilizationInfo) : BaseScreen() {
 
     var isPlayersTurn = viewingCiv == gameInfo.currentPlayerCiv
         private set     // only this class is allowed to make changes
@@ -101,30 +94,29 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     val canChangeState
         get() = isPlayersTurn && !viewingCiv.isSpectator()
     private var waitingForAutosave = false
+
     private val mapVisualization = MapVisualization(gameInfo, viewingCiv)
 
     val mapHolder = WorldMapHolder(this, gameInfo.tileMap)
-    private val minimapWrapper = MinimapHolder(mapHolder)
 
-    private val topBar = WorldScreenTopBar(this)
-    val bottomUnitTable = UnitTable(this)
-    private val bottomTileInfoTable = TileInfoTable(viewingCiv)
-    private val battleTable = BattleTable(this)
-    private val unitActionsTable = UnitActionsTable(this)
-
-    private val techPolicyAndVictoryHolder = Table()
-    private val techButtonHolder = Table()
-    private val diplomacyButtonHolder = Table()
+    // Floating Widgets going counter-clockwise
+    val topBar = WorldScreenTopBar(this)
+    private val techPolicyAndDiplomacy = TechPolicyDiplomacyButtons(this)
     private val fogOfWarButton = createFogOfWarButton()
+    private val unitActionsTable = UnitActionsTable(this)
+    val bottomUnitTable = UnitTable(this)
+    private val battleTable = BattleTable(this)
+    private val zoomController = ZoomButtonPair(mapHolder)
+    private val minimapWrapper = MinimapHolder(mapHolder)
+    private val bottomTileInfoTable = TileInfoTable(viewingCiv)
+    private val notificationsScroll = NotificationsScroll(this)
     private val nextTurnButton = NextTurnButton(keyPressDispatcher)
     private val statusButtons = StatusButtons(nextTurnButton)
     private val tutorialTaskTable = Table().apply { background = ImageGetter.getBackground(
         ImageGetter.getBlue().darken(0.5f)) }
-    private val notificationsScroll = NotificationsScroll(this)
 
     var shouldUpdate = false
 
-    private val zoomController = ZoomButtonPair(mapHolder)
 
     private var nextTurnUpdateJob: Job? = null
 
@@ -147,22 +139,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         // resume music (in case choices from the menu lead to instantiation of a new WorldScreen)
         UncivGame.Current.musicController.resume()
 
-        techButtonHolder.touchable = Touchable.enabled
-        techButtonHolder.onClick(UncivSound.Paper) {
-            game.setScreen(TechPickerScreen(viewingCiv))
-        }
-        techPolicyAndVictoryHolder.add(techButtonHolder)
-
         fogOfWarButton.isVisible = viewingCiv.isSpectator()
         fogOfWarButton.setPosition(10f, topBar.y - fogOfWarButton.height - 10f)
-
-        // Don't show policies until they become relevant
-        if (viewingCiv.policies.adoptedPolicies.isNotEmpty() || viewingCiv.policies.canAdoptPolicy()) {
-            val policyScreenButton = Button(skin)
-            policyScreenButton.add(ImageGetter.getImage("PolicyIcons/Constitution")).size(30f).pad(15f)
-            policyScreenButton.onClick { game.setScreen(PolicyPickerScreen(this)) }
-            techPolicyAndVictoryHolder.add(policyScreenButton).pad(10f)
-        }
 
         stage.addActor(mapHolder)
         stage.scrollFocus = mapHolder
@@ -170,16 +148,14 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         stage.addActor(minimapWrapper)
         stage.addActor(topBar)
         stage.addActor(statusButtons)
-        stage.addActor(techPolicyAndVictoryHolder)
+        stage.addActor(techPolicyAndDiplomacy)
         stage.addActor(tutorialTaskTable)
 
         if (UncivGame.Current.settings.showZoomButtons) {
             stage.addActor(zoomController)
         }
 
-        diplomacyButtonHolder.defaults().pad(5f)
         stage.addActor(fogOfWarButton)
-        stage.addActor(diplomacyButtonHolder)
         stage.addActor(bottomUnitTable)
         stage.addActor(bottomTileInfoTable)
         battleTable.width = stage.width / 3
@@ -430,10 +406,11 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
         topBar.update(selectedCiv)
 
-        updateTechButton()
-        techPolicyAndVictoryHolder.pack()
-        techPolicyAndVictoryHolder.setPosition(10f, topBar.y - techPolicyAndVictoryHolder.height - 5f)
-        updateDiplomacyButton(viewingCiv)
+        if (techPolicyAndDiplomacy.update())
+            displayTutorial(Tutorial.OtherCivEncountered)
+
+        if (techPolicyAndDiplomacy.update())
+            displayTutorial(Tutorial.OtherCivEncountered)
 
         if (!hasOpenPopups() && isPlayersTurn) {
             when {
@@ -539,46 +516,6 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                 it.hasUniqueToBuildImprovements && it.isCivilian() && !it.isGreatPerson()
             }
         }
-    }
-
-    private fun updateDiplomacyButton(civInfo: CivilizationInfo) {
-        diplomacyButtonHolder.clear()
-        if (!civInfo.isDefeated() && !civInfo.isSpectator() && civInfo.getKnownCivs()
-                        .filterNot { it == viewingCiv || it.isBarbarian() }
-                        .any()) {
-            displayTutorial(Tutorial.OtherCivEncountered)
-            val btn = "Diplomacy".toTextButton()
-            btn.onClick { game.setScreen(DiplomacyScreen(viewingCiv)) }
-            btn.label.setFontSize(30)
-            btn.labelCell.pad(10f)
-            diplomacyButtonHolder.add(btn)
-        }
-        diplomacyButtonHolder.pack()
-        diplomacyButtonHolder.y = techPolicyAndVictoryHolder.y - 20 - diplomacyButtonHolder.height
-    }
-
-    private fun updateTechButton() {
-        if (gameInfo.ruleSet.technologies.isEmpty()) return
-        techButtonHolder.isVisible = viewingCiv.cities.isNotEmpty()
-        techButtonHolder.clearChildren()
-
-        if (viewingCiv.tech.currentTechnology() != null) {
-            val currentTech = viewingCiv.tech.currentTechnologyName()!!
-            val innerButton = TechButton(currentTech, viewingCiv.tech)
-            innerButton.color = colorFromRGB(7, 46, 43)
-            techButtonHolder.add(innerButton)
-            val turnsToTech = viewingCiv.tech.turnsToTech(currentTech)
-            innerButton.text.setText(currentTech.tr() + "\r\n" + turnsToTech + Fonts.turn)
-        } else if (viewingCiv.tech.canResearchTech() || viewingCiv.tech.researchedTechnologies.any()) {
-            val buttonPic = Table()
-            buttonPic.background = ImageGetter.getRoundedEdgeRectangle(colorFromRGB(7, 46, 43))
-            buttonPic.defaults().pad(20f)
-            val text = if (viewingCiv.tech.canResearchTech()) "{Pick a tech}!" else "Technologies"
-            buttonPic.add(text.toLabel(Color.WHITE, 30))
-            techButtonHolder.add(buttonPic)
-        }
-
-        techButtonHolder.pack()
     }
 
     private fun updateSelectedCiv() {
