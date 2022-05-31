@@ -337,7 +337,6 @@ object UnitActions {
 
         if (!toCityPillageYield.isEmpty() && closestCity != null) {
             val pillagerLootLocal = "We have looted [${toCityPillageYield.toStringWithoutIcons()}] from a [${improvement.name}] which has been sent to [${closestCity.name}]"
-            if (tile.getOwner() != null)
             unit.civInfo.addNotification(pillagerLootLocal, tile.position, "ImprovementIcons/${improvement.name}", NotificationIcon.War)
         }
         if (!globalPillageYield.isEmpty()) {
