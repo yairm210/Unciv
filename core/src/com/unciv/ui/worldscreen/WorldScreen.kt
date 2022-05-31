@@ -833,7 +833,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                 }
 
             viewingCiv.mayVoteForDiplomaticVictory() ->
-                NextTurnAction("Vote for World Leader", Color.RED) {
+                NextTurnAction("Vote for World Leader", Color.MAROON) {
                     game.setScreen(DiplomaticVotePickerScreen(viewingCiv))
                 }
 
