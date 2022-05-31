@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameStarter
 import com.unciv.logic.map.MapParameters
+import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.MapType
@@ -28,6 +29,7 @@ import com.unciv.ui.popup.*
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.worldscreen.mainmenu.WorldScreenMenuPopup
 
 class MainMenuScreen: BaseScreen() {
     private val backgroundTable = Table().apply { background= ImageGetter.getBackground(Color.WHITE) }
@@ -75,6 +77,7 @@ class MainMenuScreen: BaseScreen() {
         launchCrashHandling("ShowMapBackground") {
             val newMap = MapGenerator(RulesetCache.getVanillaRuleset())
                     .generateMap(MapParameters().apply {
+                        shape = MapShape.rectangular
                         mapSize = MapSizeNew(MapSize.Small)
                         type = MapType.default
                         waterThreshold = -0.055f // Gives the same level as when waterThreshold was unused in MapType.default
@@ -98,7 +101,7 @@ class MainMenuScreen: BaseScreen() {
 
         if (game.gameSaver.autosaveExists()) {
             val resumeTable = getMenuButton("Resume","OtherIcons/Resume", 'r')
-                { autoLoadGame() }
+                { resumeGame() }
             column1.add(resumeTable).row()
         }
 
@@ -165,7 +168,14 @@ class MainMenuScreen: BaseScreen() {
     }
 
 
-    private fun autoLoadGame() {
+    private fun resumeGame() {
+        val curWorldScreen = game.getWorldScreenOrNull()
+        if (curWorldScreen != null) {
+            game.resetToWorldScreen()
+            curWorldScreen.popups.filterIsInstance(WorldScreenMenuPopup::class.java).forEach(Popup::close)
+            return
+        }
+
         val loadingPopup = Popup(this)
         loadingPopup.addGoodSizedLabel("Loading...")
         loadingPopup.open()
@@ -192,12 +202,19 @@ class MainMenuScreen: BaseScreen() {
                 return@launchCrashHandling
             }
 
-            postCrashHandlingRunnable { /// ... and load it into the screen on main thread for GL context
+            if (savedGame.gameParameters.isOnlineMultiplayer) {
                 try {
-                    game.loadGame(savedGame)
-                    dispose()
+                    game.onlineMultiplayer.loadGame(savedGame)
                 } catch (oom: OutOfMemoryError) {
                     outOfMemory()
+                }
+            } else {
+                postCrashHandlingRunnable { /// ... and load it into the screen on main thread for GL context
+                    try {
+                        game.loadGame(savedGame)
+                    } catch (oom: OutOfMemoryError) {
+                        outOfMemory()
+                    }
                 }
             }
         }
@@ -230,9 +247,13 @@ class MainMenuScreen: BaseScreen() {
     }
 
     private fun openCivilopedia() {
-        val ruleset =RulesetCache[game.settings.lastGameSetup?.gameParameters?.baseRuleset]
-            ?: RulesetCache[BaseRuleset.Civ_V_GnK.fullName]
-            ?: return
+        val rulesetParameters = game.settings.lastGameSetup?.gameParameters
+        val ruleset = if (rulesetParameters == null)
+                RulesetCache[BaseRuleset.Civ_V_GnK.fullName] ?: return
+                else RulesetCache.getComplexRuleset(rulesetParameters)
+        UncivGame.Current.translations.translationActiveMods = ruleset.mods
+        ImageGetter.setNewRuleset(ruleset)
+        setSkin()
         game.setScreen(CivilopediaScreen(ruleset, this))
     }
 

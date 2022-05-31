@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
@@ -35,7 +36,7 @@ class DiplomacyOverviewTab (
         defaults().pad(5f)
         background = ImageGetter.getBackground(Color.BLACK)
     }
-    val toggleCityStatesButton: TextButton = "City-States".toTextButton().apply {
+    val toggleCityStatesButton: TextButton = Constants.cityStates.toTextButton().apply {
         onClick {
             persistableData.includeCityStates = !persistableData.includeCityStates
             update()

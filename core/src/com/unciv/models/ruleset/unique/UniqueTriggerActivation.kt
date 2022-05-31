@@ -17,7 +17,7 @@ import kotlin.random.Random
 
 // Buildings, techs, policies, ancient ruins and promotions can have 'triggered' effects
 object UniqueTriggerActivation {
-    /** @return boolean whether an action was successfully preformed */
+    /** @return boolean whether an action was successfully performed */
     fun triggerCivwideUnique(
         unique: Unique,
         civInfo: CivilizationInfo,
@@ -470,7 +470,7 @@ object UniqueTriggerActivation {
         return false
     }
 
-    /** @return boolean whether an action was successfully preformed */
+    /** @return boolean whether an action was successfully performed */
     fun triggerUnitwideUnique(
         unique: Unique,
         unit: MapUnit,

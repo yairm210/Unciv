@@ -34,6 +34,7 @@ import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.tilegroups.WorldTileGroup
 import com.unciv.ui.utils.*
+import com.unciv.utils.Log
 
 
 class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap: TileMap): ZoomableScrollPane() {
@@ -116,29 +117,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                     val unit = worldScreen.bottomUnitTable.selectedUnit
                         ?: return
                     launchCrashHandling("WorldScreenClick") {
-                        val tile = tileGroup.tileInfo
-
-                        if (worldScreen.bottomUnitTable.selectedUnitIsSwapping) {
-                            if (unit.movement.canUnitSwapTo(tile)) {
-                                swapMoveUnitToTargetTile(unit, tile)
-                            }
-                            // If we are in unit-swapping mode, we don't want to move or attack
-                            return@launchCrashHandling
-                        }
-
-                        val attackableTile = BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
-                                .firstOrNull { it.tileToAttack == tileGroup.tileInfo }
-                        if (unit.canAttack() && attackableTile != null) {
-                            Battle.moveAndAttack(MapUnitCombatant(unit), attackableTile)
-                            worldScreen.shouldUpdate = true
-                            return@launchCrashHandling
-                        }
-
-                        val canUnitReachTile = unit.movement.canReach(tile)
-                        if (canUnitReachTile) {
-                            moveUnitToTargetTile(listOf(unit), tile)
-                            return@launchCrashHandling
-                        }
+                        onTileRightClicked(unit, tileGroup.tileInfo)
                     }
                 }
             })
@@ -202,6 +181,32 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         worldScreen.shouldUpdate = true
     }
 
+    private fun onTileRightClicked(unit: MapUnit, tile: TileInfo) {
+        if (worldScreen.bottomUnitTable.selectedUnitIsSwapping) {
+            if (unit.movement.canUnitSwapTo(tile)) {
+                swapMoveUnitToTargetTile(unit, tile)
+            }
+            // If we are in unit-swapping mode, we don't want to move or attack
+            return
+        }
+
+        val attackableTile = BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
+            .firstOrNull { it.tileToAttack == tile }
+        if (unit.canAttack() && attackableTile != null) {
+            worldScreen.shouldUpdate = true
+            val attacker = MapUnitCombatant(unit)
+            if (!Battle.movePreparingAttack(attacker, attackableTile)) return
+            Sounds.play(attacker.getAttackSound())
+            Battle.attackOrNuke(attacker, attackableTile)
+            return
+        }
+
+        val canUnitReachTile = unit.movement.canReach(tile)
+        if (canUnitReachTile) {
+            moveUnitToTargetTile(listOf(unit), tile)
+            return
+        }
+    }
 
     private fun moveUnitToTargetTile(selectedUnits: List<MapUnit>, targetTile: TileInfo) {
         // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
@@ -222,8 +227,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             try {
                 tileToMoveTo = selectedUnit.movement.getTileToMoveToThisTurn(targetTile)
             } catch (ex: Exception) {
-                println("Exception in getTileToMoveToThisTurn: ${ex.message}")
-                ex.printStackTrace()
+                Log.error("Exception in getTileToMoveToThisTurn", ex)
                 return@launchCrashHandling
             } // can't move here
 
@@ -247,8 +251,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                         moveUnitToTargetTile(selectedUnits.subList(1, selectedUnits.size), targetTile)
                     } else removeUnitActionOverlay() //we're done here
                 } catch (ex: Exception) {
-                    println("Exception in moveUnitToTargetTile: ${ex.message}")
-                    ex.printStackTrace()
+                    Log.error("Exception in moveUnitToTargetTile", ex)
                 }
             }
         }
@@ -550,7 +553,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             }
         }
 
-        // Same as below - randomly, tileGroups doesn't seem to contain the selected tile, and this doesn't seem duplicatable
+        // Same as below - randomly, tileGroups doesn't seem to contain the selected tile, and this doesn't seem reproducible
         val worldTileGroupsForSelectedTile = tileGroups[selectedTile]
         if (worldTileGroupsForSelectedTile != null)
             for (group in worldTileGroupsForSelectedTile)
@@ -681,7 +684,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         val originalScrollX = scrollX
         val originalScrollY = scrollY
 
-        // We want to center on the middle of the tilegroup (TG.getX()+TG.getWidth()/2)
+        // We want to center on the middle of the TileGroup (TG.getX()+TG.getWidth()/2)
         // and so the scroll position (== filter the screen starts) needs to be half the ScrollMap away
         val finalScrollX = tileGroup.x + tileGroup.width / 2 - width / 2
 

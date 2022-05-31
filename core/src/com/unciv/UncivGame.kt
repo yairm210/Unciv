@@ -13,20 +13,22 @@ import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.Translations
-import com.unciv.ui.LanguagePickerScreen
 import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.PlayerReadyScreen
 import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.logic.multiplayer.OnlineMultiplayer
+import com.unciv.ui.LanguagePickerScreen
 import com.unciv.ui.audio.Sounds
 import com.unciv.ui.crashhandling.closeExecutors
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.multiplayer.LoadDeepLinkScreen
+import com.unciv.ui.multiplayer.MultiplayerHelpers
 import com.unciv.ui.popup.Popup
+import com.unciv.utils.debug
 import kotlinx.coroutines.runBlocking
 import java.util.*
 
@@ -39,7 +41,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     val cancelDiscordEvent = parameters.cancelDiscordEvent
     var fontImplementation = parameters.fontImplementation
     val consoleMode = parameters.consoleMode
-    private val customSaveLocationHelper = parameters.customSaveLocationHelper
+    private val customSaveLocationHelper = parameters.customFileLocationHelper
     val platformSpecificHelper = parameters.platformSpecificHelper
     private val audioExceptionHelper = parameters.audioExceptionHelper
 
@@ -64,10 +66,6 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
      *  Set to 0 to disable.
      */
     var simulateUntilTurnForDebug: Int = 0
-
-    /** Console log battles
-     */
-    val alertBattle = false
 
     lateinit var worldScreen: WorldScreen
         private set
@@ -123,13 +121,13 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         Gdx.graphics.isContinuousRendering = settings.continuousRendering
 
         launchCrashHandling("LoadJSON") {
-            RulesetCache.loadRulesets(printOutput = true)
+            RulesetCache.loadRulesets()
             translations.tryReadTranslationForCurrentLanguage()
             translations.loadPercentageCompleteOfLanguages()
-            TileSetCache.loadTileSetConfigs(printOutput = true)
+            TileSetCache.loadTileSetConfigs()
 
-            if (settings.userId.isEmpty()) { // assign permanent user id
-                settings.userId = UUID.randomUUID().toString()
+            if (settings.multiplayer.userId.isEmpty()) { // assign permanent user id
+                settings.multiplayer.userId = UUID.randomUUID().toString()
                 settings.save()
             }
 
@@ -177,12 +175,18 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
      */
     fun resetToWorldScreen(newWorldScreen: WorldScreen? = null) {
         if (newWorldScreen != null) {
+            debug("Reset to new WorldScreen, gameId: %s, turn: %s, curCiv: %s",
+                newWorldScreen.gameInfo.gameId, newWorldScreen.gameInfo.turns, newWorldScreen.gameInfo.currentPlayer)
             val oldWorldScreen = getWorldScreenOrNull()
             worldScreen = newWorldScreen
             // setScreen disposes the current screen, but the old world screen is not the current screen, so need to dispose here
             if (screen != oldWorldScreen) {
                 oldWorldScreen?.dispose()
             }
+        } else {
+            val oldWorldScreen = getWorldScreenOrNull()!!
+            debug("Reset to old WorldScreen, gameId: %s, turn: %s, curCiv: %s",
+                oldWorldScreen.gameInfo.gameId, oldWorldScreen.gameInfo.turns, oldWorldScreen.gameInfo.currentPlayer)
         }
         setScreen(worldScreen)
         worldScreen.shouldUpdate = true // This can set the screen to the policy picker or tech picker screen, so the input processor must come before
@@ -201,7 +205,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
                     val mainMenu = MainMenuScreen()
                     setScreen(mainMenu)
                     val popup = Popup(mainMenu)
-                    popup.addGoodSizedLabel("Failed to load multiplayer game: ${ex.message ?: ex::class.simpleName}")
+                    popup.addGoodSizedLabel(MultiplayerHelpers.getLoadExceptionMessage(ex))
                     popup.row()
                     popup.addCloseButton()
                     popup.open()
@@ -263,7 +267,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         val threadList = Array(numThreads) { _ -> Thread() }
         Thread.enumerate(threadList)
         threadList.filter { it !== Thread.currentThread() && it.name != "DestroyJavaVM" }.forEach {
-            println("    Thread ${it.name} still running in UncivGame.dispose().")
+            debug("Thread %s still running in UncivGame.dispose().", it.name)
         }
     }
 

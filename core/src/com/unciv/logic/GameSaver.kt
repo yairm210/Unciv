@@ -3,13 +3,17 @@ package com.unciv.logic
 import com.badlogic.gdx.Files
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.utils.JsonReader
 import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.models.metadata.GameSettings
+import com.unciv.models.metadata.doMigrations
+import com.unciv.models.metadata.isMigrationNecessary
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.saves.Gzip
+import com.unciv.utils.Log
 import kotlinx.coroutines.Job
 import java.io.File
 
@@ -24,7 +28,7 @@ class GameSaver(
      * which is normally responsible for keeping the [Gdx] static variables from being garbage collected.
      */
     private val files: Files,
-    private val customSaveLocationHelper: CustomSaveLocationHelper? = null,
+    private val customFileLocationHelper: CustomFileLocationHelper? = null,
     /** When set, we know we're on Android and can save to the app's personal external file directory
      * See https://developer.android.com/training/data-storage/app-specific#external-access-files */
     private val externalFilesDirForAndroid: String? = null
@@ -67,7 +71,7 @@ class GameSaver(
         return localSaves + files.absolute(externalFilesDirForAndroid + "/${saveFolder}").list().asSequence()
     }
 
-    fun canLoadFromCustomSaveLocation() = customSaveLocationHelper != null
+    fun canLoadFromCustomSaveLocation() = customFileLocationHelper != null
 
     fun deleteSave(gameName: String) {
         getSave(gameName).delete()
@@ -82,6 +86,15 @@ class GameSaver(
      */
     fun deleteSave(file: FileHandle) {
         file.delete()
+    }
+
+    interface ChooseLocationResult {
+        val location: String?
+        val exception: Exception?
+
+        fun isCanceled(): Boolean = location == null && exception == null
+        fun isError(): Boolean = exception != null
+        fun isSuccessful(): Boolean = location != null
     }
 
     //endregion
@@ -126,8 +139,31 @@ class GameSaver(
         }
     }
 
-    fun saveGameToCustomLocation(game: GameInfo, GameName: String, saveCompletionCallback: (Exception?) -> Unit) {
-        customSaveLocationHelper!!.saveGame(game, GameName, forcePrompt = true, saveCompleteCallback = saveCompletionCallback)
+    class CustomSaveResult(
+        override val location: String? = null,
+        override val exception: Exception? = null
+    ) : ChooseLocationResult
+
+    /**
+     * [gameName] is a suggested name for the file. If the file has already been saved to or loaded from a custom location,
+     * this previous custom location will be used.
+     *
+     * Calls the [saveCompleteCallback] on the main thread with the save location on success, an [Exception] on error, or both null on cancel.
+     */
+    fun saveGameToCustomLocation(game: GameInfo, gameName: String, saveCompletionCallback: (CustomSaveResult) -> Unit) {
+        val saveLocation = game.customSaveLocation ?: Gdx.files.local(gameName).path()
+        val gameData = try {
+            gameInfoToString(game)
+        } catch (ex: Exception) {
+            postCrashHandlingRunnable { saveCompletionCallback(CustomSaveResult(exception = ex)) }
+            return
+        }
+        customFileLocationHelper!!.saveGame(gameData, saveLocation) {
+            if (it.isSuccessful()) {
+                game.customSaveLocation = it.location
+            }
+            saveCompletionCallback(it)
+        }
     }
 
     //endregion
@@ -147,9 +183,34 @@ class GameSaver(
         return json().fromJson(GameInfoPreview::class.java, gameFile)
     }
 
-    fun loadGameFromCustomLocation(loadCompletionCallback: (GameInfo?, Exception?) -> Unit) {
-        customSaveLocationHelper!!.loadGame { game, e ->
-            loadCompletionCallback(game?.apply { setTransients() }, e)
+    class CustomLoadResult<T>(
+        private val locationAndGameData: Pair<String, T>? = null,
+        override val exception: Exception? = null
+    ) : ChooseLocationResult {
+        override val location: String? get() = locationAndGameData?.first
+        val gameData: T? get() = locationAndGameData?.second
+    }
+
+    /**
+     * Calls the [loadCompleteCallback] on the main thread with the [GameInfo] on success or the [Exception] on error or null in both on cancel.
+     */
+    fun loadGameFromCustomLocation(loadCompletionCallback: (CustomLoadResult<GameInfo>) -> Unit) {
+        customFileLocationHelper!!.loadGame { result ->
+            val location = result.location
+            val gameData = result.gameData
+            if (location == null || gameData == null) {
+                loadCompletionCallback(CustomLoadResult(exception = result.exception))
+                return@loadGame
+            }
+
+            try {
+                val gameInfo = gameInfoFromString(gameData)
+                gameInfo.customSaveLocation = location
+                gameInfo.setTransients()
+                loadCompletionCallback(CustomLoadResult(location to gameInfo))
+            } catch (ex: Exception) {
+                loadCompletionCallback(CustomLoadResult(exception = ex))
+            }
         }
     }
 
@@ -164,22 +225,22 @@ class GameSaver(
 
     fun getGeneralSettings(): GameSettings {
         val settingsFile = getGeneralSettingsFile()
-        val settings: GameSettings =
-                if (!settingsFile.exists())
-                    GameSettings().apply { isFreshlyCreated = true }
-                else try {
-                    json().fromJson(GameSettings::class.java, settingsFile)
-                } catch (ex: Exception) {
-                    // I'm not sure of the circumstances,
-                    // but some people were getting null settings, even though the file existed??? Very odd.
-                    // ...Json broken or otherwise unreadable is the only possible reason.
-                    println("Error reading settings file: ${ex.localizedMessage}")
-                    println("  cause: ${ex.cause}")
-                    GameSettings().apply { isFreshlyCreated = true }
+        var settings: GameSettings? = null
+        if (settingsFile.exists()) {
+            try {
+                settings = json().fromJson(GameSettings::class.java, settingsFile)
+                if (settings.isMigrationNecessary()) {
+                    settings.doMigrations(JsonReader().parse(settingsFile))
                 }
+            } catch (ex: Exception) {
+                // I'm not sure of the circumstances,
+                // but some people were getting null settings, even though the file existed??? Very odd.
+                // ...Json broken or otherwise unreadable is the only possible reason.
+                Log.error("Error reading settings file", ex)
+            }
+        }
 
-
-        return settings
+        return settings ?: GameSettings().apply { isFreshlyCreated = true }
     }
 
     fun setGeneralSettings(gameSettings: GameSettings) {
