@@ -286,7 +286,7 @@ object UnitActions {
 
         return UnitAction(UnitActionType.Pillage,
                 action = {
-                    tile.getOwner()?.addNotification("[${unit.owner}] has pillaged our [${tile.improvement}]", tile.position, NotificationIcon.War, unit.civInfo.civName)
+                    tile.getOwner()?.addNotification("An enemy [${unit.baseUnit.name}] has pillaged our [${tile.improvement}]", tile.position, "ImprovementIcons/${tile.improvement!!}", NotificationIcon.War, unit.baseUnit.name)
                     pillageLooting(tile, unit)
                     tile.setPillaged()
                     unit.civInfo.lastSeenImprovement.remove(tile.position)
@@ -338,16 +338,11 @@ object UnitActions {
         if (!toCityPillageYield.isEmpty() && closestCity != null) {
             val pillagerLootLocal = "We have looted [${toCityPillageYield.toStringWithoutIcons()}] from a [${improvement.name}] which has been sent to [${closestCity.name}]"
             if (tile.getOwner() != null)
-                unit.civInfo.addNotification(pillagerLootLocal, tile.position, NotificationIcon.War, tile.getOwner()!!.civName)
-            else
-                unit.civInfo.addNotification(pillagerLootLocal, tile.position, NotificationIcon.War)
+            unit.civInfo.addNotification(pillagerLootLocal, tile.position, "ImprovementIcons/${improvement.name}", NotificationIcon.War)
         }
         if (!globalPillageYield.isEmpty()) {
             val pillagerLootGlobal = "We have looted [${globalPillageYield.toStringWithoutIcons()}] from a [${improvement.name}]"
-            if (tile.getOwner() != null)
-                unit.civInfo.addNotification(pillagerLootGlobal, tile.position, NotificationIcon.War, tile.getOwner()!!.civName)
-            else
-                unit.civInfo.addNotification(pillagerLootGlobal, tile.position, NotificationIcon.War)
+            unit.civInfo.addNotification(pillagerLootGlobal, tile.position, "ImprovementIcons/${improvement.name}", NotificationIcon.War)
         }
     }
 
