@@ -77,12 +77,12 @@ class PopulationManager {
         }
         if (foodStored >= getFoodToNextPopulation()) {  // growth!
             foodStored -= getFoodToNextPopulation()
-            var percentOfFoodCarriedOver = 
+            var percentOfFoodCarriedOver =
                 cityInfo.getMatchingUniques(UniqueType.CarryOverFood)
                     .filter { cityInfo.matchesFilter(it.params[1]) }
                     .sumOf { it.params[0].toInt() }
-            // Try to avoid runaway food gain in mods, just in case 
-            if (percentOfFoodCarriedOver > 95) percentOfFoodCarriedOver = 95 
+            // Try to avoid runaway food gain in mods, just in case
+            if (percentOfFoodCarriedOver > 95) percentOfFoodCarriedOver = 95
             foodStored += (getFoodToNextPopulation() * percentOfFoodCarriedOver / 100f).toInt()
             addPopulation(1)
             cityInfo.updateCitizens = true
@@ -93,7 +93,7 @@ class PopulationManager {
     private fun getStatsOfSpecialist(name: String) = cityInfo.cityStats.getStatsOfSpecialist(name)
 
     fun addPopulation(count: Int) {
-        val changedAmount = 
+        val changedAmount =
             if (population + count < 0) -population
             else count
         population += changedAmount
@@ -121,7 +121,7 @@ class PopulationManager {
             if (cityInfo.matchesFilter(unique.params[1]))
                 specialistFoodBonus *= unique.params[0].toPercent()
         specialistFoodBonus = 2f - specialistFoodBonus
-        
+
         for (i in 1..getFreePopulation()) {
             //evaluate tiles
             val (bestTile, valueBestTile) = cityInfo.getTiles()
