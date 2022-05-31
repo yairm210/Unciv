@@ -61,25 +61,25 @@ object BattleTableHelpers {
         ))
     }
 
-    fun getHealthBar(currentHealth: Int, maxHealth: Int, expectedDamage:Int): Table {
+    fun getHealthBar(currentHealth: Int, maxHealth: Int, expectedDamage: Int): Table {
         val healthBar = Table()
         val totalWidth = 100f
         fun addHealthToBar(image: Image, amount:Int) {
-            val width = totalWidth * amount/maxHealth
-            healthBar.add(image).size(width.coerceIn(0f,totalWidth),3f)
+            val width = totalWidth * amount / maxHealth
+            healthBar.add(image).size(width.coerceIn(0f, totalWidth),3f)
         }
-        addHealthToBar(ImageGetter.getDot(Color.BLACK), maxHealth-currentHealth)
+        addHealthToBar(ImageGetter.getDot(Color.BLACK), maxHealth - currentHealth)
 
         val damagedHealth = ImageGetter.getDot(Color.FIREBRICK)
         if (UncivGame.Current.settings.continuousRendering) {
             damagedHealth.addAction(Actions.repeat(
                 RepeatAction.FOREVER, Actions.sequence(
-                Actions.color(Color.BLACK,0.7f),
-                Actions.color(Color.FIREBRICK,0.7f)
+                Actions.color(Color.BLACK, 0.7f),
+                Actions.color(Color.FIREBRICK, 0.7f)
             ))) }
         addHealthToBar(damagedHealth,expectedDamage)
 
-        val remainingHealth = currentHealth-expectedDamage
+        val remainingHealth = currentHealth - expectedDamage
         val remainingHealthDot = ImageGetter.getWhiteDot()
         remainingHealthDot.color = when {
             remainingHealth / maxHealth.toFloat() > 2 / 3f -> Color.GREEN
