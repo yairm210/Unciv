@@ -461,8 +461,8 @@ object UnitActions {
 
         val couldConstruct = unit.currentMovement > 0
             && !tile.isCityCenter()
-                && unit.civInfo.gameInfo.ruleSet.tileImprovements.values.any {
-            ImprovementPickerScreen.canReport(tile.getImprovementBuildingProblems(it, unit.civInfo).toSet())
+            && unit.civInfo.gameInfo.ruleSet.tileImprovements.values.any {
+                ImprovementPickerScreen.canReport(tile.getImprovementBuildingProblems(it, unit.civInfo).toSet())
                 && unit.canBuildImprovement(it)
             }
 
@@ -768,7 +768,7 @@ object UnitActions {
         }
 
         for (otherCiv in civsToNotify)
-            otherCiv.addNotification("[${unit.civInfo}] has stolen your territory!", unit.currentTile.position, unit.civInfo.civName, NotificationIcon.War)
+            otherCiv.addNotification("Your territory has been stolen by [${unit.civInfo}]!", unit.currentTile.position, unit.civInfo.civName, NotificationIcon.War)
     }
 
     private fun addFortifyActions(actionList: ArrayList<UnitAction>, unit: MapUnit, showingAdditionalActions: Boolean) {
