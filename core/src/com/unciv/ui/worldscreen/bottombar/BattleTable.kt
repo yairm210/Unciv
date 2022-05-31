@@ -1,13 +1,7 @@
 package com.unciv.ui.worldscreen.bottombar
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.math.Interpolation
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
-import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
-import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
@@ -23,6 +17,8 @@ import com.unciv.ui.audio.Sounds
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
+import com.unciv.ui.worldscreen.bottombar.BattleTableHelpers.flashWoundedCombatants
+import com.unciv.ui.worldscreen.bottombar.BattleTableHelpers.getHealthBar
 import kotlin.math.max
 
 class BattleTable(val worldScreen: WorldScreen): Table() {
@@ -283,46 +279,9 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         Sounds.play(attacker.getAttackSound())
         Battle.attackOrNuke(attacker, attackableTile)
 
-        val actorsToFlashRed = arrayListOf<Actor>()
-
-        if (damageToDefender != 0)
-            actorsToFlashRed.addAll(getMapActorsForCombatant(defender))
-        if (damageToAttacker != 0)
-            actorsToFlashRed.addAll(getMapActorsForCombatant(attacker))
-        fun updateRedPercent(percent: Float) {
-            for (actor in actorsToFlashRed)
-                actor.color = Color.WHITE.cpy().lerp(Color.RED, percent)
-        }
-        worldScreen.stage.addAction(Actions.sequence(
-            object : FloatAction(0f, 1f, 0.3f, Interpolation.sine) {
-                override fun update(percent: Float) = updateRedPercent(percent)
-            },
-            object : FloatAction(0f, 1f, 0.3f, Interpolation.sine) {
-                override fun update(percent: Float) = updateRedPercent(1 - percent)
-            }
-        ))
+        worldScreen.flashWoundedCombatants(attacker, damageToAttacker, defender, damageToDefender)
     }
 
-    fun getMapActorsForCombatant(combatant: ICombatant):Sequence<Actor> =
-        sequence {
-            val tilegroups =
-                worldScreen.mapHolder.tileGroups[combatant.getTile()]!!
-            when {
-                combatant.isCity() -> yieldAll(tilegroups.mapNotNull { it.icons.improvementIcon })
-                combatant.isCivilian() -> {
-                    for (tileGroup in tilegroups) {
-                        tileGroup.icons.civilianUnitIcon?.let { yield(it) }
-                        yieldAll(tileGroup.pixelCivilianUnitGroup.children)
-                    }
-                }
-                else -> {
-                    for (tileGroup in tilegroups) {
-                        tileGroup.icons.militaryUnitIcon?.let { yield(it) }
-                        yieldAll(tileGroup.pixelMilitaryUnitGroup.children)
-                    }
-                }
-            }
-        }
 
     private fun simulateNuke(attacker: MapUnitCombatant, targetTile: TileInfo){
         clear()
@@ -374,35 +333,4 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         setPosition(worldScreen.stage.width/2-width/2, 5f)
     }
-
-    private fun getHealthBar(currentHealth: Int, maxHealth: Int, expectedDamage:Int): Table {
-        val healthBar = Table()
-        val totalWidth = 100f
-        fun addHealthToBar(image: Image, amount:Int) {
-            val width = totalWidth * amount/maxHealth
-            healthBar.add(image).size(width.coerceIn(0f,totalWidth),3f)
-        }
-        addHealthToBar(ImageGetter.getDot(Color.BLACK), maxHealth-currentHealth)
-
-        val damagedHealth = ImageGetter.getDot(Color.FIREBRICK)
-        if (UncivGame.Current.settings.continuousRendering) {
-            damagedHealth.addAction(Actions.repeat(RepeatAction.FOREVER, Actions.sequence(
-                    Actions.color(Color.BLACK,0.7f),
-                    Actions.color(Color.FIREBRICK,0.7f)
-            ))) }
-        addHealthToBar(damagedHealth,expectedDamage)
-
-        val remainingHealth = currentHealth-expectedDamage
-        val remainingHealthDot = ImageGetter.getWhiteDot()
-        remainingHealthDot.color = when {
-            remainingHealth / maxHealth.toFloat() > 2 / 3f -> Color.GREEN
-            remainingHealth / maxHealth.toFloat() > 1 / 3f -> Color.ORANGE
-            else -> Color.RED
-        }
-        addHealthToBar(remainingHealthDot ,remainingHealth)
-
-        healthBar.pack()
-        return healthBar
-    }
-
 }
