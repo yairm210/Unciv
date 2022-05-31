@@ -7,7 +7,11 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.scenes.scene2d.*
+import com.badlogic.gdx.scenes.scene2d.Action
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.InputEvent
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -21,10 +25,14 @@ import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.*
-import com.unciv.models.*
+import com.unciv.logic.map.MapUnit
+import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.TileMap
+import com.unciv.models.AttackableTile
+import com.unciv.models.UncivSound
 import com.unciv.models.helpers.MapArrowType
 import com.unciv.models.helpers.MiscArrowTypes
+import com.unciv.ui.UncivStage
 import com.unciv.ui.audio.Sounds
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
@@ -33,11 +41,21 @@ import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.tilegroups.WorldTileGroup
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.UnitGroup
+import com.unciv.ui.utils.ZoomableScrollPane
+import com.unciv.ui.utils.center
+import com.unciv.ui.utils.colorFromRGB
+import com.unciv.ui.utils.darken
+import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.surroundWithCircle
+import com.unciv.ui.utils.toLabel
 import com.unciv.utils.Log
 
 
-class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap: TileMap): ZoomableScrollPane() {
+class WorldMapHolder(
+    internal val worldScreen: WorldScreen,
+    internal val tileMap: TileMap
+) : ZoomableScrollPane(20f, 20f) {
     internal var selectedTile: TileInfo? = null
     val tileGroups = HashMap<TileInfo, List<WorldTileGroup>>()
 
@@ -50,8 +68,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
     private val unitMovementPaths: HashMap<MapUnit, ArrayList<TileInfo>> = HashMap()
 
-    private var maxWorldZoomOut = 2f
-    private var minZoomScale = 0.5f
+    private lateinit var tileGroupMap: TileGroupMap<WorldTileGroup>
 
     init {
         if (Gdx.app.type == Application.ApplicationType.Desktop) this.setFlingTime(0f)
@@ -69,12 +86,12 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
      * Disabling them while panning increases the frame rate while panning by approximately 100%.
      */
     private fun disablePointerEventsAndActionsOnPan() {
-        onPanStart = {
+        onPanStartListener = {
             Log.debug("Disable pointer enter/exit events & TileGroupMap.act()")
             (stage as UncivStage).performPointerEnterExitEvents = false
             tileGroupMap.shouldAct = false
         }
-        onPanStop = {
+        onPanStopListener = {
             Log.debug("Enable pointer enter/exit events & TileGroupMap.act()")
             (stage as UncivStage).performPointerEnterExitEvents = true
             tileGroupMap.shouldAct = true
@@ -82,9 +99,9 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     }
 
     internal fun reloadMaxZoom() {
-        maxWorldZoomOut = UncivGame.Current.settings.maxWorldZoomOut
-        minZoomScale = 1f / maxWorldZoomOut
-        if (scaleX < minZoomScale) zoom(1f)   // since normally min isn't reached exactly, only powers of 0.8
+        maxZoom = UncivGame.Current.settings.maxWorldZoomOut
+        minZoom = 1f / maxZoom
+        if (scaleX < minZoom) zoom(1f)   // since normally min isn't reached exactly, only powers of 0.8
     }
 
     // Interface for classes that contain the data required to draw a button
@@ -97,10 +114,8 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     internal fun addTiles() {
         val tileSetStrings = TileSetStrings()
         val daTileGroups = tileMap.values.map { WorldTileGroup(worldScreen, it, tileSetStrings) }
-        val tileGroupMap = TileGroupMap(
+        tileGroupMap = TileGroupMap(
             daTileGroups,
-            worldScreen.stage.width * maxWorldZoomOut / 2,
-            worldScreen.stage.height * maxWorldZoomOut / 2,
             continuousScrollingX)
         val mirrorTileGroups = tileGroupMap.getMirrorTiles()
 
@@ -147,12 +162,9 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
         actor = tileGroupMap
 
-        setSize(worldScreen.stage.width * maxWorldZoomOut, worldScreen.stage.height * maxWorldZoomOut)
-        setOrigin(width / 2, height / 2)
-        center(worldScreen.stage)
+        setSize(worldScreen.stage.width, worldScreen.stage.height)
 
         layout() // Fit the scroll pane to the contents - otherwise, setScroll won't work!
-
     }
 
     private fun onTileClicked(tileInfo: TileInfo) {
@@ -706,12 +718,10 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         val originalScrollX = scrollX
         val originalScrollY = scrollY
 
-        // We want to center on the middle of the TileGroup (TG.getX()+TG.getWidth()/2)
-        // and so the scroll position (== filter the screen starts) needs to be half the ScrollMap away
-        val finalScrollX = tileGroup.x + tileGroup.width / 2 - width / 2
+        val finalScrollX = tileGroup.x + tileGroup.width / 2
 
-        // Here it's the same, only the Y axis is inverted - when at 0 we're at the top, not bottom - so we invert it back.
-        val finalScrollY = maxY - (tileGroup.y + tileGroup.width / 2 - height / 2)
+        /** The Y axis of [scrollY] is inverted - when at 0 we're at the top, not bottom - so we invert it back. */
+        val finalScrollY = maxY - (tileGroup.y + tileGroup.width / 2)
 
         if (finalScrollX == originalScrollX && finalScrollY == originalScrollY) return false
 
@@ -745,20 +755,29 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     }
 
     override fun zoom(zoomScale: Float) {
-        if (zoomScale < minZoomScale || zoomScale > 2f) return
-        setScale(zoomScale)
-        val scale = 1 / scaleX  // don't use zoomScale itself, in case it was out of bounds and not applied
-        if (scale >= 1)
-            for (tileGroup in allWorldTileGroups)
+        super.zoom(zoomScale)
+
+        clampCityButtonSize()
+    }
+
+    /** We don't want the city buttons becoming too large when zooming out */
+    private fun clampCityButtonSize() {
+        // use scaleX instead of zoomScale itself, because zoomScale might have been outside minZoom..maxZoom and thus not applied
+        val clampedCityButtonZoom = 1 / scaleX
+        if (clampedCityButtonZoom >= 1) {
+            for (tileGroup in allWorldTileGroups) {
                 tileGroup.cityButtonLayerGroup.isTransform = false // to save on rendering time to improve framerate
-        if (scale < 1 && scale >= minZoomScale)
+            }
+        }
+        if (clampedCityButtonZoom < 1 && clampedCityButtonZoom >= minZoom) {
             for (tileGroup in allWorldTileGroups) {
                 // ONLY set those groups that have active city buttons as transformable!
                 // This is massively framerate-improving!
                 if (tileGroup.cityButtonLayerGroup.hasChildren())
                     tileGroup.cityButtonLayerGroup.isTransform = true
-                tileGroup.cityButtonLayerGroup.setScale(scale)
+                tileGroup.cityButtonLayerGroup.setScale(clampedCityButtonZoom)
             }
+        }
     }
 
     fun removeUnitActionOverlay() {
