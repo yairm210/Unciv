@@ -33,9 +33,8 @@ class StatTreeNode {
             return
         }
         val childName = hierarchyList.first()
-        if (!children.containsKey(childName))
-            children[childName] = StatTreeNode()
-        children[childName]!!.addStats(newStats, *hierarchyList.drop(1).toTypedArray())
+        val childNode = children[childName] ?: StatTreeNode().also { children[childName] = it }
+        childNode.addStats(newStats, *hierarchyList.drop(1).toTypedArray())
     }
 
     fun add(otherTree: StatTreeNode) {
@@ -64,6 +63,7 @@ class CityStats(val cityInfo: CityInfo) {
     //region Fields, Transient
 
     var baseStatTree = StatTreeNode()
+        private set
 
     var statPercentBonusTree = StatTreeNode()
 
@@ -452,25 +452,18 @@ class CityStats(val cityInfo: CityInfo) {
     }
 
     private fun updateBaseStatList(statsFromBuildings: StatTreeNode) {
+        // We don't edit the existing baseStatTree directly, in order to avoid concurrency exceptions
         val newBaseStatTree = StatTreeNode()
-
-        // We don't edit the existing baseStatList directly, in order to avoid concurrency exceptions
-        val newBaseStatList = StatMap()
 
         newBaseStatTree.addStats(Stats(
             science = cityInfo.population.population.toFloat(),
             production = cityInfo.population.getFreePopulation().toFloat()
         ), "Population")
-        newBaseStatList["Tile yields"] = statsFromTiles
-        newBaseStatList["Specialists"] =
-            getStatsFromSpecialists(cityInfo.population.getNewSpecialists())
-        newBaseStatList["Trade routes"] = getStatsFromTradeRoute()
         newBaseStatTree.children["Buildings"] = statsFromBuildings
-        newBaseStatList[Constants.cityStates] = getStatsFromCityStates()
-
-        for ((source, stats) in newBaseStatList)
-            newBaseStatTree.addStats(stats, source)
-
+        newBaseStatTree.addStats(statsFromTiles, "Tile yields")
+        newBaseStatTree.addStats(getStatsFromSpecialists(cityInfo.population.getNewSpecialists()), "Specialists")
+        newBaseStatTree.addStats(getStatsFromTradeRoute(), "Trade routes")
+        newBaseStatTree.addStats(getStatsFromCityStates(), Constants.cityStates)
         newBaseStatTree.add(getStatsFromUniquesBySource())
         baseStatTree = newBaseStatTree
     }
@@ -504,7 +497,7 @@ class CityStats(val cityInfo: CityInfo) {
 
         val statsFromBuildings = cityInfo.cityConstructions.getStats() // this is performance heavy, so calculate once
         updateBaseStatList(statsFromBuildings)
-        updateCityHappiness(statsFromBuildings)
+        updateCityHappiness(statsFromBuildings) // This updates this city's happiness contribution, the civ's is not updated
         updateStatPercentBonusList(currentConstruction)
 
         updateFinalStatList(currentConstruction) // again, we don't edit the existing currentCityStats directly, in order to avoid concurrency exceptions
@@ -600,19 +593,19 @@ class CityStats(val cityInfo: CityInfo) {
         val buildingsMaintenance = getBuildingMaintenanceCosts() // this is AFTER the bonus calculation!
         newFinalStatList["Maintenance"] = Stats(gold = -buildingsMaintenance.toInt().toFloat())
 
-        if (totalFood > 0
+        if (totalFood > 0f
             && currentConstruction is INonPerpetualConstruction
             && currentConstruction.hasUnique(UniqueType.ConvertFoodToProductionWhenConstructed)
         ) {
             newFinalStatList["Excess food to production"] =
                 Stats(production = getProductionFromExcessiveFood(totalFood), food = -totalFood)
+            totalFood = 0f
         }
 
         val growthNullifyingUnique = cityInfo.getMatchingUniques(UniqueType.NullifiesGrowth).firstOrNull()
         if (growthNullifyingUnique != null) {
-            val amountToRemove = -newFinalStatList.values.sumOf { it[Stat.Food].toDouble() }
             newFinalStatList[getSourceNameForUnique(growthNullifyingUnique)] =
-                Stats().apply { this[Stat.Food] = amountToRemove.toFloat() }
+                Stats(food = -totalFood)
         }
 
         if (cityInfo.isInResistance())

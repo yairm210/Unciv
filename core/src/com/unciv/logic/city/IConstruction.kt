@@ -47,7 +47,7 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
         val rejectionReasons = getRejectionReasons(cityConstructions)
         return rejectionReasons.all { it.rejectionReason == RejectionReason.Unbuildable }
     }
-    
+
     fun canBePurchasedWithAnyStat(cityInfo: CityInfo): Boolean {
         return Stat.values().any { canBePurchasedWithStat(cityInfo, it) }
     }
@@ -61,7 +61,7 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
         if (stat == Stat.Gold) return getBaseGoldCost(cityInfo.civInfo).toInt()
 
         val conditionalState = StateForConditionals(civInfo = cityInfo.civInfo, cityInfo = cityInfo)
-        
+
         // Can be purchased for [amount] [Stat] [cityFilter]
         val lowestCostUnique = getMatchingUniques(UniqueType.CanBePurchasedForAmountStat, conditionalState)
             .filter { it.params[1] == stat.name && cityInfo.matchesFilter(it.params[2]) }

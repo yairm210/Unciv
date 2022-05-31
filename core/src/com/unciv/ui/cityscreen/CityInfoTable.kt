@@ -192,9 +192,8 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
         }
     }
 
-    private fun addStatsToHashmap(
+    private fun HashMap<String, Float>.addStats(
         statTreeNode: StatTreeNode,
-        hashMap: HashMap<String, Float>,
         stat: Stat,
         showDetails: Boolean,
         indentation: Int = 0
@@ -202,8 +201,8 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
         for ((name, child) in statTreeNode.children) {
             val statAmount = child.totalStats[stat]
             if (statAmount == 0f) continue
-            hashMap["- ".repeat(indentation) + name.tr()] = statAmount
-            if (showDetails) addStatsToHashmap(child, hashMap, stat, showDetails, indentation + 1)
+            this["- ".repeat(indentation) + name.tr()] = statAmount
+            if (showDetails) addStats(child, stat, showDetails, indentation + 1)
         }
     }
 
@@ -242,7 +241,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
         val relevantBaseStats = LinkedHashMap<String, Float>()
 
         if (stat != Stat.Happiness)
-            addStatsToHashmap(cityStats.baseStatTree, relevantBaseStats, stat, showDetails)
+            relevantBaseStats.addStats(cityStats.baseStatTree, stat, showDetails)
         else relevantBaseStats.putAll(cityStats.happinessList)
         for (key in relevantBaseStats.keys.toList())
             if (relevantBaseStats[key] == 0f) relevantBaseStats.remove(key)
@@ -264,7 +263,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
         statValuesTable.add(sumOfAllBaseValues.toOneDecimalLabel()).row()
 
         val relevantBonuses = LinkedHashMap<String, Float>()
-        addStatsToHashmap(cityStats.statPercentBonusTree, relevantBonuses, stat, showDetails)
+        relevantBonuses.addStats(cityStats.statPercentBonusTree, stat, showDetails)
 
         val totalBonusStats = cityStats.statPercentBonusTree.totalStats
         if (totalBonusStats[stat] != 0f) {
