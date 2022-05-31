@@ -286,8 +286,7 @@ object UnitActions {
 
         return UnitAction(UnitActionType.Pillage,
                 action = {
-                    if (tile.getOwner() != null)
-                        tile.getOwner()!!.addNotification("[${unit.owner}] has pillaged our [${tile.improvement}]", tile.position, NotificationIcon.War, unit.civInfo.civName)
+                    tile.getOwner()?.addNotification("[${unit.owner}] has pillaged our [${tile.improvement}]", tile.position, NotificationIcon.War, unit.civInfo.civName)
                     pillageLooting(tile, unit)
                     tile.setPillaged()
                     unit.civInfo.lastSeenImprovement.remove(tile.position)
@@ -323,41 +322,32 @@ object UnitActions {
 
         for (stat in pillageYield) {
             when (stat.key) {
-                Stat.Gold, Stat.Faith, Stat.Science, Stat.Culture -> {
+                in Stat.statsWithCivWideField -> {
                     unit.civInfo.addStat(stat.key, stat.value.toInt())
                     globalPillageYield[stat.key] += stat.value
                 }
-                Stat.Food, Stat.Production -> {
+                else -> {
                     if (closestCity != null) {
                         closestCity.addStat(stat.key, stat.value.toInt())
                         toCityPillageYield[stat.key] += stat.value
                     }
                 }
-                else -> {}
             }
         }
 
-        if (toCityPillageYield.values.sum() > 0 && closestCity != null) {
-            val pillagerLootLocal = "We have looted [${pillageYieldNotificationString(toCityPillageYield)}] from a [${improvement.name}] which has been sent to [${closestCity.name}]"
+        if (!toCityPillageYield.isEmpty() && closestCity != null) {
+            val pillagerLootLocal = "We have looted [${toCityPillageYield.toStringWithoutIcons()}] from a [${improvement.name}] which has been sent to [${closestCity.name}]"
             if (tile.getOwner() != null)
                 unit.civInfo.addNotification(pillagerLootLocal, tile.position, NotificationIcon.War, tile.getOwner()!!.civName)
             else
                 unit.civInfo.addNotification(pillagerLootLocal, tile.position, NotificationIcon.War)
         }
-        if (globalPillageYield.values.sum() > 0) {
-            val pillagerLootGlobal = "We have looted [${pillageYieldNotificationString(globalPillageYield)}] from a [${improvement.name}]"
+        if (!globalPillageYield.isEmpty()) {
+            val pillagerLootGlobal = "We have looted [${globalPillageYield.toStringWithoutIcons()}] from a [${improvement.name}]"
             if (tile.getOwner() != null)
                 unit.civInfo.addNotification(pillagerLootGlobal, tile.position, NotificationIcon.War, tile.getOwner()!!.civName)
             else
                 unit.civInfo.addNotification(pillagerLootGlobal, tile.position, NotificationIcon.War)
-        }
-    }
-
-    // function that removes the icon from the Stats object since the circular icons all appear the same
-    // delete this and replace above instances with toString() once the text-coloring-affecting-font-icons bug is fixed
-    private fun pillageYieldNotificationString(stats: Stats): String {
-        return stats.joinToString {
-            it.value.toInt().toString() + " " + it.key.name.tr().substring(startIndex = 1)
         }
     }
 

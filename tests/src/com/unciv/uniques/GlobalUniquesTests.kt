@@ -359,8 +359,8 @@ class GlobalUniquesTests {
 
         val pillageAction = UnitActions.getPillageAction(unit)
         pillageAction?.action?.invoke()
-        Assert.assertTrue(civInfo.gold == 20)
-        Assert.assertTrue(cityInfo.population.foodStored == 11)
+        Assert.assertTrue("Pillaging should transfer gold to the civ", civInfo.gold == 20)
+        Assert.assertTrue("Pillaging should transfer food to the nearest city", cityInfo.population.foodStored == 11)
     }
 
 }

@@ -21,6 +21,7 @@ import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.IHasUniques
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
@@ -696,6 +697,7 @@ class Ruleset {
             }
             for (unique in improvement.uniqueObjects) {
                 if (unique.type == UniqueType.PillageYieldRandom || unique.type == UniqueType.PillageYieldFixed) {
+                    if (!Stats.isStats(unique.params[0])) continue
                     val params = Stats.parse(unique.params[0])
                     if (params.values.any { it < 0 }) lines.add(
                         "${improvement.name} cannot have a negative value for a pillage yield!",
@@ -703,8 +705,9 @@ class Ruleset {
                     )
                 }
             }
-            if ((improvement.hasUnique(UniqueType.PillageYieldRandom) || improvement.hasUnique(UniqueType.PillageYieldFixed))
-                    && improvement.hasUnique(UniqueType.Unpillagable)) {
+            if ((improvement.hasUnique(UniqueType.PillageYieldRandom, StateForConditionals.IgnoreConditionals)
+                            || improvement.hasUnique(UniqueType.PillageYieldFixed, StateForConditionals.IgnoreConditionals))
+                    && improvement.hasUnique(UniqueType.Unpillagable, StateForConditionals.IgnoreConditionals)) {
                 lines.add(
                     "${improvement.name} has both an `Unpillagable` unique type and a `PillageYieldRandom` or `PillageYieldFixed` unique type!",
                     RulesetErrorSeverity.Warning
