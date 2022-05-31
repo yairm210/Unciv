@@ -87,7 +87,7 @@ import kotlinx.coroutines.Job
  * @property isPlayersTurn (readonly) Indicates it's the player's ([viewingCiv]) turn
  * @property selectedCiv Selected civilization, used in spectator and replay mode, equals viewingCiv in ordinary games
  * @property canChangeState (readonly) `true` when it's the player's turn unless he is a spectator
- * @property mapHolder A [MinimapHolder] instance
+ * @property mapHolder A [WorldMapHolder] instance
  * @property bottomUnitTable Bottom left widget holding information about a selected unit or city
  */
 class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : BaseScreen() {
@@ -122,6 +122,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     private val notificationsScroll = NotificationsScroll(this)
 
     var shouldUpdate = false
+
+    private val zoomController = ZoomButtonPair(mapHolder)
 
     private var nextTurnUpdateJob: Job? = null
 
@@ -170,6 +172,9 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         stage.addActor(techPolicyAndVictoryHolder)
         stage.addActor(tutorialTaskTable)
 
+        if (UncivGame.Current.settings.showZoomButtons) {
+            stage.addActor(zoomController)
+        }
 
         diplomacyButtonHolder.defaults().pad(5f)
         stage.addActor(fogOfWarButton)
@@ -493,6 +498,10 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                 (if (game.settings.showMinimap) minimapWrapper.height else 0f) - 5f
         notificationsScroll.update(viewingCiv.notifications, maxNotificationsHeight, bottomTileInfoTable.height)
         notificationsScroll.setTopRight(stage.width - 10f, statusButtons.y - 5f)
+
+        val posZoomFromRight = if (game.settings.showMinimap) minimapWrapper.width
+        else bottomTileInfoTable.width
+        zoomController.setPosition(stage.width - posZoomFromRight - 10f, 10f, Align.bottomRight)
     }
 
     private fun getCurrentTutorialTask(): String {
@@ -818,7 +827,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                 }
 
             viewingCiv.mayVoteForDiplomaticVictory() ->
-                NextTurnAction("Vote for World Leader", Color.RED) {
+                NextTurnAction("Vote for World Leader", Color.MAROON) {
                     game.setScreen(DiplomaticVotePickerScreen(viewingCiv))
                 }
 

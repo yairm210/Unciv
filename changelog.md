@@ -1,3 +1,23 @@
+## 4.1.5
+
+Better minimap buttons
+
+By SomeTroglodyte:
+- Draw borders under pixel units
+- Fix rare NextTurnButton crash
+
+Improve unconstructable improvement suggestions - By doublep
+
+By alexban011:
+- Disable state-changing buttons for puppet cities
+- Add optional on-screen buttons to zoom in and out
+
+Corrected some broken policy uniques - By OptimizedForDensity
+
+Dynamically adjust StatsTable height - By itanasi
+
+Fix multiplayer turn checker writing to wrong locations - By Azzurite
+
 ## 4.1.4
 
 AI counteroffers will no longer contain items already offered by the player
@@ -15,8 +35,9 @@ Fix piety complete faith discount - By OptimizedForDensity
 
 ## 4.1.3
 
+Implement 'wait' command - by doublep
+
 By SomeTroglodyte:
-- Implement 'wait' command
 - Re-hide Enable Portrait option on desktop
 - Show required resource for upgrades
 - Fix Right-Click attacks made no sound
