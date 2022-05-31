@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.logic.IdChecker
+import com.unciv.logic.multiplayer.FriendList
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.ToastPopup
@@ -49,7 +50,7 @@ class AddFriendScreen(backScreen: ViewFriendsListScreen) : PickerScreen() {
                 return@onClick
             }
 
-            when (friendlist.addNewFriend(friendNameTextField.text, playerIDTextField.text)) {
+            when (friendlist.add(friendNameTextField.text, playerIDTextField.text)) {
                 FriendList.ErrorType.NAME -> ToastPopup("Friend name is already in your friends list!", this)
 
                 FriendList.ErrorType.ID -> ToastPopup("Player ID is already in your friends list!", this)

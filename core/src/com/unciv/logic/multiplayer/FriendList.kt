@@ -1,4 +1,4 @@
-package com.unciv.ui.multiplayer
+package com.unciv.logic.multiplayer
 
 import com.unciv.UncivGame
 
@@ -20,7 +20,7 @@ class FriendList {
         constructor() : this("", "")
     }
 
-    fun addNewFriend(friendName: String, playerID: String): ErrorType {
+    fun add(friendName: String, playerID: String): ErrorType {
         for(index in friendList.indices){
             if (friendList[index].name == friendName) {
                 return ErrorType.NAME
@@ -40,14 +40,14 @@ class FriendList {
         return ErrorType.NOERROR
     }
 
-    fun editFriend(friend: Friend, name: String, playerID: String) {
+    fun edit(friend: Friend, name: String, playerID: String) {
         friendList.remove(friend)
         val editedFriend = Friend(name,playerID)
         friendList.add(editedFriend)
         settings.save()
     }
 
-    fun deleteFriend(friend: Friend) {
+    fun delete(friend: Friend) {
         friendList.remove(friend)
         settings.save()
     }

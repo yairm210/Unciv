@@ -4,7 +4,7 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.ui.multiplayer.FriendList
+import com.unciv.logic.multiplayer.FriendList
 import com.unciv.ui.utils.Fonts
 import java.text.Collator
 import java.time.Duration

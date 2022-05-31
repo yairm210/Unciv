@@ -22,7 +22,7 @@ import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.mapeditor.GameParametersScreen
-import com.unciv.ui.multiplayer.FriendList
+import com.unciv.logic.multiplayer.FriendList
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.*

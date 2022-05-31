@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
-import com.unciv.ui.multiplayer.FriendList
+import com.unciv.logic.multiplayer.FriendList
 import com.unciv.ui.utils.*
 
 class FriendTable(val friend: FriendList.Friend, width: Float, minHeight: Float)
@@ -13,7 +13,7 @@ class FriendTable(val friend: FriendList.Friend, width: Float, minHeight: Float)
     val innerTable = Table()
 
     init {
-        val innerColor = Color(1F,1F,1F,1F) //because 0xFFFFFFFF doesn't work for some reason
+        val innerColor = Color.WHITE//because 0xFFFFFFFF doesn't work for some reason
         val totalPadding = 30f
         val internalWidth = width - totalPadding
 
