@@ -45,7 +45,6 @@ class ViewFriendsListScreen(previousScreen: BaseScreen) : PickerScreen() {
         topTable.add(mainTable).row()
         scrollPane.setScrollingDisabled(false, true)
 
-        rightSideTable.defaults().uniformX()
         rightSideTable.defaults().fillX()
         rightSideTable.defaults().pad(20.0f)
 
@@ -75,7 +74,7 @@ class ViewFriendsListScreen(previousScreen: BaseScreen) : PickerScreen() {
                 selectedFriend = friendsList[index]
                 editFriendButton.enable()
             }
-            friendsTable.add(listOfFriendsButtons[index]).padBottom(20f).row()
+            friendsTable.add(listOfFriendsButtons[index]).padBottom(10f).row()
         }
         leftSideTable.clear()
         leftSideTable.add(friendsTable)
