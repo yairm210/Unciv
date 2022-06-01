@@ -319,6 +319,22 @@ class ReligionManager {
         religionState = ReligionState.EnhancedReligion
     }
 
+    fun maySpreadReligionAtAll(missionary: MapUnit): Boolean {
+        if (!civInfo.gameInfo.isReligionEnabled()) return false // No religion, no spreading
+        if (religion == null) return false // need a religion
+        if (religionState < ReligionState.Religion) return false // First found an actual religion
+        if (!civInfo.isMajorCiv()) return false // Only major civs
+
+        return true
+    }
+
+    fun maySpreadReligionNow(missionary: MapUnit): Boolean {
+        if (!maySpreadReligionAtAll(missionary)) return false
+        if (missionary.currentTile.owningCity?.religion?.getMajorityReligion()?.name == missionary.religion)
+            return false
+        return true
+    }
+
     fun numberOfCitiesFollowingThisReligion(): Int {
         if (religion == null) return 0
         return civInfo.gameInfo.getCities()

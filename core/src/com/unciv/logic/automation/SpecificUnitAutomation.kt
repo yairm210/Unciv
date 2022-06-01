@@ -239,7 +239,11 @@ object SpecificUnitAutomation {
     }
 
     fun automateImprovementPlacer(unit: MapUnit) {
-        val improvementName = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit).first().params[0]
+        var improvementBuildingUniques = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
+        if (unit.religiousActionsUnitCanDo().all { unit.abilityUsesLeft[it] == unit.maxAbilityUses[it] })
+            improvementBuildingUniques += unit.getMatchingUniques(UniqueType.CanConstructIfNoOtherActions)
+
+        val improvementName = improvementBuildingUniques.first().params[0]
         val improvement = unit.civInfo.gameInfo.ruleSet.tileImprovements[improvementName]
             ?: return
         val relatedStat = improvement.maxByOrNull { it.value }?.key ?: Stat.Culture
@@ -293,6 +297,10 @@ object SpecificUnitAutomation {
         if (unit.religion != unit.civInfo.religionManager.religion?.name)
             return unit.destroy()
 
+        // spread religion if we can, otherwise find a new place to spread it
+        if (unit.civInfo.religionManager.maySpreadReligionNow(unit))
+            doReligiousAction(unit, unit.getTile())
+
         val cities = unit.civInfo.gameInfo.getCities().asSequence()
             .filter { it.religion.getMajorityReligion()?.name != unit.getReligionDisplayName() }
             .filterNot { it.civInfo.isAtWarWith(unit.civInfo) }
@@ -306,9 +314,6 @@ object SpecificUnitAutomation {
             .firstOrNull { unit.movement.canReach(it) } ?: return
 
         unit.movement.headTowards(destination)
-
-        if (unit.currentTile.owningCity?.religion?.getMajorityReligion()?.name != unit.religion)
-            doReligiousAction(unit, unit.getTile())
     }
 
     fun automateInquisitor(unit: MapUnit) {
