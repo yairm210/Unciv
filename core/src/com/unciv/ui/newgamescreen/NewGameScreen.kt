@@ -73,10 +73,9 @@ class NewGameScreen(
         rightSideButton.setText("Start game!".tr())
         rightSideButton.onClick {
             if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
-                val isDropbox = UncivGame.Current.settings.multiplayer.server == Constants.dropboxMultiplayerServer
                 if (!checkConnectionToMultiplayerServer()) {
                     val noInternetConnectionPopup = Popup(this)
-                    val label = if (isDropbox) "Couldn't connect to Dropbox!" else "Couldn't connect to Multiplayer Server!"
+                    val label = if (OnlineMultiplayer.usesCustomServer()) "Couldn't connect to Multiplayer Server!" else "Couldn't connect to Dropbox!"
                     noInternetConnectionPopup.addGoodSizedLabel(label.tr()).row()
                     noInternetConnectionPopup.addCloseButton()
                     noInternetConnectionPopup.open()

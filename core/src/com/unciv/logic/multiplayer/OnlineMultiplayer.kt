@@ -1,6 +1,7 @@
 package com.unciv.logic.multiplayer
 
 import com.badlogic.gdx.files.FileHandle
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
@@ -8,6 +9,7 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
+import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.crashhandling.CRASH_HANDLING_DAEMON_SCOPE
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
@@ -53,7 +55,8 @@ class OnlineMultiplayer {
 
                 val currentGame = getCurrentGame()
                 val multiplayerSettings = UncivGame.Current.settings.multiplayer
-                if (currentGame != null) {
+                val preview = currentGame?.preview
+                if (currentGame != null && (usesCustomServer() || preview == null || !preview.isUsersTurn())) {
                     throttle(lastCurGameRefresh, multiplayerSettings.currentGameRefreshDelay, {}) { currentGame.requestUpdate() }
                 }
 
@@ -316,6 +319,11 @@ class OnlineMultiplayer {
      */
     private fun hasNewerGameState(preview1: GameInfoPreview, preview2: GameInfoPreview): Boolean {
         return preview1.turns > preview2.turns
+    }
+
+    companion object {
+        fun usesCustomServer() = UncivGame.Current.settings.multiplayer.server != Constants.dropboxMultiplayerServer
+        fun usesDropbox() = !usesCustomServer()
     }
 
 }

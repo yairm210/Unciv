@@ -165,4 +165,5 @@ class GameSettingsMultiplayer {
     var statusButtonInSinglePlayer = false
     var currentGameRefreshDelay = Duration.ofSeconds(10)
     var allGameRefreshDelay = Duration.ofMinutes(5)
+    var hideDropboxWarning = false
 }
