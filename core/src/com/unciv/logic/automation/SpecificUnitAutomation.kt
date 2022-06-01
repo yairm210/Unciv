@@ -297,13 +297,13 @@ object SpecificUnitAutomation {
         if (unit.religion != unit.civInfo.religionManager.religion?.name)
             return unit.destroy()
 
-        val cities = unit.civInfo.gameInfo.getCities().asSequence()
+        val city = unit.civInfo.gameInfo.getCities().asSequence()
             .filter { it.religion.getMajorityReligion()?.name != unit.getReligionDisplayName() }
             .filterNot { it.civInfo.isAtWarWith(unit.civInfo) }
             .minByOrNull { it.getCenterTile().aerialDistanceTo(unit.currentTile) } ?: return
 
 
-        val destination = cities.getTiles().asSequence()
+        val destination = city.getTiles().asSequence()
             .filter { unit.movement.canMoveTo(it) || it == unit.getTile() }
             .sortedBy { it.aerialDistanceTo(unit.currentTile) }
             .firstOrNull { unit.movement.canReach(it) } ?: return
