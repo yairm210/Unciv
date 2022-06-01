@@ -310,7 +310,6 @@ object SpecificUnitAutomation {
 
         unit.movement.headTowards(destination)
 
-        // spread religion if we can, otherwise find a new place to spread it
         if (unit.civInfo.religionManager.maySpreadReligionNow(unit)) {
             doReligiousAction(unit, unit.getTile())
         }
