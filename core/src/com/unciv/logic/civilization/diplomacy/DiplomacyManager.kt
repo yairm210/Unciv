@@ -414,7 +414,7 @@ class DiplomacyManager() {
 
         if (bordersWereClosed) { // borders were closed, get out!
             for (unit in civInfo.getCivUnits()
-                .filter { it.currentTile.getOwner()?.civName == otherCivName}.toList()) {
+                .filter { it.currentTile.getOwner()?.civName == otherCivName }.toList()) {
                 unit.movement.teleportToClosestMoveableTile()
             }
         }

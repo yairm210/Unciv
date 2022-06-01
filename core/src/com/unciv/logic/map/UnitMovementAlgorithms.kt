@@ -370,12 +370,12 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
      * Displace a unit - choose a viable tile close by if possible and 'teleport' the unit there.
      * This will not use movement points or check for a possible route.
      * It is used e.g. if an enemy city expands its borders, or trades or diplomacy change a unit's
-     * allowed position. Does not move transported units by default but setting
-     * [forceMoveTransportedUnit] to true allows them to be moved.
+     * allowed position. Does not teleport transported units on their own, these are teleported when
+     * the transporting unit is moved.
      * CAN DESTROY THE UNIT.
      */
-    fun teleportToClosestMoveableTile(forceMoveTransportedUnit: Boolean = false) {
-        if (unit.isTransported && !forceMoveTransportedUnit) return // handled when carrying unit is teleported
+    fun teleportToClosestMoveableTile() {
+        if (unit.isTransported) return // handled when carrying unit is teleported
         var allowedTile: TileInfo? = null
         var distance = 0
         // When we didn't limit the allowed distance the game would sometimes spend a whole minute looking for a suitable tile.
@@ -409,7 +409,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
             val payloadUnits = origin.getUnits().filter { it.isTransported && unit.canTransport(it) }.toList()
             for (payload in payloadUnits) {
                 payload.removeFromTile()
-                payload.putInTile(unit.getTile())
+                payload.putInTile(allowedTile)
                 payload.isTransported = true // restore the flag to not leave the payload in the city
                 payload.mostRecentMoveType = UnitMovementMemoryType.UnitTeleported
             }
