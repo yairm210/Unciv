@@ -394,6 +394,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
                 if (allowedTile != null) break
             }
         }
+        val origin = unit.getTile()
         if (allowedTile != null) {
             unit.removeFromTile() // we "teleport" them away
             unit.putInTile(allowedTile)
@@ -401,6 +402,15 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
             if (unit.isSleeping() || unit.isFortified())
                 unit.action = null
             unit.mostRecentMoveType = UnitMovementMemoryType.UnitTeleported
+
+            // bring along the payloads
+            val payloadUnits = origin.getUnits().filter { it.isTransported && unit.canTransport(it) }.toList()
+            for (payload in payloadUnits) {
+                payload.removeFromTile()
+                payload.putInTile(unit.getTile())
+                payload.isTransported = true // restore the flag to not leave the payload in the city
+                payload.mostRecentMoveType = UnitMovementMemoryType.UnitTeleported
+            }
         }
         // it's possible that there is no close tile, and all the guy's cities are full.
         // Nothing we can do.
