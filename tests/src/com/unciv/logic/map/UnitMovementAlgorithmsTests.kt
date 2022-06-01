@@ -484,10 +484,8 @@ class UnitMovementAlgorithmsTests {
 
         // simulate ejecting all units within foreign territory
         for (unit in civInfo.getCivUnits()) unit.movement.teleportToClosestMoveableTile()
-        val success = unit.currentTile == newTiles.last()
-                && fighters.all { it.getTile() == unit.getTile() && it.isTransported }
-
-        Assert.assertTrue("Transport and transported unit must be teleported to the same tile", success)
+        Assert.assertTrue("Transport and transported unit must be teleported to the same tile",
+            civInfo.getCivUnits().all { it.getTile() == newTiles.last() })
     }
 
 }
