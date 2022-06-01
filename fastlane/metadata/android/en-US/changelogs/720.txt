@@ -1,0 +1,24 @@
+## 4.1.6
+
+Resolved  - Civs get *random* luxury resources near their starting location
+
+Territory steal rewording
+
+By Azzurite:
+- Allow non-SSL-encrypted HTTP traffic & warn Dropbox users 
+- Improve performance of worldmap panning 
+- Fix multiplayer sometimes duplicating games 
+
+By OptimizedForDensity:
+- Fix aircraft disappearing when their carrier is teleported 
+- Pillaging certain improvements may loot gold or other stat resources 
+
+By SomeTroglodyte:
+- Fix Pixel unit nation colors after combat 
+- Small fix - the Civilopedia link for buildings from CityScreen lower right had regressed 
+- Save and load reorg and keyboard handling 
+
+Added running unciv in docker  - By haimlm
+
+Autoassign the population when the manual assignment fails  - By JackRainy
+
