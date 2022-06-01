@@ -297,12 +297,6 @@ object SpecificUnitAutomation {
         if (unit.religion != unit.civInfo.religionManager.religion?.name)
             return unit.destroy()
 
-        // spread religion if we can, otherwise find a new place to spread it
-        if (unit.civInfo.religionManager.maySpreadReligionNow(unit)) {
-            doReligiousAction(unit, unit.getTile())
-            if (unit.currentMovement == 0f) return
-        }
-
         val cities = unit.civInfo.gameInfo.getCities().asSequence()
             .filter { it.religion.getMajorityReligion()?.name != unit.getReligionDisplayName() }
             .filterNot { it.civInfo.isAtWarWith(unit.civInfo) }
@@ -310,12 +304,16 @@ object SpecificUnitAutomation {
 
 
         val destination = cities.getTiles().asSequence()
-            .filterNot { unit.getTile().owningCity == it.owningCity } // to prevent the ai from moving around randomly
-            .filter { unit.movement.canMoveTo(it) }
+            .filter { unit.movement.canMoveTo(it) || it == unit.getTile() }
             .sortedBy { it.aerialDistanceTo(unit.currentTile) }
             .firstOrNull { unit.movement.canReach(it) } ?: return
 
         unit.movement.headTowards(destination)
+
+        // spread religion if we can, otherwise find a new place to spread it
+        if (unit.civInfo.religionManager.maySpreadReligionNow(unit)) {
+            doReligiousAction(unit, unit.getTile())
+        }
     }
 
     fun automateInquisitor(unit: MapUnit) {
