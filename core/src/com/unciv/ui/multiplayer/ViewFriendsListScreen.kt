@@ -28,18 +28,7 @@ class ViewFriendsListScreen(previousScreen: BaseScreen) : PickerScreen() {
         val helpButton = "Help".toTextButton()
         helpButton.onClick {
             val helpPopup = Popup(this)
-            helpPopup.addGoodSizedLabel("To add a friend, ask him to send you his player ID.").row()
-            helpPopup.addGoodSizedLabel("Click the 'Add friend' button.").row()
-            helpPopup.addGoodSizedLabel("Insert his player ID and a name for him.").row()
-            helpPopup.addGoodSizedLabel("Then click the 'Add friend' button again.").row()
-            helpPopup.addGoodSizedLabel("").row()
-
-            helpPopup.addGoodSizedLabel("After that you will see him in your friends list.").row()
-            helpPopup.addGoodSizedLabel("").row()
-
-            helpPopup.addGoodSizedLabel("A new button will appear when creating a new").row()
-            helpPopup.addGoodSizedLabel("multiplayer game, which allows you to select your friend.").row()
-            helpPopup.addGoodSizedLabel("").row()
+            helpPopup.addGoodSizedLabel("To add a friend, ask him to send you his player ID.\nClick the 'Add friend' button.\nInsert his player ID and a name for him.\nThen click the 'Add friend' button again.\n\nAfter that you will see him in your friends list.\n\nA new button will appear when creating a new\nmultiplayer game, which allows you to select your friend.").row()
 
             helpPopup.addCloseButton()
             helpPopup.open()

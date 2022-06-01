@@ -37,7 +37,7 @@ class EditFriendScreen(selectedFriend: FriendList.Friend, backScreen: ViewFriend
         topTable.add(gameIDTable).padBottom(30f).row()
 
         deleteFriendButton.onClick {
-            val askPopup = YesNoPopup("Are you sure you want to this friend?", {
+            val askPopup = YesNoPopup("Are you sure you want to delete this friend?", {
                 friendlist.delete(selectedFriend)
                 backScreen.game.setScreen(backScreen)
                 backScreen.refreshFriendsList()
