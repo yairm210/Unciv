@@ -370,10 +370,12 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
      * Displace a unit - choose a viable tile close by if possible and 'teleport' the unit there.
      * This will not use movement points or check for a possible route.
      * It is used e.g. if an enemy city expands its borders, or trades or diplomacy change a unit's
-     * allowed position.
+     * allowed position. Does not teleport transported units which are instead teleported when the
+     * transport is teleported.
      * CAN DESTROY THE UNIT.
      */
     fun teleportToClosestMoveableTile() {
+        if (unit.isTransported) return // handled when carrying unit is teleported
         var allowedTile: TileInfo? = null
         var distance = 0
         // When we didn't limit the allowed distance the game would sometimes spend a whole minute looking for a suitable tile.
@@ -385,7 +387,6 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
                 // out of those where it can be placed, can it reach them in any meaningful way?
                 .firstOrNull { getPathBetweenTiles(unit.currentTile, it).size > 1 }
         }
-        if (unit.isTransported) return // handled when carrying unit is teleported
 
         // No tile within 4 spaces? move him to a city.
         if (allowedTile == null) {
