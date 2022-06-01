@@ -28,7 +28,6 @@ import java.net.URL
 import java.util.*
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
-
 class NewGameScreen(
     private val previousScreen: BaseScreen,
     _gameSetupInfo: GameSetupInfo? = null
