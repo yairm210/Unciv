@@ -95,20 +95,31 @@ class GameSaver(
 
     fun canLoadFromCustomSaveLocation() = customFileLocationHelper != null
 
-    fun deleteSave(gameName: String) {
-        deleteSave(getSave(gameName))
+    /**
+     * @return `true` if successful.
+     * @throws SecurityException when delete access was denied
+     */
+    fun deleteSave(gameName: String): Boolean {
+        return deleteSave(getSave(gameName))
     }
 
-    fun deleteMultiplayerSave(gameName: String) {
-        deleteSave(getMultiplayerSave(gameName))
+    /**
+     * @return `true` if successful.
+     * @throws SecurityException when delete access was denied
+     */
+    fun deleteMultiplayerSave(gameName: String): Boolean {
+        return deleteSave(getMultiplayerSave(gameName))
     }
 
     /**
      * Only use this with a [FileHandle] obtained by one of the methods of this class!
+     *
+     * @return `true` if successful.
+     * @throws SecurityException when delete access was denied
      */
-    fun deleteSave(file: FileHandle) {
+    fun deleteSave(file: FileHandle): Boolean {
         debug("Deleting save %s", file.path())
-        file.delete()
+        return file.delete()
     }
 
     interface ChooseLocationResult {
