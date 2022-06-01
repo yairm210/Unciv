@@ -385,6 +385,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
                 // out of those where it can be placed, can it reach them in any meaningful way?
                 .firstOrNull { getPathBetweenTiles(unit.currentTile, it).size > 1 }
         }
+        if (unit.isTransported) return // handled when carrying unit is teleported
 
         // No tile within 4 spaces? move him to a city.
         if (allowedTile == null) {
