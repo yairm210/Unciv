@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameStarter
 import com.unciv.logic.map.MapParameters
+import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.MapType
@@ -32,6 +33,7 @@ import com.unciv.ui.popup.closeAllPopups
 import com.unciv.ui.popup.hasOpenPopups
 import com.unciv.ui.popup.popups
 import com.unciv.ui.saves.LoadGameScreen
+import com.unciv.ui.saves.QuickSave
 import com.unciv.ui.utils.AutoScrollPane
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyCharAndCode
@@ -89,6 +91,7 @@ class MainMenuScreen: BaseScreen() {
         launchCrashHandling("ShowMapBackground") {
             val newMap = MapGenerator(RulesetCache.getVanillaRuleset())
                     .generateMap(MapParameters().apply {
+                        shape = MapShape.rectangular
                         mapSize = MapSizeNew(MapSize.Small)
                         type = MapType.default
                         waterThreshold = -0.055f // Gives the same level as when waterThreshold was unused in MapType.default
@@ -186,49 +189,7 @@ class MainMenuScreen: BaseScreen() {
             curWorldScreen.popups.filterIsInstance(WorldScreenMenuPopup::class.java).forEach(Popup::close)
             return
         }
-
-        val loadingPopup = Popup(this)
-        loadingPopup.addGoodSizedLabel("Loading...")
-        loadingPopup.open()
-        launchCrashHandling("autoLoadGame") {
-            // Load game from file to class on separate thread to avoid ANR...
-            fun outOfMemory() {
-                postCrashHandlingRunnable {
-                    loadingPopup.close()
-                    ToastPopup("Not enough memory on phone to load game!", this@MainMenuScreen)
-                }
-            }
-
-            val savedGame: GameInfo
-            try {
-                savedGame = game.gameSaver.loadLatestAutosave()
-            } catch (oom: OutOfMemoryError) {
-                outOfMemory()
-                return@launchCrashHandling
-            } catch (ex: Exception) {
-                postCrashHandlingRunnable {
-                    loadingPopup.close()
-                    ToastPopup("Cannot resume game!", this@MainMenuScreen)
-                }
-                return@launchCrashHandling
-            }
-
-            if (savedGame.gameParameters.isOnlineMultiplayer) {
-                try {
-                    game.onlineMultiplayer.loadGame(savedGame)
-                } catch (oom: OutOfMemoryError) {
-                    outOfMemory()
-                }
-            } else {
-                postCrashHandlingRunnable { /// ... and load it into the screen on main thread for GL context
-                    try {
-                        game.loadGame(savedGame)
-                    } catch (oom: OutOfMemoryError) {
-                        outOfMemory()
-                    }
-                }
-            }
-        }
+        QuickSave.autoLoadGame(this)
     }
 
     private fun quickstartNewGame() {

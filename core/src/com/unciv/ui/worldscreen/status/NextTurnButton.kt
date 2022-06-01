@@ -13,7 +13,8 @@ import com.unciv.ui.utils.extensions.setFontSize
 class NextTurnButton(
     keyPressDispatcher: KeyPressDispatcher
 ) : TextButton("", BaseScreen.skin) {
-    private lateinit var nextTurnAction: NextTurnAction
+    private var nextTurnAction = NextTurnAction("", Color.BLACK) {}
+
     init {
         label.setFontSize(30)
         labelCell.pad(10f)

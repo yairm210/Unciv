@@ -576,9 +576,47 @@ open class TileInfo {
     }
 
     /** Returns true if the [improvement] can be built on this [TileInfo] */
-    fun canBuildImprovement(improvement: TileImprovement, civInfo: CivilizationInfo): Boolean {
+    fun canBuildImprovement(improvement: TileImprovement, civInfo: CivilizationInfo): Boolean = getImprovementBuildingProblems(improvement, civInfo).none()
 
-        val stateForConditionals = StateForConditionals(civInfo, tile=this)
+    enum class ImprovementBuildingProblem {
+        WrongCiv, MissingTech, Unbuildable, NotJustOutsideBorders, OutsideBorders, UnmetConditional, Obsolete, MissingResources, Other
+    }
+
+    /** Generates a sequence of reasons that prevent building given [improvement].
+     *  If the sequence is empty, improvement can be built immediately.
+     */
+    fun getImprovementBuildingProblems(improvement: TileImprovement, civInfo: CivilizationInfo, failFast: Boolean = false): Sequence<ImprovementBuildingProblem> = sequence {
+        val stateForConditionals = StateForConditionals(civInfo, tile=this@TileInfo)
+
+        if (improvement.uniqueTo != null && improvement.uniqueTo != civInfo.civName)
+            yield(ImprovementBuildingProblem.WrongCiv)
+        if (improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!))
+            yield(ImprovementBuildingProblem.MissingTech)
+        if (improvement.hasUnique(UniqueType.Unbuildable, stateForConditionals))
+            yield(ImprovementBuildingProblem.Unbuildable)
+
+        if (getOwner() != civInfo && !improvement.hasUnique(UniqueType.CanBuildOutsideBorders, stateForConditionals)) {
+            if (!improvement.hasUnique(UniqueType.CanBuildJustOutsideBorders, stateForConditionals))
+                yield(ImprovementBuildingProblem.OutsideBorders)
+            else if (neighbors.none { it.getOwner() == civInfo })
+                yield(ImprovementBuildingProblem.NotJustOutsideBorders)
+        }
+
+        if (improvement.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals).any {
+                !it.conditionalsApply(stateForConditionals)
+            })
+            yield(ImprovementBuildingProblem.UnmetConditional)
+
+        if (improvement.getMatchingUniques(UniqueType.ObsoleteWith, stateForConditionals).any {
+                civInfo.tech.isResearched(it.params[0])
+            })
+            yield(ImprovementBuildingProblem.Obsolete)
+
+        if (improvement.getMatchingUniques(UniqueType.ConsumesResources, stateForConditionals).any {
+                civInfo.getCivResourcesByName()[it.params[1]]!! < it.params[0].toInt()
+            })
+            yield(ImprovementBuildingProblem.MissingResources)
+
         val knownFeatureRemovals = ruleset.tileImprovements.values
             .filter { rulesetImprovement ->
                 rulesetImprovement.name.startsWith(Constants.remove)
@@ -586,28 +624,10 @@ open class TileInfo {
                 && (rulesetImprovement.techRequired == null || civInfo.tech.isResearched(rulesetImprovement.techRequired!!))
             }
 
-        return when {
-            improvement.uniqueTo != null && improvement.uniqueTo != civInfo.civName -> false
-            improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!) -> false
-            improvement.hasUnique(UniqueType.Unbuildable, stateForConditionals) -> false
-            getOwner() != civInfo && !(
-                improvement.hasUnique(UniqueType.CanBuildOutsideBorders, stateForConditionals)
-                || (
-                    improvement.hasUnique(UniqueType.CanBuildJustOutsideBorders, stateForConditionals)
-                    && neighbors.any { it.getOwner() == civInfo }
-                )
-            ) -> false
-            improvement.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals).any {
-                !it.conditionalsApply(stateForConditionals)
-            } -> false
-            improvement.getMatchingUniques(UniqueType.ObsoleteWith, stateForConditionals).any {
-                civInfo.tech.isResearched(it.params[0])
-            } -> false
-            improvement.getMatchingUniques(UniqueType.ConsumesResources, stateForConditionals).any {
-                civInfo.getCivResourcesByName()[it.params[1]]!! < it.params[0].toInt()
-            } -> false
-            else -> canImprovementBeBuiltHere(improvement, hasViewableResource(civInfo), knownFeatureRemovals, stateForConditionals)
-        }
+        if (!canImprovementBeBuiltHere(improvement, hasViewableResource(civInfo), knownFeatureRemovals, stateForConditionals))
+            // There are way too many conditions in that functions, besides, they are not interesting
+            // at least for the current usecases. Improve if really needed.
+            yield(ImprovementBuildingProblem.Other)
     }
 
     /** Without regards to what CivInfo it is, a lot of the checks are just for the improvement on the tile.

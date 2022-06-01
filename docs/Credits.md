@@ -2,7 +2,9 @@
 
 ## Icon Credits
 
-Flag Icons made by [Freepik](https://www.flaticon.com/authors/freepik) from [www.flaticon.com](https://www.flaticon.com) and licensed by Creative Commons 3.0
+Flag Icons made by [Freepik](https://www.flaticon.com/authors/freepik) from [www.flaticon.com](https://www.flaticon.com) and licensed by Creative Commons 3.0, except for:
+
+-   [Catalan flag] by J0anJosep licensed under Public Domain
 
 New Unciv logo made by u-ndefined on Discord
 

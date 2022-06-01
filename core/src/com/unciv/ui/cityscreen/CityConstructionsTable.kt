@@ -222,7 +222,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         val constructionsScrollY = availableConstructionsScrollPane.scrollY
 
         if (!availableConstructionsTable.hasChildren()) { //
-            availableConstructionsTable.add("Loading...".toLabel()).pad(10f)
+            availableConstructionsTable.add(Constants.loading.toLabel()).pad(10f)
         }
 
         launchCrashHandling("Construction info gathering - ${cityScreen.city.name}") {
@@ -389,7 +389,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         if (isSelectedQueueEntry()) {
             button = "Remove from queue".toTextButton()
-            if (!cityScreen.canChangeState || city.isPuppet)
+            if (!cityScreen.canCityBeChanged())
                 button.disable()
             else {
                 button.onClick {
@@ -579,7 +579,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     private fun getRaisePriorityButton(constructionQueueIndex: Int, name: String, city: CityInfo): Table {
         val tab = Table()
         tab.add(ImageGetter.getArrowImage(Align.top).apply { color = Color.BLACK }.surroundWithCircle(40f))
-        if (cityScreen.canChangeState && !city.isPuppet) {
+        if (cityScreen.canCityBeChanged()) {
             tab.touchable = Touchable.enabled
             tab.onClick {
                 tab.touchable = Touchable.disabled
@@ -595,7 +595,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     private fun getLowerPriorityButton(constructionQueueIndex: Int, name: String, city: CityInfo): Table {
         val tab = Table()
         tab.add(ImageGetter.getArrowImage(Align.bottom).apply { color = Color.BLACK }.surroundWithCircle(40f))
-        if (cityScreen.canChangeState && !city.isPuppet) {
+        if (cityScreen.canCityBeChanged()) {
             tab.touchable = Touchable.enabled
             tab.onClick {
                 tab.touchable = Touchable.disabled
@@ -611,7 +611,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     private fun getRemoveFromQueueButton(constructionQueueIndex: Int, city: CityInfo): Table {
         val tab = Table()
         tab.add(ImageGetter.getImage("OtherIcons/Stop").surroundWithCircle(40f))
-        if (cityScreen.canChangeState && !city.isPuppet) {
+        if (cityScreen.canCityBeChanged()) {
             tab.touchable = Touchable.enabled
             tab.onClick {
                 tab.touchable = Touchable.disabled

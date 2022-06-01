@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.Constants
 import com.unciv.logic.MapSaver
 import com.unciv.logic.UncivShowableException
 import com.unciv.models.ruleset.RulesetCache
@@ -95,7 +96,7 @@ class MapEditorLoadTab(
         Gdx.app.postRunnable {
             if (!needPopup) return@postRunnable
             popup = Popup(editorScreen).apply {
-                addGoodSizedLabel("Loading...")
+                addGoodSizedLabel(Constants.loading)
                 open()
             }
         }

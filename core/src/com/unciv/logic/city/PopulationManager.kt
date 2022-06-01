@@ -196,10 +196,18 @@ class PopulationManager {
 
 
             //un-assign population
-            if ((worstWorkedTile != null && valueWorstTile < valueWorstSpecialist)
-                    || worstJob == null) {
-                cityInfo.workedTiles = cityInfo.workedTiles.withoutItem(worstWorkedTile!!.position)
-            } else specialistAllocations.add(worstJob, -1)
+            if (worstWorkedTile != null && valueWorstTile < valueWorstSpecialist) {
+                cityInfo.workedTiles = cityInfo.workedTiles.withoutItem(worstWorkedTile.position)
+            } else if (worstJob != null) specialistAllocations.add(worstJob, -1)
+            else {
+                // It happens when "cityInfo.manualSpecialists == true"
+                //  and population goes below the number of specialists, e.g. city is razing.
+                // Let's give a chance to do the work automatically at least.
+                val worstAutoJob = specialistAllocations.keys.minByOrNull {
+                    Automation.rankSpecialist(it, cityInfo, cityInfo.cityStats.currentCityStats) }
+                    ?: break // sorry, we can do nothing about that
+                specialistAllocations.add(worstAutoJob, -1)
+            }
         }
 
     }

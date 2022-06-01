@@ -309,7 +309,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                         civInfo.religionManager.numberOfCitiesFollowingThisReligion()
                     religionHappiness += unique.stats.happiness * followingCities
                 }
-                if (unique.placeholderText == "[] for every [] global followers []") {
+                if (unique.type == UniqueType.StatsFromGlobalFollowers) {
                     val followers =
                         civInfo.religionManager.numberOfFollowersFollowingThisReligion(unique.params[2])
                     religionHappiness +=

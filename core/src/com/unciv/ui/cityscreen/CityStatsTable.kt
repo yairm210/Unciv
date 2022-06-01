@@ -2,6 +2,7 @@ package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -25,26 +26,34 @@ import kotlin.math.round
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class CityStatsTable(val cityScreen: CityScreen): Table() {
-    private val innerTable = Table()
-    private val outerPane: ScrollPane
+    private val innerTable = Table() // table within this Table. Slightly smaller creates border
+    private val upperTable = Table() // fixed position table
+    private val lowerTable = Table() // table that will be in the ScrollPane
+    private val lowerPane: ScrollPane
     private val cityInfo = cityScreen.city
+    private val lowerCell: Cell<ScrollPane>
 
     init {
         pad(2f)
         background = ImageGetter.getBackground(colorFromRGB(194, 180, 131))
 
         innerTable.pad(5f)
-        innerTable.defaults().pad(2f)
         innerTable.background = ImageGetter.getBackground(Color.BLACK.cpy().apply { a = 0.8f })
+        innerTable.add(upperTable).row()
 
-        outerPane = ScrollPane(innerTable)
-        outerPane.setOverscroll(false, false)
-        outerPane.setScrollingDisabled(true, false)
-        add(outerPane).maxHeight(cityScreen.stage.height / 2)
+        upperTable.defaults().pad(2f)
+        lowerTable.defaults().pad(2f)
+        lowerPane = ScrollPane(lowerTable)
+        lowerPane.setOverscroll(false, false)
+        lowerPane.setScrollingDisabled(true, false)
+        lowerCell = innerTable.add(lowerPane)
+
+        add(innerTable)
     }
 
-    fun update() {
-        innerTable.clear()
+    fun update(height: Float) {
+        upperTable.clear()
+        lowerTable.clear()
 
         val miniStatsTable = Table()
         val selected = BaseScreen.skin.get("selection", Color::class.java)
@@ -53,7 +62,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
             val icon = Table()
             if (cityInfo.cityAIFocus.stat == stat) {
                 icon.add(ImageGetter.getStatIcon(stat.name).surroundWithCircle(27f, false, color = selected))
-                if (cityScreen.canChangeState) {
+                if (cityScreen.canCityBeChanged()) {
                     icon.onClick {
                         cityInfo.cityAIFocus = CityFocus.NoFocus
                         cityInfo.reassignPopulation(); cityScreen.update()
@@ -61,7 +70,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
                 }
             } else {
                 icon.add(ImageGetter.getStatIcon(stat.name).surroundWithCircle(27f, false, color = Color.CLEAR))
-                if (cityScreen.canChangeState) {
+                if (cityScreen.canCityBeChanged()) {
                     icon.onClick {
                         cityInfo.cityAIFocus = cityInfo.cityAIFocus.safeValueOf(stat)
                         cityInfo.reassignPopulation(); cityScreen.update()
@@ -72,10 +81,12 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
             val valueToDisplay = if (stat == Stat.Happiness) cityInfo.cityStats.happinessList.values.sum() else amount
             miniStatsTable.add(round(valueToDisplay).toInt().toLabel()).padRight(10f)
         }
-        innerTable.add(miniStatsTable)
+        upperTable.add(miniStatsTable)
 
-        innerTable.addSeparator()
+        upperTable.addSeparator()
         addText()
+
+        // begin lowerTable
         addCitizenManagement()
         if (!cityInfo.population.getMaxSpecialists().isEmpty()) {
             addSpecialistInfo()
@@ -83,10 +94,14 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         if (cityInfo.religion.getNumberOfFollowers().isNotEmpty() && cityInfo.civInfo.gameInfo.isReligionEnabled())
             addReligionInfo()
 
-        innerTable.pack()
-        outerPane.layout()
-        outerPane.updateVisualScroll()
-        pack()
+        upperTable.pack()
+        lowerTable.pack()
+        lowerPane.layout()
+        lowerPane.updateVisualScroll()
+        lowerCell.maxHeight(height - upperTable.height - 8f) // 2 on each side of each cell in innerTable
+
+        innerTable.pack()  // update innerTable
+        pack()  // update self last
     }
 
     private fun addText() {
@@ -118,9 +133,9 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
                 }.tr()
         turnsToPopString += " (${cityInfo.population.foodStored}${Fonts.food}/${cityInfo.population.getFoodToNextPopulation()}${Fonts.food})"
 
-        innerTable.add(unassignedPopLabel).row()
-        innerTable.add(turnsToExpansionString.toLabel()).row()
-        innerTable.add(turnsToPopString.toLabel()).row()
+        upperTable.add(unassignedPopLabel).row()
+        upperTable.add(turnsToExpansionString.toLabel()).row()
+        upperTable.add(turnsToPopString.toLabel()).row()
 
         val tableWithIcons = Table()
         tableWithIcons.defaults().pad(2f)
@@ -146,7 +161,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
             tableWithIcons.add(wltkLabel).row()
         }
 
-        innerTable.add(tableWithIcons).row()
+        upperTable.add(tableWithIcons).row()
     }
 
     private fun addCitizenManagement() {
@@ -158,7 +173,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
                 Align.topRight
             )
         }
-        innerTable.add(expanderTab).growX().row()
+        lowerTable.add(expanderTab).growX().row()
     }
 
     private fun addSpecialistInfo() {
@@ -170,7 +185,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
                 Align.topRight
             )
         }
-        innerTable.add(expanderTab).growX().row()
+        lowerTable.add(expanderTab).growX().row()
     }
 
     private fun addReligionInfo() {
@@ -180,6 +195,6 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
             // ToDo: This probably should be refactored so its placed somewhere else in due time
             setPosition(stage.width - CityScreen.posFromEdge, stage.height - CityScreen.posFromEdge, Align.topRight)
         }
-        innerTable.add(expanderTab).growX().row()
+        lowerTable.add(expanderTab).growX().row()
     }
 }

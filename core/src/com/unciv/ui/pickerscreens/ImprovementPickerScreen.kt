@@ -8,6 +8,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.tile.TileImprovement
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
@@ -23,6 +24,19 @@ class ImprovementPickerScreen(
     private val unit: MapUnit,
     private val onAccept: ()->Unit,
 ) : PickerScreen() {
+
+    companion object {
+        /** Set of resolvable improvement building problems that this class knows how to report. */
+        private val reportableProblems = setOf(
+            TileInfo.ImprovementBuildingProblem.MissingTech,
+            TileInfo.ImprovementBuildingProblem.NotJustOutsideBorders,
+            TileInfo.ImprovementBuildingProblem.OutsideBorders,
+            TileInfo.ImprovementBuildingProblem.MissingResources)
+
+        /** Return true if we can report improvements associated with the [problems] (or there are no problems for it at all). */
+        fun canReport(problems: Collection<TileInfo.ImprovementBuildingProblem>) = problems.all { it in reportableProblems }
+    }
+
     private var selectedImprovement: TileImprovement? = null
     private val gameInfo = tileInfo.tileMap.gameInfo
     private val ruleSet = gameInfo.ruleSet
@@ -62,9 +76,9 @@ class ImprovementPickerScreen(
 
         // clone tileInfo without "top" feature if it could be removed
         // Keep this copy around for speed
-        val tileInfoNoLast: TileInfo = tileInfo.clone()
-        if (Constants.remove + tileInfoNoLast.getLastTerrain().name in ruleSet.tileImprovements) {
-            tileInfoNoLast.removeTerrainFeature(tileInfoNoLast.getLastTerrain().name)
+        val tileInfoWithoutLastTerrain: TileInfo = tileInfo.clone()
+        if (Constants.remove + tileInfoWithoutLastTerrain.getLastTerrain().name in ruleSet.tileImprovements) {
+            tileInfoWithoutLastTerrain.removeTerrainFeature(tileInfoWithoutLastTerrain.getLastTerrain().name)
         }
 
         for (improvement in ruleSet.tileImprovements.values) {
@@ -72,12 +86,15 @@ class ImprovementPickerScreen(
             // canBuildImprovement() would allow e.g. great improvements thus we need to exclude them - except cancel
             if (improvement.turnsToBuild == 0 && improvement.name != Constants.cancelImprovementOrder) continue
             if (improvement.name == tileInfo.improvement) continue // also checked by canImprovementBeBuiltHere, but after more expensive tests
-            if (!tileInfo.canBuildImprovement(improvement, currentPlayerCiv)) {
-                // if there is an improvement that could remove that terrain
-                if (!tileInfoNoLast.canBuildImprovement(improvement, currentPlayerCiv)) continue
-                suggestRemoval = true
-            }
             if (!unit.canBuildImprovement(improvement)) continue
+
+            var unbuildableBecause = tileInfo.getImprovementBuildingProblems(improvement, currentPlayerCiv).toSet()
+            if (!canReport(unbuildableBecause)) {
+                // Try after pretending to have removed the top terrain layer.
+                unbuildableBecause = tileInfoWithoutLastTerrain.getImprovementBuildingProblems(improvement, currentPlayerCiv).toSet()
+                if (!canReport(unbuildableBecause)) continue
+                else suggestRemoval = true
+            }
 
             val image = ImageGetter.getImprovementIcon(improvement.name, 30f)
 
@@ -109,8 +126,24 @@ class ImprovementPickerScreen(
                     && improvement.name != Constants.cancelImprovementOrder)
             if (tileInfo.improvement != null && removeImprovement) labelText += "\n" + "Replaces [${tileInfo.improvement}]".tr()
 
-            val pickNow = when {
-                suggestRemoval -> "${Constants.remove}[${tileInfo.getLastTerrain().name}] first".toLabel()
+            val proposedSolutions = mutableListOf<String>()
+
+            if (suggestRemoval)
+                proposedSolutions.add("${Constants.remove}[${tileInfo.getLastTerrain().name}] first")
+            if (TileInfo.ImprovementBuildingProblem.MissingTech in unbuildableBecause)
+                proposedSolutions.add("Research [${improvement.techRequired}] first")
+            if (TileInfo.ImprovementBuildingProblem.NotJustOutsideBorders in unbuildableBecause)
+                proposedSolutions.add("Have this tile close to your borders")
+            if (TileInfo.ImprovementBuildingProblem.OutsideBorders in unbuildableBecause)
+                proposedSolutions.add("Have this tile inside your empire")
+            if (TileInfo.ImprovementBuildingProblem.MissingResources in unbuildableBecause) {
+                proposedSolutions.addAll(improvement.getMatchingUniques(UniqueType.ConsumesResources).filter {
+                    currentPlayerCiv.getCivResourcesByName()[it.params[1]]!! < it.params[0].toInt()
+                }.map { "Acquire more [$it]" })
+            }
+
+            val explanationText = when {
+                proposedSolutions.any() -> proposedSolutions.joinToString("}\n{", "{", "}").toLabel()
                 tileInfo.improvementInProgress == improvement.name -> "Current construction".toLabel()
                 tileMarkedForCreatesOneImprovement -> null
                 else -> "Pick now!".toLabel().onClick { accept(improvement) }
@@ -140,7 +173,7 @@ class ImprovementPickerScreen(
             }
 
             if (improvement.name == tileInfo.improvementInProgress) improvementButton.color = Color.GREEN
-            if (suggestRemoval || tileMarkedForCreatesOneImprovement) {
+            if (proposedSolutions.isNotEmpty() || tileMarkedForCreatesOneImprovement) {
                 improvementButton.disable()
             } else if (shortcutKey != null) {
                 keyPressDispatcher[shortcutKey] = { accept(improvement) }
@@ -148,7 +181,7 @@ class ImprovementPickerScreen(
             }
 
             regularImprovements.add(improvementButton)
-            regularImprovements.add(pickNow).padLeft(10f).fillY()
+            regularImprovements.add(explanationText).padLeft(10f).fillY()
             regularImprovements.row()
         }
 

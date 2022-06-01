@@ -878,11 +878,9 @@ class MapRegions (val ruleset: Ruleset){
             // Pick a luxury at random. Weight is reduced if the luxury has been picked before
             val modifiedWeights = candidateLuxuries.map {
                 val weightingUnique = it.getMatchingUniques(UniqueType.ResourceWeighting, regionConditional).firstOrNull()
-                if (weightingUnique == null)
-                    1f / (1f + amountRegionsWithLuxury[it.name]!!)
-                else
-                    weightingUnique.params[0].toFloat() / (1f + amountRegionsWithLuxury[it.name]!!)
-            }
+                val relativeWeight = if (weightingUnique == null) 1f else weightingUnique.params[0].toFloat()
+                relativeWeight / (1f + amountRegionsWithLuxury[it.name]!!)
+            }.shuffled()
             region.luxury = candidateLuxuries.randomWeighted(modifiedWeights).name
             amountRegionsWithLuxury[region.luxury!!] = amountRegionsWithLuxury[region.luxury]!! + 1
         }

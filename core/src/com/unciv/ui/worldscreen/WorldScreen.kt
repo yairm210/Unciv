@@ -51,6 +51,7 @@ import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.popup.hasOpenPopups
 import com.unciv.ui.saves.LoadGameScreen
+import com.unciv.ui.saves.QuickSave
 import com.unciv.ui.saves.SaveGameScreen
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.BaseScreen
@@ -87,7 +88,7 @@ import kotlinx.coroutines.Job
  * @property isPlayersTurn (readonly) Indicates it's the player's ([viewingCiv]) turn
  * @property selectedCiv Selected civilization, used in spectator and replay mode, equals viewingCiv in ordinary games
  * @property canChangeState (readonly) `true` when it's the player's turn unless he is a spectator
- * @property mapHolder A [MinimapHolder] instance
+ * @property mapHolder A [WorldMapHolder] instance
  * @property bottomUnitTable Bottom left widget holding information about a selected unit or city
  */
 class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : BaseScreen() {
@@ -122,6 +123,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
     private val notificationsScroll: NotificationsScroll
     var shouldUpdate = false
+
+    private val zoomController = ZoomButtonPair(mapHolder)
 
     private var nextTurnUpdateJob: Job? = null
 
@@ -176,6 +179,9 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         stage.addActor(techPolicyAndVictoryHolder)
         stage.addActor(tutorialTaskTable)
 
+        if (UncivGame.Current.settings.showZoomButtons) {
+            stage.addActor(zoomController)
+        }
 
         diplomacyButtonHolder.defaults().pad(5f)
         stage.addActor(fogOfWarButton)
@@ -235,43 +241,6 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     }
 
     private fun addKeyboardPresses() {
-        // Note these helpers might need unification with similar code e.g. in:
-        // GameSaver.autoSave, SaveGameScreen.saveGame, LoadGameScreen.rightSideButton.onClick,...
-        val quickSave = {
-            val toast = ToastPopup("Quicksaving...", this)
-            launchCrashHandling("SaveGame", runAsDaemon = false) {
-                game.gameSaver.saveGame(gameInfo, "QuickSave") {
-                    postCrashHandlingRunnable {
-                        toast.close()
-                        if (it != null)
-                            ToastPopup("Could not save game!", this@WorldScreen)
-                        else {
-                            ToastPopup("Quicksave successful.", this@WorldScreen)
-                        }
-                    }
-                }
-            }
-            Unit    // change type of anonymous fun from ()->Thread to ()->Unit without unchecked cast
-        }
-        val quickLoad = {
-            val toast = ToastPopup("Quickloading...", this)
-            launchCrashHandling("LoadGame") {
-                try {
-                    val loadedGame = game.gameSaver.loadGameByName("QuickSave")
-                    postCrashHandlingRunnable {
-                        toast.close()
-                        UncivGame.Current.loadGame(loadedGame)
-                        ToastPopup("Quickload successful.", this@WorldScreen)
-                    }
-                } catch (ex: Exception) {
-                    postCrashHandlingRunnable {
-                        ToastPopup("Could not load game!", this@WorldScreen)
-                    }
-                }
-            }
-            Unit    // change type to ()->Unit
-        }
-
         // Space and N are assigned in createNextTurnButton
         keyPressDispatcher[Input.Keys.F1] = { game.setScreen(CivilopediaScreen(gameInfo.ruleSet, this)) }
         keyPressDispatcher['E'] = { game.setScreen(EmpireOverviewScreen(selectedCiv)) }     // Empire overview last used page
@@ -289,8 +258,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         keyPressDispatcher[Input.Keys.F8] = { game.setScreen(VictoryScreen(this)) }    // Victory Progress
         keyPressDispatcher[Input.Keys.F9] = { game.setScreen(EmpireOverviewScreen(selectedCiv, "Stats")) }    // Demographics
         keyPressDispatcher[Input.Keys.F10] = { game.setScreen(EmpireOverviewScreen(selectedCiv, "Resources")) }    // originally Strategic View
-        keyPressDispatcher[Input.Keys.F11] = quickSave    // Quick Save
-        keyPressDispatcher[Input.Keys.F12] = quickLoad    // Quick Load
+        keyPressDispatcher[Input.Keys.F11] = { QuickSave.save(gameInfo, this) }    // Quick Save
+        keyPressDispatcher[Input.Keys.F12] = { QuickSave.load(this) }    // Quick Load
         keyPressDispatcher[Input.Keys.HOME] = {    // Capital City View
             val capital = gameInfo.currentPlayerCiv.getCapital()
             if (capital != null && !mapHolder.setCenterPosition(capital.location))
@@ -497,6 +466,10 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         updateGameplayButtons()
         notificationsScroll.update(viewingCiv.notifications, bottomTileInfoTable.height)
         notificationsScroll.setTopRight(stage.width - 10f, statusButtons.y - 5f)
+
+        val posZoomFromRight = if (game.settings.showMinimap) minimapWrapper.width
+        else bottomTileInfoTable.width
+        zoomController.setPosition(stage.width - posZoomFromRight - 10f, 10f, Align.bottomRight)
     }
 
     private fun getCurrentTutorialTask(): String {
@@ -822,7 +795,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                 }
 
             viewingCiv.mayVoteForDiplomaticVictory() ->
-                NextTurnAction("Vote for World Leader", Color.RED) {
+                NextTurnAction("Vote for World Leader", Color.MAROON) {
                     game.setScreen(DiplomaticVotePickerScreen(viewingCiv))
                 }
 

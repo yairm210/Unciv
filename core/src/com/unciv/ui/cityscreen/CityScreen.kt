@@ -175,7 +175,12 @@ class CityScreen(
         cityPickerTable.setPosition(centeredX, exitCityButton.top + 10f, Align.bottom)
 
         // Top right of screen: Stats / Specialists
-        cityStatsTable.update()
+        var statsHeight = stage.height - posFromEdge * 2
+        if (selectedTile != null)
+            statsHeight -= tileTable.height + 10f
+        if (selectedConstruction != null)
+            statsHeight -= selectedConstructionTable.height + 10f
+        cityStatsTable.update(statsHeight)
         cityStatsTable.setPosition(stage.width - posFromEdge, stage.height - posFromEdge, Align.topRight)
 
         // Top center: Annex/Raze button
@@ -189,6 +194,10 @@ class CityScreen(
             scrollY = (maxY - cityStatsTable.packIfNeeded().height - posFromEdge + cityPickerTable.top) / 2
             updateVisualScroll()
         }
+    }
+
+    fun canCityBeChanged(): Boolean {
+        return canChangeState && !city.isPuppet
     }
 
     private fun updateTileGroups() {
@@ -294,7 +303,7 @@ class CityScreen(
             tileGroups.add(tileGroup)
         }
 
-        val tilesToUnwrap = ArrayList<CityTileGroup>()
+        val tilesToUnwrap = mutableSetOf<CityTileGroup>()
         for (tileGroup in tileGroups) {
             val xDifference = cityInfo.getCenterTile().position.x - tileGroup.tileInfo.position.x
             val yDifference = cityInfo.getCenterTile().position.y - tileGroup.tileInfo.position.y

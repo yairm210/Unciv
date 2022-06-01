@@ -24,9 +24,12 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
         val resetLabel = "Reset Citizens".toLabel()
         val resetCell = Table()
         resetCell.add(resetLabel).pad(5f)
-        if (cityScreen.canChangeState) {
+        if (cityScreen.canCityBeChanged()) {
             resetCell.touchable = Touchable.enabled
-            resetCell.onClick { city.reassignPopulation(true); cityScreen.update() }
+            resetCell.onClick {
+                city.reassignPopulation(true)
+                cityScreen.update()
+            }
         }
         resetCell.background = ImageGetter.getBackground(colorButton)
         add(resetCell).colspan(2).growX().pad(3f)
@@ -35,9 +38,13 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
         val avoidLabel = "Avoid Growth".toLabel()
         val avoidCell = Table()
         avoidCell.add(avoidLabel).pad(5f)
-        if (cityScreen.canChangeState) {
+        if (cityScreen.canCityBeChanged()) {
             avoidCell.touchable = Touchable.enabled
-            avoidCell.onClick { city.avoidGrowth = !city.avoidGrowth; city.reassignPopulation(); cityScreen.update() }
+            avoidCell.onClick {
+                city.avoidGrowth = !city.avoidGrowth
+                city.reassignPopulation()
+                cityScreen.update()
+            }
         }
         avoidCell.background = ImageGetter.getBackground(if (city.avoidGrowth) colorSelected else colorButton)
         add(avoidCell).colspan(2).growX().pad(3f)
@@ -50,10 +57,12 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
             val label = focus.label.toLabel()
             val cell = Table()
             cell.add(label).pad(5f)
-            if (cityScreen.canChangeState) {
+            if (cityScreen.canCityBeChanged()) {
                 cell.touchable = Touchable.enabled
                 cell.onClick {
-                    city.cityAIFocus = focus; city.reassignPopulation(); cityScreen.update()
+                    city.cityAIFocus = focus
+                    city.reassignPopulation()
+                    cityScreen.update()
                 }
             }
             cell.background = ImageGetter.getBackground(if (city.cityAIFocus == focus) colorSelected else colorButton)
