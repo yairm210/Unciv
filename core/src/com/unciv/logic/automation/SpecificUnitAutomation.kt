@@ -298,8 +298,10 @@ object SpecificUnitAutomation {
             return unit.destroy()
 
         // spread religion if we can, otherwise find a new place to spread it
-        if (unit.civInfo.religionManager.maySpreadReligionNow(unit))
+        if (unit.civInfo.religionManager.maySpreadReligionNow(unit)) {
             doReligiousAction(unit, unit.getTile())
+            return
+        }
 
         val cities = unit.civInfo.gameInfo.getCities().asSequence()
             .filter { it.religion.getMajorityReligion()?.name != unit.getReligionDisplayName() }
