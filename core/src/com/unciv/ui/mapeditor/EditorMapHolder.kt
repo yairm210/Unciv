@@ -24,7 +24,7 @@ class EditorMapHolder(
     parentScreen: BaseScreen,
     internal val tileMap: TileMap,
     private val onTileClick: (TileInfo) -> Unit
-): ZoomableScrollPane() {
+): ZoomableScrollPane(20f, 20f) {
     val editorScreen = parentScreen as? MapEditorScreen
 
     val tileGroups = HashMap<TileInfo, List<TileGroup>>()
@@ -32,7 +32,6 @@ class EditorMapHolder(
     private val allTileGroups = ArrayList<TileGroup>()
 
     private val maxWorldZoomOut = UncivGame.Current.settings.maxWorldZoomOut
-    private val minZoomScale = 1f / maxWorldZoomOut
 
     private var blinkAction: Action? = null
 
@@ -53,8 +52,6 @@ class EditorMapHolder(
 
         tileGroupMap = TileGroupMap(
             daTileGroups,
-            stage.width * maxWorldZoomOut / 2,
-            stage.height * maxWorldZoomOut / 2,
             continuousScrollingX)
         actor = tileGroupMap
         val mirrorTileGroups = tileGroupMap.getMirrorTiles()
@@ -140,11 +137,6 @@ class EditorMapHolder(
         addAction(blinkAction) // Don't set it on the group because it's an actionless group
     }
 
-    override fun zoom(zoomScale: Float) {
-        if (zoomScale < minZoomScale || zoomScale > 2f) return
-        setScale(zoomScale)
-    }
-
     /*
     The ScrollPane interferes with the dragging listener of MapEditorToolsDrawer.
     Once the ZoomableScrollPane super is initialized, there are 3 listeners + 1 capture listener:
@@ -195,7 +187,7 @@ class EditorMapHolder(
                 if (!isPainting) return
 
                 editorScreen!!.hideSelection()
-                val stageCoords = actor.stageToLocalCoordinates(Vector2(event!!.stageX, event.stageY))
+                val stageCoords = actor?.stageToLocalCoordinates(Vector2(event!!.stageX, event.stageY)) ?: return
                 val centerTileInfo = getClosestTileTo(stageCoords)
                     ?: return
                 editorScreen.tabs.edit.paintTilesWithBrush(centerTileInfo)

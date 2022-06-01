@@ -615,10 +615,12 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
         // This is not the case if you have a multiplayer game where you play as 2 civs
         if (newWorldScreen.viewingCiv.civName == viewingCiv.civName) {
-            newWorldScreen.mapHolder.scrollX = mapHolder.scrollX
-            newWorldScreen.mapHolder.scrollY = mapHolder.scrollY
+            newWorldScreen.mapHolder.width = mapHolder.width
+            newWorldScreen.mapHolder.height = mapHolder.height
             newWorldScreen.mapHolder.scaleX = mapHolder.scaleX
             newWorldScreen.mapHolder.scaleY = mapHolder.scaleY
+            newWorldScreen.mapHolder.scrollX = mapHolder.scrollX
+            newWorldScreen.mapHolder.scrollY = mapHolder.scrollY
             newWorldScreen.mapHolder.updateVisualScroll()
         }
 
@@ -850,7 +852,6 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         }
 //        topBar.selectedCivLabel.setText(Gdx.graphics.framesPerSecond) // for framerate testing
 
-        minimapWrapper.minimap.updateScrollPosition()
 
         super.render(delta)
     }
