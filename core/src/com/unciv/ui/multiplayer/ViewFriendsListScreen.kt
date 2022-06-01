@@ -22,6 +22,7 @@ class ViewFriendsListScreen(previousScreen: BaseScreen) : PickerScreen() {
 
     init {
         setDefaultCloseAction(previousScreen)
+        rightSideButton.remove()
 
         //Help Button Setup
         val tab = Table()
