@@ -3,7 +3,6 @@ package com.unciv.ui.multiplayer
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
-import com.unciv.UncivGame
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.ui.newgamescreen.PlayerPickerTable
 import com.unciv.ui.utils.BaseScreen
@@ -15,7 +14,7 @@ class FriendPickerList(
 ) : VerticalGroup() {
 
     private val friendDisplays = mutableMapOf<String, FriendDisplay>()
-    private var friendList = UncivGame.Current.settings.multiplayer.friendList
+    private var friendList: MutableList<FriendList.Friend>
 
     init {
         padTop(10f)

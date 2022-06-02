@@ -16,7 +16,7 @@ class FriendList {
         ALREADYINLIST;
     }
 
-    data class Friend(val name: String, var playerID: String) {
+    data class Friend(val name: String, val playerID: String) {
         constructor() : this("", "")
     }
 
