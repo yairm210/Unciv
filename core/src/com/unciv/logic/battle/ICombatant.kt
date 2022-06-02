@@ -43,13 +43,4 @@ interface ICombatant {
         return this is CityCombatant
     }
     fun isCivilian() = this is MapUnitCombatant && this.unit.isCivilian()
-    fun getMaxMovement(): Int {
-        if (this is MapUnitCombatant) return unit.getMaxMovement()
-        return 0
-    }
-    fun getRange(): Int {
-        if (this is MapUnitCombatant) return unit.getRange()
-        if (this is CityCombatant) return city.range
-        return 0
-    }
 }

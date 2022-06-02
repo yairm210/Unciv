@@ -54,9 +54,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             simulateNuke(attacker, selectedTile)
         } else {
             val defender = tryGetDefender() ?: return hide()
-            val aerialDistance = defender.getTile().aerialDistanceTo(attacker.getTile())
-            val threatDistance = attacker.getRange() + attacker.getMaxMovement() + defender.getMaxMovement()
-            if (aerialDistance > threatDistance) return hide()
+            if (attacker is CityCombatant && defender is CityCombatant) return hide()
             simulateBattle(attacker, defender)
         }
 
