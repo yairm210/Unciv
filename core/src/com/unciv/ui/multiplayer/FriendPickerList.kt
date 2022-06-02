@@ -5,19 +5,23 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.UncivGame
 import com.unciv.logic.multiplayer.FriendList
+import com.unciv.ui.newgamescreen.PlayerPickerTable
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.onClick
 
-class FriendPickerListList(
+class FriendPickerList(
+    playerPicker: PlayerPickerTable,
     onSelected: (String) -> Unit
 ) : VerticalGroup() {
 
     private val friendDisplays = mutableMapOf<String, FriendDisplay>()
-    private val friendList = UncivGame.Current.settings.multiplayer.friendList
+    private var friendList = UncivGame.Current.settings.multiplayer.friendList
 
     init {
         padTop(10f)
         padBottom(10f)
+
+        friendList = playerPicker.getAvailableFriends().toMutableList()
 
         for (friend in friendList) {
             addFriend(friend, onSelected)
@@ -45,11 +49,6 @@ private class FriendDisplay(
 
         add(friendButton)
         onClick { onSelected(friendName) }
-    }
-
-    fun changeName(newName: String) {
-        friendName = newName
-        friendButton.setText(newName)
     }
 
     override fun compareTo(other: FriendDisplay): Int = friendName.compareTo(other.friendName)

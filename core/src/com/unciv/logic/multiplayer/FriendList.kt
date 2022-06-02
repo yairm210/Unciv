@@ -16,7 +16,7 @@ class FriendList {
         ALREADYINLIST;
     }
 
-    data class Friend(val name: String, val playerID: String) {
+    data class Friend(val name: String, var playerID: String) {
         constructor() : this("", "")
     }
 
@@ -77,6 +77,15 @@ class FriendList {
     fun getFriendWithId(id: String): Friend? {
         for (index in friendList.indices) {
             if (id == friendList[index].playerID) {
+                return friendList[index]
+            }
+        }
+        return null
+    }
+
+    fun getFriendWithName(name: String): Friend? {
+        for (index in friendList.indices) {
+            if (name == friendList[index].name) {
                 return friendList[index]
             }
         }
