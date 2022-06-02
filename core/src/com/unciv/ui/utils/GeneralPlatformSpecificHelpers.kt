@@ -19,7 +19,8 @@ interface GeneralPlatformSpecificHelpers {
     fun notifyTurnStarted() {}
 
     /**
-     * @return an additional external directory for save files, if applicable on the platform
+     * If the GDX [com.badlogic.gdx.Files.getExternalStoragePath] should be preferred for this platform,
+     * otherwise uses [com.badlogic.gdx.Files.getLocalStoragePath]
      */
-    fun getExternalFilesDir(): String? { return null }
+    fun shouldPreferExternalStorage(): Boolean
 }

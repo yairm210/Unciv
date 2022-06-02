@@ -6,9 +6,9 @@ import kotlin.reflect.KMutableProperty0
 /**
  * A container for the seven basic ["currencies"][Stat] in Unciv,
  * **Mutable**, allowing for easy merging of sources and applying bonuses.
- * 
+ *
  * Supports e.g. `for ((key,value) in <Stats>)` - the [iterator] will skip zero values automatically.
- * 
+ *
  * Also possible: `<Stats>`.[values].sum() and similar aggregates over a Sequence<Float>.
  */
 open class Stats(
@@ -20,7 +20,7 @@ open class Stats(
     var happiness: Float = 0f,
     var faith: Float = 0f
 ): Iterable<Stats.StatValuePair> {
-    
+
     // This is what facilitates indexed access by [Stat] or add(Stat,Float)
     // without additional memory allocation or expensive conditionals
     private fun statToProperty(stat: Stat):KMutableProperty0<Float>{
@@ -124,9 +124,9 @@ open class Stats(
         happiness *= number
         faith *= number
     }
-    
+
     operator fun div(number: Float) = times(1/number)
-    
+
     /** Apply weighting for Production Ranking */
     fun applyRankingWeights(){
         food *= 14
@@ -139,7 +139,7 @@ open class Stats(
     }
 
     /** ***Not*** only a debug helper. It returns a string representing the content, already _translated_.
-     * 
+     *
      * Example output: `+1 Production, -1 Food`.
      */
     override fun toString(): String {
@@ -152,6 +152,14 @@ open class Stats(
     fun toStringWithDecimals(): String {
         return this.joinToString {
             (if (it.value > 0) "+" else "") + it.value.toString().removeSuffix(".0") + " " + it.key.toString().tr()
+        }
+    }
+
+    // function that removes the icon from the Stats object since the circular icons all appear the same
+    // delete this and replace above instances with toString() once the text-coloring-affecting-font-icons bug is fixed (e.g., in notification text)
+    fun toStringWithoutIcons(): String {
+        return this.joinToString {
+            it.value.toInt().toString() + " " + it.key.name.tr().substring(startIndex = 1)
         }
     }
 

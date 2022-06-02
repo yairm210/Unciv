@@ -21,7 +21,7 @@ import kotlin.concurrent.thread
 
 /*
 Crashes are now handled from:
-- Event listeners, by [CrashHandlingStage].
+- Event listeners, by [UncivStage].
 - The main rendering loop, by [UncivGame.render].
 - Threads, by [crashHandlingThread].
 - Main loop runnables, by [postCrashHandlingRunnable].

@@ -10,7 +10,6 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
 import com.unciv.ui.images.ClippingImage
-import com.unciv.ui.utils.*
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.worldscreen.WorldMapHolder
 import kotlin.math.max
@@ -56,6 +55,8 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Group() {
 
         setSize(tileLayer.width, tileLayer.height)
         addActor(tileLayer)
+
+        mapHolder.onViewportChangedListener = ::updateScrollPosition
     }
 
     private fun calcTileSize(minimapSize: Int): Float {
@@ -97,29 +98,19 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Group() {
 
     /**### Transform and set coordinates for the scrollPositionIndicator.
      *
-     *  Relies on the [MiniMap][MinimapHolder.minimap]'s copy of the main [WorldMapHolder] as input.
-     *
      *  Requires [scrollPositionIndicator] to be a [ClippingImage] to keep the displayed portion of the indicator within the bounds of the minimap.
      */
-    fun updateScrollPosition() {
-        // Only mapHolder.scrollX/Y and mapHolder.scaleX/Y change. scrollX/Y will range from 0 to mapHolder.maxX/Y,
-        // with all extremes centering the corresponding map edge on screen. Y axis is 0 top, maxY bottom.
-        // Visible area relative to this coordinate system seems to be mapHolder.width/2 * mapHolder.height/2.
-        // Minimap coordinates are measured from the allTiles Group, which is a bounding box over the entire map, and (0,0) @ lower left.
-
-        // Helpers for readability - each single use, but they should help explain the logic
+    private fun updateScrollPosition(worldWidth: Float, worldHeight: Float, worldViewport: Rectangle) {
         operator fun Rectangle.times(other: Vector2) = Rectangle(x * other.x, y * other.y, width * other.x, height * other.y)
-
-        fun Vector2.centeredRectangle(size: Vector2) = Rectangle(x - size.x / 2, y - size.y / 2, size.x, size.y)
-        fun Rectangle.invertY(max: Float) = Rectangle(x, max - height - y, width, height)
         fun Actor.setViewport(rect: Rectangle) {
-            x = rect.x; y = rect.y; width = rect.width; height = rect.height
+            x = rect.x;
+            y = rect.y;
+            width = rect.width;
+            height = rect.height
         }
 
-        val worldToMiniFactor = Vector2(tileLayer.width / mapHolder.maxX, tileLayer.height / mapHolder.maxY)
-        val worldVisibleArea = Vector2(mapHolder.width / 2 / mapHolder.scaleX, mapHolder.height / 2 / mapHolder.scaleY)
-        val worldViewport = Vector2(mapHolder.scrollX, mapHolder.scrollY).centeredRectangle(worldVisibleArea)
-        val miniViewport = worldViewport.invertY(mapHolder.maxY) * worldToMiniFactor
+        val worldToMiniFactor = Vector2(tileLayer.width / worldWidth, tileLayer.height / worldHeight)
+        val miniViewport = worldViewport * worldToMiniFactor
         // This _could_ place parts of the 'camera' icon outside the minimap if it were a standard Image, thus the ClippingImage helper class
         scrollPositionIndicators[0].setViewport(miniViewport)
 

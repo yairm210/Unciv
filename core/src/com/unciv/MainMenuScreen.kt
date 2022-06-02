@@ -28,6 +28,7 @@ import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.ModManagementScreen
 import com.unciv.ui.popup.*
 import com.unciv.ui.saves.LoadGameScreen
+import com.unciv.ui.saves.QuickSave
 import com.unciv.ui.tutorials.EasterEggRulesets
 import com.unciv.ui.tutorials.EasterEggRulesets.modifyForEasterEgg
 import com.unciv.ui.utils.*
@@ -82,7 +83,7 @@ class MainMenuScreen: BaseScreen() {
 
         launchCrashHandling("ShowMapBackground") {
             var scale = 1f
-            var mapWidth = stage.width / 57.735f  // TileGroupMap.groupSize * sqrt(4f/3f)
+            var mapWidth = stage.width / 43.5f  // TileGroupMap.groupSize * sqrt(4f/3f)
             var mapHeight = stage.height / 50f  // TileGroupMap.groupSize
             if (mapWidth * mapHeight > 3000f) {  // 3000 as max estimated number of tiles is arbitrary (we had typically 721 before)
                 scale = mapWidth * mapHeight / 3000f
@@ -200,49 +201,7 @@ class MainMenuScreen: BaseScreen() {
             curWorldScreen.popups.filterIsInstance(WorldScreenMenuPopup::class.java).forEach(Popup::close)
             return
         }
-
-        val loadingPopup = Popup(this)
-        loadingPopup.addGoodSizedLabel("Loading...")
-        loadingPopup.open()
-        launchCrashHandling("autoLoadGame") {
-            // Load game from file to class on separate thread to avoid ANR...
-            fun outOfMemory() {
-                postCrashHandlingRunnable {
-                    loadingPopup.close()
-                    ToastPopup("Not enough memory on phone to load game!", this@MainMenuScreen)
-                }
-            }
-
-            val savedGame: GameInfo
-            try {
-                savedGame = game.gameSaver.loadLatestAutosave()
-            } catch (oom: OutOfMemoryError) {
-                outOfMemory()
-                return@launchCrashHandling
-            } catch (ex: Exception) {
-                postCrashHandlingRunnable {
-                    loadingPopup.close()
-                    ToastPopup("Cannot resume game!", this@MainMenuScreen)
-                }
-                return@launchCrashHandling
-            }
-
-            if (savedGame.gameParameters.isOnlineMultiplayer) {
-                try {
-                    game.onlineMultiplayer.loadGame(savedGame)
-                } catch (oom: OutOfMemoryError) {
-                    outOfMemory()
-                }
-            } else {
-                postCrashHandlingRunnable { /// ... and load it into the screen on main thread for GL context
-                    try {
-                        game.loadGame(savedGame)
-                    } catch (oom: OutOfMemoryError) {
-                        outOfMemory()
-                    }
-                }
-            }
-        }
+        QuickSave.autoLoadGame(this)
     }
 
     private fun quickstartNewGame() {
