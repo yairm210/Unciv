@@ -15,7 +15,9 @@
             UnusedAttribute: Since we're targeting a range of API levels, it's OK that e.g. appCategory will be ignored by OLD devices
             IconDensities: See https://developer.android.com/training/tv/start/start#banner for the banner attribute, where they recommend supplying only one density.
     -->
+    <!-- Cleartext traffic permission solely so users can host their own server without setting up https -->
     <application
+        android:usesCleartextTraffic="true"
         android:allowBackup="true"
         android:icon="@mipmap/uncivicon"
         android:roundIcon="@mipmap/uncivicon_round"

@@ -22,11 +22,14 @@ import kotlin.math.min
  */
 class TileGroupMap<T: TileGroup>(
     tileGroups: Iterable<T>,
-    private val leftAndRightPadding: Float,
-    private val topAndBottomPadding: Float,
     worldWrap: Boolean = false,
     tileGroupsToUnwrap: Set<T>? = null
 ): Group() {
+    /** If the [act] method should be performed. If this is false, every child within this [TileGroupMap] will not get their [act] method called
+     * and thus not perform any [com.badlogic.gdx.scenes.scene2d.Action]s.
+     * Most children here already do not do anything in their [act] methods. However, even iterating through all of them */
+    var shouldAct = true
+
     private var topX = -Float.MAX_VALUE
     private var topY = -Float.MAX_VALUE
     private var bottomX = Float.MAX_VALUE
@@ -72,7 +75,7 @@ class TileGroupMap<T: TileGroup>(
         }
 
         for (group in tileGroups) {
-            group.moveBy(-bottomX + leftAndRightPadding, -bottomY + topAndBottomPadding)
+            group.moveBy(-bottomX, -bottomY)
         }
 
         if (worldWrap) {
@@ -81,11 +84,11 @@ class TileGroupMap<T: TileGroup>(
 
                 mirrorTiles.first.setPosition(positionalVector.x * 0.8f * groupSize.toFloat(),
                         positionalVector.y * 0.8f * groupSize.toFloat())
-                mirrorTiles.first.moveBy(-bottomX + leftAndRightPadding - bottomX * 2, -bottomY + topAndBottomPadding)
+                mirrorTiles.first.moveBy(-bottomX - bottomX * 2, -bottomY )
 
                 mirrorTiles.second.setPosition(positionalVector.x * 0.8f * groupSize.toFloat(),
                         positionalVector.y * 0.8f * groupSize.toFloat())
-                mirrorTiles.second.moveBy(-bottomX + leftAndRightPadding + bottomX * 2, -bottomY + topAndBottomPadding)
+                mirrorTiles.second.moveBy(-bottomX + bottomX * 2, -bottomY)
             }
         }
 
@@ -146,8 +149,8 @@ class TileGroupMap<T: TileGroup>(
         // Map's width is reduced by groupSize if it is wrapped, because wrapped map will miss a tile on the right.
         // This ensures that wrapped maps have a smooth transition.
         // If map is not wrapped, Map's width doesn't need to be reduce by groupSize
-        if (worldWrap) setSize(topX - bottomX + leftAndRightPadding * 2 - groupSize, topY - bottomY + topAndBottomPadding * 2)
-        else setSize(topX - bottomX + leftAndRightPadding * 2, topY - bottomY + topAndBottomPadding * 2)
+        if (worldWrap) setSize(topX - bottomX - groupSize, topY - bottomY)
+        else setSize(topX - bottomX, topY - bottomY)
     }
 
     /**
@@ -155,7 +158,7 @@ class TileGroupMap<T: TileGroup>(
      */
     fun getPositionalVector(stageCoords: Vector2): Vector2 {
         val trueGroupSize = 0.8f * groupSize.toFloat()
-        return Vector2(bottomX - leftAndRightPadding, bottomY - topAndBottomPadding)
+        return Vector2(bottomX, bottomY)
                 .add(stageCoords)
                 .sub(groupSize.toFloat() / 2f, groupSize.toFloat() / 2f)
                 .scl(1f / trueGroupSize)
@@ -166,5 +169,9 @@ class TileGroupMap<T: TileGroup>(
     // For debugging purposes
      override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
      @Suppress("RedundantOverride")
-     override fun act(delta: Float) { super.act(delta) }
+     override fun act(delta: Float) {
+         if(shouldAct) {
+             super.act(delta)
+         }
+     }
 }

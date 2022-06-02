@@ -1,12 +1,12 @@
 {
   // Each entry s a tutorial, but the tutorial may be spread over separate paragraphs.
   // Entries starting with a _ will NOT be shown in Civilopedia.
-  // 
+  //
 
   Introduction: [
       "Welcome to Unciv!\nBecause this is a complex game, there are basic tasks to help familiarize you with the game.\nThese are completely optional, and you're welcome to explore the game on your own!"
   ],
-  
+
   // Civilopedia only, because players said this was too wall-of-text
   New_Game: [
       "Your first mission is to found your capital city.\nThis is actually an important task because your capital city will probably be your most prosperous.\nMany game bonuses apply only to your capital city and it will probably be the center of your empire.",
@@ -20,27 +20,27 @@
   Culture_and_Policies: [
       "Each turn, the culture you gain from all your cities is added to your Civilization's culture.\nWhen you have enough culture, you may pick a Social Policy, each one giving you a certain bonus."	,
       "The policies are organized into branches, with each branch providing a bonus ability when all policies in the branch have been adopted."    ,
-      "With each policy adopted, and with each city built,\n  the cost of adopting another policy rises - so choose wisely!"    
+      "With each policy adopted, and with each city built,\n  the cost of adopting another policy rises - so choose wisely!"
   ],
   City_Expansion: [
 	"Once a city has gathered enough Culture, it will expand into a neighboring tile.\nYou have no control over the tile it will expand into, but tiles with resources and higher yields are prioritized.",
 	"Each additional tile will require more culture, but generally your first cities will eventually expand to a wide tile range.",
 	"Although your city will keep expanding forever, your citizens can only work 3 tiles away from city center.\nThis should be taken into account when placing new cities."
   ],
-  Happiness: [   
+  Happiness: [
       "As cities grow in size and influence, you have to deal with a happiness mechanic that is no longer tied to each individual city.\nInstead, your entire empire shares the same level of satisfaction.\nAs your cities grow in population you’ll find that it is more and more difficult to keep your empire happy."    ,
       "In addition, you can’t even build any city improvements that increase happiness until you’ve done the appropriate research.\nIf your empire’s happiness ever goes below zero the growth rate of your cities will be hurt.\nIf your empire becomes severely unhappy (as indicated by the smiley-face icon at the top of the interface)\n  your armies will have a big penalty slapped on to their overall combat effectiveness."    ,
-      "This means that it is very difficult to expand quickly in Unciv.\nIt isn’t impossible, but as a new player you probably shouldn't do it.\nSo what should you do? Chill out, scout, and improve the land that you do have by building Workers.\nOnly build new cities once you have found a spot that you believe is appropriate."    
+      "This means that it is very difficult to expand quickly in Unciv.\nIt isn’t impossible, but as a new player you probably shouldn't do it.\nSo what should you do? Chill out, scout, and improve the land that you do have by building Workers.\nOnly build new cities once you have found a spot that you believe is appropriate."
   ],
-  Unhappiness: [    
+  Unhappiness: [
       "It seems that your citizens are unhappy!\nWhile unhappy, your civilization will suffer many detrimental effects, increasing in severity as unhappiness gets higher.",
       "Unhappiness has two main causes: Population and cities.\n  Each city causes 3 unhappiness, and each population, 1",
-      "There are 2 main ways to combat unhappiness:\n  by building happiness buildings for your population\n  or by having improved luxury resources within your borders."  
+      "There are 2 main ways to combat unhappiness:\n  by building happiness buildings for your population\n  or by having improved luxury resources within your borders."
   ],
   Golden_Age: [
       "You have entered a Golden Age!\nGolden age points are accumulated each turn by the total happiness \n  of your civilization\nWhen in a golden age, culture and production generation increases +20%,\n  and every tile already providing at least one gold will provide an extra gold."
   ],
-  
+
   Roads_and_Railroads: [
       "Connecting your cities to the capital by roads\n  will generate gold via the trade route.\nNote that each road costs 1 gold Maintenance per turn, and each Railroad costs 2 gold,\n  so it may be more economical to wait until the cities grow!"
   ],
@@ -97,7 +97,7 @@
       "Every rating and review that I get puts a smile on my face =)\n  So contact me! Send me an email, review, Github issue\n  or mail pigeon, and let's figure out how to make the game \n  even more awesome!\n(Contact info is in the Play Store)"
   ],
   Pillaging: [
-      "Military units can pillage improvements, which heals them 25 health and ruins the improvement.\nThe tile can still be worked, but advantages from the improvement - stat bonuses and resources - will be lost.\nWorkers can repair these improvements, which takes less time than building the improvement from scratch."
+      "Military units can pillage improvements, which heals them 25 health and ruins the improvement.\nThe tile can still be worked, but advantages from the improvement - stat bonuses and resources - will be lost.\nWorkers can repair these improvements, which takes less time than building the improvement from scratch.\nPillaging certain improvements will result in your units looting gold from the improvement."
   ],
   Experience: [
 	"Units that enter combat gain experience, which can then be used on promotions for that unit.\nUnits gain more experience when in Melee combat than Ranged, and more when attacking than when defending.",

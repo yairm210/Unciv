@@ -14,6 +14,7 @@ import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.saves.Gzip
 import com.unciv.utils.Log
+import com.unciv.utils.debug
 import kotlinx.coroutines.Job
 import java.io.File
 
@@ -29,10 +30,12 @@ class GameSaver(
      */
     private val files: Files,
     private val customFileLocationHelper: CustomFileLocationHelper? = null,
-    /** When set, we know we're on Android and can save to the app's personal external file directory
-     * See https://developer.android.com/training/data-storage/app-specific#external-access-files */
-    private val externalFilesDirForAndroid: String? = null
+    private val preferExternalStorage: Boolean = false
 ) {
+    init {
+        debug("Creating GameSaver, localStoragePath: %s, externalStoragePath: %s, preferExternalStorage: %s",
+            files.localStoragePath, files.externalStoragePath, preferExternalStorage)
+    }
     //region Data
 
     var autoSaveJob: Job? = null
@@ -48,11 +51,20 @@ class GameSaver(
     }
 
     private fun getSave(saveFolder: String, gameName: String): FileHandle {
-        val localFile = files.local("${saveFolder}/$gameName")
-        if (externalFilesDirForAndroid.isNullOrBlank() || !files.isExternalStorageAvailable) return localFile
-        val externalFile = files.absolute(externalFilesDirForAndroid + "/${saveFolder}/$gameName")
-        if (localFile.exists() && !externalFile.exists()) return localFile
-        return externalFile
+        debug("Getting save %s from folder %s, preferExternal: %s",
+            gameName, saveFolder, preferExternalStorage, files.externalStoragePath)
+        val location = "${saveFolder}/$gameName"
+        val localFile = files.local(location)
+        val externalFile = files.external(location)
+
+        val toReturn = if (preferExternalStorage && files.isExternalStorageAvailable && (externalFile.exists() || !localFile.exists())) {
+            externalFile
+        } else {
+            localFile
+        }
+
+        debug("Save found: %s", toReturn.file().absolutePath)
+        return toReturn
     }
 
     fun getMultiplayerSaves(): Sequence<FileHandle> {
@@ -66,26 +78,48 @@ class GameSaver(
     }
 
     private fun getSaves(saveFolder: String): Sequence<FileHandle> {
-        val localSaves = files.local(saveFolder).list().asSequence()
-        if (externalFilesDirForAndroid.isNullOrBlank() || !files.isExternalStorageAvailable) return localSaves
-        return localSaves + files.absolute(externalFilesDirForAndroid + "/${saveFolder}").list().asSequence()
+        debug("Getting saves from folder %s, externalStoragePath: %s", saveFolder, files.externalStoragePath)
+        val localFiles = files.local(saveFolder).list().asSequence()
+
+        val externalFiles = if (files.isExternalStorageAvailable) {
+            files.external(saveFolder).list().asSequence()
+        } else {
+            emptySequence()
+        }
+
+        debug("Local files: %s, external files: %s",
+            { localFiles.joinToString(prefix = "[", postfix = "]", transform = { it.file().absolutePath }) },
+            { externalFiles.joinToString(prefix = "[", postfix = "]", transform = { it.file().absolutePath }) })
+        return localFiles + externalFiles
     }
 
     fun canLoadFromCustomSaveLocation() = customFileLocationHelper != null
 
-    fun deleteSave(gameName: String) {
-        getSave(gameName).delete()
+    /**
+     * @return `true` if successful.
+     * @throws SecurityException when delete access was denied
+     */
+    fun deleteSave(gameName: String): Boolean {
+        return deleteSave(getSave(gameName))
     }
 
-    fun deleteMultiplayerSave(gameName: String) {
-        getMultiplayerSave(gameName).delete()
+    /**
+     * @return `true` if successful.
+     * @throws SecurityException when delete access was denied
+     */
+    fun deleteMultiplayerSave(gameName: String): Boolean {
+        return deleteSave(getMultiplayerSave(gameName))
     }
 
     /**
      * Only use this with a [FileHandle] obtained by one of the methods of this class!
+     *
+     * @return `true` if successful.
+     * @throws SecurityException when delete access was denied
      */
-    fun deleteSave(file: FileHandle) {
-        file.delete()
+    fun deleteSave(file: FileHandle): Boolean {
+        debug("Deleting save %s", file.path())
+        return file.delete()
     }
 
     interface ChooseLocationResult {
@@ -111,6 +145,7 @@ class GameSaver(
      */
     fun saveGame(game: GameInfo, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }) {
         try {
+            debug("Saving GameInfo %s to %s", game.gameId, file.path())
             file.writeString(gameInfoToString(game), false)
             saveCompletionCallback(null)
         } catch (ex: Exception) {
@@ -132,6 +167,7 @@ class GameSaver(
      */
     fun saveGame(game: GameInfoPreview, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }) {
         try {
+            debug("Saving GameInfoPreview %s to %s", game.gameId, file.path())
             json().toJson(game, file)
             saveCompletionCallback(null)
         } catch (ex: Exception) {
@@ -158,6 +194,7 @@ class GameSaver(
             postCrashHandlingRunnable { saveCompletionCallback(CustomSaveResult(exception = ex)) }
             return
         }
+        debug("Saving GameInfo %s to custom location %s", game.gameId, saveLocation)
         customFileLocationHelper!!.saveGame(gameData, saveLocation) {
             if (it.isSuccessful()) {
                 game.customSaveLocation = it.location
