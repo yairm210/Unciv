@@ -216,6 +216,11 @@ class WorldMapHolder(
     }
 
     private fun onTileRightClicked(unit: MapUnit, tile: TileInfo) {
+        removeUnitActionOverlay()
+        selectedTile = tile
+        unitMovementPaths.clear()
+        worldScreen.shouldUpdate = true
+
         if (worldScreen.bottomUnitTable.selectedUnitIsSwapping) {
             if (unit.movement.canUnitSwapTo(tile)) {
                 swapMoveUnitToTargetTile(unit, tile)

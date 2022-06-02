@@ -33,28 +33,28 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         touchable = Touchable.enabled
     }
 
-    fun hide(){
+    private fun hide() {
         isVisible = false
         clear()
         pack()
     }
 
     fun update() {
-        isVisible = true
-        if (!worldScreen.canChangeState) { hide(); return }
+        if (!worldScreen.canChangeState) return hide()
 
-        val attacker = tryGetAttacker()
-        if (attacker == null) { hide(); return }
+        val attacker = tryGetAttacker() ?: return hide()
 
         if (attacker is MapUnitCombatant && attacker.unit.baseUnit.isNuclearWeapon()) {
             val selectedTile = worldScreen.mapHolder.selectedTile
-            if (selectedTile == null) { hide(); return } // no selected tile
+                ?: return hide() // no selected tile
             simulateNuke(attacker, selectedTile)
         } else {
-            val defender = tryGetDefender()
-            if (defender == null) { hide(); return }
+            val defender = tryGetDefender() ?: return hide()
+            if (attacker is CityCombatant && defender is CityCombatant) return hide()
             simulateBattle(attacker, defender)
         }
+
+        isVisible = true
         pack()
         addBorderAllowOpacity(1f, Color.WHITE)
     }
