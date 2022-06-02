@@ -34,6 +34,9 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
     private val copyUserIdText = "Copy user ID"
     private val copyUserIdButton = createCopyUserIdButton()
 
+    private val friendsListText = "Friends List"
+    private val friendsListButton = createFriendsListButton()
+
     private val refreshText = "Refresh list"
     private val refreshButton = createRefreshButton()
 
@@ -74,6 +77,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
         table.add(copyGameIdButton).row()
         table.add(editButton).row()
         table.add(addGameButton).padBottom(30f).row()
+        table.add(friendsListButton).padBottom(30f).row()
         table.add(refreshButton).row()
         return table
     }
@@ -108,6 +112,14 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
                 Gdx.app.clipboard.contents = gameInfo.gameId
                 ToastPopup("Game ID copied to clipboard!", this)
             }
+        }
+        return btn
+    }
+
+    fun createFriendsListButton(): TextButton {
+        val btn = friendsListText.toTextButton()
+        btn.onClick {
+            game.setScreen(ViewFriendsListScreen(this))
         }
         return btn
     }

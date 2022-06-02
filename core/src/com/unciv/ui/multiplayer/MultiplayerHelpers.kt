@@ -1,7 +1,9 @@
 package com.unciv.ui.multiplayer
 
+import com.badlogic.gdx.Gdx
 import com.unciv.UncivGame
 import com.unciv.logic.UncivShowableException
+import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.logic.multiplayer.OnlineMultiplayerGame
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.models.translations.tr
@@ -9,6 +11,7 @@ import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.toCheckBox
 import java.io.FileNotFoundException
 import java.time.Duration
 import java.time.Instant
@@ -66,5 +69,26 @@ object MultiplayerHelpers {
         } else {
             return "[${durationToNow.toDays()}] [Days]"
         }
+    }
+
+    fun showDropboxWarning(screen: BaseScreen) {
+        if (!OnlineMultiplayer.usesDropbox() || UncivGame.Current.settings.multiplayer.hideDropboxWarning) return
+
+        val dropboxWarning = Popup(screen)
+        dropboxWarning.addGoodSizedLabel(
+            "You're currently using the default multiplayer server, which is based on a free Dropbox account. " +
+            "Because a lot of people use this, it is uncertain if you'll actually be able to access it consistently. " +
+            "Consider using a custom server instead."
+        ).colspan(2).row()
+        dropboxWarning.addButton("Open Documentation") {
+            Gdx.net.openURI("https://yairm210.github.io/Unciv/Other/Hosting-a-Multiplayer-server/")
+        }.colspan(2).row()
+
+        val checkBox = "Don't show again".toCheckBox()
+        dropboxWarning.add(checkBox)
+        dropboxWarning.addCloseButton {
+            UncivGame.Current.settings.multiplayer.hideDropboxWarning = checkBox.isChecked
+        }
+        dropboxWarning.open()
     }
 }

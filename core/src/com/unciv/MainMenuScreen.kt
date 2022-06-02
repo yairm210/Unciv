@@ -27,6 +27,7 @@ import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.ModManagementScreen
 import com.unciv.ui.popup.*
 import com.unciv.ui.saves.LoadGameScreen
+import com.unciv.ui.saves.QuickSave
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.mainmenu.WorldScreenMenuPopup
@@ -190,49 +191,7 @@ class MainMenuScreen: BaseScreen() {
             curWorldScreen.popups.filterIsInstance(WorldScreenMenuPopup::class.java).forEach(Popup::close)
             return
         }
-
-        val loadingPopup = Popup(this)
-        loadingPopup.addGoodSizedLabel("Loading...")
-        loadingPopup.open()
-        launchCrashHandling("autoLoadGame") {
-            // Load game from file to class on separate thread to avoid ANR...
-            fun outOfMemory() {
-                postCrashHandlingRunnable {
-                    loadingPopup.close()
-                    ToastPopup("Not enough memory on phone to load game!", this@MainMenuScreen)
-                }
-            }
-
-            val savedGame: GameInfo
-            try {
-                savedGame = game.gameSaver.loadLatestAutosave()
-            } catch (oom: OutOfMemoryError) {
-                outOfMemory()
-                return@launchCrashHandling
-            } catch (ex: Exception) {
-                postCrashHandlingRunnable {
-                    loadingPopup.close()
-                    ToastPopup("Cannot resume game!", this@MainMenuScreen)
-                }
-                return@launchCrashHandling
-            }
-
-            if (savedGame.gameParameters.isOnlineMultiplayer) {
-                try {
-                    game.onlineMultiplayer.loadGame(savedGame)
-                } catch (oom: OutOfMemoryError) {
-                    outOfMemory()
-                }
-            } else {
-                postCrashHandlingRunnable { /// ... and load it into the screen on main thread for GL context
-                    try {
-                        game.loadGame(savedGame)
-                    } catch (oom: OutOfMemoryError) {
-                        outOfMemory()
-                    }
-                }
-            }
-        }
+        QuickSave.autoLoadGame(this)
     }
 
     private fun quickstartNewGame() {

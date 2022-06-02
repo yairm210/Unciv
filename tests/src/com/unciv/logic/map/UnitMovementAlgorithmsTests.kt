@@ -100,7 +100,7 @@ class UnitMovementAlgorithmsTests {
             if (terrain.impassable) continue
             tile.baseTerrain = terrain.name
             tile.setTransients()
-            
+
             for (type in ruleSet.unitTypes) {
                 unit.baseUnit = BaseUnit().apply { unitType = type.key; ruleset = ruleSet }
                 Assert.assertTrue("%s cannot be at %s".format(type.key, terrain.name),
@@ -197,7 +197,7 @@ class UnitMovementAlgorithmsTests {
             civInfo.tech.techsResearched.remove("Astronomy")
 
             Assert.assertTrue("$type cannot be in Ocean until Astronomy",
-                    (unit.baseUnit.isMelee() || unit.baseUnit.isRanged()) 
+                    (unit.baseUnit.isMelee() || unit.baseUnit.isRanged())
                                 != unit.movement.canPassThrough(tile))
 
             civInfo.tech.techsResearched.add("Astronomy")
@@ -208,7 +208,7 @@ class UnitMovementAlgorithmsTests {
     fun canNOTPassThroughTileWithEnemyUnits() {
         tile.baseTerrain = Constants.grassland
         tile.setTransients()
-        
+
         unit.currentTile = tile
 
         val otherCiv = CivilizationInfo()
@@ -449,6 +449,43 @@ class UnitMovementAlgorithmsTests {
 
         Assert.assertTrue("Civilian unit must be captured by teleported unit",
             unit.currentTile == newTiles.last() && otherUnit.civInfo == unit.civInfo)
+    }
+
+    @Test
+    fun `can teleport transport and its transported units to the same tile`() {
+        civInfo.nation.name = Constants.spectator
+
+        tile.baseTerrain = Constants.ocean
+        tile.position.set(0f, 0f)
+        tile.setTransients()
+        createOpponentCivAndCity()
+        val newTiles = generateTileCopies(3)
+
+        setupMilitaryUnitInTheCurrentTile("Aircraft Carrier")
+        unit.owner = civInfo.civName
+        unit.civInfo = civInfo
+        unit.baseUnit.uniques.add("Can carry [2] [Aircraft] units")
+        unit.updateUniques(ruleSet)
+        civInfo.addUnit(unit, false)
+
+        val fighters = ArrayList<MapUnit>()
+        for (i in 0..1) {
+            val newFighter = MapUnit()
+            newFighter.baseUnit = BaseUnit().apply { unitType = "Fighter"; ruleset = ruleSet }
+            newFighter.owner = civInfo.civName
+            newFighter.civInfo = civInfo
+            newFighter.currentTile = unit.getTile()
+            tile.airUnits += newFighter
+            newFighter.name = "Fighter"
+            newFighter.isTransported = true
+            civInfo.addUnit(newFighter, false)
+            fighters += newFighter
+        }
+
+        // simulate ejecting all units within foreign territory
+        for (unit in civInfo.getCivUnits()) unit.movement.teleportToClosestMoveableTile()
+        Assert.assertTrue("Transport and transported units must be teleported to the same tile",
+            civInfo.getCivUnits().toList().size == 3 && civInfo.getCivUnits().all { it.getTile() == newTiles.last() })
     }
 
 }

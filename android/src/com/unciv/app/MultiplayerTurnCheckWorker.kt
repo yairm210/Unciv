@@ -264,12 +264,10 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
     init {
         // We can't use Gdx.files since that is only initialized within a com.badlogic.gdx.backends.android.AndroidApplication.
         // Worker instances may be stopped & recreated by the Android WorkManager, so no AndroidApplication and thus no Gdx.files available
-        val files = DefaultAndroidFiles(applicationContext.assets, ContextWrapper(applicationContext), false)
+        val files = DefaultAndroidFiles(applicationContext.assets, ContextWrapper(applicationContext), true)
         // GDX's AndroidFileHandle uses Gdx.files internally, so we need to set that to our new instance
         Gdx.files = files
-        val externalFilesDirForAndroid = applicationContext.getExternalFilesDir(null)?.path
-        Log.d(LOG_TAG, "Creating new GameSaver with externalFilesDir=[${externalFilesDirForAndroid}]")
-        gameSaver = GameSaver(files, null, externalFilesDirForAndroid)
+        gameSaver = GameSaver(files, null, true)
     }
 
     override fun doWork(): Result = runBlocking {

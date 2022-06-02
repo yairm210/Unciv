@@ -1,6 +1,7 @@
 package com.unciv.logic.multiplayer
 
 import com.badlogic.gdx.files.FileHandle
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
@@ -8,6 +9,7 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
+import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.crashhandling.CRASH_HANDLING_DAEMON_SCOPE
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
@@ -53,7 +55,8 @@ class OnlineMultiplayer {
 
                 val currentGame = getCurrentGame()
                 val multiplayerSettings = UncivGame.Current.settings.multiplayer
-                if (currentGame != null) {
+                val preview = currentGame?.preview
+                if (currentGame != null && (usesCustomServer() || preview == null || !preview.isUsersTurn())) {
                     throttle(lastCurGameRefresh, multiplayerSettings.currentGameRefreshDelay, {}) { currentGame.requestUpdate() }
                 }
 
@@ -95,15 +98,18 @@ class OnlineMultiplayer {
 
     private fun updateSavesFromFiles() {
         val saves = gameSaver.getMultiplayerSaves()
+
         val removedSaves = savedGames.keys - saves.toSet()
-        removedSaves.forEach(savedGames::remove)
+        for (saveFile in removedSaves) {
+            deleteGame(saveFile)
+        }
+
         val newSaves = saves - savedGames.keys
         for (saveFile in newSaves) {
-            val game = OnlineMultiplayerGame(saveFile)
-            savedGames[saveFile] = game
-            postCrashHandlingRunnable { EventBus.send(MultiplayerGameAdded(game.name)) }
+            addGame(saveFile)
         }
     }
+
 
     /**
      * Fires [MultiplayerGameAdded]
@@ -123,7 +129,7 @@ class OnlineMultiplayer {
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
      * @throws FileNotFoundException if the file can't be found
      */
-    suspend fun addGame(gameId: String, gameName: String? = null): String {
+    suspend fun addGame(gameId: String, gameName: String? = null) {
         val saveFileName = if (gameName.isNullOrBlank()) gameId else gameName
         var gamePreview: GameInfoPreview
         try {
@@ -132,7 +138,7 @@ class OnlineMultiplayer {
             // Game is so old that a preview could not be found on dropbox lets try the real gameInfo instead
             gamePreview = onlineGameSaver.tryDownloadGame(gameId).asPreview()
         }
-        return addGame(gamePreview, saveFileName)
+        addGame(gamePreview, saveFileName)
     }
 
     private fun addGame(newGame: GameInfo) {
@@ -140,12 +146,15 @@ class OnlineMultiplayer {
         addGame(newGamePreview, newGamePreview.gameId)
     }
 
-    private fun addGame(preview: GameInfoPreview, saveFileName: String): String {
+    private fun addGame(preview: GameInfoPreview, saveFileName: String) {
         val fileHandle = gameSaver.saveGame(preview, saveFileName)
+        return addGame(fileHandle, preview)
+    }
+
+    private fun addGame(fileHandle: FileHandle, preview: GameInfoPreview = gameSaver.loadGamePreviewFromFile(fileHandle)) {
         val game = OnlineMultiplayerGame(fileHandle, preview, Instant.now())
         savedGames[fileHandle] = game
         postCrashHandlingRunnable { EventBus.send(MultiplayerGameAdded(game.name)) }
-        return saveFileName
     }
 
     fun getGameByName(name: String): OnlineMultiplayerGame? {
@@ -252,9 +261,17 @@ class OnlineMultiplayer {
      * Fires [MultiplayerGameDeleted]
      */
     fun deleteGame(multiplayerGame: OnlineMultiplayerGame) {
-        val name = multiplayerGame.name
-        gameSaver.deleteSave(multiplayerGame.fileHandle)
-        EventBus.send(MultiplayerGameDeleted(name))
+        deleteGame(multiplayerGame.fileHandle)
+    }
+
+    private fun deleteGame(fileHandle: FileHandle) {
+        gameSaver.deleteSave(fileHandle)
+
+        val game = savedGames[fileHandle]
+        if (game == null) return
+
+        savedGames.remove(game.fileHandle)
+        postCrashHandlingRunnable { EventBus.send(MultiplayerGameDeleted(game.name)) }
     }
 
     /**
@@ -302,6 +319,11 @@ class OnlineMultiplayer {
      */
     private fun hasNewerGameState(preview1: GameInfoPreview, preview2: GameInfoPreview): Boolean {
         return preview1.turns > preview2.turns
+    }
+
+    companion object {
+        fun usesCustomServer() = UncivGame.Current.settings.multiplayer.server != Constants.dropboxMultiplayerServer
+        fun usesDropbox() = !usesCustomServer()
     }
 
 }
