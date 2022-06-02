@@ -280,13 +280,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     companion object {
         lateinit var Current: UncivGame
         fun isCurrentInitialized() = this::Current.isInitialized
-        fun isCurrentGame(gameId: String): Boolean {
-            return if (isCurrentInitialized() && Current.isGameInfoInitialized()) {
-                Current.gameInfo.gameId == gameId
-            } else {
-                false
-            }
-        }
+        fun isCurrentGame(gameId: String): Boolean = isCurrentInitialized() && Current.isGameInfoInitialized() && Current.gameInfo.gameId == gameId
         fun isDeepLinkedGameLoading() = isCurrentInitialized() && Current.deepLinkedMultiplayerGame != null
     }
 }
