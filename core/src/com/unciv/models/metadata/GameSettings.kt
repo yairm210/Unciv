@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.UncivSound
+import com.unciv.logic.multiplayer.FriendList
 import com.unciv.ui.utils.Fonts
 import java.text.Collator
 import java.time.Duration
@@ -161,6 +162,7 @@ enum class LocaleCode(var language: String, var country: String) {
 class GameSettingsMultiplayer {
     var userId = ""
     var server = Constants.dropboxMultiplayerServer
+    var friendList: MutableList<FriendList.Friend> = mutableListOf()
     var turnCheckerEnabled = true
     var turnCheckerPersistentNotificationEnabled = true
     var turnCheckerDelay = Duration.ofMinutes(5)
@@ -169,6 +171,7 @@ class GameSettingsMultiplayer {
     var allGameRefreshDelay = Duration.ofMinutes(5)
     var currentGameTurnNotificationSound: UncivSound = UncivSound.Silent
     var otherGameTurnNotificationSound: UncivSound = UncivSound.Silent
+    var hideDropboxWarning = false
 }
 
 enum class GameSetting(
@@ -181,6 +184,7 @@ enum class GameSetting(
 //     MULTIPLAYER_STATUSBUTTON_IN_SINGLEPLAYER(Boolean::class, { it.multiplayer::statusButtonInSinglePlayer }),
 //     MULTIPLAYER_TURN_CHECKER_ENABLED(Boolean::class, { it.multiplayer::turnCheckerEnabled }),
 //     MULTIPLAYER_TURN_CHECKER_PERSISTENT_NOTIFICATION_ENABLED(Boolean::class, { it.multiplayer::turnCheckerPersistentNotificationEnabled }),
+//     MULTIPLAYER_HIDE_DROPBOX_WARNING(Boolean::class, { it.multiplayer::hideDropboxWarning }),
     MULTIPLAYER_TURN_CHECKER_DELAY(Duration::class, { it.multiplayer::turnCheckerDelay }),
     MULTIPLAYER_CURRENT_GAME_REFRESH_DELAY(Duration::class, { it.multiplayer::currentGameRefreshDelay }),
     MULTIPLAYER_ALL_GAME_REFRESH_DELAY(Duration::class, { it.multiplayer::allGameRefreshDelay }),

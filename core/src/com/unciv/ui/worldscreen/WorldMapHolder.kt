@@ -32,6 +32,7 @@ import com.unciv.models.AttackableTile
 import com.unciv.models.UncivSound
 import com.unciv.models.helpers.MapArrowType
 import com.unciv.models.helpers.MiscArrowTypes
+import com.unciv.ui.UncivStage
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
@@ -51,7 +52,10 @@ import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.utils.Log
 
 
-class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap: TileMap): ZoomableScrollPane() {
+class WorldMapHolder(
+    internal val worldScreen: WorldScreen,
+    internal val tileMap: TileMap
+) : ZoomableScrollPane(20f, 20f) {
     internal var selectedTile: TileInfo? = null
     val tileGroups = HashMap<TileInfo, List<WorldTileGroup>>()
 
@@ -64,19 +68,40 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
     private val unitMovementPaths: HashMap<MapUnit, ArrayList<TileInfo>> = HashMap()
 
-    private var maxWorldZoomOut = 2f
-    private var minZoomScale = 0.5f
+    private lateinit var tileGroupMap: TileGroupMap<WorldTileGroup>
 
     init {
         if (Gdx.app.type == Application.ApplicationType.Desktop) this.setFlingTime(0f)
         continuousScrollingX = tileMap.mapParameters.worldWrap
         reloadMaxZoom()
+        disablePointerEventsAndActionsOnPan()
+    }
+
+    /**
+     * When scrolling the world map, there are two unnecessary (at least currently) things happening that take a decent amount of time:
+     *
+     * 1. Checking which [Actor]'s bounds the pointer (mouse/finger) entered+exited and sending appropriate events to these actors
+     * 2. Running all [Actor.act] methods of all child [Actor]s
+     *
+     * Disabling them while panning increases the frame rate while panning by approximately 100%.
+     */
+    private fun disablePointerEventsAndActionsOnPan() {
+        onPanStartListener = {
+            Log.debug("Disable pointer enter/exit events & TileGroupMap.act()")
+            (stage as UncivStage).performPointerEnterExitEvents = false
+            tileGroupMap.shouldAct = false
+        }
+        onPanStopListener = {
+            Log.debug("Enable pointer enter/exit events & TileGroupMap.act()")
+            (stage as UncivStage).performPointerEnterExitEvents = true
+            tileGroupMap.shouldAct = true
+        }
     }
 
     internal fun reloadMaxZoom() {
-        maxWorldZoomOut = UncivGame.Current.settings.maxWorldZoomOut
-        minZoomScale = 1f / maxWorldZoomOut
-        if (scaleX < minZoomScale) zoom(1f)   // since normally min isn't reached exactly, only powers of 0.8
+        maxZoom = UncivGame.Current.settings.maxWorldZoomOut
+        minZoom = 1f / maxZoom
+        if (scaleX < minZoom) zoom(1f)   // since normally min isn't reached exactly, only powers of 0.8
     }
 
     // Interface for classes that contain the data required to draw a button
@@ -89,10 +114,8 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     internal fun addTiles() {
         val tileSetStrings = TileSetStrings()
         val daTileGroups = tileMap.values.map { WorldTileGroup(worldScreen, it, tileSetStrings) }
-        val tileGroupMap = TileGroupMap(
+        tileGroupMap = TileGroupMap(
             daTileGroups,
-            worldScreen.stage.width * maxWorldZoomOut / 2,
-            worldScreen.stage.height * maxWorldZoomOut / 2,
             continuousScrollingX)
         val mirrorTileGroups = tileGroupMap.getMirrorTiles()
 
@@ -139,12 +162,9 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
         actor = tileGroupMap
 
-        setSize(worldScreen.stage.width * maxWorldZoomOut, worldScreen.stage.height * maxWorldZoomOut)
-        setOrigin(width / 2, height / 2)
-        center(worldScreen.stage)
+        setSize(worldScreen.stage.width, worldScreen.stage.height)
 
         layout() // Fit the scroll pane to the contents - otherwise, setScroll won't work!
-
     }
 
     private fun onTileClicked(tileInfo: TileInfo) {
@@ -698,12 +718,10 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         val originalScrollX = scrollX
         val originalScrollY = scrollY
 
-        // We want to center on the middle of the TileGroup (TG.getX()+TG.getWidth()/2)
-        // and so the scroll position (== filter the screen starts) needs to be half the ScrollMap away
-        val finalScrollX = tileGroup.x + tileGroup.width / 2 - width / 2
+        val finalScrollX = tileGroup.x + tileGroup.width / 2
 
-        // Here it's the same, only the Y axis is inverted - when at 0 we're at the top, not bottom - so we invert it back.
-        val finalScrollY = maxY - (tileGroup.y + tileGroup.width / 2 - height / 2)
+        /** The Y axis of [scrollY] is inverted - when at 0 we're at the top, not bottom - so we invert it back. */
+        val finalScrollY = maxY - (tileGroup.y + tileGroup.width / 2)
 
         if (finalScrollX == originalScrollX && finalScrollY == originalScrollY) return false
 
@@ -737,20 +755,29 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     }
 
     override fun zoom(zoomScale: Float) {
-        if (zoomScale < minZoomScale || zoomScale > 2f) return
-        setScale(zoomScale)
-        val scale = 1 / scaleX  // don't use zoomScale itself, in case it was out of bounds and not applied
-        if (scale >= 1)
-            for (tileGroup in allWorldTileGroups)
+        super.zoom(zoomScale)
+
+        clampCityButtonSize()
+    }
+
+    /** We don't want the city buttons becoming too large when zooming out */
+    private fun clampCityButtonSize() {
+        // use scaleX instead of zoomScale itself, because zoomScale might have been outside minZoom..maxZoom and thus not applied
+        val clampedCityButtonZoom = 1 / scaleX
+        if (clampedCityButtonZoom >= 1) {
+            for (tileGroup in allWorldTileGroups) {
                 tileGroup.cityButtonLayerGroup.isTransform = false // to save on rendering time to improve framerate
-        if (scale < 1 && scale >= minZoomScale)
+            }
+        }
+        if (clampedCityButtonZoom < 1 && clampedCityButtonZoom >= minZoom) {
             for (tileGroup in allWorldTileGroups) {
                 // ONLY set those groups that have active city buttons as transformable!
                 // This is massively framerate-improving!
                 if (tileGroup.cityButtonLayerGroup.hasChildren())
                     tileGroup.cityButtonLayerGroup.isTransform = true
-                tileGroup.cityButtonLayerGroup.setScale(scale)
+                tileGroup.cityButtonLayerGroup.setScale(clampedCityButtonZoom)
             }
+        }
     }
 
     fun removeUnitActionOverlay() {

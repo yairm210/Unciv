@@ -314,11 +314,9 @@ class CityScreen(
             }
         }
 
-        val tileMapGroup = TileGroupMap(tileGroups, stage.width / 2, stage.height / 2, tileGroupsToUnwrap = tilesToUnwrap)
+        val tileMapGroup = TileGroupMap(tileGroups, tileGroupsToUnwrap = tilesToUnwrap)
         mapScrollPane.actor = tileMapGroup
         mapScrollPane.setSize(stage.width, stage.height)
-        mapScrollPane.setOrigin(stage.width / 2, stage.height / 2)
-        mapScrollPane.center(stage)
         stage.addActor(mapScrollPane)
 
         mapScrollPane.layout() // center scrolling

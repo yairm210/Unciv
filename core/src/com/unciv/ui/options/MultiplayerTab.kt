@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.Constants
+import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.logic.multiplayer.storage.SimpleHttp
 import com.unciv.models.UncivSound
 import com.unciv.models.metadata.GameSetting
@@ -115,7 +116,7 @@ private fun addMultiplayerServerOptions(
 
     val connectionToServerButton = "Check connection to server".toTextButton()
 
-    val textToShowForMultiplayerAddress = if (isCustomServer(settings)) {
+    val textToShowForMultiplayerAddress = if (OnlineMultiplayer.usesCustomServer()) {
         settings.multiplayer.server
     } else {
         "https://"
