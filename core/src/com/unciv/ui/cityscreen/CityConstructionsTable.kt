@@ -204,7 +204,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         val constructionsScrollY = availableConstructionsScrollPane.scrollY
 
         if (!availableConstructionsTable.hasChildren()) { //
-            availableConstructionsTable.add("Loading...".toLabel()).pad(10f)
+            availableConstructionsTable.add(Constants.loading.toLabel()).pad(10f)
         }
 
         launchCrashHandling("Construction info gathering - ${cityScreen.city.name}") {

@@ -66,6 +66,7 @@ object Constants {
     const val close = "Close"
     const val yes = "Yes"
     const val no = "No"
+    const val loading = "Loading..."
 
     const val barbarians = "Barbarians"
     const val spectator = "Spectator"

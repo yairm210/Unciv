@@ -1,8 +1,12 @@
 package com.unciv.ui.newgamescreen
 
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CityStateType
+import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.UniqueType
@@ -10,6 +14,8 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.multiplayer.MultiplayerHelpers
+import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.*
 
@@ -100,9 +106,12 @@ class GameOptionsTable(
 
     private fun Table.addIsOnlineMultiplayerCheckbox() =
             addCheckbox("Online Multiplayer", gameParameters.isOnlineMultiplayer)
-            {
-                gameParameters.isOnlineMultiplayer = it
+            { shouldUseMultiplayer ->
+                gameParameters.isOnlineMultiplayer = shouldUseMultiplayer
                 updatePlayerPickerTable("")
+                if (shouldUseMultiplayer) {
+                    MultiplayerHelpers.showDropboxWarning(previousScreen as BaseScreen)
+                }
             }
 
     private fun numberOfCityStates() = ruleset.nations.values.count {

@@ -34,7 +34,7 @@ open class TileGroup(
     /*
         Layers (reordered in TileGroupMap):
         Base image (+ overlay)
-        Terrain Feature overlay (including roads and pixel units)
+        Terrain Feature overlay (including roads)
         Misc: improvements, resources, yields, worked, resources, border, arrows, and starting locations in editor
         Pixel Units
         Highlight, Fog, Crosshair layer (in that order)

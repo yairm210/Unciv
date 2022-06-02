@@ -1,3 +1,41 @@
+## 4.1.6
+
+Multiplayer friends list - by alexban 011
+
+By Azzurite:
+- Improve performance of worldmap panning
+- Fix multiplayer sometimes duplicating games
+- Allow non-SSL-encrypted HTTP traffic & warn Dropbox users
+
+By OptimizedForDensity:
+- Fix aircraft disappearing when carrier is teleported
+- Pillaging certain improvements yields stats
+
+By SomeTroglodyte:
+- Fix Pixel unit nation colors after combat
+
+Autoassign population when the manual assignment fails - By JackRainy
+
+## 4.1.5
+
+Better minimap buttons
+
+By SomeTroglodyte:
+- Draw borders under pixel units
+- Fix rare NextTurnButton crash
+
+Improve unconstructable improvement suggestions - By doublep
+
+By alexban011:
+- Disable state-changing buttons for puppet cities
+- Add optional on-screen buttons to zoom in and out
+
+Corrected some broken policy uniques - By OptimizedForDensity
+
+Dynamically adjust StatsTable height - By itanasi
+
+Fix multiplayer turn checker writing to wrong locations - By Azzurite
+
 ## 4.1.4
 
 AI counteroffers will no longer contain items already offered by the player
