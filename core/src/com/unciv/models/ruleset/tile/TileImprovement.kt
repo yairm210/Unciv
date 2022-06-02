@@ -138,7 +138,61 @@ class TileImprovement : RulesetStatsObject() {
             textList += FormattedLine("Unique to [$uniqueTo]", link="Nation/$uniqueTo")
         }
 
-        if (terrainsCanBeBuiltOn.isNotEmpty()) {
+        //todo Why does this have to be so complicated? A unit's "Can build [Land] improvements on tiles"
+        //     creates the _justified_ expectation that an improvement it can build _will_ have
+        //     `matchesFilter("Land")==true` - but that's not the case.
+        //     A kludge, but for display purposes the test below is meaningful enough.
+        val canOnlyFilters = getMatchingUniques(UniqueType.CanOnlyBeBuiltOnTile)
+            .map { it.params[0].run { if (this == "Coastal") "Land" else this } }.toSet()
+        val cannotFilters = getMatchingUniques(UniqueType.CannotBuildOnTile).map { it.params[0] }.toSet()
+        val resourcesImprovedByThis = ruleset.tileResources.values.filter { it.isImprovedBy(name) }
+        val expandedCanBeBuiltOn = sequence {
+                yieldAll(terrainsCanBeBuiltOn)
+                yieldAll(terrainsCanBeBuiltOn.asSequence().mapNotNull { ruleset.terrains[it] }.flatMap { it.occursOn.asSequence() })
+                if (hasUnique(UniqueType.CanOnlyImproveResource))
+                    yieldAll(resourcesImprovedByThis.asSequence().flatMap { it.terrainsCanBeFoundOn })
+                if (name.startsWith(Constants.remove)) name.removePrefix(Constants.remove).apply {
+                    yield(this)
+                    ruleset.terrains[this]?.occursOn?.let { yieldAll(it) }
+                    ruleset.tileImprovements[this]?.terrainsCanBeBuiltOn?.let { yieldAll(it) }
+                }
+            }.filter { it !in cannotFilters }.toMutableSet()
+        val terrainsCanBeBuiltOnTypes = sequence {
+                yieldAll(expandedCanBeBuiltOn.asSequence()
+                    .mapNotNull { ruleset.terrains[it]?.type })
+                yieldAll(TerrainType.values().asSequence()
+                    .filter { it.name in expandedCanBeBuiltOn })
+            }.filter { it.name !in cannotFilters }.toMutableSet()
+        if (canOnlyFilters.isNotEmpty() &&
+                canOnlyFilters.intersect(expandedCanBeBuiltOn).isEmpty()) {
+            expandedCanBeBuiltOn.clear()
+            if (terrainsCanBeBuiltOnTypes.none { it.name in canOnlyFilters })
+                terrainsCanBeBuiltOnTypes.clear()
+        }
+        fun matchesBuildImprovementsFilter(filter: String) =
+                matchesFilter(filter) ||
+                filter in expandedCanBeBuiltOn ||
+                terrainsCanBeBuiltOnTypes.any { it.name == filter }
+
+        val buildingUnits = if (hasUnique(UniqueType.Unbuildable)) emptyList()
+            else ruleset.units.values.asSequence()
+            .filter { unit ->
+                turnsToBuild != 0 &&
+                    unit.getMatchingUniques(UniqueType.BuildImprovements, StateForConditionals.IgnoreConditionals)
+                    .any { matchesBuildImprovementsFilter(it.params[0]) } ||
+                unit.hasUnique(UniqueType.CreateWaterImprovements) &&
+                        terrainsCanBeBuiltOnTypes.contains(TerrainType.Water)
+            }.toList()
+
+        val constructingUnits = ruleset.units.values.asSequence()
+            .filter { unit ->
+                unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit, StateForConditionals.IgnoreConditionals)
+                    .any { it.params[0] == name }
+            }.toList()
+
+        val creatorExists = buildingUnits.isNotEmpty() || constructingUnits.isNotEmpty()
+
+        if (creatorExists && terrainsCanBeBuiltOn.isNotEmpty()) {
             textList += FormattedLine()
             if (terrainsCanBeBuiltOn.size == 1) {
                 with (terrainsCanBeBuiltOn.first()) {
@@ -153,7 +207,7 @@ class TileImprovement : RulesetStatsObject() {
         }
 
         var addedLineBeforeResourceBonus = false
-        for (resource in ruleset.tileResources.values.filter { it.isImprovedBy(name) }) {
+        for (resource in resourcesImprovedByThis) {
             if (resource.improvementStats == null) continue
             if (!addedLineBeforeResourceBonus) {
                 addedLineBeforeResourceBonus = true
@@ -193,15 +247,12 @@ class TileImprovement : RulesetStatsObject() {
                 }
         }
 
-        val unit = ruleset.units.asSequence().firstOrNull {
-            entry -> entry.value.uniques.any {
-                it.startsWith("Can construct [$name]")
-            }
-        }?.key
-        if (unit != null) {
+        if (creatorExists)
             textList += FormattedLine()
-            textList += FormattedLine("{Can be constructed by} {$unit}", link="Unit/$unit")
-        }
+        for (unit in buildingUnits)
+            textList += FormattedLine("{Can be built by} {$unit}", unit.makeLink())
+        for (unit in constructingUnits)
+            textList += FormattedLine("{Can be constructed by} {$unit}", unit.makeLink())
 
         textList += Belief.getCivilopediaTextMatching(name, ruleset)
 
