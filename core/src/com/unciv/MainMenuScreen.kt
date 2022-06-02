@@ -10,7 +10,6 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.GameStarter
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapShape
-import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.mapgenerator.MapGenerator
@@ -23,6 +22,7 @@ import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.ModManagementScreen
 import com.unciv.ui.popup.*
@@ -31,6 +31,8 @@ import com.unciv.ui.saves.QuickSave
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.mainmenu.WorldScreenMenuPopup
+import kotlin.math.min
+
 
 class MainMenuScreen: BaseScreen() {
     private val backgroundTable = Table().apply { background= ImageGetter.getBackground(Color.WHITE) }
@@ -76,16 +78,29 @@ class MainMenuScreen: BaseScreen() {
         ImageGetter.ruleset = RulesetCache.getVanillaRuleset()
 
         launchCrashHandling("ShowMapBackground") {
-            val newMap = MapGenerator(RulesetCache.getVanillaRuleset())
+            var scale = 1f
+            var mapWidth = stage.width / TileGroupMap.groupHorizontalAdvance
+            var mapHeight = stage.height / TileGroupMap.groupSize
+            if (mapWidth * mapHeight > 3000f) {  // 3000 as max estimated number of tiles is arbitrary (we had typically 721 before)
+                scale = mapWidth * mapHeight / 3000f
+                mapWidth /= scale
+                mapHeight /= scale
+                scale = min(scale, 20f)
+            }
+
+            val mapRuleset = RulesetCache.getVanillaRuleset()
+            val newMap = MapGenerator(mapRuleset)
                     .generateMap(MapParameters().apply {
                         shape = MapShape.rectangular
-                        mapSize = MapSizeNew(MapSize.Small)
+                        mapSize = MapSizeNew(mapWidth.toInt() + 1, mapHeight.toInt() + 1)
                         type = MapType.default
                         waterThreshold = -0.055f // Gives the same level as when waterThreshold was unused in MapType.default
                     })
+
             postCrashHandlingRunnable { // for GL context
-                ImageGetter.setNewRuleset(RulesetCache.getVanillaRuleset())
+                ImageGetter.setNewRuleset(mapRuleset)
                 val mapHolder = EditorMapHolder(this@MainMenuScreen, newMap) {}
+                mapHolder.setScale(scale)
                 backgroundTable.addAction(Actions.sequence(
                         Actions.fadeOut(0f),
                         Actions.run {
