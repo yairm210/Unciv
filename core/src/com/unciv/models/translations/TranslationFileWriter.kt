@@ -506,7 +506,7 @@ object TranslationFileWriter {
                 !endWithNewline && translated.endsWith('\n') -> translated.removeSuffix("\n")
                 else -> translated
             }
-            val localeCode = LocaleCode.valueOf(language)
+            val localeCode = LocaleCode.valueOf(language.replace("_",""))
             val path = fastlanePath + localeCode.language
             File(path).mkdirs()
             File(path + File.separator + fileName).writeText(fileContent)

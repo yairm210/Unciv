@@ -16,6 +16,7 @@ import com.unciv.models.Religion
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.*
+import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.UniqueType
 
 class TestGame {
@@ -180,4 +181,6 @@ class TestGame {
             createRulesetObject(ruleset.buildings, *uniques) { Building() }
     fun createPolicy(vararg uniques: String) =
             createRulesetObject(ruleset.policies, *uniques) { Policy() }
+    fun createTileImprovement(vararg uniques: String) =
+            createRulesetObject(ruleset.tileImprovements, *uniques) { TileImprovement() }
 }

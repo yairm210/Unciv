@@ -125,5 +125,15 @@ Single player does not use this feature.
 
 | [![](https://static.itch.io/images/badge.svg)](https://yairm210.itch.io/unciv)    |    [![](https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png)](https://play.google.com/store/apps/details?id=com.unciv.app)   |    [![](https://fdroid.gitlab.io/artwork/badge/get-it-on.png)](https://f-droid.org/en/packages/com.unciv.app/)	| [![](https://flathub.org/assets/badges/flathub-badge-en.svg)](https://flathub.org/apps/details/io.github.yairm210.unciv)  
 |---	|---	|---	|---	|
+## Run with Docker
+
+If you have docker and docker-compose installed, you can:
+
+* Run ```$ docker-compose build && docker-compose up```
+* Open http://localhost:6901/vnc.html?password=headless
+
+And if you are using docker desktop:
+* ```$ docker compose build && docker compose up```
+* http://localhost:6901/vnc.html?password=headless
 
 # [Credits and 3rd parties](docs/Credits.md)
