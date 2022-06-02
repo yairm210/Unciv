@@ -174,8 +174,7 @@ class CivilopediaScreen(
         val imageSize = 50f
         onBackButtonClicked { game.setScreen(previousScreen) }
 
-        val religionEnabled = if (game.isGameInfoInitialized()) game.gameInfo.isReligionEnabled()
-            else ruleset.beliefs.isNotEmpty()
+        val religionEnabled = showReligionInCivilopedia(ruleset)
         val victoryTypes = if (game.isGameInfoInitialized()) game.gameInfo.gameParameters.victoryTypes
             else listOf()
 
@@ -299,7 +298,7 @@ class CivilopediaScreen(
     }
 
     private fun navigateEntries(direction: Int) {
-        //todo this is abusing a Map as Array - there must be a collection allowing both easy positional and associative access 
+        //todo this is abusing a Map as Array - there must be a collection allowing both easy positional and associative access
         val index = entryIndex.keys.indexOf(currentEntry)
         if (index < 0) return selectEntry(entryIndex.keys.first(), true)
         val newIndex = when (direction) {
@@ -313,6 +312,17 @@ class CivilopediaScreen(
     override fun resize(width: Int, height: Int) {
         if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
             game.setScreen(CivilopediaScreen(ruleset, previousScreen, currentCategory, currentEntry))
+        }
+    }
+
+    companion object {
+        /** Test whether to show Religion-specific items, does not require a game to be running */
+        // Here we decide whether to show Religion in Civilopedia from Main Menu (no gameInfo loaded)
+        fun showReligionInCivilopedia(ruleset: Ruleset? = null) = when {
+            UncivGame.isCurrentInitialized() && UncivGame.Current.isGameInfoInitialized() ->
+                UncivGame.Current.gameInfo.isReligionEnabled()
+            ruleset != null -> ruleset.beliefs.isNotEmpty()
+            else -> true
         }
     }
 }
