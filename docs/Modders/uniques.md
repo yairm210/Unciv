@@ -1487,6 +1487,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Unpillagable"
 	Applicable to: Improvement
 
+??? example  "Pillaging this improvement yields approximately [stats]"
+	Example: "Pillaging this improvement yields approximately [+1 Gold, +2 Production]"
+
+	Applicable to: Improvement
+
+??? example  "Pillaging this improvement yields [stats]"
+	Example: "Pillaging this improvement yields [+1 Gold, +2 Production]"
+
+	Applicable to: Improvement
+
 ??? example  "Irremovable"
 	Applicable to: Improvement
 
