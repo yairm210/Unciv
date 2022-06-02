@@ -229,6 +229,16 @@ class TileImprovement : RulesetStatsObject() {
                 textList += FormattedLine(unique)
         }
 
+        // Be clearer when one needs to chop down a Forest first... A "Can be built on Plains" is clear enough,
+        // but a "Can be built on Land" is not - how is the user to know Forest is _not_ Land?
+        if (creatorExists &&
+                !isEmpty() && // Has any Stats
+                !hasUnique(UniqueType.NoFeatureRemovalNeeded) &&
+                !hasUnique(UniqueType.RemovesFeaturesIfBuilt) &&
+                terrainsCanBeBuiltOn.none { it in ruleset.terrains }
+        )
+            textList += FormattedLine("Needs removal of terrain features to be built")
+
         if (isAncientRuinsEquivalent() && ruleset.ruinRewards.isNotEmpty()) {
             val difficulty = if (!UncivGame.isCurrentInitialized() || !UncivGame.Current.isGameInfoInitialized())
                     "Prince"
