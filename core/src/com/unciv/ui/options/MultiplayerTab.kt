@@ -130,7 +130,7 @@ private fun addMultiplayerServerOptions(
         multiplayerServerTextField.text = Gdx.app.clipboard.contents
     }).row()
     multiplayerServerTextField.onChange {
-        val isCustomServer = multiplayerServerTextField.text != Constants.dropboxMultiplayerServer
+        val isCustomServer = OnlineMultiplayer.usesCustomServer()
         connectionToServerButton.isEnabled = isCustomServer
 
         for (refreshSelect in toUpdate) refreshSelect.update(isCustomServer)
@@ -221,7 +221,7 @@ private class RefreshSelect(
     private val settingsSelect: SettingsSelect<Duration>
 
     init {
-        val initialOptions = if (isCustomServer(settings)) customServerItems else dropboxItems
+        val initialOptions = if (OnlineMultiplayer.usesCustomServer()) customServerItems else dropboxItems
         settingsSelect = SettingsSelect(labelText, initialOptions, setting, settings)
     }
 
@@ -276,6 +276,3 @@ private fun createRefreshOptions(unit: ChronoUnit, vararg options: Long): List<S
         SelectItem(duration.format(), duration)
     }
 }
-
-private fun isCustomServer(settings: GameSettings) = settings.multiplayer.server != Constants.dropboxMultiplayerServer
-

@@ -222,10 +222,9 @@ class NewGameScreen(
     }
 
     private fun checkConnectionToMultiplayerServer(): Boolean {
-        val isDropbox = UncivGame.Current.settings.multiplayer.server == Constants.dropboxMultiplayerServer
         return try {
             val multiplayerServer = UncivGame.Current.settings.multiplayer.server
-            val u =  URL(if (isDropbox) "https://content.dropboxapi.com" else multiplayerServer)
+            val u =  URL(if (OnlineMultiplayer.usesDropbox()) "https://content.dropboxapi.com" else multiplayerServer)
             val con = u.openConnection()
             con.connectTimeout = 3000
             con.connect()
