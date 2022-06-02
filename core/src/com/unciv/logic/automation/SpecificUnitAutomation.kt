@@ -330,16 +330,14 @@ object SpecificUnitAutomation {
 
         if (cityToProtect != null) {
             destination = cityToProtect.getCenterTile().neighbors.asSequence()
-                .filterNot { unit.getTile().owningCity == it.owningCity } // to prevent the ai from moving around randomly
-                .filter { unit.movement.canMoveTo(it) }
+                .filter { unit.movement.canMoveTo(it) || it == unit.getTile() }
                 .sortedBy { it.aerialDistanceTo(unit.currentTile) }
                 .firstOrNull { unit.movement.canReach(it) }
         }
         if (destination == null) {
             if (cityToConvert == null) return
             destination = cityToConvert.getCenterTile().neighbors.asSequence()
-                .filterNot { unit.getTile().owningCity == it.owningCity } // to prevent the ai from moving around randomly
-                .filter { unit.movement.canMoveTo(it) }
+                .filter { unit.movement.canMoveTo(it) || it == unit.getTile() }
                 .sortedBy { it.aerialDistanceTo(unit.currentTile) }
                 .firstOrNull { unit.movement.canReach(it) }
         }
