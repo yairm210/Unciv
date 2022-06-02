@@ -12,6 +12,7 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
+import com.unciv.ui.civilopedia.CivilopediaScreen.Companion.showReligionInCivilopedia
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.toPercent
 import com.unciv.ui.worldscreen.unit.UnitActions
@@ -159,8 +160,8 @@ class TileImprovement : RulesetStatsObject() {
                 textList += FormattedLine()
             }
             val statsString = resource.improvementStats.toString()
-
-            textList += FormattedLine("[${statsString}] <in [${resource.name}] tiles>", link = "Resource/${resource.name}")
+            // Line intentionally modeled as UniqueType.Stats + ConditionalInTiles
+            textList += FormattedLine("[${statsString}] <in [${resource.name}] tiles>", link = resource.makeLink())
         }
 
         if (techRequired != null) {
@@ -175,21 +176,16 @@ class TileImprovement : RulesetStatsObject() {
         }
 
         if (isAncientRuinsEquivalent() && ruleset.ruinRewards.isNotEmpty()) {
-            val difficulty: String
-            val religionEnabled: Boolean
-            if (UncivGame.isCurrentInitialized() && UncivGame.Current.isGameInfoInitialized()) {
-                difficulty = UncivGame.Current.gameInfo.gameParameters.difficulty
-                religionEnabled = UncivGame.Current.gameInfo.isReligionEnabled()
-            } else {
-                difficulty = "Prince"  // most factors == 1
-                religionEnabled = true
-            }
+            val difficulty = if (!UncivGame.isCurrentInitialized() || !UncivGame.Current.isGameInfoInitialized())
+                    "Prince"
+                else UncivGame.Current.gameInfo.gameParameters.difficulty
+            val religionEnabled = showReligionInCivilopedia(ruleset)
             textList += FormattedLine()
             textList += FormattedLine("The possible rewards are:")
             ruleset.ruinRewards.values.asSequence()
                 .filter { reward ->
                     difficulty !in reward.excludedDifficulties &&
-                    (religionEnabled || !reward.hasUnique(UniqueType.HiddenWithoutReligion))
+                            (religionEnabled || !reward.hasUnique(UniqueType.HiddenWithoutReligion))
                 }
                 .forEach { reward ->
                     textList += FormattedLine(reward.name, starred = true, color = reward.color)
