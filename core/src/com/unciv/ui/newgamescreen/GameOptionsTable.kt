@@ -104,15 +104,20 @@ class GameOptionsTable(
             addCheckbox("Enable Nuclear Weapons", gameParameters.nuclearWeaponsEnabled)
             { gameParameters.nuclearWeaponsEnabled = it }
 
-    private fun Table.addIsOnlineMultiplayerCheckbox() =
-            addCheckbox("Online Multiplayer", gameParameters.isOnlineMultiplayer)
-            { shouldUseMultiplayer ->
-                gameParameters.isOnlineMultiplayer = shouldUseMultiplayer
-                updatePlayerPickerTable("")
-                if (shouldUseMultiplayer) {
-                    MultiplayerHelpers.showDropboxWarning(previousScreen as BaseScreen)
-                }
+    private fun Table.addIsOnlineMultiplayerCheckbox() {
+        if (UncivGame.Current.settings.multiplayer.disable) {
+            gameParameters.isOnlineMultiplayer = false
+            return
+        }
+        addCheckbox("Online Multiplayer", gameParameters.isOnlineMultiplayer) {
+            shouldUseMultiplayer ->
+            gameParameters.isOnlineMultiplayer = shouldUseMultiplayer
+            updatePlayerPickerTable("")
+            if (shouldUseMultiplayer) {
+                MultiplayerHelpers.showDropboxWarning(previousScreen as BaseScreen)
             }
+        }
+    }
 
     private fun numberOfCityStates() = ruleset.nations.values.count {
         it.isCityState()
@@ -293,4 +298,3 @@ class GameOptionsTable(
         updatePlayerPickerTable(desiredCiv)
     }
 }
-

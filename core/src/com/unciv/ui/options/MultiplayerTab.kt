@@ -2,9 +2,12 @@ package com.unciv.ui.options
 
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Array
 import com.unciv.Constants
@@ -25,13 +28,33 @@ fun multiplayerTab(
     pad(10f)
     defaults().pad(5f)
 
+    fun setControlsDisabled(disable: Boolean) {
+        val color = if (disable) Color.GRAY else Color.WHITE
+        for (cell in cells) {
+            if (cell.row == 0) continue
+            (cell.actor as? SelectBox<*>)?.isDisabled = disable
+            (cell.actor as? TextField)?.isDisabled = disable
+            (cell.actor as? TextButton)?.apply {
+                isEnabled = !disable
+                label.color = color
+            }
+            (cell.actor as? Label)?.color = color
+        }
+    }
+
     val settings = optionsPopup.settings
+
+    optionsPopup.addCheckbox(this, "Disable multiplayer and background network activity",
+        settings.multiplayer.disable, updateWorld = true
+    ) {
+        settings.multiplayer.disable = it
+        setControlsDisabled(it)
+    }
 
     optionsPopup.addCheckbox(this, "Enable multiplayer status button in singleplayer games",
         settings.multiplayer.statusButtonInSinglePlayer, updateWorld = true
     ) {
         settings.multiplayer.statusButtonInSinglePlayer = it
-        settings.save()
     }
 
     val curRefreshSelect = addRefreshSelect(this, settings, settings.multiplayer::currentGameRefreshDelay,
@@ -47,7 +70,6 @@ fun multiplayerTab(
             settings.multiplayer.turnCheckerEnabled
         ) {
             settings.multiplayer.turnCheckerEnabled = it
-            settings.save()
         }
 
         if (settings.multiplayer.turnCheckerEnabled) {
@@ -70,11 +92,11 @@ fun multiplayerTab(
     val multiplayerServerTextField = TextField(textToShowForMultiplayerAddress, BaseScreen.skin)
     multiplayerServerTextField.setTextFieldFilter { _, c -> c !in " \r\n\t\\" }
     multiplayerServerTextField.programmaticChangeEvents = true
-    val serverIpTable = Table()
 
-    serverIpTable.add("Server address".toLabel().onClick {
+    add("Server address".toLabel().onClick {
         multiplayerServerTextField.text = Gdx.app.clipboard.contents
-    }).row()
+    }).colspan(2).padBottom(0f).row()
+
     multiplayerServerTextField.onChange {
         val isCustomServer = multiplayerServerTextField.text != Constants.dropboxMultiplayerServer
         connectionToServerButton.isEnabled = isCustomServer
@@ -96,8 +118,7 @@ fun multiplayerTab(
     }
 
     val screen = optionsPopup.screen
-    serverIpTable.add(multiplayerServerTextField).minWidth(screen.stage.width / 2).growX()
-    add(serverIpTable).fillX().row()
+    add(multiplayerServerTextField).minWidth(screen.stage.width / 2).fillX().colspan(2).row()
 
     add("Reset to Dropbox".toTextButton().onClick {
         multiplayerServerTextField.text = Constants.dropboxMultiplayerServer
@@ -111,7 +132,7 @@ fun multiplayerTab(
             turnCheckerSelect.items = turnCheckerDropboxOptions
         }
         settings.save()
-    }).row()
+    }).colspan(2).row()
 
     add(connectionToServerButton.onClick {
         val popup = Popup(screen).apply {
@@ -123,7 +144,9 @@ fun multiplayerTab(
             popup.addGoodSizedLabel(if (success) "Success!" else "Failed!").row()
             popup.addCloseButton()
         }
-    }).row()
+    }).colspan(2).row()
+
+    setControlsDisabled(settings.multiplayer.disable)
 }
 
 private fun successfullyConnectedToServer(settings: GameSettings, action: (Boolean, String, Int?) -> Unit) {
@@ -224,7 +247,7 @@ private fun addRefreshSelect(
 
     refreshSelectBox.selected = options.firstOrNull() { it.delay == settingsProperty.get() } ?: options.first()
 
-    table.add(refreshSelectBox).pad(10f).row()
+    table.add(refreshSelectBox).right().pad(10f).row()
 
     refreshSelectBox.onChange {
         settingsProperty.set(refreshSelectBox.selected.delay)

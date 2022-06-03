@@ -728,7 +728,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     }
 
     private fun updateMultiplayerStatusButton() {
-        if (gameInfo.gameParameters.isOnlineMultiplayer || game.settings.multiplayer.statusButtonInSinglePlayer) {
+        if (!game.settings.multiplayer.disable && (gameInfo.gameParameters.isOnlineMultiplayer
+                        || game.settings.multiplayer.statusButtonInSinglePlayer)) {
             if (statusButtons.multiplayerStatusButton != null) return
             statusButtons.multiplayerStatusButton = MultiplayerStatusButton(this, game.onlineMultiplayer.getGameByGameId(gameInfo.gameId))
         } else {

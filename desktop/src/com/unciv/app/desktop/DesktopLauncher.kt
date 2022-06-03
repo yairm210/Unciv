@@ -66,7 +66,9 @@ internal object DesktopLauncher {
 
         val game = UncivGame(desktopParameters)
 
-        tryActivateDiscord(game)
+        if (!settings.multiplayer.disable)
+            tryActivateDiscord(game)
+
         Lwjgl3Application(game, config)
     }
 

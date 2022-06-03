@@ -22,7 +22,6 @@ open class AndroidLauncher : AndroidApplication() {
         super.onCreate(savedInstanceState)
         Log.backend = AndroidLogBackend()
         customFileLocationHelper = CustomFileLocationHelperAndroid(this)
-        MultiplayerTurnCheckWorker.createNotificationChannels(applicationContext)
 
         copyMods()
 
@@ -32,6 +31,9 @@ open class AndroidLauncher : AndroidApplication() {
 
         val settings = GameSaver.getSettingsForPlatformLaunchers(filesDir.path)
         val fontFamily = settings.fontFamily
+
+        if (!settings.multiplayer.disable)
+            MultiplayerTurnCheckWorker.createNotificationChannels(applicationContext)
 
         // Manage orientation lock
         val platformSpecificHelper = PlatformSpecificHelpersAndroid(this)
@@ -71,6 +73,7 @@ open class AndroidLauncher : AndroidApplication() {
     override fun onPause() {
         if (UncivGame.isCurrentInitialized()
                 && UncivGame.Current.isGameInfoInitialized()
+                && !UncivGame.Current.settings.multiplayer.disable
                 && UncivGame.Current.settings.multiplayer.turnCheckerEnabled
                 && UncivGame.Current.gameSaver.getMultiplayerSaves().any()
         ) {

@@ -37,6 +37,7 @@ import kotlin.math.min
 class MainMenuScreen: BaseScreen() {
     private val backgroundTable = Table().apply { background= ImageGetter.getBackground(Color.WHITE) }
     private val singleColumn = isCrampedPortrait()
+    private val multiplayerButton: Table
 
     /** Create one **Main Menu Button** including onClick/key binding
      *  @param text      The text to display on the button
@@ -116,40 +117,44 @@ class MainMenuScreen: BaseScreen() {
         val column2 = if (singleColumn) column1 else Table().apply { defaults().pad(10f).fillX() }
 
         if (game.gameSaver.autosaveExists()) {
-            val resumeTable = getMenuButton("Resume","OtherIcons/Resume", 'r')
+            val resumeButton = getMenuButton("Resume","OtherIcons/Resume", 'r')
                 { resumeGame() }
-            column1.add(resumeTable).row()
+            column1.add(resumeButton).row()
         }
 
-        val quickstartTable = getMenuButton("Quickstart", "OtherIcons/Quickstart", 'q')
+        val quickstartButton = getMenuButton("Quickstart", "OtherIcons/Quickstart", 'q')
             { quickstartNewGame() }
-        column1.add(quickstartTable).row()
+        column1.add(quickstartButton).row()
 
         val newGameButton = getMenuButton("Start new game", "OtherIcons/New", 'n')
             { game.setScreen(NewGameScreen(this)) }
         column1.add(newGameButton).row()
 
         if (game.gameSaver.getSaves().any()) {
-            val loadGameTable = getMenuButton("Load game", "OtherIcons/Load", 'l')
+            val loadGameButton = getMenuButton("Load game", "OtherIcons/Load", 'l')
                 { game.setScreen(LoadGameScreen(this)) }
-            column1.add(loadGameTable).row()
+            column1.add(loadGameButton).row()
         }
 
-        val multiplayerTable = getMenuButton("Multiplayer", "OtherIcons/Multiplayer", 'm')
-            { game.setScreen(MultiplayerScreen(this)) }
-        column2.add(multiplayerTable).row()
+        multiplayerButton = getMenuButton("Multiplayer", "OtherIcons/Multiplayer", 'm') {
+            game.setScreen(MultiplayerScreen(this))
+        }
+        column2.add(multiplayerButton).row()
 
-        val mapEditorScreenTable = getMenuButton("Map editor", "OtherIcons/MapEditor", 'e')
+        val mapEditorScreenButton = getMenuButton("Map editor", "OtherIcons/MapEditor", 'e')
             { game.setScreen(MapEditorScreen()) }
-        column2.add(mapEditorScreenTable).row()
+        column2.add(mapEditorScreenButton).row()
 
-        val modsTable = getMenuButton("Mods", "OtherIcons/Mods", 'd')
+        val modsButton = getMenuButton("Mods", "OtherIcons/Mods", 'd')
             { game.setScreen(ModManagementScreen()) }
-        column2.add(modsTable).row()
+        column2.add(modsButton).row()
 
-        val optionsTable = getMenuButton("Options", "OtherIcons/Options", 'o')
-            { this.openOptionsPopup() }
-        column2.add(optionsTable).row()
+        val optionsButton = getMenuButton("Options", "OtherIcons/Options", 'o') {
+            openOptionsPopup {
+                setMultiplayerButtonDisabled()
+            }
+        }
+        column2.add(optionsButton).row()
 
 
         val table = Table().apply { defaults().pad(10f) }
@@ -181,8 +186,16 @@ class MainMenuScreen: BaseScreen() {
         helpButton.addTooltip(KeyCharAndCode(Input.Keys.F1), 20f)
         helpButton.setPosition(20f, 20f)
         stage.addActor(helpButton)
+
+        setMultiplayerButtonDisabled()
     }
 
+    private fun setMultiplayerButtonDisabled() {
+        val disableMultiplayer = UncivGame.Current.settings.multiplayer.disable
+        multiplayerButton.touchable = if (disableMultiplayer) Touchable.disabled else Touchable.enabled
+        val color = if (disableMultiplayer) Color.GRAY else Color.WHITE
+        multiplayerButton.cells.forEach { it.actor?.color = color }
+    }
 
     private fun resumeGame() {
         val curWorldScreen = game.getWorldScreenOrNull()

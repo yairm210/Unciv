@@ -102,10 +102,14 @@ abstract class BaseScreen : Screen {
                 font = Fonts.font
                 fontColor = Color.WHITE
             }
-            skin.get(TextField.TextFieldStyle::class.java).font = Fonts.font
+            skin.get(TextField.TextFieldStyle::class.java).apply {
+                font = Fonts.font
+                disabledFontColor = Color.GRAY
+            }
             skin.get(SelectBox.SelectBoxStyle::class.java).apply {
                 font = Fonts.font
                 listStyle.font = Fonts.font
+                disabledFontColor = Color.GRAY
             }
         }
         /** Colour to use for empty sections of the screen. */

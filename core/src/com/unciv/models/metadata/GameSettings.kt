@@ -159,13 +159,14 @@ enum class LocaleCode(var language: String, var country: String) {
 
 class GameSettingsMultiplayer {
     var userId = ""
+    var disable = false
     var server = Constants.dropboxMultiplayerServer
     var friendList: MutableList<FriendList.Friend> = mutableListOf()
     var turnCheckerEnabled = true
     var turnCheckerPersistentNotificationEnabled = true
-    var turnCheckerDelay = Duration.ofMinutes(5)
+    var turnCheckerDelay: Duration = Duration.ofMinutes(5)
     var statusButtonInSinglePlayer = false
-    var currentGameRefreshDelay = Duration.ofSeconds(10)
-    var allGameRefreshDelay = Duration.ofMinutes(5)
+    var currentGameRefreshDelay: Duration = Duration.ofSeconds(10)
+    var allGameRefreshDelay: Duration = Duration.ofMinutes(5)
     var hideDropboxWarning = false
 }

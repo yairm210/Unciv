@@ -61,7 +61,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
         private const val PERSISTENT_NOTIFICATION_ENABLED = "PERSISTENT_NOTIFICATION_ENABLED"
         private const val FILE_STORAGE = "FILE_STORAGE"
 
-        fun enqueue(appContext: Context, delay: Duration, inputData: Data) {
+        private fun enqueue(appContext: Context, delay: Duration, inputData: Data) {
 
             val constraints = Constraints.Builder()
                     // If no internet is available, worker waits before becoming active.
@@ -85,7 +85,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
          * API level < 26 does not support Notification Channels
          * For more infos: https://developer.android.com/training/notify-user/channels.html#CreateChannel
          */
-        fun createNotificationChannelInfo(appContext: Context) {
+        private fun createNotificationChannelInfo(appContext: Context) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
             val name = appContext.resources.getString(R.string.Notify_ChannelInfo_Short)
             val descriptionText = appContext.resources.getString(R.string.Notify_ChannelInfo_Long)
@@ -106,7 +106,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
          * API level < 26 does not support Notification Channels
          * For more infos: https://developer.android.com/training/notify-user/channels.html#CreateChannel
          */
-        fun createNotificationChannelService(appContext: Context) {
+        private fun createNotificationChannelService(appContext: Context) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
             val name = appContext.resources.getString(R.string.Notify_ChannelService_Short)
             val descriptionText = appContext.resources.getString(R.string.Notify_ChannelService_Long)
@@ -124,7 +124,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
          * The persistent notification is purely for informational reasons.
          * It is not technically necessary for the Worker, since it is not a Service.
          */
-        fun showPersistentNotification(appContext: Context, lastTimeChecked: String, checkPeriod: Duration) {
+        private fun showPersistentNotification(appContext: Context, lastTimeChecked: String, checkPeriod: Duration) {
             val flags = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) FLAG_IMMUTABLE else 0) or
                 FLAG_UPDATE_CURRENT
             val pendingIntent: PendingIntent =
@@ -152,7 +152,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
             }
         }
 
-        fun notifyUserAboutTurn(applicationContext: Context, game: Pair<String, String>) {
+        private fun notifyUserAboutTurn(applicationContext: Context, game: Pair<String, String>) {
             Log.i(LOG_TAG, "notifyUserAboutTurn ${game.first}")
             val intent = Intent(applicationContext, AndroidLauncher::class.java).apply {
                 action = Intent.ACTION_VIEW
