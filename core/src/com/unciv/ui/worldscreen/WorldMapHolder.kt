@@ -216,34 +216,36 @@ class WorldMapHolder(
     }
 
     private fun onTileRightClicked(unit: MapUnit, tile: TileInfo) {
-        removeUnitActionOverlay()
-        selectedTile = tile
-        unitMovementPaths.clear()
-        worldScreen.shouldUpdate = true
-
-        if (worldScreen.bottomUnitTable.selectedUnitIsSwapping) {
-            if (unit.movement.canUnitSwapTo(tile)) {
-                swapMoveUnitToTargetTile(unit, tile)
-            }
-            // If we are in unit-swapping mode, we don't want to move or attack
-            return
-        }
-
-        val attackableTile = BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
-            .firstOrNull { it.tileToAttack == tile }
-        if (unit.canAttack() && attackableTile != null) {
+        if (!UncivGame.Current.gameInfo.currentPlayerCiv.isSpectator()) {
+            removeUnitActionOverlay()
+            selectedTile = tile
+            unitMovementPaths.clear()
             worldScreen.shouldUpdate = true
-            val attacker = MapUnitCombatant(unit)
-            if (!Battle.movePreparingAttack(attacker, attackableTile)) return
-            Sounds.play(attacker.getAttackSound())
-            Battle.attackOrNuke(attacker, attackableTile)
-            return
-        }
 
-        val canUnitReachTile = unit.movement.canReach(tile)
-        if (canUnitReachTile) {
-            moveUnitToTargetTile(listOf(unit), tile)
-            return
+            if (worldScreen.bottomUnitTable.selectedUnitIsSwapping) {
+                if (unit.movement.canUnitSwapTo(tile)) {
+                    swapMoveUnitToTargetTile(unit, tile)
+                }
+                // If we are in unit-swapping mode, we don't want to move or attack
+                return
+            }
+
+            val attackableTile = BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
+                .firstOrNull { it.tileToAttack == tile }
+            if (unit.canAttack() && attackableTile != null) {
+                worldScreen.shouldUpdate = true
+                val attacker = MapUnitCombatant(unit)
+                if (!Battle.movePreparingAttack(attacker, attackableTile)) return
+                Sounds.play(attacker.getAttackSound())
+                Battle.attackOrNuke(attacker, attackableTile)
+                return
+            }
+
+            val canUnitReachTile = unit.movement.canReach(tile)
+            if (canUnitReachTile) {
+                moveUnitToTargetTile(listOf(unit), tile)
+                return
+            }
         }
     }
 
