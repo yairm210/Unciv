@@ -133,9 +133,9 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         // line 8681 and below
         var influenceGained = giftAmount.toFloat().pow(1.01f) / 9.8f
         val gameSpeed = civInfo.gameInfo.getGameSpeed()
-        val gameProgressApproximate = min(civInfo.gameInfo.turns / (400f * gameSpeed.modifier), 1f) //TODO: according to source, denominator should probably just be number of turns in the game
+        val gameProgressApproximate = min(civInfo.gameInfo.turns / (400f * gameSpeed.modifier), 1f)
         influenceGained *= 1 - (2/3f) * gameProgressApproximate
-        influenceGained *= gameSpeed.goldGiftMod
+        influenceGained *= gameSpeed.goldGiftModifier
         for (unique in donorCiv.getMatchingUniques(UniqueType.CityStateGoldGiftsProvideMoreInfluence))
             influenceGained *= 1f + unique.params[0].toFloat() / 100f
 
@@ -267,7 +267,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
 
     fun getDiplomaticMarriageCost(): Int {
         // https://github.com/Gedemon/Civ5-DLL/blob/master/CvGameCoreDLL_Expansion1/CvMinorCivAI.cpp, line 7812
-        var cost = (500 * civInfo.gameInfo.getGameSpeed().modifier).toInt()
+        var cost = (500 * civInfo.gameInfo.getGameSpeed().goldCostModifier).toInt()
         // Plus disband value of all units
         for (unit in civInfo.getCivUnits()) {
             cost += unit.baseUnit.getDisbandGold(civInfo)
@@ -387,7 +387,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
 
     fun goldGainedByTribute(): Int {
         // These values are close enough, linear increase throughout the game
-        var gold = (10 * civInfo.gameInfo.getGameSpeed().goldGiftMod).toInt() * 5 // rounding down to nearest 5
+        var gold = (10 * civInfo.gameInfo.getGameSpeed().goldGiftModifier).toInt() * 5 // rounding down to nearest 5
         val turnsToIncrement = when (civInfo.gameInfo.getGameSpeed().name) {
             "Quick" -> 5f
             "Standard" -> 6.5f

@@ -339,7 +339,7 @@ object UniqueTriggerActivation {
 
                 val foundStatAmount =
                     (tileBasedRandom.nextInt(unique.params[0].toInt(), unique.params[1].toInt()) *
-                            civInfo.gameInfo.getGameSpeed().modifier
+                            civInfo.gameInfo.getGameSpeed().statCostModifiers()[stat]!!
                             ).toInt()
 
                 civInfo.addStat(

@@ -46,8 +46,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     var promotions = HashSet<String>()
     var obsoleteTech: String? = null
     var upgradesTo: String? = null
-    val specialUpgradesTo: String? by lazy { 
-        getMatchingUniques(UniqueType.RuinsUpgrade).map { it.params[0] }.firstOrNull() 
+    val specialUpgradesTo: String? by lazy {
+        getMatchingUniques(UniqueType.RuinsUpgrade).map { it.params[0] }.firstOrNull()
     }
     var replaces: String? = null
     var uniqueTo: String? = null
@@ -238,8 +238,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         unit.owner = civInfo.civName
 
         // must be after setting name & civInfo because it sets the baseUnit according to the name
-        // and the civInfo is required for using `hasUnique` when determining its movement options  
-        unit.setTransients(civInfo.gameInfo.ruleSet) 
+        // and the civInfo is required for using `hasUnique` when determining its movement options
+        unit.setTransients(civInfo.gameInfo.ruleSet)
 
         return unit
     }
@@ -252,14 +252,14 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 civInfo.getDifficulty().unitCostModifier
             else
                 civInfo.gameInfo.getDifficulty().aiUnitCostModifier
-        productionCost *= civInfo.gameInfo.getGameSpeed().modifier
+        productionCost *= civInfo.gameInfo.getGameSpeed().productionCostModifier
         return productionCost.toInt()
     }
 
     override fun canBePurchasedWithStat(cityInfo: CityInfo?, stat: Stat): Boolean {
         if (cityInfo == null) return super.canBePurchasedWithStat(cityInfo, stat)
         val conditionalState = StateForConditionals(civInfo = cityInfo.civInfo, cityInfo = cityInfo)
-        
+
         return (cityInfo.getMatchingUniques(UniqueType.BuyUnitsIncreasingCost, conditionalState)
                 .any {
                     it.params[2] == stat.name
@@ -394,17 +394,17 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         val rejectionReasons = RejectionReasons()
         val ruleSet = civInfo.gameInfo.ruleSet
 
-        if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) 
-            rejectionReasons.add(RejectionReason.RequiresTech.toInstance("$requiredTech not researched")) 
+        if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!))
+            rejectionReasons.add(RejectionReason.RequiresTech.toInstance("$requiredTech not researched"))
         if (obsoleteTech != null && civInfo.tech.isResearched(obsoleteTech!!))
             rejectionReasons.add(RejectionReason.Obsoleted.toInstance("Obsolete by $obsoleteTech"))
 
-        if (uniqueTo != null && uniqueTo != civInfo.civName) 
+        if (uniqueTo != null && uniqueTo != civInfo.civName)
             rejectionReasons.add(RejectionReason.UniqueToOtherNation.toInstance("Unique to $uniqueTo"))
         if (ruleSet.units.values.any { it.uniqueTo == civInfo.civName && it.replaces == name })
             rejectionReasons.add(RejectionReason.ReplacedByOurUnique.toInstance("Our unique unit replaces this"))
 
-        if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon()) 
+        if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon())
             rejectionReasons.add(RejectionReason.DisabledBySetting)
 
         for (unique in uniqueObjects) {
@@ -481,11 +481,11 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
         // If this unit has special abilities that need to be kept track of, start doing so here
         if (unit.hasUnique(UniqueType.ReligiousUnit) && civInfo.gameInfo.isReligionEnabled()) {
-            unit.religion =  
+            unit.religion =
                 if (unit.hasUnique(UniqueType.TakeReligionOverBirthCity))
                     civInfo.religionManager.religion?.name
                 else cityConstructions.cityInfo.religion.getMajorityReligionName()
-            
+
             unit.setupAbilityUses(cityConstructions.cityInfo)
         }
 
@@ -509,7 +509,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             if (unit.matchesFilter(unique.params[0]))
                 XP += unique.params[1].toInt()
         }
-        unit.promotions.XP = XP        
+        unit.promotions.XP = XP
 
         for (unique in cityConstructions.cityInfo.getMatchingUniques(UniqueType.UnitStartingPromotions)
             .filter { cityConstructions.cityInfo.matchesFilter(it.params[1]) }) {
@@ -613,7 +613,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             && (uniqueObjects + getType().uniqueObjects)
                 .any { it.isOfType(UniqueType.Strength)
                     && it.params[0].toInt() > 0
-                    && it.conditionals.any { conditional -> conditional.isOfType(UniqueType.ConditionalVsCity) } 
+                    && it.conditionals.any { conditional -> conditional.isOfType(UniqueType.ConditionalVsCity) }
                 }
         )
 

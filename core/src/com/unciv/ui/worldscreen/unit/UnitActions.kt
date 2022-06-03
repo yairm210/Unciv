@@ -40,7 +40,7 @@ object UnitActions {
         val unitTable = worldScreen.bottomUnitTable
         val actionList = ArrayList<UnitAction>()
 
-        if (unit.isMoving()) 
+        if (unit.isMoving())
             actionList += UnitAction(UnitActionType.StopMovement) { unit.action = null }
         if (unit.isExploring())
             actionList += UnitAction(UnitActionType.StopExploration) { unit.action = null }
@@ -310,7 +310,7 @@ object UnitActions {
         if (unit.baseUnit().upgradesTo == null) return null
         if (!unit.canUpgrade()) return null
         if (tile.getOwner() != unit.civInfo) return null
-        
+
         val upgradedUnit = unit.getUnitToUpgradeTo()
         val goldCostOfUpgrade = unit.getCostOfUpgrade()
 
@@ -339,7 +339,7 @@ object UnitActions {
             }
         )
     }
-    
+
     fun getFreeUpgradeAction(unit: MapUnit): UnitAction? {
         if (unit.baseUnit().upgradesTo == null) return null
         val upgradedUnit = unit.civInfo.getEquivalentUnit(unit.baseUnit().upgradesTo!!)
@@ -375,7 +375,7 @@ object UnitActions {
             }
         val upgradedUnit =
             unit.civInfo.getEquivalentUnit(unit.civInfo.gameInfo.ruleSet.units[upgradedUnitName]!!)
-        
+
         if (!unit.canUpgrade(upgradedUnit,true)) return null
 
         return UnitAction(UnitActionType.Upgrade,
@@ -397,8 +397,8 @@ object UnitActions {
 
         val canConstruct = unit.currentMovement > 0
             && !tile.isCityCenter()
-            && unit.civInfo.gameInfo.ruleSet.tileImprovements.values.any { 
-                tile.canBuildImprovement(it, unit.civInfo) 
+            && unit.civInfo.gameInfo.ruleSet.tileImprovements.values.any {
+                tile.canBuildImprovement(it, unit.civInfo)
                 && unit.canBuildImprovement(it)
             }
 
@@ -469,7 +469,7 @@ object UnitActions {
                     action = {
                         tile.getCity()!!.cityConstructions.apply {
                             //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
-                            addProductionPoints(((300 + 30 * tile.getCity()!!.population.population) * unit.civInfo.gameInfo.getGameSpeed().modifier).toInt())
+                            addProductionPoints(((300 + 30 * tile.getCity()!!.population.population) * unit.civInfo.gameInfo.getGameSpeed().productionCostModifier).toInt())
                             constructIfEnough()
                         }
 
@@ -490,7 +490,7 @@ object UnitActions {
 
                 //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
                 val productionPointsToAdd = min(
-                    (300 + 30 * tile.getCity()!!.population.population) * unit.civInfo.gameInfo.getGameSpeed().modifier,
+                    (300 + 30 * tile.getCity()!!.population.population) * unit.civInfo.gameInfo.getGameSpeed().productionCostModifier,
                     cityConstructions.getRemainingWork(cityConstructions.currentConstructionFromQueue).toFloat() - 1
                 ).toInt()
                 if (productionPointsToAdd <= 0) continue
@@ -514,7 +514,7 @@ object UnitActions {
                 actionList += UnitAction(UnitActionType.ConductTradeMission,
                     action = {
                         // http://civilization.wikia.com/wiki/Great_Merchant_(Civ5)
-                        var goldEarned = (350 + 50 * unit.civInfo.getEraNumber()) * unit.civInfo.gameInfo.getGameSpeed().modifier
+                        var goldEarned = (350 + 50 * unit.civInfo.getEraNumber()) * unit.civInfo.gameInfo.getGameSpeed().goldCostModifier
                         for (goldUnique in unit.civInfo.getMatchingUniques(UniqueType.PercentGoldFromTradeMissions))
                             goldEarned *= goldUnique.params[0].toPercent()
                         unit.civInfo.addGold(goldEarned.toInt())
@@ -809,7 +809,7 @@ object UnitActions {
 
         return UnitAction(UnitActionType.GiftUnit, action = giftAction)
     }
-    
+
     private fun addTriggerUniqueActions(unit: MapUnit, actionList: ArrayList<UnitAction>){
         for (unique in unit.getUniques()) {
             if (!unique.conditionals.any { it.type == UniqueType.ConditionalConsumeUnit }) continue

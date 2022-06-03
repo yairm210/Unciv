@@ -287,6 +287,6 @@ class Encampment() {
         // Quicker if this camp has already spawned units
         countdown -= min(3, spawnedUnits)
 
-        countdown = (countdown * gameInfo.getGameSpeed().barbPercent).toInt()
+        countdown = (countdown * gameInfo.getGameSpeed().barbarianModifier).toInt()
     }
 }

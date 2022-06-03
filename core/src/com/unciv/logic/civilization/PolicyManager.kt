@@ -110,7 +110,7 @@ class PolicyManager {
             // Should be deprecated together with TimedAttackStrength so
             // I'm putting this here so the compiler will complain if we don't
             val rememberToDeprecate = UniqueType.TimedAttackStrength
-            if (!unique.text.contains(turnCountRegex)) 
+            if (!unique.text.contains(turnCountRegex))
                 policyUniques.addUnique(unique)
         }
     }
@@ -144,7 +144,7 @@ class PolicyManager {
         for (unique in civInfo.getMatchingUniques(UniqueType.LessPolicyCostFromCities)) cityModifier *= 1 - unique.params[0].toFloat() / 100
         for (unique in civInfo.getMatchingUniques(UniqueType.LessPolicyCost)) policyCultureCost *= unique.params[0].toPercent()
         if (civInfo.isPlayerCivilization()) policyCultureCost *= civInfo.getDifficulty().policyCostModifier
-        policyCultureCost *= civInfo.gameInfo.getGameSpeed().modifier
+        policyCultureCost *= civInfo.gameInfo.getGameSpeed().cultureCostModifier
         val cost: Int = (policyCultureCost * (1 + cityModifier)).roundToInt()
         return cost - (cost % 5)
     }

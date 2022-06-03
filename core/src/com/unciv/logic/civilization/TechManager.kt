@@ -49,7 +49,7 @@ class TechManager {
 
     var freeTechs = 0
     // For calculating score
-    var repeatingTechsResearched = 0 
+    var repeatingTechsResearched = 0
 
     /** For calculating Great Scientist yields - see https://civilization.fandom.com/wiki/Great_Scientist_(Civ5)  */
     var scienceOfLast8Turns = IntArray(8) { 0 }
@@ -88,7 +88,7 @@ class TechManager {
         var techCost = getRuleset().technologies[techName]!!.cost.toFloat()
         if (civInfo.isPlayerCivilization())
             techCost *= civInfo.getDifficulty().researchCostModifier
-        techCost *= civInfo.gameInfo.getGameSpeed().modifier
+        techCost *= civInfo.gameInfo.getGameSpeed().scienceCostModifier
         val techsResearchedKnownCivs = civInfo.getKnownCivs()
                 .count { it.isMajorCiv() && it.tech.isResearched(techName) }
         val undefeatedCivs = civInfo.gameInfo.civilizations
@@ -120,7 +120,7 @@ class TechManager {
 
     fun researchOfTech(TechName: String?) = techsInProgress[TechName] ?: 0
     // Was once duplicated as fun scienceSpentOnTech(tech: String): Int
-    
+
     fun remainingScienceToTech(techName: String) = costOfTech(techName) - researchOfTech(techName)
 
     fun turnsToTech(techName: String) = when {
@@ -165,7 +165,7 @@ class TechManager {
 
     fun getScienceFromGreatScientist(): Int {
         // https://civilization.fandom.com/wiki/Great_Scientist_(Civ5)
-        return (scienceOfLast8Turns.sum() * civInfo.gameInfo.getGameSpeed().modifier).toInt()
+        return (scienceOfLast8Turns.sum() * civInfo.gameInfo.getGameSpeed().scienceCostModifier).toInt()
     }
 
     private fun addCurrentScienceToScienceOfLast8Turns() {

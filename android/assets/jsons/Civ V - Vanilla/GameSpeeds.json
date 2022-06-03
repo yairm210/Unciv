@@ -3,15 +3,53 @@
     // values that end in "Duration" are in number of turns
     // values that end in "Percent" are float percentages (67% = 0.67f)
 
+    // MODIFIER SUMMARY
+    // modifier (default 1.0): general speed modifier. Any speed modifiers that end in "Modifier"
+    // are optional and will be given this value if omitted from this file
+    // [production,gold,science,culture,faith]CostModifier: scales the cost of the relevant
+    //      stat as well as some times where this stat is given to a civ by an effect (such as
+    //      earned gold from clearing an encampment, which is scaled by goldCostModifier)
+    // improvementBuildLengthModifier: scales the number of turns required to construct an
+    //      improvement (unless construction is instantaneous)
+    // barbarianModifier: scales the rate at which barbarians spawn
+    // goldGiftModifier: scales the influence earned by gifting gold to a city-state
+    // goldenAgeLengthModifier: scales the length of a golden age
+    // religiousPressureAdjacaentCity (default 6): religious pressure exerted by cities
+    //      on their neighbors
+    // peaceDealDuration (default 10): number of turns a peace deal lasts
+    // dealDuration (default 30): number of turns a non-peace deal lasts (e.g., open borders)
+
+    // turnIncrements (required): specifies how many years pass between turns (yearsPerTurn) as well as the
+    //      number of turns spent at this yearPerTurn increment (turnsPerIncrement). turnIncrement
+    //      blocks are processed top to bottom and once the last block has been used, all turns will
+    //      continue at the yearsPerTurn of the last block. The estimated game length is calculated
+    //      by summing all turnsPerIncrement values (e.g., standard speed is 500 turns). Estimated
+    //      game length is used in some calculations (e.g., unit maintenance).
+
+    //      EXAMPLE:
+    //  "turnIncrements": [
+    //            {"yearsPerTurn": 60, "turnsPerIncrement": 50},
+    //            {"yearsPerTurn": 10, "turnsPerIncrement": 30},
+    //  ]
+    // The game will advance 60 years per turn for 50 turns, then at 10 years per turn for 30 turns.
+    // Starting from the 81st turn, the game will continue to advance at 10 years per turn until
+    // the game ends.
+
     {
         "name": "Quick",
         "modifier": 0.67,
-        "dealDuration": 25,
-        "goldGiftMod": 1.25,
-        "barbPercent": 0.67,
-        "goldenAgePercent": 0.80,
+        "productionCostModifier": 0.67,
+        "goldCostModifier": 0.67,
+        "scienceCostModifier": 0.67,
+        "cultureCostModifier": 0.67,
+        "faithCostModifier": 0.67,
+        "improvementBuildLengthModifier": 0.67,
+        "barbarianModifier": 0.67,
+        "goldGiftModifier": 1.25,
+        "goldenAgeLengthModifier": 0.80,
         "religiousPressureAdjacentCity": 9,
         "peaceDealDuration": 10,
+        "dealDuration": 25,
         "turnIncrements": [
             {"yearsPerTurn": 60, "turnsPerIncrement": 50},
             {"yearsPerTurn": 40, "turnsPerIncrement": 30},
@@ -26,12 +64,18 @@
     {
         "name": "Standard",
         "modifier": 1.0,
-        "dealDuration": 30,
-        "goldGiftMod": 1.0,
-        "barbPercent": 1.0,
-        "goldenAgePercent": 1.0,
+        "productionCostModifier": 1.0,
+        "goldCostModifier": 1.0,
+        "scienceCostModifier": 1.0,
+        "cultureCostModifier": 1.0,
+        "faithCostModifier": 1.0,
+        "improvementBuildLengthModifier": 1.0,
+        "barbarianModifier": 1.0,
+        "goldGiftModifier": 1.0,
+        "goldenAgeLengthModifier": 1.0,
         "religiousPressureAdjacentCity": 6,
         "peaceDealDuration": 10,
+        "dealDuration": 30,
         "turnIncrements": [
             {"yearsPerTurn":  40, "turnsPerIncrement":  75},
             {"yearsPerTurn":  25, "turnsPerIncrement":  60},
@@ -46,12 +90,18 @@
     {
         "name": "Epic",
         "modifier": 1.5,
-        "dealDuration": 45,
-        "goldGiftMod": 0.75,
-        "barbPercent": 1.5,
-        "goldenAgePercent": 1.25,
+        "productionCostModifier": 1.5,
+        "goldCostModifier": 1.5,
+        "scienceCostModifier": 1.5,
+        "cultureCostModifier": 1.5,
+        "faithCostModifier": 1.5,
+        "improvementBuildLengthModifier": 1.5,
+        "barbarianModifier": 1.5,
+        "goldGiftModifier": 0.75,
+        "goldenAgeLengthModifier": 1.25,
         "religiousPressureAdjacentCity": 4,
         "peaceDealDuration": 15,
+        "dealDuration": 45,
         "turnIncrements": [
             {"yearsPerTurn":  25, "turnsPerIncrement": 140},
             {"yearsPerTurn":  15, "turnsPerIncrement":  90},
@@ -65,12 +115,18 @@
     {
         "name": "Marathon",
         "modifier": 3.0,
-        "dealDuration": 90,
-        "goldGiftMod": 0.67,
-        "barbPercent": 4.0,
-        "goldenAgePercent": 2.0,
+        "productionCostModifier": 3.0,
+        "goldCostModifier": 3.0,
+        "scienceCostModifier": 3.0,
+        "cultureCostModifier": 3.0,
+        "faithCostModifier": 3.0,
+        "improvementBuildLengthModifier": 3.0,
+        "barbarianModifier": 4.0,
+        "goldGiftModifier": 0.67,
+        "goldenAgeLengthModifier": 2.0,
         "religiousPressureAdjacentCity": 2,
         "peaceDealDuration": 30,
+        "dealDuration": 90,
         "turnIncrements": [
             {"yearsPerTurn":   15, "turnsPerIncrement": 100},
             {"yearsPerTurn":   10, "turnsPerIncrement": 300},

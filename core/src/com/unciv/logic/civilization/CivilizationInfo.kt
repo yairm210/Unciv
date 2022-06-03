@@ -1219,7 +1219,7 @@ class CivilizationInfo {
     fun getResearchAgreementCost(): Int {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
         return (
-            getEra().researchAgreementCost * gameInfo.getGameSpeed().modifier
+            getEra().researchAgreementCost * gameInfo.getGameSpeed().goldCostModifier
         ).toInt()
     }
 

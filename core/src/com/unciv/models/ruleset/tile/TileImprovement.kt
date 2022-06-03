@@ -26,13 +26,13 @@ class TileImprovement : RulesetStatsObject() {
     override fun getUniqueTarget() = UniqueTarget.Improvement
     val shortcutKey: Char? = null
     // This is the base cost. A cost of 0 means created instead of buildable.
-    val turnsToBuild: Int = 0 
+    val turnsToBuild: Int = 0
 
 
     fun getTurnsToBuild(civInfo: CivilizationInfo, unit: MapUnit): Int {
         val state = StateForConditionals(civInfo, unit = unit)
         return unit.getMatchingUniques(UniqueType.TileImprovementTime, state, checkCivInfoUniques = true)
-            .fold(turnsToBuild.toFloat() * civInfo.gameInfo.getGameSpeed().modifier) { it, unique ->
+            .fold(turnsToBuild.toFloat() * civInfo.gameInfo.getGameSpeed().improvementBuildLengthModifier) { it, unique ->
                 it * unique.params[0].toPercent()
             }.roundToInt()
             .coerceAtLeast(1)
@@ -71,7 +71,7 @@ class TileImprovement : RulesetStatsObject() {
     fun canBeBuiltOn(terrain: String): Boolean {
         return terrain in terrainsCanBeBuiltOn
     }
-    
+
     fun handleImprovementCompletion(builder: MapUnit) {
         val tile = builder.getTile()
         if (hasUnique(UniqueType.TakesOverAdjacentTiles))
@@ -88,18 +88,18 @@ class TileImprovement : RulesetStatsObject() {
             // and that aren't explicitly allowed under the improvement
             val removableTerrainFeatures = tile.terrainFeatures.filter { feature ->
                 val removingAction = "${Constants.remove}$feature"
-                
+
                 removingAction in tile.ruleset.tileImprovements
                 && !isAllowedOnFeature(feature)
                 && tile.ruleset.tileImprovements[removingAction]!!.let {
                     it.techRequired == null || builder.civInfo.tech.isResearched(it.techRequired!!)
                 }
             }
-            
+
             tile.setTerrainFeatures(tile.terrainFeatures.filterNot { it in removableTerrainFeatures })
         }
     }
-    
+
     /**
      * Check: Is this improvement allowed on a [given][name] terrain feature?
      *
@@ -198,7 +198,7 @@ class TileImprovement : RulesetStatsObject() {
         }
 
         val unit = ruleset.units.asSequence().firstOrNull {
-            entry -> entry.value.uniques.any { 
+            entry -> entry.value.uniques.any {
                 it.startsWith("Can construct [$name]")
             }
         }?.key

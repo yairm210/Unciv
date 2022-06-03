@@ -198,14 +198,14 @@ object Automation {
 
         // Very late in the game we are not afraid
         val gameSpeed = civInfo.gameInfo.getGameSpeed()
-        if (civInfo.gameInfo.turns > 200 * gameSpeed.barbPercent)
+        if (civInfo.gameInfo.turns > 200 * gameSpeed.barbarianModifier)
             return false
 
         var multiplier = if (civInfo.gameInfo.gameParameters.ragingBarbarians) 1.3f
         else 1f // We're slightly more afraid of raging barbs
 
         // Past the early game we are less afraid
-        if (civInfo.gameInfo.turns > 120 * gameSpeed.barbPercent * multiplier)
+        if (civInfo.gameInfo.turns > 120 * gameSpeed.barbarianModifier * multiplier)
             multiplier /= 2
 
         // If we have a lot of, or no cities we are not afraid
