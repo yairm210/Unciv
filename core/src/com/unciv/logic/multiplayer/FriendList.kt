@@ -21,7 +21,7 @@ class FriendList {
     }
 
     fun add(friendName: String, playerID: String): ErrorType {
-        for(index in friendList.indices){
+        for (index in friendList.indices) {
             if (friendList[index].name == friendName) {
                 return ErrorType.NAME
             } else if (friendList[index].playerID == playerID) {
@@ -74,21 +74,7 @@ class FriendList {
         return ErrorType.NOERROR
     }
 
-    fun getFriendWithId(id: String): Friend? {
-        for (index in friendList.indices) {
-            if (id == friendList[index].playerID) {
-                return friendList[index]
-            }
-        }
-        return null
-    }
+    fun getFriendById(id: String) = friendList.firstOrNull { it.playerID == id }
 
-    fun getFriendWithName(name: String): Friend? {
-        for (index in friendList.indices) {
-            if (name == friendList[index].name) {
-                return friendList[index]
-            }
-        }
-        return null
-    }
+    fun getFriendByName(name: String) = friendList.firstOrNull { it.name == name }
 }

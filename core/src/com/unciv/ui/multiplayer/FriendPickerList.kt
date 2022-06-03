@@ -31,14 +31,13 @@ class FriendPickerList(
         val friendDisplay = FriendDisplay(friend, onSelected)
         friendDisplays[friend.name] = friendDisplay
         addActor(friendDisplay)
-        children.sort()
     }
 }
 
 private class FriendDisplay(
     friend: FriendList.Friend,
     private val onSelected: (String) -> Unit
-) : Table(), Comparable<FriendDisplay> {
+) : Table() {
     var friendName: String = friend.name
         private set
     val friendButton = TextButton(friendName, BaseScreen.skin)
@@ -49,8 +48,4 @@ private class FriendDisplay(
         add(friendButton)
         onClick { onSelected(friendName) }
     }
-
-    override fun compareTo(other: FriendDisplay): Int = friendName.compareTo(other.friendName)
-    override fun equals(other: Any?): Boolean = (other is FriendDisplay) && (friendName == other.friendName)
-    override fun hashCode(): Int = friendName.hashCode()
 }

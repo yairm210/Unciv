@@ -278,7 +278,7 @@ class PlayerPickerTable(
         val friendListWithRemovedFriends = friendList.friendList.toMutableList()
         for (index in gameParameters.players.indices) {
             val currentFriendId = previousScreen.gameSetupInfo.gameParameters.players[index].playerId
-            friendListWithRemovedFriends.remove(friendList.getFriendWithId(currentFriendId))
+            friendListWithRemovedFriends.remove(friendList.getFriendById(currentFriendId))
         }
         return friendListWithRemovedFriends.asSequence()
     }
@@ -317,7 +317,7 @@ class FriendSelectionPopup(
 
     private fun friendSelected(friendName: String) {
         val friendsList = FriendList()
-        val friend = friendsList.getFriendWithName(friendName)
+        val friend = friendsList.getFriendByName(friendName)
         if (friend != null) {
             selectedFriendId = friend.playerID
         }
