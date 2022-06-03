@@ -1,6 +1,7 @@
 package com.unciv.ui.victoryscreen
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
@@ -9,6 +10,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.translations.tr
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Victory
+import com.unciv.models.stats.Stat
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.PickerScreen
@@ -80,7 +82,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
                 hasWon -> playerCivInfo.gameInfo.ruleSet.victories[victoryType]!!.victoryString
                 else -> playerCivInfo.gameInfo.ruleSet.victories[victoryType]!!.defeatString
             }
-        
+
         descriptionLabel.setText(description.tr() + "\n" + endGameMessage.tr())
 
         rightSideButton.setText("Start new game".tr())
@@ -103,21 +105,21 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         val ourVictoryStatusTable = Table()
         ourVictoryStatusTable.defaults().pad(10f)
         val victoriesToShow = gameInfo.getEnabledVictories()
-        
+
         for (victory in victoriesToShow) {
             ourVictoryStatusTable.add("[${victory.key}] Victory".toLabel())
         }
         ourVictoryStatusTable.row()
-        
+
         for (victory in victoriesToShow) {
             ourVictoryStatusTable.add(getOurVictoryColumn(victory.key))
         }
         ourVictoryStatusTable.row()
-        
+
         for (victory in victoriesToShow) {
             ourVictoryStatusTable.add(victory.value.victoryScreenHeader.toLabel())
         }
-        
+
         contentsTable.clear()
         contentsTable.add(ourVictoryStatusTable)
     }
@@ -148,7 +150,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         val majorCivs = gameInfo.civilizations.filter { it.isMajorCiv() }
         val globalVictoryTable = Table().apply { defaults().pad(10f) }
         val victoriesToShow = gameInfo.ruleSet.victories.filter { !it.value.hiddenInVictoryScreen && enabledVictoryTypes.contains(it.key) }
-        
+
         for (victory in victoriesToShow) {
             globalVictoryTable.add(getGlobalVictoryColumn(majorCivs, victory.key))
         }
@@ -156,10 +158,10 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         contentsTable.clear()
         contentsTable.add(globalVictoryTable)
     }
-    
+
     private fun getGlobalVictoryColumn(majorCivs: List<CivilizationInfo>, victory: String): Table {
         val victoryColumn = Table().apply { defaults().pad(10f) }
-        
+
         victoryColumn.add("[$victory] Victory".toLabel()).row()
         victoryColumn.addSeparator()
 
@@ -172,14 +174,14 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
             val buttonText = civ.victoryManager.getNextMilestone(victory)?.getVictoryScreenButtonHeaderText(false, civ) ?: "Done!"
             victoryColumn.add(getCivGroup(civ, "\n" + buttonText.tr(), playerCivInfo)).fillX().row()
         }
-        
+
         return victoryColumn
     }
 
     private fun setCivRankingsTable() {
         val majorCivs = gameInfo.civilizations.filter { it.isMajorCiv() }
         contentsTable.clear()
-        
+
         if (UncivGame.Current.settings.useDemographics) contentsTable.add(buildDemographicsTable(majorCivs))
         else contentsTable.add(buildRankingsTable(majorCivs))
     }
@@ -188,14 +190,14 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
     private fun buildDemographicsTable(majorCivs: List<CivilizationInfo>): Table {
         val demographicsTable = Table().apply { defaults().pad(5f) }
         buildDemographicsHeaders(demographicsTable)
-        
+
         for (rankLabel in RankLabels.values())   {
             demographicsTable.row()
             demographicsTable.add(rankLabel.name.toLabel())
 
             for (category in RankingType.values()) {
                 val aliveMajorCivsSorted = majorCivs.filter{ it.isAlive() }.sortedByDescending { it.getStatForRanking(category) }
-                
+
                 fun addRankCivGroup(civ: CivilizationInfo) { // local function for reuse of getting and formatting civ stats
                     demographicsTable.add(getCivGroup(civ, ": " + civ.getStatForRanking(category).toString(), playerCivInfo)).fillX()
                 }
@@ -213,7 +215,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
         return demographicsTable
     }
-    
+
     private fun buildDemographicsHeaders(demographicsTable: Table) {
         val demoLabel = Table().apply { defaults().pad(5f) }
 
@@ -223,8 +225,12 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
         for (category in RankingType.values()) {
             val headers = Table().apply { defaults().pad(5f) }
-            headers.add(category.name.replace('_', ' ').toLabel()).row()
-            headers.addSeparator().fillX()
+            val textAndIcon = Table().apply { defaults().pad(5f) }
+            val columnImage = getRankingColumnIcon(category)
+            if (columnImage != null) textAndIcon.add(columnImage).center().size(Constants.defaultFontSize.toFloat() * 0.75f).padRight(0f).padTop(0f)
+            textAndIcon.add(category.name.replace('_', ' ').toLabel()).pad(5f).row()
+            headers.add(textAndIcon)
+            headers.addSeparator().size(0f, -1f).fillX()
             demographicsTable.add(headers)
         }
     }
@@ -234,7 +240,11 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
         for (category in RankingType.values()) {
             val column = Table().apply { defaults().pad(5f) }
-            column.add(category.name.replace('_' , ' ').toLabel()).row()
+            val textAndIcon = Table().apply { defaults().pad(5f) }
+            val columnImage = getRankingColumnIcon(category)
+            if (columnImage != null) textAndIcon.add(columnImage).size(Constants.defaultFontSize.toFloat() * 0.75f).padRight(-3f).padTop(0f)
+            textAndIcon.add(category.name.replace('_' , ' ').toLabel()).pad(5f).row()
+            column.add(textAndIcon)
             column.addSeparator()
 
             for (civ in majorCivs.sortedByDescending { it.getStatForRanking(category) }) {
@@ -279,5 +289,22 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         civGroup.add(label).padLeft(10f)
         civGroup.pack()
         return civGroup
+    }
+
+    private fun getRankingColumnIcon(type: RankingType): Image? {
+        // Stats already have their icons due to tr()
+        return when (type) {
+            RankingType.Score -> {
+                val icon = ImageGetter.getImage("OtherIcons/Cultured")
+                icon.color = Color.FIREBRICK
+                icon
+            }
+            RankingType.Population -> ImageGetter.getStatIcon("Population")
+            RankingType.Crop_Yield -> ImageGetter.getStatIcon("Food")
+            RankingType.Technologies -> ImageGetter.getStatIcon("Science")
+            RankingType.Force -> ImageGetter.getImage("OtherIcons/Shield")
+            RankingType.Territory -> ImageGetter.getImage("OtherIcons/Hexagon")
+            else -> null
+        }
     }
 }
