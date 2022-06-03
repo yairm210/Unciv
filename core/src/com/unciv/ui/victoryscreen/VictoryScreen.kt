@@ -291,13 +291,9 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
     }
 
     private fun getRankingColumnIcon(type: RankingType): Image? {
-        // Stats already have their icons due to tr()
+        // Stats already have their icons because tr() adds them
         return when (type) {
-            RankingType.Score -> {
-                val icon = ImageGetter.getImage("OtherIcons/Cultured")
-                icon.color = Color.FIREBRICK
-                icon
-            }
+            RankingType.Score -> ImageGetter.getImage("OtherIcons/Cultured").apply { color = Color.FIREBRICK }
             RankingType.Population -> ImageGetter.getStatIcon("Population")
             RankingType.Crop_Yield -> ImageGetter.getStatIcon("Food")
             RankingType.Technologies -> ImageGetter.getStatIcon("Science")
