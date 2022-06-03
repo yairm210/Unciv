@@ -9,8 +9,9 @@ import com.badlogic.gdx.graphics.glutils.HdpiMode
 import com.sun.jna.Native
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
+import com.unciv.utils.Log
+import com.unciv.utils.debug
 import com.unciv.logic.GameSaver
-import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.utils.Fonts
 import java.util.*
 import kotlin.concurrent.timer
@@ -20,9 +21,14 @@ internal object DesktopLauncher {
 
     @JvmStatic
     fun main(arg: Array<String>) {
+        Log.backend = DesktopLogBackend()
         // Solves a rendering problem in specific GPUs and drivers.
         // For more info see https://github.com/yairm210/Unciv/pull/3202 and https://github.com/LWJGL/lwjgl/issues/119
         System.setProperty("org.lwjgl.opengl.Display.allowSoftwareOpenGL", "true")
+        // This setting (default 64) limits clipboard transfers. Value in kB!
+        // 386 is an almost-arbitrary choice from the saves I had at the moment and their GZipped size.
+        // There must be a reason for lwjgl3 being so stingy, which for me meant to stay conservative.
+        System.setProperty("org.lwjgl.system.stackSize", "384")
 
         ImagePacker.packImages()
 
@@ -52,7 +58,7 @@ internal object DesktopLauncher {
             versionFromJar,
             cancelDiscordEvent = { discordTimer?.cancel() },
             fontImplementation = NativeFontDesktop(Fonts.ORIGINAL_FONT_SIZE.toInt(), settings.fontFamily),
-            customSaveLocationHelper = CustomSaveLocationHelperDesktop(),
+            customFileLocationHelper = CustomFileLocationHelperDesktop(),
             crashReportSysInfo = CrashReportSysInfoDesktop(),
             platformSpecificHelper = platformSpecificHelper,
             audioExceptionHelper = HardenGdxAudio()
@@ -85,7 +91,7 @@ internal object DesktopLauncher {
             }
         } catch (ex: Throwable) {
             // This needs to be a Throwable because if we can't find the discord_rpc library, we'll get a UnsatisfiedLinkError, which is NOT an exception.
-            println("Could not initialize Discord")
+            debug("Could not initialize Discord")
         }
     }
 

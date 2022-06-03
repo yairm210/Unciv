@@ -61,6 +61,7 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
 
             tileInfo.isLocked() -> {
                 icons.addPopulationIcon(ImageGetter.getImage("OtherIcons/Lock"))
+                isWorkable = true
             }
 
             tileInfo.isWorked() || !tileInfo.providesYield() -> { // workable

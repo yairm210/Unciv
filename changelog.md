@@ -1,3 +1,76 @@
+## 4.1.6
+
+Multiplayer friends list - by alexban 011
+
+By Azzurite:
+- Improve performance of worldmap panning
+- Fix multiplayer sometimes duplicating games
+- Allow non-SSL-encrypted HTTP traffic & warn Dropbox users
+
+By OptimizedForDensity:
+- Fix aircraft disappearing when carrier is teleported
+- Pillaging certain improvements yields stats
+
+By SomeTroglodyte:
+- Fix Pixel unit nation colors after combat
+
+Autoassign population when the manual assignment fails - By JackRainy
+
+## 4.1.5
+
+Better minimap buttons
+
+By SomeTroglodyte:
+- Draw borders under pixel units
+- Fix rare NextTurnButton crash
+
+Improve unconstructable improvement suggestions - By doublep
+
+By alexban011:
+- Disable state-changing buttons for puppet cities
+- Add optional on-screen buttons to zoom in and out
+
+Corrected some broken policy uniques - By OptimizedForDensity
+
+Dynamically adjust StatsTable height - By itanasi
+
+Fix multiplayer turn checker writing to wrong locations - By Azzurite
+
+## 4.1.4
+
+AI counteroffers will no longer contain items already offered by the player
+
+By itanasi:
+- Citizen management area expandable
+- Citizen Management buttons disabled if Spectator
+- Make Locked Tiles clickable
+
+Puppet cities only focus on gold - By alexban011
+
+Multiplayer Status Display - By Azzurite
+
+Fix piety complete faith discount - By OptimizedForDensity
+
+## 4.1.3
+
+Implement 'wait' command - by doublep
+
+By SomeTroglodyte:
+- Re-hide Enable Portrait option on desktop
+- Show required resource for upgrades
+- Fix Right-Click attacks made no sound
+
+Fix missing icons in civilopedia from main menu - By OptimizedForDensity
+
+By Azzurite:
+- Return to current game from main menu "Resume"
+
+By alexban011:
+- Fixed slider sound when opening screens
+- Added confirmation option for "next turn"
+
+Adding spaceship sprites for FantasyHex tileset - By GeneralWadaling
+
 ## 4.1.2
 
 Fixed multiplayer bugs (double files, turn checker problems) - By Azzurite

@@ -26,37 +26,36 @@ import java.lang.IllegalStateException
 import kotlin.math.*
 import kotlin.random.Random
 
-/** A lot of the render time was spent on snapshot arrays of the TileGroupMap's groups, in the act() function.
- * This class is to avoid the overhead of useless act() calls. */
-open class ActionlessGroup(val checkHit:Boolean=false):Group() {
-    override fun act(delta: Float) {}
-    override fun hit(x: Float, y: Float, touchable: Boolean): Actor? {
-        if (checkHit)
-            return super.hit(x, y, touchable)
-        return null
-    }
-}
-
-open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, private val groupSize: Float = 54f) : ActionlessGroup(true) {
+open class TileGroup(
+    var tileInfo: TileInfo,
+    val tileSetStrings: TileSetStrings,
+    groupSize: Float = 54f
+) : ActionlessGroupWithHit() {
     /*
-    Layers:
-    Base image (+ overlay)
-    Feature overlay / city overlay
-    Misc: Units, improvements, resources, border, arrows
-    Highlight, Crosshair, Fog layer
-    City name
+        Layers (reordered in TileGroupMap):
+        Base image (+ overlay)
+        Terrain Feature overlay (including roads)
+        Misc: improvements, resources, yields, worked, resources, border, arrows, and starting locations in editor
+        Pixel Units
+        Highlight, Fog, Crosshair layer (in that order)
+        Units
+        City button
+        City name
     */
 
     /** Cache simple but frequent calculations. */
     private val hexagonImageWidth = groupSize * 1.5f
     /** Cache simple but frequent calculations. */
-    private val hexagonImageOrigin = Pair(hexagonImageWidth/2f, sqrt((hexagonImageWidth/2f).pow(2) - (hexagonImageWidth/4f).pow(2))) // Pair, not Vector2, for immutability. Second number is triangle height for hex center.
+    private val hexagonImageOrigin = Pair(hexagonImageWidth / 2f, sqrt((hexagonImageWidth / 2f).pow(2) - (hexagonImageWidth / 4f).pow(2)))
+    // Pair, not Vector2, for immutability. Second number is triangle height for hex center.
     /** Cache simple but frequent calculations. */
-    private val hexagonImagePosition = Pair(-hexagonImageOrigin.first/3f, -hexagonImageOrigin.second/4f) // Honestly, I got these numbers empirically by printing `.x` and `.y` after `.center()`, and I'm not totally clear on the stack of transformations that makes them work. But they are still exact ratios, AFAICT.
+    private val hexagonImagePosition = Pair(-hexagonImageOrigin.first / 3f, -hexagonImageOrigin.second / 4f)
+    // Honestly, I got these numbers empirically by printing `.x` and `.y` after `.center()`, and I'm not totally
+    // clear on the stack of transformations that makes them work. But they are still exact ratios, AFAICT.
 
     // For recognizing the group in the profiler
-    class BaseLayerGroupClass:ActionlessGroup()
-    val baseLayerGroup = BaseLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize)  }
+    class BaseLayerGroupClass(groupSize: Float) : ActionlessGroup(groupSize)
+    val baseLayerGroup = BaseLayerGroupClass(groupSize)
 
     val tileBaseImages: ArrayList<Image> = ArrayList()
     /** List of image locations comprising the layers so we don't need to change images all the time */
@@ -66,9 +65,8 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
     private  var baseTerrainOverlayImage: Image? = null
     private  var baseTerrain: String = ""
 
-    class TerrainFeatureLayerGroupClass:ActionlessGroup()
-    val terrainFeatureLayerGroup = TerrainFeatureLayerGroupClass()
-            .apply { isTransform = false; setSize(groupSize, groupSize) }
+    class TerrainFeatureLayerGroupClass(groupSize: Float) : ActionlessGroup(groupSize)
+    val terrainFeatureLayerGroup = TerrainFeatureLayerGroupClass(groupSize)
 
     // These are for OLD tiles - for instance the "forest" symbol on the forest
     private var terrainFeatureOverlayImage: Image? = null
@@ -77,14 +75,14 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
     private var naturalWonderImage: Image? = null
 
     private var pixelMilitaryUnitImageLocation = ""
-    var pixelMilitaryUnitGroup = ActionlessGroup().apply { isTransform = false; setSize(groupSize, groupSize) }
+    var pixelMilitaryUnitGroup = ActionlessGroup(groupSize)
     private var pixelCivilianUnitImageLocation = ""
-    var pixelCivilianUnitGroup = ActionlessGroup().apply { isTransform = false; setSize(groupSize, groupSize) }
+    var pixelCivilianUnitGroup = ActionlessGroup(groupSize)
 
-    class MiscLayerGroupClass:ActionlessGroup(){
+    class MiscLayerGroupClass(groupSize: Float) : ActionlessGroup(groupSize) {
         override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
     }
-    val miscLayerGroup = MiscLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize) }
+    val miscLayerGroup = MiscLayerGroupClass(groupSize)
 
     var tileYieldGroupInitialized = false
     val tileYieldGroup: YieldGroup by lazy { YieldGroup() }
@@ -110,22 +108,31 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
     @Suppress("LeakingThis")    // we trust TileGroupIcons not to use our `this` in its constructor except storing it for later
     val icons = TileGroupIcons(this)
 
-    class UnitLayerGroupClass:Group(){
+    class UnitLayerGroupClass(groupSize: Float) : Group() {
+        init {
+            isTransform = false
+            touchable = Touchable.disabled
+            setSize(groupSize, groupSize)
+        }
+
         override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
-        override fun act(delta: Float) { // No 'snapshotting' since we trust it wil remain the same
+        override fun act(delta: Float) { // No 'snapshotting' since we trust it will remain the same
             for (child in children)
                 child.act(delta)
         }
     }
 
-    class UnitImageLayerGroupClass:ActionlessGroup(){
+    class UnitImageLayerGroupClass(groupSize: Float) : ActionlessGroup(groupSize) {
         override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
+        init {
+            touchable = Touchable.disabled
+        }
     }
     // We separate the units from the units' backgrounds, because all the background elements are in the same texture, and the units' aren't
-    val unitLayerGroup = UnitLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize);touchable = Touchable.disabled }
-    val unitImageLayerGroup = UnitImageLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize);touchable = Touchable.disabled }
+    val unitLayerGroup = UnitLayerGroupClass(groupSize)
+    val unitImageLayerGroup = UnitImageLayerGroupClass(groupSize)
 
-    class CityButtonLayerGroupClass(val tileInfo: TileInfo) :Group() {
+    class CityButtonLayerGroupClass(val tileInfo: TileInfo, groupSize: Float) : Group() {
         override fun draw(batch: Batch?, parentAlpha: Float) {
             if (!tileInfo.isCityCenter()) return
             super.draw(batch, parentAlpha)
@@ -138,12 +145,17 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
             if (!tileInfo.isCityCenter()) return null
             return super.hit(x, y, touchable)
         }
+        init {
+            isTransform = false
+            setSize(groupSize, groupSize)
+            touchable = Touchable.childrenOnly
+            setOrigin(Align.center)
+        }
     }
 
-    val cityButtonLayerGroup = CityButtonLayerGroupClass(tileInfo).apply { isTransform = false; setSize(groupSize, groupSize)
-        touchable = Touchable.childrenOnly; setOrigin(Align.center);  }
+    val cityButtonLayerGroup = CityButtonLayerGroupClass(tileInfo, groupSize)
 
-    val highlightCrosshairFogLayerGroup = ActionlessGroup().apply { isTransform = false; setSize(groupSize, groupSize) }
+    val highlightFogCrosshairLayerGroup = ActionlessGroup(groupSize)
     val highlightImage = ImageGetter.getImage(tileSetStrings.highlight) // for blue and red circles/emphasis on the tile
     private val crosshairImage = ImageGetter.getImage(tileSetStrings.crosshair) // for when a unit is targeted
     private val fogImage = ImageGetter.getImage(tileSetStrings.crosshatchHexagon )
@@ -181,12 +193,11 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
         this.addActor(baseLayerGroup)
         this.addActor(terrainFeatureLayerGroup)
         this.addActor(miscLayerGroup)
+        this.addActor(pixelMilitaryUnitGroup)
+        this.addActor(pixelCivilianUnitGroup)
         this.addActor(unitLayerGroup)
         this.addActor(cityButtonLayerGroup)
-        this.addActor(highlightCrosshairFogLayerGroup)
-
-        terrainFeatureLayerGroup.addActor(pixelMilitaryUnitGroup)
-        terrainFeatureLayerGroup.addActor(pixelCivilianUnitGroup)
+        this.addActor(highlightFogCrosshairLayerGroup)
 
         updateTileImage(null)
 
@@ -196,25 +207,25 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
         isTransform = false // performance helper - nothing here is rotated or scaled
     }
 
-    open fun clone(): TileGroup = TileGroup(tileInfo, tileSetStrings)
+    open fun clone() = TileGroup(tileInfo, tileSetStrings)
 
 
     //region init functions
     private fun addHighlightImage() {
-        highlightCrosshairFogLayerGroup.addActor(highlightImage)
+        highlightFogCrosshairLayerGroup.addActor(highlightImage)
         setHexagonImageSize(highlightImage)
         highlightImage.isVisible = false
     }
 
     private fun addFogImage() {
         fogImage.color = Color.WHITE.cpy().apply { a = 0.2f }
-        highlightCrosshairFogLayerGroup.addActor(fogImage)
+        highlightFogCrosshairLayerGroup.addActor(fogImage)
         setHexagonImageSize(fogImage)
     }
 
     private fun addCrosshairImage() {
         crosshairImage.isVisible = false
-        highlightCrosshairFogLayerGroup.addActor(crosshairImage)
+        highlightFogCrosshairLayerGroup.addActor(crosshairImage)
         setHexagonImageSize(crosshairImage)
     }
     //endregion
@@ -544,7 +555,7 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
 
                 val sign = if (relativeWorldPosition.x < 0) -1 else 1
                 val angle = sign * (atan(sign * relativeWorldPosition.y / relativeWorldPosition.x) * 180 / PI - 90.0).toFloat()
-                
+
                 val innerBorderImage = ImageGetter.getImage(
                         tileSetStrings.orFallback { getBorder(borderShapeString,"Inner") }
                 )
@@ -568,7 +579,7 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
 
     /** Create and setup Actors for all arrows to be drawn from this tile. */
     private fun updateArrows() {
-        for (actorList in arrows.values) 
+        for (actorList in arrows.values)
             for (actor in actorList)
                 actor.remove()
         arrows.clear()

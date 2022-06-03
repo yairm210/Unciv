@@ -2,6 +2,7 @@ package com.unciv.logic
 
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.utils.debug
 import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
 import com.unciv.logic.BackwardCompatibility.migrateBarbarianCamps
 import com.unciv.logic.BackwardCompatibility.migrateSeenImprovements
@@ -107,7 +108,7 @@ class GameInfo {
 
     fun getPlayerToViewAs(): CivilizationInfo {
         if (!gameParameters.isOnlineMultiplayer) return currentPlayerCiv // non-online, play as human player
-        val userId = UncivGame.Current.settings.userId
+        val userId = UncivGame.Current.settings.multiplayer.userId
 
         // Iterating on all civs, starting from the the current player, gives us the one that will have the next turn
         // This allows multiple civs from the same UserID
@@ -156,7 +157,7 @@ class GameInfo {
         }
 
     fun isReligionEnabled(): Boolean {
-        if (ruleSet.eras[gameParameters.startingEra]!!.hasUnique("Starting in this era disables religion")
+        if (ruleSet.eras[gameParameters.startingEra]!!.hasUnique(UniqueType.DisablesReligion)
             || ruleSet.modOptions.uniques.contains(ModOptionsConstants.disableReligion)
         ) return false
         return gameParameters.religionEnabled
@@ -199,7 +200,7 @@ class GameInfo {
             if (currentPlayerIndex == 0) {
                 turns++
                 if (UncivGame.Current.simulateUntilTurnForDebug != 0)
-                    println("Starting simulation of turn $turns")
+                    debug("Starting simulation of turn %s", turns)
             }
             thisPlayer = civilizations[currentPlayerIndex]
             thisPlayer.startTurn()
@@ -217,7 +218,7 @@ class GameInfo {
                 || turns < simulateMaxTurns && simulateUntilWin
                 // For multiplayer, if there are 3+ players and one is defeated or spectator,
                 // we'll want to skip over their turn
-                || gameParameters.isOnlineMultiplayer && (thisPlayer.isDefeated() || thisPlayer.isSpectator() && thisPlayer.playerId != UncivGame.Current.settings.userId)
+                || gameParameters.isOnlineMultiplayer && (thisPlayer.isDefeated() || thisPlayer.isSpectator() && thisPlayer.playerId != UncivGame.Current.settings.multiplayer.userId)
         ) {
             if (!thisPlayer.isDefeated() || thisPlayer.isBarbarian()) {
                 NextTurnAutomation.automateCivMoves(thisPlayer)

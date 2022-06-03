@@ -206,9 +206,9 @@ class PolicyManager {
             }
         }
 
-        for (unique in policy.uniques) {
-            if (unique.equalsPlaceholderText("Triggers the following global alert: []")) triggerGlobalAlerts(
-                policy, unique.getPlaceholderParameters()[0]
+        for (unique in policy.getMatchingUniques(UniqueType.OneTimeGlobalAlert)) {
+            triggerGlobalAlerts(
+                policy, unique.params[0]
             )
         }
 

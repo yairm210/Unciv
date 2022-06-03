@@ -8,18 +8,20 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.GameSaver
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.*
+import com.unciv.utils.Log
 import java.io.PrintWriter
 import java.io.StringWriter
 import kotlin.concurrent.thread
 
 /*
 Crashes are now handled from:
-- Event listeners, by [CrashHandlingStage].
+- Event listeners, by [UncivStage].
 - The main rendering loop, by [UncivGame.render].
 - Threads, by [crashHandlingThread].
 - Main loop runnables, by [postCrashHandlingRunnable].
@@ -53,9 +55,9 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
     private fun tryGetSaveGame(): String {
         if (!UncivGame.isCurrentInitialized() || !UncivGame.Current.isGameInfoInitialized())
             return ""
-        return "\n**Save Data:**\n<details><summary>Show Saved Game</summary>\n\n```" +
+        return "\n**Save Data:**\n<details><summary>Show Saved Game</summary>\n\n```\n" +
             try {
-                game.gameSaver.gameInfoToString(UncivGame.Current.gameInfo, forceZip = true)
+                GameSaver.gameInfoToString(UncivGame.Current.gameInfo, forceZip = true)
             } catch (e: Throwable) {
                 "No save data: $e" // In theory .toString() could still error here.
             } + "\n```\n</details>\n"
@@ -106,7 +108,7 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
     }
 
     init {
-        println(text) // Also print to system terminal.
+        Log.error(text) // Also print to system terminal.
         thread { throw exception } // this is so the GPC logs catch the exception
         stage.addActor(makeLayoutTable())
     }

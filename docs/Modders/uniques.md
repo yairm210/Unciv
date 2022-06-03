@@ -44,6 +44,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Triggers voting for the Diplomatic Victory"
 	Applicable to: Triggerable
 
+??? example  "Triggers the following global alert: [comment]"
+	Example: "Triggers the following global alert: [comment]"
+
+	Applicable to: Triggerable
+
 ??? example  "This Unit gains the [promotion] promotion"
 	Example: "This Unit gains the [Shock I] promotion"
 
@@ -798,6 +803,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Nation
 
+## Era uniques
+??? example  "Starting in this era disables religion"
+	Applicable to: Era
+
 ## Tech uniques
 ??? example  "Starting tech"
 	Applicable to: Tech
@@ -1476,6 +1485,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Improvement
 
 ??? example  "Unpillagable"
+	Applicable to: Improvement
+
+??? example  "Pillaging this improvement yields approximately [stats]"
+	Example: "Pillaging this improvement yields approximately [+1 Gold, +2 Production]"
+
+	Applicable to: Improvement
+
+??? example  "Pillaging this improvement yields [stats]"
+	Example: "Pillaging this improvement yields [+1 Gold, +2 Production]"
+
 	Applicable to: Improvement
 
 ??? example  "Irremovable"

@@ -1,6 +1,7 @@
 package com.unciv.ui.trade
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.Constants
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeOffersList
@@ -72,8 +73,10 @@ class OfferColumnsTable(private val tradeLogic: TradeLogic, val screen: Diplomac
     fun update() {
         val ourFilteredOffers = tradeLogic.ourAvailableOffers.without(tradeLogic.currentTrade.ourOffers)
         val theirFilteredOffers = tradeLogic.theirAvailableOffers.without(tradeLogic.currentTrade.theirOffers)
-        val ourUntradables = tradeLogic.ourCivilization.getCivResourcesWithOriginsForTrade().filterNot { it.origin == "Tradable" }
-        val theirUntradables = tradeLogic.otherCivilization.getCivResourcesWithOriginsForTrade().filterNot { it.origin == "Tradable" }
+        val ourUntradables = tradeLogic.ourCivilization.getCivResourcesWithOriginsForTrade()
+            .removeAll(Constants.tradable)
+        val theirUntradables = tradeLogic.otherCivilization.getCivResourcesWithOriginsForTrade()
+            .removeAll(Constants.tradable)
         ourAvailableOffersTable.update(ourFilteredOffers, tradeLogic.theirAvailableOffers, ourUntradables)
         ourOffersTable.update(tradeLogic.currentTrade.ourOffers, tradeLogic.theirAvailableOffers)
         theirOffersTable.update(tradeLogic.currentTrade.theirOffers, tradeLogic.ourAvailableOffers)

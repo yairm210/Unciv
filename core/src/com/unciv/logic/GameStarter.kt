@@ -2,6 +2,7 @@ package com.unciv.logic
 
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.utils.debug
 import com.unciv.logic.civilization.*
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
@@ -20,12 +21,11 @@ import kotlin.collections.HashSet
 
 object GameStarter {
     // temporary instrumentation while tuning/debugging
-    private const val consoleOutput = false
     private const val consoleTimings = false
 
     fun startNewGame(gameSetupInfo: GameSetupInfo): GameInfo {
-        if (consoleOutput || consoleTimings)
-            println("\nGameStarter run with parameters ${gameSetupInfo.gameParameters}, map ${gameSetupInfo.mapParameters}")
+        if (consoleTimings)
+            debug("\nGameStarter run with parameters %s, map %s", gameSetupInfo.gameParameters, gameSetupInfo.mapParameters)
 
         val gameInfo = GameInfo()
         lateinit var tileMap: TileMap
@@ -138,7 +138,7 @@ object GameStarter {
         val startNanos = System.nanoTime()
         action()
         val delta = System.nanoTime() - startNanos
-        println("GameStarter.$text took ${delta/1000000L}.${(delta/10000L).rem(100)}ms")
+        debug("GameStarter.%s took %s.%sms", text, delta/1000000L, (delta/10000L).rem(100))
     }
 
     private fun addPlayerIntros(gameInfo: GameInfo) {

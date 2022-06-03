@@ -22,6 +22,7 @@ import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.mapeditor.GameParametersScreen
+import com.unciv.logic.multiplayer.FriendList
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.*
@@ -46,12 +47,15 @@ class PlayerPickerTable(
 ): Table() {
     val playerListTable = Table()
     val civBlocksWidth = if(blockWidth <= 10f) previousScreen.stage.width / 3 - 5f else blockWidth
+    val friendsBlocksWidth = if(blockWidth <= 10f) previousScreen.stage.width / 5 - 5f else blockWidth / 2
 
     /** Locks player table for editing, currently unused, was previously used for scenarios and could be useful in the future.*/
     var locked = false
 
     /** No random civilization is available, used during map editing.*/
     var noRandom = false
+
+    private val friendList = FriendList()
 
     init {
         for (player in gameParameters.players)
@@ -174,9 +178,10 @@ class PlayerPickerTable(
                     errorLabel.apply { setText("✘");setFontColor(Color.RED) }
                 }
             }
+            onPlayerIdTextUpdated()
 
             playerIdTextField.addListener { onPlayerIdTextUpdated(); true }
-            val currentUserId = UncivGame.Current.settings.userId
+            val currentUserId = UncivGame.Current.settings.multiplayer.userId
             val setCurrentUserButton = "Set current user".toTextButton()
             setCurrentUserButton.onClick {
                 playerIdTextField.text = currentUserId
@@ -189,7 +194,16 @@ class PlayerPickerTable(
                 playerIdTextField.text = Gdx.app.clipboard.contents
                 onPlayerIdTextUpdated()
             }
-            playerTable.add(copyFromClipboardButton).colspan(3).fillX().pad(5f)
+            playerTable.add(copyFromClipboardButton).right().colspan(3).fillX().pad(5f).row()
+
+            //check if friends list is empty before adding the select friend button
+            if (friendList.friendList.isNotEmpty()) {
+                val selectPlayerFromFriendsList = "Player ID from friends list".toTextButton()
+                selectPlayerFromFriendsList.onClick {
+                    popupFriendPicker(player)
+                }
+                playerTable.add(selectPlayerFromFriendsList).left().colspan(3).fillX().pad(5f)
+            }
         }
 
         return playerTable
@@ -203,8 +217,8 @@ class PlayerPickerTable(
      */
     private fun getNationTable(player: Player): Table {
         val nationTable = Table()
-        val nationImage = 
-            if (player.chosenCiv == Constants.random) 
+        val nationImage =
+            if (player.chosenCiv == Constants.random)
                 ImageGetter.getRandomNationIndicator(40f)
             else ImageGetter.getNationIndicator(previousScreen.ruleset.nations[player.chosenCiv]!!, 40f)
         nationTable.add(nationImage).pad(5f)
@@ -214,6 +228,17 @@ class PlayerPickerTable(
             if (!locked) popupNationPicker(player)
         }
         return nationTable
+    }
+
+    /**
+     * Opens Friend picking popup with all friends,
+     * currently available for [player] to choose, depending on current
+     * friends list and if another friend is selected.
+     * @param player current player
+     */
+    private fun popupFriendPicker(player: Player) {
+        FriendPickerPopup(this, player).open()
+        update()
     }
 
     /**
@@ -230,10 +255,10 @@ class PlayerPickerTable(
     /**
      * Returns a list of available civilization for all players, according
      * to current ruleset, with exception of city states nations, spectator and barbarians.
-     * 
+     *
      * Skips nations already chosen by a player, unless parameter [dontSkipNation] says to keep a
      * specific one. That is used so the picker can be used to inspect and confirm the current selection.
-     * 
+     *
      * @return [Sequence] of available [Nation]s
      */
     internal fun getAvailablePlayerCivs(dontSkipNation: String? = null) =
@@ -241,6 +266,119 @@ class PlayerPickerTable(
             .filter { it.isMajorCiv() }
             .filter { it.name == dontSkipNation || gameParameters.players.none { player -> player.chosenCiv == it.name } }
 
+    /**
+     * Returns a list of available friends.
+     * Skips friends already chosen.
+     *
+     * @return [Sequence] of available [FriendList.Friend]s
+     */
+    internal fun getAvailableFriends(): Sequence<FriendList.Friend> {
+        val friendListWithRemovedFriends = friendList.friendList.toMutableList()
+        for (index in gameParameters.players.indices) {
+            val currentFriendId = previousScreen.gameSetupInfo.gameParameters.players[index].playerId
+            friendListWithRemovedFriends.remove(friendList.getFriendWithId(currentFriendId))
+        }
+        return friendListWithRemovedFriends.asSequence()
+    }
+}
+
+private class FriendPickerPopup(
+        private val playerPicker: PlayerPickerTable,
+        private val player: Player
+) : Popup(playerPicker.previousScreen as BaseScreen) {
+    companion object {
+        // These are used for the Close/OK buttons in the lower left/right corners:
+        const val buttonsCircleSize = 70f
+        const val buttonsIconSize = 50f
+        const val buttonsOffsetFromEdge = 5f
+        val buttonsBackColor: Color = Color.BLACK.cpy().apply { a = 0.67f }
+    }
+
+    // This Popup's body has two halves of same size, either side by side or arranged vertically
+    // depending on screen proportions - determine height for one of those
+    private val partHeight = screen.stage.height * (if (screen.isNarrowerThan4to3()) 0.3f else 0.4f)
+    private val friendsBlocksWidth = playerPicker.friendsBlocksWidth
+    private val friendListTable = Table()
+    private val friendListScroll = ScrollPane(friendListTable)
+    private val friendDetailsTable = Table()
+    private val friendDetailsScroll = ScrollPane(friendDetailsTable)
+    var selectedFriend: FriendList.Friend? = null
+
+    init {
+        friendListScroll.setOverscroll(false, false)
+        add(friendListScroll).size( friendsBlocksWidth + 10f, partHeight )
+        // +10, because the friend table has a 5f pad, for a total of +10f
+        if (screen.isNarrowerThan4to3()) row()
+        friendDetailsScroll.setOverscroll(false, false)
+        add(friendDetailsScroll).size(friendsBlocksWidth + 10f, partHeight) // Same here, see above
+
+        val friends = ArrayList<FriendList.Friend>()
+
+        friends += playerPicker.getAvailableFriends()
+
+        var friendsListScrollY = 0f
+        var currentY = 0f
+        for (friend in friends) {
+            val friendTable = FriendTable(friend, friendsBlocksWidth, 0f) // no need for min height
+            val cell = friendListTable.add(friendTable)
+            cell.padTop(20f)
+            currentY += cell.padBottom + cell.prefHeight + cell.padTop
+            cell.row()
+            friendTable.onClick {
+                setFriendDetails(friend)
+            }
+        }
+
+        friendListScroll.layout()
+        pack()
+        if (friendsListScrollY > 0f) {
+            // center the selected friend vertically, getRowHeight safe because friendListScrollY > 0f ensures at least 1 row
+            friendsListScrollY -= (friendListScroll.height - friendListTable.getRowHeight(0)) / 2
+            friendListScroll.scrollY = friendsListScrollY.coerceIn(0f, friendListScroll.maxY)
+        }
+
+        val closeButton = "OtherIcons/Close".toImageButton(Color.FIREBRICK)
+        closeButton.onClick { close() }
+        closeButton.setPosition(buttonsOffsetFromEdge, buttonsOffsetFromEdge, Align.bottomLeft)
+        innerTable.addActor(closeButton)
+        keyPressDispatcher[KeyCharAndCode.BACK] = { close() }
+
+        val okButton = "OtherIcons/Checkmark".toImageButton(Color.LIME)
+        okButton.onClick { returnSelected() }
+        okButton.setPosition(innerTable.width - buttonsOffsetFromEdge, buttonsOffsetFromEdge, Align.bottomRight)
+        innerTable.addActor(okButton)
+
+        friendDetailsTable.touchable = Touchable.enabled
+        friendDetailsTable.onClick { returnSelected() }
+    }
+
+    private fun String.toImageButton(overColor: Color): Group {
+        val style = ImageButton.ImageButtonStyle()
+        val image = ImageGetter.getDrawable(this)
+        style.imageUp = image
+        style.imageOver = image.tint(overColor)
+        val button = ImageButton(style)
+        button.setSize(buttonsIconSize, buttonsIconSize)
+
+        return button.surroundWithCircle(buttonsCircleSize, false, buttonsBackColor)
+    }
+
+    private fun setFriendDetails(friend: FriendList.Friend) {
+        friendDetailsTable.clearChildren()  // .clear() also clears listeners!
+
+        friendDetailsTable.add(FriendTable(friend, friendsBlocksWidth, partHeight))
+        selectedFriend = friend
+    }
+
+    fun returnSelected() {
+        if (selectedFriend == null) {
+            close()
+            return
+        }
+        player.playerId = selectedFriend?.playerID.toString()
+        close()
+        playerPicker.update()
+    }
 }
 
 private class NationPickerPopup(

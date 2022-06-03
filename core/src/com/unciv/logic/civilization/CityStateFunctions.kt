@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization
 
+import com.unciv.Constants
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.civilization.diplomacy.*
 import com.unciv.models.ruleset.Ruleset
@@ -658,13 +659,10 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         }
     }
 
-    fun getCityStateResourcesForAlly(): ResourceSupplyList {
-        val newDetailedCivResources = ResourceSupplyList()
+    fun getCityStateResourcesForAlly() = ResourceSupplyList().apply {
         for (city in civInfo.cities) {
-            for (resourceSupply in city.getCityResources())
-                if (resourceSupply.amount > 0) // IGNORE the fact that they consume their own resources - #4769
-                    newDetailedCivResources.add(resourceSupply.resource, resourceSupply.amount, "City-State")
+            // IGNORE the fact that they consume their own resources - #4769
+            addPositiveByResource(city.getCityResources(), Constants.cityStates)
         }
-        return newDetailedCivResources
     }
 }

@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.EventListener
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.unciv.utils.debug
 
 /*
  * For now, many combination keys cannot easily be expressed.
@@ -15,7 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage
  *      (Exception: international keyboard AltGr-combos)
  * An update supporting easy declarations for any modifier combos would need to use Gdx.input.isKeyPressed()
  * Gdx seems to omit support for a modifier mask (e.g. Ctrl-Alt-Shift) so we would need to reinvent this
- * 
+ *
  * Note: It is important that KeyCharAndCode is an immutable data class to support usage as HashMap key
  */
 
@@ -181,8 +182,7 @@ class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (()
      * @param   checkIgnoreKeys An optional lambda - when it returns true all keys are ignored
      */
     fun install(stage: Stage, checkIgnoreKeys: (() -> Boolean)? = null) {
-        if (consoleLog)
-            println("$this: install")
+        debug("%s: install", this)
         if (installStage != null) uninstall()
         listener =
             object : InputListener() {
@@ -198,17 +198,12 @@ class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (()
 
                     // see if we want to handle this key, and if not, let it propagate
                     if (!contains(key) || (checkIgnoreKeys?.invoke() == true)) {
-                        if (consoleLog)
-                            println("${this@KeyPressDispatcher}: $key not handled")
+                        debug("%s: %s not handled", this@KeyPressDispatcher, key)
                         return super.keyDown(event, keycode)
                     }
 
-                    // try-catch mainly for debugging. Breakpoints in the vicinity can make the event fire twice in rapid succession, second time the context can be invalid
-                    if (consoleLog)
-                        println("${this@KeyPressDispatcher}: handling $key")
-                    try {
-                        this@KeyPressDispatcher[key]?.invoke()
-                    } catch (ex: Exception) {}
+                    debug("%s: handling %s", this@KeyPressDispatcher, key)
+                    this@KeyPressDispatcher[key]?.invoke()
                     return true
                 }
             }
@@ -218,8 +213,7 @@ class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (()
 
     /** uninstall our [EventListener] from the stage it was installed on. */
     fun uninstall() {
-        if (consoleLog)
-            println("$this: uninstall")
+        debug("%s: uninstall", this)
         checkInstall(forceRemove = true)
         listener = null
         installStage = null
@@ -235,18 +229,14 @@ class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (()
         if (listener == null || installStage == null) return
         if (listenerInstalled && (isEmpty() || isPaused || forceRemove)) {
             listenerInstalled = false
-            if (consoleLog)
-                println("$this: removeListener")
+            debug("%s: removeListener", this)
             installStage!!.removeListener(listener)
-            if (consoleLog)
-                println("$this: Listener removed")
+            debug("%s: Listener removed", this)
         } else if (!listenerInstalled && !(isEmpty() || isPaused)) {
-            if (consoleLog)
-                println("$this: addListener")
+            debug("%s: addListener", this)
             installStage!!.addListener(listener)
             listenerInstalled = true
-            if (consoleLog)
-                println("$this: Listener added")
+            debug("%s: Listener added", this)
         }
     }
 
@@ -258,9 +248,6 @@ class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (()
         }
 
     companion object {
-        // Control debug logging
-        private const val consoleLog = false
-
         /** Tests presence of a physical keyboard - static here as convenience shortcut only */
         val keyboardAvailable = Gdx.input.isPeripheralAvailable(Input.Peripheral.HardwareKeyboard)
     }

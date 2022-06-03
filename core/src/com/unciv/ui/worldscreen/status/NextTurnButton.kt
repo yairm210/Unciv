@@ -9,7 +9,8 @@ import com.unciv.ui.utils.*
 class NextTurnButton(
     keyPressDispatcher: KeyPressDispatcher
 ) : TextButton("", BaseScreen.skin) {
-    private lateinit var nextTurnAction: NextTurnAction
+    private var nextTurnAction = NextTurnAction("", Color.BLACK) {}
+
     init {
         label.setFontSize(30)
         labelCell.pad(10f)
@@ -19,7 +20,11 @@ class NextTurnButton(
         keyPressDispatcher['n'] = action
     }
 
-    fun update(isSomethingOpen: Boolean, isPlayersTurn: Boolean, waitingForAutosave: Boolean, nextTurnAction: NextTurnAction? = null) {
+    fun update(isSomethingOpen: Boolean,
+               isPlayersTurn: Boolean,
+               waitingForAutosave: Boolean,
+               isNextTurnUpdateRunning: Boolean,
+               nextTurnAction: NextTurnAction? = null) {
         if (nextTurnAction != null) {
             this.nextTurnAction = nextTurnAction
             setText(nextTurnAction.text.tr())
@@ -27,7 +32,7 @@ class NextTurnButton(
             pack()
         }
 
-        isEnabled = !isSomethingOpen && isPlayersTurn && !waitingForAutosave
+        isEnabled = !isSomethingOpen && isPlayersTurn && !waitingForAutosave && !isNextTurnUpdateRunning
     }
 }
 

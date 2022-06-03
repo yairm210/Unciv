@@ -57,13 +57,13 @@ fun Color.darken(t: Float): Color = Color(this).lerp(Color.BLACK, t)
  * The result is returned as a new instance. */
 fun Color.brighten(t: Float): Color = Color(this).lerp(Color.WHITE, t)
 
-fun Actor.centerX(parent: Actor){ x = parent.width/2 - width/2 }
-fun Actor.centerY(parent: Actor){ y = parent.height/2- height/2}
-fun Actor.center(parent: Actor){ centerX(parent); centerY(parent)}
+fun Actor.centerX(parent: Actor) { x = parent.width / 2 - width / 2 }
+fun Actor.centerY(parent: Actor) { y = parent.height / 2 - height / 2 }
+fun Actor.center(parent: Actor) { centerX(parent); centerY(parent) }
 
-fun Actor.centerX(parent: Stage){ x = parent.width/2 - width/2 }
-fun Actor.centerY(parent: Stage){ y = parent.height/2- height/2}
-fun Actor.center(parent: Stage){ centerX(parent); centerY(parent)}
+fun Actor.centerX(parent: Stage) { x = parent.width / 2 - width / 2 }
+fun Actor.centerY(parent: Stage) { y = parent.height / 2 - height / 2 }
+fun Actor.center(parent: Stage) { centerX(parent); centerY(parent) }
 
 /** same as [onClick], but sends the [InputEvent] and coordinates along */
 fun Actor.onClickEvent(sound: UncivSound = UncivSound.Click, function: (event: InputEvent?, x: Float, y: Float) -> Unit) {

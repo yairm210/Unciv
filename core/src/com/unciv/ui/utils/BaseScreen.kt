@@ -10,9 +10,9 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.utils.viewport.ExtendViewport
-import com.unciv.ui.crashhandling.CrashHandlingStage
 import com.unciv.UncivGame
 import com.unciv.models.Tutorial
+import com.unciv.ui.UncivStage
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.hasOpenPopups
 import com.unciv.ui.tutorials.TutorialController
@@ -32,7 +32,7 @@ abstract class BaseScreen : Screen {
         val height = resolutions[1]
 
         /** The ExtendViewport sets the _minimum_(!) world size - the actual world size will be larger, fitted to screen/window aspect ratio. */
-        stage = CrashHandlingStage(ExtendViewport(height, height), SpriteBatch())
+        stage = UncivStage(ExtendViewport(height, height), SpriteBatch())
 
         if (enableSceneDebug) {
             stage.setDebugUnderMouse(true)
