@@ -52,26 +52,22 @@ class FriendList {
         settings.save()
     }
 
-    fun getFriendsList(): MutableList<Friend> {
-        return friendList
-    }
+    fun getFriendsList() = friendList
 
     fun isFriendNameInFriendList(name: String): ErrorType {
-        for (index in friendList.indices) {
-            if (name == friendList[index].name) {
-                return ErrorType.ALREADYINLIST
-            }
+        return if (friendList.firstOrNull { it.name == name } != null ) {
+            ErrorType.ALREADYINLIST
+        } else {
+            ErrorType.NOERROR
         }
-        return ErrorType.NOERROR
     }
 
     fun isFriendIDInFriendList(id: String): ErrorType {
-        for (index in friendList.indices) {
-            if (id == friendList[index].playerID) {
-                return ErrorType.ALREADYINLIST
-            }
+        return if (friendList.firstOrNull { it.playerID == id } != null ) {
+            ErrorType.ALREADYINLIST
+        } else {
+            ErrorType.NOERROR
         }
-        return ErrorType.NOERROR
     }
 
     fun getFriendById(id: String) = friendList.firstOrNull { it.playerID == id }
