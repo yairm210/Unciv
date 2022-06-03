@@ -346,7 +346,9 @@ fun String.tr(): String {
     }
 
     if (contains('{')) { // Translating partial sentences
-        return curlyBraceRegex.replace(this) { it.groups[1]!!.value.tr() }
+        // ..but not if they're contained in square brackets?
+        if (getPlaceholderText().contains('{'))
+            return curlyBraceRegex.replace(this) { it.groups[1]!!.value.tr() }
     }
 
     // There might still be optimization potential here!
@@ -485,4 +487,3 @@ fun String.removeConditionals(): String {
         .replace("  ", " ")
         .trim()
 }
-
