@@ -10,7 +10,6 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.translations.tr
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Victory
-import com.unciv.models.stats.Stat
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.PickerScreen
