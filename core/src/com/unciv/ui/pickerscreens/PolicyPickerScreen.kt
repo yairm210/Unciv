@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.models.Tutorial
+import com.unciv.models.TutorialTrigger
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.PolicyBranch
@@ -24,7 +24,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
 
     init {
         val policies = viewingCiv.policies
-        displayTutorial(Tutorial.CultureAndPolicies)
+        displayTutorial(TutorialTrigger.CultureAndPolicies)
 
         rightSideButton.setText(when {
             policies.allPoliciesAdopted(checkEra = false) ->
