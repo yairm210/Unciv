@@ -389,14 +389,11 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         }
 
         // No tile within 4 spaces? move him to a city.
-        if (allowedTile == null) {
-            for (city in unit.civInfo.cities) {
-                allowedTile = city.getTiles()
-                        .firstOrNull { canMoveTo(it) }
-                if (allowedTile != null) break
-            }
-        }
         val origin = unit.getTile()
+        if (allowedTile == null)
+            allowedTile = unit.civInfo.cities.flatMap { it.getTiles() }
+                .sortedBy { it.aerialDistanceTo(origin) }.firstOrNull{ canMoveTo(it) }
+
         if (allowedTile != null) {
             unit.removeFromTile() // we "teleport" them away
             unit.putInTile(allowedTile)
