@@ -385,7 +385,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
                 // can the unit be placed safely there?
                 .filter { canMoveTo(it) }
                 // out of those where it can be placed, can it reach them in any meaningful way?
-                .firstOrNull { getPathBetweenTiles(unit.currentTile, it).size > 1 }
+                .firstOrNull { getPathBetweenTiles(unit.currentTile, it).contains(it) }
         }
 
         // No tile within 4 spaces? move him to a city.
@@ -740,7 +740,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
     private fun getPathBetweenTiles(from: TileInfo, to: TileInfo): MutableSet<TileInfo> {
         val tmp = unit.canEnterForeignTerrain
         unit.canEnterForeignTerrain = true // the trick to ignore tiles owners
-        val bfs = BFS(from) { canMoveTo(it) }
+        val bfs = BFS(from) { canPassThrough(it) }
         bfs.stepUntilDestination(to)
         unit.canEnterForeignTerrain = tmp
         return bfs.getReachedTiles()
