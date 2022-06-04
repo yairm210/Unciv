@@ -354,6 +354,33 @@ class UnitMovementAlgorithmsTests {
     }
 
     @Test
+    fun `can teleport water unit over other unit`() {
+        // this is needed for unit.putInTile(), unit.moveThroughTile() to avoid using Uncivgame.Current.viewEntireMapForDebug
+        civInfo.nation.name = Constants.spectator
+
+        tile.baseTerrain = Constants.ocean
+        tile.position.set(0f, 0f)
+        tile.setTransients()
+        createOpponentCivAndCity()
+        val newTiles = generateTileCopies(3)
+
+        // Other unit on the way
+        val otherUnit = MapUnit()
+        otherUnit.civInfo = civInfo
+        otherUnit.owner = civInfo.civName
+        otherUnit.baseUnit = BaseUnit().apply { unitType = "Melee Water"; strength = 1; ruleset = ruleSet }
+        otherUnit.currentTile = newTiles[0]
+        newTiles[0].militaryUnit = otherUnit
+        otherUnit.name = "Friend Unit"
+
+        setupMilitaryUnitInTheCurrentTile("Melee Water")
+
+        unit.movement.teleportToClosestMoveableTile()
+
+        Assert.assertTrue("Unit must be teleported to new location", unit.currentTile == newTiles.last())
+    }
+
+    @Test
     fun `can teleport air unit`() {
         // this is needed for unit.putInTile(), unit.moveThroughTile() to avoid using Uncivgame.Current.viewEntireMapForDebug
         civInfo.nation.name = Constants.spectator
@@ -380,17 +407,19 @@ class UnitMovementAlgorithmsTests {
         tile.position.set(0f, 0f)
         tile.setTransients()
         createOpponentCivAndCity()
-        val newTiles = generateTileCopies(6)
+        val newTiles = generateTileCopies(7)
         // create obstacle
-        newTiles[4].baseTerrain = "Grand Mesa"
-        newTiles[4].setTransients()
+        newTiles[3].baseTerrain = "Grand Mesa"
+        newTiles[3].setTransients()
         // create our city
         CityInfo().apply {
             this.civInfo = this@UnitMovementAlgorithmsTests.civInfo
             location = newTiles.last().position.cpy()
             tiles.add(location)
+            tiles.add(newTiles[5].position)
             tileMap = tile.tileMap
             civInfo.cities = listOf(this)
+            newTiles[5].setOwningCity(this)
             newTiles.last().setOwningCity(this)
         }
 
@@ -398,7 +427,7 @@ class UnitMovementAlgorithmsTests {
 
         unit.movement.teleportToClosestMoveableTile()
 
-        Assert.assertTrue("Unit must be teleported to the city", unit.currentTile == newTiles.last())
+        Assert.assertTrue("Unit must be teleported to the city", unit.currentTile == newTiles[5])
     }
 
     @Test
@@ -412,8 +441,8 @@ class UnitMovementAlgorithmsTests {
         createOpponentCivAndCity()
         val newTiles = generateTileCopies(3)
         // create obstacle
-        newTiles[0].baseTerrain = Constants.grassland
-        newTiles[0].setTransients()
+        newTiles[1].baseTerrain = Constants.grassland
+        newTiles[1].setTransients()
 
         setupMilitaryUnitInTheCurrentTile("Melee Water")
 
