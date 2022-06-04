@@ -1,7 +1,6 @@
 package com.unciv.ui.victoryscreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
@@ -224,12 +223,12 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
         for (category in RankingType.values()) {
             val headers = Table().apply { defaults().pad(5f) }
-            val textAndIcon = Table().apply { defaults().pad(5f) }
-            val columnImage = getRankingColumnIcon(category)
-            if (columnImage != null) textAndIcon.add(columnImage).center().size(Constants.defaultFontSize.toFloat() * 0.75f).padRight(0f).padTop(0f)
-            textAndIcon.add(category.name.replace('_', ' ').toLabel()).pad(5f).row()
+            val textAndIcon = Table().apply { defaults() }
+            val columnImage = category.getImage()
+            if (columnImage != null) textAndIcon.add(columnImage).center().size(Constants.defaultFontSize.toFloat() * 0.75f).padRight(2f).padTop(-2f)
+            textAndIcon.add(category.name.replace('_', ' ').toLabel()).row()
             headers.add(textAndIcon)
-            headers.addSeparator().size(0f, -1f).fillX()
+            headers.addSeparator()
             demographicsTable.add(headers)
         }
     }
@@ -239,10 +238,10 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
         for (category in RankingType.values()) {
             val column = Table().apply { defaults().pad(5f) }
-            val textAndIcon = Table().apply { defaults().pad(5f) }
-            val columnImage = getRankingColumnIcon(category)
-            if (columnImage != null) textAndIcon.add(columnImage).size(Constants.defaultFontSize.toFloat() * 0.75f).padRight(-3f).padTop(0f)
-            textAndIcon.add(category.name.replace('_' , ' ').toLabel()).pad(5f).row()
+            val textAndIcon = Table().apply { defaults() }
+            val columnImage = category.getImage()
+            if (columnImage != null) textAndIcon.add(columnImage).size(Constants.defaultFontSize.toFloat() * 0.75f).padRight(2f).padTop(-2f)
+            textAndIcon.add(category.name.replace('_' , ' ').toLabel()).row()
             column.add(textAndIcon)
             column.addSeparator()
 
@@ -288,18 +287,5 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         civGroup.add(label).padLeft(10f)
         civGroup.pack()
         return civGroup
-    }
-
-    private fun getRankingColumnIcon(type: RankingType): Image? {
-        // Stats already have their icons because tr() adds them
-        return when (type) {
-            RankingType.Score -> ImageGetter.getImage("OtherIcons/Cultured").apply { color = Color.FIREBRICK }
-            RankingType.Population -> ImageGetter.getStatIcon("Population")
-            RankingType.Crop_Yield -> ImageGetter.getStatIcon("Food")
-            RankingType.Technologies -> ImageGetter.getStatIcon("Science")
-            RankingType.Force -> ImageGetter.getImage("OtherIcons/Shield")
-            RankingType.Territory -> ImageGetter.getImage("OtherIcons/Hexagon")
-            else -> null
-        }
     }
 }
