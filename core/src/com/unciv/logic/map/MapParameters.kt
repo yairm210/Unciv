@@ -70,7 +70,7 @@ class MapSizeNew {
         this.radius = getEquivalentHexagonalRadius(width, height)
     }
 
-    fun clone() = MapSizeNew().also { 
+    fun clone() = MapSizeNew().also {
         it.name = name
         it.radius = radius
         it.width = width
@@ -236,14 +236,16 @@ class MapParameters {
     override fun toString() = sequence {
         if (name.isNotEmpty()) yield("\"$name\" ")
         yield("(")
-        if (mapSize.name != MapSize.custom) yield(mapSize.name + " ")
-        if (worldWrap) yield("{wrapped} ")
-        yield(shape)
+        if (mapSize.name != MapSize.custom) yield("{${mapSize.name}} ")
+        if (worldWrap) yield("{World Wrap} ")
+        yield("{$shape}")
         yield(" " + displayMapDimensions() + ")")
-        yield(mapResources)
+        if(mapResources != MapResources.default) yield(" {Resource Setting}: {$mapResources}")
         if (name.isEmpty()) return@sequence
-        yield("\n$type, {Seed} $seed")
-        yield(", {Map Height}=" + elevationExponent.niceToString(2))
+        yield("\n")
+        if (type != MapType.custom && type != MapType.empty) yield("{Map Generation Type}: {$type}, ")
+        yield("{RNG Seed} $seed")
+        yield(", {Map Elevation}=" + elevationExponent.niceToString(2))
         yield(", {Temperature extremeness}=" + temperatureExtremeness.niceToString(2))
         yield(", {Resource richness}=" + resourceRichness.niceToString(3))
         yield(", {Vegetation richness}=" + vegetationRichness.niceToString(2))
@@ -252,7 +254,7 @@ class MapParameters {
         yield(", {Biome areas extension}=$tilesPerBiomeArea")
         yield(", {Water level}=" + waterThreshold.niceToString(2))
     }.joinToString("")
-    
+
     fun numberOfTiles() =
         if (shape == MapShape.hexagonal) {
             1 + 3 * mapSize.radius * (mapSize.radius - 1)
