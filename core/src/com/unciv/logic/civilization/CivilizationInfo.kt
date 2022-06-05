@@ -147,6 +147,8 @@ class CivilizationInfo {
     var diplomacy = HashMap<String, DiplomacyManager>()
     var proximity = HashMap<String, Proximity>()
     var notifications = ArrayList<Notification>()
+    var notificationsLog = ArrayList<Notification>()
+    var notifTurnCounter = ArrayList<Int>()
     val popupAlerts = ArrayList<PopupAlert>()
     private var allyCivName: String? = null
     var naturalWonders = ArrayList<String>()
@@ -255,6 +257,7 @@ class CivilizationInfo {
         toReturn.exploredTiles.addAll(gameInfo.tileMap.values.asSequence().map { it.position }.filter { it in exploredTiles })
         toReturn.lastSeenImprovement.putAll(lastSeenImprovement)
         toReturn.notifications.addAll(notifications)
+        toReturn.notificationsLog.addAll(notificationsLog)
         toReturn.citiesCreated = citiesCreated
         toReturn.popupAlerts.addAll(popupAlerts)
         toReturn.tradeRequests.addAll(tradeRequests)
@@ -900,6 +903,7 @@ class CivilizationInfo {
     }
 
     fun endTurn() {
+        notifTurnCounter.add(notificationsLog.size)
         notifications.clear()
 
         val nextTurnStats = statsForNextTurn
@@ -1182,6 +1186,8 @@ class CivilizationInfo {
         if (playerType == PlayerType.AI) return // no point in lengthening the saved game info if no one will read it
         val arrayList = notificationIcons.toCollection(ArrayList())
         notifications.add(Notification(text, arrayList,
+                if (action is LocationAction && action.locations.isEmpty()) null else action))
+        notificationsLog.add(Notification(text, arrayList,
                 if (action is LocationAction && action.locations.isEmpty()) null else action))
     }
 
