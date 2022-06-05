@@ -258,6 +258,7 @@ class CivilizationInfo {
         toReturn.lastSeenImprovement.putAll(lastSeenImprovement)
         toReturn.notifications.addAll(notifications)
         toReturn.notificationsLog.addAll(notificationsLog)
+        toReturn.notifTurnCounter.addAll(notifTurnCounter)
         toReturn.citiesCreated = citiesCreated
         toReturn.popupAlerts.addAll(popupAlerts)
         toReturn.tradeRequests.addAll(tradeRequests)
@@ -903,7 +904,6 @@ class CivilizationInfo {
     }
 
     fun endTurn() {
-        notifTurnCounter.add(notificationsLog.size)
         notifications.clear()
 
         val nextTurnStats = statsForNextTurn
@@ -955,6 +955,8 @@ class CivilizationInfo {
         updateHasActiveGreatWall()
 
         cachedMilitaryMight = -1    // Reset so we don't use a value from a previous turn
+
+        notifTurnCounter.add(notificationsLog.size)
     }
 
     private fun startTurnFlags() {

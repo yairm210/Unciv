@@ -29,9 +29,15 @@ class NotificationsOverviewTable(
     }
 
     fun generateNotificationTable() {
+//         notificationTable.add("This turn").row()
         for (index in notificationLog.indices) {
             notificationTable.add(notificationsTable(notificationLog.lastIndex-index))
-            notificationTable.padTop(15f).row()
+            notificationTable.padTop(20f).row()
+//             for (index2 in notifTurnCounter.indices) {
+//                 if (index == notifTurnCounter[notifTurnCounter.lastIndex-index2]) {
+//                     notificationTable.add("Turn $index2").padTop(20f).row()
+//                 }
+//             }
         }
     }
 
