@@ -68,7 +68,7 @@ class BasicTests {
         var allObsoletingUnitsHaveUpgrades = true
         for (unit in units) {
             if (unit.obsoleteTech != null && unit.upgradesTo == null && unit.name !="Scout" ) {
-                debug(unit.name + " obsoletes but has no upgrade")
+                debug("%s obsoletes but has no upgrade", unit.name)
                 allObsoletingUnitsHaveUpgrades = false
             }
         }
@@ -94,7 +94,7 @@ class BasicTests {
             val ruleset = RulesetCache[baseRuleset.fullName]!!
             val modCheck = ruleset.checkModLinks()
             if (modCheck.isNotOK())
-                debug(modCheck.getErrorText(true))
+                debug("%s", modCheck.getErrorText(true))
             Assert.assertFalse(modCheck.isNotOK())
         }
     }
@@ -107,7 +107,7 @@ class BasicTests {
                 for (paramType in entry.value) {
                     if (paramType == UniqueParameterType.Unknown) {
                         val badParam = uniqueType.text.getPlaceholderParameters()[entry.index]
-                        debug("${uniqueType.name} param[${entry.index}] type \"$badParam\" is unknown")
+                        debug("%s param[%s] type \"%s\" is unknown", uniqueType.name, entry.index, badParam)
                         noUnknownParameters = false
                     }
                 }
@@ -121,7 +121,7 @@ class BasicTests {
         var allOK = true
         for (uniqueType in UniqueType.values()) {
             if (uniqueType.targetTypes.isEmpty()) {
-                debug("${uniqueType.name} has no targets.")
+                debug("%s has no targets.", uniqueType.name)
                 allOK = false
             }
         }
@@ -135,7 +135,7 @@ class BasicTests {
         for (unit in units) {
             for (unique in unit.uniques) {
                 if (!UniqueType.values().any { it.placeholderText == unique.getPlaceholderText() }) {
-                    debug("${unit.name}: $unique")
+                    debug("%s: %s", unit.name, unique)
                     allOK = false
                 }
             }
@@ -150,7 +150,7 @@ class BasicTests {
         for (building in buildings) {
             for (unique in building.uniques) {
                 if (!UniqueType.values().any { it.placeholderText == unique.getPlaceholderText() }) {
-                    debug("${building.name}: $unique")
+                    debug("%s: %s", building.name, unique)
                     allOK = false
                 }
             }
@@ -165,7 +165,7 @@ class BasicTests {
         for (promotion in promotions) {
             for (unique in promotion.uniques) {
                 if (!UniqueType.values().any { it.placeholderText == unique.getPlaceholderText() }) {
-                    debug("${promotion.name}: $unique")
+                    debug("%s: %s", promotion.name, unique)
                     allOK = false
                 }
             }
@@ -183,7 +183,7 @@ class BasicTests {
         for (obj in objects) {
             for (unique in obj.uniques) {
                 if (!UniqueType.values().any { it.placeholderText == unique.getPlaceholderText() }) {
-                    debug("${obj.name}: $unique")
+                    debug("%s: %s", obj.name, unique)
                     allOK = false
                 }
             }
@@ -265,16 +265,16 @@ class BasicTests {
 
 
                 if (replacementTextUnique.type == null) {
-                    debug("${uniqueType.name}'s deprecation text \"$uniqueText\" does not match any existing type!")
+                    debug("%s's deprecation text \"%s\" does not match any existing type!", uniqueType.name, uniqueText)
                     allOK = false
                 }
                 if (replacementTextUnique.type == uniqueType) {
-                    debug("${uniqueType.name}'s deprecation text references itself!")
+                    debug("%s's deprecation text references itself!", uniqueType.name)
                     allOK = false
                 }
                 for (conditional in replacementTextUnique.conditionals) {
                     if (conditional.type == null) {
-                        debug("${uniqueType.name}'s deprecation text contains conditional \"${conditional.text}\" which does not match any existing type!")
+                        debug("%s's deprecation text contains conditional \"%s\" which does not match any existing type!", uniqueType.name, conditional.text)
                         allOK = false
                     }
                 }
@@ -284,7 +284,7 @@ class BasicTests {
                 while (replacementUnique.getDeprecationAnnotation() != null) {
                     if (iteration == 10) {
                         allOK = false
-                        debug("${uniqueType.name}'s deprecation text never references an undeprecated unique!")
+                        debug("%s's deprecation text never references an undeprecated unique!", uniqueType.name)
                         break
                     }
                     iteration++
@@ -302,7 +302,7 @@ class BasicTests {
         Thread.sleep(5000) // makes timings a little more repeatable
         val startTime = System.nanoTime()
         statMathRunner(iterations = 1_000_000)
-        debug("statMathStressTest took ${(System.nanoTime()-startTime)/1000}µs")
+        debug("statMathStressTest took %sµs", (System.nanoTime()-startTime) / 1000)
     }
 
     @Test
