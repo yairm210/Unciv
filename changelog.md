@@ -1,27 +1,23 @@
 ## 4.1.7
 
 By OptimizedForDensity:
-- More rankings & demographics screen icons 
-- Fix medic promotion healing enemies 
-- Fix amphibious promotion 
-- AI always uses great prophets if it has one & fixes them standing around in enemy land tiles 
+- Fix medic and amphibious promotions
+- Better Great Prophet AI
+- More rankings & demographics screen icons
 
 By SomeTroglodyte:
-- Moddable prettier Tutorials - Step 1 
-- Fix current list of un-translatables 
-- Prevent senseless BattleTable display and fix right-click issues 
-- MainMenu Background Map scaled to Screen and minor MapGen fixes 
+- Better Tutorials
+- Prevent city-to-city Battle Table
+- Minor fixes
 
 By alexban011:
-- spectators can no longer move and attack with units after selecting them 
-- Better friends list UI 
-- Translated notifications into Romanian 
+- spectators can no longer move and attack with units
+- Better friends list UI
 
-Bugfixes to the units' teleportation  - By JackRainy
+Bugfixes for units' teleportation - By JackRainy
 
 By Azzurite:
-- Fix test logging not using format specifiers for arbitrary text 
-- Fix editor zoom in 
+- Fix map editor zoom in
 
 HexaRealm tileset update  - By GeneralWadaling
 
