@@ -1104,7 +1104,7 @@ open class TileInfo {
         when {
             airUnits.contains(mapUnit) -> airUnits.remove(mapUnit)
             civilianUnit == mapUnit -> civilianUnit = null
-            else -> militaryUnit = null
+            militaryUnit == mapUnit -> militaryUnit = null
         }
     }
 
