@@ -485,4 +485,3 @@ fun String.removeConditionals(): String {
         .replace("  ", " ")
         .trim()
 }
-
