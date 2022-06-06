@@ -687,7 +687,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                     val newWorldScreen = this@WorldScreen.game.worldScreen
                     newWorldScreen.waitingForAutosave = true
                     newWorldScreen.shouldUpdate = true
-                    game.gameSaver.autoSave(gameInfoClone) {
+                    game.gameSaver.requestAutoSave(gameInfoClone).invokeOnCompletion {
                         // only enable the user to next turn once we've saved the current one
                         newWorldScreen.waitingForAutosave = false
                         newWorldScreen.shouldUpdate = true

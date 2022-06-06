@@ -32,7 +32,6 @@ import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import com.unciv.utils.debug
-import kotlinx.coroutines.runBlocking
 import java.util.*
 
 class UncivGame(parameters: UncivGameParameters) : Game() {
@@ -230,7 +229,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     }
 
     override fun pause() {
-        if (isGameInfoInitialized()) gameSaver.autoSave(this.gameInfo)
+        if (isGameInfoInitialized()) gameSaver.requestAutoSave(this.gameInfo)
         musicController.pause()
         super.pause()
     }
@@ -241,25 +240,27 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     override fun render() = wrappedCrashHandlingRender()
 
-    override fun dispose() = runBlocking {
+    override fun dispose() {
         Gdx.input.inputProcessor = null // don't allow ANRs when shutting down, that's silly
 
         cancelDiscordEvent?.invoke()
         Sounds.clearCache()
         if (::musicController.isInitialized) musicController.gracefulShutdown()  // Do allow fade-out
-        Concurrency.stopThreadPools()
 
         if (isGameInfoInitialized()) {
             val autoSaveJob = gameSaver.autoSaveJob
             if (autoSaveJob != null && autoSaveJob.isActive) {
                 // auto save is already in progress (e.g. started by onPause() event)
                 // let's allow it to finish and do not try to autosave second time
-                autoSaveJob.join()
+                Concurrency.runBlocking {
+                    autoSaveJob.join()
+                }
             } else {
-                gameSaver.autoSaveSingleThreaded(gameInfo)      // NO new thread
+                gameSaver.autoSave(gameInfo)      // NO new thread
             }
         }
         settings.save()
+        Concurrency.stopThreadPools()
 
         // On desktop this should only be this one and "DestroyJavaVM"
         logRunningThreads()
@@ -274,7 +275,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         }
     }
 
-    /** Handles an uncaught [Throwable]. First attempts a platform-specific handler, and if that didn't handle the exception, brings the game to a [CrashScreen]. */
+    /** Handles an uncaught exception or error. First attempts a platform-specific handler, and if that didn't handle the exception or error, brings the game to a [CrashScreen]. */
     fun handleUncaughtThrowable(ex: Throwable) {
         Log.error("Uncaught throwable", ex)
         if (platformSpecificHelper?.handleUncaughtThrowable(ex) == true) return
