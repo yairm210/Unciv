@@ -1,48 +1,28 @@
 package com.unciv.testing
 
+import com.badlogic.gdx.utils.Array
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
-import com.unciv.models.TutorialTrigger
-import com.unciv.models.ruleset.Tutorial
-import org.junit.Assert.fail
+import com.unciv.models.Tutorial
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.util.LinkedHashMap
 
 @RunWith(GdxTestRunner::class)
 class TutorialTranslationTests {
-    private var tutorials: LinkedHashMap<String, Tutorial>? = null
-    private var exception: Throwable? = null
 
-    init {
-         try {
-             tutorials = json().fromJsonFile(Array<Tutorial>::class.java, "jsons/Tutorials.json")
-                 .associateByTo(linkedMapOf()) { it.name }
-         } catch (ex: Throwable) {
-             exception = ex
-         }
-    }
+    private var tutorialCount = Tutorial.values().size
+    private var tutorialKeyNames = Tutorial.values().map { it.value }
 
     @Test
-    fun tutorialsFileIsDeSerializable() {
-        if (exception != null)
-            fail("Loading Tutorials.json fails with ${exception?.javaClass?.simpleName} \"${exception?.message}\"")
-    }
+    fun tutorialsFileIsSerializable() {
+        val map = json().fromJsonFile(LinkedHashMap<String, Array<String>>().javaClass, "jsons/Tutorials.json")
 
-    @Test
-    fun tutorialsFileCoversAllTriggers() {
-        if (tutorials == null) return
-        for (trigger in TutorialTrigger.values()) {
-            val name = trigger.value.replace('_', ' ').trimStart()
-            if (name in tutorials!!) continue
-            fail("TutorialTrigger $trigger has no matching entry in Tutorials.json")
-        }
-    }
-    @Test
-    fun tutorialsAllHaveText() {
-        if (tutorials == null) return
-        for (tutorial in tutorials!!.values) {
-            if (tutorial.steps?.isNotEmpty() != true && tutorial.civilopediaText.isEmpty())
-                fail("Tutorial \"$tutorial\" contains no text")
-        }
+        assertTrue("The number of items from Tutorials.json must match to the enum Tutorial",
+                map.size == tutorialCount)
+
+        assertTrue("The items from Tutorials.json must match to the enum Tutorial values",
+                tutorialKeyNames.containsAll(map.keys))
     }
 }

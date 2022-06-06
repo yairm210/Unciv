@@ -47,7 +47,6 @@ enum class UniqueTarget(val inheritsFrom: UniqueTarget? = null) {
     Ruins(Triggerable),
 
     // Other
-    Tutorial,
     CityState,
     ModOptions,
     Conditional,
@@ -1073,3 +1072,4 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
 // I didn't put this is a companion object because APPARENTLY doing that means you can't use it in the init function.
 val numberRegex = Regex("\\d+$") // Any number of trailing digits
+

@@ -26,7 +26,7 @@ import com.unciv.logic.map.MapVisualization
 import com.unciv.logic.multiplayer.MultiplayerGameUpdated
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.trade.TradeEvaluation
-import com.unciv.models.TutorialTrigger
+import com.unciv.models.Tutorial
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
@@ -58,6 +58,7 @@ import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.UncivDateFormat.formatDate
 import com.unciv.ui.utils.centerX
 import com.unciv.ui.utils.colorFromRGB
 import com.unciv.ui.utils.darken
@@ -79,6 +80,7 @@ import com.unciv.ui.worldscreen.status.StatusButtons
 import com.unciv.ui.worldscreen.unit.UnitActionsTable
 import com.unciv.ui.worldscreen.unit.UnitTable
 import kotlinx.coroutines.Job
+import java.util.*
 
 /**
  * Unciv's world screen
@@ -520,9 +522,9 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
     private fun displayTutorialsOnUpdate() {
 
-        displayTutorial(TutorialTrigger.Introduction)
+        displayTutorial(Tutorial.Introduction)
 
-        displayTutorial(TutorialTrigger.EnemyCityNeedsConqueringWithMeleeUnit) {
+        displayTutorial(Tutorial.EnemyCityNeedsConqueringWithMeleeUnit) {
             viewingCiv.diplomacy.values.asSequence()
                     .filter { it.diplomaticStatus == DiplomaticStatus.War }
                     .map { it.otherCiv() } // we're now lazily enumerating over CivilizationInfo's we're at war with
@@ -534,11 +536,11 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                     //    no matter whether civilian, air or ranged, tell user he needs melee
                     .any { it.getUnits().any { unit -> unit.civInfo == viewingCiv } }
         }
-        displayTutorial(TutorialTrigger.AfterConquering) { viewingCiv.cities.any { it.hasJustBeenConquered } }
+        displayTutorial(Tutorial.AfterConquering) { viewingCiv.cities.any { it.hasJustBeenConquered } }
 
-        displayTutorial(TutorialTrigger.InjuredUnits) { gameInfo.getCurrentPlayerCivilization().getCivUnits().any { it.health < 100 } }
+        displayTutorial(Tutorial.InjuredUnits) { gameInfo.getCurrentPlayerCivilization().getCivUnits().any { it.health < 100 } }
 
-        displayTutorial(TutorialTrigger.Workers) {
+        displayTutorial(Tutorial.Workers) {
             gameInfo.getCurrentPlayerCivilization().getCivUnits().any {
                 it.hasUniqueToBuildImprovements && it.isCivilian() && !it.isGreatPerson()
             }
@@ -550,7 +552,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         if (!civInfo.isDefeated() && !civInfo.isSpectator() && civInfo.getKnownCivs()
                         .filterNot { it == viewingCiv || it.isBarbarian() }
                         .any()) {
-            displayTutorial(TutorialTrigger.OtherCivEncountered)
+            displayTutorial(Tutorial.OtherCivEncountered)
             val btn = "Diplomacy".toTextButton()
             btn.onClick { game.setScreen(DiplomacyScreen(viewingCiv)) }
             btn.label.setFontSize(30)
@@ -856,27 +858,27 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
     private fun showTutorialsOnNextTurn() {
         if (!game.settings.showTutorials) return
-        displayTutorial(TutorialTrigger.SlowStart)
-        displayTutorial(TutorialTrigger.CityExpansion) { viewingCiv.cities.any { it.expansion.tilesClaimed() > 0 } }
-        displayTutorial(TutorialTrigger.BarbarianEncountered) { viewingCiv.viewableTiles.any { it.getUnits().any { unit -> unit.civInfo.isBarbarian() } } }
-        displayTutorial(TutorialTrigger.RoadsAndRailroads) { viewingCiv.cities.size > 2 }
-        displayTutorial(TutorialTrigger.Happiness) { viewingCiv.getHappiness() < 5 }
-        displayTutorial(TutorialTrigger.Unhappiness) { viewingCiv.getHappiness() < 0 }
-        displayTutorial(TutorialTrigger.GoldenAge) { viewingCiv.goldenAges.isGoldenAge() }
-        displayTutorial(TutorialTrigger.IdleUnits) { gameInfo.turns >= 50 && game.settings.checkForDueUnits }
-        displayTutorial(TutorialTrigger.ContactMe) { gameInfo.turns >= 100 }
+        displayTutorial(Tutorial.SlowStart)
+        displayTutorial(Tutorial.CityExpansion) { viewingCiv.cities.any { it.expansion.tilesClaimed() > 0 } }
+        displayTutorial(Tutorial.BarbarianEncountered) { viewingCiv.viewableTiles.any { it.getUnits().any { unit -> unit.civInfo.isBarbarian() } } }
+        displayTutorial(Tutorial.RoadsAndRailroads) { viewingCiv.cities.size > 2 }
+        displayTutorial(Tutorial.Happiness) { viewingCiv.getHappiness() < 5 }
+        displayTutorial(Tutorial.Unhappiness) { viewingCiv.getHappiness() < 0 }
+        displayTutorial(Tutorial.GoldenAge) { viewingCiv.goldenAges.isGoldenAge() }
+        displayTutorial(Tutorial.IdleUnits) { gameInfo.turns >= 50 && game.settings.checkForDueUnits }
+        displayTutorial(Tutorial.ContactMe) { gameInfo.turns >= 100 }
         val resources = viewingCiv.detailedCivResources.asSequence().filter { it.origin == "All" }  // Avoid full list copy
-        displayTutorial(TutorialTrigger.LuxuryResource) { resources.any { it.resource.resourceType == ResourceType.Luxury } }
-        displayTutorial(TutorialTrigger.StrategicResource) { resources.any { it.resource.resourceType == ResourceType.Strategic } }
-        displayTutorial(TutorialTrigger.EnemyCity) {
+        displayTutorial(Tutorial.LuxuryResource) { resources.any { it.resource.resourceType == ResourceType.Luxury } }
+        displayTutorial(Tutorial.StrategicResource) { resources.any { it.resource.resourceType == ResourceType.Strategic } }
+        displayTutorial(Tutorial.EnemyCity) {
             viewingCiv.getKnownCivs().asSequence().filter { viewingCiv.isAtWarWith(it) }
                     .flatMap { it.cities.asSequence() }.any { viewingCiv.exploredTiles.contains(it.location) }
         }
-        displayTutorial(TutorialTrigger.ApolloProgram) { viewingCiv.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts) }
-        displayTutorial(TutorialTrigger.SiegeUnits) { viewingCiv.getCivUnits().any { it.baseUnit.isProbablySiegeUnit() } }
-        displayTutorial(TutorialTrigger.Embarking) { viewingCiv.hasUnique(UniqueType.LandUnitEmbarkation) }
-        displayTutorial(TutorialTrigger.NaturalWonders) { viewingCiv.naturalWonders.size > 0 }
-        displayTutorial(TutorialTrigger.WeLoveTheKingDay) { viewingCiv.cities.any { it.demandedResource != "" } }
+        displayTutorial(Tutorial.ApolloProgram) { viewingCiv.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts) }
+        displayTutorial(Tutorial.SiegeUnits) { viewingCiv.getCivUnits().any { it.baseUnit.isProbablySiegeUnit() } }
+        displayTutorial(Tutorial.Embarking) { viewingCiv.hasUnique(UniqueType.LandUnitEmbarkation) }
+        displayTutorial(Tutorial.NaturalWonders) { viewingCiv.naturalWonders.size > 0 }
+        displayTutorial(Tutorial.WeLoveTheKingDay) { viewingCiv.cities.any { it.demandedResource != "" } }
     }
 
     private fun backButtonAndESCHandler() {
