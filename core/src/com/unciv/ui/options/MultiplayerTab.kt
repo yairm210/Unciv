@@ -12,10 +12,15 @@ import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.logic.multiplayer.storage.SimpleHttp
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.translations.tr
-import com.unciv.ui.crashhandling.launchCrashHandling
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.popup.Popup
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.isEnabled
+import com.unciv.ui.utils.onChange
+import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.toTextButton
+import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.launchOnGLThread
 import java.time.Duration
 import kotlin.reflect.KMutableProperty0
 
@@ -127,10 +132,10 @@ fun multiplayerTab(
 }
 
 private fun successfullyConnectedToServer(settings: GameSettings, action: (Boolean, String, Int?) -> Unit) {
-    launchCrashHandling("TestIsAlive") {
+    Concurrency.run("TestIsAlive") {
         SimpleHttp.sendGetRequest("${settings.multiplayer.server}/isalive") {
                 success, result, code ->
-            postCrashHandlingRunnable {
+            launchOnGLThread {
                 action(success, result, code)
             }
         }

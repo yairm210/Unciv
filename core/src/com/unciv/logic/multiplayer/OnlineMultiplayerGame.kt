@@ -1,14 +1,13 @@
 package com.unciv.logic.multiplayer
 
 import com.badlogic.gdx.files.FileHandle
-import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.utils.isLargerThan
+import com.unciv.utils.concurrency.Concurrency
 import java.io.FileNotFoundException
 import java.time.Duration
 import java.time.Instant
@@ -69,7 +68,9 @@ class OnlineMultiplayerGame(
             error = e
             GameUpdateResult.FAILURE
         }
-        postCrashHandlingRunnable { EventBus.send(MultiplayerGameUpdateStarted(name)) }
+        Concurrency.runOnGLThread {
+            EventBus.send(MultiplayerGameUpdateStarted(name))
+        }
         val throttleInterval = if (forceUpdate) Duration.ZERO else getUpdateThrottleInterval()
         val updateResult = if (forceUpdate || needsUpdate()) {
             attemptAction(lastOnlineUpdate, onUnchanged, onError, ::update)
@@ -85,7 +86,7 @@ class OnlineMultiplayerGame(
             GameUpdateResult.FAILURE -> MultiplayerGameUpdateFailed(name, error!!)
             GameUpdateResult.UNCHANGED -> MultiplayerGameUpdateUnchanged(name, preview!!)
         }
-        postCrashHandlingRunnable { EventBus.send(updateEvent) }
+        Concurrency.runOnGLThread { EventBus.send(updateEvent) }
     }
 
     private suspend fun update(): GameUpdateResult {
@@ -101,7 +102,7 @@ class OnlineMultiplayerGame(
         lastOnlineUpdate.set(Instant.now())
         error = null
         preview = gameInfo
-        postCrashHandlingRunnable { EventBus.send(MultiplayerGameUpdated(name, gameInfo)) }
+        Concurrency.runOnGLThread { EventBus.send(MultiplayerGameUpdated(name, gameInfo)) }
     }
 
     override fun equals(other: Any?): Boolean = other is OnlineMultiplayerGame && fileHandle == other.fileHandle

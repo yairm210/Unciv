@@ -6,9 +6,15 @@ import com.unciv.models.UncivSound
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicTrackChooserFlags
-import com.unciv.ui.crashhandling.launchCrashHandling
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.UncivSlider
+import com.unciv.ui.utils.WrappableLabel
+import com.unciv.ui.utils.disable
+import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.toTextButton
+import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.launchOnGLThread
 import kotlin.math.floor
 
 fun soundTab(
@@ -44,16 +50,16 @@ private fun addDownloadMusic(table: Table, optionsPopup: OptionsPopup) {
         errorTable.add("Downloading...".toLabel())
 
         // So the whole game doesn't get stuck while downloading the file
-        launchCrashHandling("MusicDownload") {
+        Concurrency.run("MusicDownload") {
             try {
                 val screen = optionsPopup.screen
                 screen.game.musicController.downloadDefaultFile()
-                postCrashHandlingRunnable {
+                launchOnGLThread {
                     optionsPopup.tabs.replacePage("Sound", soundTab(optionsPopup))
                     screen.game.musicController.chooseTrack(flags = MusicTrackChooserFlags.setPlayDefault)
                 }
             } catch (ex: Exception) {
-                postCrashHandlingRunnable {
+                launchOnGLThread {
                     errorTable.clear()
                     errorTable.add("Could not download music!".toLabel(Color.RED))
                 }
@@ -140,7 +146,7 @@ private fun addMusicCurrentlyPlaying(table: Table, screen: BaseScreen) {
     label.wrap = true
     table.add(label).padTop(20f).colspan(2).fillX().row()
     screen.game.musicController.onChange {
-        postCrashHandlingRunnable {
+        Concurrency.runOnGLThread {
             label.setText("Currently playing: [$it]".tr())
         }
     }

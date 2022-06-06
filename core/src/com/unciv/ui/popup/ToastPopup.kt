@@ -1,9 +1,9 @@
 package com.unciv.ui.popup
 
-import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.onClick
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
+import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.launchOnGLThread
 import kotlinx.coroutines.delay
 
 /**
@@ -24,9 +24,9 @@ class ToastPopup (message: String, screen: BaseScreen, val time: Long = 2000) : 
     }
 
     private fun startTimer(){
-        launchCrashHandling("ResponsePopup") {
+        Concurrency.run("ResponsePopup") {
             delay(time)
-            postCrashHandlingRunnable { this@ToastPopup.close() }
+            launchOnGLThread { this@ToastPopup.close() }
         }
     }
 

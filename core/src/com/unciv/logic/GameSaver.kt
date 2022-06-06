@@ -10,9 +10,9 @@ import com.unciv.json.json
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.doMigrations
 import com.unciv.models.metadata.isMigrationNecessary
-import com.unciv.ui.crashhandling.launchCrashHandling
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.saves.Gzip
+import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.launchOnGLThread
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import kotlinx.coroutines.Job
@@ -191,7 +191,7 @@ class GameSaver(
         val gameData = try {
             gameInfoToString(game)
         } catch (ex: Exception) {
-            postCrashHandlingRunnable { saveCompletionCallback(CustomSaveResult(exception = ex)) }
+            Concurrency.runOnGLThread { saveCompletionCallback(CustomSaveResult(exception = ex)) }
             return
         }
         debug("Saving GameInfo %s to custom location %s", game.gameId, saveLocation)
@@ -362,10 +362,10 @@ class GameSaver(
 
     fun autoSaveUnCloned(gameInfo: GameInfo, postRunnable: () -> Unit = {}) {
         // This is used when returning from WorldScreen to MainMenuScreen - no clone since UI access to it should be gone
-        autoSaveJob = launchCrashHandling(AUTOSAVE_FILE_NAME) {
+        autoSaveJob = Concurrency.run(AUTOSAVE_FILE_NAME) {
             autoSaveSingleThreaded(gameInfo)
             // do this on main thread
-            postCrashHandlingRunnable ( postRunnable )
+            launchOnGLThread { postRunnable() }
         }
     }
 

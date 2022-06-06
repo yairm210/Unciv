@@ -9,25 +9,27 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.Translations
+import com.unciv.ui.LanguagePickerScreen
 import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicMood
-import com.unciv.ui.utils.*
-import com.unciv.ui.worldscreen.PlayerReadyScreen
-import com.unciv.ui.worldscreen.WorldScreen
-import com.unciv.logic.multiplayer.OnlineMultiplayer
-import com.unciv.ui.LanguagePickerScreen
 import com.unciv.ui.audio.Sounds
-import com.unciv.ui.crashhandling.closeExecutors
-import com.unciv.ui.crashhandling.launchCrashHandling
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
+import com.unciv.ui.crashhandling.CrashScreen
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.multiplayer.LoadDeepLinkScreen
 import com.unciv.ui.multiplayer.MultiplayerHelpers
 import com.unciv.ui.popup.Popup
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.center
+import com.unciv.ui.utils.wrapCrashHandlingUnit
+import com.unciv.ui.worldscreen.PlayerReadyScreen
+import com.unciv.ui.worldscreen.WorldScreen
+import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.launchOnGLThread
 import com.unciv.utils.debug
 import kotlinx.coroutines.runBlocking
 import java.util.*
@@ -120,7 +122,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
         Gdx.graphics.isContinuousRendering = settings.continuousRendering
 
-        launchCrashHandling("LoadJSON") {
+        Concurrency.run("LoadJSON") {
             RulesetCache.loadRulesets()
             translations.tryReadTranslationForCurrentLanguage()
             translations.loadPercentageCompleteOfLanguages()
@@ -132,7 +134,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             }
 
             // This stuff needs to run on the main thread because it needs the GL context
-            postCrashHandlingRunnable {
+            launchOnGLThread {
                 musicController.chooseTrack(suffix = MusicMood.Menu)
 
                 ImageGetter.ruleset = RulesetCache.getVanillaRuleset() // so that we can enter the map editor without having to load a game first
@@ -193,15 +195,15 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         Gdx.graphics.requestRendering()
     }
 
-    private fun tryLoadDeepLinkedGame() = launchCrashHandling("LoadDeepLinkedGame") {
+    private fun tryLoadDeepLinkedGame() = Concurrency.run("LoadDeepLinkedGame") {
         if (deepLinkedMultiplayerGame != null) {
-            postCrashHandlingRunnable {
+            launchOnGLThread {
                 setScreen(LoadDeepLinkScreen())
             }
             try {
                 onlineMultiplayer.loadGame(deepLinkedMultiplayerGame!!)
             } catch (ex: Exception) {
-                postCrashHandlingRunnable {
+                launchOnGLThread {
                     val mainMenu = MainMenuScreen()
                     setScreen(mainMenu)
                     val popup = Popup(mainMenu)
@@ -244,7 +246,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         cancelDiscordEvent?.invoke()
         Sounds.clearCache()
         if (::musicController.isInitialized) musicController.gracefulShutdown()  // Do allow fade-out
-        closeExecutors()
+        Concurrency.stopThreadPools()
 
         if (isGameInfoInitialized()) {
             val autoSaveJob = gameSaver.autoSaveJob
@@ -268,6 +270,12 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         Thread.enumerate(threadList)
         threadList.filter { it !== Thread.currentThread() && it.name != "DestroyJavaVM" }.forEach {
             debug("Thread %s still running in UncivGame.dispose().", it.name)
+        }
+    }
+
+    fun showCrash(t: Throwable) {
+        Gdx.app.postRunnable {
+            Current.setScreen(CrashScreen(t))
         }
     }
 

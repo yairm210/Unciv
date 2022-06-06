@@ -1,6 +1,5 @@
 package com.unciv.ui.utils
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.ui.*
@@ -8,14 +7,14 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
-import com.unciv.ui.crashhandling.CrashScreen
 import com.unciv.UncivGame
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.Sounds
-import com.unciv.ui.crashhandling.launchCrashHandling
+import com.unciv.ui.crashhandling.CrashScreen
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
+import com.unciv.utils.concurrency.Concurrency
 import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.Instant
@@ -69,7 +68,7 @@ fun Actor.center(parent: Stage) { centerX(parent); centerY(parent) }
 fun Actor.onClickEvent(sound: UncivSound = UncivSound.Click, function: (event: InputEvent?, x: Float, y: Float) -> Unit) {
     this.addListener(object : ClickListener() {
         override fun clicked(event: InputEvent?, x: Float, y: Float) {
-            launchCrashHandling("Sound") { Sounds.play(sound) }
+            Concurrency.run("Sound") { Sounds.play(sound) }
             function(event, x, y)
         }
     })
@@ -339,17 +338,12 @@ fun Instant.isLargerThan(other: Instant): Boolean {
  * @return Result from the function, or null if an exception is thrown.
  * */
 fun <R> (() -> R).wrapCrashHandling(
-    postToMainThread: Boolean = false
 ): () -> R?
     = {
         try {
             this()
         } catch (e: Throwable) {
-            if (postToMainThread) {
-                Gdx.app.postRunnable {
-                    UncivGame.Current.setScreen(CrashScreen(e))
-                }
-            } else UncivGame.Current.setScreen(CrashScreen(e))
+            UncivGame.Current.showCrash(e)
             null
         }
     }
@@ -363,10 +357,8 @@ fun <R> (() -> R).wrapCrashHandling(
  *
  * @param postToMainThread Whether the [CrashScreen] should be opened by posting a runnable to the main thread, instead of directly. Set this to true if the function is going to run on any thread other than the main loop.
  * */
-fun (() -> Unit).wrapCrashHandlingUnit(
-    postToMainThread: Boolean = false
-): () -> Unit {
-    val wrappedReturning = this.wrapCrashHandling(postToMainThread)
+fun (() -> Unit).wrapCrashHandlingUnit(): () -> Unit {
+    val wrappedReturning = this.wrapCrashHandling()
     // Don't instantiate a new lambda every time the return get called.
     return { wrappedReturning() ?: Unit }
 }

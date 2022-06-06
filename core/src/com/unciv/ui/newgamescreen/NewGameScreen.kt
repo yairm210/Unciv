@@ -8,7 +8,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.badlogic.gdx.utils.Array
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.*
+import com.unciv.logic.GameInfo
+import com.unciv.logic.GameStarter
+import com.unciv.logic.IdChecker
+import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapType
 import com.unciv.logic.multiplayer.OnlineMultiplayer
@@ -16,14 +19,24 @@ import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.crashhandling.launchCrashHandling
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.popup.YesNoPopup
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.ExpanderTab
+import com.unciv.ui.utils.addSeparator
+import com.unciv.ui.utils.addSeparatorVertical
+import com.unciv.ui.utils.disable
+import com.unciv.ui.utils.enable
+import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.pad
+import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.toTextButton
+import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.launchOnGLThread
+import kotlinx.coroutines.coroutineScope
 import java.net.URL
 import java.util.*
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
@@ -142,13 +155,11 @@ class NewGameScreen(
                 val mapSize = gameSetupInfo.mapParameters.mapSize
                 val message = mapSize.fixUndesiredSizes(gameSetupInfo.mapParameters.worldWrap)
                 if (message != null) {
-                    postCrashHandlingRunnable {
-                        ToastPopup( message, UncivGame.Current.screen as BaseScreen, 4000 )
-                        with (mapOptionsTable.generatedMapOptionsTable) {
-                            customMapSizeRadius.text = mapSize.radius.toString()
-                            customMapWidth.text = mapSize.width.toString()
-                            customMapHeight.text = mapSize.height.toString()
-                        }
+                    ToastPopup( message, UncivGame.Current.screen as BaseScreen, 4000 )
+                    with (mapOptionsTable.generatedMapOptionsTable) {
+                        customMapSizeRadius.text = mapSize.radius.toString()
+                        customMapWidth.text = mapSize.width.toString()
+                        customMapHeight.text = mapSize.height.toString()
                     }
                     game.setScreen(this) // to get the input back
                     return@onClick
@@ -159,7 +170,7 @@ class NewGameScreen(
             rightSideButton.setText("Working...".tr())
 
             // Creating a new game can take a while and we don't want ANRs
-            launchCrashHandling("NewGame", runAsDaemon = false) {
+            Concurrency.runOnNonDaemonThreadPool("NewGame") {
                 startNewGame()
             }
         }
@@ -224,9 +235,9 @@ class NewGameScreen(
         }
     }
 
-    private suspend fun startNewGame() {
-        val popup = Popup(this)
-        postCrashHandlingRunnable {
+    private suspend fun startNewGame() = coroutineScope {
+        val popup = Popup(this@NewGameScreen)
+        launchOnGLThread {
             popup.addGoodSizedLabel("Working...").row()
             popup.open()
         }
@@ -236,7 +247,7 @@ class NewGameScreen(
             newGame = GameStarter.startNewGame(gameSetupInfo)
         } catch (exception: Exception) {
             exception.printStackTrace()
-            postCrashHandlingRunnable {
+            launchOnGLThread {
                 popup.apply {
                     reuseWith("It looks like we can't make a map with the parameters you requested!")
                     row()
@@ -247,7 +258,7 @@ class NewGameScreen(
                 rightSideButton.enable()
                 rightSideButton.setText("Start game!".tr())
             }
-            return
+            return@coroutineScope
         }
 
         if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
@@ -256,25 +267,25 @@ class NewGameScreen(
                 game.onlineMultiplayer.createGame(newGame)
                 game.gameSaver.autoSave(newGame)
             } catch (ex: FileStorageRateLimitReached) {
-                postCrashHandlingRunnable {
+                launchOnGLThread {
                     popup.reuseWith("Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds", true)
+                    rightSideButton.enable()
+                    rightSideButton.setText("Start game!".tr())
                 }
                 Gdx.input.inputProcessor = stage
-                rightSideButton.enable()
-                rightSideButton.setText("Start game!".tr())
-                return
+                return@coroutineScope
             } catch (ex: Exception) {
-                postCrashHandlingRunnable {
+                launchOnGLThread {
                     popup.reuseWith("Could not upload game!", true)
+                    rightSideButton.enable()
+                    rightSideButton.setText("Start game!".tr())
                 }
                 Gdx.input.inputProcessor = stage
-                rightSideButton.enable()
-                rightSideButton.setText("Start game!".tr())
-                return
+                return@coroutineScope
             }
         }
 
-        postCrashHandlingRunnable {
+        launchOnGLThread {
             game.loadGame(newGame)
             previousScreen.dispose()
             if (newGame.gameParameters.isOnlineMultiplayer) {

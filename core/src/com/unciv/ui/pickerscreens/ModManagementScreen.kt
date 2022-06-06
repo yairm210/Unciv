@@ -13,20 +13,30 @@ import com.unciv.models.ruleset.ModOptions
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.crashhandling.launchCrashHandling
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.utils.*
 import com.unciv.ui.pickerscreens.ModManagementOptions.SortType
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.popup.YesNoPopup
+import com.unciv.ui.utils.AutoScrollPane
+import com.unciv.ui.utils.ExpanderTab
+import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.UncivDateFormat.formatDate
 import com.unciv.ui.utils.UncivDateFormat.parseDate
+import com.unciv.ui.utils.WrappableLabel
+import com.unciv.ui.utils.addSeparator
+import com.unciv.ui.utils.disable
+import com.unciv.ui.utils.enable
+import com.unciv.ui.utils.isEnabled
+import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.toCheckBox
+import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.toTextButton
+import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.launchOnGLThread
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import java.util.*
-import kotlin.collections.HashMap
 import kotlin.math.max
 
 /**
@@ -167,7 +177,7 @@ class ModManagementScreen(
         topTable.add(scrollOnlineMods)
         topTable.add(modActionTable)
         topTable.add().row()
-        topTable.add().expandY()  // So short lists won't vertically center everything including headers 
+        topTable.add().expandY()  // So short lists won't vertically center everything including headers
 
         stage.addActor(optionsManager.expander)
         optionsManager.expanderChangeEvent = {
@@ -191,23 +201,23 @@ class ModManagementScreen(
      *  calls itself for the next page of search results
      */
     private fun tryDownloadPage(pageNum: Int) {
-        runningSearchJob = launchCrashHandling("GitHubSearch") {
+        runningSearchJob = Concurrency.run("GitHubSearch") {
             val repoSearch: Github.RepoSearch
             try {
                 repoSearch = Github.tryGetGithubReposWithTopic(amountPerPage, pageNum)!!
             } catch (ex: Exception) {
-                postCrashHandlingRunnable {
+                launchOnGLThread {
                     ToastPopup("Could not download mod list", this@ModManagementScreen)
                 }
                 runningSearchJob = null
-                return@launchCrashHandling
+                return@run
             }
 
             if (!isActive) {
-                return@launchCrashHandling
+                return@run
             }
 
-            postCrashHandlingRunnable { addModInfoFromRepoSearch(repoSearch, pageNum) }
+            launchOnGLThread { addModInfoFromRepoSearch(repoSearch, pageNum) }
             runningSearchJob = null
         }
     }
@@ -395,16 +405,16 @@ class ModManagementScreen(
 
     /** Download and install a mod in the background, called both from the right-bottom button and the URL entry popup */
     private fun downloadMod(repo: Github.Repo, postAction: () -> Unit = {}) {
-        launchCrashHandling("DownloadMod") { // to avoid ANRs - we've learnt our lesson from previous download-related actions
+        Concurrency.run("DownloadMod") { // to avoid ANRs - we've learnt our lesson from previous download-related actions
             try {
                 val modFolder = Github.downloadAndExtract(repo.html_url, repo.default_branch,
                     Gdx.files.local("mods"))
                     ?: throw Exception()    // downloadAndExtract returns null for 404 errors and the like -> display something!
                 Github.rewriteModOptions(repo, modFolder)
-                postCrashHandlingRunnable {
+                launchOnGLThread {
                     ToastPopup("[${repo.name}] Downloaded!", this@ModManagementScreen)
                     RulesetCache.loadRulesets()
-                    RulesetCache[repo.name]?.let { 
+                    RulesetCache[repo.name]?.let {
                         installedModInfo[repo.name] = ModUIData(it)
                     }
                     refreshInstalledModTable()
@@ -413,7 +423,7 @@ class ModManagementScreen(
                     postAction()
                 }
             } catch (ex: Exception) {
-                postCrashHandlingRunnable {
+                launchOnGLThread {
                     ToastPopup("Could not download [${repo.name}]", this@ModManagementScreen)
                     postAction()
                 }

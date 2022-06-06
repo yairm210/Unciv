@@ -7,11 +7,11 @@ import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.logic.multiplayer.OnlineMultiplayerGame
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.models.translations.tr
-import com.unciv.ui.crashhandling.launchCrashHandling
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.toCheckBox
+import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.launchOnGLThread
 import java.io.FileNotFoundException
 import java.time.Duration
 import java.time.Instant
@@ -29,12 +29,12 @@ object MultiplayerHelpers {
         loadingGamePopup.addGoodSizedLabel("Loading latest game state...")
         loadingGamePopup.open()
 
-        launchCrashHandling("JoinMultiplayerGame") {
+        Concurrency.run("JoinMultiplayerGame") {
             try {
                 UncivGame.Current.onlineMultiplayer.loadGame(selectedGame)
             } catch (ex: Exception) {
                 val message = getLoadExceptionMessage(ex)
-                postCrashHandlingRunnable {
+                launchOnGLThread {
                     loadingGamePopup.reuseWith(message, true)
                 }
             }

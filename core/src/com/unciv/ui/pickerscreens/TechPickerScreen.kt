@@ -14,12 +14,16 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaCategories
 import com.unciv.ui.civilopedia.CivilopediaScreen
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.utils.*
-import java.util.*
-import kotlin.collections.ArrayList
+import com.unciv.ui.utils.Fonts
+import com.unciv.ui.utils.addBorder
+import com.unciv.ui.utils.colorFromRGB
+import com.unciv.ui.utils.darken
+import com.unciv.ui.utils.disable
+import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.toLabel
+import com.unciv.utils.concurrency.Concurrency
 
 
 class TechPickerScreen(
@@ -287,11 +291,11 @@ class TechPickerScreen(
 
         val label = "Research [${tempTechsToResearch[0]}]".tr()
         val techProgression = getTechProgressLabel(tempTechsToResearch)
-        
+
         pick("${label}\n${techProgression}")
         setButtonsInfo()
     }
-    
+
     private fun getTechProgressLabel(techs: List<String>): String {
         val progress = techs.sumOf { tech -> civTech.researchOfTech(tech) }
         val techCost = techs.sumOf { tech -> civInfo.tech.costOfTech(tech) }
@@ -299,7 +303,7 @@ class TechPickerScreen(
     }
 
     private fun centerOnTechnology(tech: Technology) {
-        postCrashHandlingRunnable {
+        Concurrency.runOnGLThread {
             techNameToButton[tech.name]?.let {
                 scrollPane.scrollTo(it.x, it.y, it.width, it.height, true, true)
                 scrollPane.updateVisualScroll()

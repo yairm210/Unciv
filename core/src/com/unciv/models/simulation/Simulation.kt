@@ -5,11 +5,12 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameStarter
 import com.unciv.models.metadata.GameSetupInfo
-import com.unciv.ui.crashhandling.launchCrashHandling
+import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlin.time.Duration
 import kotlin.math.max
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.ExperimentalTime
 
@@ -48,7 +49,7 @@ class Simulation(
         startTime = System.currentTimeMillis()
         val jobs: ArrayList<Job> = ArrayList()
         for (threadId in 1..threadsNumber) {
-            jobs.add(launchCrashHandling("simulation-${threadId}") {
+            jobs.add(launch(CoroutineName("simulation-${threadId}")) {
                 for (i in 1..simulationsPerThread) {
                     val gameInfo = GameStarter.startNewGame(GameSetupInfo(newGameInfo))
                     gameInfo.simulateMaxTurns = maxTurns
