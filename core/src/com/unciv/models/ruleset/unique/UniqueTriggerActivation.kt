@@ -448,6 +448,7 @@ object UniqueTriggerActivation {
                         tile.position,
                         NotificationIcon.Ruins
                     )
+                return true
             }
 
             OneTimeTriggerVoting -> {
