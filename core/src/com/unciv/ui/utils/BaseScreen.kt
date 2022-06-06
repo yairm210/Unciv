@@ -11,7 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.unciv.UncivGame
-import com.unciv.models.Tutorial
+import com.unciv.models.TutorialTrigger
 import com.unciv.ui.UncivStage
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.hasOpenPopups
@@ -67,7 +67,7 @@ abstract class BaseScreen : Screen {
         keyPressDispatcher.uninstall()
     }
 
-    fun displayTutorial(tutorial: Tutorial, test: (() -> Boolean)? = null) {
+    fun displayTutorial(tutorial: TutorialTrigger, test: (() -> Boolean)? = null) {
         if (!game.settings.showTutorials) return
         if (game.settings.tutorialsShown.contains(tutorial.name)) return
         if (test != null && !test()) return

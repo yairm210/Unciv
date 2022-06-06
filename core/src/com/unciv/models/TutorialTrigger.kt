@@ -1,6 +1,7 @@
 package com.unciv.models
 
-enum class Tutorial(val value: String, val isCivilopedia: Boolean = !value.startsWith("_")) {
+
+enum class TutorialTrigger(val value: String, val isCivilopedia: Boolean = !value.startsWith("_")) {
 
     Introduction("Introduction"),
     NewGame("New_Game"),
@@ -44,9 +45,4 @@ enum class Tutorial(val value: String, val isCivilopedia: Boolean = !value.start
     Inquisitors("Inquisitors"),
     MayanCalendar("Maya_Long_Count_calendar_cycle"),
     WeLoveTheKingDay("We_Love_The_King_Day"),
-    ;
-
-    companion object {
-        fun findByName(name: String): Tutorial? = values().find { it.value == name }
-    }
 }

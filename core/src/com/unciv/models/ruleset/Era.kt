@@ -8,7 +8,7 @@ import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.colorFromRGB
 
-class Era : RulesetObject(), IHasUniques {
+class Era : RulesetObject() {
     var eraNumber: Int = -1
     var researchAgreementCost = 300
     var startingSettlerCount = 1
