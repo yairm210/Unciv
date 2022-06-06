@@ -42,11 +42,8 @@ class GameInfo {
     // Set to false whenever the results still need te be processed
     var diplomaticVictoryVotesProcessed = false
 
-    /**Keep track of a custom location this game was saved to _or_ loaded from
-     *
-     * Note this was used as silent autosave destination, but it was decided (#3898) to
-     * make the custom location feature a one-shot import/export kind of operation.
-     * The tracking is left in place, however [GameSaver.autoSaveSingleThreaded] no longer uses it
+    /**
+     * Keep track of a custom location this game was saved to _or_ loaded from, using it as the default custom location for any further save/load attempts.
      */
     @Volatile
     var customSaveLocation: String? = null

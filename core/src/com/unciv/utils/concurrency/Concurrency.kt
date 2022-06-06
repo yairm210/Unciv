@@ -2,7 +2,6 @@ package com.unciv.utils.concurrency
 
 import com.badlogic.gdx.Gdx
 import com.unciv.UncivGame
-import com.unciv.ui.crashhandling.CrashScreen
 import com.unciv.ui.utils.wrapCrashHandlingUnit
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineName
@@ -25,17 +24,28 @@ import kotlin.coroutines.CoroutineContext
  * - Then, use the `launch...` functions within `run...` code blocks.
  * - Within `suspend` functions, use [kotlinx.coroutines.coroutineScope] to gain access to the `launch...` functions.
  *
- * All methods in this file automatically wrap the given code blocks to catch all uncaught exceptions, bringing the game to a [CrashScreen].
+ * All methods in this file automatically wrap the given code blocks to catch all uncaught exceptions, calling [UncivGame.handleUncaughtThrowable].
  */
 object Concurrency {
 
-    /** See [kotlinx.coroutines.runBlocking]. Runs on a non-daemon thread pool by default. */
+    /**
+     * See [kotlinx.coroutines.runBlocking]. Runs on a non-daemon thread pool by default.
+     *
+     * @return null if an uncaught exception occured
+     */
     fun <T> runBlocking(
         name: String? = null,
         context: CoroutineContext = Dispatcher.NON_DAEMON,
         block: suspend CoroutineScope.() -> T
     ): T? {
-        return kotlinx.coroutines.runBlocking(addName(context, name), block)
+        return kotlinx.coroutines.runBlocking(addName(context, name)) {
+            try {
+                block(this)
+            } catch (ex: Throwable) {
+                UncivGame.Current.handleUncaughtThrowable(ex)
+                null
+            }
+        }
     }
 
     /** Non-blocking version of [runBlocking]. Runs on a daemon thread pool by default. Use this for code that does not necessarily need to finish executing. */
@@ -67,8 +77,8 @@ fun CoroutineScope.launchCrashHandling(
     return launch(addName(context, name)) {
         try {
             block(this)
-        } catch (ex: Exception) {
-            UncivGame.Current.showCrash(ex)
+        } catch (ex: Throwable) {
+            UncivGame.Current.handleUncaughtThrowable(ex)
         }
     }
 }

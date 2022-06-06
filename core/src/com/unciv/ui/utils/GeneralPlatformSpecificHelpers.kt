@@ -1,6 +1,9 @@
 package com.unciv.ui.utils
 
+import com.badlogic.gdx.Gdx
+import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
+import com.unciv.ui.crashhandling.CrashScreen
 
 /** Interface to support various platform-specific tools */
 interface GeneralPlatformSpecificHelpers {
@@ -23,4 +26,10 @@ interface GeneralPlatformSpecificHelpers {
      * otherwise uses [com.badlogic.gdx.Files.getLocalStoragePath]
      */
     fun shouldPreferExternalStorage(): Boolean
+
+    /**
+     * Handle an uncaught throwable.
+     * @return true if the throwable was handled.
+     */
+    fun handleUncaughtThrowable(ex: Throwable): Boolean = false
 }

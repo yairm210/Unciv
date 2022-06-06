@@ -11,7 +11,6 @@ import com.unciv.UncivGame
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.Sounds
-import com.unciv.ui.crashhandling.CrashScreen
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.utils.concurrency.Concurrency
@@ -326,37 +325,28 @@ fun Instant.isLargerThan(other: Instant): Boolean {
 }
 
 /**
- * Returns a wrapped version of a function that safely crashes the game to [CrashScreen] if an exception or error is thrown.
+ * Returns a wrapped version of a function that automatically handles an uncaught exception or error. In case of an uncaught exception or error, the return will be null.
  *
- * In case an exception or error is thrown, the return will be null. Therefore the return type is always nullable.
- *
- * The game loop, threading, and event systems already use this to wrap nearly everything that can happen during the lifespan of the Unciv application.
- *
- * Therefore, it usually shouldn't be necessary to manually use this. See the note at the top of [CrashScreen].kt for details.
- *
- * @param postToMainThread Whether the [CrashScreen] should be opened by posting a runnable to the main thread, instead of directly. Set this to true if the function is going to run on any thread other than the main loop.
- * @return Result from the function, or null if an exception is thrown.
- * */
+ * [com.unciv.ui.UncivStage], [UncivGame.render] and [Concurrency] already use this to wrap nearly everything that can happen during the lifespan of the Unciv application.
+ * Therefore, it usually shouldn't be necessary to manually use this.
+ */
 fun <R> (() -> R).wrapCrashHandling(
 ): () -> R?
     = {
         try {
             this()
         } catch (e: Throwable) {
-            UncivGame.Current.showCrash(e)
+            UncivGame.Current.handleUncaughtThrowable(e)
             null
         }
     }
 
 /**
- * Returns a wrapped a version of a Unit-returning function which safely crashes the game to [CrashScreen] if an exception or error is thrown.
+ * Returns a wrapped version of a function that automatically handles an uncaught exception or error.
  *
- * The game loop, threading, and event systems already use this to wrap nearly everything that can happen during the lifespan of the Unciv application.
- *
- * Therefore, it usually shouldn't be necessary to manually use this. See the note at the top of [CrashScreen].kt for details.
- *
- * @param postToMainThread Whether the [CrashScreen] should be opened by posting a runnable to the main thread, instead of directly. Set this to true if the function is going to run on any thread other than the main loop.
- * */
+ * [com.unciv.ui.UncivStage], [UncivGame.render] and [Concurrency] already use this to wrap nearly everything that can happen during the lifespan of the Unciv application.
+ * Therefore, it usually shouldn't be necessary to manually use this.
+ */
 fun (() -> Unit).wrapCrashHandlingUnit(): () -> Unit {
     val wrappedReturning = this.wrapCrashHandling()
     // Don't instantiate a new lambda every time the return get called.

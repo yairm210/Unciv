@@ -28,6 +28,7 @@ import com.unciv.ui.utils.center
 import com.unciv.ui.utils.wrapCrashHandlingUnit
 import com.unciv.ui.worldscreen.PlayerReadyScreen
 import com.unciv.ui.worldscreen.WorldScreen
+import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import com.unciv.utils.debug
@@ -273,9 +274,12 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         }
     }
 
-    fun showCrash(t: Throwable) {
+    /** Handles an uncaught [Throwable]. First attempts a platform-specific handler, and if that didn't handle the exception, brings the game to a [CrashScreen]. */
+    fun handleUncaughtThrowable(ex: Throwable) {
+        Log.error("Uncaught throwable", ex)
+        if (platformSpecificHelper?.handleUncaughtThrowable(ex) == true) return
         Gdx.app.postRunnable {
-            Current.setScreen(CrashScreen(t))
+            setScreen(CrashScreen(ex))
         }
     }
 
