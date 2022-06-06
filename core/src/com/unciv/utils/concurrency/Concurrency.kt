@@ -1,15 +1,19 @@
 package com.unciv.utils.concurrency
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.LifecycleListener
 import com.unciv.UncivGame
 import com.unciv.ui.utils.wrapCrashHandlingUnit
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import java.util.concurrent.CancellationException
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadFactory
@@ -109,10 +113,27 @@ private fun addName(context: CoroutineContext, name: String?) = if (name != null
 
 private val EXECUTORS = mutableListOf<ExecutorService>()
 
-private class GLDispatcher : CoroutineDispatcher() {
+private class GLDispatcher : CoroutineDispatcher(), LifecycleListener {
+    var isDisposed = false
+
+    init {
+        Gdx.app.addLifecycleListener(this)
+    }
+
     override fun dispatch(context: CoroutineContext, block: Runnable) {
+        if (isDisposed) {
+            context.cancel(CancellationException("GDX GL thread is not handling runnables anymore"))
+            Dispatcher.DAEMON.dispatch(context, block) // dispatch contract states that block has to be invoked
+            return
+        }
         Gdx.app.postRunnable(block)
     }
+
+    override fun dispose() {
+        isDisposed = true
+    }
+    override fun pause() {}
+    override fun resume() {}
 }
 
 private fun createThreadpoolDispatcher(threadPrefix: String, isDaemon: Boolean): CrashHandlingDispatcher {
