@@ -112,10 +112,8 @@ object BattleDamage {
         if (attacker is MapUnitCombatant) {
             modifiers.add(getTileSpecificModifiers(attacker, defender.getTile()))
 
-            // Depreciated Version
-            if (attacker.unit.isEmbarked() && !attacker.unit.hasUnique(UniqueType.AttackFromSea))
-                modifiers["Landing"] = -50
-            if (attacker.unit.isEmbarked() && !attacker.unit.hasUnique(UniqueType.AttackAcrossCoast))
+            if (attacker.unit.isEmbarked()
+                    && !(attacker.unit.hasUnique(UniqueType.AttackAcrossCoast)) || attacker.unit.hasUnique(UniqueType.AttackFromSea))
                 modifiers["Landing"] = -50
 
             // Land Melee Unit attacking to Water

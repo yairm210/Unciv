@@ -32,7 +32,7 @@ Please note:
 * Have a Java JDK installed
 * Download the [latest UncivServer.jar](https://github.com/yairm210/Unciv/releases/latest/download/UncivServer.jar) (can also use that link to automatically update probably)
 * See options with `java -jar UncivServer.jar --help`
-    * The server will run on a specified port (`-p`, default `80`), writing files in a folder (`-f`, default `./MultiplayerGames/`), so it needs appropriate permissions.
+    * The server will run on a specified port (`-p`, default `80`), writing files in a folder (`-f`, default `./MultiplayerFiles/`), so it needs appropriate permissions.
 * Run it: `java -jar UncivServer.jar -p 8080 -f /some/folder/`
     * It basically just does simple file storage over HTTP.
     * Files are not cleaned automatically if a game ends or is deleted on the client-side

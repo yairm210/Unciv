@@ -1,3 +1,26 @@
+## 4.1.7
+
+By OptimizedForDensity:
+- Fix medic and amphibious promotions
+- Better Great Prophet AI
+- More rankings & demographics screen icons
+
+By SomeTroglodyte:
+- Better Tutorials
+- Prevent city-to-city Battle Table
+- Minor fixes
+
+By alexban011:
+- spectators can no longer move and attack with units
+- Better friends list UI
+
+Bugfixes for units' teleportation - By JackRainy
+
+By Azzurite:
+- Fix map editor zoom in
+
+HexaRealm tileset update  - By GeneralWadaling
+
 ## 4.1.6
 
 Multiplayer friends list - by alexban 011
