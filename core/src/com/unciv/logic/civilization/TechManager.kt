@@ -133,23 +133,14 @@ class TechManager {
     fun canBeResearched(techName: String): Boolean {
         val tech = getRuleset().technologies[techName]!!
         if (tech.uniqueObjects.any { it.type == UniqueType.OnlyAvailableWhen && !it.conditionalsApply(civInfo) })
+            return false
+        
         if (tech.getMatchingUniques(UniqueType.IncompatibleWith).any { isResearched(it.params[0]) })
             return false
         
-        val pathToTech = civInfo.tech.getRequiredTechsToDestination(tech)
-        for (requiredTech in pathToTech) {
-            for (unique in requiredTech.getMatchingUniques(UniqueType.IncompatibleWith))
-                if (civInfo.tech.isResearched(unique.params[0])) {
-                    return false
-                }
-            for (unique in requiredTech.uniqueObjects
-                    .filter { it.type == UniqueType.OnlyAvailableWhen && !it.conditionalsApply(civInfo) }) {
-                return false
-            }
-        }
-        
         if (isResearched(tech.name) && !tech.isContinuallyResearchable())
             return false
+        
         return tech.prerequisites.all { isResearched(it) }
     }
 
