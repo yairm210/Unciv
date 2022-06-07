@@ -13,9 +13,12 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.utils.io.jvm.javaio.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileNotFoundException
+import java.time.Instant
 
 
 internal object UncivServer {
@@ -45,33 +48,35 @@ private class UncivServerRunner : CliktCommand() {
         embeddedServer(Netty, port = serverPort) {
             routing {
                 get("/isalive") {
-                    println("Received isalive request from ${call.request.local.remoteHost}")
+                    log.info("Received isalive request from ${call.request.local.remoteHost}")
                     call.respondText("true")
                 }
                 put("/files/{fileName}") {
                     val fileName = call.parameters["fileName"] ?: throw Exception("No fileName!")
+                    log.info("Receiving file: ${fileName}")
+                    val file = File(fileFolderName, fileName)
                     withContext(Dispatchers.IO) {
-                        val receivedBytes =
-                            call.request.receiveChannel().toInputStream().readBytes()
-                        val textString = String(receivedBytes)
-                        println("Received text: $textString")
-                        File(fileFolderName, fileName).writeText(textString)
+                        file.outputStream().use {
+                            call.request.receiveChannel().toInputStream().copyTo(it)
+                        }
                     }
+                    call.respond(HttpStatusCode.OK)
                 }
                 get("/files/{fileName}") {
                     val fileName = call.parameters["fileName"] ?: throw Exception("No fileName!")
-                    println("Get file: $fileName")
+                    log.info("File requested: $fileName")
                     val file = File(fileFolderName, fileName)
                     if (!file.exists()) {
+                        log.info("File $fileName not found")
                         call.respond(HttpStatusCode.NotFound, "File does not exist")
                         return@get
                     }
-                    val fileText = file.readText()
-                    println("Text read: $fileText")
+                    val fileText = withContext(Dispatchers.IO) { file.readText() }
                     call.respondText(fileText)
                 }
                 delete("/files/{fileName}") {
                     val fileName = call.parameters["fileName"] ?: throw Exception("No fileName!")
+                    log.info("Deleting file: $fileName")
                     val file = File(fileFolderName, fileName)
                     if (!file.exists()) {
                         call.respond(HttpStatusCode.NotFound, "File does not exist")
