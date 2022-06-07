@@ -20,8 +20,8 @@ object MultiplayerHelpers {
     fun getLoadExceptionMessage(ex: Throwable) = when (ex) {
         is FileStorageRateLimitReached -> "Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds"
         is FileNotFoundException -> "File could not be found on the multiplayer server"
-        is UncivShowableException -> ex.message!! // some of these seem to be translated already, but not all
-        else -> "Unhandled problem, [${ex::class.simpleName}] ${ex.message}"
+        is UncivShowableException -> ex.message // If this is already translated, it's an error on the throwing side!
+        else -> "Unhandled problem, [${ex::class.simpleName} ${ex.localizedMessage}]"
     }
 
     fun loadMultiplayerGame(screen: BaseScreen, selectedGame: OnlineMultiplayerGame) {
