@@ -417,7 +417,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
     }
 
     fun moveToTile(destination: TileInfo, considerZoneOfControl: Boolean = true) {
-        if (destination == unit.getTile()) return // already here!
+        if (destination == unit.getTile() || unit.isDestroyed) return // already here (or dead)!
 
 
         if (unit.baseUnit.movesLikeAirUnits()) { // air units move differently from all other units

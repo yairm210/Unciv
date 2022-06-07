@@ -924,6 +924,7 @@ class MapUnit {
     fun destroy() {
         val currentPosition = Vector2(getTile().position)
         civInfo.attacksSinceTurnStart.addAll(attacksSinceTurnStart.asSequence().map { CivilizationInfo.HistoricalAttackMemory(this.name, currentPosition, it) })
+        currentMovement = 0f
         removeFromTile()
         civInfo.removeUnit(this)
         civInfo.updateViewableTiles()
