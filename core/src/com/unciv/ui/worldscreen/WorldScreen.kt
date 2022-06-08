@@ -602,13 +602,13 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
     }
 
-    private fun createNewWorldScreen(gameInfo: GameInfo) {
+    private fun createNewWorldScreen(gameInfo: GameInfo, resize:Boolean=false) {
 
         game.gameInfo = gameInfo
         val newWorldScreen = WorldScreen(gameInfo, gameInfo.getPlayerToViewAs())
 
         // This is not the case if you have a multiplayer game where you play as 2 civs
-        if (newWorldScreen.viewingCiv.civName == viewingCiv.civName) {
+        if (!resize && newWorldScreen.viewingCiv.civName == viewingCiv.civName) {
             newWorldScreen.mapHolder.width = mapHolder.width
             newWorldScreen.mapHolder.height = mapHolder.height
             newWorldScreen.mapHolder.scaleX = mapHolder.scaleX
@@ -831,7 +831,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
     override fun resize(width: Int, height: Int) {
         if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height)
-            createNewWorldScreen(gameInfo) // start over
+            createNewWorldScreen(gameInfo, resize=true) // start over
     }
 
 
