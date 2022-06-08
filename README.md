@@ -108,7 +108,7 @@ This is a subject that I've heard a lot of hearsay on but no solid sources of la
 
 From what I gather, it is illegal:
  - To use the Civilization name
- - To impersonate the Civ games (so calling yourself civilzation with a similar logo, for instance)
+ - To impersonate the Civ games (so calling yourself civilization with a similar logo, for instance)
  - To use any assets from the original game (images, sound etc) - they belong to Firaxis
 
 From what I understand, intellectual property rights apply to names, characters and settings. They do not apply to mechanics - as I'm sure you know, there are a billion Flappy Bird knockoffs
