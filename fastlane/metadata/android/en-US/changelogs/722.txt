@@ -1,22 +1,13 @@
-## 4.1.8
-
 Resolved crashes when centering on a city-state with no cities
 
-Fastlane descriptions
-
 By OptimizedForDensity:
-- Certain projects cannot be hurried by great engineer 
-- Fix scout not upgrading through ruins 
-- Fix rare case where ruins would delete an AI unit while trying to upgrade it 
-- Prevent duplicate ruin reward 
+- Certain projects cannot be hurried by great engineer
+- Fix scout not upgrading through ruins
+- Fix rare case where ruins would delete an AI unit while trying to upgrade it
+- Prevent duplicate ruin reward
 
-By Azzurite:
-- Fix UncivServer not correctly handling put request 
-- Fix wrong default folder name
+WordScreenTopBar reworked, portrait-friendlier  - By SomeTroglodyte
 
-WordScreenTopBar rework, portrait-friendlier  - By SomeTroglodyte
+Fixed minimap fog of war for spectators - By alexban011
 
-fixed minimap showing fog of war everywhere when you joined a mp game without being a player  - By alexban011
-
-Fix "Free technology" allowing you to get a technology you're not supposed to be able to get  - By MindaugasRumsa
-
+Fix "Free technology" allowing restricted techs - By MindaugasRumsa

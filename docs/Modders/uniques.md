@@ -814,6 +814,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Only available"
 	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement
 
+??? example  "Cannot be hurried"
+	Applicable to: Tech, Building
+
 ## FounderBelief uniques
 ??? example  "[stats] for each global city following this religion"
 	Example: "[+1 Gold, +2 Production] for each global city following this religion"
@@ -1234,6 +1237,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "Can speed up construction of a building"
+	Applicable to: Unit
+
+??? example  "Can speed up the construction of a wonder"
 	Applicable to: Unit
 
 ??? example  "Can hurry technology research"
