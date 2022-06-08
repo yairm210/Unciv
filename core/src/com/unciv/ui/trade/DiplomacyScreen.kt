@@ -398,7 +398,8 @@ class DiplomacyScreen(
             }
         }
 
-        diplomacyTable.add(getGoToOnMapButton(otherCiv)).row()
+        if (otherCiv.cities.isNotEmpty() && otherCiv.getCapital() != null && otherCiv.getCapital()!!.location in viewingCiv.exploredTiles)
+            diplomacyTable.add(getGoToOnMapButton(otherCiv)).row()
 
         val diplomaticMarriageButton = getDiplomaticMarriageButton(otherCiv)
         if (diplomaticMarriageButton != null) diplomacyTable.add(diplomaticMarriageButton).row()

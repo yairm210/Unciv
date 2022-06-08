@@ -370,7 +370,7 @@ object UnitActions {
         isFree: Boolean,
         isSpecial: Boolean
     ): UnitAction? {
-        if (unit.baseUnit().upgradesTo == null) return null
+        if (unit.baseUnit().upgradesTo == null && unit.baseUnit().specialUpgradesTo == null) return null // can't upgrade to anything
         val unitTile = unit.getTile()
         val civInfo = unit.civInfo
         if (!isFree && unitTile.getOwner() != civInfo) return null

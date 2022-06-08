@@ -79,8 +79,9 @@ import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import com.unciv.utils.concurrency.launchOnThreadPool
 import com.unciv.utils.debug
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
+import com.unciv.utils.debug
+import kotlinx.coroutines.Job
 
 /**
  * Unciv's world screen
@@ -122,8 +123,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     private val statusButtons = StatusButtons(nextTurnButton)
     private val tutorialTaskTable = Table().apply { background = ImageGetter.getBackground(
         ImageGetter.getBlue().darken(0.5f)) }
+    private val notificationsScroll = NotificationsScroll(this)
 
-    private val notificationsScroll: NotificationsScroll
     var shouldUpdate = false
 
     private val zoomController = ZoomButtonPair(mapHolder)
@@ -134,12 +135,6 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
 
     init {
-        topBar.setPosition(0f, stage.height - topBar.height)
-        topBar.width = stage.width
-
-        val maxNotificationsHeight = topBar.y - nextTurnButton.height -
-                (if (game.settings.showMinimap) minimapWrapper.height else 0f) - 25f
-        notificationsScroll = NotificationsScroll(this, maxNotificationsHeight)
         // notifications are right-aligned, they take up only as much space as necessary.
         notificationsScroll.width = stage.width / 2
 
@@ -443,8 +438,6 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         techPolicyAndVictoryHolder.setPosition(10f, topBar.y - techPolicyAndVictoryHolder.height - 5f)
         updateDiplomacyButton(viewingCiv)
 
-        topBar.unitSupplyImage.isVisible = selectedCiv.stats().getUnitSupplyDeficit() > 0
-
         if (!hasOpenPopups() && isPlayersTurn) {
             when {
                 viewingCiv.shouldShowDiplomaticVotingResults() ->
@@ -465,8 +458,12 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                 }
             }
         }
+
         updateGameplayButtons()
-        notificationsScroll.update(viewingCiv.notifications, bottomTileInfoTable.height)
+
+        val maxNotificationsHeight = statusButtons.y -
+                (if (game.settings.showMinimap) minimapWrapper.height else 0f) - 5f
+        notificationsScroll.update(viewingCiv.notifications, maxNotificationsHeight, bottomTileInfoTable.height)
         notificationsScroll.setTopRight(stage.width - 10f, statusButtons.y - 5f)
 
         val posZoomFromRight = if (game.settings.showMinimap) minimapWrapper.width
