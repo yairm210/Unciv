@@ -91,7 +91,7 @@ class NotificationsOverviewTable(
                 }
             }
 
-            turnTable.add(notification)
+            turnTable.add(notification).pad(5f)
             turnTable.padTop(20f).row()
         }
         turnTable.padTop(20f).row()
