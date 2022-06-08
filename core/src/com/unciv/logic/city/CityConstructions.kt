@@ -189,6 +189,11 @@ class CityConstructions {
         return currentConstruction is Building && currentConstruction.isWonder
     }
 
+    fun canBeHurried(): Boolean {
+        val currentConstruction = getCurrentConstruction()
+        return currentConstruction is INonPerpetualConstruction && !currentConstruction.hasUnique(UniqueType.CannotBeHurried)
+    }
+
     /** If the city is constructing multiple units of the same type, subsequent units will require the full cost  */
     fun isFirstConstructionOfItsKind(constructionQueueIndex: Int, name: String): Boolean {
         // if the construction name is the same as the current construction, it isn't the first
