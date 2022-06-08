@@ -749,13 +749,21 @@ open class TileInfo {
             else -> {
                 if (terrainFeatures.contains(filter)) return true
                 if (getAllTerrains().any { it.hasUnique(filter) }) return true
+
                 // Resource type check is last - cannot succeed if no resource here
                 if (resource == null) return false
+
                 // Checks 'luxury resource', 'strategic resource' and 'bonus resource' - only those that are visible of course
                 // not using hasViewableResource as observingCiv is often not passed in,
                 // and we want to be able to at least test for non-strategic in that case.
                 val resourceObject = tileResource
-                if (resourceObject.resourceType.name + " resource" != filter) return false // filter match
+                val hasResourceWithFilter =
+                        tileResource.name == filter
+                                || tileResource.hasUnique(filter)
+                                || tileResource.resourceType.name + " resource" == filter
+                if (!hasResourceWithFilter) return false
+
+                // Now that we know that this resource matches the filter - can the observer see that there's a resource here?
                 if (resourceObject.revealedBy == null) return true  // no need for tech
                 if (observingCiv == null) return false  // can't check tech
                 return observingCiv.tech.isResearched(resourceObject.revealedBy!!)
