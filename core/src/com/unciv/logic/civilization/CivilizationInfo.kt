@@ -33,6 +33,7 @@ import com.unciv.ui.utils.toPercent
 import com.unciv.ui.utils.withItem
 import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -146,12 +147,12 @@ class CivilizationInfo {
     var ruinsManager = RuinsManager()
     var diplomacy = HashMap<String, DiplomacyManager>()
     var proximity = HashMap<String, Proximity>()
-    var notifications = ArrayList<Notification>()
-    var notificationsLog = ArrayList<Notification>()
-    var notifTurnCounter = ArrayList<Int>()
     val popupAlerts = ArrayList<PopupAlert>()
     private var allyCivName: String? = null
     var naturalWonders = ArrayList<String>()
+    var notifications = ArrayList<Notification>()
+
+    var notificationsLog = ArrayList<NotificationsLog>()
 
     /** for trades here, ourOffers is the current civ's offers, and theirOffers is what the requesting civ offers  */
     val tradeRequests = ArrayList<TradeRequest>()
@@ -258,7 +259,6 @@ class CivilizationInfo {
         toReturn.lastSeenImprovement.putAll(lastSeenImprovement)
         toReturn.notifications.addAll(notifications)
         toReturn.notificationsLog.addAll(notificationsLog)
-        toReturn.notifTurnCounter.addAll(notifTurnCounter)
         toReturn.citiesCreated = citiesCreated
         toReturn.popupAlerts.addAll(popupAlerts)
         toReturn.tradeRequests.addAll(tradeRequests)
@@ -904,6 +904,9 @@ class CivilizationInfo {
     }
 
     fun endTurn() {
+        var notificationsThisTurn = NotificationsLog()
+        notificationsThisTurn.notifications += notifications
+        notificationsLog.add(notificationsThisTurn)
         notifications.clear()
 
         val nextTurnStats = statsForNextTurn
@@ -955,8 +958,6 @@ class CivilizationInfo {
         updateHasActiveGreatWall()
 
         cachedMilitaryMight = -1    // Reset so we don't use a value from a previous turn
-
-        notifTurnCounter.add(notificationsLog.size)
     }
 
     private fun startTurnFlags() {
@@ -1189,8 +1190,6 @@ class CivilizationInfo {
         val arrayList = notificationIcons.toCollection(ArrayList())
         notifications.add(Notification(text, arrayList,
                 if (action is LocationAction && action.locations.isEmpty()) null else action))
-        notificationsLog.add(Notification(text, arrayList,
-                if (action is LocationAction && action.locations.isEmpty()) null else action))
     }
 
     fun addUnit(unitName: String, city: CityInfo? = null): MapUnit? {
@@ -1383,6 +1382,10 @@ class CivilizationInfo {
     //endregion
 
     fun asPreview() = CivilizationInfoPreview(this)
+}
+
+class NotificationsLog {
+    var notifications = ArrayList<Notification>()
 }
 
 /**

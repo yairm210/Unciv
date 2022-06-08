@@ -16,8 +16,7 @@ class NotificationsOverviewTable(
 
     val worldScreen = worldScreen
     val notificationLog = viewingPlayer.notificationsLog
-    val notificationTable = Table(BaseScreen.skin)
-    val notifTurnCounter = viewingPlayer.notifTurnCounter
+    private val notificationTable = Table(BaseScreen.skin)
 
     init {
         val tablePadding = 30f  // Padding around each of the stat tables
@@ -28,30 +27,40 @@ class NotificationsOverviewTable(
         add(notificationTable)
     }
 
-    fun generateNotificationTable() {
-//         notificationTable.add("This turn").row()
+    private fun generateNotificationTable() {
+        val thisTurnTable = Table(BaseScreen.skin)
+        thisTurnTable.add("This turn").row()
+        for (index2 in viewingPlayer.notifications.indices) {
+            thisTurnTable.add(viewingPlayer.notifications[index2].text)
+            thisTurnTable.touchable = Touchable.enabled
+            thisTurnTable.onClick {
+                UncivGame.Current.resetToWorldScreen()
+                viewingPlayer.notifications[index2].action?.execute(worldScreen)
+            }
+            thisTurnTable.padTop(20f).row()
+        }
+        notificationTable.add(thisTurnTable).row()
+
         for (index in notificationLog.indices) {
-            notificationTable.add(notificationsTable(notificationLog.lastIndex-index))
+            notificationTable.add(notificationsArrayTable(notificationLog.lastIndex - index))
             notificationTable.padTop(20f).row()
-//             for (index2 in notifTurnCounter.indices) {
-//                 if (index == notifTurnCounter[notifTurnCounter.lastIndex-index2]) {
-//                     notificationTable.add("Turn $index2").padTop(20f).row()
-//                 }
-//             }
         }
     }
 
-    fun notificationsTable(index: Int): Table {
-        val currentNotification = notificationLog[index]
-        val currentNotificationTable = Table(BaseScreen.skin)
+    private fun notificationsArrayTable(index: Int): Table {
+        val turnTable = Table(BaseScreen.skin)
 
-        currentNotificationTable.add(currentNotification.text)
-        currentNotificationTable.touchable = Touchable.enabled
-        currentNotificationTable.onClick {
-            UncivGame.Current.resetToWorldScreen()
-            currentNotification.action?.execute(worldScreen)
+        turnTable.add("Turn $index").row()
+        for (index2 in notificationLog[index].notifications.indices) {
+            turnTable.add(notificationLog[index].notifications[index2].text)
+            turnTable.touchable = Touchable.enabled
+            turnTable.onClick {
+                UncivGame.Current.resetToWorldScreen()
+                notificationLog[index].notifications[index2].action?.execute(worldScreen)
+            }
+            turnTable.padTop(20f).row()
         }
-
-        return currentNotificationTable
+        turnTable.padTop(20f).row()
+        return turnTable
     }
 }
