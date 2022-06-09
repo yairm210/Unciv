@@ -24,22 +24,22 @@ class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame, 
 
         val deleteButton = "Delete save".toTextButton()
         deleteButton.onClick {
-            val askPopup = YesNoPopup("Are you sure you want to delete this map?", {
+            val askPopup = YesNoPopup("Are you sure you want to delete this map?", this) {
                 try {
                     game.onlineMultiplayer.deleteGame(multiplayerGame)
                     game.setScreen(backScreen)
                 } catch (ex: Exception) {
                     ToastPopup("Could not delete game!", this)
                 }
-            }, this)
+            }
             askPopup.open()
         }.apply { color = Color.RED }
 
         val giveUpButton = "Resign".toTextButton()
         giveUpButton.onClick {
-            val askPopup = YesNoPopup("Are you sure you want to resign?", {
+            val askPopup = YesNoPopup("Are you sure you want to resign?", this) {
                 resign(multiplayerGame, backScreen)
-            }, this)
+            }
             askPopup.open()
         }
         giveUpButton.apply { color = Color.RED }

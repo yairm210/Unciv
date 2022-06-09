@@ -602,7 +602,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
     }
 
-    private fun createNewWorldScreen(gameInfo: GameInfo, resize:Boolean=false) {
+    private fun createNewWorldScreen(gameInfo: GameInfo, resize:Boolean=false): WorldScreen {
 
         game.gameInfo = gameInfo
         val newWorldScreen = WorldScreen(gameInfo, gameInfo.getPlayerToViewAs())
@@ -621,7 +621,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         newWorldScreen.selectedCiv = gameInfo.getCivilization(selectedCiv.civName)
         newWorldScreen.fogOfWar = fogOfWar
 
-        game.resetToWorldScreen(newWorldScreen)
+        return game.resetToWorldScreen(newWorldScreen)
     }
 
     fun nextTurn() {
@@ -821,7 +821,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                         nextTurn()
                     }
                     if (game.settings.confirmNextTurn) {
-                        YesNoPopup("Confirm next turn", action, this).open()
+                        YesNoPopup("Confirm next turn", this, action = action).open()
                     } else {
                         action()
                     }

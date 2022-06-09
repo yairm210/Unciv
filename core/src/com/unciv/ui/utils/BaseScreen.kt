@@ -122,7 +122,7 @@ abstract class BaseScreen : Screen {
     fun isCrampedPortrait() = isPortrait() &&
             game.settings.resolution.split("x").map { it.toInt() }.last() <= 700
     /** @return `true` if the screen is narrower than 4:3 landscape */
-    fun isNarrowerThan4to3() = stage.viewport.screenHeight * 4 > stage.viewport.screenWidth * 3
+    fun isNarrowerThan4to3() = stage.isNarrowerThan4to3()
 
     fun openOptionsPopup(startingPage: Int = OptionsPopup.defaultPage, onClose: () -> Unit = {}) {
         OptionsPopup(this, startingPage, onClose).open(force = true)

@@ -127,7 +127,7 @@ object UnitActions {
                 val disbandText = if (unit.currentTile.getOwner() == unit.civInfo)
                     "Disband this unit for [${unit.baseUnit.getDisbandGold(unit.civInfo)}] gold?".tr()
                 else "Do you really want to disband this unit?".tr()
-                YesNoPopup(disbandText, { unit.disband(); worldScreen.shouldUpdate = true }).open()
+                YesNoPopup(disbandText, UncivGame.Current.worldScreen!!) { unit.disband(); worldScreen.shouldUpdate = true }.open()
             }
         }.takeIf { unit.currentMovement > 0 })
     }
@@ -204,7 +204,7 @@ object UnitActions {
                     else {
                         // ask if we would be breaking a promise
                         val text = "Do you want to break your promise to [$leaders]?"
-                        YesNoPopup(text, foundAction, UncivGame.Current.worldScreen).open(force = true)
+                        YesNoPopup(text, UncivGame.Current.worldScreen!!, action = foundAction).open(force = true)
                     }
                 }
             )
@@ -275,7 +275,7 @@ object UnitActions {
         else actionList += UnitAction(type = UnitActionType.Pillage) {
             if (!worldScreen.hasOpenPopups()) {
                 val pillageText = "Are you sure you want to pillage this [${unit.currentTile.improvement}]?"
-                YesNoPopup(pillageText, { (pillageAction.action)(); worldScreen.shouldUpdate = true }).open()
+                YesNoPopup(pillageText, UncivGame.Current.worldScreen!!) { (pillageAction.action)(); worldScreen.shouldUpdate = true }.open()
             }
         }
     }

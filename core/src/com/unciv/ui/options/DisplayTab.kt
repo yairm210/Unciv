@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
+import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.tr
@@ -36,7 +37,7 @@ fun displayTab(
     optionsPopup.addCheckbox(this, "Experimental Demographics scoreboard", settings.useDemographics, true) { settings.useDemographics = it }
     optionsPopup.addCheckbox(this, "Show zoom buttons in world screen", settings.showZoomButtons, true) { settings.showZoomButtons = it }
 
-    addMinimapSizeSlider(this, settings, optionsPopup.screen, optionsPopup.selectBoxMinWidth)
+    addMinimapSizeSlider(this, settings, optionsPopup.selectBoxMinWidth)
 
     addResolutionSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onResolutionChange)
 
@@ -57,7 +58,7 @@ fun displayTab(
 
 }
 
-private fun addMinimapSizeSlider(table: Table, settings: GameSettings, screen: BaseScreen, selectBoxMinWidth: Float) {
+private fun addMinimapSizeSlider(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
     table.add("Show minimap".toLabel()).left().fillX()
 
     // The meaning of the values needs a formula to be synchronized between here and
@@ -83,8 +84,9 @@ private fun addMinimapSizeSlider(table: Table, settings: GameSettings, screen: B
             settings.minimapSize = size
         }
         settings.save()
-        if (screen is WorldScreen)
-            screen.shouldUpdate = true
+        val worldScreen = UncivGame.Current.getWorldScreenIfActive()
+        if (worldScreen != null)
+            worldScreen.shouldUpdate = true
     }
     table.add(minimapSlider).minWidth(selectBoxMinWidth).pad(10f).row()
 }

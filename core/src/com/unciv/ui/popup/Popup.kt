@@ -2,6 +2,7 @@ package com.unciv.ui.popup
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
@@ -13,7 +14,12 @@ import com.unciv.ui.utils.*
  * Base class for all Popups, i.e. Tables that get rendered in the middle of a screen and on top of everything else
  */
 @Suppress("MemberVisibilityCanBePrivate")
-open class Popup(val screen: BaseScreen): Table(BaseScreen.skin) {
+open class Popup(
+    val stageToShowOn: Stage
+): Table(BaseScreen.skin) {
+
+    constructor(screen: BaseScreen) : this(screen.stage)
+
     // This exists to differentiate the actual popup (the inner table)
     // from the 'screen blocking' part of the popup (which covers the entire screen)
     val innerTable = Table(BaseScreen.skin)
@@ -24,11 +30,15 @@ open class Popup(val screen: BaseScreen): Table(BaseScreen.skin) {
      */
     val keyPressDispatcher = KeyPressDispatcher(this.javaClass.simpleName)
 
+    val closeListeners = mutableListOf<() -> Unit>()
+
+    val scrollPane: AutoScrollPane
+
     init {
         // Set actor name for debugging
         name = javaClass.simpleName
 
-        val scrollPane = AutoScrollPane(innerTable, BaseScreen.skin)
+        scrollPane = AutoScrollPane(innerTable, BaseScreen.skin)
 
         background = ImageGetter.getBackground(Color.GRAY.cpy().apply { a=.5f })
         innerTable.background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.5f))
@@ -47,11 +57,11 @@ open class Popup(val screen: BaseScreen): Table(BaseScreen.skin) {
      * closed. Use [force] = true if you want to open this popup above the other one anyway.
      */
     fun open(force: Boolean = false) {
-        screen.stage.addActor(this)
+        stageToShowOn.addActor(this)
         innerTable.pack()
         pack()
-        center(screen.stage)
-        if (force || !screen.hasOpenPopups()) {
+        center(stageToShowOn)
+        if (force || !stageToShowOn.hasOpenPopups()) {
             show()
         }
     }
@@ -59,18 +69,19 @@ open class Popup(val screen: BaseScreen): Table(BaseScreen.skin) {
     /** Subroutine for [open] handles only visibility and [keyPressDispatcher] */
     private fun show() {
         this.isVisible = true
-        val currentCount = screen.countOpenPopups()
+        val currentCount = stageToShowOn.countOpenPopups()
         // the lambda is for stacked key dispatcher precedence:
-        keyPressDispatcher.install(screen.stage) { screen.countOpenPopups() > currentCount }
+        keyPressDispatcher.install(stageToShowOn) { stageToShowOn.countOpenPopups() > currentCount }
     }
 
     /**
      * Close this popup and - if any other popups are pending - display the next one.
      */
     open fun close() {
+        for (listener in closeListeners) listener()
         keyPressDispatcher.uninstall()
         remove()
-        val nextPopup = screen.stage.actors.firstOrNull { it is Popup }
+        val nextPopup = stageToShowOn.actors.firstOrNull { it is Popup }
         if (nextPopup != null) (nextPopup as Popup).show()
     }
 
@@ -90,7 +101,7 @@ open class Popup(val screen: BaseScreen): Table(BaseScreen.skin) {
         val label = text.toLabel(fontSize = size)
         label.wrap = true
         label.setAlignment(Align.center)
-        return add(label).width(screen.stage.width / 2)
+        return add(label).width(stageToShowOn.width / 2)
     }
 
     /**
@@ -205,9 +216,9 @@ open class Popup(val screen: BaseScreen): Table(BaseScreen.skin) {
      * [FocusListener][com.badlogic.gdx.scenes.scene2d.utils.FocusListener] cancels the event.
      */
     var keyboardFocus: Actor?
-        get() = screen.stage.keyboardFocus
+        get() = stageToShowOn.keyboardFocus
         set(value) {
-            if (screen.stage.setKeyboardFocus(value))
+            if (stageToShowOn.setKeyboardFocus(value))
                 (value as? TextField)?.selectAll()
         }
 }
@@ -216,25 +227,22 @@ open class Popup(val screen: BaseScreen): Table(BaseScreen.skin) {
  * Checks if there are visible [Popup]s.
  * @return `true` if any were found.
  */
-fun BaseScreen.hasOpenPopups(): Boolean = stage.actors.any { it is Popup && it.isVisible }
+fun BaseScreen.hasOpenPopups(): Boolean = stage.hasOpenPopups()
+private fun Stage.hasOpenPopups(): Boolean = actors.any { it is Popup && it.isVisible }
 
 /**
  * Counts number of visible[Popup]s.
- * 
+ *
  * Used for key dispatcher precedence.
  */
-fun BaseScreen.countOpenPopups() = stage.actors.count { it is Popup && it.isVisible }
+private fun Stage.countOpenPopups() = actors.count { it is Popup && it.isVisible }
 
 /** Closes all [Popup]s. */
-fun BaseScreen.closeAllPopups() = popups.forEach { it.close() }
-
-/**
- * Closes the topmost visible [Popup].
- * @return The [name][Popup.name] of the closed [Popup] if any popup was closed and if it had a name.
- */
-fun BaseScreen.closeOneVisiblePopup() = popups.lastOrNull { it.isVisible }?.apply { close() }?.name
+fun BaseScreen.closeAllPopups() = stage.popups.forEach { it.close() }
 
 /** @return A [List] of currently active or pending [Popup] screens. */
-val BaseScreen.popups: List<Popup>
-    get() = stage.actors.filterIsInstance<Popup>()
+val BaseScreen.popups
+    get() = stage.popups
+private val Stage.popups: List<Popup>
+    get() = actors.filterIsInstance<Popup>()
 

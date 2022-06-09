@@ -274,6 +274,9 @@ fun WidgetGroup.packIfNeeded(): WidgetGroup {
     return this
 }
 
+/** @return `true` if the screen is narrower than 4:3 landscape */
+fun Stage.isNarrowerThan4to3() = viewport.screenHeight * 4 > viewport.screenWidth * 3
+
 /** Get one random element of a given List.
  *
  * The probability for each element is proportional to the value of its corresponding element in the [weights] List.

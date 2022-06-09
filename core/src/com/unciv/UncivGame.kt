@@ -9,17 +9,14 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.Translations
+import com.unciv.ui.LanguagePickerScreen
 import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicMood
-import com.unciv.ui.utils.*
-import com.unciv.ui.worldscreen.PlayerReadyScreen
-import com.unciv.ui.worldscreen.WorldScreen
-import com.unciv.logic.multiplayer.OnlineMultiplayer
-import com.unciv.ui.LanguagePickerScreen
 import com.unciv.ui.audio.Sounds
 import com.unciv.ui.crashhandling.closeExecutors
 import com.unciv.ui.crashhandling.launchCrashHandling
@@ -28,6 +25,11 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.multiplayer.LoadDeepLinkScreen
 import com.unciv.ui.multiplayer.MultiplayerHelpers
 import com.unciv.ui.popup.Popup
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.center
+import com.unciv.ui.utils.wrapCrashHandlingUnit
+import com.unciv.ui.worldscreen.PlayerReadyScreen
+import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.utils.debug
 import kotlinx.coroutines.runBlocking
 import java.util.*
@@ -172,8 +174,9 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     /**
      * If called with null [newWorldScreen], disposes of the current screen and sets it to the current stored world screen.
      * If the current screen is already the world screen, the only thing that happens is that the world screen updates.
+     * @return the world screen of the game
      */
-    fun resetToWorldScreen(newWorldScreen: WorldScreen? = null) {
+    fun resetToWorldScreen(newWorldScreen: WorldScreen? = null): WorldScreen {
         if (newWorldScreen != null) {
             debug("Reset to new WorldScreen, gameId: %s, turn: %s, curCiv: %s",
                 newWorldScreen.gameInfo.gameId, newWorldScreen.gameInfo.turns, newWorldScreen.gameInfo.currentPlayer)
@@ -191,6 +194,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         setScreen(worldScreen)
         worldScreen.shouldUpdate = true // This can set the screen to the policy picker or tech picker screen, so the input processor must come before
         Gdx.graphics.requestRendering()
+        return worldScreen!!
     }
 
     private fun tryLoadDeepLinkedGame() = launchCrashHandling("LoadDeepLinkedGame") {
@@ -269,6 +273,11 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         threadList.filter { it !== Thread.currentThread() && it.name != "DestroyJavaVM" }.forEach {
             debug("Thread %s still running in UncivGame.dispose().", it.name)
         }
+    }
+
+    /** Returns the [worldScreen] if it is the currently active screen of the game */
+    fun getWorldScreenIfActive(): WorldScreen? {
+        return if (screen == worldScreen) worldScreen else null
     }
 
     companion object {

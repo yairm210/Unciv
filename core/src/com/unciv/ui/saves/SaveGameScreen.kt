@@ -34,7 +34,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
         rightSideButton.setText("Save game".tr())
         val saveAction = {
             if (game.gameSaver.getSave(gameNameTextField.text).exists())
-                YesNoPopup("Overwrite existing file?", { saveGame() }, this).open()
+                YesNoPopup("Overwrite existing file?", this) { saveGame() }.open()
             else saveGame()
         }
         rightSideButton.onClick(saveAction)

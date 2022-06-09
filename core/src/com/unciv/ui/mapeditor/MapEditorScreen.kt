@@ -185,9 +185,9 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen() {
 
     fun askIfDirty(question: String, action: ()->Unit) {
         if (!isDirty) return action()
-        YesNoPopup(question, action, screen = this, restoreDefault = {
+        YesNoPopup(question, screen = this, restoreDefault = {
             keyPressDispatcher[KeyCharAndCode.BACK] = this::closeEditor
-        }).open()
+        }, action).open()
     }
 
     fun hideSelection() {

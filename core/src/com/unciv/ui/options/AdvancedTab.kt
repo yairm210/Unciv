@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
+import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.tr
@@ -39,12 +40,12 @@ fun advancedTab(
 
     addMaxZoomSlider(this, settings)
 
-    val screen = optionsPopup.screen
-    if (screen.game.platformSpecificHelper != null && Gdx.app.type == Application.ApplicationType.Android) {
+    val helper = UncivGame.Current.platformSpecificHelper
+    if (helper != null && Gdx.app.type == Application.ApplicationType.Android) {
         optionsPopup.addCheckbox(this, "Enable portrait orientation", settings.allowAndroidPortrait) {
             settings.allowAndroidPortrait = it
             // Note the following might close the options screen indirectly and delayed
-            screen.game.platformSpecificHelper.allowPortrait(it)
+            helper.allowPortrait(it)
         }
     }
 
@@ -52,7 +53,7 @@ fun advancedTab(
 
     addTranslationGeneration(this, optionsPopup)
 
-    addSetUserId(this, settings, screen)
+    addSetUserId(this, settings)
 }
 
 private fun addAutosaveTurnsSelectBox(table: Table, settings: GameSettings) {
@@ -152,22 +153,18 @@ private fun addTranslationGeneration(table: Table, optionsPopup: OptionsPopup) {
     table.add(generateTranslationsButton).colspan(2).row()
 }
 
-private fun addSetUserId(table: Table, settings: GameSettings, screen: BaseScreen) {
+private fun addSetUserId(table: Table, settings: GameSettings) {
     val idSetLabel = "".toLabel()
     val takeUserIdFromClipboardButton = "Take user ID from clipboard".toTextButton()
         .onClick {
             try {
                 val clipboardContents = Gdx.app.clipboard.contents.trim()
                 UUID.fromString(clipboardContents)
-                YesNoPopup(
-                    "Doing this will reset your current user ID to the clipboard contents - are you sure?",
-                    {
-                        settings.multiplayer.userId = clipboardContents
-                        settings.save()
-                        idSetLabel.setFontColor(Color.WHITE).setText("ID successfully set!".tr())
-                    },
-                    screen
-                ).open(true)
+                YesNoPopup("Doing this will reset your current user ID to the clipboard contents - are you sure?",table.stage) {
+                    settings.multiplayer.userId = clipboardContents
+                    settings.save()
+                    idSetLabel.setFontColor(Color.WHITE).setText("ID successfully set!".tr())
+                }.open(true)
                 idSetLabel.isVisible = true
             } catch (ex: Exception) {
                 idSetLabel.isVisible = true

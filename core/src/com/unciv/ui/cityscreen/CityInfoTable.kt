@@ -129,13 +129,13 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
                     cityScreen.closeAllPopups()
 
                     YesNoPopup("Are you sure you want to sell this [${building.name}]?".tr(),
-                        {
-                            cityScreen.city.sellBuilding(building.name)
+                        cityScreen, {
                             cityScreen.update()
-                        }, cityScreen,
-                        {
-                            cityScreen.update()
-                        }).open()
+                        }
+                    ) {
+                        cityScreen.city.sellBuilding(building.name)
+                        cityScreen.update()
+                    }.open()
                 }
                 if (cityScreen.city.hasSoldBuildingThisTurn && !cityScreen.city.civInfo.gameInfo.gameParameters.godMode
                     || cityScreen.city.isPuppet

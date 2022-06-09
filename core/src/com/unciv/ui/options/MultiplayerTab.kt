@@ -95,8 +95,7 @@ fun multiplayerTab(
         settings.save()
     }
 
-    val screen = optionsPopup.screen
-    serverIpTable.add(multiplayerServerTextField).minWidth(screen.stage.width / 2).growX()
+    serverIpTable.add(multiplayerServerTextField).minWidth(optionsPopup.stageToShowOn.width / 2).growX()
     add(serverIpTable).fillX().row()
 
     add("Reset to Dropbox".toTextButton().onClick {
@@ -114,7 +113,7 @@ fun multiplayerTab(
     }).row()
 
     add(connectionToServerButton.onClick {
-        val popup = Popup(screen).apply {
+        val popup = Popup(optionsPopup.stage).apply {
             addGoodSizedLabel("Awaiting response...").row()
         }
         popup.open(true)

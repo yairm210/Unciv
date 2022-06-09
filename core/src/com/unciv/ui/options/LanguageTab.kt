@@ -1,6 +1,7 @@
 package com.unciv.ui.options
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.UncivGame
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.LanguageTable.Companion.addLanguageTables
 import com.unciv.ui.utils.onClick
@@ -17,7 +18,7 @@ fun languageTab(
     fun selectLanguage() {
         settings.language = chosenLanguage
         settings.updateLocaleFromLanguage()
-        optionsPopup.screen.game.translations.tryReadTranslationForCurrentLanguage()
+        UncivGame.Current.translations.tryReadTranslationForCurrentLanguage()
         onLanguageSelected()
     }
 
