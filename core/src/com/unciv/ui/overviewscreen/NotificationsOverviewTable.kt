@@ -11,7 +11,6 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.WrappableLabel
 import com.unciv.ui.utils.onClick
-import com.unciv.ui.worldscreen.NotificationsScroll
 import com.unciv.ui.worldscreen.WorldScreen
 
 class NotificationsOverviewTable(
@@ -43,24 +42,25 @@ class NotificationsOverviewTable(
     }
 
     private fun generateNotificationTable() {
-        notificationTable.add(notificationsArrayTable("Current", viewingPlayer.notifications)).row()
+        if (viewingPlayer.notifications.isNotEmpty())
+            notificationTable.add(notificationsArrayTable("Current", viewingPlayer.notifications)).row()
 
         for (index in notificationLog.indices) {
             val turnCounter = notificationLog.lastIndex - index
             if (notificationLog[turnCounter].notifications.isNotEmpty()) {
-                notificationTable.add(notificationsArrayTable(turnCounter.toString(), notificationLog[turnCounter].notifications))
+                notificationTable.add(notificationsArrayTable(notificationLog[turnCounter].turn.toString(), notificationLog[turnCounter].notifications))
                 notificationTable.padTop(20f).row()
             }
         }
     }
 
-    private fun notificationsArrayTable(index: String, notifications: ArrayList<Notification>): Table {
+    private fun notificationsArrayTable(turn: String, notifications: ArrayList<Notification>): Table {
         val turnTable = Table(BaseScreen.skin)
 
-        if (index != "Current")
-            turnTable.add("Turn $index").row()
+        if (turn != "Current")
+            turnTable.add("Turn $turn").row()
         else
-            turnTable.add("$index turn").row()
+            turnTable.add("$turn turn").row()
 
         for (index2 in notifications.indices) {
             val notification = Table (BaseScreen.skin)

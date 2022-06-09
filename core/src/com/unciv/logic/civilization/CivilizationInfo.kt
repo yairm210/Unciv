@@ -153,6 +153,9 @@ class CivilizationInfo {
     var notifications = ArrayList<Notification>()
 
     var notificationsLog = ArrayList<NotificationsLog>()
+    class NotificationsLog(val turn: Int) {
+        var notifications = ArrayList<Notification>()
+    }
 
     /** for trades here, ourOffers is the current civ's offers, and theirOffers is what the requesting civ offers  */
     val tradeRequests = ArrayList<TradeRequest>()
@@ -904,9 +907,14 @@ class CivilizationInfo {
     }
 
     fun endTurn() {
-        var notificationsThisTurn = NotificationsLog()
+        val notificationsThisTurn = NotificationsLog(gameInfo.turns)
         notificationsThisTurn.notifications += notifications
-        notificationsLog.add(notificationsThisTurn)
+        if (notificationsLog.size == UncivGame.Current.settings.notificationsLogMaxTurns) {
+            notificationsLog.removeFirst()
+        }
+        if (notificationsThisTurn.notifications.isNotEmpty())
+            notificationsLog.add(notificationsThisTurn)
+
         notifications.clear()
 
         val nextTurnStats = statsForNextTurn
@@ -1384,9 +1392,6 @@ class CivilizationInfo {
     fun asPreview() = CivilizationInfoPreview(this)
 }
 
-class NotificationsLog {
-    var notifications = ArrayList<Notification>()
-}
 
 /**
  * Reduced variant of CivilizationInfo used for load preview.
