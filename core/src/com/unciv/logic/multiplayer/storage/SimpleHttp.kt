@@ -46,7 +46,8 @@ object SimpleHttp {
                     outputStream.flush()
                 }
 
-                val text = BufferedReader(InputStreamReader(inputStream)).readText()
+                val redirected = responseCode == 301 || responseCode == 302 || responseCode == 303
+                val text = if (redirected) getHeaderField("Location") else BufferedReader(InputStreamReader(inputStream)).readText()
                 action(true, text, responseCode)
             } catch (t: Throwable) {
                 debug("Error during HTTP request", t)
