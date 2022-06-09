@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.Notification
@@ -11,6 +12,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.WrappableLabel
 import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.toTextButton
 import com.unciv.ui.worldscreen.WorldScreen
 
 class NotificationsOverviewTable(
@@ -20,8 +22,10 @@ class NotificationsOverviewTable(
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
 
     val notificationLog = viewingPlayer.notificationsLog
-    private val notificationTable = Table(BaseScreen.skin)
 
+    private val leftSideTable = Table(BaseScreen.skin)
+
+    private val rightSideTable = Table(BaseScreen.skin)
 
     val scaleFactor = 0.3f
     val inverseScaleFactor = 1f / scaleFactor
@@ -30,36 +34,38 @@ class NotificationsOverviewTable(
 
     val iconSize = 20f
 
-
     init {
         val tablePadding = 30f
         defaults().pad(tablePadding).top()
 
-        generateNotificationTable()
+        generateTurnButtons()
 
-        add(notificationTable)
+        add(leftSideTable)
+        add(rightSideTable)
     }
 
-    private fun generateNotificationTable() {
-        if (viewingPlayer.notifications.isNotEmpty())
-            notificationTable.add(notificationsArrayTable("Current", viewingPlayer.notifications)).row()
+    private fun generateTurnButtons() {
+        if (viewingPlayer.notifications.isNotEmpty()) {
+            leftSideTable.add(createTurnButton(viewingPlayer.gameInfo.turns.toString() + " (Current)", viewingPlayer.notifications)).row()
+        }
 
         for (index in notificationLog.indices) {
-            val turnCounter = notificationLog.lastIndex - index
-            if (notificationLog[turnCounter].notifications.isNotEmpty()) {
-                notificationTable.add(notificationsArrayTable(notificationLog[turnCounter].turn.toString(), notificationLog[turnCounter].notifications))
-                notificationTable.padTop(20f).row()
-            }
+            val invertedIndex = notificationLog.lastIndex - index
+            leftSideTable.add(createTurnButton(notificationLog[invertedIndex].turn.toString(), notificationLog[invertedIndex].notifications)).row()
         }
     }
 
-    private fun notificationsArrayTable(turn: String, notifications: ArrayList<Notification>): Table {
-        val turnTable = Table(BaseScreen.skin)
+    private fun createTurnButton(text: String, notifications: ArrayList<Notification>): TextButton {
+        val btn = text.toTextButton()
+        btn.onClick {
+            layout()
+            notificationsArrayTable(notifications)
+        }
+        return btn
+    }
 
-        if (turn != "Current")
-            turnTable.add("Turn $turn").row()
-        else
-            turnTable.add("$turn turn").row()
+    private fun notificationsArrayTable(notifications: ArrayList<Notification>) {
+        rightSideTable.clear()
 
         for (index2 in notifications.indices) {
             val notification = Table (BaseScreen.skin)
@@ -90,11 +96,9 @@ class NotificationsOverviewTable(
                 }
             }
 
-            turnTable.add(notification).pad(5f)
-            turnTable.padTop(20f).row()
+            rightSideTable.add(notification).pad(5f)
+            rightSideTable.padTop(20f).row()
         }
-        turnTable.padTop(20f).row()
-
-        return turnTable
+        rightSideTable.padTop(20f).row()
     }
 }
