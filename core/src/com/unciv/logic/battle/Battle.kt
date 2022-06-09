@@ -203,7 +203,7 @@ object Battle {
 
         // CS friendship from killing barbarians
         if (defeatedUnit.matchesCategory("Barbarian") && defeatedUnit.matchesCategory("Military") && civUnit.getCivInfo().isMajorCiv()) {
-            for (cityState in UncivGame.Current.gameInfo.getAliveCityStates()) {
+            for (cityState in UncivGame.Current.gameInfo!!.getAliveCityStates()) {
                 if (civUnit.getCivInfo().knows(cityState) && defeatedUnit.unit.threatensCiv(cityState)) {
                     cityState.cityStateFunctions.threateningBarbarianKilledBy(civUnit.getCivInfo())
                 }
@@ -211,7 +211,7 @@ object Battle {
         }
 
         // CS war with major pseudo-quest
-        for (cityState in UncivGame.Current.gameInfo.getAliveCityStates()) {
+        for (cityState in UncivGame.Current.gameInfo!!.getAliveCityStates()) {
             cityState.questManager.militaryUnitKilledBy(civUnit.getCivInfo(), defeatedUnit.getCivInfo())
         }
     }

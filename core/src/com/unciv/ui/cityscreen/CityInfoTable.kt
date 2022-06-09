@@ -139,7 +139,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
                 }
                 if (cityScreen.city.hasSoldBuildingThisTurn && !cityScreen.city.civInfo.gameInfo.gameParameters.godMode
                     || cityScreen.city.isPuppet
-                    || !UncivGame.Current.worldScreen.isPlayersTurn || !cityScreen.canChangeState)
+                    || !UncivGame.Current.worldScreen!!.isPlayersTurn || !cityScreen.canChangeState)
                     sellBuildingButton.disable()
             }
             it.addSeparator()

@@ -238,8 +238,11 @@ class WonderOverviewTab(
                 val locationLabel = locationText.toLabel()
                 if (wonder.location != null)
                     locationLabel.onClick{
-                        UncivGame.Current.resetToWorldScreen()
-                        UncivGame.Current.worldScreen.mapHolder.setCenterPosition(wonder.location.position)
+                        val worldScreen = UncivGame.Current.worldScreen
+                        if (worldScreen != null) {
+                            UncivGame.Current.resetToWorldScreen()
+                            worldScreen.mapHolder.setCenterPosition(wonder.location.position)
+                        }
                     }
                 add(locationLabel).fillY()
             }

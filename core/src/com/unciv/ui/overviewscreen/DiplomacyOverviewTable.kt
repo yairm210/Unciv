@@ -121,7 +121,6 @@ class DiplomacyOverviewTab (
         table.touchable = Touchable.enabled
         table.onClick {
             if (civInfo.isDefeated() || viewingPlayer.isSpectator() || civInfo == viewingPlayer) return@onClick
-            overviewScreen.dispose()
             UncivGame.Current.setScreen(DiplomacyScreen(viewingPlayer, civInfo))
         }
         return table

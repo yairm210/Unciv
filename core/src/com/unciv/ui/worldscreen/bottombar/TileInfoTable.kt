@@ -23,7 +23,7 @@ class TileInfoTable(private val viewingCiv :CivilizationInfo) : Table(BaseScreen
         if (tile != null && (UncivGame.Current.viewEntireMapForDebug || viewingCiv.exploredTiles.contains(tile.position)) ) {
             add(getStatsTable(tile))
             add( MarkupRenderer.render(tile.toMarkup(viewingCiv), padding = 0f, iconDisplay = IconDisplay.None) {
-                UncivGame.Current.setScreen(CivilopediaScreen(viewingCiv.gameInfo.ruleSet, UncivGame.Current.worldScreen, link = it))
+                UncivGame.Current.setScreen(CivilopediaScreen(viewingCiv.gameInfo.ruleSet, UncivGame.Current.worldScreen!!, link = it))
             } ).pad(5f).row()
             if (UncivGame.Current.viewEntireMapForDebug)
                 add(tile.position.run { "(${x.toInt()},${y.toInt()})" }.toLabel()).colspan(2).pad(5f)

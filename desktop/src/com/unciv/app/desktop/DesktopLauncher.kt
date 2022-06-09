@@ -87,6 +87,7 @@ internal object DesktopLauncher {
                 try {
                     updateRpc(game)
                 } catch (ex: Exception) {
+                    debug("Exception while updating Discord Rich Presence", ex)
                 }
             }
         } catch (ex: Throwable) {
@@ -98,10 +99,15 @@ internal object DesktopLauncher {
     private fun updateRpc(game: UncivGame) {
         if (!game.isInitialized) return
         val presence = DiscordRichPresence()
-        val currentPlayerCiv = game.gameInfo.getCurrentPlayerCivilization()
-        presence.details = "${currentPlayerCiv.nation.leaderName} of ${currentPlayerCiv.nation.name}"
         presence.largeImageKey = "logo" // The actual image is uploaded to the discord app / applications webpage
-        presence.largeImageText = "Turn" + " " + currentPlayerCiv.gameInfo.turns
+
+        val gameInfo = game.gameInfo
+        if (gameInfo != null) {
+            val currentPlayerCiv = gameInfo.getCurrentPlayerCivilization()
+            presence.details = "${currentPlayerCiv.nation.leaderName} of ${currentPlayerCiv.nation.name}"
+            presence.largeImageText = "Turn" + " " + currentPlayerCiv.gameInfo.turns
+        }
+
         DiscordRPC.INSTANCE.Discord_UpdatePresence(presence)
     }
 }

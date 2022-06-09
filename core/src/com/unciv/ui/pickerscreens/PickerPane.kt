@@ -67,7 +67,7 @@ class PickerPane(
 
     /** Sets the text of the [rightSideButton] and enables it if it's the player's turn */
     fun pick(rightButtonText: String) {
-        if (UncivGame.Current.worldScreen.isPlayersTurn) rightSideButton.enable()
+        if (UncivGame.Current.worldScreen!!.isPlayersTurn) rightSideButton.enable()
         rightSideButton.setText(rightButtonText)
     }
 

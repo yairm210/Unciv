@@ -43,7 +43,6 @@ open class PickerScreen(disableScroll: Boolean = false) : BaseScreen() {
         val closeAction = {
             if (previousScreen != null) game.setScreen(previousScreen)
             else game.resetToWorldScreen()
-            dispose()
         }
         pickerPane.closeButton.onClick(closeAction)
         onBackButtonClicked(closeAction)

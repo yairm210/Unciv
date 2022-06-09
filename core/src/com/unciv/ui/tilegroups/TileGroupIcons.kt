@@ -167,7 +167,7 @@ class TileGroupIcons(val tileGroup: TileGroup) {
             val shouldDisplayResource =
                     if (tileGroup.showEntireMap) showResourcesAndImprovements
                     else showResourcesAndImprovements
-                            && tileGroup.tileInfo.hasViewableResource(UncivGame.Current.worldScreen.viewingCiv)
+                            && tileGroup.tileInfo.hasViewableResource(UncivGame.Current.worldScreen!!.viewingCiv)
             tileGroup.resourceImage!!.isVisible = shouldDisplayResource
         }
     }

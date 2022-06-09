@@ -18,7 +18,7 @@ import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 
 /**
  * Implements a 'Tabs' widget where different pages can be switched by selecting a header button.
- * 
+ *
  * Each page is an Actor, passed to the Widget via [addPage]. Pages can be [removed][removePage],
  * [replaced][replacePage] or dynamically added after the Widget is already shown.
 
@@ -26,10 +26,10 @@ import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
  * The widget optionally supports "fixed content", an additional Actor that will be inserted above
  * the regular content of any page. It will scroll only horizontally, and its scroll position will
  * synchronize bidirectionally with the scrolling of the main content.
- * 
+ *
  * Pages can be disabled or secret - any 'secret' pages added require a later call to [askForPassword]
  * to activate them (or discard if the password is wrong).
- * 
+ *
  * The size parameters are lower and upper bounds of the page content area. The widget will always report
  * these bounds (plus header height) as layout properties min/max-Width/Height, and measure the content
  * area of added pages and set the reported pref-W/H to their maximum within these bounds. But, if a
@@ -273,7 +273,7 @@ open class TabbedPager(
     //region Initialization
 
     init {
-        val screen = (if (UncivGame.isCurrentInitialized()) UncivGame.Current.screen else null) as? BaseScreen
+        val screen = (if (UncivGame.isCurrentInitialized()) UncivGame.Current.screen else null)
         val (screenWidth, screenHeight) = (screen?.stage?.run { width to height }) ?: (Float.MAX_VALUE to Float.MAX_VALUE)
         dimW = DimensionMeasurement.from(minimumWidth, maximumWidth, screenWidth)
         dimH = DimensionMeasurement.from(minimumHeight, maximumHeight, screenHeight)
@@ -585,7 +585,7 @@ open class TabbedPager(
         if (!UncivGame.isCurrentInitialized() || askPasswordLock || deferredSecretPages.isEmpty()) return
         askPasswordLock = true  // race condition: Popup closes _first_, then deferredSecretPages is emptied -> parent shows and calls us again
 
-        PassPopup(UncivGame.Current.screen as BaseScreen, {
+        PassPopup(UncivGame.Current.screen!!, {
             addDeferredSecrets()
         }, {
             deferredSecretPages.clear()

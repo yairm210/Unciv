@@ -187,7 +187,7 @@ object UnitActions {
             if (tile.ruleset.tileImprovements.containsKey("City center"))
                 tile.improvement = "City center"
             unit.destroy()
-            UncivGame.Current.worldScreen.shouldUpdate = true
+            UncivGame.Current.worldScreen!!.shouldUpdate = true
         }
 
         if (unit.civInfo.playerType == PlayerType.AI)
@@ -853,7 +853,7 @@ object UnitActions {
                 unit.destroy()  // City states dont get GPs
             else
                 unit.gift(recipient)
-            UncivGame.Current.worldScreen.shouldUpdate = true
+            UncivGame.Current.worldScreen!!.shouldUpdate = true
         }
 
         return UnitAction(UnitActionType.GiftUnit, action = giftAction)

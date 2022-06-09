@@ -35,7 +35,7 @@ class CityScreen(
     }
 
     /** Toggles or adds/removes all state changing buttons */
-    val canChangeState = UncivGame.Current.worldScreen.canChangeState
+    val canChangeState = UncivGame.Current.worldScreen!!.canChangeState
 
     /** Toggle between Constructions and cityInfo (buildings, specialists etc. */
     var showConstructionsTable = true
@@ -396,8 +396,8 @@ class CityScreen(
 
     fun exit() {
         game.resetToWorldScreen()
-        game.worldScreen.mapHolder.setCenterPosition(city.location)
-        game.worldScreen.bottomUnitTable.selectUnit()
+        game.worldScreen!!.mapHolder.setCenterPosition(city.location)
+        game.worldScreen!!.bottomUnitTable.selectUnit()
     }
 
     fun page(delta: Int) {

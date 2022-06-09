@@ -122,7 +122,8 @@ class OptionsPopup(
         settings.save()
         val worldScreen = UncivGame.Current.getWorldScreenIfActive()
         if (worldScreen != null) {
-            val newWorldScreen = worldScreen.game.resetToWorldScreen(WorldScreen(worldScreen.gameInfo, worldScreen.viewingCiv))
+            val newWorldScreen = WorldScreen(worldScreen.gameInfo, worldScreen.viewingCiv)
+            worldScreen.game.setScreen(newWorldScreen)
             newWorldScreen.openOptionsPopup(tabs.activePage)
         }
     }

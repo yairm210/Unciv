@@ -84,8 +84,6 @@ class TechPickerScreen(
             game.settings.addCompletedTutorialTask("Pick technology")
 
             game.resetToWorldScreen()
-            game.worldScreen.shouldUpdate = true
-            dispose()
         }
 
         // per default show current/recent technology,
@@ -261,7 +259,7 @@ class TechPickerScreen(
             return
         }
 
-        if (!UncivGame.Current.worldScreen.canChangeState) {
+        if (!UncivGame.Current.worldScreen!!.canChangeState) {
             rightSideButton.disable()
             return
         }

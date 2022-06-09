@@ -62,7 +62,6 @@ abstract class ReligionPickerScreenCommon(
         rightSideButton.onClick(UncivSound.Choir) {
             choosingCiv.religionManager.action()
             UncivGame.Current.resetToWorldScreen()
-            dispose()
         }
     }
 

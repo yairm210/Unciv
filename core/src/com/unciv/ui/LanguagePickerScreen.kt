@@ -49,6 +49,5 @@ class LanguagePickerScreen : PickerScreen() {
 
         game.translations.tryReadTranslationForCurrentLanguage()
         game.setScreen(MainMenuScreen())
-        dispose()
     }
 }

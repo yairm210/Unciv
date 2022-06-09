@@ -67,7 +67,7 @@ class CityReligionInfoTable(
     private fun getIconAndLabel(religionName: String?) =
         getIconAndLabel(gameInfo.religions[religionName])
     private fun getIconAndLabel(religion: Religion?): Pair<String, String> {
-        return if (religion == null) "Religion" to "None" 
+        return if (religion == null) "Religion" to "None"
             else religion.getIconName() to religion.getReligionDisplayName()
     }
     private fun linkedReligionIcon(iconName: String, religion: String?): IconCircleGroup {
@@ -76,7 +76,7 @@ class CityReligionInfoTable(
         icon.onClick {
             val newScreen = if (religion == iconName)
                 EmpireOverviewScreen(civInfo, EmpireOverviewCategories.Religion.name, religion)
-            else CivilopediaScreen(gameInfo.ruleSet, UncivGame.Current.screen as BaseScreen, CivilopediaCategories.Belief, religion )
+            else CivilopediaScreen(gameInfo.ruleSet, UncivGame.Current.screen!!, CivilopediaCategories.Belief, religion )
             UncivGame.Current.setScreen(newScreen)
         }
         return icon

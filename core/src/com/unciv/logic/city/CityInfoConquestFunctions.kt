@@ -155,8 +155,10 @@ class CityInfoConquestFunctions(val city: CityInfo){
         city.isPuppet = false
         city.cityConstructions.inProgressConstructions.clear() // undo all progress of the previous civ on units etc.
         city.cityStats.update()
-        if (!UncivGame.Current.consoleMode)
-            UncivGame.Current.worldScreen.shouldUpdate = true
+        val worldScreen = UncivGame.Current.worldScreen
+        if (!UncivGame.Current.consoleMode && worldScreen != null) {
+            worldScreen.shouldUpdate = true
+        }
     }
 
     private fun diplomaticRepercussionsForConqueringCity(oldCiv: CivilizationInfo, conqueringCiv: CivilizationInfo) {

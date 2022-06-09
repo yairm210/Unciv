@@ -156,7 +156,7 @@ class NewGameScreen(
                 val message = mapSize.fixUndesiredSizes(gameSetupInfo.mapParameters.worldWrap)
                 if (message != null) {
                     postCrashHandlingRunnable {
-                        ToastPopup( message, UncivGame.Current.screen as BaseScreen, 4000 )
+                        ToastPopup( message, UncivGame.Current.screen!!, 4000 )
                         with (mapOptionsTable.generatedMapOptionsTable) {
                             customMapSizeRadius.text = mapSize.radius.toString()
                             customMapWidth.text = mapSize.width.toString()
@@ -289,13 +289,12 @@ class NewGameScreen(
         }
 
         postCrashHandlingRunnable {
-            game.loadGame(newGame)
-            previousScreen.dispose()
+            val worldScreen = game.loadGame(newGame)
             if (newGame.gameParameters.isOnlineMultiplayer) {
                 // Save gameId to clipboard because you have to do it anyway.
                 Gdx.app.clipboard.contents = newGame.gameId
                 // Popup to notify the User that the gameID got copied to the clipboard
-                ToastPopup("Game ID copied to clipboard!".tr(), game.worldScreen, 2500)
+                ToastPopup("Game ID copied to clipboard!".tr(), worldScreen, 2500)
             }
         }
     }

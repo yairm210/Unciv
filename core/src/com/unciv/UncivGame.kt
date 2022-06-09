@@ -4,6 +4,7 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.Screen
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
@@ -48,8 +49,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     private val audioExceptionHelper = parameters.audioExceptionHelper
 
     var deepLinkedMultiplayerGame: String? = null
-    lateinit var gameInfo: GameInfo
-    fun isGameInfoInitialized() = this::gameInfo.isInitialized
+    var gameInfo: GameInfo? = null
     lateinit var settings: GameSettings
     lateinit var musicController: MusicController
     lateinit var onlineMultiplayer: OnlineMultiplayer
@@ -69,9 +69,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
      */
     var simulateUntilTurnForDebug: Int = 0
 
-    lateinit var worldScreen: WorldScreen
+    var worldScreen: WorldScreen? = null
         private set
-    fun getWorldScreenOrNull() = if (this::worldScreen.isInitialized) worldScreen else null
 
     var isInitialized = false
 
@@ -104,7 +103,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
          * - Font (hence Fonts.resetFont() inside setSkin())
          */
         settings = gameSaver.getGeneralSettings() // needed for the screen
-        screen = LoadingScreen()  // NOT dependent on any atlas or skin
+        setScreen(LoadingScreen())  // NOT dependent on any atlas or skin
         musicController = MusicController()  // early, but at this point does only copy volume from settings
         audioExceptionHelper?.installHooks(
             musicController.getAudioLoopCallback(),
@@ -150,51 +149,66 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         }
     }
 
-    fun loadGame(gameInfo: GameInfo) {
+    fun loadGame(gameInfo: GameInfo): WorldScreen {
         this.gameInfo = gameInfo
         ImageGetter.setNewRuleset(gameInfo.ruleSet)
         // Clone the mod list and add the base ruleset to it
         val fullModList = gameInfo.gameParameters.getModsAndBaseRuleset()
         musicController.setModList(fullModList)
         Gdx.input.inputProcessor = null // Since we will set the world screen when we're ready,
-        if (gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1 && !gameInfo.gameParameters.isOnlineMultiplayer)
-            setScreen(PlayerReadyScreen(gameInfo, gameInfo.getPlayerToViewAs()))
+        val worldScreen = WorldScreen(gameInfo, gameInfo.getPlayerToViewAs())
+        val newScreen = if (gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1 && !gameInfo.gameParameters.isOnlineMultiplayer)
+            PlayerReadyScreen(worldScreen)
         else {
-            resetToWorldScreen(WorldScreen(gameInfo, gameInfo.getPlayerToViewAs()))
+            worldScreen
         }
-    }
-
-    fun setScreen(screen: BaseScreen) {
-        val oldScreen = getScreen()
-        Gdx.input.inputProcessor = screen.stage
-        super.setScreen(screen)
-        if (oldScreen != getWorldScreenOrNull()) oldScreen.dispose()
+        setScreen(newScreen)
+        return worldScreen
     }
 
     /**
-     * If called with null [newWorldScreen], disposes of the current screen and sets it to the current stored world screen.
-     * If the current screen is already the world screen, the only thing that happens is that the world screen updates.
-     * @return the world screen of the game
+     * Sets the screen of the game and automatically disposes the old screen as long as it isn't the world screen.
+     *
+     * @param screen must be a subclass of [BaseScreen].
      */
-    fun resetToWorldScreen(newWorldScreen: WorldScreen? = null): WorldScreen {
-        if (newWorldScreen != null) {
-            debug("Reset to new WorldScreen, gameId: %s, turn: %s, curCiv: %s",
-                newWorldScreen.gameInfo.gameId, newWorldScreen.gameInfo.turns, newWorldScreen.gameInfo.currentPlayer)
-            val oldWorldScreen = getWorldScreenOrNull()
-            worldScreen = newWorldScreen
-            // setScreen disposes the current screen, but the old world screen is not the current screen, so need to dispose here
-            if (screen != oldWorldScreen) {
-                oldWorldScreen?.dispose()
-            }
+    override fun setScreen(screen: Screen) {
+        if (screen !is BaseScreen) throw IllegalArgumentException("Call to setScreen with screen that does not inherit BaseScreen: " + screen.javaClass.simpleName)
+        setScreen(screen)
+    }
+
+    override fun getScreen(): BaseScreen? {
+        val curScreen = super.getScreen()
+        return if (curScreen == null) { null } else { curScreen as BaseScreen }
+    }
+
+    /** Sets the screen of the game and automatically [disposes][Screen.dispose] the old screen as long as it isn't the world screen. */
+    fun setScreen(newScreen: BaseScreen) {
+        if (newScreen is WorldScreen) {
+            debug(
+                "Setting new world screen: gameId: %s, turn: %s, curCiv: %s",
+                newScreen.gameInfo.gameId, newScreen.gameInfo.turns, newScreen.gameInfo.currentPlayer
+            )
+            if (newScreen != worldScreen) worldScreen?.dispose()
+            worldScreen = newScreen
+            newScreen.shouldUpdate = true
+            Gdx.graphics.requestRendering()
         } else {
-            val oldWorldScreen = getWorldScreenOrNull()!!
-            debug("Reset to old WorldScreen, gameId: %s, turn: %s, curCiv: %s",
-                oldWorldScreen.gameInfo.gameId, oldWorldScreen.gameInfo.turns, oldWorldScreen.gameInfo.currentPlayer)
+            debug("Setting new screen: %s", newScreen)
         }
-        setScreen(worldScreen)
-        worldScreen.shouldUpdate = true // This can set the screen to the policy picker or tech picker screen, so the input processor must come before
-        Gdx.graphics.requestRendering()
-        return worldScreen!!
+
+        val oldScreen = screen
+        Gdx.input.inputProcessor = newScreen.stage
+        super.setScreen(newScreen) // This can set the screen to the policy picker or tech picker screen, so the input processor must be set before
+        if (oldScreen !is WorldScreen) { // we want to keep the world screen around, because it's expensive to re-create it
+            oldScreen?.dispose()
+        }
+    }
+
+    /**
+     * Resets the game to the stored world screen and automatically [disposes][Screen.dispose] the old screen.
+     */
+    fun resetToWorldScreen() {
+        setScreen(worldScreen!!)
     }
 
     private fun tryLoadDeepLinkedGame() = launchCrashHandling("LoadDeepLinkedGame") {
@@ -231,7 +245,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     }
 
     override fun pause() {
-        if (isGameInfoInitialized()) gameSaver.autoSave(this.gameInfo)
+        val curGameInfo = gameInfo
+        if (curGameInfo != null) gameSaver.autoSave(curGameInfo)
         musicController.pause()
         super.pause()
     }
@@ -250,14 +265,15 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         if (::musicController.isInitialized) musicController.gracefulShutdown()  // Do allow fade-out
         closeExecutors()
 
-        if (isGameInfoInitialized()) {
+        val curGameInfo = gameInfo
+        if (curGameInfo != null) {
             val autoSaveJob = gameSaver.autoSaveJob
             if (autoSaveJob != null && autoSaveJob.isActive) {
                 // auto save is already in progress (e.g. started by onPause() event)
                 // let's allow it to finish and do not try to autosave second time
                 autoSaveJob.join()
             } else {
-                gameSaver.autoSaveSingleThreaded(gameInfo)      // NO new thread
+                gameSaver.autoSaveSingleThreaded(curGameInfo)      // NO new thread
             }
         }
         settings.save()

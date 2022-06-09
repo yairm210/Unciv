@@ -56,7 +56,7 @@ class DiplomacyScreen(
     private val rightSideTable = Table()
     private val closeButton = Constants.close.toTextButton()
 
-    private fun isNotPlayersTurn() = !UncivGame.Current.worldScreen.canChangeState
+    private fun isNotPlayersTurn() = !UncivGame.Current.worldScreen!!.canChangeState
 
     init {
         onBackButtonClicked { UncivGame.Current.resetToWorldScreen() }
@@ -188,7 +188,7 @@ class DiplomacyScreen(
                 wrapper.addTooltip(name, 18f)
                 wrapper.onClick {
                     val pedia = CivilopediaScreen(
-                        UncivGame.Current.gameInfo.ruleSet,
+                        UncivGame.Current.gameInfo!!.ruleSet,
                         this,
                         link = "Resource/$name"
                     )
@@ -979,8 +979,11 @@ class DiplomacyScreen(
     private fun getGoToOnMapButton(civilization: CivilizationInfo): TextButton {
         val goToOnMapButton = "Go to on map".toTextButton()
         goToOnMapButton.onClick {
-            UncivGame.Current.resetToWorldScreen()
-            UncivGame.Current.worldScreen.mapHolder.setCenterPosition(civilization.getCapital()!!.location, selectUnit = false)
+            val worldScreen = UncivGame.Current.worldScreen
+            if (worldScreen != null) {
+                UncivGame.Current.resetToWorldScreen()
+                worldScreen.mapHolder.setCenterPosition(civilization.getCapital()!!.location, selectUnit = false)
+            }
         }
         return goToOnMapButton
     }
