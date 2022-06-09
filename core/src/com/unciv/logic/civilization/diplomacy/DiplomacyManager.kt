@@ -690,9 +690,8 @@ class DiplomacyManager() {
 
         otherCivDiplomacy.setModifier(DiplomaticModifiers.DeclaredWarOnUs, -20f)
         otherCivDiplomacy.removeModifier(DiplomaticModifiers.ReturnedCapturedUnits)
-        if (otherCiv.isCityState()) {
-            if (!indirectCityStateAttack)
-                otherCivDiplomacy.setInfluence(-60f)
+        if (otherCiv.isCityState() && !indirectCityStateAttack) {
+            otherCivDiplomacy.setInfluence(-60f)
             civInfo.changeMinorCivsAttacked(1)
             otherCiv.cityStateFunctions.cityStateAttacked(civInfo)
         }
