@@ -910,8 +910,9 @@ class CivilizationInfo {
         val notificationsThisTurn = NotificationsLog(gameInfo.turns)
         notificationsThisTurn.notifications.addAll(notifications)
 
-        if (notificationsLog.size == UncivGame.Current.settings.notificationsLogMaxTurns)
+        while (notificationsLog.size >= UncivGame.Current.settings.notificationsLogMaxTurns) {
             notificationsLog.removeFirst()
+        }
 
         if (notificationsThisTurn.notifications.isNotEmpty())
             notificationsLog.add(notificationsThisTurn)
