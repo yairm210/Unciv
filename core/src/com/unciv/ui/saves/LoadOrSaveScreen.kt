@@ -83,7 +83,7 @@ abstract class LoadOrSaveScreen(
         } catch (ex: Throwable) {
             "Failed to delete [$selectedSave]."
         }
-        descriptionLabel.setText(result)
+        descriptionLabel.setText(result.tr())
     }
 
     private fun updateShownSaves(showAutosaves: Boolean) {

@@ -829,7 +829,8 @@ class MapUnit {
         }
 
         val maxAdjacentHealingBonus = currentTile.neighbors
-            .flatMap { it.getUnits().asSequence() }.map { it.adjacentHealingBonus() }.maxOrNull()
+            .flatMap { it.getUnits().asSequence() }.filter { it.civInfo == civInfo }
+            .map { it.adjacentHealingBonus() }.maxOrNull()
         if (maxAdjacentHealingBonus != null)
             healing += maxAdjacentHealingBonus
 
@@ -926,6 +927,7 @@ class MapUnit {
     fun destroy() {
         val currentPosition = Vector2(getTile().position)
         civInfo.attacksSinceTurnStart.addAll(attacksSinceTurnStart.asSequence().map { CivilizationInfo.HistoricalAttackMemory(this.name, currentPosition, it) })
+        currentMovement = 0f
         removeFromTile()
         civInfo.removeUnit(this)
         civInfo.updateViewableTiles()

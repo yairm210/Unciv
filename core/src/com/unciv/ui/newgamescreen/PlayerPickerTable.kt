@@ -22,6 +22,8 @@ import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.mapeditor.GameParametersScreen
 import com.unciv.logic.multiplayer.FriendList
+import com.unciv.ui.multiplayer.FriendPickerList
+import com.unciv.ui.pickerscreens.PickerPane
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.*
@@ -238,7 +240,7 @@ class PlayerPickerTable(
      * @param player current player
      */
     private fun popupFriendPicker(player: Player) {
-        FriendPickerPopup(this, player).open()
+        FriendSelectionPopup(this, player, previousScreen as BaseScreen ).open()
         update()
     }
 
@@ -277,109 +279,53 @@ class PlayerPickerTable(
         val friendListWithRemovedFriends = friendList.friendList.toMutableList()
         for (index in gameParameters.players.indices) {
             val currentFriendId = previousScreen.gameSetupInfo.gameParameters.players[index].playerId
-            friendListWithRemovedFriends.remove(friendList.getFriendWithId(currentFriendId))
+            friendListWithRemovedFriends.remove(friendList.getFriendById(currentFriendId))
         }
         return friendListWithRemovedFriends.asSequence()
     }
 }
 
-private class FriendPickerPopup(
-        private val playerPicker: PlayerPickerTable,
-        private val player: Player
-) : Popup(playerPicker.previousScreen as BaseScreen) {
-    companion object {
-        // These are used for the Close/OK buttons in the lower left/right corners:
-        const val buttonsCircleSize = 70f
-        const val buttonsIconSize = 50f
-        const val buttonsOffsetFromEdge = 5f
-        val buttonsBackColor: Color = Color.BLACK.cpy().apply { a = 0.67f }
-    }
+class FriendSelectionPopup(
+    private val playerPicker: PlayerPickerTable,
+    player: Player,
+    screen: BaseScreen,
+) : Popup(screen) {
 
-    // This Popup's body has two halves of same size, either side by side or arranged vertically
-    // depending on screen proportions - determine height for one of those
-    private val partHeight = screen.stage.height * (if (screen.isNarrowerThan4to3()) 0.3f else 0.4f)
-    private val friendsBlocksWidth = playerPicker.friendsBlocksWidth
-    private val friendListTable = Table()
-    private val friendListScroll = ScrollPane(friendListTable)
-    private val friendDetailsTable = Table()
-    private val friendDetailsScroll = ScrollPane(friendDetailsTable)
-    var selectedFriend: FriendList.Friend? = null
+    val pickerPane = PickerPane()
+    private var selectedFriendId: String? = null
 
     init {
-        friendListScroll.setOverscroll(false, false)
-        add(friendListScroll).size( friendsBlocksWidth + 10f, partHeight )
-        // +10, because the friend table has a 5f pad, for a total of +10f
-        if (screen.isNarrowerThan4to3()) row()
-        friendDetailsScroll.setOverscroll(false, false)
-        add(friendDetailsScroll).size(friendsBlocksWidth + 10f, partHeight) // Same here, see above
+        val pickerCell = add()
+            .width(700f).fillX().expandX()
+            .minHeight(screen.stage.height * 0.5f)
+            .maxHeight(screen.stage.height * 0.8f)
 
-        val friends = ArrayList<FriendList.Friend>()
-
-        friends += playerPicker.getAvailableFriends()
-
-        var friendsListScrollY = 0f
-        var currentY = 0f
-        for (friend in friends) {
-            val friendTable = FriendTable(friend, friendsBlocksWidth, 0f) // no need for min height
-            val cell = friendListTable.add(friendTable)
-            cell.padTop(20f)
-            currentY += cell.padBottom + cell.prefHeight + cell.padTop
-            cell.row()
-            friendTable.onClick {
-                setFriendDetails(friend)
+        val friendList = FriendPickerList(playerPicker, ::friendSelected)
+        pickerPane.topTable.add(friendList)
+        pickerPane.rightSideButton.setText("Select friend".tr())
+        pickerPane.closeButton.onClick(::close)
+        pickerCell.setActor<PickerPane>(pickerPane)
+        pickerPane.rightSideButton.onClick {
+            close()
+            val friendId = selectedFriendId
+            if (friendId != null) {
+                player.playerId = selectedFriendId.toString()
+                close()
+                playerPicker.update()
             }
         }
+    }
 
-        friendListScroll.layout()
-        pack()
-        if (friendsListScrollY > 0f) {
-            // center the selected friend vertically, getRowHeight safe because friendListScrollY > 0f ensures at least 1 row
-            friendsListScrollY -= (friendListScroll.height - friendListTable.getRowHeight(0)) / 2
-            friendListScroll.scrollY = friendsListScrollY.coerceIn(0f, friendListScroll.maxY)
+    private fun friendSelected(friendName: String) {
+        val friendsList = FriendList()
+        val friend = friendsList.getFriendByName(friendName)
+        if (friend != null) {
+            selectedFriendId = friend.playerID
         }
-
-        val closeButton = "OtherIcons/Close".toImageButton(Color.FIREBRICK)
-        closeButton.onClick { close() }
-        closeButton.setPosition(buttonsOffsetFromEdge, buttonsOffsetFromEdge, Align.bottomLeft)
-        innerTable.addActor(closeButton)
-        keyPressDispatcher[KeyCharAndCode.BACK] = { close() }
-
-        val okButton = "OtherIcons/Checkmark".toImageButton(Color.LIME)
-        okButton.onClick { returnSelected() }
-        okButton.setPosition(innerTable.width - buttonsOffsetFromEdge, buttonsOffsetFromEdge, Align.bottomRight)
-        innerTable.addActor(okButton)
-
-        friendDetailsTable.touchable = Touchable.enabled
-        friendDetailsTable.onClick { returnSelected() }
+        pickerPane.setRightSideButtonEnabled(true)
+        pickerPane.rightSideButton.setText("Select [$friendName]".tr())
     }
 
-    private fun String.toImageButton(overColor: Color): Group {
-        val style = ImageButton.ImageButtonStyle()
-        val image = ImageGetter.getDrawable(this)
-        style.imageUp = image
-        style.imageOver = image.tint(overColor)
-        val button = ImageButton(style)
-        button.setSize(buttonsIconSize, buttonsIconSize)
-
-        return button.surroundWithCircle(buttonsCircleSize, false, buttonsBackColor)
-    }
-
-    private fun setFriendDetails(friend: FriendList.Friend) {
-        friendDetailsTable.clearChildren()  // .clear() also clears listeners!
-
-        friendDetailsTable.add(FriendTable(friend, friendsBlocksWidth, partHeight))
-        selectedFriend = friend
-    }
-
-    fun returnSelected() {
-        if (selectedFriend == null) {
-            close()
-            return
-        }
-        player.playerId = selectedFriend?.playerID.toString()
-        close()
-        playerPicker.update()
-    }
 }
 
 private class NationPickerPopup(

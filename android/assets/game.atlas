@@ -1082,90 +1082,6 @@ TileSets/FantasyHex/Arrows/UnitHasAttacked
   orig: 100, 60
   offset: 0, 0
   index: -1
-TileSets/Default/Arrows/Generic
-  rotate: false
-  xy: 4, 6
-  size: 100, 60
-  orig: 100, 60
-  offset: 0, 0
-  index: -1
-TileSets/FantasyHex/Arrows/Generic
-  rotate: false
-  xy: 4, 6
-  size: 100, 60
-  orig: 100, 60
-  offset: 0, 0
-  index: -1
-TileSets/Default/Arrows/UnitAttacked
-  rotate: false
-  xy: 190, 1164
-  size: 100, 60
-  orig: 100, 60
-  offset: 0, 0
-  index: -1
-TileSets/FantasyHex/Arrows/UnitAttacked
-  rotate: false
-  xy: 190, 1164
-  size: 100, 60
-  orig: 100, 60
-  offset: 0, 0
-  index: -1
-TileSets/Default/Arrows/UnitMoved
-  rotate: false
-  xy: 298, 1150
-  size: 100, 60
-  orig: 100, 60
-  offset: 0, 0
-  index: -1
-TileSets/FantasyHex/Arrows/UnitMoved
-  rotate: false
-  xy: 298, 1150
-  size: 100, 60
-  orig: 100, 60
-  offset: 0, 0
-  index: -1
-TileSets/Default/Arrows/UnitMoving
-  rotate: false
-  xy: 112, 6
-  size: 100, 60
-  orig: 100, 60
-  offset: 0, 0
-  index: -1
-TileSets/FantasyHex/Arrows/UnitMoving
-  rotate: false
-  xy: 112, 6
-  size: 100, 60
-  orig: 100, 60
-  offset: 0, 0
-  index: -1
-TileSets/Default/Arrows/UnitTeleported
-  rotate: false
-  xy: 730, 1228
-  size: 100, 60
-  orig: 100, 60
-  offset: 0, 0
-  index: -1
-TileSets/FantasyHex/Arrows/UnitTeleported
-  rotate: false
-  xy: 730, 1228
-  size: 100, 60
-  orig: 100, 60
-  offset: 0, 0
-  index: -1
-TileSets/Default/Arrows/UnitWithdrew
-  rotate: false
-  xy: 838, 1228
-  size: 100, 60
-  orig: 100, 60
-  offset: 0, 0
-  index: -1
-TileSets/FantasyHex/Arrows/UnitWithdrew
-  rotate: false
-  xy: 838, 1228
-  size: 100, 60
-  orig: 100, 60
-  offset: 0, 0
-  index: -1
 TileSets/Default/AtollOverlay
   rotate: false
   xy: 4, 830
@@ -1173,151 +1089,11 @@ TileSets/Default/AtollOverlay
   orig: 100, 100
   offset: 0, 0
   index: -1
-TileSets/Default/Borders/ConcaveConvexInner
-  rotate: false
-  xy: 406, 1411
-  size: 81, 15
-  orig: 81, 15
-  offset: 0, 0
-  index: -1
-TileSets/FantasyHex/Borders/ConcaveConvexInner
-  rotate: false
-  xy: 406, 1411
-  size: 81, 15
-  orig: 81, 15
-  offset: 0, 0
-  index: -1
-TileSets/Default/Borders/ConcaveConvexOuter
-  rotate: false
-  xy: 406, 1165
-  size: 81, 15
-  orig: 81, 15
-  offset: 0, 0
-  index: -1
-TileSets/FantasyHex/Borders/ConcaveConvexOuter
-  rotate: false
-  xy: 406, 1165
-  size: 81, 15
-  orig: 81, 15
-  offset: 0, 0
-  index: -1
-TileSets/Default/Borders/ConcaveInner
-  rotate: false
-  xy: 730, 1205
-  size: 81, 15
-  orig: 81, 15
-  offset: 0, 0
-  index: -1
-TileSets/FantasyHex/Borders/ConcaveInner
-  rotate: false
-  xy: 730, 1205
-  size: 81, 15
-  orig: 81, 15
-  offset: 0, 0
-  index: -1
-TileSets/Default/Borders/ConcaveOuter
-  rotate: false
-  xy: 1486, 1273
-  size: 81, 15
-  orig: 81, 15
-  offset: 0, 0
-  index: -1
-TileSets/FantasyHex/Borders/ConcaveOuter
-  rotate: false
-  xy: 1486, 1273
-  size: 81, 15
-  orig: 81, 15
-  offset: 0, 0
-  index: -1
-TileSets/Default/Borders/ConvexConcaveInner
-  rotate: false
-  xy: 495, 1165
-  size: 81, 15
-  orig: 81, 15
-  offset: 0, 0
-  index: -1
-TileSets/FantasyHex/Borders/ConvexConcaveInner
-  rotate: false
-  xy: 495, 1165
-  size: 81, 15
-  orig: 81, 15
-  offset: 0, 0
-  index: -1
-TileSets/Default/Borders/ConvexConcaveOuter
-  rotate: false
-  xy: 819, 1205
-  size: 81, 15
-  orig: 81, 15
-  offset: 0, 0
-  index: -1
-TileSets/FantasyHex/Borders/ConvexConcaveOuter
-  rotate: false
-  xy: 819, 1205
-  size: 81, 15
-  orig: 81, 15
-  offset: 0, 0
-  index: -1
-TileSets/Default/Borders/ConvexInner
-  rotate: false
-  xy: 1486, 1250
-  size: 81, 15
-  orig: 81, 15
-  offset: 0, 0
-  index: -1
-TileSets/FantasyHex/Borders/ConvexInner
-  rotate: false
-  xy: 1486, 1250
-  size: 81, 15
-  orig: 81, 15
-  offset: 0, 0
-  index: -1
-TileSets/Default/Borders/ConvexOuter
-  rotate: false
-  xy: 1575, 1273
-  size: 81, 15
-  orig: 81, 15
-  offset: 0, 0
-  index: -1
-TileSets/FantasyHex/Borders/ConvexOuter
-  rotate: false
-  xy: 1575, 1273
-  size: 81, 15
-  orig: 81, 15
-  offset: 0, 0
-  index: -1
 TileSets/Default/CityOverlay
   rotate: false
   xy: 1470, 1944
   size: 100, 100
   orig: 100, 100
-  offset: 0, 0
-  index: -1
-TileSets/Default/Crosshair
-  rotate: false
-  xy: 482, 1944
-  size: 116, 100
-  orig: 116, 100
-  offset: 0, 0
-  index: -1
-TileSets/FantasyHex/Crosshair
-  rotate: false
-  xy: 482, 1944
-  size: 116, 100
-  orig: 116, 100
-  offset: 0, 0
-  index: -1
-TileSets/Default/CrosshatchHexagon
-  rotate: false
-  xy: 4, 1340
-  size: 273, 236
-  orig: 273, 236
-  offset: 0, 0
-  index: -1
-TileSets/FantasyHex/CrosshatchHexagon
-  rotate: false
-  xy: 4, 1340
-  size: 273, 236
-  orig: 273, 236
   offset: 0, 0
   index: -1
 TileSets/Default/FalloutOverlay
@@ -1339,20 +1115,6 @@ TileSets/Default/ForestOverlay
   xy: 1346, 1836
   size: 100, 100
   orig: 100, 100
-  offset: 0, 0
-  index: -1
-TileSets/Default/Highlight
-  rotate: false
-  xy: 4, 1832
-  size: 284, 212
-  orig: 284, 212
-  offset: 0, 0
-  index: -1
-TileSets/FantasyHex/Highlight
-  rotate: false
-  xy: 4, 1832
-  size: 284, 212
-  orig: 284, 212
   offset: 0, 0
   index: -1
 TileSets/Default/HillOverlay
@@ -1420,23 +1182,261 @@ TileSets/Default/Road
   index: -1
 TileSets/Default/Tiles/River-Bottom
   rotate: false
-  xy: 1580, 601
+  xy: 1620, 606
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/Default/Tiles/River-BottomLeft
   rotate: false
-  xy: 1660, 622
+  xy: 1660, 586
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/Default/Tiles/River-BottomRight
   rotate: false
-  xy: 1620, 570
+  xy: 1660, 550
   size: 32, 28
   orig: 32, 28
+  offset: 0, 0
+  index: -1
+TileSets/FantasyHex/Arrows/Generic
+  rotate: false
+  xy: 4, 6
+  size: 100, 60
+  orig: 100, 60
+  offset: 0, 0
+  index: -1
+TileSets/Default/Arrows/Generic
+  rotate: false
+  xy: 4, 6
+  size: 100, 60
+  orig: 100, 60
+  offset: 0, 0
+  index: -1
+TileSets/FantasyHex/Arrows/UnitAttacked
+  rotate: false
+  xy: 190, 1164
+  size: 100, 60
+  orig: 100, 60
+  offset: 0, 0
+  index: -1
+TileSets/Default/Arrows/UnitAttacked
+  rotate: false
+  xy: 190, 1164
+  size: 100, 60
+  orig: 100, 60
+  offset: 0, 0
+  index: -1
+TileSets/FantasyHex/Arrows/UnitMoved
+  rotate: false
+  xy: 298, 1150
+  size: 100, 60
+  orig: 100, 60
+  offset: 0, 0
+  index: -1
+TileSets/Default/Arrows/UnitMoved
+  rotate: false
+  xy: 298, 1150
+  size: 100, 60
+  orig: 100, 60
+  offset: 0, 0
+  index: -1
+TileSets/FantasyHex/Arrows/UnitMoving
+  rotate: false
+  xy: 112, 6
+  size: 100, 60
+  orig: 100, 60
+  offset: 0, 0
+  index: -1
+TileSets/Default/Arrows/UnitMoving
+  rotate: false
+  xy: 112, 6
+  size: 100, 60
+  orig: 100, 60
+  offset: 0, 0
+  index: -1
+TileSets/FantasyHex/Arrows/UnitTeleported
+  rotate: false
+  xy: 730, 1228
+  size: 100, 60
+  orig: 100, 60
+  offset: 0, 0
+  index: -1
+TileSets/Default/Arrows/UnitTeleported
+  rotate: false
+  xy: 730, 1228
+  size: 100, 60
+  orig: 100, 60
+  offset: 0, 0
+  index: -1
+TileSets/FantasyHex/Arrows/UnitWithdrew
+  rotate: false
+  xy: 838, 1228
+  size: 100, 60
+  orig: 100, 60
+  offset: 0, 0
+  index: -1
+TileSets/Default/Arrows/UnitWithdrew
+  rotate: false
+  xy: 838, 1228
+  size: 100, 60
+  orig: 100, 60
+  offset: 0, 0
+  index: -1
+TileSets/FantasyHex/Borders/ConcaveConvexInner
+  rotate: false
+  xy: 406, 1411
+  size: 81, 15
+  orig: 81, 15
+  offset: 0, 0
+  index: -1
+TileSets/Default/Borders/ConcaveConvexInner
+  rotate: false
+  xy: 406, 1411
+  size: 81, 15
+  orig: 81, 15
+  offset: 0, 0
+  index: -1
+TileSets/FantasyHex/Borders/ConcaveConvexOuter
+  rotate: false
+  xy: 406, 1165
+  size: 81, 15
+  orig: 81, 15
+  offset: 0, 0
+  index: -1
+TileSets/Default/Borders/ConcaveConvexOuter
+  rotate: false
+  xy: 406, 1165
+  size: 81, 15
+  orig: 81, 15
+  offset: 0, 0
+  index: -1
+TileSets/FantasyHex/Borders/ConcaveInner
+  rotate: false
+  xy: 730, 1205
+  size: 81, 15
+  orig: 81, 15
+  offset: 0, 0
+  index: -1
+TileSets/Default/Borders/ConcaveInner
+  rotate: false
+  xy: 730, 1205
+  size: 81, 15
+  orig: 81, 15
+  offset: 0, 0
+  index: -1
+TileSets/FantasyHex/Borders/ConcaveOuter
+  rotate: false
+  xy: 1486, 1273
+  size: 81, 15
+  orig: 81, 15
+  offset: 0, 0
+  index: -1
+TileSets/Default/Borders/ConcaveOuter
+  rotate: false
+  xy: 1486, 1273
+  size: 81, 15
+  orig: 81, 15
+  offset: 0, 0
+  index: -1
+TileSets/FantasyHex/Borders/ConvexConcaveInner
+  rotate: false
+  xy: 495, 1165
+  size: 81, 15
+  orig: 81, 15
+  offset: 0, 0
+  index: -1
+TileSets/Default/Borders/ConvexConcaveInner
+  rotate: false
+  xy: 495, 1165
+  size: 81, 15
+  orig: 81, 15
+  offset: 0, 0
+  index: -1
+TileSets/FantasyHex/Borders/ConvexConcaveOuter
+  rotate: false
+  xy: 819, 1205
+  size: 81, 15
+  orig: 81, 15
+  offset: 0, 0
+  index: -1
+TileSets/Default/Borders/ConvexConcaveOuter
+  rotate: false
+  xy: 819, 1205
+  size: 81, 15
+  orig: 81, 15
+  offset: 0, 0
+  index: -1
+TileSets/FantasyHex/Borders/ConvexInner
+  rotate: false
+  xy: 1486, 1250
+  size: 81, 15
+  orig: 81, 15
+  offset: 0, 0
+  index: -1
+TileSets/Default/Borders/ConvexInner
+  rotate: false
+  xy: 1486, 1250
+  size: 81, 15
+  orig: 81, 15
+  offset: 0, 0
+  index: -1
+TileSets/FantasyHex/Borders/ConvexOuter
+  rotate: false
+  xy: 1575, 1273
+  size: 81, 15
+  orig: 81, 15
+  offset: 0, 0
+  index: -1
+TileSets/Default/Borders/ConvexOuter
+  rotate: false
+  xy: 1575, 1273
+  size: 81, 15
+  orig: 81, 15
+  offset: 0, 0
+  index: -1
+TileSets/FantasyHex/Crosshair
+  rotate: false
+  xy: 482, 1944
+  size: 116, 100
+  orig: 116, 100
+  offset: 0, 0
+  index: -1
+TileSets/Default/Crosshair
+  rotate: false
+  xy: 482, 1944
+  size: 116, 100
+  orig: 116, 100
+  offset: 0, 0
+  index: -1
+TileSets/FantasyHex/CrosshatchHexagon
+  rotate: false
+  xy: 4, 1340
+  size: 273, 236
+  orig: 273, 236
+  offset: 0, 0
+  index: -1
+TileSets/Default/CrosshatchHexagon
+  rotate: false
+  xy: 4, 1340
+  size: 273, 236
+  orig: 273, 236
+  offset: 0, 0
+  index: -1
+TileSets/FantasyHex/Highlight
+  rotate: false
+  xy: 4, 1832
+  size: 284, 212
+  orig: 284, 212
+  offset: 0, 0
+  index: -1
+TileSets/Default/Highlight
+  rotate: false
+  xy: 4, 1832
+  size: 284, 212
+  orig: 284, 212
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Railroad
@@ -2323,21 +2323,21 @@ TileSets/FantasyHex/Tiles/Quarry+Stone
   index: -1
 TileSets/FantasyHex/Tiles/River-Bottom
   rotate: false
-  xy: 1620, 606
+  xy: 1580, 601
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/River-BottomLeft
   rotate: false
-  xy: 1660, 586
+  xy: 1660, 622
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/River-BottomRight
   rotate: false
-  xy: 1660, 550
+  xy: 1620, 570
   size: 32, 28
   orig: 32, 28
   offset: 0, 0

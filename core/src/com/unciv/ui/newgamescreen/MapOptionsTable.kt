@@ -97,7 +97,7 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
                 Popup(newGameScreen).apply {
                     addGoodSizedLabel("Could not load map!").row()
                     if (ex is UncivShowableException)
-                        addGoodSizedLabel(ex.message!!).row()
+                        addGoodSizedLabel(ex.message).row()
                     addCloseButton()
                     open()
                 }

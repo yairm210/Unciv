@@ -216,6 +216,14 @@ class WorldMapHolder(
     }
 
     private fun onTileRightClicked(unit: MapUnit, tile: TileInfo) {
+        if (UncivGame.Current.gameInfo.currentPlayerCiv.isSpectator()) {
+            return
+        }
+        removeUnitActionOverlay()
+        selectedTile = tile
+        unitMovementPaths.clear()
+        worldScreen.shouldUpdate = true
+
         if (worldScreen.bottomUnitTable.selectedUnitIsSwapping) {
             if (unit.movement.canUnitSwapTo(tile)) {
                 swapMoveUnitToTargetTile(unit, tile)

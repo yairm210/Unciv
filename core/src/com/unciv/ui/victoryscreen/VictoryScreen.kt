@@ -227,8 +227,12 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
         for (category in RankingType.values()) {
             val headers = Table().apply { defaults().pad(5f) }
-            headers.add(category.name.replace('_', ' ').toLabel()).row()
-            headers.addSeparator().fillX()
+            val textAndIcon = Table().apply { defaults() }
+            val columnImage = category.getImage()
+            if (columnImage != null) textAndIcon.add(columnImage).center().size(Constants.defaultFontSize.toFloat() * 0.75f).padRight(2f).padTop(-2f)
+            textAndIcon.add(category.name.replace('_', ' ').toLabel()).row()
+            headers.add(textAndIcon)
+            headers.addSeparator()
             demographicsTable.add(headers)
         }
     }
@@ -238,7 +242,11 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
         for (category in RankingType.values()) {
             val column = Table().apply { defaults().pad(5f) }
-            column.add(category.name.replace('_' , ' ').toLabel()).row()
+            val textAndIcon = Table().apply { defaults() }
+            val columnImage = category.getImage()
+            if (columnImage != null) textAndIcon.add(columnImage).size(Constants.defaultFontSize.toFloat() * 0.75f).padRight(2f).padTop(-2f)
+            textAndIcon.add(category.name.replace('_' , ' ').toLabel()).row()
+            column.add(textAndIcon)
             column.addSeparator()
 
             for (civ in majorCivs.sortedByDescending { it.getStatForRanking(category) }) {

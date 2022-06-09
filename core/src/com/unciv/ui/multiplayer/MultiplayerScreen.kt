@@ -32,7 +32,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
     private val copyUserIdText = "Copy user ID"
     private val copyUserIdButton = createCopyUserIdButton()
 
-    private val friendsListText = "Friends List"
+    private val friendsListText = "Friends list"
     private val friendsListButton = createFriendsListButton()
 
     private val refreshText = "Refresh list"

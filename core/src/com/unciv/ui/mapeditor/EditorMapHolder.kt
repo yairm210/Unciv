@@ -36,8 +36,6 @@ class EditorMapHolder(
     private lateinit var tileGroupMap: TileGroupMap<TileGroup>
     private val allTileGroups = ArrayList<TileGroup>()
 
-    private val maxWorldZoomOut = UncivGame.Current.settings.maxWorldZoomOut
-
     private var blinkAction: Action? = null
 
     private var savedCaptureListeners = emptyList<EventListener>()
@@ -96,9 +94,7 @@ class EditorMapHolder(
                 tileGroup.onClick { onTileClick(tileGroup.tileInfo) }
         }
 
-        setSize(stage.width * maxWorldZoomOut, stage.height * maxWorldZoomOut)
-        setOrigin(width / 2,height / 2)
-        center(stage)
+        setSize(stage.width, stage.height)
 
         layout()
 

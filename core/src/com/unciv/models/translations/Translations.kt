@@ -484,7 +484,3 @@ fun String.removeConditionals(): String {
         .replace("  ", " ")
         .trim()
 }
-
-fun ChronoUnit.tr(): String {
-    return toString().tr()
-}

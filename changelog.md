@@ -1,3 +1,42 @@
+## 4.1.8
+
+Resolved crashes when centering on a city-state with no cities
+
+By OptimizedForDensity:
+- Certain projects cannot be hurried by great engineer
+- Fix scout not upgrading through ruins
+- Fix rare case where ruins would delete an AI unit while trying to upgrade it
+- Prevent duplicate ruin reward
+
+WordScreenTopBar reworked, portrait-friendlier  - By SomeTroglodyte
+
+Fixed minimap fog of war for spectators - By alexban011
+
+Fix "Free technology" allowing restricted techs - By MindaugasRumsa
+
+## 4.1.7
+
+By OptimizedForDensity:
+- Fix medic and amphibious promotions
+- Better Great Prophet AI
+- More rankings & demographics screen icons
+
+By SomeTroglodyte:
+- Better Tutorials
+- Prevent city-to-city Battle Table
+- Minor fixes
+
+By alexban011:
+- spectators can no longer move and attack with units
+- Better friends list UI
+
+Bugfixes for units' teleportation - By JackRainy
+
+By Azzurite:
+- Fix map editor zoom in
+
+HexaRealm tileset update  - By GeneralWadaling
+
 ## 4.1.6
 
 Multiplayer friends list - by alexban 011
