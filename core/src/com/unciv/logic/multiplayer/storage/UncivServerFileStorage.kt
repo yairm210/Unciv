@@ -10,8 +10,8 @@ class UncivServerFileStorage(val serverUrl: String, val timeout: Int = 30000) : 
         SimpleHttp.sendRequest(Net.HttpMethods.PUT, fileUrl(fileName), data, timeout) {
                 success, result, code -> {
                     // try one more time on redirection
-                    if (code == 301 || code == 302) {
-                        SimpleHttp.sendRequest(Net.HttpMethods.PUT, fileUrl(fileName), data, timeout) {
+                    if (code == 301 || code == 302 || code == 303) {
+                        SimpleHttp.sendRequest(Net.HttpMethods.PUT, result, data, timeout) {
                             success, result, code -> if (!success) {
                                 debug("Error from UncivServer during save: %s", result)
                                 throw Exception(result)
