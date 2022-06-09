@@ -8,11 +8,22 @@ import java.lang.Exception
 class UncivServerFileStorage(val serverUrl: String, val timeout: Int = 30000) : FileStorage {
     override fun saveFileData(fileName: String, data: String, overwrite: Boolean) {
         SimpleHttp.sendRequest(Net.HttpMethods.PUT, fileUrl(fileName), data, timeout) {
-                success, result, _ ->
-            if (!success) {
-                debug("Error from UncivServer during save: %s", result)
-                throw Exception(result)
-            }
+                success, result, code -> {
+                    // try one more time on redirection
+                    if (code == 301 || code == 302) {
+                        return SimpleHttp.sendRequest(Net.HttpMethods.PUT, fileUrl(fileName), data, timeout) {
+                            success, result, code -> if (!success) {
+                                debug("Error from UncivServer during save: %s", result)
+                                throw Exception(result)
+                            }
+                        }
+                    }
+                    
+                    if (!success) {
+                        debug("Error from UncivServer during save: %s", result)
+                        throw Exception(result)
+                    }
+                }
         }
     }
 
