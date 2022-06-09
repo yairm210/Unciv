@@ -25,12 +25,11 @@ class NotificationsOverviewTable(
 
     val scaleFactor = 0.3f
     val inverseScaleFactor = 1f / scaleFactor
-
     val maxWidthOfStage = 0.333f
+    private val maxEntryWidth = worldScreen.stage.width * maxWidthOfStage * inverseScaleFactor
 
     val iconSize = 20f
 
-    private val maxEntryWidth = worldScreen.stage.width * maxWidthOfStage * inverseScaleFactor
 
     init {
         val tablePadding = 30f

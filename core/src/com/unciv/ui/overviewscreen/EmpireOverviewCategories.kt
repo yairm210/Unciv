@@ -60,7 +60,7 @@ enum class EmpireOverviewCategories(
         fun (viewingPlayer: CivilizationInfo, overviewScreen: EmpireOverviewScreen, _: EmpireOverviewTabPersistableData?)
                 = WonderOverviewTab(viewingPlayer, overviewScreen),
         fun (viewingPlayer: CivilizationInfo) = (viewingPlayer.naturalWonders.isEmpty() && viewingPlayer.cities.isEmpty()).toState()),
-    Notifications("StatIcons/Gold", 'N', Align.top,
+    Notifications("OtherIcons/Notifications", 'N', Align.top,
         fun (viewingPlayer: CivilizationInfo, overviewScreen: EmpireOverviewScreen, _: EmpireOverviewTabPersistableData?)
                 = NotificationsOverviewTable(worldScreen = UncivGame.Current.worldScreen, viewingPlayer, overviewScreen),
         fun (_: CivilizationInfo) = EmpireOverviewTabState.Normal)

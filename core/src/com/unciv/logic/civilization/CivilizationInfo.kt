@@ -153,7 +153,7 @@ class CivilizationInfo {
     var notifications = ArrayList<Notification>()
 
     var notificationsLog = ArrayList<NotificationsLog>()
-    class NotificationsLog(val turn: Int) {
+    class NotificationsLog(val turn: Int = 0) {
         var notifications = ArrayList<Notification>()
     }
 
@@ -908,10 +908,11 @@ class CivilizationInfo {
 
     fun endTurn() {
         val notificationsThisTurn = NotificationsLog(gameInfo.turns)
-        notificationsThisTurn.notifications += notifications
-        if (notificationsLog.size == UncivGame.Current.settings.notificationsLogMaxTurns) {
+        notificationsThisTurn.notifications.addAll(notifications)
+
+        if (notificationsLog.size == UncivGame.Current.settings.notificationsLogMaxTurns)
             notificationsLog.removeFirst()
-        }
+
         if (notificationsThisTurn.notifications.isNotEmpty())
             notificationsLog.add(notificationsThisTurn)
 
@@ -1185,7 +1186,6 @@ class CivilizationInfo {
         if (isPlayerCivilization() && otherCiv.isCityState()) return true
         return false
     }
-
 
     fun addNotification(text: String, location: Vector2, vararg notificationIcons: String) {
         addNotification(text, LocationAction(location), *notificationIcons)

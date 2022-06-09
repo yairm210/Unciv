@@ -3,7 +3,6 @@ package com.unciv.ui.options
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.metadata.GameSettings
-import com.unciv.models.translations.tr
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.UncivSlider
 import com.unciv.ui.utils.toLabel
@@ -47,8 +46,7 @@ private fun addNotificationLogMaxTurnsSlider(table: Table, settings: GameSetting
 
     val minimapSlider = UncivSlider(
         3f, 15f, 1f,
-        initial = settings.notificationsLogMaxTurns.toFloat(),
-        getTipText = null //getTipText
+        initial = settings.notificationsLogMaxTurns.toFloat()
     ) {
         val turns = it.toInt()
         settings.notificationsLogMaxTurns = turns
