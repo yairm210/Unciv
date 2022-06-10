@@ -154,7 +154,6 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         techPolicyAndVictoryHolder.add(techButtonHolder)
 
         fogOfWarButton.isVisible = viewingCiv.isSpectator()
-        fogOfWarButton.setPosition(10f, topBar.y - fogOfWarButton.height - 10f)
 
         // Don't show policies until they become relevant
         if (viewingCiv.policies.adoptedPolicies.isNotEmpty() || viewingCiv.policies.canAdoptPolicy()) {
@@ -187,6 +186,9 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         stage.addActor(battleTable)
 
         stage.addActor(unitActionsTable)
+
+        topBar.update(viewingCiv)
+        fogOfWarButton.setPosition(10f, topBar.y - fogOfWarButton.height - 10f)
 
         val tileToCenterOn: Vector2 =
                 when {
