@@ -146,10 +146,16 @@ class CivilizationInfo {
     var ruinsManager = RuinsManager()
     var diplomacy = HashMap<String, DiplomacyManager>()
     var proximity = HashMap<String, Proximity>()
-    var notifications = ArrayList<Notification>()
     val popupAlerts = ArrayList<PopupAlert>()
     private var allyCivName: String? = null
     var naturalWonders = ArrayList<String>()
+
+    var notifications = ArrayList<Notification>()
+
+    var notificationsLog = ArrayList<NotificationsLog>()
+    class NotificationsLog(val turn: Int = 0) {
+        var notifications = ArrayList<Notification>()
+    }
 
     /** for trades here, ourOffers is the current civ's offers, and theirOffers is what the requesting civ offers  */
     val tradeRequests = ArrayList<TradeRequest>()
@@ -255,6 +261,7 @@ class CivilizationInfo {
         toReturn.exploredTiles.addAll(gameInfo.tileMap.values.asSequence().map { it.position }.filter { it in exploredTiles })
         toReturn.lastSeenImprovement.putAll(lastSeenImprovement)
         toReturn.notifications.addAll(notifications)
+        toReturn.notificationsLog.addAll(notificationsLog)
         toReturn.citiesCreated = citiesCreated
         toReturn.popupAlerts.addAll(popupAlerts)
         toReturn.tradeRequests.addAll(tradeRequests)
@@ -900,6 +907,16 @@ class CivilizationInfo {
     }
 
     fun endTurn() {
+        val notificationsThisTurn = NotificationsLog(gameInfo.turns)
+        notificationsThisTurn.notifications.addAll(notifications)
+
+        while (notificationsLog.size >= UncivGame.Current.settings.notificationsLogMaxTurns) {
+            notificationsLog.removeFirst()
+        }
+
+        if (notificationsThisTurn.notifications.isNotEmpty())
+            notificationsLog.add(notificationsThisTurn)
+
         notifications.clear()
 
         val nextTurnStats = statsForNextTurn
