@@ -101,10 +101,8 @@ object QuickSave {
                         outOfMemory()
                     } catch (ex: Exception) {
                         Log.error("Could not autoload game", ex)
-                        postCrashHandlingRunnable {
-                            loadingPopup.close()
-                            ToastPopup("Cannot resume game!", screen)
-                        }
+                        loadingPopup.close()
+                        ToastPopup("Cannot resume game!", screen)
                     }
                 }
             }
