@@ -37,10 +37,13 @@ open class AndroidLauncher : AndroidApplication() {
         val platformSpecificHelper = PlatformSpecificHelpersAndroid(this)
         platformSpecificHelper.allowPortrait(settings.allowAndroidPortrait)
 
+         var addSize=0
+        if (settings.biggerFonts) addSize=18 
+        
         val androidParameters = UncivGameParameters(
             version = BuildConfig.VERSION_NAME,
             crashReportSysInfo = CrashReportSysInfoAndroid,
-            fontImplementation = NativeFontAndroid(Fonts.ORIGINAL_FONT_SIZE.toInt(), fontFamily),
+            fontImplementation = NativeFontAndroid(addSize+Fonts.ORIGINAL_FONT_SIZE.toInt(), fontFamily),
             customFileLocationHelper = customFileLocationHelper,
             platformSpecificHelper = platformSpecificHelper
         )
