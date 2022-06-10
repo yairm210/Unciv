@@ -370,7 +370,7 @@ object UnitActions {
         isFree: Boolean,
         isSpecial: Boolean
     ): UnitAction? {
-        if (unit.baseUnit().upgradesTo == null) return null
+        if (unit.baseUnit().upgradesTo == null && unit.baseUnit().specialUpgradesTo == null) return null // can't upgrade to anything
         val unitTile = unit.getTile()
         val civInfo = unit.civInfo
         if (!isFree && unitTile.getOwner() != civInfo) return null
@@ -489,16 +489,17 @@ object UnitActions {
 
     private fun addGreatPersonActions(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
 
-        if (unit.currentMovement > 0) for (unique in unit.getUniques()) when (unique.placeholderText) {
-            "Can hurry technology research" -> {
+        if (unit.currentMovement > 0) for (unique in unit.getUniques()) when (unique.type) {
+            UniqueType.CanHurryResearch -> {
                 actionList += UnitAction(UnitActionType.HurryResearch,
                     action = {
                         unit.civInfo.tech.addScience(unit.civInfo.tech.getScienceFromGreatScientist())
                         unit.consume()
-                    }.takeIf { unit.civInfo.tech.currentTechnologyName() != null }
+                    }.takeIf { unit.civInfo.tech.currentTechnologyName() != null
+                            && !unit.civInfo.tech.currentTechnology()!!.hasUnique(UniqueType.CannotBeHurried) }
                 )
             }
-            "Can start an []-turn golden age" -> {
+            UniqueType.StartGoldenAge -> {
                 val turnsToGoldenAge = unique.params[0].toInt()
                 actionList += UnitAction(UnitActionType.StartGoldenAge,
                     action = {
@@ -507,11 +508,11 @@ object UnitActions {
                     }.takeIf { unit.currentTile.getOwner() != null && unit.currentTile.getOwner() == unit.civInfo }
                 )
             }
-            "Can speed up the construction of a wonder" -> {
+            UniqueType.CanSpeedupWonderConstruction -> {
                 val canHurryWonder =
                     if (!tile.isCityCenter()) false
                     else tile.getCity()!!.cityConstructions.isBuildingWonder()
-
+                            && tile.getCity()!!.cityConstructions.canBeHurried()
 
                 actionList += UnitAction(UnitActionType.HurryWonder,
                     action = {
@@ -526,15 +527,15 @@ object UnitActions {
                 )
             }
 
-            "Can speed up construction of a building" -> {
+            UniqueType.CanSpeedupConstruction -> {
                 if (!tile.isCityCenter()) {
                     actionList += UnitAction(UnitActionType.HurryBuilding, action = null)
                     continue
                 }
 
-                val canHurryConstruction = tile.getCity()!!.cityConstructions.getCurrentConstruction() is Building
-
                 val cityConstructions = tile.getCity()!!.cityConstructions
+                val canHurryConstruction = cityConstructions.getCurrentConstruction() is Building
+                        && cityConstructions.canBeHurried()
 
                 //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
                 val productionPointsToAdd = min(
@@ -555,7 +556,7 @@ object UnitActions {
                     }.takeIf { canHurryConstruction }
                 )
             }
-            "Can undertake a trade mission with City-State, giving a large sum of gold and [] Influence" -> {
+            UniqueType.CanTradeWithCityStateForGoldAndInfluence -> {
                 val canConductTradeMission = tile.owningCity?.civInfo?.isCityState() == true
                         && tile.owningCity?.civInfo?.isAtWarWith(unit.civInfo) == false
                 val influenceEarned = unique.params[0].toFloat()

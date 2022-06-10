@@ -654,8 +654,10 @@ class DiplomacyManager() {
         trades.clear()
         updateHasOpenBorders()
 
-        if (civInfo.isCityState() && civInfo.getProtectorCivs().contains(otherCiv())) {
-            civInfo.removeProtectorCiv(otherCiv(), forced = true)
+        val civAtWarWith = otherCiv()
+
+        if (civInfo.isCityState() && civInfo.getProtectorCivs().contains(civAtWarWith)) {
+            civInfo.removeProtectorCiv(civAtWarWith, forced = true)
         }
 
         diplomaticStatus = DiplomaticStatus.War
@@ -664,6 +666,22 @@ class DiplomacyManager() {
         setFlag(DiplomacyFlags.DeclinedPeace, 10)/// AI won't propose peace for 10 turns
         setFlag(DiplomacyFlags.DeclaredWar, 10) // AI won't agree to trade for 10 turns
         removeFlag(DiplomacyFlags.BorderConflict)
+
+
+        // Go through city state allies.
+        if (!civInfo.isCityState()) {
+            for (thirdCiv in civInfo.getKnownCivs()
+                .filter { it.isCityState() && it.getAllyCiv() == civInfo.civName }) {
+
+                if (thirdCiv.knows(civAtWarWith) && !thirdCiv.isAtWarWith(civAtWarWith))
+                    thirdCiv.getDiplomacyManager(civAtWarWith).declareWar(true)
+                else if (!thirdCiv.knows(civAtWarWith)) {
+                    // Our city state ally has not met them yet, so they have to meet first
+                    thirdCiv.makeCivilizationsMeet(civAtWarWith, warOnContact = true)
+                    thirdCiv.getDiplomacyManager(civAtWarWith).declareWar(true)
+                }
+            }
+        }
     }
 
     /** Declares war with the other civ in this diplomacy manager.
@@ -690,9 +708,8 @@ class DiplomacyManager() {
 
         otherCivDiplomacy.setModifier(DiplomaticModifiers.DeclaredWarOnUs, -20f)
         otherCivDiplomacy.removeModifier(DiplomaticModifiers.ReturnedCapturedUnits)
-        if (otherCiv.isCityState()) {
-            if (!indirectCityStateAttack)
-                otherCivDiplomacy.setInfluence(-60f)
+        if (otherCiv.isCityState() && !indirectCityStateAttack) {
+            otherCivDiplomacy.setInfluence(-60f)
             civInfo.changeMinorCivsAttacked(1)
             otherCiv.cityStateFunctions.cityStateAttacked(civInfo)
         }
@@ -715,42 +732,13 @@ class DiplomacyManager() {
             }
         }
         otherCivDiplomacy.removeFlag(DiplomacyFlags.DeclarationOfFriendship)
+
         if (hasFlag(DiplomacyFlags.ResearchAgreement)) {
             removeFlag(DiplomacyFlags.ResearchAgreement)
             totalOfScienceDuringRA = 0
             otherCivDiplomacy.totalOfScienceDuringRA = 0
         }
         otherCivDiplomacy.removeFlag(DiplomacyFlags.ResearchAgreement)
-
-        // Go through our city state allies.
-        if (!civInfo.isCityState()) {
-            for (thirdCiv in civInfo.getKnownCivs()) {
-                if (thirdCiv.isCityState() && thirdCiv.getAllyCiv() == civInfo.civName) {
-                    if (thirdCiv.knows(otherCiv) && !thirdCiv.isAtWarWith(otherCiv))
-                        thirdCiv.getDiplomacyManager(otherCiv).declareWar(true)
-                    else if (!thirdCiv.knows(otherCiv)) {
-                        // Our city state ally has not met them yet, so they have to meet first
-                        thirdCiv.makeCivilizationsMeet(otherCiv, warOnContact = true)
-                        thirdCiv.getDiplomacyManager(otherCiv).declareWar(true)
-                    }
-                }
-            }
-        }
-
-        // Go through their city state allies.
-        if (!otherCiv.isCityState()) {
-            for (thirdCiv in otherCiv.getKnownCivs()) {
-                if (thirdCiv.isCityState() && thirdCiv.getAllyCiv() == otherCiv.civName) {
-                    if (thirdCiv.knows(civInfo) && !thirdCiv.isAtWarWith(civInfo))
-                        thirdCiv.getDiplomacyManager(civInfo).declareWar(true)
-                    else if (!thirdCiv.knows(civInfo)) {
-                        // Their city state ally has not met us yet, so we have to meet first
-                        thirdCiv.makeCivilizationsMeet(civInfo, warOnContact = true)
-                        thirdCiv.getDiplomacyManager(civInfo).declareWar(true)
-                    }
-                }
-            }
-        }
     }
 
     /** Should only be called from makePeace */

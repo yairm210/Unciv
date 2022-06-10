@@ -578,8 +578,8 @@ open class TileInfo {
     /** Generates a sequence of reasons that prevent building given [improvement].
      *  If the sequence is empty, improvement can be built immediately.
      */
-    fun getImprovementBuildingProblems(improvement: TileImprovement, civInfo: CivilizationInfo, failFast: Boolean = false): Sequence<ImprovementBuildingProblem> = sequence {
-        val stateForConditionals = StateForConditionals(civInfo, tile=this@TileInfo)
+    fun getImprovementBuildingProblems(improvement: TileImprovement, civInfo: CivilizationInfo): Sequence<ImprovementBuildingProblem> = sequence {
+        val stateForConditionals = StateForConditionals(civInfo, tile = this@TileInfo)
 
         if (improvement.uniqueTo != null && improvement.uniqueTo != civInfo.civName)
             yield(ImprovementBuildingProblem.WrongCiv)
@@ -749,13 +749,21 @@ open class TileInfo {
             else -> {
                 if (terrainFeatures.contains(filter)) return true
                 if (getAllTerrains().any { it.hasUnique(filter) }) return true
+
                 // Resource type check is last - cannot succeed if no resource here
                 if (resource == null) return false
+
                 // Checks 'luxury resource', 'strategic resource' and 'bonus resource' - only those that are visible of course
                 // not using hasViewableResource as observingCiv is often not passed in,
                 // and we want to be able to at least test for non-strategic in that case.
                 val resourceObject = tileResource
-                if (resourceObject.resourceType.name + " resource" != filter) return false // filter match
+                val hasResourceWithFilter =
+                        tileResource.name == filter
+                                || tileResource.hasUnique(filter)
+                                || tileResource.resourceType.name + " resource" == filter
+                if (!hasResourceWithFilter) return false
+
+                // Now that we know that this resource matches the filter - can the observer see that there's a resource here?
                 if (resourceObject.revealedBy == null) return true  // no need for tech
                 if (observingCiv == null) return false  // can't check tech
                 return observingCiv.tech.isResearched(resourceObject.revealedBy!!)
@@ -1104,7 +1112,7 @@ open class TileInfo {
         when {
             airUnits.contains(mapUnit) -> airUnits.remove(mapUnit)
             civilianUnit == mapUnit -> civilianUnit = null
-            else -> militaryUnit = null
+            militaryUnit == mapUnit -> militaryUnit = null
         }
     }
 

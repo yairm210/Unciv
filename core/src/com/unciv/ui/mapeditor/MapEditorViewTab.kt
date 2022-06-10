@@ -79,7 +79,7 @@ class MapEditorViewTab(
         val area = tileMap.values.size
         val waterPercent = (tileMap.values.count { it.isWater } * 100f / area).toInt()
         val continents = tileMap.continentSizes.size
-        val statsText = "Area: [$area] tiles, $waterPercent% water, [$continents] continents/islands"
+        val statsText = "Area: [$area] tiles, [$waterPercent]% water, [$continents] continents/islands"
         val statsLabel = WrappableLabel(statsText, labelWidth)
         add(statsLabel.apply { wrap = true }).row()
 
@@ -135,7 +135,7 @@ class MapEditorViewTab(
         addSeparator()
         add("Exit map editor".toTextButton().apply { onClick(editorScreen::closeEditor) }).row()
 
-        invalidateHierarchy()  //todo - unsure this helps 
+        invalidateHierarchy()  //todo - unsure this helps
         validate()
     }
 

@@ -216,6 +216,9 @@ class WorldMapHolder(
     }
 
     private fun onTileRightClicked(unit: MapUnit, tile: TileInfo) {
+        if (UncivGame.Current.gameInfo.currentPlayerCiv.isSpectator()) {
+            return
+        }
         removeUnitActionOverlay()
         selectedTile = tile
         unitMovementPaths.clear()
