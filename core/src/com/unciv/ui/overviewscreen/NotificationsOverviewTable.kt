@@ -40,7 +40,8 @@ class NotificationsOverviewTable(
     }
 
     private fun generateNotificationTable() {
-        notificationTable.add(notificationsArrayTable("Current", viewingPlayer.notifications)).row()
+        if (viewingPlayer.notifications.isNotEmpty())
+            notificationTable.add(notificationsArrayTable("Current", viewingPlayer.notifications)).row()
 
         for (index in notificationLog.indices) {
             val turnCounter = notificationLog.lastIndex - index
