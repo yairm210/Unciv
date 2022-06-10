@@ -11,8 +11,8 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.surroundWithCircle
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.surroundWithCircle
 import kotlin.math.PI
 import kotlin.math.atan
 

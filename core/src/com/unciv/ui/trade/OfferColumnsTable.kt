@@ -9,7 +9,9 @@ import com.unciv.logic.trade.TradeType
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.AskNumberPopup
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.surroundWithCircle
 
 /** This is the class that holds the 4 columns of the offers (ours/theirs/ offered/available) in trade */
 class OfferColumnsTable(private val tradeLogic: TradeLogic, val screen: DiplomacyScreen, val onChange: () -> Unit): Table(BaseScreen.skin) {
@@ -24,15 +26,15 @@ class OfferColumnsTable(private val tradeLogic: TradeLogic, val screen: Diplomac
         when (it.type) {
             TradeType.Gold -> openGoldSelectionPopup(it, tradeLogic.currentTrade.ourOffers, tradeLogic.ourCivilization.gold)
             TradeType.Gold_Per_Turn -> openGoldSelectionPopup(it, tradeLogic.currentTrade.ourOffers, tradeLogic.ourCivilization.statsForNextTurn.gold.toInt())
-            else -> addOffer(it, tradeLogic.currentTrade.ourOffers, tradeLogic.currentTrade.theirOffers) 
+            else -> addOffer(it, tradeLogic.currentTrade.ourOffers, tradeLogic.currentTrade.theirOffers)
         }
     }
-    
+
     private val ourOffersTable = OffersListScroll("OurTrade") {
         when (it.type) {
             TradeType.Gold -> openGoldSelectionPopup(it, tradeLogic.currentTrade.ourOffers, tradeLogic.ourCivilization.gold)
             TradeType.Gold_Per_Turn -> openGoldSelectionPopup(it, tradeLogic.currentTrade.ourOffers, tradeLogic.ourCivilization.statsForNextTurn.gold.toInt())
-            else -> addOffer(it.copy(amount = -it.amount), tradeLogic.currentTrade.ourOffers, tradeLogic.currentTrade.theirOffers) 
+            else -> addOffer(it.copy(amount = -it.amount), tradeLogic.currentTrade.ourOffers, tradeLogic.currentTrade.theirOffers)
         }
     }
     private val theirOffersTable = OffersListScroll("TheirTrade") {
@@ -92,7 +94,7 @@ class OfferColumnsTable(private val tradeLogic: TradeLogic, val screen: Diplomac
             label = "Enter the amount of gold",
             icon = ImageGetter.getStatIcon("Gold").surroundWithCircle(80f),
             defaultValue = offer.amount.toString(),
-            amountButtons = 
+            amountButtons =
                 if (offer.type == TradeType.Gold) listOf(50, 500)
                 else listOf(5, 15),
             bounds = IntRange(0, maxGold),

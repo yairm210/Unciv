@@ -6,7 +6,8 @@ import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.extensions.isEnabled
+import com.unciv.ui.utils.extensions.onClick
 
 class GreatPersonPickerScreen(val civInfo:CivilizationInfo) : PickerScreen() {
     private var theChosenOne: BaseUnit? = null

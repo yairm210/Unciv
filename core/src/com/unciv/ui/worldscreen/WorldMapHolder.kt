@@ -33,7 +33,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.helpers.MapArrowType
 import com.unciv.models.helpers.MiscArrowTypes
 import com.unciv.ui.UncivStage
-import com.unciv.ui.audio.Sounds
+import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
@@ -43,12 +43,12 @@ import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.tilegroups.WorldTileGroup
 import com.unciv.ui.utils.UnitGroup
 import com.unciv.ui.utils.ZoomableScrollPane
-import com.unciv.ui.utils.center
-import com.unciv.ui.utils.colorFromRGB
-import com.unciv.ui.utils.darken
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.surroundWithCircle
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.extensions.center
+import com.unciv.ui.utils.extensions.colorFromRGB
+import com.unciv.ui.utils.extensions.darken
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.utils.Log
 
 
@@ -238,7 +238,7 @@ class WorldMapHolder(
             worldScreen.shouldUpdate = true
             val attacker = MapUnitCombatant(unit)
             if (!Battle.movePreparingAttack(attacker, attackableTile)) return
-            Sounds.play(attacker.getAttackSound())
+            SoundPlayer.play(attacker.getAttackSound())
             Battle.attackOrNuke(attacker, attackableTile)
             return
         }
@@ -283,7 +283,7 @@ class WorldMapHolder(
                     selectedUnit.movement.moveToTile(tileToMoveTo)
                     if (selectedUnit.isExploring() || selectedUnit.isMoving())
                         selectedUnit.action = null // remove explore on manual move
-                    Sounds.play(UncivSound.Whoosh)
+                    SoundPlayer.play(UncivSound.Whoosh)
                     if (selectedUnit.currentTile != targetTile)
                         selectedUnit.action = "moveTo " + targetTile.position.x.toInt() + "," + targetTile.position.y.toInt()
                     if (selectedUnit.currentMovement > 0) worldScreen.bottomUnitTable.selectUnit(selectedUnit)
@@ -306,7 +306,7 @@ class WorldMapHolder(
             selectedUnit.action = null // remove explore on manual swap-move
 
         // Play something like a swish-swoosh
-        Sounds.play(UncivSound.Swap)
+        SoundPlayer.play(UncivSound.Swap)
 
         if (selectedUnit.currentMovement > 0) worldScreen.bottomUnitTable.selectUnit(selectedUnit)
 

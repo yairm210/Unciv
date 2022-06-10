@@ -21,9 +21,12 @@ import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.ui.cityscreen.YieldGroup
 import com.unciv.ui.images.ImageAttempter
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.utils.*
-import java.lang.IllegalStateException
-import kotlin.math.*
+import com.unciv.ui.utils.extensions.center
+import kotlin.math.PI
+import kotlin.math.atan
+import kotlin.math.atan2
+import kotlin.math.pow
+import kotlin.math.sqrt
 import kotlin.random.Random
 
 open class TileGroup(

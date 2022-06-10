@@ -2,8 +2,8 @@ package com.unciv.ui.multiplayer
 
 import com.unciv.Constants
 import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.center
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.extensions.center
+import com.unciv.ui.utils.extensions.toLabel
 
 class LoadDeepLinkScreen : BaseScreen() {
     init {

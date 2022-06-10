@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.ui.newgamescreen.PlayerPickerTable
 import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.extensions.onClick
 
 class FriendPickerList(
     playerPicker: PlayerPickerTable,

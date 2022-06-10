@@ -6,7 +6,8 @@ import com.unciv.UncivGame
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.MarkupRenderer
 import com.unciv.ui.images.ImageGetter
-import java.util.ArrayList
+import com.unciv.ui.utils.extensions.darken
+import com.unciv.ui.utils.extensions.toLabel
 
 /** Represents a row in the Language picker, used both in OptionsPopup and in LanguagePickerScreen */
 internal class LanguageTable(val language:String, val percentComplete: Int): Table(){

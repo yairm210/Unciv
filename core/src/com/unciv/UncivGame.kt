@@ -9,18 +9,16 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.Translations
+import com.unciv.ui.LanguagePickerScreen
+import com.unciv.ui.audio.GameSounds
 import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicMood
-import com.unciv.ui.utils.*
-import com.unciv.ui.worldscreen.PlayerReadyScreen
-import com.unciv.ui.worldscreen.WorldScreen
-import com.unciv.logic.multiplayer.OnlineMultiplayer
-import com.unciv.ui.LanguagePickerScreen
-import com.unciv.ui.audio.Sounds
+import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.crashhandling.closeExecutors
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
@@ -28,6 +26,11 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.multiplayer.LoadDeepLinkScreen
 import com.unciv.ui.multiplayer.MultiplayerHelpers
 import com.unciv.ui.popup.Popup
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.extensions.center
+import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
+import com.unciv.ui.worldscreen.PlayerReadyScreen
+import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.utils.debug
 import kotlinx.coroutines.runBlocking
 import java.util.*
@@ -103,6 +106,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
          */
         settings = gameSaver.getGeneralSettings() // needed for the screen
         screen = LoadingScreen()  // NOT dependent on any atlas or skin
+        GameSounds.init()
         musicController = MusicController()  // early, but at this point does only copy volume from settings
         audioExceptionHelper?.installHooks(
             musicController.getAudioLoopCallback(),
@@ -194,23 +198,25 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     }
 
     private fun tryLoadDeepLinkedGame() = launchCrashHandling("LoadDeepLinkedGame") {
-        if (deepLinkedMultiplayerGame != null) {
+        if (deepLinkedMultiplayerGame == null) return@launchCrashHandling
+
+        postCrashHandlingRunnable {
+            setScreen(LoadDeepLinkScreen())
+        }
+        try {
+            onlineMultiplayer.loadGame(deepLinkedMultiplayerGame!!)
+        } catch (ex: Exception) {
             postCrashHandlingRunnable {
-                setScreen(LoadDeepLinkScreen())
+                val mainMenu = MainMenuScreen()
+                setScreen(mainMenu)
+                val popup = Popup(mainMenu)
+                popup.addGoodSizedLabel(MultiplayerHelpers.getLoadExceptionMessage(ex))
+                popup.row()
+                popup.addCloseButton()
+                popup.open()
             }
-            try {
-                onlineMultiplayer.loadGame(deepLinkedMultiplayerGame!!)
-            } catch (ex: Exception) {
-                postCrashHandlingRunnable {
-                    val mainMenu = MainMenuScreen()
-                    setScreen(mainMenu)
-                    val popup = Popup(mainMenu)
-                    popup.addGoodSizedLabel(MultiplayerHelpers.getLoadExceptionMessage(ex))
-                    popup.row()
-                    popup.addCloseButton()
-                    popup.open()
-                }
-            }
+        } finally {
+            deepLinkedMultiplayerGame = null
         }
     }
 
@@ -242,7 +248,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         Gdx.input.inputProcessor = null // don't allow ANRs when shutting down, that's silly
 
         cancelDiscordEvent?.invoke()
-        Sounds.clearCache()
+        SoundPlayer.clearCache()
         if (::musicController.isInitialized) musicController.gracefulShutdown()  // Do allow fade-out
         closeExecutors()
 
@@ -274,6 +280,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     companion object {
         lateinit var Current: UncivGame
         fun isCurrentInitialized() = this::Current.isInitialized
+        fun isCurrentGame(gameId: String): Boolean = isCurrentInitialized() && Current.isGameInfoInitialized() && Current.gameInfo.gameId == gameId
+        fun isDeepLinkedGameLoading() = isCurrentInitialized() && Current.deepLinkedMultiplayerGame != null
     }
 }
 
