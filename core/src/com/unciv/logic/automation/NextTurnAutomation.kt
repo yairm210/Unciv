@@ -858,7 +858,7 @@ object NextTurnAutomation {
             city.reassignAllPopulation()
 
             city.cityConstructions.chooseNextConstruction()
-            if (city.health < city.getMaxHealth() && !city.isPuppet)
+            if (city.health < city.getMaxHealth())
                 Automation.tryTrainMilitaryUnit(city) // override previous decision if city is under attack
         }
     }
