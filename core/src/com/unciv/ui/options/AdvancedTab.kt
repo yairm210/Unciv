@@ -49,6 +49,10 @@ fun advancedTab(
     }
 
     addFontFamilySelect(this, settings, optionsPopup.selectBoxMinWidth, onFontChange)
+    
+    optionsPopup.addCheckbox(this, "Bigger fonts (need restart)", settings.biggerFonts) {
+        settings.biggerFonts = it 
+    }
 
     addTranslationGeneration(this, optionsPopup)
 
