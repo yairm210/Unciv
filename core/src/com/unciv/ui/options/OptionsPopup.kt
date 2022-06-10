@@ -46,7 +46,7 @@ class OptionsPopup(
             selectBoxMinWidth = if (stage.width < 600f) 200f else 240f
             tabMaxWidth = if (isPortrait()) stage.width - 10f else 0.8f * stage.width
             tabMinWidth = 0.6f * stage.width
-            tabMaxHeight = (if (isPortrait()) 0.7f else 0.8f) * stage.height
+            tabMaxHeight = 0.75f * stage.height
         }
         tabs = TabbedPager(
             tabMinWidth, tabMaxWidth, 0f, tabMaxHeight,
