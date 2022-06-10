@@ -12,7 +12,7 @@ import com.unciv.models.translations.squareBraceRegex
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
-import com.unciv.ui.utils.colorFromRGB
+import com.unciv.ui.utils.extensions.colorFromRGB
 
 class Nation : RulesetObject() {
     var leaderName = ""

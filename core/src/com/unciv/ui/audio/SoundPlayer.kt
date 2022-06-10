@@ -43,7 +43,7 @@ import java.io.File
  * a handful of them in memory we should be able to get away with keeping them alive for the
  * app lifetime - and we do dispose them when the app is disposed.
  */
-object Sounds {
+object SoundPlayer {
     @Suppress("EnumEntryName")
     private enum class SupportedExtensions { mp3, ogg, wav }    // Per Gdx docs, no aac/m4a
 
@@ -120,7 +120,7 @@ object Sounds {
             else GetSoundResult(soundMap[sound]!!, false)
 
         // Not cached - try loading it
-        val fileName = sound.value
+        val fileName = sound.fileName
         var file: FileHandle? = null
         for ( (modFolder, extension) in getFolders().flatMap {
             // This is essentially a cross join. To operate on all combinations, we pack both lambda
@@ -137,12 +137,12 @@ object Sounds {
 
         @Suppress("LiftReturnOrAssignment")
         if (file == null || !file.exists()) {
-            debug("Sound %s not found!", sound.value)
+            debug("Sound %s not found!", sound.fileName)
             // remember that the actual file is missing
             soundMap[sound] = null
             return null
         } else {
-            debug("Sound %s loaded from %s", sound.value, file.path())
+            debug("Sound %s loaded from %s", sound.fileName, file.path())
             val newSound = Gdx.audio.newSound(file)
             // Store Sound for reuse
             soundMap[sound] = newSound
@@ -150,7 +150,11 @@ object Sounds {
         }
     }
 
-    /** Find, cache and play a Sound
+    /**
+     * Find, cache and play a Sound.
+     *
+     * **Attention:** The [GameSounds] object has been set up to control playing all sounds of the game. Chances are that you shouldn't be calling this method
+     * from anywhere but [GameSounds].
      *
      * Sources are mods from a loaded game, then mods marked as permanent audiovisual,
      * and lastly Unciv's own assets/sounds. Will fail silently if the sound file cannot be found.

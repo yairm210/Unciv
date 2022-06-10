@@ -8,15 +8,20 @@ import com.unciv.models.UncivSound
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
-import com.unciv.ui.audio.Sounds
+import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.civilopedia.FormattedLine.IconDisplay
 import com.unciv.ui.civilopedia.MarkupRenderer
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.popup.closeAllPopups
-import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.utils.extensions.darken
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.isEnabled
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
 import kotlin.math.roundToInt
 
 class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
@@ -110,7 +115,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
             screen = cityScreen,
             restoreDefault = { cityScreen.update() }
         ) {
-            Sounds.play(UncivSound.Coin)
+            SoundPlayer.play(UncivSound.Coin)
             city.expansion.buyTile(selectedTile)
             // preselect the next tile on city screen rebuild so bulk buying can go faster
             UncivGame.Current.setScreen(CityScreen(city, initSelectedTile = city.expansion.chooseNewTileToOwn()))

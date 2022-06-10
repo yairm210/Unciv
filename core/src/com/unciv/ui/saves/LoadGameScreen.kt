@@ -17,10 +17,16 @@ import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.pickerscreens.Github
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.enable
+import com.unciv.ui.utils.extensions.isEnabled
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
 import java.io.FileNotFoundException
-import java.util.concurrent.CancellationException
 
 class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
     private val copySavedGameToClipboardButton = getCopyExistingSaveToClipboardButton()

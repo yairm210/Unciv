@@ -2,7 +2,6 @@
 
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.utils.debug
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.NotificationIcon
@@ -12,7 +11,8 @@ import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.utils.withoutItem
+import com.unciv.ui.utils.extensions.withoutItem
+import com.unciv.utils.debug
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt

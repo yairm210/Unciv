@@ -12,7 +12,11 @@ import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.AskTextPopup
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.extensions.isEnabled
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
 
 class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
     private var selectedPromotion: Promotion? = null

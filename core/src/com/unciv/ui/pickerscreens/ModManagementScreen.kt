@@ -16,17 +16,17 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.utils.*
 import com.unciv.ui.pickerscreens.ModManagementOptions.SortType
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.popup.YesNoPopup
-import com.unciv.ui.utils.UncivDateFormat.formatDate
-import com.unciv.ui.utils.UncivDateFormat.parseDate
+import com.unciv.ui.utils.*
+import com.unciv.ui.utils.extensions.*
+import com.unciv.ui.utils.extensions.UncivDateFormat.formatDate
+import com.unciv.ui.utils.extensions.UncivDateFormat.parseDate
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import java.util.*
-import kotlin.collections.HashMap
 import kotlin.math.max
 
 /**
@@ -166,7 +166,7 @@ class ModManagementScreen(
         topTable.add(scrollOnlineMods)
         topTable.add(modActionTable)
         topTable.add().row()
-        topTable.add().expandY()  // So short lists won't vertically center everything including headers 
+        topTable.add().expandY()  // So short lists won't vertically center everything including headers
 
         stage.addActor(optionsManager.expander)
         optionsManager.expanderChangeEvent = {
@@ -403,7 +403,7 @@ class ModManagementScreen(
                 postCrashHandlingRunnable {
                     ToastPopup("[${repo.name}] Downloaded!", this@ModManagementScreen)
                     RulesetCache.loadRulesets()
-                    RulesetCache[repo.name]?.let { 
+                    RulesetCache[repo.name]?.let {
                         installedModInfo[repo.name] = ModUIData(it)
                     }
                     refreshInstalledModTable()

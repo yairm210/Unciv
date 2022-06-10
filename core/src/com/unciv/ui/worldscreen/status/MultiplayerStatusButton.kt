@@ -24,8 +24,8 @@ import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.setSize
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.setSize
 import kotlinx.coroutines.delay
 import java.time.Duration
 import java.time.Instant

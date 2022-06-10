@@ -4,8 +4,8 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.Viewport
-import com.unciv.ui.utils.wrapCrashHandling
-import com.unciv.ui.utils.wrapCrashHandlingUnit
+import com.unciv.ui.crashhandling.wrapCrashHandling
+import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
 
 
 /** Main stage for the game. Safely brings the game to a [CrashScreen] if any event handlers throw an exception or an error that doesn't get otherwise handled. */

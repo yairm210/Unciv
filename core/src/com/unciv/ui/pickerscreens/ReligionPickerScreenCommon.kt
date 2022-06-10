@@ -17,7 +17,12 @@ import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.civilopedia.MarkupRenderer
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.WrappableLabel
+import com.unciv.ui.utils.extensions.darken
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.enable
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
 
 abstract class ReligionPickerScreenCommon(
     private val choosingCiv: CivilizationInfo,

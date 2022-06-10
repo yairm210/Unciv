@@ -6,8 +6,8 @@ import com.unciv.Constants
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
 
 class PlayerReadyScreen(worldScreen: WorldScreen) : BaseScreen() {
     init {

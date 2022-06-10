@@ -1,19 +1,30 @@
 package com.unciv.models.ruleset
 
-import com.unciv.logic.city.*
+import com.unciv.logic.city.CityConstructions
+import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.INonPerpetualConstruction
+import com.unciv.logic.city.RejectionReason
+import com.unciv.logic.city.RejectionReasons
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileImprovement
-import com.unciv.models.ruleset.unique.*
+import com.unciv.models.ruleset.unique.LocalUniqueCache
+import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueFlag
+import com.unciv.models.ruleset.unique.UniqueParameterType
+import com.unciv.models.ruleset.unique.UniqueTarget
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
-import com.unciv.ui.utils.getConsumesAmountString
-import com.unciv.ui.utils.toPercent
+import com.unciv.ui.utils.extensions.getConsumesAmountString
+import com.unciv.ui.utils.extensions.toPercent
 import kotlin.math.pow
 
 
@@ -156,7 +167,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (maintenance != 0 && !isFree) lines += "{Maintenance cost}: $maintenance {Gold}"
         if (showAdditionalInfo && missingCities.isNotEmpty()) {
             // Could be red. But IMO that should be done by enabling GDX's ColorMarkupLanguage globally instead of adding a separate label.
-            lines += "\n" + 
+            lines += "\n" +
                 "[${cityInfo.civInfo.getEquivalentBuilding(missingUnique!!.params[0])}] required:".tr() +
                 " " + missingCities.joinToString(", ") { "{${it.name}}" }
             // Can't nest square bracket placeholders inside curlies, and don't see any way to define wildcard placeholders. So run translation explicitly on base text.
@@ -164,7 +175,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         return lines.joinToString("\n") { it.tr() }.trim()
     }
 
-    fun getStats(city: CityInfo, 
+    fun getStats(city: CityInfo,
                  /* By default, do not cache - if we're getting stats for only one building this isn't efficient.
                  * Only use a cache if it was sent to us from outside, which means we can use the results for other buildings.  */
                  localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Stats {
@@ -193,12 +204,12 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     fun getStatPercentageBonuses(cityInfo: CityInfo?, localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Stats {
         val stats = percentStatBonus?.clone() ?: Stats()
         val civInfo = cityInfo?.civInfo ?: return stats  // initial stats
-        
+
         for (unique in localUniqueCache.get("StatPercentFromObject", civInfo.getMatchingUniques(UniqueType.StatPercentFromObject))) {
             if (matchesFilter(unique.params[2]))
                 stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
         }
-        
+
         for (unique in localUniqueCache.get("AllStatsPercentFromObject", civInfo.getMatchingUniques(UniqueType.AllStatsPercentFromObject))) {
             if (!matchesFilter(unique.params[1])) continue
             for (stat in Stat.values()) {

@@ -8,12 +8,25 @@ import com.unciv.UncivGame
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeOffersList
 import com.unciv.logic.trade.TradeType
-import com.unciv.logic.trade.TradeType.*
+import com.unciv.logic.trade.TradeType.Agreement
+import com.unciv.logic.trade.TradeType.City
+import com.unciv.logic.trade.TradeType.Gold
+import com.unciv.logic.trade.TradeType.Gold_Per_Turn
+import com.unciv.logic.trade.TradeType.Introduction
+import com.unciv.logic.trade.TradeType.Luxury_Resource
+import com.unciv.logic.trade.TradeType.Strategic_Resource
+import com.unciv.logic.trade.TradeType.Technology
+import com.unciv.logic.trade.TradeType.Treaty
+import com.unciv.logic.trade.TradeType.WarDeclaration
+import com.unciv.logic.trade.TradeType.values
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.ExpanderTab
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.onClick
 import kotlin.math.min
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 

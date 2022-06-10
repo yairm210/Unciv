@@ -12,7 +12,12 @@ import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.overviewscreen.EmpireOverviewCategories
 import com.unciv.ui.overviewscreen.EmpireOverviewScreen
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.ExpanderTab
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.addSeparatorVertical
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
 
 class CityReligionInfoTable(
     private val religionManager: CityInfoReligionManager,

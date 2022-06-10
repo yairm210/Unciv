@@ -4,7 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.extensions.onClick
 import kotlinx.coroutines.delay
 
 /**

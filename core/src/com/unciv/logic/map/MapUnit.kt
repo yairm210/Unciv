@@ -12,17 +12,20 @@ import com.unciv.logic.city.RejectionReason
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationIcon
-import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.models.UnitActionType
+import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileImprovement
-import com.unciv.models.ruleset.unique.*
+import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueMap
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stats
-import com.unciv.ui.utils.filterAndLogic
-import com.unciv.ui.utils.toPercent
+import com.unciv.ui.utils.extensions.filterAndLogic
+import com.unciv.ui.utils.extensions.toPercent
 import java.text.DecimalFormat
 import kotlin.math.pow
 

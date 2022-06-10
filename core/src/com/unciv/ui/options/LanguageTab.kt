@@ -4,7 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.LanguageTable.Companion.addLanguageTables
-import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.extensions.onClick
 
 fun languageTab(
     optionsPopup: OptionsPopup,

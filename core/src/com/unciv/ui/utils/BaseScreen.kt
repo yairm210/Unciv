@@ -7,16 +7,22 @@ import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.Stage
-import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
+import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
+import com.badlogic.gdx.scenes.scene2d.ui.Skin
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.unciv.UncivGame
 import com.unciv.models.Tutorial
 import com.unciv.ui.UncivStage
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.options.OptionsPopup
 import com.unciv.ui.popup.hasOpenPopups
 import com.unciv.ui.tutorials.TutorialController
-import com.unciv.ui.options.OptionsPopup
+import com.unciv.ui.utils.extensions.isNarrowerThan4to3
 
 abstract class BaseScreen : Screen {
 

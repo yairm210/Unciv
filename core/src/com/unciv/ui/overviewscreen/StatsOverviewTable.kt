@@ -9,7 +9,9 @@ import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.UncivSlider
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.toLabel
 import kotlin.math.roundToInt
 
 class StatsOverviewTab(

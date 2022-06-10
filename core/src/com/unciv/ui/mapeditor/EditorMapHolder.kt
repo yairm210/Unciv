@@ -1,7 +1,12 @@
 package com.unciv.ui.mapeditor
 
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.scenes.scene2d.*
+import com.badlogic.gdx.scenes.scene2d.Action
+import com.badlogic.gdx.scenes.scene2d.EventListener
+import com.badlogic.gdx.scenes.scene2d.InputEvent
+import com.badlogic.gdx.scenes.scene2d.InputListener
+import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
@@ -12,8 +17,8 @@ import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ZoomableScrollPane
-import com.unciv.ui.utils.center
-import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.extensions.center
+import com.unciv.ui.utils.extensions.onClick
 
 
 /**

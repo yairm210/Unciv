@@ -9,7 +9,12 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.UnitGroup
+import com.unciv.ui.utils.extensions.center
+import com.unciv.ui.utils.extensions.centerX
+import com.unciv.ui.utils.extensions.darken
+import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.ui.utils.extensions.toLabel
 import kotlin.math.min
 
 /** Helper class for TileGroup, which was getting too full */

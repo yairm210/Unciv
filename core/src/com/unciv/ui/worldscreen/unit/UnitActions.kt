@@ -26,7 +26,7 @@ import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.popup.hasOpenPopups
-import com.unciv.ui.utils.toPercent
+import com.unciv.ui.utils.extensions.toPercent
 import com.unciv.ui.worldscreen.WorldScreen
 import kotlin.math.min
 import kotlin.random.Random
