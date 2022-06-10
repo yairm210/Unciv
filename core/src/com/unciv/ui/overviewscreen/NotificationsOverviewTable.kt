@@ -71,21 +71,7 @@ class NotificationsOverviewTable(
                 notification.action?.execute(worldScreen)
             }
 
-            if (notification.icons.isNotEmpty()) {
-                val ruleset = worldScreen.gameInfo.ruleSet
-                for (icon in notification.icons.reversed()) {
-                    val image: Actor = when {
-                        ruleset.technologies.containsKey(icon) -> ImageGetter.getTechIcon(icon)
-                        ruleset.nations.containsKey(icon) -> ImageGetter.getNationIndicator(
-                            ruleset.nations[icon]!!,
-                            iconSize
-                        )
-                        ruleset.units.containsKey(icon) -> ImageGetter.getUnitIcon(icon)
-                        else -> ImageGetter.getImage(icon)
-                    }
-                    notificationTable.add(image).size(iconSize).padRight(5f)
-                }
-            }
+            notification.addNotificationIcons(worldScreen.gameInfo.ruleSet, iconSize, notificationTable)
 
             turnTable.add(notificationTable)
             turnTable.padTop(20f).row()

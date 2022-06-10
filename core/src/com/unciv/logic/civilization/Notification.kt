@@ -1,7 +1,11 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.ui.cityscreen.CityScreen
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.MayaCalendar
@@ -48,6 +52,23 @@ open class Notification() {
         this.icons = notificationIcons
         this.action = action
     }
+
+    fun addNotificationIcons(ruleset: Ruleset, iconSize: Float, table: Table) {
+        if (this.icons.isNotEmpty()) {
+            for (icon in this.icons.reversed()) {
+                val image: Actor = when {
+                    ruleset.technologies.containsKey(icon) -> ImageGetter.getTechIcon(icon)
+                    ruleset.nations.containsKey(icon) -> ImageGetter.getNationIndicator(
+                        ruleset.nations[icon]!!,
+                        iconSize
+                    )
+                    ruleset.units.containsKey(icon) -> ImageGetter.getUnitIcon(icon)
+                    else -> ImageGetter.getImage(icon)
+                }
+                table.add(image).size(iconSize).padRight(5f)
+            }
+        }
+    }
 }
 
 /** defines what to do if the user clicks on a notification */
@@ -56,7 +77,7 @@ interface NotificationAction {
 }
 
 /** A notification action that cycles through tiles.
- * 
+ *
  * Constructors accept any kind of [Vector2] collection, including [Iterable], [Sequence], `vararg`.
  * `varargs` allows nulls which are ignored, a resulting empty list is allowed and equivalent to no [NotificationAction].
  */
