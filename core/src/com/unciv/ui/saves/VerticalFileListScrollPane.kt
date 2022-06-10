@@ -12,7 +12,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.AutoScrollPane
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyPressDispatcher
-import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.extensions.onClick
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 

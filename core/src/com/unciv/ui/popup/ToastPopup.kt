@@ -1,7 +1,7 @@
 package com.unciv.ui.popup
 
 import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.extensions.onClick
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import kotlinx.coroutines.delay

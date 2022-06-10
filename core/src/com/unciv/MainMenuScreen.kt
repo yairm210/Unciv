@@ -36,11 +36,11 @@ import com.unciv.ui.utils.AutoScrollPane
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
-import com.unciv.ui.utils.center
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.setFontSize
-import com.unciv.ui.utils.surroundWithCircle
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.extensions.center
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.setFontSize
+import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.worldscreen.mainmenu.WorldScreenMenuPopup
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread

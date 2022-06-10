@@ -55,16 +55,16 @@ import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.KeyCharAndCode
-import com.unciv.ui.utils.centerX
-import com.unciv.ui.utils.colorFromRGB
-import com.unciv.ui.utils.darken
-import com.unciv.ui.utils.disable
-import com.unciv.ui.utils.enable
-import com.unciv.ui.utils.isEnabled
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.setFontSize
-import com.unciv.ui.utils.toLabel
-import com.unciv.ui.utils.toTextButton
+import com.unciv.ui.utils.extensions.centerX
+import com.unciv.ui.utils.extensions.colorFromRGB
+import com.unciv.ui.utils.extensions.darken
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.enable
+import com.unciv.ui.utils.extensions.isEnabled
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.setFontSize
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
 import com.unciv.ui.victoryscreen.VictoryScreen
 import com.unciv.ui.worldscreen.bottombar.BattleTable
 import com.unciv.ui.worldscreen.bottombar.TileInfoTable
@@ -605,13 +605,13 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
     }
 
-    private fun createNewWorldScreen(gameInfo: GameInfo) {
+    private fun createNewWorldScreen(gameInfo: GameInfo, resize:Boolean=false) {
 
         game.gameInfo = gameInfo
         val newWorldScreen = WorldScreen(gameInfo, gameInfo.getPlayerToViewAs())
 
         // This is not the case if you have a multiplayer game where you play as 2 civs
-        if (newWorldScreen.viewingCiv.civName == viewingCiv.civName) {
+        if (!resize && newWorldScreen.viewingCiv.civName == viewingCiv.civName) {
             newWorldScreen.mapHolder.width = mapHolder.width
             newWorldScreen.mapHolder.height = mapHolder.height
             newWorldScreen.mapHolder.scaleX = mapHolder.scaleX
@@ -834,7 +834,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
     override fun resize(width: Int, height: Int) {
         if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height)
-            createNewWorldScreen(gameInfo) // start over
+            createNewWorldScreen(gameInfo, resize=true) // start over
     }
 
 

@@ -1,7 +1,7 @@
 package com.unciv.ui.pickerscreens
 
 import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.extensions.onClick
 
 open class PickerScreen(disableScroll: Boolean = false) : BaseScreen() {
 

@@ -9,7 +9,7 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
-import com.unciv.ui.utils.isLargerThan
+import com.unciv.ui.utils.extensions.isLargerThan
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.Dispatcher
 import com.unciv.utils.concurrency.launchOnGLThread

@@ -8,7 +8,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.MapSaver
 import com.unciv.models.translations.tr
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.TabbedPager
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.isEnabled
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toCheckBox
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
 
 class MapEditorOptionsTab(
     private val editorScreen: MapEditorScreen

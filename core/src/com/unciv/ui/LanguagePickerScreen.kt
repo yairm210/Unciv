@@ -2,12 +2,12 @@ package com.unciv.ui
 
 import com.unciv.MainMenuScreen
 import com.unciv.models.translations.tr
+import com.unciv.ui.options.OptionsPopup
 import com.unciv.ui.pickerscreens.PickerScreen
-import com.unciv.ui.utils.enable
-import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.LanguageTable
 import com.unciv.ui.utils.LanguageTable.Companion.addLanguageTables
-import com.unciv.ui.options.OptionsPopup
+import com.unciv.ui.utils.extensions.enable
+import com.unciv.ui.utils.extensions.onClick
 
 /** A [PickerScreen] to select a language, used once on the initial run after a fresh install.
  *  After that, [OptionsPopup] provides the functionality.

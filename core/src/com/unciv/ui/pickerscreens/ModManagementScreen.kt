@@ -4,7 +4,12 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.ui.Button
+import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextArea
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.MainMenuScreen
 import com.unciv.json.fromJsonFile
@@ -21,22 +26,21 @@ import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.utils.AutoScrollPane
 import com.unciv.ui.utils.ExpanderTab
 import com.unciv.ui.utils.KeyCharAndCode
-import com.unciv.ui.utils.UncivDateFormat.formatDate
-import com.unciv.ui.utils.UncivDateFormat.parseDate
 import com.unciv.ui.utils.WrappableLabel
-import com.unciv.ui.utils.addSeparator
-import com.unciv.ui.utils.disable
-import com.unciv.ui.utils.enable
-import com.unciv.ui.utils.isEnabled
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.toCheckBox
-import com.unciv.ui.utils.toLabel
-import com.unciv.ui.utils.toTextButton
+import com.unciv.ui.utils.extensions.UncivDateFormat.formatDate
+import com.unciv.ui.utils.extensions.UncivDateFormat.parseDate
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.enable
+import com.unciv.ui.utils.extensions.isEnabled
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toCheckBox
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
-import java.util.*
 import kotlin.math.max
 
 /**

@@ -3,11 +3,10 @@ package com.unciv.utils.concurrency
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.LifecycleListener
 import com.unciv.UncivGame
-import com.unciv.ui.utils.wrapCrashHandlingUnit
+import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.asCoroutineDispatcher

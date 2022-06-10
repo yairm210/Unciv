@@ -9,7 +9,8 @@ import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.models.translations.tr
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.toCheckBox
+import com.unciv.ui.utils.extensions.formatShort
+import com.unciv.ui.utils.extensions.toCheckBox
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import java.io.FileNotFoundException
@@ -50,25 +51,13 @@ object MultiplayerHelpers {
             descriptionText.appendLine(message.tr())
         }
         val lastUpdate = multiplayerGame.lastUpdate
-        descriptionText.appendLine("Last refresh: ${formattedElapsedTime(lastUpdate)} ago".tr())
+        descriptionText.appendLine("Last refresh: [${Duration.between(lastUpdate, Instant.now()).formatShort()}] ago".tr())
         val preview = multiplayerGame.preview
         if (preview?.currentPlayer != null) {
             val currentTurnStartTime = Instant.ofEpochMilli(preview.currentTurnStartTime)
-            descriptionText.appendLine("Current Turn: [${preview.currentPlayer}] since ${formattedElapsedTime(currentTurnStartTime)} ago".tr())
+            descriptionText.appendLine("Current Turn: [${preview.currentPlayer}] since [${Duration.between(currentTurnStartTime, Instant.now()).formatShort()}] ago".tr())
         }
         return descriptionText
-    }
-
-    private fun formattedElapsedTime(lastUpdate: Instant): String {
-        val durationToNow = Duration.between(lastUpdate, Instant.now())
-        val elapsedMinutes = durationToNow.toMinutes()
-        if (elapsedMinutes < 120) return "[$elapsedMinutes] [Minutes]"
-        val elapsedHours = durationToNow.toHours()
-        if (elapsedHours < 48) {
-            return "[${elapsedHours}] [Hours]"
-        } else {
-            return "[${durationToNow.toDays()}] [Days]"
-        }
     }
 
     fun showDropboxWarning(screen: BaseScreen) {

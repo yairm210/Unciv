@@ -7,7 +7,12 @@ import com.unciv.logic.GameSaver
 import com.unciv.logic.MapSaver
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.UncivSlider
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toCheckBox
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
 
 fun debugTab() = Table(BaseScreen.skin).apply {
     pad(10f)

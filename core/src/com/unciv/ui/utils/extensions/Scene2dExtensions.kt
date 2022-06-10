@@ -1,24 +1,31 @@
-package com.unciv.ui.utils
+package com.unciv.ui.utils.extensions
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.*
-import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.InputEvent
+import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.ui.Button
+import com.badlogic.gdx.scenes.scene2d.ui.Cell
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
+import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
-import com.unciv.UncivGame
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
-import com.unciv.ui.audio.Sounds
+import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.Fonts
 import com.unciv.utils.concurrency.Concurrency
-import java.text.SimpleDateFormat
-import java.time.Duration
-import java.time.Instant
-import java.util.*
-import kotlin.random.Random
 
 /**
  * Collection of extension functions mostly for libGdx widgets
@@ -67,7 +74,7 @@ fun Actor.center(parent: Stage) { centerX(parent); centerY(parent) }
 fun Actor.onClickEvent(sound: UncivSound = UncivSound.Click, function: (event: InputEvent?, x: Float, y: Float) -> Unit) {
     this.addListener(object : ClickListener() {
         override fun clicked(event: InputEvent?, x: Float, y: Float) {
-            Concurrency.run("Sound") { Sounds.play(sound) }
+            Concurrency.run("Sound") { SoundPlayer.play(sound) }
             function(event, x, y)
         }
     })
@@ -164,55 +171,6 @@ fun Image.setSize(size: Float) {
     setSize(size, size)
 }
 
-/** Gets a clone of an [ArrayList] with an additional item
- *
- * Solves concurrent modification problems - everyone who had a reference to the previous arrayList can keep using it because it hasn't changed
- */
-fun <T> ArrayList<T>.withItem(item:T): ArrayList<T> {
-    val newArrayList = ArrayList(this)
-    newArrayList.add(item)
-    return newArrayList
-}
-
-/** Gets a clone of a [HashSet] with an additional item
- *
- * Solves concurrent modification problems - everyone who had a reference to the previous hashSet can keep using it because it hasn't changed
- */
-fun <T> HashSet<T>.withItem(item:T): HashSet<T> {
-    val newHashSet = HashSet(this)
-    newHashSet.add(item)
-    return newHashSet
-}
-
-/** Gets a clone of an [ArrayList] without a given item
- *
- * Solves concurrent modification problems - everyone who had a reference to the previous arrayList can keep using it because it hasn't changed
- */
-fun <T> ArrayList<T>.withoutItem(item:T): ArrayList<T> {
-    val newArrayList = ArrayList(this)
-    newArrayList.remove(item)
-    return newArrayList
-}
-
-/** Gets a clone of a [HashSet] without a given item
- *
- * Solves concurrent modification problems - everyone who had a reference to the previous hashSet can keep using it because it hasn't changed
- */
-fun <T> HashSet<T>.withoutItem(item:T): HashSet<T> {
-    val newHashSet = HashSet(this)
-    newHashSet.remove(item)
-    return newHashSet
-}
-
-/** Translate a percentage number - e.g. 25 - to the multiplication value - e.g. 1.25f */
-fun String.toPercent() = toFloat().toPercent()
-
-/** Translate a percentage number - e.g. 25 - to the multiplication value - e.g. 1.25f */
-fun Int.toPercent() = toFloat().toPercent()
-
-/** Translate a percentage number - e.g. 25 - to the multiplication value - e.g. 1.25f */
-fun Float.toPercent() = 1 + this/100
-
 /** Translate a [String] and make a [TextButton] widget from it */
 fun String.toTextButton() = TextButton(this.tr(), BaseScreen.skin)
 
@@ -271,105 +229,3 @@ fun WidgetGroup.packIfNeeded(): WidgetGroup {
     if (needsLayout()) pack()
     return this
 }
-
-/** Get one random element of a given List.
- *
- * The probability for each element is proportional to the value of its corresponding element in the [weights] List.
- */
-fun <T> List<T>.randomWeighted(weights: List<Float>, random: Random = Random): T {
-    if (this.isEmpty()) throw NoSuchElementException("Empty list.")
-    if (this.size != weights.size) throw UnsupportedOperationException("Weights size does not match this list size.")
-
-    val totalWeight = weights.sum()
-    val randDouble = random.nextDouble()
-    var sum = 0f
-
-    for (i in weights.indices) {
-        sum += weights[i] / totalWeight
-        if (randDouble <= sum)
-            return this[i]
-    }
-    return this.last()
-}
-
-/**
- * Standardize date formatting so dates are presented in a consistent style and all decisions
- * to change date handling are encapsulated here
- */
-object UncivDateFormat {
-    private val standardFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US)
-
-    /** Format a date to ISO format with minutes */
-    fun Date.formatDate(): String = standardFormat.format(this)
-    // Previously also used:
-    //val updateString = "{Updated}: " +DateFormat.getDateInstance(DateFormat.SHORT).format(date)
-
-    // Everything under java.time is from Java 8 onwards, meaning older phones that use Java 7 won't be able to handle it :/
-    // So we're forced to use ancient Java 6 classes instead of the newer and nicer LocalDateTime.parse :(
-    // Direct solution from https://stackoverflow.com/questions/2201925/converting-iso-8601-compliant-string-to-java-util-date
-
-    @Suppress("SpellCheckingInspection")
-    private val utcFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
-
-    /** Parse an UTC date as passed by online API's
-     * example: `"2021-04-11T14:43:33Z".parseDate()`
-     */
-    fun String.parseDate(): Date = utcFormat.parse(this)
-}
-
-fun Duration.isLargerThan(other: Duration): Boolean {
-    return compareTo(other) > 0
-}
-fun Instant.isLargerThan(other: Instant): Boolean {
-    return compareTo(other) > 0
-}
-
-/**
- * Returns a wrapped version of a function that automatically handles an uncaught exception or error. In case of an uncaught exception or error, the return will be null.
- *
- * [com.unciv.ui.UncivStage], [UncivGame.render] and [Concurrency] already use this to wrap nearly everything that can happen during the lifespan of the Unciv application.
- * Therefore, it usually shouldn't be necessary to manually use this.
- */
-fun <R> (() -> R).wrapCrashHandling(
-): () -> R?
-    = {
-        try {
-            this()
-        } catch (e: Throwable) {
-            UncivGame.Current.handleUncaughtThrowable(e)
-            null
-        }
-    }
-
-/**
- * Returns a wrapped version of a function that automatically handles an uncaught exception or error.
- *
- * [com.unciv.ui.UncivStage], [UncivGame.render] and [Concurrency] already use this to wrap nearly everything that can happen during the lifespan of the Unciv application.
- * Therefore, it usually shouldn't be necessary to manually use this.
- */
-fun (() -> Unit).wrapCrashHandlingUnit(): () -> Unit {
-    val wrappedReturning = this.wrapCrashHandling()
-    // Don't instantiate a new lambda every time the return get called.
-    return { wrappedReturning() ?: Unit }
-}
-
-/** For filters containing '{', apply the [predicate] to each part inside "{}" and aggregate using [operation];
- *  otherwise return `null` for Elvis chaining of the individual filter. */
-fun <T> String.filterCompositeLogic(predicate: (String) -> T?, operation: (T, T) -> T): T? {
-    val elements: List<T> = removePrefix("{").removeSuffix("}").split("} {")
-        .mapNotNull(predicate)
-    if (elements.isEmpty()) return null
-    return elements.reduce(operation)
-}
-/** If a filter string contains '{', apply the [predicate] to each part inside "{}" then 'and' (`&&`) them together;
- *  otherwise return `null` for Elvis chaining of the individual filter. */
-fun String.filterAndLogic(predicate: (String) -> Boolean): Boolean? =
-    if (contains('{')) filterCompositeLogic(predicate) { a, b -> a && b } else null
-
-
-/** Convert a [resource name][this] into "Consumes [amount] $resource" string (untranslated, using separate templates for 1 and other amounts) */
-//todo some day... remove and use just one translatable where this is called
-fun String.getConsumesAmountString(amount: Int) = (
-            if (amount == 1) "Consumes 1 [$this]"
-            else "Consumes [$amount] [$this]"
-        )

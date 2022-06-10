@@ -9,10 +9,10 @@ import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.UncivSlider
 import com.unciv.ui.utils.WrappableLabel
-import com.unciv.ui.utils.disable
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.toLabel
-import com.unciv.ui.utils.toTextButton
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import kotlin.math.floor

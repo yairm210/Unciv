@@ -20,7 +20,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
-import com.unciv.ui.audio.Sounds
+import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.YesNoPopup
@@ -28,19 +28,19 @@ import com.unciv.ui.popup.closeAllPopups
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ExpanderTab
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
-import com.unciv.ui.utils.addBorder
-import com.unciv.ui.utils.addCell
-import com.unciv.ui.utils.addSeparator
-import com.unciv.ui.utils.brighten
-import com.unciv.ui.utils.darken
-import com.unciv.ui.utils.disable
-import com.unciv.ui.utils.getConsumesAmountString
-import com.unciv.ui.utils.isEnabled
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.packIfNeeded
-import com.unciv.ui.utils.surroundWithCircle
-import com.unciv.ui.utils.toLabel
-import com.unciv.ui.utils.toTextButton
+import com.unciv.ui.utils.extensions.addBorder
+import com.unciv.ui.utils.extensions.addCell
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.brighten
+import com.unciv.ui.utils.extensions.darken
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.getConsumesAmountString
+import com.unciv.ui.utils.extensions.isEnabled
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.packIfNeeded
+import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import kotlin.math.max
@@ -427,7 +427,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         }
         cityScreen.stopPickTileForCreatesOneImprovement()
 
-        Sounds.play(getConstructionSound(construction))
+        SoundPlayer.play(getConstructionSound(construction))
 
         cityConstructions.addToQueue(construction.name)
         if (!construction.shouldBeDisplayed(cityConstructions)) // For buildings - unlike units which can be queued multiple times
@@ -551,7 +551,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         stat: Stat = Stat.Gold,
         tile: TileInfo? = null
     ) {
-        Sounds.play(stat.purchaseSound)
+        SoundPlayer.play(stat.purchaseSound)
         val city = cityScreen.city
         if (!city.cityConstructions.purchaseConstruction(construction.name, selectedQueueEntry, false, stat, tile)) {
             Popup(cityScreen).apply {

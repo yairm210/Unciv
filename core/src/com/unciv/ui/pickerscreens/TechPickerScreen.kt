@@ -17,12 +17,12 @@ import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.Fonts
-import com.unciv.ui.utils.addBorder
-import com.unciv.ui.utils.colorFromRGB
-import com.unciv.ui.utils.darken
-import com.unciv.ui.utils.disable
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.extensions.addBorder
+import com.unciv.ui.utils.extensions.colorFromRGB
+import com.unciv.ui.utils.extensions.darken
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.utils.concurrency.Concurrency
 
 

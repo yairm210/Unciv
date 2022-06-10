@@ -7,12 +7,16 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.ExpanderTab
+import com.unciv.ui.utils.extensions.onChange
+import com.unciv.ui.utils.extensions.pad
+import com.unciv.ui.utils.extensions.toCheckBox
 
 /**
- * A widget containing one expander for extension mods. 
+ * A widget containing one expander for extension mods.
  * Manages compatibility checks, warns or prevents incompatibilities.
- * 
+ *
  * @param mods In/out set of active mods, modified in place
  * @param baseRuleset The selected base Ruleset //todo clarify
  * @param screen Parent screen, used only to show [ToastPopup]s
@@ -51,8 +55,8 @@ class ModCheckboxTable(
             }).padTop(padTop).growX().row()
         }
     }
-    
-    fun setBaseRuleset(newBaseRuleset: String) { baseRuleset = newBaseRuleset } 
+
+    fun setBaseRuleset(newBaseRuleset: String) { baseRuleset = newBaseRuleset }
     fun disableAllCheckboxes() {
         for (checkBox in extensionRulesetModButtons) {
             checkBox.isChecked = false

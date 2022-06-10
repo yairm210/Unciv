@@ -7,8 +7,8 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.utils.concurrency.Concurrency
 
 class PlayerReadyScreen(gameInfo: GameInfo, currentPlayerCiv: CivilizationInfo) : BaseScreen(){

@@ -1,3 +1,35 @@
+## 4.1.9
+
+Peace cooldown with city-states
+
+"attacked city state" functions activate only when attacking directly, not when declaring war due to alliances
+
+tileFilter matches resource name and uniques
+
+Fixed map position after portrait mode enabled
+
+By Azzurite:
+- Add multiplayer turn sound notification
+- Fix crash during next turn automation
+
+disable worldWrap when disabled in settings  - By alexban011
+
+## 4.1.8
+
+Resolved crashes when centering on a city-state with no cities
+
+By OptimizedForDensity:
+- Certain projects cannot be hurried by great engineer
+- Fix scout not upgrading through ruins
+- Fix rare case where ruins would delete an AI unit while trying to upgrade it
+- Prevent duplicate ruin reward
+
+WordScreenTopBar reworked, portrait-friendlier  - By SomeTroglodyte
+
+Fixed minimap fog of war for spectators - By alexban011
+
+Fix "Free technology" allowing restricted techs - By MindaugasRumsa
+
 ## 4.1.7
 
 By OptimizedForDensity:

@@ -16,14 +16,14 @@ import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ExpanderTab
 import com.unciv.ui.utils.TabbedPager
-import com.unciv.ui.utils.onChange
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.surroundWithCircle
-import com.unciv.ui.utils.toLabel
-import com.unciv.ui.utils.toTextButton
+import com.unciv.ui.utils.extensions.onChange
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
+import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
-import com.unciv.utils.Log
 import com.unciv.utils.debug
 
 

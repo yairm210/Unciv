@@ -22,8 +22,8 @@ import com.unciv.logic.multiplayer.OnlineMultiplayerGame
 import com.unciv.logic.multiplayer.isUsersTurn
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.setSize
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.setSize
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import kotlinx.coroutines.delay

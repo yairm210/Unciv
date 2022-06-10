@@ -9,9 +9,9 @@ import com.unciv.logic.MapSaver
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.pad
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.pad
+import com.unciv.ui.utils.extensions.toLabel
 
 class MapEditorFilesTable(
     initWidth: Float,
@@ -74,7 +74,7 @@ class MapEditorFilesTable(
 
         var lastMod = ""
         for ((index, entry) in sortedFiles.withIndex()) {
-            val (mod, mapFile) = entry 
+            val (mod, mapFile) = entry
             if (mod != lastMod) {
                 // One header per Mod
                 add(Table().apply {

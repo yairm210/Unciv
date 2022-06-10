@@ -26,14 +26,14 @@ import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ExpanderTab
-import com.unciv.ui.utils.addSeparator
-import com.unciv.ui.utils.addSeparatorVertical
-import com.unciv.ui.utils.disable
-import com.unciv.ui.utils.enable
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.pad
-import com.unciv.ui.utils.toLabel
-import com.unciv.ui.utils.toTextButton
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.addSeparatorVertical
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.enable
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.pad
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import kotlinx.coroutines.coroutineScope
@@ -221,10 +221,9 @@ class NewGameScreen(
     }
 
     private fun checkConnectionToMultiplayerServer(): Boolean {
-        val isDropbox = UncivGame.Current.settings.multiplayer.server == Constants.dropboxMultiplayerServer
         return try {
             val multiplayerServer = UncivGame.Current.settings.multiplayer.server
-            val u =  URL(if (isDropbox) "https://content.dropboxapi.com" else multiplayerServer)
+            val u =  URL(if (OnlineMultiplayer.usesDropbox()) "https://content.dropboxapi.com" else multiplayerServer)
             val con = u.openConnection()
             con.connectTimeout = 3000
             con.connect()

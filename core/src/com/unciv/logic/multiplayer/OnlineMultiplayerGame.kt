@@ -6,7 +6,7 @@ import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
-import com.unciv.ui.utils.isLargerThan
+import com.unciv.ui.utils.extensions.isLargerThan
 import com.unciv.utils.concurrency.Concurrency
 import java.io.FileNotFoundException
 import java.time.Duration

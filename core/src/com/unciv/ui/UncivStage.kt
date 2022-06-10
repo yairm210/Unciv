@@ -4,8 +4,8 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.Viewport
-import com.unciv.ui.utils.wrapCrashHandling
-import com.unciv.ui.utils.wrapCrashHandlingUnit
+import com.unciv.ui.crashhandling.wrapCrashHandling
+import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
 
 
 /** Main stage for the game. Catches all exceptions or errors thrown by event handlers, calling [com.unciv.UncivGame.handleUncaughtThrowable] with the thrown exception or error. */
