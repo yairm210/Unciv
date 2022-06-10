@@ -55,7 +55,7 @@ class NotificationsOverviewTable(
         if (index != "Current")
             turnTable.add("Turn $index").row()
         else
-            turnTable.add("$index turn").row()
+            turnTable.add("Current turn").row()
 
         for (index2 in notifications.indices) {
             val notification = Table(BaseScreen.skin)
