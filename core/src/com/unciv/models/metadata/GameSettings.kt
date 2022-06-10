@@ -65,6 +65,7 @@ class GameSettings {
     var lastGameSetup: GameSetupInfo? = null
 
     var fontFamily: String = Fonts.DEFAULT_FONT_FAMILY
+    var biggerFonts: Boolean = false
 
     /** Maximum zoom-out of the map - performance heavy */
     var maxWorldZoomOut = 2f
