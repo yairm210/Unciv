@@ -1,7 +1,6 @@
 package com.unciv.ui.overviewscreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
@@ -10,7 +9,7 @@ import com.unciv.logic.civilization.Notification
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.WrappableLabel
-import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.worldscreen.WorldScreen
 
 class NotificationsOverviewTable(

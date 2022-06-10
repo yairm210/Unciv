@@ -5,7 +5,7 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.UncivSlider
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.worldscreen.WorldScreen
 
 fun gameplayTab(
