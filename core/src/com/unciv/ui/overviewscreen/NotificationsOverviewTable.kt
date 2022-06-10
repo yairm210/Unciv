@@ -57,23 +57,23 @@ class NotificationsOverviewTable(
         else
             turnTable.add("Current turn").row()
 
-        for (index2 in notifications.indices) {
-            val notification = Table(BaseScreen.skin)
+        for (notification in notifications) {
+            val notificationTable = Table(BaseScreen.skin)
 
-            val labelWidth = maxEntryWidth * notifications[index2].icons.size - 10f
-            val label = WrappableLabel(notifications[index2].text, labelWidth, Color.BLACK, 20)
+            val labelWidth = maxEntryWidth * notification.icons.size - 10f
+            val label = WrappableLabel(notification.text, labelWidth, Color.BLACK, 20)
 
-            notification.add(label)
-            notification.background = ImageGetter.getRoundedEdgeRectangle()
-            notification.touchable = Touchable.enabled
-            notification.onClick {
+            notificationTable.add(label)
+            notificationTable.background = ImageGetter.getRoundedEdgeRectangle()
+            notificationTable.touchable = Touchable.enabled
+            notificationTable.onClick {
                 UncivGame.Current.resetToWorldScreen()
-                notifications[index2].action?.execute(worldScreen)
+                notification.action?.execute(worldScreen)
             }
 
-            if (notifications[index2].icons.isNotEmpty()) {
+            if (notification.icons.isNotEmpty()) {
                 val ruleset = worldScreen.gameInfo.ruleSet
-                for (icon in notifications[index2].icons.reversed()) {
+                for (icon in notification.icons.reversed()) {
                     val image: Actor = when {
                         ruleset.technologies.containsKey(icon) -> ImageGetter.getTechIcon(icon)
                         ruleset.nations.containsKey(icon) -> ImageGetter.getNationIndicator(
@@ -83,11 +83,11 @@ class NotificationsOverviewTable(
                         ruleset.units.containsKey(icon) -> ImageGetter.getUnitIcon(icon)
                         else -> ImageGetter.getImage(icon)
                     }
-                    notification.add(image).size(iconSize).padRight(5f)
+                    notificationTable.add(image).size(iconSize).padRight(5f)
                 }
             }
 
-            turnTable.add(notification)
+            turnTable.add(notificationTable)
             turnTable.padTop(20f).row()
         }
         turnTable.padTop(20f).row()
