@@ -1,22 +1,18 @@
 ## 4.1.9
 
-Resolved  - Peace cooldown with city-states
+Peace cooldown with city-states
 
-refactor: Simplified city-state war declaration
+"attacked city state" functions activate only when attacking directly, not when declaring war due to alliances
 
-All "attacked city state" functions should only activate when attacking directly, not when declaring war due to alliances
+tileFilter matches resource name and uniques
 
-Resolves  - tileFilter matches resource name and uniques
-
-Resolves  - mapholder size reset after resize
+Fixed map position after portrait mode enabled
 
 By Azzurite:
-- Add multiplayer turn sound notification 
-- Fix crash during next turn automation 
+- Add multiplayer turn sound notification
+- Fix crash during next turn automation
 
-disable worldWrap if its disabled in settings  - By alexban011
-
-Removed incorrectly translated strings from indonesian translation  - By xlenstra
+disable worldWrap when disabled in settings  - By alexban011
 
 ## 4.1.8
 
