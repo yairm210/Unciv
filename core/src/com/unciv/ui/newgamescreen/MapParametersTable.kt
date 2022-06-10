@@ -222,6 +222,7 @@ class MapParametersTable(
             addNoRuinsCheckbox()
             addNoNaturalWondersCheckbox()
             if (showWorldWrap) addWorldWrapCheckbox()
+            else mapParameters.worldWrap = false
         }).colspan(2).center().row()
         if (showWorldWrap)
             add("World wrap maps are very memory intensive - creating large world wrap maps on Android can lead to crashes!"
