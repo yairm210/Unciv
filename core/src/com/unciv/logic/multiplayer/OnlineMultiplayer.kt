@@ -13,7 +13,7 @@ import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.crashhandling.CRASH_HANDLING_DAEMON_SCOPE
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
-import com.unciv.ui.utils.isLargerThan
+import com.unciv.ui.utils.extensions.isLargerThan
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn

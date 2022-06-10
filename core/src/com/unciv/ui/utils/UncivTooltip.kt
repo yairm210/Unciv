@@ -3,22 +3,30 @@ package com.unciv.ui.utils
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.scenes.scene2d.*
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.InputEvent
+import com.badlogic.gdx.scenes.scene2d.InputListener
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.ui.Container
+import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.Tooltip
 import com.badlogic.gdx.utils.Align
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.utils.extensions.toLabel
 
 /**
  * A **Replacement** for Gdx [Tooltip], placement does not follow the mouse.
- * 
+ *
  * Usage: [group][Group].addTooltip([text][String], size) builds a [Label] as tip actor and attaches it to your [Group].
  *
  * @param target        The widget the tooltip will be added to - take care this is the same for which addListener is called
  * @param content       The actor to display as Tooltip
  * @param targetAlign   Point on the [target] widget to align the Tooltip to
- * @param tipAlign      Point on the Tooltip to align with the given point on the [target] 
+ * @param tipAlign      Point on the Tooltip to align with the given point on the [target]
  * @param offset        Additional offset for Tooltip position after alignment
  * @param animate       Use show/hide animations
  * @param forceContentSize  Force virtual [content] width/height for alignment calculation
@@ -157,9 +165,9 @@ class UncivTooltip <T: Actor>(
     companion object {
         /**
          * Add a [Label]-based Tooltip with a rounded-corner background to a [Table] or other [Group].
-         * 
+         *
          * Tip is positioned over top right corner, slightly overshooting the receiver widget, longer tip [text]s will extend to the left.
-         * 
+         *
          * @param text Automatically translated tooltip text
          * @param size _Vertical_ size of the entire Tooltip including background
          * @param always override requirement: presence of physical keyboard
@@ -180,7 +188,7 @@ class UncivTooltip <T: Actor>(
 
             val background = ImageGetter.getRoundedEdgeRectangle(Color.LIGHT_GRAY)
             // This controls text positioning relative to the background.
-            // The minute fiddling makes both single caps and longer text look centered. 
+            // The minute fiddling makes both single caps and longer text look centered.
             @Suppress("SpellCheckingInspection")
             val skewPadDescenders = if (",;gjpqy".any { it in text }) 0f else 2.5f
             val horizontalPad = if (text.length > 1) 10f else 6f

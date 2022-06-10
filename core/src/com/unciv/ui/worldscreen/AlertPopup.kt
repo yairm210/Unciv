@@ -6,7 +6,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.*
+import com.unciv.logic.civilization.AlertType
+import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.ruleset.unique.UniqueType
@@ -17,18 +20,24 @@ import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.trade.LeaderIntroTable
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.pad
+import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
 import java.util.*
 
 /**
  * [Popup] communicating events other than trade offers to the player.
- * (e.g. First Contact, Wonder built, Tech researched,...) 
+ * (e.g. First Contact, Wonder built, Tech researched,...)
  *
  * Called in [WorldScreen].update, which pulls them from viewingCiv.popupAlerts.
- * 
+ *
  * @param worldScreen The parent screen
  * @param popupAlert The [PopupAlert] entry to present
- * 
+ *
  * @see AlertType
  */
 class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popup(worldScreen) {

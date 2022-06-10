@@ -5,7 +5,10 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.*
+import com.unciv.logic.map.MapResources
+import com.unciv.logic.map.MapShape
+import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
@@ -17,8 +20,12 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
-import com.unciv.ui.utils.randomWeighted
-import kotlin.math.*
+import com.unciv.ui.utils.extensions.randomWeighted
+import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.pow
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 class MapRegions (val ruleset: Ruleset){

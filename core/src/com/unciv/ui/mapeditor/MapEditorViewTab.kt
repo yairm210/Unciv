@@ -15,10 +15,18 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.civilopedia.FormattedLine
-import com.unciv.ui.civilopedia.MarkupRenderer
 import com.unciv.ui.civilopedia.FormattedLine.IconDisplay
+import com.unciv.ui.civilopedia.MarkupRenderer
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.ExpanderTab
+import com.unciv.ui.utils.TabbedPager
+import com.unciv.ui.utils.WrappableLabel
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.darken
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.pad
+import com.unciv.ui.utils.extensions.toTextButton
 
 class MapEditorViewTab(
     private val editorScreen: MapEditorScreen

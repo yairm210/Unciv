@@ -3,10 +3,14 @@ package com.unciv.models.ruleset
 import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.civilization.CityStateType
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
-import com.unciv.models.ruleset.unique.*
+import com.unciv.models.ruleset.unique.IHasUniques
+import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTarget
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
-import com.unciv.ui.utils.colorFromRGB
+import com.unciv.ui.utils.extensions.colorFromRGB
 
 class Era : RulesetObject(), IHasUniques {
     var eraNumber: Int = -1

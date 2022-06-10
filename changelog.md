@@ -1,3 +1,19 @@
+## 4.1.9
+
+Peace cooldown with city-states
+
+"attacked city state" functions activate only when attacking directly, not when declaring war due to alliances
+
+tileFilter matches resource name and uniques
+
+Fixed map position after portrait mode enabled
+
+By Azzurite:
+- Add multiplayer turn sound notification
+- Fix crash during next turn automation
+
+disable worldWrap when disabled in settings  - By alexban011
+
 ## 4.1.8
 
 Resolved crashes when centering on a city-state with no cities

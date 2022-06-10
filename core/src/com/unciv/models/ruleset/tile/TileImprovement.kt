@@ -13,9 +13,8 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
-import com.unciv.ui.utils.toPercent
+import com.unciv.ui.utils.extensions.toPercent
 import com.unciv.ui.worldscreen.unit.UnitActions
-import java.util.*
 import kotlin.math.roundToInt
 
 class TileImprovement : RulesetStatsObject() {

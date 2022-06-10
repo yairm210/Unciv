@@ -7,7 +7,9 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
 
 class PlayerReadyScreen(gameInfo: GameInfo, currentPlayerCiv: CivilizationInfo) : BaseScreen(){
     init {

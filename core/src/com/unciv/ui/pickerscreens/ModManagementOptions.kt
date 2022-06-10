@@ -2,20 +2,30 @@ package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.newgamescreen.TranslatedSelectBox
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.ExpanderTab
+import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.utils.extensions.onChange
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
 import kotlin.math.sign
 
 /**
  * Helper class for Mod Manager - filtering and sorting.
- * 
+ *
  * This isn't a UI Widget, but offers one: [expander] can be used to offer filtering and sorting options.
  * It holds the variables [sortInstalled] and [sortOnline] for the [modManagementScreen] and knows
  * how to sort collections of [ModUIData] by providing comparators.
@@ -28,7 +38,7 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
         val sortByDate = Comparator { mod1, mod2: ModUIData -> mod1.lastUpdated().compareTo(mod2.lastUpdated()) }
         val sortByDateDesc = Comparator { mod1, mod2: ModUIData -> mod2.lastUpdated().compareTo(mod1.lastUpdated()) }
         // comparators for stars or status
-        val sortByStars = Comparator { mod1, mod2: ModUIData -> 
+        val sortByStars = Comparator { mod1, mod2: ModUIData ->
             10 * (mod2.stargazers() - mod1.stargazers()) + mod1.name.compareTo(mod2.name, true).sign
         }
         val sortByStatus = Comparator { mod1, mod2: ModUIData ->

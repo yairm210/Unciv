@@ -7,7 +7,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
 import com.unciv.ui.utils.Fonts
-import com.unciv.ui.utils.toPercent
+import com.unciv.ui.utils.extensions.toPercent
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -47,7 +47,7 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
         val rejectionReasons = getRejectionReasons(cityConstructions)
         return rejectionReasons.all { it.rejectionReason == RejectionReason.Unbuildable }
     }
-    
+
     fun canBePurchasedWithAnyStat(cityInfo: CityInfo): Boolean {
         return Stat.values().any { canBePurchasedWithStat(cityInfo, it) }
     }
@@ -61,7 +61,7 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
         if (stat == Stat.Gold) return getBaseGoldCost(cityInfo.civInfo).toInt()
 
         val conditionalState = StateForConditionals(civInfo = cityInfo.civInfo, cityInfo = cityInfo)
-        
+
         // Can be purchased for [amount] [Stat] [cityFilter]
         val lowestCostUnique = getMatchingUniques(UniqueType.CanBePurchasedForAmountStat, conditionalState)
             .filter { it.params[1] == stat.name && cityInfo.matchesFilter(it.params[2]) }
@@ -145,7 +145,7 @@ class RejectionReasons: HashSet<RejectionReasonInstance>() {
             RejectionReason.NoPlaceToPutUnit,
         )
     }
-} 
+}
 
 
 enum class RejectionReason(val shouldShow: Boolean, val errorMessage: String) {
@@ -197,7 +197,7 @@ enum class RejectionReason(val shouldShow: Boolean, val errorMessage: String) {
 
     NoSettlerForOneCityPlayers(false, "No settlers for city-states or one-city challengers"),
     NoPlaceToPutUnit(true, "No space to place this unit");
-    
+
     fun toInstance(errorMessage: String = this.errorMessage,
         shouldShow: Boolean = this.shouldShow): RejectionReasonInstance {
         return RejectionReasonInstance(this, errorMessage, shouldShow)

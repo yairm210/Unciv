@@ -4,12 +4,14 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.models.UncivSound
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.ui.utils.Fonts
 import java.text.Collator
 import java.time.Duration
 import java.util.*
-import kotlin.collections.HashSet
+import kotlin.reflect.KClass
+import kotlin.reflect.KMutableProperty0
 
 data class WindowState (val width: Int = 900, val height: Int = 600)
 
@@ -169,5 +171,30 @@ class GameSettingsMultiplayer {
     var statusButtonInSinglePlayer = false
     var currentGameRefreshDelay = Duration.ofSeconds(10)
     var allGameRefreshDelay = Duration.ofMinutes(5)
+    var currentGameTurnNotificationSound: UncivSound = UncivSound.Silent
+    var otherGameTurnNotificationSound: UncivSound = UncivSound.Silent
     var hideDropboxWarning = false
+}
+
+enum class GameSetting(
+    val kClass: KClass<*>,
+    private val propertyGetter: (GameSettings) -> KMutableProperty0<*>
+) {
+//     Uncomment these once they are refactored to send events on change
+//     MULTIPLAYER_USER_ID(String::class, { it.multiplayer::userId }),
+//     MULTIPLAYER_SERVER(String::class, { it.multiplayer::server }),
+//     MULTIPLAYER_STATUSBUTTON_IN_SINGLEPLAYER(Boolean::class, { it.multiplayer::statusButtonInSinglePlayer }),
+//     MULTIPLAYER_TURN_CHECKER_ENABLED(Boolean::class, { it.multiplayer::turnCheckerEnabled }),
+//     MULTIPLAYER_TURN_CHECKER_PERSISTENT_NOTIFICATION_ENABLED(Boolean::class, { it.multiplayer::turnCheckerPersistentNotificationEnabled }),
+//     MULTIPLAYER_HIDE_DROPBOX_WARNING(Boolean::class, { it.multiplayer::hideDropboxWarning }),
+    MULTIPLAYER_TURN_CHECKER_DELAY(Duration::class, { it.multiplayer::turnCheckerDelay }),
+    MULTIPLAYER_CURRENT_GAME_REFRESH_DELAY(Duration::class, { it.multiplayer::currentGameRefreshDelay }),
+    MULTIPLAYER_ALL_GAME_REFRESH_DELAY(Duration::class, { it.multiplayer::allGameRefreshDelay }),
+    MULTIPLAYER_CURRENT_GAME_TURN_NOTIFICATION_SOUND(UncivSound::class, { it.multiplayer::currentGameTurnNotificationSound }),
+    MULTIPLAYER_OTHER_GAME_TURN_NOTIFICATION_SOUND(UncivSound::class, { it.multiplayer::otherGameTurnNotificationSound });
+
+    /** **Warning:** It is the obligation of the caller to select the same type [T] that the [kClass] of this property has */
+    fun <T> getProperty(settings: GameSettings): KMutableProperty0<T> {
+        return propertyGetter(settings) as KMutableProperty0<T>
+    }
 }
