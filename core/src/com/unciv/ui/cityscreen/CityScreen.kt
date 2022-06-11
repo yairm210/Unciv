@@ -20,6 +20,7 @@ import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.ZoomableScrollPane
 import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.disable
@@ -106,7 +107,7 @@ class CityScreen(
     private val nextTileToOwn = city.expansion.chooseNewTileToOwn()
 
     init {
-        onBackButtonClicked { game.resetToWorldScreen() }
+        globalShortcuts.add(KeyCharAndCode.BACK) { game.resetToWorldScreen() }
         UncivGame.Current.settings.addCompletedTutorialTask("Enter city screen")
 
         addTiles()
@@ -121,16 +122,8 @@ class CityScreen(
         stage.addActor(exitCityButton)
         update()
 
-        keyPressDispatcher[Input.Keys.LEFT] = { page(-1) }
-        keyPressDispatcher[Input.Keys.RIGHT] = { page(1) }
-        keyPressDispatcher['T'] = {
-            if (selectedTile != null)
-                tileTable.askToBuyTile(selectedTile!!)
-        }
-        keyPressDispatcher['B'] = {
-            if (selectedConstruction is INonPerpetualConstruction)
-                constructionsTable.askToBuyConstruction(selectedConstruction as INonPerpetualConstruction)
-        }
+        globalShortcuts.add(Input.Keys.LEFT) { page(-1) }
+        globalShortcuts.add(Input.Keys.RIGHT) { page(1) }
     }
 
     internal fun update() {

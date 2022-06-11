@@ -13,8 +13,9 @@ import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.extensions.UncivDateFormat.formatDate
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.enable
+import com.unciv.ui.utils.extensions.keyShortcuts
 import com.unciv.ui.utils.extensions.onChange
-import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.pad
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
@@ -32,7 +33,7 @@ abstract class LoadOrSaveScreen(
     protected var selectedSave = ""
         private set
 
-    private val savesScrollPane = VerticalFileListScrollPane(keyPressDispatcher)
+    private val savesScrollPane = VerticalFileListScrollPane()
     protected val rightSideTable = Table()
     protected val deleteSaveButton = "Delete save".toTextButton()
     protected val showAutosavesCheckbox = CheckBox("Show autosaves".tr(), skin)
@@ -47,12 +48,12 @@ abstract class LoadOrSaveScreen(
             updateShownSaves(showAutosavesCheckbox.isChecked)
         }
         val ctrlA = KeyCharAndCode.ctrl('a')
-        keyPressDispatcher[ctrlA] = { showAutosavesCheckbox.toggle() }
+        showAutosavesCheckbox.keyShortcuts.add(ctrlA) { showAutosavesCheckbox.toggle() }
         showAutosavesCheckbox.addTooltip(ctrlA)
 
         deleteSaveButton.disable()
-        deleteSaveButton.onClick(::onDeleteClicked)
-        keyPressDispatcher[KeyCharAndCode.DEL] = ::onDeleteClicked
+        deleteSaveButton.onActivation { onDeleteClicked() }
+        deleteSaveButton.keyShortcuts.add(KeyCharAndCode.DEL)
         deleteSaveButton.addTooltip(KeyCharAndCode.DEL)
 
         if (fileListHeaderText != null)

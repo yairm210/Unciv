@@ -12,6 +12,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.PickerScreen
+import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.extensions.addSeparator
 import com.unciv.ui.utils.extensions.enable
 import com.unciv.ui.utils.extensions.onClick
@@ -71,7 +72,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
             wonOrLost("", null, false)
         } else if (!someoneHasWon) {
             setDefaultCloseAction()
-            onBackButtonClicked { game.resetToWorldScreen() }
+            globalShortcuts.add(KeyCharAndCode.BACK) { game.resetToWorldScreen() }
         }
     }
 

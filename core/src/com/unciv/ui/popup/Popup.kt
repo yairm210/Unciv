@@ -16,11 +16,11 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.AutoScrollPane
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyCharAndCode
-import com.unciv.ui.utils.KeyPressDispatcher
 import com.unciv.ui.utils.extensions.addSeparator
 import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.darken
-import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.keyShortcuts
+import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
 
@@ -37,12 +37,6 @@ open class Popup(
     // This exists to differentiate the actual popup (the inner table)
     // from the 'screen blocking' part of the popup (which covers the entire screen)
     val innerTable = Table(BaseScreen.skin)
-
-    /** The [KeyPressDispatcher] for the popup - Key handlers from the parent screen are inactive
-     * while the popup is active through the [hasOpenPopups][BaseScreen.hasOpenPopups] mechanism.
-     * @see [KeyPressDispatcher.install]
-     */
-    val keyPressDispatcher = KeyPressDispatcher(this.javaClass.simpleName)
 
     val closeListeners = mutableListOf<() -> Unit>()
 
@@ -80,12 +74,9 @@ open class Popup(
         }
     }
 
-    /** Subroutine for [open] handles only visibility and [keyPressDispatcher] */
+    /** Subroutine for [open] handles only visibility */
     private fun show() {
         this.isVisible = true
-        val currentCount = stageToShowOn.countOpenPopups()
-        // the lambda is for stacked key dispatcher precedence:
-        keyPressDispatcher.install(stageToShowOn) { stageToShowOn.countOpenPopups() > currentCount }
     }
 
     /**
@@ -93,7 +84,6 @@ open class Popup(
      */
     open fun close() {
         for (listener in closeListeners) listener()
-        keyPressDispatcher.uninstall()
         remove()
         val nextPopup = stageToShowOn.actors.firstOrNull { it is Popup }
         if (nextPopup != null) (nextPopup as Popup).show()
@@ -127,10 +117,8 @@ open class Popup(
      */
     fun addButtonInRow(text: String, key: KeyCharAndCode? = null, action: () -> Unit): Cell<TextButton> {
         val button = text.toTextButton()
-        button.onClick(action)
-        if (key != null) {
-            keyPressDispatcher[key] = action
-        }
+        button.onActivation { action() }
+        button.keyShortcuts.add(key)
         return add(button)
     }
     fun addButtonInRow(text: String, key: Char, action: () -> Unit)
@@ -165,9 +153,9 @@ open class Popup(
         additionalKey: KeyCharAndCode? = null,
         action: (()->Unit)? = null
     ): Cell<TextButton> {
-        val closeAction = { close(); if(action!=null) action()  }
-        keyPressDispatcher[KeyCharAndCode.BACK] = closeAction
-        return addButton(text, additionalKey, closeAction)
+        val cell = addButton(text, additionalKey) { close(); if(action!=null) action() }
+        cell.getActor().keyShortcuts.add(KeyCharAndCode.BACK)
+        return cell
     }
 
     /**
@@ -185,14 +173,14 @@ open class Popup(
         validate: (() -> Boolean) = { true },
         action: (() -> Unit),
     ): Cell<TextButton> {
-        val okAction = {
+        val cell = addButtonInRow(text, additionalKey) {
             if (validate()) {
                 close()
                 action()
             }
         }
-        keyPressDispatcher[KeyCharAndCode.RETURN] = okAction
-        return addButtonInRow(text, additionalKey, okAction)
+        cell.getActor().keyShortcuts.add(KeyCharAndCode.RETURN)
+        return cell
     }
 
     /**
@@ -237,6 +225,18 @@ open class Popup(
         }
 }
 
+
+/** @return A [List] of currently active or pending [Popup] screens. */
+val BaseScreen.popups
+    get() = stage.popups
+private val Stage.popups: List<Popup>
+    get() = actors.filterIsInstance<Popup>()
+
+/** @return The currently active [Popup] or [null] if none. */
+// FIXME: We depend on the order of actors; is this fine?
+val BaseScreen.activePopup: Popup?
+    get() = popups.lastOrNull { it.isVisible }
+
 /**
  * Checks if there are visible [Popup]s.
  * @return `true` if any were found.
@@ -252,11 +252,4 @@ private fun Stage.hasOpenPopups(): Boolean = actors.any { it is Popup && it.isVi
 private fun Stage.countOpenPopups() = actors.count { it is Popup && it.isVisible }
 
 /** Closes all [Popup]s. */
-fun BaseScreen.closeAllPopups() = stage.popups.forEach { it.close() }
-
-/** @return A [List] of currently active or pending [Popup] screens. */
-val BaseScreen.popups
-    get() = stage.popups
-private val Stage.popups: List<Popup>
-    get() = actors.filterIsInstance<Popup>()
-
+fun BaseScreen.closeAllPopups() = popups.forEach { it.close() }

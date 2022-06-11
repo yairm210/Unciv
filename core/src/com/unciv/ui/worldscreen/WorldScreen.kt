@@ -118,7 +118,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     private val techButtonHolder = Table()
     private val diplomacyButtonHolder = Table()
     private val fogOfWarButton = createFogOfWarButton()
-    private val nextTurnButton = NextTurnButton(keyPressDispatcher)
+    private val nextTurnButton = NextTurnButton()
     private val statusButtons = StatusButtons(nextTurnButton)
     private val tutorialTaskTable = Table().apply { background = ImageGetter.getBackground(
         ImageGetter.getBlue().darken(0.5f)) }
@@ -205,7 +205,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
         tutorialController.allTutorialsShowedCallback = { shouldUpdate = true }
 
-        onBackButtonClicked { backButtonAndESCHandler() }
+        globalShortcuts.add(KeyCharAndCode.BACK) { backButtonAndESCHandler() }
 
         addKeyboardListener() // for map panning by W,S,A,D
         addKeyboardPresses()  // shortcut keys like F1
@@ -238,41 +238,40 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
     private fun addKeyboardPresses() {
         // Space and N are assigned in createNextTurnButton
-        keyPressDispatcher[Input.Keys.F1] = { game.setScreen(CivilopediaScreen(gameInfo.ruleSet, this)) }
-        keyPressDispatcher['E'] = { game.setScreen(EmpireOverviewScreen(selectedCiv)) }     // Empire overview last used page
+        globalShortcuts.add(Input.Keys.F1) { game.setScreen(CivilopediaScreen(gameInfo.ruleSet, this)) }
+        globalShortcuts.add('E') { game.setScreen(EmpireOverviewScreen(selectedCiv)) }     // Empire overview last used page
         /*
          * These try to be faithful to default Civ5 key bindings as found in several places online
          * Some are a little arbitrary, e.g. Economic info, Military info
          * Some are very much so as Unciv *is* Strategic View and the Notification log is always visible
          */
-        keyPressDispatcher[Input.Keys.F2] = { game.setScreen(EmpireOverviewScreen(selectedCiv, "Trades")) }    // Economic info
-        keyPressDispatcher[Input.Keys.F3] = { game.setScreen(EmpireOverviewScreen(selectedCiv, "Units")) }    // Military info
-        keyPressDispatcher[Input.Keys.F4] = { game.setScreen(EmpireOverviewScreen(selectedCiv, "Diplomacy")) }    // Diplomacy info
-        keyPressDispatcher[Input.Keys.F5] = { game.setScreen(PolicyPickerScreen(this, selectedCiv)) }    // Social Policies Screen
-        keyPressDispatcher[Input.Keys.F6] = { game.setScreen(TechPickerScreen(viewingCiv)) }    // Tech Screen
-        keyPressDispatcher[Input.Keys.F7] = { game.setScreen(EmpireOverviewScreen(selectedCiv, "Cities")) }    // originally Notification Log
-        keyPressDispatcher[Input.Keys.F8] = { game.setScreen(VictoryScreen(this)) }    // Victory Progress
-        keyPressDispatcher[Input.Keys.F9] = { game.setScreen(EmpireOverviewScreen(selectedCiv, "Stats")) }    // Demographics
-        keyPressDispatcher[Input.Keys.F10] = { game.setScreen(EmpireOverviewScreen(selectedCiv, "Resources")) }    // originally Strategic View
-        keyPressDispatcher[Input.Keys.F11] = { QuickSave.save(gameInfo, this) }    // Quick Save
-        keyPressDispatcher[Input.Keys.F12] = { QuickSave.load(this) }    // Quick Load
-        keyPressDispatcher[Input.Keys.HOME] = {    // Capital City View
+        globalShortcuts.add(Input.Keys.F2) { game.setScreen(EmpireOverviewScreen(selectedCiv, "Trades")) }    // Economic info
+        globalShortcuts.add(Input.Keys.F3) { game.setScreen(EmpireOverviewScreen(selectedCiv, "Units")) }    // Military info
+        globalShortcuts.add(Input.Keys.F4) { game.setScreen(EmpireOverviewScreen(selectedCiv, "Diplomacy")) }    // Diplomacy info
+        globalShortcuts.add(Input.Keys.F5) { game.setScreen(PolicyPickerScreen(this, selectedCiv)) }    // Social Policies Screen
+        globalShortcuts.add(Input.Keys.F6) { game.setScreen(TechPickerScreen(viewingCiv)) }    // Tech Screen
+        globalShortcuts.add(Input.Keys.F7) { game.setScreen(EmpireOverviewScreen(selectedCiv, "Cities")) }    // originally Notification Log
+        globalShortcuts.add(Input.Keys.F8) { game.setScreen(VictoryScreen(this)) }    // Victory Progress
+        globalShortcuts.add(Input.Keys.F9) { game.setScreen(EmpireOverviewScreen(selectedCiv, "Stats")) }    // Demographics
+        globalShortcuts.add(Input.Keys.F10) { game.setScreen(EmpireOverviewScreen(selectedCiv, "Resources")) }    // originally Strategic View
+        globalShortcuts.add(Input.Keys.F11) { QuickSave.save(gameInfo, this) }    // Quick Save
+        globalShortcuts.add(Input.Keys.F12) { QuickSave.load(this) }    // Quick Load
+        globalShortcuts.add(Input.Keys.HOME) {    // Capital City View
             val capital = gameInfo.currentPlayerCiv.getCapital()
             if (capital != null && !mapHolder.setCenterPosition(capital.location))
                 game.setScreen(CityScreen(capital))
         }
-        keyPressDispatcher[KeyCharAndCode.ctrl('O')] = { // Game Options
+        globalShortcuts.add(KeyCharAndCode.ctrl('O')) { // Game Options
             this.openOptionsPopup(onClose = {
                 mapHolder.reloadMaxZoom()
                 nextTurnButton.update(hasOpenPopups(), isPlayersTurn, waitingForAutosave, isNextTurnUpdateRunning())
             })
         }
-        keyPressDispatcher[KeyCharAndCode.ctrl('S')] = { game.setScreen(SaveGameScreen(gameInfo)) }    //   Save
-        keyPressDispatcher[KeyCharAndCode.ctrl('L')] = { game.setScreen(LoadGameScreen(this)) }    //   Load
-        keyPressDispatcher[KeyCharAndCode.ctrl('Q')] = { ExitGamePopup(this, true) }    //   Quit
-        keyPressDispatcher[Input.Keys.NUMPAD_ADD] = { this.mapHolder.zoomIn() }    //   '+' Zoom
-        keyPressDispatcher[Input.Keys.NUMPAD_SUBTRACT] = { this.mapHolder.zoomOut() }    //   '-' Zoom
-        keyPressDispatcher.setCheckpoint()
+        globalShortcuts.add(KeyCharAndCode.ctrl('S')) { game.setScreen(SaveGameScreen(gameInfo)) }    //   Save
+        globalShortcuts.add(KeyCharAndCode.ctrl('L')) { game.setScreen(LoadGameScreen(this)) }    //   Load
+        globalShortcuts.add(KeyCharAndCode.ctrl('Q')) { ExitGamePopup(this, true) }    //   Quit
+        globalShortcuts.add(Input.Keys.NUMPAD_ADD) { this.mapHolder.zoomIn() }    //   '+' Zoom
+        globalShortcuts.add(Input.Keys.NUMPAD_SUBTRACT) { this.mapHolder.zoomOut() }    //   '-' Zoom
     }
 
     private fun addKeyboardListener() {
@@ -287,7 +286,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
                     override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
                         if (keycode !in ALLOWED_KEYS) return false
-                        // Without the following keyPressDispatcher Ctrl-S would leave WASD map scrolling stuck
+                        // Without the following Ctrl-S would leave WASD map scrolling stuck
+                        // Might be obsolete with keyboard shortcut refactoring
                         if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT)) return false
 
                         pressedKeys.add(keycode)
@@ -402,7 +402,6 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         if (fogOfWar) minimapWrapper.update(selectedCiv)
         else minimapWrapper.update(viewingCiv)
 
-        keyPressDispatcher.revertToCheckPoint()
         unitActionsTable.update(bottomUnitTable.selectedUnit)
         unitActionsTable.y = bottomUnitTable.height
 

@@ -17,6 +17,7 @@ import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.Fonts
+import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.extensions.addBorder
 import com.unciv.ui.utils.extensions.colorFromRGB
 import com.unciv.ui.utils.extensions.darken
@@ -61,7 +62,7 @@ class TechPickerScreen(
 
     init {
         setDefaultCloseAction()
-        onBackButtonClicked { UncivGame.Current.resetToWorldScreen() }
+        globalShortcuts.add(KeyCharAndCode.BACK) { UncivGame.Current.resetToWorldScreen() }
         scrollPane.setOverscroll(false, false)
 
         descriptionLabel.onClick {

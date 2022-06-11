@@ -13,8 +13,10 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.Fonts
+import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.keyShortcuts
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toLabel
 import kotlin.math.roundToInt
@@ -63,7 +65,7 @@ class ImprovementPickerScreen(
 
     init {
         setDefaultCloseAction()
-        onBackButtonClicked { UncivGame.Current.resetToWorldScreen() }
+        globalShortcuts.add(KeyCharAndCode.BACK) { UncivGame.Current.resetToWorldScreen() }
 
         rightSideButton.setText("Pick improvement".tr())
         rightSideButton.onClick {
@@ -175,7 +177,8 @@ class ImprovementPickerScreen(
             if (proposedSolutions.isNotEmpty() || tileMarkedForCreatesOneImprovement) {
                 improvementButton.disable()
             } else if (shortcutKey != null) {
-                keyPressDispatcher[shortcutKey] = { accept(improvement) }
+                // FIXME: Different compared to onClick() and therefore no onActivation() here, to preserve pre-existing behavior. Reconsider this?
+                improvementButton.keyShortcuts.add(shortcutKey) { accept(improvement) }
                 improvementButton.addTooltip(shortcutKey)
             }
 

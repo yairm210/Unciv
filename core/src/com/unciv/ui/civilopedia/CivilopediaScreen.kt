@@ -181,7 +181,7 @@ class CivilopediaScreen(
 
     init {
         val imageSize = 50f
-        onBackButtonClicked { game.setScreen(previousScreen) }
+        globalShortcuts.add(KeyCharAndCode.BACK) { game.setScreen(previousScreen) }
 
         val curGameInfo = game.gameInfo
         val religionEnabled = if (curGameInfo != null) curGameInfo.isReligionEnabled() else ruleset.beliefs.isNotEmpty()
@@ -289,16 +289,16 @@ class CivilopediaScreen(
                 selectEntry(link, noScrollAnimation = true)
 
         for (categoryKey in CivilopediaCategories.values()) {
-            keyPressDispatcher[categoryKey.key] = { navigateCategories(categoryKey.key) }
+            globalShortcuts.add(categoryKey.key) { navigateCategories(categoryKey.key) }
         }
-        keyPressDispatcher[Input.Keys.LEFT] = { selectCategory(currentCategory.getByOffset(-1)) }
-        keyPressDispatcher[Input.Keys.RIGHT] = { selectCategory(currentCategory.getByOffset(1)) }
-        keyPressDispatcher[Input.Keys.UP] = { navigateEntries(-1) }
-        keyPressDispatcher[Input.Keys.DOWN] = { navigateEntries(1) }
-        keyPressDispatcher[Input.Keys.PAGE_UP] = { navigateEntries(-10) }
-        keyPressDispatcher[Input.Keys.PAGE_DOWN] = { navigateEntries(10) }
-        keyPressDispatcher[Input.Keys.HOME] = { navigateEntries(Int.MIN_VALUE) }
-        keyPressDispatcher[Input.Keys.END] = { navigateEntries(Int.MAX_VALUE) }
+        globalShortcuts.add(Input.Keys.LEFT) { selectCategory(currentCategory.getByOffset(-1)) }
+        globalShortcuts.add(Input.Keys.RIGHT) { selectCategory(currentCategory.getByOffset(1)) }
+        globalShortcuts.add(Input.Keys.UP) { navigateEntries(-1) }
+        globalShortcuts.add(Input.Keys.DOWN) { navigateEntries(1) }
+        globalShortcuts.add(Input.Keys.PAGE_UP) { navigateEntries(-10) }
+        globalShortcuts.add(Input.Keys.PAGE_DOWN) { navigateEntries(10) }
+        globalShortcuts.add(Input.Keys.HOME) { navigateEntries(Int.MIN_VALUE) }
+        globalShortcuts.add(Input.Keys.END) { navigateEntries(Int.MAX_VALUE) }
     }
 
     private fun navigateCategories(key: KeyCharAndCode) {

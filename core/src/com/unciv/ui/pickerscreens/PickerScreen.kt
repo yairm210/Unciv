@@ -1,7 +1,9 @@
 package com.unciv.ui.pickerscreens
 
 import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.extensions.keyShortcuts
+import com.unciv.ui.utils.extensions.onActivation
 
 open class PickerScreen(disableScroll: Boolean = false) : BaseScreen() {
 
@@ -40,12 +42,11 @@ open class PickerScreen(disableScroll: Boolean = false) : BaseScreen() {
      * to return to the [previousScreen] if specified, or else to the world screen.
      */
     fun setDefaultCloseAction(previousScreen: BaseScreen? = null) {
-        val closeAction = {
+        pickerPane.closeButton.onActivation {
             if (previousScreen != null) game.setScreen(previousScreen)
             else game.resetToWorldScreen()
         }
-        pickerPane.closeButton.onClick(closeAction)
-        onBackButtonClicked(closeAction)
+        pickerPane.closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
     }
 
     /** Enables the [rightSideButton]. See [pick] for a way to set the text. */

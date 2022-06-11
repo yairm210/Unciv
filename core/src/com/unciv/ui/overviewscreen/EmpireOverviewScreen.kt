@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.ui.overviewscreen.EmpireOverviewTab.EmpireOverviewTabPersistableData
 import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.TabbedPager
 
@@ -44,16 +45,14 @@ class EmpireOverviewScreen(
             else game.settings.lastOverviewPage
         val iconSize = Constants.defaultFontSize.toFloat()
 
-        onBackButtonClicked { game.resetToWorldScreen() }
+        globalShortcuts.add(KeyCharAndCode.BACK) { game.resetToWorldScreen() }
 
         tabbedPager = TabbedPager(
             stage.width, stage.width,
             centerAreaHeight, centerAreaHeight,
             separatorColor = Color.WHITE,
-            keyPressDispatcher = keyPressDispatcher,
             capacity = EmpireOverviewCategories.values().size)
 
-        tabbedPager.bindArrowKeys()
         tabbedPager.addClosePage { game.resetToWorldScreen() }
 
         for (category in EmpireOverviewCategories.values()) {

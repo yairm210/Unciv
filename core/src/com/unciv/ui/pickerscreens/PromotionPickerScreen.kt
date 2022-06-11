@@ -12,6 +12,7 @@ import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.AskTextPopup
+import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.extensions.isEnabled
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.surroundWithCircle
@@ -33,7 +34,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
     }
 
     init {
-        onBackButtonClicked { UncivGame.Current.resetToWorldScreen() }
+        globalShortcuts.add(KeyCharAndCode.BACK) { UncivGame.Current.resetToWorldScreen() }
         setDefaultCloseAction()
 
         rightSideButton.setText("Pick promotion".tr())
