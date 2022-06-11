@@ -56,7 +56,7 @@ interface NotificationAction {
 }
 
 /** A notification action that cycles through tiles.
- * 
+ *
  * Constructors accept any kind of [Vector2] collection, including [Iterable], [Sequence], `vararg`.
  * `varargs` allows nulls which are ignored, a resulting empty list is allowed and equivalent to no [NotificationAction].
  */

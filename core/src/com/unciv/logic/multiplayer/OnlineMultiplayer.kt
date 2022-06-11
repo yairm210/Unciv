@@ -68,8 +68,9 @@ class OnlineMultiplayer {
     }
 
     private fun getCurrentGame(): OnlineMultiplayerGame? {
-        if (UncivGame.isCurrentInitialized() && UncivGame.Current.isGameInfoInitialized()) {
-            return getGameByGameId(UncivGame.Current.gameInfo.gameId)
+        val gameInfo = UncivGame.Current.gameInfo
+        if (gameInfo != null) {
+            return getGameByGameId(gameInfo.gameId)
         } else {
             return null
         }

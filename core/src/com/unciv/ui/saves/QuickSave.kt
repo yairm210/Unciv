@@ -4,11 +4,13 @@ import com.unciv.Constants
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
+import com.unciv.ui.multiplayer.MultiplayerHelpers
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
+import com.unciv.utils.Log
 
 
 //todo reduce code duplication
@@ -70,6 +72,7 @@ object QuickSave {
                 outOfMemory()
                 return@run
             } catch (ex: Exception) {
+                Log.error("Could not autoload game", ex)
                 launchOnGLThread {
                     loadingPopup.close()
                     ToastPopup("Cannot resume game!", screen)
@@ -82,6 +85,13 @@ object QuickSave {
                     screen.game.onlineMultiplayer.loadGame(savedGame)
                 } catch (oom: OutOfMemoryError) {
                     outOfMemory()
+                } catch (ex: Exception) {
+                    val message = MultiplayerHelpers.getLoadExceptionMessage(ex)
+                    Log.error("Could not autoload game", ex)
+                    launchOnGLThread {
+                        loadingPopup.close()
+                        ToastPopup(message, screen)
+                    }
                 }
             } else {
                 launchOnGLThread { /// ... and load it into the screen on main thread for GL context
@@ -89,6 +99,10 @@ object QuickSave {
                         screen.game.loadGame(savedGame)
                     } catch (oom: OutOfMemoryError) {
                         outOfMemory()
+                    } catch (ex: Exception) {
+                        Log.error("Could not autoload game", ex)
+                        loadingPopup.close()
+                        ToastPopup("Cannot resume game!", screen)
                     }
                 }
             }

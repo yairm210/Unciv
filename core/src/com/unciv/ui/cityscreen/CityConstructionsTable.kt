@@ -516,10 +516,9 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 "Would you like to purchase [${construction.name}] for [$constructionBuyCost] [${stat.character}]?".tr()
         YesNoPopup(
             purchasePrompt,
-            action = { purchaseConstruction(construction, stat, tile) },
             screen = cityScreen,
             restoreDefault = { cityScreen.update() }
-        ).open()
+        ) { purchaseConstruction(construction, stat, tile) }.open()
     }
 
     /** This tests whether the buy button should be _shown_ */

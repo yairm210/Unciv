@@ -39,7 +39,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         actionButton.pack()
         val action = {
             unitAction.action?.invoke()
-            UncivGame.Current.worldScreen.shouldUpdate = true
+            UncivGame.Current.worldScreen!!.shouldUpdate = true
         }
         if (unitAction.action == null) actionButton.disable()
         else {

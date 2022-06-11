@@ -137,10 +137,11 @@ class Nation : RulesetObject() {
 
         textList += FormattedLine("{Type}: {$cityStateType}", header = 4, color = cityStateType!!.color)
 
-        val era = if (UncivGame.isCurrentInitialized() && UncivGame.Current.isGameInfoInitialized())
-            UncivGame.Current.gameInfo.currentPlayerCiv.getEra()
-        else
+        val era = if (UncivGame.isCurrentInitialized() && UncivGame.Current.gameInfo != null) {
+            UncivGame.Current.gameInfo!!.currentPlayerCiv.getEra()
+        } else {
             ruleset.eras.values.first()
+        }
         var showResources = false
 
         val friendBonus = era.friendBonus[cityStateType!!.name]
@@ -185,7 +186,7 @@ class Nation : RulesetObject() {
             when {
                 building.uniqueTo != name -> continue
                 building.hasUnique(UniqueType.HiddenFromCivilopedia) -> continue
-                UncivGame.Current.isGameInfoInitialized() && !UncivGame.Current.gameInfo.isReligionEnabled() && building.hasUnique(UniqueType.HiddenWithoutReligion) -> continue // This seems consistent with existing behaviour of CivilopediaScreen's init.<locals>.shouldBeDisplayed(), and Technology().getEnabledUnits(). Otherwise there are broken links in the Civilopedia (E.G. to "Pyramid" and "Shrine", from "The Maya").
+                UncivGame.Current.gameInfo != null && !UncivGame.Current.gameInfo!!.isReligionEnabled() && building.hasUnique(UniqueType.HiddenWithoutReligion) -> continue // This seems consistent with existing behaviour of CivilopediaScreen's init.<locals>.shouldBeDisplayed(), and Technology().getEnabledUnits(). Otherwise there are broken links in the Civilopedia (E.G. to "Pyramid" and "Shrine", from "The Maya").
             }
             yield(FormattedLine("{${building.name}} -", link=building.makeLink()))
             if (building.replaces != null && ruleset.buildings.containsKey(building.replaces!!)) {

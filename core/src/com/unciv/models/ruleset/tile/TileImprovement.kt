@@ -176,9 +176,9 @@ class TileImprovement : RulesetStatsObject() {
         if (isAncientRuinsEquivalent() && ruleset.ruinRewards.isNotEmpty()) {
             val difficulty: String
             val religionEnabled: Boolean
-            if (UncivGame.isCurrentInitialized() && UncivGame.Current.isGameInfoInitialized()) {
-                difficulty = UncivGame.Current.gameInfo.gameParameters.difficulty
-                religionEnabled = UncivGame.Current.gameInfo.isReligionEnabled()
+            if (UncivGame.isCurrentInitialized() && UncivGame.Current.gameInfo != null) {
+                difficulty = UncivGame.Current.gameInfo!!.gameParameters.difficulty
+                religionEnabled = UncivGame.Current.gameInfo!!.isReligionEnabled()
             } else {
                 difficulty = "Prince"  // most factors == 1
                 religionEnabled = true
