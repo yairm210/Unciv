@@ -6,8 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.models.translations.tr
-import com.unciv.ui.crashhandling.launchCrashHandling
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.KeyCharAndCode
@@ -20,7 +18,9 @@ import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.pad
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
-import java.util.Date
+import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.launchOnGLThread
+import java.util.*
 
 
 abstract class LoadOrSaveScreen(
@@ -101,7 +101,7 @@ abstract class LoadOrSaveScreen(
 
     private fun showSaveInfo(saveGameFile: FileHandle) {
         descriptionLabel.setText(Constants.loading.tr())
-        launchCrashHandling("LoadMetaData") { // Even loading the game to get its metadata can take a long time on older phones
+        Concurrency.run("LoadMetaData") { // Even loading the game to get its metadata can take a long time on older phones
             val textToSet = try {
                 val savedAt = Date(saveGameFile.lastModified())
                 val game = game.gameSaver.loadGamePreviewFromFile(saveGameFile)
@@ -118,7 +118,7 @@ abstract class LoadOrSaveScreen(
                 "\n{Could not load game}!"
             }
 
-            postCrashHandlingRunnable {
+            launchOnGLThread {
                 descriptionLabel.setText(textToSet.tr())
             }
         }

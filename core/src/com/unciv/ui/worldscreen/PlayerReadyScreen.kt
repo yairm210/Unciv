@@ -3,11 +3,11 @@ package com.unciv.ui.worldscreen
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.utils.concurrency.Concurrency
 
 class PlayerReadyScreen(worldScreen: WorldScreen) : BaseScreen() {
     init {
@@ -19,7 +19,7 @@ class PlayerReadyScreen(worldScreen: WorldScreen) : BaseScreen() {
         table.add("[$curCiv] ready?".toLabel(curCiv.nation.getInnerColor(), Constants.headingFontSize))
 
         table.onClick {
-            postCrashHandlingRunnable { // To avoid ANRs on Android when the creation of the worldscreen takes more than 500ms
+            Concurrency.runOnGLThread { // To avoid ANRs on Android when the creation of the worldscreen takes more than 500ms
                 game.setScreen(worldScreen)
             }
         }

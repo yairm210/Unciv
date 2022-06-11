@@ -20,9 +20,7 @@ import com.unciv.ui.audio.GameSounds
 import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.crashhandling.closeExecutors
-import com.unciv.ui.crashhandling.launchCrashHandling
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
+import com.unciv.ui.crashhandling.CrashScreen
 import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.multiplayer.LoadDeepLinkScreen
@@ -32,8 +30,10 @@ import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.worldscreen.PlayerReadyScreen
 import com.unciv.ui.worldscreen.WorldScreen
+import com.unciv.utils.Log
+import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.launchOnGLThread
 import com.unciv.utils.debug
-import kotlinx.coroutines.runBlocking
 import java.util.*
 
 class UncivGame(parameters: UncivGameParameters) : Game() {
@@ -123,7 +123,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
         Gdx.graphics.isContinuousRendering = settings.continuousRendering
 
-        launchCrashHandling("LoadJSON") {
+        Concurrency.run("LoadJSON") {
             RulesetCache.loadRulesets()
             translations.tryReadTranslationForCurrentLanguage()
             translations.loadPercentageCompleteOfLanguages()
@@ -135,7 +135,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             }
 
             // This stuff needs to run on the main thread because it needs the GL context
-            postCrashHandlingRunnable {
+            launchOnGLThread {
                 musicController.chooseTrack(suffix = MusicMood.Menu)
 
                 ImageGetter.ruleset = RulesetCache.getVanillaRuleset() // so that we can enter the map editor without having to load a game first
@@ -213,16 +213,16 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         setScreen(worldScreen!!)
     }
 
-    private fun tryLoadDeepLinkedGame() = launchCrashHandling("LoadDeepLinkedGame") {
-        if (deepLinkedMultiplayerGame == null) return@launchCrashHandling
+    private fun tryLoadDeepLinkedGame() = Concurrency.run("LoadDeepLinkedGame") {
+        if (deepLinkedMultiplayerGame == null) return@run
 
-        postCrashHandlingRunnable {
+        launchOnGLThread {
             setScreen(LoadDeepLinkScreen())
         }
         try {
             onlineMultiplayer.loadGame(deepLinkedMultiplayerGame!!)
         } catch (ex: Exception) {
-            postCrashHandlingRunnable {
+            launchOnGLThread {
                 val mainMenu = MainMenuScreen()
                 setScreen(mainMenu)
                 val popup = Popup(mainMenu)
@@ -250,7 +250,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     override fun pause() {
         val curGameInfo = gameInfo
-        if (curGameInfo != null) gameSaver.autoSave(curGameInfo)
+        if (curGameInfo != null) gameSaver.requestAutoSave(curGameInfo)
         musicController.pause()
         super.pause()
     }
@@ -261,13 +261,12 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     override fun render() = wrappedCrashHandlingRender()
 
-    override fun dispose() = runBlocking {
+    override fun dispose() {
         Gdx.input.inputProcessor = null // don't allow ANRs when shutting down, that's silly
 
         cancelDiscordEvent?.invoke()
         SoundPlayer.clearCache()
         if (::musicController.isInitialized) musicController.gracefulShutdown()  // Do allow fade-out
-        closeExecutors()
 
         val curGameInfo = gameInfo
         if (curGameInfo != null) {
@@ -275,12 +274,15 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             if (autoSaveJob != null && autoSaveJob.isActive) {
                 // auto save is already in progress (e.g. started by onPause() event)
                 // let's allow it to finish and do not try to autosave second time
-                autoSaveJob.join()
+                Concurrency.runBlocking {
+                    autoSaveJob.join()
+                }
             } else {
-                gameSaver.autoSaveSingleThreaded(curGameInfo)      // NO new thread
+                gameSaver.autoSave(curGameInfo)      // NO new thread
             }
         }
         settings.save()
+        Concurrency.stopThreadPools()
 
         // On desktop this should only be this one and "DestroyJavaVM"
         logRunningThreads()
@@ -292,6 +294,15 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         Thread.enumerate(threadList)
         threadList.filter { it !== Thread.currentThread() && it.name != "DestroyJavaVM" }.forEach {
             debug("Thread %s still running in UncivGame.dispose().", it.name)
+        }
+    }
+
+    /** Handles an uncaught exception or error. First attempts a platform-specific handler, and if that didn't handle the exception or error, brings the game to a [CrashScreen]. */
+    fun handleUncaughtThrowable(ex: Throwable) {
+        Log.error("Uncaught throwable", ex)
+        if (platformSpecificHelper?.handleUncaughtThrowable(ex) == true) return
+        Gdx.app.postRunnable {
+            setScreen(CrashScreen(ex))
         }
     }
 

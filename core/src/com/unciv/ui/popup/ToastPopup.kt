@@ -1,10 +1,10 @@
 package com.unciv.ui.popup
 
 import com.badlogic.gdx.scenes.scene2d.Stage
-import com.unciv.ui.crashhandling.launchCrashHandling
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.extensions.onClick
+import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.launchOnGLThread
 import kotlinx.coroutines.delay
 
 /**
@@ -28,9 +28,9 @@ class ToastPopup (message: String, stage: Stage, val time: Long = 2000) : Popup(
     }
 
     private fun startTimer(){
-        launchCrashHandling("ResponsePopup") {
+        Concurrency.run("ResponsePopup") {
             delay(time)
-            postCrashHandlingRunnable { this@ToastPopup.close() }
+            launchOnGLThread { this@ToastPopup.close() }
         }
     }
 

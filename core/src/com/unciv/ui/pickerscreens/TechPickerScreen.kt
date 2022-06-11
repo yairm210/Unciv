@@ -14,7 +14,6 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaCategories
 import com.unciv.ui.civilopedia.CivilopediaScreen
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.Fonts
@@ -24,6 +23,7 @@ import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.utils.concurrency.Concurrency
 
 
 class TechPickerScreen(
@@ -301,7 +301,7 @@ class TechPickerScreen(
     }
 
     private fun centerOnTechnology(tech: Technology) {
-        postCrashHandlingRunnable {
+        Concurrency.runOnGLThread {
             techNameToButton[tech.name]?.let {
                 scrollPane.scrollTo(it.x, it.y, it.width, it.height, true, true)
                 scrollPane.updateVisualScroll()

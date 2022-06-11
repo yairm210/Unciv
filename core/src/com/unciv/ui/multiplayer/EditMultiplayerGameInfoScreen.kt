@@ -4,8 +4,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.logic.multiplayer.OnlineMultiplayerGame
 import com.unciv.models.translations.tr
-import com.unciv.ui.crashhandling.launchCrashHandling
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
@@ -15,6 +13,8 @@ import com.unciv.ui.utils.extensions.enable
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
+import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.launchOnGLThread
 
 /** Subscreen of MultiplayerScreen to edit and delete saves
  * backScreen is used for getting back to the MultiplayerScreen so it doesn't have to be created over and over again */
@@ -85,23 +85,23 @@ class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame, 
         popup.addGoodSizedLabel("Working...").row()
         popup.open()
 
-        launchCrashHandling("Resign", runAsDaemon = false) {
+        Concurrency.runOnNonDaemonThreadPool("Resign") {
             try {
                 val resignSuccess = game.onlineMultiplayer.resign(multiplayerGame)
                 if (resignSuccess) {
-                    postCrashHandlingRunnable {
+                    launchOnGLThread {
                         popup.close()
                         //go back to the MultiplayerScreen
                         game.setScreen(backScreen)
                     }
                 } else {
-                    postCrashHandlingRunnable {
+                    launchOnGLThread {
                         popup.reuseWith("You can only resign if it's your turn", true)
                     }
                 }
             } catch (ex: Exception) {
                 val message = MultiplayerHelpers.getLoadExceptionMessage(ex)
-                postCrashHandlingRunnable {
+                launchOnGLThread {
                     popup.reuseWith(message, true)
                 }
             }

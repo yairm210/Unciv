@@ -13,8 +13,6 @@ import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.tr
-import com.unciv.ui.crashhandling.launchCrashHandling
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.FontFamilyData
@@ -27,6 +25,8 @@ import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.setFontColor
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
+import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.launchOnGLThread
 import java.util.*
 
 fun advancedTab(
@@ -115,14 +115,14 @@ fun addFontFamilySelect(table: Table, settings: GameSettings, selectBoxMinWidth:
         }
     }
 
-    launchCrashHandling("Add Font Select") {
+    Concurrency.run("Add Font Select") {
         // This is a heavy operation and causes ANRs
         val fonts = Array<FontFamilyData>().apply {
             add(FontFamilyData.default)
             for (font in Fonts.getAvailableFontFamilyNames())
                 add(font)
         }
-        postCrashHandlingRunnable { loadFontSelect(fonts, selectCell) }
+        launchOnGLThread { loadFontSelect(fonts, selectCell) }
     }
 }
 
@@ -146,9 +146,9 @@ private fun addTranslationGeneration(table: Table, optionsPopup: OptionsPopup) {
     val generateAction: () -> Unit = {
         optionsPopup.tabs.selectPage("Advanced")
         generateTranslationsButton.setText("Working...".tr())
-        launchCrashHandling("WriteTranslations") {
+        Concurrency.run("WriteTranslations") {
             val result = TranslationFileWriter.writeNewTranslationFiles()
-            postCrashHandlingRunnable {
+            launchOnGLThread {
                 // notify about completion
                 generateTranslationsButton.setText(result.tr())
                 generateTranslationsButton.disable()

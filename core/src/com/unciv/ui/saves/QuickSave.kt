@@ -4,12 +4,12 @@ import com.unciv.Constants
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
-import com.unciv.ui.crashhandling.launchCrashHandling
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.multiplayer.MultiplayerHelpers
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.worldscreen.WorldScreen
+import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.launchOnGLThread
 import com.unciv.utils.Log
 
 
@@ -19,9 +19,9 @@ object QuickSave {
     fun save(gameInfo: GameInfo, screen: WorldScreen) {
         val gameSaver = UncivGame.Current.gameSaver
         val toast = ToastPopup("Quicksaving...", screen)
-        launchCrashHandling("QuickSaveGame", runAsDaemon = false) {
+        Concurrency.runOnNonDaemonThreadPool("QuickSaveGame") {
             gameSaver.saveGame(gameInfo, "QuickSave") {
-                postCrashHandlingRunnable {
+                launchOnGLThread {
                     toast.close()
                     if (it != null)
                         ToastPopup("Could not save game!", screen)
@@ -35,16 +35,16 @@ object QuickSave {
     fun load(screen: WorldScreen) {
         val gameSaver = UncivGame.Current.gameSaver
         val toast = ToastPopup("Quickloading...", screen)
-        launchCrashHandling("QuickLoadGame") {
+        Concurrency.run("QuickLoadGame") {
             try {
                 val loadedGame = gameSaver.loadGameByName("QuickSave")
-                postCrashHandlingRunnable {
+                launchOnGLThread {
                     toast.close()
                     UncivGame.Current.loadGame(loadedGame)
                     ToastPopup("Quickload successful.", screen)
                 }
             } catch (ex: Exception) {
-                postCrashHandlingRunnable {
+                launchOnGLThread {
                     toast.close()
                     ToastPopup("Could not load game!", screen)
                 }
@@ -56,10 +56,10 @@ object QuickSave {
         val loadingPopup = Popup(screen)
         loadingPopup.addGoodSizedLabel(Constants.loading)
         loadingPopup.open()
-        launchCrashHandling("autoLoadGame") {
+        Concurrency.run("autoLoadGame") {
             // Load game from file to class on separate thread to avoid ANR...
             fun outOfMemory() {
-                postCrashHandlingRunnable {
+                launchOnGLThread {
                     loadingPopup.close()
                     ToastPopup("Not enough memory on phone to load game!", screen)
                 }
@@ -70,14 +70,14 @@ object QuickSave {
                 savedGame = screen.game.gameSaver.loadLatestAutosave()
             } catch (oom: OutOfMemoryError) {
                 outOfMemory()
-                return@launchCrashHandling
+                return@run
             } catch (ex: Exception) {
                 Log.error("Could not autoload game", ex)
-                postCrashHandlingRunnable {
+                launchOnGLThread {
                     loadingPopup.close()
                     ToastPopup("Cannot resume game!", screen)
                 }
-                return@launchCrashHandling
+                return@run
             }
 
             if (savedGame.gameParameters.isOnlineMultiplayer) {
@@ -88,13 +88,13 @@ object QuickSave {
                 } catch (ex: Exception) {
                     val message = MultiplayerHelpers.getLoadExceptionMessage(ex)
                     Log.error("Could not autoload game", ex)
-                    postCrashHandlingRunnable {
+                    launchOnGLThread {
                         loadingPopup.close()
                         ToastPopup(message, screen)
                     }
                 }
             } else {
-                postCrashHandlingRunnable { /// ... and load it into the screen on main thread for GL context
+                launchOnGLThread { /// ... and load it into the screen on main thread for GL context
                     try {
                         screen.game.loadGame(savedGame)
                     } catch (oom: OutOfMemoryError) {

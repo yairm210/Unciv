@@ -21,11 +21,11 @@ import com.unciv.Constants
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.Fonts
+import com.unciv.utils.concurrency.Concurrency
 
 /**
  * Collection of extension functions mostly for libGdx widgets
@@ -74,7 +74,7 @@ fun Actor.center(parent: Stage) { centerX(parent); centerY(parent) }
 fun Actor.onClickEvent(sound: UncivSound = UncivSound.Click, function: (event: InputEvent?, x: Float, y: Float) -> Unit) {
     this.addListener(object : ClickListener() {
         override fun clicked(event: InputEvent?, x: Float, y: Float) {
-            launchCrashHandling("Sound") { SoundPlayer.play(sound) }
+            Concurrency.run("Sound") { SoundPlayer.play(sound) }
             function(event, x, y)
         }
     })

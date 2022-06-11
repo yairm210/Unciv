@@ -3,6 +3,7 @@ package com.unciv.app
 import android.app.Activity
 import android.content.pm.ActivityInfo
 import com.unciv.ui.utils.GeneralPlatformSpecificHelpers
+import kotlin.concurrent.thread
 
 /** See also interface [GeneralPlatformSpecificHelpers].
  *
@@ -35,4 +36,9 @@ Sources for Info about current orientation in case need:
      * External is probably on an SD-card or similar which is always accessible by the user.
      */
     override fun shouldPreferExternalStorage(): Boolean = true
+
+    override fun handleUncaughtThrowable(ex: Throwable): Boolean {
+        thread { throw ex } // this will kill the app but report the exception to the Google Play Console if the user allows it
+        return true
+    }
 }

@@ -9,10 +9,10 @@ import com.badlogic.gdx.graphics.glutils.HdpiMode
 import com.sun.jna.Native
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
-import com.unciv.utils.Log
-import com.unciv.utils.debug
 import com.unciv.logic.GameSaver
 import com.unciv.ui.utils.Fonts
+import com.unciv.utils.Log
+import com.unciv.utils.debug
 import java.util.*
 import kotlin.concurrent.timer
 
