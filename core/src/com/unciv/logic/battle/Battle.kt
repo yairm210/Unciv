@@ -348,9 +348,12 @@ object Battle {
         addedUnit.currentMovement = 0f
         addedUnit.health = 50
         attacker.getCivInfo().addNotification(notification, addedUnit.getTile().position, attacker.getName(), unitName)
-        // Also capture any civilians on the same tile
-        if (tile.civilianUnit != null)
-            captureCivilianUnit(attacker, MapUnitCombatant(tile.civilianUnit!!))
+
+        val civilianUnit = tile.civilianUnit
+        // placeUnitNearTile might not have spawned the unit in exactly this tile, in which case no capture would have happened on this tile. So we need to do that here.
+        if (addedUnit.getTile() != tile && civilianUnit != null) {
+            captureCivilianUnit(attacker, MapUnitCombatant(civilianUnit))
+        }
         return true
     }
 
@@ -559,7 +562,14 @@ object Battle {
         return null
     }
 
+    /**
+     * @throws IllegalArgumentException if the [attacker] and [defender] belong to the same civ.
+     */
     fun captureCivilianUnit(attacker: ICombatant, defender: MapUnitCombatant, checkDefeat: Boolean = true) {
+        if (attacker.getCivInfo() == defender.getCivInfo()) {
+            throw IllegalArgumentException("Can't capture our own unit!")
+        }
+
         // need to save this because if the unit is captured its owner wil be overwritten
         val defenderCiv = defender.getCivInfo()
 
