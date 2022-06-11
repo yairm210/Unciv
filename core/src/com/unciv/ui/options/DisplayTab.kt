@@ -36,7 +36,7 @@ fun displayTab(
     optionsPopup.addCheckbox(this, "Experimental Demographics scoreboard", settings.useDemographics, true) { settings.useDemographics = it }
     optionsPopup.addCheckbox(this, "Show zoom buttons in world screen", settings.showZoomButtons, true) { settings.showZoomButtons = it }
     if(System.getProperty("java.vendor").contains("Android"))
-        optionsPopup.addCheckbox(this, "Enable cutout", settings.androidCutout, false) { settings.androidCutout = it }
+        optionsPopup.addCheckbox(this, "Enable display cutout", settings.androidCutout, false) { settings.androidCutout = it }
 
     addMinimapSizeSlider(this, settings, optionsPopup.screen, optionsPopup.selectBoxMinWidth)
 
