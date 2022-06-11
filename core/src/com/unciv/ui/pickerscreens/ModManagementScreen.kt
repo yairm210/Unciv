@@ -87,7 +87,6 @@ class ModManagementScreen(
                 game.settings.tileSet = tileSets.first()
             }
             game.setScreen(MainMenuScreen())
-            dispose()
         }
         closeButton.onClick(closeAction)
         onBackButtonClicked(closeAction)
@@ -581,7 +580,6 @@ class ModManagementScreen(
     override fun resize(width: Int, height: Int) {
         if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
             game.setScreen(ModManagementScreen(installedModInfo, onlineModInfo))
-            dispose()  // interrupt background loader - sorry, the resized new screen won't continue
         }
     }
 

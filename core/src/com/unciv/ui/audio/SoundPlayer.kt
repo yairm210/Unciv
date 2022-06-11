@@ -59,7 +59,8 @@ object SoundPlayer {
         val game = UncivGame.Current
 
         // Get a hash covering all mods - quickly, so don't map, cast or copy the Set types
-        val hash1 = if (game.isGameInfoInitialized()) game.gameInfo.ruleSet.mods.hashCode() else 0
+        val gameInfo = game.gameInfo
+        val hash1 = if (gameInfo != null) gameInfo.ruleSet.mods.hashCode() else 0
         val newHash = hash1.xor(game.settings.visualMods.hashCode())
 
         // If hash the same, leave the cache as is
@@ -91,8 +92,10 @@ object SoundPlayer {
         // audiovisual mods after game mods but before built-in sounds
         // (these can already be available when game.gameInfo is not)
         val modList: MutableSet<String> = mutableSetOf()
-        if (game.isGameInfoInitialized())
-            modList.addAll(game.gameInfo.ruleSet.mods)  // Sounds from game mods
+        val gameInfo = game.gameInfo
+        if (gameInfo != null) {
+            modList.addAll(gameInfo.ruleSet.mods)  // Sounds from game mods
+        }
         modList.addAll(game.settings.visualMods)
 
         // Translate the basic mod list into relative folder names so only sounds/name.ext needs

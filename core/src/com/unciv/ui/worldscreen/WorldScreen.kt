@@ -336,7 +336,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
         try {
             debug("loadLatestMultiplayerState current game: gameId: %s, turn: %s, curCiv: %s",
-                game.worldScreen.gameInfo.gameId, game.worldScreen.gameInfo.turns, game.worldScreen.gameInfo.currentPlayer)
+                gameInfo.gameId, gameInfo.turns, gameInfo.currentPlayer)
             val latestGame = game.onlineMultiplayer.downloadGame(gameInfo.gameId)
             debug("loadLatestMultiplayerState downloaded game: gameId: %s, turn: %s, curCiv: %s",
                 latestGame.gameId, latestGame.turns, latestGame.currentPlayer)
@@ -345,8 +345,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
             }
             postCrashHandlingRunnable {
                 loadingGamePopup.close()
-                if (game.gameInfo.gameId == gameInfo.gameId) { // game could've been changed during download
-                    createNewWorldScreen(latestGame)
+                if (game.gameInfo!!.gameId == gameInfo.gameId) { // game could've been changed during download
+                    game.setScreen(createNewWorldScreen(latestGame))
                 }
             }
         } catch (ex: Throwable) {
@@ -602,7 +602,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
     }
 
-    private fun createNewWorldScreen(gameInfo: GameInfo, resize:Boolean=false) {
+    private fun createNewWorldScreen(gameInfo: GameInfo, resize:Boolean=false): WorldScreen {
 
         game.gameInfo = gameInfo
         val newWorldScreen = WorldScreen(gameInfo, gameInfo.getPlayerToViewAs())
@@ -621,7 +621,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         newWorldScreen.selectedCiv = gameInfo.getCivilization(selectedCiv.civName)
         newWorldScreen.fogOfWar = fogOfWar
 
-        game.resetToWorldScreen(newWorldScreen)
+        return newWorldScreen
     }
 
     fun nextTurn() {
@@ -669,16 +669,15 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
             // create a new WorldScreen to show the new stuff we've changed, and switch out the current screen.
             // do this on main thread - it's the only one that has a GL context to create images from
             postCrashHandlingRunnable {
-
+                val newWorldScreen = createNewWorldScreen(gameInfoClone)
                 if (gameInfoClone.currentPlayerCiv.civName != viewingCiv.civName
-                        && !gameInfoClone.gameParameters.isOnlineMultiplayer)
-                    game.setScreen(PlayerReadyScreen(gameInfoClone, gameInfoClone.getCurrentPlayerCivilization()))
-                else {
-                    createNewWorldScreen(gameInfoClone)
+                        && !gameInfoClone.gameParameters.isOnlineMultiplayer) {
+                    game.setScreen(PlayerReadyScreen(newWorldScreen))
+                } else {
+                    game.setScreen(newWorldScreen)
                 }
 
                 if (shouldAutoSave) {
-                    val newWorldScreen = this@WorldScreen.game.worldScreen
                     newWorldScreen.waitingForAutosave = true
                     newWorldScreen.shouldUpdate = true
                     game.gameSaver.autoSave(gameInfoClone) {
@@ -821,7 +820,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                         nextTurn()
                     }
                     if (game.settings.confirmNextTurn) {
-                        YesNoPopup("Confirm next turn", action, this).open()
+                        YesNoPopup("Confirm next turn", this, action = action).open()
                     } else {
                         action()
                     }

@@ -198,7 +198,7 @@ class MainMenuScreen: BaseScreen() {
 
 
     private fun resumeGame() {
-        val curWorldScreen = game.getWorldScreenOrNull()
+        val curWorldScreen = game.worldScreen
         if (curWorldScreen != null) {
             game.resetToWorldScreen()
             curWorldScreen.popups.filterIsInstance(WorldScreenMenuPopup::class.java).forEach(Popup::close)

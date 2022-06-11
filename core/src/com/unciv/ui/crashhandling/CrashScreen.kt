@@ -47,7 +47,7 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
 
     /** Qualified class name of the game screen that was active at the construction of this instance, or an error note. */
     private val lastScreenType = try {
-        UncivGame.Current.screen::class.qualifiedName.toString()
+        UncivGame.Current.screen!!::class.qualifiedName.toString()
     } catch (e: Throwable) {
         "Could not get screen type: $e"
     }
@@ -58,11 +58,11 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
 
     /** @return The last active save game serialized as a compressed string if any, or an informational note otherwise. */
     private fun tryGetSaveGame(): String {
-        if (!UncivGame.isCurrentInitialized() || !UncivGame.Current.isGameInfoInitialized())
+        if (!UncivGame.isCurrentInitialized() || UncivGame.Current.gameInfo == null)
             return ""
         return "\n**Save Data:**\n<details><summary>Show Saved Game</summary>\n\n```\n" +
             try {
-                GameSaver.gameInfoToString(UncivGame.Current.gameInfo, forceZip = true)
+                GameSaver.gameInfoToString(UncivGame.Current.gameInfo!!, forceZip = true)
             } catch (e: Throwable) {
                 "No save data: $e" // In theory .toString() could still error here.
             } + "\n```\n</details>\n"
@@ -70,11 +70,11 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
 
     /** @return Mods from the last active save game if any, or an informational note otherwise. */
     private fun tryGetSaveMods(): String {
-        if (!UncivGame.isCurrentInitialized() || !UncivGame.Current.isGameInfoInitialized())
+        if (!UncivGame.isCurrentInitialized() || UncivGame.Current.gameInfo == null)
             return ""
         return "\n**Save Mods:**\n```\n" +
             try { // Also from old CrashController().buildReport(), also could still error at .toString().
-                LinkedHashSet(UncivGame.Current.gameInfo.gameParameters.getModsAndBaseRuleset()).toString()
+                LinkedHashSet(UncivGame.Current.gameInfo!!.gameParameters.getModsAndBaseRuleset()).toString()
             } catch (e: Throwable) {
                 "No mod data: $e"
             } + "\n```\n"

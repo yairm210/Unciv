@@ -36,6 +36,7 @@ import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.pad
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
+import com.unciv.utils.Log
 import java.net.URL
 import java.util.*
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
@@ -74,9 +75,9 @@ class NewGameScreen(
             val resetToDefaultsButton = "Reset to defaults".toTextButton()
             rightSideGroup.addActorAt(0, resetToDefaultsButton)
             resetToDefaultsButton.onClick {
-                YesNoPopup("Are you sure you want to reset all game options to defaults?", {
+                YesNoPopup("Are you sure you want to reset all game options to defaults?", this) {
                     game.setScreen(NewGameScreen(previousScreen, GameSetupInfo()))
-                }, this).open(true)
+                }.open(true)
             }
         }
 
@@ -155,7 +156,7 @@ class NewGameScreen(
                 val message = mapSize.fixUndesiredSizes(gameSetupInfo.mapParameters.worldWrap)
                 if (message != null) {
                     postCrashHandlingRunnable {
-                        ToastPopup( message, UncivGame.Current.screen as BaseScreen, 4000 )
+                        ToastPopup( message, UncivGame.Current.screen!!, 4000 )
                         with (mapOptionsTable.generatedMapOptionsTable) {
                             customMapSizeRadius.text = mapSize.radius.toString()
                             customMapWidth.text = mapSize.width.toString()
@@ -275,6 +276,7 @@ class NewGameScreen(
                 rightSideButton.setText("Start game!".tr())
                 return
             } catch (ex: Exception) {
+                Log.error("Error while creating game", ex)
                 postCrashHandlingRunnable {
                     popup.reuseWith("Could not upload game!", true)
                 }
@@ -286,13 +288,12 @@ class NewGameScreen(
         }
 
         postCrashHandlingRunnable {
-            game.loadGame(newGame)
-            previousScreen.dispose()
+            val worldScreen = game.loadGame(newGame)
             if (newGame.gameParameters.isOnlineMultiplayer) {
                 // Save gameId to clipboard because you have to do it anyway.
                 Gdx.app.clipboard.contents = newGame.gameId
                 // Popup to notify the User that the gameID got copied to the clipboard
-                ToastPopup("Game ID copied to clipboard!".tr(), game.worldScreen, 2500)
+                ToastPopup("Game ID copied to clipboard!".tr(), worldScreen, 2500)
             }
         }
     }

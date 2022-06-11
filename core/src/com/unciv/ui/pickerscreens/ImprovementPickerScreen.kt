@@ -59,7 +59,6 @@ class ImprovementPickerScreen(
             onAccept()
         }
         game.resetToWorldScreen()
-        dispose()
     }
 
     init {
