@@ -8,16 +8,18 @@ import com.unciv.UncivGame
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.RulesetObject
+import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.extensions.darken
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.surroundWithCircle
 
 class ConstructionInfoTable(val cityScreen: CityScreen): Table() {
     private val selectedConstructionTable = Table()
-    val city = cityScreen.city
 
     init {
         selectedConstructionTable.background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.5f))
@@ -26,7 +28,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen): Table() {
     }
 
     fun update(selectedConstruction: IConstruction?) {
-        selectedConstructionTable.clear()
+        selectedConstructionTable.clear()  // clears content and listeners
 
         if (selectedConstruction == null) {
             isVisible = false
@@ -40,6 +42,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen): Table() {
     }
 
     private fun updateSelectedConstructionTable(construction: IConstruction) {
+        val city = cityScreen.city
         val cityConstructions = city.cityConstructions
 
         //val selectedConstructionTable = Table()
@@ -68,8 +71,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen): Table() {
             descriptionLabel.wrap = true
             add(descriptionLabel).colspan(2).width(stage.width / 4)
 
-            clearListeners()
-            val link = (construction as? RulesetObject)?.makeLink() ?: return
+            val link = (construction as? IRulesetObject)?.makeLink() ?: return
             if (link.isEmpty()) return
             touchable = Touchable.enabled
             onClick {

@@ -16,10 +16,8 @@ import com.unciv.models.Religion
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.*
+import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.utils.withItem
-import kotlin.math.abs
-import kotlin.math.max
 
 class TestGame {
 
@@ -61,7 +59,9 @@ class TestGame {
         gameInfo.tileMap = newTileMap
     }
 
-    /** Makes a new hexagonal tileMap and sets it in gameInfo. Removes all existing tiles. All new tiles have terrain [baseTerrain] */
+    /** Makes a new hexagonal tileMap with radius [newRadius] and sets it in gameInfo.
+     * Removes all existing tiles. All new tiles have terrain [baseTerrain]
+     */
     fun makeHexagonalMap(newRadius: Int, baseTerrain: String = Constants.desert) {
         val newTileMap = TileMap(newRadius, ruleset, tileMap.mapParameters.worldWrap)
         newTileMap.mapParameters.mapSize = MapSizeNew(newRadius)
@@ -88,20 +88,18 @@ class TestGame {
         return tile
     }
 
-    fun addCiv(uniques: List<String> = emptyList(), isPlayer: Boolean = false, cityState: CityStateType? = null): CivilizationInfo {
-        val nationName = "Nation-${objectsCreated++}"
-        ruleset.nations[nationName] = Nation().apply {
-            name = nationName
+    fun addCiv(vararg uniques: String, isPlayer: Boolean = false, cityState: CityStateType? = null): CivilizationInfo {
+        fun nationFactory() = Nation().apply {
             cities = arrayListOf("The Capital")
-            if (cityState != null) {
-                cityStateType = cityState
-            }
-            this.uniques = ArrayList(uniques)
+            cityStateType = cityState
+        }
+        val nation = createRulesetObject(ruleset.nations, *uniques) {
+            nationFactory()
         }
         val civInfo = CivilizationInfo()
-        civInfo.nation = ruleset.nations[nationName]!!
+        civInfo.nation = nation
         civInfo.gameInfo = gameInfo
-        civInfo.civName = nationName
+        civInfo.civName = nation.name
         if (isPlayer) civInfo.playerType = PlayerType.Human
         civInfo.setTransients()
         if (cityState != null) {
@@ -123,7 +121,7 @@ class TestGame {
 
         if (replacePalace && civInfo.cities.size == 1) {
             // Add a capital indicator without any other stats
-            val palaceWithoutStats = createBuildingWithUnique(UniqueType.IndicatesCapital.text)
+            val palaceWithoutStats = createBuilding(UniqueType.IndicatesCapital.text)
             cityInfo.cityConstructions.removeBuilding("Palace")
             cityInfo.cityConstructions.addBuilding(palaceWithoutStats.name)
         }
@@ -148,18 +146,6 @@ class TestGame {
         return name
     }
 
-    fun createBuildingWithUnique(unique: String): Building {
-        return createBuildingWithUniques(arrayListOf(unique))
-    }
-
-    fun createBuildingWithUniques(uniques: ArrayList<String> = arrayListOf()): Building {
-        val building = Building()
-        building.uniques = uniques
-        building.name = "Building-${objectsCreated++}"
-        ruleset.buildings[building.name] = building
-        return building
-    }
-
     fun addReligion(foundingCiv: CivilizationInfo): Religion {
         gameInfo.gameParameters.religionEnabled = true
         val religion = Religion("Religion-${objectsCreated++}", gameInfo, foundingCiv.civName)
@@ -168,12 +154,25 @@ class TestGame {
         return religion
     }
 
-    fun addBelief(type: BeliefType = BeliefType.Any, vararg uniques: String): Belief {
-        val belief = Belief()
-        belief.name = "Belief-${objectsCreated++}"
-        belief.type = type
-        belief.uniques = arrayListOf<String>(*uniques)
-        ruleset.beliefs[belief.name] = belief
-        return belief
+    private fun <T: IRulesetObject> createRulesetObject(
+        rulesetCollection: LinkedHashMap<String, T>,
+        vararg uniques: String,
+        factory: () -> T
+    ): T {
+        val obj = factory()
+        val name = "${obj::class.simpleName}-${objectsCreated++}"
+        obj.name = name
+        uniques.toCollection(obj.uniques)
+        rulesetCollection[name] = obj
+        return obj
     }
+
+    fun createBelief(type: BeliefType = BeliefType.Any, vararg uniques: String) =
+            createRulesetObject(ruleset.beliefs, *uniques) { Belief(type) }
+    fun createBuilding(vararg uniques: String) =
+            createRulesetObject(ruleset.buildings, *uniques) { Building() }
+    fun createPolicy(vararg uniques: String) =
+            createRulesetObject(ruleset.policies, *uniques) { Policy() }
+    fun createTileImprovement(vararg uniques: String) =
+            createRulesetObject(ruleset.tileImprovements, *uniques) { TileImprovement() }
 }

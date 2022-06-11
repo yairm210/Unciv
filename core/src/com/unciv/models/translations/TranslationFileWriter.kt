@@ -16,6 +16,7 @@ import com.unciv.models.ruleset.unique.*
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
+import com.unciv.utils.debug
 import java.io.File
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
@@ -143,7 +144,7 @@ object TranslationFileWriter {
                 }
 
                 val translationKey = line.split(" = ")[0].replace("\\n", "\n")
-                val hashMapKey = 
+                val hashMapKey =
                     if (translationKey == Translations.englishConditionalOrderingString)
                         Translations.englishConditionalOrderingString
                     else translationKey
@@ -279,7 +280,7 @@ object TranslationFileWriter {
                 .sortedBy { it.name() }       // generatedStrings maintains order, so let's feed it a predictable one
 
         // One set per json file, secondary loop var. Could be nicer to isolate all per-file
-        // processing into another class, but then we'd have to pass uniqueIndexOfNewLine around. 
+        // processing into another class, but then we'd have to pass uniqueIndexOfNewLine around.
         lateinit var resultStrings: MutableSet<String>
 
         init {
@@ -304,7 +305,7 @@ object TranslationFileWriter {
             }
             val displayName = if (jsonsFolder.name() != "jsons") jsonsFolder.name()
                 else jsonsFolder.parent().name()  // Show mod name
-            println("Translation writer took ${System.currentTimeMillis() - startMillis}ms for $displayName")
+            debug("Translation writer took %sms for %s", System.currentTimeMillis() - startMillis, displayName)
         }
 
         fun submitString(string: String) {
@@ -390,7 +391,7 @@ object TranslationFileWriter {
                     // Promotion names are not uniques but since we did the "[unitName] ability"
                     // they need the "parameters" treatment too
                     // Same for victory milestones
-                    (field.name == "uniques" || field.name == "promotions" || field.name == "milestones") 
+                    (field.name == "uniques" || field.name == "promotions" || field.name == "milestones")
                     && (fieldValue is java.util.AbstractCollection<*>) ->
                         for (item in fieldValue)
                             if (item is String) submitString(item, Unique(item)) else serializeElement(item!!)
@@ -478,7 +479,7 @@ object TranslationFileWriter {
     }
 
     //endregion
-    //region Fastlane 
+    //region Fastlane
 
     /** This writes translated short_description.txt and full_description.txt files into the Fastlane structure.
      *  @param [translations] A [Translations] instance with all languages loaded.
@@ -505,13 +506,13 @@ object TranslationFileWriter {
                 !endWithNewline && translated.endsWith('\n') -> translated.removeSuffix("\n")
                 else -> translated
             }
-            val localeCode = LocaleCode.valueOf(language)
+            val localeCode = LocaleCode.valueOf(language.replace("_",""))
             val path = fastlanePath + localeCode.language
             File(path).mkdirs()
             File(path + File.separator + fileName).writeText(fileContent)
         }
     }
-    
+
     // Original changelog entry, written by incrementVersionAndChangelog, is often changed manually for readability.
     // This updates the fastlane changelog entry to match the latest one in changelog.md
     private fun updateFastlaneChangelog() {

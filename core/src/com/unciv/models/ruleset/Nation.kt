@@ -12,7 +12,7 @@ import com.unciv.models.translations.squareBraceRegex
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
-import com.unciv.ui.utils.colorFromRGB
+import com.unciv.ui.utils.extensions.colorFromRGB
 
 class Nation : RulesetObject() {
     var leaderName = ""
@@ -37,16 +37,16 @@ class Nation : RulesetObject() {
     var uniqueText = ""
     var innerColor: List<Int>? = null
     var startBias = ArrayList<String>()
-    
+
     var startIntroPart1 = ""
     var startIntroPart2 = ""
 
     /* Properties present in json but not yet implemented:
     var adjective = ArrayList<String>()
      */
-    
+
     var favoredReligion: String? = null
-    
+
     @Transient
     private lateinit var outerColorObject: Color
     fun getOuterColor(): Color = outerColorObject
@@ -118,7 +118,7 @@ class Nation : RulesetObject() {
                 val link = if ('[' !in it.value) it.value
                     else squareBraceRegex.find(it.value)!!.groups[1]!!.value
                 textList += FormattedLine(
-                    (if (it.index == 0) "[Start bias:] " else "") + it.value.tr(),  // extra tr because tr cannot nest {[]} 
+                    (if (it.index == 0) "[Start bias:] " else "") + it.value.tr(),  // extra tr because tr cannot nest {[]}
                     link = "Terrain/$link",
                     indent = if (it.index == 0) 0 else 1,
                     iconCrossed = it.value.startsWith("Avoid "))
@@ -170,7 +170,7 @@ class Nation : RulesetObject() {
             if (allMercantileResources.isNotEmpty()) {
                 textList += FormattedLine()
                 textList += FormattedLine("The unique luxury is one of:")
-                allMercantileResources.forEach { 
+                allMercantileResources.forEach {
                     textList += FormattedLine(it.name, it.makeLink(), indent = 1)
                 }
             }

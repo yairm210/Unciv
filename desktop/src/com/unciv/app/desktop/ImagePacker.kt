@@ -3,15 +3,17 @@ package com.unciv.app.desktop
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.tools.texturepacker.TexturePacker
 import com.badlogic.gdx.utils.Json
+import com.unciv.utils.Log
+import com.unciv.utils.debug
 import java.io.File
 
 /**
  * Entry point: _ImagePacker.[packImages] ()_
- * 
+ *
  * Re-packs our texture assets into atlas + png File pairs, which will be loaded by the game.
  * With the exception of the ExtraImages folder and the Font system these are the only
  * graphics used (The source Image folders are unused at run time except here).
- * 
+ *
  * [TexturePacker] documentation is [here](https://github.com/libgdx/libgdx/wiki/Texture-packer)
  */
 internal object ImagePacker {
@@ -68,14 +70,14 @@ internal object ImagePacker {
                     try {
                         packImagesPerMod(mod.path, mod.path, defaultSettings)
                     } catch (ex: Throwable) {
-                        println("Exception in ImagePacker: ${ex.message}")
+                        Log.error("Exception in ImagePacker: %s", ex.message)
                     }
                 }
             }
         }
 
         val texturePackingTime = System.currentTimeMillis() - startTime
-        println("Packing textures - " + texturePackingTime + "ms")
+        debug("Packing textures - %sms", texturePackingTime)
     }
 
     // Scan multiple image folders and generate an atlas for each - if outdated

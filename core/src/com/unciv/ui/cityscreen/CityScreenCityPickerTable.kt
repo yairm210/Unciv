@@ -6,7 +6,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.AskTextPopup
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
 
 /** Widget for the City Screen -
  *  the panel at bottom center showing the city name and offering arrows to cycle through the cities. */

@@ -1,34 +1,51 @@
 ﻿package com.unciv
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
-import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
 import com.unciv.logic.map.MapParameters
-import com.unciv.logic.map.MapSize
+import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.models.metadata.BaseRuleset
-import com.unciv.models.ruleset.RulesetCache
-import com.unciv.ui.multiplayer.MultiplayerScreen
-import com.unciv.ui.mapeditor.*
 import com.unciv.models.metadata.GameSetupInfo
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.mapeditor.EditorMapHolder
+import com.unciv.ui.mapeditor.MapEditorScreen
+import com.unciv.ui.multiplayer.MultiplayerScreen
+import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.ModManagementScreen
-import com.unciv.ui.popup.*
+import com.unciv.ui.popup.ExitGamePopup
+import com.unciv.ui.popup.Popup
+import com.unciv.ui.popup.ToastPopup
+import com.unciv.ui.popup.closeAllPopups
+import com.unciv.ui.popup.hasOpenPopups
+import com.unciv.ui.popup.popups
 import com.unciv.ui.saves.LoadGameScreen
-import com.unciv.ui.utils.*
+import com.unciv.ui.saves.QuickSave
+import com.unciv.ui.utils.AutoScrollPane
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.utils.extensions.center
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.setFontSize
+import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.worldscreen.mainmenu.WorldScreenMenuPopup
+import kotlin.math.min
+
 
 class MainMenuScreen: BaseScreen() {
     private val backgroundTable = Table().apply { background= ImageGetter.getBackground(Color.WHITE) }
@@ -74,15 +91,29 @@ class MainMenuScreen: BaseScreen() {
         ImageGetter.ruleset = RulesetCache.getVanillaRuleset()
 
         launchCrashHandling("ShowMapBackground") {
-            val newMap = MapGenerator(RulesetCache.getVanillaRuleset())
+            var scale = 1f
+            var mapWidth = stage.width / TileGroupMap.groupHorizontalAdvance
+            var mapHeight = stage.height / TileGroupMap.groupSize
+            if (mapWidth * mapHeight > 3000f) {  // 3000 as max estimated number of tiles is arbitrary (we had typically 721 before)
+                scale = mapWidth * mapHeight / 3000f
+                mapWidth /= scale
+                mapHeight /= scale
+                scale = min(scale, 20f)
+            }
+
+            val mapRuleset = RulesetCache.getVanillaRuleset()
+            val newMap = MapGenerator(mapRuleset)
                     .generateMap(MapParameters().apply {
-                        mapSize = MapSizeNew(MapSize.Small)
+                        shape = MapShape.rectangular
+                        mapSize = MapSizeNew(mapWidth.toInt() + 1, mapHeight.toInt() + 1)
                         type = MapType.default
                         waterThreshold = -0.055f // Gives the same level as when waterThreshold was unused in MapType.default
                     })
+
             postCrashHandlingRunnable { // for GL context
-                ImageGetter.setNewRuleset(RulesetCache.getVanillaRuleset())
+                ImageGetter.setNewRuleset(mapRuleset)
                 val mapHolder = EditorMapHolder(this@MainMenuScreen, newMap) {}
+                mapHolder.setScale(scale)
                 backgroundTable.addAction(Actions.sequence(
                         Actions.fadeOut(0f),
                         Actions.run {
@@ -97,10 +128,9 @@ class MainMenuScreen: BaseScreen() {
         val column1 = Table().apply { defaults().pad(10f).fillX() }
         val column2 = if (singleColumn) column1 else Table().apply { defaults().pad(10f).fillX() }
 
-        val autosaveGame = GameSaver.getSave(GameSaver.autoSaveFileName, false)
-        if (autosaveGame.exists()) {
+        if (game.gameSaver.autosaveExists()) {
             val resumeTable = getMenuButton("Resume","OtherIcons/Resume", 'r')
-                { autoLoadGame() }
+                { resumeGame() }
             column1.add(resumeTable).row()
         }
 
@@ -112,7 +142,7 @@ class MainMenuScreen: BaseScreen() {
             { game.setScreen(NewGameScreen(this)) }
         column1.add(newGameButton).row()
 
-        if (GameSaver.getSaves(false).any()) {
+        if (game.gameSaver.getSaves().any()) {
             val loadGameTable = getMenuButton("Load game", "OtherIcons/Load", 'l')
                 { game.setScreen(LoadGameScreen(this)) }
             column1.add(loadGameTable).row()
@@ -167,53 +197,14 @@ class MainMenuScreen: BaseScreen() {
     }
 
 
-    private fun autoLoadGame() {
-        val loadingPopup = Popup(this)
-        loadingPopup.addGoodSizedLabel("Loading...")
-        loadingPopup.open()
-        launchCrashHandling("autoLoadGame") {
-            // Load game from file to class on separate thread to avoid ANR...
-            fun outOfMemory() {
-                postCrashHandlingRunnable {
-                    loadingPopup.close()
-                    ToastPopup("Not enough memory on phone to load game!", this@MainMenuScreen)
-                }
-            }
-
-            var savedGame: GameInfo
-            try {
-                savedGame = GameSaver.loadGameByName(GameSaver.autoSaveFileName)
-            } catch (oom: OutOfMemoryError) {
-                outOfMemory()
-                return@launchCrashHandling
-            } catch (ex: Exception) { // silent fail if we can't read the autosave for any reason - try to load the last autosave by turn number first
-                // This can help for situations when the autosave is corrupted
-                try {
-                    val autosaves = GameSaver.getSaves()
-                        .filter { it.name() != GameSaver.autoSaveFileName && it.name().startsWith(GameSaver.autoSaveFileName) }
-                    savedGame =
-                        GameSaver.loadGameFromFile(autosaves.maxByOrNull { it.lastModified() }!!)
-                } catch (oom: OutOfMemoryError) { // The autosave could have oom problems as well... smh
-                    outOfMemory()
-                    return@launchCrashHandling
-                } catch (ex: Exception) {
-                    postCrashHandlingRunnable {
-                        loadingPopup.close()
-                        ToastPopup("Cannot resume game!", this@MainMenuScreen)
-                    }
-                    return@launchCrashHandling
-                }
-            }
-
-            postCrashHandlingRunnable { /// ... and load it into the screen on main thread for GL context
-                try {
-                    game.loadGame(savedGame)
-                    dispose()
-                } catch (oom: OutOfMemoryError) {
-                    outOfMemory()
-                }
-            }
+    private fun resumeGame() {
+        val curWorldScreen = game.getWorldScreenOrNull()
+        if (curWorldScreen != null) {
+            game.resetToWorldScreen()
+            curWorldScreen.popups.filterIsInstance(WorldScreenMenuPopup::class.java).forEach(Popup::close)
+            return
         }
+        QuickSave.autoLoadGame(this)
     }
 
     private fun quickstartNewGame() {
@@ -243,9 +234,13 @@ class MainMenuScreen: BaseScreen() {
     }
 
     private fun openCivilopedia() {
-        val ruleset =RulesetCache[game.settings.lastGameSetup?.gameParameters?.baseRuleset]
-            ?: RulesetCache[BaseRuleset.Civ_V_GnK.fullName]
-            ?: return
+        val rulesetParameters = game.settings.lastGameSetup?.gameParameters
+        val ruleset = if (rulesetParameters == null)
+                RulesetCache[BaseRuleset.Civ_V_GnK.fullName] ?: return
+                else RulesetCache.getComplexRuleset(rulesetParameters)
+        UncivGame.Current.translations.translationActiveMods = ruleset.mods
+        ImageGetter.setNewRuleset(ruleset)
+        setSkin()
         game.setScreen(CivilopediaScreen(ruleset, this))
     }
 

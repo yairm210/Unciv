@@ -15,8 +15,17 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.popup.YesNoPopup
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.FontFamilyData
+import com.unciv.ui.utils.Fonts
+import com.unciv.ui.utils.UncivSlider
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.onChange
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.setFontColor
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
 import java.util.*
 
 fun advancedTab(
@@ -40,7 +49,7 @@ fun advancedTab(
     addMaxZoomSlider(this, settings)
 
     val screen = optionsPopup.screen
-    if (screen.game.platformSpecificHelper != null) {
+    if (screen.game.platformSpecificHelper != null && Gdx.app.type == Application.ApplicationType.Android) {
         optionsPopup.addCheckbox(this, "Enable portrait orientation", settings.allowAndroidPortrait) {
             settings.allowAndroidPortrait = it
             // Note the following might close the options screen indirectly and delayed
@@ -162,7 +171,7 @@ private fun addSetUserId(table: Table, settings: GameSettings, screen: BaseScree
                 YesNoPopup(
                     "Doing this will reset your current user ID to the clipboard contents - are you sure?",
                     {
-                        settings.userId = clipboardContents
+                        settings.multiplayer.userId = clipboardContents
                         settings.save()
                         idSetLabel.setFontColor(Color.WHITE).setText("ID successfully set!".tr())
                     },

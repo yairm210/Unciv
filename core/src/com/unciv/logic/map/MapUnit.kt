@@ -12,17 +12,20 @@ import com.unciv.logic.city.RejectionReason
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationIcon
-import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.models.UnitActionType
+import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileImprovement
-import com.unciv.models.ruleset.unique.*
+import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueMap
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stats
-import com.unciv.ui.utils.filterAndLogic
-import com.unciv.ui.utils.toPercent
+import com.unciv.ui.utils.extensions.filterAndLogic
+import com.unciv.ui.utils.extensions.toPercent
 import java.text.DecimalFormat
 import kotlin.math.pow
 
@@ -106,10 +109,10 @@ class MapUnit {
 
     @Transient
     var canEnterForeignTerrain: Boolean = false
-    
+
     @Transient
     var costToDisembark: Float? = null
-    
+
     @Transient
     var costToEmbark: Float? = null
 
@@ -282,8 +285,8 @@ class MapUnit {
     }
 
     fun hasUnique(
-        uniqueType: UniqueType, 
-        stateForConditionals: StateForConditionals = StateForConditionals(civInfo, unit=this), 
+        uniqueType: UniqueType,
+        stateForConditionals: StateForConditionals = StateForConditionals(civInfo, unit=this),
         checkCivInfoUniques: Boolean = false
     ): Boolean {
         return getMatchingUniques(uniqueType, stateForConditionals, checkCivInfoUniques).any()
@@ -376,12 +379,12 @@ class MapUnit {
         movement += getMatchingUniques(UniqueType.Movement, checkCivInfoUniques = true)
             .sumOf { it.params[0].toInt() }
 
-        
+
         if (movement < 1) movement = 1
 
         return movement
     }
-    
+
     /**
      * Determines this (land or sea) unit's current maximum vision range from unit properties, civ uniques and terrain.
      * @return Maximum distance of tiles this unit may possibly see
@@ -394,18 +397,18 @@ class MapUnit {
         if (isEmbarked() && !hasUnique(UniqueType.NormalVisionWhenEmbarked, conditionalState, checkCivInfoUniques = true)) {
             return 1
         }
-        
+
         visibilityRange += getMatchingUniques(UniqueType.Sight, conditionalState, checkCivInfoUniques = true)
             .sumOf { it.params[0].toInt() }
 
         visibilityRange += getTile().getMatchingUniques(UniqueType.Sight, conditionalState)
             .sumOf { it.params[0].toInt() }
-        
+
         if (visibilityRange < 1) visibilityRange = 1
 
         return visibilityRange
     }
-    
+
     /**
      * Update this unit's cache of viewable tiles and its civ's as well.
      */
@@ -418,7 +421,7 @@ class MapUnit {
                 getTile().getTilesInDistance(getVisibilityRange()).toHashSet() // it's that simple
             else -> getTile().getViewableTilesList(getVisibilityRange()).toHashSet()
         }
-        
+
         // Set equality automatically determines if anything changed - https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-abstract-set/equals.html
         if (updateCivViewableTiles && oldViewableTiles != viewableTiles)
             civInfo.updateViewableTiles() // for the civ
@@ -501,49 +504,127 @@ class MapUnit {
         return false
     }
 
-    fun getUnitToUpgradeTo(): BaseUnit {
+    /**
+     *  Follow the upgrade chain, stopping when there is no [BaseUnit.upgradesTo] or a tech is not researched.
+     *  @param  [actionAllowStep] Will be called for each upgrade allowed by tech and has a double purpose:
+     *          Side effects, e.g. for aggregation, are allowed, and
+     *          returning `false` will abort the upgrade chain and not include the step in the final count.
+     *  @return Number of allowed upgrade steps
+     */
+    private fun followUpgradePath(
+        maxSteps: Int = Int.MAX_VALUE,
+        actionAllowStep: (oldUnit: BaseUnit, newUnit: BaseUnit)->Boolean
+    ): Int {
         var unit = baseUnit()
+        var steps = 0
 
         // Go up the upgrade tree until you find the last one which is buildable
-        while (unit.upgradesTo != null && unit.getDirectUpgradeUnit(civInfo).requiredTech
-                .let { it == null || civInfo.tech.isResearched(it) }
-        )
-            unit = unit.getDirectUpgradeUnit(civInfo)
+        while(steps < maxSteps) {
+            if (unit.upgradesTo == null) break
+            val newUnit = unit.getDirectUpgradeUnit(civInfo)
+            val techName = newUnit.requiredTech
+            if (techName != null && !civInfo.tech.isResearched(techName)) break
+            if (!actionAllowStep(unit, newUnit)) break
+            unit = newUnit
+            steps++
+        }
+        return steps
+    }
+
+    /** Get the base unit this map unit could upgrade to, respecting researched tech and nation uniques only.
+     *  Note that if the unit can't upgrade, the current BaseUnit is returned.
+     *  @param maxSteps follow the upgrade chain only this far. Useful values are default (directly upgrade to what tech ultimately allows) or 1 (Civ5 behaviour)
+     */
+    // Used from UnitAutomation, UI action, canUpgrade
+    fun getUnitToUpgradeTo(maxSteps: Int = Int.MAX_VALUE): BaseUnit {
+        var unit = baseUnit()
+        followUpgradePath(maxSteps) { _, newUnit ->
+            unit = newUnit
+            true
+        }
         return unit
     }
 
-    /** @param ignoreRequired: Ignore possible tech/policy/building requirements. 
-     * Used for upgrading units via ancient ruins.
-     */
-    fun canUpgrade(unitToUpgradeTo: BaseUnit = getUnitToUpgradeTo(), ignoreRequired: Boolean = false): Boolean {
-        if (name == unitToUpgradeTo.name) return false
-        val rejectionReasons = unitToUpgradeTo.getRejectionReasons(civInfo)
-        if (rejectionReasons.isEmpty()) return true
-        if (ignoreRequired && rejectionReasons.filterTechPolicyEraWonderRequirements().isEmpty()) return true
-
-        if (rejectionReasons.contains(RejectionReason.ConsumesResources)) {
-            // We need to remove the unit from the civ for this check,
-            // because if the unit requires, say, horses, and so does its upgrade,
-            // and the civ currently has 0 horses, we need to see if the upgrade will be buildable
-            // WHEN THE CURRENT UNIT IS NOT HERE
-            civInfo.removeUnit(this)
-            val canUpgrade =
-                if (ignoreRequired) unitToUpgradeTo.isBuildableIgnoringTechs(civInfo)
-                else unitToUpgradeTo.isBuildable(civInfo)
-            civInfo.addUnit(this)
-            return canUpgrade
-        }
-        return false
+    /** Check if the default upgrade would do more than one step
+     *  - to avoid showing both the single step and normal upgrades in UnitActions */
+    fun canUpgradeMultipleSteps(): Boolean {
+        return 1 < followUpgradePath(2) { _, _ -> true }
     }
 
-    fun getCostOfUpgrade(): Int {
-        val unitToUpgradeTo = getUnitToUpgradeTo()
-        var goldCostOfUpgrade = (unitToUpgradeTo.cost - baseUnit().cost) * 2f + 10f
-        for (unique in civInfo.getMatchingUniques(UniqueType.UnitUpgradeCost, StateForConditionals(civInfo, unit=this)))
-            goldCostOfUpgrade *= unique.params[0].toPercent()
+    /** Check whether this unit can upgrade to [unitToUpgradeTo]. This does not check or follow the
+     *  normal upgrade chain defined by [BaseUnit.upgradesTo], unless [unitToUpgradeTo] is left at default.
+     *  @param maxSteps only used for default of [unitToUpgradeTo], ignored otherwise.
+     *  @param ignoreRequirements Ignore possible tech/policy/building requirements (e.g. resource requirements still count).
+     *          Used for upgrading units via ancient ruins.
+     *  @param ignoreResources Ignore resource requirements (tech still counts)
+     *          Used to display disabled Upgrade button
+     */
+    fun canUpgrade(
+        maxSteps: Int = Int.MAX_VALUE,
+        unitToUpgradeTo: BaseUnit = getUnitToUpgradeTo(maxSteps),
+        ignoreRequirements: Boolean = false,
+        ignoreResources: Boolean = false
+    ): Boolean {
+        if (name == unitToUpgradeTo.name) return false
+        val rejectionReasons = unitToUpgradeTo.getRejectionReasons(civInfo)
+        if (rejectionReasons.isOKIgnoringRequirements(ignoreRequirements, ignoreResources)) return true
 
-        if (goldCostOfUpgrade < 0) return 0 // For instance, Landsknecht costs less than Spearman, so upgrading would cost negative gold
-        return goldCostOfUpgrade.toInt()
+        // The resource requirements check above did not consider that the resources
+        // this unit currently "consumes" are available for an upgrade too - if that's one of the
+        // reasons, repeat the check with those resources in the pool.
+        if (!rejectionReasons.contains(RejectionReason.ConsumesResources))
+            return false
+
+        //TODO redesign without kludge: Inform getRejectionReasons about 'virtually available' resources somehow
+
+        // We need to remove the unit from the civ for this check,
+        // because if the unit requires, say, horses, and so does its upgrade,
+        // and the civ currently has 0 horses, we need to see if the upgrade will be buildable
+        // WHEN THE CURRENT UNIT IS NOT HERE
+        civInfo.removeUnit(this)
+        val canUpgrade = unitToUpgradeTo.getRejectionReasons(civInfo)
+            .isOKIgnoringRequirements(ignoreTechPolicyEraWonderRequirements = ignoreRequirements)
+        civInfo.addUnit(this)
+        return canUpgrade
+    }
+
+    /** Determine gold cost of a Unit Upgrade, potentially over several steps.
+     *  @param unitToUpgradeTo the final BaseUnit. Must be reachable via normal upgrades or else
+     *         the function will return the cost to upgrade to the last possible and researched normal upgrade.
+     *  @return Gold cost in increments of 5, never negative. Will return 0 for invalid inputs (unit can't upgrade or is is already a [unitToUpgradeTo])
+     *  @see   <a href="https://github.com/dmnd/CvGameCoreSource/blob/6501d2398113a5100ffa854c146fb6f113992898/CvGameCoreDLL_Expansion1/CvUnit.cpp#L7728">CvUnit::upgradePrice</a>
+     */
+    // Only one use from getUpgradeAction at the moment, so AI-specific rules omitted
+    //todo Does the AI never buy upgrades???
+    fun getCostOfUpgrade(unitToUpgradeTo: BaseUnit): Int {
+        // Source rounds to int every step, we don't
+        //TODO From the source, this should apply _Production_ modifiers (Temple of Artemis? GameSpeed! StartEra!), at the moment it doesn't
+
+        var goldCostOfUpgrade = 0
+
+        val ruleset = civInfo.gameInfo.ruleSet
+        val constants = ruleset.modOptions.constants.unitUpgradeCost
+        // apply modifiers: Wonders (Pentagon), Policies (Professional Army). Cached outside loop despite
+        // the UniqueType being allowed on a BaseUnit - we don't have a MapUnit in the loop.
+        // Actually instantiating every intermediate to support such mods: todo
+        var civModifier = 1f
+        val stateForConditionals = StateForConditionals(civInfo, unit = this)
+        for (unique in civInfo.getMatchingUniques(UniqueType.UnitUpgradeCost, stateForConditionals))
+            civModifier *= unique.params[0].toPercent()
+
+        followUpgradePath(actionAllowStep = fun(oldUnit: BaseUnit, newUnit: BaseUnit): Boolean {
+            // do clamping and rounding here so upgrading stepwise costs the same as upgrading far down the chain
+            var stepCost = constants.base
+            stepCost += (constants.perProduction * (newUnit.cost - oldUnit.cost)).coerceAtLeast(0f)
+            val era = ruleset.eras[ruleset.technologies[newUnit.requiredTech]?.era()]
+            if (era != null)
+                stepCost *= (1f + era.eraNumber * constants.eraMultiplier)
+            stepCost = (stepCost * civModifier).pow(constants.exponent)
+            goldCostOfUpgrade += (stepCost / constants.roundTo).toInt() * constants.roundTo
+            return newUnit != unitToUpgradeTo  // stop at requested BaseUnit to upgrade to
+        })
+
+        return goldCostOfUpgrade
     }
 
 
@@ -649,13 +730,13 @@ class MapUnit {
                 val removedFeatureName = tile.improvementInProgress!!.removePrefix(Constants.remove)
                 val tileImprovement = tile.getTileImprovement()
                 if (tileImprovement != null
-                    && tile.terrainFeatures.any { 
-                        tileImprovement.terrainsCanBeBuiltOn.contains(it) && it == removedFeatureName 
+                    && tile.terrainFeatures.any {
+                        tileImprovement.terrainsCanBeBuiltOn.contains(it) && it == removedFeatureName
                     }
                     && !tileImprovement.terrainsCanBeBuiltOn.contains(tile.baseTerrain)
                 ) {
                     // We removed a terrain (e.g. Forest) and the improvement (e.g. Lumber mill) requires it!
-                    tile.improvement = null 
+                    tile.improvement = null
                     if (tile.resource != null) civInfo.updateDetailedCivResources() // unlikely, but maybe a mod makes a resource improvement dependent on a terrain feature
                 }
                 if (RoadStatus.values().any { tile.improvementInProgress == it.removeAction })
@@ -676,7 +757,7 @@ class MapUnit {
                 tile.improvement = tile.improvementInProgress
             }
         }
-        
+
         tile.improvementInProgress = null
         tile.getCity()?.updateCitizens = true
     }
@@ -700,7 +781,7 @@ class MapUnit {
             )
         }
     }
-    
+
     private fun heal() {
         if (isEmbarked()) return // embarked units can't heal
         if (health >= 100) return // No need to heal if at max health
@@ -713,7 +794,7 @@ class MapUnit {
     }
 
     fun healBy(amount: Int) {
-        health += amount * 
+        health += amount *
             if (hasUnique(UniqueType.HealingEffectsDoubled, checkCivInfoUniques = true)) 2
             else 1
         if (health > 100) health = 100
@@ -736,7 +817,7 @@ class MapUnit {
         if (!mayHeal) return healing
 
         healing += getMatchingUniques(UniqueType.Heal, checkCivInfoUniques = true).sumOf { it.params[0].toInt() }
-        
+
         val healingCity = tileInfo.getTilesInDistance(1).firstOrNull {
             it.isCityCenter() && it.getCity()!!.getMatchingUniques(UniqueType.CityHealingUnits).any()
         }?.getCity()
@@ -748,7 +829,8 @@ class MapUnit {
         }
 
         val maxAdjacentHealingBonus = currentTile.neighbors
-            .flatMap { it.getUnits().asSequence() }.map { it.adjacentHealingBonus() }.maxOrNull()
+            .flatMap { it.getUnits().asSequence() }.filter { it.civInfo == civInfo }
+            .map { it.adjacentHealingBonus() }.maxOrNull()
         if (maxAdjacentHealingBonus != null)
             healing += maxAdjacentHealingBonus
 
@@ -845,6 +927,7 @@ class MapUnit {
     fun destroy() {
         val currentPosition = Vector2(getTile().position)
         civInfo.attacksSinceTurnStart.addAll(attacksSinceTurnStart.asSequence().map { CivilizationInfo.HistoricalAttackMemory(this.name, currentPosition, it) })
+        currentMovement = 0f
         removeFromTile()
         civInfo.removeUnit(this)
         civInfo.updateViewableTiles()
@@ -865,7 +948,7 @@ class MapUnit {
         assignOwner(recipient)
         recipient.updateViewableTiles()
     }
-    
+
     /** Destroys the unit and gives stats if its a great person */
     fun consume() {
         addStatsPerGreatPersonUsage()
@@ -897,7 +980,7 @@ class MapUnit {
         // getAncientRuinBonus, if it places a new unit, does too
         currentTile = tile
 
-        if (civInfo.isMajorCiv() 
+        if (civInfo.isMajorCiv()
             && tile.improvement != null
             && tile.getTileImprovement()!!.isAncientRuinsEquivalent()
         ) {
@@ -1127,7 +1210,7 @@ class MapUnit {
         } else civInfo.addNotification(
             "An enemy [Citadel] has attacked our [$name]",
             locations,
-            NotificationIcon.Citadel, NotificationIcon.War, name 
+            NotificationIcon.Citadel, NotificationIcon.War, name
         )
     }
 
@@ -1154,8 +1237,8 @@ class MapUnit {
     fun canBuildImprovement(improvement: TileImprovement, tile: TileInfo = currentTile): Boolean {
         // Workers (and similar) should never be able to (instantly) construct things, only build them
         // HOWEVER, they should be able to repair such things if they are pillaged
-        if (improvement.turnsToBuild == 0 
-            && improvement.name != Constants.cancelImprovementOrder 
+        if (improvement.turnsToBuild == 0
+            && improvement.name != Constants.cancelImprovementOrder
             && tile.improvementInProgress != improvement.name
         ) return false
 

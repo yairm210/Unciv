@@ -5,8 +5,8 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.unciv.UncivGame
 import com.unciv.ui.images.IconCircleGroup
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.surroundWithCircle
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.surroundWithCircle
 
 /**
  * Class that unifies the behaviour of the little green map overlay toggle buttons shown next to the minimap.
@@ -25,13 +25,14 @@ class MapOverlayToggleButton(
     /** [Actor] of the button. Add this to whatever layout. */
     val actor: IconCircleGroup by lazy {
         var innerActor: Actor = icon
+        val iconSize = 30f
         if (backgroundColor != null) {
             innerActor = innerActor
-                .surroundWithCircle(30f)
+                .surroundWithCircle(iconSize)
                 .apply { circle.color = backgroundColor }
-        }
+        } else innerActor.setSize(iconSize,iconSize)
         // So, the "Food" and "Population" stat icons have green as part of their image, but the "Cattle" icon needs a background colour, which is… An interesting mixture/reuse of texture data and render-time processing.
-        innerActor.surroundWithCircle(40f).apply { circle.color = Color.BLACK }
+        innerActor.surroundWithCircle(32f, resizeActor = false).apply { circle.color = Color.BLACK }
     }
 
     init {

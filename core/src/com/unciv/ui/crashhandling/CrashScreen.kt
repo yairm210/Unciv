@@ -13,14 +13,20 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.AutoScrollPane
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.extensions.addBorder
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.setFontSize
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.utils.Log
 import java.io.PrintWriter
 import java.io.StringWriter
 import kotlin.concurrent.thread
 
 /*
 Crashes are now handled from:
-- Event listeners, by [CrashHandlingStage].
+- Event listeners, by [UncivStage].
 - The main rendering loop, by [UncivGame.render].
 - Threads, by [crashHandlingThread].
 - Main loop runnables, by [postCrashHandlingRunnable].
@@ -54,7 +60,7 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
     private fun tryGetSaveGame(): String {
         if (!UncivGame.isCurrentInitialized() || !UncivGame.Current.isGameInfoInitialized())
             return ""
-        return "\n**Save Data:**\n<details><summary>Show Saved Game</summary>\n\n```" +
+        return "\n**Save Data:**\n<details><summary>Show Saved Game</summary>\n\n```\n" +
             try {
                 GameSaver.gameInfoToString(UncivGame.Current.gameInfo, forceZip = true)
             } catch (e: Throwable) {
@@ -107,7 +113,7 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
     }
 
     init {
-        println(text) // Also print to system terminal.
+        Log.error(text) // Also print to system terminal.
         thread { throw exception } // this is so the GPC logs catch the exception
         stage.addActor(makeLayoutTable())
     }

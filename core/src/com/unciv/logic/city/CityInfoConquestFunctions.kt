@@ -11,7 +11,8 @@ import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.utils.withoutItem
+import com.unciv.ui.utils.extensions.withoutItem
+import com.unciv.utils.debug
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -32,7 +33,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
     }
 
     private fun destroyBuildingsOnCapture() {
-        city.apply {            
+        city.apply {
             // Possibly remove other buildings
             for (building in cityConstructions.getBuiltBuildings()) {
                 when {
@@ -49,7 +50,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
             }
         }
     }
-    
+
     private fun removeBuildingsOnMoveToCiv(oldCiv: CivilizationInfo) {
         city.apply {
             // Remove all buildings provided for free to this city
@@ -60,7 +61,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
             // Remove all buildings provided for free from here to other cities (e.g. CN Tower)
             for ((cityId, buildings) in cityConstructions.freeBuildingsProvidedFromThisCity) {
                 val city = oldCiv.cities.firstOrNull { it.id == cityId } ?: continue
-                println("Removing buildings $buildings from city ${city.name}")
+                debug("Removing buildings %s from city %s", buildings, city.name)
                 for (building in buildings) {
                     city.cityConstructions.removeBuilding(building)
                 }
@@ -88,9 +89,9 @@ class CityInfoConquestFunctions(val city: CityInfo){
         }
     }
 
-    /** Function for stuff that should happen on any capture, be it puppet, annex or liberate. 
+    /** Function for stuff that should happen on any capture, be it puppet, annex or liberate.
      * Stuff that should happen any time a city is moved between civs, so also when trading,
-     * should go in `this.moveToCiv()`, which this function also calls. 
+     * should go in `this.moveToCiv()`, which this function also calls.
      */
     private fun conquerCity(conqueringCiv: CivilizationInfo, conqueredCiv: CivilizationInfo, receivingCiv: CivilizationInfo) {
         val goldPlundered = getGoldForCapturingCity(conqueringCiv)
@@ -101,7 +102,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
             val reconqueredCityWhileStillInResistance = previousOwner == conqueringCiv.civName && isInResistance()
 
             destroyBuildingsOnCapture()
-            
+
             this@CityInfoConquestFunctions.moveToCiv(receivingCiv)
 
             Battle.destroyIfDefeated(conqueredCiv, conqueringCiv)
@@ -272,12 +273,12 @@ class CityInfoConquestFunctions(val city: CityInfo){
 
             // Stop WLTKD if it's still going
             resetWLTKD()
-    
+
             // Remove their free buildings from this city and remove free buildings provided by the city from their cities
             removeBuildingsOnMoveToCiv(oldCiv)
 
             // Place palace for newCiv if this is the only city they have
-            // This needs to happen _before_ free buildings are added, as somtimes these should 
+            // This needs to happen _before_ free buildings are added, as somtimes these should
             // only be placed in the capital, and then there needs to be a capital.
             if (newCivInfo.cities.size == 1) {
                 newCivInfo.moveCapitalTo(this)

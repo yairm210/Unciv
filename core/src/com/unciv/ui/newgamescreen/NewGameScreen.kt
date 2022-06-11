@@ -8,11 +8,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.badlogic.gdx.utils.Array
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.*
+import com.unciv.logic.GameInfo
+import com.unciv.logic.GameStarter
+import com.unciv.logic.IdChecker
+import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapType
+import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
-import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
@@ -23,11 +26,19 @@ import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.popup.YesNoPopup
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.ExpanderTab
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.addSeparatorVertical
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.enable
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.pad
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
 import java.net.URL
 import java.util.*
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
-
 
 class NewGameScreen(
     private val previousScreen: BaseScreen,
@@ -73,10 +84,9 @@ class NewGameScreen(
         rightSideButton.setText("Start game!".tr())
         rightSideButton.onClick {
             if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
-                val isDropbox = UncivGame.Current.settings.multiplayerServer == Constants.dropboxMultiplayerServer
                 if (!checkConnectionToMultiplayerServer()) {
                     val noInternetConnectionPopup = Popup(this)
-                    val label = if (isDropbox) "Couldn't connect to Dropbox!" else "Couldn't connect to Multiplayer Server!"
+                    val label = if (OnlineMultiplayer.usesCustomServer()) "Couldn't connect to Multiplayer Server!" else "Couldn't connect to Dropbox!"
                     noInternetConnectionPopup.addGoodSizedLabel(label.tr()).row()
                     noInternetConnectionPopup.addCloseButton()
                     noInternetConnectionPopup.open()
@@ -100,7 +110,7 @@ class NewGameScreen(
                 it.playerType == PlayerType.Human &&
                     // do not allow multiplayer with only remote spectator(s) and AI(s) - non-MP that works
                     !(it.chosenCiv == Constants.spectator && gameSetupInfo.gameParameters.isOnlineMultiplayer &&
-                            it.playerId != UncivGame.Current.settings.userId)
+                            it.playerId != UncivGame.Current.settings.multiplayer.userId)
             }) {
                 val noHumanPlayersPopup = Popup(this)
                 noHumanPlayersPopup.addGoodSizedLabel("No human players selected!".tr()).row()
@@ -188,7 +198,7 @@ class NewGameScreen(
         topTable.add(playerPickerTable)  // No ScrollPane, PlayerPickerTable has its own
                 .width(stage.width / 3).top()
     }
-    
+
     private fun initPortrait() {
         scrollPane.setScrollingDisabled(false,false)
 
@@ -199,7 +209,7 @@ class NewGameScreen(
 
         topTable.add(newGameOptionsTable.modCheckboxes).expandX().fillX().row()
         topTable.addSeparator(Color.DARK_GRAY, height = 1f)
-        
+
         topTable.add(ExpanderTab("Map Options") {
             it.add(mapOptionsTable).row()
         }).expandX().fillX().row()
@@ -212,10 +222,9 @@ class NewGameScreen(
     }
 
     private fun checkConnectionToMultiplayerServer(): Boolean {
-        val isDropbox = UncivGame.Current.settings.multiplayerServer == Constants.dropboxMultiplayerServer
         return try {
-            val multiplayerServer = UncivGame.Current.settings.multiplayerServer
-            val u =  URL(if (isDropbox) "https://content.dropboxapi.com" else multiplayerServer)
+            val multiplayerServer = UncivGame.Current.settings.multiplayer.server
+            val u =  URL(if (OnlineMultiplayer.usesDropbox()) "https://content.dropboxapi.com" else multiplayerServer)
             val con = u.openConnection()
             con.connectTimeout = 3000
             con.connect()
@@ -255,13 +264,8 @@ class NewGameScreen(
         if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
             newGame.isUpToDate = true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
             try {
-                OnlineMultiplayerGameSaver().tryUploadGame(newGame, withPreview = true)
-
-                GameSaver.autoSave(newGame)
-
-                // Saved as Multiplayer game to show up in the session browser
-                val newGamePreview = newGame.asPreview()
-                GameSaver.saveGame(newGamePreview, newGamePreview.gameId)
+                game.onlineMultiplayer.createGame(newGame)
+                game.gameSaver.autoSave(newGame)
             } catch (ex: FileStorageRateLimitReached) {
                 postCrashHandlingRunnable {
                     popup.reuseWith("Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds", true)
@@ -329,11 +333,7 @@ class TranslatedSelectBox(values : Collection<String>, default:String, skin: Ski
         val translation = value.tr()
         override fun toString() = translation
         // Equality contract needs to be implemented else TranslatedSelectBox.setSelected won't work properly
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (javaClass != other?.javaClass) return false
-            return value == (other as TranslatedString).value
-        }
+        override fun equals(other: Any?): Boolean = other is TranslatedString && value == other.value
         override fun hashCode() = value.hashCode()
     }
 
@@ -343,7 +343,7 @@ class TranslatedSelectBox(values : Collection<String>, default:String, skin: Ski
         items = array
         selected = array.firstOrNull { it.value == default } ?: array.first()
     }
-    
+
     fun setSelected(newValue: String) {
         selected = items.firstOrNull { it == TranslatedString(newValue) } ?: return
     }

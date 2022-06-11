@@ -8,7 +8,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
-import com.unciv.logic.city.*
+import com.unciv.logic.city.CityConstructions
+import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.IConstruction
+import com.unciv.logic.city.INonPerpetualConstruction
+import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
@@ -16,15 +20,29 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
-import com.unciv.ui.audio.Sounds
+import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.crashhandling.launchCrashHandling
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.popup.closeAllPopups
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.ExpanderTab
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.utils.extensions.addBorder
+import com.unciv.ui.utils.extensions.addCell
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.brighten
+import com.unciv.ui.utils.extensions.darken
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.getConsumesAmountString
+import com.unciv.ui.utils.extensions.isEnabled
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.packIfNeeded
+import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
 import kotlin.math.max
 import kotlin.math.min
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
@@ -204,7 +222,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         val constructionsScrollY = availableConstructionsScrollPane.scrollY
 
         if (!availableConstructionsTable.hasChildren()) { //
-            availableConstructionsTable.add("Loading...".toLabel()).pad(10f)
+            availableConstructionsTable.add(Constants.loading.toLabel()).pad(10f)
         }
 
         launchCrashHandling("Construction info gathering - ${cityScreen.city.name}") {
@@ -371,7 +389,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         if (isSelectedQueueEntry()) {
             button = "Remove from queue".toTextButton()
-            if (!cityScreen.canChangeState || city.isPuppet)
+            if (!cityScreen.canCityBeChanged())
                 button.disable()
             else {
                 button.onClick {
@@ -409,7 +427,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         }
         cityScreen.stopPickTileForCreatesOneImprovement()
 
-        Sounds.play(getConstructionSound(construction))
+        SoundPlayer.play(getConstructionSound(construction))
 
         cityConstructions.addToQueue(construction.name)
         if (!construction.shouldBeDisplayed(cityConstructions)) // For buildings - unlike units which can be queued multiple times
@@ -533,7 +551,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         stat: Stat = Stat.Gold,
         tile: TileInfo? = null
     ) {
-        Sounds.play(stat.purchaseSound)
+        SoundPlayer.play(stat.purchaseSound)
         val city = cityScreen.city
         if (!city.cityConstructions.purchaseConstruction(construction.name, selectedQueueEntry, false, stat, tile)) {
             Popup(cityScreen).apply {
@@ -561,7 +579,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     private fun getRaisePriorityButton(constructionQueueIndex: Int, name: String, city: CityInfo): Table {
         val tab = Table()
         tab.add(ImageGetter.getArrowImage(Align.top).apply { color = Color.BLACK }.surroundWithCircle(40f))
-        if (cityScreen.canChangeState && !city.isPuppet) {
+        if (cityScreen.canCityBeChanged()) {
             tab.touchable = Touchable.enabled
             tab.onClick {
                 tab.touchable = Touchable.disabled
@@ -577,7 +595,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     private fun getLowerPriorityButton(constructionQueueIndex: Int, name: String, city: CityInfo): Table {
         val tab = Table()
         tab.add(ImageGetter.getArrowImage(Align.bottom).apply { color = Color.BLACK }.surroundWithCircle(40f))
-        if (cityScreen.canChangeState && !city.isPuppet) {
+        if (cityScreen.canCityBeChanged()) {
             tab.touchable = Touchable.enabled
             tab.onClick {
                 tab.touchable = Touchable.disabled
@@ -593,7 +611,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     private fun getRemoveFromQueueButton(constructionQueueIndex: Int, city: CityInfo): Table {
         val tab = Table()
         tab.add(ImageGetter.getImage("OtherIcons/Stop").surroundWithCircle(40f))
-        if (cityScreen.canChangeState && !city.isPuppet) {
+        if (cityScreen.canCityBeChanged()) {
             tab.touchable = Touchable.enabled
             tab.onClick {
                 tab.touchable = Touchable.disabled

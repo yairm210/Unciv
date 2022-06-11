@@ -7,7 +7,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
 import com.unciv.ui.utils.Fonts
-import com.unciv.ui.utils.toPercent
+import com.unciv.ui.utils.extensions.toPercent
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -47,7 +47,7 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
         val rejectionReasons = getRejectionReasons(cityConstructions)
         return rejectionReasons.all { it.rejectionReason == RejectionReason.Unbuildable }
     }
-    
+
     fun canBePurchasedWithAnyStat(cityInfo: CityInfo): Boolean {
         return Stat.values().any { canBePurchasedWithStat(cityInfo, it) }
     }
@@ -61,7 +61,7 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
         if (stat == Stat.Gold) return getBaseGoldCost(cityInfo.civInfo).toInt()
 
         val conditionalState = StateForConditionals(civInfo = cityInfo.civInfo, cityInfo = cityInfo)
-        
+
         // Can be purchased for [amount] [Stat] [cityFilter]
         val lowestCostUnique = getMatchingUniques(UniqueType.CanBePurchasedForAmountStat, conditionalState)
             .filter { it.params[1] == stat.name && cityInfo.matchesFilter(it.params[2]) }
@@ -84,13 +84,24 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
 
 
 class RejectionReasons: HashSet<RejectionReasonInstance>() {
-    
+
     fun add(rejectionReason: RejectionReason) = add(RejectionReasonInstance(rejectionReason))
-    
+
     fun contains(rejectionReason: RejectionReason) = any { it.rejectionReason == rejectionReason }
 
-    fun filterTechPolicyEraWonderRequirements(): List<RejectionReasonInstance> {
-        return filterNot { it.rejectionReason in techPolicyEraWonderRequirements }
+    fun isOKIgnoringRequirements(
+        ignoreTechPolicyEraWonderRequirements: Boolean = false,
+        ignoreResources: Boolean = false
+    ): Boolean {
+        if (!ignoreTechPolicyEraWonderRequirements && !ignoreResources) return isEmpty()
+        if (!ignoreTechPolicyEraWonderRequirements)
+            return all { it.rejectionReason == RejectionReason.ConsumesResources }
+        if (!ignoreResources)
+            return all { it.rejectionReason in techPolicyEraWonderRequirements }
+        return all {
+            it.rejectionReason == RejectionReason.ConsumesResources ||
+            it.rejectionReason in techPolicyEraWonderRequirements
+        }
     }
 
     fun hasAReasonToBeRemovedFromQueue(): Boolean {
@@ -134,7 +145,7 @@ class RejectionReasons: HashSet<RejectionReasonInstance>() {
             RejectionReason.NoPlaceToPutUnit,
         )
     }
-} 
+}
 
 
 enum class RejectionReason(val shouldShow: Boolean, val errorMessage: String) {
@@ -186,7 +197,7 @@ enum class RejectionReason(val shouldShow: Boolean, val errorMessage: String) {
 
     NoSettlerForOneCityPlayers(false, "No settlers for city-states or one-city challengers"),
     NoPlaceToPutUnit(true, "No space to place this unit");
-    
+
     fun toInstance(errorMessage: String = this.errorMessage,
         shouldShow: Boolean = this.shouldShow): RejectionReasonInstance {
         return RejectionReasonInstance(this, errorMessage, shouldShow)

@@ -13,11 +13,20 @@ import com.unciv.logic.civilization.RuinsManager.RuinsManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.logic.map.*
+import com.unciv.logic.map.MapShape
+import com.unciv.logic.map.MapUnit
+import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.UnitMovementAlgorithms
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeRequest
 import com.unciv.models.Counter
-import com.unciv.models.ruleset.*
+import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.Difficulty
+import com.unciv.models.ruleset.Era
+import com.unciv.models.ruleset.ModOptionsConstants
+import com.unciv.models.ruleset.Nation
+import com.unciv.models.ruleset.Policy
+import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
@@ -29,8 +38,8 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.MayaCalendar
-import com.unciv.ui.utils.toPercent
-import com.unciv.ui.utils.withItem
+import com.unciv.ui.utils.extensions.toPercent
+import com.unciv.ui.utils.extensions.withItem
 import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
 import kotlin.math.max
@@ -73,6 +82,12 @@ class CivilizationInfo {
      */
     @Transient
     private var units = listOf<MapUnit>()
+
+    /**
+     * Index in the unit list above of the unit that is potentially due and is next up for button "Next unit".
+     */
+    @Transient
+    private var nextPotentiallyDueAt = 0
 
     @Transient
     var viewableTiles = setOf<TileInfo>()
@@ -150,13 +165,13 @@ class CivilizationInfo {
 
     /** See DiplomacyManager.flagsCountdown for why this does not map Enums to ints */
     private var flagsCountdown = HashMap<String, Int>()
-    
+
     /** Arraylist instead of HashMap as the same unique might appear multiple times
      * We don't use pairs, as these cannot be serialized due to having no no-arg constructor
      * This can also contain NON-temporary uniques but I can't be bothered to do the deprecation dance with this one
      */
     val temporaryUniques = ArrayList<TemporaryUnique>()
-    
+
     // if we only use lists, and change the list each time the cities are changed,
     // we won't get concurrent modification exceptions.
     // This is basically a way to ensure our lists are immutable.
@@ -303,7 +318,7 @@ class CivilizationInfo {
             compareByDescending<CivilizationInfo> { it.isMajorCiv() }
                 .thenBy (UncivGame.Current.settings.getCollatorFromLocale()) { it.civName.tr() }
         )
-    fun getCapital() = cities.first { it.isCapital() }
+    fun getCapital() = cities.firstOrNull { it.isCapital() }
     fun isPlayerCivilization() = playerType == PlayerType.Human
     fun isOneCityChallenger() = (
             playerType == PlayerType.Human &&
@@ -344,11 +359,11 @@ class CivilizationInfo {
         return if (preferredVictoryType == Constants.neutralVictoryType) null
                else gameInfo.ruleSet.victories[getPreferredVictoryType()]!!
     }
-    
+
     fun wantsToFocusOn(focus: Victory.Focus): Boolean {
         return thingsToFocusOnForVictory.contains(focus)
     }
-    
+
     @Transient
     private val civInfoStats = CivInfoStats(this)
     fun stats() = civInfoStats
@@ -369,15 +384,15 @@ class CivilizationInfo {
 
     // Preserves some origins for resources so we can separate them for trades
     fun getCivResourcesWithOriginsForTrade(): ResourceSupplyList {
-        val newResourceSupplyList = ResourceSupplyList()
+        val newResourceSupplyList = ResourceSupplyList(keepZeroAmounts = true)
         for (resourceSupply in detailedCivResources) {
             // If we got it from another trade or from a CS, preserve the origin
-            if ((resourceSupply.origin == "City-States" || resourceSupply.origin == "Trade") && resourceSupply.amount > 0) {
-                newResourceSupplyList.add(resourceSupply.resource, resourceSupply.amount, resourceSupply.origin)
-                newResourceSupplyList.add(resourceSupply.resource, 0, "Tradable") // Still add an empty "tradable" entry so it shows up in the list
+            if (resourceSupply.isCityStateOrTradeOrigin()) {
+                newResourceSupplyList.add(resourceSupply.copy())
+                newResourceSupplyList.add(resourceSupply.resource, Constants.tradable, 0) // Still add an empty "tradable" entry so it shows up in the list
             }
             else
-                newResourceSupplyList.add(resourceSupply.resource, resourceSupply.amount, "Tradable")
+                newResourceSupplyList.add(resourceSupply.resource, Constants.tradable, resourceSupply.amount)
         }
         return newResourceSupplyList
     }
@@ -413,7 +428,7 @@ class CivilizationInfo {
 
     fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals =
         StateForConditionals(this)) = getMatchingUniques(uniqueType, stateForConditionals).any()
-        
+
     // Does not return local uniques, only global ones.
     /** Destined to replace getMatchingUniques, gradually, as we fill the enum */
     fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(this), cityToIgnore: CityInfo? = null) = sequence {
@@ -433,25 +448,34 @@ class CivilizationInfo {
         if (religionManager.religion != null)
             yieldAll(religionManager.religion!!.getFounderUniques()
                 .filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) })
-        
+
         yieldAll(getCivResources().asSequence()
             .filter { it.amount > 0 }
             .flatMap { it.resource.getMatchingUniques(uniqueType, stateForConditionals) }
         )
-        
+
         yieldAll(gameInfo.ruleSet.globalUniques.getMatchingUniques(uniqueType, stateForConditionals))
     }
-    
- 
+
+
     //region Units
     fun getCivUnitsSize(): Int = units.size
     fun getCivUnits(): Sequence<MapUnit> = units.asSequence()
     fun getCivGreatPeople(): Sequence<MapUnit> = getCivUnits().filter { mapUnit -> mapUnit.isGreatPerson() }
 
+    // Similar to getCivUnits(), but the returned list is rotated so that the
+    // 'nextPotentiallyDueAt' unit is first here.
+    private fun getCivUnitsStartingAtNextDue(): Sequence<MapUnit> = sequenceOf(units.subList(nextPotentiallyDueAt, units.size) + units.subList(0, nextPotentiallyDueAt)).flatten()
+
     fun addUnit(mapUnit: MapUnit, updateCivInfo: Boolean = true) {
-        val newList = ArrayList(units)
+        // Since we create a new list anyway (otherwise some concurrent modification
+        // exception will happen), also rearrange existing units so that
+        // 'nextPotentiallyDueAt' becomes 0.  This way new units are always last to be due
+        // (can be changed as wanted, just have a predictable place).
+        var newList = getCivUnitsStartingAtNextDue().toMutableList()
         newList.add(mapUnit)
         units = newList
+        nextPotentiallyDueAt = 0
 
         if (updateCivInfo) {
             // Not relevant when updating TileInfo transients, since some info of the civ itself isn't yet available,
@@ -462,27 +486,46 @@ class CivilizationInfo {
     }
 
     fun removeUnit(mapUnit: MapUnit) {
-        val newList = ArrayList(units)
+        // See comment in addUnit().
+        var newList = getCivUnitsStartingAtNextDue().toMutableList()
         newList.remove(mapUnit)
         units = newList
+        nextPotentiallyDueAt = 0
+
         updateStatsForNextTurn() // unit upkeep
         updateDetailedCivResources()
     }
 
     fun getIdleUnits() = getCivUnits().filter { it.isIdle() }
 
-    private fun getDueUnits() = getCivUnits().filter { it.due && it.isIdle() }
+    fun getDueUnits(): Sequence<MapUnit> = getCivUnitsStartingAtNextDue().filter { it.due && it.isIdle() }
 
     fun shouldGoToDueUnit() = UncivGame.Current.settings.checkForDueUnits && getDueUnits().any()
 
-    fun getNextDueUnit(): MapUnit? {
-        val dueUnits = getDueUnits()
-        if (dueUnits.any()) {
-            val unit = dueUnits.first()
-            unit.due = false
-            return unit
+    // Return the next due unit, but preferably not 'unitToSkip': this is returned only if it is the only remaining due unit.
+    fun cycleThroughDueUnits(unitToSkip: MapUnit? = null): MapUnit? {
+        if (units.none()) return null
+
+        var returnAt = nextPotentiallyDueAt
+        var fallbackAt = -1
+
+        do {
+            if (units[returnAt].due && units[returnAt].isIdle()) {
+                if (units[returnAt] != unitToSkip) {
+                    nextPotentiallyDueAt = (returnAt + 1) % units.size
+                    return units[returnAt]
+                }
+                else fallbackAt = returnAt
+            }
+
+            returnAt = (returnAt + 1) % units.size
+        } while (returnAt != nextPotentiallyDueAt)
+
+        if (fallbackAt >= 0) {
+            nextPotentiallyDueAt = (fallbackAt + 1) % units.size
+            return units[fallbackAt]
         }
-        return null
+        else return null
     }
     //endregion
 
@@ -507,7 +550,7 @@ class CivilizationInfo {
         val baseUnit = gameInfo.ruleSet.units[baseUnitName]
             ?: throw UncivShowableException("Unit $baseUnitName doesn't seem to exist!")
         return getEquivalentUnit(baseUnit)
-    } 
+    }
     fun getEquivalentUnit(baseUnit: BaseUnit): BaseUnit {
         if (baseUnit.replaces != null)
             return getEquivalentUnit(baseUnit.replaces!!) // Equivalent of unique unit is the equivalent of the replaced unit
@@ -536,7 +579,7 @@ class CivilizationInfo {
         if (!(isCityState() && otherCiv.isMajorCiv())) return
         if (warOnContact || otherCiv.isMinorCivAggressor()) return // No gift if they are bad people, or we are just about to be at war
 
-        val cityStateLocation = if (cities.isEmpty()) null else getCapital().location
+        val cityStateLocation = if (cities.isEmpty()) null else getCapital()!!.location
 
         val giftAmount = Stats(gold = 15f)
         val faithAmount = Stats(faith = 4f)
@@ -561,10 +604,10 @@ class CivilizationInfo {
         }
         for ((key, value) in giftAmount)
             otherCiv.addStat(key, value.toInt())
-        
+
         if (cities.isNotEmpty())
-            otherCiv.exploredTiles = otherCiv.exploredTiles.withItem(getCapital().location)
-        
+            otherCiv.exploredTiles = otherCiv.exploredTiles.withItem(getCapital()!!.location)
+
         questManager.justMet(otherCiv) // Include them in war with major pseudo-quest
     }
 
@@ -987,7 +1030,7 @@ class CivilizationInfo {
     fun getTurnsTillCallForBarbHelp() = flagsCountdown[CivFlags.TurnsTillCallForBarbHelp.name]
 
     fun mayVoteForDiplomaticVictory() =
-        getTurnsTillNextDiplomaticVote() == 0 
+        getTurnsTillNextDiplomaticVote() == 0
         && civName !in gameInfo.diplomaticVictoryVotesCast.keys
         // Only vote if there is someone to vote for, may happen in one-more-turn mode
         && gameInfo.civilizations.any { it.isMajorCiv() && !it.isDefeated() && it != this }
@@ -999,6 +1042,7 @@ class CivilizationInfo {
     fun shouldShowDiplomaticVotingResults() =
          flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == 0
          && gameInfo.civilizations.any { it.isMajorCiv() && !it.isDefeated() && it != this }
+
 
     private fun updateRevolts() {
         if (gameInfo.civilizations.none { it.isBarbarian() }) {
@@ -1031,7 +1075,7 @@ class CivilizationInfo {
         val spawnCity = cities.maxByOrNull { random.nextInt(it.population.population + 10) } ?: return
         val spawnTile = spawnCity.getTiles().maxByOrNull { rateTileForRevoltSpawn(it) } ?: return
         val unitToSpawn = gameInfo.ruleSet.units.values.asSequence().filter {
-            it.uniqueTo == null && it.isMelee() && it.isLandUnit() 
+            it.uniqueTo == null && it.isMelee() && it.isLandUnit()
             && !it.hasUnique(UniqueType.CannotAttack) && it.isBuildable(this)
         }.maxByOrNull {
             random.nextInt(1000)
@@ -1046,14 +1090,14 @@ class CivilizationInfo {
         }
 
         // Will be automatically added again as long as unhappiness is still low enough
-        removeFlag(CivFlags.RevoltSpawning.name) 
+        removeFlag(CivFlags.RevoltSpawning.name)
 
         addNotification("Your citizens are revolting due to very high unhappiness!", spawnTile.position, unitToSpawn.name, "StatIcons/Malcontent")
     }
 
     // Higher is better
     private fun rateTileForRevoltSpawn(tile: TileInfo): Int {
-        if (tile.isWater || tile.militaryUnit != null || tile.civilianUnit != null || tile.isCityCenter() || tile.isImpassible()) 
+        if (tile.isWater || tile.militaryUnit != null || tile.civilianUnit != null || tile.isCityCenter() || tile.isImpassible())
             return -1
         var score = 10
         if (tile.improvement == null) {
@@ -1164,7 +1208,7 @@ class CivilizationInfo {
         }
 
         if (placedUnit.hasUnique(UniqueType.ReligiousUnit) && gameInfo.isReligionEnabled()) {
-            placedUnit.religion = 
+            placedUnit.religion =
                 when {
                     placedUnit.hasUnique(UniqueType.TakeReligionOverBirthCity)
                     && religionManager.religion?.isMajorReligion() == true ->
@@ -1181,7 +1225,7 @@ class CivilizationInfo {
                 passableImpassables.add(unique.params[0])   // Add to list of passable impassables
             }
         }
-        
+
         return placedUnit
     }
 
@@ -1272,7 +1316,7 @@ class CivilizationInfo {
 
         // Check if different continents (unless already max distance, or water map)
         if (connections > 0 && proximity != Proximity.Distant && !gameInfo.tileMap.isWaterMap()
-            && getCapital().getCenterTile().getContinent() != otherCiv.getCapital().getCenterTile().getContinent()
+            && getCapital()!!.getCenterTile().getContinent() != otherCiv.getCapital()!!.getCenterTile().getContinent()
         ) {
             // Different continents - increase separation by one step
             proximity = when (proximity) {
@@ -1299,8 +1343,9 @@ class CivilizationInfo {
      * Removes current capital then moves capital to argument city if not null
      */
     fun moveCapitalTo(city: CityInfo?) {
-        if (cities.isNotEmpty()) {
-            getCapital().cityConstructions.removeBuilding(getCapital().capitalCityIndicator())
+        if (cities.isNotEmpty() && getCapital() != null) {
+            val oldCapital = getCapital()!!
+            oldCapital.cityConstructions.removeBuilding(oldCapital.capitalCityIndicator())
         }
 
         if (city == null) return // can't move a non-existent city but we can always remove our old capital
@@ -1311,7 +1356,7 @@ class CivilizationInfo {
 
     fun moveCapitalToNextLargest() {
         moveCapitalTo(cities
-            .filterNot { it == getCapital() }
+            .filterNot { it.isCapital() }
             .maxByOrNull { it.population.population})
     }
 

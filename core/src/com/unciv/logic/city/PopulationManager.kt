@@ -2,14 +2,13 @@ package com.unciv.logic.city
 
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.civilization.NotificationIcon
-import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
-import com.unciv.ui.utils.toPercent
-import com.unciv.ui.utils.withItem
-import com.unciv.ui.utils.withoutItem
+import com.unciv.ui.utils.extensions.toPercent
+import com.unciv.ui.utils.extensions.withItem
+import com.unciv.ui.utils.extensions.withoutItem
 import kotlin.math.floor
 import kotlin.math.pow
 
@@ -77,12 +76,12 @@ class PopulationManager {
         }
         if (foodStored >= getFoodToNextPopulation()) {  // growth!
             foodStored -= getFoodToNextPopulation()
-            var percentOfFoodCarriedOver = 
+            var percentOfFoodCarriedOver =
                 cityInfo.getMatchingUniques(UniqueType.CarryOverFood)
                     .filter { cityInfo.matchesFilter(it.params[1]) }
                     .sumOf { it.params[0].toInt() }
-            // Try to avoid runaway food gain in mods, just in case 
-            if (percentOfFoodCarriedOver > 95) percentOfFoodCarriedOver = 95 
+            // Try to avoid runaway food gain in mods, just in case
+            if (percentOfFoodCarriedOver > 95) percentOfFoodCarriedOver = 95
             foodStored += (getFoodToNextPopulation() * percentOfFoodCarriedOver / 100f).toInt()
             addPopulation(1)
             cityInfo.updateCitizens = true
@@ -93,7 +92,7 @@ class PopulationManager {
     private fun getStatsOfSpecialist(name: String) = cityInfo.cityStats.getStatsOfSpecialist(name)
 
     fun addPopulation(count: Int) {
-        val changedAmount = 
+        val changedAmount =
             if (population + count < 0) -population
             else count
         population += changedAmount
@@ -121,7 +120,7 @@ class PopulationManager {
             if (cityInfo.matchesFilter(unique.params[1]))
                 specialistFoodBonus *= unique.params[0].toPercent()
         specialistFoodBonus = 2f - specialistFoodBonus
-        
+
         for (i in 1..getFreePopulation()) {
             //evaluate tiles
             val (bestTile, valueBestTile) = cityInfo.getTiles()
@@ -197,10 +196,18 @@ class PopulationManager {
 
 
             //un-assign population
-            if ((worstWorkedTile != null && valueWorstTile < valueWorstSpecialist)
-                    || worstJob == null) {
-                cityInfo.workedTiles = cityInfo.workedTiles.withoutItem(worstWorkedTile!!.position)
-            } else specialistAllocations.add(worstJob, -1)
+            if (worstWorkedTile != null && valueWorstTile < valueWorstSpecialist) {
+                cityInfo.workedTiles = cityInfo.workedTiles.withoutItem(worstWorkedTile.position)
+            } else if (worstJob != null) specialistAllocations.add(worstJob, -1)
+            else {
+                // It happens when "cityInfo.manualSpecialists == true"
+                //  and population goes below the number of specialists, e.g. city is razing.
+                // Let's give a chance to do the work automatically at least.
+                val worstAutoJob = specialistAllocations.keys.minByOrNull {
+                    Automation.rankSpecialist(it, cityInfo, cityInfo.cityStats.currentCityStats) }
+                    ?: break // sorry, we can do nothing about that
+                specialistAllocations.add(worstAutoJob, -1)
+            }
         }
 
     }

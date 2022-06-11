@@ -1,8 +1,14 @@
 package com.unciv.logic.multiplayer.storage
 
 import com.unciv.json.json
-import com.unciv.ui.utils.UncivDateFormat.parseDate
-import java.io.*
+import com.unciv.ui.utils.extensions.UncivDateFormat.parseDate
+import com.unciv.utils.Log
+import com.unciv.utils.debug
+import java.io.BufferedReader
+import java.io.DataOutputStream
+import java.io.FileNotFoundException
+import java.io.InputStream
+import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.Charset
@@ -41,10 +47,10 @@ object DropBox: FileStorage {
 
                 return inputStream
             } catch (ex: Exception) {
-                println(ex.message)
+                debug("Dropbox exception", ex)
                 val reader = BufferedReader(InputStreamReader(errorStream))
                 val responseString = reader.readText()
-                println(responseString)
+                debug("Response: %s", responseString)
 
                 val error = json().fromJson(ErrorResponse::class.java, responseString)
                 // Throw Exceptions based on the HTTP response from dropbox
@@ -53,12 +59,11 @@ object DropBox: FileStorage {
                     error.error_summary.startsWith("path/not_found/") -> throw FileNotFoundException()
                     error.error_summary.startsWith("path/conflict/file") -> throw FileStorageConflictException()
                 }
-                
+
                 return null
             } catch (error: Error) {
-                println(error.message)
-                val reader = BufferedReader(InputStreamReader(errorStream))
-                println(reader.readText())
+                Log.error("Dropbox error", error)
+                debug("Error stream: %s", { BufferedReader(InputStreamReader(errorStream)).readText() })
                 return null
             }
         }

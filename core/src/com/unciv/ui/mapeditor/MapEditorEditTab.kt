@@ -15,7 +15,13 @@ import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.mapeditor.MapEditorOptionsTab.TileMatchFuzziness
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.TabbedPager
+import com.unciv.ui.utils.UncivSlider
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.utils.Log
 
 class MapEditorEditTab(
     private val editorScreen: MapEditorScreen,
@@ -73,9 +79,9 @@ class MapEditorEditTab(
             defaults().pad(10f).left()
             add(brushLabel)
             brushCell = add().padLeft(0f)
-            brushSlider = UncivSlider(1f,6f,1f, getTipText = { getBrushTip(it).tr() }) {
+            brushSlider = UncivSlider(1f,6f,1f, initial = 1f, getTipText = { getBrushTip(it).tr() }) {
                 brushSize = if (it > 5f) -1 else it.toInt()
-                brushLabel.setText("Brush ([${getBrushTip(it).take(1)}]):".tr())
+                brushLabel.setText("Brush ([${getBrushTip(it, true)}]):".tr())
             }
             add(brushSlider).padLeft(0f)
         }
@@ -208,7 +214,7 @@ class MapEditorEditTab(
             val riverGenerator = RiverGenerator(editorScreen.tileMap, randomness, ruleset)
             riverGenerator.spawnRiver(riverStartTile!!, riverEndTile!!, resultingTiles)
         } catch (ex: Exception) {
-            println(ex.message)
+            Log.error("Exception while generating rivers", ex)
             ToastPopup("River generation failed!", editorScreen)
         }
         riverStartTile = null
@@ -237,7 +243,7 @@ class MapEditorEditTab(
         }
     }
 
-    /** Used for starting locations - no temp tile as brushAction needs to access tile.tileMap */ 
+    /** Used for starting locations - no temp tile as brushAction needs to access tile.tileMap */
     private fun directPaintTile(tile: TileInfo) {
         brushAction(tile)
         editorScreen.isDirty = true
@@ -320,6 +326,10 @@ class MapEditorEditTab(
     }
 
     companion object {
-        private fun getBrushTip(value: Float) = if (value > 5f) "Floodfill" else value.toInt().toString()
+        private fun getBrushTip(value: Float, abbreviate: Boolean = false) = when {
+            value <= 5f -> value.toInt().toString()
+            abbreviate -> "Floodfill_Abbreviation"
+            else -> "Floodfill"
+        }
     }
 }

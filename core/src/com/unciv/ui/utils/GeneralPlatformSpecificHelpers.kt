@@ -17,4 +17,10 @@ interface GeneralPlatformSpecificHelpers {
      * Notifies the user that it's their turn while the game is running
      */
     fun notifyTurnStarted() {}
+
+    /**
+     * If the GDX [com.badlogic.gdx.Files.getExternalStoragePath] should be preferred for this platform,
+     * otherwise uses [com.badlogic.gdx.Files.getLocalStoragePath]
+     */
+    fun shouldPreferExternalStorage(): Boolean
 }

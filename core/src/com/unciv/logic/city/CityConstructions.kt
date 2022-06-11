@@ -6,7 +6,7 @@ import com.unciv.logic.automation.ConstructionAutomation
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
-import com.unciv.logic.map.MapUnit  // for Kdoc only
+import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Ruleset
@@ -21,11 +21,9 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaCategories
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
-import com.unciv.ui.utils.withItem
-import com.unciv.ui.utils.withoutItem
-import com.unciv.ui.worldscreen.unit.UnitActions  // for Kdoc only
-import java.util.*
-import kotlin.collections.ArrayList
+import com.unciv.ui.utils.extensions.withItem
+import com.unciv.ui.utils.extensions.withoutItem
+import com.unciv.ui.worldscreen.unit.UnitActions
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 
@@ -187,6 +185,11 @@ class CityConstructions {
     fun isBuildingWonder(): Boolean {
         val currentConstruction = getCurrentConstruction()
         return currentConstruction is Building && currentConstruction.isWonder
+    }
+
+    fun canBeHurried(): Boolean {
+        val currentConstruction = getCurrentConstruction()
+        return currentConstruction is INonPerpetualConstruction && !currentConstruction.hasUnique(UniqueType.CannotBeHurried)
     }
 
     /** If the city is constructing multiple units of the same type, subsequent units will require the full cost  */

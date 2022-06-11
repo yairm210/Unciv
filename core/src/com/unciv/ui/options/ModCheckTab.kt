@@ -15,7 +15,16 @@ import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.newgamescreen.TranslatedSelectBox
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.ExpanderTab
+import com.unciv.ui.utils.TabbedPager
+import com.unciv.ui.utils.extensions.onChange
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
+import com.unciv.utils.Log
+import com.unciv.utils.debug
 
 
 private const val MOD_CHECK_WITHOUT_BASE = "-none-"
@@ -194,7 +203,7 @@ class ModCheckTab(
                 deprecatedUnique.sourceObjectType!!
             )
             for (error in modInvariantErrors)
-                println(error.text + " - " + error.errorSeverityToReport)
+                Log.error("ModInvariantError: %s - %s", error.text, error.errorSeverityToReport)
             if (modInvariantErrors.isNotEmpty()) continue // errors means no autoreplace
 
             if (mod.modOptions.isBaseRuleset) {
@@ -206,12 +215,12 @@ class ModCheckTab(
                     deprecatedUnique.sourceObjectType
                 )
                 for (error in modSpecificErrors)
-                    println(error.text + " - " + error.errorSeverityToReport)
+                    Log.error("ModSpecificError: %s - %s", error.text, error.errorSeverityToReport)
                 if (modSpecificErrors.isNotEmpty()) continue
             }
 
             deprecatedUniquesToReplacementText[deprecatedUnique.text] = uniqueReplacementText
-            println("Replace \"${deprecatedUnique.text}\" with \"$uniqueReplacementText\"")
+            debug("Replace \"%s\" with \"%s\"", deprecatedUnique.text, uniqueReplacementText)
         }
         return deprecatedUniquesToReplacementText
     }

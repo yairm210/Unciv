@@ -2,19 +2,25 @@ package com.unciv.logic.civilization.diplomacy
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
-import com.unciv.logic.civilization.*
+import com.unciv.logic.civilization.AlertType
+import com.unciv.logic.civilization.CityStatePersonality
+import com.unciv.logic.civilization.CityStateType
+import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
-import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
-import com.unciv.ui.utils.toPercent
+import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.utils.extensions.toPercent
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 
 enum class RelationshipLevel(val color: Color) {
-    // War is tested separately for the Diplomacy Screen. Colored RED. 
+    // War is tested separately for the Diplomacy Screen. Colored RED.
     Unforgivable(Color.FIREBRICK),
     Afraid(Color(0x5300ffff)),     // HSV(260,100,100)
     Enemy(Color.YELLOW),
@@ -116,7 +122,7 @@ class DiplomacyManager() {
 
     /** For city-states. Influence is saved in the CITY STATE -> major civ Diplomacy, NOT in the major civ -> city state diplomacy.
      * Access via getInfluence() and setInfluence() unless you know what you're doing.
-     * Note that not using the setter skips recalculating the ally and bounds checks, 
+     * Note that not using the setter skips recalculating the ally and bounds checks,
      * and skipping the getter bypasses the modified value when at war */
     private var influence = 0f
 
@@ -230,7 +236,7 @@ class DiplomacyManager() {
         influence = max(amount, MINIMUM_INFLUENCE)
         civInfo.updateAllyCivForCityState()
     }
-    
+
     fun getInfluence() = if (civInfo.isAtWarWith(otherCiv())) MINIMUM_INFLUENCE else influence
 
     // To be run from City-State DiplomacyManager, which holds the influence. Resting point for every major civ can be different.
@@ -240,9 +246,9 @@ class DiplomacyManager() {
         for (unique in otherCiv().getMatchingUniques(UniqueType.CityStateRestingPoint))
             restingPoint += unique.params[0].toInt()
 
-        if (civInfo.cities.any()) // no capital if no cities
+        if (civInfo.cities.any() && civInfo.getCapital() != null)
             for (unique in otherCiv().getMatchingUniques(UniqueType.RestingPointOfCityStatesFollowingReligionChange))
-                if (otherCiv().religionManager.religion?.name == civInfo.getCapital().religion.getMajorityReligionName())
+                if (otherCiv().religionManager.religion?.name == civInfo.getCapital()!!.religion.getMajorityReligionName())
                     restingPoint += unique.params[0].toInt()
 
         if (diplomaticStatus == DiplomaticStatus.Protector) restingPoint += 10
@@ -266,8 +272,8 @@ class DiplomacyManager() {
         for (unique in otherCiv().getMatchingUniques(UniqueType.CityStateInfluenceDegradation))
             modifierPercent += unique.params[0].toFloat()
 
-        val religion = if (civInfo.cities.isEmpty()) null
-            else civInfo.getCapital().religion.getMajorityReligionName()
+        val religion = if (civInfo.cities.isEmpty() || civInfo.getCapital() == null) null
+            else civInfo.getCapital()!!.religion.getMajorityReligionName()
         if (religion != null && religion == otherCiv().religionManager.religion?.name)
             modifierPercent -= 25f  // 25% slower degrade when sharing a religion
 
@@ -291,8 +297,8 @@ class DiplomacyManager() {
         if (otherCiv().hasUnique(UniqueType.CityStateInfluenceRecoversTwiceNormalRate))
             modifierPercent += 100f
 
-        val religion = if (civInfo.cities.isEmpty()) null
-            else civInfo.getCapital().religion.getMajorityReligionName()
+        val religion = if (civInfo.cities.isEmpty() || civInfo.getCapital() == null) null
+            else civInfo.getCapital()!!.religion.getMajorityReligionName()
         if (religion != null && religion == otherCiv().religionManager.religion?.name)
             modifierPercent += 50f  // 50% quicker recovery when sharing a religion
 
@@ -325,25 +331,25 @@ class DiplomacyManager() {
     }
 
     fun resourcesFromTrade(): ResourceSupplyList {
-        val counter = ResourceSupplyList()
+        val newResourceSupplyList = ResourceSupplyList()
         val resourcesMap = civInfo.gameInfo.ruleSet.tileResources
         val isResourceFilter: (TradeOffer) -> Boolean = {
             (it.type == TradeType.Strategic_Resource || it.type == TradeType.Luxury_Resource)
-                    && civInfo.gameInfo.ruleSet.tileResources.containsKey(it.name)
+                    && resourcesMap.containsKey(it.name)
         }
         for (trade in trades) {
             for (offer in trade.ourOffers.filter(isResourceFilter))
-                counter.add(resourcesMap[offer.name]!!, -offer.amount, "Trade")
+                newResourceSupplyList.add(resourcesMap[offer.name]!!, "Trade", -offer.amount)
             for (offer in trade.theirOffers.filter(isResourceFilter))
-                counter.add(resourcesMap[offer.name]!!, offer.amount, "Trade")
+                newResourceSupplyList.add(resourcesMap[offer.name]!!, "Trade", offer.amount)
         }
 
         for (trade in otherCiv().tradeRequests.filter { it.requestingCiv == civInfo.civName }) {
             for (offer in trade.trade.theirOffers.filter(isResourceFilter))
-                counter.add(resourcesMap[offer.name]!!, -offer.amount, "Trade request")
+                newResourceSupplyList.add(resourcesMap[offer.name]!!, "Trade request", -offer.amount)
         }
 
-        return counter
+        return newResourceSupplyList
     }
 
     /** Returns the [civilizations][CivilizationInfo] that know about both sides ([civInfo] and [otherCiv]) */
@@ -373,7 +379,7 @@ class DiplomacyManager() {
                 if (offer.type in listOf(TradeType.Luxury_Resource, TradeType.Strategic_Resource)
                     && (offer.name in negativeCivResources || !civInfo.gameInfo.ruleSet.tileResources.containsKey(offer.name))
                 ) {
-                    
+
                     trades.remove(trade)
                     val otherCivTrades = otherCiv().getDiplomacyManager(civInfo).trades
                     otherCivTrades.removeAll { it.equalTrade(trade.reverse()) }
@@ -382,7 +388,7 @@ class DiplomacyManager() {
                     if (trade.theirOffers.any { it.name == Constants.peaceTreaty }) {
                         remakePeaceTreaty(trade.theirOffers.first { it.name == Constants.peaceTreaty }.duration)
                     }
-                    
+
                     civInfo.addNotification("One of our trades with [$otherCivName] has been cut short", NotificationIcon.Trade, otherCivName)
                     otherCiv().addNotification("One of our trades with [${civInfo.civName}] has been cut short", NotificationIcon.Trade, civInfo.civName)
                     civInfo.updateDetailedCivResources()
@@ -390,7 +396,7 @@ class DiplomacyManager() {
             }
         }
     }
-    
+
     private fun remakePeaceTreaty(durationLeft: Int) {
         val treaty = Trade()
         treaty.ourOffers.add(
@@ -444,7 +450,7 @@ class DiplomacyManager() {
         val initialRelationshipLevel = relationshipLevel()
 
         val restingPoint = getCityStateInfluenceRestingPoint()
-        // We don't use `getInfluence()` here, as then during war with the ally of this CS, 
+        // We don't use `getInfluence()` here, as then during war with the ally of this CS,
         // our influence would be set to -59, overwriting the old value, which we want to keep
         // as it should be restored once the war ends (though we keep influence degradation from time during the war)
         if (influence > restingPoint) {
@@ -456,7 +462,7 @@ class DiplomacyManager() {
         }
 
         if (!civInfo.isDefeated()) { // don't display city state relationship notifications when the city state is currently defeated
-            val civCapitalLocation = if (civInfo.cities.isNotEmpty()) civInfo.getCapital().location else null
+            val civCapitalLocation = if (civInfo.cities.isNotEmpty() || civInfo.getCapital() != null) civInfo.getCapital()!!.location else null
             if (getTurnsToRelationshipChange() == 1) {
                 val text = "Your relationship with [${civInfo.civName}] is about to degrade"
                 if (civCapitalLocation != null) otherCiv().addNotification(text, civCapitalLocation, civInfo.civName, NotificationIcon.Diplomacy)
@@ -612,17 +618,17 @@ class DiplomacyManager() {
             revertToZero(DiplomaticModifiers.DeclarationOfFriendship, 1 / 2f) //decreases slowly and will revert to full if it is declared later
 
         if (!otherCiv().isCityState()) return
-        
+
         val eraInfo = civInfo.getEra()
 
         if (relationshipLevel() < RelationshipLevel.Friend) {
-            if (hasFlag(DiplomacyFlags.ProvideMilitaryUnit)) 
+            if (hasFlag(DiplomacyFlags.ProvideMilitaryUnit))
                 removeFlag(DiplomacyFlags.ProvideMilitaryUnit)
             return
         }
-        
+
         val variance = listOf(-1, 0, 1).random()
-                
+
         if (eraInfo.undefinedCityStateBonuses() && otherCiv().cityStateType == CityStateType.Militaristic) {
             // Deprecated, assume Civ V values for compatibility
             if (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) && relationshipLevel() == RelationshipLevel.Friend)
@@ -632,7 +638,7 @@ class DiplomacyManager() {
                 && relationshipLevel() == RelationshipLevel.Ally)
                 setFlag(DiplomacyFlags.ProvideMilitaryUnit, 17 + variance)
         }
-        
+
         if (eraInfo.undefinedCityStateBonuses()) return
 
         for (bonus in eraInfo.getCityStateBonuses(otherCiv().cityStateType, relationshipLevel())) {
@@ -654,24 +660,42 @@ class DiplomacyManager() {
         trades.clear()
         updateHasOpenBorders()
 
-        if (civInfo.isCityState() && civInfo.getProtectorCivs().contains(otherCiv())) {
-            civInfo.removeProtectorCiv(otherCiv(), forced = true)
+        val civAtWarWith = otherCiv()
+
+        if (civInfo.isCityState() && civInfo.getProtectorCivs().contains(civAtWarWith)) {
+            civInfo.removeProtectorCiv(civAtWarWith, forced = true)
         }
-        
+
         diplomaticStatus = DiplomaticStatus.War
 
         removeModifier(DiplomaticModifiers.YearsOfPeace)
         setFlag(DiplomacyFlags.DeclinedPeace, 10)/// AI won't propose peace for 10 turns
         setFlag(DiplomacyFlags.DeclaredWar, 10) // AI won't agree to trade for 10 turns
         removeFlag(DiplomacyFlags.BorderConflict)
+
+
+        // Go through city state allies.
+        if (!civInfo.isCityState()) {
+            for (thirdCiv in civInfo.getKnownCivs()
+                .filter { it.isCityState() && it.getAllyCiv() == civInfo.civName }) {
+
+                if (thirdCiv.knows(civAtWarWith) && !thirdCiv.isAtWarWith(civAtWarWith))
+                    thirdCiv.getDiplomacyManager(civAtWarWith).declareWar(true)
+                else if (!thirdCiv.knows(civAtWarWith)) {
+                    // Our city state ally has not met them yet, so they have to meet first
+                    thirdCiv.makeCivilizationsMeet(civAtWarWith, warOnContact = true)
+                    thirdCiv.getDiplomacyManager(civAtWarWith).declareWar(true)
+                }
+            }
+        }
     }
 
-    /** Declares war with the other civ in this diplomacy manager. 
+    /** Declares war with the other civ in this diplomacy manager.
      * Handles all war effects and diplomatic changes with other civs and such.
-     * 
-     * @param indirectCityStateAttack Influence with city states should only be set to -60 
-     * when they are attacked directly, not when their ally is attacked. 
-     * When @indirectCityStateAttack is set to true, we thus don't reset the influence with this city state. 
+     *
+     * @param indirectCityStateAttack Influence with city states should only be set to -60
+     * when they are attacked directly, not when their ally is attacked.
+     * When @indirectCityStateAttack is set to true, we thus don't reset the influence with this city state.
      * Should only ever be set to true for calls originating from within this function.
      */
     fun declareWar(indirectCityStateAttack: Boolean = false) {
@@ -690,9 +714,8 @@ class DiplomacyManager() {
 
         otherCivDiplomacy.setModifier(DiplomaticModifiers.DeclaredWarOnUs, -20f)
         otherCivDiplomacy.removeModifier(DiplomaticModifiers.ReturnedCapturedUnits)
-        if (otherCiv.isCityState()) {
-            if (!indirectCityStateAttack)
-                otherCivDiplomacy.setInfluence(-60f)
+        if (otherCiv.isCityState() && !indirectCityStateAttack) {
+            otherCivDiplomacy.setInfluence(-60f)
             civInfo.changeMinorCivsAttacked(1)
             otherCiv.cityStateFunctions.cityStateAttacked(civInfo)
         }
@@ -715,42 +738,13 @@ class DiplomacyManager() {
             }
         }
         otherCivDiplomacy.removeFlag(DiplomacyFlags.DeclarationOfFriendship)
+
         if (hasFlag(DiplomacyFlags.ResearchAgreement)) {
             removeFlag(DiplomacyFlags.ResearchAgreement)
             totalOfScienceDuringRA = 0
             otherCivDiplomacy.totalOfScienceDuringRA = 0
         }
         otherCivDiplomacy.removeFlag(DiplomacyFlags.ResearchAgreement)
-
-        // Go through our city state allies.
-        if (!civInfo.isCityState()) {
-            for (thirdCiv in civInfo.getKnownCivs()) {
-                if (thirdCiv.isCityState() && thirdCiv.getAllyCiv() == civInfo.civName) {
-                    if (thirdCiv.knows(otherCiv) && !thirdCiv.isAtWarWith(otherCiv))
-                        thirdCiv.getDiplomacyManager(otherCiv).declareWar(true)
-                    else if (!thirdCiv.knows(otherCiv)) {
-                        // Our city state ally has not met them yet, so they have to meet first
-                        thirdCiv.makeCivilizationsMeet(otherCiv, warOnContact = true)
-                        thirdCiv.getDiplomacyManager(otherCiv).declareWar(true)
-                    }
-                }
-            }
-        }
-
-        // Go through their city state allies.
-        if (!otherCiv.isCityState()) {
-            for (thirdCiv in otherCiv.getKnownCivs()) {
-                if (thirdCiv.isCityState() && thirdCiv.getAllyCiv() == otherCiv.civName) {
-                    if (thirdCiv.knows(civInfo) && !thirdCiv.isAtWarWith(civInfo))
-                        thirdCiv.getDiplomacyManager(civInfo).declareWar(true)
-                    else if (!thirdCiv.knows(civInfo)) {
-                        // Their city state ally has not met us yet, so we have to meet first
-                        thirdCiv.makeCivilizationsMeet(civInfo, warOnContact = true)
-                        thirdCiv.getDiplomacyManager(civInfo).declareWar(true)
-                    }
-                }
-            }
-        }
     }
 
     /** Should only be called from makePeace */

@@ -21,6 +21,7 @@ import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.IHasUniques
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
@@ -32,8 +33,10 @@ import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
-import com.unciv.ui.utils.colorFromRGB
+import com.unciv.ui.utils.extensions.colorFromRGB
 import com.unciv.ui.utils.getRelativeTextDistance
+import com.unciv.utils.Log
+import com.unciv.utils.debug
 import kotlin.collections.set
 
 object ModOptionsConstants {
@@ -56,13 +59,13 @@ class ModOptions : IHasUniques {
     var modUrl = ""
     var author = ""
     var modSize = 0
- 
+
     @Deprecated("As of 3.18.15")
     var maxXPfromBarbarians = 30
 
     override var uniques = ArrayList<String>()
 
-    // If these two are delegated with "by lazy", the mod download process crashes and burns 
+    // If these two are delegated with "by lazy", the mod download process crashes and burns
     // Instead, Ruleset.load sets them, which is preferable in this case anyway
     override var uniqueObjects: List<Unique> = listOf()
     override var uniqueMap: Map<String, List<Unique>> = mapOf()
@@ -192,7 +195,7 @@ class Ruleset {
     fun allIHasUniques(): Sequence<IHasUniques> =
             allRulesetObjects() + sequenceOf(modOptions)
 
-    fun load(folderHandle: FileHandle, printOutput: Boolean) {
+    fun load(folderHandle: FileHandle) {
         val gameBasicsStartTime = System.currentTimeMillis()
 
         val modOptionsFile = folderHandle.child("ModOptions.json")
@@ -307,21 +310,21 @@ class Ruleset {
         }
 
         val difficultiesFile = folderHandle.child("Difficulties.json")
-        if (difficultiesFile.exists()) 
+        if (difficultiesFile.exists())
             difficulties += createHashmap(json().fromJsonFile(Array<Difficulty>::class.java, difficultiesFile))
 
         val globalUniquesFile = folderHandle.child("GlobalUniques.json")
         if (globalUniquesFile.exists()) {
             globalUniques = json().fromJsonFile(GlobalUniques::class.java, globalUniquesFile)
         }
-        
+
         val victoryTypesFiles = folderHandle.child("VictoryTypes.json")
         if (victoryTypesFiles.exists()) {
             victories += createHashmap(json().fromJsonFile(Array<Victory>::class.java, victoryTypesFiles))
         }
 
-        
-        
+
+
         // Add objects that might not be present in base ruleset mods, but are required
         if (modOptions.isBaseRuleset) {
             // This one should be temporary
@@ -342,8 +345,7 @@ class Ruleset {
             }
         }
 
-        val gameBasicsLoadTime = System.currentTimeMillis() - gameBasicsStartTime
-        if (printOutput) println("Loading ruleset - " + gameBasicsLoadTime + "ms")
+        debug("Loading ruleset - %sms", System.currentTimeMillis() - gameBasicsStartTime)
     }
 
     /** Building costs are unique in that they are dependant on info in the technology part.
@@ -355,7 +357,7 @@ class Ruleset {
         for (building in buildings.values) {
             if (building.cost == 0 && !building.hasUnique(UniqueType.Unbuildable)) {
                 val column = technologies[building.requiredTech]?.column
-                        ?: throw UncivShowableException("Building (${building.name}) is buildable and therefore must either have an explicit cost or reference an existing tech")
+                        ?: throw UncivShowableException("Building '[${building.name}]' is buildable and therefore must either have an explicit cost or reference an existing tech.")
                 building.cost = if (building.isAnyWonder()) column.wonderCost else column.buildingCost
             }
         }
@@ -389,7 +391,7 @@ class Ruleset {
         forOptionsPopup: Boolean
     ) {
         val name = if (uniqueContainer is INamed) uniqueContainer.name else ""
-        
+
         for (unique in uniqueContainer.uniqueObjects) {
             val errors = checkUnique(
                 unique,
@@ -424,12 +426,12 @@ class Ruleset {
                 unique.text.count { it=='<' } != unique.text.count { it=='>' } ->listOf(
                         RulesetError("$name's unique \"${unique.text}\" contains mismatched conditional braces!",
                             RulesetErrorSeverity.Warning))
-                
+
                 // This should only ever happen if a bug is or has been introduced that prevents Unique.type from being set for a valid UniqueType, I think.\
                 equalUniques.isNotEmpty() -> listOf(RulesetError(
                         "$name's unique \"${unique.text}\" looks like it should be fine, but for some reason isn't recognized.",
                         RulesetErrorSeverity.OK))
-                
+
                 similarUniques.isNotEmpty() -> {
                     val text =
                         "$name's unique \"${unique.text}\" looks like it may be a misspelling of:\n" +
@@ -503,7 +505,7 @@ class Ruleset {
         if (unique.type.targetTypes.none { uniqueTarget.canAcceptUniqueTarget(it) }
             // the 'consume unit' conditional causes a triggerable unique to become a unit action
             && !(uniqueTarget==UniqueTarget.Unit
-                    && unique.isTriggerable 
+                    && unique.isTriggerable
                     && unique.conditionals.any { it.type == UniqueType.ConditionalConsumeUnit }))
             rulesetErrors.add(
                 "$name's unique \"${unique.text}\" cannot be put on this type of object!",
@@ -681,15 +683,33 @@ class Ruleset {
             for (terrain in improvement.terrainsCanBeBuiltOn)
                 if (!terrains.containsKey(terrain) && terrain != "Land" && terrain != "Water")
                     lines += "${improvement.name} can be built on terrain $terrain which does not exist!"
-            if (improvement.terrainsCanBeBuiltOn.isEmpty() 
-                && !improvement.hasUnique(UniqueType.CanOnlyImproveResource) 
-                && !improvement.hasUnique(UniqueType.Unbuildable) 
-                && !improvement.name.startsWith(Constants.remove) 
+            if (improvement.terrainsCanBeBuiltOn.isEmpty()
+                && !improvement.hasUnique(UniqueType.CanOnlyImproveResource)
+                && !improvement.hasUnique(UniqueType.Unbuildable)
+                && !improvement.name.startsWith(Constants.remove)
                 && improvement.name !in RoadStatus.values().map { it.removeAction }
                 && improvement.name != Constants.cancelImprovementOrder
             ) {
                 lines.add(
                     "${improvement.name} has an empty `terrainsCanBeBuiltOn`, isn't allowed to only improve resources and isn't unbuildable! Support for this will soon end. Either give this the unique \"Unbuildable\", \"Can only be built to improve a resource\" or add \"Land\", \"Water\" or any other value to `terrainsCanBeBuiltOn`.",
+                    RulesetErrorSeverity.Warning
+                )
+            }
+            for (unique in improvement.uniqueObjects) {
+                if (unique.type == UniqueType.PillageYieldRandom || unique.type == UniqueType.PillageYieldFixed) {
+                    if (!Stats.isStats(unique.params[0])) continue
+                    val params = Stats.parse(unique.params[0])
+                    if (params.values.any { it < 0 }) lines.add(
+                        "${improvement.name} cannot have a negative value for a pillage yield!",
+                        RulesetErrorSeverity.Error
+                    )
+                }
+            }
+            if ((improvement.hasUnique(UniqueType.PillageYieldRandom, StateForConditionals.IgnoreConditionals)
+                            || improvement.hasUnique(UniqueType.PillageYieldFixed, StateForConditionals.IgnoreConditionals))
+                    && improvement.hasUnique(UniqueType.Unpillagable, StateForConditionals.IgnoreConditionals)) {
+                lines.add(
+                    "${improvement.name} has both an `Unpillagable` unique type and a `PillageYieldRandom` or `PillageYieldFixed` unique type!",
                     RulesetErrorSeverity.Warning
                 )
             }
@@ -792,7 +812,7 @@ class Ruleset {
                         lines += "${policy.name} requires policy $prereq which does not exist!"
             checkUniques(policy, lines, rulesetSpecific, forOptionsPopup)
         }
-        
+
         for (policy in policyBranches.values.flatMap { it.policies + it })
             if (policy != policies[policy.name])
                 lines += "More than one policy with the name ${policy.name} exists!"
@@ -818,13 +838,13 @@ class Ruleset {
         for (unitType in unitTypes.values) {
             checkUniques(unitType, lines, rulesetSpecific, forOptionsPopup)
         }
-        
+
         for (victoryType in victories.values) {
-            for (requiredUnit in victoryType.requiredSpaceshipParts) 
+            for (requiredUnit in victoryType.requiredSpaceshipParts)
                 if (!units.contains(requiredUnit))
                     lines.add("Victory type ${victoryType.name} requires adding the non-existant unit $requiredUnit to the capital to win!", RulesetErrorSeverity.Warning)
-            for (milestone in victoryType.milestoneObjects) 
-                if (milestone.type == null) 
+            for (milestone in victoryType.milestoneObjects)
+                if (milestone.type == null)
                     lines.add("Victory type ${victoryType.name} has milestone ${milestone.uniqueDescription} that is of an unknown type!", RulesetErrorSeverity.Error)
             for (victory in victories.values)
                 if (victory.name != victoryType.name && victory.milestones == victoryType.milestones)
@@ -859,15 +879,15 @@ object RulesetCache : HashMap<String,Ruleset>() {
 
 
     /** Returns error lines from loading the rulesets, so we can display the errors to users */
-    fun loadRulesets(consoleMode: Boolean = false, printOutput: Boolean = false, noMods: Boolean = false) :List<String> {
+    fun loadRulesets(consoleMode: Boolean = false, noMods: Boolean = false) :List<String> {
         clear()
         for (ruleset in BaseRuleset.values()) {
             val fileName = "jsons/${ruleset.fullName}"
-            val fileHandle = 
+            val fileHandle =
                 if (consoleMode) FileHandle(fileName)
                 else Gdx.files.internal(fileName)
-            this[ruleset.fullName] = Ruleset().apply { 
-                load(fileHandle, printOutput)
+            this[ruleset.fullName] = Ruleset().apply {
+                load(fileHandle)
                 name = ruleset.fullName
             }
         }
@@ -883,13 +903,16 @@ object RulesetCache : HashMap<String,Ruleset>() {
             if (!modFolder.isDirectory) continue
             try {
                 val modRuleset = Ruleset()
-                modRuleset.load(modFolder.child("jsons"), printOutput)
+                modRuleset.load(modFolder.child("jsons"))
                 modRuleset.name = modFolder.name()
                 modRuleset.folderLocation = modFolder
                 this[modRuleset.name] = modRuleset
-                if (printOutput) {
-                    println("Mod loaded successfully: " + modRuleset.name)
-                    println(modRuleset.checkModLinks().getErrorText())
+                debug("Mod loaded successfully: %s", modRuleset.name)
+                if (Log.shouldLog()) {
+                    val modLinksErrors = modRuleset.checkModLinks()
+                    if (modLinksErrors.any()) {
+                        debug("checkModLinks errors: %s", modLinksErrors.getErrorText())
+                    }
                 }
             } catch (ex: Exception) {
                 errorLines += "Exception loading mod '${modFolder.name()}':"
@@ -897,7 +920,7 @@ object RulesetCache : HashMap<String,Ruleset>() {
                 errorLines += "  ${ex.cause?.localizedMessage}"
             }
         }
-        if (printOutput) for (line in errorLines) println(line)
+        if (Log.shouldLog()) for (line in errorLines) debug(line)
         return errorLines
     }
 
@@ -949,7 +972,7 @@ object RulesetCache : HashMap<String,Ruleset>() {
         val loadedMods = mods.asSequence()
             .filter { containsKey(it) }
             .map { this[it]!! }
-            .filter { !it.modOptions.isBaseRuleset } + 
+            .filter { !it.modOptions.isBaseRuleset } +
             baseRuleset
 
         for (mod in loadedMods.sortedByDescending { it.modOptions.isBaseRuleset }) {
@@ -982,7 +1005,7 @@ object RulesetCache : HashMap<String,Ruleset>() {
             // This happens if a building is dependent on a tech not in the base ruleset
             //  because newRuleset.updateBuildingCosts() in getComplexRuleset() throws an error
             Ruleset.RulesetErrorList()
-                .apply { add(ex.message!!.tr(), Ruleset.RulesetErrorSeverity.Error) }
+                .apply { add(ex.message, Ruleset.RulesetErrorSeverity.Error) }
         }
     }
 

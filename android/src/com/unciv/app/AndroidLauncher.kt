@@ -10,28 +10,27 @@ import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
 import com.unciv.logic.GameSaver
-import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.utils.Fonts
+import com.unciv.utils.Log
 import java.io.File
 
 open class AndroidLauncher : AndroidApplication() {
-    private var customSaveLocationHelper: CustomSaveLocationHelperAndroid? = null
+    private var customFileLocationHelper: CustomFileLocationHelperAndroid? = null
     private var game: UncivGame? = null
     private var deepLinkedMultiplayerGame: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        customSaveLocationHelper = CustomSaveLocationHelperAndroid(this)
+        Log.backend = AndroidLogBackend()
+        customFileLocationHelper = CustomFileLocationHelperAndroid(this)
         MultiplayerTurnCheckWorker.createNotificationChannels(applicationContext)
 
         copyMods()
-        val externalFilesDir = getExternalFilesDir(null)
-        if (externalFilesDir != null) GameSaver.externalFilesDirForAndroid = externalFilesDir.path
 
         val config = AndroidApplicationConfiguration().apply {
             useImmersiveMode = true
         }
 
-        val settings = GameSettings.getSettingsForPlatformLaunchers(filesDir.path)
+        val settings = GameSaver.getSettingsForPlatformLaunchers(filesDir.path)
         val fontFamily = settings.fontFamily
 
         // Manage orientation lock
@@ -42,7 +41,7 @@ open class AndroidLauncher : AndroidApplication() {
             version = BuildConfig.VERSION_NAME,
             crashReportSysInfo = CrashReportSysInfoAndroid,
             fontImplementation = NativeFontAndroid(Fonts.ORIGINAL_FONT_SIZE.toInt(), fontFamily),
-            customSaveLocationHelper = customSaveLocationHelper,
+            customFileLocationHelper = customFileLocationHelper,
             platformSpecificHelper = platformSpecificHelper
         )
 
@@ -72,9 +71,13 @@ open class AndroidLauncher : AndroidApplication() {
     override fun onPause() {
         if (UncivGame.isCurrentInitialized()
                 && UncivGame.Current.isGameInfoInitialized()
-                && UncivGame.Current.settings.multiplayerTurnCheckerEnabled
-                && GameSaver.getSaves(true).any()) {
-            MultiplayerTurnCheckWorker.startTurnChecker(applicationContext, GameSaver, UncivGame.Current.gameInfo, UncivGame.Current.settings)
+                && UncivGame.Current.settings.multiplayer.turnCheckerEnabled
+                && UncivGame.Current.gameSaver.getMultiplayerSaves().any()
+        ) {
+            MultiplayerTurnCheckWorker.startTurnChecker(
+                applicationContext, UncivGame.Current.gameSaver,
+                UncivGame.Current.gameInfo, UncivGame.Current.settings.multiplayer
+            )
         }
         super.onPause()
     }
@@ -115,7 +118,7 @@ open class AndroidLauncher : AndroidApplication() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        customSaveLocationHelper?.handleIntentData(requestCode, data?.data)
+        customFileLocationHelper?.onActivityResult(requestCode, data)
         super.onActivityResult(requestCode, resultCode, data)
     }
 }

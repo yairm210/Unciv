@@ -9,7 +9,7 @@ import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
-import com.unciv.ui.utils.toPercent
+import com.unciv.ui.utils.extensions.toPercent
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -110,7 +110,7 @@ class PolicyManager {
             // Should be deprecated together with TimedAttackStrength so
             // I'm putting this here so the compiler will complain if we don't
             val rememberToDeprecate = UniqueType.TimedAttackStrength
-            if (!unique.text.contains(turnCountRegex)) 
+            if (!unique.text.contains(turnCountRegex))
                 policyUniques.addUnique(unique)
         }
     }
@@ -206,9 +206,9 @@ class PolicyManager {
             }
         }
 
-        for (unique in policy.uniques) {
-            if (unique.equalsPlaceholderText("Triggers the following global alert: []")) triggerGlobalAlerts(
-                policy, unique.getPlaceholderParameters()[0]
+        for (unique in policy.getMatchingUniques(UniqueType.OneTimeGlobalAlert)) {
+            triggerGlobalAlerts(
+                policy, unique.params[0]
             )
         }
 

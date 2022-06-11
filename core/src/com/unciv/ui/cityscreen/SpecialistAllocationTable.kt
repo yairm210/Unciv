@@ -6,9 +6,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.ExpanderTab
+import com.unciv.ui.utils.extensions.addBorder
+import com.unciv.ui.utils.extensions.addSeparatorVertical
+import com.unciv.ui.utils.extensions.darken
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.ui.utils.extensions.toLabel
 
 class SpecialistAllocationTable(val cityScreen: CityScreen) : Table(BaseScreen.skin) {
     val cityInfo = cityScreen.city
@@ -18,14 +24,21 @@ class SpecialistAllocationTable(val cityScreen: CityScreen) : Table(BaseScreen.s
         // Auto/Manual Specialists Toggle
         // Color of "color" coming from Skin.json that's loaded into BaseScreen
         // 5 columns: unassignButton, AllocationTable, assignButton, SeparatorVertical, SpecialistsStatsTabe
-        if (cityInfo.manualSpecialists) {
-            val manualSpecialists = "Manual Specialists".toLabel().addBorder(5f, BaseScreen.skin.get("color", Color::class.java))
-            manualSpecialists.onClick { cityInfo.manualSpecialists = false; cityInfo.reassignPopulation(); cityScreen.update() }
-            add(manualSpecialists).colspan(5).row()
-        } else {
-            val autoSpecialists = "Auto Specialists".toLabel().addBorder(5f, BaseScreen.skin.get("color", Color::class.java))
-            autoSpecialists.onClick { cityInfo.manualSpecialists = true; update() }
-            add(autoSpecialists).colspan(5).row()
+        if (cityScreen.canCityBeChanged()) {
+            if (cityInfo.manualSpecialists) {
+                val manualSpecialists = "Manual Specialists".toLabel()
+                    .addBorder(5f, BaseScreen.skin.get("color", Color::class.java))
+                manualSpecialists.onClick {
+                    cityInfo.manualSpecialists = false
+                    cityInfo.reassignPopulation(); cityScreen.update()
+                }
+                add(manualSpecialists).colspan(5).row()
+            } else {
+                val autoSpecialists = "Auto Specialists".toLabel()
+                    .addBorder(5f, BaseScreen.skin.get("color", Color::class.java))
+                autoSpecialists.onClick { cityInfo.manualSpecialists = true; update() }
+                add(autoSpecialists).colspan(5).row()
+            }
         }
         for ((specialistName, maxSpecialists) in cityInfo.population.getMaxSpecialists()) {
             if (!cityInfo.getRuleset().specialists.containsKey(specialistName)) // specialist doesn't exist in this ruleset, probably a mod

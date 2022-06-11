@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.Constants
 import com.unciv.logic.MapSaver
 import com.unciv.logic.UncivShowableException
 import com.unciv.models.ruleset.RulesetCache
@@ -12,7 +13,14 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.popup.YesNoPopup
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.AutoScrollPane
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.TabbedPager
+import com.unciv.ui.utils.extensions.isEnabled
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toTextButton
+import com.unciv.utils.Log
 import kotlin.concurrent.thread
 
 class MapEditorLoadTab(
@@ -88,7 +96,7 @@ class MapEditorLoadTab(
         Gdx.app.postRunnable {
             if (!needPopup) return@postRunnable
             popup = Popup(editorScreen).apply {
-                addGoodSizedLabel("Loading...")
+                addGoodSizedLabel(Constants.loading)
                 open()
             }
         }
@@ -122,7 +130,7 @@ class MapEditorLoadTab(
                     val rulesetIncompatibilities = map.getRulesetIncompatibility(ruleset)
                     if (rulesetIncompatibilities.isNotEmpty()) {
                         map.removeMissingTerrainModReferences(ruleset)
-                        val message = "{This map has errors:}\n\n".tr() +
+                        val message = "{This map has errors:}\n\n" +
                                 rulesetIncompatibilities.sorted().joinToString("\n") { it.tr() } +
                                 "\n\n{The incompatible elements have been removed.}"
                         ToastPopup(message, editorScreen, 4000L)
@@ -134,7 +142,7 @@ class MapEditorLoadTab(
                 } catch (ex: Throwable) {
                     needPopup = false
                     popup?.close()
-                    println("Error displaying map \"$chosenMap\": ${ex.localizedMessage}")
+                    Log.error("Error displaying map \"$chosenMap\"", ex)
                     Gdx.input.inputProcessor = editorScreen.stage
                     ToastPopup("Error loading map!", editorScreen)
                 }
@@ -143,9 +151,9 @@ class MapEditorLoadTab(
             needPopup = false
             Gdx.app.postRunnable {
                 popup?.close()
-                println("Error loading map \"$chosenMap\": ${ex.localizedMessage}")
-                ToastPopup("Error loading map!".tr() +
-                        (if (ex is UncivShowableException) "\n" + ex.message else ""), editorScreen)
+                Log.error("Error loading map \"$chosenMap\"", ex)
+                ToastPopup("{Error loading map!}" +
+                        (if (ex is UncivShowableException) "\n{${ex.message}}" else ""), editorScreen)
             }
         }
     }

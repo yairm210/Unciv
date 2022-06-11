@@ -1,6 +1,10 @@
 package com.unciv.models.ruleset.unit
 
-import com.unciv.logic.city.*
+import com.unciv.logic.city.CityConstructions
+import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.INonPerpetualConstruction
+import com.unciv.logic.city.RejectionReason
+import com.unciv.logic.city.RejectionReasons
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.ruleset.Ruleset
@@ -13,12 +17,9 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
-import com.unciv.ui.utils.filterAndLogic
-import com.unciv.ui.utils.getConsumesAmountString
-import com.unciv.ui.utils.toPercent
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
-import kotlin.collections.HashSet
+import com.unciv.ui.utils.extensions.filterAndLogic
+import com.unciv.ui.utils.extensions.getConsumesAmountString
+import com.unciv.ui.utils.extensions.toPercent
 import kotlin.math.pow
 
 // This is BaseUnit because Unit is already a base Kotlin class and to avoid mixing the two up
@@ -46,8 +47,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     var promotions = HashSet<String>()
     var obsoleteTech: String? = null
     var upgradesTo: String? = null
-    val specialUpgradesTo: String? by lazy { 
-        getMatchingUniques(UniqueType.RuinsUpgrade).map { it.params[0] }.firstOrNull() 
+    val specialUpgradesTo: String? by lazy {
+        getMatchingUniques(UniqueType.RuinsUpgrade).map { it.params[0] }.firstOrNull()
     }
     var replaces: String? = null
     var uniqueTo: String? = null
@@ -238,8 +239,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         unit.owner = civInfo.civName
 
         // must be after setting name & civInfo because it sets the baseUnit according to the name
-        // and the civInfo is required for using `hasUnique` when determining its movement options  
-        unit.setTransients(civInfo.gameInfo.ruleSet) 
+        // and the civInfo is required for using `hasUnique` when determining its movement options
+        unit.setTransients(civInfo.gameInfo.ruleSet)
 
         return unit
     }
@@ -259,7 +260,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     override fun canBePurchasedWithStat(cityInfo: CityInfo?, stat: Stat): Boolean {
         if (cityInfo == null) return super.canBePurchasedWithStat(cityInfo, stat)
         val conditionalState = StateForConditionals(civInfo = cityInfo.civInfo, cityInfo = cityInfo)
-        
+
         return (cityInfo.getMatchingUniques(UniqueType.BuyUnitsIncreasingCost, conditionalState)
                 .any {
                     it.params[2] == stat.name
@@ -394,17 +395,17 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         val rejectionReasons = RejectionReasons()
         val ruleSet = civInfo.gameInfo.ruleSet
 
-        if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) 
-            rejectionReasons.add(RejectionReason.RequiresTech.toInstance("$requiredTech not researched")) 
+        if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!))
+            rejectionReasons.add(RejectionReason.RequiresTech.toInstance("$requiredTech not researched"))
         if (obsoleteTech != null && civInfo.tech.isResearched(obsoleteTech!!))
             rejectionReasons.add(RejectionReason.Obsoleted.toInstance("Obsolete by $obsoleteTech"))
 
-        if (uniqueTo != null && uniqueTo != civInfo.civName) 
+        if (uniqueTo != null && uniqueTo != civInfo.civName)
             rejectionReasons.add(RejectionReason.UniqueToOtherNation.toInstance("Unique to $uniqueTo"))
         if (ruleSet.units.values.any { it.uniqueTo == civInfo.civName && it.replaces == name })
             rejectionReasons.add(RejectionReason.ReplacedByOurUnique.toInstance("Our unique unit replaces this"))
 
-        if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon()) 
+        if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon())
             rejectionReasons.add(RejectionReason.DisabledBySetting)
 
         for (unique in uniqueObjects) {
@@ -467,7 +468,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     fun isBuildableIgnoringTechs(civInfo: CivilizationInfo): Boolean {
         val rejectionReasons = getRejectionReasons(civInfo)
-        return rejectionReasons.filterTechPolicyEraWonderRequirements().isEmpty()
+        return rejectionReasons.isOKIgnoringRequirements(ignoreTechPolicyEraWonderRequirements = true)
     }
 
     override fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat?): Boolean {
@@ -481,11 +482,11 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
         // If this unit has special abilities that need to be kept track of, start doing so here
         if (unit.hasUnique(UniqueType.ReligiousUnit) && civInfo.gameInfo.isReligionEnabled()) {
-            unit.religion =  
+            unit.religion =
                 if (unit.hasUnique(UniqueType.TakeReligionOverBirthCity))
                     civInfo.religionManager.religion?.name
                 else cityConstructions.cityInfo.religion.getMajorityReligionName()
-            
+
             unit.setupAbilityUses(cityConstructions.cityInfo)
         }
 
@@ -509,7 +510,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             if (unit.matchesFilter(unique.params[0]))
                 XP += unique.params[1].toInt()
         }
-        unit.promotions.XP = XP        
+        unit.promotions.XP = XP
 
         for (unique in cityConstructions.cityInfo.getMatchingUniques(UniqueType.UnitStartingPromotions)
             .filter { cityConstructions.cityInfo.matchesFilter(it.params[1]) }) {
@@ -613,7 +614,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             && (uniqueObjects + getType().uniqueObjects)
                 .any { it.isOfType(UniqueType.Strength)
                     && it.params[0].toInt() > 0
-                    && it.conditionals.any { conditional -> conditional.isOfType(UniqueType.ConditionalVsCity) } 
+                    && it.conditionals.any { conditional -> conditional.isOfType(UniqueType.ConditionalVsCity) }
                 }
         )
 

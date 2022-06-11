@@ -14,11 +14,10 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.utils.Log
+import com.unciv.utils.debug
 
 private object WorkerAutomationConst {
-    /** Controls detailed logging of decisions to the console -Turn off for release builds! */
-    const val consoleOutput = false
-
     /** BFS max size is determined by the aerial distance of two cities to connect, padded with this */
     // two tiles longer than the distance to the nearest connected city should be enough as the 'reach' of a BFS is increased by blocked tiles
     const val maxBfsReachPadding = 2
@@ -28,7 +27,7 @@ private object WorkerAutomationConst {
  * Contains the logic for worker automation.
  *
  * This is instantiated from [CivilizationInfo.getWorkerAutomation] and cached there.
- * 
+ *
  * @param civInfo       The Civilization - data common to all automated workers is cached once per Civ
  * @param cachedForTurn The turn number this was created for - a recreation of the instance is forced on different turn numbers
  */
@@ -57,14 +56,14 @@ class WorkerAutomation(
                         && !it.isCapital() && !it.isBeingRazed // Cities being razed should not be connected.
                         && !it.cityStats.isConnectedToCapital(bestRoadAvailable)
             }.sortedBy {
-                it.getCenterTile().aerialDistanceTo(civInfo.getCapital().getCenterTile())
+                it.getCenterTile().aerialDistanceTo(civInfo.getCapital()!!.getCenterTile())
             }.toList()
-        if (WorkerAutomationConst.consoleOutput) {
-            println("WorkerAutomation citiesThatNeedConnecting for ${civInfo.civName} turn $cachedForTurn:")
+        if (Log.shouldLog()) {
+            debug("WorkerAutomation citiesThatNeedConnecting for ${civInfo.civName} turn $cachedForTurn:")
             if (result.isEmpty())
-                println("\tempty")
+                debug("\tempty")
             else result.forEach {
-                println("\t${it.name}")
+                debug("\t${it.name}")
             }
         }
         result
@@ -76,21 +75,21 @@ class WorkerAutomation(
             .filter { it.isCapital() || it.cityStats.isConnectedToCapital(bestRoadAvailable) }
             .map { it.getCenterTile() }
             .toList()
-        if (WorkerAutomationConst.consoleOutput) {
-            println("WorkerAutomation tilesOfConnectedCities for ${civInfo.civName} turn $cachedForTurn:")
+        if (Log.shouldLog()) {
+            debug("WorkerAutomation tilesOfConnectedCities for ${civInfo.civName} turn $cachedForTurn:")
             if (result.isEmpty())
-                println("\tempty")
+                debug("\tempty")
             else result.forEach {
-                println("\t$it")    //  ${it.getCity()?.name} included in TileInfo toString()
+                debug("\t$it")    //  ${it.getCity()?.name} included in TileInfo toString()
             }
         }
         result
     }
 
     /** Caches BFS by city locations (cities needing connecting).
-     * 
+     *
      *  key: The city to connect from as [hex position][Vector2].
-     *  
+     *
      *  value: The [BFS] searching from that city, whether successful or not.
      */
     //todo: If BFS were to deal in vectors instead of TileInfos, we could copy this on cloning
@@ -116,7 +115,7 @@ class WorkerAutomation(
         fun evaluateFortPlacement(tile: TileInfo, civInfo: CivilizationInfo, isCitadel: Boolean): Boolean {
             return civInfo.getWorkerAutomation().evaluateFortPlacement(tile, isCitadel)
         }
-        
+
         /** For console logging only */
         private fun MapUnit.label() = toString() + " " + getTile().position.toString()
     }
@@ -135,8 +134,7 @@ class WorkerAutomation(
         }
 
         if (tileToWork != currentTile) {
-            if (WorkerAutomationConst.consoleOutput)
-                println("WorkerAutomation: ${unit.label()} -> head towards $tileToWork")
+            debug("WorkerAutomation: %s -> head towards %s", unit.label(), tileToWork)
             val reachedTile = unit.movement.headTowards(tileToWork)
             if (reachedTile != currentTile) unit.doAction() // otherwise, we get a situation where the worker is automated, so it tries to move but doesn't, then tries to automate, then move, etc, forever. Stack overflow exception!
             return
@@ -144,8 +142,7 @@ class WorkerAutomation(
 
         if (currentTile.improvementInProgress == null && currentTile.isLand
             && tileCanBeImproved(unit, currentTile)) {
-            if (WorkerAutomationConst.consoleOutput)
-                println("WorkerAutomation: ${unit.label()} -> start improving $currentTile")
+            debug("WorkerAutomation: ${unit.label()} -> start improving $currentTile")
             return currentTile.startWorkingOnImprovement(chooseImprovement(unit, currentTile)!!, civInfo, unit)
         }
 
@@ -164,15 +161,13 @@ class WorkerAutomation(
             .firstOrNull { unit.movement.canReach(it.getCenterTile()) } //goto most undeveloped city
 
         if (mostUndevelopedCity != null && mostUndevelopedCity != currentTile.owningCity) {
-            if (WorkerAutomationConst.consoleOutput)
-                println("WorkerAutomation: ${unit.label()} -> head towards undeveloped city ${mostUndevelopedCity.name}")
+            debug("WorkerAutomation: %s -> head towards undeveloped city %s", unit.label(), mostUndevelopedCity.name)
             val reachedTile = unit.movement.headTowards(mostUndevelopedCity.getCenterTile())
             if (reachedTile != currentTile) unit.doAction() // since we've moved, maybe we can do something here - automate
             return
         }
 
-        if (WorkerAutomationConst.consoleOutput)
-            println("WorkerAutomation: ${unit.label()} -> nothing to do")
+        debug("WorkerAutomation: %s -> nothing to do", unit.label())
         unit.civInfo.addNotification("${unit.shortDisplayName()} has no work to do.", currentTile.position, unit.name, "OtherIcons/Sleep")
 
         // Idle CS units should wander so they don't obstruct players so much
@@ -236,15 +231,14 @@ class WorkerAutomation(
                         val improvement = bestRoadAvailable.improvement(ruleSet)!!
                         tileToConstructRoadOn.startWorkingOnImprovement(improvement, civInfo, unit)
                     }
-                    if (WorkerAutomationConst.consoleOutput)
-                        println("WorkerAutomation: ${unit.label()} -> connect city ${bfs.startingPoint.getCity()?.name} to ${cityTile.getCity()!!.name} on $tileToConstructRoadOn")
+                    debug("WorkerAutomation: %s -> connect city %s to %s on %s",
+                        unit.label(), bfs.startingPoint.getCity()?.name, cityTile.getCity()!!.name, tileToConstructRoadOn)
                     return true
                 }
                 if (bfs.hasEnded()) break
                 bfs.nextStep()
             }
-            if (WorkerAutomationConst.consoleOutput)
-                println("WorkerAutomation: ${unit.label()} -> connect city ${bfs.startingPoint.getCity()?.name} failed at BFS size ${bfs.size()}")
+            debug("WorkerAutomation: ${unit.label()} -> connect city ${bfs.startingPoint.getCity()?.name} failed at BFS size ${bfs.size()}")
         }
 
         return false
@@ -297,7 +291,7 @@ class WorkerAutomation(
             if (tile.improvementInProgress != null && unit.canBuildImprovement(tile.getTileImprovementInProgress()!!, tile)) return true
             val chosenImprovement = chooseImprovement(unit, tile)
             if (chosenImprovement != null && tile.canBuildImprovement(chosenImprovement, civInfo) && unit.canBuildImprovement(chosenImprovement, tile)) return true
-            
+
         } else if (!tile.containsGreatImprovement() && tile.hasViewableResource(civInfo)
             && tile.tileResource.isImprovedBy(tile.improvement!!)
             && (chooseImprovement(unit, tile) // if the chosen improvement is not null and buildable

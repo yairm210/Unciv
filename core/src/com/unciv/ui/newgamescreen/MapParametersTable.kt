@@ -6,8 +6,21 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldFilter.DigitsOnlyFilter
 import com.unciv.UncivGame
-import com.unciv.logic.map.*
-import com.unciv.ui.utils.*
+import com.unciv.logic.map.MapParameters
+import com.unciv.logic.map.MapResources
+import com.unciv.logic.map.MapShape
+import com.unciv.logic.map.MapSize
+import com.unciv.logic.map.MapSizeNew
+import com.unciv.logic.map.MapType
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.ExpanderTab
+import com.unciv.ui.utils.UncivSlider
+import com.unciv.ui.utils.extensions.onChange
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.pad
+import com.unciv.ui.utils.extensions.toCheckBox
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
 
 /** Table for editing [mapParameters]
  *
@@ -222,6 +235,7 @@ class MapParametersTable(
             addNoRuinsCheckbox()
             addNoNaturalWondersCheckbox()
             if (showWorldWrap) addWorldWrapCheckbox()
+            else mapParameters.worldWrap = false
         }).colspan(2).center().row()
         if (showWorldWrap)
             add("World wrap maps are very memory intensive - creating large world wrap maps on Android can lead to crashes!"
@@ -253,22 +267,21 @@ class MapParametersTable(
         table.add("RNG Seed".toLabel()).left()
         table.add(seedTextField).fillX().padBottom(10f).row()
 
-        fun addSlider(text: String, getValue:()->Float, min:Float, max:Float, onChange: (value:Float)->Unit): UncivSlider {
-            val slider = UncivSlider(min, max, (max - min) / 20, onChange = onChange)
-            slider.value = getValue()
+        fun addSlider(text: String, getValue:()->Float, min: Float, max: Float, onChange: (value: Float)->Unit): UncivSlider {
+            val slider = UncivSlider(min, max, (max - min) / 20, onChange = onChange, initial = getValue())
             table.add(text.toLabel()).left()
             table.add(slider).fillX().row()
             advancedSliders[slider] = getValue
             return slider
         }
 
-        addSlider("Map Elevation", {mapParameters.elevationExponent}, 0.6f,0.8f)
+        addSlider("Map Elevation", {mapParameters.elevationExponent}, 0.6f, 0.8f)
         { mapParameters.elevationExponent = it }
 
-        addSlider("Temperature extremeness", {mapParameters.temperatureExtremeness}, 0.4f,0.8f)
+        addSlider("Temperature extremeness", {mapParameters.temperatureExtremeness}, 0.4f, 0.8f)
         { mapParameters.temperatureExtremeness = it }
 
-        addSlider("Resource richness", {mapParameters.resourceRichness},0f,0.5f)
+        addSlider("Resource richness", {mapParameters.resourceRichness},0f, 0.5f)
         { mapParameters.resourceRichness = it }
 
         addSlider("Vegetation richness", {mapParameters.vegetationRichness}, 0f, 1f)

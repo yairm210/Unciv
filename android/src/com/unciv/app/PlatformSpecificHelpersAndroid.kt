@@ -29,4 +29,10 @@ Sources for Info about current orientation in case need:
         // Comparison ensures ActivityTaskManager.getService().setRequestedOrientation isn't called unless necessary
         if (activity.requestedOrientation != orientation) activity.requestedOrientation = orientation
     }
+
+    /**
+     * On Android, local is some android-internal data directory which may or may not be accessible by the user.
+     * External is probably on an SD-card or similar which is always accessible by the user.
+     */
+    override fun shouldPreferExternalStorage(): Boolean = true
 }

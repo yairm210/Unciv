@@ -17,7 +17,7 @@ import kotlin.random.Random
 
 // Buildings, techs, policies, ancient ruins and promotions can have 'triggered' effects
 object UniqueTriggerActivation {
-    /** @return boolean whether an action was successfully preformed */
+    /** @return boolean whether an action was successfully performed */
     fun triggerCivwideUnique(
         unique: Unique,
         civInfo: CivilizationInfo,
@@ -25,13 +25,13 @@ object UniqueTriggerActivation {
         tile: TileInfo? = null,
         notification: String? = null
     ): Boolean {
-        if (!unique.conditionalsApply(civInfo, cityInfo)) return false
-
         val timingConditional = unique.conditionals.firstOrNull{it.type == ConditionalTimedUnique}
-        if (timingConditional!=null) {
+        if (timingConditional != null) {
             civInfo.temporaryUniques.add(TemporaryUnique(unique, timingConditional.params[0].toInt()))
             return true
         }
+
+        if (!unique.conditionalsApply(civInfo, cityInfo)) return false
 
         val chosenCity = cityInfo ?: civInfo.cities.firstOrNull { it.isCapital() }
         val tileBasedRandom =
@@ -448,6 +448,7 @@ object UniqueTriggerActivation {
                         tile.position,
                         NotificationIcon.Ruins
                     )
+                return true
             }
 
             OneTimeTriggerVoting -> {
@@ -470,7 +471,7 @@ object UniqueTriggerActivation {
         return false
     }
 
-    /** @return boolean whether an action was successfully preformed */
+    /** @return boolean whether an action was successfully performed */
     fun triggerUnitwideUnique(
         unique: Unique,
         unit: MapUnit,

@@ -5,12 +5,18 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.logic.IdChecker
 import com.unciv.models.translations.tr
+import com.unciv.ui.crashhandling.launchCrashHandling
+import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.pickerscreens.PickerScreen
+import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.extensions.enable
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
 import java.util.*
 
-class AddMultiplayerGameScreen(backScreen: MultiplayerScreen) : PickerScreen(){
+class AddMultiplayerGameScreen(backScreen: MultiplayerScreen) : PickerScreen() {
     init {
         val gameNameTextField = TextField("", skin)
         val gameIDTextField = TextField("", skin)
@@ -21,12 +27,12 @@ class AddMultiplayerGameScreen(backScreen: MultiplayerScreen) : PickerScreen(){
 
         topTable.add("GameID".toLabel()).row()
         val gameIDTable = Table()
-        gameIDTable.add(gameIDTextField).pad(10f).width(2*stage.width/3 - pasteGameIDButton.width)
+        gameIDTable.add(gameIDTextField).pad(10f).width(2 * stage.width / 3 - pasteGameIDButton.width)
         gameIDTable.add(pasteGameIDButton)
         topTable.add(gameIDTable).padBottom(30f).row()
 
         topTable.add("Game name".toLabel()).row()
-        topTable.add(gameNameTextField).pad(10f).padBottom(30f).width(stage.width/2).row()
+        topTable.add(gameNameTextField).pad(10f).padBottom(30f).width(stage.width / 2).row()
 
         //CloseButton Setup
         closeButton.setText("Back".tr())
@@ -40,13 +46,29 @@ class AddMultiplayerGameScreen(backScreen: MultiplayerScreen) : PickerScreen(){
         rightSideButton.onClick {
             try {
                 UUID.fromString(IdChecker.checkAndReturnGameUuid(gameIDTextField.text))
-            }catch (ex: Exception){
+            } catch (ex: Exception) {
                 ToastPopup("Invalid game ID!", this)
                 return@onClick
             }
 
-            backScreen.addMultiplayerGame(gameIDTextField.text.trim(), gameNameTextField.text.trim())
-            backScreen.game.setScreen(backScreen)
+            val popup = Popup(this)
+            popup.addGoodSizedLabel("Working...")
+            popup.open()
+
+            launchCrashHandling("AddMultiplayerGame") {
+                try {
+                    game.onlineMultiplayer.addGame(gameIDTextField.text.trim(), gameNameTextField.text.trim())
+                    postCrashHandlingRunnable {
+                        popup.close()
+                        game.setScreen(backScreen)
+                    }
+                } catch (ex: Exception) {
+                    val message = MultiplayerHelpers.getLoadExceptionMessage(ex)
+                    postCrashHandlingRunnable {
+                        popup.reuseWith(message, true)
+                    }
+                }
+            }
         }
     }
 }

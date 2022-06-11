@@ -7,6 +7,7 @@ import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.*
+import com.unciv.utils.debug
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -39,13 +40,13 @@ class TranslationTests {
                 translations.size > 0)
     }
 
-    
+
     // This test is incorrectly defined: it should read from the template.properties file and not fro the final translation files.
 //    @Test
 //    fun allUnitActionsHaveTranslation() {
 //        val actions: MutableSet<String> = HashSet()
 //        for (action in UnitActionType.values()) {
-//            actions.add( 
+//            actions.add(
 //                when(action) {
 //                    UnitActionType.Upgrade -> "Upgrade to [unitType] ([goldCost] gold)"
 //                    UnitActionType.Create -> "Create [improvement]"
@@ -95,7 +96,7 @@ class TranslationTests {
                 for (placeholder in placeholders) {
                     if (!output.contains(placeholder)) {
                         allTranslationsHaveCorrectPlaceholders = false
-                        println("Placeholder `$placeholder` not found in `$language` for entry `$translationEntry`")
+                        debug("Placeholder `%s` not found in `%s` for entry `%s`", placeholder, language, translationEntry)
                     }
                 }
             }
@@ -115,7 +116,7 @@ class TranslationTests {
             val keyFromEntry = translationEntry.replace(squareBraceRegex, "[]")
             if (key != keyFromEntry) {
                 allPlaceholderKeysMatchEntry = false
-                println("Entry $translationEntry found under bad key $key")
+                debug("Entry %s found under bad key %s", translationEntry, key)
                 break
             }
         }
@@ -135,7 +136,7 @@ class TranslationTests {
             for (placeholder in placeholders)
                 if (placeholders.count { it == placeholder } > 1) {
                     noTwoPlaceholdersAreTheSame = false
-                    println("Entry $translationEntry has the parameter $placeholder more than once")
+                    debug("Entry %s has the parameter %s more than once", translationEntry, placeholder)
                     break
                 }
         }
@@ -151,7 +152,7 @@ class TranslationTests {
         var failed = false
         for (line in templateLines) {
             if (line.endsWith(" =")) {
-                println("$line ends without a space at the end")
+                debug("%s ends without a space at the end", line)
                 failed = true
             }
         }
@@ -176,7 +177,7 @@ class TranslationTests {
                     translationEntry.entry.tr()
                 } catch (ex: Exception) {
                     allWordsTranslatedCorrectly = false
-                    println("Crashed when translating ${translationEntry.entry} to $language")
+                    debug("Crashed when translating %s to %s", translationEntry.entry, language)
                 }
             }
         }
@@ -185,11 +186,11 @@ class TranslationTests {
             allWordsTranslatedCorrectly
         )
     }
-    
+
     @Test
     fun wordBoundaryTranslationIsFormattedCorrectly() {
         val translationEntry = translations["\" \""]!!
-                
+
         var allTranslationsCheckedOut = true
         for ((language, translation) in translationEntry) {
             if (!translation.startsWith("\"")
@@ -197,10 +198,10 @@ class TranslationTests {
                 || translation.count { it == '\"' } != 2
             ) {
                 allTranslationsCheckedOut = false
-                println("Translation of the word boundary in $language was incorrectly formatted")
+                debug("Translation of the word boundary in %s was incorrectly formatted", language)
             }
         }
-        
+
         Assert.assertTrue(
             "This test will only pass when the word boundrary translation succeeds",
             allTranslationsCheckedOut
@@ -210,18 +211,18 @@ class TranslationTests {
 
     @Test
     fun translationParameterExtractionForNestedBracesWorks() {
-        Assert.assertEquals(listOf("New [York]"), 
+        Assert.assertEquals(listOf("New [York]"),
             "The city of [New [York]]".getPlaceholderParametersIgnoringLowerLevelBraces())
 
         // Closing braces without a matching opening brace - 'level 0' - are ignored
         Assert.assertEquals(listOf("New [York]"),
             "The city of [New [York]]]".getPlaceholderParametersIgnoringLowerLevelBraces())
-        
+
         // Opening braces without a matching closing brace mean that the term is never 'closed'
         // so there are no parameters
         Assert.assertEquals(listOf<String>(),
             "The city of [[New [York]".getPlaceholderParametersIgnoringLowerLevelBraces())
-        
+
         // Supernesting
         val superNestedString = "The brother of [[my [best friend]] and [[America]'s greatest [Dad]]]"
         Assert.assertEquals(listOf("[my [best friend]] and [[America]'s greatest [Dad]]"),
@@ -239,8 +240,8 @@ class TranslationTests {
         }
         addTranslation("The brother of [person]", "The sibling of [person]")
         Assert.assertEquals("The sibling of bob", "The brother of [bob]".tr())
-        
-        
+
+
         addTranslation("[a] and [b]", "[a] and indeed [b]")
         addTranslation("my [whatever]", "mine own [whatever]")
         addTranslation("[place]'s greatest [job]", "the greatest [job] in [place]")
@@ -248,11 +249,11 @@ class TranslationTests {
         addTranslation("best friend", "closest ally")
         addTranslation("America", "The old British colonies")
 
-        println("[Dad] and [my [best friend]]".getPlaceholderText())
+        debug("[Dad] and [my [best friend]]".getPlaceholderText())
         Assert.assertEquals(listOf("Dad","my [best friend]"),
             "[Dad] and [my [best friend]]".getPlaceholderParametersIgnoringLowerLevelBraces())
         Assert.assertEquals("Father and indeed mine own closest ally", "[Dad] and [my [best friend]]".tr())
-        
+
         // Reminder: "The brother of [[my [best friend]] and [[America]'s greatest [Dad]]]"
         Assert.assertEquals("The sibling of mine own closest ally and indeed the greatest Father in The old British colonies",
             superNestedString.tr())
@@ -264,7 +265,7 @@ class TranslationTests {
 //        val orderedConditionals = Translations.englishConditionalOrderingString
 //        val orderedConditionalsSet = orderedConditionals.getConditionals().map { it.placeholderText }
 //        val translationEntry = translations[orderedConditionals]!!
-//        
+//
 //        var allTranslationsCheckedOut = true
 //        for ((language, translation) in translationEntry) {
 //            val translationConditionals = translation.getConditionals().map { it.placeholderText }
@@ -275,7 +276,7 @@ class TranslationTests {
 //                println("Not all or double parameters found in the conditional ordering for $language")
 //            }
 //        }
-//        
+//
 //        Assert.assertTrue(
 //            "This test will only pass when each of the conditionals exists exactly once in the translations for the conditional ordering",
 //            allTranslationsCheckedOut

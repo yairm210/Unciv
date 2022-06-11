@@ -370,10 +370,12 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
      * Displace a unit - choose a viable tile close by if possible and 'teleport' the unit there.
      * This will not use movement points or check for a possible route.
      * It is used e.g. if an enemy city expands its borders, or trades or diplomacy change a unit's
-     * allowed position.
+     * allowed position. Does not teleport transported units on their own, these are teleported when
+     * the transporting unit is moved.
      * CAN DESTROY THE UNIT.
      */
     fun teleportToClosestMoveableTile() {
+        if (unit.isTransported) return // handled when carrying unit is teleported
         var allowedTile: TileInfo? = null
         var distance = 0
         // When we didn't limit the allowed distance the game would sometimes spend a whole minute looking for a suitable tile.
@@ -383,17 +385,15 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
                 // can the unit be placed safely there?
                 .filter { canMoveTo(it) }
                 // out of those where it can be placed, can it reach them in any meaningful way?
-                .firstOrNull { getPathBetweenTiles(unit.currentTile, it).size > 1 }
+                .firstOrNull { getPathBetweenTiles(unit.currentTile, it).contains(it) }
         }
 
         // No tile within 4 spaces? move him to a city.
-        if (allowedTile == null) {
-            for (city in unit.civInfo.cities) {
-                allowedTile = city.getTiles()
-                        .firstOrNull { canMoveTo(it) }
-                if (allowedTile != null) break
-            }
-        }
+        val origin = unit.getTile()
+        if (allowedTile == null)
+            allowedTile = unit.civInfo.cities.flatMap { it.getTiles() }
+                .sortedBy { it.aerialDistanceTo(origin) }.firstOrNull{ canMoveTo(it) }
+
         if (allowedTile != null) {
             unit.removeFromTile() // we "teleport" them away
             unit.putInTile(allowedTile)
@@ -401,6 +401,15 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
             if (unit.isSleeping() || unit.isFortified())
                 unit.action = null
             unit.mostRecentMoveType = UnitMovementMemoryType.UnitTeleported
+
+            // bring along the payloads
+            val payloadUnits = origin.getUnits().filter { it.isTransported && unit.canTransport(it) }.toList()
+            for (payload in payloadUnits) {
+                payload.removeFromTile()
+                payload.putInTile(allowedTile)
+                payload.isTransported = true // restore the flag to not leave the payload in the city
+                payload.mostRecentMoveType = UnitMovementMemoryType.UnitTeleported
+            }
         }
         // it's possible that there is no close tile, and all the guy's cities are full.
         // Nothing we can do.
@@ -408,7 +417,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
     }
 
     fun moveToTile(destination: TileInfo, considerZoneOfControl: Boolean = true) {
-        if (destination == unit.getTile()) return // already here!
+        if (destination == unit.getTile() || unit.isDestroyed) return // already here (or dead)!
 
 
         if (unit.baseUnit.movesLikeAirUnits()) { // air units move differently from all other units
@@ -728,7 +737,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
     private fun getPathBetweenTiles(from: TileInfo, to: TileInfo): MutableSet<TileInfo> {
         val tmp = unit.canEnterForeignTerrain
         unit.canEnterForeignTerrain = true // the trick to ignore tiles owners
-        val bfs = BFS(from) { canMoveTo(it) }
+        val bfs = BFS(from) { canPassThrough(it) }
         bfs.stepUntilDestination(to)
         unit.canEnterForeignTerrain = tmp
         return bfs.getReachedTiles()

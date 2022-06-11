@@ -33,4 +33,5 @@ fun gameplayTab(
         settings.automatedWorkersReplaceImprovements
     ) { settings.automatedWorkersReplaceImprovements = it }
     optionsPopup.addCheckbox(this, "Order trade offers by amount", settings.orderTradeOffersByAmount) { settings.orderTradeOffersByAmount = it }
+    optionsPopup.addCheckbox(this, "Ask for confirmation when pressing next turn", settings.confirmNextTurn) { settings.confirmNextTurn = it }
 }

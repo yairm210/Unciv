@@ -4,11 +4,11 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.utils.centerX
+import com.unciv.ui.utils.extensions.centerX
 
 class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrings: TileSetStrings) : TileGroup(tileInfo,tileSetStrings) {
 
@@ -61,6 +61,7 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
 
             tileInfo.isLocked() -> {
                 icons.addPopulationIcon(ImageGetter.getImage("OtherIcons/Lock"))
+                isWorkable = true
             }
 
             tileInfo.isWorked() || !tileInfo.providesYield() -> { // workable

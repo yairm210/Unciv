@@ -1,26 +1,36 @@
 package com.unciv.ui.worldscreen.bottombar
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.math.Interpolation
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
-import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
-import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.automation.BattleHelper
 import com.unciv.logic.automation.UnitAutomation
-import com.unciv.logic.battle.*
+import com.unciv.logic.battle.Battle
+import com.unciv.logic.battle.BattleDamage
+import com.unciv.logic.battle.CityCombatant
+import com.unciv.logic.battle.ICombatant
+import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
+import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
+import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.Fonts
+import com.unciv.ui.utils.UnitGroup
+import com.unciv.ui.utils.extensions.addBorderAllowOpacity
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
 import com.unciv.ui.worldscreen.WorldScreen
+import com.unciv.ui.worldscreen.bottombar.BattleTableHelpers.flashWoundedCombatants
+import com.unciv.ui.worldscreen.bottombar.BattleTableHelpers.getHealthBar
 import kotlin.math.max
 
 class BattleTable(val worldScreen: WorldScreen): Table() {
@@ -28,35 +38,35 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
     init {
         isVisible = false
         skin = BaseScreen.skin
-        background = ImageGetter.getBackground(ImageGetter.getBlue().apply { a=0.8f })
+        background = ImageGetter.getBackground(ImageGetter.getBlue().apply { a = 0.8f })
 
         defaults().pad(5f)
         pad(5f)
         touchable = Touchable.enabled
     }
 
-    fun hide(){
+    private fun hide() {
         isVisible = false
         clear()
         pack()
     }
 
     fun update() {
-        isVisible = true
-        if (!worldScreen.canChangeState) { hide(); return }
+        if (!worldScreen.canChangeState) return hide()
 
-        val attacker = tryGetAttacker()
-        if (attacker == null) { hide(); return }
+        val attacker = tryGetAttacker() ?: return hide()
 
         if (attacker is MapUnitCombatant && attacker.unit.baseUnit.isNuclearWeapon()) {
             val selectedTile = worldScreen.mapHolder.selectedTile
-            if (selectedTile == null) { hide(); return } // no selected tile
+                ?: return hide() // no selected tile
             simulateNuke(attacker, selectedTile)
         } else {
-            val defender = tryGetDefender()
-            if (defender == null) { hide(); return }
+            val defender = tryGetDefender() ?: return hide()
+            if (attacker is CityCombatant && defender is CityCombatant) return hide()
             simulateBattle(attacker, defender)
         }
+
+        isVisible = true
         pack()
         addBorderAllowOpacity(1f, Color.WHITE)
     }
@@ -84,7 +94,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         if (defender == null || (!includeFriendly && defender.getCivInfo() == attackerCiv))
             return null  // no enemy combatant in tile
 
-        val canSeeDefender = 
+        val canSeeDefender =
             if (UncivGame.Current.viewEntireMapForDebug) true
             else {
                 when {
@@ -130,114 +140,94 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         add(defender.getDefendingStrength(attacker.isRanged()).toString() + defenceIcon).row()
 
 
-        val quarterScreen = worldScreen.stage.width/4
+        val quarterScreen = worldScreen.stage.width / 4
 
+        fun getModifierTable(key: String, value: Int) = Table().apply {
+            val description = if (key.startsWith("vs "))
+                ("vs [" + key.drop(3) + "]").tr()
+                else key.tr()
+            val percentage = (if (value > 0) "+" else "") + value + "%"
+            val upOrDownLabel = if (value > 0f) "⬆".toLabel(Color.GREEN)
+                else "⬇".toLabel(Color.RED)
+
+            add(upOrDownLabel)
+            val modifierLabel = "$percentage $description".toLabel(fontSize = 14).apply { wrap = true }
+            add(modifierLabel).width(quarterScreen - upOrDownLabel.minWidth)
+        }
         val attackerModifiers =
                 BattleDamage.getAttackModifiers(attacker, defender).map {
-                    val description = if (it.key.startsWith("vs "))
-                        ("vs [" + it.key.replace("vs ", "") + "]").tr()
-                    else it.key.tr()
-                    val percentage = (if (it.value > 0) "+" else "") + it.value + "%"
-
-                    val upOrDownLabel = if (it.value > 0f) "⬆".toLabel(Color.GREEN) else "⬇".toLabel(
-                        Color.RED)
-                    val modifierTable = Table()
-                    modifierTable.add(upOrDownLabel)
-                    val modifierLabel = "$percentage $description".toLabel(fontSize = 14).apply { wrap=true }
-                    modifierTable.add(modifierLabel).width(quarterScreen)
-                    modifierTable
+                    getModifierTable(it.key, it.value)
                 }
         val defenderModifiers =
                 if (defender is MapUnitCombatant)
                     BattleDamage.getDefenceModifiers(attacker, defender).map {
-                        val description = if(it.key.startsWith("vs ")) ("vs ["+it.key.replace("vs ","")+"]").tr() else it.key.tr()
-                        val percentage = (if(it.value>0)"+" else "")+ it.value +"%"
-                        val upOrDownLabel = if (it.value > 0f) "⬆".toLabel(Color.GREEN) else "⬇".toLabel(
-                            Color.RED)
-                        val modifierTable = Table()
-                        modifierTable.add(upOrDownLabel)
-                        val modifierLabel = "$percentage $description".toLabel(fontSize = 14).apply { wrap=true }
-                        modifierTable.add(modifierLabel).width(quarterScreen)
-                        modifierTable
+                        getModifierTable(it.key, it.value)
                     }
                 else listOf()
 
-        for (i in 0..max(attackerModifiers.size,defenderModifiers.size)) {
-            if (attackerModifiers.size > i)
-                add(attackerModifiers[i])
-            else add().width(quarterScreen)
-            if (defenderModifiers.size > i)
-                add(defenderModifiers[i])
-            else add().width(quarterScreen)
+        for (i in 0..max(attackerModifiers.size, defenderModifiers.size)) {
+            if (i < attackerModifiers.size) add(attackerModifiers[i]) else add()
+            if (i < defenderModifiers.size) add(defenderModifiers[i]) else add()
             row().pad(2f)
         }
 
         // from Battle.addXp(), check for can't gain more XP from Barbarians
-        val modConstants = attacker.getCivInfo().gameInfo.ruleSet.modOptions.constants
-        if (attacker is MapUnitCombatant && attacker.unit.promotions.totalXpProduced() >= modConstants.maxXPfromBarbarians
+        val maxXPFromBarbarians = attacker.getCivInfo().gameInfo.ruleSet.modOptions.constants.maxXPfromBarbarians
+        if (attacker is MapUnitCombatant && attacker.unit.promotions.totalXpProduced() >= maxXPFromBarbarians
                 && defender.getCivInfo().isBarbarian()){
-            add("Cannot gain more XP from Barbarians".tr().toLabel(fontSize = 16).apply { wrap=true }).width(quarterScreen)
+            add("Cannot gain more XP from Barbarians".toLabel(fontSize = 16).apply { wrap = true }).width(quarterScreen)
             row()
         }
 
         var damageToDefender = BattleDamage.calculateDamageToDefender(attacker, defender, true)
         var damageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, defender, true)
 
-
-        if (damageToAttacker>attacker.getHealth() && damageToDefender>defender.getHealth()) // when damage exceeds health, we don't want to show negative health numbers
-        // Also if both parties are supposed to die it's not indicative of who is more likely to win
-        // So we "normalize" the damages until one dies
-        {
-            if(damageToDefender/defender.getHealth().toFloat() > damageToAttacker/attacker.getHealth().toFloat()) // defender dies quicker ie first
-            {
+        if (damageToAttacker > attacker.getHealth() && damageToDefender > defender.getHealth()) {
+            // when damage exceeds health, we don't want to show negative health numbers
+            // Also if both parties are supposed to die it's not indicative of who is more likely to win
+            // So we "normalize" the damages until one dies
+            if (damageToDefender * attacker.getHealth() > damageToAttacker * defender.getHealth()) { // defender dies quicker ie first
                 // Both damages *= (defender.health/damageToDefender)
                 damageToDefender = defender.getHealth()
-                damageToAttacker *= (defender.getHealth()/damageToDefender.toFloat()).toInt()
-            } else{ // attacker dies first
+                damageToAttacker *= (defender.getHealth() / damageToDefender.toFloat()).toInt()
+            } else { // attacker dies first
                 // Both damages *= (attacker.health/damageToAttacker)
                 damageToAttacker = attacker.getHealth()
-                damageToDefender *= (attacker.getHealth()/damageToAttacker.toFloat()).toInt()
+                damageToDefender *= (attacker.getHealth() / damageToAttacker.toFloat()).toInt()
             }
         }
-        else if (damageToAttacker>attacker.getHealth()) damageToAttacker=attacker.getHealth()
-        else if (damageToDefender>defender.getHealth()) damageToDefender=defender.getHealth()
+        else if (damageToAttacker > attacker.getHealth()) damageToAttacker = attacker.getHealth()
+        else if (damageToDefender > defender.getHealth()) damageToDefender = defender.getHealth()
 
-
-        if(attacker.isMelee() && (defender.isCivilian()
-                        || defender is CityCombatant && defender.isDefeated())) {
-            add("")
-            add(
-                if (defender.isCivilian()
-                    && (defender as MapUnitCombatant).unit.hasUnique(UniqueType.Uncapturable)
-                ) ""
-                else if (defender.isCivilian()) "Captured!".tr()
-                else "Occupied!".tr()
-            )
-        }
-
-
-        else {
+        if (attacker.isMelee() &&
+                (defender.isCivilian() || defender is CityCombatant && defender.isDefeated())) {
+            add()
+            val defeatedText = when {
+                !defender.isCivilian() -> "Occupied!"
+                (defender as MapUnitCombatant).unit.hasUnique(UniqueType.Uncapturable) -> ""
+                else -> "Captured!"
+            }
+            add(defeatedText.toLabel())
+        } else {
             add(getHealthBar(attacker.getHealth(), attacker.getMaxHealth(), damageToAttacker))
             add(getHealthBar(defender.getHealth(), defender.getMaxHealth(), damageToDefender))
         }
 
         row().pad(5f)
-        val attackText : String = when (attacker) {
+        val attackText: String = when (attacker) {
             is CityCombatant -> "Bombard"
             else -> "Attack"
         }
         val attackButton = attackText.toTextButton().apply { color= Color.RED }
 
-        var attackableTile : AttackableTile? = null
+        var attackableTile: AttackableTile? = null
 
         if (attacker.canAttack()) {
             if (attacker is MapUnitCombatant) {
                 attackableTile = BattleHelper
                         .getAttackableEnemies(attacker.unit, attacker.unit.movement.getDistanceToTiles())
                         .firstOrNull{ it.tileToAttack == defender.getTile()}
-            }
-            else if (attacker is CityCombatant)
-            {
+            } else if (attacker is CityCombatant) {
                 val canBombard = UnitAutomation.getBombardTargets(attacker.city).contains(defender.getTile())
                 if (canBombard) {
                     attackableTile = AttackableTile(attacker.getTile(), defender.getTile(), 0f)
@@ -248,32 +238,9 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         if (!worldScreen.isPlayersTurn || attackableTile == null) {
             attackButton.disable()
             attackButton.label.color = Color.GRAY
-        }
-
-        else {
-            attackButton.onClick(attacker.getAttackSound()) {
-                Battle.moveAndAttack(attacker, attackableTile)
-                worldScreen.mapHolder.removeUnitActionOverlay() // the overlay was one of attacking
-                worldScreen.update()
-
-                val actorsToFlashRed = arrayListOf<Actor>()
-
-                if (damageToDefender != 0)
-                    actorsToFlashRed.addAll(getMapActorsForCombatant(defender))
-                if (damageToAttacker != 0)
-                    actorsToFlashRed.addAll(getMapActorsForCombatant(attacker))
-                fun updateRedPercent(percent: Float) {
-                    for (actor in actorsToFlashRed)
-                        actor.color = Color.WHITE.cpy().lerp(Color.RED, percent)
-                }
-                worldScreen.stage.addAction(Actions.sequence(
-                    object : FloatAction(0f, 1f, 0.3f, Interpolation.sine) {
-                        override fun update(percent: Float) = updateRedPercent(percent)
-                    },
-                    object : FloatAction(0f, 1f, 0.3f, Interpolation.sine) {
-                        override fun update(percent: Float) = updateRedPercent(1 - percent)
-                    }
-                ))
+        } else {
+            attackButton.onClick(UncivSound.Silent) {  // onAttackButtonClicked will do the sound
+                onAttackButtonClicked(attacker, defender, attackableTile, damageToAttacker, damageToDefender)
             }
         }
 
@@ -281,30 +248,30 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         pack()
 
-        setPosition(worldScreen.stage.width/2-width/2, 5f)
+        setPosition(worldScreen.stage.width / 2 - width / 2, 5f)
     }
 
+    private fun onAttackButtonClicked(
+        attacker: ICombatant,
+        defender: ICombatant,
+        attackableTile: AttackableTile,
+        damageToAttacker: Int,
+        damageToDefender: Int
+    ) {
+        val canStillAttack = Battle.movePreparingAttack(attacker, attackableTile)
+        worldScreen.mapHolder.removeUnitActionOverlay() // the overlay was one of attacking
+        // There was a direct worldScreen.update() call here, removing its 'private' but not the comment justifying the modifier.
+        // My tests (desktop only) show the red-flash animations look just fine without.
+        worldScreen.shouldUpdate = true
+        //Gdx.graphics.requestRendering()  // Use this if immediate rendering is required
 
-    fun getMapActorsForCombatant(combatant: ICombatant):Sequence<Actor> =
-        sequence {
-            val tilegroups =
-                worldScreen.mapHolder.tileGroups[combatant.getTile()]!!
-            when {
-                combatant.isCity() -> yieldAll(tilegroups.mapNotNull { it.icons.improvementIcon })
-                combatant.isCivilian() -> {
-                    for (tileGroup in tilegroups) {
-                        tileGroup.icons.civilianUnitIcon?.let { yield(it) }
-                        yieldAll(tileGroup.pixelCivilianUnitGroup.children)
-                    }
-                }
-                else -> {
-                    for (tileGroup in tilegroups) {
-                        tileGroup.icons.militaryUnitIcon?.let { yield(it) }
-                        yieldAll(tileGroup.pixelMilitaryUnitGroup.children)
-                    }
-                }
-            }
-        }
+        if (!canStillAttack) return
+        SoundPlayer.play(attacker.getAttackSound())
+        Battle.attackOrNuke(attacker, attackableTile)
+
+        worldScreen.flashWoundedCombatants(attacker, damageToAttacker, defender, damageToDefender)
+    }
+
 
     private fun simulateNuke(attacker: MapUnitCombatant, targetTile: TileInfo){
         clear()
@@ -314,17 +281,17 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         attackerNameWrapper.add(getIcon(attacker)).padRight(5f)
         attackerNameWrapper.add(attackerLabel)
         add(attackerNameWrapper)
-        
+
         val canNuke = Battle.mayUseNuke(attacker, targetTile)
 
         val blastRadius =
             if (!attacker.unit.hasUnique(UniqueType.BlastRadius)) 2
             else attacker.unit.getMatchingUniques(UniqueType.BlastRadius).first().params[0].toInt()
-        
+
         val defenderNameWrapper = Table()
         for (tile in targetTile.getTilesInDistance(blastRadius)) {
             val defender = tryGetDefenderAtTile(tile, true) ?: continue
-            
+
             val defenderLabel = Label(defender.getName().tr(), skin)
             defenderNameWrapper.add(getIcon(defender)).padRight(5f)
             defenderNameWrapper.add(defenderLabel).row()
@@ -354,37 +321,6 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         pack()
 
-        setPosition(worldScreen.stage.width/2-width/2, 5f)
+        setPosition(worldScreen.stage.width / 2 - width / 2, 5f)
     }
-
-    private fun getHealthBar(currentHealth: Int, maxHealth: Int, expectedDamage:Int): Table {
-        val healthBar = Table()
-        val totalWidth = 100f
-        fun addHealthToBar(image: Image, amount:Int) {
-            val width = totalWidth * amount/maxHealth
-            healthBar.add(image).size(width.coerceIn(0f,totalWidth),3f)
-        }
-        addHealthToBar(ImageGetter.getDot(Color.BLACK), maxHealth-currentHealth)
-
-        val damagedHealth = ImageGetter.getDot(Color.FIREBRICK)
-        if (UncivGame.Current.settings.continuousRendering) {
-            damagedHealth.addAction(Actions.repeat(RepeatAction.FOREVER, Actions.sequence(
-                    Actions.color(Color.BLACK,0.7f),
-                    Actions.color(Color.FIREBRICK,0.7f)
-            ))) }
-        addHealthToBar(damagedHealth,expectedDamage)
-
-        val remainingHealth = currentHealth-expectedDamage
-        val remainingHealthDot = ImageGetter.getWhiteDot()
-        remainingHealthDot.color = when {
-            remainingHealth / maxHealth.toFloat() > 2 / 3f -> Color.GREEN
-            remainingHealth / maxHealth.toFloat() > 1 / 3f -> Color.ORANGE
-            else -> Color.RED
-        }
-        addHealthToBar(remainingHealthDot ,remainingHealth)
-
-        healthBar.pack()
-        return healthBar
-    }
-
 }

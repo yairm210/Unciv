@@ -17,9 +17,13 @@ import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.utils.*
-import java.util.*
-import kotlin.collections.ArrayList
+import com.unciv.ui.utils.Fonts
+import com.unciv.ui.utils.extensions.addBorder
+import com.unciv.ui.utils.extensions.colorFromRGB
+import com.unciv.ui.utils.extensions.darken
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
 
 
 class TechPickerScreen(
@@ -57,7 +61,7 @@ class TechPickerScreen(
 
     init {
         setDefaultCloseAction()
-        onBackButtonClicked { UncivGame.Current.setWorldScreen() }
+        onBackButtonClicked { UncivGame.Current.resetToWorldScreen() }
         scrollPane.setOverscroll(false, false)
 
         descriptionLabel.onClick {
@@ -83,7 +87,7 @@ class TechPickerScreen(
 
             game.settings.addCompletedTutorialTask("Pick technology")
 
-            game.setWorldScreen()
+            game.resetToWorldScreen()
             game.worldScreen.shouldUpdate = true
             dispose()
         }
@@ -287,11 +291,11 @@ class TechPickerScreen(
 
         val label = "Research [${tempTechsToResearch[0]}]".tr()
         val techProgression = getTechProgressLabel(tempTechsToResearch)
-        
+
         pick("${label}\n${techProgression}")
         setButtonsInfo()
     }
-    
+
     private fun getTechProgressLabel(techs: List<String>): String {
         val progress = techs.sumOf { tech -> civTech.researchOfTech(tech) }
         val techCost = techs.sumOf { tech -> civInfo.tech.costOfTech(tech) }

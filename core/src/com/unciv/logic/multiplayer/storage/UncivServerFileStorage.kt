@@ -1,6 +1,7 @@
 package com.unciv.logic.multiplayer.storage
 
 import com.badlogic.gdx.Net
+import com.unciv.utils.debug
 import java.io.FileNotFoundException
 import java.lang.Exception
 
@@ -9,7 +10,7 @@ class UncivServerFileStorage(val serverUrl: String, val timeout: Int = 30000) : 
         SimpleHttp.sendRequest(Net.HttpMethods.PUT, fileUrl(fileName), data, timeout) {
                 success, result, _ ->
             if (!success) {
-                println(result)
+                debug("Error from UncivServer during save: %s", result)
                 throw Exception(result)
             }
         }
@@ -20,7 +21,7 @@ class UncivServerFileStorage(val serverUrl: String, val timeout: Int = 30000) : 
         SimpleHttp.sendGetRequest(fileUrl(fileName), timeout = timeout){
                 success, result, code ->
             if (!success) {
-                println(result)
+                debug("Error from UncivServer during load: %s", result)
                 when (code) {
                     404 -> throw FileNotFoundException(result)
                     else -> throw Exception(result)

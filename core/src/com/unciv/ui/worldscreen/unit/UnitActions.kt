@@ -12,6 +12,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.Counter
 import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
@@ -19,14 +20,16 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
+import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.popup.hasOpenPopups
-import com.unciv.ui.utils.toPercent
+import com.unciv.ui.utils.extensions.toPercent
 import com.unciv.ui.worldscreen.WorldScreen
 import kotlin.math.min
+import kotlin.random.Random
 
 object UnitActions {
 
@@ -40,7 +43,7 @@ object UnitActions {
         val unitTable = worldScreen.bottomUnitTable
         val actionList = ArrayList<UnitAction>()
 
-        if (unit.isMoving()) 
+        if (unit.isMoving())
             actionList += UnitAction(UnitActionType.StopMovement) { unit.action = null }
         if (unit.isExploring())
             actionList += UnitAction(UnitActionType.StopExploration) { unit.action = null }
@@ -68,6 +71,7 @@ object UnitActions {
         addTriggerUniqueActions(unit, actionList)
         addAddInCapitalAction(unit, actionList, tile)
 
+        addWaitAction(unit, actionList, worldScreen);
 
         addToggleActionsAction(unit, actionList, unitTable)
 
@@ -81,6 +85,9 @@ object UnitActions {
 
         addSleepActions(actionList, unit, true)
         addFortifyActions(actionList, unit, true)
+
+        if (unit.canUpgradeMultipleSteps())
+            addUnitUpgradeAction(unit, actionList, 1)
 
         addSwapAction(unit, actionList, worldScreen)
         addDisbandAction(actionList, unit, worldScreen)
@@ -279,6 +286,8 @@ object UnitActions {
 
         return UnitAction(UnitActionType.Pillage,
                 action = {
+                    tile.getOwner()?.addNotification("An enemy [${unit.baseUnit.name}] has pillaged our [${tile.improvement}]", tile.position, "ImprovementIcons/${tile.improvement!!}", NotificationIcon.War, unit.baseUnit.name)
+                    pillageLooting(tile, unit)
                     tile.setPillaged()
                     unit.civInfo.lastSeenImprovement.remove(tile.position)
                     if (tile.resource != null) tile.getOwner()?.updateDetailedCivResources()    // this might take away a resource
@@ -291,6 +300,51 @@ object UnitActions {
                 }.takeIf { unit.currentMovement > 0 && canPillage(unit, tile) })
     }
 
+    private fun pillageLooting(tile: TileInfo, unit: MapUnit) {
+        // Stats objects for reporting pillage results in a notification
+        val pillageYield = Stats()
+        val globalPillageYield = Stats()
+        val toCityPillageYield = Stats()
+        val closestCity = unit.civInfo.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
+        val improvement = tile.ruleset.tileImprovements[tile.improvement]!!
+
+        for (unique in improvement.getMatchingUniques(UniqueType.PillageYieldRandom)) {
+            for (stat in unique.stats) {
+                val looted = Random.nextInt((stat.value + 1).toInt()) + Random.nextInt((stat.value + 1).toInt())
+                pillageYield.add(stat.key, looted.toFloat())
+            }
+        }
+        for (unique in improvement.getMatchingUniques(UniqueType.PillageYieldFixed)) {
+            for (stat in unique.stats) {
+                pillageYield.add(stat.key, stat.value)
+            }
+        }
+
+        for (stat in pillageYield) {
+            when (stat.key) {
+                in Stat.statsWithCivWideField -> {
+                    unit.civInfo.addStat(stat.key, stat.value.toInt())
+                    globalPillageYield[stat.key] += stat.value
+                }
+                else -> {
+                    if (closestCity != null) {
+                        closestCity.addStat(stat.key, stat.value.toInt())
+                        toCityPillageYield[stat.key] += stat.value
+                    }
+                }
+            }
+        }
+
+        if (!toCityPillageYield.isEmpty() && closestCity != null) {
+            val pillagerLootLocal = "We have looted [${toCityPillageYield.toStringWithoutIcons()}] from a [${improvement.name}] which has been sent to [${closestCity.name}]"
+            unit.civInfo.addNotification(pillagerLootLocal, tile.position, "ImprovementIcons/${improvement.name}", NotificationIcon.War)
+        }
+        if (!globalPillageYield.isEmpty()) {
+            val pillagerLootGlobal = "We have looted [${globalPillageYield.toStringWithoutIcons()}] from a [${improvement.name}]"
+            unit.civInfo.addNotification(pillagerLootGlobal, tile.position, "ImprovementIcons/${improvement.name}", NotificationIcon.War)
+        }
+    }
+
     private fun addExplorationActions(unit: MapUnit, actionList: ArrayList<UnitAction>) {
         if (unit.baseUnit.movesLikeAirUnits()) return
         if (unit.isExploring()) return
@@ -300,105 +354,99 @@ object UnitActions {
         }
     }
 
-    private fun addUnitUpgradeAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
-        val upgradeAction = getUpgradeAction(unit)
+    private fun addUnitUpgradeAction(
+        unit: MapUnit,
+        actionList: ArrayList<UnitAction>,
+        maxSteps: Int = Int.MAX_VALUE
+    ) {
+        val upgradeAction = getUpgradeAction(unit, maxSteps)
         if (upgradeAction != null) actionList += upgradeAction
     }
 
-    fun getUpgradeAction(unit: MapUnit): UnitAction? {
-        val tile = unit.currentTile
-        if (unit.baseUnit().upgradesTo == null) return null
-        if (!unit.canUpgrade()) return null
-        if (tile.getOwner() != unit.civInfo) return null
-        
-        val upgradedUnit = unit.getUnitToUpgradeTo()
-        val goldCostOfUpgrade = unit.getCostOfUpgrade()
+    /**  Common implementation for [getUpgradeAction], [getFreeUpgradeAction] and [getAncientRuinsUpgradeAction] */
+    private fun getUpgradeAction(
+        unit: MapUnit,
+        maxSteps: Int,
+        isFree: Boolean,
+        isSpecial: Boolean
+    ): UnitAction? {
+        if (unit.baseUnit().upgradesTo == null && unit.baseUnit().specialUpgradesTo == null) return null // can't upgrade to anything
+        val unitTile = unit.getTile()
+        val civInfo = unit.civInfo
+        if (!isFree && unitTile.getOwner() != civInfo) return null
+
+        val upgradesTo = unit.baseUnit().upgradesTo
+        val specialUpgradesTo = unit.baseUnit().specialUpgradesTo
+        val upgradedUnit = when {
+            isSpecial && specialUpgradesTo != null -> civInfo.getEquivalentUnit (specialUpgradesTo)
+            isFree && upgradesTo != null -> civInfo.getEquivalentUnit(upgradesTo)  // getUnitToUpgradeTo can't ignore tech
+            else -> unit.getUnitToUpgradeTo(maxSteps)
+        }
+        if (!unit.canUpgrade(unitToUpgradeTo = upgradedUnit, ignoreRequirements = isFree, ignoreResources = true))
+            return null
+
+        // Check _new_ resource requirements (display only - yes even for free or special upgrades)
+        // Using Counter to aggregate is a bit exaggerated, but - respect the mad modder.
+        val resourceRequirementsDelta = Counter<String>()
+        for ((resource, amount) in unit.baseUnit().getResourceRequirements())
+            resourceRequirementsDelta.add(resource, -amount)
+        for ((resource, amount) in upgradedUnit.getResourceRequirements())
+            resourceRequirementsDelta.add(resource, amount)
+        val newResourceRequirementsString = resourceRequirementsDelta.entries
+            .filter { it.value > 0 }
+            .joinToString { "${it.value} {${it.key}}".tr() }
+
+        val goldCostOfUpgrade = if (isFree) 0 else unit.getCostOfUpgrade(upgradedUnit)
+
+        // No string for "FREE" variants, these are never shown to the user.
+        // The free actions are only triggered via OneTimeUnitUpgrade or OneTimeUnitSpecialUpgrade in UniqueTriggerActivation.
+        val title = if (newResourceRequirementsString.isEmpty())
+                 "Upgrade to [${upgradedUnit.name}] ([$goldCostOfUpgrade] gold)"
+            else "Upgrade to [${upgradedUnit.name}]\n([$goldCostOfUpgrade] gold, [$newResourceRequirementsString])"
 
         return UnitAction(UnitActionType.Upgrade,
-            title = "Upgrade to [${upgradedUnit.name}] ([$goldCostOfUpgrade] gold)",
+            title = title,
             action = {
-                val unitTile = unit.getTile()
                 unit.destroy()
-                val newUnit = unit.civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name)
+                val newUnit = civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name)
 
                 /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
                  * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
                  */
                 if (newUnit == null) {
-                    val readdedUnit = unit.civInfo.placeUnitNearTile(unitTile.position, unit.name)
-                    unit.copyStatisticsTo(readdedUnit!!)
+                    val resurrectedUnit = civInfo.placeUnitNearTile(unitTile.position, unit.name)!!
+                    unit.copyStatisticsTo(resurrectedUnit)
                 } else { // Managed to upgrade
-                    unit.civInfo.addGold(-goldCostOfUpgrade)
+                    if (!isFree) civInfo.addGold(-goldCostOfUpgrade)
                     unit.copyStatisticsTo(newUnit)
                     newUnit.currentMovement = 0f
                 }
             }.takeIf {
-                unit.civInfo.gold >= goldCostOfUpgrade
-                && unit.currentMovement > 0
-                && !unit.isEmbarked()
-            }
-        )
-    }
-    
-    fun getFreeUpgradeAction(unit: MapUnit): UnitAction? {
-        if (unit.baseUnit().upgradesTo == null) return null
-        val upgradedUnit = unit.civInfo.getEquivalentUnit(unit.baseUnit().upgradesTo!!)
-        if (!unit.canUpgrade(upgradedUnit, true)) return null
-
-        return UnitAction(UnitActionType.Upgrade,
-            title = "Upgrade to [${upgradedUnit.name}] (FREE)",
-            action = {
-                val unitTile = unit.getTile()
-                unit.destroy()
-                val newUnit = unit.civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name)
-
-                /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
-                 * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
-                 */
-                if (newUnit == null) {
-                    val readdedUnit = unit.civInfo.placeUnitNearTile(unitTile.position, unit.name)
-                    unit.copyStatisticsTo(readdedUnit!!)
-                } else { // Managed to upgrade
-                    unit.copyStatisticsTo(newUnit)
-                    newUnit.currentMovement = 0f
-                }
+                isFree || (
+                    unit.civInfo.gold >= goldCostOfUpgrade
+                    && unit.currentMovement > 0
+                    && !unit.isEmbarked()
+                    && unit.canUpgrade(unitToUpgradeTo = upgradedUnit)
+                )
             }
         )
     }
 
-    fun getAncientRuinsUpgradeAction(unit: MapUnit): UnitAction? {
-        val upgradedUnitName =
-            when {
-                unit.baseUnit.specialUpgradesTo != null -> unit.baseUnit.specialUpgradesTo
-                unit.baseUnit.upgradesTo != null -> unit.baseUnit.upgradesTo
-                else -> return null
-            }
-        val upgradedUnit =
-            unit.civInfo.getEquivalentUnit(unit.civInfo.gameInfo.ruleSet.units[upgradedUnitName]!!)
-        
-        if (!unit.canUpgrade(upgradedUnit,true)) return null
-
-        return UnitAction(UnitActionType.Upgrade,
-            title = "Upgrade to [${upgradedUnit.name}] (free)",
-            action = {
-                val unitTile = unit.getTile()
-                unit.destroy()
-                val newUnit = unit.civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name)!!
-                unit.copyStatisticsTo(newUnit)
-
-                newUnit.currentMovement = 0f
-            }
-        )
-    }
+    fun getUpgradeAction(unit: MapUnit, maxSteps: Int = Int.MAX_VALUE) =
+        getUpgradeAction(unit, maxSteps, isFree = false, isSpecial = false)
+    fun getFreeUpgradeAction(unit: MapUnit) =
+        getUpgradeAction(unit, 1, isFree = true, isSpecial = false)
+    fun getAncientRuinsUpgradeAction(unit: MapUnit) =
+        getUpgradeAction(unit, 1, isFree = true, isSpecial = true)
 
     private fun addBuildingImprovementsAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo, worldScreen: WorldScreen, unitTable: UnitTable) {
         if (!unit.hasUniqueToBuildImprovements) return
         if (unit.isEmbarked()) return
 
-        val canConstruct = unit.currentMovement > 0
+        val couldConstruct = unit.currentMovement > 0
             && !tile.isCityCenter()
-            && unit.civInfo.gameInfo.ruleSet.tileImprovements.values.any { 
-                tile.canBuildImprovement(it, unit.civInfo) 
+            && unit.civInfo.gameInfo.ruleSet.tileImprovements.values.any {
+                ImprovementPickerScreen.canReport(tile.getImprovementBuildingProblems(it, unit.civInfo).toSet())
                 && unit.canBuildImprovement(it)
             }
 
@@ -406,7 +454,7 @@ object UnitActions {
             isCurrentAction = unit.currentTile.hasImprovementInProgress(),
             action = {
                 worldScreen.game.setScreen(ImprovementPickerScreen(tile, unit) { unitTable.selectUnit() })
-            }.takeIf { canConstruct }
+            }.takeIf { couldConstruct }
         )
     }
 
@@ -441,16 +489,17 @@ object UnitActions {
 
     private fun addGreatPersonActions(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
 
-        if (unit.currentMovement > 0) for (unique in unit.getUniques()) when (unique.placeholderText) {
-            "Can hurry technology research" -> {
+        if (unit.currentMovement > 0) for (unique in unit.getUniques()) when (unique.type) {
+            UniqueType.CanHurryResearch -> {
                 actionList += UnitAction(UnitActionType.HurryResearch,
                     action = {
                         unit.civInfo.tech.addScience(unit.civInfo.tech.getScienceFromGreatScientist())
                         unit.consume()
-                    }.takeIf { unit.civInfo.tech.currentTechnologyName() != null }
+                    }.takeIf { unit.civInfo.tech.currentTechnologyName() != null
+                            && !unit.civInfo.tech.currentTechnology()!!.hasUnique(UniqueType.CannotBeHurried) }
                 )
             }
-            "Can start an []-turn golden age" -> {
+            UniqueType.StartGoldenAge -> {
                 val turnsToGoldenAge = unique.params[0].toInt()
                 actionList += UnitAction(UnitActionType.StartGoldenAge,
                     action = {
@@ -459,11 +508,11 @@ object UnitActions {
                     }.takeIf { unit.currentTile.getOwner() != null && unit.currentTile.getOwner() == unit.civInfo }
                 )
             }
-            "Can speed up the construction of a wonder" -> {
+            UniqueType.CanSpeedupWonderConstruction -> {
                 val canHurryWonder =
                     if (!tile.isCityCenter()) false
                     else tile.getCity()!!.cityConstructions.isBuildingWonder()
-
+                            && tile.getCity()!!.cityConstructions.canBeHurried()
 
                 actionList += UnitAction(UnitActionType.HurryWonder,
                     action = {
@@ -478,15 +527,15 @@ object UnitActions {
                 )
             }
 
-            "Can speed up construction of a building" -> {
+            UniqueType.CanSpeedupConstruction -> {
                 if (!tile.isCityCenter()) {
                     actionList += UnitAction(UnitActionType.HurryBuilding, action = null)
                     continue
                 }
 
-                val canHurryConstruction = tile.getCity()!!.cityConstructions.getCurrentConstruction() is Building
-
                 val cityConstructions = tile.getCity()!!.cityConstructions
+                val canHurryConstruction = cityConstructions.getCurrentConstruction() is Building
+                        && cityConstructions.canBeHurried()
 
                 //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
                 val productionPointsToAdd = min(
@@ -507,7 +556,7 @@ object UnitActions {
                     }.takeIf { canHurryConstruction }
                 )
             }
-            "Can undertake a trade mission with City-State, giving a large sum of gold and [] Influence" -> {
+            UniqueType.CanTradeWithCityStateForGoldAndInfluence -> {
                 val canConductTradeMission = tile.owningCity?.civInfo?.isCityState() == true
                         && tile.owningCity?.civInfo?.isAtWarWith(unit.civInfo) == false
                 val influenceEarned = unique.params[0].toFloat()
@@ -704,7 +753,7 @@ object UnitActions {
         }
 
         for (otherCiv in civsToNotify)
-            otherCiv.addNotification("[${unit.civInfo}] has stolen your territory!", unit.currentTile.position, unit.civInfo.civName, NotificationIcon.War)
+            otherCiv.addNotification("Your territory has been stolen by [${unit.civInfo}]!", unit.currentTile.position, unit.civInfo.civName, NotificationIcon.War)
     }
 
     private fun addFortifyActions(actionList: ArrayList<UnitAction>, unit: MapUnit, showingAdditionalActions: Boolean) {
@@ -809,7 +858,7 @@ object UnitActions {
 
         return UnitAction(UnitActionType.GiftUnit, action = giftAction)
     }
-    
+
     private fun addTriggerUniqueActions(unit: MapUnit, actionList: ArrayList<UnitAction>){
         for (unique in unit.getUniques()) {
             if (!unique.conditionals.any { it.type == UniqueType.ConditionalConsumeUnit }) continue
@@ -819,6 +868,18 @@ object UnitActions {
             }
             actionList += unitAction
         }
+    }
+
+    private fun addWaitAction(unit: MapUnit, actionList: ArrayList<UnitAction>, worldScreen: WorldScreen) {
+        if (!unit.isIdle()) return
+        if (worldScreen.viewingCiv.getDueUnits().filter { it != unit }.none()) return
+        actionList += UnitAction(
+            type = UnitActionType.Wait,
+            action = {
+                unit.due = true
+                worldScreen.switchToNextUnit()
+            }
+        )
     }
 
     private fun addToggleActionsAction(unit: MapUnit, actionList: ArrayList<UnitAction>, unitTable: UnitTable) {
@@ -831,5 +892,4 @@ object UnitActions {
             }
         )
     }
-
 }

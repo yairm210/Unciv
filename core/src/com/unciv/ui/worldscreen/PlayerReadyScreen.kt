@@ -7,7 +7,9 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
 
 class PlayerReadyScreen(gameInfo: GameInfo, currentPlayerCiv: CivilizationInfo) : BaseScreen(){
     init {
@@ -19,8 +21,7 @@ class PlayerReadyScreen(gameInfo: GameInfo, currentPlayerCiv: CivilizationInfo) 
 
         table.onClick {
             postCrashHandlingRunnable { // To avoid ANRs on Android when the creation of the worldscreen takes more than 500ms
-                game.worldScreen = WorldScreen(gameInfo, currentPlayerCiv)
-                game.setWorldScreen()
+                game.resetToWorldScreen(WorldScreen(gameInfo, currentPlayerCiv))
             }
         }
         table.setFillParent(true)

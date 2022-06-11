@@ -12,11 +12,13 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.INamed
+import com.unciv.ui.civilopedia.MarkupRenderer.render
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.addSeparator
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.utils.Log
 import kotlin.math.max
 
 /* Ideas:
@@ -111,7 +113,7 @@ class FormattedLine (
     val displayColor: Color by lazy { parseColor() }
 
     /** Returns true if this formatted line will not display anything */
-    fun isEmpty(): Boolean = text.isEmpty() && extraImage.isEmpty() && 
+    fun isEmpty(): Boolean = text.isEmpty() && extraImage.isEmpty() &&
             !starred && icon.isEmpty() && link.isEmpty() && !separator
 
     /** Self-check to potentially support the mod checker
@@ -187,9 +189,8 @@ class FormattedLine (
             val result = HashMap<String,CivilopediaCategories>()
             allObjectMapsSequence.filter { !it.first.hide }
                 .flatMap { pair -> pair.second.keys.asSequence().map { key -> pair.first to key } }
-                .forEach { 
+                .forEach {
                     result[it.second] = it.first
-                    //println("  ${it.second} is a ${it.first}")
                 }
             result["Maya Long Count calendar cycle"] = CivilopediaCategories.Tutorial
 
@@ -231,7 +232,7 @@ class FormattedLine (
     /**
      * Renders the formatted line as a scene2d [Actor] (currently always a [Table])
      * @param labelWidth Total width to render into, needed to support wrap on Labels.
-     * @param iconDisplay Flag to omit link or all images. 
+     * @param iconDisplay Flag to omit link or all images.
      */
     fun render(labelWidth: Float, iconDisplay: IconDisplay = IconDisplay.All): Actor {
         if (extraImage.isNotEmpty()) {
@@ -250,7 +251,7 @@ class FormattedLine (
                 val height = width * image.height / image.width
                 table.add(image).size(width, height)
             } catch (exception: Exception) {
-                println ("${exception.message}: ${exception.cause?.message}")
+                Log.error("Exception while rendering civilopedia text", exception)
             }
             return table
         }
@@ -436,7 +437,7 @@ interface ICivilopediaText {
      * **or** [UncivGame.Current.worldScreen][UncivGame.worldScreen] being initialized,
      * this should be able to run from the main menu.
      * (And the info displayed should be about the **ruleset**, not the player situation)
-     * 
+     *
      * Default implementation is empty - no need to call super in overrides.
      *
      * @param ruleset The current ruleset for the Civilopedia viewer

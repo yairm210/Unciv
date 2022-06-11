@@ -1,7 +1,7 @@
 package com.unciv.ui.pickerscreens
 
 import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.extensions.onClick
 
 open class PickerScreen(disableScroll: Boolean = false) : BaseScreen() {
 
@@ -26,7 +26,7 @@ open class PickerScreen(disableScroll: Boolean = false) : BaseScreen() {
     init {
         pickerPane.setFillParent(true)
         stage.addActor(pickerPane)
-        ensureLayout() 
+        ensureLayout()
     }
 
     /** Make sure that anyone relying on sizes of the tables within this class during construction gets correct size readings.
@@ -39,10 +39,10 @@ open class PickerScreen(disableScroll: Boolean = false) : BaseScreen() {
      * Initializes the [Close button][closeButton]'s action (and the Back/ESC handler)
      * to return to the [previousScreen] if specified, or else to the world screen.
      */
-    fun setDefaultCloseAction(previousScreen: BaseScreen?=null) {
+    fun setDefaultCloseAction(previousScreen: BaseScreen? = null) {
         val closeAction = {
             if (previousScreen != null) game.setScreen(previousScreen)
-            else game.setWorldScreen()
+            else game.resetToWorldScreen()
             dispose()
         }
         pickerPane.closeButton.onClick(closeAction)

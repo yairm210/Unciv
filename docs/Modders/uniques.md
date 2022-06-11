@@ -44,6 +44,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Triggers voting for the Diplomatic Victory"
 	Applicable to: Triggerable
 
+??? example  "Triggers the following global alert: [comment]"
+	Example: "Triggers the following global alert: [comment]"
+
+	Applicable to: Triggerable
+
 ??? example  "This Unit gains the [promotion] promotion"
 	Example: "This Unit gains the [Shock I] promotion"
 
@@ -98,11 +103,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "[stats] whenever a Great Person is expended"
-	Example: "[+1 Gold, +2 Production] whenever a Great Person is expended"
-
-	Applicable to: Global
-
 ??? example  "[stats] from [tileFilter] tiles [cityFilter]"
 	Example: "[+1 Gold, +2 Production] from [Farm] tiles [in all cities]"
 
@@ -133,12 +133,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "[relativeAmount]% [stat] from every [tileFilter/specialist/buildingName]"
+??? example  "[relativeAmount]% [stat] from every [tileFilter/buildingFilter]"
 	Example: "[+20]% [Culture] from every [Farm]"
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "[relativeAmount]% Yield from every [tileFilter]"
+??? example  "[relativeAmount]% Yield from every [tileFilter/buildingFilter]"
 	Example: "[+20]% Yield from every [Farm]"
 
 	Applicable to: Global, FollowerBelief
@@ -287,6 +287,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "[stats] when a city adopts this religion for the first time"
 	Example: "[+1 Gold, +2 Production] when a city adopts this religion for the first time"
+
+	Applicable to: Global
+
+??? example  "[stats] whenever a Great Person is expended"
+	Example: "[+1 Gold, +2 Production] whenever a Great Person is expended"
 
 	Applicable to: Global
 
@@ -798,12 +803,19 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Nation
 
+## Era uniques
+??? example  "Starting in this era disables religion"
+	Applicable to: Era
+
 ## Tech uniques
 ??? example  "Starting tech"
 	Applicable to: Tech
 
 ??? example  "Only available"
 	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement
+
+??? example  "Cannot be hurried"
+	Applicable to: Tech, Building
 
 ## FounderBelief uniques
 ??? example  "[stats] for each global city following this religion"
@@ -1227,6 +1239,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Can speed up construction of a building"
 	Applicable to: Unit
 
+??? example  "Can speed up the construction of a wonder"
+	Applicable to: Unit
+
 ??? example  "Can hurry technology research"
 	Applicable to: Unit
 
@@ -1476,6 +1491,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Improvement
 
 ??? example  "Unpillagable"
+	Applicable to: Improvement
+
+??? example  "Pillaging this improvement yields approximately [stats]"
+	Example: "Pillaging this improvement yields approximately [+1 Gold, +2 Production]"
+
+	Applicable to: Improvement
+
+??? example  "Pillaging this improvement yields [stats]"
+	Example: "Pillaging this improvement yields [+1 Gold, +2 Production]"
+
 	Applicable to: Improvement
 
 ??? example  "Irremovable"
