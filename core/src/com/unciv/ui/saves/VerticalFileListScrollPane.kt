@@ -28,6 +28,8 @@ class VerticalFileListScrollPane(
     private val existingSavesTable: Table = Table()
 ) : AutoScrollPane(existingSavesTable) {
 
+    private val savesPerButton = mutableMapOf<TextButton, FileHandle>()
+
     private var previousSelection: TextButton? = null
 
     private var onChangeListener: ((FileHandle) -> Unit)? = null
@@ -71,9 +73,10 @@ class VerticalFileListScrollPane(
             launchOnGLThread {
                 loadAnimation.reset()
                 existingSavesTable.clear()
+                savesPerButton.clear()
                 for (saveGameFile in saves) {
                     val textButton = TextButton(saveGameFile.name(), BaseScreen.skin)
-                    textButton.userObject = saveGameFile
+                    savesPerButton[textButton] = saveGameFile
                     textButton.onClick {
                         selectExistingSave(textButton)
                     }
@@ -88,7 +91,7 @@ class VerticalFileListScrollPane(
         textButton.color = Color.GREEN
         previousSelection = textButton
 
-        val saveGameFile = textButton.userObject as? FileHandle ?: return
+        val saveGameFile = savesPerButton[textButton] ?: return
         onChangeListener?.invoke(saveGameFile)
     }
 

@@ -1,6 +1,5 @@
 package com.unciv.ui.utils.extensions
 
-import java.util.WeakHashMap
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
@@ -87,14 +86,14 @@ class ActorKeyShortcutDispatcher internal constructor(val actor: Actor): KeyShor
 
 private class ActorAttachments {
     companion object {
-        private val lookup = WeakHashMap<Actor, ActorAttachments>()
-
         fun getOrNull(actor: Actor): ActorAttachments? {
-            return lookup[actor];
+            return actor.userObject as ActorAttachments?
         }
 
         fun get(actor: Actor): ActorAttachments {
-            return lookup.computeIfAbsent(actor, { ActorAttachments(actor) })
+            if (actor.userObject == null)
+                actor.userObject = ActorAttachments(actor)
+            return getOrNull(actor)!!
         }
     }
 
