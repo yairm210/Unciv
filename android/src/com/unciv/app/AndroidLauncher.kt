@@ -2,7 +2,9 @@ package com.unciv.app
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.WorkManager
 import com.badlogic.gdx.backends.android.AndroidApplication
@@ -18,6 +20,7 @@ open class AndroidLauncher : AndroidApplication() {
     private var customFileLocationHelper: CustomFileLocationHelperAndroid? = null
     private var game: UncivGame? = null
     private var deepLinkedMultiplayerGame: String? = null
+    @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.backend = AndroidLogBackend()
@@ -33,9 +36,10 @@ open class AndroidLauncher : AndroidApplication() {
         val settings = GameSaver.getSettingsForPlatformLaunchers(filesDir.path)
         val fontFamily = settings.fontFamily
 
-        // Manage orientation lock
+        // Manage orientation lock and display cutout
         val platformSpecificHelper = PlatformSpecificHelpersAndroid(this)
         platformSpecificHelper.allowPortrait(settings.allowAndroidPortrait)
+        platformSpecificHelper.toggleDisplayCutout(settings.androidCutout)
 
         val androidParameters = UncivGameParameters(
             version = BuildConfig.VERSION_NAME,

@@ -13,6 +13,8 @@ interface GeneralPlatformSpecificHelpers {
      */
     fun allowPortrait(allow: Boolean) {}
 
+    fun toggleDisplayCutout(androidCutout: Boolean) {}
+
     /**
      * Notifies the user that it's their turn while the game is running
      */

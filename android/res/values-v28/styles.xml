@@ -1,9 +1,0 @@
-<resources>
-
-    <style name="GdxTheme" parent="android:Theme">
-        <item name="android:windowLayoutInDisplayCutoutMode">
-            shortEdges
-        </item>
-    </style>
-
-</resources>
