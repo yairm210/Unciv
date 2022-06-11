@@ -878,7 +878,7 @@ object NextTurnAutomation {
                     currentConstruction is BaseUnit && currentConstruction.hasUnique(UniqueType.FoundCity)
                 }) {
 
-            val bestCity = civInfo.cities.maxByOrNull { it.cityStats.currentCityStats.production }!!
+            val bestCity = civInfo.cities.filterNot { it.isPuppet }.maxByOrNull { it.cityStats.currentCityStats.production }!!
             if (bestCity.cityConstructions.builtBuildings.size > 1) // 2 buildings or more, otherwise focus on self first
                 bestCity.cityConstructions.currentConstructionFromQueue = settlerUnits.minByOrNull { it.cost }!!.name
         }
