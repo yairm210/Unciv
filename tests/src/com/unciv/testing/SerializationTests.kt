@@ -68,7 +68,7 @@ class SerializationTests {
 
         UncivGame.Current.settings = GameSettings()
         game = GameStarter.startNewGame(setup)
-        UncivGame.Current.gameInfo = game
+        UncivGame.Current.startSimulation(game)
 
         // Found a city otherwise too many classes have no instance and are not tested
         val civ = game.getCurrentPlayerCivilization()

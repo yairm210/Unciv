@@ -23,7 +23,7 @@ import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.crashhandling.CrashScreen
 import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.multiplayer.LoadDeepLinkScreen
+import com.unciv.ui.LoadingScreen
 import com.unciv.ui.multiplayer.MultiplayerHelpers
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.BaseScreen
@@ -32,8 +32,10 @@ import com.unciv.ui.worldscreen.PlayerReadyScreen
 import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.Dispatcher
 import com.unciv.utils.concurrency.launchOnGLThread
 import com.unciv.utils.debug
+import kotlinx.coroutines.withContext
 import java.util.*
 
 class UncivGame(parameters: UncivGameParameters) : Game() {
@@ -51,6 +53,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     var deepLinkedMultiplayerGame: String? = null
     var gameInfo: GameInfo? = null
+        private set
     lateinit var settings: GameSettings
     lateinit var musicController: MusicController
     lateinit var onlineMultiplayer: OnlineMultiplayer
@@ -104,7 +107,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
          * - Font (hence Fonts.resetFont() inside setSkin())
          */
         settings = gameSaver.getGeneralSettings() // needed for the screen
-        setScreen(LoadingScreen())  // NOT dependent on any atlas or skin
+        setScreen(GameStartScreen())  // NOT dependent on any atlas or skin
         GameSounds.init()
         musicController = MusicController()  // early, but at this point does only copy volume from settings
         audioExceptionHelper?.installHooks(
@@ -151,21 +154,58 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         }
     }
 
-    fun loadGame(gameInfo: GameInfo): WorldScreen {
-        this.gameInfo = gameInfo
-        ImageGetter.setNewRuleset(gameInfo.ruleSet)
-        // Clone the mod list and add the base ruleset to it
-        val fullModList = gameInfo.gameParameters.getModsAndBaseRuleset()
-        musicController.setModList(fullModList)
-        Gdx.input.inputProcessor = null // Since we will set the world screen when we're ready,
-        val worldScreen = WorldScreen(gameInfo, gameInfo.getPlayerToViewAs())
-        val newScreen = if (gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1 && !gameInfo.gameParameters.isOnlineMultiplayer)
-            PlayerReadyScreen(worldScreen)
-        else {
-            worldScreen
+    /** Loads a game, initializing the state of all important modules. Automatically runs on the appropriate thread. */
+    suspend fun loadGame(newGameInfo: GameInfo): WorldScreen = withContext(Dispatcher.DAEMON) {
+        val prevGameInfo = gameInfo
+        gameInfo = newGameInfo
+
+        if (prevGameInfo == null || prevGameInfo.ruleSet != newGameInfo.ruleSet) {
+            withContext(Dispatcher.GL) {
+                ImageGetter.setNewRuleset(newGameInfo.ruleSet)
+            }
         }
-        setScreen(newScreen)
-        return worldScreen
+
+        if (prevGameInfo == null ||
+                prevGameInfo.gameParameters.baseRuleset != newGameInfo.gameParameters.baseRuleset ||
+                prevGameInfo.gameParameters.mods != newGameInfo.gameParameters.mods) {
+            val fullModList = newGameInfo.gameParameters.getModsAndBaseRuleset()
+            musicController.setModList(fullModList)
+        }
+
+        val restoreState = if (worldScreen != null && prevGameInfo != null && prevGameInfo.gameId == newGameInfo.gameId) worldScreen!!.getRestoreState() else null
+
+        return@withContext loadWorldscreen {
+            val worldScreen = WorldScreen(newGameInfo, newGameInfo.getPlayerToViewAs(), restoreState)
+            if (newGameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1 && !newGameInfo.gameParameters.isOnlineMultiplayer) {
+                NewScreens(PlayerReadyScreen(worldScreen), worldScreen)
+            } else {
+                NewScreens(worldScreen)
+            }
+        }
+    }
+
+    /** Re-creates the current [worldScreen], if there is any. */
+    fun reloadWorldscreen() {
+        val curWorldScreen = worldScreen
+        val curGameInfo = gameInfo
+        if (curWorldScreen == null || curGameInfo == null) return
+
+        Concurrency.run { loadGame(curGameInfo) }
+    }
+
+    private data class NewScreens(val screenToShow: BaseScreen, val worldScreen: WorldScreen) {
+        constructor(worldScreen: WorldScreen) : this(worldScreen, worldScreen)
+    }
+    private suspend fun loadWorldscreen(factory: suspend () -> NewScreens): WorldScreen = withContext(Dispatcher.DAEMON) {
+        // This all runs in separate thread to give LoadGameScreen a chance to show
+        withContext(Dispatcher.GL) { setScreen(LoadingScreen()) }
+        worldScreen?.dispose()
+        worldScreen = null // This allows the GC to collect our old WorldScreen, otherwise we keep two WorldScreens in memory.
+        return@withContext withContext(Dispatcher.GL) {
+            val newScreens = factory()
+            setScreen(newScreens.screenToShow)
+            newScreens.worldScreen
+        }
     }
 
     /**
@@ -217,7 +257,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         if (deepLinkedMultiplayerGame == null) return@run
 
         launchOnGLThread {
-            setScreen(LoadDeepLinkScreen())
+            setScreen(LoadingScreen())
         }
         try {
             onlineMultiplayer.loadGame(deepLinkedMultiplayerGame!!)
@@ -311,6 +351,21 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         return if (screen == worldScreen) worldScreen else null
     }
 
+    fun goToMainMenu(): MainMenuScreen {
+        val curGameInfo = gameInfo
+        if (curGameInfo != null) {
+            gameSaver.requestAutoSaveUnCloned(curGameInfo) // Can save gameInfo directly because the user can't modify it on the MainMenuScreen
+        }
+        val mainMenuScreen = MainMenuScreen()
+        setScreen(mainMenuScreen)
+        return mainMenuScreen
+    }
+
+    /** Sets a simulated [GameInfo] object this game should run on */
+    fun startSimulation(simulatedGameInfo: GameInfo) {
+        gameInfo = simulatedGameInfo
+    }
+
     companion object {
         lateinit var Current: UncivGame
         fun isCurrentInitialized() = this::Current.isInitialized
@@ -319,7 +374,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     }
 }
 
-private class LoadingScreen : BaseScreen() {
+private class GameStartScreen : BaseScreen() {
     init {
         val happinessImage = ImageGetter.getExternalImage("LoadScreen.png")
         happinessImage.center(stage)

@@ -81,7 +81,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
             try {
                 // This is what can lead to ANRs - reading the file and setting the transients, that's why this is in another thread
                 val loadedGame = game.gameSaver.loadGameByName(selectedSave)
-                launchOnGLThread { game.loadGame(loadedGame) }
+                game.loadGame(loadedGame)
             } catch (ex: Exception) {
                 launchOnGLThread {
                     loadingPopup.close()
@@ -118,7 +118,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
                 try {
                     val clipboardContentsString = Gdx.app.clipboard.contents.trim()
                     val loadedGame = GameSaver.gameInfoFromString(clipboardContentsString)
-                    launchOnGLThread { game.loadGame(loadedGame) }
+                    game.loadGame(loadedGame)
                 } catch (ex: Exception) {
                     launchOnGLThread { handleLoadGameException("Could not load game from clipboard!", ex) }
                 }
@@ -143,7 +143,9 @@ class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
                     if (result.isError()) {
                         handleLoadGameException("Could not load game from custom location!", result.exception)
                     } else if (result.isSuccessful()) {
-                        game.loadGame(result.gameData!!)
+                        Concurrency.run {
+                            game.loadGame(result.gameData!!)
+                        }
                     }
                 }
             }

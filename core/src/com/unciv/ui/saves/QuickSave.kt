@@ -94,12 +94,12 @@ object QuickSave {
                     }
                 }
             } else {
-                launchOnGLThread { /// ... and load it into the screen on main thread for GL context
-                    try {
-                        screen.game.loadGame(savedGame)
-                    } catch (oom: OutOfMemoryError) {
-                        outOfMemory()
-                    } catch (ex: Exception) {
+                try {
+                    screen.game.loadGame(savedGame)
+                } catch (oom: OutOfMemoryError) {
+                    outOfMemory()
+                } catch (ex: Exception) {
+                    launchOnGLThread {
                         Log.error("Could not autoload game", ex)
                         loadingPopup.close()
                         ToastPopup("Cannot resume game!", screen)

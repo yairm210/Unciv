@@ -230,7 +230,7 @@ class OnlineMultiplayer {
         } else if (onlinePreview != null && hasNewerGameState(preview, onlinePreview)){
             onlineGame.doManualUpdate(preview)
         }
-        launchOnGLThread { UncivGame.Current.loadGame(gameInfo) }
+        UncivGame.Current.loadGame(gameInfo)
     }
 
     /**
@@ -241,7 +241,7 @@ class OnlineMultiplayer {
         val preview = onlineGameSaver.tryDownloadGamePreview(gameId)
         if (hasLatestGameState(gameInfo, preview)) {
             gameInfo.isUpToDate = true
-            launchOnGLThread { UncivGame.Current.loadGame(gameInfo) }
+            UncivGame.Current.loadGame(gameInfo)
         } else {
             loadGame(gameId)
         }
