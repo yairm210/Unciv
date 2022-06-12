@@ -474,8 +474,9 @@ object UnitAutomation {
             // move into position far away enough that the bombard doesn't hurt
             if (tileToMoveTo != null) {
                 unit.movement.headTowards(tileToMoveTo)
+                return true
             }
-            return unit.currentMovement < Constants.minimumMovementEpsilon
+            return false
         }
 
         val numberOfUnitsAroundCity = closestReachableEnemyCity.getTilesInDistance(4)
@@ -491,13 +492,13 @@ object UnitAutomation {
 
             if (tileToHeadTo != null) { // no need to worry, keep going as the movement alg. says
                 unit.movement.headTowards(tileToHeadTo)
-                return unit.currentMovement < Constants.minimumMovementEpsilon
             }
+            return true
         }
 
         unit.movement.headTowards(closestReachableEnemyCity) // go for it!
 
-        return unit.currentMovement < Constants.minimumMovementEpsilon
+        return true
     }
 
     fun tryEnterOwnClosestCity(unit: MapUnit): Boolean {
