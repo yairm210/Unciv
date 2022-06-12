@@ -28,6 +28,7 @@ import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.popup.hasOpenPopups
 import com.unciv.ui.utils.extensions.toPercent
 import com.unciv.ui.worldscreen.WorldScreen
+import com.unciv.utils.Log.debug
 import kotlin.math.min
 import kotlin.random.Random
 
@@ -573,6 +574,9 @@ object UnitActions {
                         unit.consume()
                     }.takeIf { canConductTradeMission }
                 )
+            }
+            else -> {
+                debug("Fragment ${unique.type} is not applicable to Great Person")
             }
         }
     }
