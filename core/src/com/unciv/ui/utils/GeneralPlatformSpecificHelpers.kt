@@ -13,6 +13,7 @@ interface GeneralPlatformSpecificHelpers {
      */
     fun allowPortrait(allow: Boolean) {}
 
+    fun hasDisplayCutout(): Boolean { return false }
     fun toggleDisplayCutout(androidCutout: Boolean) {}
 
     /**

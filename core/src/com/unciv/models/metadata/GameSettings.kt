@@ -53,7 +53,7 @@ class GameSettings {
     var useDemographics: Boolean = false
     var showZoomButtons: Boolean = false
 
-    var androidCutout: Boolean = true
+    var androidCutout: Boolean = false
 
     var multiplayer = GameSettingsMultiplayer()
 

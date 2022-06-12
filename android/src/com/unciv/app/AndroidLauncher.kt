@@ -20,7 +20,6 @@ open class AndroidLauncher : AndroidApplication() {
     private var customFileLocationHelper: CustomFileLocationHelperAndroid? = null
     private var game: UncivGame? = null
     private var deepLinkedMultiplayerGame: String? = null
-    @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.backend = AndroidLogBackend()
@@ -39,7 +38,10 @@ open class AndroidLauncher : AndroidApplication() {
         // Manage orientation lock and display cutout
         val platformSpecificHelper = PlatformSpecificHelpersAndroid(this)
         platformSpecificHelper.allowPortrait(settings.allowAndroidPortrait)
-        platformSpecificHelper.toggleDisplayCutout(settings.androidCutout)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            platformSpecificHelper.toggleDisplayCutout(settings.androidCutout)
+        }
 
         val androidParameters = UncivGameParameters(
             version = BuildConfig.VERSION_NAME,

@@ -34,6 +34,15 @@ Sources for Info about current orientation in case need:
         if (activity.requestedOrientation != orientation) activity.requestedOrientation = orientation
     }
 
+    override fun hasDisplayCutout(): Boolean {
+        val displayCutout = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            activity.windowManager.defaultDisplay.cutout
+        } else {
+            TODO("VERSION.SDK_INT < Q")
+        }
+        return displayCutout != null
+    }
+
     @RequiresApi(Build.VERSION_CODES.P)
     override fun toggleDisplayCutout(androidCutout: Boolean) {
         val layoutParams = activity.window.attributes
