@@ -16,6 +16,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.Translations
 import com.unciv.ui.LanguagePickerScreen
+import com.unciv.ui.LoadingScreen
 import com.unciv.ui.audio.GameSounds
 import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicMood
@@ -23,7 +24,6 @@ import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.crashhandling.CrashScreen
 import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.LoadingScreen
 import com.unciv.ui.multiplayer.MultiplayerHelpers
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.BaseScreen

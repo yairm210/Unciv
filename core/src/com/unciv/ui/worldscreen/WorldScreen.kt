@@ -79,10 +79,8 @@ import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import com.unciv.utils.concurrency.launchOnThreadPool
 import com.unciv.utils.debug
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 
 /**
  * Do not create this screen without seriously thinking about the implications: this is the single most memory-intensive class in the application.
@@ -617,10 +615,7 @@ class WorldScreen(
         val viewingCivName: String,
         val fogOfWar: Boolean
     ) {
-        val width = mapHolder.width
-        val height = mapHolder.height
-        val scaleX = mapHolder.scaleX
-        val scaleY = mapHolder.scaleY
+        val zoom = mapHolder.scaleX
         val scrollX = mapHolder.scrollX
         val scrollY = mapHolder.scrollY
     }
@@ -632,10 +627,7 @@ class WorldScreen(
 
         // This is not the case if you have a multiplayer game where you play as 2 civs
         if (viewingCiv.civName == restoreState.viewingCivName) {
-            mapHolder.width = restoreState.width
-            mapHolder.height = restoreState.height
-            mapHolder.scaleX = restoreState.scaleX
-            mapHolder.scaleY = restoreState.scaleY
+            mapHolder.zoom(restoreState.zoom)
             mapHolder.scrollX = restoreState.scrollX
             mapHolder.scrollY = restoreState.scrollY
             mapHolder.updateVisualScroll()
