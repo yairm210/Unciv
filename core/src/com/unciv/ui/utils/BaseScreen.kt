@@ -66,7 +66,7 @@ abstract class BaseScreen : Screen {
             // and also the global shortcuts on the screen itself.
             return { associatedActor: Actor?, _: KeyShortcutDispatcher? ->
                 when { associatedActor == null -> DispatcherVetoResult.Skip
-                       associatedActor.isDescendantOf(activePopup.innerTable) -> DispatcherVetoResult.Accept
+                       associatedActor.isDescendantOf(activePopup) -> DispatcherVetoResult.Accept
                        else -> DispatcherVetoResult.SkipWithChildren }
             }
         }
