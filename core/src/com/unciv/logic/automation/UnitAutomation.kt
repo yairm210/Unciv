@@ -385,8 +385,9 @@ object UnitAutomation {
 
         if (closestEnemy != null) {
             unit.movement.headTowards(closestEnemy.tileToAttackFrom)
+            return true
         }
-        return unit.currentMovement < Constants.minimumMovementEpsilon
+        return false
     }
 
     private fun tryAccompanySettlerOrGreatPerson(unit: MapUnit): Boolean {
