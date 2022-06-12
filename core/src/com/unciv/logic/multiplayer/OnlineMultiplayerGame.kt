@@ -116,7 +116,7 @@ class OnlineMultiplayerGame(
         lastOnlineUpdate.set(Instant.now())
         error = null
         preview = gameInfo
-        Concurrency.runOnGLThread {
+        withGLContext {
             EventBus.send(MultiplayerGameUpdated(name, gameInfo))
         }
     }

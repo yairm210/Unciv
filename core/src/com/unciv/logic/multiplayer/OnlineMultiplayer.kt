@@ -12,8 +12,9 @@ import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
 import com.unciv.ui.utils.extensions.isLargerThan
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.Dispatcher
-import com.unciv.utils.concurrency.launchOnGLThread
 import com.unciv.utils.concurrency.launchOnThreadPool
+import com.unciv.utils.concurrency.withGLContext
+import com.unciv.utils.debug
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
@@ -98,7 +99,7 @@ class OnlineMultiplayer {
         }
     }
 
-    private fun updateSavesFromFiles() {
+    private suspend fun updateSavesFromFiles() {
         val saves = gameSaver.getMultiplayerSaves()
 
         val removedSaves = savedGames.keys - saves.toSet()
@@ -143,21 +144,23 @@ class OnlineMultiplayer {
         addGame(gamePreview, saveFileName)
     }
 
-    private fun addGame(newGame: GameInfo) {
+    private suspend fun addGame(newGame: GameInfo) {
         val newGamePreview = newGame.asPreview()
         addGame(newGamePreview, newGamePreview.gameId)
     }
 
-    private fun addGame(preview: GameInfoPreview, saveFileName: String) {
+    private suspend fun addGame(preview: GameInfoPreview, saveFileName: String) {
         val fileHandle = gameSaver.saveGame(preview, saveFileName)
         return addGame(fileHandle, preview)
     }
 
-    private fun addGame(fileHandle: FileHandle, preview: GameInfoPreview = gameSaver.loadGamePreviewFromFile(fileHandle)) {
+    private suspend fun addGame(fileHandle: FileHandle, preview: GameInfoPreview = gameSaver.loadGamePreviewFromFile(fileHandle)) {
         debug("Adding game %s", preview.gameId)
         val game = OnlineMultiplayerGame(fileHandle, preview, Instant.now())
         savedGames[fileHandle] = game
-        Concurrency.runOnGLThread { EventBus.send(MultiplayerGameAdded(game.name)) }
+        withGLContext {
+            EventBus.send(MultiplayerGameAdded(game.name))
+        }
     }
 
     fun getGameByName(name: String): OnlineMultiplayerGame? {
