@@ -35,7 +35,7 @@ To check if everything works, you can start Unciv on the same computer, go to "O
 
 To connect with other devices, you'll need the port (default 80) the server is running on to be visible externally (port forwarding) and know your external IP-address.
 
-On the other device, enter the URL to your server, click 'check connection' from the new device, and if you get the same "Success!" result - congratulations, you're connected to the same server and can start a multiplayer game!
+On the other device, enter the URL to your server (`http://<your IP address>:<your chosen port>`), click 'check connection' from the new device, and if you get the same "Success!" result - congratulations, you're connected to the same server and can start a multiplayer game!
 
 Please note:
 * Devices *not* connected to the same server will *not* be able to participate in multiplayer games together
