@@ -17,10 +17,10 @@ import com.unciv.ui.utils.extensions.toLabel
  */
 open class YesNoPopup(
     question: String,
-    stage: Stage,
+    stageToShowOn: Stage,
     restoreDefault: () -> Unit = {},
     action: () -> Unit
-) : Popup(stage) {
+) : Popup(stageToShowOn) {
 
     constructor(
         question: String,

@@ -344,7 +344,7 @@ private class NationPickerPopup(
     private val ruleset = previousScreen.ruleset
     // This Popup's body has two halves of same size, either side by side or arranged vertically
     // depending on screen proportions - determine height for one of those
-    private val partHeight = stage.height * (if (stage.isNarrowerThan4to3()) 0.45f else 0.8f)
+    private val partHeight = stageToShowOn.height * (if (stageToShowOn.isNarrowerThan4to3()) 0.45f else 0.8f)
     private val civBlocksWidth = playerPicker.civBlocksWidth
     private val nationListTable = Table()
     private val nationListScroll = ScrollPane(nationListTable)
@@ -356,7 +356,7 @@ private class NationPickerPopup(
         nationListScroll.setOverscroll(false, false)
         add(nationListScroll).size( civBlocksWidth + 10f, partHeight )
             // +10, because the nation table has a 5f pad, for a total of +10f
-        if (stage.isNarrowerThan4to3()) row()
+        if (stageToShowOn.isNarrowerThan4to3()) row()
         nationDetailsScroll.setOverscroll(false, false)
         add(nationDetailsScroll).size(civBlocksWidth + 10f, partHeight) // Same here, see above
 
