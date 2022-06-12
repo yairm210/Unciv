@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
+import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.tr
@@ -36,6 +37,9 @@ fun advancedTab(
     ) {
         settings.showExperimentalWorldWrap = it
     }
+
+    if (UncivGame.Current.platformSpecificHelper?.hasDisplayCutout() == true)
+        optionsPopup.addCheckbox(this, "Enable display cutout (requires restart)", settings.androidCutout, false) { settings.androidCutout = it }
 
     addMaxZoomSlider(this, settings)
 
