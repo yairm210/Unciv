@@ -21,10 +21,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         if (unit == null) return
         if (!worldScreen.canChangeState) return // No actions when it's not your turn or spectator!
         for (button in UnitActions.getUnitActions(unit, worldScreen).map { getUnitActionButton(it) })
-            if (UncivGame.Current.settings.androidCutout)
-                add(button).left().padLeft(60f).padBottom(2f).row()
-            else
-                add(button).left().padBottom(2f).row()
+            add(button).left().padBottom(2f).row()
         pack()
     }
 
