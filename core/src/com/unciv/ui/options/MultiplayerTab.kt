@@ -154,7 +154,7 @@ private fun addMultiplayerServerOptions(
     }).colspan(2).row()
 
     tab.add(connectionToServerButton.onClick {
-        val popup = Popup(optionsPopup.stage).apply {
+        val popup = Popup(optionsPopup.stageToShowOn).apply {
             addGoodSizedLabel("Awaiting response...").row()
         }
         popup.open(true)

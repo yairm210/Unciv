@@ -11,7 +11,7 @@ import kotlinx.coroutines.delay
  * This is an unobtrusive popup which will close itself after a given amount of time.
  * Default time is two seconds (in milliseconds)
  */
-class ToastPopup (message: String, stage: Stage, val time: Long = 2000) : Popup(stage){
+class ToastPopup (message: String, stageToShowOn: Stage, val time: Long = 2000) : Popup(stageToShowOn){
 
     constructor(message: String, screen: BaseScreen, time: Long = 2000) : this(message, screen.stage, time)
 
@@ -24,7 +24,7 @@ class ToastPopup (message: String, stage: Stage, val time: Long = 2000) : Popup(
         open()
         //move it to the top so its not in the middle of the screen
         //have to be done after open() because open() centers the popup
-        y = stage.height - (height + 20f)
+        y = stageToShowOn.height - (height + 20f)
     }
 
     private fun startTimer(){
