@@ -10,6 +10,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.TechManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
+import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.ModOptions
 import com.unciv.models.ruleset.Ruleset
 
@@ -195,15 +196,13 @@ object BackwardCompatibility {
 
     /** Convert from Fortify X to Fortify and save off X */
     fun GameInfo.convertFortify() {
-        //val reg = Regex("""^Fortify\s+(\d+)""")
+        val reg = Regex("""^Fortify\s+(\d+)([\w\s]*)""")
         for (civInfo in civilizations) {
             for (unit in civInfo.getCivUnits()) {
-                if (unit.action != null && unit.action!!.split(" ").size > 1 && unit.action!!.split(" ")[1].toIntOrNull() != null) {
-                    unit.turnsFortified = unit.action!!.split(" ")[1].toInt()
-                    unit.action = if (unit.action!!.split(" ").size > 2)
-                        "Fortify until healed"
-                    else
-                        "Fortify"
+                if (unit.action != null && reg.matches(unit.action!!)) {
+                    val (turns, heal) = reg.find(unit.action!!)!!.destructured
+                    unit.turnsFortified = turns.toInt()
+                    unit.action = "Fortify$heal"
                 }
             }
         }
