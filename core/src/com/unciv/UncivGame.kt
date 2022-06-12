@@ -32,10 +32,10 @@ import com.unciv.ui.worldscreen.PlayerReadyScreen
 import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
-import com.unciv.utils.concurrency.Dispatcher
 import com.unciv.utils.concurrency.launchOnGLThread
+import com.unciv.utils.concurrency.withGLContext
+import com.unciv.utils.concurrency.withThreadPoolContext
 import com.unciv.utils.debug
-import kotlinx.coroutines.withContext
 import java.util.*
 
 class UncivGame(parameters: UncivGameParameters) : Game() {
@@ -155,12 +155,12 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     }
 
     /** Loads a game, initializing the state of all important modules. Automatically runs on the appropriate thread. */
-    suspend fun loadGame(newGameInfo: GameInfo): WorldScreen = withContext(Dispatcher.DAEMON) {
+    suspend fun loadGame(newGameInfo: GameInfo): WorldScreen = withThreadPoolContext {
         val prevGameInfo = gameInfo
         gameInfo = newGameInfo
 
         if (prevGameInfo == null || prevGameInfo.ruleSet != newGameInfo.ruleSet) {
-            withContext(Dispatcher.GL) {
+            withGLContext {
                 ImageGetter.setNewRuleset(newGameInfo.ruleSet)
             }
         }
@@ -174,7 +174,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
         val restoreState = if (worldScreen != null && prevGameInfo != null && prevGameInfo.gameId == newGameInfo.gameId) worldScreen!!.getRestoreState() else null
 
-        return@withContext loadWorldscreen {
+        return@withThreadPoolContext loadWorldscreen {
             val worldScreen = WorldScreen(newGameInfo, newGameInfo.getPlayerToViewAs(), restoreState)
             if (newGameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1 && !newGameInfo.gameParameters.isOnlineMultiplayer) {
                 NewScreens(PlayerReadyScreen(worldScreen), worldScreen)
@@ -196,12 +196,12 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     private data class NewScreens(val screenToShow: BaseScreen, val worldScreen: WorldScreen) {
         constructor(worldScreen: WorldScreen) : this(worldScreen, worldScreen)
     }
-    private suspend fun loadWorldscreen(factory: suspend () -> NewScreens): WorldScreen = withContext(Dispatcher.DAEMON) {
+    private suspend fun loadWorldscreen(factory: suspend () -> NewScreens): WorldScreen = withThreadPoolContext {
         // This all runs in separate thread to give LoadGameScreen a chance to show
-        withContext(Dispatcher.GL) { setScreen(LoadingScreen()) }
+        withGLContext { setScreen(LoadingScreen()) }
         worldScreen?.dispose()
         worldScreen = null // This allows the GC to collect our old WorldScreen, otherwise we keep two WorldScreens in memory.
-        return@withContext withContext(Dispatcher.GL) {
+        return@withThreadPoolContext withGLContext {
             val newScreens = factory()
             setScreen(newScreens.screenToShow)
             newScreens.worldScreen

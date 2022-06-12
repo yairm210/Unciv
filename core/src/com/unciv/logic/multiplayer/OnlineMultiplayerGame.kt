@@ -8,6 +8,10 @@ import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
 import com.unciv.ui.utils.extensions.isLargerThan
 import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.launchOnGLThread
+import com.unciv.utils.concurrency.withGLContext
+import com.unciv.utils.debug
+import kotlinx.coroutines.coroutineScope
 import java.io.FileNotFoundException
 import java.time.Duration
 import java.time.Instant
@@ -62,13 +66,13 @@ class OnlineMultiplayerGame(
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
      * @throws FileNotFoundException if the file can't be found
      */
-    suspend fun requestUpdate(forceUpdate: Boolean = false) {
+    suspend fun requestUpdate(forceUpdate: Boolean = false) = coroutineScope {
         val onUnchanged = { GameUpdateResult.UNCHANGED }
         val onError = { e: Exception ->
             error = e
             GameUpdateResult.FAILURE
         }
-        Concurrency.runOnGLThread {
+        launchOnGLThread {
             EventBus.send(MultiplayerGameUpdateStarted(name))
         }
         val throttleInterval = if (forceUpdate) Duration.ZERO else getUpdateThrottleInterval()
@@ -86,7 +90,9 @@ class OnlineMultiplayerGame(
             GameUpdateResult.FAILURE -> MultiplayerGameUpdateFailed(name, error!!)
             GameUpdateResult.UNCHANGED -> MultiplayerGameUpdateUnchanged(name, preview!!)
         }
-        Concurrency.runOnGLThread { EventBus.send(updateEvent) }
+        launchOnGLThread {
+            EventBus.send(updateEvent)
+        }
     }
 
     private suspend fun update(): GameUpdateResult {
@@ -98,11 +104,14 @@ class OnlineMultiplayerGame(
         return GameUpdateResult.CHANGED
     }
 
-    fun doManualUpdate(gameInfo: GameInfoPreview) {
+    suspend fun doManualUpdate(gameInfo: GameInfoPreview) {
+        debug("Doing manual update of game %s", gameInfo.gameId)
         lastOnlineUpdate.set(Instant.now())
         error = null
         preview = gameInfo
-        Concurrency.runOnGLThread { EventBus.send(MultiplayerGameUpdated(name, gameInfo)) }
+        Concurrency.runOnGLThread {
+            EventBus.send(MultiplayerGameUpdated(name, gameInfo))
+        }
     }
 
     override fun equals(other: Any?): Boolean = other is OnlineMultiplayerGame && fileHandle == other.fileHandle
