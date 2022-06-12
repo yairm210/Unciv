@@ -70,7 +70,7 @@ object MultiplayerHelpers {
             "Consider using a custom server instead."
         ).colspan(2).row()
         dropboxWarning.addButton("Open Documentation") {
-            Gdx.net.openURI("https://yairm210.github.io/Unciv/Other/Hosting-a-Multiplayer-server/")
+            Gdx.net.openURI("https://yairm210.github.io/Unciv/Other/Multiplayer/#Hosting-a-Multiplayer-server")
         }.colspan(2).row()
 
         val checkBox = "Don't show again".toCheckBox()
