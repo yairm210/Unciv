@@ -28,7 +28,6 @@ import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.popup.hasOpenPopups
 import com.unciv.ui.utils.extensions.toPercent
 import com.unciv.ui.worldscreen.WorldScreen
-import com.unciv.utils.Log.debug
 import kotlin.math.min
 import kotlin.random.Random
 
@@ -72,7 +71,7 @@ object UnitActions {
         addTriggerUniqueActions(unit, actionList)
         addAddInCapitalAction(unit, actionList, tile)
 
-        addWaitAction(unit, actionList, worldScreen);
+        addWaitAction(unit, actionList, worldScreen)
 
         addToggleActionsAction(unit, actionList, unitTable)
 
@@ -575,9 +574,7 @@ object UnitActions {
                     }.takeIf { canConductTradeMission }
                 )
             }
-            else -> {
-                debug("Fragment ${unique.type} is not applicable to Great Person")
-            }
+            else -> {}
         }
     }
 
