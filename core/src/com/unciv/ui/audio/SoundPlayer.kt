@@ -6,7 +6,7 @@ import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
 import com.unciv.models.UncivSound
-import com.unciv.ui.crashhandling.launchCrashHandling
+import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.debug
 import kotlinx.coroutines.delay
 import java.io.File
@@ -59,7 +59,8 @@ object SoundPlayer {
         val game = UncivGame.Current
 
         // Get a hash covering all mods - quickly, so don't map, cast or copy the Set types
-        val hash1 = if (game.isGameInfoInitialized()) game.gameInfo.ruleSet.mods.hashCode() else 0
+        val gameInfo = game.gameInfo
+        val hash1 = if (gameInfo != null) gameInfo.ruleSet.mods.hashCode() else 0
         val newHash = hash1.xor(game.settings.visualMods.hashCode())
 
         // If hash the same, leave the cache as is
@@ -91,8 +92,10 @@ object SoundPlayer {
         // audiovisual mods after game mods but before built-in sounds
         // (these can already be available when game.gameInfo is not)
         val modList: MutableSet<String> = mutableSetOf()
-        if (game.isGameInfoInitialized())
-            modList.addAll(game.gameInfo.ruleSet.mods)  // Sounds from game mods
+        val gameInfo = game.gameInfo
+        if (gameInfo != null) {
+            modList.addAll(gameInfo.ruleSet.mods)  // Sounds from game mods
+        }
         modList.addAll(game.settings.visualMods)
 
         // Translate the basic mod list into relative folder names so only sounds/name.ext needs
@@ -168,7 +171,7 @@ object SoundPlayer {
         val initialDelay = if (isFresh && Gdx.app.type == Application.ApplicationType.Android) 40 else 0
 
         if (initialDelay > 0 || resource.play(volume) == -1L) {
-            launchCrashHandling("DelayedSound") {
+            Concurrency.run("DelayedSound") {
                 delay(initialDelay.toLong())
                 while (resource.play(volume) == -1L) {
                     delay(20L)

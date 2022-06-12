@@ -164,10 +164,13 @@ class FormattedLine (
             }
             return ""
         }
-        private fun getCurrentRuleset() = when {
-            !UncivGame.isCurrentInitialized() -> Ruleset()
-            !UncivGame.Current.isGameInfoInitialized() -> RulesetCache[BaseRuleset.Civ_V_Vanilla.fullName]!!
-            else -> UncivGame.Current.gameInfo.ruleSet
+        private fun getCurrentRuleset(): Ruleset {
+            val gameInfo = UncivGame.Current.gameInfo
+            return when {
+                !UncivGame.isCurrentInitialized() -> Ruleset()
+                gameInfo == null -> RulesetCache[BaseRuleset.Civ_V_Vanilla.fullName]!!
+                else -> gameInfo.ruleSet
+            }
         }
         private fun initNamesCategoryMap(ruleSet: Ruleset): HashMap<String, CivilopediaCategories> {
             //val startTime = System.nanoTime()

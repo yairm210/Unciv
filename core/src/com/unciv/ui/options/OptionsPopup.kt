@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.unciv.MainMenuScreen
+import com.unciv.UncivGame
 import com.unciv.logic.event.EventBus
 import com.unciv.models.UncivSound
 import com.unciv.models.metadata.BaseRuleset
@@ -133,20 +134,20 @@ class OptionsPopup(
     /** Reload this Popup after major changes (resolution, tileset, language, font) */
     private fun reloadWorldAndOptions() {
         settings.save()
-        if (screen is WorldScreen) {
-            screen.game.resetToWorldScreen(WorldScreen(screen.gameInfo, screen.viewingCiv))
-        } else if (screen is MainMenuScreen) {
-            screen.game.setScreen(MainMenuScreen())
+        val worldScreen = UncivGame.Current.getWorldScreenIfActive()
+        if (worldScreen != null) {
+            val newWorldScreen = WorldScreen(worldScreen.gameInfo, worldScreen.viewingCiv)
+            worldScreen.game.setScreen(newWorldScreen)
+            newWorldScreen.openOptionsPopup(tabs.activePage)
         }
-        (screen.game.screen as BaseScreen).openOptionsPopup(tabs.activePage)
     }
 
     fun addCheckbox(table: Table, text: String, initialState: Boolean, updateWorld: Boolean = false, action: ((Boolean) -> Unit)) {
         val checkbox = text.toCheckBox(initialState) {
             action(it)
             settings.save()
-            if (updateWorld && screen is WorldScreen)
-                screen.shouldUpdate = true
+            val worldScreen = UncivGame.Current.getWorldScreenIfActive()
+            if (updateWorld && worldScreen != null) worldScreen.shouldUpdate = true
         }
         table.add(checkbox).colspan(2).left().row()
     }

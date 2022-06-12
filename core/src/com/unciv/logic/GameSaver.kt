@@ -10,9 +10,8 @@ import com.unciv.json.json
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.doMigrations
 import com.unciv.models.metadata.isMigrationNecessary
-import com.unciv.ui.crashhandling.launchCrashHandling
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.saves.Gzip
+import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import kotlinx.coroutines.Job
@@ -191,7 +190,7 @@ class GameSaver(
         val gameData = try {
             gameInfoToString(game)
         } catch (ex: Exception) {
-            postCrashHandlingRunnable { saveCompletionCallback(CustomSaveResult(exception = ex)) }
+            Concurrency.runOnGLThread { saveCompletionCallback(CustomSaveResult(exception = ex)) }
             return
         }
         debug("Saving GameInfo %s to custom location %s", game.gameId, saveLocation)
@@ -351,25 +350,27 @@ class GameSaver(
     //region Autosave
 
     /**
-     * Runs autoSave
+     * Auto-saves a snapshot of the [gameInfo] in a new thread.
      */
-    fun autoSave(gameInfo: GameInfo, postRunnable: () -> Unit = {}) {
+    fun requestAutoSave(gameInfo: GameInfo): Job {
         // The save takes a long time (up to a few seconds on large games!) and we can do it while the player continues his game.
         // On the other hand if we alter the game data while it's being serialized we could get a concurrent modification exception.
         // So what we do is we clone all the game data and serialize the clone.
-        autoSaveUnCloned(gameInfo.clone(), postRunnable)
+        return requestAutoSaveUnCloned(gameInfo.clone())
     }
 
-    fun autoSaveUnCloned(gameInfo: GameInfo, postRunnable: () -> Unit = {}) {
-        // This is used when returning from WorldScreen to MainMenuScreen - no clone since UI access to it should be gone
-        autoSaveJob = launchCrashHandling(AUTOSAVE_FILE_NAME) {
-            autoSaveSingleThreaded(gameInfo)
-            // do this on main thread
-            postCrashHandlingRunnable ( postRunnable )
+    /**
+     * In a new thread, auto-saves the [gameInfo] directly - only use this with [GameInfo] objects that are guaranteed not to be changed while the autosave is in progress!
+     */
+    fun requestAutoSaveUnCloned(gameInfo: GameInfo): Job {
+        val job = Concurrency.run("autoSaveUnCloned") {
+            autoSave(gameInfo)
         }
+        autoSaveJob = job
+        return job
     }
 
-    fun autoSaveSingleThreaded(gameInfo: GameInfo) {
+    fun autoSave(gameInfo: GameInfo) {
         try {
             saveGame(gameInfo, AUTOSAVE_FILE_NAME)
         } catch (oom: OutOfMemoryError) {

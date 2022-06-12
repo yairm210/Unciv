@@ -73,7 +73,7 @@ class DiplomacyScreen(
     private val rightSideTable = Table()
     private val closeButton = Constants.close.toTextButton()
 
-    private fun isNotPlayersTurn() = !UncivGame.Current.worldScreen.canChangeState
+    private fun isNotPlayersTurn() = !UncivGame.Current.worldScreen!!.canChangeState
 
     init {
         onBackButtonClicked { UncivGame.Current.resetToWorldScreen() }
@@ -205,7 +205,7 @@ class DiplomacyScreen(
                 wrapper.addTooltip(name, 18f)
                 wrapper.onClick {
                     val pedia = CivilopediaScreen(
-                        UncivGame.Current.gameInfo.ruleSet,
+                        UncivGame.Current.gameInfo!!.ruleSet,
                         this,
                         link = "Resource/$name"
                     )
@@ -389,11 +389,11 @@ class DiplomacyScreen(
     private fun getRevokeProtectionButton(otherCiv: CivilizationInfo): TextButton {
         val revokeProtectionButton = "Revoke Protection".toTextButton()
         revokeProtectionButton.onClick {
-            YesNoPopup("Revoke protection for [${otherCiv.civName}]?", {
+            YesNoPopup("Revoke protection for [${otherCiv.civName}]?", this) {
                 otherCiv.removeProtectorCiv(viewingCiv)
                 updateLeftSideTable(otherCiv)
                 updateRightSide(otherCiv)
-            }, this).open()
+            }.open()
         }
         if (isNotPlayersTurn() || !otherCiv.otherCivCanWithdrawProtection(viewingCiv)) revokeProtectionButton.disable()
         return revokeProtectionButton
@@ -402,11 +402,11 @@ class DiplomacyScreen(
     private fun getPledgeToProtectButton(otherCiv: CivilizationInfo): TextButton {
         val protectionButton = "Pledge to protect".toTextButton()
         protectionButton.onClick {
-            YesNoPopup("Declare Protection of [${otherCiv.civName}]?", {
+            YesNoPopup("Declare Protection of [${otherCiv.civName}]?", this) {
                 otherCiv.addProtectorCiv(viewingCiv)
                 updateLeftSideTable(otherCiv)
                 updateRightSide(otherCiv)
-            }, this).open()
+            }.open()
         }
         if (isNotPlayersTurn() || !otherCiv.otherCivCanPledgeProtection(viewingCiv)) protectionButton.disable()
         return protectionButton
@@ -418,7 +418,7 @@ class DiplomacyScreen(
     ): TextButton {
         val peaceButton = "Negotiate Peace".toTextButton()
         peaceButton.onClick {
-            YesNoPopup("Peace with [${otherCiv.civName}]?", {
+            YesNoPopup("Peace with [${otherCiv.civName}]?", this) {
                 val tradeLogic = TradeLogic(viewingCiv, otherCiv)
                 tradeLogic.currentTrade.ourOffers.add(
                     TradeOffer(
@@ -435,7 +435,7 @@ class DiplomacyScreen(
                 tradeLogic.acceptTrade()
                 updateLeftSideTable(otherCiv)
                 updateRightSide(otherCiv)
-            }, this).open()
+            }.open()
         }
         val cityStatesAlly = otherCiv.getAllyCiv()
         val atWarWithItsAlly = viewingCiv.getKnownCivs()
@@ -761,11 +761,11 @@ class DiplomacyScreen(
     ): TextButton {
         val denounceButton = "Denounce ([30] turns)".toTextButton()
         denounceButton.onClick {
-            YesNoPopup("Denounce [${otherCiv.civName}]?", {
+            YesNoPopup("Denounce [${otherCiv.civName}]?", this) {
                 diplomacyManager.denounce()
                 updateLeftSideTable(otherCiv)
                 setRightSideFlavorText(otherCiv, "We will remember this.", "Very well.")
-            }, this).open()
+            }.open()
         }
         if (isNotPlayersTurn()) denounceButton.disable()
         return denounceButton
@@ -956,12 +956,12 @@ class DiplomacyScreen(
             declareWarButton.setText(declareWarButton.text.toString() + " ($turnsToPeaceTreaty${Fonts.turn})")
         }
         declareWarButton.onClick {
-            YesNoPopup("Declare war on [${otherCiv.civName}]?", {
+            YesNoPopup("Declare war on [${otherCiv.civName}]?", this) {
                 diplomacyManager.declareWar()
                 setRightSideFlavorText(otherCiv, otherCiv.nation.attacked, "Very well.")
                 updateLeftSideTable(otherCiv)
                 UncivGame.Current.musicController.chooseTrack(otherCiv.civName, MusicMood.War, MusicTrackChooserFlags.setSpecific)
-            }, this).open()
+            }.open()
         }
         if (isNotPlayersTurn()) declareWarButton.disable()
         return declareWarButton
@@ -996,8 +996,11 @@ class DiplomacyScreen(
     private fun getGoToOnMapButton(civilization: CivilizationInfo): TextButton {
         val goToOnMapButton = "Go to on map".toTextButton()
         goToOnMapButton.onClick {
-            UncivGame.Current.resetToWorldScreen()
-            UncivGame.Current.worldScreen.mapHolder.setCenterPosition(civilization.getCapital()!!.location, selectUnit = false)
+            val worldScreen = UncivGame.Current.worldScreen
+            if (worldScreen != null) {
+                UncivGame.Current.resetToWorldScreen()
+                worldScreen.mapHolder.setCenterPosition(civilization.getCapital()!!.location, selectUnit = false)
+            }
         }
         return goToOnMapButton
     }

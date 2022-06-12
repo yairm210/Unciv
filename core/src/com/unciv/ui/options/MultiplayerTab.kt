@@ -12,9 +12,6 @@ import com.unciv.models.metadata.GameSetting
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.translations.tr
-import com.unciv.ui.crashhandling.launchCrashHandling
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.extensions.format
@@ -24,6 +21,8 @@ import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toGdxArray
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
+import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.launchOnGLThread
 import java.time.Duration
 import java.time.temporal.ChronoUnit
 
@@ -145,8 +144,7 @@ private fun addMultiplayerServerOptions(
         settings.save()
     }
 
-    val screen = optionsPopup.screen
-    serverIpTable.add(multiplayerServerTextField).minWidth(screen.stage.width / 2).growX()
+    serverIpTable.add(multiplayerServerTextField).minWidth(optionsPopup.stageToShowOn.width / 2).growX()
     tab.add(serverIpTable).colspan(2).fillX().row()
 
     tab.add("Reset to Dropbox".toTextButton().onClick {
@@ -156,7 +154,7 @@ private fun addMultiplayerServerOptions(
     }).colspan(2).row()
 
     tab.add(connectionToServerButton.onClick {
-        val popup = Popup(screen).apply {
+        val popup = Popup(optionsPopup.stage).apply {
             addGoodSizedLabel("Awaiting response...").row()
         }
         popup.open(true)
@@ -200,9 +198,9 @@ private fun addTurnCheckerOptions(
 }
 
 private fun successfullyConnectedToServer(settings: GameSettings, action: (Boolean, String, Int?) -> Unit) {
-    launchCrashHandling("TestIsAlive") {
+    Concurrency.run("TestIsAlive") {
         SimpleHttp.sendGetRequest("${settings.multiplayer.server}/isalive") { success, result, code ->
-            postCrashHandlingRunnable {
+            launchOnGLThread {
                 action(success, result, code)
             }
         }

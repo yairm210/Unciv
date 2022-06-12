@@ -42,7 +42,7 @@ class MapOverlayToggleButton(
     /** Toggle overlay. Called on click. */
     fun toggle() {
         setter(!getter())
-        UncivGame.Current.worldScreen.shouldUpdate = true
+        UncivGame.Current.worldScreen!!.shouldUpdate = true
         // Setting worldScreen.shouldUpdate implicitly causes this.update() to be called by the WorldScreen on the next update.
     }
 

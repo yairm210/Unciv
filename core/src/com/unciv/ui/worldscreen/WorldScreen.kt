@@ -32,8 +32,6 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.civilopedia.CivilopediaScreen
-import com.unciv.ui.crashhandling.launchCrashHandling
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.multiplayer.MultiplayerHelpers
 import com.unciv.ui.overviewscreen.EmpireOverviewScreen
@@ -77,8 +75,12 @@ import com.unciv.ui.worldscreen.status.NextTurnButton
 import com.unciv.ui.worldscreen.status.StatusButtons
 import com.unciv.ui.worldscreen.unit.UnitActionsTable
 import com.unciv.ui.worldscreen.unit.UnitTable
+import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.launchOnGLThread
+import com.unciv.utils.concurrency.launchOnThreadPool
 import com.unciv.utils.debug
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
 
 /**
  * Unciv's world screen
@@ -218,7 +220,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                 if (isNextTurnUpdateRunning() || game.onlineMultiplayer.hasLatestGameState(gameInfo, it.preview)) {
                     return@receive
                 }
-                launchCrashHandling("Load latest multiplayer state") {
+                Concurrency.run("Load latest multiplayer state") {
                     loadLatestMultiplayerState()
                 }
             }
@@ -327,36 +329,36 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
     }
 
-    private suspend fun loadLatestMultiplayerState() {
-        val loadingGamePopup = Popup(this)
-        postCrashHandlingRunnable {
+    private suspend fun loadLatestMultiplayerState(): Unit = coroutineScope {
+        val loadingGamePopup = Popup(this@WorldScreen)
+        launchOnGLThread {
             loadingGamePopup.addGoodSizedLabel("Loading latest game state...")
             loadingGamePopup.open()
         }
 
         try {
             debug("loadLatestMultiplayerState current game: gameId: %s, turn: %s, curCiv: %s",
-                game.worldScreen.gameInfo.gameId, game.worldScreen.gameInfo.turns, game.worldScreen.gameInfo.currentPlayer)
+                gameInfo.gameId, gameInfo.turns, gameInfo.currentPlayer)
             val latestGame = game.onlineMultiplayer.downloadGame(gameInfo.gameId)
             debug("loadLatestMultiplayerState downloaded game: gameId: %s, turn: %s, curCiv: %s",
                 latestGame.gameId, latestGame.turns, latestGame.currentPlayer)
             if (viewingCiv.civName == latestGame.currentPlayer || viewingCiv.civName == Constants.spectator) {
                 game.platformSpecificHelper?.notifyTurnStarted()
             }
-            postCrashHandlingRunnable {
+            launchOnGLThread {
                 loadingGamePopup.close()
-                if (game.gameInfo.gameId == gameInfo.gameId) { // game could've been changed during download
-                    createNewWorldScreen(latestGame)
+                if (game.gameInfo!!.gameId == gameInfo.gameId) { // game could've been changed during download
+                    game.setScreen(createNewWorldScreen(latestGame))
                 }
             }
         } catch (ex: Throwable) {
-            postCrashHandlingRunnable {
+            launchOnGLThread {
                 val message = MultiplayerHelpers.getLoadExceptionMessage(ex)
                 loadingGamePopup.innerTable.clear()
                 loadingGamePopup.addGoodSizedLabel("Couldn't download the latest game state!").colspan(2).row()
                 loadingGamePopup.addGoodSizedLabel(message).colspan(2).row()
                 loadingGamePopup.addButtonInRow("Retry") {
-                    launchCrashHandling("Load latest multiplayer state after error") {
+                    launchOnThreadPool("Load latest multiplayer state after error") {
                         loadLatestMultiplayerState()
                     }
                 }.right()
@@ -602,7 +604,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
     }
 
-    private fun createNewWorldScreen(gameInfo: GameInfo, resize:Boolean=false) {
+    private fun createNewWorldScreen(gameInfo: GameInfo, resize:Boolean=false): WorldScreen {
 
         game.gameInfo = gameInfo
         val newWorldScreen = WorldScreen(gameInfo, gameInfo.getPlayerToViewAs())
@@ -621,7 +623,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         newWorldScreen.selectedCiv = gameInfo.getCivilization(selectedCiv.civName)
         newWorldScreen.fogOfWar = fogOfWar
 
-        game.resetToWorldScreen(newWorldScreen)
+        return newWorldScreen
     }
 
     fun nextTurn() {
@@ -629,7 +631,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         shouldUpdate = true
 
         // on a separate thread so the user can explore their world while we're passing the turn
-        nextTurnUpdateJob = launchCrashHandling("NextTurn", runAsDaemon = false) {
+        nextTurnUpdateJob = Concurrency.runOnNonDaemonThreadPool("NextTurn") {
             debug("Next turn starting")
             val startTime = System.currentTimeMillis()
             val originalGameInfo = gameInfo
@@ -646,7 +648,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                         is FileStorageRateLimitReached -> "Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds"
                         else -> "Could not upload game!"
                     }
-                    postCrashHandlingRunnable { // Since we're changing the UI, that should be done on the main thread
+                    launchOnGLThread { // Since we're changing the UI, that should be done on the main thread
                         val cantUploadNewGamePopup = Popup(this@WorldScreen)
                         cantUploadNewGamePopup.addGoodSizedLabel(message).row()
                         cantUploadNewGamePopup.addCloseButton()
@@ -654,12 +656,12 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                     }
                     this@WorldScreen.isPlayersTurn = true // Since we couldn't push the new game clone, then it's like we never clicked the "next turn" button
                     this@WorldScreen.shouldUpdate = true
-                    return@launchCrashHandling
+                    return@runOnNonDaemonThreadPool
                 }
             }
 
             if (game.gameInfo != originalGameInfo) // while this was turning we loaded another game
-                return@launchCrashHandling
+                return@runOnNonDaemonThreadPool
 
             this@WorldScreen.game.gameInfo = gameInfoClone
             debug("Next turn took %sms", System.currentTimeMillis() - startTime)
@@ -668,20 +670,19 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
             // create a new WorldScreen to show the new stuff we've changed, and switch out the current screen.
             // do this on main thread - it's the only one that has a GL context to create images from
-            postCrashHandlingRunnable {
-
+            launchOnGLThread {
+                val newWorldScreen = createNewWorldScreen(gameInfoClone)
                 if (gameInfoClone.currentPlayerCiv.civName != viewingCiv.civName
-                        && !gameInfoClone.gameParameters.isOnlineMultiplayer)
-                    game.setScreen(PlayerReadyScreen(gameInfoClone, gameInfoClone.getCurrentPlayerCivilization()))
-                else {
-                    createNewWorldScreen(gameInfoClone)
+                        && !gameInfoClone.gameParameters.isOnlineMultiplayer) {
+                    game.setScreen(PlayerReadyScreen(newWorldScreen))
+                } else {
+                    game.setScreen(newWorldScreen)
                 }
 
                 if (shouldAutoSave) {
-                    val newWorldScreen = this@WorldScreen.game.worldScreen
                     newWorldScreen.waitingForAutosave = true
                     newWorldScreen.shouldUpdate = true
-                    game.gameSaver.autoSave(gameInfoClone) {
+                    game.gameSaver.requestAutoSave(gameInfoClone).invokeOnCompletion {
                         // only enable the user to next turn once we've saved the current one
                         newWorldScreen.waitingForAutosave = false
                         newWorldScreen.shouldUpdate = true
@@ -803,10 +804,10 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                     viewingCiv.hasMovedAutomatedUnits = true
                     isPlayersTurn = false // Disable state changes
                     nextTurnButton.disable()
-                    launchCrashHandling("Move automated units") {
+                    Concurrency.run("Move automated units") {
                         for (unit in viewingCiv.getCivUnits())
                             unit.doAction()
-                        postCrashHandlingRunnable {
+                        launchOnGLThread {
                             shouldUpdate = true
                             isPlayersTurn = true //Re-enable state changes
                             nextTurnButton.enable()
@@ -821,7 +822,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                         nextTurn()
                     }
                     if (game.settings.confirmNextTurn) {
-                        YesNoPopup("Confirm next turn", action, this).open()
+                        YesNoPopup("Confirm next turn", this, action = action).open()
                     } else {
                         action()
                     }

@@ -58,7 +58,6 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
             // If we've moved to another screen in the meantime (great person pick, victory screen) ignore this
             if (game.screen !is PolicyPickerScreen || !policies.canAdoptPolicy()) {
                 game.resetToWorldScreen()
-                dispose()
             } else {
                 val policyScreen = PolicyPickerScreen(worldScreen)
                 policyScreen.scrollPane.scrollPercentX = scrollPane.scrollPercentX
