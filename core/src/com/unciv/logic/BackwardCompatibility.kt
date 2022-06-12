@@ -195,32 +195,18 @@ object BackwardCompatibility {
 
     /** Convert from Fortify X to Fortify and save off X */
     fun GameInfo.convertFortify() {
-        println("called")
-        val reg = Regex("""^Fortify\s+(\d+)""")
+        //val reg = Regex("""^Fortify\s+(\d+)""")
         for (civInfo in civilizations) {
-            println(civInfo.civName + " " + civInfo.getCivUnitsSize())
             for (unit in civInfo.getCivUnits()) {
-                println(unit.name)
-                if(unit.action != null)
-                    println(unit.action)
-                /*if (unit.action?.startsWith(UnitActionType.Fortify.value) == true) {
-                    val (turns, heal) = reg.find(unit.action!!)!!.destructured
-                    println(turns)
-                    unit.turnsFortified = turns.toInt()
-                    unit.action = "Fortify$heal"
-                }*/
                 if (unit.action != null && unit.action!!.split(" ").size > 1 && unit.action!!.split(" ")[1].toIntOrNull() != null) {
                     unit.turnsFortified = unit.action!!.split(" ")[1].toInt()
                     unit.action = if (unit.action!!.split(" ").size > 2)
                         "Fortify until healed"
                     else
                         "Fortify"
-                    println("new ${unit.action} turns ${unit.turnsFortified}")
                 }
-
             }
         }
-        println("=======")
     }
 
     private fun isOldFormat(manager: BarbarianManager): Boolean {
