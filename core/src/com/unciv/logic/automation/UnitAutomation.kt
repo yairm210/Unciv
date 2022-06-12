@@ -347,7 +347,7 @@ object UnitAutomation {
             unit.movement.moveToTile(tileToPillage)
 
         UnitActions.getPillageAction(unit)?.action?.invoke()
-        return unit.currentMovement < Constants.minimumMovementEpsilon
+        return unit.currentMovement == 0f
     }
 
     fun getBombardTargets(city: CityInfo): Sequence<TileInfo> =
@@ -422,7 +422,7 @@ object UnitAutomation {
         if (reachableTileNearSiegedCity != null) {
             unit.movement.headTowards(reachableTileNearSiegedCity)
         }
-        return unit.currentMovement < Constants.minimumMovementEpsilon
+        return unit.currentMovement == 0f
     }
 
     fun tryHeadTowardsEnemyCity(unit: MapUnit): Boolean {

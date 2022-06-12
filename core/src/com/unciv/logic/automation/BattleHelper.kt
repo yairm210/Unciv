@@ -29,7 +29,7 @@ object BattleHelper {
         if (enemyTileToAttack != null) {
             Battle.moveAndAttack(MapUnitCombatant(unit), enemyTileToAttack)
         }
-        return unit.currentMovement < Constants.minimumMovementEpsilon
+        return unit.currentMovement == 0f
     }
 
     fun getAttackableEnemies(
