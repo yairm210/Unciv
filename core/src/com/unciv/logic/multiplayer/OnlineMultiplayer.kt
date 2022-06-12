@@ -154,6 +154,7 @@ class OnlineMultiplayer {
     }
 
     private fun addGame(fileHandle: FileHandle, preview: GameInfoPreview = gameSaver.loadGamePreviewFromFile(fileHandle)) {
+        debug("Adding game %s", preview.gameId)
         val game = OnlineMultiplayerGame(fileHandle, preview, Instant.now())
         savedGames[fileHandle] = game
         Concurrency.runOnGLThread { EventBus.send(MultiplayerGameAdded(game.name)) }
@@ -272,6 +273,7 @@ class OnlineMultiplayer {
         val game = savedGames[fileHandle]
         if (game == null) return
 
+        debug("Deleting game %s with id %s", fileHandle.name(), game.preview?.gameId)
         savedGames.remove(game.fileHandle)
         Concurrency.runOnGLThread { EventBus.send(MultiplayerGameDeleted(game.name)) }
     }
@@ -280,6 +282,7 @@ class OnlineMultiplayer {
      * Fires [MultiplayerGameNameChanged]
      */
     fun changeGameName(game: OnlineMultiplayerGame, newName: String) {
+        debug("Changing name of game %s to", game.name, newName)
         val oldPreview = game.preview ?: throw game.error!!
         val oldLastUpdate = game.lastUpdate
         val oldName = game.name
@@ -298,8 +301,10 @@ class OnlineMultiplayer {
      * @throws FileNotFoundException if the file can't be found
      */
     suspend fun updateGame(gameInfo: GameInfo) {
+        debug("Updating remote game %s", gameInfo.gameId)
         onlineGameSaver.tryUploadGame(gameInfo, withPreview = true)
         val game = getGameByGameId(gameInfo.gameId)
+        debug("Existing OnlineMultiplayerGame: %s", game)
         if (game == null) {
             addGame(gameInfo)
         } else {

@@ -72,6 +72,7 @@ class OnlineMultiplayerGame(
             error = e
             GameUpdateResult.FAILURE
         }
+        debug("Starting multiplayer game update for %s with id %s", name, preview?.gameId)
         launchOnGLThread {
             EventBus.send(MultiplayerGameUpdateStarted(name))
         }
@@ -81,14 +82,20 @@ class OnlineMultiplayerGame(
         } else {
             throttle(lastOnlineUpdate, throttleInterval, onUnchanged, onError, ::update)
         }
-        when (updateResult) {
-            GameUpdateResult.UNCHANGED, GameUpdateResult.CHANGED -> error = null
-            else -> {}
-        }
         val updateEvent = when (updateResult) {
-            GameUpdateResult.CHANGED -> MultiplayerGameUpdated(name, preview!!)
-            GameUpdateResult.FAILURE -> MultiplayerGameUpdateFailed(name, error!!)
-            GameUpdateResult.UNCHANGED -> MultiplayerGameUpdateUnchanged(name, preview!!)
+            GameUpdateResult.CHANGED -> {
+                debug("Game update for %s with id %s had remote change", name, preview?.gameId)
+                MultiplayerGameUpdated(name, preview!!)
+            }
+            GameUpdateResult.FAILURE -> {
+                debug("Game update for %s with id %s failed: %s", name, preview?.gameId, error)
+                MultiplayerGameUpdateFailed(name, error!!)
+            }
+            GameUpdateResult.UNCHANGED -> {
+                debug("Game update for %s with id %s had no changes", name, preview?.gameId)
+                error = null
+                MultiplayerGameUpdateUnchanged(name, preview!!)
+            }
         }
         launchOnGLThread {
             EventBus.send(updateEvent)
