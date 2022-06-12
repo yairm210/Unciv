@@ -119,7 +119,7 @@ object UnitAutomation {
             ?: return false
 
         upgradeAction.action?.invoke()
-        return true
+        return unit.isDestroyed // a successful upgrade action will destroy this unit
     }
 
     fun automateUnitMoves(unit: MapUnit) {
@@ -274,14 +274,11 @@ object UnitAutomation {
         if (unit.baseUnit.isRanged() && unit.hasUnique(UniqueType.HealsEvenAfterAction))
             return false // will heal anyway, and attacks don't hurt
 
+        if (tryPillageImprovement(unit)) return true
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         if (unitDistanceToTiles.isEmpty()) return true // can't move, so...
 
-
         val currentUnitTile = unit.getTile()
-
-        if (tryPillageImprovement(unit)) return true
-
 
         val nearbyRangedEnemyUnits = unit.currentTile.getTilesInDistance(3)
                 .flatMap { tile -> tile.getUnits().filter { unit.civInfo.isAtWarWith(it.civInfo) } }
@@ -483,9 +480,8 @@ object UnitAutomation {
             // move into position far away enough that the bombard doesn't hurt
             if (tileToMoveTo != null) {
                 unit.movement.headTowards(tileToMoveTo)
-                return true
             }
-            return false // didn't move
+            return unit.currentMovement < Constants.minimumMovementEpsilon
         }
 
         val numberOfUnitsAroundCity = closestReachableEnemyCity.getTilesInDistance(4)
@@ -497,17 +493,17 @@ object UnitAutomation {
             val tileToHeadTo = closestReachableEnemyCity.getTilesInDistanceRange(3..4)
                     .filter { it.isLand && unit.getDamageFromTerrain(it) <= 0 } // Don't head for hurty terrain
                     .sortedBy { it.aerialDistanceTo(unit.currentTile) }
-                    .firstOrNull { unit.movement.canReach(it) }
+                    .firstOrNull { (unit.movement.canMoveTo(it) || it == unit.currentTile) && unit.movement.canReach(it) }
 
             if (tileToHeadTo != null) { // no need to worry, keep going as the movement alg. says
                 unit.movement.headTowards(tileToHeadTo)
-                return true
+                return unit.currentMovement < Constants.minimumMovementEpsilon
             }
         }
 
         unit.movement.headTowards(closestReachableEnemyCity) // go for it!
 
-        return true
+        return unit.currentMovement < Constants.minimumMovementEpsilon
     }
 
     fun tryEnterOwnClosestCity(unit: MapUnit): Boolean {
