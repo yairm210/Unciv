@@ -15,7 +15,7 @@ import com.unciv.models.ruleset.Ruleset
 
 /**
  * Container for all temporarily used code managing transitions from deprecated elements to their replacements.
- * 
+ *
  * Please place ***all*** such code here and call  it _only_ from [GameInfo.setTransients].
  * Functions are allowed to remain once no longer used if you think they might serve as template for
  * similar usecases in the future. Please comment sufficiently :)
@@ -43,9 +43,9 @@ object BackwardCompatibility {
         for (city in civilizations.asSequence().flatMap { it.cities.asSequence() }) {
 
             changeBuildingNameIfNotInRuleset(ruleSet, city.cityConstructions, "Hanse", "Bank")
-            
+
             for (building in city.cityConstructions.builtBuildings.toHashSet()) {
-                
+
                 if (!ruleSet.buildings.containsKey(building))
                     city.cityConstructions.builtBuildings.remove(building)
             }
@@ -191,6 +191,36 @@ object BackwardCompatibility {
             camps.clear()
             camps.putAll(newFormat)
         }
+    }
+
+    /** Convert from Fortify X to Fortify and save off X */
+    fun GameInfo.convertFortify() {
+        println("called")
+        val reg = Regex("""^Fortify\s+(\d+)""")
+        for (civInfo in civilizations) {
+            println(civInfo.civName + " " + civInfo.getCivUnitsSize())
+            for (unit in civInfo.getCivUnits()) {
+                println(unit.name)
+                if(unit.action != null)
+                    println(unit.action)
+                /*if (unit.action?.startsWith(UnitActionType.Fortify.value) == true) {
+                    val (turns, heal) = reg.find(unit.action!!)!!.destructured
+                    println(turns)
+                    unit.turnsFortified = turns.toInt()
+                    unit.action = "Fortify$heal"
+                }*/
+                if (unit.action != null && unit.action!!.split(" ").size > 1 && unit.action!!.split(" ")[1].toIntOrNull() != null) {
+                    unit.turnsFortified = unit.action!!.split(" ")[1].toInt()
+                    unit.action = if (unit.action!!.split(" ").size > 2)
+                        "Fortify until healed"
+                    else
+                        "Fortify"
+                    println("new ${unit.action} turns ${unit.turnsFortified}")
+                }
+
+            }
+        }
+        println("=======")
     }
 
     private fun isOldFormat(manager: BarbarianManager): Boolean {
