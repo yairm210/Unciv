@@ -215,7 +215,7 @@ object UnitAutomation {
         if (BattleHelper.tryDisembarkUnitToAttackPosition(unit)) return
 
         // if there is an attackable unit in the vicinity, attack!
-        if (BattleHelper.tryAttackNearbyEnemy(unit)) return
+        if (tryAttacking(unit)) return
 
         if (tryTakeBackCapturedCity(unit)) return
 
@@ -226,12 +226,18 @@ object UnitAutomation {
         // move towards the closest reasonably attackable enemy unit within 3 turns of movement (and 5 tiles range)
         if (tryAdvanceTowardsCloseEnemy(unit)) return
 
+        // may be able to attack an enemy now
+        if (tryAttacking(unit)) return
+
         if (unit.health < 100 && tryHealUnit(unit)) return
 
         // Focus all units without a specific target on the enemy city closest to one of our cities
         if (tryHeadTowardsEnemyCity(unit)) return
 
         if (tryHeadTowardsEncampment(unit)) return
+
+        // one last attack attempt
+        if (tryAttacking(unit)) return
 
         // else, try to go to unreached tiles
         if (tryExplore(unit)) return
@@ -241,6 +247,14 @@ object UnitAutomation {
         // Idle CS units should wander so they don't obstruct players so much
         if (unit.civInfo.isCityState())
             wander(unit, stayInTerritory = true)
+    }
+
+    /** @return true only if the unit has 0 movement left */
+    private fun tryAttacking(unit: MapUnit): Boolean {
+        for (numAttacks in unit.attacksThisTurn until unit.maxAttacksPerTurn()) {
+            if (BattleHelper.tryAttackNearbyEnemy(unit)) return true
+        }
+        return false
     }
 
     private fun tryHeadTowardsEncampment(unit: MapUnit): Boolean {
