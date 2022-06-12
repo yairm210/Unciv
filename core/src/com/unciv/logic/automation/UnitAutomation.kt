@@ -356,7 +356,7 @@ object UnitAutomation {
             unit.movement.moveToTile(tileToPillage)
 
         UnitActions.getPillageAction(unit)?.action?.invoke()
-        return true
+        return unit.currentMovement < Constants.minimumMovementEpsilon
     }
 
     fun getBombardTargets(city: CityInfo): Sequence<TileInfo> =
@@ -394,9 +394,8 @@ object UnitAutomation {
 
         if (closestEnemy != null) {
             unit.movement.headTowards(closestEnemy.tileToAttackFrom)
-            return true
         }
-        return false
+        return unit.currentMovement < Constants.minimumMovementEpsilon
     }
 
     private fun tryAccompanySettlerOrGreatPerson(unit: MapUnit): Boolean {
@@ -419,6 +418,9 @@ object UnitAutomation {
                             it.health < it.getMaxHealth() * 0.75
                 } //Weird health issues and making sure that not all forces move to good defenses
 
+        if (siegedCities.any { it.getCenterTile().aerialDistanceTo(unit.getTile()) <= 2 })
+            return false
+
         val reachableTileNearSiegedCity = siegedCities
                 .flatMap { it.getCenterTile().getTilesAtDistance(2) }
                 .sortedBy { it.aerialDistanceTo(unit.currentTile) }
@@ -427,9 +429,8 @@ object UnitAutomation {
 
         if (reachableTileNearSiegedCity != null) {
             unit.movement.headTowards(reachableTileNearSiegedCity)
-            return true
         }
-        return false
+        return unit.currentMovement < Constants.minimumMovementEpsilon
     }
 
     fun tryHeadTowardsEnemyCity(unit: MapUnit): Boolean {
