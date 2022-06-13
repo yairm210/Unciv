@@ -155,10 +155,39 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     }
 
     /** Loads a game, initializing the state of all important modules. Automatically runs on the appropriate thread. */
-    suspend fun loadGame(newGameInfo: GameInfo): WorldScreen = withThreadPoolContext {
+    suspend fun loadGame(newGameInfo: GameInfo): WorldScreen = withThreadPoolContext toplevel@{
         val prevGameInfo = gameInfo
         gameInfo = newGameInfo
 
+        initializeResources(prevGameInfo, newGameInfo)
+
+        val isLoadingSameGame = worldScreen != null && prevGameInfo != null && prevGameInfo.gameId == newGameInfo.gameId
+        val worldScreenRestoreState = if (isLoadingSameGame) worldScreen!!.getRestoreState() else null
+
+        withGLContext { setScreen(LoadingScreen(getScreen())) }
+
+        worldScreen?.dispose()
+        worldScreen = null // This allows the GC to collect our old WorldScreen, otherwise we keep two WorldScreens in memory.
+
+        return@toplevel withGLContext {
+            val worldScreen = WorldScreen(newGameInfo, newGameInfo.getPlayerToViewAs(), worldScreenRestoreState)
+
+            val moreThanOnePlayer = newGameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1
+            val isSingleplayer = !newGameInfo.gameParameters.isOnlineMultiplayer
+            val screenToShow = if (moreThanOnePlayer && isSingleplayer) {
+                PlayerReadyScreen(worldScreen)
+            } else {
+                worldScreen
+            }
+
+            setScreen(screenToShow)
+
+            return@withGLContext worldScreen
+        }
+    }
+
+    /** The new game info may have different mods or rulesets, which may use different resources that need to be loaded. */
+    private suspend fun initializeResources(prevGameInfo: GameInfo?, newGameInfo: GameInfo) {
         if (prevGameInfo == null || prevGameInfo.ruleSet != newGameInfo.ruleSet) {
             withGLContext {
                 ImageGetter.setNewRuleset(newGameInfo.ruleSet)
@@ -167,20 +196,10 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
         if (prevGameInfo == null ||
                 prevGameInfo.gameParameters.baseRuleset != newGameInfo.gameParameters.baseRuleset ||
-                prevGameInfo.gameParameters.mods != newGameInfo.gameParameters.mods) {
+                prevGameInfo.gameParameters.mods != newGameInfo.gameParameters.mods
+        ) {
             val fullModList = newGameInfo.gameParameters.getModsAndBaseRuleset()
             musicController.setModList(fullModList)
-        }
-
-        val restoreState = if (worldScreen != null && prevGameInfo != null && prevGameInfo.gameId == newGameInfo.gameId) worldScreen!!.getRestoreState() else null
-
-        return@withThreadPoolContext loadWorldscreen {
-            val worldScreen = WorldScreen(newGameInfo, newGameInfo.getPlayerToViewAs(), restoreState)
-            if (newGameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1 && !newGameInfo.gameParameters.isOnlineMultiplayer) {
-                NewScreens(PlayerReadyScreen(worldScreen), worldScreen)
-            } else {
-                NewScreens(worldScreen)
-            }
         }
     }
 
@@ -195,17 +214,6 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     private data class NewScreens(val screenToShow: BaseScreen, val worldScreen: WorldScreen) {
         constructor(worldScreen: WorldScreen) : this(worldScreen, worldScreen)
-    }
-    private suspend fun loadWorldscreen(factory: suspend () -> NewScreens): WorldScreen = withThreadPoolContext {
-        // This all runs in separate thread to give LoadGameScreen a chance to show
-        withGLContext { setScreen(LoadingScreen(getScreen())) }
-        worldScreen?.dispose()
-        worldScreen = null // This allows the GC to collect our old WorldScreen, otherwise we keep two WorldScreens in memory.
-        return@withThreadPoolContext withGLContext {
-            val newScreens = factory()
-            setScreen(newScreens.screenToShow)
-            newScreens.worldScreen
-        }
     }
 
     /**
