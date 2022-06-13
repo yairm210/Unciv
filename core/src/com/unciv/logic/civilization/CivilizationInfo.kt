@@ -78,6 +78,8 @@ class CivilizationInfo {
     @Transient
     lateinit var nation: Nation
 
+    var team = ""
+
     /**
      * We never add or remove from here directly, could cause comodification problems.
      * Instead, we create a copy list with the change, and replace this list.
@@ -244,6 +246,7 @@ class CivilizationInfo {
         val toReturn = CivilizationInfo()
         toReturn.gold = gold
         toReturn.playerType = playerType
+        toReturn.team = team
         toReturn.playerId = playerId
         toReturn.civName = civName
         toReturn.tech = tech.clone()
@@ -912,6 +915,7 @@ class CivilizationInfo {
     }
 
     fun endTurn() {
+        println(team)
         notifications.clear()
 
         val nextTurnStats = statsForNextTurn

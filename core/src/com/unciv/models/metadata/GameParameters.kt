@@ -11,8 +11,14 @@ class GameParameters { // Default values are the default new game
     var difficulty = "Prince"
     var gameSpeed = GameSpeed.Standard
     var players = ArrayList<Player>().apply {
-        add(Player().apply { playerType = PlayerType.Human })
-        for (i in 1..3) add(Player())
+        add(Player().apply {
+            playerType = PlayerType.Human
+            team = "1"
+        })
+        add(Player().apply {
+            team = "1"
+        })
+        for (i in 2..4) add(Player().apply { team = "$i" })
     }
     var numberOfCityStates = 6
 
@@ -22,14 +28,14 @@ class GameParameters { // Default values are the default new game
     var godMode = false
     var nuclearWeaponsEnabled = true
     var religionEnabled = false
-    
-    var victoryTypes: ArrayList<String> = arrayListOf()  
+
+    var victoryTypes: ArrayList<String> = arrayListOf()
     var startingEra = "Ancient era"
 
     var isOnlineMultiplayer = false
     var baseRuleset: String = BaseRuleset.Civ_V_GnK.fullName
     var mods = LinkedHashSet<String>()
-    
+
     var maxTurns = 500
 
     fun clone(): GameParameters {
@@ -69,7 +75,7 @@ class GameParameters { // Default values are the default new game
             yield(baseRuleset)
             yield(if (mods.isEmpty()) "no mods" else mods.joinToString(",", "mods=(", ")", 6) )
         }.joinToString(prefix = "(", postfix = ")")
-    
+
     fun getModsAndBaseRuleset(): HashSet<String> {
         return mods.toHashSet().apply { add(baseRuleset) }
     }

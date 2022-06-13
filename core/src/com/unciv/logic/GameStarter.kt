@@ -239,6 +239,7 @@ object GameStarter {
                 playerCiv.tech.techsResearched.add(tech.name) // can't be .addTechnology because the civInfo isn't assigned yet
             playerCiv.playerType = player.playerType
             playerCiv.playerId = player.playerId
+            playerCiv.team = player.team
             gameInfo.civilizations.add(playerCiv)
         }
 

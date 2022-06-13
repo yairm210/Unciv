@@ -164,6 +164,12 @@ class PlayerPickerTable(
                         update()
                     }).pad(5f).right().row()
         }
+        val playerTeamTextField = TextField(player.playerId, BaseScreen.skin)
+        playerTeamTextField.messageText = player.team.tr()
+        playerTeamTextField.text = player.team
+        playerTable.add(playerTeamTextField).colspan(2).fillX().pad(5f)
+        playerTeamTextField.addListener { player.team = playerTeamTextField.text; true }
+
         if (gameParameters.isOnlineMultiplayer && player.playerType == PlayerType.Human) {
 
             val playerIdTextField = TextField(player.playerId, BaseScreen.skin)
