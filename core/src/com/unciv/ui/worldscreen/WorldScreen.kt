@@ -78,6 +78,7 @@ import com.unciv.ui.worldscreen.unit.UnitTable
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import com.unciv.utils.concurrency.launchOnThreadPool
+import com.unciv.utils.concurrency.withGLContext
 import com.unciv.utils.debug
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
@@ -904,8 +905,10 @@ private fun startNewScreenJob(gameInfo: GameInfo) {
         val newWorldScreen = try {
             UncivGame.Current.loadGame(gameInfo)
         } catch (oom: OutOfMemoryError) {
-            val mainMenu = UncivGame.Current.goToMainMenu()
-            ToastPopup("Not enough memory on phone to load game!", mainMenu)
+            withGLContext {
+                val mainMenu = UncivGame.Current.goToMainMenu()
+                ToastPopup("Not enough memory on phone to load game!", mainMenu)
+            }
             return@run
         }
 
