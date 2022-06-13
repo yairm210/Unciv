@@ -98,19 +98,12 @@ data class KeyShortcut(val key: KeyCharAndCode, val priority: Int = 0)
 
 
 open class KeyShortcutDispatcher {
-    private var shortcuts: MutableList<Pair<KeyShortcut, () -> Unit>>? = null
+    private val shortcuts: MutableList<Pair<KeyShortcut, () -> Unit>> = mutableListOf()
 
     fun add(shortcut: KeyShortcut?, action: (() -> Unit)?): Unit {
         if (action == null || shortcut == null) return
-        var shortcuts = this.shortcuts
-        if (shortcuts == null) {
-            shortcuts = mutableListOf(Pair(shortcut, action))
-            this.shortcuts = shortcuts
-        }
-        else {
-            shortcuts.removeIf { it.first == shortcut }
-            shortcuts.add(Pair(shortcut, action))
-        }
+        shortcuts.removeIf { it.first == shortcut }
+        shortcuts.add(Pair(shortcut, action))
     }
 
     fun add(key: KeyCharAndCode?, action: (() -> Unit)?): Unit {
@@ -129,51 +122,42 @@ open class KeyShortcutDispatcher {
     }
 
     fun remove(shortcut: KeyShortcut?): Unit {
-        val shortcuts = this.shortcuts
-        if (shortcuts != null) shortcuts.removeIf { it.first == shortcut }
+        shortcuts.removeIf { it.first == shortcut }
     }
+
     fun remove(key: KeyCharAndCode?): Unit {
-        val shortcuts = this.shortcuts
-        if (shortcuts != null) shortcuts.removeIf { it.first.key == key }
+        shortcuts.removeIf { it.first.key == key }
     }
 
     fun remove(char: Char?): Unit {
-        val shortcuts = this.shortcuts
-        if (shortcuts != null) shortcuts.removeIf { it.first.key.char == char }
+        shortcuts.removeIf { it.first.key.char == char }
     }
 
     fun remove(keyCode: Int?): Unit {
-        val shortcuts = this.shortcuts
-        if (shortcuts != null) shortcuts.removeIf { it.first.key.code == keyCode }
+        shortcuts.removeIf { it.first.key.code == keyCode }
     }
-
 
     open fun isActive(): Boolean = true
 
 
-    /**
-     * Update given list of [actions] with those trigerred by [key] in this dispatcher with given [priority] or higher.
-     * Only actions with maximum priority among trigerred are listed. Returns the highest trigerred priority.
-     */
-    fun retrieveActions(key: KeyCharAndCode, actions: MutableList<() -> Unit>, priority: Int): Int {
-        if (!isActive()) return priority
+    class Resolver(val key: KeyCharAndCode) {
+        private var priority = Int.MIN_VALUE
+        val trigerredActions: MutableList<() -> Unit> = mutableListOf()
 
-        var shortcuts = this.shortcuts
-        if (shortcuts == null) return priority
+        fun updateFor(dispatcher: KeyShortcutDispatcher) {
+            if (!dispatcher.isActive()) return
 
-        var resultingPriority = priority
-        for (shortcut in shortcuts) {
-            if (shortcut.first.key == key) {
-                if (shortcut.first.priority == resultingPriority)
-                    actions.add(shortcut.second)
-                else if (shortcut.first.priority > resultingPriority) {
-                    resultingPriority = shortcut.first.priority
-                    actions.clear()
-                    actions.add(shortcut.second)
+            for (shortcut in dispatcher.shortcuts) {
+                if (shortcut.first.key == key) {
+                    if (shortcut.first.priority == priority)
+                        trigerredActions.add(shortcut.second)
+                    else if (shortcut.first.priority > priority) {
+                        priority = shortcut.first.priority
+                        trigerredActions.clear()
+                        trigerredActions.add(shortcut.second)
+                    }
                 }
             }
         }
-
-        return resultingPriority
     }
 }

@@ -233,7 +233,6 @@ private val Stage.popups: List<Popup>
     get() = actors.filterIsInstance<Popup>()
 
 /** @return The currently active [Popup] or [null] if none. */
-// FIXME: We depend on the order of actors; is this fine?
 val BaseScreen.activePopup: Popup?
     get() = popups.lastOrNull { it.isVisible }
 

@@ -220,12 +220,11 @@ fun Stage.installShortcutDispatcher(additionalShortcuts: KeyShortcutDispatcher? 
         }
 
         private fun activate(key: KeyCharAndCode, dispatcherVetoer: DispatcherVetoer): Boolean {
-            val trigerredActions = mutableListOf<() -> Unit>()
-            var priority = Int.MIN_VALUE
-            var pendingActors = ArrayDeque<Actor>(getActors().toList())
+            val shortcutResolver = KeyShortcutDispatcher.Resolver(key)
+            val pendingActors = ArrayDeque<Actor>(getActors().toList())
 
             if (additionalShortcuts != null && dispatcherVetoer(null, additionalShortcuts) == DispatcherVetoResult.Accept)
-                priority = additionalShortcuts.retrieveActions(key, trigerredActions, priority)
+                shortcutResolver.updateFor(additionalShortcuts)
 
             while (pendingActors.any()) {
                 val actor = pendingActors.removeFirst()
@@ -233,14 +232,14 @@ fun Stage.installShortcutDispatcher(additionalShortcuts: KeyShortcutDispatcher? 
                 val vetoResult = dispatcherVetoer(actor, shortcuts)
 
                 if (shortcuts != null && vetoResult == DispatcherVetoResult.Accept)
-                    priority = shortcuts.retrieveActions(key, trigerredActions, priority)
+                    shortcutResolver.updateFor(shortcuts)
                 if (actor is Group && vetoResult != DispatcherVetoResult.SkipWithChildren)
                     pendingActors.addAll(actor.getChildren())
             }
 
-            for (action in trigerredActions)
+            for (action in shortcutResolver.trigerredActions)
                 action()
-            return trigerredActions.any()
+            return shortcutResolver.trigerredActions.any()
         }
     })
 }
