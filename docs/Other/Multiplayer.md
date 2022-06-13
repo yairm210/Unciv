@@ -53,7 +53,7 @@ Please note:
 
 ## Third-party (unofficial) software for hosting your own Unciv server
 
-* https://github.com/Mape6/Unciv_server (Python)
-* https://gitlab.com/azzurite/unciv-server (NodeJS)
-* https://github.com/oynqr/rust_unciv_server (Rust)
-* https://github.com/touhidurrr/UncivServer.xyz (NodeJS)
+* [https://github.com/Mape6/Unciv_server](https://github.com/Mape6/Unciv_server) (Python)
+* [https://gitlab.com/azzurite/unciv-server](https://gitlab.com/azzurite/unciv-server) (NodeJS)
+* [https://github.com/oynqr/rust_unciv_server](https://github.com/oynqr/rust_unciv_server) (Rust)
+* [https://github.com/touhidurrr/UncivServer.xyz](https://github.com/touhidurrr/UncivServer.xyz) (NodeJS)
