@@ -151,6 +151,8 @@ class EditorMapHolder(
         action.interpolation = Interpolation.sine
         addAction(action)
 
+        if (!blink) return
+
         removeAction(blinkAction) // so we don't have multiple blinks at once
         blinkAction = Actions.repeat(3, Actions.sequence(
             Actions.run { tileGroup.highlightImage.isVisible = false },
