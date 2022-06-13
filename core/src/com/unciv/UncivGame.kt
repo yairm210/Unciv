@@ -198,7 +198,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     }
     private suspend fun loadWorldscreen(factory: suspend () -> NewScreens): WorldScreen = withThreadPoolContext {
         // This all runs in separate thread to give LoadGameScreen a chance to show
-        withGLContext { setScreen(LoadingScreen()) }
+        withGLContext { setScreen(LoadingScreen(getScreen())) }
         worldScreen?.dispose()
         worldScreen = null // This allows the GC to collect our old WorldScreen, otherwise we keep two WorldScreens in memory.
         return@withThreadPoolContext withGLContext {
@@ -257,7 +257,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         if (deepLinkedMultiplayerGame == null) return@run
 
         launchOnGLThread {
-            setScreen(LoadingScreen())
+            setScreen(LoadingScreen(getScreen()!!))
         }
         try {
             onlineMultiplayer.loadGame(deepLinkedMultiplayerGame!!)
