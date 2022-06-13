@@ -4,7 +4,11 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.unciv.Constants
+import com.unciv.ui.images.ImageWithCustomSize
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.closeAllPopups
 import com.unciv.ui.popup.popups
@@ -18,6 +22,10 @@ class LoadingScreen(
     val screenshot: Texture
     init {
         screenshot = takeScreenshot(previousScreen)
+        val image = ImageWithCustomSize(TextureRegion(screenshot, 0, screenshot.height, screenshot.width, -screenshot.height))
+        image.width = stage.width
+        image.height= stage.height
+        stage.addActor(image)
         val popup = Popup(stage)
         popup.add(Constants.loading.toLabel())
         popup.open()
@@ -35,14 +43,9 @@ class LoadingScreen(
         return screenshot
     }
 
-    override fun render(delta: Float) {
-        val camera = stage.viewport.camera
-        camera.update()
-        val batch = stage.batch as SpriteBatch
-        batch.projectionMatrix = camera.combined
-        batch.begin()
-        batch.draw(screenshot, 0f, 0f, camera.viewportWidth, camera.viewportHeight, 0, 0, screenshot.width, screenshot.height, false, true)
-        stage.root.draw(batch, 1f)
-        batch.end()
+
+    override fun dispose() {
+        screenshot.dispose()
+        super.dispose()
     }
 }
