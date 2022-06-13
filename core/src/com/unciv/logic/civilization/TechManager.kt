@@ -132,13 +132,13 @@ class TechManager {
         val tech = getRuleset().technologies[techName]!!
         if (tech.uniqueObjects.any { it.type == UniqueType.OnlyAvailableWhen && !it.conditionalsApply(civInfo) })
             return false
-        
+
         if (tech.getMatchingUniques(UniqueType.IncompatibleWith).any { isResearched(it.params[0]) })
             return false
-        
+
         if (isResearched(tech.name) && !tech.isContinuallyResearchable())
             return false
-        
+
         return tech.prerequisites.all { isResearched(it) }
     }
 
@@ -335,6 +335,8 @@ class TechManager {
             if (unique.params[1] != techName) continue
             civInfo.addNotification("You have unlocked [The Long Count]!", MayaLongCountAction(), MayaCalendar.notificationIcon)
         }
+
+        civInfo.gameInfo.addTechnologyToTeam(civInfo.team, techName)
 
         updateEra()
     }

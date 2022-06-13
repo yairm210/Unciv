@@ -42,6 +42,7 @@ import com.unciv.ui.utils.extensions.toPercent
 import com.unciv.ui.utils.extensions.withItem
 import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -79,6 +80,7 @@ class CivilizationInfo {
     lateinit var nation: Nation
 
     var team = ""
+    var techsResearchedByTeam = ArrayList<String>()
 
     /**
      * We never add or remove from here directly, could cause comodification problems.
@@ -875,6 +877,10 @@ class CivilizationInfo {
     fun updateDetailedCivResources() = transients().updateCivResources()
 
     fun startTurn() {
+        for (techName in techsResearchedByTeam) {
+            tech.addTechnology(techName)
+        }
+        techsResearchedByTeam.clear()
         civConstructions.startTurn()
         attacksSinceTurnStart.clear()
         updateStatsForNextTurn() // for things that change when turn passes e.g. golden age, city state influence

@@ -37,6 +37,17 @@ class GameInfo {
     var currentTurnStartTime = 0L
     var gameId = UUID.randomUUID().toString() // random string
 
+    fun addTechnologyToTeam(team: String, techName: String) {
+        var teammatesCivs = civilizations - civilizations.filter { it.team != team }
+        for (teammate in teammatesCivs) {
+            if (teammate.tech.techsResearched.find { it == techName } == techName)
+                teammatesCivs -= teammate
+        }
+        for (teammate in teammatesCivs) {
+            teammate.techsResearchedByTeam.add(techName)
+        }
+    }
+
     // Maps a civ to the civ they voted for
     var diplomaticVictoryVotesCast = HashMap<String, String>()
     // Set to false whenever the results still need te be processed
