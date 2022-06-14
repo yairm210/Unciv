@@ -30,5 +30,11 @@ data class UncivSound(
         val Swap = UncivSound("swap")
         val Upgrade = UncivSound("upgrade")
         val Whoosh = UncivSound("whoosh")
+        val CityAncient = UncivSound("cityAncient")
+        val CityClassical = UncivSound("cityClassical")
+        val CityMedieval = UncivSound("cityMedieval")
+        val CityRenaissance = UncivSound("cityRenaissance")
+        val CityIndustrial = UncivSound("cityIndustrial")
+        val CityModern = UncivSound("cityModern")
     }
 }
