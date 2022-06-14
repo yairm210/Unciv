@@ -2,29 +2,20 @@
 
 Fixed translation order
 
-Added test for branches which require missing eras
-
-added cutout support  - By alexban011
+Added cutout support  - By alexban011
 
 By OptimizedForDensity:
-- Fix spectator's fog of war toggle 
-- Improvements to AI military unit usage 
-- Prevent AI from sending a second peace treaty 
-- Stop AI puppets from building settlers and military 
+- Improvements to AI military unit usage
+- Fix spectator's fog of war toggle
+- Stop AI puppets from building settlers and military
 
 By Azzurite:
-- Fix scroll to wonder in the map editor 
-- Fix unit being captured two times 
-- Docs: Create actual links
-- Add URL example
-- Fix anchor link
-- Change heading to match page name
-- Fix NPE in Nation selection & editor mods popup 
+- Fix scroll to wonder in the map editor
+- Fix unit being captured two times
+- Fix NPE in Nation selection & editor mods popup
 - Add more extensive multiplayer documentation
-- Refactor: Consistent & correct usage of coroutines 
-- Refactor:  Change UncivGame.worldScreen and UncivGame.gameInfo to be of nullable type 
 
-Do not enter the city while performing an air strikes sequence  - By JackRainy
+UI: Do not enter city while performing air strikes - By JackRainy
 
 ## 4.1.9
 
