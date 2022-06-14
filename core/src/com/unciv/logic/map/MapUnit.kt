@@ -174,6 +174,7 @@ class MapUnit {
     var promotions = UnitPromotions()
     var due: Boolean = true
     var isTransported: Boolean = false
+    var turnsFortified = 0
 
     var abilityUsesLeft: HashMap<String, Int> = hashMapOf()
     var maxAbilityUses: HashMap<String, Int> = hashMapOf()
@@ -234,6 +235,7 @@ class MapUnit {
         toReturn.health = health
         toReturn.action = action
         toReturn.attacksThisTurn = attacksThisTurn
+        toReturn.turnsFortified = turnsFortified
         toReturn.promotions = promotions.clone()
         toReturn.isTransported = isTransported
         toReturn.abilityUsesLeft.putAll(abilityUsesLeft)
@@ -450,7 +452,7 @@ class MapUnit {
 
     fun getFortificationTurns(): Int {
         if (!isFortified()) return 0
-        return action!!.split(" ")[1].toInt()
+        return turnsFortified
     }
 
     // debug helper (please update comment if you see some "$unit" using this)
@@ -639,11 +641,11 @@ class MapUnit {
     }
 
     fun fortify() {
-        action = "Fortify 0"
+        action = "Fortify"
     }
 
     fun fortifyUntilHealed() {
-        action = "Fortify 0 until healed"
+        action = "Fortify until healed"
     }
 
     fun fortifyIfCan() {
@@ -672,6 +674,7 @@ class MapUnit {
     }
 
     fun useMovementPoints(amount: Float) {
+        turnsFortified = 0
         currentMovement -= amount
         if (currentMovement < 0) currentMovement = 0f
     }
@@ -842,15 +845,11 @@ class MapUnit {
             && getTile().improvementInProgress != null
             && canBuildImprovement(getTile().getTileImprovementInProgress()!!)
         ) workOnImprovement()
-        if (currentMovement == getMaxMovement().toFloat() && isFortified()) {
-            val currentTurnsFortified = getFortificationTurns()
-            if (currentTurnsFortified < 2)
-                action = action!!.replace(
-                    currentTurnsFortified.toString(),
-                    (currentTurnsFortified + 1).toString(),
-                    true
-                )
+        if (currentMovement == getMaxMovement().toFloat() && isFortified() && turnsFortified < 2) {
+            turnsFortified++
         }
+        if (!isFortified())
+            turnsFortified = 0
 
         if (currentMovement == getMaxMovement().toFloat() // didn't move this turn
             || hasUnique(UniqueType.HealsEvenAfterAction)
