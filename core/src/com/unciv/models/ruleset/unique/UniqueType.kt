@@ -533,7 +533,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     CanActionSeveralTimes("Can [action] [amount] times", UniqueTarget.Unit),
 
+    CannotBeHurried("Cannot be hurried", UniqueTarget.Building, UniqueTarget.Tech),
     CanSpeedupConstruction("Can speed up construction of a building", UniqueTarget.Unit),
+    CanSpeedupWonderConstruction("Can speed up the construction of a wonder", UniqueTarget.Unit),
     CanHurryResearch("Can hurry technology research", UniqueTarget.Unit),
     CanTradeWithCityStateForGoldAndInfluence("Can undertake a trade mission with City-State, giving a large sum of gold and [amount] Influence", UniqueTarget.Unit),
 

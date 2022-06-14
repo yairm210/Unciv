@@ -7,9 +7,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Notification
-import com.unciv.ui.utils.WrappableLabel
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.WrappableLabel
+import com.unciv.ui.utils.extensions.onClick
 import kotlin.math.min
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 

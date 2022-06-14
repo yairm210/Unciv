@@ -5,7 +5,12 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
-import com.unciv.logic.map.*
+import com.unciv.logic.map.MapParameters
+import com.unciv.logic.map.MapShape
+import com.unciv.logic.map.MapSize
+import com.unciv.logic.map.MapSizeNew
+import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.TileMap
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Ruleset
@@ -15,7 +20,8 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.tilegroups.TileGroup
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.worldscreen.ZoomButtonPair
 
 
@@ -185,9 +191,9 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen() {
 
     fun askIfDirty(question: String, action: ()->Unit) {
         if (!isDirty) return action()
-        YesNoPopup(question, action, screen = this, restoreDefault = {
+        YesNoPopup(question, screen = this, restoreDefault = {
             keyPressDispatcher[KeyCharAndCode.BACK] = this::closeEditor
-        }).open()
+        }, action).open()
     }
 
     fun hideSelection() {

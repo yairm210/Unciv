@@ -27,7 +27,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
             .filterNot { it.isAnyWonder() }
     private val buildableWonders = buildableBuildings
             .filter { it.isAnyWonder() }
-    
+
     private val buildableUnits = cityConstructions.getConstructableUnits()
 
     private val civUnits = civInfo.getCivUnits()
@@ -41,10 +41,10 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
             .mapNotNull { civInfo.victoryManager.getNextMilestone(it.name) }
             .filter { it.type == MilestoneType.BuiltBuilding || it.type == MilestoneType.BuildingBuiltGlobally }
             .map { it.params[0] }
-    
+
     private val spaceshipParts = civInfo.gameInfo.spaceResources
 
-    
+
     private val averageProduction = civInfo.cities.map { it.cityStats.currentCityStats.production }.average()
     private val cityIsOverAverageProduction = cityInfo.cityStats.currentCityStats.production >= averageProduction
 
@@ -149,8 +149,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
                 && Automation.allowAutomatedConstruction(civInfo, cityInfo, it)
             }
         val alreadyHasWorkBoat = buildableWorkboatUnits.any()
-            && !cityInfo.getTiles().any { 
-                it.civilianUnit?.hasUnique(UniqueType.CreateWaterImprovements) == true 
+            && !cityInfo.getTiles().any {
+                it.civilianUnit?.hasUnique(UniqueType.CreateWaterImprovements) == true
             }
         if (!alreadyHasWorkBoat) return
 
@@ -160,10 +160,10 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         }
         for (i in 1..10) bfs.nextStep()
         if (!bfs.getReachedTiles()
-            .any { tile -> 
+            .any { tile ->
                 tile.hasViewableResource(civInfo) && tile.improvement == null && tile.getOwner() == civInfo
                 && tile.tileResource.getImprovements().any {
-                    tile.canBuildImprovement(tile.ruleset.tileImprovements[it]!!, civInfo) 
+                    tile.canBuildImprovement(tile.ruleset.tileImprovements[it]!!, civInfo)
                 }
             }
         ) return
@@ -178,7 +178,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         val workerEquivalents = buildableUnits
             .filter {
                 it.hasUnique(UniqueType.BuildImprovements)
-                && Automation.allowAutomatedConstruction(civInfo, cityInfo, it) 
+                && Automation.allowAutomatedConstruction(civInfo, cityInfo, it)
             }
         if (workerEquivalents.none()) return // for mods with no worker units
 
@@ -221,7 +221,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private fun getWonderPriority(wonder: Building): Float {
         // Only start building if we are the city that would complete it the soonest
-        if (wonder.hasUnique(UniqueType.TriggersCulturalVictory) 
+        if (wonder.hasUnique(UniqueType.TriggersCulturalVictory)
             && cityInfo == civInfo.cities.minByOrNull {
                 it.cityConstructions.turnsToConstruction(wonder.name)
             }!!
@@ -253,7 +253,9 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
         val highestPriorityWonder = buildableWonders
             .filter { Automation.allowAutomatedConstruction(civInfo, cityInfo, it) }
-            .maxByOrNull { getWonderPriority(it) }!!
+            .maxByOrNull { getWonderPriority(it) }
+            ?: return
+
         val citiesBuildingWonders = civInfo.cities
                 .count { it.cityConstructions.isBuildingWonder() }
 
@@ -343,10 +345,10 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     private fun addFoodBuildingChoice() {
         val conditionalState = StateForConditionals(civInfo, cityInfo)
         val foodBuilding = buildableNotWonders.asSequence()
-            .filter { 
-                (it.isStatRelated(Stat.Food) 
+            .filter {
+                (it.isStatRelated(Stat.Food)
                     || it.hasUnique(UniqueType.CarryOverFood, conditionalState)
-                ) && Automation.allowAutomatedConstruction(civInfo, cityInfo, it) 
+                ) && Automation.allowAutomatedConstruction(civInfo, cityInfo, it)
             }.minByOrNull { it.cost }
         if (foodBuilding != null) {
             var modifier = 1f

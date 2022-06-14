@@ -33,9 +33,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.helpers.MapArrowType
 import com.unciv.models.helpers.MiscArrowTypes
 import com.unciv.ui.UncivStage
-import com.unciv.ui.audio.Sounds
-import com.unciv.ui.crashhandling.launchCrashHandling
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
+import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileGroup
@@ -43,13 +41,15 @@ import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.tilegroups.WorldTileGroup
 import com.unciv.ui.utils.UnitGroup
 import com.unciv.ui.utils.ZoomableScrollPane
-import com.unciv.ui.utils.center
-import com.unciv.ui.utils.colorFromRGB
-import com.unciv.ui.utils.darken
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.surroundWithCircle
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.extensions.center
+import com.unciv.ui.utils.extensions.colorFromRGB
+import com.unciv.ui.utils.extensions.darken
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.utils.Log
+import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.launchOnGLThread
 
 
 class WorldMapHolder(
@@ -153,7 +153,7 @@ class WorldMapHolder(
                 override fun clicked(event: InputEvent?, x: Float, y: Float) {
                     val unit = worldScreen.bottomUnitTable.selectedUnit
                         ?: return
-                    launchCrashHandling("WorldScreenClick") {
+                    Concurrency.run("WorldScreenClick") {
                         onTileRightClicked(unit, tileGroup.tileInfo)
                     }
                 }
@@ -216,6 +216,14 @@ class WorldMapHolder(
     }
 
     private fun onTileRightClicked(unit: MapUnit, tile: TileInfo) {
+        if (UncivGame.Current.gameInfo!!.currentPlayerCiv.isSpectator()) {
+            return
+        }
+        removeUnitActionOverlay()
+        selectedTile = tile
+        unitMovementPaths.clear()
+        worldScreen.shouldUpdate = true
+
         if (worldScreen.bottomUnitTable.selectedUnitIsSwapping) {
             if (unit.movement.canUnitSwapTo(tile)) {
                 swapMoveUnitToTargetTile(unit, tile)
@@ -230,7 +238,7 @@ class WorldMapHolder(
             worldScreen.shouldUpdate = true
             val attacker = MapUnitCombatant(unit)
             if (!Battle.movePreparingAttack(attacker, attackableTile)) return
-            Sounds.play(attacker.getAttackSound())
+            SoundPlayer.play(attacker.getAttackSound())
             Battle.attackOrNuke(attacker, attackableTile)
             return
         }
@@ -253,7 +261,7 @@ class WorldMapHolder(
 
         val selectedUnit = selectedUnits.first()
 
-        launchCrashHandling("TileToMoveTo") {
+        Concurrency.run("TileToMoveTo") {
             // these are the heavy parts, finding where we want to go
             // Since this runs in a different thread, even if we check movement.canReach()
             // then it might change until we get to the getTileToMoveTo, so we just try/catch it
@@ -262,10 +270,10 @@ class WorldMapHolder(
                 tileToMoveTo = selectedUnit.movement.getTileToMoveToThisTurn(targetTile)
             } catch (ex: Exception) {
                 Log.error("Exception in getTileToMoveToThisTurn", ex)
-                return@launchCrashHandling
+                return@run
             } // can't move here
 
-            postCrashHandlingRunnable {
+            launchOnGLThread {
                 try {
                     // Because this is darned concurrent (as it MUST be to avoid ANRs),
                     // there are edge cases where the canReach is true,
@@ -275,7 +283,7 @@ class WorldMapHolder(
                     selectedUnit.movement.moveToTile(tileToMoveTo)
                     if (selectedUnit.isExploring() || selectedUnit.isMoving())
                         selectedUnit.action = null // remove explore on manual move
-                    Sounds.play(UncivSound.Whoosh)
+                    SoundPlayer.play(UncivSound.Whoosh)
                     if (selectedUnit.currentTile != targetTile)
                         selectedUnit.action = "moveTo " + targetTile.position.x.toInt() + "," + targetTile.position.y.toInt()
                     if (selectedUnit.currentMovement > 0) worldScreen.bottomUnitTable.selectUnit(selectedUnit)
@@ -298,7 +306,7 @@ class WorldMapHolder(
             selectedUnit.action = null // remove explore on manual swap-move
 
         // Play something like a swish-swoosh
-        Sounds.play(UncivSound.Swap)
+        SoundPlayer.play(UncivSound.Swap)
 
         if (selectedUnit.currentMovement > 0) worldScreen.bottomUnitTable.selectUnit(selectedUnit)
 
@@ -307,7 +315,7 @@ class WorldMapHolder(
     }
 
     private fun addTileOverlaysWithUnitMovement(selectedUnits: List<MapUnit>, tileInfo: TileInfo) {
-        launchCrashHandling("TurnsToGetThere") {
+        Concurrency.run("TurnsToGetThere") {
             /** LibGdx sometimes has these weird errors when you try to edit the UI layout from 2 separate threads.
              * And so, all UI editing will be done on the main thread.
              * The only "heavy lifting" that needs to be done is getting the turns to get there,
@@ -338,12 +346,12 @@ class WorldMapHolder(
                 unitToTurnsToTile[unit] = turnsToGetThere
             }
 
-            postCrashHandlingRunnable {
+            launchOnGLThread {
                 val unitsWhoCanMoveThere = HashMap(unitToTurnsToTile.filter { it.value != 0 })
                 if (unitsWhoCanMoveThere.isEmpty()) { // give the regular tile overlays with no unit movement
                     addTileOverlays(tileInfo)
                     worldScreen.shouldUpdate = true
-                    return@postCrashHandlingRunnable
+                    return@launchOnGLThread
                 }
 
                 val turnsToGetThere = unitsWhoCanMoveThere.values.maxOrNull()!!

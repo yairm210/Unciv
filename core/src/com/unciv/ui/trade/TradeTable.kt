@@ -5,7 +5,10 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeRequest
 import com.unciv.models.translations.tr
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.extensions.isEnabled
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toTextButton
 
 class TradeTable(val otherCivilization: CivilizationInfo, stage: DiplomacyScreen): Table(BaseScreen.skin) {
     val currentPlayerCiv = otherCivilization.gameInfo.getCurrentPlayerCivilization()

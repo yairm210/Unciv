@@ -11,7 +11,9 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.ui.civilopedia.FormattedLine.IconDisplay
 import com.unciv.ui.civilopedia.MarkupRenderer
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.WrappableLabel
+import com.unciv.ui.utils.extensions.pad
 
 // The ruleset also acts as a secondary parameter to determine if this is the right or self side of the player picker
 class NationTable(val nation: Nation, width: Float, minHeight: Float, ruleset: Ruleset? = null)

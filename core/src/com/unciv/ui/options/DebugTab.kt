@@ -7,29 +7,37 @@ import com.unciv.logic.GameSaver
 import com.unciv.logic.MapSaver
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.UncivSlider
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toCheckBox
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
 
 fun debugTab() = Table(BaseScreen.skin).apply {
     pad(10f)
     defaults().pad(5f)
     val game = UncivGame.Current
 
-    val simulateButton = "Simulate until turn:".toTextButton()
-    val simulateTextField = TextField(game.simulateUntilTurnForDebug.toString(), BaseScreen.skin)
-    val invalidInputLabel = "This is not a valid integer!".toLabel().also { it.isVisible = false }
-    simulateButton.onClick {
-        val simulateUntilTurns = simulateTextField.text.toIntOrNull()
-        if (simulateUntilTurns == null) {
-            invalidInputLabel.isVisible = true
-            return@onClick
+    val worldScreen = game.worldScreen
+    if (worldScreen != null) {
+        val simulateButton = "Simulate until turn:".toTextButton()
+        val simulateTextField = TextField(game.simulateUntilTurnForDebug.toString(), BaseScreen.skin)
+        val invalidInputLabel = "This is not a valid integer!".toLabel().also { it.isVisible = false }
+        simulateButton.onClick {
+            val simulateUntilTurns = simulateTextField.text.toIntOrNull()
+            if (simulateUntilTurns == null) {
+                invalidInputLabel.isVisible = true
+                return@onClick
+            }
+            game.simulateUntilTurnForDebug = simulateUntilTurns
+            invalidInputLabel.isVisible = false
+            worldScreen.nextTurn()
         }
-        game.simulateUntilTurnForDebug = simulateUntilTurns
-        invalidInputLabel.isVisible = false
-        game.worldScreen.nextTurn()
+        add(simulateButton)
+        add(simulateTextField).row()
+        add(invalidInputLabel).colspan(2).row()
     }
-    add(simulateButton)
-    add(simulateTextField).row()
-    add(invalidInputLabel).colspan(2).row()
 
     add("Supercharged".toCheckBox(game.superchargedForDebug) {
         game.superchargedForDebug = it
@@ -37,9 +45,10 @@ fun debugTab() = Table(BaseScreen.skin).apply {
     add("View entire map".toCheckBox(game.viewEntireMapForDebug) {
         game.viewEntireMapForDebug = it
     }).colspan(2).row()
-    if (game.isGameInfoInitialized()) {
-        add("God mode (current game)".toCheckBox(game.gameInfo.gameParameters.godMode) {
-            game.gameInfo.gameParameters.godMode = it
+    val curGameInfo = game.gameInfo
+    if (curGameInfo != null) {
+        add("God mode (current game)".toCheckBox(curGameInfo.gameParameters.godMode) {
+            curGameInfo.gameParameters.godMode = it
         }).colspan(2).row()
     }
     add("Save games compressed".toCheckBox(GameSaver.saveZipped) {
@@ -68,25 +77,25 @@ fun debugTab() = Table(BaseScreen.skin).apply {
 
     val unlockTechsButton = "Unlock all techs".toTextButton()
     unlockTechsButton.onClick {
-        if (!game.isGameInfoInitialized())
+        if (curGameInfo == null)
             return@onClick
-        for (tech in game.gameInfo.ruleSet.technologies.keys) {
-            if (tech !in game.gameInfo.getCurrentPlayerCivilization().tech.techsResearched) {
-                game.gameInfo.getCurrentPlayerCivilization().tech.addTechnology(tech)
-                game.gameInfo.getCurrentPlayerCivilization().popupAlerts.removeLastOrNull()
+        for (tech in curGameInfo.ruleSet.technologies.keys) {
+            if (tech !in curGameInfo.getCurrentPlayerCivilization().tech.techsResearched) {
+                curGameInfo.getCurrentPlayerCivilization().tech.addTechnology(tech)
+                curGameInfo.getCurrentPlayerCivilization().popupAlerts.removeLastOrNull()
             }
         }
-        game.gameInfo.getCurrentPlayerCivilization().updateSightAndResources()
-        game.worldScreen.shouldUpdate = true
+        curGameInfo.getCurrentPlayerCivilization().updateSightAndResources()
+        if (worldScreen != null) worldScreen.shouldUpdate = true
     }
     add(unlockTechsButton).colspan(2).row()
 
     val giveResourcesButton = "Get all strategic resources".toTextButton()
     giveResourcesButton.onClick {
-        if (!game.isGameInfoInitialized())
+        if (curGameInfo == null)
             return@onClick
-        val ownedTiles = game.gameInfo.tileMap.values.asSequence().filter { it.getOwner() == game.gameInfo.getCurrentPlayerCivilization() }
-        val resourceTypes = game.gameInfo.ruleSet.tileResources.values.asSequence().filter { it.resourceType == ResourceType.Strategic }
+        val ownedTiles = curGameInfo.tileMap.values.asSequence().filter { it.getOwner() == curGameInfo.getCurrentPlayerCivilization() }
+        val resourceTypes = curGameInfo.ruleSet.tileResources.values.asSequence().filter { it.resourceType == ResourceType.Strategic }
         for ((tile, resource) in ownedTiles zip resourceTypes) {
             tile.resource = resource.name
             tile.resourceAmount = 999
@@ -94,8 +103,8 @@ fun debugTab() = Table(BaseScreen.skin).apply {
             // If this becomes a problem, check if such an improvement exists and otherwise plop down a great improvement or so
             tile.improvement = resource.getImprovements().first()
         }
-        game.gameInfo.getCurrentPlayerCivilization().updateSightAndResources()
-        game.worldScreen.shouldUpdate = true
+        curGameInfo.getCurrentPlayerCivilization().updateSightAndResources()
+        if (worldScreen != null) worldScreen.shouldUpdate = true
     }
     add(giveResourcesButton).colspan(2).row()
 }

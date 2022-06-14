@@ -10,8 +10,14 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.newgamescreen.ModCheckboxTable
 import com.unciv.ui.newgamescreen.TranslatedSelectBox
 import com.unciv.ui.popup.Popup
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.TabbedPager
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.utils.extensions.isEnabled
+import com.unciv.ui.utils.extensions.onChange
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
 
 class MapEditorModsTab(
     private val editorScreen: MapEditorScreen
@@ -125,7 +131,7 @@ class MapEditorModsTab(
                     add(inc.toLabel()).row()
             }
             add(ScrollPane(incompatibilityTable)).colspan(2)
-                .maxHeight(screen.stage.height * 0.8f).row()
+                .maxHeight(stageToShowOn.height * 0.8f).row()
             addGoodSizedLabel("Change map to fit selected ruleset?", 24).colspan(2).row()
             addButtonInRow(Constants.yes, 'y') {
                 onOK()

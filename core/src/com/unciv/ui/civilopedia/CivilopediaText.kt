@@ -12,11 +12,12 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.INamed
+import com.unciv.ui.civilopedia.MarkupRenderer.render
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.addSeparator
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.utils.Log
 import kotlin.math.max
 
@@ -163,10 +164,13 @@ class FormattedLine (
             }
             return ""
         }
-        private fun getCurrentRuleset() = when {
-            !UncivGame.isCurrentInitialized() -> Ruleset()
-            !UncivGame.Current.isGameInfoInitialized() -> RulesetCache[BaseRuleset.Civ_V_Vanilla.fullName]!!
-            else -> UncivGame.Current.gameInfo.ruleSet
+        private fun getCurrentRuleset(): Ruleset {
+            val gameInfo = UncivGame.Current.gameInfo
+            return when {
+                !UncivGame.isCurrentInitialized() -> Ruleset()
+                gameInfo == null -> RulesetCache[BaseRuleset.Civ_V_Vanilla.fullName]!!
+                else -> gameInfo.ruleSet
+            }
         }
         private fun initNamesCategoryMap(ruleSet: Ruleset): HashMap<String, CivilopediaCategories> {
             //val startTime = System.nanoTime()

@@ -47,8 +47,9 @@ class Belief() : RulesetObject() {
         // private but potentially reusable, therefore not folded into getCivilopediaTextMatching
         private fun getBeliefsMatching(name: String, ruleset: Ruleset): Sequence<Belief> {
             if (!UncivGame.isCurrentInitialized()) return sequenceOf()
-            if (!UncivGame.Current.isGameInfoInitialized()) return sequenceOf()
-            if (!UncivGame.Current.gameInfo.isReligionEnabled()) return sequenceOf()
+            val gameInfo = UncivGame.Current.gameInfo
+            if (gameInfo == null) return sequenceOf()
+            if (!gameInfo.isReligionEnabled()) return sequenceOf()
             return ruleset.beliefs.asSequence().map { it.value }
                 .filter { belief -> belief.uniqueObjects.any { unique -> unique.params.any { it == name } }
             }

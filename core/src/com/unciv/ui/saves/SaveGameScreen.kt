@@ -9,18 +9,17 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.models.translations.tr
-import com.unciv.ui.crashhandling.launchCrashHandling
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
-import com.unciv.ui.utils.disable
-import com.unciv.ui.utils.enable
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.toLabel
-import com.unciv.ui.utils.toTextButton
-import java.util.concurrent.CancellationException
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.enable
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
+import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.launchOnGLThread
 
 
 class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves") {
@@ -34,7 +33,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
         rightSideButton.setText("Save game".tr())
         val saveAction = {
             if (game.gameSaver.getSave(gameNameTextField.text).exists())
-                YesNoPopup("Overwrite existing file?", { saveGame() }, this).open()
+                YesNoPopup("Overwrite existing file?", this) { saveGame() }.open()
             else saveGame()
         }
         rightSideButton.onClick(saveAction)
@@ -71,13 +70,15 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
     }
 
     private fun copyToClipboardHandler() {
-        launchCrashHandling("Copy game to clipboard") {
+        Concurrency.run("Copy game to clipboard") {
             // the Gzip rarely leads to ANRs
             try {
                 Gdx.app.clipboard.contents = GameSaver.gameInfoToString(gameInfo, forceZip = true)
             } catch (ex: Throwable) {
                 ex.printStackTrace()
-                ToastPopup("Could not save game to clipboard!", this@SaveGameScreen)
+                launchOnGLThread {
+                    ToastPopup("Could not save game to clipboard!", this@SaveGameScreen)
+                }
             }
         }
     }
@@ -90,7 +91,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
             errorLabel.setText("")
             saveToCustomLocation.setText("Saving...".tr())
             saveToCustomLocation.disable()
-            launchCrashHandling("Save to custom location", runAsDaemon = false) {
+            Concurrency.runOnNonDaemonThreadPool("Save to custom location") {
                 game.gameSaver.saveGameToCustomLocation(gameInfo, gameNameTextField.text) { result ->
                     if (result.isError()) {
                         errorLabel.setText("Could not save game to custom location!".tr())
@@ -108,9 +109,9 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
 
     private fun saveGame() {
         rightSideButton.setText("Saving...".tr())
-        launchCrashHandling("SaveGame", runAsDaemon = false) {
+        Concurrency.runOnNonDaemonThreadPool("SaveGame") {
             game.gameSaver.saveGame(gameInfo, gameNameTextField.text) {
-                postCrashHandlingRunnable {
+                launchOnGLThread {
                     if (it != null) ToastPopup("Could not save game!", this@SaveGameScreen)
                     else UncivGame.Current.resetToWorldScreen()
                 }

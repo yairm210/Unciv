@@ -4,7 +4,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.Popup
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.enable
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toTextButton
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class ViewFriendsListScreen(previousScreen: BaseScreen) : PickerScreen() {

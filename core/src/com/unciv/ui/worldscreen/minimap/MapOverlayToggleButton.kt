@@ -5,8 +5,8 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.unciv.UncivGame
 import com.unciv.ui.images.IconCircleGroup
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.surroundWithCircle
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.surroundWithCircle
 
 /**
  * Class that unifies the behaviour of the little green map overlay toggle buttons shown next to the minimap.
@@ -42,7 +42,7 @@ class MapOverlayToggleButton(
     /** Toggle overlay. Called on click. */
     fun toggle() {
         setter(!getter())
-        UncivGame.Current.worldScreen.shouldUpdate = true
+        UncivGame.Current.worldScreen!!.shouldUpdate = true
         // Setting worldScreen.shouldUpdate implicitly causes this.update() to be called by the WorldScreen on the next update.
     }
 

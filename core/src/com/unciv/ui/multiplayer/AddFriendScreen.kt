@@ -8,7 +8,10 @@ import com.unciv.logic.multiplayer.FriendList
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.extensions.enable
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
 import java.util.*
 
 class AddFriendScreen(backScreen: ViewFriendsListScreen) : PickerScreen() {

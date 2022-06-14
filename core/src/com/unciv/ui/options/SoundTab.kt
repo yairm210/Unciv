@@ -2,13 +2,21 @@ package com.unciv.ui.options
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.UncivGame
 import com.unciv.models.UncivSound
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.translations.tr
+import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicTrackChooserFlags
-import com.unciv.ui.crashhandling.launchCrashHandling
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.UncivSlider
+import com.unciv.ui.utils.WrappableLabel
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
+import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.launchOnGLThread
 import kotlin.math.floor
 
 fun soundTab(
@@ -18,17 +26,17 @@ fun soundTab(
     defaults().pad(5f)
 
     val settings = optionsPopup.settings
-    val screen = optionsPopup.screen
+    val music = UncivGame.Current.musicController
 
     addSoundEffectsVolumeSlider(this, settings)
 
-    if (screen.game.musicController.isMusicAvailable()) {
-        addMusicVolumeSlider(this, settings, screen)
-        addMusicPauseSlider(this, settings, screen)
-        addMusicCurrentlyPlaying(this, screen)
+    if (UncivGame.Current.musicController.isMusicAvailable()) {
+        addMusicVolumeSlider(this, settings, music)
+        addMusicPauseSlider(this, settings, music)
+        addMusicCurrentlyPlaying(this, music)
     }
 
-    if (!screen.game.musicController.isDefaultFileAvailable())
+    if (!UncivGame.Current.musicController.isDefaultFileAvailable())
         addDownloadMusic(this, optionsPopup)
 }
 
@@ -44,16 +52,15 @@ private fun addDownloadMusic(table: Table, optionsPopup: OptionsPopup) {
         errorTable.add("Downloading...".toLabel())
 
         // So the whole game doesn't get stuck while downloading the file
-        launchCrashHandling("MusicDownload") {
+        Concurrency.run("MusicDownload") {
             try {
-                val screen = optionsPopup.screen
-                screen.game.musicController.downloadDefaultFile()
-                postCrashHandlingRunnable {
+                UncivGame.Current.musicController.downloadDefaultFile()
+                launchOnGLThread {
                     optionsPopup.tabs.replacePage("Sound", soundTab(optionsPopup))
-                    screen.game.musicController.chooseTrack(flags = MusicTrackChooserFlags.setPlayDefault)
+                    UncivGame.Current.musicController.chooseTrack(flags = MusicTrackChooserFlags.setPlayDefault)
                 }
             } catch (ex: Exception) {
-                postCrashHandlingRunnable {
+                launchOnGLThread {
                     errorTable.clear()
                     errorTable.add("Could not download music!".toLabel(Color.RED))
                 }
@@ -77,7 +84,7 @@ private fun addSoundEffectsVolumeSlider(table: Table, settings: GameSettings) {
     table.add(soundEffectsVolumeSlider).pad(5f).row()
 }
 
-private fun addMusicVolumeSlider(table: Table, settings: GameSettings, screen: BaseScreen) {
+private fun addMusicVolumeSlider(table: Table, settings: GameSettings, music: MusicController) {
     table.add("Music volume".tr()).left().fillX()
 
     val musicVolumeSlider = UncivSlider(
@@ -89,7 +96,6 @@ private fun addMusicVolumeSlider(table: Table, settings: GameSettings, screen: B
         settings.musicVolume = it
         settings.save()
 
-        val music = screen.game.musicController
         music.setVolume(it)
         if (!music.isPlaying())
             music.chooseTrack(flags = MusicTrackChooserFlags.setPlayDefault)
@@ -97,9 +103,7 @@ private fun addMusicVolumeSlider(table: Table, settings: GameSettings, screen: B
     table.add(musicVolumeSlider).pad(5f).row()
 }
 
-private fun addMusicPauseSlider(table: Table, settings: GameSettings, screen: BaseScreen) {
-    val music = screen.game.musicController
-
+private fun addMusicPauseSlider(table: Table, settings: GameSettings, music: MusicController) {
     // map to/from 0-1-2..10-12-14..30-35-40..60-75-90-105-120
     fun posToLength(pos: Float): Float = when (pos) {
         in 0f..10f -> pos
@@ -135,16 +139,16 @@ private fun addMusicPauseSlider(table: Table, settings: GameSettings, screen: Ba
     table.add(pauseLengthSlider).pad(5f).row()
 }
 
-private fun addMusicCurrentlyPlaying(table: Table, screen: BaseScreen) {
+private fun addMusicCurrentlyPlaying(table: Table, music: MusicController) {
     val label = WrappableLabel("", table.width - 10f, Color(-0x2f5001), 16)
     label.wrap = true
     table.add(label).padTop(20f).colspan(2).fillX().row()
-    screen.game.musicController.onChange {
-        postCrashHandlingRunnable {
+    music.onChange {
+        Concurrency.runOnGLThread {
             label.setText("Currently playing: [$it]".tr())
         }
     }
     label.onClick(UncivSound.Silent) {
-        screen.game.musicController.chooseTrack(flags = MusicTrackChooserFlags.none)
+        music.chooseTrack(flags = MusicTrackChooserFlags.none)
     }
 }
