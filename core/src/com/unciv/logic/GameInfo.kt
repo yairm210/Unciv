@@ -21,6 +21,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class GameInfo {
@@ -56,6 +57,18 @@ class GameInfo {
             }
         }
         return playerCount
+    }
+
+    fun getTeammatesOfCiv(civInfo: CivilizationInfo): ArrayList<CivilizationInfo> {
+        val teammates = ArrayList<CivilizationInfo>()
+
+        for (civ in civilizations) {
+            if (civ.team == civInfo.team) {
+                teammates.add(civ)
+            }
+        }
+
+        return teammates
     }
 
     // Maps a civ to the civ they voted for

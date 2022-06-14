@@ -876,11 +876,20 @@ class CivilizationInfo {
     fun updateViewableTiles() = transients().updateViewableTiles()
     fun updateDetailedCivResources() = transients().updateCivResources()
 
-    fun startTurn() {
+    // TODO: change this name to something better
+    fun teamStuff() {
         for (techName in techsResearchedByTeam) {
             tech.addTechnology(techName)
         }
         techsResearchedByTeam.clear()
+
+        for (teammate in gameInfo.getTeammatesOfCiv(this)) {
+            exploredTiles.addAll(teammate.exploredTiles)
+        }
+    }
+
+    fun startTurn() {
+        teamStuff()
         civConstructions.startTurn()
         attacksSinceTurnStart.clear()
         updateStatsForNextTurn() // for things that change when turn passes e.g. golden age, city state influence
