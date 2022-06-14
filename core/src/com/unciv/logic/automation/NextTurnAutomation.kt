@@ -946,7 +946,7 @@ object NextTurnAutomation {
     /** Handle decision making after city conquest, namely whether the AI should liberate, puppet,
      * or raze a city */
     fun onConquerCity(civInfo: CivilizationInfo, city: CityInfo) {
-        if (city.foundingCiv != "") {
+        if (!city.hasDiplomaticMarriage()) {
             val foundingCiv = civInfo.gameInfo.getCivilization(city.foundingCiv)
             var valueAlliance = valueCityStateAlliance(civInfo, foundingCiv)
             if (civInfo.getHappiness() < 0)
