@@ -28,6 +28,7 @@ import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.packIfNeeded
 import com.unciv.ui.utils.extensions.toTextButton
+import java.io.FileNotFoundException
 
 class CityScreen(
     internal val city: CityInfo,
@@ -108,7 +109,12 @@ class CityScreen(
     private val nextTileToOwn = city.expansion.chooseNewTileToOwn()
 
     init {
-        playCitySound()
+        try {
+            SoundPlayer.play(UncivSound("cityEra" + city.civInfo.getEra().eraNumber.toString()))
+        } catch (ex: Throwable) {
+            SoundPlayer.play(UncivSound.Silent)
+        }
+
         onBackButtonClicked { game.resetToWorldScreen() }
         UncivGame.Current.settings.addCompletedTutorialTask("Enter city screen")
 
@@ -133,21 +139,6 @@ class CityScreen(
         keyPressDispatcher['B'] = {
             if (selectedConstruction is INonPerpetualConstruction)
                 constructionsTable.askToBuyConstruction(selectedConstruction as INonPerpetualConstruction)
-        }
-    }
-
-    private fun playCitySound() {
-        when (city.civInfo.getEra().eraNumber) {
-            0 -> SoundPlayer.play(UncivSound.CityAncient)
-            1 -> SoundPlayer.play(UncivSound.CityClassical)
-            2 -> SoundPlayer.play(UncivSound.CityMedieval)
-            3 -> SoundPlayer.play(UncivSound.CityRenaissance)
-            4 -> SoundPlayer.play(UncivSound.CityIndustrial)
-            5 -> SoundPlayer.play(UncivSound.CityModern)
-            6 -> SoundPlayer.play(UncivSound.Click) //atomic
-            7 -> SoundPlayer.play(UncivSound.Click) //information
-            8 -> SoundPlayer.play(UncivSound.Click) //future
-            else -> SoundPlayer.play(UncivSound.Silent)
         }
     }
 
