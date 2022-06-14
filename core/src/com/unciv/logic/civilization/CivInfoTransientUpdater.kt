@@ -91,6 +91,10 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
             }
         }
 
+        for (teammate in civInfo.getTeammates()) {
+            newViewableTiles.addAll(teammate.viewableTiles)
+        }
+
         civInfo.viewableTiles = newViewableTiles // to avoid concurrent modification problems
     }
 

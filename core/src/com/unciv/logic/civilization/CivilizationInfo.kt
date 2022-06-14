@@ -292,6 +292,10 @@ class CivilizationInfo {
     }
 
     //region pure functions
+    fun getTeammates(): ArrayList<CivilizationInfo> {
+        return gameInfo.getTeammatesOfCiv(this)
+    }
+
     fun getDifficulty(): Difficulty {
         if (isPlayerCivilization()) return gameInfo.getDifficulty()
         // TODO We should be able to mark a difficulty as 'default AI difficulty' somehow
@@ -882,10 +886,6 @@ class CivilizationInfo {
             tech.addTechnology(techName)
         }
         techsResearchedByTeam.clear()
-
-        for (teammate in gameInfo.getTeammatesOfCiv(this)) {
-            exploredTiles.addAll(teammate.exploredTiles)
-        }
     }
 
     fun startTurn() {
