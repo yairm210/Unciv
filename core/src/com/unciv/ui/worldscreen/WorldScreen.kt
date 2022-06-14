@@ -112,7 +112,7 @@ class WorldScreen(
     private val mapVisualization = MapVisualization(gameInfo, viewingCiv)
 
     // Floating Widgets going counter-clockwise
-    private val topBar = WorldScreenTopBar(this)
+    val topBar = WorldScreenTopBar(this)
     private val techPolicyAndDiplomacy = TechPolicyDiplomacyButtons(this)
     private val fogOfWarButton = createFogOfWarButton()
     private val unitActionsTable = UnitActionsTable(this)
@@ -168,9 +168,6 @@ class WorldScreen(
         stage.addActor(battleTable)
 
         stage.addActor(unitActionsTable)
-
-        topBar.update(viewingCiv)
-        fogOfWarButton.setPosition(10f, topBar.y - fogOfWarButton.height - 10f)
 
         val tileToCenterOn: Vector2 =
                 when {
@@ -366,8 +363,6 @@ class WorldScreen(
 
         updateSelectedCiv()
 
-        fogOfWarButton.isEnabled = !selectedCiv.isSpectator()
-
         tutorialTaskTable.clear()
         val tutorialTask = getCurrentTutorialTask()
         if (tutorialTask == "" || !game.settings.showTutorials || viewingCiv.isDefeated()) {
@@ -412,6 +407,9 @@ class WorldScreen(
 
         if (techPolicyAndDiplomacy.update())
             displayTutorial(Tutorial.OtherCivEncountered)
+
+        fogOfWarButton.isEnabled = !selectedCiv.isSpectator()
+        fogOfWarButton.setPosition(10f, topBar.y - fogOfWarButton.height - 10f)
 
         if (!hasOpenPopups() && isPlayersTurn) {
             when {
