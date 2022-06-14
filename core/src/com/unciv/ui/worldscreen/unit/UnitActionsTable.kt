@@ -9,10 +9,10 @@ import com.unciv.models.UnitAction
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.KeyPressDispatcher.Companion.keyboardAvailable
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.extensions.disable
-import com.unciv.ui.utils.extensions.keyShortcuts
-import com.unciv.ui.utils.extensions.onActivation
+import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.utils.concurrency.Concurrency
 
@@ -31,20 +31,28 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
     private fun getUnitActionButton(unitAction: UnitAction): Button {
         val icon = unitAction.getIcon()
         // If peripheral keyboard not detected, hotkeys will not be displayed
-        val key = if (KeyCharAndCode.keyboardAvailable) unitAction.type.key else KeyCharAndCode.UNKNOWN
+        val key = if (keyboardAvailable) unitAction.type.key else KeyCharAndCode.UNKNOWN
 
         val fontColor = if (unitAction.isCurrentAction) Color.YELLOW else Color.WHITE
         val actionButton = IconTextButton(unitAction.title, icon, fontColor = fontColor)
         actionButton.addTooltip(key)
         actionButton.pack()
-        if (unitAction.action == null) actionButton.disable()
-
-        actionButton.onActivation(unitAction.uncivSound, {
+        val action = {
             unitAction.action?.invoke()
             UncivGame.Current.worldScreen!!.shouldUpdate = true
-        })
-
-        if (key != KeyCharAndCode.UNKNOWN) actionButton.keyShortcuts.add(key)
+        }
+        if (unitAction.action == null) actionButton.disable()
+        else {
+            actionButton.onClick(unitAction.uncivSound, action)
+            if (key != KeyCharAndCode.UNKNOWN)
+                actionButton.keyShortcuts.add(key) {
+                    Concurrency.run("UnitSound") { SoundPlayer.play(unitAction.uncivSound) }
+                    action()
+                    // FIXME: Why do we need it here, but not when clicking? Otherwise
+                    // could have merged the two callbacks into an "activation" handler.
+                    worldScreen.mapHolder.removeUnitActionOverlay()
+                }
+        }
 
         return actionButton
     }
