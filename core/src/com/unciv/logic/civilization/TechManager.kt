@@ -104,6 +104,10 @@ class TechManager {
         }
         techCost *= worldSizeModifier[0]
         techCost *= 1 + (civInfo.cities.size - 1) * worldSizeModifier[1]
+
+        //add 50% of techCost for each additional team member, like in Civ 5
+        techCost += (civInfo.gameInfo.countPlayersInTeam(civInfo.team) - 1) * (techCost * 0.5f)
+
         return techCost.toInt()
     }
 

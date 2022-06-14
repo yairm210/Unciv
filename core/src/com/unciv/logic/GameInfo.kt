@@ -48,6 +48,16 @@ class GameInfo {
         }
     }
 
+    fun countPlayersInTeam(team: String): Int {
+        var playerCount = 0
+        for (civ in civilizations) {
+            if (civ.team == team) {
+                playerCount++
+            }
+        }
+        return playerCount
+    }
+
     // Maps a civ to the civ they voted for
     var diplomaticVictoryVotesCast = HashMap<String, String>()
     // Set to false whenever the results still need te be processed
