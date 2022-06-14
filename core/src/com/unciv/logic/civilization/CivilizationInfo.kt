@@ -12,6 +12,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.RuinsManager.RuinsManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapUnit
@@ -882,10 +883,15 @@ class CivilizationInfo {
 
     // TODO: change this name to something better
     fun teamStuff() {
+        // don't mind this, it will be removed when do the tech stuff
         for (techName in techsResearchedByTeam) {
             tech.addTechnology(techName)
         }
         techsResearchedByTeam.clear()
+
+        for (teammate in getTeammates()) {
+            getDiplomacyManager(teammate.civName).setModifier(DiplomaticModifiers.DeclarationOfFriendship, 35f)
+        }
     }
 
     fun startTurn() {
