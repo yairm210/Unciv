@@ -12,6 +12,7 @@ import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.CancellationException
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -92,6 +93,13 @@ fun CoroutineScope.launchOnThreadPool(name: String? = null, block: suspend Corou
 fun CoroutineScope.launchOnNonDaemonThreadPool(name: String? = null, block: suspend CoroutineScope.() -> Unit) = launchCrashHandling(Dispatcher.NON_DAEMON, name, block)
 /** See [launch]. Runs on the GDX GL thread. Use this for all code that manipulates the GDX UI classes. */
 fun CoroutineScope.launchOnGLThread(name: String? = null, block: suspend CoroutineScope.() -> Unit) = launchCrashHandling(Dispatcher.GL, name, block)
+
+/** See [withContext]. Runs on a daemon thread pool. Use this for code that does not necessarily need to finish executing. */
+suspend fun <T> withThreadPoolContext(block: suspend CoroutineScope.() -> T): T = withContext(Dispatcher.DAEMON, block)
+/** See [withContext]. Runs on a non-daemon thread pool. Use this if you do something that should always finish if possible, like saving the game. */
+suspend fun <T> withNonDaemonThreadPoolContext(block: suspend CoroutineScope.() -> T): T = withContext(Dispatcher.NON_DAEMON, block)
+/** See [withContext]. Runs on the GDX GL thread. Use this for all code that manipulates the GDX UI classes. */
+suspend fun <T> withGLContext(block: suspend CoroutineScope.() -> T): T = withContext(Dispatcher.GL, block)
 
 
 /**

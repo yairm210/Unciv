@@ -134,12 +134,7 @@ class OptionsPopup(
     /** Reload this Popup after major changes (resolution, tileset, language, font) */
     private fun reloadWorldAndOptions() {
         settings.save()
-        val worldScreen = UncivGame.Current.getWorldScreenIfActive()
-        if (worldScreen != null) {
-            val newWorldScreen = WorldScreen(worldScreen.gameInfo, worldScreen.viewingCiv)
-            worldScreen.game.setScreen(newWorldScreen)
-            newWorldScreen.openOptionsPopup(tabs.activePage)
-        }
+        UncivGame.Current.reloadWorldscreen()
     }
 
     fun addCheckbox(table: Table, text: String, initialState: Boolean, updateWorld: Boolean = false, action: ((Boolean) -> Unit)) {

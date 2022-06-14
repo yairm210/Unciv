@@ -55,6 +55,8 @@ class GameSettings {
     var useDemographics: Boolean = false
     var showZoomButtons: Boolean = false
 
+    var androidCutout: Boolean = false
+
     var multiplayer = GameSettingsMultiplayer()
 
     var showExperimentalWorldWrap = false // We're keeping this as a config due to ANR problems on Android phones for people who don't know what they're doing :/

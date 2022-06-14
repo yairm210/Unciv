@@ -1,6 +1,6 @@
-# Multiplayer in Unciv
+# Multiplayer
 
-Multiplayer in Unciv is based on simple save file up/download, which is why it is based on a free Dropbox account by default. However, a lot of people use this default, so it is uncertain if you'll actually be able to access it consistently. See [Hosting a Multiplayer server](#Hosting-a-Multiplayer-server) for hosting your own server.
+Multiplayer in Unciv is based on simple save file up/download, which is why it is based on a free Dropbox account by default. However, a lot of people use this default, so it is uncertain if you'll actually be able to access it consistently. See [Hosting a Multiplayer server](#hosting-a-multiplayer-server) for hosting your own server.
 
 ## How to play
 
@@ -35,7 +35,7 @@ To check if everything works, you can start Unciv on the same computer, go to "O
 
 To connect with other devices, you'll need the port (default 80) the server is running on to be visible externally (port forwarding) and know your external IP-address.
 
-On the other device, enter the URL to your server, click 'check connection' from the new device, and if you get the same "Success!" result - congratulations, you're connected to the same server and can start a multiplayer game!
+On the other device, enter the URL to your server (`http://<your IP address>:<your chosen port>`), click 'check connection' from the new device, and if you get the same "Success!" result - congratulations, you're connected to the same server and can start a multiplayer game!
 
 Please note:
 * Devices *not* connected to the same server will *not* be able to participate in multiplayer games together
@@ -53,7 +53,7 @@ Please note:
 
 ## Third-party (unofficial) software for hosting your own Unciv server
 
-* https://github.com/Mape6/Unciv_server (Python)
-* https://gitlab.com/azzurite/unciv-server (NodeJS)
-* https://github.com/oynqr/rust_unciv_server (Rust)
-* https://github.com/touhidurrr/UncivServer.xyz (NodeJS)
+* [https://github.com/Mape6/Unciv_server](https://github.com/Mape6/Unciv_server) (Python)
+* [https://gitlab.com/azzurite/unciv-server](https://gitlab.com/azzurite/unciv-server) (NodeJS)
+* [https://github.com/oynqr/rust_unciv_server](https://github.com/oynqr/rust_unciv_server) (Rust)
+* [https://github.com/touhidurrr/UncivServer.xyz](https://github.com/touhidurrr/UncivServer.xyz) (NodeJS)

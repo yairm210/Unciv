@@ -6,7 +6,8 @@ import org.junit.Test
 import java.lang.ref.WeakReference
 
 class EventBusTest {
-    open class Parent : Event
+    open class Parent2 : Event
+    open class Parent : Parent2()
     class Child : Parent()
 
     @Test
@@ -14,6 +15,17 @@ class EventBusTest {
         val events = EventBus.EventReceiver()
         var callCount = 0
         events.receive(Parent::class) { ++callCount }
+
+        EventBus.send(Child())
+
+        assertThat(callCount, `is`(1))
+    }
+
+    @Test
+    fun `should receive parent event when child event with two levels of inheritance is sent`() {
+        val events = EventBus.EventReceiver()
+        var callCount = 0
+        events.receive(Parent2::class) { ++callCount }
 
         EventBus.send(Child())
 

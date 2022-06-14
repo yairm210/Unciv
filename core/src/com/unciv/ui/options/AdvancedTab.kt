@@ -47,6 +47,9 @@ fun advancedTab(
         settings.showExperimentalWorldWrap = it
     }
 
+    if (UncivGame.Current.platformSpecificHelper?.hasDisplayCutout() == true)
+        optionsPopup.addCheckbox(this, "Enable display cutout (requires restart)", settings.androidCutout, false) { settings.androidCutout = it }
+
     addMaxZoomSlider(this, settings)
 
     val helper = UncivGame.Current.platformSpecificHelper

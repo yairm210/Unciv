@@ -71,7 +71,7 @@ object UnitActions {
         addTriggerUniqueActions(unit, actionList)
         addAddInCapitalAction(unit, actionList, tile)
 
-        addWaitAction(unit, actionList, worldScreen);
+        addWaitAction(unit, actionList, worldScreen)
 
         addToggleActionsAction(unit, actionList, unitTable)
 
@@ -574,6 +574,7 @@ object UnitActions {
                     }.takeIf { canConductTradeMission }
                 )
             }
+            else -> {}
         }
     }
 

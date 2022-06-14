@@ -2,6 +2,10 @@ package com.unciv.app
 
 import android.app.Activity
 import android.content.pm.ActivityInfo
+import android.os.Build
+import android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER
+import android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+import androidx.annotation.RequiresApi
 import com.unciv.ui.utils.GeneralPlatformSpecificHelpers
 import kotlin.concurrent.thread
 
@@ -29,6 +33,25 @@ Sources for Info about current orientation in case need:
         }
         // Comparison ensures ActivityTaskManager.getService().setRequestedOrientation isn't called unless necessary
         if (activity.requestedOrientation != orientation) activity.requestedOrientation = orientation
+    }
+
+    override fun hasDisplayCutout(): Boolean {
+        val displayCutout = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            activity.windowManager.defaultDisplay.cutout
+        } else {
+            TODO("VERSION.SDK_INT < Q")
+        }
+        return displayCutout != null
+    }
+
+    @RequiresApi(Build.VERSION_CODES.P)
+    override fun toggleDisplayCutout(androidCutout: Boolean) {
+        val layoutParams = activity.window.attributes
+        if (androidCutout) {
+            layoutParams.layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+        } else {
+            layoutParams.layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER
+        }
     }
 
     /**

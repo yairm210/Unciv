@@ -163,9 +163,10 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
             if (isButtonMoved) {
                 val viewingCiv = worldScreen.viewingCiv
                 // second tap on the button will go to the city screen
-                // if this city belongs to you
-                if (uncivGame.viewEntireMapForDebug || belongsToViewingCiv() || viewingCiv.isSpectator()) {
-                    uncivGame.setScreen(CityScreen(city))
+                // if this city belongs to you and you are not iterating though the air units
+                if (uncivGame.viewEntireMapForDebug || viewingCiv.isSpectator()
+                    || (belongsToViewingCiv() && !tileGroup.tileInfo.airUnits.contains(unitTable.selectedUnit))) {
+                        uncivGame.setScreen(CityScreen(city))
                 } else if (viewingCiv.knows(city.civInfo)) {
                     foreignCityInfoPopup()
                 }

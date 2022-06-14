@@ -286,13 +286,14 @@ class NewGameScreen(
             }
         }
 
-        launchOnGLThread {
-            val worldScreen = game.loadGame(newGame)
-            if (newGame.gameParameters.isOnlineMultiplayer) {
-                // Save gameId to clipboard because you have to do it anyway.
-                Gdx.app.clipboard.contents = newGame.gameId
-                // Popup to notify the User that the gameID got copied to the clipboard
-                ToastPopup("Game ID copied to clipboard!".tr(), worldScreen, 2500)
+        val worldScreen = game.loadGame(newGame)
+
+        if (newGame.gameParameters.isOnlineMultiplayer) {
+            launchOnGLThread {
+                    // Save gameId to clipboard because you have to do it anyway.
+                    Gdx.app.clipboard.contents = newGame.gameId
+                    // Popup to notify the User that the gameID got copied to the clipboard
+                    ToastPopup("Game ID copied to clipboard!".tr(), worldScreen, 2500)
             }
         }
     }

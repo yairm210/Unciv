@@ -119,7 +119,7 @@ object UnitAutomation {
             ?: return false
 
         upgradeAction.action?.invoke()
-        return true
+        return unit.isDestroyed // a successful upgrade action will destroy this unit
     }
 
     fun automateUnitMoves(unit: MapUnit) {
@@ -215,7 +215,7 @@ object UnitAutomation {
         if (BattleHelper.tryDisembarkUnitToAttackPosition(unit)) return
 
         // if there is an attackable unit in the vicinity, attack!
-        if (BattleHelper.tryAttackNearbyEnemy(unit)) return
+        if (tryAttacking(unit)) return
 
         if (tryTakeBackCapturedCity(unit)) return
 
@@ -243,6 +243,14 @@ object UnitAutomation {
             wander(unit, stayInTerritory = true)
     }
 
+    /** @return true only if the unit has 0 movement left */
+    private fun tryAttacking(unit: MapUnit): Boolean {
+        for (attackNumber in unit.attacksThisTurn until unit.maxAttacksPerTurn()) {
+            if (BattleHelper.tryAttackNearbyEnemy(unit)) return true
+        }
+        return false
+    }
+
     private fun tryHeadTowardsEncampment(unit: MapUnit): Boolean {
         if (unit.hasUnique(UniqueType.SelfDestructs)) return false // don't use single-use units against barbarians...
         val knownEncampments = unit.civInfo.gameInfo.tileMap.values.asSequence()
@@ -260,14 +268,11 @@ object UnitAutomation {
         if (unit.baseUnit.isRanged() && unit.hasUnique(UniqueType.HealsEvenAfterAction))
             return false // will heal anyway, and attacks don't hurt
 
+        if (tryPillageImprovement(unit)) return true
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         if (unitDistanceToTiles.isEmpty()) return true // can't move, so...
 
-
         val currentUnitTile = unit.getTile()
-
-        if (tryPillageImprovement(unit)) return true
-
 
         val nearbyRangedEnemyUnits = unit.currentTile.getTilesInDistance(3)
                 .flatMap { tile -> tile.getUnits().filter { unit.civInfo.isAtWarWith(it.civInfo) } }
@@ -342,7 +347,7 @@ object UnitAutomation {
             unit.movement.moveToTile(tileToPillage)
 
         UnitActions.getPillageAction(unit)?.action?.invoke()
-        return true
+        return unit.currentMovement == 0f
     }
 
     fun getBombardTargets(city: CityInfo): Sequence<TileInfo> =
@@ -405,6 +410,9 @@ object UnitAutomation {
                             it.health < it.getMaxHealth() * 0.75
                 } //Weird health issues and making sure that not all forces move to good defenses
 
+        if (siegedCities.any { it.getCenterTile().aerialDistanceTo(unit.getTile()) <= 2 })
+            return false
+
         val reachableTileNearSiegedCity = siegedCities
                 .flatMap { it.getCenterTile().getTilesAtDistance(2) }
                 .sortedBy { it.aerialDistanceTo(unit.currentTile) }
@@ -413,9 +421,8 @@ object UnitAutomation {
 
         if (reachableTileNearSiegedCity != null) {
             unit.movement.headTowards(reachableTileNearSiegedCity)
-            return true
         }
-        return false
+        return unit.currentMovement == 0f
     }
 
     fun tryHeadTowardsEnemyCity(unit: MapUnit): Boolean {
@@ -470,7 +477,7 @@ object UnitAutomation {
                 unit.movement.headTowards(tileToMoveTo)
                 return true
             }
-            return false // didn't move
+            return false
         }
 
         val numberOfUnitsAroundCity = closestReachableEnemyCity.getTilesInDistance(4)
@@ -482,12 +489,12 @@ object UnitAutomation {
             val tileToHeadTo = closestReachableEnemyCity.getTilesInDistanceRange(3..4)
                     .filter { it.isLand && unit.getDamageFromTerrain(it) <= 0 } // Don't head for hurty terrain
                     .sortedBy { it.aerialDistanceTo(unit.currentTile) }
-                    .firstOrNull { unit.movement.canReach(it) }
+                    .firstOrNull { (unit.movement.canMoveTo(it) || it == unit.currentTile) && unit.movement.canReach(it) }
 
             if (tileToHeadTo != null) { // no need to worry, keep going as the movement alg. says
                 unit.movement.headTowards(tileToHeadTo)
-                return true
             }
+            return true
         }
 
         unit.movement.headTowards(closestReachableEnemyCity) // go for it!
