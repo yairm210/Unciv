@@ -86,7 +86,7 @@ private fun addSoundEffectsVolumeSlider(table: Table, settings: GameSettings) {
 }
 
 private fun addCityEnterVolumeSlider(table: Table, settings: GameSettings) {
-    table.add("Enter city sound volume".tr()).left().fillX()
+    table.add("Sound volume when entering cities".tr()).left().fillX()
 
     val cityEnterVolumeSlider = UncivSlider(
         0f, 1.0f, 0.05f,
