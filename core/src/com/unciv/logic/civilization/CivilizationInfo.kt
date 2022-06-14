@@ -144,6 +144,8 @@ class CivilizationInfo {
     @Transient
     var thingsToFocusOnForVictory = setOf<Victory.Focus>()
 
+    var friendshipWithTeamDeclared = false
+
     var playerType = PlayerType.AI
 
     /** Used in online multiplayer for human players */
@@ -883,15 +885,17 @@ class CivilizationInfo {
 
     // TODO: change this name to something better
     fun teamStuff() {
+        if (!friendshipWithTeamDeclared) {
+            for (teammate in getTeammates()) {
+                getDiplomacyManager(teammate.civName).setModifier(DiplomaticModifiers.DeclarationOfFriendship, 35f)
+            }
+            friendshipWithTeamDeclared = true
+        }
         // don't mind this, it will be removed when do the tech stuff
         for (techName in techsResearchedByTeam) {
             tech.addTechnology(techName)
         }
         techsResearchedByTeam.clear()
-
-        for (teammate in getTeammates()) {
-            getDiplomacyManager(teammate.civName).setModifier(DiplomaticModifiers.DeclarationOfFriendship, 35f)
-        }
     }
 
     fun startTurn() {

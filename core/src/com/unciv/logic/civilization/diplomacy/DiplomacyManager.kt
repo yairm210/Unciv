@@ -615,7 +615,8 @@ class DiplomacyManager() {
         setFriendshipBasedModifier()
 
         if (!hasFlag(DiplomacyFlags.DeclarationOfFriendship))
-            revertToZero(DiplomaticModifiers.DeclarationOfFriendship, 1 / 2f) //decreases slowly and will revert to full if it is declared later
+            if (otherCiv().team != civInfo.team)
+                revertToZero(DiplomaticModifiers.DeclarationOfFriendship, 1 / 2f) //decreases slowly and will revert to full if it is declared later
 
         if (!otherCiv().isCityState()) return
 
