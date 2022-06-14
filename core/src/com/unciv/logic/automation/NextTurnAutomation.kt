@@ -790,6 +790,8 @@ object NextTurnAutomation {
                 .filter { !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedPeace) }
                 // Don't allow AIs to offer peace to city states allied with their enemies
                 .filterNot { it.isCityState() && it.getAllyCiv() != null && civInfo.isAtWarWith(civInfo.gameInfo.getCivilization(it.getAllyCiv()!!)) }
+                // ignore civs that we have already offered peace this turn as a counteroffer to another civ's peace offer
+                .filter { it.tradeRequests.none { tradeRequest -> tradeRequest.requestingCiv == civInfo.civName && tradeRequest.trade.isPeaceTreaty() } }
 
         for (enemy in enemiesCiv) {
             val motivationToAttack = motivationToAttack(civInfo, enemy)

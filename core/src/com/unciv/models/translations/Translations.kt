@@ -350,10 +350,6 @@ fun String.tr(): String {
         return fullyTranslatedString
     }
 
-    if (contains('{')) { // Translating partial sentences
-        return curlyBraceRegex.replace(this) { it.groups[1]!!.value.tr() }
-    }
-
     // There might still be optimization potential here!
     if (contains('[')) { // Placeholders!
         /**
@@ -402,6 +398,12 @@ fun String.tr(): String {
         }
         return languageSpecificPlaceholder      // every component is already translated
     }
+
+
+    if (contains('{')) { // Translating partial sentences
+        return curlyBraceRegex.replace(this) { it.groups[1]!!.value.tr() }
+    }
+
 
     if (Stats.isStats(this)) return Stats.parse(this).toString()
 
