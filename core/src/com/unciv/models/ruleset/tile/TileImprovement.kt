@@ -14,9 +14,8 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaScreen.Companion.showReligionInCivilopedia
 import com.unciv.ui.civilopedia.FormattedLine
-import com.unciv.ui.utils.toPercent
+import com.unciv.ui.utils.extensions.toPercent
 import com.unciv.ui.worldscreen.unit.UnitActions
-import java.util.*
 import kotlin.math.roundToInt
 
 class TileImprovement : RulesetStatsObject() {
@@ -240,8 +239,8 @@ class TileImprovement : RulesetStatsObject() {
             textList += FormattedLine("Needs removal of terrain features to be built")
 
         if (isAncientRuinsEquivalent() && ruleset.ruinRewards.isNotEmpty()) {
-            val difficulty = if (!UncivGame.isCurrentInitialized() || !UncivGame.Current.isGameInfoInitialized())
-                    "Prince"
+            val difficulty = if (!UncivGame.isCurrentInitialized() || UncivGame.Current.gameInfo == null)
+                    "Prince"  // most factors == 1
                 else UncivGame.Current.gameInfo.gameParameters.difficulty
             val religionEnabled = showReligionInCivilopedia(ruleset)
             textList += FormattedLine()
@@ -249,7 +248,7 @@ class TileImprovement : RulesetStatsObject() {
             ruleset.ruinRewards.values.asSequence()
                 .filter { reward ->
                     difficulty !in reward.excludedDifficulties &&
-                            (religionEnabled || !reward.hasUnique(UniqueType.HiddenWithoutReligion))
+                    (religionEnabled || !reward.hasUnique(UniqueType.HiddenWithoutReligion))
                 }
                 .forEach { reward ->
                     textList += FormattedLine(reward.name, starred = true, color = reward.color)

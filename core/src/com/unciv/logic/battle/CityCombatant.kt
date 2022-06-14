@@ -7,7 +7,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.UnitType
-import com.unciv.ui.utils.toPercent
+import com.unciv.ui.utils.extensions.toPercent
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -54,14 +54,14 @@ class CityCombatant(val city: CityInfo) : ICombatant {
         // The way all of this adds up...
         // All ancient techs - 0.5 extra, Classical - 2.7, Medieval - 8, Renaissance - 17.5,
         // Industrial - 32.4, Modern - 51, Atomic - 72.5, All - 118.3
-        
+
         // Garrisoned unit gives up to 20% of strength to city, health-dependant
         if (cityTile.militaryUnit != null)
             strength += cityTile.militaryUnit!!.baseUnit().strength * (cityTile.militaryUnit!!.health / 100f) * modConstants.cityStrengthFromGarrison
 
         var buildingsStrength = city.cityConstructions.getBuiltBuildings().sumOf { it.cityStrength }.toFloat()
         val stateForConditionals = StateForConditionals(getCivInfo(), city, ourCombatant = this, combatAction = combatAction)
-        
+
         for (unique in getCivInfo().getMatchingUniques(UniqueType.BetterDefensiveBuildings, stateForConditionals))
             buildingsStrength *= unique.params[0].toPercent()
         strength += buildingsStrength

@@ -16,8 +16,7 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
         defaults().fillX()
 
         addButton("Main menu") {
-            worldScreen.game.gameSaver.autoSaveUnCloned(worldScreen.gameInfo)
-            worldScreen.game.setScreen(MainMenuScreen())
+            worldScreen.game.goToMainMenu()
         }
         addButton("Civilopedia") {
             close()

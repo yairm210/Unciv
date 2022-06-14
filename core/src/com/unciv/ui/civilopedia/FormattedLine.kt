@@ -13,7 +13,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.extensions.toLabel
 import com.unciv.utils.Log
 import kotlin.math.max
 
@@ -162,7 +162,7 @@ class FormattedLine (
         }
         private fun getCurrentRuleset() = when {
             !UncivGame.isCurrentInitialized() -> Ruleset()
-            !UncivGame.Current.isGameInfoInitialized() -> RulesetCache[BaseRuleset.Civ_V_Vanilla.fullName]!!
+            UncivGame.Current.gameInfo == null -> RulesetCache[BaseRuleset.Civ_V_Vanilla.fullName]!!
             else -> UncivGame.Current.gameInfo.ruleSet
         }
         private fun initNamesCategoryMap(ruleSet: Ruleset): HashMap<String, CivilopediaCategories> {

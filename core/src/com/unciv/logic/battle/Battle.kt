@@ -3,9 +3,13 @@ package com.unciv.logic.battle
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.utils.debug
 import com.unciv.logic.city.CityInfo
-import com.unciv.logic.civilization.*
+import com.unciv.logic.civilization.AlertType
+import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.RoadStatus
@@ -18,7 +22,8 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
-import com.unciv.ui.utils.toPercent
+import com.unciv.ui.utils.extensions.toPercent
+import com.unciv.utils.debug
 import java.util.*
 import kotlin.math.max
 import kotlin.math.min
@@ -203,7 +208,7 @@ object Battle {
 
         // CS friendship from killing barbarians
         if (defeatedUnit.matchesCategory("Barbarian") && defeatedUnit.matchesCategory("Military") && civUnit.getCivInfo().isMajorCiv()) {
-            for (cityState in UncivGame.Current.gameInfo.getAliveCityStates()) {
+            for (cityState in UncivGame.Current.gameInfo!!.getAliveCityStates()) {
                 if (civUnit.getCivInfo().knows(cityState) && defeatedUnit.unit.threatensCiv(cityState)) {
                     cityState.cityStateFunctions.threateningBarbarianKilledBy(civUnit.getCivInfo())
                 }
@@ -211,7 +216,7 @@ object Battle {
         }
 
         // CS war with major pseudo-quest
-        for (cityState in UncivGame.Current.gameInfo.getAliveCityStates()) {
+        for (cityState in UncivGame.Current.gameInfo!!.getAliveCityStates()) {
             cityState.questManager.militaryUnitKilledBy(civUnit.getCivInfo(), defeatedUnit.getCivInfo())
         }
     }
@@ -343,9 +348,12 @@ object Battle {
         addedUnit.currentMovement = 0f
         addedUnit.health = 50
         attacker.getCivInfo().addNotification(notification, addedUnit.getTile().position, attacker.getName(), unitName)
-        // Also capture any civilians on the same tile
-        if (tile.civilianUnit != null)
-            captureCivilianUnit(attacker, MapUnitCombatant(tile.civilianUnit!!))
+
+        val civilianUnit = tile.civilianUnit
+        // placeUnitNearTile might not have spawned the unit in exactly this tile, in which case no capture would have happened on this tile. So we need to do that here.
+        if (addedUnit.getTile() != tile && civilianUnit != null) {
+            captureCivilianUnit(attacker, MapUnitCombatant(civilianUnit))
+        }
         return true
     }
 
@@ -554,7 +562,14 @@ object Battle {
         return null
     }
 
+    /**
+     * @throws IllegalArgumentException if the [attacker] and [defender] belong to the same civ.
+     */
     fun captureCivilianUnit(attacker: ICombatant, defender: MapUnitCombatant, checkDefeat: Boolean = true) {
+        if (attacker.getCivInfo() == defender.getCivInfo()) {
+            throw IllegalArgumentException("Can't capture our own unit!")
+        }
+
         // need to save this because if the unit is captured its owner wil be overwritten
         val defenderCiv = defender.getCivInfo()
 

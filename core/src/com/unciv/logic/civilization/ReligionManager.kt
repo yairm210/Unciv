@@ -6,7 +6,7 @@ import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.utils.toPercent
+import com.unciv.ui.utils.extensions.toPercent
 import kotlin.random.Random
 
 class ReligionManager {
@@ -317,6 +317,23 @@ class ReligionManager {
         religion!!.followerBeliefs.addAll(beliefs.filter { it.type == BeliefType.Follower || it.type == BeliefType.Pantheon }.map { it.name })
         religion!!.founderBeliefs.addAll(beliefs.filter { it.type == BeliefType.Enhancer || it.type == BeliefType.Founder }.map { it.name })
         religionState = ReligionState.EnhancedReligion
+    }
+
+    fun maySpreadReligionAtAll(missionary: MapUnit): Boolean {
+        if (!civInfo.gameInfo.isReligionEnabled()) return false // No religion, no spreading
+        if (religion == null) return false // need a religion
+        if (religionState < ReligionState.Religion) return false // First found an actual religion
+        if (!civInfo.isMajorCiv()) return false // Only major civs
+
+        return true
+    }
+
+    fun maySpreadReligionNow(missionary: MapUnit): Boolean {
+        if (!maySpreadReligionAtAll(missionary)) return false
+        if (missionary.getTile().getOwner() == null) return false
+        if (missionary.currentTile.owningCity?.religion?.getMajorityReligion()?.name == missionary.religion)
+            return false
+        return true
     }
 
     fun numberOfCitiesFollowingThisReligion(): Int {

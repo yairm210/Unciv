@@ -7,9 +7,9 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.utils.toPercent
-import com.unciv.ui.utils.withItem
-import com.unciv.ui.utils.withoutItem
+import com.unciv.ui.utils.extensions.toPercent
+import com.unciv.ui.utils.extensions.withItem
+import com.unciv.ui.utils.extensions.withoutItem
 import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -64,18 +64,18 @@ class CityExpansionManager {
         val baseCost = 50
         val distanceFromCenter = tileInfo.aerialDistanceTo(cityInfo.getCenterTile())
         var cost = baseCost * (distanceFromCenter - 1) + tilesClaimed() * 5.0
-        
+
         for (unique in cityInfo.getMatchingUniques(UniqueType.TileCostPercentage)) {
             if (cityInfo.matchesFilter(unique.params[1]))
                 cost *= unique.params[0].toPercent()
         }
-        
+
         return cost.roundToInt()
     }
 
     fun getChoosableTiles() = cityInfo.getCenterTile().getTilesInDistance(5)
         .filter { it.getOwner() == null }
-    
+
     fun chooseNewTileToOwn(): TileInfo? {
         // Technically, in the original a random tile with the lowest score was selected
         // However, doing this requires either caching it, which is way more work,

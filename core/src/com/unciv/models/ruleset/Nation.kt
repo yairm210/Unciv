@@ -13,7 +13,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaScreen.Companion.showReligionInCivilopedia
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
-import com.unciv.ui.utils.colorFromRGB
+import com.unciv.ui.utils.extensions.colorFromRGB
 
 class Nation : RulesetObject() {
     var leaderName = ""
@@ -138,10 +138,11 @@ class Nation : RulesetObject() {
 
         textList += FormattedLine("{Type}: {$cityStateType}", header = 4, color = cityStateType!!.color)
 
-        val era = if (UncivGame.isCurrentInitialized() && UncivGame.Current.isGameInfoInitialized())
-            UncivGame.Current.gameInfo.currentPlayerCiv.getEra()
-        else
+        val era = if (UncivGame.isCurrentInitialized() && UncivGame.Current.gameInfo != null) {
+            UncivGame.Current.gameInfo!!.currentPlayerCiv.getEra()
+        } else {
             ruleset.eras.values.first()
+        }
         var showResources = false
 
         val friendBonus = era.friendBonus[cityStateType!!.name]

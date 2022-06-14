@@ -19,7 +19,16 @@ import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.popup.closeAllPopups
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.ExpanderTab
+import com.unciv.ui.utils.extensions.addBorder
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.darken
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
 import java.text.DecimalFormat
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
@@ -129,17 +138,17 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
                     cityScreen.closeAllPopups()
 
                     YesNoPopup("Are you sure you want to sell this [${building.name}]?".tr(),
-                        {
-                            cityScreen.city.sellBuilding(building.name)
+                        cityScreen, {
                             cityScreen.update()
-                        }, cityScreen,
-                        {
-                            cityScreen.update()
-                        }).open()
+                        }
+                    ) {
+                        cityScreen.city.sellBuilding(building.name)
+                        cityScreen.update()
+                    }.open()
                 }
                 if (cityScreen.city.hasSoldBuildingThisTurn && !cityScreen.city.civInfo.gameInfo.gameParameters.godMode
                     || cityScreen.city.isPuppet
-                    || !UncivGame.Current.worldScreen.isPlayersTurn || !cityScreen.canChangeState)
+                    || !UncivGame.Current.worldScreen!!.isPlayersTurn || !cityScreen.canChangeState)
                     sellBuildingButton.disable()
             }
             it.addSeparator()

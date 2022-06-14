@@ -6,7 +6,8 @@ import com.unciv.Constants
 import com.unciv.models.Tutorial
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.Popup
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.KeyCharAndCode
 
 data class TutorialForRender(val tutorial: Tutorial, val texts: Array<String>)
 

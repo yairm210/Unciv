@@ -10,13 +10,20 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
-import com.unciv.ui.crashhandling.launchCrashHandling
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.newgamescreen.TranslatedSelectBox
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.ExpanderTab
+import com.unciv.ui.utils.TabbedPager
+import com.unciv.ui.utils.extensions.onChange
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
 import com.unciv.utils.Log
+import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.launchOnGLThread
 import com.unciv.utils.debug
 
 
@@ -83,7 +90,7 @@ class ModCheckTab(
         modCheckResultTable.add("Checking mods for errors...".toLabel()).row()
         modCheckBaseSelect!!.isDisabled = true
 
-        launchCrashHandling("ModChecker") {
+        Concurrency.run("ModChecker") {
             for (mod in RulesetCache.values.sortedBy { it.name }) {
                 if (base != MOD_CHECK_WITHOUT_BASE && mod.modOptions.isBaseRuleset) continue
 
@@ -95,10 +102,10 @@ class ModCheckTab(
                 if (modLinks.isNotEmpty()) modLinks += Ruleset.RulesetError("", Ruleset.RulesetErrorSeverity.OK)
                 if (noProblem) modLinks += Ruleset.RulesetError("No problems found.".tr(), Ruleset.RulesetErrorSeverity.OK)
 
-                postCrashHandlingRunnable {
+                launchOnGLThread {
                     // When the options popup is already closed before this postRunnable is run,
                     // Don't add the labels, as otherwise the game will crash
-                    if (stage == null) return@postCrashHandlingRunnable
+                    if (stage == null) return@launchOnGLThread
                     // Don't just render text, since that will make all the conditionals in the mod replacement messages move to the end, which makes it unreadable
                     // Don't use .toLabel() either, since that activates translations as well, which is what we're trying to avoid,
                     // Instead, some manual work needs to be put in.
@@ -142,7 +149,7 @@ class ModCheckTab(
             }
 
             // done with all mods!
-            postCrashHandlingRunnable {
+            launchOnGLThread {
                 modCheckResultTable.removeActor(modCheckResultTable.children.last())
                 modCheckBaseSelect!!.isDisabled = false
             }

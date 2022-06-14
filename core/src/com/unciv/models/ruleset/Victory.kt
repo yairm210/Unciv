@@ -3,12 +3,12 @@ package com.unciv.models.ruleset
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
-import com.unciv.models.stats.INamed
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.Counter
+import com.unciv.models.stats.INamed
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
-import com.unciv.ui.utils.toTextButton
+import com.unciv.ui.utils.extensions.toTextButton
 
 
 enum class MilestoneType(val text: String) {
@@ -41,7 +41,7 @@ class Victory : INamed {
         CityStates,
         Score,
     }
-    
+
     override var name = ""
     val victoryScreenHeader = "Do things to win!"
     val hiddenInVictoryScreen = false
@@ -57,10 +57,10 @@ class Victory : INamed {
             parts.add(spaceshipPart, 1)
         parts
     }
-    
+
     val victoryString = "Your civilization stands above all others! The exploits of your people shall be remembered until the end of civilization itself!"
     val defeatString = "You have been defeated. Your civilization has been overwhelmed by its many foes. But your people do not despair, for they know that one day you shall return - and lead them forward to victory!"
-    
+
     fun enablesMaxTurns(): Boolean = milestoneObjects.any { it.type == MilestoneType.ScoreAfterTimeOut }
     fun getThingsToFocus(civInfo: CivilizationInfo): Set<Focus> = milestoneObjects
         .filter { !it.hasBeenCompletedBy(civInfo) }
@@ -78,7 +78,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
         incompleteSpaceshipParts.remove(civInfo.victoryManager.currentsSpaceshipParts)
         return incompleteSpaceshipParts
     }
-    
+
     fun hasBeenCompletedBy(civInfo: CivilizationInfo): Boolean {
         return when (type!!) {
             MilestoneType.BuiltBuilding ->
@@ -101,9 +101,9 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                 && civInfo == civInfo.gameInfo.civilizations.maxByOrNull { it.calculateTotalScore() }
             }
             MilestoneType.WorldReligion -> {
-                civInfo.gameInfo.isReligionEnabled() 
+                civInfo.gameInfo.isReligionEnabled()
                 && civInfo.religionManager.religion != null
-                && civInfo.gameInfo.civilizations.all { 
+                && civInfo.gameInfo.civilizations.all {
                     it.religionManager.isMajorityReligionForCiv(civInfo.religionManager.religion!!)
                 }
             }
@@ -116,11 +116,11 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
         else textButton.color = Color.GRAY
         return textButton
     }
-    
+
     fun getVictoryScreenButtonHeaderText(completed: Boolean, civInfo: CivilizationInfo): String {
         return when (type!!) {
-            MilestoneType.BuildingBuiltGlobally, MilestoneType.WinDiplomaticVote, 
-            MilestoneType.ScoreAfterTimeOut, MilestoneType.BuiltBuilding -> 
+            MilestoneType.BuildingBuiltGlobally, MilestoneType.WinDiplomaticVote,
+            MilestoneType.ScoreAfterTimeOut, MilestoneType.BuiltBuilding ->
                 uniqueDescription
             MilestoneType.CompletePolicyBranches -> {
                 val amountToDo = params[0]
@@ -148,9 +148,9 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                 val incompleteSpaceshipParts = parentVictory.requiredSpaceshipPartsAsCounter.clone()
                 val amountToDo = incompleteSpaceshipParts.sumValues()
                 incompleteSpaceshipParts.remove(completeSpaceshipParts)
-                
+
                 val amountDone = amountToDo - incompleteSpaceshipParts.sumValues()
-                
+
                 "{$uniqueDescription} ($amountDone/$amountToDo)"
             }
             MilestoneType.WorldReligion -> {
@@ -168,10 +168,10 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
             }
         }
     }
-    
+
     fun getVictoryScreenButtons(completionStatus: Victory.CompletionStatus, civInfo: CivilizationInfo): List<TextButton> {
         val headerButton = getMilestoneButton(
-            getVictoryScreenButtonHeaderText(completionStatus == Victory.CompletionStatus.Completed, civInfo), 
+            getVictoryScreenButtonHeaderText(completionStatus == Victory.CompletionStatus.Completed, civInfo),
             completionStatus == Victory.CompletionStatus.Completed
         )
         if (completionStatus == Victory.CompletionStatus.Completed || completionStatus == Victory.CompletionStatus.Incomplete) {
@@ -182,12 +182,12 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
         val buttons = mutableListOf(headerButton)
         when (type) {
             // No extra buttons necessary
-            MilestoneType.BuiltBuilding, MilestoneType.BuildingBuiltGlobally, 
-            MilestoneType.ScoreAfterTimeOut, MilestoneType.WinDiplomaticVote -> {} 
+            MilestoneType.BuiltBuilding, MilestoneType.BuildingBuiltGlobally,
+            MilestoneType.ScoreAfterTimeOut, MilestoneType.WinDiplomaticVote -> {}
             MilestoneType.AddedSSPartsInCapital -> {
                 val completedSpaceshipParts = civInfo.victoryManager.currentsSpaceshipParts
                 val incompleteSpaceshipParts = getIncompleteSpaceshipParts(civInfo)
-                
+
                 for (part in completedSpaceshipParts) {
                     repeat(part.value) {
                         buttons.add(getMilestoneButton(part.key, true))
@@ -199,7 +199,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                     }
                 }
             }
-            
+
             MilestoneType.DestroyAllPlayers -> {
                 val majorCivs = civInfo.gameInfo.civilizations.filter { it.isMajorCiv() && it != civInfo }
                 for (civ in majorCivs) {
@@ -209,7 +209,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                     buttons.add(getMilestoneButton(milestoneText, !civ.isAlive()))
                 }
             }
-            
+
             MilestoneType.CaptureAllCapitals -> {
                 val originalCapitals = civInfo.gameInfo.getCities().filter { it.isOriginalCapital }
                 for (city in originalCapitals) {
@@ -219,7 +219,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                     buttons.add(getMilestoneButton(milestoneText, city.civInfo == civInfo))
                 }
             }
-            
+
             MilestoneType.CompletePolicyBranches -> {
                 for (branch in civInfo.gameInfo.ruleSet.policyBranches.values) {
                     val finisher = branch.policies.last().name
@@ -241,7 +241,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
         }
         return buttons
     }
-    
+
     fun getFocus(civInfo: CivilizationInfo): Victory.Focus {
         val ruleset = civInfo.gameInfo.ruleSet
         return when (type!!) {

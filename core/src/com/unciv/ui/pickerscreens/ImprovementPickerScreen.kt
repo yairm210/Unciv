@@ -14,9 +14,9 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
-import com.unciv.ui.utils.disable
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
 import kotlin.math.roundToInt
 
 class ImprovementPickerScreen(
@@ -59,7 +59,6 @@ class ImprovementPickerScreen(
             onAccept()
         }
         game.resetToWorldScreen()
-        dispose()
     }
 
     init {

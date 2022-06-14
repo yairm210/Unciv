@@ -10,7 +10,10 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.popup.YesNoPopup
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.extensions.enable
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
 import java.util.*
 
 class EditFriendScreen(selectedFriend: FriendList.Friend, backScreen: ViewFriendsListScreen) : PickerScreen() {
@@ -37,11 +40,11 @@ class EditFriendScreen(selectedFriend: FriendList.Friend, backScreen: ViewFriend
         topTable.add(gameIDTable).padBottom(30f).row()
 
         deleteFriendButton.onClick {
-            val askPopup = YesNoPopup("Are you sure you want to delete this friend?", {
+            val askPopup = YesNoPopup("Are you sure you want to delete this friend?", this) {
                 friendlist.delete(selectedFriend)
                 backScreen.game.setScreen(backScreen)
                 backScreen.refreshFriendsList()
-            }, this)
+            }
             askPopup.open()
         }.apply { color = Color.RED }
         topTable.add(deleteFriendButton)
