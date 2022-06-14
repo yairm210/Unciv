@@ -163,9 +163,9 @@ object SoundPlayer {
      * separate thread. No new thread is created if the sound can be played immediately.
      *
      * @param sound The sound to play
+     * @param volume The volume at which the sound will be played
      */
-    fun play(sound: UncivSound) {
-        val volume = UncivGame.Current.settings.soundEffectsVolume
+    fun play(sound: UncivSound, volume: Float = UncivGame.Current.settings.soundEffectsVolume) {
         if (sound == UncivSound.Silent || volume < 0.01) return
         val (resource, isFresh) = get(sound) ?: return
         val initialDelay = if (isFresh && Gdx.app.type == Application.ApplicationType.Android) 40 else 0

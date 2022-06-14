@@ -34,6 +34,7 @@ class GameSettings {
     var soundEffectsVolume = 0.5f
     var musicVolume = 0.5f
     var pauseBetweenTracks = 10
+    var cityScreenEnterVolume = 0.5f
 
     var turnsBetweenAutosaves = 1
     var tileSet: String = "FantasyHex"

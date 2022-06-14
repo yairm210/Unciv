@@ -109,7 +109,7 @@ class CityScreen(
     private val nextTileToOwn = city.expansion.chooseNewTileToOwn()
 
     init {
-        SoundPlayer.play(UncivSound("cityEra" + city.civInfo.getEra().eraNumber.toString()))
+        SoundPlayer.play(UncivSound("cityEra" + city.civInfo.getEra().eraNumber.toString()), UncivGame.Current.settings.cityScreenEnterVolume)
 
         onBackButtonClicked { game.resetToWorldScreen() }
         UncivGame.Current.settings.addCompletedTutorialTask("Enter city screen")
