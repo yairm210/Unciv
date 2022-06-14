@@ -202,9 +202,9 @@ class MainMenuScreen: BaseScreen() {
         if (curWorldScreen != null) {
             game.resetToWorldScreen()
             curWorldScreen.popups.filterIsInstance(WorldScreenMenuPopup::class.java).forEach(Popup::close)
-            return
+        } else {
+            QuickSave.autoLoadGame(this)
         }
-        QuickSave.autoLoadGame(this)
     }
 
     private fun quickstartNewGame() {
@@ -221,12 +221,14 @@ class MainMenuScreen: BaseScreen() {
             }
 
             // ...or when loading the game
-            launchOnGLThread {
-                try {
-                    game.loadGame(newGame)
-                } catch (outOfMemory: OutOfMemoryError) {
+            try {
+                game.loadGame(newGame)
+            } catch (outOfMemory: OutOfMemoryError) {
+                launchOnGLThread {
                     ToastPopup("Not enough memory on phone to load game!", this@MainMenuScreen)
-                } catch (ex: Exception) {
+                }
+            } catch (ex: Exception) {
+                launchOnGLThread {
                     ToastPopup(errorText, this@MainMenuScreen)
                 }
             }
