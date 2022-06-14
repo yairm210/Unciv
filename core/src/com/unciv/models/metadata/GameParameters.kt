@@ -15,9 +15,6 @@ class GameParameters { // Default values are the default new game
             playerType = PlayerType.Human
             team = "1"
         })
-        add(Player().apply {
-            team = "1"
-        })
         for (i in 2..4) add(Player().apply { team = "$i" })
     }
     var numberOfCityStates = 6
