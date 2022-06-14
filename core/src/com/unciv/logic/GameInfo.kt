@@ -62,9 +62,11 @@ class GameInfo {
     fun getTeammatesOfCiv(civInfo: CivilizationInfo): ArrayList<CivilizationInfo> {
         val teammates = ArrayList<CivilizationInfo>()
 
-        for (civ in civilizations) {
-            if (civ.team == civInfo.team) {
-                teammates.add(civ)
+        if (!civInfo.isBarbarian() && !civInfo.isSpectator() && !civInfo.isCityState()) {
+            for (civ in civilizations) {
+                if (civ.team == civInfo.team && civ != civInfo) {
+                    teammates.add(civ)
+                }
             }
         }
 
