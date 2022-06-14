@@ -946,9 +946,12 @@ object NextTurnAutomation {
     fun onConquerCity(civInfo: CivilizationInfo, city: CityInfo) {
         if (city.foundingCiv != "") {
             val foundingCiv = civInfo.gameInfo.getCivilization(city.foundingCiv)
+            var valueAlliance = valueCityStateAlliance(civInfo, foundingCiv)
+            if (civInfo.getHappiness() < 0)
+                valueAlliance -= civInfo.getHappiness() // put extra weight on liberating if unhappy
             if (foundingCiv.isCityState() && city.civInfo != civInfo && foundingCiv != civInfo
                     && !civInfo.isAtWarWith(foundingCiv)
-                    && valueCityStateAlliance(civInfo, foundingCiv) > 0) {
+                    && valueAlliance > 0) {
                 city.liberateCity(civInfo)
                 return
             }
