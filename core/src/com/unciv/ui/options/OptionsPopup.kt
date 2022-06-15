@@ -28,6 +28,9 @@ import com.unciv.ui.utils.extensions.toCheckBox
 import com.unciv.ui.utils.extensions.toGdxArray
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.worldscreen.WorldScreen
+import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.Dispatcher
+import com.unciv.utils.concurrency.withGLContext
 import kotlin.reflect.KMutableProperty0
 
 /**
@@ -133,8 +136,20 @@ class OptionsPopup(
 
     /** Reload this Popup after major changes (resolution, tileset, language, font) */
     private fun reloadWorldAndOptions() {
-        settings.save()
-        UncivGame.Current.reloadWorldscreen()
+        Concurrency.run("Reload from options") {
+            settings.save()
+            val screen = UncivGame.Current.screen
+            if (screen is WorldScreen) {
+                UncivGame.Current.reloadWorldscreen()
+            } else if (screen is MainMenuScreen) {
+                withGLContext {
+                    UncivGame.Current.setScreen(MainMenuScreen())
+                }
+            }
+            withGLContext {
+                UncivGame.Current.screen?.openOptionsPopup(tabs.activePage)
+            }
+        }
     }
 
     fun addCheckbox(table: Table, text: String, initialState: Boolean, updateWorld: Boolean = false, action: ((Boolean) -> Unit)) {
