@@ -7,7 +7,7 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.utils.randomWeighted
+import com.unciv.ui.utils.extensions.randomWeighted
 import java.util.*
 import kotlin.math.max
 import kotlin.math.min

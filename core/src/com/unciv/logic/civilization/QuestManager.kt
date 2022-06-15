@@ -17,8 +17,8 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.tr
-import com.unciv.ui.utils.randomWeighted
-import com.unciv.ui.utils.toPercent
+import com.unciv.ui.utils.extensions.randomWeighted
+import com.unciv.ui.utils.extensions.toPercent
 import kotlin.math.max
 import kotlin.random.Random
 
@@ -919,11 +919,11 @@ class AssignedQuest(val questName: String = "",
         when (questName) {
             QuestName.ClearBarbarianCamp.value -> {
                 game.resetToWorldScreen()
-                game.worldScreen.mapHolder.setCenterPosition(Vector2(data1.toFloat(), data2.toFloat()), selectUnit = false)
+                game.worldScreen!!.mapHolder.setCenterPosition(Vector2(data1.toFloat(), data2.toFloat()), selectUnit = false)
             }
             QuestName.Route.value -> {
                 game.resetToWorldScreen()
-                game.worldScreen.mapHolder.setCenterPosition(gameInfo.getCivilization(assigner).getCapital()!!.location, selectUnit = false)
+                game.worldScreen!!.mapHolder.setCenterPosition(gameInfo.getCivilization(assigner).getCapital()!!.location, selectUnit = false)
             }
         }
     }

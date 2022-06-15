@@ -9,12 +9,16 @@ import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.GlobalUniques
 import com.unciv.models.ruleset.ModOptionsConstants
-import com.unciv.models.ruleset.unique.*
+import com.unciv.models.ruleset.unique.LocalUniqueCache
+import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTarget
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
 import com.unciv.models.stats.Stats
-import com.unciv.ui.utils.toPercent
+import com.unciv.ui.utils.extensions.toPercent
 import kotlin.math.min
 
 

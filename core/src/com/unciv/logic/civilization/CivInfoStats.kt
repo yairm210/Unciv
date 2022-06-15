@@ -5,13 +5,13 @@ import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Policy
-import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
 import com.unciv.models.stats.Stats
-import com.unciv.ui.utils.toPercent
+import com.unciv.ui.utils.extensions.toPercent
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow

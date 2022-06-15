@@ -1,7 +1,7 @@
 ﻿package com.unciv
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -14,23 +14,36 @@ import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.models.metadata.BaseRuleset
-import com.unciv.models.ruleset.RulesetCache
-import com.unciv.ui.multiplayer.MultiplayerScreen
-import com.unciv.ui.mapeditor.*
 import com.unciv.models.metadata.GameSetupInfo
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.civilopedia.CivilopediaScreen
-import com.unciv.ui.crashhandling.launchCrashHandling
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.map.TileGroupMap
+import com.unciv.ui.mapeditor.EditorMapHolder
+import com.unciv.ui.mapeditor.MapEditorScreen
+import com.unciv.ui.multiplayer.MultiplayerScreen
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.ModManagementScreen
-import com.unciv.ui.popup.*
+import com.unciv.ui.popup.ExitGamePopup
+import com.unciv.ui.popup.Popup
+import com.unciv.ui.popup.ToastPopup
+import com.unciv.ui.popup.closeAllPopups
+import com.unciv.ui.popup.hasOpenPopups
+import com.unciv.ui.popup.popups
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.saves.QuickSave
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.AutoScrollPane
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.utils.extensions.center
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.setFontSize
+import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.worldscreen.mainmenu.WorldScreenMenuPopup
+import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.launchOnGLThread
 import kotlin.math.min
 
 
@@ -77,7 +90,7 @@ class MainMenuScreen: BaseScreen() {
         // will not exist unless we reset the ruleset and images
         ImageGetter.ruleset = RulesetCache.getVanillaRuleset()
 
-        launchCrashHandling("ShowMapBackground") {
+        Concurrency.run("ShowMapBackground") {
             var scale = 1f
             var mapWidth = stage.width / TileGroupMap.groupHorizontalAdvance
             var mapHeight = stage.height / TileGroupMap.groupSize
@@ -97,7 +110,7 @@ class MainMenuScreen: BaseScreen() {
                         waterThreshold = -0.055f // Gives the same level as when waterThreshold was unused in MapType.default
                     })
 
-            postCrashHandlingRunnable { // for GL context
+            launchOnGLThread { // for GL context
                 ImageGetter.setNewRuleset(mapRuleset)
                 val mapHolder = EditorMapHolder(this@MainMenuScreen, newMap) {}
                 mapHolder.setScale(scale)
@@ -185,35 +198,37 @@ class MainMenuScreen: BaseScreen() {
 
 
     private fun resumeGame() {
-        val curWorldScreen = game.getWorldScreenOrNull()
+        val curWorldScreen = game.worldScreen
         if (curWorldScreen != null) {
             game.resetToWorldScreen()
             curWorldScreen.popups.filterIsInstance(WorldScreenMenuPopup::class.java).forEach(Popup::close)
-            return
+        } else {
+            QuickSave.autoLoadGame(this)
         }
-        QuickSave.autoLoadGame(this)
     }
 
     private fun quickstartNewGame() {
         ToastPopup("Working...", this)
         val errorText = "Cannot start game with the default new game parameters!"
-        launchCrashHandling("QuickStart") {
+        Concurrency.run("QuickStart") {
             val newGame: GameInfo
             // Can fail when starting the game...
             try {
                 newGame = GameStarter.startNewGame(GameSetupInfo.fromSettings("Chieftain"))
             } catch (ex: Exception) {
-                postCrashHandlingRunnable { ToastPopup(errorText, this@MainMenuScreen) }
-                return@launchCrashHandling
+                launchOnGLThread { ToastPopup(errorText, this@MainMenuScreen) }
+                return@run
             }
 
             // ...or when loading the game
-            postCrashHandlingRunnable {
-                try {
-                    game.loadGame(newGame)
-                } catch (outOfMemory: OutOfMemoryError) {
+            try {
+                game.loadGame(newGame)
+            } catch (outOfMemory: OutOfMemoryError) {
+                launchOnGLThread {
                     ToastPopup("Not enough memory on phone to load game!", this@MainMenuScreen)
-                } catch (ex: Exception) {
+                }
+            } catch (ex: Exception) {
+                launchOnGLThread {
                     ToastPopup(errorText, this@MainMenuScreen)
                 }
             }

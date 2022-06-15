@@ -16,7 +16,12 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.civilopedia.MarkupRenderer
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.setFontSize
+import com.unciv.ui.utils.extensions.toLabel
 import kotlin.math.max
 
 class ReligionOverviewTab(
@@ -134,7 +139,7 @@ class ReligionOverviewTab(
         statsTable.add(religion.getReligionDisplayName().toLabel()).right().row()
         statsTable.add("Founding Civ:".toLabel())
         val foundingCivName =
-            if (viewingPlayer.knows(religion.foundingCivName) || viewingPlayer.civName == religion.foundingCivName) 
+            if (viewingPlayer.knows(religion.foundingCivName) || viewingPlayer.civName == religion.foundingCivName)
                 religion.foundingCivName
             else Constants.unknownNationName
         statsTable.add(foundingCivName.toLabel()).right().row()
@@ -142,7 +147,7 @@ class ReligionOverviewTab(
             val holyCity = gameInfo.getCities().firstOrNull { it.religion.religionThisIsTheHolyCityOf == religion.name }
             if (holyCity != null) {
                 statsTable.add("Holy City:".toLabel())
-                val cityName = 
+                val cityName =
                     if (viewingPlayer.exploredTiles.contains(holyCity.getCenterTile().position))
                         holyCity.name
                     else Constants.unknownNationName

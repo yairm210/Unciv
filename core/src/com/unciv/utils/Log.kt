@@ -34,7 +34,9 @@ object Log {
     }
 
     /**
-     * Logs the given message by [java.lang.String.format]ting them with an optional list of [params].
+     * Logs the given message by [String.format][java.lang.String.format]ting them with an optional list of [params]. Since this uses
+     * [format specifiers][java.util.Formatter], make sure your message only contains `%` characters correctly used as [format specifiers][java.util.Formatter]
+     * and never do manual string concatenation, only use [params] to log arbitrary text that could contain `%` characters.
      *
      * Only actually does something when logging is enabled.
      *
@@ -48,7 +50,9 @@ object Log {
     }
 
     /**
-     * Logs the given message by [java.lang.String.format]ting them with an optional list of [params].
+     * Logs the given message by [String.format][java.lang.String.format]ting them with an optional list of [params]. Since this uses
+     * [format specifiers][java.util.Formatter], make sure your message only contains `%` characters correctly used as [format specifiers][java.util.Formatter]
+     * and never do manual string concatenation, only use [params] to log arbitrary text that could contain `%` characters.
      *
      * Only actually does something when logging is enabled.
      *
@@ -61,7 +65,7 @@ object Log {
     }
 
     /**
-     * Logs the given [throwable] by appending it to [msg]
+     * Logs the given [throwable] by appending it to [msg].
      *
      * Only actually does something when logging is enabled.
      *
@@ -72,7 +76,7 @@ object Log {
         debug(getTag(), msg, throwable)
     }
     /**
-     * Logs the given [throwable] by appending it to [msg]
+     * Logs the given [throwable] by appending it to [msg].
      *
      * Only actually does something when logging is enabled.
      */
@@ -82,7 +86,9 @@ object Log {
     }
 
     /**
-     * Logs the given error message by [java.lang.String.format]ting them with an optional list of [params].
+     * Logs the given message by [String.format][java.lang.String.format]ting them with an optional list of [params]. Since this uses
+     * [format specifiers][java.util.Formatter], make sure your message only contains `%` characters correctly used as [format specifiers][java.util.Formatter]
+     * and never do manual string concatenation, only use [params] to log arbitrary text that could contain `%` characters.
      *
      * Always logs, even in release builds.
      *
@@ -96,7 +102,9 @@ object Log {
 
 
     /**
-     * Logs the given error message by [java.lang.String.format]ting them with an optional list of [params].
+     * Logs the given message by [String.format][java.lang.String.format]ting them with an optional list of [params]. Since this uses
+     * [format specifiers][java.util.Formatter], make sure your message only contains `%` characters correctly used as [format specifiers][java.util.Formatter]
+     * and never do manual string concatenation, only use [params] to log arbitrary text that could contain `%` characters.
      *
      * Always logs, even in release builds.
      *
@@ -108,7 +116,7 @@ object Log {
     }
 
     /**
-     * Logs the given [throwable] by appending it to [msg]
+     * Logs the given [throwable] by appending it to [msg].
      *
      * Always logs, even in release builds.
      *
@@ -118,7 +126,7 @@ object Log {
         error(getTag(), msg, throwable)
     }
     /**
-     * Logs the given [throwable] by appending it to [msg]
+     * Logs the given [throwable] by appending it to [msg].
      *
      * Always logs, even in release builds.
      */
@@ -173,7 +181,8 @@ fun debug(tag: Tag, msg: String, throwable: Throwable) {
 }
 
 private fun doLog(logger: (Tag, String, String) -> Unit, tag: Tag, msg: String, vararg params: Any?) {
-    logger(tag, Thread.currentThread().name, msg.format(*params))
+    val formattedMessage = if (params.isEmpty()) msg else msg.format(*params)
+    logger(tag, Thread.currentThread().name, formattedMessage)
 }
 
 private fun isTagDisabled(tag: Tag): Boolean {

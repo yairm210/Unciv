@@ -1,7 +1,7 @@
 package com.unciv.logic.civilization
 
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.utils.toPercent
+import com.unciv.ui.utils.extensions.toPercent
 
 class GoldenAgeManager {
     @Transient

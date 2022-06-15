@@ -1,6 +1,10 @@
 package com.unciv.models.ruleset.unit
 
-import com.unciv.logic.city.*
+import com.unciv.logic.city.CityConstructions
+import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.INonPerpetualConstruction
+import com.unciv.logic.city.RejectionReason
+import com.unciv.logic.city.RejectionReasons
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.ruleset.Ruleset
@@ -13,12 +17,9 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
-import com.unciv.ui.utils.filterAndLogic
-import com.unciv.ui.utils.getConsumesAmountString
-import com.unciv.ui.utils.toPercent
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
-import kotlin.collections.HashSet
+import com.unciv.ui.utils.extensions.filterAndLogic
+import com.unciv.ui.utils.extensions.getConsumesAmountString
+import com.unciv.ui.utils.extensions.toPercent
 import kotlin.math.pow
 
 // This is BaseUnit because Unit is already a base Kotlin class and to avoid mixing the two up

@@ -193,6 +193,20 @@ object BackwardCompatibility {
         }
     }
 
+    /** Convert from Fortify X to Fortify and save off X */
+    fun GameInfo.convertFortify() {
+        val reg = Regex("""^Fortify\s+(\d+)([\w\s]*)""")
+        for (civInfo in civilizations) {
+            for (unit in civInfo.getCivUnits()) {
+                if (unit.action != null && reg.matches(unit.action!!)) {
+                    val (turns, heal) = reg.find(unit.action!!)!!.destructured
+                    unit.turnsFortified = turns.toInt()
+                    unit.action = "Fortify$heal"
+                }
+            }
+        }
+    }
+
     private fun isOldFormat(manager: BarbarianManager): Boolean {
         val keys = manager.camps.keys as Set<Any>
         val iterator = keys.iterator()

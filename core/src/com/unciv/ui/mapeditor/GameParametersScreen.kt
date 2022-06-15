@@ -6,7 +6,6 @@ import com.unciv.ui.newgamescreen.GameOptionsTable
 import com.unciv.ui.newgamescreen.IPreviousScreen
 import com.unciv.ui.newgamescreen.PlayerPickerTable
 import com.unciv.ui.pickerscreens.PickerScreen
-import com.unciv.ui.utils.*
 
 /**
  * As of MapEditor V2, the editor no longer deals with GameParameters, **only** with MapParameters,

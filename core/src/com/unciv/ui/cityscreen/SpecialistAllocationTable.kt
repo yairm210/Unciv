@@ -6,9 +6,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.ExpanderTab
+import com.unciv.ui.utils.extensions.addBorder
+import com.unciv.ui.utils.extensions.addSeparatorVertical
+import com.unciv.ui.utils.extensions.darken
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.ui.utils.extensions.toLabel
 
 class SpecialistAllocationTable(val cityScreen: CityScreen) : Table(BaseScreen.skin) {
     val cityInfo = cityScreen.city
@@ -75,7 +81,7 @@ class SpecialistAllocationTable(val cityScreen: CityScreen) : Table(BaseScreen.s
             cityInfo.cityStats.update()
             cityScreen.update()
         }
-        if (cityInfo.population.getFreePopulation() == 0 || !UncivGame.Current.worldScreen.isPlayersTurn)
+        if (cityInfo.population.getFreePopulation() == 0 || !UncivGame.Current.worldScreen!!.isPlayersTurn)
             assignButton.clear()
         return assignButton
     }
@@ -92,7 +98,7 @@ class SpecialistAllocationTable(val cityScreen: CityScreen) : Table(BaseScreen.s
         }
 
         if (assignedSpecialists <= 0 || cityInfo.isPuppet) unassignButton.isVisible = false
-        if (!UncivGame.Current.worldScreen.isPlayersTurn) unassignButton.clear()
+        if (!UncivGame.Current.worldScreen!!.isPlayersTurn) unassignButton.clear()
         return unassignButton
     }
 

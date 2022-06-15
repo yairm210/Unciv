@@ -8,11 +8,16 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.Tutorial
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Policy
-import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.ruleset.Policy.PolicyBranchType
+import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.enable
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.pad
+import com.unciv.ui.utils.extensions.toTextButton
 import com.unciv.ui.worldscreen.WorldScreen
 import kotlin.math.min
 
@@ -53,7 +58,6 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
             // If we've moved to another screen in the meantime (great person pick, victory screen) ignore this
             if (game.screen !is PolicyPickerScreen || !policies.canAdoptPolicy()) {
                 game.resetToWorldScreen()
-                dispose()
             } else {
                 val policyScreen = PolicyPickerScreen(worldScreen)
                 policyScreen.scrollPane.scrollPercentX = scrollPane.scrollPercentX

@@ -13,9 +13,8 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
-import com.unciv.ui.utils.toPercent
+import com.unciv.ui.utils.extensions.toPercent
 import com.unciv.ui.worldscreen.unit.UnitActions
-import java.util.*
 import kotlin.math.roundToInt
 
 class TileImprovement : RulesetStatsObject() {
@@ -177,9 +176,9 @@ class TileImprovement : RulesetStatsObject() {
         if (isAncientRuinsEquivalent() && ruleset.ruinRewards.isNotEmpty()) {
             val difficulty: String
             val religionEnabled: Boolean
-            if (UncivGame.isCurrentInitialized() && UncivGame.Current.isGameInfoInitialized()) {
-                difficulty = UncivGame.Current.gameInfo.gameParameters.difficulty
-                religionEnabled = UncivGame.Current.gameInfo.isReligionEnabled()
+            if (UncivGame.isCurrentInitialized() && UncivGame.Current.gameInfo != null) {
+                difficulty = UncivGame.Current.gameInfo!!.gameParameters.difficulty
+                religionEnabled = UncivGame.Current.gameInfo!!.isReligionEnabled()
             } else {
                 difficulty = "Prince"  // most factors == 1
                 religionEnabled = true

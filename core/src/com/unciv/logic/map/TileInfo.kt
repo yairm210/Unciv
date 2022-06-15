@@ -8,14 +8,21 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.tile.*
-import com.unciv.models.ruleset.unique.*
+import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.tile.Terrain
+import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.ruleset.tile.TileImprovement
+import com.unciv.models.ruleset.tile.TileResource
+import com.unciv.models.ruleset.unique.LocalUniqueCache
+import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
-import com.unciv.ui.utils.toPercent
+import com.unciv.ui.utils.extensions.toPercent
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.random.Random
@@ -578,8 +585,8 @@ open class TileInfo {
     /** Generates a sequence of reasons that prevent building given [improvement].
      *  If the sequence is empty, improvement can be built immediately.
      */
-    fun getImprovementBuildingProblems(improvement: TileImprovement, civInfo: CivilizationInfo, failFast: Boolean = false): Sequence<ImprovementBuildingProblem> = sequence {
-        val stateForConditionals = StateForConditionals(civInfo, tile=this@TileInfo)
+    fun getImprovementBuildingProblems(improvement: TileImprovement, civInfo: CivilizationInfo): Sequence<ImprovementBuildingProblem> = sequence {
+        val stateForConditionals = StateForConditionals(civInfo, tile = this@TileInfo)
 
         if (improvement.uniqueTo != null && improvement.uniqueTo != civInfo.civName)
             yield(ImprovementBuildingProblem.WrongCiv)
@@ -749,13 +756,21 @@ open class TileInfo {
             else -> {
                 if (terrainFeatures.contains(filter)) return true
                 if (getAllTerrains().any { it.hasUnique(filter) }) return true
+
                 // Resource type check is last - cannot succeed if no resource here
                 if (resource == null) return false
+
                 // Checks 'luxury resource', 'strategic resource' and 'bonus resource' - only those that are visible of course
                 // not using hasViewableResource as observingCiv is often not passed in,
                 // and we want to be able to at least test for non-strategic in that case.
                 val resourceObject = tileResource
-                if (resourceObject.resourceType.name + " resource" != filter) return false // filter match
+                val hasResourceWithFilter =
+                        tileResource.name == filter
+                                || tileResource.hasUnique(filter)
+                                || tileResource.resourceType.name + " resource" == filter
+                if (!hasResourceWithFilter) return false
+
+                // Now that we know that this resource matches the filter - can the observer see that there's a resource here?
                 if (resourceObject.revealedBy == null) return true  // no need for tech
                 if (observingCiv == null) return false  // can't check tech
                 return observingCiv.tech.isResearched(resourceObject.revealedBy!!)
@@ -1104,7 +1119,7 @@ open class TileInfo {
         when {
             airUnits.contains(mapUnit) -> airUnits.remove(mapUnit)
             civilianUnit == mapUnit -> civilianUnit = null
-            else -> militaryUnit = null
+            militaryUnit == mapUnit -> militaryUnit = null
         }
     }
 

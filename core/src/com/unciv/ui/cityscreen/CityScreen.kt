@@ -19,7 +19,13 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.tilegroups.TileSetStrings
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.ZoomableScrollPane
+import com.unciv.ui.utils.extensions.center
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.packIfNeeded
+import com.unciv.ui.utils.extensions.toTextButton
 
 class CityScreen(
     internal val city: CityInfo,
@@ -35,7 +41,7 @@ class CityScreen(
     }
 
     /** Toggles or adds/removes all state changing buttons */
-    val canChangeState = UncivGame.Current.worldScreen.canChangeState
+    val canChangeState = UncivGame.Current.worldScreen!!.canChangeState
 
     /** Toggle between Constructions and cityInfo (buildings, specialists etc. */
     var showConstructionsTable = true
@@ -396,8 +402,8 @@ class CityScreen(
 
     fun exit() {
         game.resetToWorldScreen()
-        game.worldScreen.mapHolder.setCenterPosition(city.location)
-        game.worldScreen.bottomUnitTable.selectUnit()
+        game.worldScreen!!.mapHolder.setCenterPosition(city.location)
+        game.worldScreen!!.bottomUnitTable.selectUnit()
     }
 
     fun page(delta: Int) {

@@ -239,7 +239,11 @@ object SpecificUnitAutomation {
     }
 
     fun automateImprovementPlacer(unit: MapUnit) {
-        val improvementName = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit).first().params[0]
+        var improvementBuildingUniques = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
+        if (unit.religiousActionsUnitCanDo().all { unit.abilityUsesLeft[it] == unit.maxAbilityUses[it] })
+            improvementBuildingUniques += unit.getMatchingUniques(UniqueType.CanConstructIfNoOtherActions)
+
+        val improvementName = improvementBuildingUniques.first().params[0]
         val improvement = unit.civInfo.gameInfo.ruleSet.tileImprovements[improvementName]
             ?: return
         val relatedStat = improvement.maxByOrNull { it.value }?.key ?: Stat.Culture
@@ -293,22 +297,22 @@ object SpecificUnitAutomation {
         if (unit.religion != unit.civInfo.religionManager.religion?.name)
             return unit.destroy()
 
-        val cities = unit.civInfo.gameInfo.getCities().asSequence()
+        val city = unit.civInfo.gameInfo.getCities().asSequence()
             .filter { it.religion.getMajorityReligion()?.name != unit.getReligionDisplayName() }
             .filterNot { it.civInfo.isAtWarWith(unit.civInfo) }
             .minByOrNull { it.getCenterTile().aerialDistanceTo(unit.currentTile) } ?: return
 
 
-        val destination = cities.getTiles().asSequence()
-            .filterNot { unit.getTile().owningCity == it.owningCity } // to prevent the ai from moving around randomly
-            .filter { unit.movement.canMoveTo(it) }
+        val destination = city.getTiles().asSequence()
+            .filter { unit.movement.canMoveTo(it) || it == unit.getTile() }
             .sortedBy { it.aerialDistanceTo(unit.currentTile) }
             .firstOrNull { unit.movement.canReach(it) } ?: return
 
         unit.movement.headTowards(destination)
 
-        if (unit.currentTile.owningCity?.religion?.getMajorityReligion()?.name != unit.religion)
+        if (unit.civInfo.religionManager.maySpreadReligionNow(unit)) {
             doReligiousAction(unit, unit.getTile())
+        }
     }
 
     fun automateInquisitor(unit: MapUnit) {
@@ -326,16 +330,14 @@ object SpecificUnitAutomation {
 
         if (cityToProtect != null) {
             destination = cityToProtect.getCenterTile().neighbors.asSequence()
-                .filterNot { unit.getTile().owningCity == it.owningCity } // to prevent the ai from moving around randomly
-                .filter { unit.movement.canMoveTo(it) }
+                .filter { unit.movement.canMoveTo(it) || it == unit.getTile() }
                 .sortedBy { it.aerialDistanceTo(unit.currentTile) }
                 .firstOrNull { unit.movement.canReach(it) }
         }
         if (destination == null) {
             if (cityToConvert == null) return
             destination = cityToConvert.getCenterTile().neighbors.asSequence()
-                .filterNot { unit.getTile().owningCity == it.owningCity } // to prevent the ai from moving around randomly
-                .filter { unit.movement.canMoveTo(it) }
+                .filter { unit.movement.canMoveTo(it) || it == unit.getTile() }
                 .sortedBy { it.aerialDistanceTo(unit.currentTile) }
                 .firstOrNull { unit.movement.canReach(it) }
         }

@@ -2,14 +2,13 @@ package com.unciv.logic.city
 
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.civilization.NotificationIcon
-import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
-import com.unciv.ui.utils.toPercent
-import com.unciv.ui.utils.withItem
-import com.unciv.ui.utils.withoutItem
+import com.unciv.ui.utils.extensions.toPercent
+import com.unciv.ui.utils.extensions.withItem
+import com.unciv.ui.utils.extensions.withoutItem
 import kotlin.math.floor
 import kotlin.math.pow
 

@@ -26,7 +26,7 @@ import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.popup.hasOpenPopups
-import com.unciv.ui.utils.toPercent
+import com.unciv.ui.utils.extensions.toPercent
 import com.unciv.ui.worldscreen.WorldScreen
 import kotlin.math.min
 import kotlin.random.Random
@@ -71,7 +71,7 @@ object UnitActions {
         addTriggerUniqueActions(unit, actionList)
         addAddInCapitalAction(unit, actionList, tile)
 
-        addWaitAction(unit, actionList, worldScreen);
+        addWaitAction(unit, actionList, worldScreen)
 
         addToggleActionsAction(unit, actionList, unitTable)
 
@@ -127,7 +127,7 @@ object UnitActions {
                 val disbandText = if (unit.currentTile.getOwner() == unit.civInfo)
                     "Disband this unit for [${unit.baseUnit.getDisbandGold(unit.civInfo)}] gold?".tr()
                 else "Do you really want to disband this unit?".tr()
-                YesNoPopup(disbandText, { unit.disband(); worldScreen.shouldUpdate = true }).open()
+                YesNoPopup(disbandText, UncivGame.Current.worldScreen!!) { unit.disband(); worldScreen.shouldUpdate = true }.open()
             }
         }.takeIf { unit.currentMovement > 0 })
     }
@@ -187,7 +187,7 @@ object UnitActions {
             if (tile.ruleset.tileImprovements.containsKey("City center"))
                 tile.improvement = "City center"
             unit.destroy()
-            UncivGame.Current.worldScreen.shouldUpdate = true
+            UncivGame.Current.worldScreen!!.shouldUpdate = true
         }
 
         if (unit.civInfo.playerType == PlayerType.AI)
@@ -204,7 +204,7 @@ object UnitActions {
                     else {
                         // ask if we would be breaking a promise
                         val text = "Do you want to break your promise to [$leaders]?"
-                        YesNoPopup(text, foundAction, UncivGame.Current.worldScreen).open(force = true)
+                        YesNoPopup(text, UncivGame.Current.worldScreen!!, action = foundAction).open(force = true)
                     }
                 }
             )
@@ -275,7 +275,7 @@ object UnitActions {
         else actionList += UnitAction(type = UnitActionType.Pillage) {
             if (!worldScreen.hasOpenPopups()) {
                 val pillageText = "Are you sure you want to pillage this [${unit.currentTile.improvement}]?"
-                YesNoPopup(pillageText, { (pillageAction.action)(); worldScreen.shouldUpdate = true }).open()
+                YesNoPopup(pillageText, UncivGame.Current.worldScreen!!) { (pillageAction.action)(); worldScreen.shouldUpdate = true }.open()
             }
         }
     }
@@ -370,7 +370,7 @@ object UnitActions {
         isFree: Boolean,
         isSpecial: Boolean
     ): UnitAction? {
-        if (unit.baseUnit().upgradesTo == null) return null
+        if (unit.baseUnit().upgradesTo == null && unit.baseUnit().specialUpgradesTo == null) return null // can't upgrade to anything
         val unitTile = unit.getTile()
         val civInfo = unit.civInfo
         if (!isFree && unitTile.getOwner() != civInfo) return null
@@ -489,16 +489,17 @@ object UnitActions {
 
     private fun addGreatPersonActions(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
 
-        if (unit.currentMovement > 0) for (unique in unit.getUniques()) when (unique.placeholderText) {
-            "Can hurry technology research" -> {
+        if (unit.currentMovement > 0) for (unique in unit.getUniques()) when (unique.type) {
+            UniqueType.CanHurryResearch -> {
                 actionList += UnitAction(UnitActionType.HurryResearch,
                     action = {
                         unit.civInfo.tech.addScience(unit.civInfo.tech.getScienceFromGreatScientist())
                         unit.consume()
-                    }.takeIf { unit.civInfo.tech.currentTechnologyName() != null }
+                    }.takeIf { unit.civInfo.tech.currentTechnologyName() != null
+                            && !unit.civInfo.tech.currentTechnology()!!.hasUnique(UniqueType.CannotBeHurried) }
                 )
             }
-            "Can start an []-turn golden age" -> {
+            UniqueType.StartGoldenAge -> {
                 val turnsToGoldenAge = unique.params[0].toInt()
                 actionList += UnitAction(UnitActionType.StartGoldenAge,
                     action = {
@@ -507,11 +508,11 @@ object UnitActions {
                     }.takeIf { unit.currentTile.getOwner() != null && unit.currentTile.getOwner() == unit.civInfo }
                 )
             }
-            "Can speed up the construction of a wonder" -> {
+            UniqueType.CanSpeedupWonderConstruction -> {
                 val canHurryWonder =
                     if (!tile.isCityCenter()) false
                     else tile.getCity()!!.cityConstructions.isBuildingWonder()
-
+                            && tile.getCity()!!.cityConstructions.canBeHurried()
 
                 actionList += UnitAction(UnitActionType.HurryWonder,
                     action = {
@@ -526,15 +527,15 @@ object UnitActions {
                 )
             }
 
-            "Can speed up construction of a building" -> {
+            UniqueType.CanSpeedupConstruction -> {
                 if (!tile.isCityCenter()) {
                     actionList += UnitAction(UnitActionType.HurryBuilding, action = null)
                     continue
                 }
 
-                val canHurryConstruction = tile.getCity()!!.cityConstructions.getCurrentConstruction() is Building
-
                 val cityConstructions = tile.getCity()!!.cityConstructions
+                val canHurryConstruction = cityConstructions.getCurrentConstruction() is Building
+                        && cityConstructions.canBeHurried()
 
                 //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
                 val productionPointsToAdd = min(
@@ -555,7 +556,7 @@ object UnitActions {
                     }.takeIf { canHurryConstruction }
                 )
             }
-            "Can undertake a trade mission with City-State, giving a large sum of gold and [] Influence" -> {
+            UniqueType.CanTradeWithCityStateForGoldAndInfluence -> {
                 val canConductTradeMission = tile.owningCity?.civInfo?.isCityState() == true
                         && tile.owningCity?.civInfo?.isAtWarWith(unit.civInfo) == false
                 val influenceEarned = unique.params[0].toFloat()
@@ -573,6 +574,7 @@ object UnitActions {
                     }.takeIf { canConductTradeMission }
                 )
             }
+            else -> {}
         }
     }
 
@@ -852,7 +854,7 @@ object UnitActions {
                 unit.destroy()  // City states dont get GPs
             else
                 unit.gift(recipient)
-            UncivGame.Current.worldScreen.shouldUpdate = true
+            UncivGame.Current.worldScreen!!.shouldUpdate = true
         }
 
         return UnitAction(UnitActionType.GiftUnit, action = giftAction)

@@ -8,6 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.utils.extensions.center
+import com.unciv.ui.utils.extensions.surroundWithCircle
 
 class UnitGroup(val unit: MapUnit, val size: Float): Group() {
     var blackSpinningCircle: Image? = null

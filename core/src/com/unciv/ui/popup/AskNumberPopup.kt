@@ -6,7 +6,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.extensions.onChange
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.ui.utils.extensions.toLabel
 
 /** Simple class for showing a prompt for a positive integer to the user
  * @param screen The previous screen the user was on
@@ -32,7 +36,7 @@ class AskNumberPopup(
     actionOnOk: (input: Int) -> Unit = { },
 ): Popup(screen) {
     /** Note for future developers: Why this class only accepts positive digits and not negative.
-     * 
+     *
      * The problems is the minus sign. This might not seem like a large obstacle, but problems
      * arrive quickly. First is that our clean `DigitsOnlyFilter()` must be replaced with a check
      * that allows for adding a minus sign, but only when it is the first character. So far so good,
@@ -44,9 +48,9 @@ class AskNumberPopup(
      * the number before overwriting it with the clamped variant. But now you reset your cursor
      * position every time you type a character. You might start trying to cache the cursor position
      * as well, but at that point you're basically rewriting the setText() function, and when I
-     * reached this point I decided to stop. 
-     * 
-     * P.S., if you do decide to go on this quest of adding minus signs, don't forget that 
+     * reached this point I decided to stop.
+     *
+     * P.S., if you do decide to go on this quest of adding minus signs, don't forget that
      * `"-".toInt()` also crashes, so you need to exclude that before checking to clamp.
      */
 
@@ -58,30 +62,30 @@ class AskNumberPopup(
 
         val nameField = TextField(defaultValue, skin)
         nameField.textFieldFilter = TextField.TextFieldFilter { _, char -> char.isDigit() || char == '-' }
-        
+
         fun isValidInt(input: String): Boolean {
             return input.toIntOrNull() != null
         }
-        
-        
+
+
         fun clampInBounds(input: String): String {
             val int = input.toIntOrNull() ?: return input
-            
+
             if (bounds.first > int) {
                 return bounds.first.toString()
             }
             if (bounds.last < int)
                 return bounds.last.toString()
-            
+
             return input
-        } 
-        
+        }
+
         nameField.onChange {
             nameField.text = clampInBounds(nameField.text)
         }
-        
+
         val centerTable = Table(skin)
-        
+
         fun addValueButton(value: Int) {
             centerTable.add(
                 Button(
@@ -96,19 +100,19 @@ class AskNumberPopup(
                 }
             ).pad(5f)
         }
-        
+
         for (value in amountButtons.reversed()) {
             addValueButton(-value)
         }
 
         centerTable.add(nameField).growX().pad(10f)
-        
+
         add(centerTable).colspan(2).row()
 
         for (value in amountButtons) {
             addValueButton(value)
         }
-        
+
         val errorLabel = errorText.toLabel()
         errorLabel.color = Color.RED
 
@@ -123,7 +127,7 @@ class AskNumberPopup(
         }
         addCloseButton()
         equalizeLastTwoButtonWidths()
-        
+
         keyboardFocus = nameField
     }
 }

@@ -1,3 +1,77 @@
+## 4.1.10
+
+Fixed translation order
+
+Added cutout support  - By alexban011
+
+By OptimizedForDensity:
+- Improvements to AI military unit usage
+- Fix spectator's fog of war toggle
+- Stop AI puppets from building settlers and military
+
+By Azzurite:
+- Fix scroll to wonder in the map editor
+- Fix unit being captured two times
+- Fix NPE in Nation selection & editor mods popup
+- Add more extensive multiplayer documentation
+
+UI: Do not enter city while performing air strikes - By JackRainy
+
+## 4.1.9
+
+Peace cooldown with city-states
+
+"attacked city state" functions activate only when attacking directly, not when declaring war due to alliances
+
+tileFilter matches resource name and uniques
+
+Fixed map position after portrait mode enabled
+
+By Azzurite:
+- Add multiplayer turn sound notification
+- Fix crash during next turn automation
+
+disable worldWrap when disabled in settings  - By alexban011
+
+## 4.1.8
+
+Resolved crashes when centering on a city-state with no cities
+
+By OptimizedForDensity:
+- Certain projects cannot be hurried by great engineer
+- Fix scout not upgrading through ruins
+- Fix rare case where ruins would delete an AI unit while trying to upgrade it
+- Prevent duplicate ruin reward
+
+WordScreenTopBar reworked, portrait-friendlier  - By SomeTroglodyte
+
+Fixed minimap fog of war for spectators - By alexban011
+
+Fix "Free technology" allowing restricted techs - By MindaugasRumsa
+
+## 4.1.7
+
+By OptimizedForDensity:
+- Fix medic and amphibious promotions
+- Better Great Prophet AI
+- More rankings & demographics screen icons
+
+By SomeTroglodyte:
+- Better Tutorials
+- Prevent city-to-city Battle Table
+- Minor fixes
+
+By alexban011:
+- spectators can no longer move and attack with units
+- Better friends list UI
+
+Bugfixes for units' teleportation - By JackRainy
+
+By Azzurite:
+- Fix map editor zoom in
+
+HexaRealm tileset update  - By GeneralWadaling
+
 ## 4.1.6
 
 Multiplayer friends list - by alexban 011

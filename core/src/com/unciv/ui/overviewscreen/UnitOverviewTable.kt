@@ -9,11 +9,20 @@ import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
-import com.unciv.ui.audio.Sounds
+import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.ExpanderTab
+import com.unciv.ui.utils.Fonts
+import com.unciv.ui.utils.TabbedPager
+import com.unciv.ui.utils.UnitGroup
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.brighten
+import com.unciv.ui.utils.extensions.center
+import com.unciv.ui.utils.extensions.darken
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.worldscreen.unit.UnitActions
 import kotlin.math.abs
 
@@ -69,7 +78,7 @@ class UnitOverviewTab(
     private fun showWorldScreenAt(position: Vector2, unit: MapUnit?) {
         val game = overviewScreen.game
         game.resetToWorldScreen()
-        game.worldScreen.mapHolder.setCenterPosition(position, forceSelectUnit = unit)
+        game.worldScreen!!.mapHolder.setCenterPosition(position, forceSelectUnit = unit)
     }
     private fun showWorldScreenAt(unit: MapUnit) = showWorldScreenAt(unit.currentTile.position, unit)
     private fun showWorldScreenAt(tile: TileInfo) = showWorldScreenAt(tile.position, null)
@@ -181,7 +190,7 @@ class UnitOverviewTab(
             if (unit.promotions.canBePromoted())
                 promotionsTable.add(
                     ImageGetter.getImage("OtherIcons/Star").apply {
-                        color = if (game.worldScreen.canChangeState && unit.currentMovement > 0f && unit.attacksThisTurn == 0)
+                        color = if (game.worldScreen!!.canChangeState && unit.currentMovement > 0f && unit.attacksThisTurn == 0)
                                 Color.GOLDENROD
                             else Color.GOLDENROD.darken(0.25f)
                     }
@@ -189,7 +198,6 @@ class UnitOverviewTab(
             promotionsTable.onClick {
                 if (unit.promotions.canBePromoted() || unit.promotions.promotions.isNotEmpty()) {
                     game.setScreen(PromotionPickerScreen(unit))
-                    overviewScreen.dispose()
                 }
             }
             add(promotionsTable)
@@ -202,7 +210,7 @@ class UnitOverviewTab(
                     if (enable) Color.GREEN else Color.GREEN.darken(0.5f))
                 if (enable) upgradeIcon.onClick {
                     showWorldScreenAt(unit)
-                    Sounds.play(unitAction!!.uncivSound)
+                    SoundPlayer.play(unitAction!!.uncivSound)
                     unitAction.action!!()
                 }
                 add(upgradeIcon).size(28f)

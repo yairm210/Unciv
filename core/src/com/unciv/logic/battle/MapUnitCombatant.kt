@@ -19,8 +19,8 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     override fun isInvisible(to: CivilizationInfo): Boolean = unit.isInvisible(to)
     override fun canAttack(): Boolean = unit.canAttack()
     override fun matchesCategory(category: String) = unit.matchesFilter(category)
-    override fun getAttackSound() = unit.baseUnit.attackSound.let { 
-        if (it==null) UncivSound.Click else UncivSound.custom(it)
+    override fun getAttackSound() = unit.baseUnit.attackSound.let {
+        if (it == null) UncivSound.Click else UncivSound(it)
     }
 
     override fun takeDamage(damage: Int) {
@@ -50,7 +50,7 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
         return unit.name+" of "+unit.civInfo.civName
     }
 
-    fun getMatchingUniques(uniqueType: UniqueType, conditionalState: StateForConditionals, checkCivUniques: Boolean): Sequence<Unique> = 
+    fun getMatchingUniques(uniqueType: UniqueType, conditionalState: StateForConditionals, checkCivUniques: Boolean): Sequence<Unique> =
         unit.getMatchingUniques(uniqueType, conditionalState, checkCivUniques)
 
     fun hasUnique(uniqueType: UniqueType, conditionalState: StateForConditionals? = null): Boolean =

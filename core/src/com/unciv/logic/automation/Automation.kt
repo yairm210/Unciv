@@ -106,6 +106,7 @@ object Automation {
     }
 
     fun tryTrainMilitaryUnit(city: CityInfo) {
+        if (city.isPuppet) return
         val chosenUnitName = chooseMilitaryUnit(city)
         if (chosenUnitName != null)
             city.cityConstructions.currentConstructionFromQueue = chosenUnitName

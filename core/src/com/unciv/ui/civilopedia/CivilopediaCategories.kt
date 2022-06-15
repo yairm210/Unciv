@@ -9,11 +9,11 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.KeyCharAndCode
-import com.unciv.ui.utils.surroundWithCircle
+import com.unciv.ui.utils.extensions.surroundWithCircle
 import java.io.File
 
 /** Encapsulates the knowledge on how to get an icon for each of the Civilopedia categories */

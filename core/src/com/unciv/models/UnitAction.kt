@@ -4,11 +4,11 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.utils.Align
-import com.unciv.ui.utils.KeyCharAndCode
-import com.unciv.ui.images.ImageGetter
 import com.unciv.Constants
 import com.unciv.models.translations.getPlaceholderParameters
-import com.unciv.ui.utils.darken
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.extensions.darken
 
 
 /** Unit Actions - class - carries dynamic data and actual execution.
@@ -54,7 +54,7 @@ data class UnitAction(
 }
 
 /** Unit Actions - generic enum with static properties
- * 
+ *
  * @param value         _default_ label to display, can be overridden in UnitAction instantiation
  * @param imageGetter   optional lambda to get an Icon - `null` if icon is dependent on outside factors and needs special handling
  * @param key           keyboard binding - can be a [KeyCharAndCode], a [Char], or omitted.
@@ -97,7 +97,7 @@ enum class UnitActionType(
         { imageGetPromote() }, 'o', UncivSound.Promote),
     Upgrade("Upgrade",
         null, 'u', UncivSound.Upgrade),
-    Pillage("Pillage", 
+    Pillage("Pillage",
         { ImageGetter.getImage("OtherIcons/Pillage") }, 'p'),
     Paradrop("Paradrop",
         { ImageGetter.getUnitIcon("Paratrooper") }, 'p'),

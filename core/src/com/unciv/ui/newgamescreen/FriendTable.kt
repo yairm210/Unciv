@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.ui.utils.*
+import com.unciv.ui.utils.extensions.pad
 
 class FriendTable(val friend: FriendList.Friend, width: Float, minHeight: Float)
     : Table() {
@@ -26,7 +27,7 @@ class FriendTable(val friend: FriendList.Friend, width: Float, minHeight: Float)
             friendDisplayLabel.wrap = true
             titleTable.add(friendDisplayLabel).width(friendDisplayNameMaxWidth)
         } else {
-            titleTable.add(friendDisplayLabel).align(Align.center).pad(10f,0f)
+            titleTable.add(friendDisplayLabel).align(Align.center).pad(10f, 0f)
         }
 
         innerTable.add(titleTable).growX().fillY().row()

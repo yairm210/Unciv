@@ -96,7 +96,7 @@ class TranslationTests {
                 for (placeholder in placeholders) {
                     if (!output.contains(placeholder)) {
                         allTranslationsHaveCorrectPlaceholders = false
-                        debug("Placeholder `$placeholder` not found in `$language` for entry `$translationEntry`")
+                        debug("Placeholder `%s` not found in `%s` for entry `%s`", placeholder, language, translationEntry)
                     }
                 }
             }
@@ -116,7 +116,7 @@ class TranslationTests {
             val keyFromEntry = translationEntry.replace(squareBraceRegex, "[]")
             if (key != keyFromEntry) {
                 allPlaceholderKeysMatchEntry = false
-                debug("Entry $translationEntry found under bad key $key")
+                debug("Entry %s found under bad key %s", translationEntry, key)
                 break
             }
         }
@@ -136,7 +136,7 @@ class TranslationTests {
             for (placeholder in placeholders)
                 if (placeholders.count { it == placeholder } > 1) {
                     noTwoPlaceholdersAreTheSame = false
-                    debug("Entry $translationEntry has the parameter $placeholder more than once")
+                    debug("Entry %s has the parameter %s more than once", translationEntry, placeholder)
                     break
                 }
         }
@@ -152,7 +152,7 @@ class TranslationTests {
         var failed = false
         for (line in templateLines) {
             if (line.endsWith(" =")) {
-                debug("$line ends without a space at the end")
+                debug("%s ends without a space at the end", line)
                 failed = true
             }
         }
@@ -177,7 +177,7 @@ class TranslationTests {
                     translationEntry.entry.tr()
                 } catch (ex: Exception) {
                     allWordsTranslatedCorrectly = false
-                    debug("Crashed when translating ${translationEntry.entry} to $language")
+                    debug("Crashed when translating %s to %s", translationEntry.entry, language)
                 }
             }
         }
@@ -198,7 +198,7 @@ class TranslationTests {
                 || translation.count { it == '\"' } != 2
             ) {
                 allTranslationsCheckedOut = false
-                debug("Translation of the word boundary in $language was incorrectly formatted")
+                debug("Translation of the word boundary in %s was incorrectly formatted", language)
             }
         }
 

@@ -12,17 +12,20 @@ import com.unciv.logic.city.RejectionReason
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationIcon
-import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.models.UnitActionType
+import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileImprovement
-import com.unciv.models.ruleset.unique.*
+import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueMap
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stats
-import com.unciv.ui.utils.filterAndLogic
-import com.unciv.ui.utils.toPercent
+import com.unciv.ui.utils.extensions.filterAndLogic
+import com.unciv.ui.utils.extensions.toPercent
 import java.text.DecimalFormat
 import kotlin.math.pow
 
@@ -171,6 +174,7 @@ class MapUnit {
     var promotions = UnitPromotions()
     var due: Boolean = true
     var isTransported: Boolean = false
+    var turnsFortified = 0
 
     var abilityUsesLeft: HashMap<String, Int> = hashMapOf()
     var maxAbilityUses: HashMap<String, Int> = hashMapOf()
@@ -231,6 +235,7 @@ class MapUnit {
         toReturn.health = health
         toReturn.action = action
         toReturn.attacksThisTurn = attacksThisTurn
+        toReturn.turnsFortified = turnsFortified
         toReturn.promotions = promotions.clone()
         toReturn.isTransported = isTransported
         toReturn.abilityUsesLeft.putAll(abilityUsesLeft)
@@ -447,7 +452,7 @@ class MapUnit {
 
     fun getFortificationTurns(): Int {
         if (!isFortified()) return 0
-        return action!!.split(" ")[1].toInt()
+        return turnsFortified
     }
 
     // debug helper (please update comment if you see some "$unit" using this)
@@ -636,11 +641,11 @@ class MapUnit {
     }
 
     fun fortify() {
-        action = "Fortify 0"
+        action = "Fortify"
     }
 
     fun fortifyUntilHealed() {
-        action = "Fortify 0 until healed"
+        action = "Fortify until healed"
     }
 
     fun fortifyIfCan() {
@@ -669,6 +674,7 @@ class MapUnit {
     }
 
     fun useMovementPoints(amount: Float) {
+        turnsFortified = 0
         currentMovement -= amount
         if (currentMovement < 0) currentMovement = 0f
     }
@@ -826,7 +832,8 @@ class MapUnit {
         }
 
         val maxAdjacentHealingBonus = currentTile.neighbors
-            .flatMap { it.getUnits().asSequence() }.map { it.adjacentHealingBonus() }.maxOrNull()
+            .flatMap { it.getUnits().asSequence() }.filter { it.civInfo == civInfo }
+            .map { it.adjacentHealingBonus() }.maxOrNull()
         if (maxAdjacentHealingBonus != null)
             healing += maxAdjacentHealingBonus
 
@@ -838,15 +845,11 @@ class MapUnit {
             && getTile().improvementInProgress != null
             && canBuildImprovement(getTile().getTileImprovementInProgress()!!)
         ) workOnImprovement()
-        if (currentMovement == getMaxMovement().toFloat() && isFortified()) {
-            val currentTurnsFortified = getFortificationTurns()
-            if (currentTurnsFortified < 2)
-                action = action!!.replace(
-                    currentTurnsFortified.toString(),
-                    (currentTurnsFortified + 1).toString(),
-                    true
-                )
+        if (currentMovement == getMaxMovement().toFloat() && isFortified() && turnsFortified < 2) {
+            turnsFortified++
         }
+        if (!isFortified())
+            turnsFortified = 0
 
         if (currentMovement == getMaxMovement().toFloat() // didn't move this turn
             || hasUnique(UniqueType.HealsEvenAfterAction)
@@ -923,6 +926,7 @@ class MapUnit {
     fun destroy() {
         val currentPosition = Vector2(getTile().position)
         civInfo.attacksSinceTurnStart.addAll(attacksSinceTurnStart.asSequence().map { CivilizationInfo.HistoricalAttackMemory(this.name, currentPosition, it) })
+        currentMovement = 0f
         removeFromTile()
         civInfo.removeUnit(this)
         civInfo.updateViewableTiles()
