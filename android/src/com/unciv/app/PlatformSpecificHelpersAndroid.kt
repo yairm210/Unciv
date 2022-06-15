@@ -36,16 +36,15 @@ Sources for Info about current orientation in case need:
     }
 
     override fun hasDisplayCutout(): Boolean {
-        val displayCutout = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            activity.windowManager.defaultDisplay.cutout
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            activity.windowManager.defaultDisplay.cutout != null
         } else {
-            TODO("VERSION.SDK_INT < Q")
+             false
         }
-        return displayCutout != null
     }
 
-    @RequiresApi(Build.VERSION_CODES.P)
     override fun toggleDisplayCutout(androidCutout: Boolean) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return
         val layoutParams = activity.window.attributes
         if (androidCutout) {
             layoutParams.layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES

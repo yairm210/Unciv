@@ -12,8 +12,9 @@ import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
 import com.unciv.ui.utils.extensions.isLargerThan
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.Dispatcher
-import com.unciv.utils.concurrency.launchOnGLThread
 import com.unciv.utils.concurrency.launchOnThreadPool
+import com.unciv.utils.concurrency.withGLContext
+import com.unciv.utils.debug
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
@@ -98,7 +99,7 @@ class OnlineMultiplayer {
         }
     }
 
-    private fun updateSavesFromFiles() {
+    private suspend fun updateSavesFromFiles() {
         val saves = gameSaver.getMultiplayerSaves()
 
         val removedSaves = savedGames.keys - saves.toSet()
@@ -143,20 +144,23 @@ class OnlineMultiplayer {
         addGame(gamePreview, saveFileName)
     }
 
-    private fun addGame(newGame: GameInfo) {
+    private suspend fun addGame(newGame: GameInfo) {
         val newGamePreview = newGame.asPreview()
         addGame(newGamePreview, newGamePreview.gameId)
     }
 
-    private fun addGame(preview: GameInfoPreview, saveFileName: String) {
+    private suspend fun addGame(preview: GameInfoPreview, saveFileName: String) {
         val fileHandle = gameSaver.saveGame(preview, saveFileName)
         return addGame(fileHandle, preview)
     }
 
-    private fun addGame(fileHandle: FileHandle, preview: GameInfoPreview = gameSaver.loadGamePreviewFromFile(fileHandle)) {
+    private suspend fun addGame(fileHandle: FileHandle, preview: GameInfoPreview = gameSaver.loadGamePreviewFromFile(fileHandle)) {
+        debug("Adding game %s", preview.gameId)
         val game = OnlineMultiplayerGame(fileHandle, preview, Instant.now())
         savedGames[fileHandle] = game
-        Concurrency.runOnGLThread { EventBus.send(MultiplayerGameAdded(game.name)) }
+        withGLContext {
+            EventBus.send(MultiplayerGameAdded(game.name))
+        }
     }
 
     fun getGameByName(name: String): OnlineMultiplayerGame? {
@@ -230,7 +234,7 @@ class OnlineMultiplayer {
         } else if (onlinePreview != null && hasNewerGameState(preview, onlinePreview)){
             onlineGame.doManualUpdate(preview)
         }
-        launchOnGLThread { UncivGame.Current.loadGame(gameInfo) }
+        UncivGame.Current.loadGame(gameInfo)
     }
 
     /**
@@ -241,7 +245,7 @@ class OnlineMultiplayer {
         val preview = onlineGameSaver.tryDownloadGamePreview(gameId)
         if (hasLatestGameState(gameInfo, preview)) {
             gameInfo.isUpToDate = true
-            launchOnGLThread { UncivGame.Current.loadGame(gameInfo) }
+            UncivGame.Current.loadGame(gameInfo)
         } else {
             loadGame(gameId)
         }
@@ -272,6 +276,7 @@ class OnlineMultiplayer {
         val game = savedGames[fileHandle]
         if (game == null) return
 
+        debug("Deleting game %s with id %s", fileHandle.name(), game.preview?.gameId)
         savedGames.remove(game.fileHandle)
         Concurrency.runOnGLThread { EventBus.send(MultiplayerGameDeleted(game.name)) }
     }
@@ -280,6 +285,7 @@ class OnlineMultiplayer {
      * Fires [MultiplayerGameNameChanged]
      */
     fun changeGameName(game: OnlineMultiplayerGame, newName: String) {
+        debug("Changing name of game %s to", game.name, newName)
         val oldPreview = game.preview ?: throw game.error!!
         val oldLastUpdate = game.lastUpdate
         val oldName = game.name
@@ -298,8 +304,10 @@ class OnlineMultiplayer {
      * @throws FileNotFoundException if the file can't be found
      */
     suspend fun updateGame(gameInfo: GameInfo) {
+        debug("Updating remote game %s", gameInfo.gameId)
         onlineGameSaver.tryUploadGame(gameInfo, withPreview = true)
         val game = getGameByGameId(gameInfo.gameId)
+        debug("Existing OnlineMultiplayerGame: %s", game)
         if (game == null) {
             addGame(gameInfo)
         } else {

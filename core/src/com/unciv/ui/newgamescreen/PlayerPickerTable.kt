@@ -402,10 +402,10 @@ private class NationPickerPopup(
         }
 
         val closeButton = "OtherIcons/Close".toImageButton(Color.FIREBRICK)
-        closeButton.onClick { close() }
+        closeButton.onActivation { close() }
+        closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
         closeButton.setPosition(buttonsOffsetFromEdge, buttonsOffsetFromEdge, Align.bottomLeft)
         innerTable.addActor(closeButton)
-        keyPressDispatcher[KeyCharAndCode.BACK] = { close() }
 
         val okButton = "OtherIcons/Checkmark".toImageButton(Color.LIME)
         okButton.onClick { returnSelected() }

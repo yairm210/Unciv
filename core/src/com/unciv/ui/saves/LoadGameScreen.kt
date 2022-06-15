@@ -21,6 +21,8 @@ import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.enable
 import com.unciv.ui.utils.extensions.isEnabled
+import com.unciv.ui.utils.extensions.keyShortcuts
+import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
@@ -45,8 +47,8 @@ class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
     init {
         setDefaultCloseAction(previousScreen)
         rightSideTable.initRightSideTable()
-        rightSideButton.onClick(::onLoadGame)
-        keyPressDispatcher[KeyCharAndCode.RETURN] = ::onLoadGame
+        rightSideButton.onActivation { onLoadGame() }
+        rightSideButton.keyShortcuts.add(KeyCharAndCode.RETURN)
     }
 
     override fun resetWindowState() {
@@ -81,7 +83,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
             try {
                 // This is what can lead to ANRs - reading the file and setting the transients, that's why this is in another thread
                 val loadedGame = game.gameSaver.loadGameByName(selectedSave)
-                launchOnGLThread { game.loadGame(loadedGame) }
+                game.loadGame(loadedGame)
             } catch (ex: Exception) {
                 launchOnGLThread {
                     loadingPopup.close()
@@ -113,20 +115,19 @@ class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
 
     private fun getLoadFromClipboardButton(): TextButton {
         val pasteButton = loadFromClipboard.toTextButton()
-        val pasteHandler: ()->Unit = {
+        pasteButton.onActivation {
             Concurrency.run(loadFromClipboard) {
                 try {
                     val clipboardContentsString = Gdx.app.clipboard.contents.trim()
                     val loadedGame = GameSaver.gameInfoFromString(clipboardContentsString)
-                    launchOnGLThread { game.loadGame(loadedGame) }
+                    game.loadGame(loadedGame)
                 } catch (ex: Exception) {
                     launchOnGLThread { handleLoadGameException("Could not load game from clipboard!", ex) }
                 }
             }
         }
-        pasteButton.onClick(pasteHandler)
         val ctrlV = KeyCharAndCode.ctrl('v')
-        keyPressDispatcher[ctrlV] = pasteHandler
+        pasteButton.keyShortcuts.add(ctrlV)
         pasteButton.addTooltip(ctrlV)
         return pasteButton
     }
@@ -143,7 +144,9 @@ class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
                     if (result.isError()) {
                         handleLoadGameException("Could not load game from custom location!", result.exception)
                     } else if (result.isSuccessful()) {
-                        game.loadGame(result.gameData!!)
+                        Concurrency.run {
+                            game.loadGame(result.gameData!!)
+                        }
                     }
                 }
             }
@@ -153,7 +156,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
 
     private fun getCopyExistingSaveToClipboardButton(): TextButton {
         val copyButton = copyExistingSaveToClipboard.toTextButton()
-        val copyHandler: ()->Unit = {
+        copyButton.onActivation {
             Concurrency.run(copyExistingSaveToClipboard) {
                 try {
                     val gameText = game.gameSaver.getSave(selectedSave).readString()
@@ -164,10 +167,9 @@ class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
                 }
             }
         }
-        copyButton.onClick(copyHandler)
         copyButton.disable()
         val ctrlC = KeyCharAndCode.ctrl('c')
-        keyPressDispatcher[ctrlC] = copyHandler
+        copyButton.keyShortcuts.add(ctrlC)
         copyButton.addTooltip(ctrlC)
         return copyButton
     }

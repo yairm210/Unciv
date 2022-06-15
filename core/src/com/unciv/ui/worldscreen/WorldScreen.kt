@@ -78,38 +78,54 @@ import com.unciv.ui.worldscreen.unit.UnitTable
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import com.unciv.utils.concurrency.launchOnThreadPool
+import com.unciv.utils.concurrency.withGLContext
 import com.unciv.utils.debug
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 
 /**
- * Unciv's world screen
+ * Do not create this screen without seriously thinking about the implications: this is the single most memory-intensive class in the application.
+ * There really should ever be only one in memory at the same time, likely managed by [UncivGame].
+ *
  * @param gameInfo The game state the screen should represent
  * @param viewingCiv The currently active [civilization][CivilizationInfo]
- * @property shouldUpdate When set, causes the screen to update in the next [render][BaseScreen.render] event
- * @property isPlayersTurn (readonly) Indicates it's the player's ([viewingCiv]) turn
- * @property selectedCiv Selected civilization, used in spectator and replay mode, equals viewingCiv in ordinary games
- * @property canChangeState (readonly) `true` when it's the player's turn unless he is a spectator
- * @property mapHolder A [WorldMapHolder] instance
- * @property bottomUnitTable Bottom left widget holding information about a selected unit or city
+ * @param restoreState
  */
-class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : BaseScreen() {
+class WorldScreen(
+    val gameInfo: GameInfo,
+    val viewingCiv: CivilizationInfo,
+    restoreState: RestoreState? = null
+) : BaseScreen() {
+    /** When set, causes the screen to update in the next [render][BaseScreen.render] event */
+    var shouldUpdate = false
 
+    /** Indicates it's the player's ([viewingCiv]) turn */
     var isPlayersTurn = viewingCiv == gameInfo.currentPlayerCiv
         private set     // only this class is allowed to make changes
+
+    /** Selected civilization, used in spectator and replay mode, equals viewingCiv in ordinary games */
     var selectedCiv = viewingCiv
+
     var fogOfWar = true
         private set
+
+    /** `true` when it's the player's turn unless he is a spectator*/
     val canChangeState
         get() = isPlayersTurn && !viewingCiv.isSpectator()
+
+    val mapHolder = WorldMapHolder(this, gameInfo.tileMap)
+
+    /** Bottom left widget holding information about a selected unit or city */
+    val bottomUnitTable = UnitTable(this)
+
     private var waitingForAutosave = false
     private val mapVisualization = MapVisualization(gameInfo, viewingCiv)
 
-    val mapHolder = WorldMapHolder(this, gameInfo.tileMap)
     private val minimapWrapper = MinimapHolder(mapHolder)
 
     private val topBar = WorldScreenTopBar(this)
-    val bottomUnitTable = UnitTable(this)
+
+
     private val bottomTileInfoTable = TileInfoTable(viewingCiv)
     private val battleTable = BattleTable(this)
     private val unitActionsTable = UnitActionsTable(this)
@@ -118,13 +134,11 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     private val techButtonHolder = Table()
     private val diplomacyButtonHolder = Table()
     private val fogOfWarButton = createFogOfWarButton()
-    private val nextTurnButton = NextTurnButton(keyPressDispatcher)
+    private val nextTurnButton = NextTurnButton()
     private val statusButtons = StatusButtons(nextTurnButton)
     private val tutorialTaskTable = Table().apply { background = ImageGetter.getBackground(
         ImageGetter.getBlue().darken(0.5f)) }
     private val notificationsScroll = NotificationsScroll(this)
-
-    var shouldUpdate = false
 
     private val zoomController = ZoomButtonPair(mapHolder)
 
@@ -139,12 +153,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
         minimapWrapper.x = stage.width - minimapWrapper.width
 
-        try { // Most memory errors occur here, so this is a sort of catch-all
-            mapHolder.addTiles()
-        } catch (outOfMemoryError: OutOfMemoryError) {
-            mapHolder.clear() // hopefully enough memory will be freed to be able to display the toast popup
-            ToastPopup("Not enough memory on phone to load game!", this)
-        }
+        // This is the most memory-intensive operation we have currently, most OutOfMemory errors will occur here
+        mapHolder.addTiles()
 
         // resume music (in case choices from the menu lead to instantiation of a new WorldScreen)
         UncivGame.Current.musicController.resume()
@@ -207,7 +217,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
         tutorialController.allTutorialsShowedCallback = { shouldUpdate = true }
 
-        onBackButtonClicked { backButtonAndESCHandler() }
+        globalShortcuts.add(KeyCharAndCode.BACK) { backButtonAndESCHandler() }
 
         addKeyboardListener() // for map panning by W,S,A,D
         addKeyboardPresses()  // shortcut keys like F1
@@ -228,6 +238,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
             }
         }
 
+        if (restoreState != null) restore(restoreState)
+
         // don't run update() directly, because the UncivGame.worldScreen should be set so that the city buttons and tile groups
         //  know what the viewing civ is.
         shouldUpdate = true
@@ -240,41 +252,40 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
     private fun addKeyboardPresses() {
         // Space and N are assigned in createNextTurnButton
-        keyPressDispatcher[Input.Keys.F1] = { game.setScreen(CivilopediaScreen(gameInfo.ruleSet, this)) }
-        keyPressDispatcher['E'] = { game.setScreen(EmpireOverviewScreen(selectedCiv)) }     // Empire overview last used page
+        globalShortcuts.add(Input.Keys.F1) { game.setScreen(CivilopediaScreen(gameInfo.ruleSet, this)) }
+        globalShortcuts.add('E') { game.setScreen(EmpireOverviewScreen(selectedCiv)) }     // Empire overview last used page
         /*
          * These try to be faithful to default Civ5 key bindings as found in several places online
          * Some are a little arbitrary, e.g. Economic info, Military info
          * Some are very much so as Unciv *is* Strategic View and the Notification log is always visible
          */
-        keyPressDispatcher[Input.Keys.F2] = { game.setScreen(EmpireOverviewScreen(selectedCiv, "Trades")) }    // Economic info
-        keyPressDispatcher[Input.Keys.F3] = { game.setScreen(EmpireOverviewScreen(selectedCiv, "Units")) }    // Military info
-        keyPressDispatcher[Input.Keys.F4] = { game.setScreen(EmpireOverviewScreen(selectedCiv, "Diplomacy")) }    // Diplomacy info
-        keyPressDispatcher[Input.Keys.F5] = { game.setScreen(PolicyPickerScreen(this, selectedCiv)) }    // Social Policies Screen
-        keyPressDispatcher[Input.Keys.F6] = { game.setScreen(TechPickerScreen(viewingCiv)) }    // Tech Screen
-        keyPressDispatcher[Input.Keys.F7] = { game.setScreen(EmpireOverviewScreen(selectedCiv, "Cities")) }    // originally Notification Log
-        keyPressDispatcher[Input.Keys.F8] = { game.setScreen(VictoryScreen(this)) }    // Victory Progress
-        keyPressDispatcher[Input.Keys.F9] = { game.setScreen(EmpireOverviewScreen(selectedCiv, "Stats")) }    // Demographics
-        keyPressDispatcher[Input.Keys.F10] = { game.setScreen(EmpireOverviewScreen(selectedCiv, "Resources")) }    // originally Strategic View
-        keyPressDispatcher[Input.Keys.F11] = { QuickSave.save(gameInfo, this) }    // Quick Save
-        keyPressDispatcher[Input.Keys.F12] = { QuickSave.load(this) }    // Quick Load
-        keyPressDispatcher[Input.Keys.HOME] = {    // Capital City View
+        globalShortcuts.add(Input.Keys.F2) { game.setScreen(EmpireOverviewScreen(selectedCiv, "Trades")) }    // Economic info
+        globalShortcuts.add(Input.Keys.F3) { game.setScreen(EmpireOverviewScreen(selectedCiv, "Units")) }    // Military info
+        globalShortcuts.add(Input.Keys.F4) { game.setScreen(EmpireOverviewScreen(selectedCiv, "Diplomacy")) }    // Diplomacy info
+        globalShortcuts.add(Input.Keys.F5) { game.setScreen(PolicyPickerScreen(this, selectedCiv)) }    // Social Policies Screen
+        globalShortcuts.add(Input.Keys.F6) { game.setScreen(TechPickerScreen(viewingCiv)) }    // Tech Screen
+        globalShortcuts.add(Input.Keys.F7) { game.setScreen(EmpireOverviewScreen(selectedCiv, "Cities")) }    // originally Notification Log
+        globalShortcuts.add(Input.Keys.F8) { game.setScreen(VictoryScreen(this)) }    // Victory Progress
+        globalShortcuts.add(Input.Keys.F9) { game.setScreen(EmpireOverviewScreen(selectedCiv, "Stats")) }    // Demographics
+        globalShortcuts.add(Input.Keys.F10) { game.setScreen(EmpireOverviewScreen(selectedCiv, "Resources")) }    // originally Strategic View
+        globalShortcuts.add(Input.Keys.F11) { QuickSave.save(gameInfo, this) }    // Quick Save
+        globalShortcuts.add(Input.Keys.F12) { QuickSave.load(this) }    // Quick Load
+        globalShortcuts.add(Input.Keys.HOME) {    // Capital City View
             val capital = gameInfo.currentPlayerCiv.getCapital()
             if (capital != null && !mapHolder.setCenterPosition(capital.location))
                 game.setScreen(CityScreen(capital))
         }
-        keyPressDispatcher[KeyCharAndCode.ctrl('O')] = { // Game Options
+        globalShortcuts.add(KeyCharAndCode.ctrl('O')) { // Game Options
             this.openOptionsPopup(onClose = {
                 mapHolder.reloadMaxZoom()
                 nextTurnButton.update(hasOpenPopups(), isPlayersTurn, waitingForAutosave, isNextTurnUpdateRunning())
             })
         }
-        keyPressDispatcher[KeyCharAndCode.ctrl('S')] = { game.setScreen(SaveGameScreen(gameInfo)) }    //   Save
-        keyPressDispatcher[KeyCharAndCode.ctrl('L')] = { game.setScreen(LoadGameScreen(this)) }    //   Load
-        keyPressDispatcher[KeyCharAndCode.ctrl('Q')] = { ExitGamePopup(this, true) }    //   Quit
-        keyPressDispatcher[Input.Keys.NUMPAD_ADD] = { this.mapHolder.zoomIn() }    //   '+' Zoom
-        keyPressDispatcher[Input.Keys.NUMPAD_SUBTRACT] = { this.mapHolder.zoomOut() }    //   '-' Zoom
-        keyPressDispatcher.setCheckpoint()
+        globalShortcuts.add(KeyCharAndCode.ctrl('S')) { game.setScreen(SaveGameScreen(gameInfo)) }    //   Save
+        globalShortcuts.add(KeyCharAndCode.ctrl('L')) { game.setScreen(LoadGameScreen(this)) }    //   Load
+        globalShortcuts.add(KeyCharAndCode.ctrl('Q')) { ExitGamePopup(this, true) }    //   Quit
+        globalShortcuts.add(Input.Keys.NUMPAD_ADD) { this.mapHolder.zoomIn() }    //   '+' Zoom
+        globalShortcuts.add(Input.Keys.NUMPAD_SUBTRACT) { this.mapHolder.zoomOut() }    //   '-' Zoom
     }
 
     private fun addKeyboardListener() {
@@ -289,7 +300,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
                     override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
                         if (keycode !in ALLOWED_KEYS) return false
-                        // Without the following keyPressDispatcher Ctrl-S would leave WASD map scrolling stuck
+                        // Without the following Ctrl-S would leave WASD map scrolling stuck
+                        // Might be obsolete with keyboard shortcut refactoring
                         if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT)) return false
 
                         pressedKeys.add(keycode)
@@ -349,10 +361,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
             }
             launchOnGLThread {
                 loadingGamePopup.close()
-                if (game.gameInfo!!.gameId == gameInfo.gameId) { // game could've been changed during download
-                    game.setScreen(createNewWorldScreen(latestGame))
-                }
             }
+            startNewScreenJob(latestGame)
         } catch (ex: Throwable) {
             launchOnGLThread {
                 val message = MultiplayerHelpers.getLoadExceptionMessage(ex)
@@ -404,7 +414,6 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         if (fogOfWar) minimapWrapper.update(selectedCiv)
         else minimapWrapper.update(viewingCiv)
 
-        keyPressDispatcher.revertToCheckPoint()
         unitActionsTable.update(bottomUnitTable.selectedUnit)
         unitActionsTable.y = bottomUnitTable.height
 
@@ -425,12 +434,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         // it doesn't update the explored tiles of the civ... need to think about that harder
         // it causes a bug when we move a unit to an unexplored tile (for instance a cavalry unit which can move far)
 
-        try { // Most memory errors occur here, so this is a sort of catch-all
-            if (fogOfWar) mapHolder.updateTiles(selectedCiv)
-            else mapHolder.updateTiles(viewingCiv)
-        } catch (outOfMemoryError: OutOfMemoryError) {
-            ToastPopup("Not enough memory on phone to load game!", this)
-        }
+        if (fogOfWar) mapHolder.updateTiles(selectedCiv)
+        else mapHolder.updateTiles(viewingCiv)
 
         topBar.update(selectedCiv)
 
@@ -606,26 +611,32 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
     }
 
-    private fun createNewWorldScreen(gameInfo: GameInfo, resize:Boolean=false): WorldScreen {
+    class RestoreState(
+        mapHolder: WorldMapHolder,
+        val selectedCivName: String,
+        val viewingCivName: String,
+        val fogOfWar: Boolean
+    ) {
+        val zoom = mapHolder.scaleX
+        val scrollX = mapHolder.scrollX
+        val scrollY = mapHolder.scrollY
+    }
+    fun getRestoreState(): RestoreState {
+        return RestoreState(mapHolder, selectedCiv.civName, viewingCiv.civName, fogOfWar)
+    }
 
-        game.gameInfo = gameInfo
-        val newWorldScreen = WorldScreen(gameInfo, gameInfo.getPlayerToViewAs())
+    private fun restore(restoreState: RestoreState) {
 
         // This is not the case if you have a multiplayer game where you play as 2 civs
-        if (!resize && newWorldScreen.viewingCiv.civName == viewingCiv.civName) {
-            newWorldScreen.mapHolder.width = mapHolder.width
-            newWorldScreen.mapHolder.height = mapHolder.height
-            newWorldScreen.mapHolder.scaleX = mapHolder.scaleX
-            newWorldScreen.mapHolder.scaleY = mapHolder.scaleY
-            newWorldScreen.mapHolder.scrollX = mapHolder.scrollX
-            newWorldScreen.mapHolder.scrollY = mapHolder.scrollY
-            newWorldScreen.mapHolder.updateVisualScroll()
+        if (viewingCiv.civName == restoreState.viewingCivName) {
+            mapHolder.zoom(restoreState.zoom)
+            mapHolder.scrollX = restoreState.scrollX
+            mapHolder.scrollY = restoreState.scrollY
+            mapHolder.updateVisualScroll()
         }
 
-        newWorldScreen.selectedCiv = gameInfo.getCivilization(selectedCiv.civName)
-        newWorldScreen.fogOfWar = fogOfWar
-
-        return newWorldScreen
+        selectedCiv = gameInfo.getCivilization(restoreState.selectedCivName)
+        fogOfWar = restoreState.fogOfWar
     }
 
     fun nextTurn() {
@@ -665,32 +676,9 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
             if (game.gameInfo != originalGameInfo) // while this was turning we loaded another game
                 return@runOnNonDaemonThreadPool
 
-            this@WorldScreen.game.gameInfo = gameInfoClone
             debug("Next turn took %sms", System.currentTimeMillis() - startTime)
 
-            val shouldAutoSave = gameInfoClone.turns % game.settings.turnsBetweenAutosaves == 0
-
-            // create a new WorldScreen to show the new stuff we've changed, and switch out the current screen.
-            // do this on main thread - it's the only one that has a GL context to create images from
-            launchOnGLThread {
-                val newWorldScreen = createNewWorldScreen(gameInfoClone)
-                if (gameInfoClone.currentPlayerCiv.civName != viewingCiv.civName
-                        && !gameInfoClone.gameParameters.isOnlineMultiplayer) {
-                    game.setScreen(PlayerReadyScreen(newWorldScreen))
-                } else {
-                    game.setScreen(newWorldScreen)
-                }
-
-                if (shouldAutoSave) {
-                    newWorldScreen.waitingForAutosave = true
-                    newWorldScreen.shouldUpdate = true
-                    game.gameSaver.requestAutoSave(gameInfoClone).invokeOnCompletion {
-                        // only enable the user to next turn once we've saved the current one
-                        newWorldScreen.waitingForAutosave = false
-                        newWorldScreen.shouldUpdate = true
-                    }
-                }
-            }
+            startNewScreenJob(gameInfoClone)
         }
     }
 
@@ -833,8 +821,9 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     }
 
     override fun resize(width: Int, height: Int) {
-        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height)
-            createNewWorldScreen(gameInfo, resize=true) // start over
+        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
+            startNewScreenJob(gameInfo) // start over
+        }
     }
 
 
@@ -898,5 +887,35 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
         ExitGamePopup(this, true)
 
+    }
+
+    fun autoSave() {
+        waitingForAutosave = true
+        shouldUpdate = true
+        UncivGame.Current.gameSaver.requestAutoSave(gameInfo).invokeOnCompletion {
+            // only enable the user to next turn once we've saved the current one
+            waitingForAutosave = false
+            shouldUpdate = true
+        }
+    }
+}
+
+/** This exists so that no reference to the current world screen remains, so the old world screen can get garbage collected during [UncivGame.loadGame]. */
+private fun startNewScreenJob(gameInfo: GameInfo) {
+    Concurrency.run {
+        val newWorldScreen = try {
+            UncivGame.Current.loadGame(gameInfo)
+        } catch (oom: OutOfMemoryError) {
+            withGLContext {
+                val mainMenu = UncivGame.Current.goToMainMenu()
+                ToastPopup("Not enough memory on phone to load game!", mainMenu)
+            }
+            return@run
+        }
+
+        val shouldAutoSave = gameInfo.turns % UncivGame.Current.settings.turnsBetweenAutosaves == 0
+        if (shouldAutoSave) {
+            newWorldScreen.autoSave()
+        }
     }
 }

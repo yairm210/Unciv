@@ -97,10 +97,9 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen() {
         // so all levels select to show the tab in question is too complex. Sub-Tabs need to maintain
         // the key binding here and the used key in their `addPage`s again for the tooltips.
         fun selectGeneratePage(index: Int) { tabs.run { selectPage(1); generate.selectPage(index) } }
-        keyPressDispatcher[KeyCharAndCode.ctrl('n')] = { selectGeneratePage(0) }
-        keyPressDispatcher[KeyCharAndCode.ctrl('g')] = { selectGeneratePage(1) }
-        keyPressDispatcher[KeyCharAndCode.BACK] = this::closeEditor
-        keyPressDispatcher.setCheckpoint()
+        globalShortcuts.add(KeyCharAndCode.ctrl('n')) { selectGeneratePage(0) }
+        globalShortcuts.add(KeyCharAndCode.ctrl('g')) { selectGeneratePage(1) }
+        globalShortcuts.add(KeyCharAndCode.BACK) { closeEditor() }
     }
 
     companion object {
@@ -191,9 +190,7 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen() {
 
     fun askIfDirty(question: String, action: ()->Unit) {
         if (!isDirty) return action()
-        YesNoPopup(question, screen = this, restoreDefault = {
-            keyPressDispatcher[KeyCharAndCode.BACK] = this::closeEditor
-        }, action).open()
+        YesNoPopup(question, screen = this, action = action).open()
     }
 
     fun hideSelection() {
