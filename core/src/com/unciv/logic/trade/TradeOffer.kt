@@ -13,7 +13,7 @@ data class TradeOffer(val name: String, val type: TradeType, var amount: Int = 1
         name: String,
         type: TradeType,
         amount: Int = 1,
-        gameSpeed: GameSpeed = UncivGame.Current.gameInfo.getGameSpeed()
+        gameSpeed: GameSpeed = UncivGame.Current.gameInfo!!.getGameSpeed()
     ) : this(name, type, amount, duration = -1) {
         duration = when {
             type.isImmediate -> -1 // -1 for offers that are immediate (e.g. gold transfer)
