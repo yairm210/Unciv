@@ -184,8 +184,7 @@ class CivilopediaScreen(
         onBackButtonClicked { game.setScreen(previousScreen) }
 
         val religionEnabled = showReligionInCivilopedia(ruleset)
-        val victoryTypes = if (game.gameInfo == null) listOf()
-            else game.gameInfo.gameParameters.victoryTypes
+        val victoryTypes = game.gameInfo?.gameParameters?.victoryTypes ?: listOf()
 
         fun shouldBeDisplayed(obj: IHasUniques): Boolean {
             return when {
@@ -328,7 +327,7 @@ class CivilopediaScreen(
         // Here we decide whether to show Religion in Civilopedia from Main Menu (no gameInfo loaded)
         fun showReligionInCivilopedia(ruleset: Ruleset? = null) = when {
             UncivGame.isCurrentInitialized() && UncivGame.Current.gameInfo != null ->
-                UncivGame.Current.gameInfo.isReligionEnabled()
+                UncivGame.Current.gameInfo!!.isReligionEnabled()
             ruleset != null -> ruleset.beliefs.isNotEmpty()
             else -> true
         }

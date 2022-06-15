@@ -241,7 +241,7 @@ class TileImprovement : RulesetStatsObject() {
         if (isAncientRuinsEquivalent() && ruleset.ruinRewards.isNotEmpty()) {
             val difficulty = if (!UncivGame.isCurrentInitialized() || UncivGame.Current.gameInfo == null)
                     "Prince"  // most factors == 1
-                else UncivGame.Current.gameInfo.gameParameters.difficulty
+                else UncivGame.Current.gameInfo!!.gameParameters.difficulty
             val religionEnabled = showReligionInCivilopedia(ruleset)
             textList += FormattedLine()
             textList += FormattedLine("The possible rewards are:")

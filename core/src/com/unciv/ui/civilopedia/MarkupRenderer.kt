@@ -4,8 +4,8 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.addSeparator
-import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.onClick
 
 
 /** Makes [renderer][render] available outside [ICivilopediaText] */
