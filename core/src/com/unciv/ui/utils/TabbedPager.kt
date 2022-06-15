@@ -289,7 +289,7 @@ open class TabbedPager(
     //region Initialization
 
     init {
-        val screen = (if (UncivGame.isCurrentInitialized()) UncivGame.Current.screen else null) as? BaseScreen
+        val screen = (if (UncivGame.isCurrentInitialized()) UncivGame.Current.screen else null)
         val (screenWidth, screenHeight) = (screen?.stage?.run { width to height }) ?: (Float.MAX_VALUE to Float.MAX_VALUE)
         dimW = DimensionMeasurement.from(minimumWidth, maximumWidth, screenWidth)
         dimH = DimensionMeasurement.from(minimumHeight, maximumHeight, screenHeight)
@@ -601,7 +601,7 @@ open class TabbedPager(
         if (!UncivGame.isCurrentInitialized() || askPasswordLock || deferredSecretPages.isEmpty()) return
         askPasswordLock = true  // race condition: Popup closes _first_, then deferredSecretPages is emptied -> parent shows and calls us again
 
-        PassPopup(UncivGame.Current.screen as BaseScreen, {
+        PassPopup(UncivGame.Current.screen!!, {
             addDeferredSecrets()
         }, {
             deferredSecretPages.clear()

@@ -919,11 +919,11 @@ class AssignedQuest(val questName: String = "",
         when (questName) {
             QuestName.ClearBarbarianCamp.value -> {
                 game.resetToWorldScreen()
-                game.worldScreen.mapHolder.setCenterPosition(Vector2(data1.toFloat(), data2.toFloat()), selectUnit = false)
+                game.worldScreen!!.mapHolder.setCenterPosition(Vector2(data1.toFloat(), data2.toFloat()), selectUnit = false)
             }
             QuestName.Route.value -> {
                 game.resetToWorldScreen()
-                game.worldScreen.mapHolder.setCenterPosition(gameInfo.getCivilization(assigner).getCapital()!!.location, selectUnit = false)
+                game.worldScreen!!.mapHolder.setCenterPosition(gameInfo.getCivilization(assigner).getCapital()!!.location, selectUnit = false)
             }
         }
     }

@@ -138,7 +138,7 @@ class StatsOverviewTab(
             for (city in viewingPlayer.cities) { city.cityStats.update() }
             update()
         }
-        slider.isDisabled = !UncivGame.Current.worldScreen.canChangeState
+        slider.isDisabled = !UncivGame.Current.worldScreen!!.canChangeState
 
         sliderTable.add(slider).padTop(15f)
         add(sliderTable).colspan(2)

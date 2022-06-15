@@ -8,13 +8,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameSaver
-import com.unciv.ui.crashhandling.launchCrashHandling
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.AutoScrollPane
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyPressDispatcher
 import com.unciv.ui.utils.extensions.onClick
+import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.launchOnGLThread
 
 //todo key auto-repeat for navigation keys?
 
@@ -67,11 +67,11 @@ class VerticalFileListScrollPane(
 
         // Apparently, even just getting the list of saves can cause ANRs -
         // not sure how many saves these guys had but Google Play reports this to have happened hundreds of times
-        launchCrashHandling("GetSaves") {
+        Concurrency.run("GetSaves") {
             // .toList() materializes the result of the sequence
             val saves = files.toList()
 
-            postCrashHandlingRunnable {
+            launchOnGLThread {
                 loadAnimation.reset()
                 existingSavesTable.clear()
                 for (saveGameFile in saves) {

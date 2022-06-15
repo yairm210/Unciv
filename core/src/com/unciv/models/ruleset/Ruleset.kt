@@ -813,6 +813,11 @@ class Ruleset {
             checkUniques(policy, lines, rulesetSpecific, forOptionsPopup)
         }
 
+        for (branch in policyBranches.values)
+            if (branch.era !in eras)
+                lines += "${branch.name} requires era ${branch.era} which does not exist!"
+
+
         for (policy in policyBranches.values.flatMap { it.policies + it })
             if (policy != policies[policy.name])
                 lines += "More than one policy with the name ${policy.name} exists!"

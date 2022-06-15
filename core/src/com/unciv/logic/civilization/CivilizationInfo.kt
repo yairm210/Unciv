@@ -62,8 +62,11 @@ class CivilizationInfo {
     /** Returns an instance of WorkerAutomation valid for the duration of the current turn
      * This instance carries cached data common for all Workers of this civ */
     fun getWorkerAutomation(): WorkerAutomation {
-        val currentTurn = if (UncivGame.Current.isInitialized && UncivGame.Current.isGameInfoInitialized())
-                UncivGame.Current.gameInfo.turns else 0
+        val currentTurn = if (UncivGame.Current.isInitialized && UncivGame.Current.gameInfo != null) {
+            UncivGame.Current.gameInfo!!.turns
+        } else {
+            0
+        }
         if (workerAutomationCache == null || workerAutomationCache!!.cachedForTurn != currentTurn)
             workerAutomationCache = WorkerAutomation(this, currentTurn)
         return workerAutomationCache!!

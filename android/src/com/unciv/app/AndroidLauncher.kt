@@ -2,7 +2,9 @@ package com.unciv.app
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.WorkManager
 import com.badlogic.gdx.backends.android.AndroidApplication
@@ -33,9 +35,13 @@ open class AndroidLauncher : AndroidApplication() {
         val settings = GameSaver.getSettingsForPlatformLaunchers(filesDir.path)
         val fontFamily = settings.fontFamily
 
-        // Manage orientation lock
+        // Manage orientation lock and display cutout
         val platformSpecificHelper = PlatformSpecificHelpersAndroid(this)
         platformSpecificHelper.allowPortrait(settings.allowAndroidPortrait)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            platformSpecificHelper.toggleDisplayCutout(settings.androidCutout)
+        }
 
         val androidParameters = UncivGameParameters(
             version = BuildConfig.VERSION_NAME,
@@ -70,13 +76,13 @@ open class AndroidLauncher : AndroidApplication() {
 
     override fun onPause() {
         if (UncivGame.isCurrentInitialized()
-                && UncivGame.Current.isGameInfoInitialized()
+                && UncivGame.Current.gameInfo != null
                 && UncivGame.Current.settings.multiplayer.turnCheckerEnabled
                 && UncivGame.Current.gameSaver.getMultiplayerSaves().any()
         ) {
             MultiplayerTurnCheckWorker.startTurnChecker(
                 applicationContext, UncivGame.Current.gameSaver,
-                UncivGame.Current.gameInfo, UncivGame.Current.settings.multiplayer
+                UncivGame.Current.gameInfo!!, UncivGame.Current.settings.multiplayer
             )
         }
         super.onPause()

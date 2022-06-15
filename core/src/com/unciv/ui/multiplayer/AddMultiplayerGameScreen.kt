@@ -5,8 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.logic.IdChecker
 import com.unciv.models.translations.tr
-import com.unciv.ui.crashhandling.launchCrashHandling
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
@@ -14,6 +12,8 @@ import com.unciv.ui.utils.extensions.enable
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
+import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.launchOnGLThread
 import java.util.*
 
 class AddMultiplayerGameScreen(backScreen: MultiplayerScreen) : PickerScreen() {
@@ -55,16 +55,16 @@ class AddMultiplayerGameScreen(backScreen: MultiplayerScreen) : PickerScreen() {
             popup.addGoodSizedLabel("Working...")
             popup.open()
 
-            launchCrashHandling("AddMultiplayerGame") {
+            Concurrency.run("AddMultiplayerGame") {
                 try {
                     game.onlineMultiplayer.addGame(gameIDTextField.text.trim(), gameNameTextField.text.trim())
-                    postCrashHandlingRunnable {
+                    launchOnGLThread {
                         popup.close()
                         game.setScreen(backScreen)
                     }
                 } catch (ex: Exception) {
                     val message = MultiplayerHelpers.getLoadExceptionMessage(ex)
-                    postCrashHandlingRunnable {
+                    launchOnGLThread {
                         popup.reuseWith(message, true)
                     }
                 }

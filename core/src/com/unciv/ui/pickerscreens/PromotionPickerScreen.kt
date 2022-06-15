@@ -30,8 +30,6 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
             game.setScreen(PromotionPickerScreen(unit).setScrollY(scrollPane.scrollY))
         else
             game.resetToWorldScreen()
-        dispose()
-        game.worldScreen.shouldUpdate = true
     }
 
     init {
@@ -43,7 +41,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
             acceptPromotion(selectedPromotion)
         }
         val canBePromoted = unit.promotions.canBePromoted()
-        val canChangeState = game.worldScreen.canChangeState
+        val canChangeState = game.worldScreen!!.canChangeState
         val canPromoteNow = canBePromoted && canChangeState
                 && unit.currentMovement > 0 && unit.attacksThisTurn == 0
         rightSideButton.isEnabled = canPromoteNow

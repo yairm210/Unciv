@@ -183,10 +183,9 @@ class CivilopediaScreen(
         val imageSize = 50f
         onBackButtonClicked { game.setScreen(previousScreen) }
 
-        val religionEnabled = if (game.isGameInfoInitialized()) game.gameInfo.isReligionEnabled()
-            else ruleset.beliefs.isNotEmpty()
-        val victoryTypes = if (game.isGameInfoInitialized()) game.gameInfo.gameParameters.victoryTypes
-            else listOf()
+        val curGameInfo = game.gameInfo
+        val religionEnabled = if (curGameInfo != null) curGameInfo.isReligionEnabled() else ruleset.beliefs.isNotEmpty()
+        val victoryTypes = if (curGameInfo != null) curGameInfo.gameParameters.victoryTypes else emptyList()
 
         fun shouldBeDisplayed(obj: IHasUniques): Boolean {
             return when {
@@ -254,7 +253,6 @@ class CivilopediaScreen(
         val goToGameButton = Constants.close.toTextButton()
         goToGameButton.onClick {
             game.setScreen(previousScreen)
-            dispose()
         }
 
         val topTable = Table()
