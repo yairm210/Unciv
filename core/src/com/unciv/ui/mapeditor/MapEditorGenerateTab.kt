@@ -15,7 +15,17 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.newgamescreen.MapParametersTable
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.TabbedPager
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.enable
+import com.unciv.ui.utils.extensions.isEnabled
+import com.unciv.ui.utils.extensions.onChange
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toCheckBox
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
 import com.unciv.utils.Log
 import kotlin.concurrent.thread
 

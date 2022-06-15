@@ -6,7 +6,7 @@ import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
 import com.unciv.models.UncivSound
-import com.unciv.ui.crashhandling.launchCrashHandling
+import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.debug
 import kotlinx.coroutines.delay
 import java.io.File
@@ -43,7 +43,7 @@ import java.io.File
  * a handful of them in memory we should be able to get away with keeping them alive for the
  * app lifetime - and we do dispose them when the app is disposed.
  */
-object Sounds {
+object SoundPlayer {
     @Suppress("EnumEntryName")
     private enum class SupportedExtensions { mp3, ogg, wav }    // Per Gdx docs, no aac/m4a
 
@@ -59,7 +59,8 @@ object Sounds {
         val game = UncivGame.Current
 
         // Get a hash covering all mods - quickly, so don't map, cast or copy the Set types
-        val hash1 = if (game.isGameInfoInitialized()) game.gameInfo.ruleSet.mods.hashCode() else 0
+        val gameInfo = game.gameInfo
+        val hash1 = if (gameInfo != null) gameInfo.ruleSet.mods.hashCode() else 0
         val newHash = hash1.xor(game.settings.visualMods.hashCode())
 
         // If hash the same, leave the cache as is
@@ -91,8 +92,10 @@ object Sounds {
         // audiovisual mods after game mods but before built-in sounds
         // (these can already be available when game.gameInfo is not)
         val modList: MutableSet<String> = mutableSetOf()
-        if (game.isGameInfoInitialized())
-            modList.addAll(game.gameInfo.ruleSet.mods)  // Sounds from game mods
+        val gameInfo = game.gameInfo
+        if (gameInfo != null) {
+            modList.addAll(gameInfo.ruleSet.mods)  // Sounds from game mods
+        }
         modList.addAll(game.settings.visualMods)
 
         // Translate the basic mod list into relative folder names so only sounds/name.ext needs
@@ -117,7 +120,7 @@ object Sounds {
             else GetSoundResult(soundMap[sound]!!, false)
 
         // Not cached - try loading it
-        val fileName = sound.value
+        val fileName = sound.fileName
         var file: FileHandle? = null
         for ( (modFolder, extension) in getFolders().flatMap {
             // This is essentially a cross join. To operate on all combinations, we pack both lambda
@@ -134,12 +137,12 @@ object Sounds {
 
         @Suppress("LiftReturnOrAssignment")
         if (file == null || !file.exists()) {
-            debug("Sound %s not found!", sound.value)
+            debug("Sound %s not found!", sound.fileName)
             // remember that the actual file is missing
             soundMap[sound] = null
             return null
         } else {
-            debug("Sound %s loaded from %s", sound.value, file.path())
+            debug("Sound %s loaded from %s", sound.fileName, file.path())
             val newSound = Gdx.audio.newSound(file)
             // Store Sound for reuse
             soundMap[sound] = newSound
@@ -147,7 +150,11 @@ object Sounds {
         }
     }
 
-    /** Find, cache and play a Sound
+    /**
+     * Find, cache and play a Sound.
+     *
+     * **Attention:** The [GameSounds] object has been set up to control playing all sounds of the game. Chances are that you shouldn't be calling this method
+     * from anywhere but [GameSounds].
      *
      * Sources are mods from a loaded game, then mods marked as permanent audiovisual,
      * and lastly Unciv's own assets/sounds. Will fail silently if the sound file cannot be found.
@@ -164,7 +171,7 @@ object Sounds {
         val initialDelay = if (isFresh && Gdx.app.type == Application.ApplicationType.Android) 40 else 0
 
         if (initialDelay > 0 || resource.play(volume) == -1L) {
-            launchCrashHandling("DelayedSound") {
+            Concurrency.run("DelayedSound") {
                 delay(initialDelay.toLong())
                 while (resource.play(volume) == -1L) {
                     delay(20L)

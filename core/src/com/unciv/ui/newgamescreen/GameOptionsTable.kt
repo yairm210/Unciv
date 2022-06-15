@@ -17,7 +17,11 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.multiplayer.MultiplayerHelpers
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.UncivSlider
+import com.unciv.ui.utils.extensions.onChange
+import com.unciv.ui.utils.extensions.toCheckBox
+import com.unciv.ui.utils.extensions.toLabel
 
 class GameOptionsTable(
     val previousScreen: IPreviousScreen,

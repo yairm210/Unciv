@@ -33,7 +33,7 @@ import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
-import com.unciv.ui.utils.colorFromRGB
+import com.unciv.ui.utils.extensions.colorFromRGB
 import com.unciv.ui.utils.getRelativeTextDistance
 import com.unciv.utils.Log
 import com.unciv.utils.debug
@@ -812,6 +812,11 @@ class Ruleset {
                         lines += "${policy.name} requires policy $prereq which does not exist!"
             checkUniques(policy, lines, rulesetSpecific, forOptionsPopup)
         }
+
+        for (branch in policyBranches.values)
+            if (branch.era !in eras)
+                lines += "${branch.name} requires era ${branch.era} which does not exist!"
+
 
         for (policy in policyBranches.values.flatMap { it.policies + it })
             if (policy != policies[policy.name])

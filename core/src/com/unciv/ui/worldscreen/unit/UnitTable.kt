@@ -17,7 +17,12 @@ import com.unciv.ui.civilopedia.CivilopediaCategories
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.UnitGroup
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.darken
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.worldscreen.WorldScreen
 
 class UnitTable(val worldScreen: WorldScreen) : Table(){
@@ -163,17 +168,17 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                     unitDescriptionTable.add("XP")
                     unitDescriptionTable.add(unit.promotions.XP.toString() + "/" + unit.promotions.xpForNextPromotion())
                 }
-                
+
                 if (unit.canDoReligiousAction(Constants.spreadReligionAbilityCount)) {
                     unitDescriptionTable.add(ImageGetter.getStatIcon("Faith")).size(20f)
                     unitDescriptionTable.add(unit.getActionString(Constants.spreadReligionAbilityCount))
                 }
-                
+
                 if (unit.canDoReligiousAction(Constants.removeHeresyAbilityCount)) {
                     unitDescriptionTable.add(ImageGetter.getImage("OtherIcons/Remove Heresy")).size(20f)
                     unitDescriptionTable.add(unit.getActionString(Constants.removeHeresyAbilityCount))
                 }
-                
+
                 if (unit.baseUnit.religiousStrength > 0) {
                     unitDescriptionTable.add(ImageGetter.getStatIcon("ReligiousStrength")).size(20f)
                     unitDescriptionTable.add((unit.baseUnit.religiousStrength - unit.religiousStrengthLost).toString())

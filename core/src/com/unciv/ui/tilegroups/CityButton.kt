@@ -21,7 +21,14 @@ import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.trade.DiplomacyScreen
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.Fonts
+import com.unciv.ui.utils.extensions.brighten
+import com.unciv.ui.utils.extensions.centerX
+import com.unciv.ui.utils.extensions.centerY
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.setFontSize
+import com.unciv.ui.utils.extensions.toLabel
 import kotlin.math.max
 import kotlin.math.min
 
@@ -156,9 +163,10 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
             if (isButtonMoved) {
                 val viewingCiv = worldScreen.viewingCiv
                 // second tap on the button will go to the city screen
-                // if this city belongs to you
-                if (uncivGame.viewEntireMapForDebug || belongsToViewingCiv() || viewingCiv.isSpectator()) {
-                    uncivGame.setScreen(CityScreen(city))
+                // if this city belongs to you and you are not iterating though the air units
+                if (uncivGame.viewEntireMapForDebug || viewingCiv.isSpectator()
+                    || (belongsToViewingCiv() && !tileGroup.tileInfo.airUnits.contains(unitTable.selectedUnit))) {
+                        uncivGame.setScreen(CityScreen(city))
                 } else if (viewingCiv.knows(city.civInfo)) {
                     foreignCityInfoPopup()
                 }

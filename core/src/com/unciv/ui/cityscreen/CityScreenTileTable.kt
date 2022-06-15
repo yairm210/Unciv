@@ -8,15 +8,20 @@ import com.unciv.models.UncivSound
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
-import com.unciv.ui.audio.Sounds
+import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.civilopedia.FormattedLine.IconDisplay
 import com.unciv.ui.civilopedia.MarkupRenderer
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.popup.closeAllPopups
-import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.utils.extensions.darken
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.isEnabled
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
 import kotlin.math.roundToInt
 
 class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
@@ -91,7 +96,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
     }
 
     /** Ask whether user wants to buy [selectedTile] for gold.
-     * 
+     *
      * Used from onClick and keyboard dispatch, thus only minimal parameters are passed,
      * and it needs to do all checks and the sound as appropriate.
      */
@@ -107,15 +112,14 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
                 "Would you like to purchase [Tile] for [$goldCostOfTile] [${Stat.Gold.character}]?".tr()
         YesNoPopup(
             purchasePrompt,
-            action = {
-                Sounds.play(UncivSound.Coin)
-                city.expansion.buyTile(selectedTile)
-                // preselect the next tile on city screen rebuild so bulk buying can go faster
-                UncivGame.Current.setScreen(CityScreen(city, initSelectedTile = city.expansion.chooseNewTileToOwn()))
-            },
             screen = cityScreen,
             restoreDefault = { cityScreen.update() }
-        ).open()
+        ) {
+            SoundPlayer.play(UncivSound.Coin)
+            city.expansion.buyTile(selectedTile)
+            // preselect the next tile on city screen rebuild so bulk buying can go faster
+            UncivGame.Current.setScreen(CityScreen(city, initSelectedTile = city.expansion.chooseNewTileToOwn()))
+        }.open()
     }
 
     /** This tests whether the buy button should be _shown_ */

@@ -15,7 +15,12 @@ import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.mapeditor.MapEditorOptionsTab.TileMatchFuzziness
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.TabbedPager
+import com.unciv.ui.utils.UncivSlider
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.utils.Log
 
 class MapEditorEditTab(

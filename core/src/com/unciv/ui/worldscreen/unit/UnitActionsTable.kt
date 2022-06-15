@@ -6,13 +6,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.UnitAction
-import com.unciv.ui.audio.Sounds
-import com.unciv.ui.crashhandling.launchCrashHandling
+import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.images.IconTextButton
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.KeyPressDispatcher.Companion.keyboardAvailable
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.worldscreen.WorldScreen
+import com.unciv.utils.concurrency.Concurrency
 
 class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
 
@@ -37,14 +39,14 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         actionButton.pack()
         val action = {
             unitAction.action?.invoke()
-            UncivGame.Current.worldScreen.shouldUpdate = true
+            UncivGame.Current.worldScreen!!.shouldUpdate = true
         }
         if (unitAction.action == null) actionButton.disable()
         else {
             actionButton.onClick(unitAction.uncivSound, action)
             if (key != KeyCharAndCode.UNKNOWN)
                 worldScreen.keyPressDispatcher[key] = {
-                    launchCrashHandling("UnitSound") { Sounds.play(unitAction.uncivSound) }
+                    Concurrency.run("UnitSound") { SoundPlayer.play(unitAction.uncivSound) }
                     action()
                     worldScreen.mapHolder.removeUnitActionOverlay()
                 }

@@ -9,7 +9,7 @@ import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.civilopedia.FormattedLine
-import com.unciv.ui.utils.colorFromRGB
+import com.unciv.ui.utils.extensions.colorFromRGB
 
 class Terrain : RulesetStatsObject() {
 

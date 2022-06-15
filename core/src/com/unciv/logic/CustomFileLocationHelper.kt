@@ -2,7 +2,7 @@ package com.unciv.logic
 
 import com.unciv.logic.GameSaver.CustomLoadResult
 import com.unciv.logic.GameSaver.CustomSaveResult
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
+import com.unciv.utils.concurrency.Concurrency
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -82,14 +82,14 @@ private fun callLoadCallback(loadCompleteCallback: (CustomLoadResult<String>) ->
     } else {
         CustomLoadResult(null, exception)
     }
-    postCrashHandlingRunnable {
+    Concurrency.runOnGLThread {
         loadCompleteCallback(result)
     }
 }
 private fun callSaveCallback(saveCompleteCallback: (CustomSaveResult) -> Unit,
                              location: String? = null,
                              exception: Exception? = null) {
-    postCrashHandlingRunnable {
+    Concurrency.runOnGLThread {
         saveCompleteCallback(CustomSaveResult(location, exception))
     }
 }

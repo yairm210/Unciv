@@ -9,7 +9,9 @@ import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.UncivSlider
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.toLabel
 import kotlin.math.roundToInt
 
 class StatsOverviewTab(
@@ -136,7 +138,7 @@ class StatsOverviewTab(
             for (city in viewingPlayer.cities) { city.cityStats.update() }
             update()
         }
-        slider.isDisabled = !UncivGame.Current.worldScreen.canChangeState
+        slider.isDisabled = !UncivGame.Current.worldScreen!!.canChangeState
 
         sliderTable.add(slider).padTop(15f)
         add(sliderTable).colspan(2)

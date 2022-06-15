@@ -13,11 +13,20 @@ import com.unciv.logic.civilization.RuinsManager.RuinsManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.logic.map.*
+import com.unciv.logic.map.MapShape
+import com.unciv.logic.map.MapUnit
+import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.UnitMovementAlgorithms
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeRequest
 import com.unciv.models.Counter
-import com.unciv.models.ruleset.*
+import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.Difficulty
+import com.unciv.models.ruleset.Era
+import com.unciv.models.ruleset.ModOptionsConstants
+import com.unciv.models.ruleset.Nation
+import com.unciv.models.ruleset.Policy
+import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
@@ -29,8 +38,8 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.MayaCalendar
-import com.unciv.ui.utils.toPercent
-import com.unciv.ui.utils.withItem
+import com.unciv.ui.utils.extensions.toPercent
+import com.unciv.ui.utils.extensions.withItem
 import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
 import kotlin.math.max
@@ -53,8 +62,11 @@ class CivilizationInfo {
     /** Returns an instance of WorkerAutomation valid for the duration of the current turn
      * This instance carries cached data common for all Workers of this civ */
     fun getWorkerAutomation(): WorkerAutomation {
-        val currentTurn = if (UncivGame.Current.isInitialized && UncivGame.Current.isGameInfoInitialized())
-                UncivGame.Current.gameInfo.turns else 0
+        val currentTurn = if (UncivGame.Current.isInitialized && UncivGame.Current.gameInfo != null) {
+            UncivGame.Current.gameInfo!!.turns
+        } else {
+            0
+        }
         if (workerAutomationCache == null || workerAutomationCache!!.cachedForTurn != currentTurn)
             workerAutomationCache = WorkerAutomation(this, currentTurn)
         return workerAutomationCache!!

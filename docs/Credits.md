@@ -754,6 +754,8 @@ Sounds are from FreeSound.org unless otherwise noted and are either Creative Com
 -   [elephant 44](https://freesound.org/people/y89312/sounds/139875/) by y89312 for Naruesan's Elephant sound
 -   Excerpt from [Missile Strike](https://freesound.org/people/BaDoink/sounds/570690/) by BaDoink for guided missile
 -   Excerpt from [FireBurning_v2.wav](https://freesound.org/people/pcaeldries/sounds/30322/) by pcaeldries for 'remove heresy' action of inquisitor ([License](http://creativecommons.org/licenses/by/3.0/))
+- [Up Chime 2](https://freesound.org/people/FoolBoyMedia/sounds/352666/) by FoolBoyMedia for notifications
+- [dingaling](https://freesound.org/people/morrisjm/sounds/268756/) by morrisjm (based on [Calling_Bell_02.wav](https://freesound.org/people/RSilveira_88/sounds/216306/) by RSilveira_88) for notifications
 
 ## Music
 

@@ -4,17 +4,15 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.ruleset.Era
+import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
-import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.utils.MayaCalendar
-import com.unciv.ui.utils.toPercent
-import com.unciv.ui.utils.withItem
+import com.unciv.ui.utils.extensions.toPercent
+import com.unciv.ui.utils.extensions.withItem
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashSet
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
@@ -49,7 +47,7 @@ class TechManager {
 
     var freeTechs = 0
     // For calculating score
-    var repeatingTechsResearched = 0 
+    var repeatingTechsResearched = 0
 
     /** For calculating Great Scientist yields - see https://civilization.fandom.com/wiki/Great_Scientist_(Civ5)  */
     var scienceOfLast8Turns = IntArray(8) { 0 }
@@ -120,7 +118,7 @@ class TechManager {
 
     fun researchOfTech(TechName: String?) = techsInProgress[TechName] ?: 0
     // Was once duplicated as fun scienceSpentOnTech(tech: String): Int
-    
+
     fun remainingScienceToTech(techName: String) = costOfTech(techName) - researchOfTech(techName)
 
     fun turnsToTech(techName: String) = when {
@@ -133,10 +131,14 @@ class TechManager {
     fun canBeResearched(techName: String): Boolean {
         val tech = getRuleset().technologies[techName]!!
         if (tech.uniqueObjects.any { it.type == UniqueType.OnlyAvailableWhen && !it.conditionalsApply(civInfo) })
+            return false
+        
         if (tech.getMatchingUniques(UniqueType.IncompatibleWith).any { isResearched(it.params[0]) })
             return false
+        
         if (isResearched(tech.name) && !tech.isContinuallyResearchable())
             return false
+        
         return tech.prerequisites.all { isResearched(it) }
     }
 
