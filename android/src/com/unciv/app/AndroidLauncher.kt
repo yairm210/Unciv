@@ -39,9 +39,7 @@ open class AndroidLauncher : AndroidApplication() {
         val platformSpecificHelper = PlatformSpecificHelpersAndroid(this)
         platformSpecificHelper.allowPortrait(settings.allowAndroidPortrait)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            platformSpecificHelper.toggleDisplayCutout(settings.androidCutout)
-        }
+        platformSpecificHelper.toggleDisplayCutout(settings.androidCutout)
 
         val androidParameters = UncivGameParameters(
             version = BuildConfig.VERSION_NAME,
