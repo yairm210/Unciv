@@ -1,7 +1,6 @@
 package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -24,12 +23,10 @@ import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ZoomableScrollPane
-import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.packIfNeeded
 import com.unciv.ui.utils.extensions.toTextButton
-import java.io.FileNotFoundException
 
 class CityScreen(
     internal val city: CityInfo,
