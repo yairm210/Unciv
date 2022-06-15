@@ -45,8 +45,15 @@ object EventBus {
 
     /** To be able to listen to an event class and get notified even when child classes are sent as an event */
     private fun <T : Event> getClassesToListenTo(eventClass: KClass<T>): List<KClass<*>> {
-        val superClasses = eventClass.supertypes.map { it.classifier as KClass<*> }.filter { it != Any::class }
-        return superClasses + eventClass
+        return getSuperClasses(eventClass) + eventClass
+    }
+
+    private fun getSuperClasses(kClass: KClass<*>): List<KClass<*>> {
+        if (kClass.supertypes.size == 1 && kClass.supertypes[0] == Any::class) return emptyList()
+        return kClass.supertypes
+            .map { it.classifier as KClass<*> }
+            .flatMap { getSuperClasses(it) + it }
+            .filter { it != Any::class }
     }
 
     /** Removes all listeners whose WeakReference got collected and returns the ones that are still active */
@@ -74,13 +81,13 @@ object EventBus {
         }
         listeners[eventClass]!!.add(EventListenerWeakReference(eventHandler, filter))
     }
-    
+
     private fun cleanUp(eventHandlers: Map<KClass<*>, MutableList<Any>>) {
         for ((kClass, toRemove) in eventHandlers) {
             val registeredListeners = listeners.get(kClass)
-            registeredListeners?.removeIf { 
+            registeredListeners?.removeIf {
                 val eventHandler = it.eventHandler.get()
-                eventHandler == null || (eventHandler as Any) in toRemove 
+                eventHandler == null || (eventHandler as Any) in toRemove
             }
         }
     }
@@ -99,14 +106,14 @@ object EventBus {
      *             // do something when the event is received.
      *         }
      *     }
-     *     
+     *
      *     // Optional
      *     cleanup() {
      *         events.stopReceiving()
      *     }
      * }
      * ```
-     * 
+     *
      * The [stopReceiving] call is optional. Event listeners will be automatically garbage collected. However, garbage collection is non-deterministic, so it's
      * possible that the events keep being received for quite a while even after a class is unused. [stopReceiving] immediately cleans up all listeners.
      *
@@ -134,7 +141,7 @@ object EventBus {
                 eventHandlers[eventClass] = mutableListOf()
             }
             eventHandlers[eventClass]!!.add(eventHandler)
-            
+
             EventBus.receive(eventClass, filter, eventHandler)
         }
 

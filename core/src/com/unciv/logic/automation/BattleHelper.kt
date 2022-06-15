@@ -21,16 +21,15 @@ object BattleHelper {
                 BattleDamage.calculateDamageToAttacker(
                     MapUnitCombatant(unit),
                     Battle.getMapCombatantOfTile(it.tileToAttack)!!
-                ) < unit.health
+                ) + unit.getDamageFromTerrain(it.tileToAttackFrom) < unit.health
             }
 
         val enemyTileToAttack = chooseAttackTarget(unit, attackableEnemies)
 
         if (enemyTileToAttack != null) {
             Battle.moveAndAttack(MapUnitCombatant(unit), enemyTileToAttack)
-            return true
         }
-        return false
+        return unit.currentMovement == 0f
     }
 
     fun getAttackableEnemies(

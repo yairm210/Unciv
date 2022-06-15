@@ -60,7 +60,7 @@ If not, then the feature won't be added until we've finished all the features fr
 
 ### Why not? This is its own game, why not add features that weren't in Civ V?
 
-Having a clear vision is important for actually getting things done. 
+Having a clear vision is important for actually getting things done.
 
 Anyone can make a suggestion. Not all are good, viable, or simple. Not many can actually implement stuff.
 
@@ -79,7 +79,7 @@ Yes! Windows and Linux versions are available at [itch.io](https://yairm210.itch
 Unciv can also be installed on macOS, a guide on how to do that can be found [here](https://yairm210.github.io/Unciv/Other/Installing-on-macOS/).
 
 If you have Java 8, and are familiar with the command line, there are (considerably smaller) JARs in [Releases](https://github.com/yairm210/UnCiv/releases) which you can run with `java -jar Unciv.jar`.
-For Mac users, you'll need to add extra parameters, `java -XstartOnFirstThread -Djava.awt.headless=true -jar Unciv.jar`. 
+For Mac users, you'll need to add extra parameters, `java -XstartOnFirstThread -Djava.awt.headless=true -jar Unciv.jar`.
 
 If you use Flatpaks, there's a Flatpak by [MayeulC](https://github.com/MayeulC) and you can know more about it [here](https://github.com/flathub/io.github.yairm210.unciv). Flathub link is available in the [Downloads](#downloads) section.
 
@@ -91,7 +91,7 @@ I'm not planning on it.
 
 It means paying money to Apple, yet another release path,
  and since I don't have an IOS device it means I can't test it properly.
- 
+
 ## How can I learn to play? Where's the wiki?
 
 All the tutorial information is available in-game at menu > civilopedia > tutorials
@@ -117,13 +117,13 @@ If anyone has any real legal sources, or can shed some light on the limits of wh
 
 ## Disclosure
 
-Multiplayer takes advantage of Dropbox, which is *non-free software*, for syncing purposes.
+[Multiplayer](https://yairm210.github.io/Unciv/Other/Multiplayer/) takes advantage of Dropbox, which is *non-free software*, for syncing purposes.
 
 Single player does not use this feature.
 
 ## Downloads
 
-| [![](https://static.itch.io/images/badge.svg)](https://yairm210.itch.io/unciv)    |    [![](https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png)](https://play.google.com/store/apps/details?id=com.unciv.app)   |    [![](https://fdroid.gitlab.io/artwork/badge/get-it-on.png)](https://f-droid.org/en/packages/com.unciv.app/)	| [![](https://flathub.org/assets/badges/flathub-badge-en.svg)](https://flathub.org/apps/details/io.github.yairm210.unciv)  
+| [![](https://static.itch.io/images/badge.svg)](https://yairm210.itch.io/unciv)    |    [![](https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png)](https://play.google.com/store/apps/details?id=com.unciv.app)   |    [![](https://fdroid.gitlab.io/artwork/badge/get-it-on.png)](https://f-droid.org/en/packages/com.unciv.app/)	| [![](https://flathub.org/assets/badges/flathub-badge-en.svg)](https://flathub.org/apps/details/io.github.yairm210.unciv)
 |---	|---	|---	|---	|
 ## Run with Docker
 

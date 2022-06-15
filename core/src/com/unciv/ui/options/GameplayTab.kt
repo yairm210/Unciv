@@ -1,6 +1,7 @@
 package com.unciv.ui.options
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.worldscreen.WorldScreen
@@ -12,16 +13,16 @@ fun gameplayTab(
     defaults().pad(5f)
 
     val settings = optionsPopup.settings
-    val screen = optionsPopup.screen
 
     optionsPopup.addCheckbox(this, "Check for idle units", settings.checkForDueUnits, true) { settings.checkForDueUnits = it }
     optionsPopup.addCheckbox(this, "Move units with a single tap", settings.singleTapMove) { settings.singleTapMove = it }
-    optionsPopup.addCheckbox(this, "Auto-assign city production", settings.autoAssignCityProduction, true) {
-        settings.autoAssignCityProduction = it
-        if (it && screen is WorldScreen &&
-            screen.viewingCiv.isCurrentPlayer() && screen.viewingCiv.playerType == PlayerType.Human
+    optionsPopup.addCheckbox(this, "Auto-assign city production", settings.autoAssignCityProduction, true) { shouldAutoAssignCityProduction ->
+        settings.autoAssignCityProduction = shouldAutoAssignCityProduction
+        val worldScreen = UncivGame.Current.getWorldScreenIfActive()
+        if (shouldAutoAssignCityProduction && worldScreen != null &&
+                worldScreen.viewingCiv.isCurrentPlayer() && worldScreen.viewingCiv.playerType == PlayerType.Human
         ) {
-            screen.gameInfo.currentPlayerCiv.cities.forEach { city ->
+            worldScreen.gameInfo.currentPlayerCiv.cities.forEach { city ->
                 city.cityConstructions.chooseNextConstruction()
             }
         }

@@ -78,10 +78,10 @@ class MapEditorSaveTab(
 
     private fun deleteHandler() {
         if (chosenMap == null) return
-        YesNoPopup("Are you sure you want to delete this map?", {
+        YesNoPopup("Are you sure you want to delete this map?", editorScreen) {
             chosenMap!!.delete()
             mapFiles.update()
-        }, editorScreen).open()
+        }.open()
     }
 
     override fun activated(index: Int, caption: String, pager: TabbedPager) {

@@ -112,15 +112,14 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
                 "Would you like to purchase [Tile] for [$goldCostOfTile] [${Stat.Gold.character}]?".tr()
         YesNoPopup(
             purchasePrompt,
-            action = {
-                SoundPlayer.play(UncivSound.Coin)
-                city.expansion.buyTile(selectedTile)
-                // preselect the next tile on city screen rebuild so bulk buying can go faster
-                UncivGame.Current.setScreen(CityScreen(city, initSelectedTile = city.expansion.chooseNewTileToOwn()))
-            },
             screen = cityScreen,
             restoreDefault = { cityScreen.update() }
-        ).open()
+        ) {
+            SoundPlayer.play(UncivSound.Coin)
+            city.expansion.buyTile(selectedTile)
+            // preselect the next tile on city screen rebuild so bulk buying can go faster
+            UncivGame.Current.setScreen(CityScreen(city, initSelectedTile = city.expansion.chooseNewTileToOwn()))
+        }.open()
     }
 
     /** This tests whether the buy button should be _shown_ */
