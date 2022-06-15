@@ -80,7 +80,7 @@ class CivilizationInfo {
     @Transient
     lateinit var nation: Nation
 
-    var team = ""
+    var team = (Math.random()*100).toInt()
     var techsResearchedByTeam = ArrayList<String>()
 
     /**
