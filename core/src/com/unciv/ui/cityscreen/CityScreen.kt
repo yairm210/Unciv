@@ -1,5 +1,6 @@
 package com.unciv.ui.cityscreen
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Image
@@ -11,12 +12,10 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
-import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.popup.ToastPopup
@@ -76,7 +75,7 @@ class CityScreen(
     /** Button for exiting the city - sits on BOTTOM CENTER */
     private val exitCityButton = "Exit city".toTextButton().apply {
         labelCell.pad(10f)
-        onClick { exit() }
+        onClick { exit(); citySound.stop() }
     }
 
     /** Holds City tiles group*/
@@ -106,8 +105,11 @@ class CityScreen(
     // val should be OK as buying tiles is what changes this, and that would re-create the whole CityScreen
     private val nextTileToOwn = city.expansion.chooseNewTileToOwn()
 
+    val citySound = Gdx.audio.newMusic(Gdx.files.internal("./sounds/cityEra" + city.civInfo.getEra().eraNumber.toString() + ".mp3"))
+
     init {
-        playCitySound()
+        citySound.volume = UncivGame.Current.settings.soundEffectsVolume
+        citySound.play()
         onBackButtonClicked { game.resetToWorldScreen() }
         UncivGame.Current.settings.addCompletedTutorialTask("Enter city screen")
 
@@ -196,10 +198,6 @@ class CityScreen(
             scrollY = (maxY - cityStatsTable.packIfNeeded().height - posFromEdge + cityPickerTable.top) / 2
             updateVisualScroll()
         }
-    }
-
-    private fun playCitySound() {
-        SoundPlayer.play(UncivSound("cityEra" + city.civInfo.getEra().eraNumber.toString()))
     }
 
     fun canCityBeChanged(): Boolean {
