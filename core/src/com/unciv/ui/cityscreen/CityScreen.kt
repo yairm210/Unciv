@@ -1,6 +1,7 @@
 package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -109,8 +110,7 @@ class CityScreen(
     private val nextTileToOwn = city.expansion.chooseNewTileToOwn()
 
     init {
-        SoundPlayer.play(UncivSound("cityEra" + city.civInfo.getEra().eraNumber.toString()), UncivGame.Current.settings.cityScreenEnterVolume)
-
+        playEnterCitySound()
         onBackButtonClicked { game.resetToWorldScreen() }
         UncivGame.Current.settings.addCompletedTutorialTask("Enter city screen")
 
@@ -199,6 +199,11 @@ class CityScreen(
             scrollY = (maxY - cityStatsTable.packIfNeeded().height - posFromEdge + cityPickerTable.top) / 2
             updateVisualScroll()
         }
+    }
+
+    private fun playEnterCitySound() {
+        SoundPlayer.clearCache()
+        SoundPlayer.play(UncivSound("cityEra" + city.civInfo.getEra().eraNumber.toString()), UncivGame.Current.settings.cityScreenEnterVolume)
     }
 
     fun canCityBeChanged(): Boolean {
