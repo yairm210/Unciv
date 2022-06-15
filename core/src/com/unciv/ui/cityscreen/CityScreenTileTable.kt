@@ -19,6 +19,8 @@ import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.isEnabled
+import com.unciv.ui.utils.extensions.keyShortcuts
+import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
@@ -55,10 +57,11 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
         if (isTilePurchaseShown(selectedTile)) {
             val goldCostOfTile = city.expansion.getGoldCostOfTile(selectedTile)
             val buyTileButton = "Buy for [$goldCostOfTile] gold".toTextButton()
-            buyTileButton.onClick {
+            buyTileButton.onActivation {
                 buyTileButton.disable()
                 askToBuyTile(selectedTile)
             }
+            buyTileButton.keyShortcuts.add('T')
             buyTileButton.isEnabled = isTilePurchaseAllowed(goldCostOfTile)
             buyTileButton.addTooltip('T')  // The key binding is done in CityScreen constructor
             innerTable.add(buyTileButton).padTop(5f).row()

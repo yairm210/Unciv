@@ -37,6 +37,8 @@ import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.extensions.center
+import com.unciv.ui.utils.extensions.keyShortcuts
+import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.setFontSize
 import com.unciv.ui.utils.extensions.surroundWithCircle
@@ -70,11 +72,11 @@ class MainMenuScreen: BaseScreen() {
         table.add(text.toLabel().setFontSize(30)).minWidth(200f)
 
         table.touchable = Touchable.enabled
-        table.onClick(function)
+        table.onActivation(function)
 
         if (key != null) {
             if (!keyVisualOnly)
-                keyPressDispatcher[key] = function
+                table.keyShortcuts.add(key)
             table.addTooltip(key, 32f)
         }
 
@@ -175,10 +177,10 @@ class MainMenuScreen: BaseScreen() {
         stage.addActor(scrollPane)
         table.center(scrollPane)
 
-        onBackButtonClicked {
+        globalShortcuts.add(KeyCharAndCode.BACK) {
             if (hasOpenPopups()) {
                 closeAllPopups()
-                return@onBackButtonClicked
+                return@add
             }
             ExitGamePopup(this)
         }
@@ -189,8 +191,8 @@ class MainMenuScreen: BaseScreen() {
             .apply { actor.y -= 2.5f } // compensate font baseline (empirical)
             .surroundWithCircle(42f, resizeActor = false)
         helpButton.touchable = Touchable.enabled
-        helpButton.onClick { openCivilopedia() }
-        keyPressDispatcher[Input.Keys.F1] = { openCivilopedia() }
+        helpButton.onActivation { openCivilopedia() }
+        helpButton.keyShortcuts.add(Input.Keys.F1)
         helpButton.addTooltip(KeyCharAndCode(Input.Keys.F1), 20f)
         helpButton.setPosition(20f, 20f)
         stage.addActor(helpButton)

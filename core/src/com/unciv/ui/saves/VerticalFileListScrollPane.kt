@@ -11,7 +11,7 @@ import com.unciv.logic.GameSaver
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.AutoScrollPane
 import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.KeyPressDispatcher
+import com.unciv.ui.utils.extensions.keyShortcuts
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
@@ -21,27 +21,26 @@ import com.unciv.utils.concurrency.launchOnGLThread
 /** A widget holding TextButtons vertically in a Table contained in a ScrollPane, with methods to
  *  hold file names and FileHandle's in those buttons. Used to display existing saves in the Load and Save game dialogs.
  *
- *  @param keyPressDispatcher optionally pass in a [BaseScreen]'s [keyPressDispatcher][BaseScreen.keyPressDispatcher] to allow keyboard navigation.
+ *  @param shorcutScreen optionally pass in a [BaseScreen] where global keyboard shorcuts should be installed.
  *  @param existingSavesTable exists here for coder convenience. No need to touch.
  */
 class VerticalFileListScrollPane(
-    keyPressDispatcher: KeyPressDispatcher?,
     private val existingSavesTable: Table = Table()
 ) : AutoScrollPane(existingSavesTable) {
+
+    private val savesPerButton = mutableMapOf<TextButton, FileHandle>()
 
     private var previousSelection: TextButton? = null
 
     private var onChangeListener: ((FileHandle) -> Unit)? = null
 
     init {
-        if (keyPressDispatcher != null) {
-            keyPressDispatcher[Input.Keys.UP] = { onArrowKey(-1) }
-            keyPressDispatcher[Input.Keys.DOWN] = { onArrowKey(1) }
-            keyPressDispatcher[Input.Keys.PAGE_UP] = { onPageKey(-1) }
-            keyPressDispatcher[Input.Keys.PAGE_DOWN] = { onPageKey(1) }
-            keyPressDispatcher[Input.Keys.HOME] = { onHomeEndKey(0) }
-            keyPressDispatcher[Input.Keys.END] = { onHomeEndKey(1) }
-        }
+        keyShortcuts.add(Input.Keys.UP) { onArrowKey(-1) }
+        keyShortcuts.add(Input.Keys.DOWN) { onArrowKey(1) }
+        keyShortcuts.add(Input.Keys.PAGE_UP) { onPageKey(-1) }
+        keyShortcuts.add(Input.Keys.PAGE_DOWN) { onPageKey(1) }
+        keyShortcuts.add(Input.Keys.HOME) { onHomeEndKey(0) }
+        keyShortcuts.add(Input.Keys.END) { onHomeEndKey(1) }
     }
 
     fun onChange(action: (FileHandle) -> Unit) {
@@ -74,9 +73,10 @@ class VerticalFileListScrollPane(
             launchOnGLThread {
                 loadAnimation.reset()
                 existingSavesTable.clear()
+                savesPerButton.clear()
                 for (saveGameFile in saves) {
                     val textButton = TextButton(saveGameFile.name(), BaseScreen.skin)
-                    textButton.userObject = saveGameFile
+                    savesPerButton[textButton] = saveGameFile
                     textButton.onClick {
                         selectExistingSave(textButton)
                     }
@@ -91,7 +91,7 @@ class VerticalFileListScrollPane(
         textButton.color = Color.GREEN
         previousSelection = textButton
 
-        val saveGameFile = textButton.userObject as? FileHandle ?: return
+        val saveGameFile = savesPerButton[textButton] ?: return
         onChangeListener?.invoke(saveGameFile)
     }
 

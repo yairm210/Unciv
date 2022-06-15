@@ -1,7 +1,6 @@
 package com.unciv.ui.mapeditor
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -18,7 +17,8 @@ import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.TabbedPager
 import com.unciv.ui.utils.extensions.isEnabled
-import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.keyShortcuts
+import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.toTextButton
 import com.unciv.utils.Log
 import kotlin.concurrent.thread
@@ -40,9 +40,11 @@ class MapEditorLoadTab(
     init {
         val buttonTable = Table(skin)
         buttonTable.defaults().pad(10f).fillX()
-        loadButton.onClick(this::loadHandler)
+        loadButton.onActivation { loadHandler() }
+        loadButton.keyShortcuts.add(KeyCharAndCode.RETURN)
         buttonTable.add(loadButton)
-        deleteButton.onClick(this::deleteHandler)
+        deleteButton.onActivation { deleteHandler() }
+        deleteButton.keyShortcuts.add(KeyCharAndCode.DEL)
         buttonTable.add(deleteButton)
         buttonTable.pack()
 
@@ -71,15 +73,10 @@ class MapEditorLoadTab(
     override fun activated(index: Int, caption: String, pager: TabbedPager) {
         pager.setScrollDisabled(true)
         mapFiles.update()
-        editorScreen.keyPressDispatcher[KeyCharAndCode.RETURN] = this::loadHandler
-        editorScreen.keyPressDispatcher[KeyCharAndCode.DEL] = this::deleteHandler
-        editorScreen.keyPressDispatcher[Input.Keys.UP] = { mapFiles.moveSelection(-1) }
-        editorScreen.keyPressDispatcher[Input.Keys.DOWN] = { mapFiles.moveSelection(1) }
         selectFile(null)
     }
 
     override fun deactivated(index: Int, caption: String, pager: TabbedPager) {
-        editorScreen.keyPressDispatcher.revertToCheckPoint()
         pager.setScrollDisabled(false)
     }
 

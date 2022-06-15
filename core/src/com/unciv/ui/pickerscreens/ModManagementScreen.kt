@@ -32,7 +32,9 @@ import com.unciv.ui.utils.extensions.UncivDateFormat.parseDate
 import com.unciv.ui.utils.extensions.addSeparator
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.enable
+import com.unciv.ui.utils.extensions.keyShortcuts
 import com.unciv.ui.utils.extensions.isEnabled
+import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toCheckBox
 import com.unciv.ui.utils.extensions.toLabel
@@ -95,15 +97,14 @@ class ModManagementScreen(
 
     init {
         //setDefaultCloseAction(screen) // this would initialize the new MainMenuScreen immediately
-        val closeAction = {
+        closeButton.onActivation {
             val tileSets = ImageGetter.getAvailableTilesets()
             if (game.settings.tileSet !in tileSets) {
                 game.settings.tileSet = tileSets.first()
             }
             game.setScreen(MainMenuScreen())
         }
-        closeButton.onClick(closeAction)
-        onBackButtonClicked(closeAction)
+        closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
 
         val labelWidth = max(stage.width / 2f - 60f,60f)
         modDescriptionLabel = WrappableLabel("", labelWidth)
@@ -122,8 +123,6 @@ class ModManagementScreen(
 
         if (isNarrowerThan4to3()) initPortrait()
         else initLandscape()
-
-        keyPressDispatcher[KeyCharAndCode.RETURN] = optionsManager.filterAction
 
         if (onlineModInfo.isEmpty())
             reloadOnlineMods()

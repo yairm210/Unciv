@@ -204,12 +204,12 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     }
 
     /** Re-creates the current [worldScreen], if there is any. */
-    fun reloadWorldscreen() {
+    suspend fun reloadWorldscreen() {
         val curWorldScreen = worldScreen
         val curGameInfo = gameInfo
         if (curWorldScreen == null || curGameInfo == null) return
 
-        Concurrency.run { loadGame(curGameInfo) }
+        loadGame(curGameInfo)
     }
 
     private data class NewScreens(val screenToShow: BaseScreen, val worldScreen: WorldScreen) {
