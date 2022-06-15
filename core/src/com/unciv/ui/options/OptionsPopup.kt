@@ -68,7 +68,7 @@ class OptionsPopup(
         }
         tabs = TabbedPager(
             tabMinWidth, tabMaxWidth, 0f, tabMaxHeight,
-            headerFontSize = 21, backgroundColor = Color.CLEAR, keyPressDispatcher = this.keyPressDispatcher, capacity = 8
+            headerFontSize = 21, backgroundColor = Color.CLEAR, capacity = 8
         )
         add(tabs).pad(0f).grow().row()
 
@@ -115,7 +115,6 @@ class OptionsPopup(
         if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT) && (Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT) || Gdx.input.isKeyPressed(Input.Keys.ALT_RIGHT))) {
             tabs.addPage("Debug", debugTab(), ImageGetter.getImage("OtherIcons/SecretOptions"), 24f, secret = true)
         }
-        tabs.bindArrowKeys() // If we're sharing WorldScreen's dispatcher that's OK since it does revertToCheckPoint on update
 
         addCloseButton {
             screen.game.musicController.onChange(null)

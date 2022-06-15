@@ -12,6 +12,7 @@ import com.unciv.models.ruleset.Policy.PolicyBranchType
 import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.extensions.addSeparator
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.enable
@@ -45,7 +46,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         if (policies.freePolicies > 0 && policies.canAdoptPolicy())
             closeButton.disable()
         else
-            onBackButtonClicked { UncivGame.Current.resetToWorldScreen() }
+            globalShortcuts.add(KeyCharAndCode.BACK) { UncivGame.Current.resetToWorldScreen() }
 
         rightSideButton.onClick(UncivSound.Policy) {
             val policy = pickedPolicy!!

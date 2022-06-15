@@ -13,6 +13,8 @@ import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.TabbedPager
 import com.unciv.ui.utils.extensions.addSeparator
 import com.unciv.ui.utils.extensions.isEnabled
+import com.unciv.ui.utils.extensions.keyShortcuts
+import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toCheckBox
 import com.unciv.ui.utils.extensions.toLabel
@@ -58,9 +60,11 @@ class MapEditorOptionsTab(
         addSeparator(Color.GRAY)
 
         add("Map copy and paste".toLabel(Color.GOLD)).row()
-        copyMapButton.onClick(this::copyHandler)
+        copyMapButton.onActivation { copyHandler() }
+        copyMapButton.keyShortcuts.add(KeyCharAndCode.ctrl('c'))
         add(copyMapButton).row()
-        pasteMapButton.onClick(this::pasteHandler)
+        pasteMapButton.onActivation { pasteHandler() }
+        pasteMapButton.keyShortcuts.add(KeyCharAndCode.ctrl('v'))
         add(pasteMapButton).row()
     }
 
@@ -81,13 +85,10 @@ class MapEditorOptionsTab(
     override fun activated(index: Int, caption: String, pager: TabbedPager) {
         seedToCopy = editorScreen.tileMap.mapParameters.seed.toString()
         seedLabel.setText("Current map RNG seed: [$seedToCopy]".tr())
-        editorScreen.keyPressDispatcher[KeyCharAndCode.ctrl('c')] = this::copyHandler
-        editorScreen.keyPressDispatcher[KeyCharAndCode.ctrl('v')] = this::pasteHandler
         pasteMapButton.isEnabled = Gdx.app.clipboard.hasContents()
     }
 
     override fun deactivated(index: Int, caption: String, pager: TabbedPager) {
         editorScreen.tileMatchFuzziness = tileMatchFuzziness
-        editorScreen.keyPressDispatcher.revertToCheckPoint()
     }
 }

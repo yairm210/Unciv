@@ -41,6 +41,8 @@ import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.extensions.addSeparator
 import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.keyShortcuts
+import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.setFontSize
 import com.unciv.ui.utils.extensions.surroundWithCircle
@@ -76,7 +78,6 @@ class DiplomacyScreen(
     private fun isNotPlayersTurn() = !UncivGame.Current.worldScreen!!.canChangeState
 
     init {
-        onBackButtonClicked { UncivGame.Current.resetToWorldScreen() }
         val splitPane = SplitPane(leftSideScroll, rightSideTable, false, skin)
         splitPane.splitAmount = 0.2f
 
@@ -85,7 +86,8 @@ class DiplomacyScreen(
         splitPane.setFillParent(true)
         stage.addActor(splitPane)
 
-        closeButton.onClick { UncivGame.Current.resetToWorldScreen() }
+        closeButton.onActivation { UncivGame.Current.resetToWorldScreen() }
+        closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
         closeButton.label.setFontSize(Constants.headingFontSize)
         closeButton.labelCell.pad(10f)
         closeButton.pack()
@@ -981,12 +983,8 @@ class DiplomacyScreen(
         diplomacyTable.add(flavorText.toLabel()).row()
 
         val responseButton = response.toTextButton()
-        val action = {
-            keyPressDispatcher.remove(KeyCharAndCode.SPACE)
-            updateRightSide(otherCiv)
-        }
-        responseButton.onClick(action)
-        keyPressDispatcher[KeyCharAndCode.SPACE] = action
+        responseButton.onActivation { updateRightSide(otherCiv) }
+        responseButton.keyShortcuts.add(KeyCharAndCode.SPACE)
         diplomacyTable.add(responseButton)
 
         rightSideTable.clear()
