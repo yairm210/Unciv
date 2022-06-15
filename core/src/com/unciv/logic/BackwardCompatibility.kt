@@ -15,7 +15,7 @@ import com.unciv.models.ruleset.Ruleset
 
 /**
  * Container for all temporarily used code managing transitions from deprecated elements to their replacements.
- *
+ * 
  * Please place ***all*** such code here and call  it _only_ from [GameInfo.setTransients].
  * Functions are allowed to remain once no longer used if you think they might serve as template for
  * similar usecases in the future. Please comment sufficiently :)
@@ -43,9 +43,9 @@ object BackwardCompatibility {
         for (city in civilizations.asSequence().flatMap { it.cities.asSequence() }) {
 
             changeBuildingNameIfNotInRuleset(ruleSet, city.cityConstructions, "Hanse", "Bank")
-
+            
             for (building in city.cityConstructions.builtBuildings.toHashSet()) {
-
+                
                 if (!ruleSet.buildings.containsKey(building))
                     city.cityConstructions.builtBuildings.remove(building)
             }
@@ -190,20 +190,6 @@ object BackwardCompatibility {
 
             camps.clear()
             camps.putAll(newFormat)
-        }
-    }
-
-    /** Convert from Fortify X to Fortify and save off X */
-    fun GameInfo.convertFortify() {
-        val reg = Regex("""^Fortify\s+(\d+)([\w\s]*)""")
-        for (civInfo in civilizations) {
-            for (unit in civInfo.getCivUnits()) {
-                if (unit.action != null && reg.matches(unit.action!!)) {
-                    val (turns, heal) = reg.find(unit.action!!)!!.destructured
-                    unit.turnsFortified = turns.toInt()
-                    unit.action = "Fortify$heal"
-                }
-            }
         }
     }
 

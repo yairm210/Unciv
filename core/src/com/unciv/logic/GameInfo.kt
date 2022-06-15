@@ -2,7 +2,6 @@ package com.unciv.logic
 
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.BackwardCompatibility.convertFortify
 import com.unciv.utils.debug
 import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
 import com.unciv.logic.BackwardCompatibility.migrateBarbarianCamps
@@ -427,8 +426,6 @@ class GameInfo {
 
         for (civInfo in civilizations) civInfo.setTransients()
         for (civInfo in civilizations) civInfo.updateSightAndResources()
-
-        convertFortify()
 
         for (civInfo in civilizations) {
             for (unit in civInfo.getCivUnits())
