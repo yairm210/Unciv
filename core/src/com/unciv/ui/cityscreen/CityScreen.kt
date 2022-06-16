@@ -208,7 +208,7 @@ class CityScreen(
 
         citySoundsController.setMusicPath("sounds")
 
-        citySoundsController.setVolume(UncivGame.Current.settings.cityScreenEnterVolume)
+        citySoundsController.setVolume(UncivGame.Current.settings.soundEffectsVolume)
 
         if (city.isWeLoveTheKingDayActive()) {
             citySoundsController.chooseTrack(
