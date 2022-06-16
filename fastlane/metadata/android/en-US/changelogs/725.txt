@@ -1,0 +1,24 @@
+## 4.1.11
+
+Revert "Maintain Fortify bonus after Fortify until Healed "
+
+AI considers liberating city-states from other civilizations  - By OptimizedForDensity
+
+By Azzurite:
+- Fix unit action/selection overlay not being closed when performing an action with a new unit 
+- Fix option change not reloading main menu properly 
+- Fix wrong Duration short formatting 
+- Fix cutout options crash 
+- Fix OutOfMemory error when loading game state after already having a game loaded 
+- Fix EventBus not being able to listen to events with more than one level of inheritance 
+
+Two new Unit Tests  - By SomeTroglodyte
+
+By alexban011:
+- small fixes 
+- increased kotlin version to latest 1.7.0 
+
+Refactor key handling  - By doublep
+
+Maintain Fortify bonus after Fortify until Healed  - By itanasi
+
