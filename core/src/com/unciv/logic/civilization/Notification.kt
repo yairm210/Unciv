@@ -54,19 +54,18 @@ open class Notification() {
     }
 
     fun addNotificationIcons(ruleset: Ruleset, iconSize: Float, table: Table) {
-        if (this.icons.isNotEmpty()) {
-            for (icon in this.icons.reversed()) {
-                val image: Actor = when {
-                    ruleset.technologies.containsKey(icon) -> ImageGetter.getTechIcon(icon)
-                    ruleset.nations.containsKey(icon) -> ImageGetter.getNationIndicator(
-                        ruleset.nations[icon]!!,
-                        iconSize
-                    )
-                    ruleset.units.containsKey(icon) -> ImageGetter.getUnitIcon(icon)
-                    else -> ImageGetter.getImage(icon)
-                }
-                table.add(image).size(iconSize).padRight(5f)
+        if (icons.isEmpty()) return
+        for (icon in icons.reversed()) {
+            val image: Actor = when {
+                ruleset.technologies.containsKey(icon) -> ImageGetter.getTechIcon(icon)
+                ruleset.nations.containsKey(icon) -> ImageGetter.getNationIndicator(
+                    ruleset.nations[icon]!!,
+                    iconSize
+                )
+                ruleset.units.containsKey(icon) -> ImageGetter.getUnitIcon(icon)
+                else -> ImageGetter.getImage(icon)
             }
+            table.add(image).size(iconSize).padRight(5f)
         }
     }
 }
