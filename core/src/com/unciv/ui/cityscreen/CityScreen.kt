@@ -1,8 +1,10 @@
 package com.unciv.ui.cityscreen
 
+import com.badlogic.gdx.Files
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.audio.Music
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -16,8 +18,6 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
-import com.unciv.ui.audio.MusicController
-import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.popup.ToastPopup
@@ -29,7 +29,6 @@ import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.packIfNeeded
 import com.unciv.ui.utils.extensions.toTextButton
-import java.util.*
 import kotlin.collections.ArrayList
 
 class CityScreen(
@@ -82,7 +81,11 @@ class CityScreen(
         labelCell.pad(10f)
         onClick {
             exit()
-            playingCitySound.stop()
+            try {
+                playingCitySound.stop()
+            } catch (ex: Throwable) {
+                ex.printStackTrace()
+            }
         }
     }
 
@@ -114,6 +117,7 @@ class CityScreen(
     private val nextTileToOwn = city.expansion.chooseNewTileToOwn()
 
     private lateinit var playingCitySound: Music
+    private val fileExtensions = listOf("mp3", "ogg", "wav")   // All Gdx formats
 
     init {
         playCityMusicSound()
@@ -201,13 +205,45 @@ class CityScreen(
         }
     }
 
+    private fun getFile(path: String) =
+            if (Files.FileType.Local == Files.FileType.External && Gdx.files.isExternalStorageAvailable)
+                Gdx.files.external(path)
+            else Gdx.files.local(path)
+
+    private fun getSoundFolders() = sequence {
+        val visualMods = UncivGame.Current.settings.visualMods
+        val mods = UncivGame.Current.gameInfo!!.gameParameters.getModsAndBaseRuleset()
+        yieldAll(
+            (visualMods + mods).asSequence()
+                .map { getFile("mods")
+                    .child(it).child("sounds") }
+        )
+        yield(getFile("sounds"))
+    }
+
+    private fun getSoundFile(fileName: String) = getSoundFolders()
+        .filter { it.exists() && it.isDirectory }
+        .flatMap { it.list().asSequence() }
+        // ensure only normal files with common sound extension
+        .filter { it.exists() && !it.isDirectory && it.extension() in fileExtensions }
+        .firstOrNull { it.name().contains(fileName)}
+
     private fun playCityMusicSound() {
-        if (city.isWeLoveTheKingDayActive()) {
-            playingCitySound = Gdx.audio.newMusic(Gdx.files.internal("sounds/" + city.civInfo.getEra().cityWLTKSound + ".mp3"))
+        try {
+            val file: FileHandle = if (city.isWeLoveTheKingDayActive()) {
+                FileHandle(getSoundFile(city.civInfo.getEra().citySound).toString())
+            } else {
+                FileHandle(getSoundFile(city.civInfo.getEra().citySound).toString())
+            }
+            playingCitySound = Gdx.audio.newMusic(file)
+        } catch (ex: Throwable) {
+            ex.printStackTrace()
+        }
+
+        try {
             playingCitySound.play()
-        } else {
-            playingCitySound = Gdx.audio.newMusic(Gdx.files.internal("sounds/" + city.civInfo.getEra().citySound + ".mp3"))
-            playingCitySound.play()
+        } catch (ex: Throwable) {
+            ex.printStackTrace()
         }
     }
 
