@@ -12,6 +12,7 @@ import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.keyShortcuts
+import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.utils.concurrency.Concurrency
@@ -37,21 +38,17 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         val actionButton = IconTextButton(unitAction.title, icon, fontColor = fontColor)
         actionButton.addTooltip(key)
         actionButton.pack()
-        val action = {
-            unitAction.action?.invoke()
-            UncivGame.Current.worldScreen!!.shouldUpdate = true
-        }
-        if (unitAction.action == null) actionButton.disable()
-        else {
-            actionButton.onClick(unitAction.uncivSound, action)
-            if (key != KeyCharAndCode.UNKNOWN)
-                actionButton.keyShortcuts.add(key) {
-                    Concurrency.run("UnitSound") { SoundPlayer.play(unitAction.uncivSound) }
-                    action()
-                    // FIXME: Why do we need it here, but not when clicking? Otherwise
-                    // could have merged the two callbacks into an "activation" handler.
-                    worldScreen.mapHolder.removeUnitActionOverlay()
-                }
+        if (unitAction.action == null) {
+            actionButton.disable()
+        } else {
+            actionButton.onActivation(unitAction.uncivSound) {
+                unitAction.action.invoke()
+                UncivGame.Current.worldScreen!!.shouldUpdate = true
+                // We keep the unit action/selection overlay from the previous unit open even when already selecting another unit
+                // so you need less clicks/touches to do things, but once we do an action with the new unit, we want to close this
+                // overlay, since the user definitely wants to interact with the new unit.
+                worldScreen.mapHolder.removeUnitActionOverlay()
+            }
         }
 
         return actionButton
