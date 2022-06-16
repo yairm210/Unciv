@@ -17,6 +17,7 @@ import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.Translations
 import com.unciv.ui.LanguagePickerScreen
 import com.unciv.ui.LoadingScreen
+import com.unciv.ui.audio.CitySoundPlayer
 import com.unciv.ui.audio.GameSounds
 import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicMood
@@ -50,12 +51,14 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     private val customSaveLocationHelper = parameters.customFileLocationHelper
     val platformSpecificHelper = parameters.platformSpecificHelper
     private val audioExceptionHelper = parameters.audioExceptionHelper
+    private val audioExceptionHelper2 = parameters.audioExceptionHelper
 
     var deepLinkedMultiplayerGame: String? = null
     var gameInfo: GameInfo? = null
         private set
     lateinit var settings: GameSettings
     lateinit var musicController: MusicController
+    lateinit var citySoundController: CitySoundPlayer
     lateinit var onlineMultiplayer: OnlineMultiplayer
     lateinit var gameSaver: GameSaver
 
@@ -109,11 +112,19 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         settings = gameSaver.getGeneralSettings() // needed for the screen
         setScreen(GameStartScreen())  // NOT dependent on any atlas or skin
         GameSounds.init()
+
         musicController = MusicController()  // early, but at this point does only copy volume from settings
         audioExceptionHelper?.installHooks(
             musicController.getAudioLoopCallback(),
             musicController.getAudioExceptionHandler()
         )
+
+        citySoundController = CitySoundPlayer()
+        audioExceptionHelper2?.installHooks(
+            citySoundController.getAudioLoopCallback(),
+            citySoundController.getAudioExceptionHandler()
+        )
+
         onlineMultiplayer = OnlineMultiplayer()
 
         ImageGetter.resetAtlases()

@@ -117,7 +117,7 @@ class CityScreen(
     // val should be OK as buying tiles is what changes this, and that would re-create the whole CityScreen
     private val nextTileToOwn = city.expansion.chooseNewTileToOwn()
 
-    val citySoundPlayer = CitySoundPlayer()
+    val citySoundPlayer = UncivGame.Current.citySoundController
 
     init {
         citySoundPlayer.playCitySound(city)

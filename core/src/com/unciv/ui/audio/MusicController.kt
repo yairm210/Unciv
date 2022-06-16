@@ -20,7 +20,7 @@ import kotlin.math.roundToInt
  *
  * Main methods: [chooseTrack], [pause], [resume], [setModList], [isPlaying], [gracefulShutdown]
  */
-class MusicController {
+open class MusicController {
     companion object {
         /** Mods live in Local - but this file prepares for music living in External just in case */
         private val musicLocation = FileType.Local
@@ -35,7 +35,7 @@ class MusicController {
         private const val defaultFadingStepGdx = 1f / (defaultFadeDuration * ticksPerSecondGdx)
         private const val defaultFadingStepOwn = 1f / (defaultFadeDuration * ticksPerSecondOwn)
         private const val musicHistorySize = 8      // number of names to keep to avoid playing the same in short succession
-        private val fileExtensions = listOf("mp3", "ogg", "wav")   // All Gdx formats
+        val fileExtensions = listOf("mp3", "ogg", "wav")   // All Gdx formats
 
         private fun getFile(path: String) =
             if (musicLocation == FileType.External && Gdx.files.isExternalStorageAvailable)

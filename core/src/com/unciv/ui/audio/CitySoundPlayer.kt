@@ -7,9 +7,8 @@ import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 
-class CitySoundPlayer {
+class CitySoundPlayer: MusicController() {
     private lateinit var playingCitySound: Music
-    private val fileExtensions = listOf("mp3", "ogg", "wav")   // All Gdx formats
 
     private fun getFile(path: String) =
             if (Files.FileType.Local == Files.FileType.External && Gdx.files.isExternalStorageAvailable)
