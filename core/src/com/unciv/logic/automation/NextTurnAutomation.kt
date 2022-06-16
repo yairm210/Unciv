@@ -299,8 +299,6 @@ object NextTurnAutomation {
 
     private fun valueCityStateAlliance(civInfo: CivilizationInfo, cityState: CivilizationInfo): Int {
         var value = 0
-        if (!cityState.isAlive() || cityState.cities.isEmpty() || civInfo.cities.isEmpty())
-            return value
 
         if (civInfo.wantsToFocusOn(Victory.Focus.Culture) && cityState.canGiveStat(Stat.Culture)) {
             value += 10
@@ -310,17 +308,17 @@ object NextTurnAutomation {
             value += 10
         }
         else if (civInfo.wantsToFocusOn(Victory.Focus.Military)) {
-            // Don't ally close city-states, conquer them instead
-            val distance = getMinDistanceBetweenCities(civInfo, cityState)
-            if (distance < 20)
-                value -= (20 - distance) / 4
+            if (!cityState.isAlive())
+                value -= 5
+            else {
+                // Don't ally close city-states, conquer them instead
+                val distance = getMinDistanceBetweenCities(civInfo, cityState)
+                if (distance < 20)
+                    value -= (20 - distance) / 4
+            }
         }
         else if (civInfo.wantsToFocusOn(Victory.Focus.CityStates)) {
             value += 5  // Generally be friendly
-        }
-        if (civInfo.gold < 100) {
-            // Consider bullying for cash
-            value -= 5
         }
         if (civInfo.getHappiness() < 5 && cityState.canGiveStat(Stat.Happiness)) {
             value += 10 - civInfo.getHappiness()
@@ -328,6 +326,15 @@ object NextTurnAutomation {
         if (civInfo.getHappiness() > 5 && cityState.canGiveStat(Stat.Food)) {
             value += 5
         }
+
+        if (!cityState.isAlive() || cityState.cities.isEmpty() || civInfo.cities.isEmpty())
+            return value
+
+        if (civInfo.gold < 100) {
+            // Consider bullying for cash
+            value -= 5
+        }
+
         if (cityState.getAllyCiv() != null && cityState.getAllyCiv() != civInfo.civName) {
             // easier not to compete if a third civ has this locked down
             val thirdCivInfluence = cityState.getDiplomacyManager(cityState.getAllyCiv()!!).getInfluence().toInt()
@@ -934,6 +941,31 @@ object NextTurnAutomation {
             }
         }
         diplomacyManager.removeFlag(DiplomacyFlags.SettledCitiesNearUs)
+    }
+
+    /** Handle decision making after city conquest, namely whether the AI should liberate, puppet,
+     * or raze a city */
+    fun onConquerCity(civInfo: CivilizationInfo, city: CityInfo) {
+        if (!city.hasDiplomaticMarriage()) {
+            val foundingCiv = civInfo.gameInfo.getCivilization(city.foundingCiv)
+            var valueAlliance = valueCityStateAlliance(civInfo, foundingCiv)
+            if (civInfo.getHappiness() < 0)
+                valueAlliance -= civInfo.getHappiness() // put extra weight on liberating if unhappy
+            if (foundingCiv.isCityState() && city.civInfo != civInfo && foundingCiv != civInfo
+                    && !civInfo.isAtWarWith(foundingCiv)
+                    && valueAlliance > 0) {
+                city.liberateCity(civInfo)
+                return
+            }
+        }
+
+        city.puppetCity(civInfo)
+        if ((city.population.population < 4 || civInfo.isCityState())
+                && city.foundingCiv != civInfo.civName && city.canBeDestroyed(justCaptured = true)) {
+            // raze if attacker is a city state
+            city.annexCity()
+            city.isBeingRazed = true
+        }
     }
 
     fun getMinDistanceBetweenCities(civ1: CivilizationInfo, civ2: CivilizationInfo): Int {
