@@ -49,6 +49,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
                 // overlay, since the user definitely wants to interact with the new unit.
                 worldScreen.mapHolder.removeUnitActionOverlay()
             }
+            actionButton.keyShortcuts.add(key)
         }
 
         return actionButton
