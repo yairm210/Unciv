@@ -1,8 +1,6 @@
 package com.unciv.ui.cityscreen
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.audio.Music
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -16,6 +14,8 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
+import com.unciv.ui.audio.MusicController
+import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.popup.ToastPopup
@@ -27,6 +27,7 @@ import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.packIfNeeded
 import com.unciv.ui.utils.extensions.toTextButton
+import java.util.*
 import kotlin.collections.ArrayList
 
 class CityScreen(
@@ -77,7 +78,10 @@ class CityScreen(
     /** Button for exiting the city - sits on BOTTOM CENTER */
     private val exitCityButton = "Exit city".toTextButton().apply {
         labelCell.pad(10f)
-        onClick { exit(); citySound?.stop(); citySound?.dispose() }
+        onClick {
+            exit()
+            citySoundsController.setVolume(0f)
+        }
     }
 
     /** Holds City tiles group*/
@@ -107,10 +111,10 @@ class CityScreen(
     // val should be OK as buying tiles is what changes this, and that would re-create the whole CityScreen
     private val nextTileToOwn = city.expansion.chooseNewTileToOwn()
 
-    var citySound: Music? = null
+    private val citySoundsController = MusicController()
 
     init {
-        playCitySound()
+        playCityMusicSound()
 
         globalShortcuts.add(KeyCharAndCode.BACK) { game.resetToWorldScreen() }
 
@@ -195,15 +199,21 @@ class CityScreen(
         }
     }
 
-    private fun playCitySound() {
-        citySound = try {
-            Gdx.audio.newMusic(Gdx.files.internal("sounds/cityEra" + city.civInfo.getEra().eraNumber.toString() + ".mp3"))
-        } catch (ex: Throwable) {
-            ex.printStackTrace()
-            return
+    private fun playCityMusicSound() {
+        val fullModList = UncivGame.Current.gameInfo?.gameParameters?.getModsAndBaseRuleset()
+
+        if (fullModList != null) {
+            citySoundsController.setModList(fullModList)
         }
-        citySound?.volume = UncivGame.Current.settings.soundEffectsVolume
-        citySound?.play()
+
+        citySoundsController.setMusicPath("sounds")
+
+        citySoundsController.setVolume(UncivGame.Current.settings.cityScreenEnterVolume)
+        citySoundsController.chooseTrack(
+            "cityEra",
+            city.civInfo.getEra().eraNumber.toString(),
+            EnumSet.of(MusicTrackChooserFlags.PrefixMustMatch, MusicTrackChooserFlags.SuffixMustMatch, MusicTrackChooserFlags.PlaySound)
+        )
     }
 
     fun canCityBeChanged(): Boolean {

@@ -24,7 +24,7 @@ class MusicController {
     companion object {
         /** Mods live in Local - but this file prepares for music living in External just in case */
         private val musicLocation = FileType.Local
-        private const val musicPath = "music"
+        private var musicPath = "music"
         private const val modPath = "mods"
         private const val musicFallbackLocation = "/music/thatched-villagers.mp3"  // Dropbox path
         private const val musicFallbackLocalName = "music/Thatched Villagers - Ambient.mp3"  // Name we save it to
@@ -146,6 +146,10 @@ class MusicController {
         return current?.isPlaying() == true
     }
 
+    /** Sets the music path to a different folder so we can use this for things other than actual music */
+    fun setMusicPath(path: String) {
+        musicPath = path
+    }
     //endregion
     //region Internal helpers
 
@@ -282,22 +286,23 @@ class MusicController {
         }
         // Scan whole music folder and mods to find best match for desired prefix and/or suffix
         // get a path list (as strings) of music folder candidates - existence unchecked
-        return getAllMusicFiles()
+        var allMusicFiles = getAllMusicFiles()
             .filter {
                 (!flags.contains(MusicTrackChooserFlags.PrefixMustMatch) || it.nameWithoutExtension().startsWith(prefix))
                         && (!flags.contains(MusicTrackChooserFlags.SuffixMustMatch) || it.nameWithoutExtension().endsWith(suffix))
             }
-            // randomize
-            .shuffled()
-            // sort them by prefix match / suffix match / not last played
-            .sortedWith(compareBy(
-                { if (it.nameWithoutExtension().startsWith(prefix)) 0 else 1 }
-                , { if (it.nameWithoutExtension().endsWith(suffix)) 0 else 1 }
-                , { if (it.path() in musicHistory) 1 else 0 }
-            // Then just pick the first one. Not as wasteful as it looks - need to check all names anyway
-            )).firstOrNull()
+        if (!flags.contains(MusicTrackChooserFlags.PlaySound))
+            allMusicFiles = allMusicFiles.shuffled()
+                // sort them by prefix match / suffix match / not last played
+                .sortedWith(compareBy(
+                    { if (it.nameWithoutExtension().startsWith(prefix)) 0 else 1 }
+                    , { if (it.nameWithoutExtension().endsWith(suffix)) 0 else 1 }
+                    , { if (it.path() in musicHistory) 1 else 0 }
+                    // Then just pick the first one. Not as wasteful as it looks - need to check all names anyway
+                ))
         // Note: shuffled().sortedWith(), ***not*** .sortedWith(.., Random)
         // the latter worked with older JVM's, current ones *crash* you when a compare is not transitive.
+        return allMusicFiles.firstOrNull()
     }
 
     private fun fireOnChange() {
