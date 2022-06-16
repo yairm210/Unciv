@@ -291,7 +291,7 @@ class MusicController {
                 (!flags.contains(MusicTrackChooserFlags.PrefixMustMatch) || it.nameWithoutExtension().startsWith(prefix))
                         && (!flags.contains(MusicTrackChooserFlags.SuffixMustMatch) || it.nameWithoutExtension().endsWith(suffix))
             }
-        if (!flags.contains(MusicTrackChooserFlags.PlaySound))
+        if (!flags.contains(MusicTrackChooserFlags.PlayAsSound))
             allMusicFiles = allMusicFiles.shuffled()
                 // sort them by prefix match / suffix match / not last played
                 .sortedWith(compareBy(

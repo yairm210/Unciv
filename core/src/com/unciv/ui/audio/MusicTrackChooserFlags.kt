@@ -14,7 +14,7 @@ enum class MusicTrackChooserFlags {
     /** directly choose the 'fallback' file for playback */
     PlayDefaultFile,
     /** don't sort of shuffle*/
-    PlaySound,
+    PlayAsSound,
     ;
 
     companion object {

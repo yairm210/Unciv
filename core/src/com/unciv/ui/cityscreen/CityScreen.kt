@@ -210,12 +210,17 @@ class CityScreen(
 
         citySoundsController.setVolume(UncivGame.Current.settings.cityScreenEnterVolume)
 
-        citySoundsController.chooseTrack(
-            "city",
-            city.civInfo.getEra().name.removeSuffix(" era"),
-            EnumSet.of(MusicTrackChooserFlags.PrefixMustMatch, MusicTrackChooserFlags.SuffixMustMatch, MusicTrackChooserFlags.PlaySound)
-        )
-
+        if (city.isWeLoveTheKingDayActive()) {
+            citySoundsController.chooseTrack(
+                city.civInfo.getEra().cityWLTKSound,
+                flags = EnumSet.of(MusicTrackChooserFlags.PrefixMustMatch, MusicTrackChooserFlags.PlayAsSound)
+            )
+        } else {
+            citySoundsController.chooseTrack(
+                city.civInfo.getEra().citySound,
+                flags = EnumSet.of(MusicTrackChooserFlags.PrefixMustMatch, MusicTrackChooserFlags.PlayAsSound)
+            )
+        }
     }
 
     fun canCityBeChanged(): Boolean {

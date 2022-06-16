@@ -29,6 +29,8 @@ class Era : RulesetObject(), IHasUniques {
     var baseUnitBuyCost = 200
     var embarkDefense = 3
     var startPercent = 0
+    var citySound = ""
+    var cityWLTKSound = ""
 
     var friendBonus = HashMap<String, List<String>>()
     var allyBonus = HashMap<String, List<String>>()
