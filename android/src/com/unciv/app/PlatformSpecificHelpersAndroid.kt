@@ -35,6 +35,7 @@ Sources for Info about current orientation in case need:
         if (activity.requestedOrientation != orientation) activity.requestedOrientation = orientation
     }
 
+    @Suppress("DEPRECATION")
     override fun hasDisplayCutout(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             activity.windowManager.defaultDisplay.cutout != null
