@@ -18,6 +18,7 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
+import com.unciv.ui.audio.CitySoundPlayer
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.popup.ToastPopup
@@ -82,7 +83,7 @@ class CityScreen(
         onClick {
             exit()
             try {
-                playingCitySound.stop()
+                citySoundPlayer.stopCitySound()
             } catch (ex: Throwable) {
                 ex.printStackTrace()
             }
@@ -116,11 +117,10 @@ class CityScreen(
     // val should be OK as buying tiles is what changes this, and that would re-create the whole CityScreen
     private val nextTileToOwn = city.expansion.chooseNewTileToOwn()
 
-    private lateinit var playingCitySound: Music
-    private val fileExtensions = listOf("mp3", "ogg", "wav")   // All Gdx formats
+    val citySoundPlayer = CitySoundPlayer()
 
     init {
-        playCitySound()
+        citySoundPlayer.playCitySound(city)
 
         globalShortcuts.add(KeyCharAndCode.BACK) { game.resetToWorldScreen() }
 
@@ -202,48 +202,6 @@ class CityScreen(
             scrollX = (maxX - constructionsTable.getLowerWidth() - posFromEdge) / 2
             scrollY = (maxY - cityStatsTable.packIfNeeded().height - posFromEdge + cityPickerTable.top) / 2
             updateVisualScroll()
-        }
-    }
-
-    private fun getFile(path: String) =
-            if (Files.FileType.Local == Files.FileType.External && Gdx.files.isExternalStorageAvailable)
-                Gdx.files.external(path)
-            else Gdx.files.local(path)
-
-    private fun getSoundFolders() = sequence {
-        val visualMods = UncivGame.Current.settings.visualMods
-        val mods = UncivGame.Current.gameInfo!!.gameParameters.getModsAndBaseRuleset()
-        yieldAll(
-            (visualMods + mods).asSequence()
-                .map { getFile("mods")
-                    .child(it).child("sounds") }
-        )
-        yield(getFile("sounds"))
-    }
-
-    private fun getSoundFile(fileName: String) = getSoundFolders()
-        .filter { it.exists() && it.isDirectory }
-        .flatMap { it.list().asSequence() }
-        // ensure only normal files with common sound extension
-        .filter { it.exists() && !it.isDirectory && it.extension() in fileExtensions }
-        .firstOrNull { it.name().contains(fileName)}
-
-    private fun playCitySound() {
-        try {
-            val file: FileHandle = if (city.isWeLoveTheKingDayActive()) {
-                FileHandle(getSoundFile(city.civInfo.getEra().citySound).toString())
-            } else {
-                FileHandle(getSoundFile(city.civInfo.getEra().citySound).toString())
-            }
-            playingCitySound = Gdx.audio.newMusic(file)
-        } catch (ex: Throwable) {
-            ex.printStackTrace()
-        }
-
-        try {
-            playingCitySound.play()
-        } catch (ex: Throwable) {
-            ex.printStackTrace()
         }
     }
 
