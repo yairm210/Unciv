@@ -52,8 +52,6 @@ private fun addNotificationLogMaxTurnsSlider(table: Table, settings: GameSetting
         val turns = it.toInt()
         settings.notificationsLogMaxTurns = turns
         settings.save()
-        if (screen is WorldScreen)
-            screen.shouldUpdate = true
     }
     table.add(minimapSlider).minWidth(selectBoxMinWidth).pad(10f).row()
 }
