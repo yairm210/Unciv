@@ -209,11 +209,13 @@ class CityScreen(
         citySoundsController.setMusicPath("sounds")
 
         citySoundsController.setVolume(UncivGame.Current.settings.cityScreenEnterVolume)
+
         citySoundsController.chooseTrack(
-            "cityEra",
-            city.civInfo.getEra().eraNumber.toString(),
+            "city",
+            city.civInfo.getEra().name.removeSuffix(" era"),
             EnumSet.of(MusicTrackChooserFlags.PrefixMustMatch, MusicTrackChooserFlags.SuffixMustMatch, MusicTrackChooserFlags.PlaySound)
         )
+
     }
 
     fun canCityBeChanged(): Boolean {
