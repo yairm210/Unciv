@@ -138,9 +138,9 @@ class TileImprovement : RulesetStatsObject() {
             textList += FormattedLine("Unique to [$uniqueTo]", link="Nation/$uniqueTo")
         }
 
-        val builderUnits = getBuilderUnits(ruleset)
         val constructorUnits = getConstructorUnits(ruleset)
-        val creatorExists = builderUnits.isNotEmpty() || constructorUnits.isNotEmpty()
+        val creatingUnits = getCreatingUnits(ruleset)
+        val creatorExists = constructorUnits.isNotEmpty() || creatingUnits.isNotEmpty()
 
         if (creatorExists && terrainsCanBeBuiltOn.isNotEmpty()) {
             textList += FormattedLine()
@@ -209,21 +209,23 @@ class TileImprovement : RulesetStatsObject() {
 
         if (creatorExists)
             textList += FormattedLine()
-        for (unit in builderUnits)
-            textList += FormattedLine("{Can be built by} {$unit}", unit.makeLink())
         for (unit in constructorUnits)
             textList += FormattedLine("{Can be constructed by} {$unit}", unit.makeLink())
+        for (unit in creatingUnits)
+            textList += FormattedLine("{Can be created instantly by} {$unit}", unit.makeLink())
 
         textList += Belief.getCivilopediaTextMatching(name, ruleset)
 
         return textList
     }
 
-    private fun getBuilderUnits(ruleset: Ruleset): List<BaseUnit> {
+    private fun getConstructorUnits(ruleset: Ruleset): List<BaseUnit> {
         //todo Why does this have to be so complicated? A unit's "Can build [Land] improvements on tiles"
         //     creates the _justified_ expectation that an improvement it can build _will_ have
         //     `matchesFilter("Land")==true` - but that's not the case.
         //     A kludge, but for display purposes the test below is meaningful enough.
+        if (hasUnique(UniqueType.Unbuildable)) return emptyList()
+
         val canOnlyFilters = getMatchingUniques(UniqueType.CanOnlyBeBuiltOnTile)
             .map { it.params[0].run { if (this == "Coastal") "Land" else this } }.toSet()
         val cannotFilters = getMatchingUniques(UniqueType.CannotBuildOnTile).map { it.params[0] }.toSet()
@@ -255,22 +257,21 @@ class TileImprovement : RulesetStatsObject() {
         }
 
         fun matchesBuildImprovementsFilter(filter: String) =
-                matchesFilter(filter) ||
-                filter in expandedCanBeBuiltOn ||
-                terrainsCanBeBuiltOnTypes.any { it.name == filter }
+            matchesFilter(filter) ||
+            filter in expandedCanBeBuiltOn ||
+            terrainsCanBeBuiltOnTypes.any { it.name == filter }
 
-        return if (hasUnique(UniqueType.Unbuildable)) emptyList()
-            else ruleset.units.values.asSequence()
-                .filter { unit ->
-                    turnsToBuild != 0
-                        && unit.getMatchingUniques(UniqueType.BuildImprovements, StateForConditionals.IgnoreConditionals)
-                            .any { matchesBuildImprovementsFilter(it.params[0]) }
-                    || unit.hasUnique(UniqueType.CreateWaterImprovements)
-                        && terrainsCanBeBuiltOnTypes.contains(TerrainType.Water)
-                }.toList()
+        return ruleset.units.values.asSequence()
+            .filter { unit ->
+                turnsToBuild != 0
+                    && unit.getMatchingUniques(UniqueType.BuildImprovements, StateForConditionals.IgnoreConditionals)
+                        .any { matchesBuildImprovementsFilter(it.params[0]) }
+                || unit.hasUnique(UniqueType.CreateWaterImprovements)
+                    && terrainsCanBeBuiltOnTypes.contains(TerrainType.Water)
+            }.toList()
     }
 
-    private fun getConstructorUnits(ruleset: Ruleset): List<BaseUnit> {
+    private fun getCreatingUnits(ruleset: Ruleset): List<BaseUnit> {
         return ruleset.units.values.asSequence()
             .filter { unit ->
                 unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit, StateForConditionals.IgnoreConditionals)
