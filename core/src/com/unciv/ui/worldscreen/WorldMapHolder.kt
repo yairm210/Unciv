@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Action
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -13,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
@@ -723,31 +721,9 @@ class WorldMapHolder(
         if (selectUnit || forceSelectUnit != null)
             worldScreen.bottomUnitTable.tileSelected(selectedTile!!, forceSelectUnit)
 
-        val originalScrollX = scrollX
-        val originalScrollY = scrollY
-
-        val finalScrollX = tileGroup.x + tileGroup.width / 2
-
-        /** The Y axis of [scrollY] is inverted - when at 0 we're at the top, not bottom - so we invert it back. */
-        val finalScrollY = maxY - (tileGroup.y + tileGroup.width / 2)
-
-        if (finalScrollX == originalScrollX && finalScrollY == originalScrollY) return false
-
-        if (immediately) {
-            scrollX = finalScrollX
-            scrollY = finalScrollY
-            updateVisualScroll()
-        } else {
-            val action = object : FloatAction(0f, 1f, 0.4f) {
-                override fun update(percent: Float) {
-                    scrollX = finalScrollX * percent + originalScrollX * (1 - percent)
-                    scrollY = finalScrollY * percent + originalScrollY * (1 - percent)
-                    updateVisualScroll()
-                }
-            }
-            action.interpolation = Interpolation.sine
-            addAction(action)
-        }
+        // The Y axis of [scrollY] is inverted - when at 0 we're at the top, not bottom - so we invert it back.
+        if (!scrollTo(tileGroup.x + tileGroup.width / 2, maxY - (tileGroup.y + tileGroup.width / 2), immediately))
+            return false
 
         removeAction(blinkAction) // so we don't have multiple blinks at once
         blinkAction = Actions.repeat(3, Actions.sequence(
