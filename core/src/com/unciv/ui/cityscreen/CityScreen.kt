@@ -120,7 +120,7 @@ class CityScreen(
     private val fileExtensions = listOf("mp3", "ogg", "wav")   // All Gdx formats
 
     init {
-        playCityMusicSound()
+        playCitySound()
 
         globalShortcuts.add(KeyCharAndCode.BACK) { game.resetToWorldScreen() }
 
@@ -228,7 +228,7 @@ class CityScreen(
         .filter { it.exists() && !it.isDirectory && it.extension() in fileExtensions }
         .firstOrNull { it.name().contains(fileName)}
 
-    private fun playCityMusicSound() {
+    private fun playCitySound() {
         try {
             val file: FileHandle = if (city.isWeLoveTheKingDayActive()) {
                 FileHandle(getSoundFile(city.civInfo.getEra().citySound).toString())
