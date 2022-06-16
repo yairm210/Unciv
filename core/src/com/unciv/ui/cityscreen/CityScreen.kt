@@ -1,6 +1,8 @@
 package com.unciv.ui.cityscreen
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.audio.Music
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -80,7 +82,7 @@ class CityScreen(
         labelCell.pad(10f)
         onClick {
             exit()
-            citySoundsController.setVolume(0f)
+            playingCitySound.stop()
         }
     }
 
@@ -111,7 +113,7 @@ class CityScreen(
     // val should be OK as buying tiles is what changes this, and that would re-create the whole CityScreen
     private val nextTileToOwn = city.expansion.chooseNewTileToOwn()
 
-    private val citySoundsController = MusicController()
+    private lateinit var playingCitySound: Music
 
     init {
         playCityMusicSound()
@@ -200,26 +202,12 @@ class CityScreen(
     }
 
     private fun playCityMusicSound() {
-        val fullModList = UncivGame.Current.gameInfo?.gameParameters?.getModsAndBaseRuleset()
-
-        if (fullModList != null) {
-            citySoundsController.setModList(fullModList)
-        }
-
-        citySoundsController.setMusicPath("sounds")
-
-        citySoundsController.setVolume(UncivGame.Current.settings.soundEffectsVolume)
-
         if (city.isWeLoveTheKingDayActive()) {
-            citySoundsController.chooseTrack(
-                city.civInfo.getEra().cityWLTKSound,
-                flags = EnumSet.of(MusicTrackChooserFlags.PrefixMustMatch, MusicTrackChooserFlags.PlaySingle, MusicTrackChooserFlags.PlayAsSound)
-            )
+            playingCitySound = Gdx.audio.newMusic(Gdx.files.internal("sounds/" + city.civInfo.getEra().cityWLTKSound + ".mp3"))
+            playingCitySound.play()
         } else {
-            citySoundsController.chooseTrack(
-                city.civInfo.getEra().citySound,
-                flags = EnumSet.of(MusicTrackChooserFlags.PrefixMustMatch, MusicTrackChooserFlags.PlaySingle, MusicTrackChooserFlags.PlayAsSound)
-            )
+            playingCitySound = Gdx.audio.newMusic(Gdx.files.internal("sounds/" + city.civInfo.getEra().citySound + ".mp3"))
+            playingCitySound.play()
         }
     }
 
