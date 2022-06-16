@@ -35,13 +35,15 @@ Sources for Info about current orientation in case need:
         if (activity.requestedOrientation != orientation) activity.requestedOrientation = orientation
     }
 
-    @Suppress("DEPRECATION")
-    override fun hasDisplayCutout(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+    override fun hasDisplayCutout() = when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ->
+            activity.display?.cutout != null
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ->
+            @Suppress("DEPRECATION")
             activity.windowManager.defaultDisplay.cutout != null
-        } else {
-             false
-        }
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.P ->
+            activity.window.decorView.rootWindowInsets.displayCutout != null
+        else -> false
     }
 
     override fun toggleDisplayCutout(androidCutout: Boolean) {
