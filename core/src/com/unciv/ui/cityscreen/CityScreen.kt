@@ -213,12 +213,12 @@ class CityScreen(
         if (city.isWeLoveTheKingDayActive()) {
             citySoundsController.chooseTrack(
                 city.civInfo.getEra().cityWLTKSound,
-                flags = EnumSet.of(MusicTrackChooserFlags.PrefixMustMatch, MusicTrackChooserFlags.PlayAsSound)
+                flags = EnumSet.of(MusicTrackChooserFlags.PrefixMustMatch, MusicTrackChooserFlags.PlaySingle, MusicTrackChooserFlags.PlayAsSound)
             )
         } else {
             citySoundsController.chooseTrack(
                 city.civInfo.getEra().citySound,
-                flags = EnumSet.of(MusicTrackChooserFlags.PrefixMustMatch, MusicTrackChooserFlags.PlayAsSound)
+                flags = EnumSet.of(MusicTrackChooserFlags.PrefixMustMatch, MusicTrackChooserFlags.PlaySingle, MusicTrackChooserFlags.PlayAsSound)
             )
         }
     }
