@@ -185,7 +185,7 @@ class CivilopediaScreen(
 
         val curGameInfo = game.gameInfo
         val religionEnabled = if (curGameInfo != null) curGameInfo.isReligionEnabled() else ruleset.beliefs.isNotEmpty()
-        val victoryTypes = if (curGameInfo != null) curGameInfo.gameParameters.victoryTypes else emptyList()
+        val victoryTypes = if (curGameInfo != null) curGameInfo.gameParameters.victoryTypes else ruleset.victories.keys
 
         fun shouldBeDisplayed(obj: IHasUniques): Boolean {
             return when {
