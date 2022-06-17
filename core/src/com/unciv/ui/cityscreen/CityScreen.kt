@@ -120,7 +120,8 @@ class CityScreen(
     val citySoundPlayer = UncivGame.Current.citySoundController
 
     init {
-        citySoundPlayer.playCitySound(city)
+        if (UncivGame.Current.settings.citySounds)
+            citySoundPlayer.playCitySound(city)
 
         globalShortcuts.add(KeyCharAndCode.BACK) { game.resetToWorldScreen() }
 

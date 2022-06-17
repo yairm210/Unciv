@@ -32,6 +32,7 @@ class GameSettings {
     var hasCrashedRecently = false
 
     var soundEffectsVolume = 0.5f
+    var citySounds = true
     var musicVolume = 0.5f
     var pauseBetweenTracks = 10
 

@@ -29,6 +29,7 @@ fun soundTab(
     val music = UncivGame.Current.musicController
 
     addSoundEffectsVolumeSlider(this, settings)
+    optionsPopup.addCheckbox(this, "Enable city sounds", settings.citySounds, true) { settings.citySounds = it }
 
     if (UncivGame.Current.musicController.isMusicAvailable()) {
         addMusicVolumeSlider(this, settings, music)
