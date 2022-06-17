@@ -42,6 +42,7 @@ class CitySoundPlayer: MusicController() {
             }
             playingCitySound = Gdx.audio.newMusic(file)
         } catch (ex: Throwable) {
+            playingCitySound.dispose()
             ex.printStackTrace()
         }
 
@@ -49,6 +50,7 @@ class CitySoundPlayer: MusicController() {
             playingCitySound.isLooping = true
             playingCitySound.play()
         } catch (ex: Throwable) {
+            playingCitySound.dispose()
             ex.printStackTrace()
         }
     }
@@ -58,6 +60,7 @@ class CitySoundPlayer: MusicController() {
             if (playingCitySound.isPlaying)
                 playingCitySound.stop()
         } catch (ex: Throwable) {
+            playingCitySound.dispose()
             ex.printStackTrace()
         }
     }
