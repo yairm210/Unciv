@@ -55,7 +55,7 @@ class VictoryManager {
 
     fun getVictoryTypeAchieved(): String? {
         if (!civInfo.isMajorCiv()) return null
-        for (victoryName in civInfo.gameInfo.ruleSet.victories.keys.filter { it != Constants.neutralVictoryType}) {
+        for (victoryName in civInfo.gameInfo.gameParameters.victoryTypes.filter { it != Constants.neutralVictoryType}) {
             if (getNextMilestone(victoryName) == null)
                 return victoryName
         }
