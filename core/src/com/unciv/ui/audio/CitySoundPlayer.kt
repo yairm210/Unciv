@@ -8,7 +8,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 
 class CitySoundPlayer: MusicController() {
-    private lateinit var playingCitySound: Music
+    private var playingCitySound: Music? = null
 
     private fun getFile(path: String) =
             if (Files.FileType.Local == Files.FileType.External && Gdx.files.isExternalStorageAvailable)
@@ -34,33 +34,35 @@ class CitySoundPlayer: MusicController() {
         .firstOrNull { it.name().contains(fileName) }
 
     fun playCitySound(city: CityInfo) {
+        if (playingCitySound != null)
+            stopCitySound()
         try {
             val file: FileHandle = if (city.isWeLoveTheKingDayActive()) {
-                FileHandle(getSoundFile(city.civInfo.getEra().citySound).toString())
+                FileHandle(getSoundFile(city.civInfo.getEra().cityWLTKSound).toString())
             } else {
                 FileHandle(getSoundFile(city.civInfo.getEra().citySound).toString())
             }
             playingCitySound = Gdx.audio.newMusic(file)
         } catch (ex: Throwable) {
-            playingCitySound.dispose()
+            playingCitySound?.dispose()
             ex.printStackTrace()
         }
 
         try {
-            playingCitySound.isLooping = true
-            playingCitySound.play()
+            playingCitySound?.isLooping = true
+            playingCitySound?.play()
         } catch (ex: Throwable) {
-            playingCitySound.dispose()
+            playingCitySound?.dispose()
             ex.printStackTrace()
         }
     }
 
     fun stopCitySound() {
         try {
-            if (playingCitySound.isPlaying)
-                playingCitySound.stop()
+            if (playingCitySound?.isPlaying == true)
+                playingCitySound?.stop()
         } catch (ex: Throwable) {
-            playingCitySound.dispose()
+            playingCitySound?.dispose()
             ex.printStackTrace()
         }
     }
