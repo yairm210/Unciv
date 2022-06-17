@@ -13,6 +13,7 @@ import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.utils.createTextField
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.enable
 import com.unciv.ui.utils.extensions.keyShortcuts
@@ -25,7 +26,7 @@ import com.unciv.utils.concurrency.launchOnGLThread
 
 
 class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves") {
-    private val gameNameTextField = TextField("", skin)
+    private val gameNameTextField = createTextField("Saved game name")
 
     init {
         setDefaultCloseAction()

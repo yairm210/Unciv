@@ -16,6 +16,7 @@ import com.unciv.ui.utils.AutoScrollPane
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.TabbedPager
+import com.unciv.ui.utils.createTextField
 import com.unciv.ui.utils.extensions.isEnabled
 import com.unciv.ui.utils.extensions.keyShortcuts
 import com.unciv.ui.utils.extensions.onActivation
@@ -37,7 +38,7 @@ class MapEditorSaveTab(
     private val deleteButton = "Delete map".toTextButton()
     private val quitButton = "Exit map editor".toTextButton()
 
-    private val mapNameTextField = TextField("", skin)
+    private val mapNameTextField = createTextField("Map Name")
 
     private var chosenMap: FileHandle? = null
 

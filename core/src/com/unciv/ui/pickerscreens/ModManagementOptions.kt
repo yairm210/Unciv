@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.models.ruleset.Ruleset
@@ -16,6 +15,7 @@ import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ExpanderTab
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.utils.createTextField
 import com.unciv.ui.utils.extensions.keyShortcuts
 import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.onChange
@@ -72,7 +72,7 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
         }
     }
 
-    private val textField = TextField("", BaseScreen.skin)
+    private val textField = createTextField("Enter search text")
     fun getFilterText(): String = textField.text
 
     var sortInstalled = SortType.Name
@@ -85,8 +85,6 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
     val expander: ExpanderTab
 
     init {
-        textField.messageText = "Enter search text"
-
         val searchIcon = ImageGetter.getImage("OtherIcons/Search")
             .surroundWithCircle(50f, color = Color.CLEAR)
 

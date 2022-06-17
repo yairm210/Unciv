@@ -1,13 +1,13 @@
 package com.unciv.ui.multiplayer
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.logic.multiplayer.OnlineMultiplayerGame
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.popup.YesNoPopup
+import com.unciv.ui.utils.createTextField
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.enable
 import com.unciv.ui.utils.extensions.onClick
@@ -20,7 +20,7 @@ import com.unciv.utils.concurrency.launchOnGLThread
  * backScreen is used for getting back to the MultiplayerScreen so it doesn't have to be created over and over again */
 class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame) : PickerScreen() {
     init {
-        val textField = TextField(multiplayerGame.name, skin)
+        val textField = createTextField("Game name", multiplayerGame.name)
 
         topTable.add("Rename".toLabel()).row()
         topTable.add(textField).pad(10f).padBottom(30f).width(stage.width / 2).row()

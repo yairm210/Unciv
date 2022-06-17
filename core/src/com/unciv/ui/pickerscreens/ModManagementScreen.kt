@@ -8,7 +8,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextArea
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.MainMenuScreen
@@ -29,13 +28,14 @@ import com.unciv.ui.utils.ExpanderTab
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.RecreateOnResize
 import com.unciv.ui.utils.WrappableLabel
+import com.unciv.ui.utils.createTextField
 import com.unciv.ui.utils.extensions.UncivDateFormat.formatDate
 import com.unciv.ui.utils.extensions.UncivDateFormat.parseDate
 import com.unciv.ui.utils.extensions.addSeparator
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.enable
-import com.unciv.ui.utils.extensions.keyShortcuts
 import com.unciv.ui.utils.extensions.isEnabled
+import com.unciv.ui.utils.extensions.keyShortcuts
 import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toCheckBox
@@ -370,13 +370,13 @@ class ModManagementScreen(
         downloadButton.onClick {
             val popup = Popup(this)
             popup.addGoodSizedLabel("Please enter the mod repository -or- archive zip url:").row()
-            val textArea = TextArea("https://github.com/...", skin)
-            popup.add(textArea).width(stage.width / 2).row()
+            val textField = createTextField("")
+            popup.add(textField).width(stage.width / 2).row()
             val actualDownloadButton = "Download".toTextButton()
             actualDownloadButton.onClick {
                 actualDownloadButton.setText("Downloading...".tr())
                 actualDownloadButton.disable()
-                downloadMod(Github.Repo().parseUrl(textArea.text)) { popup.close() }
+                downloadMod(Github.Repo().parseUrl(textField.text)) { popup.close() }
             }
             popup.add(actualDownloadButton).row()
             popup.addCloseButton()
@@ -538,14 +538,13 @@ class ModManagementScreen(
             rightSideButton.isEnabled = false
             YesNoPopup(
                 question = "Are you SURE you want to delete this mod?",
-                action = {
-                    deleteMod(mod.ruleset)
-                    modActionTable.clear()
-                    rightSideButton.setText("[${mod.name}] was deleted.".tr())
-                },
                 screen = this,
                 restoreDefault = { rightSideButton.isEnabled = true }
-            ).open()
+            ) {
+                deleteMod(mod.ruleset)
+                modActionTable.clear()
+                rightSideButton.setText("[${mod.name}] was deleted.".tr())
+            }.open()
         }
     }
 

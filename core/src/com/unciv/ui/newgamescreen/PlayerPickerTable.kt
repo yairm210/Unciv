@@ -6,12 +6,12 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.IdChecker
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.multiplayer.FriendList
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Nation
@@ -21,7 +21,6 @@ import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.mapeditor.GameParametersScreen
-import com.unciv.logic.multiplayer.FriendList
 import com.unciv.ui.multiplayer.FriendPickerList
 import com.unciv.ui.pickerscreens.PickerPane
 import com.unciv.ui.pickerscreens.PickerScreen
@@ -165,8 +164,7 @@ class PlayerPickerTable(
         }
         if (gameParameters.isOnlineMultiplayer && player.playerType == PlayerType.Human) {
 
-            val playerIdTextField = TextField(player.playerId, BaseScreen.skin)
-            playerIdTextField.messageText = "Please input Player ID!".tr()
+            val playerIdTextField = createTextField("Please input Player ID!", player.playerId)
             playerTable.add(playerIdTextField).colspan(2).fillX().pad(5f)
             val errorLabel = "✘".toLabel(Color.RED)
             playerTable.add(errorLabel).pad(5f).row()

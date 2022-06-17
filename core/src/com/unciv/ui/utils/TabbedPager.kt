@@ -1,6 +1,5 @@
 package com.unciv.ui.utils
 
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.EventListener
@@ -22,10 +21,10 @@ import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
-import com.unciv.ui.utils.extensions.keyShortcuts
 import com.unciv.ui.utils.extensions.addSeparator
 import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.isEnabled
+import com.unciv.ui.utils.extensions.keyShortcuts
 import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.packIfNeeded
 import com.unciv.ui.utils.extensions.pad
@@ -328,7 +327,7 @@ open class TabbedPager(
     }
     override fun getMinWidth() = dimW.min
     override fun getMaxWidth() = dimW.max
-    override fun getMinHeight() = dimH.min + headerHeight
+    override fun getMinHeight() = headerHeight
     override fun getMaxHeight() = dimH.max + headerHeight
 
     //endregion
@@ -574,7 +573,7 @@ open class TabbedPager(
      */
     fun askForPassword(secretHashCode: Int = 0) {
         class PassPopup(screen: BaseScreen, unlockAction: ()->Unit, lockAction: ()->Unit) : Popup(screen) {
-            val passEntry = TextField("", BaseScreen.skin)
+            val passEntry = createTextField("Password")
             init {
                 passEntry.isPasswordMode = true
                 add(passEntry).row()

@@ -15,6 +15,7 @@ import com.unciv.logic.map.MapType
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ExpanderTab
 import com.unciv.ui.utils.UncivSlider
+import com.unciv.ui.utils.createTextField
 import com.unciv.ui.utils.extensions.onChange
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.pad
@@ -132,7 +133,7 @@ class MapParametersTable(
 
     private fun addHexagonalSizeTable() {
         val defaultRadius = mapParameters.mapSize.radius.toString()
-        customMapSizeRadius = TextField(defaultRadius, skin).apply {
+        customMapSizeRadius = createTextField("Radius", defaultRadius).apply {
             textFieldFilter = DigitsOnlyFilter()
         }
         customMapSizeRadius.onChange {
@@ -146,12 +147,12 @@ class MapParametersTable(
 
     private fun addRectangularSizeTable() {
         val defaultWidth = mapParameters.mapSize.width.toString()
-        customMapWidth = TextField(defaultWidth, skin).apply {
+        customMapWidth = createTextField("Width", defaultWidth).apply {
             textFieldFilter = DigitsOnlyFilter()
         }
 
         val defaultHeight = mapParameters.mapSize.height.toString()
-        customMapHeight = TextField(defaultHeight, skin).apply {
+        customMapHeight = createTextField("Height", defaultHeight).apply {
             textFieldFilter = DigitsOnlyFilter()
         }
 
@@ -252,7 +253,7 @@ class MapParametersTable(
     private fun addAdvancedControls(table: Table) {
         table.defaults().pad(5f)
 
-        seedTextField = TextField(mapParameters.seed.toString(), skin)
+        seedTextField = createTextField("RNG Seed", mapParameters.seed.toString())
         seedTextField.textFieldFilter = DigitsOnlyFilter()
 
         // If the field is empty, fallback seed value to 0
