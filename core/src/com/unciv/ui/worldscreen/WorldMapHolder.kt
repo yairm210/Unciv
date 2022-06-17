@@ -37,11 +37,14 @@ import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.tilegroups.WorldTileGroup
+import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.UnitGroup
 import com.unciv.ui.utils.ZoomableScrollPane
 import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.colorFromRGB
 import com.unciv.ui.utils.extensions.darken
+import com.unciv.ui.utils.extensions.keyShortcuts
+import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.surroundWithCircle
 import com.unciv.ui.utils.extensions.toLabel
@@ -454,12 +457,13 @@ class WorldMapHolder(
         val unitsThatCanMove = dto.unitToTurnsToDestination.keys.filter { it.currentMovement > 0 }
         if (unitsThatCanMove.isEmpty()) moveHereButton.color.a = 0.5f
         else {
-            moveHereButton.onClick(UncivSound.Silent) {
+            moveHereButton.onActivation(UncivSound.Silent) {
                 UncivGame.Current.settings.addCompletedTutorialTask("Move unit")
                 if (unitsThatCanMove.any { it.baseUnit.movesLikeAirUnits() })
                     UncivGame.Current.settings.addCompletedTutorialTask("Move an air unit")
                 moveUnitToTargetTile(unitsThatCanMove, dto.tileInfo)
             }
+            moveHereButton.keyShortcuts.add(KeyCharAndCode.TAB)
         }
         return moveHereButton
     }
@@ -475,12 +479,13 @@ class WorldMapHolder(
         unitIcon.y = buttonSize - unitIcon.height
         swapWithButton.addActor(unitIcon)
 
-        swapWithButton.onClick(UncivSound.Silent) {
+        swapWithButton.onActivation(UncivSound.Silent) {
             UncivGame.Current.settings.addCompletedTutorialTask("Move unit")
             if (dto.unit.baseUnit.movesLikeAirUnits())
                 UncivGame.Current.settings.addCompletedTutorialTask("Move an air unit")
             swapMoveUnitToTargetTile(dto.unit, dto.tileInfo)
         }
+        swapWithButton.keyShortcuts.add(KeyCharAndCode.TAB)
 
         return swapWithButton
     }
