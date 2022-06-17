@@ -96,7 +96,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         fun addStat(label: Label, icon: String, isLast: Boolean = false, screenFactory: ()->BaseScreen) {
             val image = ImageGetter.getStatIcon(icon)
             val action = {
-                worldScreen.game.setScreen(screenFactory())
+                worldScreen.game.pushScreen(screenFactory())
             }
             label.onClick(action)
             image.onClick(action)
@@ -114,7 +114,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         statsTable.add(happinessImage).padBottom(6f).size(20f)
         statsTable.add(happinessLabel).padRight(20f)
         val invokeResourcesPage = {
-            worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Resources"))
+            worldScreen.game.pushScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Resources"))
         }
         happinessImage.onClick(invokeResourcesPage)
         happinessLabel.onClick(invokeResourcesPage)
@@ -142,11 +142,11 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
                 val gameInfo = worldScreen.selectedCiv.gameInfo
                 MayaCalendar.openPopup(worldScreen, worldScreen.selectedCiv, gameInfo.getYear())
             } else {
-                worldScreen.game.setScreen(VictoryScreen(worldScreen))
+                worldScreen.game.pushScreen(VictoryScreen(worldScreen))
             }
         }
         resourcesWrapper.onClick {
-            worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Resources"))
+            worldScreen.game.pushScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Resources"))
         }
 
         val strategicResources = worldScreen.gameInfo.ruleSet.tileResources.values
@@ -171,12 +171,12 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
 
         init {
             unitSupplyImage.onClick {
-                worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Units"))
+                worldScreen.game.pushScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Units"))
             }
 
             val overviewButton = "Overview".toTextButton()
             overviewButton.addTooltip('e')
-            overviewButton.onClick { worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv)) }
+            overviewButton.onClick { worldScreen.game.pushScreen(EmpireOverviewScreen(worldScreen.selectedCiv)) }
 
             unitSupplyCell = add()
             add(overviewButton).pad(10f)
@@ -215,15 +215,14 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
             selectedCivLabel.onClick {
                 val civilopediaScreen = CivilopediaScreen(
                     worldScreen.selectedCiv.gameInfo.ruleSet,
-                    worldScreen,
                     CivilopediaCategories.Nation,
                     worldScreen.selectedCiv.civName
                 )
-                worldScreen.game.setScreen(civilopediaScreen)
+                worldScreen.game.pushScreen(civilopediaScreen)
             }
 
             selectedCivIconHolder.onClick {
-                worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv))
+                worldScreen.game.pushScreen(EmpireOverviewScreen(worldScreen.selectedCiv))
             }
 
             add(menuButton).size(50f).padRight(0f)

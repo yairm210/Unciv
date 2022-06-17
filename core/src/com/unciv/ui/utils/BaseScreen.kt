@@ -5,7 +5,6 @@ import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.g2d.BitmapFont
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
@@ -46,7 +45,7 @@ abstract class BaseScreen : Screen {
         val height = resolutions[1]
 
         /** The ExtendViewport sets the _minimum_(!) world size - the actual world size will be larger, fitted to screen/window aspect ratio. */
-        stage = UncivStage(ExtendViewport(height, height), SpriteBatch())
+        stage = UncivStage(ExtendViewport(height, height))
 
         if (enableSceneDebug) {
             stage.setDebugUnderMouse(true)
@@ -83,7 +82,11 @@ abstract class BaseScreen : Screen {
     }
 
     override fun resize(width: Int, height: Int) {
-        stage.viewport.update(width, height, true)
+        if (this !is RecreateOnResize) {
+            stage.viewport.update(width, height, true)
+        } else if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
+            game.replaceCurrentScreen(recreate())
+        }
     }
 
     override fun pause() {}
@@ -92,7 +95,9 @@ abstract class BaseScreen : Screen {
 
     override fun hide() {}
 
-    override fun dispose() {}
+    override fun dispose() {
+        stage.dispose()
+    }
 
     fun displayTutorial(tutorial: Tutorial, test: (() -> Boolean)? = null) {
         if (!game.settings.showTutorials) return
@@ -150,4 +155,8 @@ abstract class BaseScreen : Screen {
     fun openOptionsPopup(startingPage: Int = OptionsPopup.defaultPage, onClose: () -> Unit = {}) {
         OptionsPopup(this, startingPage, onClose).open(force = true)
     }
+}
+
+interface RecreateOnResize {
+    fun recreate(): BaseScreen
 }
