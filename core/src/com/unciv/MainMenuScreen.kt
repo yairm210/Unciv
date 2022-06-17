@@ -25,7 +25,6 @@ import com.unciv.ui.mapeditor.MapEditorScreen
 import com.unciv.ui.multiplayer.MultiplayerScreen
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.ModManagementScreen
-import com.unciv.ui.popup.ExitGamePopup
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.popup.closeAllPopups
@@ -192,7 +191,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
                 closeAllPopups()
                 return@add
             }
-            ExitGamePopup(this)
+            game.popScreen()
         }
 
         val helpButton = "?".toLabel(fontSize = 32)

@@ -26,6 +26,7 @@ import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.multiplayer.MultiplayerHelpers
 import com.unciv.ui.popup.Popup
+import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.worldscreen.PlayerReadyScreen
@@ -156,7 +157,15 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         }
     }
 
-    /** Loads a game, [disposing][BaseScreen.dispose] all other screens. Initializes the state of all important modules. Automatically runs on the appropriate thread. */
+    /**
+     * Loads a game, [disposing][BaseScreen.dispose] all screens.
+     *
+     * Initializes the state of all important modules.
+     *
+     * Automatically runs on the appropriate thread.
+     *
+     * Sets the returned `WorldScreen` as the only active screen.
+     */
     suspend fun loadGame(newGameInfo: GameInfo): WorldScreen = withThreadPoolContext toplevel@{
         val prevGameInfo = gameInfo
         gameInfo = newGameInfo
@@ -222,9 +231,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     }
 
     /**
-     * Sets the screen of the game and automatically disposes the old screen as long as it isn't the world screen.
-     *
-     * @param screen must be a subclass of [BaseScreen].
+     * @throws UnsupportedOperationException Use pushScreen or replaceCurrentScreen instead
      */
     override fun setScreen(screen: Screen) {
         throw UnsupportedOperationException("Use pushScreen or replaceCurrentScreen instead")
@@ -252,25 +259,36 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     }
 
     /**
-     * Pops the currently displayed screen off the screen stack and shows the previous screen. If there is no previous screen, will ask the user to quit the game.
-     * Automatically [disposes][BaseScreen.dispose] the old screen as long as it isn't the world screen.
+     * Pops the currently displayed screen off the screen stack and shows the previous screen.
+     *
+     * If there is no other screen than the current, will ask the user to quit the game and return null.
+     *
+     * Automatically [disposes][BaseScreen.dispose] the old screen.
      *
      * @return the new screen
      */
     fun popScreen(): BaseScreen? {
-        val oldScreen = screenStack.removeLast()
-        val newScreen = screenStack.lastOrNull()
-        if (newScreen == null) {
+        if (screenStack.size == 1) {
+            musicController.pause()
+            YesNoPopup(
+                question = "Do you want to exit the game?",
+                screen = screenStack.last(),
+                restoreDefault = { musicController.resume() },
+                action = {
+                    Gdx.app.exit()
+
+                }
+            ).open(force = true)
             return null
         }
+        val oldScreen = screenStack.removeLast()
+        val newScreen = screenStack.last()
         setScreen(newScreen)
-        if (oldScreen !is WorldScreen) { // we want to keep the world screen around, because it's expensive to re-create it
-            oldScreen.dispose()
-        }
+        oldScreen.dispose()
         return newScreen
     }
 
-    /** Replaces the current screen with a new one. Automatically [disposes][BaseScreen.dispose] the old screen as long as it isn't the world screen. */
+    /** Replaces the current screen with a new one. Automatically [disposes][BaseScreen.dispose] the old screen. */
     fun replaceCurrentScreen(newScreen: BaseScreen) {
         val oldScreen = screenStack.removeLast()
         screenStack.addLast(newScreen)
