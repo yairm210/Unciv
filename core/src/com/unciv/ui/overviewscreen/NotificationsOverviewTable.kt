@@ -42,9 +42,8 @@ class NotificationsOverviewTable(
         if (viewingPlayer.notifications.isNotEmpty())
             notificationTable.add(notificationsArrayTable("Current", viewingPlayer.notifications)).row()
 
-        for (index in notificationLog.indices) {
-            val turnCounter = notificationLog.lastIndex - index
-            notificationTable.add(notificationsArrayTable(turnCounter.toString(), notificationLog[index].notifications))
+        for (notification in notificationLog) {
+            notificationTable.add(notificationsArrayTable(notification.turn.toString(), notification.notifications))
             notificationTable.padTop(20f).row()
         }
     }
@@ -52,7 +51,7 @@ class NotificationsOverviewTable(
     private fun notificationsArrayTable(index: String, notifications: ArrayList<Notification>): Table {
         val turnTable = Table(BaseScreen.skin)
         if (index != "Current")
-            turnTable.add("Turn $index").row()
+            turnTable.add("Turn [$index]").row()
         else
             turnTable.add("Current turn").row()
 
