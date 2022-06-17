@@ -46,6 +46,7 @@ class CitySoundPlayer: MusicController() {
         }
 
         try {
+            playingCitySound.isLooping = true
             playingCitySound.play()
         } catch (ex: Throwable) {
             ex.printStackTrace()
@@ -54,7 +55,8 @@ class CitySoundPlayer: MusicController() {
 
     fun stopCitySound() {
         try {
-            playingCitySound.stop()
+            if (playingCitySound.isPlaying)
+                playingCitySound.stop()
         } catch (ex: Throwable) {
             ex.printStackTrace()
         }
