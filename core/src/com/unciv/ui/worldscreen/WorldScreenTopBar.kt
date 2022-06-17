@@ -158,9 +158,13 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         }
 
         // in case the icons are configured higher than a label, we add a dummy - height will be measured once before it's updated
-        resourcesWrapper.add(resourceActors[0].icon)
+        if (resourceActors.isNotEmpty()) {
+            resourcesWrapper.add(resourceActors[0].icon)
+            resourceTable.add(resourcesWrapper)
+        }
+
         resourceTable.add(turnsLabel).pad(5f, 5f, 10f, 5f)
-        resourceTable.add(resourcesWrapper)
+
         return resourceTable
     }
 
