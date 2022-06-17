@@ -395,7 +395,7 @@ class CityScreen(
 
     fun exit() {
         game.resetToWorldScreen()
-        game.worldScreen!!.mapHolder.setCenterPosition(city.location)
+        game.worldScreen!!.mapHolder.setCenterPosition(city.location, immediately = true)
         game.worldScreen!!.bottomUnitTable.selectUnit()
     }
 
