@@ -2,7 +2,6 @@
 
 ## Icon Credits
 
-[Notification icon](https://www.flaticon.com/free-icons/notification) created by [Freepik](https://www.flaticon.com/authors/freepik) - [www.flaticon.com](https://www.flaticon.com)
 Flag Icons made by [Freepik](https://www.flaticon.com/authors/freepik) from [www.flaticon.com](https://www.flaticon.com) and licensed by Creative Commons 3.0, except for:
 
 -   [Catalan flag] by J0anJosep licensed under Public Domain
