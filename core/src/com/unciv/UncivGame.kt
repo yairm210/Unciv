@@ -166,8 +166,13 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         val isLoadingSameGame = worldScreen != null && prevGameInfo != null && prevGameInfo.gameId == newGameInfo.gameId
         val worldScreenRestoreState = if (isLoadingSameGame) worldScreen!!.getRestoreState() else null
 
-        return@toplevel withGLContext {
+        withGLContext {
+            // this is not merged with the below GL context block so that our loading screen gets a chance to show - otherwise
+            // we do it all in one swoop on the same thread and the application just "freezes" without loading screen for the duration.
             setScreen(LoadingScreen(getScreen()))
+        }
+
+        return@toplevel withGLContext {
             for (screen in screenStack) screen.dispose()
             screenStack.clear()
 
