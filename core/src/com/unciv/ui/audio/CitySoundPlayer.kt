@@ -8,10 +8,11 @@ import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 
 class CitySoundPlayer: MusicController() {
+    private val soundsLocation = Files.FileType.Local
     private var playingCitySound: Music? = null
 
     private fun getFile(path: String) =
-            if (Files.FileType.Local == Files.FileType.External && Gdx.files.isExternalStorageAvailable)
+            if (soundsLocation == Files.FileType.External && Gdx.files.isExternalStorageAvailable)
                 Gdx.files.external(path)
             else Gdx.files.local(path)
 
@@ -43,12 +44,7 @@ class CitySoundPlayer: MusicController() {
                 FileHandle(getSoundFile(city.civInfo.getEra().citySound).toString())
             }
             playingCitySound = Gdx.audio.newMusic(file)
-        } catch (ex: Throwable) {
-            playingCitySound?.dispose()
-            ex.printStackTrace()
-        }
 
-        try {
             playingCitySound?.isLooping = true
             playingCitySound?.play()
         } catch (ex: Throwable) {
