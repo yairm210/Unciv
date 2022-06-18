@@ -98,7 +98,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
                         errorLabel.setText("Could not save game to custom location!".tr())
                         result.exception?.printStackTrace()
                     } else if (result.isSuccessful()) {
-                        game.resetToWorldScreen()
+                        game.popScreen()
                     }
                     saveToCustomLocation.enable()
                 }
@@ -114,7 +114,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
             game.gameSaver.saveGame(gameInfo, gameNameTextField.text) {
                 launchOnGLThread {
                     if (it != null) ToastPopup("Could not save game!", this@SaveGameScreen)
-                    else UncivGame.Current.resetToWorldScreen()
+                    else UncivGame.Current.popScreen()
                 }
             }
         }

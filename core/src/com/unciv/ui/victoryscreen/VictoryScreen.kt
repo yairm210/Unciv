@@ -72,7 +72,6 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
             wonOrLost("", null, false)
         } else if (!someoneHasWon) {
             setDefaultCloseAction()
-            globalShortcuts.add(KeyCharAndCode.BACK) { game.resetToWorldScreen() }
         }
     }
 
@@ -94,13 +93,13 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         rightSideButton.onClick {
             val newGameSetupInfo = GameSetupInfo(gameInfo)
             newGameSetupInfo.mapParameters.reseed()
-            game.setScreen(NewGameScreen(this, newGameSetupInfo))
+            game.pushScreen(NewGameScreen(newGameSetupInfo))
         }
 
         closeButton.setText("One more turn...!".tr())
         closeButton.onClick {
             gameInfo.oneMoreTurnMode = true
-            game.resetToWorldScreen()
+            game.popScreen()
         }
     }
 

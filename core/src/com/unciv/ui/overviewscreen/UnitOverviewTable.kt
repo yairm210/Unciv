@@ -197,7 +197,7 @@ class UnitOverviewTab(
                 ).size(24f).padLeft(8f)
             promotionsTable.onClick {
                 if (unit.promotions.canBePromoted() || unit.promotions.promotions.isNotEmpty()) {
-                    game.setScreen(PromotionPickerScreen(unit))
+                    game.pushScreen(PromotionPickerScreen(unit))
                 }
             }
             add(promotionsTable)

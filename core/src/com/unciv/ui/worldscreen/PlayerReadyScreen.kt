@@ -19,9 +19,7 @@ class PlayerReadyScreen(worldScreen: WorldScreen) : BaseScreen() {
         table.add("[$curCiv] ready?".toLabel(curCiv.nation.getInnerColor(), Constants.headingFontSize))
 
         table.onClick {
-            Concurrency.runOnGLThread { // To avoid ANRs on Android when the creation of the worldscreen takes more than 500ms
-                game.setScreen(worldScreen)
-            }
+            game.replaceCurrentScreen(worldScreen)
         }
         table.setFillParent(true)
         stage.addActor(table)

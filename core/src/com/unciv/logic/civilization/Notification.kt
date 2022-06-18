@@ -78,7 +78,7 @@ data class LocationAction(var locations: ArrayList<Vector2> = ArrayList()) : Not
 class TechAction(val techName: String = "") : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
         val tech = worldScreen.gameInfo.ruleSet.technologies[techName]
-        worldScreen.game.setScreen(TechPickerScreen(worldScreen.viewingCiv, tech))
+        worldScreen.game.pushScreen(TechPickerScreen(worldScreen.viewingCiv, tech))
     }
 }
 
@@ -87,7 +87,7 @@ data class CityAction(val city: Vector2 = Vector2.Zero): NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
         worldScreen.mapHolder.tileMap[city].getCity()?.let {
             if (it.civInfo == worldScreen.viewingCiv)
-                worldScreen.game.setScreen(CityScreen(it))
+                worldScreen.game.pushScreen(CityScreen(it))
         }
     }
 }
@@ -96,7 +96,7 @@ data class CityAction(val city: Vector2 = Vector2.Zero): NotificationAction {
 data class DiplomacyAction(val otherCivName: String = ""): NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
         val otherCiv = worldScreen.gameInfo.getCivilization(otherCivName)
-        worldScreen.game.setScreen(DiplomacyScreen(worldScreen.viewingCiv, otherCiv))
+        worldScreen.game.pushScreen(DiplomacyScreen(worldScreen.viewingCiv, otherCiv))
     }
 }
 

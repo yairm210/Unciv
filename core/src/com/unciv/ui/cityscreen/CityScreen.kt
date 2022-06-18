@@ -21,18 +21,20 @@ import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.RecreateOnResize
 import com.unciv.ui.utils.ZoomableScrollPane
 import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.packIfNeeded
 import com.unciv.ui.utils.extensions.toTextButton
+import com.unciv.ui.worldscreen.WorldScreen
 
 class CityScreen(
     internal val city: CityInfo,
     initSelectedConstruction: IConstruction? = null,
     initSelectedTile: TileInfo? = null
-): BaseScreen() {
+): BaseScreen(), RecreateOnResize {
     companion object {
         /** Distance from stage edges to floating widgets */
         const val posFromEdge = 5f
@@ -107,7 +109,7 @@ class CityScreen(
     private val nextTileToOwn = city.expansion.chooseNewTileToOwn()
 
     init {
-        globalShortcuts.add(KeyCharAndCode.BACK) { game.resetToWorldScreen() }
+        globalShortcuts.add(KeyCharAndCode.BACK) { game.popScreen() }
         UncivGame.Current.settings.addCompletedTutorialTask("Enter city screen")
 
         addTiles()
@@ -394,9 +396,11 @@ class CityScreen(
     }
 
     fun exit() {
-        game.resetToWorldScreen()
-        game.worldScreen!!.mapHolder.setCenterPosition(city.location, immediately = true)
-        game.worldScreen!!.bottomUnitTable.selectUnit()
+        val newScreen = game.popScreen()
+        if (newScreen is WorldScreen) {
+            newScreen.mapHolder.setCenterPosition(city.location, immediately = true)
+            newScreen.bottomUnitTable.selectUnit()
+        }
     }
 
     fun page(delta: Int) {
@@ -408,12 +412,8 @@ class CityScreen(
         val newCityScreen = CityScreen(civInfo.cities[indexOfNextCity])
         newCityScreen.showConstructionsTable = showConstructionsTable // stay on stats drilldown between cities
         newCityScreen.update()
-        game.setScreen(newCityScreen)
+        game.replaceCurrentScreen(newCityScreen)
     }
 
-    override fun resize(width: Int, height: Int) {
-        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
-            game.setScreen(CityScreen(city))
-        }
-    }
+    override fun recreate(): BaseScreen = CityScreen(city)
 }

@@ -41,10 +41,9 @@ open class PickerScreen(disableScroll: Boolean = false) : BaseScreen() {
      * Initializes the [Close button][closeButton]'s action (and the Back/ESC handler)
      * to return to the [previousScreen] if specified, or else to the world screen.
      */
-    fun setDefaultCloseAction(previousScreen: BaseScreen? = null) {
+    fun setDefaultCloseAction() {
         pickerPane.closeButton.onActivation {
-            if (previousScreen != null) game.setScreen(previousScreen)
-            else game.resetToWorldScreen()
+            game.popScreen()
         }
         pickerPane.closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
     }

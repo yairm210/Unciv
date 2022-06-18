@@ -179,7 +179,7 @@ class ReligionOverviewTab(
         MarkupRenderer.render(
             belief.getCivilopediaTextLines(withHeader = true)
         ) {
-            UncivGame.Current.setScreen(CivilopediaScreen(gameInfo.ruleSet, overviewScreen, link = it))
+            UncivGame.Current.pushScreen(CivilopediaScreen(gameInfo.ruleSet, link = it))
         }.apply {
             background = ImageGetter.getBackground(ImageGetter.getBlue())
         }

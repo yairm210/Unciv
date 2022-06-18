@@ -20,28 +20,28 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
         }
         addButton("Civilopedia") {
             close()
-            worldScreen.game.setScreen(CivilopediaScreen(worldScreen.gameInfo.ruleSet, worldScreen))
+            worldScreen.game.pushScreen(CivilopediaScreen(worldScreen.gameInfo.ruleSet))
         }
         addButton("Save game") {
             close()
-            worldScreen.game.setScreen(SaveGameScreen(worldScreen.gameInfo))
+            worldScreen.game.pushScreen(SaveGameScreen(worldScreen.gameInfo))
         }
         addButton("Load game") {
             close()
-            worldScreen.game.setScreen(LoadGameScreen(worldScreen))
+            worldScreen.game.pushScreen(LoadGameScreen(worldScreen))
         }
 
         addButton("Start new game") {
             close()
             val newGameSetupInfo = GameSetupInfo(worldScreen.gameInfo)
             newGameSetupInfo.mapParameters.reseed()
-            val newGameScreen = NewGameScreen(worldScreen, newGameSetupInfo)
-            worldScreen.game.setScreen(newGameScreen)
+            val newGameScreen = NewGameScreen(newGameSetupInfo)
+            worldScreen.game.pushScreen(newGameScreen)
         }
 
         addButton("Victory status") {
             close()
-            worldScreen.game.setScreen(VictoryScreen(worldScreen))
+            worldScreen.game.pushScreen(VictoryScreen(worldScreen))
         }
         addButton("Options") {
             close()
