@@ -62,12 +62,11 @@ class TechPickerScreen(
 
     init {
         setDefaultCloseAction()
-        globalShortcuts.add(KeyCharAndCode.BACK) { UncivGame.Current.resetToWorldScreen() }
         scrollPane.setOverscroll(false, false)
 
         descriptionLabel.onClick {
             if (selectedTech != null)
-                game.setScreen(CivilopediaScreen(civInfo.gameInfo.ruleSet, this, CivilopediaCategories.Technology, selectedTech!!.name))
+                game.pushScreen(CivilopediaScreen(civInfo.gameInfo.ruleSet, CivilopediaCategories.Technology, selectedTech!!.name))
         }
 
         tempTechsToResearch = ArrayList(civTech.techsToResearch)
@@ -88,7 +87,7 @@ class TechPickerScreen(
 
             game.settings.addCompletedTutorialTask("Pick technology")
 
-            game.resetToWorldScreen()
+            game.popScreen()
         }
 
         // per default show current/recent technology,

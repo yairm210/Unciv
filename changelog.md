@@ -1,8 +1,18 @@
+## 4.1.11
+
+AI considers liberating city-states from other civilizations  - By OptimizedForDensity
+
+By Azzurite:
+- Fix OutOfMemory error when loading game state after already having a game loaded
+- Fix unit overlay not being closed when performing an action with a new unit
+- Fix option change not reloading main menu properly
+- Fix cutout options crash
+
+Better key handling  - By doublep
+
 ## 4.1.10
 
-Fixed translation order
-
-Added cutout support  - By alexban011
+Added cutout support - By alexban011
 
 By OptimizedForDensity:
 - Improvements to AI military unit usage

@@ -24,7 +24,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
-import com.unciv.ui.popup.YesNoPopup
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.hasOpenPopups
 import com.unciv.ui.utils.extensions.toPercent
 import com.unciv.ui.worldscreen.WorldScreen
@@ -127,7 +127,7 @@ object UnitActions {
                 val disbandText = if (unit.currentTile.getOwner() == unit.civInfo)
                     "Disband this unit for [${unit.baseUnit.getDisbandGold(unit.civInfo)}] gold?".tr()
                 else "Do you really want to disband this unit?".tr()
-                YesNoPopup(disbandText, UncivGame.Current.worldScreen!!) { unit.disband(); worldScreen.shouldUpdate = true }.open()
+                ConfirmPopup(UncivGame.Current.worldScreen!!, disbandText, "Disband unit") { unit.disband(); worldScreen.shouldUpdate = true }.open()
             }
         }.takeIf { unit.currentMovement > 0 })
     }
@@ -204,7 +204,7 @@ object UnitActions {
                     else {
                         // ask if we would be breaking a promise
                         val text = "Do you want to break your promise to [$leaders]?"
-                        YesNoPopup(text, UncivGame.Current.worldScreen!!, action = foundAction).open(force = true)
+                        ConfirmPopup(UncivGame.Current.worldScreen!!, text, "Break promise", action = foundAction).open(force = true)
                     }
                 }
             )
@@ -235,7 +235,7 @@ object UnitActions {
         // promotion does not consume movement points, but is not allowed if a unit has exhausted its movement or has attacked
         actionList += UnitAction(UnitActionType.Promote,
             action = {
-                UncivGame.Current.setScreen(PromotionPickerScreen(unit))
+                UncivGame.Current.pushScreen(PromotionPickerScreen(unit))
             }.takeIf { unit.currentMovement > 0 && unit.attacksThisTurn == 0 })
     }
 
@@ -275,7 +275,15 @@ object UnitActions {
         else actionList += UnitAction(type = UnitActionType.Pillage) {
             if (!worldScreen.hasOpenPopups()) {
                 val pillageText = "Are you sure you want to pillage this [${unit.currentTile.improvement}]?"
-                YesNoPopup(pillageText, UncivGame.Current.worldScreen!!) { (pillageAction.action)(); worldScreen.shouldUpdate = true }.open()
+                ConfirmPopup(
+                    UncivGame.Current.worldScreen!!,
+                    pillageText,
+                    "Pillage",
+                    true
+                ) {
+                    (pillageAction.action)()
+                    worldScreen.shouldUpdate = true
+                }.open()
             }
         }
     }
@@ -453,7 +461,7 @@ object UnitActions {
         actionList += UnitAction(UnitActionType.ConstructImprovement,
             isCurrentAction = unit.currentTile.hasImprovementInProgress(),
             action = {
-                worldScreen.game.setScreen(ImprovementPickerScreen(tile, unit) { unitTable.selectUnit() })
+                worldScreen.game.pushScreen(ImprovementPickerScreen(tile, unit) { unitTable.selectUnit() })
             }.takeIf { couldConstruct }
         )
     }
@@ -518,7 +526,7 @@ object UnitActions {
                     action = {
                         tile.getCity()!!.cityConstructions.apply {
                             //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
-                            addProductionPoints(((300 + 30 * tile.getCity()!!.population.population) * unit.civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt())
+                            addProductionPoints(((300 + 30 * tile.getCity()!!.population.population) * unit.civInfo.gameInfo.speed.productionCostModifier).toInt())
                             constructIfEnough()
                         }
 
@@ -539,7 +547,7 @@ object UnitActions {
 
                 //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
                 val productionPointsToAdd = min(
-                    (300 + 30 * tile.getCity()!!.population.population) * unit.civInfo.gameInfo.gameParameters.gameSpeed.modifier,
+                    (300 + 30 * tile.getCity()!!.population.population) * unit.civInfo.gameInfo.speed.productionCostModifier,
                     cityConstructions.getRemainingWork(cityConstructions.currentConstructionFromQueue).toFloat() - 1
                 ).toInt()
                 if (productionPointsToAdd <= 0) continue
@@ -563,7 +571,7 @@ object UnitActions {
                 actionList += UnitAction(UnitActionType.ConductTradeMission,
                     action = {
                         // http://civilization.wikia.com/wiki/Great_Merchant_(Civ5)
-                        var goldEarned = (350 + 50 * unit.civInfo.getEraNumber()) * unit.civInfo.gameInfo.gameParameters.gameSpeed.modifier
+                        var goldEarned = (350 + 50 * unit.civInfo.getEraNumber()) * unit.civInfo.gameInfo.speed.goldCostModifier
                         for (goldUnique in unit.civInfo.getMatchingUniques(UniqueType.PercentGoldFromTradeMissions))
                             goldEarned *= goldUnique.params[0].toPercent()
                         unit.civInfo.addGold(goldEarned.toInt())

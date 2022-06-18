@@ -142,7 +142,7 @@ class OptionsPopup(
                 UncivGame.Current.reloadWorldscreen()
             } else if (screen is MainMenuScreen) {
                 withGLContext {
-                    UncivGame.Current.setScreen(MainMenuScreen())
+                    UncivGame.Current.replaceCurrentScreen(MainMenuScreen())
                 }
             }
             withGLContext {

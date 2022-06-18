@@ -38,10 +38,9 @@ import com.unciv.ui.pickerscreens.PantheonPickerScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.ReligiousBeliefsPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
-import com.unciv.ui.popup.ExitGamePopup
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.popup.hasOpenPopups
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.saves.QuickSave
@@ -219,28 +218,28 @@ class WorldScreen(
 
     private fun addKeyboardPresses() {
         // Space and N are assigned in createNextTurnButton
-        globalShortcuts.add(Input.Keys.F1) { game.setScreen(CivilopediaScreen(gameInfo.ruleSet, this)) }
-        globalShortcuts.add('E') { game.setScreen(EmpireOverviewScreen(selectedCiv)) }     // Empire overview last used page
+        globalShortcuts.add(Input.Keys.F1) { game.pushScreen(CivilopediaScreen(gameInfo.ruleSet)) }
+        globalShortcuts.add('E') { game.pushScreen(EmpireOverviewScreen(selectedCiv)) }     // Empire overview last used page
         /*
          * These try to be faithful to default Civ5 key bindings as found in several places online
          * Some are a little arbitrary, e.g. Economic info, Military info
          * Some are very much so as Unciv *is* Strategic View and the Notification log is always visible
          */
-        globalShortcuts.add(Input.Keys.F2) { game.setScreen(EmpireOverviewScreen(selectedCiv, "Trades")) }    // Economic info
-        globalShortcuts.add(Input.Keys.F3) { game.setScreen(EmpireOverviewScreen(selectedCiv, "Units")) }    // Military info
-        globalShortcuts.add(Input.Keys.F4) { game.setScreen(EmpireOverviewScreen(selectedCiv, "Diplomacy")) }    // Diplomacy info
-        globalShortcuts.add(Input.Keys.F5) { game.setScreen(PolicyPickerScreen(this, selectedCiv)) }    // Social Policies Screen
-        globalShortcuts.add(Input.Keys.F6) { game.setScreen(TechPickerScreen(viewingCiv)) }    // Tech Screen
-        globalShortcuts.add(Input.Keys.F7) { game.setScreen(EmpireOverviewScreen(selectedCiv, "Cities")) }    // originally Notification Log
-        globalShortcuts.add(Input.Keys.F8) { game.setScreen(VictoryScreen(this)) }    // Victory Progress
-        globalShortcuts.add(Input.Keys.F9) { game.setScreen(EmpireOverviewScreen(selectedCiv, "Stats")) }    // Demographics
-        globalShortcuts.add(Input.Keys.F10) { game.setScreen(EmpireOverviewScreen(selectedCiv, "Resources")) }    // originally Strategic View
+        globalShortcuts.add(Input.Keys.F2) { game.pushScreen(EmpireOverviewScreen(selectedCiv, "Trades")) }    // Economic info
+        globalShortcuts.add(Input.Keys.F3) { game.pushScreen(EmpireOverviewScreen(selectedCiv, "Units")) }    // Military info
+        globalShortcuts.add(Input.Keys.F4) { game.pushScreen(EmpireOverviewScreen(selectedCiv, "Diplomacy")) }    // Diplomacy info
+        globalShortcuts.add(Input.Keys.F5) { game.pushScreen(PolicyPickerScreen(this, selectedCiv)) }    // Social Policies Screen
+        globalShortcuts.add(Input.Keys.F6) { game.pushScreen(TechPickerScreen(viewingCiv)) }    // Tech Screen
+        globalShortcuts.add(Input.Keys.F7) { game.pushScreen(EmpireOverviewScreen(selectedCiv, "Cities")) }    // originally Notification Log
+        globalShortcuts.add(Input.Keys.F8) { game.pushScreen(VictoryScreen(this)) }    // Victory Progress
+        globalShortcuts.add(Input.Keys.F9) { game.pushScreen(EmpireOverviewScreen(selectedCiv, "Stats")) }    // Demographics
+        globalShortcuts.add(Input.Keys.F10) { game.pushScreen(EmpireOverviewScreen(selectedCiv, "Resources")) }    // originally Strategic View
         globalShortcuts.add(Input.Keys.F11) { QuickSave.save(gameInfo, this) }    // Quick Save
         globalShortcuts.add(Input.Keys.F12) { QuickSave.load(this) }    // Quick Load
         globalShortcuts.add(Input.Keys.HOME) {    // Capital City View
             val capital = gameInfo.currentPlayerCiv.getCapital()
             if (capital != null && !mapHolder.setCenterPosition(capital.location))
-                game.setScreen(CityScreen(capital))
+                game.pushScreen(CityScreen(capital))
         }
         globalShortcuts.add(KeyCharAndCode.ctrl('O')) { // Game Options
             this.openOptionsPopup(onClose = {
@@ -248,9 +247,9 @@ class WorldScreen(
                 nextTurnButton.update(hasOpenPopups(), isPlayersTurn, waitingForAutosave, isNextTurnUpdateRunning())
             })
         }
-        globalShortcuts.add(KeyCharAndCode.ctrl('S')) { game.setScreen(SaveGameScreen(gameInfo)) }    //   Save
-        globalShortcuts.add(KeyCharAndCode.ctrl('L')) { game.setScreen(LoadGameScreen(this)) }    //   Load
-        globalShortcuts.add(KeyCharAndCode.ctrl('Q')) { ExitGamePopup(this, true) }    //   Quit
+        globalShortcuts.add(KeyCharAndCode.ctrl('S')) { game.pushScreen(SaveGameScreen(gameInfo)) }    //   Save
+        globalShortcuts.add(KeyCharAndCode.ctrl('L')) { game.pushScreen(LoadGameScreen(this)) }    //   Load
+        globalShortcuts.add(KeyCharAndCode.ctrl('Q')) { game.popScreen() }    //   WorldScreen is the last screen, so this quits
         globalShortcuts.add(Input.Keys.NUMPAD_ADD) { this.mapHolder.zoomIn() }    //   '+' Zoom
         globalShortcuts.add(Input.Keys.NUMPAD_SUBTRACT) { this.mapHolder.zoomOut() }    //   '-' Zoom
     }
@@ -336,13 +335,13 @@ class WorldScreen(
                 loadingGamePopup.innerTable.clear()
                 loadingGamePopup.addGoodSizedLabel("Couldn't download the latest game state!").colspan(2).row()
                 loadingGamePopup.addGoodSizedLabel(message).colspan(2).row()
-                loadingGamePopup.addButtonInRow("Retry") {
+                loadingGamePopup.addButton("Retry") {
                     launchOnThreadPool("Load latest multiplayer state after error") {
                         loadLatestMultiplayerState()
                     }
                 }.right()
-                loadingGamePopup.addButtonInRow("Main menu") {
-                    game.setScreen(MainMenuScreen())
+                loadingGamePopup.addButton("Main menu") {
+                    game.pushScreen(MainMenuScreen())
                 }.left()
             }
         }
@@ -413,10 +412,10 @@ class WorldScreen(
         if (!hasOpenPopups() && isPlayersTurn) {
             when {
                 viewingCiv.shouldShowDiplomaticVotingResults() ->
-                    UncivGame.Current.setScreen(DiplomaticVoteResultScreen(gameInfo.diplomaticVictoryVotesCast, viewingCiv))
+                    UncivGame.Current.pushScreen(DiplomaticVoteResultScreen(gameInfo.diplomaticVictoryVotesCast, viewingCiv))
                 !gameInfo.oneMoreTurnMode && (viewingCiv.isDefeated() || gameInfo.civilizations.any { it.victoryManager.hasWon() }) ->
-                    game.setScreen(VictoryScreen(this))
-                viewingCiv.greatPeople.freeGreatPeople > 0 -> game.setScreen(GreatPersonPickerScreen(viewingCiv))
+                    game.pushScreen(VictoryScreen(this))
+                viewingCiv.greatPeople.freeGreatPeople > 0 -> game.pushScreen(GreatPersonPickerScreen(viewingCiv))
                 viewingCiv.popupAlerts.any() -> AlertPopup(this, viewingCiv.popupAlerts.first()).open()
                 viewingCiv.tradeRequests.isNotEmpty() -> {
                     // In the meantime this became invalid, perhaps because we accepted previous trades
@@ -664,32 +663,32 @@ class WorldScreen(
                 NextTurnAction("Pick construction", Color.CORAL) {
                     val cityWithNoProductionSet = viewingCiv.cities
                         .firstOrNull { it.cityConstructions.currentConstructionFromQueue == "" }
-                    if (cityWithNoProductionSet != null) game.setScreen(
+                    if (cityWithNoProductionSet != null) game.pushScreen(
                         CityScreen(cityWithNoProductionSet)
                     )
                 }
 
             viewingCiv.shouldOpenTechPicker() ->
                 NextTurnAction("Pick a tech", Color.SKY) {
-                    game.setScreen(
+                    game.pushScreen(
                         TechPickerScreen(viewingCiv, null, viewingCiv.tech.freeTechs != 0)
                     )
                 }
 
             viewingCiv.policies.shouldOpenPolicyPicker || (viewingCiv.policies.freePolicies > 0 && viewingCiv.policies.canAdoptPolicy()) ->
                 NextTurnAction("Pick a policy", Color.VIOLET) {
-                    game.setScreen(PolicyPickerScreen(this))
+                    game.pushScreen(PolicyPickerScreen(this))
                     viewingCiv.policies.shouldOpenPolicyPicker = false
                 }
 
             viewingCiv.religionManager.canFoundPantheon() ->
                 NextTurnAction("Found Pantheon", Color.WHITE) {
-                    game.setScreen(PantheonPickerScreen(viewingCiv))
+                    game.pushScreen(PantheonPickerScreen(viewingCiv))
                 }
 
             viewingCiv.religionManager.religionState == ReligionState.FoundingReligion ->
                 NextTurnAction("Found Religion", Color.WHITE) {
-                    game.setScreen(
+                    game.pushScreen(
                         ReligiousBeliefsPickerScreen(
                             viewingCiv,
                             viewingCiv.religionManager.getBeliefsToChooseAtFounding(),
@@ -700,7 +699,7 @@ class WorldScreen(
 
             viewingCiv.religionManager.religionState == ReligionState.EnhancingReligion ->
                 NextTurnAction("Enhance a Religion", Color.ORANGE) {
-                    game.setScreen(
+                    game.pushScreen(
                         ReligiousBeliefsPickerScreen(
                             viewingCiv,
                             viewingCiv.religionManager.getBeliefsToChooseAtEnhancing(),
@@ -711,7 +710,7 @@ class WorldScreen(
 
             viewingCiv.mayVoteForDiplomaticVictory() ->
                 NextTurnAction("Vote for World Leader", Color.MAROON) {
-                    game.setScreen(DiplomaticVotePickerScreen(viewingCiv))
+                    game.pushScreen(DiplomaticVotePickerScreen(viewingCiv))
                 }
 
             !viewingCiv.hasMovedAutomatedUnits && viewingCiv.getCivUnits()
@@ -738,7 +737,7 @@ class WorldScreen(
                         nextTurn()
                     }
                     if (game.settings.confirmNextTurn) {
-                        YesNoPopup("Confirm next turn", this, action = action).open()
+                        ConfirmPopup(this, "Confirm next turn", "Next turn", true, action = action).open()
                     } else {
                         action()
                     }
@@ -811,8 +810,7 @@ class WorldScreen(
             return
         }
 
-        ExitGamePopup(this, true)
-
+        game.popScreen()
     }
 
     fun autoSave() {

@@ -164,7 +164,7 @@ class MapParameters {
 
     /** This is used mainly for the map editor, so you can continue editing a map under the same ruleset you started with */
     var mods = LinkedHashSet<String>()
-    var baseRuleset = BaseRuleset.Civ_V_GnK.fullName // Hardcoded as the Rulesetcache is not yet initialized when starting up
+    var baseRuleset = BaseRuleset.Civ_V_GnK.fullName // Hardcoded as the RulesetCache is not yet initialized when starting up
 
     /** Unciv Version of creation for support cases */
     var createdWithVersion = ""
@@ -178,6 +178,11 @@ class MapParameters {
     var rareFeaturesRichness = 0.05f
     var resourceRichness = 0.1f
     var waterThreshold = 0f
+
+    /** Shifts temperature (after random, latitude and temperatureExtremeness).
+     *  For seasonal main menu background only, not user-accessible, thus transient and not cloned. */
+    @Transient
+    var temperatureShift = 0f
 
     fun clone() = MapParameters().also {
         it.name = name
