@@ -773,7 +773,7 @@ class CivilizationInfo {
             .sumOf { city -> city.cityConstructions.builtBuildings
                 .filter { gameInfo.ruleSet.buildings[it]!!.isWonder }.size
             }.toDouble()
-        scoreBreakdown["Techs"] = tech.getNumberOfTechsResearched() * 4.toDouble()
+        scoreBreakdown["Technologies"] = tech.getNumberOfTechsResearched() * 4.toDouble()
         scoreBreakdown["Future Tech"] = tech.repeatingTechsResearched * 10.toDouble()
 
         return scoreBreakdown
