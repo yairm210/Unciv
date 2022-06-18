@@ -253,7 +253,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 civInfo.getDifficulty().unitCostModifier
             else
                 civInfo.gameInfo.getDifficulty().aiUnitCostModifier
-        productionCost *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
+        productionCost *= civInfo.gameInfo.speed.productionCostModifier
         return productionCost.toInt()
     }
 
