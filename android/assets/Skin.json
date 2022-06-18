@@ -44,6 +44,10 @@ com.badlogic.gdx.graphics.Color: {
         b: 1
         a: 1
     }
+    positive: { a: 1.0, b: 0.21960784, g: 0.49411765, r: 0.12156863 }
+    negative: { a: 1.0, b: 0.0, g: 0.03137255, r: 0.5529412 }
+    negative-highlight: { a: 1.0, b: 0.050980393, g: 0.078431375, r: 0.8666667 }
+    negative-selected: { a: 1.0, b: 0.039215688, g: 0.0627451, r: 0.7764706 }
 }
 com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
     button-c: {
@@ -61,6 +65,22 @@ com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
     button-disabled: {
         name: "RoundedEdgeRectangle"
         color: disabled
+    }
+    button-positive: {
+        name: "RoundedEdgeRectangle"
+        color: positive
+    }
+    button-negative: {
+        name: "RoundedEdgeRectangle"
+        color: negative
+    }
+    button-negative-pressed: {
+        name: "RoundedEdgeRectangle"
+        color: negative-selected
+    }
+    button-negative-hover: {
+        name: "RoundedEdgeRectangle"
+        color: negative-highlight
     }
     checkbox-c: {
         name: "Checkbox"
@@ -217,6 +237,24 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
         up: button-c
         down: button-p
         over: button-h
+    }
+    positive: {
+        font: button
+        fontColor: white
+        downFontColor: white
+        overFontColor: dark-gray
+        up: button-positive
+        down: button-p
+        over: button-h
+    }
+    negative: {
+        font: button
+        fontColor: white
+        downFontColor: white
+        overFontColor: white
+        up: button-negative
+        down: button-negative-pressed
+        over: button-negative-hover
     }
     disabled: {
         font: button

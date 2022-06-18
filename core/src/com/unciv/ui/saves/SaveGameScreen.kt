@@ -10,7 +10,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.models.translations.tr
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.popup.YesNoPopup
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.extensions.disable
@@ -35,7 +35,11 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
         rightSideButton.setText("Save game".tr())
         rightSideButton.onActivation {
             if (game.gameSaver.getSave(gameNameTextField.text).exists())
-                YesNoPopup("Overwrite existing file?", this) { saveGame() }.open()
+                ConfirmPopup(
+                    this,
+                    "Overwrite existing file?",
+                    "Overwrite",
+                ) { saveGame() }.open()
             else saveGame()
         }
         rightSideButton.keyShortcuts.add(KeyCharAndCode.RETURN)

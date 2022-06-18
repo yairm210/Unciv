@@ -366,7 +366,10 @@ fun Image.setSize(size: Float) {
 }
 
 /** Translate a [String] and make a [TextButton] widget from it */
-fun String.toTextButton() = TextButton(this.tr(), BaseScreen.skin)
+fun String.toTextButton(style: TextButtonStyle? = null): TextButton {
+    val text = this.tr()
+    return if (style == null) TextButton(text, BaseScreen.skin) else TextButton(text, style)
+}
 
 /** Translate a [String] and make a [Label] widget from it */
 fun String.toLabel() = Label(this.tr(), BaseScreen.skin)

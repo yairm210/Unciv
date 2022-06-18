@@ -21,9 +21,9 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.pickerscreens.PickerScreen
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ExpanderTab
 import com.unciv.ui.utils.extensions.addSeparator
@@ -76,7 +76,11 @@ class NewGameScreen(
             val resetToDefaultsButton = "Reset to defaults".toTextButton()
             rightSideGroup.addActorAt(0, resetToDefaultsButton)
             resetToDefaultsButton.onClick {
-                YesNoPopup("Are you sure you want to reset all game options to defaults?", this) {
+                ConfirmPopup(
+                    this,
+                    "Are you sure you want to reset all game options to defaults?",
+                    "Reset to defaults",
+                ) {
                     game.setScreen(NewGameScreen(previousScreen, GameSetupInfo()))
                 }.open(true)
             }

@@ -46,7 +46,7 @@ import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.popup.ExitGamePopup
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.popup.YesNoPopup
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.hasOpenPopups
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.saves.QuickSave
@@ -812,7 +812,7 @@ class WorldScreen(
                         nextTurn()
                     }
                     if (game.settings.confirmNextTurn) {
-                        YesNoPopup("Confirm next turn", this, action = action).open()
+                        ConfirmPopup(this, "Confirm next turn", "Next turn", true, action = action).open()
                     } else {
                         action()
                     }

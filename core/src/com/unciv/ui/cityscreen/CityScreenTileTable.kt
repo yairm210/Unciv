@@ -13,7 +13,7 @@ import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.civilopedia.FormattedLine.IconDisplay
 import com.unciv.ui.civilopedia.MarkupRenderer
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popup.YesNoPopup
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.closeAllPopups
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.extensions.darken
@@ -113,9 +113,11 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
 
         val purchasePrompt = "Currently you have [${city.civInfo.gold}] [Gold].".tr() + "\n\n" +
                 "Would you like to purchase [Tile] for [$goldCostOfTile] [${Stat.Gold.character}]?".tr()
-        YesNoPopup(
+        ConfirmPopup(
+            cityScreen,
             purchasePrompt,
-            screen = cityScreen,
+            "Purchase",
+            true,
             restoreDefault = { cityScreen.update() }
         ) {
             SoundPlayer.play(UncivSound.Coin)

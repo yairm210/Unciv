@@ -33,7 +33,7 @@ import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popup.YesNoPopup
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.tilegroups.CityButton
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.Fonts
@@ -391,7 +391,7 @@ class DiplomacyScreen(
     private fun getRevokeProtectionButton(otherCiv: CivilizationInfo): TextButton {
         val revokeProtectionButton = "Revoke Protection".toTextButton()
         revokeProtectionButton.onClick {
-            YesNoPopup("Revoke protection for [${otherCiv.civName}]?", this) {
+            ConfirmPopup(this, "Revoke protection for [${otherCiv.civName}]?", "Revoke Protection") {
                 otherCiv.removeProtectorCiv(viewingCiv)
                 updateLeftSideTable(otherCiv)
                 updateRightSide(otherCiv)
@@ -404,7 +404,12 @@ class DiplomacyScreen(
     private fun getPledgeToProtectButton(otherCiv: CivilizationInfo): TextButton {
         val protectionButton = "Pledge to protect".toTextButton()
         protectionButton.onClick {
-            YesNoPopup("Declare Protection of [${otherCiv.civName}]?", this) {
+            ConfirmPopup(
+                this,
+                "Declare Protection of [${otherCiv.civName}]?",
+                "Pledge to protect",
+                true
+            ) {
                 otherCiv.addProtectorCiv(viewingCiv)
                 updateLeftSideTable(otherCiv)
                 updateRightSide(otherCiv)
@@ -420,7 +425,12 @@ class DiplomacyScreen(
     ): TextButton {
         val peaceButton = "Negotiate Peace".toTextButton()
         peaceButton.onClick {
-            YesNoPopup("Peace with [${otherCiv.civName}]?", this) {
+            ConfirmPopup(
+                this,
+                "Peace with [${otherCiv.civName}]?",
+                "Negotiate Peace",
+                true
+            ) {
                 val tradeLogic = TradeLogic(viewingCiv, otherCiv)
                 tradeLogic.currentTrade.ourOffers.add(
                     TradeOffer(
@@ -763,7 +773,7 @@ class DiplomacyScreen(
     ): TextButton {
         val denounceButton = "Denounce ([30] turns)".toTextButton()
         denounceButton.onClick {
-            YesNoPopup("Denounce [${otherCiv.civName}]?", this) {
+            ConfirmPopup(this, "Denounce [${otherCiv.civName}]?", "Denounce ([30] turns)") {
                 diplomacyManager.denounce()
                 updateLeftSideTable(otherCiv)
                 setRightSideFlavorText(otherCiv, "We will remember this.", "Very well.")
@@ -950,15 +960,14 @@ class DiplomacyScreen(
         diplomacyManager: DiplomacyManager,
         otherCiv: CivilizationInfo
     ): TextButton {
-        val declareWarButton = "Declare war".toTextButton()
-        declareWarButton.color = Color.RED
+        val declareWarButton = "Declare war".toTextButton(skin.get("negative", TextButton.TextButtonStyle::class.java))
         val turnsToPeaceTreaty = diplomacyManager.turnsToPeaceTreaty()
         if (turnsToPeaceTreaty > 0) {
             declareWarButton.disable()
             declareWarButton.setText(declareWarButton.text.toString() + " ($turnsToPeaceTreaty${Fonts.turn})")
         }
         declareWarButton.onClick {
-            YesNoPopup("Declare war on [${otherCiv.civName}]?", this) {
+            ConfirmPopup(this, "Declare war on [${otherCiv.civName}]?", "Declare war") {
                 diplomacyManager.declareWar()
                 setRightSideFlavorText(otherCiv, otherCiv.nation.attacked, "Very well.")
                 updateLeftSideTable(otherCiv)
