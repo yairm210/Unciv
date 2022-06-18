@@ -49,7 +49,7 @@ object TranslationFileWriter {
                 writeLanguagePercentages(modPercentages, modFolder)  // unused by the game but maybe helpful for the mod developer
             }
 
-            return "Translation files are generated successfully.\n" +
+            return "Translation files are generated successfully.".tr() + "\n" +
                     writeTranslatedFastlaneFiles(translations)
         } catch (ex: Throwable) {
             ex.printStackTrace()
@@ -491,7 +491,7 @@ object TranslationFileWriter {
             writeFastlaneFiles(fullDescriptionFile, translations[fullDescriptionKey], true)
             updateFastlaneChangelog()
 
-            return "Fastlane files are generated successfully."
+            return "Fastlane files are generated successfully.".tr()
         } catch (ex: Throwable) {
             ex.printStackTrace()
             return ex.localizedMessage ?: ex.javaClass.simpleName
