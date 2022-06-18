@@ -10,12 +10,14 @@ import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Button
+import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
@@ -38,14 +40,23 @@ import com.unciv.ui.utils.KeyShortcutDispatcher
  * Collection of extension functions mostly for libGdx widgets
  */
 
+private class RestorableTextButtonStyle(
+    baseStyle: TextButtonStyle,
+    val restoreStyle: ButtonStyle
+) : TextButtonStyle(baseStyle)
 /** Disable a [Button] by setting its [touchable][Button.touchable] and [color][Button.color] properties. */
 fun Button.disable() {
     touchable= Touchable.disabled
-    color = Color.GRAY
+    val oldStyle = style
+    val disabledStyle = BaseScreen.skin.get("disabled", TextButtonStyle::class.java)
+    style = RestorableTextButtonStyle(disabledStyle, oldStyle)
 }
 /** Enable a [Button] by setting its [touchable][Button.touchable] and [color][Button.color] properties. */
 fun Button.enable() {
-    color = Color.WHITE
+    val oldStyle = style
+    if (oldStyle is RestorableTextButtonStyle) {
+        style = oldStyle.restoreStyle
+    }
     touchable = Touchable.enabled
 }
 /** Enable or disable a [Button] by setting its [touchable][Button.touchable] and [color][Button.color] properties,
