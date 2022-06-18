@@ -222,7 +222,7 @@ open class SettingsSelect<T : Any>(
     }
 
     fun addTo(table: Table) {
-        table.add(label).expandX().fillX().left()
+        table.add(label).growX().left()
         table.add(refreshSelectBox).row()
     }
 
