@@ -13,11 +13,10 @@ import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.tr
-import com.unciv.ui.popup.YesNoPopup
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.FontFamilyData
 import com.unciv.ui.utils.Fonts
-import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.UncivSlider
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.extensions.disable
@@ -174,7 +173,11 @@ private fun addSetUserId(table: Table, settings: GameSettings) {
             try {
                 val clipboardContents = Gdx.app.clipboard.contents.trim()
                 UUID.fromString(clipboardContents)
-                YesNoPopup("Doing this will reset your current user ID to the clipboard contents - are you sure?",table.stage) {
+                ConfirmPopup(
+                    table.stage,
+                    "Doing this will reset your current user ID to the clipboard contents - are you sure?",
+                    "Take user ID from clipboard"
+                ) {
                     settings.multiplayer.userId = clipboardContents
                     settings.save()
                     idSetLabel.setFontColor(Color.WHITE).setText("ID successfully set!".tr())

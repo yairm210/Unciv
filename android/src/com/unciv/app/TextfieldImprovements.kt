@@ -83,9 +83,9 @@ class TextfieldPopup(
             .colspan(2)
             .row()
 
-        addButtonInRow("Cancel".tr(), KeyCharAndCode.BACK, this::close)
+        addCloseButton("Cancel")
             .left()
-        addButtonInRow("OK".tr(), KeyCharAndCode.RETURN) { textField.text = popupTextfield.text; close() }
+        addOKButton { textField.text = popupTextfield.text }
             .right()
             .row()
 

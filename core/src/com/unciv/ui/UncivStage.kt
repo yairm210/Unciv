@@ -18,7 +18,7 @@ class UncivStage(viewport: Viewport) : Stage(viewport) {
      * Enables/disables sending pointer enter/exit events to actors on this stage.
      * Checking for the enter/exit bounds is a relatively expensive operation and may thus be disabled temporarily.
      */
-    var performPointerEnterExitEvents: Boolean = false
+    var performPointerEnterExitEvents: Boolean = true
 
     var lastKnownVisibleArea: Rectangle
         private set

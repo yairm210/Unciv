@@ -43,9 +43,9 @@ import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.ReligiousBeliefsPickerScreen
 import com.unciv.ui.pickerscreens.TechButton
 import com.unciv.ui.pickerscreens.TechPickerScreen
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.popup.hasOpenPopups
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.saves.QuickSave
@@ -368,12 +368,12 @@ class WorldScreen(
                 loadingGamePopup.innerTable.clear()
                 loadingGamePopup.addGoodSizedLabel("Couldn't download the latest game state!").colspan(2).row()
                 loadingGamePopup.addGoodSizedLabel(message).colspan(2).row()
-                loadingGamePopup.addButtonInRow("Retry") {
+                loadingGamePopup.addButton("Retry") {
                     launchOnThreadPool("Load latest multiplayer state after error") {
                         loadLatestMultiplayerState()
                     }
                 }.right()
-                loadingGamePopup.addButtonInRow("Main menu") {
+                loadingGamePopup.addButton("Main menu") {
                     game.pushScreen(MainMenuScreen())
                 }.left()
             }
@@ -811,7 +811,7 @@ class WorldScreen(
                         nextTurn()
                     }
                     if (game.settings.confirmNextTurn) {
-                        YesNoPopup("Confirm next turn", this, action = action).open()
+                        ConfirmPopup(this, "Confirm next turn", "Next turn", true, action = action).open()
                     } else {
                         action()
                     }

@@ -11,7 +11,7 @@ import com.unciv.logic.map.TileMap
 import com.unciv.models.translations.tr
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.popup.YesNoPopup
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.utils.AutoScrollPane
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyCharAndCode
@@ -82,7 +82,11 @@ class MapEditorSaveTab(
 
     private fun deleteHandler() {
         if (chosenMap == null) return
-        YesNoPopup("Are you sure you want to delete this map?", editorScreen) {
+        ConfirmPopup(
+            editorScreen,
+            "Are you sure you want to delete this map?",
+            "Delete map",
+        ) {
             chosenMap!!.delete()
             mapFiles.update()
         }.open()

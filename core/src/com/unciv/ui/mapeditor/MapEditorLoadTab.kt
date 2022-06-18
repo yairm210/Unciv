@@ -11,7 +11,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.popup.YesNoPopup
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.utils.AutoScrollPane
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyCharAndCode
@@ -57,14 +57,21 @@ class MapEditorLoadTab(
 
     private fun loadHandler() {
         if (chosenMap == null) return
-        editorScreen.askIfDirty("Do you want to load another map without saving the recent changes?") {
+        editorScreen.askIfDirty(
+            "Do you want to load another map without saving the recent changes?",
+            "Load map"
+        ) {
             thread(name = "MapLoader", isDaemon = true, block = this::loaderThread)
         }
     }
 
     private fun deleteHandler() {
         if (chosenMap == null) return
-        YesNoPopup("Are you sure you want to delete this map?", editorScreen) {
+        ConfirmPopup(
+            editorScreen,
+            "Are you sure you want to delete this map?",
+            "Delete map",
+        ) {
             chosenMap!!.delete()
             mapFiles.update()
         }.open()
