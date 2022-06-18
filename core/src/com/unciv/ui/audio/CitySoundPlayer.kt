@@ -6,6 +6,7 @@ import com.badlogic.gdx.audio.Music
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
+import com.unciv.models.UncivSound
 
 class CitySoundPlayer: MusicController() {
     private val soundsLocation = Files.FileType.Local
@@ -38,11 +39,11 @@ class CitySoundPlayer: MusicController() {
         if (playingCitySound != null)
             stopCitySound()
         try {
-            val file: FileHandle = if (city.isWeLoveTheKingDayActive()) {
-                FileHandle(getSoundFile(city.civInfo.getEra().cityWLTKSound).toString())
-            } else {
-                FileHandle(getSoundFile(city.civInfo.getEra().citySound).toString())
+            if (city.isWeLoveTheKingDayActive()) {
+                SoundPlayer.play(UncivSound("WLTK"))
             }
+
+            val file = FileHandle(getSoundFile(city.civInfo.getEra().citySound).toString())
             playingCitySound = Gdx.audio.newMusic(file)
 
             playingCitySound?.isLooping = true
