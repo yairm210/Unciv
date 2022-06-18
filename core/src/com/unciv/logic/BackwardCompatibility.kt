@@ -2,7 +2,6 @@ package com.unciv.logic
 
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.JsonValue
-import com.unciv.UncivGame
 import com.unciv.json.HashMapVector2
 import com.unciv.json.json
 import com.unciv.logic.city.CityConstructions
