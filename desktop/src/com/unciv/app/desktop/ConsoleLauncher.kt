@@ -16,7 +16,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.simulation.Simulation
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.metadata.GameSetupInfo
-import com.unciv.models.ruleset.GameSpeed
+import com.unciv.models.ruleset.Speed
 import kotlin.time.ExperimentalTime
 
 internal object ConsoleLauncher {
@@ -69,7 +69,7 @@ internal object ConsoleLauncher {
     private fun getGameParameters(civilization1: String, civilization2: String): GameParameters {
         return GameParameters().apply {
             difficulty = "Chieftain"
-            gameSpeed = GameSpeed.DEFAULT
+            speed = Speed.DEFAULT
             noBarbarians = true
             players = ArrayList<Player>().apply {
                 add(Player().apply {
