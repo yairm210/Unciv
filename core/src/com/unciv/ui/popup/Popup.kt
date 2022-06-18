@@ -110,7 +110,7 @@ open class Popup(
     }
 
     /**
-     * Adds a [TextButton] and ends the current row.
+     * Adds a [TextButton].
      * @param text The button's caption.
      * @param key Associate a key with this button's action.
      * @param action A lambda to be executed when the button is clicked.
@@ -122,7 +122,6 @@ open class Popup(
         button.keyShortcuts.add(key)
         return add(button)
     }
-    /** @link [addButton] */
     fun addButton(text: String, key: Char, style: TextButtonStyle? = null, action: () -> Unit)
         = addButton(text, KeyCharAndCode(key), style, action).apply { row() }
     fun addButton(text: String, key: Int, style: TextButtonStyle? = null, action: () -> Unit)
