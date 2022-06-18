@@ -146,14 +146,14 @@ open class Popup(
      * @param text The button's caption, defaults to "Close".
      * @param additionalKey An additional key that should act like a click.
      * @param action A lambda to be executed after closing the popup when the button is clicked.
-     * @return The new [Cell], marked as end of row.
+     * @return The new [Cell]
      */
     fun addCloseButton(
         text: String = Constants.close,
         additionalKey: KeyCharAndCode? = null,
         action: (()->Unit)? = null
     ): Cell<TextButton> {
-        val cell = addButton(text, additionalKey) { close(); if(action!=null) action() }
+        val cell = addButtonInRow(text, additionalKey) { close(); if(action!=null) action() }
         cell.getActor().keyShortcuts.add(KeyCharAndCode.BACK)
         return cell
     }
@@ -165,7 +165,7 @@ open class Popup(
      * @param validate Function that should return true when the popup can be closed and `action` can be run.
      * When this function returns false, nothing happens.
      * @param action A lambda to be executed after closing the popup when the button is clicked.
-     * @return The new [Cell], NOT marked as end of row.
+     * @return The new [Cell]
      */
     fun addOKButton(
         text: String = Constants.OK,
