@@ -45,7 +45,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
     }
 
     init {
-        setDefaultCloseAction(previousScreen)
+        setDefaultCloseAction()
         rightSideTable.initRightSideTable()
         rightSideButton.onActivation { onLoadGame() }
         rightSideButton.keyShortcuts.add(KeyCharAndCode.RETURN)
