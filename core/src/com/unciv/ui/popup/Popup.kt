@@ -182,8 +182,8 @@ open class Popup(
         val cell1 = innerTable.cells[n-2]
         val cell2 = innerTable.cells[n-1]
         if (cell1.actor !is Button || cell2.actor !is Button) throw UnsupportedOperationException()
-        cell1.minWidth(cell2.actor.width)
-        cell2.minWidth(cell1.actor.width)
+        cell1.minWidth(cell2.actor.width).uniformX()
+        cell2.minWidth(cell1.actor.width).uniformX()
     }
 
     /**
