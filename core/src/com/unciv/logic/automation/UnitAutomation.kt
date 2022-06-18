@@ -7,7 +7,6 @@ import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.worldscreen.unit.UnitActions
 
@@ -58,7 +57,7 @@ object UnitAutomation {
                 )
                 && unit.movement.canMoveTo(it)
             } ?: return false
-        unit.movement.headTowards(unit.movement.getShortestPath(tileWithRuinOrEncampment,true)[0])
+        unit.movement.headTowards(tileWithRuinOrEncampment)
         return true
     }
 
