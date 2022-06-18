@@ -47,8 +47,8 @@ object GameStarter {
         val mapGen = MapGenerator(ruleset)
 
         // Make sure that a valid game speed is loaded (catches a base ruleset not using the default game speed)
-        if (!ruleset.gameSpeeds.containsKey(gameSetupInfo.gameParameters.gameSpeed)) {
-            gameSetupInfo.gameParameters.gameSpeed = ruleset.gameSpeeds.keys.first()
+        if (!ruleset.speeds.containsKey(gameSetupInfo.gameParameters.speed)) {
+            gameSetupInfo.gameParameters.speed = ruleset.speeds.keys.first()
         }
 
         if (gameSetupInfo.mapParameters.name != "") runAndMeasure("loadMap") {
@@ -207,8 +207,8 @@ object GameStarter {
         val startingEra = gameInfo.gameParameters.startingEra
         val era = ruleSet.eras[startingEra]!!
         for (civInfo in gameInfo.civilizations.filter { !it.isBarbarian() }) {
-            civInfo.addGold((era.startingGold * gameInfo.getGameSpeed().goldCostModifier).toInt())
-            civInfo.policies.addCulture((era.startingCulture * gameInfo.getGameSpeed().cultureCostModifier).toInt())
+            civInfo.addGold((era.startingGold * gameInfo.speed.goldCostModifier).toInt())
+            civInfo.policies.addCulture((era.startingCulture * gameInfo.speed.cultureCostModifier).toInt())
         }
     }
 

@@ -960,11 +960,11 @@ class MapUnit {
 
         val gainedStats = Stats()
         for (unique in civInfo.getMatchingUniques(UniqueType.ProvidesGoldWheneverGreatPersonExpended)) {
-            gainedStats.gold += (100 * civInfo.gameInfo.getGameSpeed().goldCostModifier).toInt()
+            gainedStats.gold += (100 * civInfo.gameInfo.speed.goldCostModifier).toInt()
         }
         for (unique in civInfo.getMatchingUniques(UniqueType.ProvidesStatsWheneverGreatPersonExpended)) {
             val uniqueStats = unique.stats
-            val speedModifiers = civInfo.gameInfo.getGameSpeed().statCostModifiers()
+            val speedModifiers = civInfo.gameInfo.speed.statCostModifiers
             for (stat in uniqueStats) {
                 uniqueStats[stat.key] = stat.value * speedModifiers[stat.key]!!
             }
@@ -1036,7 +1036,7 @@ class MapUnit {
             .forEach { it.questManager.barbarianCampCleared(civInfo, tile.position) }
 
         var goldGained =
-            civInfo.getDifficulty().clearBarbarianCampReward * civInfo.gameInfo.getGameSpeed().goldCostModifier
+            civInfo.getDifficulty().clearBarbarianCampReward * civInfo.gameInfo.speed.goldCostModifier
         if (civInfo.hasUnique(UniqueType.TripleGoldFromEncampmentsAndCities))
             goldGained *= 3f
 

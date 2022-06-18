@@ -354,7 +354,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 civInfo.gameInfo.getDifficulty().aiBuildingCostModifier
         }
 
-        productionCost *= civInfo.gameInfo.getGameSpeed().productionCostModifier
+        productionCost *= civInfo.gameInfo.speed.productionCostModifier
         return productionCost.toInt()
     }
 

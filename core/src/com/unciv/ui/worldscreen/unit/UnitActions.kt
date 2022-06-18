@@ -518,7 +518,7 @@ object UnitActions {
                     action = {
                         tile.getCity()!!.cityConstructions.apply {
                             //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
-                            addProductionPoints(((300 + 30 * tile.getCity()!!.population.population) * unit.civInfo.gameInfo.getGameSpeed().productionCostModifier).toInt())
+                            addProductionPoints(((300 + 30 * tile.getCity()!!.population.population) * unit.civInfo.gameInfo.speed.productionCostModifier).toInt())
                             constructIfEnough()
                         }
 
@@ -539,7 +539,7 @@ object UnitActions {
 
                 //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
                 val productionPointsToAdd = min(
-                    (300 + 30 * tile.getCity()!!.population.population) * unit.civInfo.gameInfo.getGameSpeed().productionCostModifier,
+                    (300 + 30 * tile.getCity()!!.population.population) * unit.civInfo.gameInfo.speed.productionCostModifier,
                     cityConstructions.getRemainingWork(cityConstructions.currentConstructionFromQueue).toFloat() - 1
                 ).toInt()
                 if (productionPointsToAdd <= 0) continue
@@ -563,7 +563,7 @@ object UnitActions {
                 actionList += UnitAction(UnitActionType.ConductTradeMission,
                     action = {
                         // http://civilization.wikia.com/wiki/Great_Merchant_(Civ5)
-                        var goldEarned = (350 + 50 * unit.civInfo.getEraNumber()) * unit.civInfo.gameInfo.getGameSpeed().goldCostModifier
+                        var goldEarned = (350 + 50 * unit.civInfo.getEraNumber()) * unit.civInfo.gameInfo.speed.goldCostModifier
                         for (goldUnique in unit.civInfo.getMatchingUniques(UniqueType.PercentGoldFromTradeMissions))
                             goldEarned *= goldUnique.params[0].toPercent()
                         unit.civInfo.addGold(goldEarned.toInt())

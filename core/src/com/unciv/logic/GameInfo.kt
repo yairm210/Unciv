@@ -13,7 +13,6 @@ import com.unciv.logic.civilization.*
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
-import com.unciv.models.ModConstants
 import com.unciv.models.Religion
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.*
@@ -56,7 +55,7 @@ class GameInfo {
     lateinit var difficultyObject: Difficulty // Since this is static game-wide, and was taking a large part of nextTurn
 
     @Transient
-    private lateinit var gameSpeedObject: GameSpeed
+    lateinit var speed: Speed
 
     @Transient
     lateinit var currentPlayerCiv: CivilizationInfo // this is called thousands of times, no reason to search for it with a find{} every time
@@ -133,12 +132,6 @@ class GameInfo {
     fun getAliveCityStates() = civilizations.filter { it.isAlive() && it.isCityState() }
     fun getAliveMajorCivs() = civilizations.filter { it.isAlive() && it.isMajorCiv() }
 
-    fun getGameSpeed() = gameSpeedObject
-    fun setGameSpeed(newGameSpeed: GameSpeed) {
-        gameSpeedObject = newGameSpeed
-        gameParameters.gameSpeed = newGameSpeed.name
-    }
-
     /** Returns the first spectator for a [playerId] or creates one if none found */
     fun getSpectator(playerId: String) =
         civilizations.firstOrNull {
@@ -161,20 +154,20 @@ class GameInfo {
     }
 
     private fun getEquivalentTurn(): Int {
-        val totalTurns = getGameSpeed().numTotalTurns()
+        val totalTurns = speed.numTotalTurns()
         val startPercent = ruleSet.eras[gameParameters.startingEra]!!.startPercent
         return turns + (totalTurns * startPercent / 100)
     }
 
     fun getYear(turnOffset: Int = 0): Int {
         val turn = getEquivalentTurn() + turnOffset
-        val yearsToTurn = getGameSpeed().yearsToTurnObject
-        var year: Float = ruleSet.modOptions.constants.startYear
+        val yearsToTurn = speed.yearsPerTurn
+        var year = speed.startYear
         var i = 0
         var yearsPerTurn: Float
 
         while (i < turn) {
-            yearsPerTurn = (yearsToTurn.firstOrNull { i < it.toTurn }?.yearInterval ?: yearsToTurn.last().yearInterval)
+            yearsPerTurn = (yearsToTurn.firstOrNull { i < it.untilTurn }?.yearInterval ?: yearsToTurn.last().yearInterval)
             year += yearsPerTurn
             ++i
         }
@@ -420,7 +413,7 @@ class GameInfo {
 
         difficultyObject = ruleSet.difficulties[difficulty]!!
 
-        gameSpeedObject = ruleSet.gameSpeeds[gameParameters.gameSpeed]!!
+        speed = ruleSet.speeds[gameParameters.speed]!!
 
         for (religion in religions.values) religion.setTransients(this)
 

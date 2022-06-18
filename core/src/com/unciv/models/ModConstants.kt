@@ -38,7 +38,7 @@ class ModConstants {
     class UnitUpgradeCost {
         val base = 10f
         val perProduction = 2f
-        val eraMultiplier = 0f  // 0.3 in Civ5 cpp sources but 0 in xml 
+        val eraMultiplier = 0f  // 0.3 in Civ5 cpp sources but 0 in xml
         val exponent = 1f
         val roundTo = 5
     }
@@ -62,8 +62,6 @@ class ModConstants {
     var minRiverLength = 5
     var maxRiverLength = 666  // Do not set < max map radius
 
-    var startYear = -4000f
-
     fun merge(other: ModConstants) {
         if (other.maxXPfromBarbarians != defaults.maxXPfromBarbarians) maxXPfromBarbarians = other.maxXPfromBarbarians
         if (other.cityStrengthBase != defaults.cityStrengthBase) cityStrengthBase = other.cityStrengthBase
@@ -84,7 +82,6 @@ class ModConstants {
         if (other.riverCountMultiplier != defaults.riverCountMultiplier) riverCountMultiplier = other.riverCountMultiplier
         if (other.minRiverLength != defaults.minRiverLength) minRiverLength = other.minRiverLength
         if (other.maxRiverLength != defaults.maxRiverLength) maxRiverLength = other.maxRiverLength
-        if (other.startYear != defaults.startYear) startYear = other.startYear
     }
 
     companion object {

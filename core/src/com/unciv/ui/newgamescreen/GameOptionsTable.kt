@@ -1,12 +1,8 @@
 package com.unciv.ui.newgamescreen
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
-import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CityStateType
-import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
@@ -14,7 +10,6 @@ import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.multiplayer.MultiplayerHelpers
-import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.UncivSlider
@@ -223,8 +218,8 @@ class GameOptionsTable(
     }
 
     private fun Table.addGameSpeedSelectBox() {
-        addSelectBox("{Game Speed}:", ruleset.gameSpeeds.values.map { it.name }, gameParameters.gameSpeed)
-        { gameParameters.gameSpeed = it; null }
+        addSelectBox("{Game Speed}:", ruleset.speeds.values.map { it.name }, gameParameters.speed)
+        { gameParameters.speed = it; null }
     }
 
     private fun Table.addEraSelectBox() {

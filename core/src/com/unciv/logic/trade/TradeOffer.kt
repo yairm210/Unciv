@@ -2,7 +2,7 @@ package com.unciv.logic.trade
 
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.models.ruleset.GameSpeed
+import com.unciv.models.ruleset.Speed
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.Fonts
 import com.unciv.logic.trade.TradeType.TradeTypeNumberType
@@ -13,12 +13,12 @@ data class TradeOffer(val name: String, val type: TradeType, var amount: Int = 1
         name: String,
         type: TradeType,
         amount: Int = 1,
-        gameSpeed: GameSpeed = UncivGame.Current.gameInfo!!.getGameSpeed()
+        speed: Speed = UncivGame.Current.gameInfo!!.speed
     ) : this(name, type, amount, duration = -1) {
         duration = when {
             type.isImmediate -> -1 // -1 for offers that are immediate (e.g. gold transfer)
-            name == Constants.peaceTreaty -> gameSpeed.peaceDealDuration
-            else -> gameSpeed.dealDuration
+            name == Constants.peaceTreaty -> speed.peaceDealDuration
+            else -> speed.dealDuration
         }
     }
 
