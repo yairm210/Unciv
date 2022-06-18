@@ -70,7 +70,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Triggerable
 
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Triggerable, Global, Nation, Era, Tech, Policy, FounderBelief, FollowerBelief, Building, Wonder, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, CityState, ModOptions, Conditional
+	Applicable to: Triggerable, Global, Nation, Era, Speed, Tech, Policy, FounderBelief, FollowerBelief, Building, Wonder, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, CityState, ModOptions, Conditional
 
 ## Global uniques
 ??? example  "[stats]"
