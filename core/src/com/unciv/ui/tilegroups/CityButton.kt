@@ -166,7 +166,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
                 // if this city belongs to you and you are not iterating though the air units
                 if (uncivGame.viewEntireMapForDebug || viewingCiv.isSpectator()
                     || (belongsToViewingCiv() && !tileGroup.tileInfo.airUnits.contains(unitTable.selectedUnit))) {
-                        uncivGame.setScreen(CityScreen(city))
+                        uncivGame.pushScreen(CityScreen(city))
                 } else if (viewingCiv.knows(city.civInfo)) {
                     foreignCityInfoPopup()
                 }
@@ -425,7 +425,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
     private fun foreignCityInfoPopup() {
         fun openDiplomacy() {
             // If city doesn't belong to you, go directly to its owner's diplomacy screen.
-            worldScreen.game.setScreen(DiplomacyScreen(worldScreen.viewingCiv, city.civInfo))
+            worldScreen.game.pushScreen(DiplomacyScreen(worldScreen.viewingCiv, city.civInfo))
         }
 
         // If there's nothing to display cuz no Religion - skip popup

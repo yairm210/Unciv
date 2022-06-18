@@ -86,7 +86,7 @@ class DiplomacyScreen(
         splitPane.setFillParent(true)
         stage.addActor(splitPane)
 
-        closeButton.onActivation { UncivGame.Current.resetToWorldScreen() }
+        closeButton.onActivation { UncivGame.Current.popScreen() }
         closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
         closeButton.label.setFontSize(Constants.headingFontSize)
         closeButton.labelCell.pad(10f)
@@ -206,12 +206,7 @@ class DiplomacyScreen(
                 resourcesTable.add(wrapper).padRight(20f)
                 wrapper.addTooltip(name, 18f)
                 wrapper.onClick {
-                    val pedia = CivilopediaScreen(
-                        UncivGame.Current.gameInfo!!.ruleSet,
-                        this,
-                        link = "Resource/$name"
-                    )
-                    UncivGame.Current.setScreen(pedia)
+                    UncivGame.Current.pushScreen(CivilopediaScreen(UncivGame.Current.gameInfo!!.ruleSet, link = "Resource/$name"))
                 }
             }
             diplomacyTable.add(resourcesTable).row()
@@ -504,7 +499,7 @@ class DiplomacyScreen(
         diplomaticMarriageButton.onClick {
             val newCities = otherCiv.cities
             otherCiv.cityStateFunctions.diplomaticMarriage(viewingCiv)
-            UncivGame.Current.resetToWorldScreen() // The other civ will no longer exist
+            UncivGame.Current.popScreen() // The other civ will no longer exist
             for (city in newCities)
                 viewingCiv.popupAlerts.add(PopupAlert(AlertType.DiplomaticMarriage, city.id))   // Player gets to choose between annex and puppet
         }
@@ -1003,11 +998,8 @@ class DiplomacyScreen(
     private fun getGoToOnMapButton(civilization: CivilizationInfo): TextButton {
         val goToOnMapButton = "Go to on map".toTextButton()
         goToOnMapButton.onClick {
-            val worldScreen = UncivGame.Current.worldScreen
-            if (worldScreen != null) {
-                UncivGame.Current.resetToWorldScreen()
-                worldScreen.mapHolder.setCenterPosition(civilization.getCapital()!!.location, selectUnit = false)
-            }
+            val worldScreen = UncivGame.Current.resetToWorldScreen()
+            worldScreen.mapHolder.setCenterPosition(civilization.getCapital()!!.location, selectUnit = false)
         }
         return goToOnMapButton
     }

@@ -1,8 +1,8 @@
 package com.unciv.ui.worldscreen.mainmenu
 
 import com.badlogic.gdx.Gdx
-import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.models.metadata.GameSetupInfo
+import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.saves.LoadGameScreen
@@ -19,28 +19,28 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
         }.row()
         addButton("Civilopedia") {
             close()
-            worldScreen.game.setScreen(CivilopediaScreen(worldScreen.gameInfo.ruleSet, worldScreen))
+            worldScreen.game.pushScreen(CivilopediaScreen(worldScreen.gameInfo.ruleSet))
         }.row()
         addButton("Save game") {
             close()
-            worldScreen.game.setScreen(SaveGameScreen(worldScreen.gameInfo))
+            worldScreen.game.pushScreen(SaveGameScreen(worldScreen.gameInfo))
         }.row()
         addButton("Load game") {
             close()
-            worldScreen.game.setScreen(LoadGameScreen(worldScreen))
+            worldScreen.game.pushScreen(LoadGameScreen(worldScreen))
         }.row()
 
         addButton("Start new game") {
             close()
             val newGameSetupInfo = GameSetupInfo(worldScreen.gameInfo)
             newGameSetupInfo.mapParameters.reseed()
-            val newGameScreen = NewGameScreen(worldScreen, newGameSetupInfo)
-            worldScreen.game.setScreen(newGameScreen)
+            val newGameScreen = NewGameScreen(newGameSetupInfo)
+            worldScreen.game.pushScreen(newGameScreen)
         }.row()
 
         addButton("Victory status") {
             close()
-            worldScreen.game.setScreen(VictoryScreen(worldScreen))
+            worldScreen.game.pushScreen(VictoryScreen(worldScreen))
         }.row()
         addButton("Options") {
             close()

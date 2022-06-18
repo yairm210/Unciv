@@ -19,7 +19,7 @@ import com.unciv.utils.concurrency.launchOnGLThread
 
 /** Subscreen of MultiplayerScreen to edit and delete saves
  * backScreen is used for getting back to the MultiplayerScreen so it doesn't have to be created over and over again */
-class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame, backScreen: MultiplayerScreen) : PickerScreen() {
+class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame) : PickerScreen() {
     init {
         val textField = TextField(multiplayerGame.name, skin)
 
@@ -36,7 +36,7 @@ class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame, 
             ) {
                 try {
                     game.onlineMultiplayer.deleteGame(multiplayerGame)
-                    game.setScreen(backScreen)
+                    game.popScreen()
                 } catch (ex: Exception) {
                     ToastPopup("Could not delete game!", this)
                 }
@@ -51,7 +51,7 @@ class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame, 
                 "Are you sure you want to resign?",
                 "Resign",
             ) {
-                resign(multiplayerGame, backScreen)
+                resign(multiplayerGame)
             }
             askPopup.open()
         }
@@ -62,7 +62,7 @@ class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame, 
         //CloseButton Setup
         closeButton.setText("Back".tr())
         closeButton.onClick {
-            backScreen.game.setScreen(backScreen)
+            game.popScreen()
         }
 
         //RightSideButton Setup
@@ -72,8 +72,10 @@ class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame, 
             rightSideButton.setText("Saving...".tr())
             val newName = textField.text.trim()
             game.onlineMultiplayer.changeGameName(multiplayerGame, newName)
-            backScreen.selectGame(newName)
-            backScreen.game.setScreen(backScreen)
+            val newScreen = game.popScreen()
+            if (newScreen is MultiplayerScreen) {
+                newScreen.selectGame(newName)
+            }
         }
 
         if (multiplayerGame.preview == null) {
@@ -88,7 +90,7 @@ class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame, 
      * Helper function to decrease indentation
      * Turns the current playerCiv into an AI civ and uploads the game afterwards.
      */
-    private fun resign(multiplayerGame: OnlineMultiplayerGame, backScreen: MultiplayerScreen) {
+    private fun resign(multiplayerGame: OnlineMultiplayerGame) {
         //Create a popup
         val popup = Popup(this)
         popup.addGoodSizedLabel("Working...").row()
@@ -100,8 +102,7 @@ class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame, 
                 if (resignSuccess) {
                     launchOnGLThread {
                         popup.close()
-                        //go back to the MultiplayerScreen
-                        game.setScreen(backScreen)
+                        game.popScreen()
                     }
                 } else {
                     launchOnGLThread {

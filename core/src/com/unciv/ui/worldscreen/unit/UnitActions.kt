@@ -235,7 +235,7 @@ object UnitActions {
         // promotion does not consume movement points, but is not allowed if a unit has exhausted its movement or has attacked
         actionList += UnitAction(UnitActionType.Promote,
             action = {
-                UncivGame.Current.setScreen(PromotionPickerScreen(unit))
+                UncivGame.Current.pushScreen(PromotionPickerScreen(unit))
             }.takeIf { unit.currentMovement > 0 && unit.attacksThisTurn == 0 })
     }
 
@@ -461,7 +461,7 @@ object UnitActions {
         actionList += UnitAction(UnitActionType.ConstructImprovement,
             isCurrentAction = unit.currentTile.hasImprovementInProgress(),
             action = {
-                worldScreen.game.setScreen(ImprovementPickerScreen(tile, unit) { unitTable.selectUnit() })
+                worldScreen.game.pushScreen(ImprovementPickerScreen(tile, unit) { unitTable.selectUnit() })
             }.takeIf { couldConstruct }
         )
     }

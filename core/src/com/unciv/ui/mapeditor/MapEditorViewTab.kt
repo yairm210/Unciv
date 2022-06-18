@@ -205,7 +205,7 @@ class MapEditorViewTab(
                 }
             } else {
                 // This needs CivilopediaScreen to be able to work without a GameInfo!
-                UncivGame.Current.setScreen(CivilopediaScreen(tile.ruleset, editorScreen, link = it))
+                UncivGame.Current.pushScreen(CivilopediaScreen(tile.ruleset, link = it))
             }
         })
 

@@ -26,6 +26,7 @@ import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ExpanderTab
+import com.unciv.ui.utils.RecreateOnResize
 import com.unciv.ui.utils.extensions.addSeparator
 import com.unciv.ui.utils.extensions.addSeparatorVertical
 import com.unciv.ui.utils.extensions.disable
@@ -43,9 +44,8 @@ import java.util.*
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class NewGameScreen(
-    private val previousScreen: BaseScreen,
     _gameSetupInfo: GameSetupInfo? = null
-): IPreviousScreen, PickerScreen() {
+): IPreviousScreen, PickerScreen(), RecreateOnResize {
 
     override val gameSetupInfo = _gameSetupInfo ?: GameSetupInfo.fromSettings()
     override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters) // needs to be set because the GameOptionsTable etc. depend on this
@@ -57,6 +57,9 @@ class NewGameScreen(
         updateRuleset()  // must come before playerPickerTable so mod nations from fromSettings
         // Has to be initialized before the mapOptionsTable, since the mapOptionsTable refers to it on init
 
+        // remove the victory types which are not in the rule set (e.g. were in the recently disabled mod)
+        gameSetupInfo.gameParameters.victoryTypes.removeAll { it !in ruleset.victories.keys }
+
         if (gameSetupInfo.gameParameters.victoryTypes.isEmpty())
             gameSetupInfo.gameParameters.victoryTypes.addAll(ruleset.victories.keys)
 
@@ -66,7 +69,7 @@ class NewGameScreen(
         )
         newGameOptionsTable = GameOptionsTable(this, isNarrowerThan4to3()) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
         mapOptionsTable = MapOptionsTable(this)
-        setDefaultCloseAction(previousScreen)
+        setDefaultCloseAction()
 
         if (isNarrowerThan4to3()) initPortrait()
         else initLandscape()
@@ -81,7 +84,7 @@ class NewGameScreen(
                     "Are you sure you want to reset all game options to defaults?",
                     "Reset to defaults",
                 ) {
-                    game.setScreen(NewGameScreen(previousScreen, GameSetupInfo()))
+                    game.replaceCurrentScreen(NewGameScreen(GameSetupInfo()))
                 }.open(true)
             }
         }
@@ -139,7 +142,7 @@ class NewGameScreen(
                 val map = try {
                     MapSaver.loadMap(gameSetupInfo.mapFile!!)
                 } catch (ex: Throwable) {
-                    game.setScreen(this)
+                    Gdx.input.inputProcessor = stage
                     ToastPopup("Could not load map!", this)
                     return@onClick
                 }
@@ -152,7 +155,7 @@ class NewGameScreen(
                         incompatibleMap.addGoodSizedLabel(incompatibility).row()
                     incompatibleMap.addCloseButton()
                     incompatibleMap.open()
-                    game.setScreen(this) // to get the input back
+                    Gdx.input.inputProcessor = stage
                     return@onClick
                 }
             } else {
@@ -166,7 +169,7 @@ class NewGameScreen(
                         customMapWidth.text = mapSize.width.toString()
                         customMapHeight.text = mapSize.height.toString()
                     }
-                    game.setScreen(this) // to get the input back
+                    Gdx.input.inputProcessor = stage
                     return@onClick
                 }
             }
@@ -326,11 +329,7 @@ class NewGameScreen(
         newGameOptionsTable.update()
     }
 
-    override fun resize(width: Int, height: Int) {
-        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
-            game.setScreen(NewGameScreen(previousScreen, gameSetupInfo))
-        }
-    }
+    override fun recreate(): BaseScreen = NewGameScreen(gameSetupInfo)
 }
 
 class TranslatedSelectBox(values : Collection<String>, default:String, skin: Skin) : SelectBox<TranslatedSelectBox.TranslatedString>(skin) {

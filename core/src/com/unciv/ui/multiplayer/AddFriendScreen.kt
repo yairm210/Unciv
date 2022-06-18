@@ -3,6 +3,7 @@ package com.unciv.ui.multiplayer
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
+import com.unciv.UncivGame
 import com.unciv.logic.IdChecker
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.models.translations.tr
@@ -14,7 +15,7 @@ import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
 import java.util.*
 
-class AddFriendScreen(backScreen: ViewFriendsListScreen) : PickerScreen() {
+class AddFriendScreen : PickerScreen() {
     init {
         val friendNameTextField = TextField("", skin)
         val pastePlayerIDButton = "Paste player ID from clipboard".toTextButton()
@@ -39,7 +40,7 @@ class AddFriendScreen(backScreen: ViewFriendsListScreen) : PickerScreen() {
         //CloseButton Setup
         closeButton.setText("Back".tr())
         closeButton.onClick {
-            backScreen.game.setScreen(backScreen)
+            UncivGame.Current.popScreen()
         }
 
         //RightSideButton Setup
@@ -65,8 +66,10 @@ class AddFriendScreen(backScreen: ViewFriendsListScreen) : PickerScreen() {
                 FriendList.ErrorType.YOURSELF -> ToastPopup("You cannot add your own player ID in your friend list!", this)
 
                 else -> {
-                    backScreen.game.setScreen(backScreen)
-                    backScreen.refreshFriendsList()
+                    val newScreen = UncivGame.Current.popScreen()
+                    if (newScreen is ViewFriendsListScreen) {
+                        newScreen.refreshFriendsList()
+                    }
                 }
             }
         }

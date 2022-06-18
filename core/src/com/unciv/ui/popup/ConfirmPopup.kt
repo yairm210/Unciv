@@ -1,6 +1,5 @@
 package com.unciv.ui.popup
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
 import com.badlogic.gdx.utils.Align
@@ -45,19 +44,5 @@ open class ConfirmPopup(
         val confirmStyle = BaseScreen.skin.get(confirmStyleName, TextButtonStyle::class.java)
         addOKButton(confirmText, KeyCharAndCode('y'), confirmStyle, action = action)
         equalizeLastTwoButtonWidths()
-    }
-}
-
-/** Shortcut to open a [ConfirmPopup] with the exit game question */
-class ExitGamePopup(screen: BaseScreen, force: Boolean = false) : ConfirmPopup(
-    screen = screen,
-    question = "Do you want to exit the game?",
-    confirmText = "Exit",
-    restoreDefault = { screen.game.musicController.resume() },
-    action = { Gdx.app.exit() }
-) {
-    init {
-        screen.game.musicController.pause()
-        open(force)
     }
 }
