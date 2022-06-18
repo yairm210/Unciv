@@ -85,7 +85,7 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
     val expander: ExpanderTab
 
     init {
-        textField.messageText = "Enter search text"
+        textField.messageText = "Enter search text".tr()
 
         val searchIcon = ImageGetter.getImage("OtherIcons/Search")
             .surroundWithCircle(50f, color = Color.CLEAR)
