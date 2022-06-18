@@ -24,7 +24,7 @@ com.badlogic.gdx.graphics.Color: {
         a: 1
     }
     dark-gray: { a: 1.0, b: 0.25, g: 0.25, r: 0.25 }
-    disabled: { a: 1.0, b: 0.25882354, g: 0.14117648, r: 0.105882354 }
+    disabled: { a: 1.0, b: 0.24313726, g: 0.16862746, r: 0.14509805 }
     highlight: { a: 1.0, b: 0.44705883, g: 0.8627451, r: 0.39607844 }
     pressed: {
         r: 0.2529412
