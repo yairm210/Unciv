@@ -96,7 +96,7 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
 
         addButton("How about something else...", 'e') {
             close()
-            worldScreen.game.setScreen(DiplomacyScreen(viewingCiv, requestingCiv, trade))
+            worldScreen.game.pushScreen(DiplomacyScreen(viewingCiv, requestingCiv, trade))
             worldScreen.shouldUpdate = true
         }
     }

@@ -19,6 +19,8 @@ import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.isEnabled
+import com.unciv.ui.utils.extensions.keyShortcuts
+import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
@@ -47,7 +49,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
         innerTable.pad(5f)
 
         innerTable.add( MarkupRenderer.render(selectedTile.toMarkup(city.civInfo), iconDisplay = IconDisplay.None) {
-            UncivGame.Current.setScreen(CivilopediaScreen(city.getRuleset(), cityScreen, link = it))
+            UncivGame.Current.pushScreen(CivilopediaScreen(city.getRuleset(), link = it))
         } )
         innerTable.row()
         innerTable.add(getTileStatsTable(stats)).row()
@@ -55,10 +57,11 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
         if (isTilePurchaseShown(selectedTile)) {
             val goldCostOfTile = city.expansion.getGoldCostOfTile(selectedTile)
             val buyTileButton = "Buy for [$goldCostOfTile] gold".toTextButton()
-            buyTileButton.onClick {
+            buyTileButton.onActivation {
                 buyTileButton.disable()
                 askToBuyTile(selectedTile)
             }
+            buyTileButton.keyShortcuts.add('T')
             buyTileButton.isEnabled = isTilePurchaseAllowed(goldCostOfTile)
             buyTileButton.addTooltip('T')  // The key binding is done in CityScreen constructor
             innerTable.add(buyTileButton).padTop(5f).row()
@@ -89,7 +92,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
             }
         }
         if (selectedTile.isCityCenter() && selectedTile.getCity() != city && selectedTile.getCity()!!.civInfo == city.civInfo)
-            innerTable.add("Move to city".toTextButton().onClick { cityScreen.game.setScreen(CityScreen(selectedTile.getCity()!!)) })
+            innerTable.add("Move to city".toTextButton().onClick { cityScreen.game.replaceCurrentScreen(CityScreen(selectedTile.getCity()!!)) })
 
         innerTable.pack()
         pack()
@@ -118,7 +121,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
             SoundPlayer.play(UncivSound.Coin)
             city.expansion.buyTile(selectedTile)
             // preselect the next tile on city screen rebuild so bulk buying can go faster
-            UncivGame.Current.setScreen(CityScreen(city, initSelectedTile = city.expansion.chooseNewTileToOwn()))
+            UncivGame.Current.replaceCurrentScreen(CityScreen(city, initSelectedTile = city.expansion.chooseNewTileToOwn()))
         }.open()
     }
 

@@ -66,7 +66,7 @@ abstract class ReligionPickerScreenCommon(
         rightSideButton.setText(buttonText.tr())
         rightSideButton.onClick(UncivSound.Choir) {
             choosingCiv.religionManager.action()
-            UncivGame.Current.resetToWorldScreen()
+            UncivGame.Current.popScreen()
         }
     }
 
@@ -107,7 +107,7 @@ abstract class ReligionPickerScreenCommon(
                 add(MarkupRenderer.render(
                     belief.getCivilopediaTextLines(withHeader = true), width - 20f
                 ) {
-                    UncivGame.Current.setScreen(CivilopediaScreen(ruleset, this@ReligionPickerScreenCommon, link = it))
+                    UncivGame.Current.pushScreen(CivilopediaScreen(ruleset,  link = it))
                 }).growX()
                 // Icon should it be needed:  CivilopediaImageGetters.belief(belief.getIconName(), 50f)
             }

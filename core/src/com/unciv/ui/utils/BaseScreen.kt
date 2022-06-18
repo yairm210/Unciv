@@ -5,7 +5,7 @@ import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.g2d.BitmapFont
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Label
@@ -19,10 +19,13 @@ import com.unciv.UncivGame
 import com.unciv.models.Tutorial
 import com.unciv.ui.UncivStage
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.options.OptionsPopup
-import com.unciv.ui.popup.hasOpenPopups
+import com.unciv.ui.popup.activePopup
 import com.unciv.ui.tutorials.TutorialController
+import com.unciv.ui.options.OptionsPopup
+import com.unciv.ui.utils.extensions.installShortcutDispatcher
 import com.unciv.ui.utils.extensions.isNarrowerThan4to3
+import com.unciv.ui.utils.extensions.DispatcherVetoResult
+import com.unciv.ui.utils.extensions.DispatcherVetoer
 
 abstract class BaseScreen : Screen {
 
@@ -31,14 +34,18 @@ abstract class BaseScreen : Screen {
 
     protected val tutorialController by lazy { TutorialController(this) }
 
-    val keyPressDispatcher = KeyPressDispatcher(this.javaClass.simpleName)
+    /**
+     * Keyboard shorcuts global to the screen. While this is public and can be modified,
+     * you most likely should use [keyShortcuts][Actor.keyShortcuts] on appropriate [Actor] instead.
+     */
+    val globalShortcuts = KeyShortcutDispatcher()
 
     init {
         val resolutions: List<Float> = game.settings.resolution.split("x").map { it.toInt().toFloat() }
         val height = resolutions[1]
 
         /** The ExtendViewport sets the _minimum_(!) world size - the actual world size will be larger, fitted to screen/window aspect ratio. */
-        stage = UncivStage(ExtendViewport(height, height), SpriteBatch())
+        stage = UncivStage(ExtendViewport(height, height))
 
         if (enableSceneDebug) {
             stage.setDebugUnderMouse(true)
@@ -46,7 +53,22 @@ abstract class BaseScreen : Screen {
             stage.setDebugParentUnderMouse(true)
         }
 
-        keyPressDispatcher.install(stage) { hasOpenPopups() }
+        stage.installShortcutDispatcher(globalShortcuts, this::createPopupBasedDispatcherVetoer)
+    }
+
+    private fun createPopupBasedDispatcherVetoer(): DispatcherVetoer? {
+        val activePopup = this.activePopup
+        if (activePopup == null)
+            return null
+        else {
+            // When any popup is active, disable all shortcuts on actor outside the popup
+            // and also the global shortcuts on the screen itself.
+            return { associatedActor: Actor?, _: KeyShortcutDispatcher? ->
+                when { associatedActor == null -> DispatcherVetoResult.Skip
+                       associatedActor.isDescendantOf(activePopup) -> DispatcherVetoResult.Accept
+                       else -> DispatcherVetoResult.SkipWithChildren }
+            }
+        }
     }
 
     override fun show() {}
@@ -60,7 +82,11 @@ abstract class BaseScreen : Screen {
     }
 
     override fun resize(width: Int, height: Int) {
-        stage.viewport.update(width, height, true)
+        if (this !is RecreateOnResize) {
+            stage.viewport.update(width, height, true)
+        } else if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
+            game.replaceCurrentScreen(recreate())
+        }
     }
 
     override fun pause() {}
@@ -70,7 +96,7 @@ abstract class BaseScreen : Screen {
     override fun hide() {}
 
     override fun dispose() {
-        keyPressDispatcher.uninstall()
+        stage.dispose()
     }
 
     fun displayTutorial(tutorial: Tutorial, test: (() -> Boolean)? = null) {
@@ -118,10 +144,6 @@ abstract class BaseScreen : Screen {
         val clearColor = Color(0f, 0f, 0.2f, 1f)
     }
 
-    fun onBackButtonClicked(action: () -> Unit) {
-        keyPressDispatcher[KeyCharAndCode.BACK] = action
-    }
-
     /** @return `true` if the screen is higher than it is wide */
     fun isPortrait() = stage.viewport.screenHeight > stage.viewport.screenWidth
     /** @return `true` if the screen is higher than it is wide _and_ resolution is at most 1050x700 */
@@ -133,4 +155,8 @@ abstract class BaseScreen : Screen {
     fun openOptionsPopup(startingPage: Int = OptionsPopup.defaultPage, onClose: () -> Unit = {}) {
         OptionsPopup(this, startingPage, onClose).open(force = true)
     }
+}
+
+interface RecreateOnResize {
+    fun recreate(): BaseScreen
 }

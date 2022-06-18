@@ -135,7 +135,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                 }
                 unitIconNameGroup.clearListeners()
                 unitIconNameGroup.onClick {
-                    worldScreen.game.setScreen(CivilopediaScreen(worldScreen.gameInfo.ruleSet, worldScreen, CivilopediaCategories.Unit, unit.name))
+                    worldScreen.game.pushScreen(CivilopediaScreen(worldScreen.gameInfo.ruleSet, CivilopediaCategories.Unit, unit.name))
                 }
 
                 unitDescriptionTable.clear()
@@ -227,7 +227,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                 // Since Clear also clears the listeners, we need to re-add it every time
                 promotionsTable.onClick {
                     if (selectedUnit == null || selectedUnit!!.promotions.promotions.isEmpty()) return@onClick
-                    UncivGame.Current.setScreen(PromotionPickerScreen(selectedUnit!!))
+                    UncivGame.Current.pushScreen(PromotionPickerScreen(selectedUnit!!))
                 }
             } else { // multiple selected units
                 for (unit in selectedUnits)

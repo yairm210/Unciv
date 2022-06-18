@@ -16,7 +16,7 @@ import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import java.util.*
 
-class AddMultiplayerGameScreen(backScreen: MultiplayerScreen) : PickerScreen() {
+class AddMultiplayerGameScreen : PickerScreen() {
     init {
         val gameNameTextField = TextField("", skin)
         val gameIDTextField = TextField("", skin)
@@ -37,7 +37,7 @@ class AddMultiplayerGameScreen(backScreen: MultiplayerScreen) : PickerScreen() {
         //CloseButton Setup
         closeButton.setText("Back".tr())
         closeButton.onClick {
-            backScreen.game.setScreen(backScreen)
+            game.popScreen()
         }
 
         //RightSideButton Setup
@@ -60,7 +60,7 @@ class AddMultiplayerGameScreen(backScreen: MultiplayerScreen) : PickerScreen() {
                     game.onlineMultiplayer.addGame(gameIDTextField.text.trim(), gameNameTextField.text.trim())
                     launchOnGLThread {
                         popup.close()
-                        game.setScreen(backScreen)
+                        game.popScreen()
                     }
                 } catch (ex: Exception) {
                     val message = MultiplayerHelpers.getLoadExceptionMessage(ex)

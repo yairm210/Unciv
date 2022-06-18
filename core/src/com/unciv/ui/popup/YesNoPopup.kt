@@ -40,16 +40,3 @@ open class YesNoPopup(
         equalizeLastTwoButtonWidths()
     }
 }
-
-/** Shortcut to open a [YesNoPopup] with the exit game question */
-class ExitGamePopup(screen: BaseScreen, force: Boolean = false) : YesNoPopup(
-    question = "Do you want to exit the game?",
-    screen = screen,
-    restoreDefault = { screen.game.musicController.resume() },
-    action = { Gdx.app.exit() }
-) {
-    init {
-        screen.game.musicController.pause()
-        open(force)
-    }
-}

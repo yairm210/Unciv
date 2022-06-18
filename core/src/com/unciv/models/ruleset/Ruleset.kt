@@ -987,18 +987,26 @@ object RulesetCache : HashMap<String,Ruleset>() {
      * Any mods in the [mods] parameter marked as base ruleset (or not loaded in [RulesetCache]) are ignored.
      */
     fun getComplexRuleset(mods: LinkedHashSet<String>, optionalBaseRuleset: String? = null): Ruleset {
-        val newRuleset = Ruleset()
-
         val baseRuleset =
-            if (containsKey(optionalBaseRuleset) && this[optionalBaseRuleset]!!.modOptions.isBaseRuleset)
-                this[optionalBaseRuleset]!!
-            else getVanillaRuleset()
+                if (containsKey(optionalBaseRuleset) && this[optionalBaseRuleset]!!.modOptions.isBaseRuleset)
+                    this[optionalBaseRuleset]!!
+                else getVanillaRuleset()
 
         val loadedMods = mods.asSequence()
             .filter { containsKey(it) }
             .map { this[it]!! }
-            .filter { !it.modOptions.isBaseRuleset } +
-            baseRuleset
+            .filter { !it.modOptions.isBaseRuleset }
+
+        return getComplexRuleset(baseRuleset, loadedMods.asIterable())
+    }
+
+    /**
+     * Creates a combined [Ruleset] from [baseRuleset] and [extensionRulesets] which must only contain non-base rulesets.
+     */
+    fun getComplexRuleset(baseRuleset: Ruleset, extensionRulesets: Iterable<Ruleset>): Ruleset {
+        val newRuleset = Ruleset()
+
+        val loadedMods = extensionRulesets.asSequence() + baseRuleset
 
         for (mod in loadedMods.sortedByDescending { it.modOptions.isBaseRuleset }) {
             if (mod.modOptions.isBaseRuleset) {

@@ -3,6 +3,7 @@ package com.unciv.logic.battle
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivilizationInfo
@@ -540,15 +541,7 @@ object Battle {
             // we're not taking our former capital
             attackerCiv.popupAlerts.add(PopupAlert(AlertType.CityConquered, city.id))
         } else {
-            // ideally here we would do some AI thinking for liberation vs. razing
-            // e.g., valueCityStateAlliance() > 0 to determine if we should liberate a city-state
-            city.puppetCity(attackerCiv)
-            if ((city.population.population < 4 || attackerCiv.isCityState())
-                && city.canBeDestroyed(justCaptured = true)) {
-                // raze if attacker is a city state
-                city.annexCity()
-                city.isBeingRazed = true
-            }
+            NextTurnAutomation.onConquerCity(attackerCiv, city)
         }
 
         if (attackerCiv.isPlayerCivilization())

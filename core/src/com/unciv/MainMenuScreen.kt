@@ -15,6 +15,7 @@ import com.unciv.logic.map.MapType
 import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSetupInfo
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.images.ImageGetter
@@ -24,7 +25,6 @@ import com.unciv.ui.mapeditor.MapEditorScreen
 import com.unciv.ui.multiplayer.MultiplayerScreen
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.ModManagementScreen
-import com.unciv.ui.popup.ExitGamePopup
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.popup.closeAllPopups
@@ -32,12 +32,16 @@ import com.unciv.ui.popup.hasOpenPopups
 import com.unciv.ui.popup.popups
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.saves.QuickSave
+import com.unciv.ui.tutorials.EasterEggRulesets
+import com.unciv.ui.tutorials.EasterEggRulesets.modifyForEasterEgg
 import com.unciv.ui.utils.AutoScrollPane
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.RecreateOnResize
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.extensions.center
-import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.keyShortcuts
+import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.setFontSize
 import com.unciv.ui.utils.extensions.surroundWithCircle
 import com.unciv.ui.utils.extensions.toLabel
@@ -47,9 +51,10 @@ import com.unciv.utils.concurrency.launchOnGLThread
 import kotlin.math.min
 
 
-class MainMenuScreen: BaseScreen() {
+class MainMenuScreen: BaseScreen(), RecreateOnResize {
     private val backgroundTable = Table().apply { background= ImageGetter.getBackground(Color.WHITE) }
     private val singleColumn = isCrampedPortrait()
+    private var easterEggRuleset: Ruleset? = null  // Cache it so the next 'egg' can be found in Civilopedia
 
     /** Create one **Main Menu Button** including onClick/key binding
      *  @param text      The text to display on the button
@@ -70,11 +75,11 @@ class MainMenuScreen: BaseScreen() {
         table.add(text.toLabel().setFontSize(30)).minWidth(200f)
 
         table.touchable = Touchable.enabled
-        table.onClick(function)
+        table.onActivation(function)
 
         if (key != null) {
             if (!keyVisualOnly)
-                keyPressDispatcher[key] = function
+                table.keyShortcuts.add(key)
             table.addTooltip(key, 32f)
         }
 
@@ -101,13 +106,19 @@ class MainMenuScreen: BaseScreen() {
                 scale = min(scale, 20f)
             }
 
-            val mapRuleset = RulesetCache.getVanillaRuleset()
+            val baseRuleset = RulesetCache.getVanillaRuleset()
+            easterEggRuleset = EasterEggRulesets.getTodayEasterEggRuleset()?.let {
+                RulesetCache.getComplexRuleset(baseRuleset, listOf(it))
+            }
+            val mapRuleset = easterEggRuleset ?: baseRuleset
+
             val newMap = MapGenerator(mapRuleset)
                     .generateMap(MapParameters().apply {
                         shape = MapShape.rectangular
                         mapSize = MapSizeNew(mapWidth.toInt() + 1, mapHeight.toInt() + 1)
                         type = MapType.default
                         waterThreshold = -0.055f // Gives the same level as when waterThreshold was unused in MapType.default
+                        modifyForEasterEgg()
                     })
 
             launchOnGLThread { // for GL context
@@ -139,25 +150,25 @@ class MainMenuScreen: BaseScreen() {
         column1.add(quickstartTable).row()
 
         val newGameButton = getMenuButton("Start new game", "OtherIcons/New", 'n')
-            { game.setScreen(NewGameScreen(this)) }
+            { game.pushScreen(NewGameScreen()) }
         column1.add(newGameButton).row()
 
         if (game.gameSaver.getSaves().any()) {
             val loadGameTable = getMenuButton("Load game", "OtherIcons/Load", 'l')
-                { game.setScreen(LoadGameScreen(this)) }
+                { game.pushScreen(LoadGameScreen(this)) }
             column1.add(loadGameTable).row()
         }
 
         val multiplayerTable = getMenuButton("Multiplayer", "OtherIcons/Multiplayer", 'm')
-            { game.setScreen(MultiplayerScreen(this)) }
+            { game.pushScreen(MultiplayerScreen(this)) }
         column2.add(multiplayerTable).row()
 
         val mapEditorScreenTable = getMenuButton("Map editor", "OtherIcons/MapEditor", 'e')
-            { game.setScreen(MapEditorScreen()) }
+            { game.pushScreen(MapEditorScreen()) }
         column2.add(mapEditorScreenTable).row()
 
         val modsTable = getMenuButton("Mods", "OtherIcons/Mods", 'd')
-            { game.setScreen(ModManagementScreen()) }
+            { game.pushScreen(ModManagementScreen()) }
         column2.add(modsTable).row()
 
         val optionsTable = getMenuButton("Options", "OtherIcons/Options", 'o')
@@ -175,12 +186,12 @@ class MainMenuScreen: BaseScreen() {
         stage.addActor(scrollPane)
         table.center(scrollPane)
 
-        onBackButtonClicked {
+        globalShortcuts.add(KeyCharAndCode.BACK) {
             if (hasOpenPopups()) {
                 closeAllPopups()
-                return@onBackButtonClicked
+                return@add
             }
-            ExitGamePopup(this)
+            game.popScreen()
         }
 
         val helpButton = "?".toLabel(fontSize = 32)
@@ -189,8 +200,8 @@ class MainMenuScreen: BaseScreen() {
             .apply { actor.y -= 2.5f } // compensate font baseline (empirical)
             .surroundWithCircle(42f, resizeActor = false)
         helpButton.touchable = Touchable.enabled
-        helpButton.onClick { openCivilopedia() }
-        keyPressDispatcher[Input.Keys.F1] = { openCivilopedia() }
+        helpButton.onActivation { openCivilopedia() }
+        helpButton.keyShortcuts.add(Input.Keys.F1)
         helpButton.addTooltip(KeyCharAndCode(Input.Keys.F1), 20f)
         helpButton.setPosition(20f, 20f)
         stage.addActor(helpButton)
@@ -237,18 +248,15 @@ class MainMenuScreen: BaseScreen() {
 
     private fun openCivilopedia() {
         val rulesetParameters = game.settings.lastGameSetup?.gameParameters
-        val ruleset = if (rulesetParameters == null)
+        val ruleset = easterEggRuleset ?:
+            if (rulesetParameters == null)
                 RulesetCache[BaseRuleset.Civ_V_GnK.fullName] ?: return
-                else RulesetCache.getComplexRuleset(rulesetParameters)
+            else RulesetCache.getComplexRuleset(rulesetParameters)
         UncivGame.Current.translations.translationActiveMods = ruleset.mods
         ImageGetter.setNewRuleset(ruleset)
         setSkin()
-        game.setScreen(CivilopediaScreen(ruleset, this))
+        game.pushScreen(CivilopediaScreen(ruleset))
     }
 
-    override fun resize(width: Int, height: Int) {
-        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
-            game.setScreen(MainMenuScreen())
-        }
-    }
+    override fun recreate(): BaseScreen = MainMenuScreen()
 }

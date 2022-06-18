@@ -21,7 +21,7 @@ object Log {
 
     /** Log tags (= class names) **containing** these Strings will not be logged.  */
     val disableLogsFrom = if (disabledLogsFromProperty.isEmpty()) {
-        "Battle,KeyPressDispatcher,Music,Sounds,Translations,WorkerAutomation"
+        "Battle,Music,Sounds,Translations,WorkerAutomation"
             .split(',').toMutableSet()
     } else {
         disabledLogsFromProperty

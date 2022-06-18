@@ -18,7 +18,7 @@ Each civ has an icon, like the wreath for Rome, for instant identification.
 
 All of these icons are white on a transparent background, and are 100x100 pixels - see [icon considerations](#icon-considerations) for details
 
-You'll need to put your icon in the [NationIcons folder](/Images/NationIcons).
+You'll need to put your icon in the [NationIcons folder](https://github.com/yairm210/Unciv/tree/master/android/Images.NationIcons/NationIcons).
 
 Same as with the nation name and leader name, the unique ability should also be put in the Nations translation file for bonus points =)
 
@@ -28,7 +28,7 @@ But apart from the flavor, they are boring gameplay-wise, so now we need to add 
 
 ## Adding unique units
 
-Units in general are added in the [Units.json](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Units.json) file, with an icon in the [UnitIcons](/Images.Construction/UnitIcons) folder.
+Units in general are added in the [Units.json](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Units.json) file, with an icon in the [UnitIcons](https://github.com/yairm210/Unciv/tree/master/android/Images.Construction/UnitIcons) folder.
 
 The icon must be 200x200 pixels, white on transparent background - see [icon considerations](#icon-considerations) for details
 
@@ -36,7 +36,7 @@ Remember that these are unique units, so search for an existing unique unit to s
 
 ## Adding unique buildings
 
-Same as the units - info is in the [Buildings.json](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Buildings.json) file and icons in the [BuildingIcons](/Images.Construction/BuildingIcons) folder, same rules for the icons apply (200x200 pixels, icon considerations)
+Same as the units - info is in the [Buildings.json](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Buildings.json) file and icons in the [BuildingIcons](https://github.com/yairm210/Unciv/tree/master/android/Images.Construction/BuildingIcons) folder, same rules for the icons apply (200x200 pixels, icon considerations)
 
 ## Civ Unique
 
@@ -50,4 +50,4 @@ Icons directly from the base game belong to Firaxis, so I'm not sure we're legal
 
 One source I use constantly is [The Noun Project](https://thenounproject.com) - everything there is Creative Commons or open, so they can all be used!
 
-Credits for icons should go in the [Credits](/docs/Credits.md) page.
+Credits for icons should go in the [Credits](./Credits.md) page.

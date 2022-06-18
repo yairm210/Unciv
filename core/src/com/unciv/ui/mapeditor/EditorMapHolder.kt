@@ -1,6 +1,5 @@
 package com.unciv.ui.mapeditor
 
-import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Action
 import com.badlogic.gdx.scenes.scene2d.EventListener
@@ -9,7 +8,6 @@ import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.map.TileInfo
@@ -131,25 +129,9 @@ class EditorMapHolder(
     fun setCenterPosition(vector: Vector2, blink: Boolean = false) {
         val tileGroup = allTileGroups.firstOrNull { it.tileInfo.position == vector } ?: return
 
-        val originalScrollX = scrollX
-        val originalScrollY = scrollY
-
-        val finalScrollX = tileGroup.x + tileGroup.width / 2
-
-        /** The Y axis of [scrollY] is inverted - when at 0 we're at the top, not bottom - so we invert it back. */
-        val finalScrollY = maxY - (tileGroup.y + tileGroup.width / 2)
-
-        if (finalScrollX == originalScrollX && finalScrollY == originalScrollY) return
-
-        val action = object : FloatAction(0f, 1f, 0.4f) {
-            override fun update(percent: Float) {
-                scrollX = finalScrollX * percent + originalScrollX * (1 - percent)
-                scrollY = finalScrollY * percent + originalScrollY * (1 - percent)
-                updateVisualScroll()
-            }
-        }
-        action.interpolation = Interpolation.sine
-        addAction(action)
+        // The Y axis of [scrollY] is inverted - when at 0 we're at the top, not bottom - so we invert it back.
+        if (!scrollTo(tileGroup.x + tileGroup.width / 2, maxY - (tileGroup.y + tileGroup.width / 2)))
+            return
 
         if (!blink) return
 

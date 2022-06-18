@@ -16,8 +16,9 @@ import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ExpanderTab
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.utils.extensions.keyShortcuts
+import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.onChange
-import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.surroundWithCircle
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
@@ -73,7 +74,6 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
 
     private val textField = TextField("", BaseScreen.skin)
     fun getFilterText(): String = textField.text
-    val filterAction: ()->Unit
 
     var sortInstalled = SortType.Name
     var sortOnline = SortType.Stars
@@ -133,7 +133,7 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
         }
 
         searchIcon.touchable = Touchable.enabled
-        filterAction = {
+        searchIcon.onActivation {
             if (expander.isOpen) {
                 modManagementScreen.refreshInstalledModTable()
                 modManagementScreen.refreshOnlineModTable()
@@ -142,7 +142,7 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
             }
             expander.toggle()
         }
-        searchIcon.onClick(filterAction)
+        searchIcon.keyShortcuts.add(KeyCharAndCode.RETURN)
         searchIcon.addTooltip(KeyCharAndCode.RETURN, 18f)
     }
 

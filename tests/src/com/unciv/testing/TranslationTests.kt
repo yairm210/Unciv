@@ -171,7 +171,7 @@ class TranslationTests {
 
         var allWordsTranslatedCorrectly = true
         for (translationEntry in translations.values) {
-            for ((language, translation) in translationEntry) {
+            for ((language, _) in translationEntry) {
                 UncivGame.Current.settings.language = language
                 try {
                     translationEntry.entry.tr()

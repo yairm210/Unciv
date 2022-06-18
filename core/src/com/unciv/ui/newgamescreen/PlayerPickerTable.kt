@@ -50,7 +50,6 @@ class PlayerPickerTable(
 ): Table() {
     val playerListTable = Table()
     val civBlocksWidth = if(blockWidth <= 10f) previousScreen.stage.width / 3 - 5f else blockWidth
-    val friendsBlocksWidth = if(blockWidth <= 10f) previousScreen.stage.width / 5 - 5f else blockWidth / 2
 
     /** Locks player table for editing, currently unused, was previously used for scenarios and could be useful in the future.*/
     var locked = false
@@ -402,10 +401,10 @@ private class NationPickerPopup(
         }
 
         val closeButton = "OtherIcons/Close".toImageButton(Color.FIREBRICK)
-        closeButton.onClick { close() }
+        closeButton.onActivation { close() }
+        closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
         closeButton.setPosition(buttonsOffsetFromEdge, buttonsOffsetFromEdge, Align.bottomLeft)
         innerTable.addActor(closeButton)
-        keyPressDispatcher[KeyCharAndCode.BACK] = { close() }
 
         val okButton = "OtherIcons/Checkmark".toImageButton(Color.LIME)
         okButton.onClick { returnSelected() }

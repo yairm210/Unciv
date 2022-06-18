@@ -145,6 +145,8 @@ class CityInfo {
 
     private var flagsCountdown = HashMap<String, Int>()
 
+    fun hasDiplomaticMarriage(): Boolean = foundingCiv == ""
+
     constructor()   // for json parsing, we need to have a default constructor
     constructor(civInfo: CivilizationInfo, cityLocation: Vector2) {  // new city!
         this.civInfo = civInfo
