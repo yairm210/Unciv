@@ -2,8 +2,10 @@ package com.unciv.models.ruleset
 
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.stats.Stat
+import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
+import kotlin.math.abs
 
 class Speed : RulesetObject() {
     var modifier: Float = 1f
@@ -64,6 +66,7 @@ class Speed : RulesetObject() {
         yield(FormattedLine("Golden age length modifier: [${goldenAgeLengthModifier * 100}]%${Fonts.happiness}"))
         yield(FormattedLine("Adjacent city religious pressure: [$religiousPressureAdjacentCity]${Fonts.faith}"))
         yield(FormattedLine("Peace deal duration: [$peaceDealDuration] turns${Fonts.turn}"))
+        yield(FormattedLine("Start year: " + ("[${abs(startYear).toInt()}] " + (if (startYear < 0) "BC" else "AD")).tr()))
     }.toList()
 
     fun numTotalTurns(): Int = yearsPerTurn.last().untilTurn
