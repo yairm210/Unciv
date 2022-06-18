@@ -456,6 +456,7 @@ object TranslationFileWriter {
                     "Buildings" -> emptyArray<Building>().javaClass
                     "Difficulties" -> emptyArray<Difficulty>().javaClass
                     "Eras" -> emptyArray<Era>().javaClass
+                    "Speeds" -> emptyArray<Speed>().javaClass
                     "GlobalUniques" -> GlobalUniques().javaClass
                     "Nations" -> emptyArray<Nation>().javaClass
                     "Policies" -> emptyArray<PolicyBranch>().javaClass

@@ -144,7 +144,7 @@ class QuestManager {
                 else
                     GLOBAL_QUEST_MIN_TURNS_BETWEEN + Random.nextInt(GLOBAL_QUEST_RAND_TURNS_BETWEEN)
 
-        globalQuestCountdown = (countdown * civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt()
+        globalQuestCountdown = (countdown * civInfo.gameInfo.speed.modifier).toInt()
     }
 
     private fun seedIndividualQuestsCountdown() {
@@ -164,7 +164,7 @@ class QuestManager {
                 else
                     INDIVIDUAL_QUEST_MIN_TURNS_BETWEEN + Random.nextInt(INDIVIDUAL_QUEST_RAND_TURNS_BETWEEN)
 
-        individualQuestCountdown[challenger.civName] = (countdown * civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt()
+        individualQuestCountdown[challenger.civName] = (countdown * civInfo.gameInfo.speed.modifier).toInt()
     }
 
     private fun tryStartNewGlobalQuest() {
@@ -905,7 +905,7 @@ class AssignedQuest(val questName: String = "",
     fun doesExpire(): Boolean = gameInfo.ruleSet.quests[questName]!!.duration > 0
     fun isExpired(): Boolean = doesExpire() && getRemainingTurns() == 0
     @Suppress("MemberVisibilityCanBePrivate")
-    fun getDuration(): Int = (gameInfo.gameParameters.gameSpeed.modifier * gameInfo.ruleSet.quests[questName]!!.duration).toInt()
+    fun getDuration(): Int = (gameInfo.speed.modifier * gameInfo.ruleSet.quests[questName]!!.duration).toInt()
     fun getRemainingTurns(): Int = max(0, (assignedOnTurn + getDuration()) - gameInfo.turns)
 
     fun getDescription(): String {

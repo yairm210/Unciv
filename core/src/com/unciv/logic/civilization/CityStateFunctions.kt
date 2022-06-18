@@ -3,7 +3,6 @@ package com.unciv.logic.civilization
 import com.unciv.Constants
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.civilization.diplomacy.*
-import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.unique.Unique
@@ -134,14 +133,10 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         // https://github.com/Gedemon/Civ5-DLL/blob/aa29e80751f541ae04858b6d2a2c7dcca454201e/CvGameCoreDLL_Expansion1/CvMinorCivAI.cpp
         // line 8681 and below
         var influenceGained = giftAmount.toFloat().pow(1.01f) / 9.8f
-        val gameProgressApproximate = min(civInfo.gameInfo.turns / (400f * civInfo.gameInfo.gameParameters.gameSpeed.modifier), 1f)
+        val speed = civInfo.gameInfo.speed
+        val gameProgressApproximate = min(civInfo.gameInfo.turns / (400f * speed.modifier), 1f)
         influenceGained *= 1 - (2/3f) * gameProgressApproximate
-        influenceGained *= when (civInfo.gameInfo.gameParameters.gameSpeed) {
-            GameSpeed.Quick -> 1.25f
-            GameSpeed.Standard -> 1f
-            GameSpeed.Epic -> 0.75f
-            GameSpeed.Marathon -> 0.67f
-        }
+        influenceGained *= speed.goldGiftModifier
         for (unique in donorCiv.getMatchingUniques(UniqueType.CityStateGoldGiftsProvideMoreInfluence))
             influenceGained *= 1f + unique.params[0].toFloat() / 100f
 
@@ -273,7 +268,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
 
     fun getDiplomaticMarriageCost(): Int {
         // https://github.com/Gedemon/Civ5-DLL/blob/master/CvGameCoreDLL_Expansion1/CvMinorCivAI.cpp, line 7812
-        var cost = (500 * civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt()
+        var cost = (500 * civInfo.gameInfo.speed.goldCostModifier).toInt()
         // Plus disband value of all units
         for (unit in civInfo.getCivUnits()) {
             cost += unit.baseUnit.getDisbandGold(civInfo)
@@ -393,18 +388,8 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
 
     fun goldGainedByTribute(): Int {
         // These values are close enough, linear increase throughout the game
-        var gold = when (civInfo.gameInfo.gameParameters.gameSpeed) {
-            GameSpeed.Quick -> 60
-            GameSpeed.Standard -> 50
-            GameSpeed.Epic -> 35
-            GameSpeed.Marathon -> 30
-        }
-        val turnsToIncrement = when (civInfo.gameInfo.gameParameters.gameSpeed) {
-            GameSpeed.Quick -> 5f
-            GameSpeed.Standard -> 6.5f
-            GameSpeed.Epic -> 14f
-            GameSpeed.Marathon -> 32f
-        }
+        var gold = (10 * civInfo.gameInfo.speed.goldGiftModifier).toInt() * 5 // rounding down to nearest 5
+        val turnsToIncrement = civInfo.gameInfo.speed.cityStateTributeScalingInterval
         gold += 5 * (civInfo.gameInfo.turns / turnsToIncrement).toInt()
 
         return gold
