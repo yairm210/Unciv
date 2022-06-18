@@ -28,7 +28,7 @@ class VictoryManager {
         }
         return results
     }
-    
+
     private fun votesNeededForDiplomaticVictory(): Int {
         val civCount = civInfo.gameInfo.civilizations.count { !it.isDefeated() }
 
@@ -38,24 +38,24 @@ class VictoryManager {
             else (67 - 1.1 * civCount) / 100 * civCount
         ).toInt()
     }
-    
+
     fun hasEnoughVotesForDiplomaticVictory(): Boolean {
         val results = calculateDiplomaticVotingResults(civInfo.gameInfo.diplomaticVictoryVotesCast)
         val bestCiv = results.maxByOrNull { it.value } ?: return false
-        
+
         // If we don't have the highest score, we have not won anyway
         if (bestCiv.key != civInfo.civName) return false
-        
+
         // If we don't have enough votes, we haven't won
         if (bestCiv.value < votesNeededForDiplomaticVictory()) return false
-        
+
         // If there's a tie, we haven't won either
-        return (results.none { it != bestCiv && it.value == bestCiv.value }) 
+        return (results.none { it != bestCiv && it.value == bestCiv.value })
     }
-    
+
     fun getVictoryTypeAchieved(): String? {
         if (!civInfo.isMajorCiv()) return null
-        for (victoryName in civInfo.gameInfo.ruleSet.victories.keys.filter { it != Constants.neutralVictoryType}) {
+        for (victoryName in civInfo.gameInfo.gameParameters.victoryTypes.filter { it != Constants.neutralVictoryType}) {
             if (getNextMilestone(victoryName) == null)
                 return victoryName
         }
@@ -63,7 +63,7 @@ class VictoryManager {
             return Constants.neutralVictoryType
         return null
     }
-    
+
     fun getNextMilestone(victory: String): Milestone? {
         for (milestone in civInfo.gameInfo.ruleSet.victories[victory]!!.milestoneObjects) {
             if (!milestone.hasBeenCompletedBy(civInfo))
@@ -71,7 +71,7 @@ class VictoryManager {
         }
         return null
     }
-    
+
     fun amountMilestonesCompleted(victory: String): Int {
         var completed = 0
         for (milestone in civInfo.gameInfo.ruleSet.victories[victory]!!.milestoneObjects) {

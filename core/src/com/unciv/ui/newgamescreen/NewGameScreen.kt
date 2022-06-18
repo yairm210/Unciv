@@ -57,6 +57,9 @@ class NewGameScreen(
         updateRuleset()  // must come before playerPickerTable so mod nations from fromSettings
         // Has to be initialized before the mapOptionsTable, since the mapOptionsTable refers to it on init
 
+        // remove the victory types which are not in the rule set (e.g. were in the recently disabled mod)
+        gameSetupInfo.gameParameters.victoryTypes.removeAll { it !in ruleset.victories.keys }
+
         if (gameSetupInfo.gameParameters.victoryTypes.isEmpty())
             gameSetupInfo.gameParameters.victoryTypes.addAll(ruleset.victories.keys)
 
