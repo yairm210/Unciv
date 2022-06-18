@@ -23,6 +23,7 @@ com.badlogic.gdx.graphics.Color: {
         b: 0.5
         a: 1
     }
+    dark-gray: { a: 1.0, b: 0.25, g: 0.25, r: 0.25 }
     highlight: { a: 1.0, b: 0.44705883, g: 0.8627451, r: 0.39607844 }
     pressed: {
         r: 0.2529412
@@ -207,7 +208,7 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
         font: button
         fontColor: white
         downFontColor: white
-        overFontColor: gray
+        overFontColor: dark-gray
         up: button-c
         down: button-p
         over: button-h
