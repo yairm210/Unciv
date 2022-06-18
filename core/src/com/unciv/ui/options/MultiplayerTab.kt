@@ -14,7 +14,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.createTextField
+import com.unciv.ui.utils.UncivTextField
 import com.unciv.ui.utils.extensions.format
 import com.unciv.ui.utils.extensions.isEnabled
 import com.unciv.ui.utils.extensions.onChange
@@ -121,7 +121,7 @@ private fun addMultiplayerServerOptions(
     } else {
         "https://"
     }
-    val multiplayerServerTextField = createTextField("Server address", textToShowForMultiplayerAddress)
+    val multiplayerServerTextField = UncivTextField.create("Server address", textToShowForMultiplayerAddress)
     multiplayerServerTextField.setTextFieldFilter { _, c -> c !in " \r\n\t\\" }
     multiplayerServerTextField.programmaticChangeEvents = true
     val serverIpTable = Table()

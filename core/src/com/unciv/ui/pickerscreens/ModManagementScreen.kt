@@ -19,16 +19,16 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.pickerscreens.ModManagementOptions.SortType
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.utils.AutoScrollPane
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ExpanderTab
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.RecreateOnResize
+import com.unciv.ui.utils.UncivTextField
 import com.unciv.ui.utils.WrappableLabel
-import com.unciv.ui.utils.createTextField
 import com.unciv.ui.utils.extensions.UncivDateFormat.formatDate
 import com.unciv.ui.utils.extensions.UncivDateFormat.parseDate
 import com.unciv.ui.utils.extensions.addSeparator
@@ -370,7 +370,7 @@ class ModManagementScreen(
         downloadButton.onClick {
             val popup = Popup(this)
             popup.addGoodSizedLabel("Please enter the mod repository -or- archive zip url:").row()
-            val textField = createTextField("")
+            val textField = UncivTextField.create("")
             popup.add(textField).width(stage.width / 2).row()
             val actualDownloadButton = "Download".toTextButton()
             actualDownloadButton.onClick {

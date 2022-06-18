@@ -14,8 +14,8 @@ import com.unciv.ui.newgamescreen.TranslatedSelectBox
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ExpanderTab
 import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.UncivTextField
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
-import com.unciv.ui.utils.createTextField
 import com.unciv.ui.utils.extensions.keyShortcuts
 import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.onChange
@@ -72,7 +72,7 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
         }
     }
 
-    private val textField = createTextField("Enter search text")
+    private val textField = UncivTextField.create("Enter search text")
     fun getFilterText(): String = textField.text
 
     var sortInstalled = SortType.Name

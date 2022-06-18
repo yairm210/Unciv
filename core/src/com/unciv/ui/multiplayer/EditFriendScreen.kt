@@ -10,7 +10,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.utils.createTextField
+import com.unciv.ui.utils.UncivTextField
 import com.unciv.ui.utils.extensions.enable
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toLabel
@@ -19,9 +19,9 @@ import java.util.*
 
 class EditFriendScreen(selectedFriend: FriendList.Friend) : PickerScreen() {
     init {
-        val friendNameTextField = createTextField("Please input a name for your friend!", selectedFriend.name)
+        val friendNameTextField = UncivTextField.create("Please input a name for your friend!", selectedFriend.name)
         val pastePlayerIDButton = "Player ID from clipboard".toTextButton()
-        val playerIDTextField = createTextField("Please input a player ID for your friend!", selectedFriend.playerID)
+        val playerIDTextField = UncivTextField.create("Please input a player ID for your friend!", selectedFriend.playerID)
         val deleteFriendButton = "Delete".toTextButton()
         val friendlist = FriendList()
 

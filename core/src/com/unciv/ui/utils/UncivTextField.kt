@@ -14,25 +14,27 @@ import com.unciv.ui.utils.extensions.right
 import com.unciv.ui.utils.extensions.stageBoundingBox
 import com.unciv.ui.utils.extensions.top
 
-/**
- * Creates a text field that has nicer platform-specific input added compared to the default gdx [TextField].
- * @param hint The text that should be displayed in the text field when no text is entered, will automatically be translated
- * @param preEnteredText the text already entered within this text field. Supported on all platforms.
- */
-fun createTextField(hint: String, preEnteredText: String = ""): TextField {
-    @Suppress("UNCIV_RAW_TEXTFIELD")
-    val textField = TextField(preEnteredText, BaseScreen.skin)
-    val translatedHint = hint.tr()
-    textField.messageText = translatedHint
-    textField.addListener(object : FocusListener() {
-        override fun keyboardFocusChanged(event: FocusEvent, actor: Actor, focused: Boolean) {
-            if (focused) {
-                textField.scrollAscendantToTextField()
+object UncivTextField {
+    /**
+     * Creates a text field that has nicer platform-specific input added compared to the default gdx [TextField].
+     * @param hint The text that should be displayed in the text field when no text is entered, will automatically be translated
+     * @param preEnteredText the text already entered within this text field. Supported on all platforms.
+     */
+    fun create(hint: String, preEnteredText: String = ""): TextField {
+        @Suppress("UNCIV_RAW_TEXTFIELD")
+        val textField = TextField(preEnteredText, BaseScreen.skin)
+        val translatedHint = hint.tr()
+        textField.messageText = translatedHint
+        textField.addListener(object : FocusListener() {
+            override fun keyboardFocusChanged(event: FocusEvent, actor: Actor, focused: Boolean) {
+                if (focused) {
+                    textField.scrollAscendantToTextField()
+                }
             }
-        }
-    })
-    UncivGame.Current.platformSpecificHelper?.addImprovements(textField)
-    return textField
+        })
+        UncivGame.Current.platformSpecificHelper?.addImprovements(textField)
+        return textField
+    }
 }
 
 /**

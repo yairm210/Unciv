@@ -7,7 +7,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.utils.createTextField
+import com.unciv.ui.utils.UncivTextField
 import com.unciv.ui.utils.extensions.enable
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toLabel
@@ -18,8 +18,8 @@ import java.util.*
 
 class AddMultiplayerGameScreen : PickerScreen() {
     init {
-        val gameNameTextField = createTextField("Game name")
-        val gameIDTextField = createTextField("GameID")
+        val gameNameTextField = UncivTextField.create("Game name")
+        val gameIDTextField = UncivTextField.create("GameID")
         val pasteGameIDButton = "Paste gameID from clipboard".toTextButton()
         pasteGameIDButton.onClick {
             gameIDTextField.text = Gdx.app.clipboard.contents

@@ -9,14 +9,14 @@ import com.unciv.logic.MapSaver
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.TileMap
 import com.unciv.models.translations.tr
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.utils.AutoScrollPane
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.TabbedPager
-import com.unciv.ui.utils.createTextField
+import com.unciv.ui.utils.UncivTextField
 import com.unciv.ui.utils.extensions.isEnabled
 import com.unciv.ui.utils.extensions.keyShortcuts
 import com.unciv.ui.utils.extensions.onActivation
@@ -38,7 +38,7 @@ class MapEditorSaveTab(
     private val deleteButton = "Delete map".toTextButton()
     private val quitButton = "Exit map editor".toTextButton()
 
-    private val mapNameTextField = createTextField("Map Name")
+    private val mapNameTextField = UncivTextField.create("Map Name")
 
     private var chosenMap: FileHandle? = null
 

@@ -8,7 +8,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.UncivSlider
-import com.unciv.ui.utils.createTextField
+import com.unciv.ui.utils.UncivTextField
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toCheckBox
 import com.unciv.ui.utils.extensions.toLabel
@@ -22,7 +22,7 @@ fun debugTab() = Table(BaseScreen.skin).apply {
     val worldScreen = game.worldScreen
     if (worldScreen != null) {
         val simulateButton = "Simulate until turn:".toTextButton()
-        val simulateTextField = createTextField("Turn", game.simulateUntilTurnForDebug.toString())
+        val simulateTextField = UncivTextField.create("Turn", game.simulateUntilTurnForDebug.toString())
         val invalidInputLabel = "This is not a valid integer!".toLabel().also { it.isVisible = false }
         simulateButton.onClick {
             val simulateUntilTurns = simulateTextField.text.toIntOrNull()

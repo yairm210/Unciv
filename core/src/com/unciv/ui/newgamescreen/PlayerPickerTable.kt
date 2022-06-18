@@ -164,7 +164,7 @@ class PlayerPickerTable(
         }
         if (gameParameters.isOnlineMultiplayer && player.playerType == PlayerType.Human) {
 
-            val playerIdTextField = createTextField("Please input Player ID!", player.playerId)
+            val playerIdTextField = UncivTextField.create("Please input Player ID!", player.playerId)
             playerTable.add(playerIdTextField).colspan(2).fillX().pad(5f)
             val errorLabel = "✘".toLabel(Color.RED)
             playerTable.add(errorLabel).pad(5f).row()
