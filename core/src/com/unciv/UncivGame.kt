@@ -25,8 +25,8 @@ import com.unciv.ui.crashhandling.CrashScreen
 import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.multiplayer.MultiplayerHelpers
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.Popup
-import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.worldscreen.PlayerReadyScreen
@@ -270,9 +270,10 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     fun popScreen(): BaseScreen? {
         if (screenStack.size == 1) {
             musicController.pause()
-            YesNoPopup(
-                question = "Do you want to exit the game?",
+            ConfirmPopup(
                 screen = screenStack.last(),
+                question = "Do you want to exit the game?",
+                confirmText = "Exit",
                 restoreDefault = { musicController.resume() },
                 action = {
                     Gdx.app.exit()

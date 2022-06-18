@@ -1,9 +1,8 @@
 package com.unciv.ui.worldscreen.mainmenu
 
 import com.badlogic.gdx.Gdx
-import com.unciv.MainMenuScreen
-import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.models.metadata.GameSetupInfo
+import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.saves.LoadGameScreen
@@ -17,19 +16,19 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
 
         addButton("Main menu") {
             worldScreen.game.goToMainMenu()
-        }
+        }.row()
         addButton("Civilopedia") {
             close()
             worldScreen.game.pushScreen(CivilopediaScreen(worldScreen.gameInfo.ruleSet))
-        }
+        }.row()
         addButton("Save game") {
             close()
             worldScreen.game.pushScreen(SaveGameScreen(worldScreen.gameInfo))
-        }
+        }.row()
         addButton("Load game") {
             close()
             worldScreen.game.pushScreen(LoadGameScreen(worldScreen))
-        }
+        }.row()
 
         addButton("Start new game") {
             close()
@@ -37,20 +36,20 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
             newGameSetupInfo.mapParameters.reseed()
             val newGameScreen = NewGameScreen(newGameSetupInfo)
             worldScreen.game.pushScreen(newGameScreen)
-        }
+        }.row()
 
         addButton("Victory status") {
             close()
             worldScreen.game.pushScreen(VictoryScreen(worldScreen))
-        }
+        }.row()
         addButton("Options") {
             close()
             worldScreen.openOptionsPopup()
-        }
+        }.row()
         addButton("Community") {
             close()
             WorldScreenCommunityPopup(worldScreen).open(force = true)
-        }
+        }.row()
         addCloseButton()
         pack()
     }
@@ -62,17 +61,17 @@ class WorldScreenCommunityPopup(val worldScreen: WorldScreen) : Popup(worldScree
         addButton("Discord") {
             Gdx.net.openURI("https://discord.gg/bjrB4Xw")
             close()
-        }
+        }.row()
 
         addButton("Github") {
             Gdx.net.openURI("https://github.com/yairm210/UnCiv")
             close()
-        }
+        }.row()
 
         addButton("Reddit") {
             Gdx.net.openURI("https://www.reddit.com/r/Unciv/")
             close()
-        }
+        }.row()
 
         addCloseButton()
     }

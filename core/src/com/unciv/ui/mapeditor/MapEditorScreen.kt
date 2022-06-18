@@ -2,7 +2,6 @@ package com.unciv.ui.mapeditor
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.map.MapParameters
@@ -17,8 +16,8 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyCharAndCode
@@ -184,14 +183,17 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen(), RecreateOnResize {
     }
 
     internal fun closeEditor() {
-        askIfDirty("Do you want to leave without saving the recent changes?") {
+        askIfDirty(
+            "Do you want to leave without saving the recent changes?",
+            "Leave"
+        ) {
             game.popScreen()
         }
     }
 
-    fun askIfDirty(question: String, action: ()->Unit) {
+    fun askIfDirty(question: String, confirmText: String, isConfirmPositive: Boolean = false, action: ()->Unit) {
         if (!isDirty) return action()
-        YesNoPopup(question, screen = this, action = action).open()
+        ConfirmPopup(screen = this, question, confirmText, isConfirmPositive, action = action).open()
     }
 
     fun hideSelection() {

@@ -1,12 +1,13 @@
 package com.unciv.ui.saves
 
 import com.badlogic.gdx.files.FileHandle
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
@@ -14,8 +15,8 @@ import com.unciv.ui.utils.extensions.UncivDateFormat.formatDate
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.enable
 import com.unciv.ui.utils.extensions.keyShortcuts
-import com.unciv.ui.utils.extensions.onChange
 import com.unciv.ui.utils.extensions.onActivation
+import com.unciv.ui.utils.extensions.onChange
 import com.unciv.ui.utils.extensions.pad
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
@@ -35,7 +36,7 @@ abstract class LoadOrSaveScreen(
 
     private val savesScrollPane = VerticalFileListScrollPane()
     protected val rightSideTable = Table()
-    protected val deleteSaveButton = "Delete save".toTextButton()
+    protected val deleteSaveButton = "Delete save".toTextButton(skin.get("negative", TextButton.TextButtonStyle::class.java))
     protected val showAutosavesCheckbox = CheckBox("Show autosaves".tr(), skin)
 
     init {
@@ -74,17 +75,21 @@ abstract class LoadOrSaveScreen(
 
     private fun onDeleteClicked() {
         if (selectedSave.isEmpty()) return
-        val result = try {
-            if (game.gameSaver.deleteSave(selectedSave)) {
-                resetWindowState()
-                "[$selectedSave] deleted successfully."
-            } else "Failed to delete [$selectedSave]."
-        } catch (ex: SecurityException) {
-            "Insufficient permissions to delete [$selectedSave]."
-        } catch (ex: Throwable) {
-            "Failed to delete [$selectedSave]."
-        }
-        descriptionLabel.setText(result.tr())
+        ConfirmPopup(this, "Are you sure you want to delete this save?", "Delete save") {
+            val result = try {
+                if (game.gameSaver.deleteSave(selectedSave)) {
+                    resetWindowState()
+                    "[$selectedSave] deleted successfully."
+                } else {
+                    "Failed to delete [$selectedSave]."
+                }
+            } catch (ex: SecurityException) {
+                "Insufficient permissions to delete [$selectedSave]."
+            } catch (ex: Throwable) {
+                "Failed to delete [$selectedSave]."
+            }
+            descriptionLabel.setText(result.tr())
+        }.open()
     }
 
     private fun updateShownSaves(showAutosaves: Boolean) {
@@ -93,7 +98,6 @@ abstract class LoadOrSaveScreen(
 
     private fun selectExistingSave(saveGameFile: FileHandle) {
         deleteSaveButton.enable()
-        deleteSaveButton.color = Color.RED
 
         selectedSave = saveGameFile.name()
         showSaveInfo(saveGameFile)

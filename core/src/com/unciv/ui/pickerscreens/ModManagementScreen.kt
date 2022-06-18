@@ -22,7 +22,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.pickerscreens.ModManagementOptions.SortType
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.popup.YesNoPopup
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.utils.AutoScrollPane
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ExpanderTab
@@ -529,21 +529,23 @@ class ModManagementScreen(
     private fun installedButtonAction(mod: ModUIData) {
         syncInstalledSelected(mod.name, mod.button)
         refreshInstalledModActions(mod.ruleset!!)
-        rightSideButton.setText("Delete [${mod.name}]".tr())
+        val deleteText = "Delete [${mod.name}]"
+        rightSideButton.setText(deleteText.tr())
         // Don't let the player think he can delete Vanilla and G&K rulesets
         rightSideButton.isEnabled = mod.ruleset.folderLocation!=null
         showModDescription(mod.name)
         rightSideButton.clearListeners()
         rightSideButton.onClick {
             rightSideButton.isEnabled = false
-            YesNoPopup(
+            ConfirmPopup(
+                screen = this,
                 question = "Are you SURE you want to delete this mod?",
+                confirmText = deleteText,
                 action = {
                     deleteMod(mod.ruleset)
                     modActionTable.clear()
                     rightSideButton.setText("[${mod.name}] was deleted.".tr())
                 },
-                screen = this,
                 restoreDefault = { rightSideButton.isEnabled = true }
             ).open()
         }

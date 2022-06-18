@@ -1,13 +1,14 @@
 package com.unciv.ui.multiplayer
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.logic.multiplayer.OnlineMultiplayerGame
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.enable
 import com.unciv.ui.utils.extensions.onClick
@@ -25,9 +26,14 @@ class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame) 
         topTable.add("Rename".toLabel()).row()
         topTable.add(textField).pad(10f).padBottom(30f).width(stage.width / 2).row()
 
-        val deleteButton = "Delete save".toTextButton()
+        val negativeButtonStyle = skin.get("negative", TextButtonStyle::class.java)
+        val deleteButton = "Delete save".toTextButton(negativeButtonStyle)
         deleteButton.onClick {
-            val askPopup = YesNoPopup("Are you sure you want to delete this map?", this) {
+            val askPopup = ConfirmPopup(
+                this,
+                "Are you sure you want to delete this map?",
+                "Delete map",
+            ) {
                 try {
                     game.onlineMultiplayer.deleteGame(multiplayerGame)
                     game.popScreen()
@@ -36,16 +42,19 @@ class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame) 
                 }
             }
             askPopup.open()
-        }.apply { color = Color.RED }
+        }
 
-        val giveUpButton = "Resign".toTextButton()
+        val giveUpButton = "Resign".toTextButton(negativeButtonStyle)
         giveUpButton.onClick {
-            val askPopup = YesNoPopup("Are you sure you want to resign?", this) {
+            val askPopup = ConfirmPopup(
+                this,
+                "Are you sure you want to resign?",
+                "Resign",
+            ) {
                 resign(multiplayerGame)
             }
             askPopup.open()
         }
-        giveUpButton.apply { color = Color.RED }
 
         topTable.add(deleteButton).pad(10f).row()
         topTable.add(giveUpButton)
