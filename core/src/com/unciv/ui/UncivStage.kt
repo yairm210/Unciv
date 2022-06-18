@@ -15,7 +15,7 @@ class UncivStage(viewport: Viewport, batch: Batch) : Stage(viewport, batch) {
      * Enables/disables sending pointer enter/exit events to actors on this stage.
      * Checking for the enter/exit bounds is a relatively expensive operation and may thus be disabled temporarily.
      */
-    var performPointerEnterExitEvents: Boolean = false
+    var performPointerEnterExitEvents: Boolean = true
 
     override fun draw() =
         { super.draw() }.wrapCrashHandlingUnit()()
