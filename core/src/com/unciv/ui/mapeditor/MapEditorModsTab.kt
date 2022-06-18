@@ -133,11 +133,11 @@ class MapEditorModsTab(
             add(ScrollPane(incompatibilityTable)).colspan(2)
                 .maxHeight(stageToShowOn.height * 0.8f).row()
             addGoodSizedLabel("Change map to fit selected ruleset?", 24).colspan(2).row()
-            addButtonInRow(Constants.yes, 'y') {
+            addButton(Constants.yes, 'y') {
                 onOK()
                 close()
             }
-            addButtonInRow(Constants.no, 'n') { close() }
+            addButton(Constants.no, 'n') { close() }
             equalizeLastTwoButtonWidths()
             open(true)
         }

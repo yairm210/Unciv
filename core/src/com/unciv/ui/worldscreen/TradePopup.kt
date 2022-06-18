@@ -85,20 +85,20 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
             close()
             TradeThanksPopup(leaderIntroTable, worldScreen)
             requestingCiv.addNotification("[${viewingCiv.civName}] has accepted your trade request", viewingCiv.civName, NotificationIcon.Trade)
-        }
+        }.row()
 
         addButton("Not this time.", 'n') {
             tradeRequest.decline(viewingCiv)
             close()
             requestingCiv.addNotification("[${viewingCiv.civName}] has denied your trade request", viewingCiv.civName, NotificationIcon.Trade)
             worldScreen.shouldUpdate = true
-        }
+        }.row()
 
         addButton("How about something else...", 'e') {
             close()
             worldScreen.game.setScreen(DiplomacyScreen(viewingCiv, requestingCiv, trade))
             worldScreen.shouldUpdate = true
-        }
+        }.row()
     }
 
     override fun close() {

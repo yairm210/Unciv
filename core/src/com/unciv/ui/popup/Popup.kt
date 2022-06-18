@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
@@ -109,37 +110,23 @@ open class Popup(
     }
 
     /**
-     * Adds an inline [TextButton].
-     * @param text The button's caption.
-     * @param key Associate a key with this button's action.
-     * @param action A lambda to be executed when the button is clicked.
-     * @return The new [Cell]
-     */
-    fun addButtonInRow(text: String, key: KeyCharAndCode? = null, action: () -> Unit): Cell<TextButton> {
-        val button = text.toTextButton()
-        button.onActivation { action() }
-        button.keyShortcuts.add(key)
-        return add(button)
-    }
-    fun addButtonInRow(text: String, key: Char, action: () -> Unit)
-        = addButtonInRow(text, KeyCharAndCode(key), action)
-    fun addButtonInRow(text: String, key: Int, action: () -> Unit)
-        = addButtonInRow(text, KeyCharAndCode(key), action)
-
-    /**
      * Adds a [TextButton] and ends the current row.
      * @param text The button's caption.
      * @param key Associate a key with this button's action.
      * @param action A lambda to be executed when the button is clicked.
      * @return The new [Cell]
      */
-    fun addButton(text: String, key: KeyCharAndCode? = null, action: () -> Unit)
-        = addButtonInRow(text, key, action).apply { row() }
+    fun addButton(text: String, key: KeyCharAndCode? = null, style: TextButtonStyle? = null, action: () -> Unit): Cell<TextButton> {
+        val button = text.toTextButton(style)
+        button.onActivation { action() }
+        button.keyShortcuts.add(key)
+        return add(button)
+    }
     /** @link [addButton] */
-    fun addButton(text: String, key: Char, action: () -> Unit)
-        = addButtonInRow(text, key, action).apply { row() }
-    fun addButton(text: String, key: Int, action: () -> Unit)
-        = addButtonInRow(text, key, action).apply { row() }
+    fun addButton(text: String, key: Char, style: TextButtonStyle? = null, action: () -> Unit)
+        = addButton(text, KeyCharAndCode(key), style, action).apply { row() }
+    fun addButton(text: String, key: Int, style: TextButtonStyle? = null, action: () -> Unit)
+        = addButton(text, KeyCharAndCode(key), style, action).apply { row() }
 
     /**
      * Adds a [TextButton] that closes the popup, with [BACK][KeyCharAndCode.BACK] already mapped.
@@ -151,9 +138,10 @@ open class Popup(
     fun addCloseButton(
         text: String = Constants.close,
         additionalKey: KeyCharAndCode? = null,
+        style: TextButtonStyle? = null,
         action: (()->Unit)? = null
     ): Cell<TextButton> {
-        val cell = addButtonInRow(text, additionalKey) { close(); if(action!=null) action() }
+        val cell = addButton(text, additionalKey, style) { close(); if(action!=null) action() }
         cell.getActor().keyShortcuts.add(KeyCharAndCode.BACK)
         return cell
     }
@@ -170,10 +158,11 @@ open class Popup(
     fun addOKButton(
         text: String = Constants.OK,
         additionalKey: KeyCharAndCode? = null,
+        style: TextButtonStyle? = null,
         validate: (() -> Boolean) = { true },
         action: (() -> Unit),
     ): Cell<TextButton> {
-        val cell = addButtonInRow(text, additionalKey) {
+        val cell = addButton(text, additionalKey, style) {
             if (validate()) {
                 close()
                 action()

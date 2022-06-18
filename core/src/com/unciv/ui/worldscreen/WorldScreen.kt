@@ -369,12 +369,12 @@ class WorldScreen(
                 loadingGamePopup.innerTable.clear()
                 loadingGamePopup.addGoodSizedLabel("Couldn't download the latest game state!").colspan(2).row()
                 loadingGamePopup.addGoodSizedLabel(message).colspan(2).row()
-                loadingGamePopup.addButtonInRow("Retry") {
+                loadingGamePopup.addButton("Retry") {
                     launchOnThreadPool("Load latest multiplayer state after error") {
                         loadLatestMultiplayerState()
                     }
                 }.right()
-                loadingGamePopup.addButtonInRow("Main menu") {
+                loadingGamePopup.addButton("Main menu") {
                     game.setScreen(MainMenuScreen())
                 }.left()
             }
