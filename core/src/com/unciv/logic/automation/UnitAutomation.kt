@@ -7,6 +7,7 @@ import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.worldscreen.unit.UnitActions
 
@@ -48,8 +49,8 @@ object UnitAutomation {
 
     private fun tryGoToRuinAndEncampment(unit: MapUnit): Boolean {
         if (!unit.civInfo.isMajorCiv()) return false // barbs don't have anything to do in ruins
-        val unitDistanceToTiles = unit.movement.getDistanceToTiles()
-        val tileWithRuinOrEncampment = unitDistanceToTiles.keys
+
+        val tileWithRuinOrEncampment = unit.viewableTiles
             .firstOrNull {
                 (
                     (it.improvement != null && it.getTileImprovement()!!.isAncientRuinsEquivalent())
@@ -57,7 +58,7 @@ object UnitAutomation {
                 )
                 && unit.movement.canMoveTo(it)
             } ?: return false
-        unit.movement.moveToTile(tileWithRuinOrEncampment)
+        unit.movement.headTowards(unit.movement.getShortestPath(tileWithRuinOrEncampment,true)[0])
         return true
     }
 
