@@ -53,14 +53,12 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     private val customSaveLocationHelper = parameters.customFileLocationHelper
     val platformSpecificHelper = parameters.platformSpecificHelper
     private val audioExceptionHelper = parameters.audioExceptionHelper
-    private val audioExceptionHelper2 = parameters.audioExceptionHelper
 
     var deepLinkedMultiplayerGame: String? = null
     var gameInfo: GameInfo? = null
         private set
     lateinit var settings: GameSettings
     lateinit var musicController: MusicController
-    lateinit var citySoundController: CitySoundPlayer
     lateinit var onlineMultiplayer: OnlineMultiplayer
     lateinit var gameSaver: GameSaver
 
