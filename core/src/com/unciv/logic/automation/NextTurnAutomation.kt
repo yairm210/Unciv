@@ -975,7 +975,10 @@ object NextTurnAutomation {
     data class CityDistance(val city1: CityInfo, val city2: CityInfo, val aerialDistance: Int)
 
     fun getClosestCities(civ1: CivilizationInfo, civ2: CivilizationInfo): CityDistance {
+        val city1 = CityInfo()
+        val city2 = CityInfo()
         val cityDistances = arrayListOf<CityDistance>()
+        cityDistances.add(CityDistance(city1, city2, Int.MAX_VALUE))
         for (civ1city in civ1.cities)
             for (civ2city in civ2.cities)
                 cityDistances += CityDistance(civ1city, civ2city,
