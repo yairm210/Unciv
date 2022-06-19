@@ -80,7 +80,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             return
         val giftedUnit = giftableUnits.random()
         val cities = NextTurnAutomation.getClosestCities(receivingCiv, civInfo)
-        val placedUnit = receivingCiv.placeUnitNearTile(cities.city1.location, giftedUnit.name)
+        val placedUnit = receivingCiv.placeUnitNearTile(cities!!.city1.location, giftedUnit.name)
             ?: return
         val locations = LocationAction(placedUnit.getTile().position, cities.city2.location)
         receivingCiv.addNotification( "[${civInfo.civName}] gave us a [${giftedUnit.name}] as a gift!", locations, civInfo.civName, giftedUnit.name)
@@ -88,7 +88,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
 
     fun giveMilitaryUnitToPatron(receivingCiv: CivilizationInfo) {
         val cities = NextTurnAutomation.getClosestCities(receivingCiv, civInfo)
-        val city = cities.city1
+        val city = cities!!.city1
 
         fun giftableUniqueUnit(): BaseUnit? {
             val uniqueUnit = civInfo.gameInfo.ruleSet.units[civInfo.cityStateUniqueUnit]
