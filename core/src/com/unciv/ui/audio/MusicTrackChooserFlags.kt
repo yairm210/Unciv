@@ -12,7 +12,7 @@ enum class MusicTrackChooserFlags {
     /** Lets music controller shut down after track ends instead of choosing a random next track */
     PlaySingle,
     /** directly choose the 'fallback' file for playback */
-    PlayDefaultFile
+    PlayDefaultFile,
     ;
 
     companion object {
