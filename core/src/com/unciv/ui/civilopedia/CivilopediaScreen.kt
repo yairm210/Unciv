@@ -183,9 +183,8 @@ class CivilopediaScreen(
         val imageSize = 50f
         globalShortcuts.add(KeyCharAndCode.BACK) { game.popScreen() }
 
-        val curGameInfo = game.gameInfo
-        val religionEnabled = if (curGameInfo != null) curGameInfo.isReligionEnabled() else ruleset.beliefs.isNotEmpty()
-        val victoryTypes = if (curGameInfo != null) curGameInfo.gameParameters.victoryTypes else ruleset.victories.keys
+        val religionEnabled = showReligionInCivilopedia(ruleset)
+        val victoryTypes = game.gameInfo?.gameParameters?.victoryTypes ?: ruleset.victories.keys
 
         fun shouldBeDisplayed(obj: IHasUniques): Boolean {
             return when {
@@ -319,4 +318,15 @@ class CivilopediaScreen(
     }
 
     override fun recreate(): BaseScreen = CivilopediaScreen(ruleset, currentCategory, currentEntry)
+
+    companion object {
+        /** Test whether to show Religion-specific items, does not require a game to be running */
+        // Here we decide whether to show Religion in Civilopedia from Main Menu (no gameInfo loaded)
+        fun showReligionInCivilopedia(ruleset: Ruleset? = null) = when {
+            UncivGame.isCurrentInitialized() && UncivGame.Current.gameInfo != null ->
+                UncivGame.Current.gameInfo!!.isReligionEnabled()
+            ruleset != null -> ruleset.beliefs.isNotEmpty()
+            else -> true
+        }
+    }
 }

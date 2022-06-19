@@ -11,6 +11,9 @@ enum class BaseRuleset(val fullName:String){
 class GameParameters { // Default values are the default new game
     var difficulty = "Prince"
     var speed = Speed.DEFAULT
+
+    @Deprecated("Since 4.1.11")
+    var gameSpeed = ""
     var players = ArrayList<Player>().apply {
         add(Player().apply { playerType = PlayerType.Human })
         for (i in 1..3) add(Player())

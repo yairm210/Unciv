@@ -11,7 +11,9 @@ import com.unciv.models.ruleset.RulesetStatsObject
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
+import com.unciv.ui.civilopedia.CivilopediaScreen.Companion.showReligionInCivilopedia
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.extensions.toPercent
 import com.unciv.ui.worldscreen.unit.UnitActions
@@ -131,12 +133,16 @@ class TileImprovement : RulesetStatsObject() {
         val statsDesc = cloneStats().toString()
         if (statsDesc.isNotEmpty()) textList += FormattedLine(statsDesc)
 
-        if (uniqueTo!=null) {
+        if (uniqueTo != null) {
             textList += FormattedLine()
             textList += FormattedLine("Unique to [$uniqueTo]", link="Nation/$uniqueTo")
         }
 
-        if (terrainsCanBeBuiltOn.isNotEmpty()) {
+        val constructorUnits = getConstructorUnits(ruleset)
+        val creatingUnits = getCreatingUnits(ruleset)
+        val creatorExists = constructorUnits.isNotEmpty() || creatingUnits.isNotEmpty()
+
+        if (creatorExists && terrainsCanBeBuiltOn.isNotEmpty()) {
             textList += FormattedLine()
             if (terrainsCanBeBuiltOn.size == 1) {
                 with (terrainsCanBeBuiltOn.first()) {
@@ -151,15 +157,15 @@ class TileImprovement : RulesetStatsObject() {
         }
 
         var addedLineBeforeResourceBonus = false
-        for (resource in ruleset.tileResources.values.filter { it.isImprovedBy(name) }) {
-            if (resource.improvementStats == null) continue
+        for (resource in ruleset.tileResources.values) {
+            if (resource.improvementStats == null || !resource.isImprovedBy(name)) continue
             if (!addedLineBeforeResourceBonus) {
                 addedLineBeforeResourceBonus = true
                 textList += FormattedLine()
             }
             val statsString = resource.improvementStats.toString()
-
-            textList += FormattedLine("[${statsString}] <in [${resource.name}] tiles>", link = "Resource/${resource.name}")
+            // Line intentionally modeled as UniqueType.Stats + ConditionalInTiles
+            textList += FormattedLine("[${statsString}] <in [${resource.name}] tiles>", link = resource.makeLink())
         }
 
         if (techRequired != null) {
@@ -173,16 +179,21 @@ class TileImprovement : RulesetStatsObject() {
                 textList += FormattedLine(unique)
         }
 
+        // Be clearer when one needs to chop down a Forest first... A "Can be built on Plains" is clear enough,
+        // but a "Can be built on Land" is not - how is the user to know Forest is _not_ Land?
+        if (creatorExists &&
+                !isEmpty() && // Has any Stats
+                !hasUnique(UniqueType.NoFeatureRemovalNeeded) &&
+                !hasUnique(UniqueType.RemovesFeaturesIfBuilt) &&
+                terrainsCanBeBuiltOn.none { it in ruleset.terrains }
+        )
+            textList += FormattedLine("Needs removal of terrain features to be built")
+
         if (isAncientRuinsEquivalent() && ruleset.ruinRewards.isNotEmpty()) {
-            val difficulty: String
-            val religionEnabled: Boolean
-            if (UncivGame.isCurrentInitialized() && UncivGame.Current.gameInfo != null) {
-                difficulty = UncivGame.Current.gameInfo!!.gameParameters.difficulty
-                religionEnabled = UncivGame.Current.gameInfo!!.isReligionEnabled()
-            } else {
-                difficulty = "Prince"  // most factors == 1
-                religionEnabled = true
-            }
+            val difficulty = if (!UncivGame.isCurrentInitialized() || UncivGame.Current.gameInfo == null)
+                    "Prince"  // most factors == 1
+                else UncivGame.Current.gameInfo!!.gameParameters.difficulty
+            val religionEnabled = showReligionInCivilopedia(ruleset)
             textList += FormattedLine()
             textList += FormattedLine("The possible rewards are:")
             ruleset.ruinRewards.values.asSequence()
@@ -196,18 +207,75 @@ class TileImprovement : RulesetStatsObject() {
                 }
         }
 
-        val unit = ruleset.units.asSequence().firstOrNull {
-            entry -> entry.value.uniques.any {
-                it.startsWith("Can construct [$name]")
-            }
-        }?.key
-        if (unit != null) {
+        if (creatorExists)
             textList += FormattedLine()
-            textList += FormattedLine("{Can be constructed by} {$unit}", link="Unit/$unit")
-        }
+        for (unit in constructorUnits)
+            textList += FormattedLine("{Can be constructed by} {$unit}", unit.makeLink())
+        for (unit in creatingUnits)
+            textList += FormattedLine("{Can be created instantly by} {$unit}", unit.makeLink())
 
         textList += Belief.getCivilopediaTextMatching(name, ruleset)
 
         return textList
+    }
+
+    private fun getConstructorUnits(ruleset: Ruleset): List<BaseUnit> {
+        //todo Why does this have to be so complicated? A unit's "Can build [Land] improvements on tiles"
+        //     creates the _justified_ expectation that an improvement it can build _will_ have
+        //     `matchesFilter("Land")==true` - but that's not the case.
+        //     A kludge, but for display purposes the test below is meaningful enough.
+        if (hasUnique(UniqueType.Unbuildable)) return emptyList()
+
+        val canOnlyFilters = getMatchingUniques(UniqueType.CanOnlyBeBuiltOnTile)
+            .map { it.params[0].run { if (this == "Coastal") "Land" else this } }.toSet()
+        val cannotFilters = getMatchingUniques(UniqueType.CannotBuildOnTile).map { it.params[0] }.toSet()
+        val resourcesImprovedByThis = ruleset.tileResources.values.filter { it.isImprovedBy(name) }
+
+        val expandedCanBeBuiltOn = sequence {
+            yieldAll(terrainsCanBeBuiltOn)
+            yieldAll(terrainsCanBeBuiltOn.asSequence().mapNotNull { ruleset.terrains[it] }.flatMap { it.occursOn.asSequence() })
+            if (hasUnique(UniqueType.CanOnlyImproveResource))
+                yieldAll(resourcesImprovedByThis.asSequence().flatMap { it.terrainsCanBeFoundOn })
+            if (name.startsWith(Constants.remove)) name.removePrefix(Constants.remove).apply {
+                yield(this)
+                ruleset.terrains[this]?.occursOn?.let { yieldAll(it) }
+                ruleset.tileImprovements[this]?.terrainsCanBeBuiltOn?.let { yieldAll(it) }
+            }
+        }.filter { it !in cannotFilters }.toMutableSet()
+
+        val terrainsCanBeBuiltOnTypes = sequence {
+            yieldAll(expandedCanBeBuiltOn.asSequence()
+                .mapNotNull { ruleset.terrains[it]?.type })
+            yieldAll(TerrainType.values().asSequence()
+                .filter { it.name in expandedCanBeBuiltOn })
+        }.filter { it.name !in cannotFilters }.toMutableSet()
+
+        if (canOnlyFilters.isNotEmpty() && canOnlyFilters.intersect(expandedCanBeBuiltOn).isEmpty()) {
+            expandedCanBeBuiltOn.clear()
+            if (terrainsCanBeBuiltOnTypes.none { it.name in canOnlyFilters })
+                terrainsCanBeBuiltOnTypes.clear()
+        }
+
+        fun matchesBuildImprovementsFilter(filter: String) =
+            matchesFilter(filter) ||
+            filter in expandedCanBeBuiltOn ||
+            terrainsCanBeBuiltOnTypes.any { it.name == filter }
+
+        return ruleset.units.values.asSequence()
+            .filter { unit ->
+                turnsToBuild != 0
+                    && unit.getMatchingUniques(UniqueType.BuildImprovements, StateForConditionals.IgnoreConditionals)
+                        .any { matchesBuildImprovementsFilter(it.params[0]) }
+                || unit.hasUnique(UniqueType.CreateWaterImprovements)
+                    && terrainsCanBeBuiltOnTypes.contains(TerrainType.Water)
+            }.toList()
+    }
+
+    private fun getCreatingUnits(ruleset: Ruleset): List<BaseUnit> {
+        return ruleset.units.values.asSequence()
+            .filter { unit ->
+                unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit, StateForConditionals.IgnoreConditionals)
+                    .any { it.params[0] == name }
+            }.toList()
     }
 }
