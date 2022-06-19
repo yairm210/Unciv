@@ -197,6 +197,9 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 state.ourCombatant != null && state.ourCombatant.getHealth() > condition.params[0].toInt()
             UniqueType.ConditionalBelowHP ->
                 state.ourCombatant != null && state.ourCombatant.getHealth() < condition.params[0].toInt()
+            UniqueType.ConditionalHasNotUsedOtherActions ->
+                state.unit != null &&
+                state.unit.run { religiousActionsUnitCanDo().all { abilityUsesLeft[it] == maxAbilityUses[it] } }
 
             UniqueType.ConditionalInTiles ->
                 relevantTile?.matchesFilter(condition.params[0], state.civInfo) == true

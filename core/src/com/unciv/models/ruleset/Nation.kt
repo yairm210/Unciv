@@ -10,6 +10,7 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.squareBraceRegex
 import com.unciv.models.translations.tr
+import com.unciv.ui.civilopedia.CivilopediaScreen.Companion.showReligionInCivilopedia
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.extensions.colorFromRGB
@@ -182,11 +183,12 @@ class Nation : RulesetObject() {
     }
 
     private fun getUniqueBuildingsText(ruleset: Ruleset) = sequence {
+        val religionEnabled = showReligionInCivilopedia(ruleset)
         for (building in ruleset.buildings.values) {
             when {
                 building.uniqueTo != name -> continue
                 building.hasUnique(UniqueType.HiddenFromCivilopedia) -> continue
-                UncivGame.Current.gameInfo != null && !UncivGame.Current.gameInfo!!.isReligionEnabled() && building.hasUnique(UniqueType.HiddenWithoutReligion) -> continue // This seems consistent with existing behaviour of CivilopediaScreen's init.<locals>.shouldBeDisplayed(), and Technology().getEnabledUnits(). Otherwise there are broken links in the Civilopedia (E.G. to "Pyramid" and "Shrine", from "The Maya").
+                religionEnabled && building.hasUnique(UniqueType.HiddenWithoutReligion) -> continue
             }
             yield(FormattedLine("{${building.name}} -", link=building.makeLink()))
             if (building.replaces != null && ruleset.buildings.containsKey(building.replaces!!)) {
