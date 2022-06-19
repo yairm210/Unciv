@@ -20,6 +20,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.RecreateOnResize
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.extensions.colorFromRGB
 import com.unciv.ui.utils.extensions.onClick
@@ -35,10 +36,9 @@ import com.unciv.ui.utils.AutoScrollPane as ScrollPane
  */
 class CivilopediaScreen(
     val ruleset: Ruleset,
-    val previousScreen: BaseScreen,
     category: CivilopediaCategories = CivilopediaCategories.Tutorial,
     link: String = ""
-) : BaseScreen() {
+) : BaseScreen(), RecreateOnResize {
 
     /** Container collecting data per Civilopedia entry
      * @param name From [Ruleset] object [INamed.name]
@@ -181,11 +181,10 @@ class CivilopediaScreen(
 
     init {
         val imageSize = 50f
-        globalShortcuts.add(KeyCharAndCode.BACK) { game.setScreen(previousScreen) }
+        globalShortcuts.add(KeyCharAndCode.BACK) { game.popScreen() }
 
-        val curGameInfo = game.gameInfo
-        val religionEnabled = if (curGameInfo != null) curGameInfo.isReligionEnabled() else ruleset.beliefs.isNotEmpty()
-        val victoryTypes = if (curGameInfo != null) curGameInfo.gameParameters.victoryTypes else emptyList()
+        val religionEnabled = showReligionInCivilopedia(ruleset)
+        val victoryTypes = game.gameInfo?.gameParameters?.victoryTypes ?: ruleset.victories.keys
 
         fun shouldBeDisplayed(obj: IHasUniques): Boolean {
             return when {
@@ -213,6 +212,7 @@ class CivilopediaScreen(
                 CivilopediaCategories.Belief -> (ruleset.beliefs.values.asSequence() +
                         Belief.getCivilopediaReligionEntry(ruleset)).toList()
                 CivilopediaCategories.Era -> ruleset.eras.values
+                CivilopediaCategories.Speed -> ruleset.speeds.values
             }
 
         for (loopCategory in CivilopediaCategories.values()) {
@@ -252,7 +252,7 @@ class CivilopediaScreen(
 
         val goToGameButton = Constants.close.toTextButton()
         goToGameButton.onClick {
-            game.setScreen(previousScreen)
+            game.popScreen()
         }
 
         val topTable = Table()
@@ -317,9 +317,16 @@ class CivilopediaScreen(
         selectEntry(entryIndex.keys.drop(newIndex).first())
     }
 
-    override fun resize(width: Int, height: Int) {
-        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
-            game.setScreen(CivilopediaScreen(ruleset, previousScreen, currentCategory, currentEntry))
+    override fun recreate(): BaseScreen = CivilopediaScreen(ruleset, currentCategory, currentEntry)
+
+    companion object {
+        /** Test whether to show Religion-specific items, does not require a game to be running */
+        // Here we decide whether to show Religion in Civilopedia from Main Menu (no gameInfo loaded)
+        fun showReligionInCivilopedia(ruleset: Ruleset? = null) = when {
+            UncivGame.isCurrentInitialized() && UncivGame.Current.gameInfo != null ->
+                UncivGame.Current.gameInfo!!.isReligionEnabled()
+            ruleset != null -> ruleset.beliefs.isNotEmpty()
+            else -> true
         }
     }
 }

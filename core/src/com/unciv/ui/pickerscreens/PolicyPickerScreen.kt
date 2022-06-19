@@ -12,7 +12,9 @@ import com.unciv.models.ruleset.Policy.PolicyBranchType
 import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.RecreateOnResize
 import com.unciv.ui.utils.extensions.addSeparator
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.enable
@@ -24,7 +26,7 @@ import kotlin.math.min
 
 
 class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo = worldScreen.viewingCiv)
-    : PickerScreen() {
+    : PickerScreen(), RecreateOnResize {
     internal val viewingCiv: CivilizationInfo = civInfo
     private var pickedPolicy: Policy? = null
 
@@ -45,8 +47,6 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
 
         if (policies.freePolicies > 0 && policies.canAdoptPolicy())
             closeButton.disable()
-        else
-            globalShortcuts.add(KeyCharAndCode.BACK) { UncivGame.Current.resetToWorldScreen() }
 
         rightSideButton.onClick(UncivSound.Policy) {
             val policy = pickedPolicy!!
@@ -58,13 +58,13 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
 
             // If we've moved to another screen in the meantime (great person pick, victory screen) ignore this
             if (game.screen !is PolicyPickerScreen || !policies.canAdoptPolicy()) {
-                game.resetToWorldScreen()
+                game.popScreen()
             } else {
                 val policyScreen = PolicyPickerScreen(worldScreen)
                 policyScreen.scrollPane.scrollPercentX = scrollPane.scrollPercentX
                 policyScreen.scrollPane.scrollPercentY = scrollPane.scrollPercentY
                 policyScreen.scrollPane.updateVisualScroll()
-                game.setScreen(policyScreen)  // update policies
+                game.replaceCurrentScreen(policyScreen)  // update policies
             }
         }
 
@@ -148,7 +148,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         if (viewingCiv.gameInfo.gameParameters.godMode && pickedPolicy == policy
                 && viewingCiv.policies.isAdoptable(policy)) {
             viewingCiv.policies.adopt(policy)
-            game.setScreen(PolicyPickerScreen(worldScreen))
+            game.replaceCurrentScreen(PolicyPickerScreen(worldScreen))
         }
         pickedPolicy = policy
 
@@ -211,9 +211,5 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         return policyButton
     }
 
-    override fun resize(width: Int, height: Int) {
-        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
-            game.setScreen(PolicyPickerScreen(worldScreen,viewingCiv))
-        }
-    }
+    override fun recreate(): BaseScreen = PolicyPickerScreen(worldScreen, viewingCiv)
 }

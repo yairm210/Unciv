@@ -26,6 +26,7 @@ import com.unciv.ui.crashhandling.CrashScreen
 import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.multiplayer.MultiplayerHelpers
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.extensions.center
@@ -38,6 +39,7 @@ import com.unciv.utils.concurrency.withGLContext
 import com.unciv.utils.concurrency.withThreadPoolContext
 import com.unciv.utils.debug
 import java.util.*
+import kotlin.collections.ArrayDeque
 
 class UncivGame(parameters: UncivGameParameters) : Game() {
     // we need this secondary constructor because Java code for iOS can't handle Kotlin lambda parameters
@@ -85,8 +87,9 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     private val wrappedCrashHandlingRender = { super.render() }.wrapCrashHandlingUnit()
     // Stored here because I imagine that might be slightly faster than allocating for a new lambda every time, and the render loop is possibly one of the only places where that could have a significant impact.
 
-
     val translations = Translations()
+
+    val screenStack = ArrayDeque<BaseScreen>()
 
     override fun create() {
         isInitialized = false // this could be on reload, therefore we need to keep setting this to false
@@ -155,8 +158,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
                 ImageGetter.ruleset = RulesetCache.getVanillaRuleset() // so that we can enter the map editor without having to load a game first
 
                 when {
-                    settings.isFreshlyCreated -> setScreen(LanguagePickerScreen())
-                    deepLinkedMultiplayerGame == null -> setScreen(MainMenuScreen())
+                    settings.isFreshlyCreated -> pushScreen(LanguagePickerScreen())
+                    deepLinkedMultiplayerGame == null -> pushScreen(MainMenuScreen())
                     else -> tryLoadDeepLinkedGame()
                 }
 
@@ -165,7 +168,15 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         }
     }
 
-    /** Loads a game, initializing the state of all important modules. Automatically runs on the appropriate thread. */
+    /**
+     * Loads a game, [disposing][BaseScreen.dispose] all screens.
+     *
+     * Initializes the state of all important modules.
+     *
+     * Automatically runs on the appropriate thread.
+     *
+     * Sets the returned `WorldScreen` as the only active screen.
+     */
     suspend fun loadGame(newGameInfo: GameInfo): WorldScreen = withThreadPoolContext toplevel@{
         val prevGameInfo = gameInfo
         gameInfo = newGameInfo
@@ -175,25 +186,32 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         val isLoadingSameGame = worldScreen != null && prevGameInfo != null && prevGameInfo.gameId == newGameInfo.gameId
         val worldScreenRestoreState = if (isLoadingSameGame) worldScreen!!.getRestoreState() else null
 
-        withGLContext { setScreen(LoadingScreen(getScreen())) }
-
-        worldScreen?.dispose()
-        worldScreen = null // This allows the GC to collect our old WorldScreen, otherwise we keep two WorldScreens in memory.
+        withGLContext {
+            // this is not merged with the below GL context block so that our loading screen gets a chance to show - otherwise
+            // we do it all in one swoop on the same thread and the application just "freezes" without loading screen for the duration.
+            setScreen(LoadingScreen(getScreen()))
+        }
 
         return@toplevel withGLContext {
-            val worldScreen = WorldScreen(newGameInfo, newGameInfo.getPlayerToViewAs(), worldScreenRestoreState)
+            for (screen in screenStack) screen.dispose()
+            screenStack.clear()
+
+            worldScreen = null // This allows the GC to collect our old WorldScreen, otherwise we keep two WorldScreens in memory.
+            val newWorldScreen = WorldScreen(newGameInfo, newGameInfo.getPlayerToViewAs(), worldScreenRestoreState)
+            worldScreen = newWorldScreen
 
             val moreThanOnePlayer = newGameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1
             val isSingleplayer = !newGameInfo.gameParameters.isOnlineMultiplayer
             val screenToShow = if (moreThanOnePlayer && isSingleplayer) {
-                PlayerReadyScreen(worldScreen)
+                PlayerReadyScreen(newWorldScreen)
             } else {
-                worldScreen
+                newWorldScreen
             }
 
+            screenStack.addLast(screenToShow)
             setScreen(screenToShow)
 
-            return@withGLContext worldScreen
+            return@withGLContext newWorldScreen
         }
     }
 
@@ -223,18 +241,11 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         loadGame(curGameInfo)
     }
 
-    private data class NewScreens(val screenToShow: BaseScreen, val worldScreen: WorldScreen) {
-        constructor(worldScreen: WorldScreen) : this(worldScreen, worldScreen)
-    }
-
     /**
-     * Sets the screen of the game and automatically disposes the old screen as long as it isn't the world screen.
-     *
-     * @param screen must be a subclass of [BaseScreen].
+     * @throws UnsupportedOperationException Use pushScreen or replaceCurrentScreen instead
      */
     override fun setScreen(screen: Screen) {
-        if (screen !is BaseScreen) throw IllegalArgumentException("Call to setScreen with screen that does not inherit BaseScreen: " + screen.javaClass.simpleName)
-        setScreen(screen)
+        throw UnsupportedOperationException("Use pushScreen or replaceCurrentScreen instead")
     }
 
     override fun getScreen(): BaseScreen? {
@@ -242,48 +253,82 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         return if (curScreen == null) { null } else { curScreen as BaseScreen }
     }
 
-    /** Sets the screen of the game and automatically [disposes][Screen.dispose] the old screen as long as it isn't the world screen. */
-    fun setScreen(newScreen: BaseScreen) {
-        if (newScreen is WorldScreen) {
-            debug(
-                "Setting new world screen: gameId: %s, turn: %s, curCiv: %s",
-                newScreen.gameInfo.gameId, newScreen.gameInfo.turns, newScreen.gameInfo.currentPlayer
-            )
-            if (newScreen != worldScreen) worldScreen?.dispose()
-            worldScreen = newScreen
-            newScreen.shouldUpdate = true
-            Gdx.graphics.requestRendering()
-        } else {
-            debug("Setting new screen: %s", newScreen)
-        }
-
-        val oldScreen = screen
+    private fun setScreen(newScreen: BaseScreen) {
+        debug("Setting new screen: %s, screenStack: %s", newScreen, screenStack)
         Gdx.input.inputProcessor = newScreen.stage
         super.setScreen(newScreen) // This can set the screen to the policy picker or tech picker screen, so the input processor must be set before
-        if (oldScreen !is WorldScreen) { // we want to keep the world screen around, because it's expensive to re-create it
-            oldScreen?.dispose()
+        if (newScreen is WorldScreen) {
+            newScreen.shouldUpdate = true
         }
+        Gdx.graphics.requestRendering()
+    }
+
+    /** Adds a screen to be displayed instead of the current screen, with an option to go back to the previous screen by calling [popScreen] */
+    fun pushScreen(newScreen: BaseScreen) {
+        screenStack.addLast(newScreen)
+        setScreen(newScreen)
     }
 
     /**
-     * Resets the game to the stored world screen and automatically [disposes][Screen.dispose] the old screen.
+     * Pops the currently displayed screen off the screen stack and shows the previous screen.
+     *
+     * If there is no other screen than the current, will ask the user to quit the game and return null.
+     *
+     * Automatically [disposes][BaseScreen.dispose] the old screen.
+     *
+     * @return the new screen
      */
-    fun resetToWorldScreen() {
-        setScreen(worldScreen!!)
+    fun popScreen(): BaseScreen? {
+        if (screenStack.size == 1) {
+            musicController.pause()
+            ConfirmPopup(
+                screen = screenStack.last(),
+                question = "Do you want to exit the game?",
+                confirmText = "Exit",
+                restoreDefault = { musicController.resume() },
+                action = {
+                    Gdx.app.exit()
+
+                }
+            ).open(force = true)
+            return null
+        }
+        val oldScreen = screenStack.removeLast()
+        val newScreen = screenStack.last()
+        setScreen(newScreen)
+        oldScreen.dispose()
+        return newScreen
+    }
+
+    /** Replaces the current screen with a new one. Automatically [disposes][BaseScreen.dispose] the old screen. */
+    fun replaceCurrentScreen(newScreen: BaseScreen) {
+        val oldScreen = screenStack.removeLast()
+        screenStack.addLast(newScreen)
+        setScreen(newScreen)
+        oldScreen.dispose()
+    }
+
+    /** Resets the game to the stored world screen and automatically [disposes][Screen.dispose] all other screens. */
+    fun resetToWorldScreen(): WorldScreen {
+        for (screen in screenStack.filter { it !is WorldScreen}) screen.dispose()
+        screenStack.removeAll { it !is WorldScreen }
+        val worldScreen = screenStack.last()
+        setScreen(worldScreen)
+        return worldScreen as WorldScreen
     }
 
     private fun tryLoadDeepLinkedGame() = Concurrency.run("LoadDeepLinkedGame") {
         if (deepLinkedMultiplayerGame == null) return@run
 
         launchOnGLThread {
-            setScreen(LoadingScreen(getScreen()!!))
+            pushScreen(LoadingScreen(getScreen()!!))
         }
         try {
             onlineMultiplayer.loadGame(deepLinkedMultiplayerGame!!)
         } catch (ex: Exception) {
             launchOnGLThread {
                 val mainMenu = MainMenuScreen()
-                setScreen(mainMenu)
+                replaceCurrentScreen(mainMenu)
                 val popup = Popup(mainMenu)
                 popup.addGoodSizedLabel(MultiplayerHelpers.getLoadExceptionMessage(ex))
                 popup.row()
@@ -376,7 +421,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             gameSaver.requestAutoSaveUnCloned(curGameInfo) // Can save gameInfo directly because the user can't modify it on the MainMenuScreen
         }
         val mainMenuScreen = MainMenuScreen()
-        setScreen(mainMenuScreen)
+        pushScreen(mainMenuScreen)
         return mainMenuScreen
     }
 

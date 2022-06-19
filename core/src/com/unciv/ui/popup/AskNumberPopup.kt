@@ -116,6 +116,7 @@ class AskNumberPopup(
         val errorLabel = errorText.toLabel()
         errorLabel.color = Color.RED
 
+        addCloseButton()
         addOKButton(
             validate = {
                 val errorFound = !isValidInt(nameField.text) || !validate(nameField.text.toInt())
@@ -125,7 +126,6 @@ class AskNumberPopup(
         ) {
             actionOnOk(nameField.text.toInt())
         }
-        addCloseButton()
         equalizeLastTwoButtonWidths()
 
         keyboardFocus = nameField

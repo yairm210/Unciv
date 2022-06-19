@@ -226,7 +226,7 @@ class WonderOverviewTab(
 
             val image = wonder.getImage()
             image?.onClick {
-                UncivGame.Current.setScreen(CivilopediaScreen(ruleSet, overviewScreen, wonder.category, wonder.name))
+                UncivGame.Current.pushScreen(CivilopediaScreen(ruleSet, wonder.category, wonder.name))
             }
             // Terrain image padding is a bit unpredictable, they need ~5f more. Ensure equal line spacing on name, not image:
             add(image).pad(0f, 10f, 0f, 10f)
@@ -238,11 +238,8 @@ class WonderOverviewTab(
                 val locationLabel = locationText.toLabel()
                 if (wonder.location != null)
                     locationLabel.onClick{
-                        val worldScreen = UncivGame.Current.worldScreen
-                        if (worldScreen != null) {
-                            UncivGame.Current.resetToWorldScreen()
-                            worldScreen.mapHolder.setCenterPosition(wonder.location.position)
-                        }
+                        val worldScreen = UncivGame.Current.resetToWorldScreen()
+                        worldScreen.mapHolder.setCenterPosition(wonder.location.position)
                     }
                 add(locationLabel).fillY()
             }

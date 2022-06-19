@@ -16,6 +16,7 @@ import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.extensions.surroundWithCircle
 import java.io.File
 
+
 /** Encapsulates the knowledge on how to get an icon for each of the Civilopedia categories */
 object CivilopediaImageGetters {
     private const val policyIconFolder = "PolicyIcons"
@@ -188,6 +189,11 @@ enum class CivilopediaCategories (
         getImage = null,
         KeyCharAndCode('D'),
         "OtherIcons/Tyrannosaurus"
+    ),
+    Speed ("Speeds", false,
+        getImage = null,
+        KeyCharAndCode('S'),
+        "OtherIcons/Timer"
     );
 
     fun getByOffset(offset: Int) = values()[(ordinal + count + offset) % count]

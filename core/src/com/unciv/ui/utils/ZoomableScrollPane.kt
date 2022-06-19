@@ -1,10 +1,15 @@
 package com.unciv.ui.utils
 
+import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Rectangle
+import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.Action
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.badlogic.gdx.scenes.scene2d.utils.Cullable
@@ -187,6 +192,51 @@ open class ZoomableScrollPane(
                 onPanStopListener?.invoke()
             }
         }
+    }
+
+    private var scrollingTo: Vector2? = null
+    private var scrollingAction: Action? = null
+
+    fun isScrolling(): Boolean = scrollingAction != null && actions.any { it == scrollingAction }
+
+    /** Get the scrolling destination if currently scrolling, else the current scroll position. */
+    fun scrollingDestination(): Vector2 {
+        if (isScrolling())
+            return scrollingTo!!
+        else
+            return Vector2(scrollX, scrollY)
+    }
+
+    /** Scroll the pane to specified coordinates.
+     * @return `true` if scroll position got changed or started being changed, `false`
+     *   if already centered there or already scrolling there
+     */
+    fun scrollTo(x: Float, y: Float, immediately: Boolean = false): Boolean {
+        if (scrollingDestination() == Vector2(x, y)) return false
+
+        removeAction(scrollingAction)
+
+        if (immediately) {
+            scrollX = x
+            scrollY = y
+            updateVisualScroll()
+        } else {
+            val originalScrollX = scrollX
+            val originalScrollY = scrollY
+            scrollingTo = Vector2(x, y)
+            val action = object : FloatAction(0f, 1f, 0.4f) {
+                override fun update(percent: Float) {
+                    scrollX = scrollingTo!!.x * percent + originalScrollX * (1 - percent)
+                    scrollY = scrollingTo!!.y * percent + originalScrollY * (1 - percent)
+                    updateVisualScroll()
+                }
+            }
+            action.interpolation = Interpolation.sine
+            addAction(action)
+            scrollingAction = action
+        }
+
+        return true
     }
 
     /** @return the currently scrolled-to viewport of the whole scrollable area */

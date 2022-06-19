@@ -48,6 +48,7 @@ class AskTextPopup(
         val errorLabel = errorText.toLabel()
         errorLabel.color = Color.RED
 
+        addCloseButton()
         addOKButton(
             validate = {
                 val errorFound = nameField.text == "" || !validate(nameField.text)
@@ -57,7 +58,6 @@ class AskTextPopup(
         ) {
             actionOnOk(nameField.text)
         }
-        addCloseButton()
         equalizeLastTwoButtonWidths()
         keyboardFocus = nameField
     }

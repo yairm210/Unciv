@@ -7,10 +7,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.models.ruleset.Difficulty
-import com.unciv.models.ruleset.Nation
-import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.testing.GdxTestRunner
 import org.junit.Assert
@@ -35,10 +32,11 @@ class UnitMovementAlgorithmsTests {
         civInfo.tech.techsResearched.addAll(ruleSet.technologies.keys)
         civInfo.tech.embarkedUnitsCanEnterOcean = true
         civInfo.tech.unitsCanEmbark = true
-        civInfo.nation = Nation().apply { name = "My nation" }
         civInfo.gameInfo = GameInfo()
         civInfo.gameInfo.ruleSet = ruleSet
         civInfo.gameInfo.difficultyObject = Difficulty()
+        civInfo.gameInfo.speed = ruleSet.speeds[Speed.DEFAULTFORSIMULATION]!!
+        civInfo.nation = Nation().apply { name = "My nation" }
         civInfo.gameInfo.civilizations.add(civInfo)
         unit.civInfo = civInfo
         unit.owner = civInfo.civName

@@ -465,6 +465,7 @@ class MapGenerator(val ruleset: Ruleset) {
     /**
      * [MapParameters.tilesPerBiomeArea] to set biomes size
      * [MapParameters.temperatureExtremeness] to favor very high and very low temperatures
+     * [MapParameters.temperatureShift] to shift temperature towards cold (negative) or hot (positive)
      */
     private fun applyHumidityAndTemperature(tileMap: TileMap) {
         val humiditySeed = randomness.RNG.nextInt().toDouble()
@@ -474,6 +475,8 @@ class MapGenerator(val ruleset: Ruleset) {
 
         val scale = tileMap.mapParameters.tilesPerBiomeArea.toDouble()
         val temperatureExtremeness = tileMap.mapParameters.temperatureExtremeness
+        val temperatureShift = tileMap.mapParameters.temperatureShift
+        val humidityShift = if (temperatureShift > 0) -temperatureShift else 0f
 
         // List is OK here as it's only sequentially scanned
         val limitsMap: List<TerrainOccursRange> =
@@ -491,12 +494,14 @@ class MapGenerator(val ruleset: Ruleset) {
             if (tile.isWater || tile.baseTerrain in elevationTerrains)
                 continue
 
-            val humidity = (randomness.getPerlinNoise(tile, humiditySeed, scale = scale, nOctaves = 1) + 1.0) / 2.0
+            val humidityRandom = randomness.getPerlinNoise(tile, humiditySeed, scale = scale, nOctaves = 1)
+            val humidity = ((humidityRandom + 1.0) / 2.0 + humidityShift).coerceIn(0.0..1.0)
 
             val randomTemperature = randomness.getPerlinNoise(tile, temperatureSeed, scale = scale, nOctaves = 1)
             val latitudeTemperature = 1.0 - 2.0 * abs(tile.latitude) / tileMap.maxLatitude
             var temperature = (5.0 * latitudeTemperature + randomTemperature) / 6.0
             temperature = abs(temperature).pow(1.0 - temperatureExtremeness) * temperature.sign
+            temperature = (temperature + temperatureShift).coerceIn(-1.0..1.0)
 
             // Old, static map generation rules - necessary for existing base ruleset mods to continue to function
             if (noTerrainUniques) {
