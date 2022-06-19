@@ -5,7 +5,6 @@ import com.badlogic.gdx.Files.FileType
 import com.badlogic.gdx.audio.Music
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
-import com.unciv.logic.city.CityInfo
 import com.unciv.models.metadata.GameSettings
 import com.unciv.logic.multiplayer.storage.DropBox
 import com.unciv.utils.Log
@@ -37,7 +36,6 @@ open class MusicController {
         private const val defaultFadingStepOwn = 1f / (defaultFadeDuration * ticksPerSecondOwn)
         private const val musicHistorySize = 8      // number of names to keep to avoid playing the same in short succession
         val fileExtensions = listOf("mp3", "ogg", "wav")   // All Gdx formats
-        private var playingCitySound: Music? = null
 
         private fun getFile(path: String) =
             if (musicLocation == FileType.External && Gdx.files.isExternalStorageAvailable)
@@ -481,54 +479,6 @@ open class MusicController {
     /** @return `true` if Thatched Villagers is present */
     fun isDefaultFileAvailable() =
         getFile(musicFallbackLocalName).exists()
-
-    //endregion
-
-    //region city sounds
-
-    private fun getSoundFolders() = sequence {
-        val visualMods = UncivGame.Current.settings.visualMods
-        val mods = UncivGame.Current.gameInfo!!.gameParameters.getModsAndBaseRuleset()
-        yieldAll(
-            (visualMods + mods).asSequence()
-                .map { getFile("mods")
-                    .child(it).child("sounds") }
-        )
-        yield(getFile("sounds"))
-    }
-
-    private fun getSoundFile(fileName: String): FileHandle? = getSoundFolders()
-        .filter { it.exists() && it.isDirectory }
-        .flatMap { it.list().asSequence() }
-        // ensure only normal files with common sound extension
-        .filter { it.exists() && !it.isDirectory && it.extension() in fileExtensions }
-        .firstOrNull { it.name().contains(fileName) }
-
-    fun playCitySound(city: CityInfo) {
-        if (playingCitySound != null)
-            stopCitySound()
-        try {
-            val file = FileHandle(getSoundFile(city.civInfo.getEra().citySound).toString())
-            playingCitySound = Gdx.audio.newMusic(file)
-
-            playingCitySound?.volume = UncivGame.Current.settings.citySoundsVolume
-            playingCitySound?.isLooping = true
-            playingCitySound?.play()
-        } catch (ex: Throwable) {
-            playingCitySound?.dispose()
-            Log.error("Error while playing city sound: ", ex)
-        }
-    }
-
-    fun stopCitySound() {
-        try {
-            if (playingCitySound?.isPlaying == true)
-                playingCitySound?.stop()
-        } catch (ex: Throwable) {
-            playingCitySound?.dispose()
-            Log.error("Error while stopping city sound: ", ex)
-        }
-    }
 
     //endregion
 }
