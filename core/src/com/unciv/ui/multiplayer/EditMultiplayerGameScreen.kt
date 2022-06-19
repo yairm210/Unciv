@@ -20,7 +20,7 @@ import com.unciv.utils.concurrency.launchOnGLThread
 
 /** Subscreen of MultiplayerScreen to edit and delete saves
  * backScreen is used for getting back to the MultiplayerScreen so it doesn't have to be created over and over again */
-class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame) : PickerScreen() {
+class EditMultiplayerGameScreen(val multiplayerGame: OnlineMultiplayerGame) : PickerScreen() {
     init {
         val textField = UncivTextField.create("Game name", multiplayerGame.name)
 
@@ -79,7 +79,7 @@ class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame) 
             }
         }
 
-        if (multiplayerGame.preview == null) {
+        if (multiplayerGame.status == null) {
             textField.isDisabled = true
             textField.color = Color.GRAY
             rightSideButton.disable()

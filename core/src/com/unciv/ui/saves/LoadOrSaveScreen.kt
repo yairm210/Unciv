@@ -110,7 +110,7 @@ abstract class LoadOrSaveScreen(
         Concurrency.run("LoadMetaData") { // Even loading the game to get its metadata can take a long time on older phones
             val textToSet = try {
                 val savedAt = Date(saveGameFile.lastModified())
-                val game = game.files.loadGamePreviewFromFile(saveGameFile)
+                val game = game.files.loadMultiplayerGameStatusFromFile(saveGameFile)
                 val playerCivNames = game.civilizations
                     .filter { it.isPlayerCivilization() }.joinToString { it.civName.tr() }
                 val mods = if (game.gameParameters.mods.isEmpty()) ""

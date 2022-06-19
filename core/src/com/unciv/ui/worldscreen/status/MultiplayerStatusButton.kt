@@ -53,7 +53,7 @@ class MultiplayerStatusButton(
 
         updateTurnIndicator(flash = false) // no flash since this is just the initial construction
         events.receive(MultiplayerGameUpdated::class) {
-            val shouldUpdate = if (it.preview.isUsersTurn()) {
+            val shouldUpdate = if (it.status.isUsersTurn()) {
                 gameNamesWithCurrentTurn.add(it.name)
             } else {
                 gameNamesWithCurrentTurn.remove(it.name)
@@ -117,7 +117,7 @@ class MultiplayerStatusButton(
     private fun findGamesToBeNotifiedAbout(games: Iterable<OnlineMultiplayerGame>): MutableSet<String> {
         return games
             .filter { it.name != curGameName }
-            .filter { it.preview?.isUsersTurn() == true }
+            .filter { it.status?.isUsersTurn() == true }
             .map { it.name }
             .toMutableSet()
     }

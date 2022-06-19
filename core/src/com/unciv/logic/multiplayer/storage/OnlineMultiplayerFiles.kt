@@ -3,7 +3,7 @@ package com.unciv.logic.multiplayer.storage
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
-import com.unciv.logic.GameInfoPreview
+import com.unciv.logic.multiplayer.MultiplayerGameStatus
 import com.unciv.logic.UncivFiles
 
 /**
@@ -27,18 +27,18 @@ class OnlineMultiplayerFiles(
     }
 
     /** @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time */
-    suspend fun tryUploadGame(gameInfo: GameInfo, withPreview: Boolean) {
+    suspend fun tryUploadGame(gameInfo: GameInfo, withGameStatus: Boolean) {
         val zippedGameInfo = UncivFiles.gameInfoToString(gameInfo, forceZip = true)
         fileStorage().saveFileData(gameInfo.gameId, zippedGameInfo, true)
 
-        // We upload the preview after the game because otherwise the following race condition will happen:
-        // Current player ends turn -> Uploads Game Preview
-        // Other player checks for updates -> Downloads Game Preview
-        // Current player starts game upload
+        // We upload the multiplayer game info after the full game info because otherwise the following race condition will happen:
+        // Current player ends turn -> Uploads multiplayer game info
+        // Other player checks for updates -> Downloads multiplayer game info
+        // Current player starts full game info upload
         // Other player sees update in preview -> Downloads game, gets old state
         // Current player finishes uploading game
-        if (withPreview) {
-            tryUploadGamePreview(gameInfo.asPreview())
+        if (withGameStatus) {
+            tryUploadGameStatus(MultiplayerGameStatus(gameInfo))
         }
     }
 
@@ -50,11 +50,10 @@ class OnlineMultiplayerFiles(
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
      *
      * @see tryUploadGame
-     * @see GameInfo.asPreview
      */
-    suspend fun tryUploadGamePreview(gameInfo: GameInfoPreview) {
-        val zippedGameInfo = UncivFiles.gameInfoToString(gameInfo)
-        fileStorage().saveFileData("${gameInfo.gameId}_Preview", zippedGameInfo, true)
+    suspend fun tryUploadGameStatus(status: MultiplayerGameStatus) {
+        val zippedGameInfo = UncivFiles.multiplayerGameStatusToString(status)
+        fileStorage().saveFileData("${status.gameId}_Preview", zippedGameInfo, true)
     }
 
     /**
@@ -70,8 +69,8 @@ class OnlineMultiplayerFiles(
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
      * @throws FileNotFoundException if the file can't be found
      */
-    suspend fun tryDownloadGamePreview(gameId: String): GameInfoPreview {
+    suspend fun tryDownloadGameStatus(gameId: String): MultiplayerGameStatus {
         val zippedGameInfo = fileStorage().loadFileData("${gameId}_Preview")
-        return UncivFiles.gameInfoPreviewFromString(zippedGameInfo)
+        return UncivFiles.multiplayerGameStatusFromString(zippedGameInfo)
     }
 }

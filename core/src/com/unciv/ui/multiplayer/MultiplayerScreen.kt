@@ -97,7 +97,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
     fun createEditButton(): TextButton {
         val btn = editButtonText.toTextButton().apply { disable() }
         btn.onClick {
-            game.pushScreen(EditMultiplayerGameInfoScreen(selectedGame!!))
+            game.pushScreen(EditMultiplayerGameScreen(selectedGame!!))
         }
         return btn
     }
@@ -105,9 +105,9 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
     fun createCopyGameIdButton(): TextButton {
         val btn = copyGameIdText.toTextButton().apply { disable() }
         btn.onClick {
-            val gameInfo = selectedGame?.preview
-            if (gameInfo != null) {
-                Gdx.app.clipboard.contents = gameInfo.gameId
+            val status = selectedGame?.status
+            if (status != null) {
+                Gdx.app.clipboard.contents = status.gameId
                 ToastPopup("Game ID copied to clipboard!", this)
             }
         }
@@ -186,7 +186,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
 
         selectedGame = multiplayerGame
 
-        if (multiplayerGame.preview != null) {
+        if (multiplayerGame.status != null) {
             copyGameIdButton.enable()
         } else {
             copyGameIdButton.disable()

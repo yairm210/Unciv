@@ -43,10 +43,10 @@ object MultiplayerHelpers {
         }
         val lastUpdate = multiplayerGame.lastUpdate
         descriptionText.appendLine("Last refresh: [${Duration.between(lastUpdate, Instant.now()).formatShort()}] ago".tr())
-        val preview = multiplayerGame.preview
-        if (preview?.currentPlayer != null) {
-            val currentTurnStartTime = Instant.ofEpochMilli(preview.currentTurnStartTime)
-            descriptionText.appendLine("Current Turn: [${preview.currentPlayer}] since [${Duration.between(currentTurnStartTime, Instant.now()).formatShort()}] ago".tr())
+        val status = multiplayerGame.status
+        if (status?.currentPlayer != null) {
+            val currentTurnStartTime = Instant.ofEpochMilli(status.currentTurnStartTime)
+            descriptionText.appendLine("Current Turn: [${status.currentPlayer}] since [${Duration.between(currentTurnStartTime, Instant.now()).formatShort()}] ago".tr())
         }
         return descriptionText
     }

@@ -193,8 +193,8 @@ class WorldScreen(
 
         if (gameInfo.gameParameters.isOnlineMultiplayer) {
             val gameId = gameInfo.gameId
-            events.receive(MultiplayerGameUpdated::class, { it.preview.gameId == gameId }) {
-                if (isNextTurnUpdateRunning() || game.onlineMultiplayer.hasLatestGameState(gameInfo, it.preview)) {
+            events.receive(MultiplayerGameUpdated::class, { it.status.gameId == gameId }) {
+                if (isNextTurnUpdateRunning() || game.onlineMultiplayer.hasLatestGameState(gameInfo, it.status)) {
                     return@receive
                 }
                 Concurrency.run("Load latest multiplayer state") {

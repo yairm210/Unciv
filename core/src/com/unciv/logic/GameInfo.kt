@@ -537,39 +537,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     }
 
     //endregion
-
-    fun asPreview() = GameInfoPreview(this)
 }
 
-/**
- * Reduced variant of GameInfo used for load preview and multiplayer saves.
- * Contains additional data for multiplayer settings.
- */
-class GameInfoPreview() {
-    var civilizations = mutableListOf<CivilizationInfoPreview>()
-    var difficulty = "Chieftain"
-    var gameParameters = GameParameters()
-    var turns = 0
-    var gameId = ""
-    var currentPlayer = ""
-    var currentTurnStartTime = 0L
-
-    /**
-     * Converts a GameInfo object (can be uninitialized) into a GameInfoPreview object.
-     * Sets all multiplayer settings to default.
-     */
-    constructor(gameInfo: GameInfo) : this() {
-        civilizations = gameInfo.getCivilizationsAsPreviews()
-        difficulty = gameInfo.difficulty
-        gameParameters = gameInfo.gameParameters
-        turns = gameInfo.turns
-        gameId = gameInfo.gameId
-        currentPlayer = gameInfo.currentPlayer
-        currentTurnStartTime = gameInfo.currentTurnStartTime
-    }
-
-    fun getCivilization(civName: String) = civilizations.first { it.civName == civName }
-}
 
 /** Class to use when parsing jsons if you only want the serialization [version]. */
 class GameInfoSerializationVersion : HasGameInfoSerializationVersion {

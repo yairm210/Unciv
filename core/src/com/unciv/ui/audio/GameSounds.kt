@@ -29,9 +29,9 @@ object GameSounds {
     }
 
     private fun playMultiplayerTurnNotification() {
-        events.receive(MultiplayerGameUpdated::class, { it.preview.isUsersTurn() }) {
+        events.receive(MultiplayerGameUpdated::class, { it.status.isUsersTurn() }) {
             if (UncivGame.isDeepLinkedGameLoading()) return@receive // This means we already arrived here through a turn notification, no need to notify again
-            val gameId = it.preview.gameId
+            val gameId = it.status.gameId
             val sound = if (UncivGame.isCurrentGame(gameId)) {
                 mpSettings.currentGameTurnNotificationSound
             } else {
