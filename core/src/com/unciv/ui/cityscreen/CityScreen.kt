@@ -1,10 +1,6 @@
 package com.unciv.ui.cityscreen
 
-import com.badlogic.gdx.Files
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.audio.Music
-import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -19,7 +15,6 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
-import com.unciv.ui.audio.CitySoundPlayer
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.map.TileGroupMap
@@ -35,7 +30,6 @@ import com.unciv.ui.utils.extensions.packIfNeeded
 import com.unciv.ui.utils.extensions.toTextButton
 import kotlin.collections.ArrayList
 import com.unciv.ui.worldscreen.WorldScreen
-import com.unciv.utils.Log
 
 class CityScreen(
     internal val city: CityInfo,
@@ -118,7 +112,7 @@ class CityScreen(
     // val should be OK as buying tiles is what changes this, and that would re-create the whole CityScreen
     private val nextTileToOwn = city.expansion.chooseNewTileToOwn()
 
-    val citySoundPlayer = UncivGame.Current.citySoundController
+    val citySoundPlayer = UncivGame.Current.musicController
 
     init {
         if (city.isWeLoveTheKingDayActive()) {
