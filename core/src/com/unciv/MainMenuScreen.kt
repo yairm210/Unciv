@@ -244,7 +244,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         }
         updateButton.keyShortcuts.add(Input.Keys.F2)
         updateButton.addTooltip(KeyCharAndCode(Input.Keys.F2), 20f)
-        updateButton.setPosition(20f , 70f)
+        updateButton.setPosition(20f , 80f)
         stage.addActor(updateButton)
     }
 
