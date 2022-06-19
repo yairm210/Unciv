@@ -3,6 +3,7 @@ package com.unciv.ui.options
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
@@ -191,9 +192,15 @@ open class SettingsSelect<T : Any>(
     settings: GameSettings
 ) {
     private val settingsProperty: KMutableProperty0<T> = setting.getProperty(settings)
-    private val label = labelText.toLabel()
+    private val label = createLabel(labelText)
     protected val refreshSelectBox = createSelectBox(items.toGdxArray(), settings)
     val items by refreshSelectBox::items
+
+    private fun createLabel(labelText: String): Label {
+        val selectLabel = labelText.toLabel()
+        selectLabel.wrap = true
+        return selectLabel
+    }
 
     private fun createSelectBox(initialItems: Array<SelectItem<T>>, settings: GameSettings): SelectBox<SelectItem<T>> {
         val selectBox = SelectBox<SelectItem<T>>(BaseScreen.skin)
@@ -215,7 +222,7 @@ open class SettingsSelect<T : Any>(
     }
 
     fun addTo(table: Table) {
-        table.add(label).left()
+        table.add(label).growX().left()
         table.add(refreshSelectBox).row()
     }
 

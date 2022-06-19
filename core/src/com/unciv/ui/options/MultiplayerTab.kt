@@ -12,8 +12,11 @@ import com.unciv.models.metadata.GameSetting
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.brighten
 import com.unciv.ui.utils.extensions.format
 import com.unciv.ui.utils.extensions.isEnabled
 import com.unciv.ui.utils.extensions.onChange
@@ -40,6 +43,8 @@ fun multiplayerTab(
         settings.multiplayer::statusButtonInSinglePlayer, updateWorld = true
     )
 
+    addSeparator(tab)
+
     val curRefreshSelect = RefreshSelect(
         "Update status of currently played game every:",
         createRefreshOptions(ChronoUnit.SECONDS, 3, 5),
@@ -47,7 +52,7 @@ fun multiplayerTab(
         GameSetting.MULTIPLAYER_CURRENT_GAME_REFRESH_DELAY,
         settings
     )
-    curRefreshSelect.addTo(tab)
+    addSelectAsSeparateTable(tab, curRefreshSelect)
 
     val allRefreshSelect = RefreshSelect(
         "In-game, update status of all games every:",
@@ -56,21 +61,27 @@ fun multiplayerTab(
         GameSetting.MULTIPLAYER_ALL_GAME_REFRESH_DELAY,
         settings
     )
-    allRefreshSelect.addTo(tab)
+    addSelectAsSeparateTable(tab, allRefreshSelect)
+
+    addSeparator(tab)
 
     val turnCheckerSelect = addTurnCheckerOptions(tab, optionsPopup)
 
-    SettingsSelect("Sound notification for when it's your turn in your currently open game:",
+    addSeparator(tab)
+
+    addSelectAsSeparateTable(tab, SettingsSelect("Sound notification for when it's your turn in your currently open game:",
         createNotificationSoundOptions(),
         GameSetting.MULTIPLAYER_CURRENT_GAME_TURN_NOTIFICATION_SOUND,
         settings
-    ).addTo(tab)
+    ))
 
-    SettingsSelect("Sound notification for when it's your turn in any other game:",
+    addSelectAsSeparateTable(tab, SettingsSelect("Sound notification for when it's your turn in any other game:",
         createNotificationSoundOptions(),
         GameSetting.MULTIPLAYER_OTHER_GAME_TURN_NOTIFICATION_SOUND,
         settings
-    ).addTo(tab)
+    ))
+
+    addSeparator(tab)
 
     addMultiplayerServerOptions(tab, optionsPopup, listOf(curRefreshSelect, allRefreshSelect, turnCheckerSelect).filterNotNull())
 
@@ -127,7 +138,7 @@ private fun addMultiplayerServerOptions(
 
     serverIpTable.add("Server address".toLabel().onClick {
         multiplayerServerTextField.text = Gdx.app.clipboard.contents
-    }).row()
+        }).row()
     multiplayerServerTextField.onChange {
         val isCustomServer = OnlineMultiplayer.usesCustomServer()
         connectionToServerButton.isEnabled = isCustomServer
@@ -186,7 +197,7 @@ private fun addTurnCheckerOptions(
         GameSetting.MULTIPLAYER_TURN_CHECKER_DELAY,
         settings
     )
-    turnCheckerSelect.addTo(tab)
+    addSelectAsSeparateTable(tab, turnCheckerSelect)
 
 
     optionsPopup.addCheckbox(
@@ -213,25 +224,23 @@ private class RefreshSelect(
     dropboxOptions: List<SelectItem<Duration>>,
     setting: GameSetting,
     settings: GameSettings
-) {
+) : SettingsSelect<Duration>(labelText, getInitialOptions(extraCustomServerOptions, dropboxOptions), setting, settings) {
     private val customServerItems = (extraCustomServerOptions + dropboxOptions).toGdxArray()
     private val dropboxItems = dropboxOptions.toGdxArray()
-    private val settingsSelect: SettingsSelect<Duration>
-
-    init {
-        val initialOptions = if (OnlineMultiplayer.usesCustomServer()) customServerItems else dropboxItems
-        settingsSelect = SettingsSelect(labelText, initialOptions, setting, settings)
-    }
 
     fun update(isCustomServer: Boolean) {
-        if (isCustomServer && settingsSelect.items.size != customServerItems.size) {
-            settingsSelect.replaceItems(customServerItems)
-        } else if (!isCustomServer && settingsSelect.items.size != dropboxItems.size) {
-            settingsSelect.replaceItems(dropboxItems)
+        if (isCustomServer && items.size != customServerItems.size) {
+            replaceItems(customServerItems)
+        } else if (!isCustomServer && items.size != dropboxItems.size) {
+            replaceItems(dropboxItems)
         }
     }
+}
 
-    fun addTo(tab: Table) = settingsSelect.addTo(tab)
+private fun getInitialOptions(extraCustomServerOptions: List<SelectItem<Duration>>, dropboxOptions: List<SelectItem<Duration>>): Iterable<SelectItem<Duration>> {
+    val customServerItems = (extraCustomServerOptions + dropboxOptions).toGdxArray()
+    val dropboxItems = dropboxOptions.toGdxArray()
+    return if (OnlineMultiplayer.usesCustomServer()) customServerItems else dropboxItems
 }
 
 private fun fixTextFieldUrlOnType(TextField: TextField) {
@@ -259,4 +268,14 @@ private fun createRefreshOptions(unit: ChronoUnit, vararg options: Long): List<S
         val duration = Duration.of(it, unit)
         SelectItem(duration.format(), duration)
     }
+}
+
+private fun addSelectAsSeparateTable(tab: Table, settingsSelect: SettingsSelect<*>) {
+    val table = Table()
+    settingsSelect.addTo(table)
+    tab.add(table).growX().fillX().row()
+}
+
+private fun addSeparator(tab: Table) {
+    tab.addSeparator(ImageGetter.getBlue().brighten(0.1f))
 }
