@@ -218,4 +218,12 @@ object BackwardCompatibility {
         }
         return false
     }
+
+    @Suppress("DEPRECATION")
+    fun GameInfo.convertOldGameSpeed() {
+        if (gameParameters.gameSpeed != "" && gameParameters.gameSpeed in ruleSet.speeds.keys) {
+            gameParameters.speed = gameParameters.gameSpeed
+            gameParameters.gameSpeed = ""
+        }
+    }
 }
