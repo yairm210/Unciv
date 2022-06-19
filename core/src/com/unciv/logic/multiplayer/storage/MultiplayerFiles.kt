@@ -4,21 +4,21 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.json.json
 import com.unciv.logic.GameInfo
-import com.unciv.logic.multiplayer.MultiplayerGameStatus
 import com.unciv.logic.UncivFiles
+import com.unciv.logic.multiplayer.MultiplayerGameStatus
 
 /**
  * Allows access to games stored on a server for multiplayer purposes.
  * Defaults to using UncivGame.Current.settings.multiplayerServer if fileStorageIdentifier is not given.
  *
- * For low-level access only, use [UncivGame.onlineMultiplayer] on [UncivGame.Current] if you're looking to load/save a game.
+ * For low-level access only, use [UncivGame.multiplayer] on [UncivGame.Current] if you're looking to load/save a game.
  *
  * @param fileStorageIdentifier must be given if UncivGame.Current might not be initialized
  * @see FileStorage
  * @see UncivGame.Current.settings.multiplayerServer
  */
 @Suppress("RedundantSuspendModifier") // Methods can take a long time, so force users to use them in a coroutine to not get ANRs on Android
-class OnlineMultiplayerFiles(
+class MultiplayerFiles(
     private var fileStorageIdentifier: String? = null
 ) {
     fun fileStorage(): FileStorage {

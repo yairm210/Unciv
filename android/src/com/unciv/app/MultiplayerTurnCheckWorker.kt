@@ -29,7 +29,7 @@ import com.badlogic.gdx.backends.android.DefaultAndroidFiles
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivFiles
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
-import com.unciv.logic.multiplayer.storage.OnlineMultiplayerFiles
+import com.unciv.logic.multiplayer.storage.MultiplayerFiles
 import com.unciv.models.metadata.GameSettingsMultiplayer
 import kotlinx.coroutines.runBlocking
 import java.io.FileNotFoundException
@@ -303,7 +303,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
 
                 try {
                     Log.d(LOG_TAG, "doWork download ${gameId}")
-                    val status = OnlineMultiplayerFiles(fileStorage).tryDownloadGameStatus(gameId)
+                    val status = MultiplayerFiles(fileStorage).tryDownloadGameStatus(gameId)
                     Log.d(LOG_TAG, "doWork download ${gameId} done")
 
                     //Save game so MultiplayerScreen gets updated

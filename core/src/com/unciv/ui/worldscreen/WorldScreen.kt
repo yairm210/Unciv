@@ -319,7 +319,7 @@ class WorldScreen(
         try {
             debug("loadLatestMultiplayerState current game: gameId: %s, turn: %s, curCiv: %s",
                 gameInfo.gameId, gameInfo.turns, gameInfo.currentCivName)
-            val latestGame = game.onlineMultiplayer.downloadGame(gameInfo.gameId)
+            val latestGame = game.multiplayer.downloadGame(gameInfo.gameId)
             debug("loadLatestMultiplayerState downloaded game: gameId: %s, turn: %s, curCiv: %s",
                 latestGame.gameId, latestGame.turns, latestGame.currentCivName)
             if (viewingCiv.civName == latestGame.currentCivName || viewingCiv.civName == Constants.spectator) {
@@ -581,7 +581,7 @@ class WorldScreen(
 
             if (originalGameInfo.gameParameters.isOnlineMultiplayer) {
                 try {
-                    game.onlineMultiplayer.updateGame(gameInfoClone)
+                    game.multiplayer.updateGame(gameInfoClone)
                 } catch (ex: Exception) {
                     val message = when (ex) {
                         is FileStorageRateLimitReached -> "Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds"
@@ -641,7 +641,7 @@ class WorldScreen(
     private fun updateMultiplayerStatusButton() {
         if (gameInfo.gameParameters.isOnlineMultiplayer || game.settings.multiplayer.statusButtonInSinglePlayer) {
             if (statusButtons.multiplayerStatusButton != null) return
-            statusButtons.multiplayerStatusButton = MultiplayerStatusButton(this, game.onlineMultiplayer.getGameByGameId(gameInfo.gameId))
+            statusButtons.multiplayerStatusButton = MultiplayerStatusButton(this, game.multiplayer.getGameById(gameInfo.gameId))
         } else {
             if (statusButtons.multiplayerStatusButton == null) return
             statusButtons.multiplayerStatusButton = null

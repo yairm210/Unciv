@@ -19,7 +19,7 @@ import com.unciv.logic.multiplayer.MultiplayerGameNameChanged
 import com.unciv.logic.multiplayer.MultiplayerGameUpdateEnded
 import com.unciv.logic.multiplayer.MultiplayerGameUpdateStarted
 import com.unciv.logic.multiplayer.MultiplayerGameUpdated
-import com.unciv.logic.multiplayer.OnlineMultiplayerGame
+import com.unciv.logic.multiplayer.MultiplayerGame
 import com.unciv.logic.multiplayer.isUsersTurn
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
@@ -34,7 +34,7 @@ import java.time.Instant
 
 class MultiplayerStatusButton(
     screen: BaseScreen,
-    curGame: OnlineMultiplayerGame?
+    curGame: MultiplayerGame?
 ) : Button(BaseScreen.skin), Disposable {
     private var curGameName = curGame?.name
     private val multiplayerImage = createMultiplayerImage()
@@ -110,11 +110,11 @@ class MultiplayerStatusButton(
     }
 
     private fun getInitialGamesWithCurrentTurn(): MutableSet<String> {
-        return findGamesToBeNotifiedAbout(UncivGame.Current.onlineMultiplayer.games)
+        return findGamesToBeNotifiedAbout(UncivGame.Current.multiplayer.games)
     }
 
     /** @return set of gameIds */
-    private fun findGamesToBeNotifiedAbout(games: Iterable<OnlineMultiplayerGame>): MutableSet<String> {
+    private fun findGamesToBeNotifiedAbout(games: Iterable<MultiplayerGame>): MutableSet<String> {
         return games
             .filter { it.name != curGameName }
             .filter { it.status?.isUsersTurn() == true }

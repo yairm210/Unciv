@@ -85,7 +85,7 @@ object QuickSave {
 
             if (savedGame.gameParameters.isOnlineMultiplayer) {
                 try {
-                    screen.game.onlineMultiplayer.loadGame(savedGame)
+                    screen.game.multiplayer.loadGame(savedGame)
                 } catch (oom: OutOfMemoryError) {
                     outOfMemory()
                 } catch (ex: Exception) {

@@ -5,7 +5,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.Constants
-import com.unciv.logic.multiplayer.OnlineMultiplayer
+import com.unciv.logic.multiplayer.Multiplayer
 import com.unciv.logic.multiplayer.storage.SimpleHttp
 import com.unciv.models.UncivSound
 import com.unciv.models.metadata.GameSetting
@@ -127,7 +127,7 @@ private fun addMultiplayerServerOptions(
 
     val connectionToServerButton = "Check connection to server".toTextButton()
 
-    val textToShowForMultiplayerAddress = if (OnlineMultiplayer.usesCustomServer()) {
+    val textToShowForMultiplayerAddress = if (Multiplayer.usesCustomServer()) {
         settings.multiplayer.server
     } else {
         "https://"
@@ -141,7 +141,7 @@ private fun addMultiplayerServerOptions(
         multiplayerServerTextField.text = Gdx.app.clipboard.contents
         }).row()
     multiplayerServerTextField.onChange {
-        val isCustomServer = OnlineMultiplayer.usesCustomServer()
+        val isCustomServer = Multiplayer.usesCustomServer()
         connectionToServerButton.isEnabled = isCustomServer
 
         for (refreshSelect in toUpdate) refreshSelect.update(isCustomServer)
@@ -241,7 +241,7 @@ private class RefreshSelect(
 private fun getInitialOptions(extraCustomServerOptions: List<SelectItem<Duration>>, dropboxOptions: List<SelectItem<Duration>>): Iterable<SelectItem<Duration>> {
     val customServerItems = (extraCustomServerOptions + dropboxOptions).toGdxArray()
     val dropboxItems = dropboxOptions.toGdxArray()
-    return if (OnlineMultiplayer.usesCustomServer()) customServerItems else dropboxItems
+    return if (Multiplayer.usesCustomServer()) customServerItems else dropboxItems
 }
 
 private fun fixTextFieldUrlOnType(TextField: TextField) {

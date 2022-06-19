@@ -9,7 +9,7 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerFileNotFoundException
-import com.unciv.logic.multiplayer.storage.OnlineMultiplayerFiles
+import com.unciv.logic.multiplayer.storage.MultiplayerFiles
 import com.unciv.ui.utils.extensions.isLargerThan
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.Dispatcher
@@ -39,17 +39,17 @@ private val FILE_UPDATE_THROTTLE_PERIOD = Duration.ofSeconds(60)
  *
  * See the file of [com.unciv.logic.multiplayer.MultiplayerGameAdded] for all available [EventBus] events.
  */
-class OnlineMultiplayer {
+class Multiplayer {
     private val files = UncivGame.Current.files
-    private val multiplayerFiles = OnlineMultiplayerFiles()
+    private val multiplayerFiles = MultiplayerFiles()
 
-    private val savedGames: MutableMap<FileHandle, OnlineMultiplayerGame> = Collections.synchronizedMap(mutableMapOf())
+    private val savedGames: MutableMap<FileHandle, MultiplayerGame> = Collections.synchronizedMap(mutableMapOf())
 
     private val lastFileUpdate: AtomicReference<Instant?> = AtomicReference()
     private val lastAllGamesRefresh: AtomicReference<Instant?> = AtomicReference()
     private val lastCurGameRefresh: AtomicReference<Instant?> = AtomicReference()
 
-    val games: Set<OnlineMultiplayerGame> get() = savedGames.values.toSet()
+    val games: Set<MultiplayerGame> get() = savedGames.values.toSet()
 
     init {
         flow<Unit> {
@@ -69,10 +69,10 @@ class OnlineMultiplayer {
         }.launchIn(CoroutineScope(Dispatcher.DAEMON))
     }
 
-    private fun getCurrentGame(): OnlineMultiplayerGame? {
+    private fun getCurrentGame(): MultiplayerGame? {
         val gameInfo = UncivGame.Current.gameInfo
         if (gameInfo != null) {
-            return getGameByGameId(gameInfo.gameId)
+            return getGameById(gameInfo.gameId)
         } else {
             return null
         }
@@ -85,7 +85,7 @@ class OnlineMultiplayer {
      *
      * Fires: [MultiplayerGameUpdateStarted], [MultiplayerGameUpdated], [MultiplayerGameUpdateUnchanged], [MultiplayerGameUpdateFailed]
      */
-    fun requestUpdate(forceUpdate: Boolean = false, doNotUpdate: List<OnlineMultiplayerGame> = listOf()) {
+    fun requestUpdate(forceUpdate: Boolean = false, doNotUpdate: List<MultiplayerGame> = listOf()) {
         Concurrency.run("Update all multiplayer games") {
             val fileThrottleInterval = if (forceUpdate) Duration.ZERO else FILE_UPDATE_THROTTLE_PERIOD
             // An exception only happens here if the files can't be listed, should basically never happen
@@ -157,18 +157,18 @@ class OnlineMultiplayer {
 
     private suspend fun addGame(fileHandle: FileHandle, status: MultiplayerGameStatus = files.loadMultiplayerGameStatusFromFile(fileHandle)) {
         debug("Adding game %s", status.gameId)
-        val game = OnlineMultiplayerGame(fileHandle, status, Instant.now())
+        val game = MultiplayerGame(fileHandle, status, Instant.now())
         savedGames[fileHandle] = game
         withGLContext {
             EventBus.send(MultiplayerGameAdded(game.name))
         }
     }
 
-    fun getGameByName(name: String): OnlineMultiplayerGame? {
+    fun getGameByName(name: String): MultiplayerGame? {
         return savedGames.values.firstOrNull { it.name == name }
     }
 
-    fun getGameByGameId(gameId: String): OnlineMultiplayerGame? {
+    fun getGameById(gameId: String): MultiplayerGame? {
         return savedGames.values.firstOrNull { it.status?.gameId == gameId }
     }
 
@@ -182,7 +182,7 @@ class OnlineMultiplayer {
      * @throws MultiplayerFileNotFoundException if the file can't be found
      * @return false if it's not the user's turn and thus resigning did not happen
      */
-    suspend fun resign(game: OnlineMultiplayerGame): Boolean {
+    suspend fun resign(game: MultiplayerGame): Boolean {
         val oldStatus = game.status ?: throw game.error!!
         // download to work with the latest game state
         val gameInfo = multiplayerFiles.tryDownloadGame(oldStatus.gameId)
@@ -216,7 +216,7 @@ class OnlineMultiplayer {
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
      * @throws MultiplayerFileNotFoundException if the file can't be found
      */
-    suspend fun loadGame(game: OnlineMultiplayerGame) {
+    suspend fun loadGame(game: MultiplayerGame) {
         val status = game.status ?: throw game.error!!
         loadGame(status.gameId)
     }
@@ -227,12 +227,12 @@ class OnlineMultiplayer {
      */
     suspend fun loadGame(gameId: String) = coroutineScope {
         val newGameInfo = downloadGame(gameId)
-        val onlineGame = getGameByGameId(gameId)
-        val oldStatus = onlineGame?.status
-        if (onlineGame == null) {
+        val multiplayerGame = getGameById(gameId)
+        val oldStatus = multiplayerGame?.status
+        if (multiplayerGame == null) {
             createGame(newGameInfo)
         } else if (oldStatus != null && !oldStatus.hasLatestGameState(newGameInfo)){
-            onlineGame.doManualUpdate(newGameInfo)
+            multiplayerGame.doManualUpdate(newGameInfo)
         }
         UncivGame.Current.loadGame(newGameInfo)
     }
@@ -266,7 +266,7 @@ class OnlineMultiplayer {
      *
      * Fires [MultiplayerGameDeleted]
      */
-    fun deleteGame(multiplayerGame: OnlineMultiplayerGame) {
+    fun deleteGame(multiplayerGame: MultiplayerGame) {
         deleteGame(multiplayerGame.fileHandle)
     }
 
@@ -284,7 +284,7 @@ class OnlineMultiplayer {
     /**
      * Fires [MultiplayerGameNameChanged]
      */
-    fun changeGameName(game: OnlineMultiplayerGame, newName: String) {
+    fun changeGameName(game: MultiplayerGame, newName: String) {
         debug("Changing name of game %s to", game.name, newName)
         val oldStatus = game.status ?: throw game.error!!
         val oldLastUpdate = game.lastUpdate
@@ -294,7 +294,7 @@ class OnlineMultiplayer {
         files.deleteFile(game.fileHandle)
         val newFileHandle = files.saveMultiplayerGameStatus(oldStatus, newName)
 
-        val newGame = OnlineMultiplayerGame(newFileHandle, oldStatus, oldLastUpdate)
+        val newGame = MultiplayerGame(newFileHandle, oldStatus, oldLastUpdate)
         savedGames[newFileHandle] = newGame
         EventBus.send(MultiplayerGameNameChanged(oldName, newName))
     }
@@ -306,7 +306,7 @@ class OnlineMultiplayer {
     suspend fun updateGame(gameInfo: GameInfo) {
         debug("Updating remote game %s", gameInfo.gameId)
         multiplayerFiles.tryUploadGame(gameInfo, withGameStatus = true)
-        val game = getGameByGameId(gameInfo.gameId)
+        val game = getGameById(gameInfo.gameId)
         debug("Existing OnlineMultiplayerGame: %s", game)
         if (game == null) {
             addGame(gameInfo)

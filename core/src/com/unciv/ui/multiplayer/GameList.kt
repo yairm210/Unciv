@@ -37,7 +37,7 @@ class GameList(
         padBottom(10f)
 
         events.receive(MultiplayerGameAdded::class) {
-            val multiplayerGame = UncivGame.Current.onlineMultiplayer.getGameByName(it.name)
+            val multiplayerGame = UncivGame.Current.multiplayer.getGameByName(it.name)
             if (multiplayerGame == null) return@receive
             addGame(it.name, multiplayerGame.status, multiplayerGame.error, onSelected)
         }
@@ -54,7 +54,7 @@ class GameList(
             gameDisplay.remove()
         }
 
-        for (game in UncivGame.Current.onlineMultiplayer.games) {
+        for (game in UncivGame.Current.multiplayer.games) {
             addGame(game.name, game.status, game.error, onSelected)
         }
     }
