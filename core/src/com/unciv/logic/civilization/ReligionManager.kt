@@ -70,7 +70,7 @@ class ReligionManager {
     }
 
     fun isMajorityReligionForCiv(religion: Religion): Boolean {
-        return civInfo.cities.count { it.religion.getMajorityReligion() == religion } >= civInfo.cities.size.toFloat() / 2
+        return civInfo.cities.count { it.religion.getMajorityReligion() == religion } > civInfo.cities.size / 2
     }
 
     fun faithForPantheon(additionalCivs: Int = 0) =
