@@ -1,40 +1,22 @@
 ## 4.1.12
 
-Create Privacy-Policy.md
-
 By Azzurite:
-- Nicer multiplayer settings 
-- Refactor: Fix doc comments
-- Various UX improvements 
-- Regenerate atlas & update uniques.md
-- Scroll WorldScreen immediately to the city when exiting it 
-- Fix civilopedia not showing any victory type entries when opening it without any game open 
-- Allow clearing the multiplayer server text field with the "Backspace" key 
-- Add Uncivserver.xyz community server in the wiki 
-- Fix memory leaks in BaseScreen & gdx.Stage/gdx.TextFields 
+- Many, many UX improvements!
+- Fixed memory leaks
 
 By OptimizedForDensity:
-- Population reassignment bug fixes 
-- Moddable game speed backwards compatibility 
-- Moddable game speeds 
+- Moddable game speeds
+- Population reassignment bug fixes
 
-Civilopedia tweaks  - By SomeTroglodyte
+Civilopedia tweaks - By SomeTroglodyte
 
-By J0anJosep:
-- Victory status window should translate "Technologies" entry. 
-- Translate search help text in Mod filter 
-- Translated strings after generating translation files from Adv Opt. 
+Translation improvements - By J0anJosep
 
-Do not trigger the Time Victory if it is not enabled  - By JackRainy
+Trigger Time Victory only if enabled  - By JackRainy
 
-Fix crash when base ruleset contains no strategic resources  - By Skekdog
+Fix crash for "no strategic resource" mods - By Skekdog
 
-By doublep:
-- More shortcuts 
-- Make 'Home Home' shortcut always open capital's city screen 
-- Restore unit action shortcuts accidentally dropped in commit 4fb2ad8fa 
-
-Fix broken links in wiki  - By heipizhu4
+Shortcut fixes and additions - By doublep
 
 Maintain Fortify bonus after Fortify until Healed  - By itanasi
 

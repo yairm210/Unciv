@@ -992,11 +992,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Unit
 
-??? example  "Can construct [improvementName] if it hasn't used other actions yet"
-	Example: "Can construct [Trading Post] if it hasn't used other actions yet"
-
-	Applicable to: Unit
-
 ??? example  "Can build [improvementFilter/terrainFilter] improvements on tiles"
 	Example: "Can build [All Road] improvements on tiles"
 
@@ -1791,6 +1786,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;when below [amount] HP&gt;"
 	Example: "&lt;when below [3] HP&gt;"
 
+	Applicable to: Conditional
+
+??? example  "&lt;if it hasn't used other actions yet&gt;"
 	Applicable to: Conditional
 
 ??? example  "&lt;with [amount] to [amount] neighboring [tileFilter] tiles&gt;"
