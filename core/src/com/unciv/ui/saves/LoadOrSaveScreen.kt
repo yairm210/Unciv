@@ -22,6 +22,7 @@ import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
+import com.unciv.utils.debug
 import java.util.*
 
 
@@ -121,6 +122,7 @@ abstract class LoadOrSaveScreen(
                 "$playerCivNames, ${preview.difficulty.tr()}, ${Fonts.turn}${preview.turns}\n" +
                 "{Base ruleset:} ${preview.gameParameters.baseRuleset}$mods"
             } catch (ex: Exception) {
+                debug("Exception while loading game preview", ex)
                 "\n{Could not load game}!"
             }
 
