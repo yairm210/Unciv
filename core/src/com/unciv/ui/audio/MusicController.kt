@@ -20,11 +20,11 @@ import kotlin.math.roundToInt
  *
  * Main methods: [chooseTrack], [pause], [resume], [setModList], [isPlaying], [gracefulShutdown]
  */
-open class MusicController {
+class MusicController {
     companion object {
         /** Mods live in Local - but this file prepares for music living in External just in case */
         private val musicLocation = FileType.Local
-        private var musicPath = "music"
+        private const val musicPath = "music"
         private const val modPath = "mods"
         private const val musicFallbackLocation = "/music/thatched-villagers.mp3"  // Dropbox path
         private const val musicFallbackLocalName = "music/Thatched Villagers - Ambient.mp3"  // Name we save it to
@@ -35,12 +35,12 @@ open class MusicController {
         private const val defaultFadingStepGdx = 1f / (defaultFadeDuration * ticksPerSecondGdx)
         private const val defaultFadingStepOwn = 1f / (defaultFadeDuration * ticksPerSecondOwn)
         private const val musicHistorySize = 8      // number of names to keep to avoid playing the same in short succession
-        val fileExtensions = listOf("mp3", "ogg", "wav")   // All Gdx formats
+        private val fileExtensions = listOf("mp3", "ogg", "wav")   // All Gdx formats
 
         private fun getFile(path: String) =
-            if (musicLocation == FileType.External && Gdx.files.isExternalStorageAvailable)
-                Gdx.files.external(path)
-            else Gdx.files.local(path)
+                if (musicLocation == FileType.External && Gdx.files.isExternalStorageAvailable)
+                    Gdx.files.external(path)
+                else Gdx.files.local(path)
 
         // These are replaced when we _know_ we're attached to Gdx.audio.update
         private var needOwnTimer = true
@@ -115,7 +115,7 @@ open class MusicController {
     }
 
     fun getAudioExceptionHandler(): (Throwable, Music) -> Unit = {
-        ex: Throwable, music: Music ->
+            ex: Throwable, music: Music ->
         audioExceptionHandler(ex, music)
     }
 
@@ -146,10 +146,6 @@ open class MusicController {
         return current?.isPlaying() == true
     }
 
-    /** Sets the music path to a different folder so we can use this for things other than actual music */
-    fun setMusicPath(path: String) {
-        musicPath = path
-    }
     //endregion
     //region Internal helpers
 
@@ -286,23 +282,22 @@ open class MusicController {
         }
         // Scan whole music folder and mods to find best match for desired prefix and/or suffix
         // get a path list (as strings) of music folder candidates - existence unchecked
-        var allMusicFiles = getAllMusicFiles()
+        return getAllMusicFiles()
             .filter {
                 (!flags.contains(MusicTrackChooserFlags.PrefixMustMatch) || it.nameWithoutExtension().startsWith(prefix))
                         && (!flags.contains(MusicTrackChooserFlags.SuffixMustMatch) || it.nameWithoutExtension().endsWith(suffix))
             }
-        if (!flags.contains(MusicTrackChooserFlags.PlayAsSound))
-            allMusicFiles = allMusicFiles.shuffled()
-                // sort them by prefix match / suffix match / not last played
-                .sortedWith(compareBy(
-                    { if (it.nameWithoutExtension().startsWith(prefix)) 0 else 1 }
-                    , { if (it.nameWithoutExtension().endsWith(suffix)) 0 else 1 }
-                    , { if (it.path() in musicHistory) 1 else 0 }
-                    // Then just pick the first one. Not as wasteful as it looks - need to check all names anyway
-                ))
+            // randomize
+            .shuffled()
+            // sort them by prefix match / suffix match / not last played
+            .sortedWith(compareBy(
+                { if (it.nameWithoutExtension().startsWith(prefix)) 0 else 1 }
+                , { if (it.nameWithoutExtension().endsWith(suffix)) 0 else 1 }
+                , { if (it.path() in musicHistory) 1 else 0 }
+                // Then just pick the first one. Not as wasteful as it looks - need to check all names anyway
+            )).firstOrNull()
         // Note: shuffled().sortedWith(), ***not*** .sortedWith(.., Random)
         // the latter worked with older JVM's, current ones *crash* you when a compare is not transitive.
-        return allMusicFiles.firstOrNull()
     }
 
     private fun fireOnChange() {
@@ -478,7 +473,7 @@ open class MusicController {
 
     /** @return `true` if Thatched Villagers is present */
     fun isDefaultFileAvailable() =
-        getFile(musicFallbackLocalName).exists()
+            getFile(musicFallbackLocalName).exists()
 
     //endregion
 }

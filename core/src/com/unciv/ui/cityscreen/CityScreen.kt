@@ -15,7 +15,7 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
-import com.unciv.ui.audio.CitySoundPlayer
+import com.unciv.ui.audio.CityAmbiencePlayer
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.map.TileGroupMap
@@ -82,7 +82,7 @@ class CityScreen(
         labelCell.pad(10f)
         onClick {
             exit()
-            citySoundPlayer.stopCitySound()
+            cityAmbiencePlayer.stop()
         }
     }
 
@@ -113,14 +113,14 @@ class CityScreen(
     // val should be OK as buying tiles is what changes this, and that would re-create the whole CityScreen
     private val nextTileToOwn = city.expansion.chooseNewTileToOwn()
 
-    private val citySoundPlayer = CitySoundPlayer()
+    private val cityAmbiencePlayer = CityAmbiencePlayer()
 
     init {
         if (city.isWeLoveTheKingDayActive() && UncivGame.Current.settings.citySoundsVolume > 0) {
             SoundPlayer.play(UncivSound("WLTK"))
         }
         if (UncivGame.Current.settings.citySoundsVolume > 0)
-            citySoundPlayer.playCitySound(city)
+            cityAmbiencePlayer.play(city)
 
         globalShortcuts.add(KeyCharAndCode.BACK) { game.popScreen() }
 

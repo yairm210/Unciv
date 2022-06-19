@@ -8,7 +8,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.utils.Log
 
-class CitySoundPlayer {
+class CityAmbiencePlayer {
     private val soundsLocation = Files.FileType.Local
     private var playingCitySound: Music? = null
     val fileExtensions = listOf("mp3", "ogg", "wav")   // All Gdx formats
@@ -36,9 +36,9 @@ class CitySoundPlayer {
         .filter { it.exists() && !it.isDirectory && it.extension() in fileExtensions }
         .firstOrNull { it.name().contains(fileName) }
 
-    fun playCitySound(city: CityInfo) {
+    fun play(city: CityInfo) {
         if (playingCitySound != null)
-            stopCitySound()
+            stop()
         try {
             val file = FileHandle(getSoundFile(city.civInfo.getEra().citySound).toString())
             playingCitySound = Gdx.audio.newMusic(file)
@@ -51,7 +51,7 @@ class CitySoundPlayer {
         }
     }
 
-    fun stopCitySound() {
+    fun stop() {
         try {
             if (playingCitySound?.isPlaying == true)
                 playingCitySound?.stop()
