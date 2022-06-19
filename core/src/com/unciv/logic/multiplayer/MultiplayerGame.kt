@@ -23,7 +23,7 @@ private const val CUSTOM_SERVER_THROTTLE_PERIOD = 1L
 
 class MultiplayerGame(
     val fileHandle: FileHandle,
-    var status: MultiplayerGameStatus? = null,
+    var status: Multiplayer.GameStatus? = null,
     lastOnlineUpdate: Instant? = null
 ) {
     private val lastOnlineUpdate: AtomicReference<Instant?> = AtomicReference(lastOnlineUpdate)
@@ -50,7 +50,7 @@ class MultiplayerGame(
         }
     }
 
-    private fun loadStatusFromFile(): MultiplayerGameStatus {
+    private fun loadStatusFromFile(): Multiplayer.GameStatus {
         val statusFromFile = UncivGame.Current.files.loadMultiplayerGameStatusFromFile(fileHandle)
         status = statusFromFile
         return statusFromFile
@@ -109,7 +109,7 @@ class MultiplayerGame(
         return GameUpdateResult.CHANGED
     }
 
-    suspend fun doManualUpdate(newStatus: MultiplayerGameStatus) {
+    suspend fun doManualUpdate(newStatus: Multiplayer.GameStatus) {
         debug("Doing manual update of game %s", newStatus.gameId)
         lastOnlineUpdate.set(Instant.now())
         error = null
@@ -119,7 +119,7 @@ class MultiplayerGame(
         }
     }
     suspend fun doManualUpdate(gameInfo: GameInfo) {
-        doManualUpdate(MultiplayerGameStatus(gameInfo))
+        doManualUpdate(Multiplayer.GameStatus(gameInfo))
     }
 
     override fun equals(other: Any?): Boolean = other is MultiplayerGame && fileHandle == other.fileHandle

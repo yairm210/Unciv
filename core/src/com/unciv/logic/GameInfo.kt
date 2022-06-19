@@ -37,17 +37,17 @@ import com.unciv.utils.debug
 import java.util.*
 
 interface HasGameId {
-    var gameId: String
+    val gameId: String
 }
 
 interface HasGameTurnData {
-    var turns: Int
+    val turns: Int
     /** The civ whose turn it is currently. */
-    var currentCivName: String
+    val currentCivName: String
     /** The playerId whose turn it is currently, the empty String in a single-player game. */
     val currentPlayerId: String
     /** Start of the current turn in milliseconds since epoch. */
-    var currentTurnStartTime: Long
+    val currentTurnStartTime: Long
 
     /**
      * Checks if this has the same turn as [latestGameState].

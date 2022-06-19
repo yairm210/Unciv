@@ -5,7 +5,7 @@ import com.unciv.UncivGame
 import com.unciv.json.json
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivFiles
-import com.unciv.logic.multiplayer.MultiplayerGameStatus
+import com.unciv.logic.multiplayer.Multiplayer.GameStatus
 
 /**
  * Allows access to games stored on a server for multiplayer purposes.
@@ -39,7 +39,7 @@ class MultiplayerFiles(
         // Other player sees update in preview -> Downloads game, gets old state
         // Current player finishes uploading game
         if (withGameStatus) {
-            tryUploadGameStatus(MultiplayerGameStatus(gameInfo))
+            tryUploadGameStatus(GameStatus(gameInfo))
         }
     }
 
@@ -52,7 +52,7 @@ class MultiplayerFiles(
      *
      * @see tryUploadGame
      */
-    suspend fun tryUploadGameStatus(status: MultiplayerGameStatus) {
+    suspend fun tryUploadGameStatus(status: GameStatus) {
         val zippedGameInfo = json().toJson(status) // no gzip because gzip actually has more overhead than it saves in compression
         fileStorage().saveFileData("${status.gameId}_Preview", zippedGameInfo, true)
     }
@@ -70,7 +70,7 @@ class MultiplayerFiles(
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
      * @throws FileNotFoundException if the file can't be found
      */
-    suspend fun tryDownloadGameStatus(gameId: String): MultiplayerGameStatus {
+    suspend fun tryDownloadGameStatus(gameId: String): GameStatus {
         val zippedGameInfo = fileStorage().loadFileData("${gameId}_Preview")
         return UncivFiles.multiplayerGameStatusFromString(zippedGameInfo)
     }

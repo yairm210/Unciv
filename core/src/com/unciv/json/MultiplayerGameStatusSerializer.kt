@@ -3,7 +3,7 @@ package com.unciv.json
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import com.unciv.logic.BackwardCompatibility.readOldFormat
-import com.unciv.logic.multiplayer.MultiplayerGameStatus
+import com.unciv.logic.multiplayer.Multiplayer
 
 /**
  * This should save as much bandwidth as possible while (currently) still being able to be read as plaintext.
@@ -14,8 +14,8 @@ import com.unciv.logic.multiplayer.MultiplayerGameStatus
  * [<gameId>,<turns>,<currentTurnStartTime>,<currentCivName>,<currentPlayerId>]
  * ```
  */
-class MultiplayerGameStatusSerializer : Json.Serializer<MultiplayerGameStatus> {
-    override fun write(json: Json, status: MultiplayerGameStatus, knownType: Class<*>?) {
+class MultiplayerGameStatusSerializer : Json.Serializer<Multiplayer.GameStatus> {
+    override fun write(json: Json, status: Multiplayer.GameStatus, knownType: Class<*>?) {
         json.writeArrayStart()
         json.writeValue(status.gameId)
         json.writeValue(status.turns)
@@ -25,25 +25,20 @@ class MultiplayerGameStatusSerializer : Json.Serializer<MultiplayerGameStatus> {
         json.writeArrayEnd()
     }
 
-    override fun read(json: Json, jsonData: JsonValue, type: Class<*>?): MultiplayerGameStatus {
-        val constructor = MultiplayerGameStatus::class.java.getDeclaredConstructor()
-        constructor.isAccessible = true
-        val status = constructor.newInstance()
-
-        if (jsonData["civilizations"] != null) {
-            readOldFormat(json, jsonData, status)
+    override fun read(json: Json, jsonData: JsonValue, type: Class<*>?): Multiplayer.GameStatus {
+        return if (jsonData["civilizations"] != null) {
+            readOldFormat(json, jsonData)
         } else {
-            readNewFormat(json, jsonData, status)
+            readNewFormat(json, jsonData)
         }
-
-        return status
     }
 
-    private fun readNewFormat(json: Json, jsonData: JsonValue, status: MultiplayerGameStatus) {
-        status.gameId = json.readValue(String::class.java, null, "", jsonData[0])
-        status.turns = json.readValue(Int::class.java, null, 0, jsonData[1])
-        status.currentTurnStartTime = json.readValue(Long::class.java, null, 0L, jsonData[2])
-        status.currentCivName =json.readValue(String::class.java, null, "", jsonData[3])
-        status.currentPlayerId = json.readValue(String::class.java, null, "", jsonData[4])
+    private fun readNewFormat(json: Json, jsonData: JsonValue): Multiplayer.GameStatus {
+        val gameId = json.readValue(String::class.java, null, "", jsonData[0])
+        val turns = json.readValue(Int::class.java, null, 0, jsonData[1])
+        val currentTurnStartTime = json.readValue(Long::class.java, null, 0L, jsonData[2])
+        val currentCivName = json.readValue(String::class.java, null, "", jsonData[3])
+        val currentPlayerId = json.readValue(String::class.java, null, "", jsonData[4])
+        return Multiplayer.GameStatus(gameId, turns, currentTurnStartTime, currentCivName, currentPlayerId)
     }
 }

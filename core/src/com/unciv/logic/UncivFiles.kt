@@ -8,7 +8,7 @@ import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.migrateCurrentCivName
-import com.unciv.logic.multiplayer.MultiplayerGameStatus
+import com.unciv.logic.multiplayer.Multiplayer
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.doMigrations
 import com.unciv.models.metadata.isMigrationNecessary
@@ -171,7 +171,7 @@ class UncivFiles(
     /**
      * Saves a [MultiplayerGameStatus] in the MultiplayerGames folder
      */
-    fun saveMultiplayerGameStatus(game: MultiplayerGameStatus, gameName: String, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }): FileHandle {
+    fun saveMultiplayerGameStatus(game: Multiplayer.GameStatus, gameName: String, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }): FileHandle {
         val file = getMultiplayerGameStatusFile(gameName)
         saveMultiplayerGameStatus(game, file, saveCompletionCallback)
         return file
@@ -180,7 +180,7 @@ class UncivFiles(
     /**
      * Only use this with a [FileHandle] obtained by one of the methods of this class!
      */
-    fun saveMultiplayerGameStatus(game: MultiplayerGameStatus, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }) {
+    fun saveMultiplayerGameStatus(game: Multiplayer.GameStatus, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }) {
         try {
             debug("Saving multiplayer game status %s to %s", game.gameId, file.path())
             json().toJson(game, file)
@@ -237,8 +237,8 @@ class UncivFiles(
     fun loadMultiplayerGameStatusByName(gameName: String) =
             loadMultiplayerGameStatusFromFile(getMultiplayerGameStatusFile(gameName))
 
-    fun loadMultiplayerGameStatusFromFile(gameFile: FileHandle): MultiplayerGameStatus {
-        return json().fromJson(MultiplayerGameStatus::class.java, gameFile)
+    fun loadMultiplayerGameStatusFromFile(gameFile: FileHandle): Multiplayer.GameStatus {
+        return json().fromJson(Multiplayer.GameStatus::class.java, gameFile)
     }
 
     class CustomLoadResult<T>(
@@ -354,8 +354,8 @@ class UncivFiles(
          * Parses [status] as gzipped serialization of a [MultiplayerGameStatus]
          * @throws SerializationException
          */
-        fun multiplayerGameStatusFromString(status: String): MultiplayerGameStatus {
-            return json().fromJson(MultiplayerGameStatus::class.java, Gzip.unzip(status))
+        fun multiplayerGameStatusFromString(status: String): Multiplayer.GameStatus {
+            return json().fromJson(Multiplayer.GameStatus::class.java, Gzip.unzip(status))
         }
 
         /** Returns gzipped serialization of [game], optionally gzipped ([forceZip] overrides [saveZipped]) */

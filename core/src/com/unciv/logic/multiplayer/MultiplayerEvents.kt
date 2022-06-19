@@ -1,6 +1,7 @@
 package com.unciv.logic.multiplayer
 
 import com.unciv.logic.event.Event
+import com.unciv.logic.multiplayer.Multiplayer.GameStatus
 
 interface HasMultiplayerGameName {
     val name: String
@@ -8,7 +9,7 @@ interface HasMultiplayerGameName {
 
 interface MultiplayerGameUpdateEnded : Event, HasMultiplayerGameName
 interface MultiplayerGameUpdateSucceeded : Event, HasMultiplayerGameName {
-    val status: MultiplayerGameStatus
+    val status: GameStatus
 }
 
 /**
@@ -22,7 +23,7 @@ class MultiplayerGameAdded(
  */
 class MultiplayerGameUpdated(
     override val name: String,
-    override val status: MultiplayerGameStatus,
+    override val status: GameStatus,
 ) : MultiplayerGameUpdateEnded, MultiplayerGameUpdateSucceeded
 
 /**
@@ -37,7 +38,7 @@ class MultiplayerGameUpdateFailed(
  */
 class MultiplayerGameUpdateUnchanged(
     override val name: String,
-    override val status: MultiplayerGameStatus
+    override val status: GameStatus
 ) : MultiplayerGameUpdateEnded, MultiplayerGameUpdateSucceeded
 
 /**

@@ -4,6 +4,7 @@ import com.badlogic.gdx.files.FileHandle
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
+import com.unciv.logic.HasGameId
 import com.unciv.logic.HasGameTurnData
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.event.EventBus
@@ -21,7 +22,6 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
-import java.io.FileNotFoundException
 import java.time.Duration
 import java.time.Instant
 import java.util.*
@@ -135,27 +135,27 @@ class Multiplayer {
      */
     suspend fun addGame(gameId: String, gameName: String? = null) {
         val saveFileName = if (gameName.isNullOrBlank()) gameId else gameName
-        var status: MultiplayerGameStatus
+        var status: GameStatus
         try {
             status = multiplayerFiles.tryDownloadGameStatus(gameId)
         } catch (ex: MultiplayerFileNotFoundException) {
             // Maybe something went wrong with uploading the multiplayer game info, let's try the full game info
-            status = MultiplayerGameStatus(multiplayerFiles.tryDownloadGame(gameId))
+            status = GameStatus(multiplayerFiles.tryDownloadGame(gameId))
         }
         addGame(status, saveFileName)
     }
 
     private suspend fun addGame(gameInfo: GameInfo) {
-        val status = MultiplayerGameStatus(gameInfo)
+        val status = GameStatus(gameInfo)
         addGame(status, status.gameId)
     }
 
-    private suspend fun addGame(status: MultiplayerGameStatus, saveFileName: String) {
+    private suspend fun addGame(status: GameStatus, saveFileName: String) {
         val fileHandle = files.saveMultiplayerGameStatus(status, saveFileName)
         return addGame(fileHandle, status)
     }
 
-    private suspend fun addGame(fileHandle: FileHandle, status: MultiplayerGameStatus = files.loadMultiplayerGameStatusFromFile(fileHandle)) {
+    private suspend fun addGame(fileHandle: FileHandle, status: GameStatus = files.loadMultiplayerGameStatusFromFile(fileHandle)) {
         debug("Adding game %s", status.gameId)
         val game = MultiplayerGame(fileHandle, status, Instant.now())
         savedGames[fileHandle] = game
@@ -205,7 +205,7 @@ class Multiplayer {
             civ.addNotification("[${playerCiv.civName}] resigned and is now controlled by AI", playerCiv.civName)
         }
 
-        val newStatus = MultiplayerGameStatus(gameInfo)
+        val newStatus = GameStatus(gameInfo)
         files.saveMultiplayerGameStatus(newStatus, game.fileHandle)
         multiplayerFiles.tryUploadGame(gameInfo, withGameStatus = true)
         game.doManualUpdate(newStatus)
@@ -231,7 +231,7 @@ class Multiplayer {
         val oldStatus = multiplayerGame?.status
         if (multiplayerGame == null) {
             createGame(newGameInfo)
-        } else if (oldStatus != null && !oldStatus.hasLatestGameState(newGameInfo)){
+        } else if (oldStatus != null && !oldStatus.hasLatestGameState(newGameInfo)) {
             multiplayerGame.doManualUpdate(newGameInfo)
         }
         UncivGame.Current.loadGame(newGameInfo)
@@ -320,6 +320,24 @@ class Multiplayer {
         fun usesDropbox() = !usesCustomServer()
     }
 
+    /**
+     * Reduced variant of GameInfo used for multiplayer saves.
+     * Contains additional data for multiplayer settings.
+     */
+    data class GameStatus(
+        override val gameId: String,
+        override val turns: Int,
+        override val currentTurnStartTime: Long,
+        override val currentCivName: String,
+        override val currentPlayerId: String,
+    ) : HasGameId, HasGameTurnData {
+
+        /**
+         * Converts a GameInfo object (can be uninitialized).
+         * Sets all multiplayer settings to default.
+         */
+        constructor (gameInfo: GameInfo) : this(gameInfo.gameId, gameInfo.turns, gameInfo.currentTurnStartTime, gameInfo.currentCivName, gameInfo.currentPlayerId)
+    }
 }
 
 /**

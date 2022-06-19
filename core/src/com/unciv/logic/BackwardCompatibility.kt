@@ -12,7 +12,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.TechManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
-import com.unciv.logic.multiplayer.MultiplayerGameStatus
+import com.unciv.logic.multiplayer.Multiplayer
 import com.unciv.models.ruleset.ModOptions
 import com.unciv.models.ruleset.Ruleset
 
@@ -248,15 +248,17 @@ object BackwardCompatibility {
         }
     }
 
-    /** Remove this completely once users migrated their saves. When removing this, also remove [GameInfo.currentPlayer] and [GameInfoPreview.currentPlayer] */
-    fun MultiplayerGameStatusSerializer.readOldFormat(json: Json, jsonData: JsonValue, status: MultiplayerGameStatus) {
+    /** Remove this completely once users migrated their saves. */
+    fun MultiplayerGameStatusSerializer.readOldFormat(json: Json, jsonData: JsonValue): Multiplayer.GameStatus {
         val preview = json.readValue(GameInfoPreview::class.java, jsonData)
         preview.migrateCurrentCivName()
 
-        status.gameId = json.readValue("gameId", String::class.java, "", jsonData)
-        status.turns = preview.turns
-        status.currentCivName = preview.currentCivName
-        status.currentPlayerId = preview.currentPlayerId
-        status.currentTurnStartTime = preview.currentTurnStartTime
+        val gameId = json.readValue("gameId", String::class.java, "", jsonData)
+        val turns = preview.turns
+        val currentTurnStartTime = preview.currentTurnStartTime
+        val currentCivName = preview.currentCivName
+        val currentPlayerId = preview.currentPlayerId
+
+        return Multiplayer.GameStatus(gameId, turns, currentTurnStartTime, currentCivName, currentPlayerId)
     }
 }
