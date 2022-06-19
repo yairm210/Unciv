@@ -38,9 +38,9 @@ class MusicController {
         private val fileExtensions = listOf("mp3", "ogg", "wav")   // All Gdx formats
 
         private fun getFile(path: String) =
-                if (musicLocation == FileType.External && Gdx.files.isExternalStorageAvailable)
-                    Gdx.files.external(path)
-                else Gdx.files.local(path)
+            if (musicLocation == FileType.External && Gdx.files.isExternalStorageAvailable)
+                Gdx.files.external(path)
+            else Gdx.files.local(path)
 
         // These are replaced when we _know_ we're attached to Gdx.audio.update
         private var needOwnTimer = true
@@ -115,7 +115,7 @@ class MusicController {
     }
 
     fun getAudioExceptionHandler(): (Throwable, Music) -> Unit = {
-            ex: Throwable, music: Music ->
+        ex: Throwable, music: Music ->
         audioExceptionHandler(ex, music)
     }
 
@@ -294,7 +294,7 @@ class MusicController {
                 { if (it.nameWithoutExtension().startsWith(prefix)) 0 else 1 }
                 , { if (it.nameWithoutExtension().endsWith(suffix)) 0 else 1 }
                 , { if (it.path() in musicHistory) 1 else 0 }
-                // Then just pick the first one. Not as wasteful as it looks - need to check all names anyway
+            // Then just pick the first one. Not as wasteful as it looks - need to check all names anyway
             )).firstOrNull()
         // Note: shuffled().sortedWith(), ***not*** .sortedWith(.., Random)
         // the latter worked with older JVM's, current ones *crash* you when a compare is not transitive.
@@ -473,7 +473,7 @@ class MusicController {
 
     /** @return `true` if Thatched Villagers is present */
     fun isDefaultFileAvailable() =
-            getFile(musicFallbackLocalName).exists()
+        getFile(musicFallbackLocalName).exists()
 
     //endregion
 }
