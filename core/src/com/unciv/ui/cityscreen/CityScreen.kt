@@ -115,10 +115,10 @@ class CityScreen(
     val citySoundPlayer = UncivGame.Current.musicController
 
     init {
-        if (city.isWeLoveTheKingDayActive()) {
+        if (city.isWeLoveTheKingDayActive() && UncivGame.Current.settings.citySoundsVolume > 0) {
             SoundPlayer.play(UncivSound("WLTK"))
         }
-        if (UncivGame.Current.settings.citySounds)
+        if (UncivGame.Current.settings.citySoundsVolume > 0)
             citySoundPlayer.playCitySound(city)
 
         globalShortcuts.add(KeyCharAndCode.BACK) { game.popScreen() }

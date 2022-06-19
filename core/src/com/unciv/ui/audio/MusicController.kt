@@ -511,6 +511,7 @@ open class MusicController {
             val file = FileHandle(getSoundFile(city.civInfo.getEra().citySound).toString())
             playingCitySound = Gdx.audio.newMusic(file)
 
+            playingCitySound?.volume = UncivGame.Current.settings.citySoundsVolume
             playingCitySound?.isLooping = true
             playingCitySound?.play()
         } catch (ex: Throwable) {
