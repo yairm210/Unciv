@@ -219,7 +219,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             if (latestVersion > UncivGame.Current.version) {
                 addUpdateButton(Color.YELLOW, true)
             } else {
-                addUpdateButton(ImageGetter.getBlue(), true)
+                addUpdateButton(ImageGetter.getBlue(), false)
             }
         }
     }
