@@ -14,11 +14,13 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.ui.audio.CitySoundPlayer
+import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.popup.ToastPopup
@@ -33,6 +35,7 @@ import com.unciv.ui.utils.extensions.packIfNeeded
 import com.unciv.ui.utils.extensions.toTextButton
 import kotlin.collections.ArrayList
 import com.unciv.ui.worldscreen.WorldScreen
+import com.unciv.utils.Log
 
 class CityScreen(
     internal val city: CityInfo,
@@ -84,11 +87,7 @@ class CityScreen(
         labelCell.pad(10f)
         onClick {
             exit()
-            try {
-                citySoundPlayer.stopCitySound()
-            } catch (ex: Throwable) {
-                ex.printStackTrace()
-            }
+            citySoundPlayer.stopCitySound()
         }
     }
 
@@ -122,9 +121,12 @@ class CityScreen(
     val citySoundPlayer = UncivGame.Current.citySoundController
 
     init {
+        if (city.isWeLoveTheKingDayActive()) {
+            SoundPlayer.play(UncivSound("WLTK"))
+        }
         if (UncivGame.Current.settings.citySounds)
             citySoundPlayer.playCitySound(city)
-            
+
         globalShortcuts.add(KeyCharAndCode.BACK) { game.popScreen() }
 
         UncivGame.Current.settings.addCompletedTutorialTask("Enter city screen")

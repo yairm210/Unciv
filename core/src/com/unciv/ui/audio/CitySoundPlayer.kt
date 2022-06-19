@@ -7,6 +7,7 @@ import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.models.UncivSound
+import com.unciv.utils.Log
 
 class CitySoundPlayer: MusicController() {
     private val soundsLocation = Files.FileType.Local
@@ -39,10 +40,6 @@ class CitySoundPlayer: MusicController() {
         if (playingCitySound != null)
             stopCitySound()
         try {
-            if (city.isWeLoveTheKingDayActive()) {
-                SoundPlayer.play(UncivSound("WLTK"))
-            }
-
             val file = FileHandle(getSoundFile(city.civInfo.getEra().citySound).toString())
             playingCitySound = Gdx.audio.newMusic(file)
 
@@ -50,7 +47,7 @@ class CitySoundPlayer: MusicController() {
             playingCitySound?.play()
         } catch (ex: Throwable) {
             playingCitySound?.dispose()
-            ex.printStackTrace()
+            Log.error("Error while playing city sound: ", ex)
         }
     }
 
@@ -60,7 +57,7 @@ class CitySoundPlayer: MusicController() {
                 playingCitySound?.stop()
         } catch (ex: Throwable) {
             playingCitySound?.dispose()
-            ex.printStackTrace()
+            Log.error("Error while stopping city sound: ", ex)
         }
     }
 }
