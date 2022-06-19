@@ -31,8 +31,8 @@ class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame) 
         deleteButton.onClick {
             val askPopup = ConfirmPopup(
                 this,
-                "Are you sure you want to delete this map?",
-                "Delete map",
+                "Are you sure you want to delete this save?",
+                "Delete save",
             ) {
                 try {
                     game.onlineMultiplayer.deleteGame(multiplayerGame)
