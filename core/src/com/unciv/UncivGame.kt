@@ -122,12 +122,6 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             musicController.getAudioExceptionHandler()
         )
 
-        citySoundController = CitySoundPlayer()
-        audioExceptionHelper2?.installHooks(
-            citySoundController.getAudioLoopCallback(),
-            citySoundController.getAudioExceptionHandler()
-        )
-
         onlineMultiplayer = OnlineMultiplayer()
 
         ImageGetter.resetAtlases()

@@ -9,9 +9,10 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.models.UncivSound
 import com.unciv.utils.Log
 
-class CitySoundPlayer: MusicController() {
+class CitySoundPlayer {
     private val soundsLocation = Files.FileType.Local
     private var playingCitySound: Music? = null
+    val fileExtensions = listOf("mp3", "ogg", "wav")   // All Gdx formats
 
     private fun getFile(path: String) =
             if (soundsLocation == Files.FileType.External && Gdx.files.isExternalStorageAvailable)
