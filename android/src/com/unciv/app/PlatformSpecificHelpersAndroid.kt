@@ -5,7 +5,6 @@ import android.content.pm.ActivityInfo
 import android.os.Build
 import android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER
 import android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
-import androidx.annotation.RequiresApi
 import com.unciv.ui.utils.GeneralPlatformSpecificHelpers
 import kotlin.concurrent.thread
 
@@ -54,6 +53,23 @@ Sources for Info about current orientation in case need:
         } else {
             layoutParams.layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER
         }
+    }
+
+    /**
+     * Verifies if the game was installed from GP
+     */
+    @Suppress("DEPRECATION")
+    override fun isInstalledFromGP(): Boolean {
+        // A list with valid installers package name
+        val validInstallers: List<String> =
+                ArrayList(listOf("com.android.vending", "com.google.android.feedback"))
+
+        // The package name of the app that has installed Unciv
+        val installer: String? =
+                activity.window.context.packageManager.getInstallerPackageName(activity.window.context.packageName)
+
+        // true if Unciv has been downloaded from Play Store
+        return installer != null && validInstallers.contains(installer)
     }
 
     /**

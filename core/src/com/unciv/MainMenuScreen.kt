@@ -211,16 +211,39 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         stage.addActor(helpButton)
 
 
-        val latestVersion = checkForUpdates()
-        if (latestVersion > UncivGame.Current.version) {
-            // put link to actual download page or have a popup which does this
-            ToastPopup("A new version is now available!", stage, 10000)
-        } else {
-            //this is just for debugging and would be removed
-            ToastPopup("current version", stage, 10000)
+
+        if (!UncivGame.Current.platformSpecificHelper?.isInstalledFromGP()!!) {
+            val latestVersion = checkForUpdates()
+            if (latestVersion > UncivGame.Current.version) {
+                addUpdateButton(Color.YELLOW, true)
+            } else {
+                addUpdateButton(ImageGetter.getBlue(), false)
+            }
         }
     }
 
+    private fun addUpdateButton(color: Color, shouldUpdate: Boolean) {
+        val label = "⟱".toLabel(fontSize = 32) // Unicode U+27F1
+        if (shouldUpdate)
+            label.color = Color.BLACK
+        val updateButton = label
+            .apply { setAlignment(Align.center) }
+            .surroundWithCircle(40f, color = color)
+            .apply { actor.y -= 2.5f } // compensate font baseline (empirical)
+            .surroundWithCircle(42f, resizeActor = false)
+        updateButton.touchable = Touchable.enabled
+        updateButton.onActivation {
+            if (!shouldUpdate) {
+                ToastPopup("Game is already up-to-date!", this)
+            } else {
+                ToastPopup("open download link instead of popup", this)
+            }
+        }
+        updateButton.keyShortcuts.add(Input.Keys.F2)
+        updateButton.addTooltip(KeyCharAndCode(Input.Keys.F2), 20f)
+        updateButton.setPosition(20f , 70f)
+        stage.addActor(updateButton)
+    }
 
     private fun resumeGame() {
         val curWorldScreen = game.worldScreen
@@ -277,6 +300,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
     fun checkForUpdates(): String {
         var response: InputStream? = null
         var version = ""
+
         try {
             val url = "https://github.com/yairm210/Unciv/releases/latest"
             response = URL(url).openStream()

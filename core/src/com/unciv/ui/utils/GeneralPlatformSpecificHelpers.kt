@@ -1,9 +1,6 @@
 package com.unciv.ui.utils
 
-import com.badlogic.gdx.Gdx
-import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
-import com.unciv.ui.crashhandling.CrashScreen
 
 /** Interface to support various platform-specific tools */
 interface GeneralPlatformSpecificHelpers {
@@ -16,8 +13,16 @@ interface GeneralPlatformSpecificHelpers {
      */
     fun allowPortrait(allow: Boolean) {}
 
+    /**
+     * Checks if the device has a camera notch
+     */
     fun hasDisplayCutout(): Boolean { return false }
     fun toggleDisplayCutout(androidCutout: Boolean) {}
+
+    /**
+     * Verifies if the game was installed from GP
+     */
+    fun isInstalledFromGP(): Boolean { return false }
 
     /**
      * Notifies the user that it's their turn while the game is running
