@@ -227,6 +227,10 @@ class UncivFiles(
         return gameInfoFromString(gameFile.readString())
     }
 
+    fun loadGamePreviewFromFile(gameFile: FileHandle): GameInfoPreview {
+        return json().fromJson(GameInfoPreview::class.java, gameFile)
+    }
+
     fun loadMultiplayerGameStatusByName(gameName: String) =
             loadMultiplayerGameStatusFromFile(getMultiplayerGameStatusFile(gameName))
 

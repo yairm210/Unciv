@@ -539,6 +539,15 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     //endregion
 }
 
+/**
+ * Reduced variant of [GameInfo] used for load preview.
+ */
+class GameInfoPreview private constructor() { // constructor only for serialization
+    var civilizations = mutableListOf<CivilizationInfoPreview>()
+    var difficulty = "Chieftain"
+    var gameParameters = GameParameters()
+    var turns = 0
+}
 
 /** Class to use when parsing jsons if you only want the serialization [version]. */
 class GameInfoSerializationVersion : HasGameInfoSerializationVersion {
