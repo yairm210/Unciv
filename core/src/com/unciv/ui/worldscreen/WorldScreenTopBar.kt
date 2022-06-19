@@ -131,11 +131,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     }
 
     private fun getResourceTable(): Table {
-        // Since cells with invisible actors still occupy the full actor dimensions, we only prepare
-        // the future contents for resourcesWrapper here, they're added to the Table in updateResourcesTable
-        val resourceTable = Table()
-        resourcesWrapper.defaults().pad(5f, 5f, 10f, 5f)
-        resourcesWrapper.touchable = Touchable.enabled
+        val resourceTable = Table() // Must always exist because of return resourceTable
 
         turnsLabel.onClick {
             if (worldScreen.selectedCiv.isLongCountDisplay()) {
@@ -145,25 +141,30 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
                 worldScreen.game.setScreen(VictoryScreen(worldScreen))
             }
         }
-        resourcesWrapper.onClick {
-            worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Resources"))
-        }
 
         val strategicResources = worldScreen.gameInfo.ruleSet.tileResources.values
             .filter { it.resourceType == ResourceType.Strategic }
-        for (resource in strategicResources) {
-            val resourceImage = ImageGetter.getResourceImage(resource.name, 20f)
-            val resourceLabel = "0".toLabel()
-            resourceActors += ResourceActors(resource, resourceLabel, resourceImage)
-        }
+        if (strategicResources.isNotEmpty()) {
+            for (resource in strategicResources) {
+                val resourceImage = ImageGetter.getResourceImage(resource.name, 20f)
+                val resourceLabel = "0".toLabel()
+                resourceActors += ResourceActors(resource, resourceLabel, resourceImage)
+            }
+            // Since cells with invisible actors still occupy the full actor dimensions, we only prepare
+            // the future contents for resourcesWrapper here, they're added to the Table in updateResourcesTable
+            resourcesWrapper.defaults().pad(5f, 5f, 10f, 5f)
+            resourcesWrapper.touchable = Touchable.enabled
 
-        // in case the icons are configured higher than a label, we add a dummy - height will be measured once before it's updated
-        if (resourceActors.isNotEmpty()) {
+            resourcesWrapper.onClick {
+                worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Resources"))
+            }
+
             resourcesWrapper.add(resourceActors[0].icon)
             resourceTable.add(resourcesWrapper)
         }
 
-        resourceTable.add(turnsLabel).pad(5f, 5f, 10f, 5f)
+        // in case the icons are configured higher than a label, we add a dummy - height will be measured once before it's updated
+        resourceTable.add(turnsLabel).pad(5f, 5f, 10f, 5f) // Without this, the UI looks disjointed and odd
 
         return resourceTable
     }
