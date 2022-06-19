@@ -20,7 +20,7 @@ interface GeneralPlatformSpecificHelpers {
     fun toggleDisplayCutout(androidCutout: Boolean) {}
 
     /**
-     * Verifies if the game was installed from GP
+     * Verifies if the game was installed from Google Play
      */
     fun isInstalledFromGP(): Boolean { return false }
 

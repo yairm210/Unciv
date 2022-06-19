@@ -56,7 +56,7 @@ Sources for Info about current orientation in case need:
     }
 
     /**
-     * Verifies if the game was installed from GP
+     * Verifies if the game was installed from Google Play
      */
     @Suppress("DEPRECATION")
     override fun isInstalledFromGP(): Boolean {
