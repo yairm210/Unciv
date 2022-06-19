@@ -1,5 +1,6 @@
 ﻿package com.unciv
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
@@ -236,7 +237,8 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             if (!shouldUpdate) {
                 ToastPopup("Game is already up-to-date!", this)
             } else {
-                ToastPopup("open download link instead of popup", this)
+                ToastPopup("Launching browser...", this)
+                Gdx.net.openURI("https://github.com/yairm210/Unciv/releases/latest");
             }
         }
         updateButton.keyShortcuts.add(Input.Keys.F2)
