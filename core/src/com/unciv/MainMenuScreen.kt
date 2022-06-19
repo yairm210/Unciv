@@ -26,6 +26,7 @@ import com.unciv.ui.mapeditor.MapEditorScreen
 import com.unciv.ui.multiplayer.MultiplayerScreen
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.ModManagementScreen
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.popup.closeAllPopups
@@ -218,7 +219,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             if (latestVersion > UncivGame.Current.version) {
                 addUpdateButton(Color.YELLOW, true)
             } else {
-                addUpdateButton(ImageGetter.getBlue(), false)
+                addUpdateButton(ImageGetter.getBlue(), true)
             }
         }
     }
@@ -237,8 +238,10 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             if (!shouldUpdate) {
                 ToastPopup("Game is already up-to-date!", this)
             } else {
-                ToastPopup("Launching browser...", this)
-                Gdx.net.openURI("https://github.com/yairm210/Unciv/releases/latest");
+                ConfirmPopup(this, "Open browser to download the new update?", "Open browser", true) {
+                    ToastPopup("Launching browser...", this)
+                    Gdx.net.openURI("https://github.com/yairm210/Unciv/releases/latest")
+                }.open()
             }
         }
         updateButton.keyShortcuts.add(Input.Keys.F2)
