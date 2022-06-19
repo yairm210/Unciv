@@ -48,6 +48,10 @@ import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.worldscreen.mainmenu.WorldScreenMenuPopup
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
+import java.io.IOException
+import java.io.InputStream
+import java.net.URL
+import java.util.*
 import kotlin.math.min
 
 
@@ -205,6 +209,16 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         helpButton.addTooltip(KeyCharAndCode(Input.Keys.F1), 20f)
         helpButton.setPosition(20f, 20f)
         stage.addActor(helpButton)
+
+
+        val latestVersion = checkForUpdates()
+        if (latestVersion > UncivGame.Current.version) {
+            // put link to actual download page or have a popup which does this
+            ToastPopup("A new version is now available!", stage, 10000)
+        } else {
+            //this is just for debugging and would be removed
+            ToastPopup("current version", stage, 10000)
+        }
     }
 
 
@@ -259,4 +273,30 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
     }
 
     override fun recreate(): BaseScreen = MainMenuScreen()
+
+    fun checkForUpdates(): String {
+        var response: InputStream? = null
+        var version = ""
+        try {
+            val url = "https://github.com/yairm210/Unciv/releases/latest"
+            response = URL(url).openStream()
+            val scanner = Scanner(response)
+            val responseBody = scanner.useDelimiter("\\A").next()
+
+            version = responseBody.substring(
+                responseBody.indexOf("<title>") + 7,
+                responseBody.indexOf("</title>")
+            )
+            version = version.removePrefix("Release ").removeSuffix(" · yairm210/Unciv · GitHub")
+        } catch (ex: IOException) {
+            ex.printStackTrace()
+        } finally {
+            try {
+                response!!.close()
+            } catch (ex: IOException) {
+                ex.printStackTrace()
+            }
+        }
+        return version
+    }
 }
