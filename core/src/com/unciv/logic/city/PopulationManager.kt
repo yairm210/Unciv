@@ -167,9 +167,9 @@ class PopulationManager {
         // unassign specialists that cannot be (e.g. the city was captured and one of the specialist buildings was destroyed)
         val maxSpecialists = getMaxSpecialists()
         val specialistsHashmap = specialistAllocations
-        for ((specialistName, amount) in maxSpecialists)
-            if (specialistsHashmap[specialistName]!! > amount)
-                specialistAllocations[specialistName] = amount
+        for ((specialistName, amount) in specialistsHashmap)
+            if (amount > maxSpecialists[specialistName]!!)
+                specialistAllocations[specialistName] = maxSpecialists[specialistName]!!
 
 
 
@@ -188,25 +188,33 @@ class PopulationManager {
             else Automation.rankTileForCityWork(worstWorkedTile, cityInfo, cityInfo.cityStats.currentCityStats)
 
             //evaluate specialists
-            val worstJob: String? = if (cityInfo.manualSpecialists) null else specialistAllocations.keys
+            val worstAutoJob: String? = if (cityInfo.manualSpecialists) null else specialistAllocations.keys
                     .minByOrNull { Automation.rankSpecialist(it, cityInfo, cityInfo.cityStats.currentCityStats) }
             var valueWorstSpecialist = 0f
-            if (worstJob != null)
-                valueWorstSpecialist = Automation.rankSpecialist(worstJob, cityInfo, cityInfo.cityStats.currentCityStats)
+            if (worstAutoJob != null)
+                valueWorstSpecialist = Automation.rankSpecialist(worstAutoJob, cityInfo, cityInfo.cityStats.currentCityStats)
 
 
-            //un-assign population
-            if (worstWorkedTile != null && valueWorstTile < valueWorstSpecialist) {
-                cityInfo.workedTiles = cityInfo.workedTiles.withoutItem(worstWorkedTile.position)
-            } else if (worstJob != null) specialistAllocations.add(worstJob, -1)
-            else {
-                // It happens when "cityInfo.manualSpecialists == true"
-                //  and population goes below the number of specialists, e.g. city is razing.
-                // Let's give a chance to do the work automatically at least.
-                val worstAutoJob = specialistAllocations.keys.minByOrNull {
-                    Automation.rankSpecialist(it, cityInfo, cityInfo.cityStats.currentCityStats) }
-                    ?: break // sorry, we can do nothing about that
-                specialistAllocations.add(worstAutoJob, -1)
+            // un-assign population
+            when {
+                worstAutoJob != null && worstWorkedTile != null -> {
+                    // choose between removing a specialist and removing a tile
+                    if (valueWorstTile < valueWorstSpecialist)
+                        cityInfo.workedTiles = cityInfo.workedTiles.withoutItem(worstWorkedTile.position)
+                    else
+                        specialistAllocations.add(worstAutoJob, -1)
+                }
+                worstAutoJob != null -> specialistAllocations.add(worstAutoJob, -1)
+                worstWorkedTile != null -> cityInfo.workedTiles = cityInfo.workedTiles.withoutItem(worstWorkedTile.position)
+                else -> {
+                    // It happens when "cityInfo.manualSpecialists == true"
+                    //  and population goes below the number of specialists, e.g. city is razing.
+                    // Let's give a chance to do the work automatically at least.
+                    val worstJob = specialistAllocations.keys.minByOrNull {
+                        Automation.rankSpecialist(it, cityInfo, cityInfo.cityStats.currentCityStats) }
+                        ?: break // sorry, we can do nothing about that
+                    specialistAllocations.add(worstJob, -1)
+                }
             }
         }
 
