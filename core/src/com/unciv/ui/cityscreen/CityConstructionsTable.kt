@@ -23,7 +23,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.Popup
-import com.unciv.ui.popup.YesNoPopup
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.closeAllPopups
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ExpanderTab
@@ -36,6 +36,8 @@ import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.getConsumesAmountString
 import com.unciv.ui.utils.extensions.isEnabled
+import com.unciv.ui.utils.extensions.keyShortcuts
+import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.packIfNeeded
 import com.unciv.ui.utils.extensions.surroundWithCircle
@@ -469,11 +471,12 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             val constructionBuyCost = construction.getStatBuyCost(city, stat)!!
             button.setText("Buy".tr() + " " + constructionBuyCost + stat.character)
 
-            button.onClick {
+            button.onActivation {
                 button.disable()
                 buyButtonOnClick(construction, stat)
             }
             button.isEnabled = isConstructionPurchaseAllowed(construction, stat, constructionBuyCost)
+            button.keyShortcuts.add('B')
             button.addTooltip('B')  // The key binding is done in CityScreen constructor
             preferredBuyStat = stat  // Not very intelligent, but the least common currency "wins"
         }
@@ -514,9 +517,11 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         val purchasePrompt = "Currently you have [${city.getStatReserve(stat)}] [${stat.name}].".tr() + "\n\n" +
                 "Would you like to purchase [${construction.name}] for [$constructionBuyCost] [${stat.character}]?".tr()
-        YesNoPopup(
+        ConfirmPopup(
+            cityScreen,
             purchasePrompt,
-            screen = cityScreen,
+            "Purchase",
+            true,
             restoreDefault = { cityScreen.update() }
         ) { purchaseConstruction(construction, stat, tile) }.open()
     }

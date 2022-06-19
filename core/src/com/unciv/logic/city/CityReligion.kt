@@ -4,7 +4,6 @@ import com.unciv.Constants
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.Counter
 import com.unciv.models.Religion
-import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.utils.extensions.toPercent
@@ -23,14 +22,7 @@ class CityInfoReligionManager {
     private val followers: Counter<String> = Counter()
 
     @delegate:Transient
-    private val pressureFromAdjacentCities: Int by lazy {
-        when (cityInfo.civInfo.gameInfo.gameParameters.gameSpeed) {
-            GameSpeed.Quick -> 9
-            GameSpeed.Standard -> 6
-            GameSpeed.Epic -> 4
-            GameSpeed.Marathon -> 2
-        }
-    }
+    private val pressureFromAdjacentCities: Int by lazy { cityInfo.civInfo.gameInfo.speed.religiousPressureAdjacentCity }
 
     var religionThisIsTheHolyCityOf: String? = null
 

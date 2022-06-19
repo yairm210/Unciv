@@ -9,13 +9,13 @@ import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
 
 
 /** Main stage for the game. Catches all exceptions or errors thrown by event handlers, calling [com.unciv.UncivGame.handleUncaughtThrowable] with the thrown exception or error. */
-class UncivStage(viewport: Viewport, batch: Batch) : Stage(viewport, batch) {
+class UncivStage(viewport: Viewport) : Stage(viewport) {
 
     /**
      * Enables/disables sending pointer enter/exit events to actors on this stage.
      * Checking for the enter/exit bounds is a relatively expensive operation and may thus be disabled temporarily.
      */
-    var performPointerEnterExitEvents: Boolean = false
+    var performPointerEnterExitEvents: Boolean = true
 
     override fun draw() =
         { super.draw() }.wrapCrashHandlingUnit()()

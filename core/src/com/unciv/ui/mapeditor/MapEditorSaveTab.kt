@@ -1,7 +1,6 @@
 package com.unciv.ui.mapeditor
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -12,12 +11,14 @@ import com.unciv.logic.map.TileMap
 import com.unciv.models.translations.tr
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.popup.YesNoPopup
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.utils.AutoScrollPane
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.TabbedPager
 import com.unciv.ui.utils.extensions.isEnabled
+import com.unciv.ui.utils.extensions.keyShortcuts
+import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.onChange
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toTextButton
@@ -49,13 +50,15 @@ class MapEditorSaveTab(
 
         val buttonTable = Table(skin)
         buttonTable.defaults().pad(10f).fillX()
-        saveButton.onClick(this::saveHandler)
+        saveButton.onActivation { saveHandler() }
+        saveButton.keyShortcuts.add(KeyCharAndCode.RETURN)
         mapNameTextField.onChange {
             saveButton.isEnabled = mapNameTextField.text.isNotBlank()
         }
         buttonTable.add(saveButton)
 
-        deleteButton.onClick(this::deleteHandler)
+        deleteButton.onActivation { deleteHandler() }
+        deleteButton.keyShortcuts.add(KeyCharAndCode.DEL)
         buttonTable.add(deleteButton)
 
         quitButton.onClick(editorScreen::closeEditor)
@@ -78,7 +81,11 @@ class MapEditorSaveTab(
 
     private fun deleteHandler() {
         if (chosenMap == null) return
-        YesNoPopup("Are you sure you want to delete this map?", editorScreen) {
+        ConfirmPopup(
+            editorScreen,
+            "Are you sure you want to delete this map?",
+            "Delete map",
+        ) {
             chosenMap!!.delete()
             mapFiles.update()
         }.open()
@@ -87,15 +94,10 @@ class MapEditorSaveTab(
     override fun activated(index: Int, caption: String, pager: TabbedPager) {
         pager.setScrollDisabled(true)
         mapFiles.update()
-        editorScreen.keyPressDispatcher[KeyCharAndCode.RETURN] = this::saveHandler
-        editorScreen.keyPressDispatcher[KeyCharAndCode.DEL] = this::deleteHandler
-        editorScreen.keyPressDispatcher[Input.Keys.UP] = { mapFiles.moveSelection(-1) }
-        editorScreen.keyPressDispatcher[Input.Keys.DOWN] = { mapFiles.moveSelection(1) }
         selectFile(null)
     }
 
     override fun deactivated(index: Int, caption: String, pager: TabbedPager) {
-        editorScreen.keyPressDispatcher.revertToCheckPoint()
         pager.setScrollDisabled(false)
         stage.keyboardFocus = null
     }

@@ -156,7 +156,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         if (wltkLabel != null) {
             tableWithIcons.add(wltkIcon!!).size(20f).padRight(5f)
             wltkLabel.onClick {
-                UncivGame.Current.setScreen(CivilopediaScreen(cityInfo.getRuleset(), cityScreen, link = "We Love The King Day"))
+                UncivGame.Current.pushScreen(CivilopediaScreen(cityInfo.getRuleset(), link = "We Love The King Day"))
             }
             tableWithIcons.add(wltkLabel).row()
         }

@@ -24,7 +24,7 @@ class Terrain : RulesetStatsObject() {
     val occursOn = ArrayList<String>()
 
     /** Used by Natural Wonders: it is the baseTerrain on top of which the Natural Wonder is placed */
-    val turnsInto: String? = null
+    var turnsInto: String? = null
 
     override fun getUniqueTarget() = UniqueTarget.Terrain
 

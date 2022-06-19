@@ -2,7 +2,6 @@ package com.unciv.ui.mapeditor
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.map.MapParameters
@@ -17,11 +16,12 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.RecreateOnResize
 import com.unciv.ui.worldscreen.ZoomButtonPair
 
 
@@ -47,7 +47,7 @@ import com.unciv.ui.worldscreen.ZoomButtonPair
 //todo See #6694 - allow adding tiles to a map (1 cell all around on hex? world-wrapped hex?? all around on rectangular? top bottom only on world-wrapped??)
 //todo move map copy&paste to save/load??
 
-class MapEditorScreen(map: TileMap? = null): BaseScreen() {
+class MapEditorScreen(map: TileMap? = null): BaseScreen(), RecreateOnResize {
     /** The map being edited, with mod list for that map */
     var tileMap: TileMap
     /** Flag indicating the map should be saved */
@@ -97,10 +97,9 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen() {
         // so all levels select to show the tab in question is too complex. Sub-Tabs need to maintain
         // the key binding here and the used key in their `addPage`s again for the tooltips.
         fun selectGeneratePage(index: Int) { tabs.run { selectPage(1); generate.selectPage(index) } }
-        keyPressDispatcher[KeyCharAndCode.ctrl('n')] = { selectGeneratePage(0) }
-        keyPressDispatcher[KeyCharAndCode.ctrl('g')] = { selectGeneratePage(1) }
-        keyPressDispatcher[KeyCharAndCode.BACK] = this::closeEditor
-        keyPressDispatcher.setCheckpoint()
+        globalShortcuts.add(KeyCharAndCode.ctrl('n')) { selectGeneratePage(0) }
+        globalShortcuts.add(KeyCharAndCode.ctrl('g')) { selectGeneratePage(1) }
+        globalShortcuts.add(KeyCharAndCode.BACK) { closeEditor() }
     }
 
     companion object {
@@ -184,16 +183,17 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen() {
     }
 
     internal fun closeEditor() {
-        askIfDirty("Do you want to leave without saving the recent changes?") {
-            game.setScreen(MainMenuScreen())
+        askIfDirty(
+            "Do you want to leave without saving the recent changes?",
+            "Leave"
+        ) {
+            game.popScreen()
         }
     }
 
-    fun askIfDirty(question: String, action: ()->Unit) {
+    fun askIfDirty(question: String, confirmText: String, isConfirmPositive: Boolean = false, action: ()->Unit) {
         if (!isDirty) return action()
-        YesNoPopup(question, screen = this, restoreDefault = {
-            keyPressDispatcher[KeyCharAndCode.BACK] = this::closeEditor
-        }, action).open()
+        ConfirmPopup(screen = this, question, confirmText, isConfirmPositive, action = action).open()
     }
 
     fun hideSelection() {
@@ -243,9 +243,5 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen() {
         params.mapSize = MapSizeNew((maxLongitude - minLongitude + 1), (maxLatitude - minLatitude + 1) / 2)
     }
 
-    override fun resize(width: Int, height: Int) {
-        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
-            game.setScreen(MapEditorScreen(tileMap))
-        }
-    }
+    override fun recreate(): BaseScreen = MapEditorScreen(tileMap)
 }

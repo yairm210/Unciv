@@ -10,11 +10,13 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.models.translations.tr
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.popup.YesNoPopup
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.enable
+import com.unciv.ui.utils.extensions.keyShortcuts
+import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
@@ -31,15 +33,18 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
         rightSideTable.initRightSideTable()
 
         rightSideButton.setText("Save game".tr())
-        val saveAction = {
+        rightSideButton.onActivation {
             if (game.gameSaver.getSave(gameNameTextField.text).exists())
-                YesNoPopup("Overwrite existing file?", this) { saveGame() }.open()
+                ConfirmPopup(
+                    this,
+                    "Overwrite existing file?",
+                    "Overwrite",
+                ) { saveGame() }.open()
             else saveGame()
         }
-        rightSideButton.onClick(saveAction)
+        rightSideButton.keyShortcuts.add(KeyCharAndCode.RETURN)
         rightSideButton.enable()
 
-        keyPressDispatcher[KeyCharAndCode.RETURN] = saveAction
         stage.keyboardFocus = gameNameTextField
     }
 
@@ -47,9 +52,9 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
         addGameNameField()
 
         val copyJsonButton = "Copy to clipboard".toTextButton()
-        copyJsonButton.onClick(::copyToClipboardHandler)
+        copyJsonButton.onActivation { copyToClipboardHandler() }
         val ctrlC = KeyCharAndCode.ctrl('c')
-        keyPressDispatcher[ctrlC] = ::copyToClipboardHandler
+        copyJsonButton.keyShortcuts.add(ctrlC)
         copyJsonButton.addTooltip(ctrlC)
         add(copyJsonButton).row()
 
@@ -97,7 +102,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
                         errorLabel.setText("Could not save game to custom location!".tr())
                         result.exception?.printStackTrace()
                     } else if (result.isSuccessful()) {
-                        game.resetToWorldScreen()
+                        game.popScreen()
                     }
                     saveToCustomLocation.enable()
                 }
@@ -113,7 +118,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
             game.gameSaver.saveGame(gameInfo, gameNameTextField.text) {
                 launchOnGLThread {
                     if (it != null) ToastPopup("Could not save game!", this@SaveGameScreen)
-                    else UncivGame.Current.resetToWorldScreen()
+                    else UncivGame.Current.popScreen()
                 }
             }
         }

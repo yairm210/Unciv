@@ -13,13 +13,15 @@ import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.tr
-import com.unciv.ui.popup.YesNoPopup
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.FontFamilyData
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.UncivSlider
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.keyShortcuts
+import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.onChange
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.setFontColor
@@ -146,7 +148,7 @@ private fun addTranslationGeneration(table: Table, optionsPopup: OptionsPopup) {
 
     val generateTranslationsButton = "Generate translation files".toTextButton()
 
-    val generateAction: () -> Unit = {
+    generateTranslationsButton.onActivation {
         optionsPopup.tabs.selectPage("Advanced")
         generateTranslationsButton.setText("Working...".tr())
         Concurrency.run("WriteTranslations") {
@@ -159,8 +161,7 @@ private fun addTranslationGeneration(table: Table, optionsPopup: OptionsPopup) {
         }
     }
 
-    generateTranslationsButton.onClick(generateAction)
-    optionsPopup.keyPressDispatcher[Input.Keys.F12] = generateAction
+    generateTranslationsButton.keyShortcuts.add(Input.Keys.F12)
     generateTranslationsButton.addTooltip("F12", 18f)
     table.add(generateTranslationsButton).colspan(2).row()
 }
@@ -172,7 +173,11 @@ private fun addSetUserId(table: Table, settings: GameSettings) {
             try {
                 val clipboardContents = Gdx.app.clipboard.contents.trim()
                 UUID.fromString(clipboardContents)
-                YesNoPopup("Doing this will reset your current user ID to the clipboard contents - are you sure?",table.stage) {
+                ConfirmPopup(
+                    table.stage,
+                    "Doing this will reset your current user ID to the clipboard contents - are you sure?",
+                    "Take user ID from clipboard"
+                ) {
                     settings.multiplayer.userId = clipboardContents
                     settings.save()
                     idSetLabel.setFontColor(Color.WHITE).setText("ID successfully set!".tr())

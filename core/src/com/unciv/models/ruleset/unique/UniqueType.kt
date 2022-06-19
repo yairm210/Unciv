@@ -20,6 +20,7 @@ enum class UniqueTarget(val inheritsFrom: UniqueTarget? = null) {
     // Civilization-specific
     Nation(Global),
     Era(Global),
+    Speed(Global),
     Tech(Global),
     Policy(Global),
     FounderBelief(Global),

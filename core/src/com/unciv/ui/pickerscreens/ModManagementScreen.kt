@@ -22,17 +22,21 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.pickerscreens.ModManagementOptions.SortType
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.popup.YesNoPopup
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.utils.AutoScrollPane
+import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ExpanderTab
 import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.RecreateOnResize
 import com.unciv.ui.utils.WrappableLabel
 import com.unciv.ui.utils.extensions.UncivDateFormat.formatDate
 import com.unciv.ui.utils.extensions.UncivDateFormat.parseDate
 import com.unciv.ui.utils.extensions.addSeparator
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.enable
+import com.unciv.ui.utils.extensions.keyShortcuts
 import com.unciv.ui.utils.extensions.isEnabled
+import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toCheckBox
 import com.unciv.ui.utils.extensions.toLabel
@@ -52,7 +56,7 @@ import kotlin.math.max
 class ModManagementScreen(
     previousInstalledMods: HashMap<String, ModUIData>? = null,
     previousOnlineMods: HashMap<String, ModUIData>? = null
-): PickerScreen(disableScroll = true) {
+): PickerScreen(disableScroll = true), RecreateOnResize {
 
     private val modTable = Table().apply { defaults().pad(10f) }
     private val scrollInstalledMods = AutoScrollPane(modTable)
@@ -95,15 +99,14 @@ class ModManagementScreen(
 
     init {
         //setDefaultCloseAction(screen) // this would initialize the new MainMenuScreen immediately
-        val closeAction = {
+        closeButton.onActivation {
             val tileSets = ImageGetter.getAvailableTilesets()
             if (game.settings.tileSet !in tileSets) {
                 game.settings.tileSet = tileSets.first()
             }
-            game.setScreen(MainMenuScreen())
+            game.popScreen()
         }
-        closeButton.onClick(closeAction)
-        onBackButtonClicked(closeAction)
+        closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
 
         val labelWidth = max(stage.width / 2f - 60f,60f)
         modDescriptionLabel = WrappableLabel("", labelWidth)
@@ -122,8 +125,6 @@ class ModManagementScreen(
 
         if (isNarrowerThan4to3()) initPortrait()
         else initLandscape()
-
-        keyPressDispatcher[KeyCharAndCode.RETURN] = optionsManager.filterAction
 
         if (onlineModInfo.isEmpty())
             reloadOnlineMods()
@@ -528,21 +529,23 @@ class ModManagementScreen(
     private fun installedButtonAction(mod: ModUIData) {
         syncInstalledSelected(mod.name, mod.button)
         refreshInstalledModActions(mod.ruleset!!)
-        rightSideButton.setText("Delete [${mod.name}]".tr())
+        val deleteText = "Delete [${mod.name}]"
+        rightSideButton.setText(deleteText.tr())
         // Don't let the player think he can delete Vanilla and G&K rulesets
         rightSideButton.isEnabled = mod.ruleset.folderLocation!=null
         showModDescription(mod.name)
         rightSideButton.clearListeners()
         rightSideButton.onClick {
             rightSideButton.isEnabled = false
-            YesNoPopup(
+            ConfirmPopup(
+                screen = this,
                 question = "Are you SURE you want to delete this mod?",
+                confirmText = deleteText,
                 action = {
                     deleteMod(mod.ruleset)
                     modActionTable.clear()
                     rightSideButton.setText("[${mod.name}] was deleted.".tr())
                 },
-                screen = this,
                 restoreDefault = { rightSideButton.isEnabled = true }
             ).open()
         }
@@ -591,11 +594,7 @@ class ModManagementScreen(
         modDescriptionLabel.setText(onlineModDescription + separator + installedModDescription)
     }
 
-    override fun resize(width: Int, height: Int) {
-        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
-            game.setScreen(ModManagementScreen(installedModInfo, onlineModInfo))
-        }
-    }
+    override fun recreate(): BaseScreen = ModManagementScreen(installedModInfo, onlineModInfo)
 
     companion object {
         val modsToHideAsUrl by lazy {

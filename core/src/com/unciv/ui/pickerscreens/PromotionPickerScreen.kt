@@ -12,13 +12,16 @@ import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.AskTextPopup
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.RecreateOnResize
 import com.unciv.ui.utils.extensions.isEnabled
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.surroundWithCircle
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
 
-class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
+class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResize {
     private var selectedPromotion: Promotion? = null
 
     private fun acceptPromotion(promotion: Promotion?) {
@@ -27,13 +30,12 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
 
         unit.promotions.addPromotion(promotion.name)
         if (unit.promotions.canBePromoted())
-            game.setScreen(PromotionPickerScreen(unit).setScrollY(scrollPane.scrollY))
+            game.replaceCurrentScreen(recreate())
         else
-            game.resetToWorldScreen()
+            game.popScreen()
     }
 
     init {
-        onBackButtonClicked { UncivGame.Current.resetToWorldScreen() }
         setDefaultCloseAction()
 
         rightSideButton.setText("Pick promotion".tr())
@@ -67,7 +69,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
                     validate = { it != unit.name},
                     actionOnOk = { userInput ->
                         unit.instanceName = userInput
-                        this.game.setScreen(PromotionPickerScreen(unit))
+                        this.game.replaceCurrentScreen(PromotionPickerScreen(unit))
                     }
                 ).open()
             }
@@ -111,16 +113,15 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
         displayTutorial(Tutorial.Experience)
     }
 
-    private fun setScrollY(scrollY: Float): PromotionPickerScreen {
+    private fun setScrollY(scrollY: Float) {
         splitPane.pack()    // otherwise scrollPane.maxY == 0
         scrollPane.scrollY = scrollY
         scrollPane.updateVisualScroll()
-        return this
     }
 
-    override fun resize(width: Int, height: Int) {
-        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
-            game.setScreen(PromotionPickerScreen(unit).setScrollY(scrollPane.scrollY))
-        }
+    override fun recreate(): BaseScreen {
+        val newScreen = PromotionPickerScreen(unit)
+        newScreen.setScrollY(scrollPane.scrollY)
+        return newScreen
     }
 }
