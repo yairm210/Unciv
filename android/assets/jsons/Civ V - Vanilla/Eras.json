@@ -14,7 +14,6 @@
         "embarkDefense": 3,
         "startPercent": 0,
         "citySound": "cityAncient",
-        "cityWLTKSound": "cityWLTKOld",
         "friendBonus": {
             "Cultured": ["Provides [+3 Culture] per turn"],
             "Maritime": ["Provides [+2 Food] [in capital] per turn"],
@@ -45,7 +44,6 @@
         "embarkDefense": 4,
         "startPercent": 10,
         "citySound": "cityClassical",
-        "cityWLTKSound": "cityWLTKOld",
         "friendBonus": {
             "Cultured": ["Provides [+3 Culture] per turn"],
             "Maritime": ["Provides [+2 Food] [in capital] per turn"],
@@ -78,7 +76,6 @@
         "embarkDefense": 6,
         "startPercent": 25,
         "citySound": "cityMedieval",
-        "cityWLTKSound": "cityWLTKOld",
         "friendBonus": {
             "Cultured": ["Provides [+6 Culture] per turn"],
             "Maritime": ["Provides [+2 Food] [in capital] per turn"],
@@ -112,7 +109,6 @@
         "embarkDefense": 8,
         "startPercent": 37,
         "citySound": "cityRenaissance",
-        "cityWLTKSound": "cityWLTKOld",
         "friendBonus": {
             "Cultured": ["Provides [+6 Culture] per turn"],
             "Maritime": ["Provides [+2 Food] [in capital] per turn"],
@@ -147,7 +143,6 @@
         "embarkDefense": 10,
         "startPercent": 50,
         "citySound": "cityIndustrial",
-        "cityWLTKSound": "cityWLTKOld",
         "friendBonus": {
             "Cultured": ["Provides [+13 Culture] per turn"],
             "Maritime": ["Provides [+2 Food] [in capital] per turn"],
@@ -183,7 +178,6 @@
         "embarkDefense": 13,
         "startPercent": 65,
         "citySound": "cityModern",
-        "cityWLTKSound": "cityWLTKNew",
         "friendBonus": {
             "Cultured": ["Provides [+13 Culture] per turn"],
             "Maritime": ["Provides [+2 Food] [in capital] per turn"],
@@ -220,7 +214,6 @@
         "embarkDefense": 16,
         "startPercent": 65,
         "citySound": "cityAtomic",
-        "cityWLTKSound": "cityWLTKNew",
         "friendBonus": {
             "Cultured": ["Provides [+13 Culture] per turn"],
             "Maritime": ["Provides [+2 Food] [in capital] per turn"],
@@ -261,7 +254,6 @@
         // But where is the modularity? The excluding of very specific wonders? That is no fun.
         // So we just write down the entire long list (sorted by era!) instead.
         "citySound": "cityInformation",
-        "cityWLTKSound": "cityWLTKNew",
         "friendBonus": {
             "Cultured": ["Provides [+13 Culture] per turn"],
             "Maritime": ["Provides [+2 Food] [in capital] per turn"],
@@ -302,7 +294,6 @@
         "embarkDefense": 25,
         "startPercent": 80,
         "citySound": "cityFuture",
-        "cityWLTKSound": "cityWLTKNew",
         "friendBonus": {
             "Cultured": ["Provides [+13 Culture] per turn"],
             "Maritime": ["Provides [+2 Food] [in capital] per turn"],
