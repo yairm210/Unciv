@@ -30,9 +30,8 @@ import com.unciv.utils.concurrency.launchOnGLThread
 import java.time.Duration
 import java.time.temporal.ChronoUnit
 
-fun multiplayerTab(
-    optionsPopup: OptionsPopup
-): Table {
+fun OptionsPopup.multiplayerTab(): Table {
+    val optionsPopup = this
     val tab = Table(BaseScreen.skin)
     tab.pad(10f)
     tab.defaults().pad(5f)

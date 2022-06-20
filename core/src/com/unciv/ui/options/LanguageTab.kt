@@ -6,10 +6,10 @@ import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.LanguageTable.Companion.addLanguageTables
 import com.unciv.ui.utils.extensions.onClick
 
-fun languageTab(
-    optionsPopup: OptionsPopup,
+fun OptionsPopup.languageTab(
     onLanguageSelected: () -> Unit
 ): Table = Table(BaseScreen.skin).apply {
+    val optionsPopup = this@languageTab
     val settings = optionsPopup.settings
 
     val languageTables = this.addLanguageTables(optionsPopup.tabs.prefWidth * 0.9f - 10f)

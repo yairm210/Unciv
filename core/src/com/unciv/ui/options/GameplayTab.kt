@@ -8,9 +8,8 @@ import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.UncivSlider
 import com.unciv.ui.utils.extensions.toLabel
 
-fun gameplayTab(
-    optionsPopup: OptionsPopup
-) = Table(BaseScreen.skin).apply {
+fun OptionsPopup.gameplayTab() = Table(BaseScreen.skin).apply {
+    val optionsPopup = this@gameplayTab
     pad(10f)
     defaults().pad(5f)
 
