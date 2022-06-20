@@ -472,7 +472,6 @@ object GameStarter {
         }
 
         var preferredTiles = freeTiles.toList()
-
         for (startBias in civ.nation.startBias) {
             preferredTiles = when {
                 startBias.equalsPlaceholderText("Avoid []") -> {
@@ -491,7 +490,6 @@ object GameStarter {
                 }
             }
         }
-
         return preferredTiles.lastOrNull() ?: freeTiles.last()
     }
 }
