@@ -73,6 +73,13 @@ object BackwardCompatibility {
             for (policy in civInfo.policies.adoptedPolicies.toList())
                 if (!ruleSet.policies.containsKey(policy))
                     civInfo.policies.adoptedPolicies.remove(policy)
+            
+            for (improvement in civInfo.lastSeenImprovement) {
+                if (!ruleSet.tileImprovements.containsKey(improvement.value)) {
+                    improvement.setValue("Ancient ruins") //improvement already removed from tilemap
+                } 
+            }
+                   
         }
     }
 
