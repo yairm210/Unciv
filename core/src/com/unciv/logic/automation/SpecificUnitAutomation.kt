@@ -257,14 +257,14 @@ object SpecificUnitAutomation {
             val applicableTiles = city.getWorkableTiles().filter {
                 it.isLand && it.resource == null && !it.isCityCenter()
                         && (unit.currentTile == it || unit.movement.canMoveTo(it))
-                        && !it.containsGreatImprovement()
+                        && !it.containsGreatImprovement() && it.canBuildImprovement(improvement, unit.civInfo)
             }
             if (applicableTiles.none()) continue
 
             val pathToCity = unit.movement.getShortestPath(city.getCenterTile())
 
             if (pathToCity.isEmpty()) continue
-            if (pathToCity.size > 2) {
+            if (pathToCity.size > 2 && unit.getTile().getCity() != city) {
                 if (unit.getTile().militaryUnit == null) return // Don't move until you're accompanied by a military unit
                 unit.movement.headTowards(city.getCenterTile())
                 return
