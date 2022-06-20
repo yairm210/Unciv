@@ -299,9 +299,9 @@ object SpecificUnitAutomation {
 
         val city = unit.civInfo.gameInfo.getCities().asSequence()
             .filter { it.religion.getMajorityReligion()?.name != unit.getReligionDisplayName() }
-            .filterNot { it.civInfo.isAtWarWith(unit.civInfo) }
+            .filter { it.civInfo.knows(unit.civInfo) && !it.civInfo.isAtWarWith(unit.civInfo) }
+            .filterNot { it.religion.isProtectedByInquisitor() }
             .minByOrNull { it.getCenterTile().aerialDistanceTo(unit.currentTile) } ?: return
-
 
         val destination = city.getTiles().asSequence()
             .filter { unit.movement.canMoveTo(it) || it == unit.getTile() }
