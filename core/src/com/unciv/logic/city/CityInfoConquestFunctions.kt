@@ -209,7 +209,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
                 // Resurrection!
                 cityConstructions.addBuilding(capitalCityIndicator())
                 for (civ in civInfo.gameInfo.civilizations) {
-                    if (civ == foundingCiv || civ == conqueringCiv || !civ.isAlive()) continue // don't need to notify these civs
+                    if (civ == foundingCiv || civ == conqueringCiv) continue // don't need to notify these civs
                     if (!civ.knows(conqueringCiv) && !civ.knows(foundingCiv)) continue
                     civ.addNotification("[$conqueringCiv] has liberated [$foundingCiv]", foundingCiv.civName, NotificationIcon.Diplomacy, conqueringCiv.civName)
                 }
