@@ -155,14 +155,12 @@ class DiplomacyScreen(
 
             leftSideTable.add(civIndicator).row()
 
-            val civName = Table()
             val civNameLabel = civ.civName.toLabel()
-            civNameLabel.color = Color.BLACK
-            civName.add(civNameLabel)
-            civName.background = ImageGetter.getRoundedEdgeRectangle(civ.nation.getInnerColor())
-            leftSideTable.add(civName).row()
+            civNameLabel.color = civ.nation.getInnerColor()
 
-            civName.onClick { updateRightSide(civ) }
+            leftSideTable.add(civNameLabel).row()
+
+            civNameLabel.onClick { updateRightSide(civ) }
             civIndicator.onClick { updateRightSide(civ) }
         }
 
