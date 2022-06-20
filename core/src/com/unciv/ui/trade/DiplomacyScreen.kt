@@ -41,6 +41,7 @@ import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.keyShortcuts
 import com.unciv.ui.utils.extensions.onActivation
@@ -156,7 +157,7 @@ class DiplomacyScreen(
             leftSideTable.add(civIndicator).row()
 
             val civNameLabel = civ.civName.toLabel()
-            civNameLabel.color = civ.nation.getInnerColor()
+            civNameLabel.color = civ.nation.getInnerColor().darken(-1f)
 
             leftSideTable.add(civNameLabel).row()
 
