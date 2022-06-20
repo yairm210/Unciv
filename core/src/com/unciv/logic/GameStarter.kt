@@ -22,8 +22,10 @@ import kotlin.collections.HashSet
 object GameStarter {
     // temporary instrumentation while tuning/debugging
     private const val consoleTimings = false
+    private lateinit var gameSetupInfo: GameSetupInfo
 
     fun startNewGame(gameSetupInfo: GameSetupInfo): GameInfo {
+        this.gameSetupInfo = gameSetupInfo
         if (consoleTimings)
             debug("\nGameStarter run with parameters %s, map %s", gameSetupInfo.gameParameters, gameSetupInfo.mapParameters)
 
@@ -467,20 +469,22 @@ object GameStarter {
         }
 
         var preferredTiles = freeTiles.toList()
-        for (startBias in civ.nation.startBias) {
-            preferredTiles = when {
-                startBias.equalsPlaceholderText("Avoid []") -> {
-                    val tileToAvoid = startBias.getPlaceholderParameters()[0]
-                    preferredTiles.filter { tile ->
-                        !tile.getTilesInDistance(1).any {
-                            it.matchesTerrainFilter(tileToAvoid)
+        if (!gameSetupInfo.gameParameters.noStartBias) {
+            for (startBias in civ.nation.startBias) {
+                preferredTiles = when {
+                    startBias.equalsPlaceholderText("Avoid []") -> {
+                        val tileToAvoid = startBias.getPlaceholderParameters()[0]
+                        preferredTiles.filter { tile ->
+                            !tile.getTilesInDistance(1).any {
+                                it.matchesTerrainFilter(tileToAvoid)
+                            }
                         }
                     }
-                }
-                startBias in tileMap.naturalWonders -> preferredTiles  // passthrough: already failed
-                else -> preferredTiles.filter { tile ->
-                    tile.getTilesInDistance(1).any {
-                        it.matchesTerrainFilter(startBias)
+                    startBias in tileMap.naturalWonders -> preferredTiles  // passthrough: already failed
+                    else -> preferredTiles.filter { tile ->
+                        tile.getTilesInDistance(1).any {
+                            it.matchesTerrainFilter(startBias)
+                        }
                     }
                 }
             }
