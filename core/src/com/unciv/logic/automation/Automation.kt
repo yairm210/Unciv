@@ -193,19 +193,18 @@ object Automation {
         if (civInfo.isCityState() || civInfo.isBarbarian())
             return false
 
-        // If there are no barbarians we are not afraid
         if (civInfo.gameInfo.gameParameters.noBarbarians)
-            return false
+            return false // If there are no barbarians we are not afraid
 
-        // Very late in the game we are not afraid
-        if (civInfo.gameInfo.turns > 200 * civInfo.gameInfo.gameParameters.gameSpeed.modifier)
-            return false
+        val speed = civInfo.gameInfo.speed
+        if (civInfo.gameInfo.turns > 200 * speed.barbarianModifier)
+            return false // Very late in the game we are not afraid
 
         var multiplier = if (civInfo.gameInfo.gameParameters.ragingBarbarians) 1.3f
         else 1f // We're slightly more afraid of raging barbs
 
         // Past the early game we are less afraid
-        if (civInfo.gameInfo.turns > 120 * civInfo.gameInfo.gameParameters.gameSpeed.modifier * multiplier)
+        if (civInfo.gameInfo.turns > 120 * speed.barbarianModifier * multiplier)
             multiplier /= 2
 
         // If we have a lot of, or no cities we are not afraid

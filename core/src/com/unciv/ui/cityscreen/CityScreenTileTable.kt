@@ -13,7 +13,7 @@ import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.civilopedia.FormattedLine.IconDisplay
 import com.unciv.ui.civilopedia.MarkupRenderer
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popup.YesNoPopup
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.closeAllPopups
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.extensions.darken
@@ -49,7 +49,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
         innerTable.pad(5f)
 
         innerTable.add( MarkupRenderer.render(selectedTile.toMarkup(city.civInfo), iconDisplay = IconDisplay.None) {
-            UncivGame.Current.setScreen(CivilopediaScreen(city.getRuleset(), cityScreen, link = it))
+            UncivGame.Current.pushScreen(CivilopediaScreen(city.getRuleset(), link = it))
         } )
         innerTable.row()
         innerTable.add(getTileStatsTable(stats)).row()
@@ -92,7 +92,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
             }
         }
         if (selectedTile.isCityCenter() && selectedTile.getCity() != city && selectedTile.getCity()!!.civInfo == city.civInfo)
-            innerTable.add("Move to city".toTextButton().onClick { cityScreen.game.setScreen(CityScreen(selectedTile.getCity()!!)) })
+            innerTable.add("Move to city".toTextButton().onClick { cityScreen.game.replaceCurrentScreen(CityScreen(selectedTile.getCity()!!)) })
 
         innerTable.pack()
         pack()
@@ -113,15 +113,17 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
 
         val purchasePrompt = "Currently you have [${city.civInfo.gold}] [Gold].".tr() + "\n\n" +
                 "Would you like to purchase [Tile] for [$goldCostOfTile] [${Stat.Gold.character}]?".tr()
-        YesNoPopup(
+        ConfirmPopup(
+            cityScreen,
             purchasePrompt,
-            screen = cityScreen,
+            "Purchase",
+            true,
             restoreDefault = { cityScreen.update() }
         ) {
             SoundPlayer.play(UncivSound.Coin)
             city.expansion.buyTile(selectedTile)
             // preselect the next tile on city screen rebuild so bulk buying can go faster
-            UncivGame.Current.setScreen(CityScreen(city, initSelectedTile = city.expansion.chooseNewTileToOwn()))
+            UncivGame.Current.replaceCurrentScreen(CityScreen(city, initSelectedTile = city.expansion.chooseNewTileToOwn()))
         }.open()
     }
 

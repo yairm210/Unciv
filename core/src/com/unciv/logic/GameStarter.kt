@@ -46,6 +46,11 @@ object GameStarter {
         val ruleset = RulesetCache.getComplexRuleset(gameInfo.gameParameters)
         val mapGen = MapGenerator(ruleset)
 
+        // Make sure that a valid game speed is loaded (catches a base ruleset not using the default game speed)
+        if (!ruleset.speeds.containsKey(gameSetupInfo.gameParameters.speed)) {
+            gameSetupInfo.gameParameters.speed = ruleset.speeds.keys.first()
+        }
+
         if (gameSetupInfo.mapParameters.name != "") runAndMeasure("loadMap") {
             tileMap = MapSaver.loadMap(gameSetupInfo.mapFile!!)
             // Don't override the map parameters - this can include if we world wrap or not!
@@ -202,8 +207,8 @@ object GameStarter {
         val startingEra = gameInfo.gameParameters.startingEra
         val era = ruleSet.eras[startingEra]!!
         for (civInfo in gameInfo.civilizations.filter { !it.isBarbarian() }) {
-            civInfo.addGold((era.startingGold * gameInfo.gameParameters.gameSpeed.modifier).toInt())
-            civInfo.policies.addCulture((era.startingCulture * gameInfo.gameParameters.gameSpeed.modifier).toInt())
+            civInfo.addGold((era.startingGold * gameInfo.speed.goldCostModifier).toInt())
+            civInfo.policies.addCulture((era.startingCulture * gameInfo.speed.cultureCostModifier).toInt())
         }
     }
 

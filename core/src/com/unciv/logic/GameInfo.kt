@@ -3,6 +3,7 @@ package com.unciv.logic
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.BackwardCompatibility.convertFortify
+import com.unciv.logic.BackwardCompatibility.convertOldGameSpeed
 import com.unciv.utils.debug
 import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
 import com.unciv.logic.BackwardCompatibility.migrateBarbarianCamps
@@ -16,12 +17,12 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.Religion
 import com.unciv.models.metadata.GameParameters
-import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import java.util.*
+import kotlin.NoSuchElementException
 
 
 class GameInfo {
@@ -54,6 +55,9 @@ class GameInfo {
 
     @Transient
     lateinit var difficultyObject: Difficulty // Since this is static game-wide, and was taking a large part of nextTurn
+
+    @Transient
+    lateinit var speed: Speed
 
     @Transient
     lateinit var currentPlayerCiv: CivilizationInfo // this is called thousands of times, no reason to search for it with a find{} every time
@@ -152,40 +156,20 @@ class GameInfo {
     }
 
     private fun getEquivalentTurn(): Int {
-        val totalTurns = 500f * gameParameters.gameSpeed.modifier
+        val totalTurns = speed.numTotalTurns()
         val startPercent = ruleSet.eras[gameParameters.startingEra]!!.startPercent
-        return turns + ((totalTurns * startPercent).toInt() / 100)
-    }
-    private class YearsToTurn(
-        // enum class with lists for each value group potentially more efficient?
-        val toTurn: Int,
-        val yearInterval: Float
-    ) {
-        companion object {
-            // Best to initialize these once only
-            val marathon = listOf(YearsToTurn(100, 15f), YearsToTurn(400, 10f), YearsToTurn(570, 5f), YearsToTurn(771, 2f), YearsToTurn(900, 1f), YearsToTurn(1080, 0.5f), YearsToTurn(1344, 0.25f), YearsToTurn(1500, 0.083333f))
-            val epic     = listOf(YearsToTurn(140, 25f), YearsToTurn(230, 15f), YearsToTurn(270, 10f), YearsToTurn(360, 5f), YearsToTurn(430, 2f), YearsToTurn(530, 1f), YearsToTurn(1500, 0.5f))
-            val standard = listOf(YearsToTurn(75, 40f), YearsToTurn(135, 25f), YearsToTurn(160, 20f), YearsToTurn(210, 10f), YearsToTurn(270, 5f), YearsToTurn(320, 2f), YearsToTurn(440, 1f), YearsToTurn(500, 0.5f))
-            val quick    = listOf(YearsToTurn(50, 60f), YearsToTurn(80, 40f), YearsToTurn(100, 30f), YearsToTurn(130, 20f), YearsToTurn(155, 10f), YearsToTurn(195, 5f), YearsToTurn(260, 2f), YearsToTurn(310, 1f))
-            fun getList(gameSpeed: GameSpeed) = when (gameSpeed) {
-                GameSpeed.Marathon -> marathon
-                GameSpeed.Epic -> epic
-                GameSpeed.Standard -> standard
-                GameSpeed.Quick -> quick
-            }
-        }
+        return turns + (totalTurns * startPercent / 100)
     }
 
     fun getYear(turnOffset: Int = 0): Int {
         val turn = getEquivalentTurn() + turnOffset
-        val yearToTurnList = YearsToTurn.getList(gameParameters.gameSpeed)
-        var year: Float = -4000f
+        val yearsToTurn = speed.yearsPerTurn
+        var year = speed.startYear
         var i = 0
         var yearsPerTurn: Float
 
-        // if macros are ever added to kotlin, this is one hell of a place for em'
         while (i < turn) {
-            yearsPerTurn = yearToTurnList.firstOrNull { i < it.toTurn }?.yearInterval ?: 0.5f
+            yearsPerTurn = (yearsToTurn.firstOrNull { i < it.untilTurn }?.yearInterval ?: yearsToTurn.last().yearInterval)
             year += yearsPerTurn
             ++i
         }
@@ -416,6 +400,8 @@ class GameInfo {
 
         updateGreatGeneralUniques()
 
+        convertOldGameSpeed()
+
         for (baseUnit in ruleSet.units.values)
             baseUnit.ruleset = ruleSet
 
@@ -430,6 +416,8 @@ class GameInfo {
         currentPlayerCiv = getCivilization(currentPlayer)
 
         difficultyObject = ruleSet.difficulties[difficulty]!!
+
+        speed = ruleSet.speeds[gameParameters.speed]!!
 
         for (religion in religions.values) religion.setTransients(this)
 

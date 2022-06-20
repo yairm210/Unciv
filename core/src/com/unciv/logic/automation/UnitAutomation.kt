@@ -435,6 +435,7 @@ object UnitAutomation {
 
         val closestEnemyCity = enemies
             .map { NextTurnAutomation.getClosestCities(unit.civInfo, it) }
+            .filterNotNull()
             .minByOrNull { it.aerialDistance }?.city2
           ?: return false // no attackable cities found
 

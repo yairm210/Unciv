@@ -70,7 +70,7 @@ class ReligionManager {
     }
 
     fun isMajorityReligionForCiv(religion: Religion): Boolean {
-        return civInfo.cities.count { it.religion.getMajorityReligion() == religion } >= civInfo.cities.size / 2
+        return civInfo.cities.count { it.religion.getMajorityReligion() == religion } > civInfo.cities.size / 2
     }
 
     fun faithForPantheon(additionalCivs: Int = 0) =
@@ -110,7 +110,7 @@ class ReligionManager {
 
         var faithCost =
             (200 + 100 * greatProphetsEarned * (greatProphetsEarned + 1) / 2f) *
-            civInfo.gameInfo.gameParameters.gameSpeed.modifier
+            civInfo.gameInfo.speed.faithCostModifier
 
         for (unique in civInfo.getMatchingUniques(UniqueType.FaithCostOfGreatProphetChange))
             faithCost *= unique.params[0].toPercent()

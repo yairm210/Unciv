@@ -4,19 +4,20 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
+import com.unciv.UncivGame
 import com.unciv.logic.IdChecker
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.utils.extensions.enable
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
 import java.util.*
 
-class EditFriendScreen(selectedFriend: FriendList.Friend, backScreen: ViewFriendsListScreen) : PickerScreen() {
+class EditFriendScreen(selectedFriend: FriendList.Friend) : PickerScreen() {
     init {
         val friendNameTextField = TextField(selectedFriend.name, skin)
         val pastePlayerIDButton = "Player ID from clipboard".toTextButton()
@@ -40,10 +41,13 @@ class EditFriendScreen(selectedFriend: FriendList.Friend, backScreen: ViewFriend
         topTable.add(gameIDTable).padBottom(30f).row()
 
         deleteFriendButton.onClick {
-            val askPopup = YesNoPopup("Are you sure you want to delete this friend?", this) {
+            val askPopup = ConfirmPopup(
+                this,
+                "Are you sure you want to delete this friend?",
+                "Delete"
+            ) {
                 friendlist.delete(selectedFriend)
-                backScreen.game.setScreen(backScreen)
-                backScreen.refreshFriendsList()
+                goBack()
             }
             askPopup.open()
         }.apply { color = Color.RED }
@@ -52,7 +56,7 @@ class EditFriendScreen(selectedFriend: FriendList.Friend, backScreen: ViewFriend
         //CloseButton Setup
         closeButton.setText("Back".tr())
         closeButton.onClick {
-            backScreen.game.setScreen(backScreen)
+            goBack()
         }
 
         //RightSideButton Setup
@@ -61,8 +65,7 @@ class EditFriendScreen(selectedFriend: FriendList.Friend, backScreen: ViewFriend
         rightSideButton.onClick {
             // if no edits have been made, go back to friends list
             if (selectedFriend.name == friendNameTextField.text && selectedFriend.playerID == playerIDTextField.text) {
-                backScreen.game.setScreen(backScreen)
-                backScreen.refreshFriendsList()
+                goBack()
             }
             if (friendlist.isFriendNameInFriendList(friendNameTextField.text) == FriendList.ErrorType.ALREADYINLIST
                     && friendlist.isFriendIDInFriendList(playerIDTextField.text) == FriendList.ErrorType.ALREADYINLIST) {
@@ -81,8 +84,14 @@ class EditFriendScreen(selectedFriend: FriendList.Friend, backScreen: ViewFriend
                 return@onClick
             }
             friendlist.edit(selectedFriend, friendNameTextField.text, playerIDTextField.text)
-            backScreen.game.setScreen(backScreen)
-            backScreen.refreshFriendsList()
+            goBack()
         }
+    }
+}
+
+fun goBack() {
+    val newScreen = UncivGame.Current.popScreen()
+    if (newScreen is ViewFriendsListScreen) {
+        newScreen.refreshFriendsList()
     }
 }
