@@ -470,25 +470,27 @@ object GameStarter {
 
         var preferredTiles = freeTiles.toList()
         if (!gameSetupInfo.gameParameters.noStartBias) {
-            for (startBias in civ.nation.startBias) {
-                preferredTiles = when {
-                    startBias.equalsPlaceholderText("Avoid []") -> {
-                        val tileToAvoid = startBias.getPlaceholderParameters()[0]
-                        preferredTiles.filter { tile ->
-                            !tile.getTilesInDistance(1).any {
-                                it.matchesTerrainFilter(tileToAvoid)
-                            }
+            return preferredTiles.lastOrNull() ?: freeTiles.last()
+        }
+        for (startBias in civ.nation.startBias) {
+            preferredTiles = when {
+                startBias.equalsPlaceholderText("Avoid []") -> {
+                    val tileToAvoid = startBias.getPlaceholderParameters()[0]
+                    preferredTiles.filter { tile ->
+                        !tile.getTilesInDistance(1).any {
+                            it.matchesTerrainFilter(tileToAvoid)
                         }
                     }
-                    startBias in tileMap.naturalWonders -> preferredTiles  // passthrough: already failed
-                    else -> preferredTiles.filter { tile ->
-                        tile.getTilesInDistance(1).any {
-                            it.matchesTerrainFilter(startBias)
-                        }
+                }
+                startBias in tileMap.naturalWonders -> preferredTiles  // passthrough: already failed
+                else -> preferredTiles.filter { tile ->
+                    tile.getTilesInDistance(1).any {
+                        it.matchesTerrainFilter(startBias)
                     }
                 }
             }
         }
+
         return preferredTiles.lastOrNull() ?: freeTiles.last()
     }
 }
