@@ -698,6 +698,7 @@ object NextTurnAutomation {
     }
 
     private fun motivationToAttack(civInfo: CivilizationInfo, otherCiv: CivilizationInfo): Int {
+        val closestCities = getClosestCities(civInfo, otherCiv) ?: return 0
         if(civInfo.cities.isEmpty() || otherCiv.cities.isEmpty()) return 0
         val baseForce = 30f
 
@@ -711,8 +712,7 @@ object NextTurnAutomation {
 
         if (theirCombatStrength > ourCombatStrength) return 0
 
-        val closestCities = getClosestCities(civInfo, otherCiv)
-        val ourCity = closestCities!!.city1
+        val ourCity = closestCities.city1
         val theirCity = closestCities.city2
 
         if (civInfo.getCivUnits().filter { it.isMilitary() }.none {
