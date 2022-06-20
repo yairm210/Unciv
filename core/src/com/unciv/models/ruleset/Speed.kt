@@ -32,14 +32,19 @@ class Speed : RulesetObject() {
     }
 
     val statCostModifiers: HashMap<Stat, Float> by lazy {
-        HashMap<Stat, Float>().apply {
-            this[Stat.Faith] = 1f;
-            this[Stat.Production] = productionCostModifier;
-            this[Stat.Gold] = goldCostModifier;
-            this[Stat.Science] = scienceCostModifier;
-            this[Stat.Faith] = faithCostModifier;
-            this[Stat.Happiness] = 1f;
+        val map = HashMap<Stat, Float>()
+        for (stat in Stat.values()) {
+            val modifier = when (stat) {
+                Stat.Production -> productionCostModifier
+                Stat.Gold -> goldCostModifier
+                Stat.Science -> scienceCostModifier
+                Stat.Faith -> faithCostModifier
+                else -> 1f
+            }
+            map[stat] = modifier
         }
+
+        map
     }
 
     companion object {
