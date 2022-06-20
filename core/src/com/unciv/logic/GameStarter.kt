@@ -490,6 +490,6 @@ object GameStarter {
                 }
             }
         }
-        return preferredTiles.lastOrNull() ?: freeTiles.random()
+        return preferredTiles.randomOrNull() ?: freeTiles.random()
     }
 }
