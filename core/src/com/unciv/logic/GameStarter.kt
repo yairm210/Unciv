@@ -417,9 +417,9 @@ object GameStarter {
             .sortedBy { civ ->
             when {
                 civ.civName in tileMap.startingLocationsByNation -> 1 // harshest requirements
-                civ.nation.startBias.any { it in tileMap.naturalWonders } -> 2
-                civ.nation.startBias.contains(Constants.tundra) -> 3    // Tundra starts are hard to find, so let's do them first
-                civ.nation.startBias.isNotEmpty() -> 4 // less harsh
+                civ.nation.startBias.any { it in tileMap.naturalWonders } && !gameSetupInfo.gameParameters.noStartBias -> 2
+                civ.nation.startBias.contains(Constants.tundra) && !gameSetupInfo.gameParameters.noStartBias -> 3    // Tundra starts are hard to find, so let's do them first
+                civ.nation.startBias.isNotEmpty() && !gameSetupInfo.gameParameters.noStartBias -> 4 // less harsh
                 else -> 5  // no requirements
             }
         }
@@ -459,6 +459,9 @@ object GameStarter {
         freeTiles: MutableList<TileInfo>,
         startScores: HashMap<TileInfo, Float>
     ): TileInfo {
+        if (gameSetupInfo.gameParameters.noStartBias) {
+            return freeTiles.random()
+        }
         if (civ.nation.startBias.any { it in tileMap.naturalWonders }) {
             // startPref wants Natural wonder neighbor: Rare and very likely to be outside getDistanceFromEdge
             val wonderNeighbor = tileMap.values.asSequence()
@@ -469,9 +472,7 @@ object GameStarter {
         }
 
         var preferredTiles = freeTiles.toList()
-        if (!gameSetupInfo.gameParameters.noStartBias) {
-            return preferredTiles.lastOrNull() ?: freeTiles.last()
-        }
+
         for (startBias in civ.nation.startBias) {
             preferredTiles = when {
                 startBias.equalsPlaceholderText("Avoid []") -> {
