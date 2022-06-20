@@ -800,11 +800,12 @@ Sounds are from FreeSound.org unless otherwise noted and are either Creative Com
 - Excerpt from [FireBurning_v2.wav](https://freesound.org/people/pcaeldries/sounds/30322/) by pcaeldries for 'remove heresy' action of inquisitor ([License](http://creativecommons.org/licenses/by/3.0/))
 - [Up Chime 2](https://freesound.org/people/FoolBoyMedia/sounds/352666/) by FoolBoyMedia for notifications
 - [dingaling](https://freesound.org/people/morrisjm/sounds/268756/) by morrisjm (based on [Calling_Bell_02.wav](https://freesound.org/people/RSilveira_88/sounds/216306/) by RSilveira_88) for notifications
-- [Street Musician Playing Renaissance Melody on Glockenspiel](https://freesound.org/people/_MC5_/sounds/542107/) by MC5 for Renaissance city sound
-- [Ambience, Machine Factory](https://freesound.org/people/InspectorJ/sounds/385943/) by InspectorJ for Industrial city sound
-- [Rock_Hammer_Chisel_01](https://freesound.org/people/dheming/sounds/240981/#) by dheming for Ancient city sound
-- [Future City ambience](https://freesound.org/people/bolkmar/sounds/502896/) by bolkmar for Future city sound
-- [Jingle_Achievement](https://freesound.org/people/LittleRobotSoundFactory/sounds/270404/) by LittleRobotSoundFactory for We Love The King sound
+- City ambience sounds made by Unciv Team using Audacity from CC0 sounds and
+    -   [Street Musician Playing Renaissance Melody on Glockenspiel](https://freesound.org/people/_MC5_/sounds/542107/) by MC5 for Renaissance city sound
+    -   [Ambience, Machine Factory](https://freesound.org/people/InspectorJ/sounds/385943/) by InspectorJ for Industrial city sound
+    -   [Rock_Hammer_Chisel_01](https://freesound.org/people/dheming/sounds/240981/#) by dheming for Ancient city sound
+    -   [Future City ambience](https://freesound.org/people/bolkmar/sounds/502896/) by bolkmar for Future city sound
+    -   [Jingle_Achievement](https://freesound.org/people/LittleRobotSoundFactory/sounds/270404/) by LittleRobotSoundFactory for We Love The King sound
 
 ## Music
 
