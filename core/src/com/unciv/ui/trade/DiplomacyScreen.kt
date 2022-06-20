@@ -1,6 +1,7 @@
 package com.unciv.ui.trade
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.SplitPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -154,6 +155,14 @@ class DiplomacyScreen(
 
             leftSideTable.add(civIndicator).row()
 
+            val civName = Table()
+            val civNameLabel = civ.civName.toLabel()
+            civNameLabel.color = Color.BLACK
+            civName.add(civNameLabel)
+            civName.background = ImageGetter.getRoundedEdgeRectangle(civ.nation.getInnerColor())
+            leftSideTable.add(civName).row()
+
+            civName.onClick { updateRightSide(civ) }
             civIndicator.onClick { updateRightSide(civ) }
         }
 
