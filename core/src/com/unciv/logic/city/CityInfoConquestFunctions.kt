@@ -205,7 +205,15 @@ class CityInfoConquestFunctions(val city: CityInfo){
 
             conquerCity(conqueringCiv, oldCiv, foundingCiv)
 
-            if (foundingCiv.cities.size == 1) cityConstructions.addBuilding(capitalCityIndicator()) // Resurrection!
+            if (foundingCiv.cities.size == 1) {
+                // Resurrection!
+                cityConstructions.addBuilding(capitalCityIndicator())
+                for (civ in civInfo.gameInfo.civilizations) {
+                    if (civ == foundingCiv || civ == conqueringCiv || !civ.isAlive()) continue // don't need to notify these civs
+                    if (!civ.knows(conqueringCiv) && !civ.knows(foundingCiv)) continue
+                    civ.addNotification("[$conqueringCiv] has liberated [$foundingCiv]", foundingCiv.civName, NotificationIcon.Diplomacy, conqueringCiv.civName)
+                }
+            }
             isPuppet = false
             cityStats.update()
 
