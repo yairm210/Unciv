@@ -26,6 +26,8 @@ import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.RecreateOnResize
 import com.unciv.ui.utils.ZoomableScrollPane
 import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.keyShortcuts
+import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.packIfNeeded
 import com.unciv.ui.utils.extensions.toTextButton
@@ -80,7 +82,8 @@ class CityScreen(
     /** Button for exiting the city - sits on BOTTOM CENTER */
     private val exitCityButton = "Exit city".toTextButton().apply {
         labelCell.pad(10f)
-        onClick {
+        keyShortcuts.add(KeyCharAndCode.BACK)
+        onActivation {
             exit()
             cityAmbiencePlayer.stop()
         }
@@ -121,8 +124,6 @@ class CityScreen(
         }
         if (UncivGame.Current.settings.citySoundsVolume > 0)
             cityAmbiencePlayer.play(city)
-
-        globalShortcuts.add(KeyCharAndCode.BACK) { game.popScreen() }
 
         UncivGame.Current.settings.addCompletedTutorialTask("Enter city screen")
 
