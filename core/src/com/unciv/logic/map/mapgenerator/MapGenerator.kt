@@ -11,6 +11,7 @@ import com.unciv.logic.map.Perlin
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.Counter
+import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
@@ -71,7 +72,8 @@ class MapGenerator(val ruleset: Ruleset) {
         getMatchingUniques(UniqueType.TileGenerationConditions)
             .map { unique -> TerrainOccursRange(this, unique) }
 
-    fun generateMap(mapParameters: MapParameters, civilizations: List<CivilizationInfo> = emptyList()): TileMap {
+    fun generateMap(gameSetupInfo: GameSetupInfo, civilizations: List<CivilizationInfo> = emptyList()): TileMap {
+        val mapParameters = gameSetupInfo.mapParameters
         val mapSize = mapParameters.mapSize
         val mapType = mapParameters.type
 
@@ -134,7 +136,7 @@ class MapGenerator(val ruleset: Ruleset) {
                 regions.generateRegions(map, civilizations.count { ruleset.nations[it.civName]!!.isMajorCiv() })
             }
             runAndMeasure("assignRegions") {
-                regions.assignRegions(map, civilizations.filter { ruleset.nations[it.civName]!!.isMajorCiv() })
+                regions.assignRegions(map, civilizations.filter { ruleset.nations[it.civName]!!.isMajorCiv() }, gameSetupInfo.gameParameters)
             }
             runAndMeasure("placeResourcesAndMinorCivs") {
                 regions.placeResourcesAndMinorCivs(map, civilizations.filter { ruleset.nations[it.civName]!!.isCityState() })

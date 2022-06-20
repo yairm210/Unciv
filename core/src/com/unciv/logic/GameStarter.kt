@@ -59,7 +59,7 @@ object GameStarter {
         } else runAndMeasure("generateMap") {
             // The mapgen needs to know what civs are in the game to generate regions, starts and resources
             addCivilizations(gameSetupInfo.gameParameters, gameInfo, ruleset, existingMap = false)
-            tileMap = mapGen.generateMap(gameSetupInfo.mapParameters, gameInfo.civilizations)
+            tileMap = mapGen.generateMap(gameSetupInfo, gameInfo.civilizations)
             tileMap.mapParameters = gameSetupInfo.mapParameters
             // Now forget them for a moment! MapGen can silently fail to place some city states, so then we'll use the old fallback method to place those.
             gameInfo.civilizations.clear()
