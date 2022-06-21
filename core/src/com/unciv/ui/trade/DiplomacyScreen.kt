@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.AssignedQuest
@@ -38,6 +39,7 @@ import com.unciv.ui.tilegroups.CityButton
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.RecreateOnResize
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.extensions.addSeparator
 import com.unciv.ui.utils.extensions.disable
@@ -64,7 +66,7 @@ class DiplomacyScreen(
     val viewingCiv: CivilizationInfo,
     selectCiv: CivilizationInfo? = null,
     selectTrade: Trade? = null
-): BaseScreen() {
+): BaseScreen(), RecreateOnResize {
     companion object {
         private const val nationIconSize = 100f
         private const val nationIconPad = 10f
@@ -1016,4 +1018,7 @@ class DiplomacyScreen(
         super.resize(width, height)
         positionCloseButton()
     }
+    val selectedCiv = selectCiv
+    val selectedTrade = selectTrade
+    override fun recreate(): BaseScreen = DiplomacyScreen(viewingCiv, selectedCiv, selectedTrade)
 }
