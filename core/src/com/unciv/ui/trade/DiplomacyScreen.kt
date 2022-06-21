@@ -1,7 +1,6 @@
 package com.unciv.ui.trade
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.SplitPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -41,7 +40,6 @@ import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.extensions.addSeparator
-import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.keyShortcuts
 import com.unciv.ui.utils.extensions.onActivation
@@ -154,14 +152,14 @@ class DiplomacyScreen(
                 questIcon.x = floor(civIndicator.width - questIcon.width)
             }
 
-            if (isNarrowerThan4to3() || isCrampedPortrait())
-                leftSideTable.add(civIndicator).row()
-            else
-                leftSideTable.add(civIndicator)
-
             val civNameLabel = civ.civName.toLabel()
-
-            leftSideTable.add(civNameLabel).padBottom(20f).row()
+            if (isNarrowerThan4to3() || isCrampedPortrait()) {
+                leftSideTable.add(civIndicator).row()
+                leftSideTable.add(civNameLabel).padBottom(20f).row()
+            } else {
+                leftSideTable.add(civIndicator)
+                leftSideTable.add(civNameLabel).row()
+            }
 
             civNameLabel.onClick { updateRightSide(civ) }
             civIndicator.onClick { updateRightSide(civ) }
