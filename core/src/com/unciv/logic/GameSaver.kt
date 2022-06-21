@@ -16,13 +16,14 @@ import com.unciv.utils.Log
 import com.unciv.utils.debug
 import kotlinx.coroutines.Job
 import java.io.File
+import java.io.Writer
 
 private const val SAVE_FILES_FOLDER = "SaveFiles"
 private const val MULTIPLAYER_FILES_FOLDER = "MultiplayerGames"
 private const val AUTOSAVE_FILE_NAME = "Autosave"
 private const val SETTINGS_FILE_NAME = "GameSettings.json"
 
-class GameSaver(
+class UncivFiles(
     /**
      * This is necessary because the Android turn check background worker does not hold any reference to the actual [com.badlogic.gdx.Application],
      * which is normally responsible for keeping the [Gdx] static variables from being garbage collected.
@@ -32,7 +33,7 @@ class GameSaver(
     private val preferExternalStorage: Boolean = false
 ) {
     init {
-        debug("Creating GameSaver, localStoragePath: %s, externalStoragePath: %s, preferExternalStorage: %s",
+        debug("Creating UncivFiles, localStoragePath: %s, externalStoragePath: %s, preferExternalStorage: %s",
             files.localStoragePath, files.externalStoragePath, preferExternalStorage)
     }
     //region Data

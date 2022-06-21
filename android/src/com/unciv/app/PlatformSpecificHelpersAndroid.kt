@@ -5,7 +5,6 @@ import android.content.pm.ActivityInfo
 import android.os.Build
 import android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER
 import android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
-import androidx.annotation.RequiresApi
 import com.unciv.ui.utils.GeneralPlatformSpecificHelpers
 import kotlin.concurrent.thread
 

@@ -139,7 +139,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         val column1 = Table().apply { defaults().pad(10f).fillX() }
         val column2 = if (singleColumn) column1 else Table().apply { defaults().pad(10f).fillX() }
 
-        if (game.gameSaver.autosaveExists()) {
+        if (game.files.autosaveExists()) {
             val resumeTable = getMenuButton("Resume","OtherIcons/Resume", 'r')
                 { resumeGame() }
             column1.add(resumeTable).row()
@@ -153,7 +153,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             { game.pushScreen(NewGameScreen()) }
         column1.add(newGameButton).row()
 
-        if (game.gameSaver.getSaves().any()) {
+        if (game.files.getSaves().any()) {
             val loadGameTable = getMenuButton("Load game", "OtherIcons/Load", 'l')
                 { game.pushScreen(LoadGameScreen(this)) }
             column1.add(loadGameTable).row()

@@ -8,7 +8,7 @@ import com.badlogic.gdx.Screen
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
-import com.unciv.logic.GameSaver
+import com.unciv.logic.UncivFiles
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.models.metadata.GameSettings
@@ -37,6 +37,7 @@ import com.unciv.utils.concurrency.launchOnGLThread
 import com.unciv.utils.concurrency.withGLContext
 import com.unciv.utils.concurrency.withThreadPoolContext
 import com.unciv.utils.debug
+import java.io.PrintWriter
 import java.util.*
 import kotlin.collections.ArrayDeque
 
@@ -59,7 +60,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     lateinit var settings: GameSettings
     lateinit var musicController: MusicController
     lateinit var onlineMultiplayer: OnlineMultiplayer
-    lateinit var gameSaver: GameSaver
+    lateinit var files: UncivFiles
 
     /**
      * This exists so that when debugging we can see the entire map.
@@ -95,7 +96,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             viewEntireMapForDebug = false
         }
         Current = this
-        gameSaver = GameSaver(Gdx.files, customSaveLocationHelper, platformSpecificHelper?.shouldPreferExternalStorage() == true)
+        files = UncivFiles(Gdx.files, customSaveLocationHelper, platformSpecificHelper?.shouldPreferExternalStorage() == true)
 
         // If this takes too long players, especially with older phones, get ANR problems.
         // Whatever needs graphics needs to be done on the main thread,
@@ -109,7 +110,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
          * - Skin (hence BaseScreen.setSkin())
          * - Font (hence Fonts.resetFont() inside setSkin())
          */
-        settings = gameSaver.getGeneralSettings() // needed for the screen
+        settings = files.getGeneralSettings() // needed for the screen
         setScreen(GameStartScreen())  // NOT dependent on any atlas or skin
         GameSounds.init()
         musicController = MusicController()  // early, but at this point does only copy volume from settings
@@ -343,7 +344,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     override fun pause() {
         val curGameInfo = gameInfo
-        if (curGameInfo != null) gameSaver.requestAutoSave(curGameInfo)
+        if (curGameInfo != null) files.requestAutoSave(curGameInfo)
         musicController.pause()
         super.pause()
     }
@@ -363,7 +364,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
         val curGameInfo = gameInfo
         if (curGameInfo != null) {
-            val autoSaveJob = gameSaver.autoSaveJob
+            val autoSaveJob = files.autoSaveJob
             if (autoSaveJob != null && autoSaveJob.isActive) {
                 // auto save is already in progress (e.g. started by onPause() event)
                 // let's allow it to finish and do not try to autosave second time
@@ -371,7 +372,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
                     autoSaveJob.join()
                 }
             } else {
-                gameSaver.autoSave(curGameInfo)      // NO new thread
+                files.autoSave(curGameInfo)      // NO new thread
             }
         }
         settings.save()
@@ -407,7 +408,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     fun goToMainMenu(): MainMenuScreen {
         val curGameInfo = gameInfo
         if (curGameInfo != null) {
-            gameSaver.requestAutoSaveUnCloned(curGameInfo) // Can save gameInfo directly because the user can't modify it on the MainMenuScreen
+            files.requestAutoSaveUnCloned(curGameInfo) // Can save gameInfo directly because the user can't modify it on the MainMenuScreen
         }
         val mainMenuScreen = MainMenuScreen()
         pushScreen(mainMenuScreen)
