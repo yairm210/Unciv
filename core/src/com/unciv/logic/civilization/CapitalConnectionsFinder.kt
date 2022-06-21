@@ -4,6 +4,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.collections.set
 
 class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
@@ -80,7 +81,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
     }
 
     private fun CityInfo.containsHarbor() =
-            this.cityConstructions.containsBuildingOrEquivalent(harbor)
+            this.cityConstructions.builtBuildingUniqueMap.getUniques(UniqueType.ConnectTradeRoutes).any()
 
     private fun check(cityToConnectFrom: CityInfo,
                       transportType: String,
