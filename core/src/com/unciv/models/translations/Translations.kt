@@ -360,7 +360,7 @@ fun String.tr(): String {
         else indexCurly >= 0
 
     // There might still be optimization potential here!
-    if (processSquare) {
+    if (processSquare) { // Placeholders!
         /**
          * I'm SURE there's an easier way to do this but I can't think of it =\
          * So what's all this then?
