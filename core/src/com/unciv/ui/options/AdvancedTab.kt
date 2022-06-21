@@ -141,9 +141,12 @@ private fun addFontSizeMultiplier(
     table.add("Font size multiplier".toLabel()).left().fillX()
 
     val fontSelectBox = SelectBox<Float>(table.skin)
+
     val sizes = Array<Float>()
     sizes.addAll(0.8f, 0.9f, 1.0f, 1.1f, 1.2f, 1.3f, 1.4f, 1.5f)
     fontSelectBox.items = sizes
+
+    fontSelectBox.selected = settings.fontSizeMultiplier
 
     fontSelectBox.onChange {
         settings.fontSizeMultiplier = fontSelectBox.selected
