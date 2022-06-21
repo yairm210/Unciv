@@ -154,12 +154,14 @@ class DiplomacyScreen(
                 questIcon.x = floor(civIndicator.width - questIcon.width)
             }
 
-            leftSideTable.add(civIndicator).row()
+            if (isNarrowerThan4to3() || isCrampedPortrait())
+                leftSideTable.add(civIndicator).row()
+            else
+                leftSideTable.add(civIndicator)
 
             val civNameLabel = civ.civName.toLabel()
-            civNameLabel.color = civ.nation.getInnerColor().darken(-1f)
 
-            leftSideTable.add(civNameLabel).row()
+            leftSideTable.add(civNameLabel).padBottom(20f).row()
 
             civNameLabel.onClick { updateRightSide(civ) }
             civIndicator.onClick { updateRightSide(civ) }
