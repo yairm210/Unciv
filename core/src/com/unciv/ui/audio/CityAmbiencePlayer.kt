@@ -52,10 +52,6 @@ class CityAmbiencePlayer {
     }
 
     fun stop() {
-        try {
-            playingCitySound?.dispose()
-        } catch (ex: Throwable) {
-            Log.error("Error while stopping city sound: ", ex)
-        }
+        playingCitySound?.dispose()
     }
 }
