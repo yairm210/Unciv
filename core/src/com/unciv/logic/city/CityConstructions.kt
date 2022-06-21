@@ -1,6 +1,7 @@
 package com.unciv.logic.city
 
 import com.unciv.UncivGame
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ConstructionAutomation
 import com.unciv.logic.civilization.AlertType
@@ -36,7 +37,7 @@ import kotlin.math.roundToInt
  * @property currentConstructionIsUserSet a flag indicating if the [currentConstructionFromQueue] has been set by the user or by the AI
  * @property constructionQueue a list of constructions names enqueued
  */
-class CityConstructions {
+class CityConstructions : IsPartOfGameInfoSerialization {
     //region Non-Serialized Properties
     @Transient
     lateinit var cityInfo: CityInfo

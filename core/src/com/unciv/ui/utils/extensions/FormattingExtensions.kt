@@ -1,5 +1,6 @@
 package com.unciv.ui.utils.extensions
 
+import com.unciv.UncivGame
 import com.unciv.models.translations.tr
 import java.text.SimpleDateFormat
 import java.time.Duration
@@ -92,3 +93,5 @@ fun <T> String.filterCompositeLogic(predicate: (String) -> T?, operation: (T, T)
  *  otherwise return `null` for Elvis chaining of the individual filter. */
 fun String.filterAndLogic(predicate: (String) -> Boolean): Boolean? =
         if (contains('{')) filterCompositeLogic(predicate) { a, b -> a && b } else null
+
+fun UncivGame.Version.toNiceString() = "$text (Build $number)"

@@ -47,15 +47,13 @@ internal object DesktopLauncher {
             config.setWindowedMode(settings.windowState.width.coerceAtLeast(120), settings.windowState.height.coerceAtLeast(80))
         }
 
-        val versionFromJar = DesktopLauncher.javaClass.`package`.specificationVersion ?: "Desktop"
-
-        if (versionFromJar == "Desktop") {
+        val isRunFromIDE = DesktopLauncher.javaClass.`package`.specificationVersion == null
+        if (isRunFromIDE) {
             UniqueDocsWriter().write()
         }
 
         val platformSpecificHelper = PlatformSpecificHelpersDesktop(config)
         val desktopParameters = UncivGameParameters(
-            versionFromJar,
             cancelDiscordEvent = { discordTimer?.cancel() },
             fontImplementation = NativeFontDesktop(Fonts.ORIGINAL_FONT_SIZE.toInt(), settings.fontFamily),
             customFileLocationHelper = CustomFileLocationHelperDesktop(),

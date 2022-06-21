@@ -4,7 +4,6 @@ package com.unciv.testing
 import com.badlogic.gdx.Gdx
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.UncivGameParameters
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Ruleset
@@ -50,8 +49,7 @@ class BasicTests {
 
     @Test
     fun gameIsNotRunWithDebugModes() {
-        val params = UncivGameParameters("", null)
-        val game = UncivGame(params)
+        val game = UncivGame()
         Assert.assertTrue("This test will only pass if the game is not run with debug modes",
                 !game.superchargedForDebug
                         && !game.viewEntireMapForDebug
@@ -84,7 +82,7 @@ class BasicTests {
         val statsThatShouldBe = Stats(gold = 1f, production = 2f)
         Assert.assertTrue(Stats.parse("+1 Gold, +2 Production").equals(statsThatShouldBe))
 
-        UncivGame.Current = UncivGame("")
+        UncivGame.Current = UncivGame()
         UncivGame.Current.settings = GameSettings().apply { language = "Italian" }
     }
 

@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization
 
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.Counter
 import com.unciv.models.Religion
@@ -9,7 +10,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.utils.extensions.toPercent
 import kotlin.random.Random
 
-class ReligionManager {
+class ReligionManager : IsPartOfGameInfoSerialization {
 
     @Transient
     lateinit var civInfo: CivilizationInfo
@@ -351,7 +352,7 @@ class ReligionManager {
     }
 }
 
-enum class ReligionState {
+enum class ReligionState : IsPartOfGameInfoSerialization {
     None,
     Pantheon,
     FoundingReligion, // Great prophet used, but religion has not yet been founded

@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.json.HashMapVector2
 import com.unciv.logic.GameInfo
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.automation.WorkerAutomation
@@ -47,7 +48,7 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
-enum class Proximity {
+enum class Proximity : IsPartOfGameInfoSerialization {
     None, // ie no cities
     Neighbors,
     Close,
@@ -55,7 +56,7 @@ enum class Proximity {
     Distant
 }
 
-class CivilizationInfo {
+class CivilizationInfo : IsPartOfGameInfoSerialization {
 
     @Transient
     private var workerAutomationCache: WorkerAutomation? = null
@@ -210,7 +211,7 @@ class CivilizationInfo {
      * @property target Position of the tile targeted by the attack.
      * @see [MapUnit.UnitMovementMemory], [attacksSinceTurnStart]
      */
-    class HistoricalAttackMemory() {
+    class HistoricalAttackMemory() : IsPartOfGameInfoSerialization {
         constructor(attackingUnit: String?, source: Vector2, target: Vector2): this() {
             this.attackingUnit = attackingUnit
             this.source = source

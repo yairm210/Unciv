@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization
 
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.RoadStatus
@@ -17,7 +18,7 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 
-class TechManager {
+class TechManager : IsPartOfGameInfoSerialization {
     @Transient
     var era: Era = Era()
 

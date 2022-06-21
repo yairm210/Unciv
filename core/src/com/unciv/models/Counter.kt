@@ -1,6 +1,8 @@
 package com.unciv.models
 
-open class Counter<K> : LinkedHashMap<K, Int>() {
+import com.unciv.logic.IsPartOfGameInfoSerialization
+
+open class Counter<K> : LinkedHashMap<K, Int>(), IsPartOfGameInfoSerialization {
 
     override operator fun get(key: K): Int? { // don't return null if empty
         return if (containsKey(key))
@@ -30,7 +32,7 @@ open class Counter<K> : LinkedHashMap<K, Int>() {
         for (key in keys) newCounter[key] = this[key]!! * amount
         return newCounter
     }
-    
+
     fun sumValues(): Int {
         return this.map { it.value }.sum()
     }

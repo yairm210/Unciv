@@ -1,6 +1,7 @@
 package com.unciv.logic.city
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.NotificationIcon
@@ -36,7 +37,7 @@ enum class CityFlags {
 }
 
 // if tableEnabled == true, then Stat != null
-enum class CityFocus(val label: String, val tableEnabled: Boolean, val stat: Stat? = null) {
+enum class CityFocus(val label: String, val tableEnabled: Boolean, val stat: Stat? = null) : IsPartOfGameInfoSerialization {
     NoFocus("Default Focus", true, null) {
         override fun getStatMultiplier(stat: Stat) = 1f  // actually redundant, but that's two steps to see
     },
@@ -78,7 +79,7 @@ enum class CityFocus(val label: String, val tableEnabled: Boolean, val stat: Sta
 }
 
 
-class CityInfo {
+class CityInfo : IsPartOfGameInfoSerialization {
     @Suppress("JoinDeclarationAndAssignment")
     @Transient
     lateinit var civInfo: CivilizationInfo

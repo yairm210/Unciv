@@ -41,10 +41,8 @@ import java.util.*
 import kotlin.collections.ArrayDeque
 
 class UncivGame(parameters: UncivGameParameters) : Game() {
-    // we need this secondary constructor because Java code for iOS can't handle Kotlin lambda parameters
-    constructor(version: String) : this(UncivGameParameters(version, null))
+    constructor() : this(UncivGameParameters())
 
-    val version = parameters.version
     val crashReportSysInfo = parameters.crashReportSysInfo
     val cancelDiscordEvent = parameters.cancelDiscordEvent
     var fontImplementation = parameters.fontImplementation
@@ -420,11 +418,20 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     }
 
     companion object {
+        //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
+        val VERSION = Version("4.1.12-patch1", 427)
+        //endregion
+
         lateinit var Current: UncivGame
         fun isCurrentInitialized() = this::Current.isInitialized
         fun isCurrentGame(gameId: String): Boolean = isCurrentInitialized() && Current.gameInfo != null && Current.gameInfo!!.gameId == gameId
         fun isDeepLinkedGameLoading() = isCurrentInitialized() && Current.deepLinkedMultiplayerGame != null
     }
+
+    data class Version(
+        val text: String,
+        val number: Int
+    )
 }
 
 private class GameStartScreen : BaseScreen() {

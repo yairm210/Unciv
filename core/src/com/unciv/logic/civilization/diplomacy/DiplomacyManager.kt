@@ -2,6 +2,7 @@ package com.unciv.logic.civilization.diplomacy
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CityStatePersonality
 import com.unciv.logic.civilization.CityStateType
@@ -91,7 +92,7 @@ enum class DiplomaticModifiers {
     ReturnedCapturedUnits,
 }
 
-class DiplomacyManager() {
+class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
     companion object {
         /** The value city-state influence can't go below */

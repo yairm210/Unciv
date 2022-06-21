@@ -2,9 +2,7 @@ package com.unciv.app
 
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.WorkManager
 import com.badlogic.gdx.backends.android.AndroidApplication
@@ -42,7 +40,6 @@ open class AndroidLauncher : AndroidApplication() {
         platformSpecificHelper.toggleDisplayCutout(settings.androidCutout)
 
         val androidParameters = UncivGameParameters(
-            version = BuildConfig.VERSION_NAME,
             crashReportSysInfo = CrashReportSysInfoAndroid,
             fontImplementation = NativeFontAndroid(Fonts.ORIGINAL_FONT_SIZE.toInt(), fontFamily),
             customFileLocationHelper = customFileLocationHelper,

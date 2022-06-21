@@ -25,14 +25,7 @@ internal object ConsoleLauncher {
     fun main(arg: Array<String>) {
         Log.backend = DesktopLogBackend()
 
-        val version = "0.1"
-        val consoleParameters = UncivGameParameters(
-                version,
-                null,
-                null,
-                null,
-                true
-        )
+        val consoleParameters = UncivGameParameters(consoleMode = true)
         val game = UncivGame(consoleParameters)
 
         UncivGame.Current = game

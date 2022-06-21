@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization
 
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
@@ -9,7 +10,7 @@ import com.unciv.models.stats.Stat
 import java.util.*
 import kotlin.collections.HashMap
 
-class CivConstructions {
+class CivConstructions : IsPartOfGameInfoSerialization {
 
     @Transient
     lateinit var civInfo: CivilizationInfo
@@ -122,12 +123,12 @@ class CivConstructions {
             addFreeBuilding(city.id, building)
         }
     }
-    
+
     fun countConstructedObjects(objectToCount: INonPerpetualConstruction): Int {
         val amountInSpaceShip = civInfo.victoryManager.currentsSpaceshipParts[objectToCount.name] ?: 0
-        
+
         return amountInSpaceShip + when (objectToCount) {
-            is Building -> civInfo.cities.count { 
+            is Building -> civInfo.cities.count {
                 it.cityConstructions.containsBuildingOrEquivalent(objectToCount.name)
                 || it.cityConstructions.isBeingConstructedOrEnqueued(objectToCount.name)
             }

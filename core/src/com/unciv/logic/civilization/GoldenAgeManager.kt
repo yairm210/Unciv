@@ -1,9 +1,10 @@
 package com.unciv.logic.civilization
 
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.utils.extensions.toPercent
 
-class GoldenAgeManager {
+class GoldenAgeManager : IsPartOfGameInfoSerialization {
     @Transient
     lateinit var civInfo: CivilizationInfo
 

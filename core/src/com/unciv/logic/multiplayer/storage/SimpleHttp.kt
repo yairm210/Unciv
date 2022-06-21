@@ -2,6 +2,7 @@ package com.unciv.logic.multiplayer.storage
 
 import com.badlogic.gdx.Net
 import com.unciv.UncivGame
+import com.unciv.ui.utils.extensions.toNiceString
 import com.unciv.utils.debug
 import java.io.BufferedReader
 import java.io.DataOutputStream
@@ -33,7 +34,7 @@ object SimpleHttp {
             connectTimeout = timeout
             instanceFollowRedirects = true
             if (UncivGame.isCurrentInitialized())
-                setRequestProperty("User-Agent", "Unciv/${UncivGame.Current.version}-GNU-Terry-Pratchett")
+                setRequestProperty("User-Agent", "Unciv/${UncivGame.VERSION.toNiceString()}-GNU-Terry-Pratchett")
             else
                 setRequestProperty("User-Agent", "Unciv/Turn-Checker-GNU-Terry-Pratchett")
 

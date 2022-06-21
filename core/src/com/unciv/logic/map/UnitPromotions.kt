@@ -1,16 +1,17 @@
 package com.unciv.logic.map
 
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.Promotion
 
-class UnitPromotions {
+class UnitPromotions : IsPartOfGameInfoSerialization {
     // Having this as mandatory constructor parameter would be safer, but this class is part of a
     // saved game and as usual the json deserializer needs a default constructor.
     // Initialization occurs in setTransients() - called as part of MapUnit.setTransients,
     // or copied in clone() as part of the UnitAction `Upgrade`.
-    @Transient 
+    @Transient
     private lateinit var unit: MapUnit
 
     /** Experience this unit has accumulated on top of the last promotion */

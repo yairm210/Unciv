@@ -1,8 +1,9 @@
 package com.unciv.logic.trade
 
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import java.util.*
 
-class TradeOffersList: ArrayList<TradeOffer>() {
+class TradeOffersList: ArrayList<TradeOffer>(), IsPartOfGameInfoSerialization {
     override fun add(element: TradeOffer): Boolean {
         val equivalentOffer = firstOrNull { it.name == element.name && it.type == element.type }
         if (equivalentOffer == null) {

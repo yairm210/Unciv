@@ -1,12 +1,13 @@
 package com.unciv.models.helpers
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.logic.IsPartOfGameInfoSerialization
 
 /** Base interface for classes the instances of which signify a distinctive type of look and feel with which to draw arrows on the map. */
 interface MapArrowType
 
 /** Enum constants describing how/why a unit changed position. Each is also associated with an arrow type to draw on the map overlay. */
-enum class UnitMovementMemoryType: MapArrowType {
+enum class UnitMovementMemoryType: MapArrowType, IsPartOfGameInfoSerialization {
     UnitMoved,
     UnitAttacked, // For when attacked, killed, and moved into tile.
     UnitWithdrew, // Caravel, destroyer, etc.

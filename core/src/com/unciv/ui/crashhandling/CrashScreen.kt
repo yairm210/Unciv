@@ -19,6 +19,7 @@ import com.unciv.ui.utils.extensions.addBorder
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.setFontSize
 import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toNiceString
 import com.unciv.utils.Log
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -84,7 +85,7 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
         /// The $lastScreenType substitution is the only one completely under the control of this class— Everything else can, in theory, have new lines in it due to containing strings or custom .toString behaviour with new lines (which… I think Table.toString or something actually does). So normalize indentation for basically everything.
         return """
             **Platform:** ${Gdx.app.type.toString().prependIndentToOnlyNewLines(subIndent)}
-            **Version:** ${UncivGame.Current.version.prependIndentToOnlyNewLines(subIndent)}
+            **Version:** ${UncivGame.VERSION.toNiceString().prependIndentToOnlyNewLines(subIndent)}
             **Rulesets:** ${RulesetCache.keys.toString().prependIndentToOnlyNewLines(subIndent)}
             **Last Screen:** `$lastScreenType`
 

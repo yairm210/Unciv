@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.TileInfo
@@ -23,7 +24,7 @@ import kotlin.math.max
 import kotlin.random.Random
 
 @Suppress("NON_EXHAUSTIVE_WHEN")  // Many when uses in here are much clearer this way
-class QuestManager {
+class QuestManager : IsPartOfGameInfoSerialization {
 
     companion object {
         const val UNSET = -1
@@ -894,7 +895,7 @@ class AssignedQuest(val questName: String = "",
                     val assignee: String = "",
                     val assignedOnTurn: Int = 0,
                     val data1: String = "",
-                    val data2: String = "") {
+                    val data2: String = "") : IsPartOfGameInfoSerialization {
 
     @Transient
     lateinit var gameInfo: GameInfo

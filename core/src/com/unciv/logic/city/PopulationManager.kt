@@ -1,5 +1,6 @@
 package com.unciv.logic.city
 
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.TileInfo
@@ -12,7 +13,7 @@ import com.unciv.ui.utils.extensions.withoutItem
 import kotlin.math.floor
 import kotlin.math.pow
 
-class PopulationManager {
+class PopulationManager : IsPartOfGameInfoSerialization {
     @Transient
     lateinit var cityInfo: CityInfo
 

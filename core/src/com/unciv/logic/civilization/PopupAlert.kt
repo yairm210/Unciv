@@ -1,6 +1,8 @@
 package com.unciv.logic.civilization
 
-enum class AlertType {
+import com.unciv.logic.IsPartOfGameInfoSerialization
+
+enum class AlertType : IsPartOfGameInfoSerialization {
     Defeated,
     WonderBuilt,
     TechResearched,
@@ -20,7 +22,7 @@ enum class AlertType {
     RecapturedCivilian,
 }
 
-class PopupAlert {
+class PopupAlert : IsPartOfGameInfoSerialization {
     lateinit var type: AlertType
     lateinit var value: String
 
