@@ -44,9 +44,11 @@ object QuickSave {
                     ToastPopup("Quickload successful.", screen)
                 }
             } catch (ex: Exception) {
+                Log.error("Exception while quickloading", ex)
+                val (message) = LoadGameScreen.getLoadExceptionMessage(ex)
                 launchOnGLThread {
                     toast.close()
-                    ToastPopup("Could not load game!", screen)
+                    ToastPopup(message, screen)
                 }
             }
         }
@@ -75,7 +77,8 @@ object QuickSave {
                 Log.error("Could not autoload game", ex)
                 launchOnGLThread {
                     loadingPopup.close()
-                    ToastPopup("Cannot resume game!", screen)
+                    val (message) = LoadGameScreen.getLoadExceptionMessage(ex, "Cannot resume game!")
+                    ToastPopup(message, screen)
                 }
                 return@run
             }
@@ -86,8 +89,8 @@ object QuickSave {
                 } catch (oom: OutOfMemoryError) {
                     outOfMemory()
                 } catch (ex: Exception) {
-                    val message = MultiplayerHelpers.getLoadExceptionMessage(ex)
                     Log.error("Could not autoload game", ex)
+                    val (message) = LoadGameScreen.getLoadExceptionMessage(ex)
                     launchOnGLThread {
                         loadingPopup.close()
                         ToastPopup(message, screen)

@@ -8,6 +8,7 @@ import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
+import com.unciv.logic.multiplayer.storage.MultiplayerFileNotFoundException
 import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
 import com.unciv.ui.utils.extensions.isLargerThan
 import com.unciv.utils.concurrency.Concurrency
@@ -130,14 +131,14 @@ class OnlineMultiplayer {
      * @param gameName if this is null or blank, will use the gameId as the game name
      * @return the final name the game was added under
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
-     * @throws FileNotFoundException if the file can't be found
+     * @throws MultiplayerFileNotFoundException if the file can't be found
      */
     suspend fun addGame(gameId: String, gameName: String? = null) {
         val saveFileName = if (gameName.isNullOrBlank()) gameId else gameName
         var gamePreview: GameInfoPreview
         try {
             gamePreview = onlineGameSaver.tryDownloadGamePreview(gameId)
-        } catch (ex: FileNotFoundException) {
+        } catch (ex: MultiplayerFileNotFoundException) {
             // Game is so old that a preview could not be found on dropbox lets try the real gameInfo instead
             gamePreview = onlineGameSaver.tryDownloadGame(gameId).asPreview()
         }
@@ -178,7 +179,7 @@ class OnlineMultiplayer {
      * Fires [MultiplayerGameUpdated]
      *
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
-     * @throws FileNotFoundException if the file can't be found
+     * @throws MultiplayerFileNotFoundException if the file can't be found
      * @return false if it's not the user's turn and thus resigning did not happen
      */
     suspend fun resign(game: OnlineMultiplayerGame): Boolean {
@@ -213,7 +214,7 @@ class OnlineMultiplayer {
 
     /**
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
-     * @throws FileNotFoundException if the file can't be found
+     * @throws MultiplayerFileNotFoundException if the file can't be found
      */
     suspend fun loadGame(game: OnlineMultiplayerGame) {
         val preview = game.preview ?: throw game.error!!
@@ -222,7 +223,7 @@ class OnlineMultiplayer {
 
     /**
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
-     * @throws FileNotFoundException if the file can't be found
+     * @throws MultiplayerFileNotFoundException if the file can't be found
      */
     suspend fun loadGame(gameId: String) = coroutineScope {
         val gameInfo = downloadGame(gameId)
@@ -253,7 +254,7 @@ class OnlineMultiplayer {
 
     /**
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
-     * @throws FileNotFoundException if the file can't be found
+     * @throws MultiplayerFileNotFoundException if the file can't be found
      */
     suspend fun downloadGame(gameId: String): GameInfo {
         val latestGame = onlineGameSaver.tryDownloadGame(gameId)
@@ -301,7 +302,7 @@ class OnlineMultiplayer {
 
     /**
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
-     * @throws FileNotFoundException if the file can't be found
+     * @throws MultiplayerFileNotFoundException if the file can't be found
      */
     suspend fun updateGame(gameInfo: GameInfo) {
         debug("Updating remote game %s", gameInfo.gameId)

@@ -364,9 +364,8 @@ class WorldScreen(
             startNewScreenJob(latestGame)
         } catch (ex: Throwable) {
             launchOnGLThread {
-                val message = MultiplayerHelpers.getLoadExceptionMessage(ex)
+                val (message) = LoadGameScreen.getLoadExceptionMessage(ex, "Couldn't download the latest game state!")
                 loadingGamePopup.innerTable.clear()
-                loadingGamePopup.addGoodSizedLabel("Couldn't download the latest game state!").colspan(2).row()
                 loadingGamePopup.addGoodSizedLabel(message).colspan(2).row()
                 loadingGamePopup.addButton("Retry") {
                     launchOnThreadPool("Load latest multiplayer state after error") {

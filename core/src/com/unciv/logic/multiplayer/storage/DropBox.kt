@@ -56,7 +56,7 @@ object DropBox: FileStorage {
                 // Throw Exceptions based on the HTTP response from dropbox
                 when {
                     error.error_summary.startsWith("too_many_requests/") -> triggerRateLimit(error)
-                    error.error_summary.startsWith("path/not_found/") -> throw FileNotFoundException()
+                    error.error_summary.startsWith("path/not_found/") -> throw MultiplayerFileNotFoundException(ex)
                     error.error_summary.startsWith("path/conflict/file") -> throw FileStorageConflictException()
                 }
 
@@ -132,7 +132,7 @@ object DropBox: FileStorage {
             dropboxApi("https://api.dropboxapi.com/2/files/get_metadata",
                 "{\"path\":\"$fileName\"}", "application/json")
             true
-        } catch (ex: FileNotFoundException) {
+        } catch (ex: MultiplayerFileNotFoundException) {
             false
         }
 

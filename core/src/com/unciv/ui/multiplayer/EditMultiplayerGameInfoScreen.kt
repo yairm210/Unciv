@@ -9,6 +9,7 @@ import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
+import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.enable
 import com.unciv.ui.utils.extensions.onClick
@@ -110,7 +111,7 @@ class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame) 
                     }
                 }
             } catch (ex: Exception) {
-                val message = MultiplayerHelpers.getLoadExceptionMessage(ex)
+                val (message) = LoadGameScreen.getLoadExceptionMessage(ex)
                 launchOnGLThread {
                     popup.reuseWith(message, true)
                 }

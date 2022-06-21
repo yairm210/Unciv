@@ -2,8 +2,7 @@ package com.unciv.logic.multiplayer.storage
 
 import com.badlogic.gdx.Net
 import com.unciv.utils.debug
-import java.io.FileNotFoundException
-import java.lang.Exception
+import kotlin.Exception
 
 class UncivServerFileStorage(val serverUrl: String, val timeout: Int = 30000) : FileStorage {
     override fun saveFileData(fileName: String, data: String, overwrite: Boolean) {
@@ -23,7 +22,7 @@ class UncivServerFileStorage(val serverUrl: String, val timeout: Int = 30000) : 
             if (!success) {
                 debug("Error from UncivServer during load: %s", result)
                 when (code) {
-                    404 -> throw FileNotFoundException(result)
+                    404 -> throw MultiplayerFileNotFoundException(Exception(result))
                     else -> throw Exception(result)
                 }
 
@@ -42,7 +41,7 @@ class UncivServerFileStorage(val serverUrl: String, val timeout: Int = 30000) : 
                 success, result, code ->
             if (!success) {
                 when (code) {
-                    404 -> throw FileNotFoundException(result)
+                    404 -> throw MultiplayerFileNotFoundException(Exception(result))
                     else -> throw Exception(result)
                 }
             }

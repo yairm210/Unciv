@@ -26,6 +26,7 @@ import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
+import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import java.io.FileNotFoundException
@@ -42,6 +43,38 @@ class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
         private const val loadFromClipboard = "Load copied data"
         private const val copyExistingSaveToClipboard = "Copy saved game to clipboard"
         private const val downloadMissingMods = "Download missing mods"
+
+        /** Gets a translated exception message to show to the user.
+         * @return The first returned value is the message, the second is signifying if the user can likely fix this problem. */
+        fun getLoadExceptionMessage(ex: Throwable, primaryText: String = "Could not load game!"): Pair<String, Boolean> {
+            val errorText = StringBuilder(primaryText.tr())
+
+            val isUserFixable: Boolean
+            errorText.appendLine()
+            when (ex) {
+                is UncivShowableException -> {
+                    errorText.append("${ex.localizedMessage}")
+                    isUserFixable = true
+                }
+                is SerializationException -> {
+                    errorText.append("The file data seems to be corrupted.".tr())
+                    isUserFixable = false
+                }
+                is FileNotFoundException -> {
+                    if (ex.cause?.message?.contains("Permission denied") == true) {
+                        errorText.append("You do not have sufficient permissions to access the file.".tr())
+                        isUserFixable = true
+                    } else {
+                        isUserFixable = false
+                    }
+                }
+                else -> {
+                    errorText.append("Unhandled problem, [${ex::class.simpleName} ${ex.localizedMessage}]".tr())
+                    isUserFixable = false
+                }
+            }
+            return Pair(errorText.toString(), isUserFixable)
+        }
     }
 
     init {
@@ -87,27 +120,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
             } catch (ex: Exception) {
                 launchOnGLThread {
                     loadingPopup.close()
-                    if (ex is MissingModsException) {
-                        handleLoadGameException("Could not load game", ex)
-                        return@launchOnGLThread
-                    }
-                    val cantLoadGamePopup = Popup(this@LoadGameScreen)
-                    cantLoadGamePopup.addGoodSizedLabel("It looks like your saved game can't be loaded!").row()
-                    if (ex is SerializationException)
-                        cantLoadGamePopup.addGoodSizedLabel("The file data seems to be corrupted.").row()
-                    if (ex.cause is FileNotFoundException && (ex.cause as FileNotFoundException).message?.contains("Permission denied") == true) {
-                        cantLoadGamePopup.addGoodSizedLabel("You do not have sufficient permissions to access the file.").row()
-                    } else if (ex is UncivShowableException) {
-                        // thrown exceptions are our own tests and can be shown to the user
-                        cantLoadGamePopup.addGoodSizedLabel(ex.message).row()
-                    } else {
-                        cantLoadGamePopup.addGoodSizedLabel("If you could copy your game data (\"Copy saved game to clipboard\" - ").row()
-                        cantLoadGamePopup.addGoodSizedLabel("  paste into an email to yairm210@hotmail.com)").row()
-                        cantLoadGamePopup.addGoodSizedLabel("I could maybe help you figure out what went wrong, since this isn't supposed to happen!").row()
-                        ex.printStackTrace()
-                    }
-                    cantLoadGamePopup.addCloseButton()
-                    cantLoadGamePopup.open()
+                    handleLoadGameException(ex)
                 }
             }
         }
@@ -122,7 +135,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
                     val loadedGame = GameSaver.gameInfoFromString(clipboardContentsString)
                     game.loadGame(loadedGame)
                 } catch (ex: Exception) {
-                    launchOnGLThread { handleLoadGameException("Could not load game from clipboard!", ex) }
+                    launchOnGLThread { handleLoadGameException(ex, "Could not load game from clipboard!") }
                 }
             }
         }
@@ -142,7 +155,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
             Concurrency.run(Companion.loadFromCustomLocation) {
                 game.gameSaver.loadGameFromCustomLocation { result ->
                     if (result.isError()) {
-                        handleLoadGameException("Could not load game from custom location!", result.exception)
+                        handleLoadGameException(result.exception!!, "Could not load game from custom location!")
                     } else if (result.isSuccessful()) {
                         Concurrency.run {
                             game.loadGame(result.gameData!!)
@@ -183,10 +196,20 @@ class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
         return button
     }
 
-    private fun handleLoadGameException(primaryText: String, ex: Exception?) {
-        var errorText = primaryText.tr()
-        if (ex is UncivShowableException) errorText += "\n${ex.localizedMessage}"
-        ex?.printStackTrace()
+    private fun handleLoadGameException(ex: Exception, primaryText: String = "Could not load game!") {
+        Log.error("Error while loading game", ex)
+        val (errorText, isUserFixable) = getLoadExceptionMessage(ex, primaryText)
+
+        if (!isUserFixable) {
+            val cantLoadGamePopup = Popup(this@LoadGameScreen)
+            cantLoadGamePopup.addGoodSizedLabel("It looks like your saved game can't be loaded!").row()
+            cantLoadGamePopup.addGoodSizedLabel("If you could copy your game data (\"Copy saved game to clipboard\" - ").row()
+            cantLoadGamePopup.addGoodSizedLabel("  paste into an email to yairm210@hotmail.com)").row()
+            cantLoadGamePopup.addGoodSizedLabel("I could maybe help you figure out what went wrong, since this isn't supposed to happen!").row()
+            cantLoadGamePopup.addCloseButton()
+            cantLoadGamePopup.open()
+        }
+
         Concurrency.runOnGLThread {
             errorLabel.setText(errorText)
             errorLabel.isVisible = true
@@ -228,7 +251,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
                     ToastPopup("Missing mods are downloaded successfully.", this@LoadGameScreen)
                 }
             } catch (ex: Exception) {
-                handleLoadGameException("Could not load the missing mods!", ex)
+                handleLoadGameException(ex, "Could not load the missing mods!")
             } finally {
                 loadMissingModsButton.isEnabled = true
                 descriptionLabel.setText("")

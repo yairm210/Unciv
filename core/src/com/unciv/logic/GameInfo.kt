@@ -56,8 +56,14 @@ data class SerializationVersion(
      * this instance has been loaded from a save file json that was made with another version of the game. */
     val number: Int,
     val createdWith: Version
-) {
+) : IsPartOfGameInfoSerialization {
+    @Suppress("unused") // used by json serialization
+    constructor() : this(-1, Version())
+
+    operator fun compareTo(other: SerializationVersion) = number.compareTo(other.number)
+
     companion object {
+        val CURRENT = SerializationVersion(SERIALIZATION_VERSION, UncivGame.VERSION)
         /** This is the version just before this field was introduced, i.e. all saves without any version will be from this version */
         val FIRST_WITHOUT = SerializationVersion(1, Version("4.12.1-patch1", 427))
     }
@@ -430,8 +436,6 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     // All cross-game data which needs to be altered (e.g. when removing or changing a name of a building/tech)
     // will be done here, and not in CivInfo.setTransients or CityInfo
     fun setTransients() {
-        version = SerializationVersion(SERIALIZATION_VERSION, UncivGame.VERSION)
-
         tileMap.gameInfo = this
 
         // [TEMPORARY] Convert old saves to newer ones by moving base rulesets from the mod list to the base ruleset field

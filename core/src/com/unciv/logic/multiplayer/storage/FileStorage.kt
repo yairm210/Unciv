@@ -1,9 +1,11 @@
 package com.unciv.logic.multiplayer.storage
 
+import com.unciv.logic.UncivShowableException
 import java.util.*
 
 class FileStorageConflictException : Exception()
-class FileStorageRateLimitReached(val limitRemainingSeconds: Int) : Exception()
+class FileStorageRateLimitReached(val limitRemainingSeconds: Int) : UncivShowableException("Server limit reached! Please wait for [${limitRemainingSeconds}] seconds")
+class MultiplayerFileNotFoundException(cause: Throwable?) : UncivShowableException("File could not be found on the multiplayer server", cause)
 
 interface FileMetaData {
     fun getLastModified(): Date?

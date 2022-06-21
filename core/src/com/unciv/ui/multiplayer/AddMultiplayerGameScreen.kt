@@ -8,6 +8,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
+import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.utils.extensions.enable
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toLabel
@@ -63,7 +64,7 @@ class AddMultiplayerGameScreen : PickerScreen() {
                         game.popScreen()
                     }
                 } catch (ex: Exception) {
-                    val message = MultiplayerHelpers.getLoadExceptionMessage(ex)
+                    val (message) = LoadGameScreen.getLoadExceptionMessage(ex)
                     launchOnGLThread {
                         popup.reuseWith(message, true)
                     }

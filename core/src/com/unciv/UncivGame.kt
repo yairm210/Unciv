@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.models.metadata.GameSettings
@@ -24,9 +25,9 @@ import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.crashhandling.CrashScreen
 import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.multiplayer.MultiplayerHelpers
 import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.Popup
+import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.worldscreen.PlayerReadyScreen
@@ -317,7 +318,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
                 val mainMenu = MainMenuScreen()
                 replaceCurrentScreen(mainMenu)
                 val popup = Popup(mainMenu)
-                popup.addGoodSizedLabel(MultiplayerHelpers.getLoadExceptionMessage(ex))
+                val (message) = LoadGameScreen.getLoadExceptionMessage(ex)
+                popup.addGoodSizedLabel(message)
                 popup.row()
                 popup.addCloseButton()
                 popup.open()
@@ -431,7 +433,10 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     data class Version(
         val text: String,
         val number: Int
-    )
+    ) : IsPartOfGameInfoSerialization {
+        @Suppress("unused") // used by json serialization
+        constructor() : this("", -1)
+    }
 }
 
 private class GameStartScreen : BaseScreen() {
