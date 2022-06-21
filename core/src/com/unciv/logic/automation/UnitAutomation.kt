@@ -48,8 +48,8 @@ object UnitAutomation {
 
     private fun tryGoToRuinAndEncampment(unit: MapUnit): Boolean {
         if (!unit.civInfo.isMajorCiv()) return false // barbs don't have anything to do in ruins
-        val unitDistanceToTiles = unit.movement.getDistanceToTiles()
-        val tileWithRuinOrEncampment = unitDistanceToTiles.keys
+
+        val tileWithRuinOrEncampment = unit.viewableTiles
             .firstOrNull {
                 (
                     (it.improvement != null && it.getTileImprovement()!!.isAncientRuinsEquivalent())
@@ -57,7 +57,7 @@ object UnitAutomation {
                 )
                 && unit.movement.canMoveTo(it)
             } ?: return false
-        unit.movement.moveToTile(tileWithRuinOrEncampment)
+        unit.movement.headTowards(tileWithRuinOrEncampment)
         return true
     }
 
