@@ -3,11 +3,11 @@
         "name": "Tradition",
         "era": "Ancient era",
         "priorities": {
-            "Neutral": 30,
-            "Cultural": 30,
+            "Neutral": 0,
+            "Cultural": 10,
             "Diplomatic": 0,
             "Domination": 0,
-            "Scientific": 30
+            "Scientific": 10
         },
         "uniques": [
             "[+3 Culture] [in capital]",
@@ -72,10 +72,10 @@
         "name": "Liberty",
         "era": "Ancient era",
         "priorities": {
-            "Neutral": 30,
+            "Neutral": 0,
             "Cultural": 0,
-            "Diplomatic": 30,
-            "Domination": 30,
+            "Diplomatic": 10,
+            "Domination": 10,
             "Scientific": 0
         },
         "uniques": ["[+1 Culture] [in all cities]"],
