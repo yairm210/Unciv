@@ -394,6 +394,13 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     /** Handles an uncaught exception or error. First attempts a platform-specific handler, and if that didn't handle the exception or error, brings the game to a [CrashScreen]. */
     fun handleUncaughtThrowable(ex: Throwable) {
         Log.error("Uncaught throwable", ex)
+        try {
+            PrintWriter(files.fileWriter("lasterror.txt")).use {
+                ex.printStackTrace(it)
+            }
+        } catch (ex: Exception) {
+            // ignore
+        }
         if (platformSpecificHelper?.handleUncaughtThrowable(ex) == true) return
         Gdx.app.postRunnable {
             setScreen(CrashScreen(ex))

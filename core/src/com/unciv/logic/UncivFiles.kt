@@ -67,6 +67,18 @@ class UncivFiles(
         return toReturn
     }
 
+    /**
+     * @throws GdxRuntimeException if the [path] represents a directory
+     */
+    fun fileWriter(path: String, append: Boolean = false): Writer {
+        val file = if (preferExternalStorage && files.isExternalStorageAvailable) {
+            files.external(path)
+        } else {
+            files.local(path)
+        }
+        return file.writer(append)
+    }
+
     fun getMultiplayerSaves(): Sequence<FileHandle> {
         return getSaves(MULTIPLAYER_FILES_FOLDER)
     }
