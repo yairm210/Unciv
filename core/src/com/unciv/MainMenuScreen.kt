@@ -215,36 +215,29 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         if (!UncivGame.Current.platformSpecificHelper?.isInstalledFromGP()!!) {
             val latestVersion = checkForUpdates()
             if (latestVersion > UncivGame.Current.version) {
-                addUpdateButton(Color.YELLOW, true)
-            } else {
-                addUpdateButton(ImageGetter.getBlue(), false)
+                addUpdateButton()
             }
         }
     }
 
-    private fun addUpdateButton(color: Color, shouldUpdate: Boolean) {
-        val label = "⟱".toLabel(fontSize = 32) // Unicode U+27F1
-        if (shouldUpdate)
+    private fun addUpdateButton() {
+        val label = "⟱".toLabel(fontSize = 50) // Unicode U+27F1
             label.color = Color.BLACK
         val updateButton = label
             .apply { setAlignment(Align.center) }
-            .surroundWithCircle(40f, color = color)
+            .surroundWithCircle(80f, color = Color.YELLOW)
             .apply { actor.y -= 2.5f } // compensate font baseline (empirical)
-            .surroundWithCircle(42f, resizeActor = false)
+            .surroundWithCircle(84f, resizeActor = false)
         updateButton.touchable = Touchable.enabled
         updateButton.onActivation {
-            if (!shouldUpdate) {
-                ToastPopup("Game is already up-to-date!", this)
-            } else {
-                ConfirmPopup(this, "Open browser to download the new update?", "Open browser", true) {
-                    ToastPopup("Launching browser...", this)
-                    Gdx.net.openURI("https://github.com/yairm210/Unciv/releases/latest")
-                }.open()
-            }
+            ConfirmPopup(this, "Open browser to download the new update?", "Open browser", true) {
+                ToastPopup("Launching browser...", this)
+                Gdx.net.openURI("https://github.com/yairm210/Unciv/releases/latest")
+            }.open()
         }
+        updateButton.addTooltip("F2")
         updateButton.keyShortcuts.add(Input.Keys.F2)
-        updateButton.addTooltip(KeyCharAndCode(Input.Keys.F2), 20f)
-        updateButton.setPosition(20f , 80f)
+        updateButton.setPosition(stage.width - 100f , 20f)
         stage.addActor(updateButton)
     }
 
