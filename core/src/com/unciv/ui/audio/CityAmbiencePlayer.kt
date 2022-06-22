@@ -1,6 +1,5 @@
 package com.unciv.ui.audio
 
-import com.badlogic.gdx.Files
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.audio.Music
 import com.badlogic.gdx.files.FileHandle
@@ -13,36 +12,40 @@ import com.unciv.utils.Log
 class CityAmbiencePlayer(
     city: CityInfo
 ) : Disposable {
-    private val soundsLocation = Files.FileType.Local
     private var playingCitySound: Music? = null
-    val fileExtensions = listOf("mp3", "ogg", "wav")   // All Gdx formats
 
     init {
         play(city)
     }
 
-    private fun getFile(path: String) =
-            if (soundsLocation == Files.FileType.External && Gdx.files.isExternalStorageAvailable)
-                Gdx.files.external(path)
-            else Gdx.files.local(path)
+    private fun getFile(path: String): FileHandle {
+        val internal = Gdx.files.internal(path)
+        if (internal.exists()) return internal
+        return Gdx.files.local(path)
+    }
 
     private fun getSoundFolders() = sequence {
         val visualMods = UncivGame.Current.settings.visualMods
         val mods = UncivGame.Current.gameInfo!!.gameParameters.getModsAndBaseRuleset()
-        yieldAll(
-            (visualMods + mods).asSequence()
-                .map { getFile("mods")
-                    .child(it).child("sounds") }
-        )
+        val modSoundFolders = (visualMods + mods).asSequence()
+            .map { modName ->
+                getFile("mods")
+                    .child(modName)
+                    .child("sounds")
+            }
+
+        yieldAll(modSoundFolders)
         yield(getFile("sounds"))
     }
 
-    private fun getSoundFile(fileName: String): FileHandle? = getSoundFolders()
-        .filter { it.exists() && it.isDirectory }
-        .flatMap { it.list().asSequence() }
-        // ensure only normal files with common sound extension
-        .filter { it.exists() && !it.isDirectory && it.extension() in fileExtensions }
-        .firstOrNull { it.name().contains(fileName) }
+    private fun getSoundFile(fileName: String): FileHandle? {
+        return getSoundFolders()
+            .filter { it.exists() && it.isDirectory }
+            .flatMap { it.list().asSequence() }
+            // ensure only normal files with common sound extension
+            .filter { !it.isDirectory && it.extension() in MusicController.gdxSupportedFileExtensions }
+            .firstOrNull { it.nameWithoutExtension() == fileName }
+    }
 
     private fun play(city: CityInfo) {
         if (UncivGame.Current.settings.citySoundsVolume == 0f) return
@@ -50,8 +53,7 @@ class CityAmbiencePlayer(
         if (playingCitySound != null)
             stop()
         try {
-            val file = FileHandle(getSoundFile(city.civInfo.getEra().citySound).toString())
-            playingCitySound = Gdx.audio.newMusic(file)
+            playingCitySound = Gdx.audio.newMusic(getSoundFile(city.civInfo.getEra().citySound))
             playingCitySound?.volume = UncivGame.Current.settings.citySoundsVolume
             playingCitySound?.isLooping = true
             playingCitySound?.play()
