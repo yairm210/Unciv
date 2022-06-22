@@ -12,7 +12,18 @@ class TileSetConfig {
     var tileScale: Float = 1f
     var ruleVariants: HashMap<String, Array<String>> = HashMap()
 
-    fun updateConfig(other: TileSetConfig){
+    fun clone(): TileSetConfig {
+        val toReturn = TileSetConfig()
+        toReturn.useColorAsBaseTerrain = useColorAsBaseTerrain
+        toReturn.unexploredTileColor = unexploredTileColor
+        toReturn.fogOfWarColor = fogOfWarColor
+        toReturn.fallbackTileSet = fallbackTileSet
+        toReturn.tileScale = tileScale
+        toReturn.ruleVariants.putAll(ruleVariants.map { Pair(it.key, it.value.clone()) })
+        return toReturn
+    }
+
+    fun updateConfig(other: TileSetConfig) {
         useColorAsBaseTerrain = other.useColorAsBaseTerrain
         unexploredTileColor = other.unexploredTileColor
         fogOfWarColor = other.fogOfWarColor

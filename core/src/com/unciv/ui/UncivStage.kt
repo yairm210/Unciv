@@ -1,11 +1,14 @@
 package com.unciv.ui
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.Viewport
+import com.unciv.logic.event.Event
+import com.unciv.logic.event.EventBus
 import com.unciv.ui.crashhandling.wrapCrashHandling
 import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
+import com.unciv.utils.Log
 
 
 /** Main stage for the game. Catches all exceptions or errors thrown by event handlers, calling [com.unciv.UncivGame.handleUncaughtThrowable] with the thrown exception or error. */
@@ -16,6 +19,23 @@ class UncivStage(viewport: Viewport) : Stage(viewport) {
      * Checking for the enter/exit bounds is a relatively expensive operation and may thus be disabled temporarily.
      */
     var performPointerEnterExitEvents: Boolean = true
+
+    var lastKnownVisibleArea: Rectangle
+        private set
+
+    private val events = EventBus.EventReceiver()
+    init {
+        lastKnownVisibleArea = Rectangle(0f, 0f, width, height)
+        events.receive(VisibleAreaChanged::class) {
+            Log.debug("Visible stage area changed: %s", it.visibleArea)
+            lastKnownVisibleArea = it.visibleArea
+        }
+    }
+
+    override fun dispose() {
+        events.stopReceiving()
+        super.dispose()
+    }
 
     override fun draw() =
         { super.draw() }.wrapCrashHandlingUnit()()
@@ -60,4 +80,7 @@ class UncivStage(viewport: Viewport) : Stage(viewport) {
     override fun keyTyped(character: Char) =
         { super.keyTyped(character) }.wrapCrashHandling()() ?: true
 
+    class VisibleAreaChanged(
+        val visibleArea: Rectangle
+    ) : Event
 }

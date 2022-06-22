@@ -2,7 +2,6 @@ package com.unciv.ui.multiplayer
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
-import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.logic.multiplayer.OnlineMultiplayerGame
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
@@ -10,6 +9,7 @@ import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.saves.LoadGameScreen
+import com.unciv.ui.utils.UncivTextField
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.enable
 import com.unciv.ui.utils.extensions.onClick
@@ -22,7 +22,7 @@ import com.unciv.utils.concurrency.launchOnGLThread
  * backScreen is used for getting back to the MultiplayerScreen so it doesn't have to be created over and over again */
 class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame) : PickerScreen() {
     init {
-        val textField = TextField(multiplayerGame.name, skin)
+        val textField = UncivTextField.create("Game name", multiplayerGame.name)
 
         topTable.add("Rename".toLabel()).row()
         topTable.add(textField).pad(10f).padBottom(30f).width(stage.width / 2).row()
@@ -32,8 +32,8 @@ class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame) 
         deleteButton.onClick {
             val askPopup = ConfirmPopup(
                 this,
-                "Are you sure you want to delete this map?",
-                "Delete map",
+                "Are you sure you want to delete this save?",
+                "Delete save",
             ) {
                 try {
                     game.onlineMultiplayer.deleteGame(multiplayerGame)

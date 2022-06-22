@@ -29,6 +29,7 @@ fun soundTab(
     val music = UncivGame.Current.musicController
 
     addSoundEffectsVolumeSlider(this, settings)
+    addCitySoundsVolumeSlider(this, settings)
 
     if (UncivGame.Current.musicController.isMusicAvailable()) {
         addMusicVolumeSlider(this, settings, music)
@@ -82,6 +83,20 @@ private fun addSoundEffectsVolumeSlider(table: Table, settings: GameSettings) {
         settings.save()
     }
     table.add(soundEffectsVolumeSlider).pad(5f).row()
+}
+
+private fun addCitySoundsVolumeSlider(table: Table, settings: GameSettings) {
+    table.add("City ambient sound volume".tr()).left().fillX()
+
+    val citySoundVolumeSlider = UncivSlider(
+        0f, 1.0f, 0.05f,
+        initial = settings.citySoundsVolume,
+        getTipText = UncivSlider::formatPercent
+    ) {
+        settings.citySoundsVolume = it
+        settings.save()
+    }
+    table.add(citySoundVolumeSlider).pad(5f).row()
 }
 
 private fun addMusicVolumeSlider(table: Table, settings: GameSettings, music: MusicController) {
