@@ -42,7 +42,7 @@ class NotificationsOverviewTable(
         if (viewingPlayer.notifications.isNotEmpty())
             notificationTable.add(notificationsArrayTable("Current", viewingPlayer.notifications)).row()
 
-        for (notification in notificationLog) {
+        for (notification in notificationLog.asReversed()) {
             notificationTable.add(notificationsArrayTable(notification.turn.toString(), notification.notifications))
             notificationTable.padTop(20f).row()
         }
