@@ -32,7 +32,7 @@ object TileSetCache : HashMap<String, TileSetConfig>() {
             for (entry in allConfigs.entries.filter { it.key.mod == mod } ) { // Built-in tilesets all have empty strings as their `.mod`, so loop through all of them.
                 val tileSet = entry.key.tileSet
                 if (tileSet in this) this[tileSet]!!.updateConfig(entry.value)
-                else this[tileSet] = entry.value
+                else this[tileSet] = entry.value.clone()
             }
         }
     }
