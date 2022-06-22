@@ -112,11 +112,13 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         settings = gameSaver.getGeneralSettings() // needed for the screen
         setScreen(GameStartScreen())  // NOT dependent on any atlas or skin
         GameSounds.init()
+
         musicController = MusicController()  // early, but at this point does only copy volume from settings
         audioExceptionHelper?.installHooks(
             musicController.getAudioLoopCallback(),
             musicController.getAudioExceptionHandler()
         )
+
         onlineMultiplayer = OnlineMultiplayer()
 
         ImageGetter.resetAtlases()
