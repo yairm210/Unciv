@@ -1,0 +1,26 @@
+## 4.1.13
+
+4.1.12-patch1
+
+Resolved crash for victory condition not in ruleset
+
+Resolved crash for stats not in statCostModifiers
+
+By Azzurite:
+- Make popups and text fields nicer to interact with on Android 
+- Change all translation test output checking for translator's errors back to println
+- Refactor: Remove unnecessary float conversion
+
+Rework Policy and Diplomacy buttons  - By SomeTroglodyte
+
+By OptimizedForDensity:
+- Fix cases where AI great people get stuck trying to build a great improvement 
+- Fix disappearing terrain when switching between mods 
+- Fix policies not contributing stats from city-states 
+- AI missionaries avoid cities with inquisitors 
+
+By alexban011:
+- CityScreen plays a sound when opened 
+- fixed crash in NextTurnAutomation 
+- Fix a religion to be a majority when it's over 50% of the cities, not equal to 50% 
+
