@@ -235,6 +235,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     /**
      * @throws UnsupportedOperationException Use pushScreen or replaceCurrentScreen instead
      */
+    @Deprecated("Never use this, it's only here because it's part of the gdx.Game interface.", ReplaceWith("pushScreen"))
     override fun setScreen(screen: Screen) {
         throw UnsupportedOperationException("Use pushScreen or replaceCurrentScreen instead")
     }

@@ -44,17 +44,17 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
         pickTechButton.defaults().pad(20f)
         pickTechButton.add(pickTechLabel)
         techButtonHolder.onClick(UncivSound.Paper) {
-            game.setScreen(TechPickerScreen(viewingCiv))
+            game.pushScreen(TechPickerScreen(viewingCiv))
         }
 
         policyScreenButton.add(ImageGetter.getImage("PolicyIcons/Constitution")).size(30f).pad(15f)
         policyButtonHolder.onClick {
-            game.setScreen(PolicyPickerScreen(worldScreen))
+            game.pushScreen(PolicyPickerScreen(worldScreen))
         }
 
         diplomacyButton.add(ImageGetter.getImage("OtherIcons/DiplomacyW")).size(30f).pad(15f)
         diplomacyButtonHolder.onClick {
-            game.setScreen(DiplomacyScreen(viewingCiv))
+            game.pushScreen(DiplomacyScreen(viewingCiv))
         }
     }
 
