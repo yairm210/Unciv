@@ -1,0 +1,12 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="000ce796-10c4-3e92-bd42-fa6f0bd6ec8b" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="SSBasedInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <searchConfiguration name="Raw TextField usage" description="We want to add some extra behavior to all text fields. This behavior will not be added by instantiating a TextField directly, so use our general factory function UncivTextField.create instead." suppressId="UNCIV_RAW_TEXTFIELD" problemDescriptor="Use UncivTextField.createTextField instead!" text="TextField($Params$)" recursive="true" caseInsensitive="true" type="Kotlin" pattern_context="default">
+        <constraint name="__context__" within="" contains="" />
+        <constraint name="Params" minCount="0" maxCount="2147483647" within="" contains="" />
+      </searchConfiguration>
+    </inspection_tool>
+  </profile>
+</component>
