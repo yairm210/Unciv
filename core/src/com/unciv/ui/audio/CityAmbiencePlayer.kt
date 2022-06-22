@@ -4,14 +4,22 @@ import com.badlogic.gdx.Files
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.audio.Music
 import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.utils.Disposable
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.utils.Log
 
-class CityAmbiencePlayer {
+/** Must be [disposed][dispose]. Starts playing an ambience sound for the city when created. Stops playing the ambience sound when [disposed][dispose]. */
+class CityAmbiencePlayer(
+    city: CityInfo
+) : Disposable {
     private val soundsLocation = Files.FileType.Local
     private var playingCitySound: Music? = null
     val fileExtensions = listOf("mp3", "ogg", "wav")   // All Gdx formats
+
+    init {
+        play(city)
+    }
 
     private fun getFile(path: String) =
             if (soundsLocation == Files.FileType.External && Gdx.files.isExternalStorageAvailable)
@@ -36,7 +44,9 @@ class CityAmbiencePlayer {
         .filter { it.exists() && !it.isDirectory && it.extension() in fileExtensions }
         .firstOrNull { it.name().contains(fileName) }
 
-    fun play(city: CityInfo) {
+    private fun play(city: CityInfo) {
+        if (UncivGame.Current.settings.citySoundsVolume == 0f) return
+
         if (playingCitySound != null)
             stop()
         try {
@@ -51,7 +61,11 @@ class CityAmbiencePlayer {
         }
     }
 
-    fun stop() {
+    private fun stop() {
         playingCitySound?.dispose()
+    }
+
+    override fun dispose() {
+        stop()
     }
 }

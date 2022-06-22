@@ -85,7 +85,6 @@ class CityScreen(
         keyShortcuts.add(KeyCharAndCode.BACK)
         onActivation {
             exit()
-            cityAmbiencePlayer.stop()
         }
     }
 
@@ -116,14 +115,12 @@ class CityScreen(
     // val should be OK as buying tiles is what changes this, and that would re-create the whole CityScreen
     private val nextTileToOwn = city.expansion.chooseNewTileToOwn()
 
-    private val cityAmbiencePlayer = CityAmbiencePlayer()
+    private val cityAmbiencePlayer = CityAmbiencePlayer(city)
 
     init {
         if (city.isWeLoveTheKingDayActive() && UncivGame.Current.settings.citySoundsVolume > 0) {
             SoundPlayer.play(UncivSound("WLTK"))
         }
-        if (UncivGame.Current.settings.citySoundsVolume > 0)
-            cityAmbiencePlayer.play(city)
 
         UncivGame.Current.settings.addCompletedTutorialTask("Enter city screen")
 
@@ -431,4 +428,9 @@ class CityScreen(
     }
 
     override fun recreate(): BaseScreen = CityScreen(city)
+
+    override fun dispose() {
+        cityAmbiencePlayer.dispose()
+        super.dispose()
+    }
 }
