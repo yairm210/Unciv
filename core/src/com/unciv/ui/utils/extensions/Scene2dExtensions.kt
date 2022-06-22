@@ -3,6 +3,8 @@ package com.unciv.ui.utils.extensions
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.math.Rectangle
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.InputEvent
@@ -31,10 +33,10 @@ import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.Fonts
-import com.unciv.utils.concurrency.Concurrency
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.KeyShortcut
 import com.unciv.ui.utils.KeyShortcutDispatcher
+import com.unciv.utils.concurrency.Concurrency
 
 /**
  * Collection of extension functions mostly for libGdx widgets
@@ -308,6 +310,55 @@ fun Actor.addBorder(size:Float, color: Color, expandCell:Boolean = false): Table
     table.pack()
     return table
 }
+
+/** Gets a parent of this actor that matches the [predicate], or null if none of its parents match the [predicate]. */
+fun Actor.getAscendant(predicate: (Actor) -> Boolean): Actor? {
+    var curParent = parent
+    while (curParent != null) {
+        if (predicate(curParent)) return curParent
+        curParent = curParent.parent
+    }
+    return null
+}
+
+/** The actors bounding box in stage coordinates */
+val Actor.stageBoundingBox: Rectangle get() {
+    val bottomleft = localToStageCoordinates(Vector2(0f, 0f))
+    val topright = localToStageCoordinates(Vector2(width, height))
+    return Rectangle(
+        bottomleft.x,
+        bottomleft.y,
+        topright.x - bottomleft.x,
+        topright.y - bottomleft.y
+    )
+}
+
+/** @return the area where this [Rectangle] overlaps with [other], or `null` if it doesn't overlap. */
+fun Rectangle.getOverlap(other: Rectangle): Rectangle? {
+    val overlapX = if (x > other.x) x else other.x
+
+    val rightX = x + width
+    val otherRightX = other.x + other.width
+    val overlapWidth = (if (rightX < otherRightX) rightX else otherRightX) - overlapX
+
+    val overlapY = if (y > other.y) y else other.y
+
+    val topY = y + height
+    val otherTopY = other.y + other.height
+    val overlapHeight = (if (topY < otherTopY) topY else otherTopY) - overlapY
+
+    val noOverlap = overlapWidth <= 0 || overlapHeight <= 0
+    if (noOverlap) return null
+    return Rectangle(
+        overlapX,
+        overlapY,
+        overlapWidth,
+        overlapHeight
+    )
+}
+
+val Rectangle.top get() = y + height
+val Rectangle.right get() = x + width
 
 fun Group.addBorderAllowOpacity(size:Float, color: Color): Group {
     val group = this

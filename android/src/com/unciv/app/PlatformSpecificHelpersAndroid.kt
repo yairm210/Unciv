@@ -5,6 +5,7 @@ import android.content.pm.ActivityInfo
 import android.os.Build
 import android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER
 import android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.ui.utils.GeneralPlatformSpecificHelpers
 import kotlin.concurrent.thread
 
@@ -81,5 +82,9 @@ Sources for Info about current orientation in case need:
     override fun handleUncaughtThrowable(ex: Throwable): Boolean {
         thread { throw ex } // this will kill the app but report the exception to the Google Play Console if the user allows it
         return true
+    }
+
+    override fun addImprovements(textField: TextField): TextField {
+        return TextfieldImprovements.add(textField)
     }
 }

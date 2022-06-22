@@ -35,7 +35,7 @@ class MusicController {
         private const val defaultFadingStepGdx = 1f / (defaultFadeDuration * ticksPerSecondGdx)
         private const val defaultFadingStepOwn = 1f / (defaultFadeDuration * ticksPerSecondOwn)
         private const val musicHistorySize = 8      // number of names to keep to avoid playing the same in short succession
-        private val fileExtensions = listOf("mp3", "ogg", "wav")   // All Gdx formats
+        val gdxSupportedFileExtensions = listOf("mp3", "ogg", "wav")   // All Gdx formats
 
         private fun getFile(path: String) =
             if (musicLocation == FileType.External && Gdx.files.isExternalStorageAvailable)
@@ -271,7 +271,7 @@ class MusicController {
         .filter { it.exists() && it.isDirectory }
         .flatMap { it.list().asSequence() }
         // ensure only normal files with common sound extension
-        .filter { it.exists() && !it.isDirectory && it.extension() in fileExtensions }
+        .filter { it.exists() && !it.isDirectory && it.extension() in gdxSupportedFileExtensions }
 
     /** Choose adequate entry from [getAllMusicFiles] */
     private fun chooseFile(prefix: String, suffix: String, flags: EnumSet<MusicTrackChooserFlags>): FileHandle? {
@@ -310,7 +310,7 @@ class MusicController {
         val fileNameParts = fileName.split('/')
         val modName = if (fileNameParts.size > 1 && fileNameParts[0] == "mods") fileNameParts[1] else ""
         var trackName = fileNameParts[if (fileNameParts.size > 3 && fileNameParts[2] == "music") 3 else 1]
-        for (extension in fileExtensions)
+        for (extension in gdxSupportedFileExtensions)
             trackName = trackName.removeSuffix(".$extension")
         fireOnChange(modName + (if (modName.isEmpty()) "" else ": ") + trackName)
     }

@@ -913,7 +913,7 @@ class CivilizationInfo {
 
     fun endTurn() {
         notifications.clear()
-
+        updateStatsForNextTurn()
         val nextTurnStats = statsForNextTurn
 
         policies.endTurn(nextTurnStats.culture.toInt())

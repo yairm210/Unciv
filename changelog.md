@@ -1,3 +1,42 @@
+## 4.1.13
+
+By Azzurite:
+- Make popups and text fields nicer to interact with on Android
+
+Rework Policy and Diplomacy buttons  - By SomeTroglodyte
+
+By OptimizedForDensity:
+- Fix cases where AI GP get stuck building improvements
+- Fix disappearing terrain when switching between mods
+- Fix policies not contributing stats from city-states
+- AI missionaries avoid cities with inquisitors
+
+By alexban011:
+- CityScreen plays sound when opened
+- Religion no longer "majority" when it's exactly 50% of the cities
+
+## 4.1.12
+
+By Azzurite:
+- Many, many UX improvements!
+- Fixed memory leaks
+
+By OptimizedForDensity:
+- Moddable game speeds
+- Population reassignment bug fixes
+
+Civilopedia tweaks - By SomeTroglodyte
+
+Translation improvements - By J0anJosep
+
+Trigger Time Victory only if enabled  - By JackRainy
+
+Fix crash for "no strategic resource" mods - By Skekdog
+
+Shortcut fixes and additions - By doublep
+
+Maintain Fortify bonus after Fortify until Healed  - By itanasi
+
 ## 4.1.11
 
 AI considers liberating city-states from other civilizations  - By OptimizedForDensity

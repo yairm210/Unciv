@@ -698,7 +698,7 @@ object NextTurnAutomation {
     }
 
     private fun motivationToAttack(civInfo: CivilizationInfo, otherCiv: CivilizationInfo): Int {
-        if(civInfo.cities.isEmpty() || otherCiv.cities.isEmpty()) return 0
+        val closestCities = getClosestCities(civInfo, otherCiv) ?: return 0
         val baseForce = 30f
 
         val ourCombatStrength = civInfo.getStatForRanking(RankingType.Force).toFloat() + baseForce
@@ -711,7 +711,6 @@ object NextTurnAutomation {
 
         if (theirCombatStrength > ourCombatStrength) return 0
 
-        val closestCities = getClosestCities(civInfo, otherCiv)
         val ourCity = closestCities.city1
         val theirCity = closestCities.city2
 
@@ -969,12 +968,15 @@ object NextTurnAutomation {
     }
 
     fun getMinDistanceBetweenCities(civ1: CivilizationInfo, civ2: CivilizationInfo): Int {
-        return getClosestCities(civ1, civ2).aerialDistance
+        return getClosestCities(civ1, civ2)?.aerialDistance ?: Int.MAX_VALUE
     }
 
     data class CityDistance(val city1: CityInfo, val city2: CityInfo, val aerialDistance: Int)
 
-    fun getClosestCities(civ1: CivilizationInfo, civ2: CivilizationInfo): CityDistance {
+    fun getClosestCities(civ1: CivilizationInfo, civ2: CivilizationInfo): CityDistance? {
+        if (civ1.cities.isEmpty() || civ2.cities.isEmpty())
+            return null
+
         val cityDistances = arrayListOf<CityDistance>()
         for (civ1city in civ1.cities)
             for (civ2city in civ2.cities)

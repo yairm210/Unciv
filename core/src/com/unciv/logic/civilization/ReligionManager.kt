@@ -70,7 +70,7 @@ class ReligionManager {
     }
 
     fun isMajorityReligionForCiv(religion: Religion): Boolean {
-        return civInfo.cities.count { it.religion.getMajorityReligion() == religion } >= civInfo.cities.size / 2
+        return civInfo.cities.count { it.religion.getMajorityReligion() == religion } > civInfo.cities.size / 2
     }
 
     fun faithForPantheon(additionalCivs: Int = 0) =
@@ -333,6 +333,7 @@ class ReligionManager {
         if (missionary.getTile().getOwner() == null) return false
         if (missionary.currentTile.owningCity?.religion?.getMajorityReligion()?.name == missionary.religion)
             return false
+        if (missionary.getTile().getCity()!!.religion.isProtectedByInquisitor()) return false
         return true
     }
 

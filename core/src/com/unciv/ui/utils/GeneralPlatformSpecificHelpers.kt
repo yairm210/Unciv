@@ -1,5 +1,6 @@
 package com.unciv.ui.utils
 
+import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.models.metadata.GameSettings
 
 /** Interface to support various platform-specific tools */
@@ -40,4 +41,10 @@ interface GeneralPlatformSpecificHelpers {
      * @return true if the throwable was handled.
      */
     fun handleUncaughtThrowable(ex: Throwable): Boolean = false
+
+    /**
+     * Adds platform-specific improvements to the given text field, making it nicer to interact with on this platform.
+     */
+    fun addImprovements(textField: TextField): TextField = textField
+
 }

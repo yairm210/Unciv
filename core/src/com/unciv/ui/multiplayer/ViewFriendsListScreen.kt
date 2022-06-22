@@ -4,7 +4,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.Popup
-import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.enable
 import com.unciv.ui.utils.extensions.onClick

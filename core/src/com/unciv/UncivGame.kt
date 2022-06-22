@@ -112,11 +112,13 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         settings = gameSaver.getGeneralSettings() // needed for the screen
         setScreen(GameStartScreen())  // NOT dependent on any atlas or skin
         GameSounds.init()
+
         musicController = MusicController()  // early, but at this point does only copy volume from settings
         audioExceptionHelper?.installHooks(
             musicController.getAudioLoopCallback(),
             musicController.getAudioExceptionHandler()
         )
+
         onlineMultiplayer = OnlineMultiplayer()
 
         ImageGetter.resetAtlases()
@@ -233,6 +235,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     /**
      * @throws UnsupportedOperationException Use pushScreen or replaceCurrentScreen instead
      */
+    @Deprecated("Never use this, it's only here because it's part of the gdx.Game interface.", ReplaceWith("pushScreen"))
     override fun setScreen(screen: Screen) {
         throw UnsupportedOperationException("Use pushScreen or replaceCurrentScreen instead")
     }

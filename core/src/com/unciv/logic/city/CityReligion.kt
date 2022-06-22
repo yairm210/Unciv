@@ -283,10 +283,9 @@ class CityInfoReligionManager {
     }
 
     fun isProtectedByInquisitor(): Boolean {
-        for (tile in cityInfo.getCenterTile().neighbors)
+        for (tile in cityInfo.getCenterTile().getTilesInDistance(1))
             if (tile.civilianUnit?.hasUnique(UniqueType.PreventSpreadingReligion) == true)
                 return true
-        if (cityInfo.getCenterTile().civilianUnit?.name == "Inquisitor") return true
         return false
     }
 
