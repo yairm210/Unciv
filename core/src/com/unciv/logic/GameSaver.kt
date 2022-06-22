@@ -320,11 +320,11 @@ class GameSaver(
                 val onlyVersion = json().fromJson(GameInfoSerializationVersion::class.java, unzippedJson)
                 throw IncompatibleGameInfoVersionException(onlyVersion.version, ex)
             }
-            if (gameInfo.version > SerializationVersion.CURRENT) {
+            if (gameInfo.version > GameInfo.CURRENT_COMPATIBILITY_VERSION) {
                 // this means there wasn't an immediate error while serializing, but this version will cause other errors later down the line
                 throw IncompatibleGameInfoVersionException(gameInfo.version)
             }
-            gameInfo.version = SerializationVersion.CURRENT
+            gameInfo.version = GameInfo.CURRENT_COMPATIBILITY_VERSION
             gameInfo.setTransients()
             return gameInfo
         }
@@ -413,7 +413,7 @@ class GameSaver(
 }
 
 class IncompatibleGameInfoVersionException(
-    override val version: SerializationVersion,
+    override val version: CompatibilityVersion,
     cause: Throwable? = null
 ) : UncivShowableException(
     "The save was created with an incompatible version of Unciv: [${version.createdWith.toNiceString()}]. " +

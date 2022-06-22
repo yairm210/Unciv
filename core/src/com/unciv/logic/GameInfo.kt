@@ -10,7 +10,8 @@ import com.unciv.logic.BackwardCompatibility.migrateBarbarianCamps
 import com.unciv.logic.BackwardCompatibility.migrateSeenImprovements
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
 import com.unciv.logic.BackwardCompatibility.updateGreatGeneralUniques
-import com.unciv.logic.GameInfo.Companion.SERIALIZATION_VERSION
+import com.unciv.logic.GameInfo.Companion.CURRENT_COMPATIBILITY_NUMBER
+import com.unciv.logic.GameInfo.Companion.FIRST_WITHOUT
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
@@ -41,17 +42,17 @@ import java.util.*
  * Take care with `lateinit` and `by lazy` fields - both are **never** serialized.
  *
  * When you change the structure of any class with this interface in a way which makes it impossible
- * to load the new saves from an older game version, increment [SERIALIZATION_VERSION]! And don't forget
+ * to load the new saves from an older game version, increment [CURRENT_COMPATIBILITY_NUMBER]! And don't forget
  * to add backwards compatibility for the previous format.
  */
 interface IsPartOfGameInfoSerialization
 
 interface HasGameInfoSerializationVersion {
-    val version: SerializationVersion
+    val version: CompatibilityVersion
 }
 
-data class SerializationVersion(
-    /** Contains the current serialization version of [GameInfo], i.e. when this number is not equal to [SERIALIZATION_VERSION], it means
+data class CompatibilityVersion(
+    /** Contains the current serialization version of [GameInfo], i.e. when this number is not equal to [CURRENT_COMPATIBILITY_NUMBER], it means
      * this instance has been loaded from a save file json that was made with another version of the game. */
     val number: Int,
     val createdWith: Version
@@ -59,23 +60,24 @@ data class SerializationVersion(
     @Suppress("unused") // used by json serialization
     constructor() : this(-1, Version())
 
-    operator fun compareTo(other: SerializationVersion) = number.compareTo(other.number)
+    operator fun compareTo(other: CompatibilityVersion) = number.compareTo(other.number)
 
-    companion object {
-        val CURRENT = SerializationVersion(SERIALIZATION_VERSION, UncivGame.VERSION)
-        /** This is the version just before this field was introduced, i.e. all saves without any version will be from this version */
-        val FIRST_WITHOUT = SerializationVersion(1, Version("4.12.1-patch1", 427))
-    }
 }
 
 class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion {
     companion object {
-        /** The current serialization version of [GameInfo] */
-        const val SERIALIZATION_VERSION = 1
+        /** The current compatibility version of [GameInfo]. This number is incremented whenever changes are made to the save file structure that guarantee that
+         * previous versions of the game will not be able to load or play a game normally. */
+        const val CURRENT_COMPATIBILITY_NUMBER = 1
+
+        val CURRENT_COMPATIBILITY_VERSION = CompatibilityVersion(CURRENT_COMPATIBILITY_NUMBER, UncivGame.VERSION)
+
+        /** This is the version just before this field was introduced, i.e. all saves without any version will be from this version */
+        val FIRST_WITHOUT = CompatibilityVersion(1, Version("4.12.1-patch1", 427))
     }
     //region Fields - Serialized
 
-    override var version = SerializationVersion.FIRST_WITHOUT
+    override var version = FIRST_WITHOUT
 
     var civilizations = mutableListOf<CivilizationInfo>()
     var barbarians = BarbarianManager()
@@ -571,5 +573,5 @@ class GameInfoPreview() {
 
 /** Class to use when parsing jsons if you only want the serialization [version]. */
 class GameInfoSerializationVersion : HasGameInfoSerializationVersion {
-    override var version = SerializationVersion.FIRST_WITHOUT
+    override var version = FIRST_WITHOUT
 }
