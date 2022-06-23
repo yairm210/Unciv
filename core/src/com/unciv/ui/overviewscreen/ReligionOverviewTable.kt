@@ -79,9 +79,7 @@ class ReligionOverviewTab(
         }
 
         add("Religions to be founded:".toLabel())
-
-        val foundedReligions = viewingPlayer.gameInfo.civilizations.count { it.religionManager.religionState >= ReligionState.Religion }
-        add((viewingPlayer.religionManager.amountOfFoundableReligions() - foundedReligions).toLabel()).right().row()
+        add((viewingPlayer.religionManager.remainingFoundableReligions()).toLabel()).right().row()
 
         add("Religious status:".toLabel()).left()
         add(viewingPlayer.religionManager.religionState.toString().toLabel()).right().row()
