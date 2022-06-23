@@ -319,13 +319,25 @@ object Github {
      */
     fun rewriteModOptions(repo: Repo, modFolder: FileHandle) {
         val modOptionsFile = modFolder.child("jsons/ModOptions.json")
-        val modOptions = if (modOptionsFile.exists()) json().fromJsonFile(ModOptions::class.java, modOptionsFile) else ModOptions()
+        var modOptions = ModOptions()
+
+        try {
+            modOptions = if (modOptionsFile.exists()) json().fromJsonFile(ModOptions::class.java, modOptionsFile) else ModOptions()
+        } catch (ex: Throwable) {
+            Log.error("Mod options were not read correctly.")
+        }
+
         modOptions.modUrl = repo.html_url
         modOptions.lastUpdated = repo.pushed_at
         modOptions.author = repo.owner.login
         modOptions.modSize = repo.size
         modOptions.updateDeprecations()
-        json().toJson(modOptions, modOptionsFile)
+
+        try {
+            json().toJson(modOptions, modOptionsFile)
+        } catch (ex: Throwable) {
+            Log.error("Mod options were not written correctly")
+        }
     }
 }
 
