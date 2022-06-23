@@ -42,7 +42,9 @@ fun multiplayerTab(
     optionsPopup.addCheckbox(
         tab, "Enable multiplayer status button in singleplayer games",
         settings.multiplayer::statusButtonInSinglePlayer, updateWorld = true
-    )
+    ) {
+        settings.multiplayer.statusButtonInSinglePlayer = it
+    }
 
     addSeparator(tab)
 
