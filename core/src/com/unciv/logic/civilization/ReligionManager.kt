@@ -149,6 +149,8 @@ class ReligionManager {
         }
     }
 
+    fun amountOfFoundableReligions() = civInfo.gameInfo.civilizations.count { it.isMajorCiv() } / 2 + 1
+
     fun remainingFoundableReligions(): Int {
         val foundedReligionsCount = civInfo.gameInfo.civilizations.count {
             it.religionManager.religion != null && it.religionManager.religionState >= ReligionState.Religion
