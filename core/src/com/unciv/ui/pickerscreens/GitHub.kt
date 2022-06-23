@@ -2,6 +2,7 @@ package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.Files
 import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.utils.SerializationException
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.updateDeprecations
@@ -323,8 +324,10 @@ object Github {
 
         try {
             modOptions = if (modOptionsFile.exists()) json().fromJsonFile(ModOptions::class.java, modOptionsFile) else ModOptions()
-        } catch (ex: Throwable) {
-            Log.error("Mod options were not read correctly.")
+        } catch (ex: SerializationException) {
+            Log.error("Mod options were not serialized correctly.")
+        } catch (ex: Exception) {
+            Log.error("Loading mod options caused an unhandled exception.")
         }
 
         modOptions.modUrl = repo.html_url
@@ -335,8 +338,12 @@ object Github {
 
         try {
             json().toJson(modOptions, modOptionsFile)
-        } catch (ex: Throwable) {
+        } catch (ex: SerializationException) {
             Log.error("Mod options were not written correctly")
+        } catch (ex: FileNotFoundException) {
+            Log.error("ModOptionsFile could not be found.")
+        } catch (ex: Exception) {
+            Log.error("Writing mod options caused an unhandled exception.")
         }
     }
 }
