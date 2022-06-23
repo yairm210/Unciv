@@ -30,7 +30,6 @@ import com.unciv.ui.utils.extensions.toGdxArray
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.utils.concurrency.Concurrency
-import com.unciv.utils.concurrency.Dispatcher
 import com.unciv.utils.concurrency.withGLContext
 import kotlin.reflect.KMutableProperty0
 
@@ -43,7 +42,7 @@ class OptionsPopup(
     screen: BaseScreen,
     private val selectPage: Int = defaultPage,
     private val onClose: () -> Unit = {}
-) : Popup(screen) {
+) : Popup(screen.stage, /** [TabbedPager] handles scrolling */ scrollable = false ) {
     val settings = screen.game.settings
     val tabs: TabbedPager
     val selectBoxMinWidth: Float

@@ -4,14 +4,14 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivFiles
 import com.unciv.models.translations.tr
-import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.popup.ConfirmPopup
+import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.UncivTextField
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.enable
@@ -25,7 +25,7 @@ import com.unciv.utils.concurrency.launchOnGLThread
 
 
 class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves") {
-    private val gameNameTextField = TextField("", skin)
+    private val gameNameTextField = UncivTextField.create("Saved game name")
 
     init {
         setDefaultCloseAction()
