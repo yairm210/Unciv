@@ -190,7 +190,7 @@ enum class CivilopediaCategories (
         KeyCharAndCode('D'),
         "OtherIcons/Tyrannosaurus"
     ),
-    Speed ("Speeds", false,
+    Speed ("Game Speeds", false,
         getImage = null,
         KeyCharAndCode('S'),
         "OtherIcons/Timer"

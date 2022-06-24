@@ -71,7 +71,7 @@ class Speed : RulesetObject() {
         yield(FormattedLine("Golden age length modifier: [${goldenAgeLengthModifier * 100}]%${Fonts.happiness}"))
         yield(FormattedLine("Adjacent city religious pressure: [$religiousPressureAdjacentCity]${Fonts.faith}"))
         yield(FormattedLine("Peace deal duration: [$peaceDealDuration] turns${Fonts.turn}"))
-        yield(FormattedLine("Start year: " + ("[${abs(startYear).toInt()}] " + (if (startYear < 0) "BC" else "AD")).tr()))
+        yield(FormattedLine("Start year: [" + (("[${abs(startYear).toInt()}] " + (if (startYear < 0) "BC" else "AD")).tr() + "]").tr()))
     }.toList()
 
     fun numTotalTurns(): Int = yearsPerTurn.last().untilTurn
