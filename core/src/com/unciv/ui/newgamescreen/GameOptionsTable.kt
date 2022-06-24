@@ -71,7 +71,8 @@ class GameOptionsTable(
         checkboxTable.addOneCityChallengeCheckbox()
         checkboxTable.addNuclearWeaponsCheckbox()
         checkboxTable.addIsOnlineMultiplayerCheckbox()
-        checkboxTable.addNoUnwelcomeSpectators()
+        if (gameParameters.isOnlineMultiplayer)
+            checkboxTable.addNoUnwelcomeSpectators()
         checkboxTable.addReligionCheckbox(cityStateSlider)
         add(checkboxTable).center().row()
 
@@ -111,6 +112,7 @@ class GameOptionsTable(
                 if (shouldUseMultiplayer) {
                     MultiplayerHelpers.showDropboxWarning(previousScreen as BaseScreen)
                 }
+                update()
             }
 
     private fun Table.addNoUnwelcomeSpectators() =
