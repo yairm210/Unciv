@@ -699,8 +699,9 @@ open class TileGroup(
                 val specificUnitIconLocation = this.unitsLocation + militaryUnit.name
                 return ImageAttempter(militaryUnit)
                         .forceImage { if (!UncivGame.Current.settings.showPixelUnits) "" else null }
-                        .tryImage { if (civInfo.nation.style.isEmpty()) specificUnitIconLocation else null }
-                        .tryImage { "$specificUnitIconLocation-${civInfo.nation.style}" }
+                        .tryImage { if (civInfo.nation.style.isNotEmpty()) "$specificUnitIconLocation-${civInfo.nation.style}-${civInfo.getEra().name}" else null }
+                        .tryImage { if (civInfo.nation.style.isNotEmpty()) "$specificUnitIconLocation-${civInfo.nation.style}" else null }
+                        .tryImage { "$specificUnitIconLocation-${civInfo.getEra().name}" }
                         .tryImage { specificUnitIconLocation }
                         .tryImage { if (baseUnit.replaces != null) "$unitsLocation${baseUnit.replaces}" else null }
                         .tryImages(
@@ -744,7 +745,9 @@ open class TileGroup(
                 val specificUnitIconLocation = this.unitsLocation + civilianUnit.name
                 return ImageAttempter(civilianUnit)
                         .forceImage { if (!UncivGame.Current.settings.showPixelUnits) "" else null }
+                        .tryImage { if (civInfo.nation.style.isNotEmpty()) "$specificUnitIconLocation-${civInfo.nation.style}-${civInfo.getEra().name}" else null }
                         .tryImage { if (civInfo.nation.style.isNotEmpty()) "$specificUnitIconLocation-${civInfo.nation.style}" else null }
+                        .tryImage { "$specificUnitIconLocation-${civInfo.getEra().name}" }
                         .tryImage { specificUnitIconLocation }
                         .tryImage { civilianLandUnit }
                         .getPathOrNull()
