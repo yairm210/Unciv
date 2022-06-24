@@ -420,7 +420,7 @@
 		"requiredTech": "Horseback Riding",
 		"upgradesTo": "Knight",
 		"obsoleteTech": "Chivalry",
-        "requiredResource": "Horses",
+		"requiredResource": "Horses",
 		"uniques": ["Can move after attacking", "[-25]% Strength <vs cities>"],
 		"hurryCostModifier": 20,
 		"attackSound": "horse"
