@@ -65,7 +65,7 @@ fun advancedTab(
 
     addFontFamilySelect(this, settings, optionsPopup.selectBoxMinWidth, onFontChange)
 
-    addFontSizeMultiplier(this, settings, optionsPopup.selectBoxMinWidth, onFontChange)
+    addFontSizeMultiplier(this, settings, onFontChange)
 
     addTranslationGeneration(this, optionsPopup)
 
@@ -135,26 +135,24 @@ private fun addFontFamilySelect(table: Table, settings: GameSettings, selectBoxM
 private fun addFontSizeMultiplier(
     table: Table,
     settings: GameSettings,
-    selectBoxMinWidth: Float,
     onFontChange: () -> Unit
 ) {
     table.add("Font size multiplier".toLabel()).left().fillX()
 
-    val fontSelectBox = SelectBox<Float>(table.skin)
-
-    val sizes = Array<Float>()
-    sizes.addAll(0.8f, 0.9f, 1.0f, 1.1f, 1.2f, 1.3f, 1.4f, 1.5f)
-    fontSelectBox.items = sizes
-
-    fontSelectBox.selected = settings.fontSizeMultiplier
-
-    fontSelectBox.onChange {
-        settings.fontSizeMultiplier = fontSelectBox.selected
-        Fonts.resetFont(settings.fontFamily)
-        onFontChange()
+    val fontSizeSlider = UncivSlider(
+        0.7f, 1.5f, 0.05f,
+        initial = settings.fontSizeMultiplier
+    ) {
+        settings.fontSizeMultiplier = it
+        settings.save()
     }
-
-    table.add(fontSelectBox).minWidth(selectBoxMinWidth).minWidth(10f).pad(10f).row()
+    fontSizeSlider.onChange {
+        if (!fontSizeSlider.isDragging) {
+            Fonts.resetFont(settings.fontFamily)
+            onFontChange()
+        }
+    }
+    table.add(fontSizeSlider).pad(5f).row()
 }
 
 private fun addMaxZoomSlider(table: Table, settings: GameSettings) {
