@@ -352,12 +352,10 @@ fun String.tr(): String {
 
     // curly and square brackets can be nested inside of each other so find the leftmost curly/square
     // bracket then process that first
-    val indexSquare = this.indexOfFirst { it == '[' }
-    val indexCurly = this.indexOfFirst { it == '{' }
-    val processSquare = if (indexSquare >= 0 && indexCurly >= 0) indexSquare < indexCurly
-        else indexSquare >= 0
-    val processCurly = if (indexSquare >= 0 && indexCurly >= 0) indexCurly < indexSquare
-        else indexCurly >= 0
+    val indexSquare = this.indexOf('[')
+    val indexCurly = this.indexOf('{')
+    val processSquare = indexSquare >= 0 && (indexCurly < 0 || indexSquare < indexCurly)
+    val processCurly =  indexCurly >= 0 && (indexSquare < 0 || indexCurly < indexSquare)
 
     // There might still be optimization potential here!
     if (processSquare) { // Placeholders!
