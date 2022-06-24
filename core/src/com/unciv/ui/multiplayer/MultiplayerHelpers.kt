@@ -8,6 +8,7 @@ import com.unciv.logic.multiplayer.OnlineMultiplayerGame
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.models.translations.tr
 import com.unciv.ui.popup.Popup
+import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.extensions.formatShort
 import com.unciv.ui.utils.extensions.toCheckBox
@@ -30,6 +31,19 @@ object MultiplayerHelpers {
         loadingGamePopup.addGoodSizedLabel("Loading latest game state...")
         loadingGamePopup.open()
 
+        if (selectedGame.preview?.gameParameters?.noUnwelcomeSpectators == true) {
+            if (selectedGame.preview!!.civilizations.any { it.playerId == UncivGame.Current.settings.multiplayer.userId }) {
+                actuallyLoadGame(selectedGame, loadingGamePopup)
+            } else {
+                loadingGamePopup.close()
+                ToastPopup("You are not allowed to watch this game!", screen).open()
+            }
+        } else {
+            actuallyLoadGame(selectedGame, loadingGamePopup)
+        }
+    }
+
+    private fun actuallyLoadGame(selectedGame: OnlineMultiplayerGame, loadingGamePopup: Popup) {
         Concurrency.run("JoinMultiplayerGame") {
             try {
                 UncivGame.Current.onlineMultiplayer.loadGame(selectedGame)

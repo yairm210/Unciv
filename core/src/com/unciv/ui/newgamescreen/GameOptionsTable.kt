@@ -71,6 +71,7 @@ class GameOptionsTable(
         checkboxTable.addOneCityChallengeCheckbox()
         checkboxTable.addNuclearWeaponsCheckbox()
         checkboxTable.addIsOnlineMultiplayerCheckbox()
+        checkboxTable.addNoUnwelcomeSpectators()
         checkboxTable.addReligionCheckbox(cityStateSlider)
         add(checkboxTable).center().row()
 
@@ -91,8 +92,8 @@ class GameOptionsTable(
             { gameParameters.noBarbarians = it }
 
     private fun Table.addRagingBarbariansCheckbox() =
-        addCheckbox("Raging Barbarians", gameParameters.ragingBarbarians)
-        { gameParameters.ragingBarbarians = it }
+            addCheckbox("Raging Barbarians", gameParameters.ragingBarbarians)
+            { gameParameters.ragingBarbarians = it }
 
     private fun Table.addOneCityChallengeCheckbox() =
             addCheckbox("One City Challenge", gameParameters.oneCityChallenge)
@@ -110,6 +111,12 @@ class GameOptionsTable(
                 if (shouldUseMultiplayer) {
                     MultiplayerHelpers.showDropboxWarning(previousScreen as BaseScreen)
                 }
+            }
+
+    private fun Table.addNoUnwelcomeSpectators() =
+            addCheckbox("No uninvited spectators", gameParameters.noUnwelcomeSpectators)
+            {
+                gameParameters.noUnwelcomeSpectators = it
             }
 
     private fun numberOfCityStates() = ruleset.nations.values.count {

@@ -31,6 +31,7 @@ class GameParameters { // Default values are the default new game
     var startingEra = "Ancient era"
 
     var isOnlineMultiplayer = false
+    var noUnwelcomeSpectators = false
     var baseRuleset: String = BaseRuleset.Civ_V_GnK.fullName
     var mods = LinkedHashSet<String>()
 
