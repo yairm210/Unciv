@@ -690,7 +690,7 @@
 		"requiredTech": "Machinery",
 		"upgradesTo": "Gatling Gun",
 		"obsoleteTech": "Industrialization",
-		"promotions": ["Logistics"],
+		"promotions": ["[Chu-Ko-Nu] ability"],
 		"attackSound": "arrow"
 	},
 	{
