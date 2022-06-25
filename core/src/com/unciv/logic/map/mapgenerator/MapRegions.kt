@@ -316,7 +316,7 @@ class MapRegions (val ruleset: Ruleset){
         for (civ in positiveBiasCivs) {
             // If noStartBias is enabled consider these to be randomCivs
             if (gameParameters.noStartBias) {
-                randomCivs.addAll(coastBiasCivs)
+                randomCivs.addAll(positiveBiasCivs)
                 break
             }
 
@@ -346,7 +346,7 @@ class MapRegions (val ruleset: Ruleset){
         for (civ in negativeBiasCivs) {
             // If noStartBias is enabled consider these to be randomCivs
             if (gameParameters.noStartBias) {
-                randomCivs.addAll(coastBiasCivs)
+                randomCivs.addAll(negativeBiasCivs)
                 break
             }
 
