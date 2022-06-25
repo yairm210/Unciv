@@ -31,7 +31,7 @@ object MultiplayerHelpers {
         loadingGamePopup.addGoodSizedLabel("Loading latest game state...")
         loadingGamePopup.open()
 
-        if (selectedGame.preview?.gameParameters?.noUnwelcomeSpectators == true) {
+        if (selectedGame.preview?.gameParameters?.anyoneCanSpectate == false) {
             if (selectedGame.preview!!.civilizations.any { it.playerId == UncivGame.Current.settings.multiplayer.userId }) {
                 actuallyLoadGame(selectedGame, loadingGamePopup)
             } else {

@@ -116,9 +116,9 @@ class GameOptionsTable(
             }
 
     private fun Table.addNoUnwelcomeSpectators() =
-            addCheckbox("No uninvited spectators", gameParameters.noUnwelcomeSpectators)
+            addCheckbox("Allow anyone to spectate", gameParameters.anyoneCanSpectate)
             {
-                gameParameters.noUnwelcomeSpectators = it
+                gameParameters.anyoneCanSpectate = it
             }
 
     private fun numberOfCityStates() = ruleset.nations.values.count {
