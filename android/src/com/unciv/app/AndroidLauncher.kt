@@ -15,7 +15,7 @@ import com.badlogic.gdx.backends.android.AndroidGraphics
 import com.badlogic.gdx.math.Rectangle
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
-import com.unciv.logic.GameSaver
+import com.unciv.logic.UncivFiles
 import com.unciv.logic.event.EventBus
 import com.unciv.ui.UncivStage
 import com.unciv.ui.utils.BaseScreen
@@ -40,7 +40,7 @@ open class AndroidLauncher : AndroidApplication() {
             useImmersiveMode = true
         }
 
-        val settings = GameSaver.getSettingsForPlatformLaunchers(filesDir.path)
+        val settings = UncivFiles.getSettingsForPlatformLaunchers(filesDir.path)
         val fontFamily = settings.fontFamily
 
         // Manage orientation lock and display cutout
@@ -119,10 +119,10 @@ open class AndroidLauncher : AndroidApplication() {
         if (UncivGame.isCurrentInitialized()
                 && UncivGame.Current.gameInfo != null
                 && UncivGame.Current.settings.multiplayer.turnCheckerEnabled
-                && UncivGame.Current.gameSaver.getMultiplayerSaves().any()
+                && UncivGame.Current.files.getMultiplayerSaves().any()
         ) {
             MultiplayerTurnCheckWorker.startTurnChecker(
-                applicationContext, UncivGame.Current.gameSaver,
+                applicationContext, UncivGame.Current.files,
                 UncivGame.Current.gameInfo!!, UncivGame.Current.settings.multiplayer
             )
         }
