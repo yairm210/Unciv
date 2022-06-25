@@ -699,7 +699,7 @@ open class TileGroup(
                 val specificUnitIconLocation = this.unitsLocation + militaryUnit.name
                 return ImageAttempter(militaryUnit)
                         .forceImage { if (!UncivGame.Current.settings.showPixelUnits) "" else null }
-                        .getUnitEraSprite(militaryUnit, specificUnitIconLocation)
+                        .tryGetUnitEraSprite(militaryUnit, specificUnitIconLocation)
                         .tryImage { if (civInfo.nation.style.isNotEmpty()) "$specificUnitIconLocation-${civInfo.nation.style}" else null }
                         .tryImage { specificUnitIconLocation }
                         .tryImage { if (baseUnit.replaces != null) "$unitsLocation${baseUnit.replaces}" else null }
@@ -744,7 +744,7 @@ open class TileGroup(
                 val specificUnitIconLocation = this.unitsLocation + civilianUnit.name
                 return ImageAttempter(civilianUnit)
                         .forceImage { if (!UncivGame.Current.settings.showPixelUnits) "" else null }
-                        .getUnitEraSprite(civilianUnit, specificUnitIconLocation)
+                        .tryGetUnitEraSprite(civilianUnit, specificUnitIconLocation)
                         .tryImage { if (civInfo.nation.style.isNotEmpty()) "$specificUnitIconLocation-${civInfo.nation.style}" else null }
                         .tryImage { specificUnitIconLocation }
                         .tryImage { civilianLandUnit }
@@ -768,7 +768,7 @@ open class TileGroup(
         }
     }
 
-    private fun ImageAttempter<MapUnit>.getUnitEraSprite(unit: MapUnit, specificUnitIconLocation: String): ImageAttempter<MapUnit> {
+    private fun ImageAttempter<MapUnit>.tryGetUnitEraSprite(unit: MapUnit, specificUnitIconLocation: String): ImageAttempter<MapUnit> {
         return this.tryImages(
             // iterate in reverse order to get the most recent era-specific image
             (unit.civInfo.getEraNumber() downTo 0).asSequence().map {
