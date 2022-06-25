@@ -74,7 +74,7 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
 
     enum class Category(
         val label: String,
-        val category: String
+        val topic: String
     ) {
         All("All mods", "unciv-mod"),
         Rulesets("Rulesets", "unciv-mod-rulesets"),
