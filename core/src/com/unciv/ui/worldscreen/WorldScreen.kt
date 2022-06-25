@@ -212,8 +212,9 @@ class WorldScreen(
     }
 
     override fun dispose() {
-        super.dispose()
         events.stopReceiving()
+        statusButtons.dispose()
+        super.dispose()
     }
 
     private fun addKeyboardPresses() {

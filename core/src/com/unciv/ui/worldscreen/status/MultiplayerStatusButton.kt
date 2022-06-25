@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Stack
 import com.badlogic.gdx.utils.Align
+import com.badlogic.gdx.utils.Disposable
 import com.unciv.UncivGame
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.HasMultiplayerGameName
@@ -26,14 +27,15 @@ import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.setSize
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import java.time.Duration
 import java.time.Instant
 
 class MultiplayerStatusButton(
-    /*val*/ screen: BaseScreen,
+    screen: BaseScreen,
     curGame: OnlineMultiplayerGame?
-) : Button(BaseScreen.skin) {
+) : Button(BaseScreen.skin), Disposable {
     private var curGameName = curGame?.name
     private val multiplayerImage = createMultiplayerImage()
     private val loadingImage = createLoadingImage()
@@ -43,6 +45,7 @@ class MultiplayerStatusButton(
     private var loadingStarted: Instant? = null
 
     private val events = EventBus.EventReceiver()
+    private var loadStopJob: Job? = null
 
     init {
         turnIndicatorCell = add().padTop(10f).padBottom(10f)
@@ -96,7 +99,7 @@ class MultiplayerStatusButton(
         } else {
             Duration.ZERO
         }
-        Concurrency.run("Hide loading indicator") {
+        loadStopJob = Concurrency.run("Hide loading indicator") {
             delay(waitFor.toMillis())
             launchOnGLThread {
                 loadingImage.clearActions()
@@ -147,11 +150,18 @@ class MultiplayerStatusButton(
             turnIndicator.flash()
         }
     }
+
+    override fun dispose() {
+        events.stopReceiving()
+        turnIndicator.dispose()
+        loadStopJob?.cancel()
+    }
 }
 
-private class TurnIndicator : HorizontalGroup() {
+private class TurnIndicator : HorizontalGroup(), Disposable {
     val gameAmount = Label("2", BaseScreen.skin)
     val image: Image
+    private var job: Job? = null
     init {
         image = ImageGetter.getImage("OtherIcons/ExclamationMark")
         image.setSize(30f)
@@ -175,11 +185,15 @@ private class TurnIndicator : HorizontalGroup() {
         if (alternations == 0) return
         gameAmount.color = nextColor
         image.color = nextColor
-        Concurrency.run("StatusButton color flash") {
+        job = Concurrency.run("StatusButton color flash") {
             delay(500)
             launchOnGLThread {
                 flash(alternations - 1, nextColor, curColor)
             }
         }
+    }
+
+    override fun dispose() {
+        job?.cancel()
     }
 }

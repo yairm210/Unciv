@@ -37,6 +37,7 @@ import com.unciv.utils.concurrency.launchOnGLThread
 import com.unciv.utils.concurrency.withGLContext
 import com.unciv.utils.concurrency.withThreadPoolContext
 import com.unciv.utils.debug
+import kotlinx.coroutines.CancellationException
 import java.util.*
 import kotlin.collections.ArrayDeque
 
@@ -395,6 +396,9 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     /** Handles an uncaught exception or error. First attempts a platform-specific handler, and if that didn't handle the exception or error, brings the game to a [CrashScreen]. */
     fun handleUncaughtThrowable(ex: Throwable) {
+        if (ex is CancellationException) {
+            return // kotlin coroutines use this for control flow... so we can just ignore them.
+        }
         Log.error("Uncaught throwable", ex)
         if (platformSpecificHelper?.handleUncaughtThrowable(ex) == true) return
         Gdx.app.postRunnable {
