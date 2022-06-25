@@ -1,0 +1,33 @@
+## 4.1.14
+
+By Azzurite:
+- Save uncaught exception to file 
+- Fix crash handling not disposing previous screens 
+- Regenerate atlas
+- Fix the fix
+- Fix city ambient sounds not working on Desktop 
+- 4.1.13-patch2
+- Fix city sounds not being played on released game versions 
+- Fix city ambience sound not being stopped when the city screen is updated via UncivGame.replaceCurrentScreen
+- 4.1.13-patch1
+- Fix crash
+
+By OptimizedForDensity:
+- Make mounted vs city penalties only for attacking 
+- Logistics allows move after attack 
+- Fix cataphract not requiring horses 
+- Fix crash when melee unit captures civilian then tries to attack it 
+- Fix Mayan UB not appearing in Civilopedia 
+- Add notification when a civ is resurrected through liberation 
+- Allow modded harbor-type buildings to connect cities to capital 
+- Fix "Religions to be founded" count 
+
+Exploring units now take several turns to reach a ruin (but only if it is in vision, not behind fog of war)  - By Skekdog
+
+By alexban011:
+- added gameParameter option to disable start bias 
+- Added option to select font size 
+- Add Notifications Log 
+- Improve city ambient sounds 
+- fix 
+
