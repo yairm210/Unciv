@@ -372,7 +372,7 @@ class WorldScreen(
                     .apply { setAlignment(Align.center) }).pad(10f)
             tutorialTaskTable.pack()
             tutorialTaskTable.centerX(stage)
-            tutorialTaskTable.y = topBar.y - tutorialTaskTable.height
+            tutorialTaskTable.y = topBar.y - tutorialTaskTable.height + 1
         }
 
         if (fogOfWar) minimapWrapper.update(selectedCiv)

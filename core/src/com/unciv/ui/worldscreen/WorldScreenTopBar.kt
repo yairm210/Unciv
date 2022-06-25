@@ -296,7 +296,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         }
 
         width = stage.width
-        setPosition(0f, stage.height, Align.topLeft)
+        setPosition(0f, stage.height+1, Align.topLeft)
 
         selectedCivTable.setPosition(1f, buttonY, Align.left)
         overviewButton.setPosition(stage.width, buttonY, Align.right)
