@@ -371,7 +371,7 @@
 		"requiredResource": "Horses",
 		"upgradesTo": "Knight",
 		"obsoleteTech": "Chivalry",
-		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities>" ],
+		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking>" ],
 		"hurryCostModifier": 20,
 		"attackSound": "horse"
 	},
@@ -388,7 +388,7 @@
 		"obsoleteTech": "Chivalry",
 		"promotions": ["Great Generals I"],
 		"requiredResource": "Horses",
-		"uniques": ["Can move after attacking", "No defensive terrain bonus", "[-33]% Strength <vs cities>"],
+		"uniques": ["Can move after attacking", "No defensive terrain bonus", "[-33]% Strength <vs cities> <when attacking>"],
 		"hurryCostModifier": 20,
 		"attackSound": "horse"
 	},
@@ -404,7 +404,7 @@
 		"upgradesTo": "Knight",
 		"obsoleteTech": "Chivalry",
 		"promotions": ["Great Generals II"],
-		"uniques": ["Can move after attacking", "No defensive terrain bonus", "[-33]% Strength <vs cities>",
+		"uniques": ["Can move after attacking", "No defensive terrain bonus", "[-33]% Strength <vs cities> <when attacking>",
 			"[-10]% Strength for enemy [Military] units in adjacent [All] tiles"],
 		"hurryCostModifier": 20,
 		"attackSound": "elephant"
@@ -421,7 +421,7 @@
 		"upgradesTo": "Knight",
 		"obsoleteTech": "Chivalry",
 		"requiredResource": "Horses",
-		"uniques": ["Can move after attacking", "[-25]% Strength <vs cities>"],
+		"uniques": ["Can move after attacking", "[-25]% Strength <vs cities> <when attacking>"],
 		"hurryCostModifier": 20,
 		"attackSound": "horse"
 	},
@@ -581,7 +581,7 @@
 		"obsoleteTech": "Military Science",
 		"upgradesTo": "Cavalry",
 		"requiredResource": "Horses",
-		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities>", "Never appears as a Barbarian unit"],
+		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking>", "Never appears as a Barbarian unit"],
 		"attackSound": "horse"
 	},
 	{
@@ -630,7 +630,7 @@
 		"requiredTech": "Chivalry",
 		"obsoleteTech": "Military Science",
 		"upgradesTo": "Cavalry",
-		"uniques": ["Can move after attacking","No defensive terrain bonus","[+50]% Strength <vs [Mounted] units>","[-33]% Strength <vs cities>"],
+		"uniques": ["Can move after attacking","No defensive terrain bonus","[+50]% Strength <vs [Mounted] units>","[-33]% Strength <vs cities> <when attacking>"],
 		"attackSound": "elephant"
 	},
 	{
@@ -946,7 +946,7 @@
 		"cost": 185,
 		"requiredTech": "Metallurgy",
 		"requiredResource": "Horses",
-		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities>","Never appears as a Barbarian unit"],
+		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking>","Never appears as a Barbarian unit"],
 		"promotions": ["Formation I"],
 		"upgradesTo": "Anti-Tank Gun",
 		"obsoleteTech": "Combined Arms",
@@ -962,7 +962,7 @@
 		"cost": 185,
 		"requiredTech": "Metallurgy",
 		"requiredResource": "Horses",
-		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities>",
+		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking>",
 			"[+1] Sight"],
 		"promotions": ["[Sipahi] ability","Formation I"],
 		"upgradesTo": "Anti-Tank Gun",
@@ -979,7 +979,7 @@
 		"cost": 185,
 		"requiredTech": "Metallurgy",
 		"requiredResource": "Horses",
-		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities>"],
+		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking>"],
 		"promotions": ["[Hakkapeliitta] ability","Formation I"],
 		"upgradesTo": "Anti-Tank Gun",
 		"obsoleteTech": "Combined Arms",
@@ -1077,7 +1077,7 @@
 		"obsoleteTech": "Combustion",
 		"requiredResource": "Horses",
 		"upgradesTo": "Landship",
-		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities>", "Never appears as a Barbarian unit"],
+		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking>", "Never appears as a Barbarian unit"],
 		"attackSound": "horse"
 	},
 	{
@@ -1092,7 +1092,7 @@
 		"obsoleteTech": "Combustion",
 		"requiredResource": "Horses",
 		"upgradesTo": "Landship",
-		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities>"],
+		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking>"],
 		"promotions": ["[Cossack] ability"],
 		"attackSound": "horse"
 	},
@@ -1108,7 +1108,7 @@
 		"obsoleteTech": "Combustion",
 		"requiredResource": "Horses",
 		"upgradesTo": "Landship",
-		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities>",
+		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities> <when attacking>",
 			"[+1] Sight"],
 		"promotions": ["[Hussar] ability"],
 		"attackSound": "horse"
