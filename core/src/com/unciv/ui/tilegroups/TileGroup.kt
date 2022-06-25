@@ -775,10 +775,8 @@ open class TileGroup(
                 {
                     if (civInfo.nation.style.isNotEmpty())
                         "$specificUnitIconLocation-${civInfo.nation.style}-era${it}"
-                    else if (it >= 0) // kludge to try to load the era-specific-but-not-style-specific image in the same loop
-                        "$specificUnitIconLocation-era${it}"
                     else
-                        null
+                        "$specificUnitIconLocation-era${it}"
                 }
             }
         )
