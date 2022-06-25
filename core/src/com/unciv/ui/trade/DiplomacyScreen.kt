@@ -154,16 +154,11 @@ class DiplomacyScreen(
             }
 
             val civNameLabel = civ.civName.toLabel()
-            if (isNarrowerThan4to3() || isCrampedPortrait()) {
-                leftSideTable.add(civIndicator).row()
-                leftSideTable.add(civNameLabel).padBottom(20f).row()
-            } else {
-                leftSideTable.add(civIndicator)
-                leftSideTable.add(civNameLabel).row()
-            }
+            leftSideTable.add(civIndicator).row()
+            leftSideTable.add(civNameLabel).padBottom(20f).row()
 
-            civNameLabel.onClick { updateRightSide(civ) }
             civIndicator.onClick { updateRightSide(civ) }
+            civNameLabel.onClick { updateRightSide(civ) }
         }
 
         if (selectCivY != 0f) {
