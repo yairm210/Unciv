@@ -110,7 +110,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
          * - Font (hence Fonts.resetFont() inside setSkin())
          */
         settings = gameSaver.getGeneralSettings() // needed for the screen
-        setScreen(GameStartScreen())  // NOT dependent on any atlas or skin
+        setAsRootScreen(GameStartScreen())  // NOT dependent on any atlas or skin
         GameSounds.init()
 
         musicController = MusicController()  // early, but at this point does only copy volume from settings
@@ -149,8 +149,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
                 ImageGetter.ruleset = RulesetCache.getVanillaRuleset() // so that we can enter the map editor without having to load a game first
 
                 when {
-                    settings.isFreshlyCreated -> pushScreen(LanguagePickerScreen())
-                    deepLinkedMultiplayerGame == null -> pushScreen(MainMenuScreen())
+                    settings.isFreshlyCreated -> setAsRootScreen(LanguagePickerScreen())
+                    deepLinkedMultiplayerGame == null -> setAsRootScreen(MainMenuScreen())
                     else -> tryLoadDeepLinkedGame()
                 }
 
@@ -255,6 +255,13 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         Gdx.graphics.requestRendering()
     }
 
+    /** Removes & [disposes][BaseScreen.dispose] all currently active screens in the [screenStack] and sets the given screen as the only screen. */
+    private fun setAsRootScreen(root: BaseScreen) {
+        for (screen in screenStack) screen.dispose()
+        screenStack.clear()
+        screenStack.addLast(root)
+        setScreen(root)
+    }
     /** Adds a screen to be displayed instead of the current screen, with an option to go back to the previous screen by calling [popScreen] */
     fun pushScreen(newScreen: BaseScreen) {
         screenStack.addLast(newScreen)
@@ -313,7 +320,9 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         if (deepLinkedMultiplayerGame == null) return@run
 
         launchOnGLThread {
-            pushScreen(LoadingScreen(getScreen()!!))
+            if (screenStack.isEmpty() || screenStack[0] !is GameStartScreen) {
+                setAsRootScreen(LoadingScreen(getScreen()!!))
+            }
         }
         try {
             onlineMultiplayer.loadGame(deepLinkedMultiplayerGame!!)
@@ -398,7 +407,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         Log.error("Uncaught throwable", ex)
         if (platformSpecificHelper?.handleUncaughtThrowable(ex) == true) return
         Gdx.app.postRunnable {
-            setScreen(CrashScreen(ex))
+            setAsRootScreen(CrashScreen(ex))
         }
     }
 
