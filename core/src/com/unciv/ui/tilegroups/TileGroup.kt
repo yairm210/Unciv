@@ -772,13 +772,14 @@ open class TileGroup(
         return this.tryImages(
             // iterate in reverse order to get the most recent era-specific image
             (unit.civInfo.getEraNumber() downTo 0).asSequence().map {
-                @Suppress("unused")
-                fun MapUnit.() = if (civInfo.nation.style.isNotEmpty())
-                    "$specificUnitIconLocation-${civInfo.nation.style}-era${it}"
-                else if (it >= 0) // kludge to try to load the era-specific-but-not-style-specific image in the same loop
-                    "$specificUnitIconLocation-era${it}"
-                else
-                    null
+                {
+                    if (civInfo.nation.style.isNotEmpty())
+                        "$specificUnitIconLocation-${civInfo.nation.style}-era${it}"
+                    else if (it >= 0) // kludge to try to load the era-specific-but-not-style-specific image in the same loop
+                        "$specificUnitIconLocation-era${it}"
+                    else
+                        null
+                }
             }
         )
     }
