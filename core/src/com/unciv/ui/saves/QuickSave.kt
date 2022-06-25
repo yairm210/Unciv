@@ -17,10 +17,10 @@ import com.unciv.utils.Log
 
 object QuickSave {
     fun save(gameInfo: GameInfo, screen: WorldScreen) {
-        val gameSaver = UncivGame.Current.gameSaver
+        val files = UncivGame.Current.files
         val toast = ToastPopup("Quicksaving...", screen)
         Concurrency.runOnNonDaemonThreadPool("QuickSaveGame") {
-            gameSaver.saveGame(gameInfo, "QuickSave") {
+            files.saveGame(gameInfo, "QuickSave") {
                 launchOnGLThread {
                     toast.close()
                     if (it != null)
@@ -33,11 +33,11 @@ object QuickSave {
     }
 
     fun load(screen: WorldScreen) {
-        val gameSaver = UncivGame.Current.gameSaver
+        val files = UncivGame.Current.files
         val toast = ToastPopup("Quickloading...", screen)
         Concurrency.run("QuickLoadGame") {
             try {
-                val loadedGame = gameSaver.loadGameByName("QuickSave")
+                val loadedGame = files.loadGameByName("QuickSave")
                 launchOnGLThread {
                     toast.close()
                     UncivGame.Current.loadGame(loadedGame)
@@ -69,7 +69,7 @@ object QuickSave {
 
             val savedGame: GameInfo
             try {
-                savedGame = screen.game.gameSaver.loadLatestAutosave()
+                savedGame = screen.game.files.loadLatestAutosave()
             } catch (oom: OutOfMemoryError) {
                 outOfMemory()
                 return@run

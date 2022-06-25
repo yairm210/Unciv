@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.unciv.UncivGame
 import com.unciv.json.json
 import com.unciv.logic.GameInfo
-import com.unciv.logic.GameSaver
+import com.unciv.logic.UncivFiles
 import com.unciv.logic.GameStarter
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapParameters
@@ -61,10 +61,10 @@ class SerializationTests {
         }
         val setup = GameSetupInfo(param, mapParameters)
         UncivGame.Current = UncivGame()
-        UncivGame.Current.gameSaver = GameSaver(Gdx.files)
+        UncivGame.Current.files = UncivFiles(Gdx.files)
 
         // Both startNewGame and makeCivilizationsMeet will cause a save to storage of our empty settings
-        settingsBackup = UncivGame.Current.gameSaver.getGeneralSettings()
+        settingsBackup = UncivGame.Current.files.getGeneralSettings()
 
         UncivGame.Current.settings = GameSettings()
         game = GameStarter.startNewGame(setup)

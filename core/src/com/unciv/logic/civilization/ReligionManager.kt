@@ -8,6 +8,7 @@ import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.utils.extensions.toPercent
+import java.lang.Integer.min
 import kotlin.random.Random
 
 class ReligionManager : IsPartOfGameInfoSerialization {
@@ -151,6 +152,29 @@ class ReligionManager : IsPartOfGameInfoSerialization {
 
     fun amountOfFoundableReligions() = civInfo.gameInfo.civilizations.count { it.isMajorCiv() } / 2 + 1
 
+    fun remainingFoundableReligions(): Int {
+        val foundedReligionsCount = civInfo.gameInfo.civilizations.count {
+            it.religionManager.religion != null && it.religionManager.religionState >= ReligionState.Religion
+        }
+
+        // count the number of foundable religions left given defined ruleset religions and number of civs in game
+        val maxNumberOfAdditionalReligions = min(civInfo.gameInfo.ruleSet.religions.size,
+            amountOfFoundableReligions()) - foundedReligionsCount
+
+        val availableBeliefsToFound = min(
+            civInfo.gameInfo.ruleSet.beliefs.values.count {
+                it.type == BeliefType.Follower
+                && civInfo.gameInfo.religions.values.none { religion -> it in religion.getBeliefs(BeliefType.Follower) }
+            },
+            civInfo.gameInfo.ruleSet.beliefs.values.count {
+                it.type == BeliefType.Founder
+                && civInfo.gameInfo.religions.values.none { religion -> it in religion.getBeliefs(BeliefType.Founder) }
+            }
+        )
+
+        return min(maxNumberOfAdditionalReligions, availableBeliefsToFound)
+    }
+
     fun mayFoundReligionAtAll(prophet: MapUnit): Boolean {
         if (!civInfo.gameInfo.isReligionEnabled()) return false // No religion
 
@@ -161,24 +185,8 @@ class ReligionManager : IsPartOfGameInfoSerialization {
 
         if (!civInfo.isMajorCiv()) return false // Only major civs may use religion
 
-        val foundedReligionsCount = civInfo.gameInfo.civilizations.count {
-            it.religionManager.religion != null && it.religionManager.religionState >= ReligionState.Religion
-        }
-
-        if (foundedReligionsCount >= amountOfFoundableReligions())
+        if (remainingFoundableReligions() == 0)
             return false // Too bad, too many religions have already been founded
-
-        if (foundedReligionsCount >= civInfo.gameInfo.ruleSet.religions.size)
-            return false // Mod maker did not provide enough religions for the amount of civs present
-
-        if (civInfo.gameInfo.ruleSet.beliefs.values.none {
-            it.type == BeliefType.Follower
-            && civInfo.gameInfo.religions.values.none { religion -> it in religion.getBeliefs(BeliefType.Follower) }
-        }) return false // Mod maker did not provide enough follower beliefs
-
-        // Shortcut as each religion will always have exactly one founder belief
-        if (foundedReligionsCount >= civInfo.gameInfo.ruleSet.beliefs.values.count { it.type == BeliefType.Founder })
-            return false // Mod maker did not provide enough founder beliefs
 
         return true
     }

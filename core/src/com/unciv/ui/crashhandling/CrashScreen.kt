@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.GameSaver
+import com.unciv.logic.UncivFiles
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
@@ -20,10 +20,8 @@ import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.setFontSize
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toNiceString
-import com.unciv.utils.Log
 import java.io.PrintWriter
 import java.io.StringWriter
-import kotlin.concurrent.thread
 
 /** Screen to crash to when an otherwise unhandled exception or error is thrown. */
 class CrashScreen(val exception: Throwable): BaseScreen() {
@@ -53,7 +51,7 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
             return ""
         return "\n**Save Data:**\n<details><summary>Show Saved Game</summary>\n\n```\n" +
             try {
-                GameSaver.gameInfoToString(UncivGame.Current.gameInfo!!, forceZip = true)
+                UncivFiles.gameInfoToString(UncivGame.Current.gameInfo!!, forceZip = true)
             } catch (e: Throwable) {
                 "No save data: $e" // In theory .toString() could still error here.
             } + "\n```\n</details>\n"

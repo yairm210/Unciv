@@ -117,7 +117,7 @@ class CapitalConnectionsFinderTests {
             if (capital)
                 cityConstructions.builtBuildings.add(rules.buildings.values.first { it.hasUnique(UniqueType.IndicatesCapital) }.name)
             if (hasHarbor)
-                cityConstructions.builtBuildings.add(rules.buildings.values.first { it.name == "Harbor" }.name)
+                cityConstructions.builtBuildings.add(rules.buildings.values.first { it.hasUnique(UniqueType.ConnectTradeRoutes) }.name)
             this.name = name
             setTransients()
             tilesMap[location].setOwningCity(this)

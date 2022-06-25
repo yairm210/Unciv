@@ -27,6 +27,7 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var godMode = false
     var nuclearWeaponsEnabled = true
     var religionEnabled = false
+    var noStartBias = false
 
     var victoryTypes: ArrayList<String> = arrayListOf()
     var startingEra = "Ancient era"

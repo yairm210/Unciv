@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
-import com.unciv.logic.GameSaver
+import com.unciv.logic.UncivFiles
 import com.unciv.models.translations.tr
 import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.ToastPopup
@@ -34,7 +34,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
 
         rightSideButton.setText("Save game".tr())
         rightSideButton.onActivation {
-            if (game.gameSaver.getSave(gameNameTextField.text).exists())
+            if (game.files.getSave(gameNameTextField.text).exists())
                 ConfirmPopup(
                     this,
                     "Overwrite existing file?",
@@ -78,7 +78,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
         Concurrency.run("Copy game to clipboard") {
             // the Gzip rarely leads to ANRs
             try {
-                Gdx.app.clipboard.contents = GameSaver.gameInfoToString(gameInfo, forceZip = true)
+                Gdx.app.clipboard.contents = UncivFiles.gameInfoToString(gameInfo, forceZip = true)
             } catch (ex: Throwable) {
                 ex.printStackTrace()
                 launchOnGLThread {
@@ -89,7 +89,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
     }
 
     private fun Table.addSaveToCustomLocation() {
-        if (!game.gameSaver.canLoadFromCustomSaveLocation()) return
+        if (!game.files.canLoadFromCustomSaveLocation()) return
         val saveToCustomLocation = "Save to custom location".toTextButton()
         val errorLabel = "".toLabel(Color.RED)
         saveToCustomLocation.onClick {
@@ -97,7 +97,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
             saveToCustomLocation.setText("Saving...".tr())
             saveToCustomLocation.disable()
             Concurrency.runOnNonDaemonThreadPool("Save to custom location") {
-                game.gameSaver.saveGameToCustomLocation(gameInfo, gameNameTextField.text) { result ->
+                game.files.saveGameToCustomLocation(gameInfo, gameNameTextField.text) { result ->
                     if (result.isError()) {
                         errorLabel.setText("Could not save game to custom location!".tr())
                         result.exception?.printStackTrace()
@@ -115,7 +115,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
     private fun saveGame() {
         rightSideButton.setText("Saving...".tr())
         Concurrency.runOnNonDaemonThreadPool("SaveGame") {
-            game.gameSaver.saveGame(gameInfo, gameNameTextField.text) {
+            game.files.saveGame(gameInfo, gameNameTextField.text) {
                 launchOnGLThread {
                     if (it != null) ToastPopup("Could not save game!", this@SaveGameScreen)
                     else UncivGame.Current.popScreen()

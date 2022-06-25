@@ -205,7 +205,22 @@ class CityInfoConquestFunctions(val city: CityInfo){
 
             conquerCity(conqueringCiv, oldCiv, foundingCiv)
 
-            if (foundingCiv.cities.size == 1) cityConstructions.addBuilding(capitalCityIndicator()) // Resurrection!
+            if (foundingCiv.cities.size == 1) {
+                // Resurrection!
+                cityConstructions.addBuilding(capitalCityIndicator())
+                for (civ in civInfo.gameInfo.civilizations) {
+                    if (civ == foundingCiv || civ == conqueringCiv) continue // don't need to notify these civs
+                    when {
+                        civ.knows(conqueringCiv) && civ.knows(foundingCiv) ->
+                            civ.addNotification("[$conqueringCiv] has liberated [$foundingCiv]", foundingCiv.civName, NotificationIcon.Diplomacy, conqueringCiv.civName)
+                        civ.knows(conqueringCiv) && !civ.knows(foundingCiv) ->
+                            civ.addNotification("[$conqueringCiv] has liberated an unknown civilization", NotificationIcon.Diplomacy, conqueringCiv.civName)
+                        !civ.knows(conqueringCiv) && civ.knows(foundingCiv) ->
+                            civ.addNotification("An unknown civilization has liberated [$foundingCiv]", NotificationIcon.Diplomacy, foundingCiv.civName)
+                        else -> continue
+                    }
+                }
+            }
             isPuppet = false
             cityStats.update()
 

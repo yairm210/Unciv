@@ -73,7 +73,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         val CURRENT_COMPATIBILITY_VERSION = CompatibilityVersion(CURRENT_COMPATIBILITY_NUMBER, UncivGame.VERSION)
 
         /** This is the version just before this field was introduced, i.e. all saves without any version will be from this version */
-        val FIRST_WITHOUT = CompatibilityVersion(1, Version("4.1.13-patch2", 730))
+        val FIRST_WITHOUT = CompatibilityVersion(1, Version("4.1.14", 731))
     }
     //region Fields - Serialized
 

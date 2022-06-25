@@ -72,6 +72,7 @@ class GameOptionsTable(
         checkboxTable.addNuclearWeaponsCheckbox()
         checkboxTable.addIsOnlineMultiplayerCheckbox()
         checkboxTable.addReligionCheckbox(cityStateSlider)
+        checkboxTable.addNoStartBiasCheckbox()
         add(checkboxTable).center().row()
 
         if (!isPortrait)
@@ -123,6 +124,10 @@ class GameOptionsTable(
             gameParameters.religionEnabled = it
             cityStateSlider?.run { setRange(0f, numberOfCityStates().toFloat()) }
         }
+
+    private fun Table.addNoStartBiasCheckbox() =
+            addCheckbox("Disable starting bias", gameParameters.noStartBias)
+            { gameParameters.noStartBias = it }
 
     private fun Table.addCityStatesSlider(): UncivSlider? {
         val maxCityStates = numberOfCityStates()

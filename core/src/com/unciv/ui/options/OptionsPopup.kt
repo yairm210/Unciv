@@ -166,7 +166,10 @@ class OptionsPopup(
                     settingsProperty: KMutableProperty0<Boolean>,
                     updateWorld: Boolean = false,
                     action: (Boolean) -> Unit = {}) {
-        addCheckbox(table, text, settingsProperty.get(), updateWorld, action)
+        addCheckbox(table, text, settingsProperty.get(), updateWorld) {
+            action(it)
+            settingsProperty.set(it)
+        }
     }
 
 }

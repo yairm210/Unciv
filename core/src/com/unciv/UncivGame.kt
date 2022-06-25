@@ -8,8 +8,8 @@ import com.badlogic.gdx.Screen
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
-import com.unciv.logic.GameSaver
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.UncivFiles
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.models.metadata.GameSettings
@@ -38,6 +38,7 @@ import com.unciv.utils.concurrency.launchOnGLThread
 import com.unciv.utils.concurrency.withGLContext
 import com.unciv.utils.concurrency.withThreadPoolContext
 import com.unciv.utils.debug
+import java.io.PrintWriter
 import java.util.*
 import kotlin.collections.ArrayDeque
 
@@ -58,7 +59,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     lateinit var settings: GameSettings
     lateinit var musicController: MusicController
     lateinit var onlineMultiplayer: OnlineMultiplayer
-    lateinit var gameSaver: GameSaver
+    lateinit var files: UncivFiles
 
     /**
      * This exists so that when debugging we can see the entire map.
@@ -94,7 +95,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             viewEntireMapForDebug = false
         }
         Current = this
-        gameSaver = GameSaver(Gdx.files, customSaveLocationHelper, platformSpecificHelper?.shouldPreferExternalStorage() == true)
+        files = UncivFiles(Gdx.files, customSaveLocationHelper, platformSpecificHelper?.shouldPreferExternalStorage() == true)
 
         // If this takes too long players, especially with older phones, get ANR problems.
         // Whatever needs graphics needs to be done on the main thread,
@@ -108,8 +109,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
          * - Skin (hence BaseScreen.setSkin())
          * - Font (hence Fonts.resetFont() inside setSkin())
          */
-        settings = gameSaver.getGeneralSettings() // needed for the screen
-        setScreen(GameStartScreen())  // NOT dependent on any atlas or skin
+        settings = files.getGeneralSettings() // needed for the screen
+        setAsRootScreen(GameStartScreen())  // NOT dependent on any atlas or skin
         GameSounds.init()
 
         musicController = MusicController()  // early, but at this point does only copy volume from settings
@@ -148,8 +149,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
                 ImageGetter.ruleset = RulesetCache.getVanillaRuleset() // so that we can enter the map editor without having to load a game first
 
                 when {
-                    settings.isFreshlyCreated -> pushScreen(LanguagePickerScreen())
-                    deepLinkedMultiplayerGame == null -> pushScreen(MainMenuScreen())
+                    settings.isFreshlyCreated -> setAsRootScreen(LanguagePickerScreen())
+                    deepLinkedMultiplayerGame == null -> setAsRootScreen(MainMenuScreen())
                     else -> tryLoadDeepLinkedGame()
                 }
 
@@ -234,6 +235,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     /**
      * @throws UnsupportedOperationException Use pushScreen or replaceCurrentScreen instead
      */
+    @Deprecated("Never use this, it's only here because it's part of the gdx.Game interface.", ReplaceWith("pushScreen"))
     override fun setScreen(screen: Screen) {
         throw UnsupportedOperationException("Use pushScreen or replaceCurrentScreen instead")
     }
@@ -253,6 +255,13 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         Gdx.graphics.requestRendering()
     }
 
+    /** Removes & [disposes][BaseScreen.dispose] all currently active screens in the [screenStack] and sets the given screen as the only screen. */
+    private fun setAsRootScreen(root: BaseScreen) {
+        for (screen in screenStack) screen.dispose()
+        screenStack.clear()
+        screenStack.addLast(root)
+        setScreen(root)
+    }
     /** Adds a screen to be displayed instead of the current screen, with an option to go back to the previous screen by calling [popScreen] */
     fun pushScreen(newScreen: BaseScreen) {
         screenStack.addLast(newScreen)
@@ -311,7 +320,9 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         if (deepLinkedMultiplayerGame == null) return@run
 
         launchOnGLThread {
-            pushScreen(LoadingScreen(getScreen()!!))
+            if (screenStack.isEmpty() || screenStack[0] !is GameStartScreen) {
+                setAsRootScreen(LoadingScreen(getScreen()!!))
+            }
         }
         try {
             onlineMultiplayer.loadGame(deepLinkedMultiplayerGame!!)
@@ -345,7 +356,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     override fun pause() {
         val curGameInfo = gameInfo
-        if (curGameInfo != null) gameSaver.requestAutoSave(curGameInfo)
+        if (curGameInfo != null) files.requestAutoSave(curGameInfo)
         musicController.pause()
         super.pause()
     }
@@ -365,7 +376,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
         val curGameInfo = gameInfo
         if (curGameInfo != null) {
-            val autoSaveJob = gameSaver.autoSaveJob
+            val autoSaveJob = files.autoSaveJob
             if (autoSaveJob != null && autoSaveJob.isActive) {
                 // auto save is already in progress (e.g. started by onPause() event)
                 // let's allow it to finish and do not try to autosave second time
@@ -373,7 +384,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
                     autoSaveJob.join()
                 }
             } else {
-                gameSaver.autoSave(curGameInfo)      // NO new thread
+                files.autoSave(curGameInfo)      // NO new thread
             }
         }
         settings.save()
@@ -395,9 +406,16 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     /** Handles an uncaught exception or error. First attempts a platform-specific handler, and if that didn't handle the exception or error, brings the game to a [CrashScreen]. */
     fun handleUncaughtThrowable(ex: Throwable) {
         Log.error("Uncaught throwable", ex)
+        try {
+            PrintWriter(files.fileWriter("lasterror.txt")).use {
+                ex.printStackTrace(it)
+            }
+        } catch (ex: Exception) {
+            // ignore
+        }
         if (platformSpecificHelper?.handleUncaughtThrowable(ex) == true) return
         Gdx.app.postRunnable {
-            setScreen(CrashScreen(ex))
+            setAsRootScreen(CrashScreen(ex))
         }
     }
 
@@ -409,7 +427,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     fun goToMainMenu(): MainMenuScreen {
         val curGameInfo = gameInfo
         if (curGameInfo != null) {
-            gameSaver.requestAutoSaveUnCloned(curGameInfo) // Can save gameInfo directly because the user can't modify it on the MainMenuScreen
+            files.requestAutoSaveUnCloned(curGameInfo) // Can save gameInfo directly because the user can't modify it on the MainMenuScreen
         }
         val mainMenuScreen = MainMenuScreen()
         pushScreen(mainMenuScreen)
@@ -423,7 +441,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.1.13-patch2", 730)
+        val VERSION = Version("4.1.14", 731)
         //endregion
 
         lateinit var Current: UncivGame
