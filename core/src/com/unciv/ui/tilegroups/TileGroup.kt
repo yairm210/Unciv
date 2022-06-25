@@ -699,18 +699,7 @@ open class TileGroup(
                 val specificUnitIconLocation = this.unitsLocation + militaryUnit.name
                 return ImageAttempter(militaryUnit)
                         .forceImage { if (!UncivGame.Current.settings.showPixelUnits) "" else null }
-                        .tryImages(
-                                // iterate in reverse order to get the most recent era-specific image
-                                (militaryUnit.civInfo.getEraNumber() downTo 0).asSequence().map {
-                                    @Suppress("unused")
-                                    fun MapUnit.() = if (civInfo.nation.style.isNotEmpty())
-                                        "$specificUnitIconLocation-${civInfo.nation.style}-era${it}"
-                                    else if (it >= 0) // kludge to try to load the era-specific-but-not-style-specific image in the same loop
-                                        "$specificUnitIconLocation-era${it}"
-                                    else
-                                        null
-                                }
-                        )
+                        .getUnitEraSprite(militaryUnit, specificUnitIconLocation)
                         .tryImage { if (civInfo.nation.style.isNotEmpty()) "$specificUnitIconLocation-${civInfo.nation.style}" else null }
                         .tryImage { specificUnitIconLocation }
                         .tryImage { if (baseUnit.replaces != null) "$unitsLocation${baseUnit.replaces}" else null }
@@ -755,18 +744,7 @@ open class TileGroup(
                 val specificUnitIconLocation = this.unitsLocation + civilianUnit.name
                 return ImageAttempter(civilianUnit)
                         .forceImage { if (!UncivGame.Current.settings.showPixelUnits) "" else null }
-                        .tryImages(
-                                // iterate in reverse order to get the most recent era-specific image
-                                (civilianUnit.civInfo.getEraNumber() downTo 0).asSequence().map {
-                                    @Suppress("unused")
-                                    fun MapUnit.() = if (civInfo.nation.style.isNotEmpty())
-                                        "$specificUnitIconLocation-${civInfo.nation.style}-era${it}"
-                                    else if (it >= 0) // kludge to try to load the era-specific-but-not-style-specific image in the same loop
-                                        "$specificUnitIconLocation-era${it}"
-                                    else
-                                        null
-                                }
-                        )
+                        .getUnitEraSprite(civilianUnit, specificUnitIconLocation)
                         .tryImage { if (civInfo.nation.style.isNotEmpty()) "$specificUnitIconLocation-${civInfo.nation.style}" else null }
                         .tryImage { specificUnitIconLocation }
                         .tryImage { civilianLandUnit }
@@ -790,6 +768,20 @@ open class TileGroup(
         }
     }
 
+    private fun ImageAttempter<MapUnit>.getUnitEraSprite(unit: MapUnit, specificUnitIconLocation: String): ImageAttempter<MapUnit> {
+        return this.tryImages(
+            // iterate in reverse order to get the most recent era-specific image
+            (unit.civInfo.getEraNumber() downTo 0).asSequence().map {
+                @Suppress("unused")
+                fun MapUnit.() = if (civInfo.nation.style.isNotEmpty())
+                    "$specificUnitIconLocation-${civInfo.nation.style}-era${it}"
+                else if (it >= 0) // kludge to try to load the era-specific-but-not-style-specific image in the same loop
+                    "$specificUnitIconLocation-era${it}"
+                else
+                    null
+            }
+        )
+    }
 
     private var bottomRightRiverImage :Image?=null
     private var bottomRiverImage :Image?=null
