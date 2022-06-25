@@ -56,6 +56,8 @@ class GameSettings {
     var useDemographics: Boolean = false
     var showZoomButtons: Boolean = false
 
+    var notificationsLogMaxTurns = 5
+  
     var androidCutout: Boolean = false
 
     var multiplayer = GameSettingsMultiplayer()
@@ -70,6 +72,7 @@ class GameSettings {
     var lastGameSetup: GameSetupInfo? = null
 
     var fontFamily: String = Fonts.DEFAULT_FONT_FAMILY
+    var fontSizeMultiplier: Float = 1f
 
     /** Maximum zoom-out of the map - performance heavy */
     var maxWorldZoomOut = 2f
