@@ -57,7 +57,7 @@ internal object DesktopLauncher {
         val desktopParameters = UncivGameParameters(
             versionFromJar,
             cancelDiscordEvent = { discordTimer?.cancel() },
-            fontImplementation = NativeFontDesktop(Fonts.ORIGINAL_FONT_SIZE.toInt(), settings.fontFamily),
+            fontImplementation = NativeFontDesktop((Fonts.ORIGINAL_FONT_SIZE * settings.fontSizeMultiplier).toInt(), settings.fontFamily),
             customFileLocationHelper = CustomFileLocationHelperDesktop(),
             crashReportSysInfo = CrashReportSysInfoDesktop(),
             platformSpecificHelper = platformSpecificHelper,

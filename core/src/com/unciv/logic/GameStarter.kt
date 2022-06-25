@@ -22,8 +22,10 @@ import kotlin.collections.HashSet
 object GameStarter {
     // temporary instrumentation while tuning/debugging
     private const val consoleTimings = false
+    private lateinit var gameSetupInfo: GameSetupInfo
 
     fun startNewGame(gameSetupInfo: GameSetupInfo): GameInfo {
+        this.gameSetupInfo = gameSetupInfo
         if (consoleTimings)
             debug("\nGameStarter run with parameters %s, map %s", gameSetupInfo.gameParameters, gameSetupInfo.mapParameters)
 
@@ -57,7 +59,7 @@ object GameStarter {
         } else runAndMeasure("generateMap") {
             // The mapgen needs to know what civs are in the game to generate regions, starts and resources
             addCivilizations(gameSetupInfo.gameParameters, gameInfo, ruleset, existingMap = false)
-            tileMap = mapGen.generateMap(gameSetupInfo.mapParameters, gameInfo.civilizations)
+            tileMap = mapGen.generateMap(gameSetupInfo.mapParameters, gameSetupInfo.gameParameters, gameInfo.civilizations)
             tileMap.mapParameters = gameSetupInfo.mapParameters
             // Now forget them for a moment! MapGen can silently fail to place some city states, so then we'll use the old fallback method to place those.
             gameInfo.civilizations.clear()
@@ -415,9 +417,9 @@ object GameStarter {
             .sortedBy { civ ->
             when {
                 civ.civName in tileMap.startingLocationsByNation -> 1 // harshest requirements
-                civ.nation.startBias.any { it in tileMap.naturalWonders } -> 2
-                civ.nation.startBias.contains(Constants.tundra) -> 3    // Tundra starts are hard to find, so let's do them first
-                civ.nation.startBias.isNotEmpty() -> 4 // less harsh
+                civ.nation.startBias.any { it in tileMap.naturalWonders } && !gameSetupInfo.gameParameters.noStartBias -> 2
+                civ.nation.startBias.contains(Constants.tundra) && !gameSetupInfo.gameParameters.noStartBias -> 3    // Tundra starts are hard to find, so let's do them first
+                civ.nation.startBias.isNotEmpty() && !gameSetupInfo.gameParameters.noStartBias -> 4 // less harsh
                 else -> 5  // no requirements
             }
         }
@@ -457,6 +459,9 @@ object GameStarter {
         freeTiles: MutableList<TileInfo>,
         startScores: HashMap<TileInfo, Float>
     ): TileInfo {
+        if (gameSetupInfo.gameParameters.noStartBias) {
+            return freeTiles.random()
+        }
         if (civ.nation.startBias.any { it in tileMap.naturalWonders }) {
             // startPref wants Natural wonder neighbor: Rare and very likely to be outside getDistanceFromEdge
             val wonderNeighbor = tileMap.values.asSequence()
@@ -485,6 +490,6 @@ object GameStarter {
                 }
             }
         }
-        return preferredTiles.lastOrNull() ?: freeTiles.last()
+        return preferredTiles.randomOrNull() ?: freeTiles.random()
     }
 }
