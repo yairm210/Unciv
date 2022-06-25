@@ -72,12 +72,29 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
         }
     }
 
+    enum class Category(
+        val label: String,
+        val category: String
+    ) {
+        All("All mods", "unciv-mod"),
+        Tilesets("Tilesets", "unciv-mod-tilesets");
+
+        companion object {
+            fun fromSelectBox(selectBox: TranslatedSelectBox): Category {
+                val selected = selectBox.selected.value
+                return values().firstOrNull { it.label == selected } ?: All
+            }
+        }
+    }
+
     private val textField = UncivTextField.create("Enter search text")
     fun getFilterText(): String = textField.text
 
+    var category = Category.All
     var sortInstalled = SortType.Name
     var sortOnline = SortType.Stars
 
+    private val categorySelect: TranslatedSelectBox
     private val sortInstalledSelect: TranslatedSelectBox
     private val sortOnlineSelect: TranslatedSelectBox
 
@@ -108,6 +125,17 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
             modManagementScreen.refreshOnlineModTable()
         }
 
+        categorySelect = TranslatedSelectBox(
+            Category.values().map { category -> category.label },
+            category.label,
+            BaseScreen.skin
+        )
+        categorySelect.onChange {
+            category = Category.fromSelectBox(categorySelect)
+            modManagementScreen.refreshInstalledModTable()
+            modManagementScreen.refreshOnlineModTable()
+        }
+
         expander = ExpanderTab(
             "Sort and Filter",
             fontSize = Constants.defaultFontSize,
@@ -124,6 +152,8 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
                 add(textField).pad(0f, 5f, 0f, 5f).growX()
                 add(searchIcon).right()
             }).colspan(2).growX().padBottom(7.5f).row()
+            it.add("Choose category".toLabel()).left()
+            it.add(categorySelect).right().padBottom(7.5f).row()
             it.add("Sort Current:".toLabel()).left()
             it.add(sortInstalledSelect).right().padBottom(7.5f).row()
             it.add("Sort Downloadable:".toLabel()).left()

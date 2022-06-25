@@ -261,6 +261,7 @@ class ModManagementScreen(
                     Github.rewriteModOptions(repo, installedMod.folderLocation!!)
                     installedMod.modOptions.author = repo.owner.login
                     installedMod.modOptions.modSize = repo.size
+                    installedMod.modOptions.topics = repo.topics
                 }
             }
 
@@ -495,6 +496,9 @@ class ModManagementScreen(
         // at least the button references otherwise sync will not work
         if (installedModInfo.isEmpty()) {
             for (mod in RulesetCache.values.asSequence().filter { it.name != "" }) {
+                if (!mod.modOptions.topics.contains(optionsManager.category.category) &&
+                        mod.name != "Civ V - Vanilla" &&
+                        mod.name != "Civ V - Gods & Kings") continue
                 val modUIData = ModUIData(mod)
                 modUIData.state.isVisual = mod.name in game.settings.visualMods
                 installedModInfo[mod.name] = modUIData
@@ -573,6 +577,7 @@ class ModManagementScreen(
         // We update y and height here, we do not replace the ModUIData instances do the referenced buttons stay valid.
         val sortedMods = onlineModInfo.values.asSequence().sortedWith(optionsManager.sortOnline.comparator)
         for (mod in sortedMods) {
+            if (!mod.repo?.topics?.contains(optionsManager.category.category)!!) continue
             if (!mod.matchesFilter(filter)) continue
             val cell = downloadTable.add(mod.button)
             downloadTable.row()

@@ -59,6 +59,7 @@ class ModOptions : IHasUniques {
     var modUrl = ""
     var author = ""
     var modSize = 0
+    var topics = ArrayList<String>()
 
     @Deprecated("As of 3.18.15")
     var maxXPfromBarbarians = 30
