@@ -77,10 +77,13 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
         val category: String
     ) {
         All("All mods", "unciv-mod"),
-        Tilesets("Tilesets", "unciv-mod-tilesets"),
         Rulesets("Rulesets", "unciv-mod-rulesets"),
-        Music("Music", "unciv-mod-music"),
-        Sounds("Sounds", "unciv-mod-sounds");
+        Expansions("Expansions", "unciv-mod-expansions"),
+        Tilesets("Graphics", "unciv-mod-tilesets"),
+        Audio("Audio", "unciv-mod-audio"),
+        Maps("Maps", "unciv-mod-maps"),
+        Fun("Fun", "unciv-mod-fun"),
+        ModsOfMods("Mods of mods", "unciv-mod-modsofmods");
 
         companion object {
             fun fromSelectBox(selectBox: TranslatedSelectBox): Category {
