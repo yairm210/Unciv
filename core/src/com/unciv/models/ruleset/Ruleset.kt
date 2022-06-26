@@ -915,6 +915,7 @@ object RulesetCache : HashMap<String,Ruleset>() {
             this[ruleset.fullName] = Ruleset().apply {
                 load(fileHandle)
                 name = ruleset.fullName
+                modOptions.topics.add("unciv-mod")
                 modOptions.topics.add("unciv-mod-rulesets")
             }
         }
