@@ -400,7 +400,13 @@ class CityConstructions {
     }
 
     private fun constructionComplete(construction: INonPerpetualConstruction) {
+        val setFullHealth = (construction is Building && construction.cityHealth > 0 && cityInfo.health == cityInfo.getMaxHealth())
         construction.postBuildEvent(this)
+        if (setFullHealth) {
+            // city built a building that increases health and city was previously at full health
+            // so set health to max to prevent the health bar from popping up
+            cityInfo.health = cityInfo.getMaxHealth()
+        }
         if (construction.name in inProgressConstructions)
             inProgressConstructions.remove(construction.name)
         if (construction.name == currentConstructionFromQueue)
