@@ -496,8 +496,6 @@ class ModManagementScreen(
         // at least the button references otherwise sync will not work
         if (installedModInfo.isEmpty()) {
             for (mod in RulesetCache.values.asSequence().filter { it.name != "" }) {
-                if (optionsManager.category != ModManagementOptions.Category.All)
-                    if (!mod.modOptions.topics.contains(optionsManager.category.topic) || !(mod.isVanilla && optionsManager.category == ModManagementOptions.Category.Rulesets)) continue
                 val modUIData = ModUIData(mod)
                 modUIData.state.isVisual = mod.name in game.settings.visualMods
                 installedModInfo[mod.name] = modUIData
@@ -513,6 +511,10 @@ class ModManagementScreen(
         val filter = optionsManager.getFilterText()
         for (mod in installedModInfo.values.sortedWith(optionsManager.sortInstalled.comparator)) {
             if (!mod.matchesFilter(filter)) continue
+            if (optionsManager.category != ModManagementOptions.Category.All) {
+                //if (mod.topics.contains(optionsManager.category.topic)) continue
+                if (mod.ruleset?.isVanilla == true && optionsManager.category != ModManagementOptions.Category.Rulesets) continue
+            }
             // Prevent building up listeners. The virgin Button has one: for mouseover styling.
             // The captures for our listener shouldn't need updating, so assign only once
             if (mod.button.listeners.none { it.javaClass.`package`.name.startsWith("com.unciv") })
@@ -569,6 +571,7 @@ class ModManagementScreen(
         onlineExpanderTab?.setText(newHeaderText)
 
         downloadTable.clear()
+        downloadTable.add(getDownloadFromUrlButton()).row()
         onlineScrollCurrentY = -1f
 
         val filter = optionsManager.getFilterText()
