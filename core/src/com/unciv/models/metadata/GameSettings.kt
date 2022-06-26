@@ -91,7 +91,7 @@ class GameSettings {
         if (!isFreshlyCreated && Gdx.app?.type == Application.ApplicationType.Desktop) {
             windowState = WindowState(Gdx.graphics.width, Gdx.graphics.height)
         }
-        UncivGame.Current.gameSaver.setGeneralSettings(this)
+        UncivGame.Current.files.setGeneralSettings(this)
     }
 
     fun addCompletedTutorialTask(tutorialTask: String) {

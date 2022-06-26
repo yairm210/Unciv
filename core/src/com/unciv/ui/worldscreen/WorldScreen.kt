@@ -817,7 +817,7 @@ class WorldScreen(
     fun autoSave() {
         waitingForAutosave = true
         shouldUpdate = true
-        UncivGame.Current.gameSaver.requestAutoSave(gameInfo).invokeOnCompletion {
+        UncivGame.Current.files.requestAutoSave(gameInfo).invokeOnCompletion {
             // only enable the user to next turn once we've saved the current one
             waitingForAutosave = false
             shouldUpdate = true

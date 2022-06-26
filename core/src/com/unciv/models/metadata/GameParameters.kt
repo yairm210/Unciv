@@ -26,6 +26,7 @@ class GameParameters { // Default values are the default new game
     var godMode = false
     var nuclearWeaponsEnabled = true
     var religionEnabled = false
+    var noStartBias = false
 
     var victoryTypes: ArrayList<String> = arrayListOf()
     var startingEra = "Ancient era"

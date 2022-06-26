@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
-import com.unciv.logic.GameSaver
+import com.unciv.logic.UncivFiles
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.AutoScrollPane
 import com.unciv.ui.utils.BaseScreen
@@ -48,8 +48,8 @@ class VerticalFileListScrollPane(
     }
 
     /** repopulate with existing saved games */
-    fun updateSaveGames(gameSaver: GameSaver, showAutosaves: Boolean) {
-        update(gameSaver.getSaves(showAutosaves)
+    fun updateSaveGames(files: UncivFiles, showAutosaves: Boolean) {
+        update(files.getSaves(showAutosaves)
             .sortedByDescending { it.lastModified() })
     }
 
