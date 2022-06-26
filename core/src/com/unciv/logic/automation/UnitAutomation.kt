@@ -55,7 +55,7 @@ object UnitAutomation {
                         (it.improvement != null && it.getTileImprovement()!!.isAncientRuinsEquivalent())
                                 || it.improvement == Constants.barbarianEncampment
                         )
-                        && unit.movement.canReach(it)
+                        && unit.movement.canMoveTo(it) && unit.movement.canReach(it)
             } ?: return false
         unit.movement.headTowards(tileWithRuinOrEncampment)
         return true
