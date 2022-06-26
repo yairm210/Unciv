@@ -55,11 +55,8 @@ object UnitAutomation {
                         (it.improvement != null && it.getTileImprovement()!!.isAncientRuinsEquivalent())
                                 || it.improvement == Constants.barbarianEncampment
                         )
-                        && unit.movement.canMoveTo(it)
+                        && unit.movement.canReach(it)
             } ?: return false
-        val firstPath = unit.movement.getShortestPath(tileWithRuinOrEncampment)
-        if (firstPath.isNotEmpty())
-            unit.movement.headTowards(firstPath[0])
         unit.movement.headTowards(tileWithRuinOrEncampment)
         return true
     }
