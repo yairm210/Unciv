@@ -174,7 +174,7 @@ object Fonts {
         try {
             val fontImplementationClass = UncivGame.Current.fontImplementation!!::class.java
             val fontImplementationConstructor = fontImplementationClass.constructors.first()
-            val newFontImpl = fontImplementationConstructor.newInstance(ORIGINAL_FONT_SIZE.toInt(), newFamily)
+            val newFontImpl = fontImplementationConstructor.newInstance((ORIGINAL_FONT_SIZE * UncivGame.Current.settings.fontSizeMultiplier).toInt(), newFamily)
             if (newFontImpl is NativeFontImplementation)
                 UncivGame.Current.fontImplementation = newFontImpl
         } catch (ex: Exception) {}

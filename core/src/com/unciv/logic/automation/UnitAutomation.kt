@@ -60,6 +60,7 @@ object UnitAutomation {
         val firstPath = unit.movement.getShortestPath(tileWithRuinOrEncampment)
         if (firstPath.isNotEmpty())
             unit.movement.headTowards(firstPath[0])
+        unit.movement.headTowards(tileWithRuinOrEncampment)
         return true
     }
 
