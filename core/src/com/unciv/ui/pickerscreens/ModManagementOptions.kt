@@ -79,7 +79,7 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
         All("All mods", "unciv-mod"),
         Rulesets("Rulesets", "unciv-mod-rulesets"),
         Expansions("Expansions", "unciv-mod-expansions"),
-        Tilesets("Graphics", "unciv-mod-tilesets"),
+        Graphics("Graphics", "unciv-mod-graphics"),
         Audio("Audio", "unciv-mod-audio"),
         Maps("Maps", "unciv-mod-maps"),
         Fun("Fun", "unciv-mod-fun"),
