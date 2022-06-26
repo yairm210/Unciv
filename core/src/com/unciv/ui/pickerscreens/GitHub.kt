@@ -325,6 +325,7 @@ object Github {
         modOptions.lastUpdated = repo.pushed_at
         modOptions.author = repo.owner.login
         modOptions.modSize = repo.size
+        modOptions.topics = repo.topics
         modOptions.updateDeprecations()
         json().toJson(modOptions, modOptionsFile)
     }
