@@ -512,8 +512,7 @@ class ModManagementScreen(
         for (mod in installedModInfo.values.sortedWith(optionsManager.sortInstalled.comparator)) {
             if (!mod.matchesFilter(filter)) continue
             if (optionsManager.category != ModManagementOptions.Category.All) {
-                if (mod.ruleset?.isVanilla == true && optionsManager.category != ModManagementOptions.Category.Rulesets) continue
-                if (mod.ruleset?.isVanilla == false && !mod.ruleset.modOptions.topics.contains(optionsManager.category.topic)) continue
+                if (!mod.ruleset?.modOptions?.topics?.contains(optionsManager.category.topic)!!) continue
             }
             // Prevent building up listeners. The virgin Button has one: for mouseover styling.
             // The captures for our listener shouldn't need updating, so assign only once

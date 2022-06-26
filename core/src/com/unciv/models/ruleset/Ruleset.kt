@@ -81,7 +81,6 @@ class Ruleset {
     var folderLocation:FileHandle?=null
 
     var name = ""
-    var isVanilla = false
     val beliefs = LinkedHashMap<String, Belief>()
     val buildings = LinkedHashMap<String, Building>()
     val difficulties = LinkedHashMap<String, Difficulty>()
@@ -916,7 +915,7 @@ object RulesetCache : HashMap<String,Ruleset>() {
             this[ruleset.fullName] = Ruleset().apply {
                 load(fileHandle)
                 name = ruleset.fullName
-                isVanilla = true
+                modOptions.topics.add("unciv-mod-rulesets")
             }
         }
 
