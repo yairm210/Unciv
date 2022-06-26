@@ -908,7 +908,7 @@ class MapUnit {
 
         // Wake sleeping units if there's an enemy in vision range:
         // Military units always but civilians only if not protected.
-        if (isSleeping() && (isMilitary() || currentTile.militaryUnit == null) &&
+        if (isSleeping() && (isMilitary() || (currentTile.militaryUnit == null && !currentTile.isCityCenter())) &&
             this.viewableTiles.any {
                 it.militaryUnit != null && it.militaryUnit!!.civInfo.isAtWarWith(civInfo)
             }
