@@ -320,31 +320,13 @@ object Github {
      */
     fun rewriteModOptions(repo: Repo, modFolder: FileHandle) {
         val modOptionsFile = modFolder.child("jsons/ModOptions.json")
-        var modOptions = ModOptions()
-
-        try {
-            modOptions = if (modOptionsFile.exists()) json().fromJsonFile(ModOptions::class.java, modOptionsFile) else ModOptions()
-        } catch (ex: SerializationException) {
-            Log.error("Mod options were not serialized correctly.")
-        } catch (ex: Exception) {
-            Log.error("Loading mod options caused an unhandled exception.")
-        }
-
+        val modOptions = if (modOptionsFile.exists()) json().fromJsonFile(ModOptions::class.java, modOptionsFile) else ModOptions()
         modOptions.modUrl = repo.html_url
         modOptions.lastUpdated = repo.pushed_at
         modOptions.author = repo.owner.login
         modOptions.modSize = repo.size
         modOptions.updateDeprecations()
-
-        try {
-            json().toJson(modOptions, modOptionsFile)
-        } catch (ex: SerializationException) {
-            Log.error("Mod options were not written correctly")
-        } catch (ex: FileNotFoundException) {
-            Log.error("ModOptionsFile could not be found.")
-        } catch (ex: Exception) {
-            Log.error("Writing mod options caused an unhandled exception.")
-        }
+        json().toJson(modOptions, modOptionsFile)
     }
 }
 
