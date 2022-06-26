@@ -518,7 +518,7 @@ class ModManagementScreen(
                 } catch (ex: IndexOutOfBoundsException) {
                     continue //mod does not have a category -> don't show it
                 } catch (ex: Exception) {
-                    Log.error("Error while filtering category: ", ex)
+                    Log.error("Error while filtering category for installed mods: ", ex)
                 }
             }
             // Prevent building up listeners. The virgin Button has one: for mouseover styling.
@@ -585,7 +585,13 @@ class ModManagementScreen(
         // We update y and height here, we do not replace the ModUIData instances do the referenced buttons stay valid.
         val sortedMods = onlineModInfo.values.asSequence().sortedWith(optionsManager.sortOnline.comparator)
         for (mod in sortedMods) {
-            if (!mod.repo?.topics?.contains(optionsManager.category.topic)!!) continue
+            try {
+                if (mod.repo?.topics!![1] != optionsManager.category.topic) continue
+            } catch (ex: IndexOutOfBoundsException) {
+                continue //mod does not have a category -> don't show it
+            } catch (ex: Exception) {
+                Log.error("Error while filtering category for online mods: ", ex)
+            }
             if (!mod.matchesFilter(filter)) continue
             val cell = downloadTable.add(mod.button)
             downloadTable.row()
