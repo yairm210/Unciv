@@ -773,10 +773,11 @@ open class TileGroup(
             // iterate in reverse order to get the most recent era-specific image
             (unit.civInfo.getEraNumber() downTo 0).asSequence().map {
                 {
+                    val era = civInfo.gameInfo.ruleSet.eras.keys.elementAt(it)
                     if (civInfo.nation.style.isNotEmpty())
-                        "$specificUnitIconLocation-${civInfo.nation.style}-era${it}"
+                        "$specificUnitIconLocation-${civInfo.nation.style}-$era"
                     else
-                        "$specificUnitIconLocation-era${it}"
+                        "$specificUnitIconLocation-$era"
                 }
             }
         )
