@@ -57,7 +57,9 @@ object UnitAutomation {
                         )
                         && unit.movement.canMoveTo(it)
             } ?: return false
-        unit.movement.headTowards(tileWithRuinOrEncampment)
+        val firstPath = unit.movement.getShortestPath(tileWithRuinOrEncampment)
+        if (firstPath.isNotEmpty())
+            unit.movement.headTowards(firstPath[0])
         return true
     }
 
