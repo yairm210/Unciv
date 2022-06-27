@@ -99,6 +99,7 @@ class ModManagementScreen(
 
     init {
         //setDefaultCloseAction(screen) // this would initialize the new MainMenuScreen immediately
+        rightSideButton.isVisible = false
         closeButton.onActivation {
             val tileSets = ImageGetter.getAvailableTilesets()
             if (game.settings.tileSet !in tileSets) {
@@ -389,6 +390,7 @@ class ModManagementScreen(
     private fun onlineButtonAction(repo: Github.Repo, button: Button) {
         syncOnlineSelected(repo.name, button)
         showModDescription(repo.name)
+        rightSideButton.isVisible = true
         rightSideButton.clearListeners()
         rightSideButton.enable()
         val label = if (installedModInfo[repo.name]?.state?.hasUpdate == true)
@@ -513,7 +515,10 @@ class ModManagementScreen(
             // Prevent building up listeners. The virgin Button has one: for mouseover styling.
             // The captures for our listener shouldn't need updating, so assign only once
             if (mod.button.listeners.none { it.javaClass.`package`.name.startsWith("com.unciv") })
-                mod.button.onClick { installedButtonAction(mod) }
+                mod.button.onClick {
+                    rightSideButton.isVisible = true
+                    installedButtonAction(mod)
+                }
             val decoratedButton = Table()
             decoratedButton.add(mod.button)
             decoratedButton.add(mod.state.container).align(Align.center+Align.left)

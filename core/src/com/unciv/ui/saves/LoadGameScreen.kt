@@ -49,6 +49,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
         rightSideTable.initRightSideTable()
         rightSideButton.onActivation { onLoadGame() }
         rightSideButton.keyShortcuts.add(KeyCharAndCode.RETURN)
+        rightSideButton.isVisible = false
     }
 
     override fun resetWindowState() {
@@ -60,6 +61,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
 
     override fun onExistingSaveSelected(saveGameFile: FileHandle) {
         copySavedGameToClipboardButton.enable()
+        rightSideButton.isVisible = true
         rightSideButton.setText("Load [$selectedSave]".tr())
         rightSideButton.enable()
     }
