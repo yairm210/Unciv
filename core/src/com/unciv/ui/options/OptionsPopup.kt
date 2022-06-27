@@ -54,7 +54,8 @@ class OptionsPopup(
     }
 
     init {
-        settings.addCompletedTutorialTask("Open the options table")
+        if (settings.addCompletedTutorialTask("Open the options table"))
+            (screen as? WorldScreen)?.shouldUpdate = true
 
         innerTable.pad(0f)
         val tabMaxWidth: Float
