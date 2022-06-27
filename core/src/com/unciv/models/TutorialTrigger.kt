@@ -1,6 +1,11 @@
 package com.unciv.models
 
 
+/**
+ *  Each instance represents some event that can display a [Tutorial][com.unciv.models.ruleset.Tutorial].
+ *
+ *  TODO implement as unique conditionals instead?
+ */
 enum class TutorialTrigger(val value: String, val isCivilopedia: Boolean = !value.startsWith("_")) {
 
     Introduction("Introduction"),
