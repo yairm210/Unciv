@@ -55,9 +55,9 @@ class TutorialController(screen: BaseScreen) {
         }
     }
 
-    private fun getTutorial(tutorial: TutorialTrigger): Array<String> {
+    private fun getTutorial(tutorial: TutorialTrigger): List<String> {
         val name = tutorial.value.replace('_', ' ').trimStart()
-        return tutorials[name]?.steps ?: emptyArray()
+        return tutorials[name]?.steps ?: emptyList()
     }
 
     /** Wrapper for a Tutorial, supports INamed and ICivilopediaText,

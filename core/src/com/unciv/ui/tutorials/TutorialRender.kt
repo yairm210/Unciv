@@ -8,8 +8,7 @@ import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyCharAndCode
 
-@Suppress("ArrayInDataClass")
-data class TutorialForRender(val tutorial: TutorialTrigger, val texts: Array<String>)
+data class TutorialForRender(val tutorial: TutorialTrigger, val texts: List<String>)
 
 class TutorialRender(private val screen: BaseScreen) {
 
@@ -17,7 +16,7 @@ class TutorialRender(private val screen: BaseScreen) {
         showDialog(tutorial.tutorial.name, tutorial.texts, closeAction)
     }
 
-    private fun showDialog(tutorialName: String, texts: Array<String>, closeAction: () -> Unit) {
+    private fun showDialog(tutorialName: String, texts: List<String>, closeAction: () -> Unit) {
         if (texts.isEmpty()) return closeAction()
 
         val tutorialPopup = Popup(screen)
@@ -31,7 +30,7 @@ class TutorialRender(private val screen: BaseScreen) {
 
         tutorialPopup.addCloseButton(additionalKey = KeyCharAndCode.SPACE) {
             tutorialPopup.remove()
-            showDialog(tutorialName, texts.sliceArray(1 until texts.size), closeAction)
+            showDialog(tutorialName, texts.subList(1, texts.size), closeAction)
         }
         tutorialPopup.open()
     }
