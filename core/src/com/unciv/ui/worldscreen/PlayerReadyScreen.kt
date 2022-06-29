@@ -27,7 +27,6 @@ class PlayerReadyScreen(worldScreen: WorldScreen) : BaseScreen() {
         val createPasswordButton = "Set password (optional)".toTextButton()
         val savePasswordButton = "Save password".toTextButton()
         savePasswordButton.onClick {
-            startTurn = false
             curCiv.hotseatPassword = hash(enteredPassword)
         }
 
