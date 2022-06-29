@@ -1,6 +1,5 @@
 package com.unciv.logic.civilization
 
-import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.civilization.diplomacy.*

@@ -1,6 +1,5 @@
 package com.unciv.logic
 
-import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.BackwardCompatibility.convertFortify

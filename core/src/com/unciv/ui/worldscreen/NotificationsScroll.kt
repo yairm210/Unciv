@@ -1,7 +1,6 @@
 package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -9,7 +8,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Notification
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.WrappableLabel
-import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.onClick
 import kotlin.math.min
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
