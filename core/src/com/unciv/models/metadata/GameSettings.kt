@@ -55,9 +55,10 @@ class GameSettings {
     var visualMods = HashSet<String>()
     var useDemographics: Boolean = false
     var showZoomButtons: Boolean = false
+    var coloredNotifications: Boolean = true
 
     var notificationsLogMaxTurns = 5
-  
+
     var androidCutout: Boolean = false
 
     var multiplayer = GameSettingsMultiplayer()

@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.Notification
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.WrappableLabel
@@ -65,7 +66,10 @@ class NotificationsScroll(
 
         for (notification in notifications.asReversed().toList()) { // toList to avoid concurrency problems
             val listItem = Table()
-            listItem.background = ImageGetter.getRoundedEdgeRectangle(notification.color.color)
+            listItem.background =   if (UncivGame.Current.settings.coloredNotifications)
+                                        ImageGetter.getRoundedEdgeRectangle(notification.color.color)
+                                    else
+                                        ImageGetter.getRoundedEdgeRectangle()
 
             val labelWidth = maxEntryWidth - iconSize * notification.icons.size - 10f
             val label = WrappableLabel(notification.text, labelWidth, Color.BLACK, 30)
