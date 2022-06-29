@@ -65,6 +65,8 @@ class PlayerReadyScreen(worldScreen: WorldScreen) : BaseScreen() {
 
         passwordTable.add("Password: ".toLabel())
         val passwordTextField = UncivTextField.create("Password")
+        passwordTextField.isPasswordMode = true
+        passwordTextField.setPasswordCharacter('*')
         passwordTextField.addListener { enteredPassword = passwordTextField.text; true }
 
         passwordTextField.onClick { startTurn = false }
