@@ -1,5 +1,6 @@
 package com.unciv.logic.city
 
+import com.badlogic.gdx.graphics.Color
 import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ConstructionAutomation
@@ -413,15 +414,20 @@ class CityConstructions {
             cityInfo.civInfo.popupAlerts.add(PopupAlert(AlertType.WonderBuilt, construction.name))
             for (civ in cityInfo.civInfo.gameInfo.civilizations) {
                 if (civ.exploredTiles.contains(cityInfo.location))
-                    civ.addNotification("[${construction.name}] has been built in [${cityInfo.name}]",
-                            cityInfo.location, NotificationIcon.Construction, buildingIcon)
+                    civ.addNotification(
+                        "[${construction.name}] has been built in [${cityInfo.name}]",
+                        cityInfo.location,
+                        NotificationIcon.Construction,
+                        buildingIcon,
+                        color = Color(0.745f, 1f, 0.698f, 1f)
+                    )
                 else
                     civ.addNotification("[${construction.name}] has been built in a faraway land", buildingIcon)
             }
         } else {
             val icon = if (construction is Building) buildingIcon else construction.name // could be a unit, in which case take the unit name.
             cityInfo.civInfo.addNotification("[${construction.name}] has been built in [" + cityInfo.name + "]",
-                    cityInfo.location, NotificationIcon.Construction, icon)
+                    cityInfo.location, NotificationIcon.Construction, icon, color = Color(0.745f, 1f, 0.698f, 1f))
         }
 
         if (construction is Building && construction.hasUnique(UniqueType.TriggersAlertOnCompletion,

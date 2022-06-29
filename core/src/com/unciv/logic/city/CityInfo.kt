@@ -1,5 +1,6 @@
 package com.unciv.logic.city
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.civilization.CivilizationInfo
@@ -849,7 +850,7 @@ class CityInfo {
         if (demandedResource == "") // Failed to get a valid resource, try again some time later
             setFlag(CityFlags.ResourceDemand, 15 + Random().nextInt(10))
         else
-            civInfo.addNotification("[$name] demands [$demandedResource]!", location, NotificationIcon.City, "ResourceIcons/$demandedResource")
+            civInfo.addNotification("[$name] demands [$demandedResource]!", location, NotificationIcon.City, "ResourceIcons/$demandedResource", color = Color(0.956f, 0.988f, 0.678f, 1f))
     }
 
     private fun tryWeLoveTheKing() {
@@ -858,7 +859,7 @@ class CityInfo {
             setFlag(CityFlags.WeLoveTheKing, 20 + 1) // +1 because it will be decremented by 1 in the same startTurn()
             civInfo.addNotification(
                     "Because they have [$demandedResource], the citizens of [$name] are celebrating We Love The King Day!",
-                    location, NotificationIcon.City, NotificationIcon.Happiness)
+                    location, NotificationIcon.City, NotificationIcon.Happiness, color = Color(0.956f, 0.988f, 0.678f, 1f))
         }
     }
 
