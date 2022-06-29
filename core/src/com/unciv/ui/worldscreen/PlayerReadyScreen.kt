@@ -32,8 +32,9 @@ class PlayerReadyScreen(worldScreen: WorldScreen) : BaseScreen() {
             if (enteredPassword == confirmPassword) {
                 curCiv.hotseatPassword = hash(enteredPassword)
                 game.replaceCurrentScreen(worldScreen)
-            } else
+            } else {
                 ToastPopup("Passwords do not match!", this)
+            }
         }
 
         createPasswordButton.onClick {
@@ -44,10 +45,22 @@ class PlayerReadyScreen(worldScreen: WorldScreen) : BaseScreen() {
                 table.add(savePasswordButton).padTop(10f).row()
         }
 
-        if (enteredPassword == "")
+        val removePasswordButton = "Remove password".toTextButton()
+        removePasswordButton.onClick {
+            if (hash(enteredPassword) == curCiv.hotseatPassword) {
+                curCiv.hotseatPassword = ""
+            } else {
+                startTurn = false
+                ToastPopup("You need to enter the current password first!", this)
+            }
+        }
+
+        if (enteredPassword == "") {
             table.add(createPasswordButton).row()
-        else
-            table.add(getPasswordTable())
+        } else {
+            table.add(getPasswordTable()).row()
+            table.add(removePasswordButton).padTop(10f)
+        }
 
         table.onClick {
             if (startTurn) {
@@ -58,8 +71,9 @@ class PlayerReadyScreen(worldScreen: WorldScreen) : BaseScreen() {
                 else
                     ToastPopup("Wrong password!", this)
             }
-            else
+            else {
                 startTurn = true
+            }
         }
         table.setFillParent(true)
         stage.addActor(table)
