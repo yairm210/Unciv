@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -602,12 +603,12 @@ class CivilizationInfo {
             meetString = "[${civName}] has given us [${giftAmount}] as we are the first major civ to meet them"
         }
         if (cityStateLocation != null)
-            otherCiv.addNotification(meetString, cityStateLocation, NotificationIcon.Gold)
+            otherCiv.addNotification(meetString, cityStateLocation, NotificationIcon.Gold, color = Color(0.890f, 1f, 0.819f, 1f))
         else
-            otherCiv.addNotification(meetString, NotificationIcon.Gold)
+            otherCiv.addNotification(meetString, NotificationIcon.Gold, color = Color(0.890f, 1f, 0.819f, 1f))
 
         if (otherCiv.isCityState() && otherCiv.canGiveStat(Stat.Faith)){
-            otherCiv.addNotification(religionMeetString, NotificationIcon.Faith)
+            otherCiv.addNotification(religionMeetString, NotificationIcon.Faith, color = Color(0.890f, 1f, 0.819f, 1f))
 
             for ((key, value) in faithAmount)
                 otherCiv.addStat(key, value.toInt())
@@ -1201,17 +1202,21 @@ class CivilizationInfo {
     }
 
 
-    fun addNotification(text: String, location: Vector2, vararg notificationIcons: String) {
-        addNotification(text, LocationAction(location), *notificationIcons)
+    fun addNotification(text: String, location: Vector2, vararg notificationIcons: String, color: Color? = null) {
+        addNotification(text, LocationAction(location), *notificationIcons, color = color)
     }
 
-    fun addNotification(text: String, vararg notificationIcons: String) = addNotification(text, null, *notificationIcons)
+    fun addNotification(text: String, vararg notificationIcons: String, color: Color? = null) = addNotification(text, null, *notificationIcons, color = color)
 
-    fun addNotification(text: String, action: NotificationAction?, vararg notificationIcons: String) {
+    fun addNotification(text: String, action: NotificationAction?, vararg notificationIcons: String, color: Color? = null) {
         if (playerType == PlayerType.AI) return // no point in lengthening the saved game info if no one will read it
         val arrayList = notificationIcons.toCollection(ArrayList())
-        notifications.add(Notification(text, arrayList,
-                if (action is LocationAction && action.locations.isEmpty()) null else action))
+        notifications.add(Notification(
+            text,
+            arrayList,
+            if (action is LocationAction && action.locations.isEmpty()) null else action,
+            color = color
+        ))
     }
 
     fun addUnit(unitName: String, city: CityInfo? = null): MapUnit? {

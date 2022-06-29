@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization
 
+import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.civilization.diplomacy.*
@@ -83,7 +84,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         val placedUnit = receivingCiv.placeUnitNearTile(cities.city1.location, giftedUnit.name)
             ?: return
         val locations = LocationAction(placedUnit.getTile().position, cities.city2.location)
-        receivingCiv.addNotification( "[${civInfo.civName}] gave us a [${giftedUnit.name}] as a gift!", locations, civInfo.civName, giftedUnit.name)
+        receivingCiv.addNotification( "[${civInfo.civName}] gave us a [${giftedUnit.name}] as a gift!", locations, civInfo.civName, giftedUnit.name, color = Color(0.752f, 1f, 0.698f, 1f))
     }
 
     fun giveMilitaryUnitToPatron(receivingCiv: CivilizationInfo) {
@@ -126,7 +127,8 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             "[${civInfo.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!",
             locations,
             civInfo.civName,
-            militaryUnit.name
+            militaryUnit.name,
+            color = Color(0.752f, 1f, 0.698f, 1f)
         )
     }
 

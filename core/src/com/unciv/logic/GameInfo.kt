@@ -1,5 +1,6 @@
 package com.unciv.logic
 
+import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.BackwardCompatibility.convertFortify
@@ -301,10 +302,10 @@ class GameInfo {
     private fun addBombardNotification(thisPlayer: CivilizationInfo, cities: List<CityInfo>) {
         if (cities.size < 3) {
             for (city in cities)
-                thisPlayer.addNotification("Your city [${city.name}] can bombard the enemy!", city.location, NotificationIcon.City, NotificationIcon.Crosshair)
+                thisPlayer.addNotification("Your city [${city.name}] can bombard the enemy!", city.location, NotificationIcon.City, NotificationIcon.Crosshair, color = Color(0.992f, 0.847f, 0.694f, 1f))
         } else {
             val positions = cities.asSequence().map { it.location }
-            thisPlayer.addNotification("[${cities.size}] of your cities can bombard the enemy!", LocationAction(positions), NotificationIcon.City, NotificationIcon.Crosshair)
+            thisPlayer.addNotification("[${cities.size}] of your cities can bombard the enemy!", LocationAction(positions), NotificationIcon.City, NotificationIcon.Crosshair, color = Color(0.992f, 0.847f, 0.694f, 1f))
         }
     }
 
@@ -364,7 +365,8 @@ class GameInfo {
         civInfo.addNotification(
             text,
             LocationAction(positions),
-            "ResourceIcons/$resourceName"
+            "ResourceIcons/$resourceName",
+            color = Color(0.749f, 1f, 0.701f, 1f)
         )
         return true
     }

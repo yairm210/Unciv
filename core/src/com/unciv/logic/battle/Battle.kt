@@ -1,5 +1,6 @@
 package com.unciv.logic.battle
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -868,9 +869,11 @@ object Battle {
                 "Our [$interceptorName] intercepted and destroyed an enemy [$attackerName]"
             else "Our [$interceptorName] intercepted and attacked an enemy [$attackerName]"
             attacker.getCivInfo().addNotification(attackerText, interceptor.currentTile.position,
-                    attackerName, NotificationIcon.War, interceptorName)
+                    attackerName, NotificationIcon.War, interceptorName, color = Color(0.996f, 0.752f, 0.698f, 1f)
+            )
             interceptingCiv.addNotification(interceptorText, locations,
-                    interceptorName, NotificationIcon.War, attackerName)
+                    interceptorName, NotificationIcon.War, attackerName, color = Color(0.752f, 1f, 0.698f, 1f)
+            )
             return
         }
     }

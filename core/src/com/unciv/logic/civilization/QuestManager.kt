@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -330,7 +331,8 @@ class QuestManager {
 
             assignedQuests.add(newQuest)
             assignee.addNotification("[${civInfo.civName}] assigned you a new quest: [${quest.name}].",
-                    DiplomacyAction(civInfo.civName), civInfo.civName, "OtherIcons/Quest")
+                    DiplomacyAction(civInfo.civName), civInfo.civName, "OtherIcons/Quest", color = Color(0.733f, 0.945f, 1f, 1f)
+            )
 
             if (quest.isIndividual())
                 individualQuestCountdown[assignee.civName] = UNSET
@@ -520,7 +522,7 @@ class QuestManager {
             assignedQuests.removeAll(revokedQuests)
             if (revokedQuests.count() > 0)
                 bully.addNotification("[${civInfo.civName}] cancelled the quests they had given you because you demanded tribute from them.",
-                    DiplomacyAction(civInfo.civName), civInfo.civName, "OtherIcons/Quest")
+                    DiplomacyAction(civInfo.civName), civInfo.civName, "OtherIcons/Quest", color = Color(0xffd8d0f))
         }
     }
 

@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -46,11 +47,18 @@ open class Notification() {
 
     var icons: ArrayList<String> = ArrayList() // Must be ArrayList and not List so it can be deserialized
     var action: NotificationAction? = null
+    var color: Color? = null
 
-    constructor(text: String, notificationIcons: ArrayList<String>, action: NotificationAction? = null) : this() {
+    constructor(
+        text: String,
+        notificationIcons: ArrayList<String>,
+        action: NotificationAction? = null,
+        color: Color? = null
+    ) : this() {
         this.text = text
         this.icons = notificationIcons
         this.action = action
+        this.color = color
     }
 
     fun addNotificationIcons(ruleset: Ruleset, iconSize: Float, table: Table) {

@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Notification
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.WrappableLabel
+import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.onClick
 import kotlin.math.min
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
@@ -66,7 +67,7 @@ class NotificationsScroll(
 
         for (notification in notifications.asReversed().toList()) { // toList to avoid concurrency problems
             val listItem = Table()
-            listItem.background = ImageGetter.getRoundedEdgeRectangle()
+            listItem.background = ImageGetter.getRoundedEdgeRectangle(notification.color)
 
             val labelWidth = maxEntryWidth - iconSize * notification.icons.size - 10f
             val label = WrappableLabel(notification.text, labelWidth, Color.BLACK, 30)

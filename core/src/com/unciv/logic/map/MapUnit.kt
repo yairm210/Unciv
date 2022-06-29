@@ -1,5 +1,6 @@
 package com.unciv.logic.map
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -780,7 +781,7 @@ class MapUnit {
             val locations = LocationAction(tile.position, closestCity.location)
             civInfo.addNotification(
                 "Clearing a [$removedTerrainFeature] has created [$productionPointsToAdd] Production for [${closestCity.name}]",
-                locations, NotificationIcon.Construction
+                locations, NotificationIcon.Construction, color = Color(0.741f, 1f, 0.701f, 1f)
             )
         }
     }
@@ -1203,18 +1204,21 @@ class MapUnit {
             civInfo.addNotification(
                 "An enemy [Citadel] has destroyed our [$name]",
                 locations,
-                NotificationIcon.Citadel, NotificationIcon.Death, name
+                NotificationIcon.Citadel, NotificationIcon.Death, name,
+                color = Color(0.996f, 0.752f, 0.694f, 1f)
             )
             citadelTile.getOwner()?.addNotification(
                 "Your [Citadel] has destroyed an enemy [$name]",
                 locations,
-                NotificationIcon.Citadel, NotificationIcon.Death, name
+                NotificationIcon.Citadel, NotificationIcon.Death, name,
+                color = Color(0.741f, 1f, 0.701f, 1f)
             )
             destroy()
         } else civInfo.addNotification(
             "An enemy [Citadel] has attacked our [$name]",
             locations,
-            NotificationIcon.Citadel, NotificationIcon.War, name
+            NotificationIcon.Citadel, NotificationIcon.War, name,
+            color = Color(0.996f, 0.752f, 0.694f, 1f)
         )
     }
 

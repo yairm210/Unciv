@@ -1,5 +1,6 @@
 package com.unciv.ui.worldscreen
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -305,7 +306,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 }).row()
                 add(getCloseButton("Very well.", 'n') {
                     val capitalLocation = LocationAction(cityState.cities.asSequence().map { it.location }) // in practice 0 or 1 entries, that's OK
-                    player.addNotification("You have broken your Pledge to Protect [${cityState.civName}]!", capitalLocation, cityState.civName)
+                    player.addNotification("You have broken your Pledge to Protect [${cityState.civName}]!", capitalLocation, cityState.civName, color = Color(1f, 0.850f, 0.819f, 1f))
                     cityState.removeProtectorCiv(player, forced = true)
                 }).row()
             }
