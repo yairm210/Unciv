@@ -139,6 +139,8 @@ class CivilizationInfo {
     @Transient
     var thingsToFocusOnForVictory = setOf<Victory.Focus>()
 
+    var hotseatPassword = ""
+
     var playerType = PlayerType.AI
 
     /** Used in online multiplayer for human players */
@@ -290,6 +292,7 @@ class CivilizationInfo {
         toReturn.totalFaithForContests = totalFaithForContests
         toReturn.attacksSinceTurnStart = attacksSinceTurnStart.copy()
         toReturn.hasMovedAutomatedUnits = hasMovedAutomatedUnits
+        toReturn.hotseatPassword = hotseatPassword
         return toReturn
     }
 
