@@ -16,6 +16,7 @@ class PlayerReadyScreen(worldScreen: WorldScreen) : BaseScreen() {
     var startTurn = true
     val curCiv = worldScreen.viewingCiv
     var enteredPassword = curCiv.hotseatPassword
+    var confirmPassword = ""
 
     init {
         val table = Table()
@@ -27,7 +28,11 @@ class PlayerReadyScreen(worldScreen: WorldScreen) : BaseScreen() {
         val createPasswordButton = "Set password (optional)".toTextButton()
         val savePasswordButton = "Save password".toTextButton()
         savePasswordButton.onClick {
-            curCiv.hotseatPassword = hash(enteredPassword)
+            startTurn = false
+            if (enteredPassword == confirmPassword)
+                curCiv.hotseatPassword = hash(enteredPassword)
+            else
+                ToastPopup("Passwords do not match!", this)
         }
 
         createPasswordButton.onClick {
@@ -62,14 +67,25 @@ class PlayerReadyScreen(worldScreen: WorldScreen) : BaseScreen() {
     private fun getPasswordTable(): Table {
         val passwordTable = Table()
 
-        passwordTable.add("Password: ".toLabel())
+        passwordTable.add("Password: ".toLabel(curCiv.nation.getInnerColor(), Constants.headingFontSize)).padTop(10f)
         val passwordTextField = UncivTextField.create("Password")
         passwordTextField.isPasswordMode = true
         passwordTextField.setPasswordCharacter('*')
         passwordTextField.addListener { enteredPassword = passwordTextField.text; true }
-
         passwordTextField.onClick { startTurn = false }
-        passwordTable.add(passwordTextField).row()
+
+        passwordTable.add(passwordTextField).padTop(10f).row()
+
+        if (curCiv.hotseatPassword == "") {
+            passwordTable.add("Confirm password: ".toLabel(curCiv.nation.getInnerColor(), Constants.headingFontSize)).padTop(10f)
+            val confirmPasswordTextField = UncivTextField.create("Confirm password")
+            confirmPasswordTextField.isPasswordMode = true
+            confirmPasswordTextField.setPasswordCharacter('*')
+            confirmPasswordTextField.addListener { confirmPassword = confirmPasswordTextField.text; true }
+            confirmPasswordTextField.onClick { startTurn = false }
+
+            passwordTable.add(confirmPasswordTextField).padTop(10f).row()
+        }
 
         return passwordTable
     }
