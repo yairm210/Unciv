@@ -46,7 +46,7 @@ class PlayerReadyScreen(worldScreen: WorldScreen) : BaseScreen() {
 
         table.onClick {
             if (startTurn) {
-                if (enteredPassword == curCiv.hotseatPassword)
+                if (curCiv.hotseatPassword == "")
                     game.replaceCurrentScreen(worldScreen)
                 if (hash(enteredPassword) == curCiv.hotseatPassword)
                     game.replaceCurrentScreen(worldScreen)
