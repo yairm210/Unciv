@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.Notification
+import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.WrappableLabel
@@ -51,7 +52,7 @@ class NotificationsOverviewTable(
     private fun notificationsArrayTable(index: String, notifications: ArrayList<Notification>): Table {
         val turnTable = Table(BaseScreen.skin)
         if (index != "Current")
-            turnTable.add("Turn [$index]").row()
+            turnTable.add("Turn [$index]".tr()).row()
         else
             turnTable.add("Current turn").row()
 
