@@ -213,7 +213,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         stage.addActor(helpButton)
 
         if (UncivGame.Current.platformSpecificHelper?.isInstalledFromGP() == false) {
-            val latestVersion = checkForUpdates()
+            val latestVersion = getLatestVersion()
             if (latestVersion > UncivGame.Current.version) {
                 addUpdateButton()
             }
@@ -293,7 +293,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
 
     override fun recreate(): BaseScreen = MainMenuScreen()
 
-    fun checkForUpdates(): String {
+    fun getLatestVersion(): String {
         var response: InputStream? = null
         var version = ""
 
