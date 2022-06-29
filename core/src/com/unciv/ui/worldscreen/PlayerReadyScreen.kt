@@ -25,7 +25,6 @@ class PlayerReadyScreen(worldScreen: WorldScreen) : BaseScreen() {
 
         table.add("[$curCiv] ready?".toLabel(curCiv.nation.getInnerColor(), Constants.headingFontSize)).padBottom(20f).row()
 
-        val createPasswordButton = "Set password (optional)".toTextButton()
         val savePasswordButton = "Save password".toTextButton()
         savePasswordButton.onClick {
             startTurn = false
@@ -37,6 +36,7 @@ class PlayerReadyScreen(worldScreen: WorldScreen) : BaseScreen() {
             }
         }
 
+        val createPasswordButton = "Set password (optional)".toTextButton()
         createPasswordButton.onClick {
             startTurn = false
             table.removeActor(createPasswordButton)
@@ -83,6 +83,7 @@ class PlayerReadyScreen(worldScreen: WorldScreen) : BaseScreen() {
         val passwordTable = Table()
 
         passwordTable.add("Password: ".toLabel(curCiv.nation.getInnerColor(), Constants.headingFontSize)).padTop(10f)
+
         val passwordTextField = UncivTextField.create("Password")
         passwordTextField.isPasswordMode = true
         passwordTextField.setPasswordCharacter('*')
@@ -93,6 +94,7 @@ class PlayerReadyScreen(worldScreen: WorldScreen) : BaseScreen() {
 
         if (curCiv.hotseatPassword == "") {
             passwordTable.add("Confirm password: ".toLabel(curCiv.nation.getInnerColor(), Constants.headingFontSize)).padTop(10f)
+
             val confirmPasswordTextField = UncivTextField.create("Confirm password")
             confirmPasswordTextField.isPasswordMode = true
             confirmPasswordTextField.setPasswordCharacter('*')
