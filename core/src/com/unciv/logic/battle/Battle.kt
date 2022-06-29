@@ -61,9 +61,7 @@ object Battle {
         /** Rarely, a melee unit will target a civilian then move through the civilian to get
          * to attackableTile.tileToAttackFrom, meaning that they take the civilian. This check stops
          * the melee unit from trying to capture their own unit if this happens */
-        val mapCompatantOfTile = getMapCombatantOfTile(attackableTile.tileToAttack)
-        if (mapCompatantOfTile != null)
-            if (mapCompatantOfTile.getCivInfo() == attacker.getCivInfo()) return false
+        if (getMapCombatantOfTile(attackableTile.tileToAttack)?.getCivInfo() == attacker.getCivInfo()) return false
         /** Alternatively, maybe we DID reach that tile, but it turned out to be a hill or something,
          * so we expended all of our movement points!
          */
