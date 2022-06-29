@@ -29,9 +29,10 @@ class PlayerReadyScreen(worldScreen: WorldScreen) : BaseScreen() {
         val savePasswordButton = "Save password".toTextButton()
         savePasswordButton.onClick {
             startTurn = false
-            if (enteredPassword == confirmPassword)
+            if (enteredPassword == confirmPassword) {
                 curCiv.hotseatPassword = hash(enteredPassword)
-            else
+                game.replaceCurrentScreen(worldScreen)
+            } else
                 ToastPopup("Passwords do not match!", this)
         }
 
