@@ -5,6 +5,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ConstructionAutomation
 import com.unciv.logic.civilization.AlertType
+import com.unciv.logic.civilization.NotificationColor
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.map.MapUnit
@@ -419,7 +420,7 @@ class CityConstructions {
                         cityInfo.location,
                         NotificationIcon.Construction,
                         buildingIcon,
-                        color = Color(0.745f, 1f, 0.698f, 1f)
+                        color = NotificationColor.LessGood
                     )
                 else
                     civ.addNotification("[${construction.name}] has been built in a faraway land", buildingIcon)
@@ -427,7 +428,7 @@ class CityConstructions {
         } else {
             val icon = if (construction is Building) buildingIcon else construction.name // could be a unit, in which case take the unit name.
             cityInfo.civInfo.addNotification("[${construction.name}] has been built in [" + cityInfo.name + "]",
-                    cityInfo.location, NotificationIcon.Construction, icon, color = Color(0.745f, 1f, 0.698f, 1f))
+                    cityInfo.location, NotificationIcon.Construction, icon, color = NotificationColor.LessGood)
         }
 
         if (construction is Building && construction.hasUnique(UniqueType.TriggersAlertOnCompletion,

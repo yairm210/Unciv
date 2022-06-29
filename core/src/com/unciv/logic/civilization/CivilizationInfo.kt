@@ -603,12 +603,12 @@ class CivilizationInfo {
             meetString = "[${civName}] has given us [${giftAmount}] as we are the first major civ to meet them"
         }
         if (cityStateLocation != null)
-            otherCiv.addNotification(meetString, cityStateLocation, NotificationIcon.Gold, color = Color(0.890f, 1f, 0.819f, 1f))
+            otherCiv.addNotification(meetString, cityStateLocation, NotificationIcon.Gold, color = NotificationColor.Gold)
         else
-            otherCiv.addNotification(meetString, NotificationIcon.Gold, color = Color(0.890f, 1f, 0.819f, 1f))
+            otherCiv.addNotification(meetString, NotificationIcon.Gold, color = NotificationColor.Gold)
 
         if (otherCiv.isCityState() && otherCiv.canGiveStat(Stat.Faith)){
-            otherCiv.addNotification(religionMeetString, NotificationIcon.Faith, color = Color(0.890f, 1f, 0.819f, 1f))
+            otherCiv.addNotification(religionMeetString, NotificationIcon.Faith, color = NotificationColor.Faith)
 
             for ((key, value) in faithAmount)
                 otherCiv.addStat(key, value.toInt())
@@ -1202,13 +1202,13 @@ class CivilizationInfo {
     }
 
 
-    fun addNotification(text: String, location: Vector2, vararg notificationIcons: String, color: Color? = null) {
+    fun addNotification(text: String, location: Vector2, vararg notificationIcons: String, color: NotificationColor = NotificationColor.Default) {
         addNotification(text, LocationAction(location), *notificationIcons, color = color)
     }
 
-    fun addNotification(text: String, vararg notificationIcons: String, color: Color? = null) = addNotification(text, null, *notificationIcons, color = color)
+    fun addNotification(text: String, vararg notificationIcons: String, color: NotificationColor = NotificationColor.Default) = addNotification(text, null, *notificationIcons, color = color)
 
-    fun addNotification(text: String, action: NotificationAction?, vararg notificationIcons: String, color: Color? = null) {
+    fun addNotification(text: String, action: NotificationAction?, vararg notificationIcons: String, color: NotificationColor = NotificationColor.Default) {
         if (playerType == PlayerType.AI) return // no point in lengthening the saved game info if no one will read it
         val arrayList = notificationIcons.toCollection(ArrayList())
         notifications.add(Notification(

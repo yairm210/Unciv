@@ -84,7 +84,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         val placedUnit = receivingCiv.placeUnitNearTile(cities.city1.location, giftedUnit.name)
             ?: return
         val locations = LocationAction(placedUnit.getTile().position, cities.city2.location)
-        receivingCiv.addNotification( "[${civInfo.civName}] gave us a [${giftedUnit.name}] as a gift!", locations, civInfo.civName, giftedUnit.name, color = Color(0.752f, 1f, 0.698f, 1f))
+        receivingCiv.addNotification( "[${civInfo.civName}] gave us a [${giftedUnit.name}] as a gift!", locations, civInfo.civName, giftedUnit.name, color = NotificationColor.Gold)
     }
 
     fun giveMilitaryUnitToPatron(receivingCiv: CivilizationInfo) {
@@ -128,7 +128,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             locations,
             civInfo.civName,
             militaryUnit.name,
-            color = Color(0.752f, 1f, 0.698f, 1f)
+            color = NotificationColor.Gold
         )
     }
 
@@ -498,7 +498,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             diplomacy.setFlag(DiplomacyFlags.AngerFreeIntrusion, 5)
 
         otherCiv.addNotification("[${civInfo.civName}] is grateful that you killed a Barbarian that was threatening them!",
-            DiplomacyAction(civInfo.civName), civInfo.civName)
+            DiplomacyAction(civInfo.civName), civInfo.civName, color = NotificationColor.LessGood)
     }
 
     /** A city state was bullied. What are its protectors going to do about it??? */

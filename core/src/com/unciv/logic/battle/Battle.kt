@@ -9,6 +9,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.NotificationColor
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PopupAlert
@@ -335,7 +336,7 @@ object Battle {
             val attackerIcon = if (attacker is CityCombatant) NotificationIcon.City else attacker.getName()
             val defenderIcon = if (defender is CityCombatant) NotificationIcon.City else defender.getName()
             val locations = LocationAction(attackedTile.position, attackerTile?.position)
-            defender.getCivInfo().addNotification(notificationString, locations, attackerIcon, whatHappenedIcon, defenderIcon)
+            defender.getCivInfo().addNotification(notificationString, locations, attackerIcon, whatHappenedIcon, defenderIcon, color = NotificationColor.Bad)
         }
     }
 
@@ -869,10 +870,10 @@ object Battle {
                 "Our [$interceptorName] intercepted and destroyed an enemy [$attackerName]"
             else "Our [$interceptorName] intercepted and attacked an enemy [$attackerName]"
             attacker.getCivInfo().addNotification(attackerText, interceptor.currentTile.position,
-                    attackerName, NotificationIcon.War, interceptorName, color = Color(0.996f, 0.752f, 0.698f, 1f)
+                    attackerName, NotificationIcon.War, interceptorName, color = NotificationColor.Bad
             )
             interceptingCiv.addNotification(interceptorText, locations,
-                    interceptorName, NotificationIcon.War, attackerName, color = Color(0.752f, 1f, 0.698f, 1f)
+                    interceptorName, NotificationIcon.War, attackerName, color = NotificationColor.Good
             )
             return
         }

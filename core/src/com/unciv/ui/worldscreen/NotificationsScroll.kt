@@ -67,7 +67,7 @@ class NotificationsScroll(
 
         for (notification in notifications.asReversed().toList()) { // toList to avoid concurrency problems
             val listItem = Table()
-            listItem.background = ImageGetter.getRoundedEdgeRectangle(notification.color)
+            listItem.background = ImageGetter.getRoundedEdgeRectangle(notification.color.color)
 
             val labelWidth = maxEntryWidth - iconSize * notification.icons.size - 10f
             val label = WrappableLabel(notification.text, labelWidth, Color.BLACK, 30)

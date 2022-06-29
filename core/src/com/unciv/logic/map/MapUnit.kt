@@ -12,6 +12,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.RejectionReason
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.NotificationColor
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.UnitActionType
 import com.unciv.models.helpers.UnitMovementMemoryType
@@ -781,7 +782,7 @@ class MapUnit {
             val locations = LocationAction(tile.position, closestCity.location)
             civInfo.addNotification(
                 "Clearing a [$removedTerrainFeature] has created [$productionPointsToAdd] Production for [${closestCity.name}]",
-                locations, NotificationIcon.Construction, color = Color(0.741f, 1f, 0.701f, 1f)
+                locations, NotificationIcon.Construction, color = NotificationColor.Bombard
             )
         }
     }
@@ -1205,20 +1206,20 @@ class MapUnit {
                 "An enemy [Citadel] has destroyed our [$name]",
                 locations,
                 NotificationIcon.Citadel, NotificationIcon.Death, name,
-                color = Color(0.996f, 0.752f, 0.694f, 1f)
+                color = NotificationColor.Bad
             )
             citadelTile.getOwner()?.addNotification(
                 "Your [Citadel] has destroyed an enemy [$name]",
                 locations,
                 NotificationIcon.Citadel, NotificationIcon.Death, name,
-                color = Color(0.741f, 1f, 0.701f, 1f)
+                color = NotificationColor.Good
             )
             destroy()
         } else civInfo.addNotification(
             "An enemy [Citadel] has attacked our [$name]",
             locations,
             NotificationIcon.Citadel, NotificationIcon.War, name,
-            color = Color(0.996f, 0.752f, 0.694f, 1f)
+            color = NotificationColor.Bad
         )
     }
 

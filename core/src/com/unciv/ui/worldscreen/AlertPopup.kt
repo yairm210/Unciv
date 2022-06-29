@@ -10,6 +10,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.NotificationColor
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
@@ -306,7 +307,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 }).row()
                 add(getCloseButton("Very well.", 'n') {
                     val capitalLocation = LocationAction(cityState.cities.asSequence().map { it.location }) // in practice 0 or 1 entries, that's OK
-                    player.addNotification("You have broken your Pledge to Protect [${cityState.civName}]!", capitalLocation, cityState.civName, color = Color(1f, 0.850f, 0.819f, 1f))
+                    player.addNotification("You have broken your Pledge to Protect [${cityState.civName}]!", capitalLocation, cityState.civName, color = NotificationColor.LessBad)
                     cityState.removeProtectorCiv(player, forced = true)
                 }).row()
             }

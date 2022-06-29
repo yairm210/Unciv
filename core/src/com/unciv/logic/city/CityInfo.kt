@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.NotificationColor
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.Proximity
 import com.unciv.logic.civilization.ReligionState
@@ -850,7 +851,7 @@ class CityInfo {
         if (demandedResource == "") // Failed to get a valid resource, try again some time later
             setFlag(CityFlags.ResourceDemand, 15 + Random().nextInt(10))
         else
-            civInfo.addNotification("[$name] demands [$demandedResource]!", location, NotificationIcon.City, "ResourceIcons/$demandedResource", color = Color(0.956f, 0.988f, 0.678f, 1f))
+            civInfo.addNotification("[$name] demands [$demandedResource]!", location, NotificationIcon.City, "ResourceIcons/$demandedResource", color = NotificationColor.WLTK)
     }
 
     private fun tryWeLoveTheKing() {
@@ -859,7 +860,7 @@ class CityInfo {
             setFlag(CityFlags.WeLoveTheKing, 20 + 1) // +1 because it will be decremented by 1 in the same startTurn()
             civInfo.addNotification(
                     "Because they have [$demandedResource], the citizens of [$name] are celebrating We Love The King Day!",
-                    location, NotificationIcon.City, NotificationIcon.Happiness, color = Color(0.956f, 0.988f, 0.678f, 1f))
+                    location, NotificationIcon.City, NotificationIcon.Happiness, color = NotificationColor.WLTK)
         }
     }
 

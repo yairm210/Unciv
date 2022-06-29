@@ -37,6 +37,19 @@ object NotificationIcon {
     const val Barbarians = "ImprovementIcons/Barbarian encampment"
 }
 
+enum class NotificationColor(val color: Color) {
+    Default(Color(1f,1f,1f,1f)),
+    Bombard(Color(0.992f, 0.847f, 0.694f, 1f)),
+    Bad(Color(0.996f, 0.752f, 0.698f, 1f)),
+    LessBad(Color(1f, 0.850f, 0.819f, 1f)),
+    Good(Color(0.745f, 1f, 0.698f, 1f)),
+    LessGood(Color(0.843f, 1f, 0.811f, 1f)),
+    WLTK(Color(0.956f, 0.988f, 0.678f, 1f)),
+    Gold(Color(0.976f, 1f, 0.784f, 1f)),
+    Faith(Color(0.839f, 1f, 0.988f, 1f)),
+    Quest(Color(0.733f, 0.945f, 1f, 1f))
+}
+
 /**
  * [action] is not realized as lambda, as it would be too easy to introduce references to objects
  * there that should not be serialized to the saved game.
@@ -47,13 +60,13 @@ open class Notification() {
 
     var icons: ArrayList<String> = ArrayList() // Must be ArrayList and not List so it can be deserialized
     var action: NotificationAction? = null
-    var color: Color? = null
+    var color: NotificationColor = NotificationColor.Default
 
     constructor(
         text: String,
         notificationIcons: ArrayList<String>,
         action: NotificationAction? = null,
-        color: Color? = null
+        color: NotificationColor = NotificationColor.Default
     ) : this() {
         this.text = text
         this.icons = notificationIcons

@@ -331,7 +331,7 @@ class QuestManager {
 
             assignedQuests.add(newQuest)
             assignee.addNotification("[${civInfo.civName}] assigned you a new quest: [${quest.name}].",
-                    DiplomacyAction(civInfo.civName), civInfo.civName, "OtherIcons/Quest", color = Color(0.733f, 0.945f, 1f, 1f)
+                    DiplomacyAction(civInfo.civName), civInfo.civName, "OtherIcons/Quest", color = NotificationColor.LessGood
             )
 
             if (quest.isIndividual())
@@ -522,7 +522,7 @@ class QuestManager {
             assignedQuests.removeAll(revokedQuests)
             if (revokedQuests.count() > 0)
                 bully.addNotification("[${civInfo.civName}] cancelled the quests they had given you because you demanded tribute from them.",
-                    DiplomacyAction(civInfo.civName), civInfo.civName, "OtherIcons/Quest", color = Color(0xffd8d0f))
+                    DiplomacyAction(civInfo.civName), civInfo.civName, "OtherIcons/Quest", color = NotificationColor.LessBad)
         }
     }
 
@@ -579,9 +579,9 @@ class QuestManager {
         for ((attackerName, unitsToKill) in unitsToKillForCiv) {
             if (location != null)
                 otherCiv.addNotification("[${civInfo.civName}] is being attacked by [$attackerName]! Kill [$unitsToKill] of the attacker's military units and they will be immensely grateful.",
-                    location, civInfo.civName, "OtherIcons/Quest")
+                    location, civInfo.civName, "OtherIcons/Quest", color = NotificationColor.LessGood)
             else otherCiv.addNotification("[${civInfo.civName}] is being attacked by [$attackerName]! Kill [$unitsToKill] of the attacker's military units and they will be immensely grateful.",
-                civInfo.civName, "OtherIcons/Quest")
+                civInfo.civName, "OtherIcons/Quest", color = NotificationColor.LessGood)
         }
     }
 

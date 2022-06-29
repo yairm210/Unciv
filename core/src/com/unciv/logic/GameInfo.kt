@@ -302,10 +302,10 @@ class GameInfo {
     private fun addBombardNotification(thisPlayer: CivilizationInfo, cities: List<CityInfo>) {
         if (cities.size < 3) {
             for (city in cities)
-                thisPlayer.addNotification("Your city [${city.name}] can bombard the enemy!", city.location, NotificationIcon.City, NotificationIcon.Crosshair, color = Color(0.992f, 0.847f, 0.694f, 1f))
+                thisPlayer.addNotification("Your city [${city.name}] can bombard the enemy!", city.location, NotificationIcon.City, NotificationIcon.Crosshair, color = NotificationColor.Bombard)
         } else {
             val positions = cities.asSequence().map { it.location }
-            thisPlayer.addNotification("[${cities.size}] of your cities can bombard the enemy!", LocationAction(positions), NotificationIcon.City, NotificationIcon.Crosshair, color = Color(0.992f, 0.847f, 0.694f, 1f))
+            thisPlayer.addNotification("[${cities.size}] of your cities can bombard the enemy!", LocationAction(positions), NotificationIcon.City, NotificationIcon.Crosshair, color = NotificationColor.Bombard)
         }
     }
 
@@ -366,7 +366,7 @@ class GameInfo {
             text,
             LocationAction(positions),
             "ResourceIcons/$resourceName",
-            color = Color(0.749f, 1f, 0.701f, 1f)
+            color = NotificationColor.LessGood
         )
         return true
     }
