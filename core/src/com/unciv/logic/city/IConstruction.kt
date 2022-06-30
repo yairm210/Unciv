@@ -213,7 +213,6 @@ open class PerpetualConstruction(override var name: String, val description: Str
 
     override fun shouldBeDisplayed(cityConstructions: CityConstructions) = isBuildable(cityConstructions)
     open fun getProductionTooltip(cityInfo: CityInfo) : String = ""
-    open fun getConversionRate(cityInfo: CityInfo) : Int = 0
 
     companion object {
         val science = PerpetualStatConstruction(Stat.Science)
@@ -242,7 +241,7 @@ open class PerpetualStatConstruction(val stat: Stat) :
 
     override fun getProductionTooltip(cityInfo: CityInfo) : String
             = "\r\n${(cityInfo.cityStats.currentCityStats.production / getConversionRate(cityInfo)).roundToInt()}/${Fonts.turn}"
-    override fun getConversionRate(cityInfo: CityInfo) : Int = (1/cityInfo.cityStats.getStatConversionRate(stat)).roundToInt()
+    fun getConversionRate(cityInfo: CityInfo) : Int = (1/cityInfo.cityStats.getStatConversionRate(stat)).roundToInt()
 
     override fun isBuildable(cityConstructions: CityConstructions): Boolean {
         val hasProductionUnique = cityConstructions.cityInfo.civInfo.getMatchingUniques(UniqueType.EnablesCivWideStatProduction).any { it.params[0] == stat.name }
