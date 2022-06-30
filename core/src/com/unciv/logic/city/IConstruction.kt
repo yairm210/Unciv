@@ -215,10 +215,10 @@ open class PerpetualConstruction(override var name: String, val description: Str
     open fun getProductionTooltip(cityInfo: CityInfo) : String = ""
 
     companion object {
-        val science = PerpetualStatConstruction(Stat.Science)
-        val gold = PerpetualStatConstruction(Stat.Gold)
-        val culture = PerpetualStatConstruction(Stat.Culture)
-        val faith = PerpetualStatConstruction(Stat.Faith)
+        val science = PerpetualStatConversion(Stat.Science)
+        val gold = PerpetualStatConversion(Stat.Gold)
+        val culture = PerpetualStatConversion(Stat.Culture)
+        val faith = PerpetualStatConversion(Stat.Faith)
         val idle = object : PerpetualConstruction("Nothing", "The city will not produce anything.") {
             override fun isBuildable(cityConstructions: CityConstructions): Boolean = true
         }
@@ -236,7 +236,7 @@ open class PerpetualConstruction(override var name: String, val description: Str
 
 }
 
-open class PerpetualStatConstruction(val stat: Stat) :
+open class PerpetualStatConversion(val stat: Stat) :
     PerpetualConstruction(stat.name, "Convert production to [${stat.name}] at a rate of [rate] to 1") {
 
     override fun getProductionTooltip(cityInfo: CityInfo) : String
