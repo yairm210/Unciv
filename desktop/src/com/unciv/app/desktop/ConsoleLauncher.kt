@@ -11,12 +11,12 @@ import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapSizeNew
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSettings
-import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.simulation.Simulation
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.metadata.GameSetupInfo
+import com.unciv.models.ruleset.Speed
 import kotlin.time.ExperimentalTime
 
 internal object ConsoleLauncher {
@@ -48,7 +48,7 @@ internal object ConsoleLauncher {
         val mapParameters = getMapParameters()
         val gameSetupInfo = GameSetupInfo(gameParameters, mapParameters)
         val newGame = GameStarter.startNewGame(gameSetupInfo)
-        UncivGame.Current.gameInfo = newGame
+        UncivGame.Current.startSimulation(newGame)
 
         val simulation = Simulation(newGame,10,4)
 
@@ -69,7 +69,7 @@ internal object ConsoleLauncher {
     private fun getGameParameters(civilization1: String, civilization2: String): GameParameters {
         return GameParameters().apply {
             difficulty = "Chieftain"
-            gameSpeed = GameSpeed.Quick
+            speed = Speed.DEFAULT
             noBarbarians = true
             players = ArrayList<Player>().apply {
                 add(Player().apply {

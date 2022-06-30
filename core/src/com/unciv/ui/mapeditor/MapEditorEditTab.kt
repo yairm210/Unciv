@@ -20,6 +20,7 @@ import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.TabbedPager
 import com.unciv.ui.utils.UncivSlider
 import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.keyShortcuts
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.utils.Log
 
@@ -109,6 +110,21 @@ class MapEditorEditTab(
         add(brushTable).fillX().row()
         addSeparator(Color.GRAY)
         add(subTabs).left().fillX().row()
+
+        keyShortcuts.add('t') { selectPage(0) }
+        keyShortcuts.add('f') { selectPage(1) }
+        keyShortcuts.add('w') { selectPage(2) }
+        keyShortcuts.add('r') { selectPage(3) }
+        keyShortcuts.add('i') { selectPage(4) }
+        keyShortcuts.add('v') { selectPage(5) }
+        keyShortcuts.add('s') { selectPage(6) }
+        keyShortcuts.add('u') { selectPage(7) }
+        keyShortcuts.add('1') { brushSize = 1 }
+        keyShortcuts.add('2') { brushSize = 2 }
+        keyShortcuts.add('3') { brushSize = 3 }
+        keyShortcuts.add('4') { brushSize = 4 }
+        keyShortcuts.add('5') { brushSize = 5 }
+        keyShortcuts.add(KeyCharAndCode.ctrl('f')) { brushSize = -1 }
     }
 
     private fun selectPage(index: Int) = subTabs.selectPage(index)
@@ -154,28 +170,11 @@ class MapEditorEditTab(
         editorScreen.tileClickHandler = this::tileClickHandler
         pager.setScrollDisabled(true)
         tileMatchFuzziness = editorScreen.tileMatchFuzziness
-
-        val keyPressDispatcher = editorScreen.keyPressDispatcher
-        keyPressDispatcher['t'] = { selectPage(0) }
-        keyPressDispatcher['f'] = { selectPage(1) }
-        keyPressDispatcher['w'] = { selectPage(2) }
-        keyPressDispatcher['r'] = { selectPage(3) }
-        keyPressDispatcher['i'] = { selectPage(4) }
-        keyPressDispatcher['v'] = { selectPage(5) }
-        keyPressDispatcher['s'] = { selectPage(6) }
-        keyPressDispatcher['u'] = { selectPage(7) }
-        keyPressDispatcher['1'] = { brushSize = 1 }
-        keyPressDispatcher['2'] = { brushSize = 2 }
-        keyPressDispatcher['3'] = { brushSize = 3 }
-        keyPressDispatcher['4'] = { brushSize = 4 }
-        keyPressDispatcher['5'] = { brushSize = 5 }
-        keyPressDispatcher[KeyCharAndCode.ctrl('f')] = { brushSize = -1 }
     }
 
     override fun deactivated(index: Int, caption: String, pager: TabbedPager) {
         pager.setScrollDisabled(true)
         editorScreen.tileClickHandler = null
-        editorScreen.keyPressDispatcher.revertToCheckPoint()
     }
 
     fun tileClickHandler(tile: TileInfo) {

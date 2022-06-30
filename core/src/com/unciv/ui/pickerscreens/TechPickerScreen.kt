@@ -14,16 +14,17 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaCategories
 import com.unciv.ui.civilopedia.CivilopediaScreen
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.Fonts
+import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.extensions.addBorder
 import com.unciv.ui.utils.extensions.colorFromRGB
 import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.utils.concurrency.Concurrency
 
 
 class TechPickerScreen(
@@ -61,12 +62,11 @@ class TechPickerScreen(
 
     init {
         setDefaultCloseAction()
-        onBackButtonClicked { UncivGame.Current.resetToWorldScreen() }
         scrollPane.setOverscroll(false, false)
 
         descriptionLabel.onClick {
             if (selectedTech != null)
-                game.setScreen(CivilopediaScreen(civInfo.gameInfo.ruleSet, this, CivilopediaCategories.Technology, selectedTech!!.name))
+                game.pushScreen(CivilopediaScreen(civInfo.gameInfo.ruleSet, CivilopediaCategories.Technology, selectedTech!!.name))
         }
 
         tempTechsToResearch = ArrayList(civTech.techsToResearch)
@@ -87,9 +87,7 @@ class TechPickerScreen(
 
             game.settings.addCompletedTutorialTask("Pick technology")
 
-            game.resetToWorldScreen()
-            game.worldScreen.shouldUpdate = true
-            dispose()
+            game.popScreen()
         }
 
         // per default show current/recent technology,
@@ -265,7 +263,7 @@ class TechPickerScreen(
             return
         }
 
-        if (!UncivGame.Current.worldScreen.canChangeState) {
+        if (!UncivGame.Current.worldScreen!!.canChangeState) {
             rightSideButton.disable()
             return
         }
@@ -303,7 +301,7 @@ class TechPickerScreen(
     }
 
     private fun centerOnTechnology(tech: Technology) {
-        postCrashHandlingRunnable {
+        Concurrency.runOnGLThread {
             techNameToButton[tech.name]?.let {
                 scrollPane.scrollTo(it.x, it.y, it.width, it.height, true, true)
                 scrollPane.updateVisualScroll()

@@ -19,15 +19,14 @@ import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.crashhandling.launchCrashHandling
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.pickerscreens.PickerScreen
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ExpanderTab
+import com.unciv.ui.utils.RecreateOnResize
 import com.unciv.ui.utils.extensions.addSeparator
 import com.unciv.ui.utils.extensions.addSeparatorVertical
 import com.unciv.ui.utils.extensions.disable
@@ -36,14 +35,17 @@ import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.pad
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
+import com.unciv.utils.Log
+import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.launchOnGLThread
+import kotlinx.coroutines.coroutineScope
 import java.net.URL
 import java.util.*
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class NewGameScreen(
-    private val previousScreen: BaseScreen,
     _gameSetupInfo: GameSetupInfo? = null
-): IPreviousScreen, PickerScreen() {
+): IPreviousScreen, PickerScreen(), RecreateOnResize {
 
     override val gameSetupInfo = _gameSetupInfo ?: GameSetupInfo.fromSettings()
     override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters) // needs to be set because the GameOptionsTable etc. depend on this
@@ -55,6 +57,9 @@ class NewGameScreen(
         updateRuleset()  // must come before playerPickerTable so mod nations from fromSettings
         // Has to be initialized before the mapOptionsTable, since the mapOptionsTable refers to it on init
 
+        // remove the victory types which are not in the rule set (e.g. were in the recently disabled mod)
+        gameSetupInfo.gameParameters.victoryTypes.removeAll { it !in ruleset.victories.keys }
+
         if (gameSetupInfo.gameParameters.victoryTypes.isEmpty())
             gameSetupInfo.gameParameters.victoryTypes.addAll(ruleset.victories.keys)
 
@@ -64,7 +69,7 @@ class NewGameScreen(
         )
         newGameOptionsTable = GameOptionsTable(this, isNarrowerThan4to3()) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
         mapOptionsTable = MapOptionsTable(this)
-        setDefaultCloseAction(previousScreen)
+        setDefaultCloseAction()
 
         if (isNarrowerThan4to3()) initPortrait()
         else initLandscape()
@@ -74,9 +79,13 @@ class NewGameScreen(
             val resetToDefaultsButton = "Reset to defaults".toTextButton()
             rightSideGroup.addActorAt(0, resetToDefaultsButton)
             resetToDefaultsButton.onClick {
-                YesNoPopup("Are you sure you want to reset all game options to defaults?", {
-                    game.setScreen(NewGameScreen(previousScreen, GameSetupInfo()))
-                }, this).open(true)
+                ConfirmPopup(
+                    this,
+                    "Are you sure you want to reset all game options to defaults?",
+                    "Reset to defaults",
+                ) {
+                    game.replaceCurrentScreen(NewGameScreen(GameSetupInfo()))
+                }.open(true)
             }
         }
 
@@ -133,7 +142,7 @@ class NewGameScreen(
                 val map = try {
                     MapSaver.loadMap(gameSetupInfo.mapFile!!)
                 } catch (ex: Throwable) {
-                    game.setScreen(this)
+                    Gdx.input.inputProcessor = stage
                     ToastPopup("Could not load map!", this)
                     return@onClick
                 }
@@ -146,7 +155,7 @@ class NewGameScreen(
                         incompatibleMap.addGoodSizedLabel(incompatibility).row()
                     incompatibleMap.addCloseButton()
                     incompatibleMap.open()
-                    game.setScreen(this) // to get the input back
+                    Gdx.input.inputProcessor = stage
                     return@onClick
                 }
             } else {
@@ -154,15 +163,13 @@ class NewGameScreen(
                 val mapSize = gameSetupInfo.mapParameters.mapSize
                 val message = mapSize.fixUndesiredSizes(gameSetupInfo.mapParameters.worldWrap)
                 if (message != null) {
-                    postCrashHandlingRunnable {
-                        ToastPopup( message, UncivGame.Current.screen as BaseScreen, 4000 )
-                        with (mapOptionsTable.generatedMapOptionsTable) {
-                            customMapSizeRadius.text = mapSize.radius.toString()
-                            customMapWidth.text = mapSize.width.toString()
-                            customMapHeight.text = mapSize.height.toString()
-                        }
+                    ToastPopup( message, UncivGame.Current.screen!!, 4000 )
+                    with (mapOptionsTable.generatedMapOptionsTable) {
+                        customMapSizeRadius.text = mapSize.radius.toString()
+                        customMapWidth.text = mapSize.width.toString()
+                        customMapHeight.text = mapSize.height.toString()
                     }
-                    game.setScreen(this) // to get the input back
+                    Gdx.input.inputProcessor = stage
                     return@onClick
                 }
             }
@@ -171,7 +178,7 @@ class NewGameScreen(
             rightSideButton.setText("Working...".tr())
 
             // Creating a new game can take a while and we don't want ANRs
-            launchCrashHandling("NewGame", runAsDaemon = false) {
+            Concurrency.runOnNonDaemonThreadPool("NewGame") {
                 startNewGame()
             }
         }
@@ -235,9 +242,9 @@ class NewGameScreen(
         }
     }
 
-    private suspend fun startNewGame() {
-        val popup = Popup(this)
-        postCrashHandlingRunnable {
+    private suspend fun startNewGame() = coroutineScope {
+        val popup = Popup(this@NewGameScreen)
+        launchOnGLThread {
             popup.addGoodSizedLabel("Working...").row()
             popup.open()
         }
@@ -247,7 +254,7 @@ class NewGameScreen(
             newGame = GameStarter.startNewGame(gameSetupInfo)
         } catch (exception: Exception) {
             exception.printStackTrace()
-            postCrashHandlingRunnable {
+            launchOnGLThread {
                 popup.apply {
                     reuseWith("It looks like we can't make a map with the parameters you requested!")
                     row()
@@ -258,41 +265,42 @@ class NewGameScreen(
                 rightSideButton.enable()
                 rightSideButton.setText("Start game!".tr())
             }
-            return
+            return@coroutineScope
         }
 
         if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
             newGame.isUpToDate = true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
             try {
                 game.onlineMultiplayer.createGame(newGame)
-                game.gameSaver.autoSave(newGame)
+                game.files.requestAutoSave(newGame)
             } catch (ex: FileStorageRateLimitReached) {
-                postCrashHandlingRunnable {
+                launchOnGLThread {
                     popup.reuseWith("Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds", true)
+                    rightSideButton.enable()
+                    rightSideButton.setText("Start game!".tr())
                 }
                 Gdx.input.inputProcessor = stage
-                rightSideButton.enable()
-                rightSideButton.setText("Start game!".tr())
-                return
+                return@coroutineScope
             } catch (ex: Exception) {
-                postCrashHandlingRunnable {
+                Log.error("Error while creating game", ex)
+                launchOnGLThread {
                     popup.reuseWith("Could not upload game!", true)
+                    rightSideButton.enable()
+                    rightSideButton.setText("Start game!".tr())
                 }
                 Gdx.input.inputProcessor = stage
-                rightSideButton.enable()
-                rightSideButton.setText("Start game!".tr())
-                return
+                return@coroutineScope
             }
         }
 
-        postCrashHandlingRunnable {
-            game.loadGame(newGame)
-            previousScreen.dispose()
-            if (newGame.gameParameters.isOnlineMultiplayer) {
-                // Save gameId to clipboard because you have to do it anyway.
-                Gdx.app.clipboard.contents = newGame.gameId
-                // Popup to notify the User that the gameID got copied to the clipboard
-                ToastPopup("Game ID copied to clipboard!".tr(), game.worldScreen, 2500)
+        val worldScreen = game.loadGame(newGame)
+
+        if (newGame.gameParameters.isOnlineMultiplayer) {
+            launchOnGLThread {
+                    // Save gameId to clipboard because you have to do it anyway.
+                    Gdx.app.clipboard.contents = newGame.gameId
+                    // Popup to notify the User that the gameID got copied to the clipboard
+                    ToastPopup("Game ID copied to clipboard!".tr(), worldScreen, 2500)
             }
         }
     }
@@ -321,11 +329,7 @@ class NewGameScreen(
         newGameOptionsTable.update()
     }
 
-    override fun resize(width: Int, height: Int) {
-        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
-            game.setScreen(NewGameScreen(previousScreen, gameSetupInfo))
-        }
-    }
+    override fun recreate(): BaseScreen = NewGameScreen(gameSetupInfo)
 }
 
 class TranslatedSelectBox(values : Collection<String>, default:String, skin: Skin) : SelectBox<TranslatedSelectBox.TranslatedString>(skin) {

@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Action
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -13,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
@@ -34,22 +32,25 @@ import com.unciv.models.helpers.MapArrowType
 import com.unciv.models.helpers.MiscArrowTypes
 import com.unciv.ui.UncivStage
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.crashhandling.launchCrashHandling
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.tilegroups.WorldTileGroup
+import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.UnitGroup
 import com.unciv.ui.utils.ZoomableScrollPane
 import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.colorFromRGB
 import com.unciv.ui.utils.extensions.darken
+import com.unciv.ui.utils.extensions.keyShortcuts
+import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.surroundWithCircle
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.utils.Log
+import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.launchOnGLThread
 
 
 class WorldMapHolder(
@@ -153,7 +154,7 @@ class WorldMapHolder(
                 override fun clicked(event: InputEvent?, x: Float, y: Float) {
                     val unit = worldScreen.bottomUnitTable.selectedUnit
                         ?: return
-                    launchCrashHandling("WorldScreenClick") {
+                    Concurrency.run("WorldScreenClick") {
                         onTileRightClicked(unit, tileGroup.tileInfo)
                     }
                 }
@@ -216,7 +217,7 @@ class WorldMapHolder(
     }
 
     private fun onTileRightClicked(unit: MapUnit, tile: TileInfo) {
-        if (UncivGame.Current.gameInfo.currentPlayerCiv.isSpectator()) {
+        if (UncivGame.Current.gameInfo!!.currentPlayerCiv.isSpectator()) {
             return
         }
         removeUnitActionOverlay()
@@ -261,7 +262,7 @@ class WorldMapHolder(
 
         val selectedUnit = selectedUnits.first()
 
-        launchCrashHandling("TileToMoveTo") {
+        Concurrency.run("TileToMoveTo") {
             // these are the heavy parts, finding where we want to go
             // Since this runs in a different thread, even if we check movement.canReach()
             // then it might change until we get to the getTileToMoveTo, so we just try/catch it
@@ -270,10 +271,10 @@ class WorldMapHolder(
                 tileToMoveTo = selectedUnit.movement.getTileToMoveToThisTurn(targetTile)
             } catch (ex: Exception) {
                 Log.error("Exception in getTileToMoveToThisTurn", ex)
-                return@launchCrashHandling
+                return@run
             } // can't move here
 
-            postCrashHandlingRunnable {
+            launchOnGLThread {
                 try {
                     // Because this is darned concurrent (as it MUST be to avoid ANRs),
                     // there are edge cases where the canReach is true,
@@ -315,7 +316,7 @@ class WorldMapHolder(
     }
 
     private fun addTileOverlaysWithUnitMovement(selectedUnits: List<MapUnit>, tileInfo: TileInfo) {
-        launchCrashHandling("TurnsToGetThere") {
+        Concurrency.run("TurnsToGetThere") {
             /** LibGdx sometimes has these weird errors when you try to edit the UI layout from 2 separate threads.
              * And so, all UI editing will be done on the main thread.
              * The only "heavy lifting" that needs to be done is getting the turns to get there,
@@ -346,12 +347,12 @@ class WorldMapHolder(
                 unitToTurnsToTile[unit] = turnsToGetThere
             }
 
-            postCrashHandlingRunnable {
+            launchOnGLThread {
                 val unitsWhoCanMoveThere = HashMap(unitToTurnsToTile.filter { it.value != 0 })
                 if (unitsWhoCanMoveThere.isEmpty()) { // give the regular tile overlays with no unit movement
                     addTileOverlays(tileInfo)
                     worldScreen.shouldUpdate = true
-                    return@postCrashHandlingRunnable
+                    return@launchOnGLThread
                 }
 
                 val turnsToGetThere = unitsWhoCanMoveThere.values.maxOrNull()!!
@@ -456,12 +457,13 @@ class WorldMapHolder(
         val unitsThatCanMove = dto.unitToTurnsToDestination.keys.filter { it.currentMovement > 0 }
         if (unitsThatCanMove.isEmpty()) moveHereButton.color.a = 0.5f
         else {
-            moveHereButton.onClick(UncivSound.Silent) {
+            moveHereButton.onActivation(UncivSound.Silent) {
                 UncivGame.Current.settings.addCompletedTutorialTask("Move unit")
                 if (unitsThatCanMove.any { it.baseUnit.movesLikeAirUnits() })
                     UncivGame.Current.settings.addCompletedTutorialTask("Move an air unit")
                 moveUnitToTargetTile(unitsThatCanMove, dto.tileInfo)
             }
+            moveHereButton.keyShortcuts.add(KeyCharAndCode.TAB)
         }
         return moveHereButton
     }
@@ -477,12 +479,13 @@ class WorldMapHolder(
         unitIcon.y = buttonSize - unitIcon.height
         swapWithButton.addActor(unitIcon)
 
-        swapWithButton.onClick(UncivSound.Silent) {
+        swapWithButton.onActivation(UncivSound.Silent) {
             UncivGame.Current.settings.addCompletedTutorialTask("Move unit")
             if (dto.unit.baseUnit.movesLikeAirUnits())
                 UncivGame.Current.settings.addCompletedTutorialTask("Move an air unit")
             swapMoveUnitToTargetTile(dto.unit, dto.tileInfo)
         }
+        swapWithButton.keyShortcuts.add(KeyCharAndCode.TAB)
 
         return swapWithButton
     }
@@ -723,31 +726,9 @@ class WorldMapHolder(
         if (selectUnit || forceSelectUnit != null)
             worldScreen.bottomUnitTable.tileSelected(selectedTile!!, forceSelectUnit)
 
-        val originalScrollX = scrollX
-        val originalScrollY = scrollY
-
-        val finalScrollX = tileGroup.x + tileGroup.width / 2
-
-        /** The Y axis of [scrollY] is inverted - when at 0 we're at the top, not bottom - so we invert it back. */
-        val finalScrollY = maxY - (tileGroup.y + tileGroup.width / 2)
-
-        if (finalScrollX == originalScrollX && finalScrollY == originalScrollY) return false
-
-        if (immediately) {
-            scrollX = finalScrollX
-            scrollY = finalScrollY
-            updateVisualScroll()
-        } else {
-            val action = object : FloatAction(0f, 1f, 0.4f) {
-                override fun update(percent: Float) {
-                    scrollX = finalScrollX * percent + originalScrollX * (1 - percent)
-                    scrollY = finalScrollY * percent + originalScrollY * (1 - percent)
-                    updateVisualScroll()
-                }
-            }
-            action.interpolation = Interpolation.sine
-            addAction(action)
-        }
+        // The Y axis of [scrollY] is inverted - when at 0 we're at the top, not bottom - so we invert it back.
+        if (!scrollTo(tileGroup.x + tileGroup.width / 2, maxY - (tileGroup.y + tileGroup.width / 2), immediately))
+            return false
 
         removeAction(blinkAction) // so we don't have multiple blinks at once
         blinkAction = Actions.repeat(3, Actions.sequence(

@@ -81,7 +81,7 @@ class SpecialistAllocationTable(val cityScreen: CityScreen) : Table(BaseScreen.s
             cityInfo.cityStats.update()
             cityScreen.update()
         }
-        if (cityInfo.population.getFreePopulation() == 0 || !UncivGame.Current.worldScreen.isPlayersTurn)
+        if (cityInfo.population.getFreePopulation() == 0 || !UncivGame.Current.worldScreen!!.isPlayersTurn)
             assignButton.clear()
         return assignButton
     }
@@ -98,7 +98,7 @@ class SpecialistAllocationTable(val cityScreen: CityScreen) : Table(BaseScreen.s
         }
 
         if (assignedSpecialists <= 0 || cityInfo.isPuppet) unassignButton.isVisible = false
-        if (!UncivGame.Current.worldScreen.isPlayersTurn) unassignButton.clear()
+        if (!UncivGame.Current.worldScreen!!.isPlayersTurn) unassignButton.clear()
         return unassignButton
     }
 

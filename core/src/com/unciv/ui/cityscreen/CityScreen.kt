@@ -9,29 +9,36 @@ import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.IConstruction
-import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
+import com.unciv.ui.audio.CityAmbiencePlayer
+import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.RecreateOnResize
 import com.unciv.ui.utils.ZoomableScrollPane
-import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.keyShortcuts
+import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.packIfNeeded
 import com.unciv.ui.utils.extensions.toTextButton
+import kotlin.collections.ArrayList
+import com.unciv.ui.worldscreen.WorldScreen
 
 class CityScreen(
     internal val city: CityInfo,
     initSelectedConstruction: IConstruction? = null,
     initSelectedTile: TileInfo? = null
-): BaseScreen() {
+): BaseScreen(), RecreateOnResize {
     companion object {
         /** Distance from stage edges to floating widgets */
         const val posFromEdge = 5f
@@ -41,7 +48,7 @@ class CityScreen(
     }
 
     /** Toggles or adds/removes all state changing buttons */
-    val canChangeState = UncivGame.Current.worldScreen.canChangeState
+    val canChangeState = UncivGame.Current.worldScreen!!.canChangeState
 
     /** Toggle between Constructions and cityInfo (buildings, specialists etc. */
     var showConstructionsTable = true
@@ -75,7 +82,10 @@ class CityScreen(
     /** Button for exiting the city - sits on BOTTOM CENTER */
     private val exitCityButton = "Exit city".toTextButton().apply {
         labelCell.pad(10f)
-        onClick { exit() }
+        keyShortcuts.add(KeyCharAndCode.BACK)
+        onActivation {
+            exit()
+        }
     }
 
     /** Holds City tiles group*/
@@ -105,8 +115,13 @@ class CityScreen(
     // val should be OK as buying tiles is what changes this, and that would re-create the whole CityScreen
     private val nextTileToOwn = city.expansion.chooseNewTileToOwn()
 
+    private val cityAmbiencePlayer = CityAmbiencePlayer(city)
+
     init {
-        onBackButtonClicked { game.resetToWorldScreen() }
+        if (city.isWeLoveTheKingDayActive() && UncivGame.Current.settings.citySoundsVolume > 0) {
+            SoundPlayer.play(UncivSound("WLTK"))
+        }
+
         UncivGame.Current.settings.addCompletedTutorialTask("Enter city screen")
 
         addTiles()
@@ -121,16 +136,8 @@ class CityScreen(
         stage.addActor(exitCityButton)
         update()
 
-        keyPressDispatcher[Input.Keys.LEFT] = { page(-1) }
-        keyPressDispatcher[Input.Keys.RIGHT] = { page(1) }
-        keyPressDispatcher['T'] = {
-            if (selectedTile != null)
-                tileTable.askToBuyTile(selectedTile!!)
-        }
-        keyPressDispatcher['B'] = {
-            if (selectedConstruction is INonPerpetualConstruction)
-                constructionsTable.askToBuyConstruction(selectedConstruction as INonPerpetualConstruction)
-        }
+        globalShortcuts.add(Input.Keys.LEFT) { page(-1) }
+        globalShortcuts.add(Input.Keys.RIGHT) { page(1) }
     }
 
     internal fun update() {
@@ -401,9 +408,11 @@ class CityScreen(
     }
 
     fun exit() {
-        game.resetToWorldScreen()
-        game.worldScreen.mapHolder.setCenterPosition(city.location)
-        game.worldScreen.bottomUnitTable.selectUnit()
+        val newScreen = game.popScreen()
+        if (newScreen is WorldScreen) {
+            newScreen.mapHolder.setCenterPosition(city.location, immediately = true)
+            newScreen.bottomUnitTable.selectUnit()
+        }
     }
 
     fun page(delta: Int) {
@@ -415,12 +424,13 @@ class CityScreen(
         val newCityScreen = CityScreen(civInfo.cities[indexOfNextCity])
         newCityScreen.showConstructionsTable = showConstructionsTable // stay on stats drilldown between cities
         newCityScreen.update()
-        game.setScreen(newCityScreen)
+        game.replaceCurrentScreen(newCityScreen)
     }
 
-    override fun resize(width: Int, height: Int) {
-        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
-            game.setScreen(CityScreen(city))
-        }
+    override fun recreate(): BaseScreen = CityScreen(city)
+
+    override fun dispose() {
+        cityAmbiencePlayer.dispose()
+        super.dispose()
     }
 }

@@ -60,6 +60,43 @@ Each era can have the following attributes:
 | settlerBuildings | List of Strings | defaults to none | Buildings that should automatically be built whenever a city is settled when starting a game in this era |
 | startingObsoleteWonders | List of Strings | defaults to none | Wonders (and technically buildings) that should be impossible to built when starting a game in this era. Used in the base game to remove all wonders older than 2 era's |
 
+## Speeds.json
+
+[Link to original](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Speeds.json)
+
+This file should contain all the speeds you want to use in your mod.
+
+Each speed can have the following attributes:
+
+| Attribute | Type | Optional | Notes |
+| --------- | ---- | -------- | ----- |
+| name | String | required | Name of the speed |
+| modifier | Float (≥0) | defaults to 1.0 | Overall game speed modifier |
+| productionCostModifier | Float (≥0) | defaults to the value of `modifier` | Scales production cost of units and buildings |
+| goldCostModifier | Float (≥0) | defaults to the value of `modifier` | Scales gold costs |
+| scienceCostModifier | Float (≥0) | defaults to the value of `modifier` | Scales science costs |
+| cultureCostModifier | Float (≥0) | defaults to the value of `modifier` | Scales culture costs |
+| faithCostModifier | Float (≥0) | defaults to the value of `modifier` | Scales faith costs |
+| improvementBuildLengthModifier | Float (≥0) | defaults to the value of `modifier` | Scales the time it takes for a worker to build tile improvements |
+| barbarianModifier | Float (≥0) | defaults to the value of `modifier` | Scales the time between barbarian spawns |
+| goldGiftModifier | Float (≥0) | defaults to the value of `modifier` | Scales the influence gained from gifting gold to city-states |
+| cityStateTributeScalingInterval | Float (≥0) | defaults to 6.5 | The number of turns it takes for the amount of gold a player demands from city-states to increase by 5 gold |
+| goldenAgeLengthModifier | Float (≥0) | defaults to the value of `modifier` | Scales the length of golden ages |
+| religiousPressureAdjacentCity | Integer (≥0) | defaults to 6 | Defines how much religious pressure a city exerts on nearby cities |
+| peaceDealDuration | Integer (≥0) | defaults to 10 | The number of turns a peace deal lasts |
+| dealDuration | Integer (≥0) | defaults to 30 | The number of turns a non-peace deal (research agreement, open borders, etc.) lasts |
+| startYear | Float | defaults to -4000 | The start year of the game (negative is BC/BCE) |
+| turns | List of HashMaps | required | The amount of time passed between turns ("yearsPerTurn") and the range of turn numbers ("untilTurn") that this duration applies to |
+
+The below code is an example of a valid "turns" definition and it specifies that the first 50 turns of a game last for 60 years each, then the next 30 turns (and any played after the 80th) last for 40 years each.
+
+```json
+"turns": [
+{"yearsPerTurn": 60, "untilTurn":  50},
+{"yearsPerTurn": 40, "untilTurn":  80}
+]
+```
+
 ## ModOptions.json
 
 <!-- [Link to original](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/ModOptions.json) -->
@@ -185,13 +222,13 @@ Currently the following milestones are supported:
 | --------- | ----------- |
 | Build [building] | Build the building [building] in any city |
 | Anyone build [building] | Anyone must build the building [building] for all players to have this milestone |
-| Add all [comment] in capital | Add all units in the `requiredSpaceshipParts` field of this victory to the capital | 
+| Add all [comment] in capital | Add all units in the `requiredSpaceshipParts` field of this victory to the capital |
 | Destroy all players | You must be the only major civilization with any cities left |
 | Capture all capitals | Capture all the original capitals of major civilizations in the game |
 | Complete [amount] Policy branches | Fully complete at least [amount] policy branches |
 | Win diplomatic vote | At any point in the game win a diplomatic vote (UN). You may lose afterwards and still retain this milestone |
 | Become the world religion | Have your religion be the majority religion in a majority of cities of all major civs |
-| Have highest score after max turns | Basically time victory. Enables the 'max turn' slider and calculates score when that amount is reached |  
+| Have highest score after max turns | Basically time victory. Enables the 'max turn' slider and calculates score when that amount is reached |
 
 
 ## Civilopedia text

@@ -188,7 +188,7 @@ class CityOverviewTab(
         for (city in cityList) {
             val button = city.name.toTextButton()
             button.onClick {
-                overviewScreen.game.setScreen(CityScreen(city))
+                overviewScreen.game.pushScreen(CityScreen(city))
             }
             cityInfoTableDetails.add(button).left().fillX()
 

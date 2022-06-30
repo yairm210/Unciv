@@ -62,8 +62,11 @@ class CivilizationInfo {
     /** Returns an instance of WorkerAutomation valid for the duration of the current turn
      * This instance carries cached data common for all Workers of this civ */
     fun getWorkerAutomation(): WorkerAutomation {
-        val currentTurn = if (UncivGame.Current.isInitialized && UncivGame.Current.isGameInfoInitialized())
-                UncivGame.Current.gameInfo.turns else 0
+        val currentTurn = if (UncivGame.Current.isInitialized && UncivGame.Current.gameInfo != null) {
+            UncivGame.Current.gameInfo!!.turns
+        } else {
+            0
+        }
         if (workerAutomationCache == null || workerAutomationCache!!.cachedForTurn != currentTurn)
             workerAutomationCache = WorkerAutomation(this, currentTurn)
         return workerAutomationCache!!
@@ -155,10 +158,16 @@ class CivilizationInfo {
     var ruinsManager = RuinsManager()
     var diplomacy = HashMap<String, DiplomacyManager>()
     var proximity = HashMap<String, Proximity>()
-    var notifications = ArrayList<Notification>()
     val popupAlerts = ArrayList<PopupAlert>()
     private var allyCivName: String? = null
     var naturalWonders = ArrayList<String>()
+
+    var notifications = ArrayList<Notification>()
+
+    var notificationsLog = ArrayList<NotificationsLog>()
+    class NotificationsLog(val turn: Int = 0) {
+        var notifications = ArrayList<Notification>()
+    }
 
     /** for trades here, ourOffers is the current civ's offers, and theirOffers is what the requesting civ offers  */
     val tradeRequests = ArrayList<TradeRequest>()
@@ -264,6 +273,7 @@ class CivilizationInfo {
         toReturn.exploredTiles.addAll(gameInfo.tileMap.values.asSequence().map { it.position }.filter { it in exploredTiles })
         toReturn.lastSeenImprovement.putAll(lastSeenImprovement)
         toReturn.notifications.addAll(notifications)
+        toReturn.notificationsLog.addAll(notificationsLog)
         toReturn.citiesCreated = citiesCreated
         toReturn.popupAlerts.addAll(popupAlerts)
         toReturn.tradeRequests.addAll(tradeRequests)
@@ -770,7 +780,7 @@ class CivilizationInfo {
             .sumOf { city -> city.cityConstructions.builtBuildings
                 .filter { gameInfo.ruleSet.buildings[it]!!.isWonder }.size
             }.toDouble()
-        scoreBreakdown["Techs"] = tech.getNumberOfTechsResearched() * 4.toDouble()
+        scoreBreakdown["Technologies"] = tech.getNumberOfTechsResearched() * 4.toDouble()
         scoreBreakdown["Future Tech"] = tech.repeatingTechsResearched * 10.toDouble()
 
         return scoreBreakdown
@@ -909,8 +919,18 @@ class CivilizationInfo {
     }
 
     fun endTurn() {
-        notifications.clear()
+        val notificationsThisTurn = NotificationsLog(gameInfo.turns)
+        notificationsThisTurn.notifications.addAll(notifications)
 
+        while (notificationsLog.size >= UncivGame.Current.settings.notificationsLogMaxTurns) {
+            notificationsLog.removeFirst()
+        }
+
+        if (notificationsThisTurn.notifications.isNotEmpty())
+            notificationsLog.add(notificationsThisTurn)
+
+        notifications.clear()
+        updateStatsForNextTurn()
         val nextTurnStats = statsForNextTurn
 
         policies.endTurn(nextTurnStats.culture.toInt())
@@ -1022,7 +1042,7 @@ class CivilizationInfo {
     fun removeFlag(flag: String) = flagsCountdown.remove(flag)
     fun hasFlag(flag: String) = flagsCountdown.contains(flag)
 
-    fun getTurnsBetweenDiplomaticVotes() = (15 * gameInfo.gameParameters.gameSpeed.modifier).toInt() // Dunno the exact calculation, hidden in Lua files
+    fun getTurnsBetweenDiplomaticVotes() = (15 * gameInfo.speed.modifier).toInt() // Dunno the exact calculation, hidden in Lua files
 
     fun getTurnsTillNextDiplomaticVote() = flagsCountdown[CivFlags.TurnsTillNextDiplomaticVote.name]
 
@@ -1112,7 +1132,7 @@ class CivilizationInfo {
     }
 
     private fun getTurnsBeforeRevolt() =
-        ((4 + Random().nextInt(3)) * max(gameInfo.gameParameters.gameSpeed.modifier, 1f)).toInt()
+        ((4 + Random().nextInt(3)) * max(gameInfo.speed.modifier, 1f)).toInt()
 
     /** Modify gold by a given amount making sure it does neither overflow nor underflow.
      * @param delta the amount to add (can be negative)
@@ -1262,7 +1282,7 @@ class CivilizationInfo {
     fun getResearchAgreementCost(): Int {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
         return (
-            getEra().researchAgreementCost * gameInfo.gameParameters.gameSpeed.modifier
+            getEra().researchAgreementCost * gameInfo.speed.goldCostModifier
         ).toInt()
     }
 
@@ -1364,7 +1384,7 @@ class CivilizationInfo {
 
     fun receiveGoldGift(donorCiv: CivilizationInfo, giftAmount: Int) =
         cityStateFunctions.receiveGoldGift(donorCiv, giftAmount)
-    fun turnsForGreatPersonFromCityState(): Int = ((37 + Random().nextInt(7)) * gameInfo.gameParameters.gameSpeed.modifier).toInt()
+    fun turnsForGreatPersonFromCityState(): Int = ((37 + Random().nextInt(7)) * gameInfo.speed.modifier).toInt()
 
     fun getProtectorCivs() = cityStateFunctions.getProtectorCivs()
     fun addProtectorCiv(otherCiv: CivilizationInfo) = cityStateFunctions.addProtectorCiv(otherCiv)

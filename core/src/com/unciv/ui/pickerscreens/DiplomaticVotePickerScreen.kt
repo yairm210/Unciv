@@ -30,7 +30,7 @@ class DiplomaticVotePickerScreen(private val votingCiv: CivilizationInfo) : Pick
 
         rightSideButton.onClick(UncivSound.Chimes) {
             votingCiv.diplomaticVoteForCiv(chosenCiv!!)
-            UncivGame.Current.resetToWorldScreen()
+            UncivGame.Current.popScreen()
         }
 
     }

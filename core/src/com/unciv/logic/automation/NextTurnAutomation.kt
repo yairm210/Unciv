@@ -299,8 +299,6 @@ object NextTurnAutomation {
 
     private fun valueCityStateAlliance(civInfo: CivilizationInfo, cityState: CivilizationInfo): Int {
         var value = 0
-        if (!cityState.isAlive() || cityState.cities.isEmpty() || civInfo.cities.isEmpty())
-            return value
 
         if (civInfo.wantsToFocusOn(Victory.Focus.Culture) && cityState.canGiveStat(Stat.Culture)) {
             value += 10
@@ -310,17 +308,17 @@ object NextTurnAutomation {
             value += 10
         }
         else if (civInfo.wantsToFocusOn(Victory.Focus.Military)) {
-            // Don't ally close city-states, conquer them instead
-            val distance = getMinDistanceBetweenCities(civInfo, cityState)
-            if (distance < 20)
-                value -= (20 - distance) / 4
+            if (!cityState.isAlive())
+                value -= 5
+            else {
+                // Don't ally close city-states, conquer them instead
+                val distance = getMinDistanceBetweenCities(civInfo, cityState)
+                if (distance < 20)
+                    value -= (20 - distance) / 4
+            }
         }
         else if (civInfo.wantsToFocusOn(Victory.Focus.CityStates)) {
             value += 5  // Generally be friendly
-        }
-        if (civInfo.gold < 100) {
-            // Consider bullying for cash
-            value -= 5
         }
         if (civInfo.getHappiness() < 5 && cityState.canGiveStat(Stat.Happiness)) {
             value += 10 - civInfo.getHappiness()
@@ -328,6 +326,15 @@ object NextTurnAutomation {
         if (civInfo.getHappiness() > 5 && cityState.canGiveStat(Stat.Food)) {
             value += 5
         }
+
+        if (!cityState.isAlive() || cityState.cities.isEmpty() || civInfo.cities.isEmpty())
+            return value
+
+        if (civInfo.gold < 100) {
+            // Consider bullying for cash
+            value -= 5
+        }
+
         if (cityState.getAllyCiv() != null && cityState.getAllyCiv() != civInfo.civName) {
             // easier not to compete if a third civ has this locked down
             val thirdCivInfluence = cityState.getDiplomacyManager(cityState.getAllyCiv()!!).getInfluence().toInt()
@@ -691,7 +698,7 @@ object NextTurnAutomation {
     }
 
     private fun motivationToAttack(civInfo: CivilizationInfo, otherCiv: CivilizationInfo): Int {
-        if(civInfo.cities.isEmpty() || otherCiv.cities.isEmpty()) return 0
+        val closestCities = getClosestCities(civInfo, otherCiv) ?: return 0
         val baseForce = 30f
 
         val ourCombatStrength = civInfo.getStatForRanking(RankingType.Force).toFloat() + baseForce
@@ -704,7 +711,6 @@ object NextTurnAutomation {
 
         if (theirCombatStrength > ourCombatStrength) return 0
 
-        val closestCities = getClosestCities(civInfo, otherCiv)
         val ourCity = closestCities.city1
         val theirCity = closestCities.city2
 
@@ -790,6 +796,8 @@ object NextTurnAutomation {
                 .filter { !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedPeace) }
                 // Don't allow AIs to offer peace to city states allied with their enemies
                 .filterNot { it.isCityState() && it.getAllyCiv() != null && civInfo.isAtWarWith(civInfo.gameInfo.getCivilization(it.getAllyCiv()!!)) }
+                // ignore civs that we have already offered peace this turn as a counteroffer to another civ's peace offer
+                .filter { it.tradeRequests.none { tradeRequest -> tradeRequest.requestingCiv == civInfo.civName && tradeRequest.trade.isPeaceTreaty() } }
 
         for (enemy in enemiesCiv) {
             val motivationToAttack = motivationToAttack(civInfo, enemy)
@@ -878,7 +886,7 @@ object NextTurnAutomation {
                     currentConstruction is BaseUnit && currentConstruction.hasUnique(UniqueType.FoundCity)
                 }) {
 
-            val bestCity = civInfo.cities.maxByOrNull { it.cityStats.currentCityStats.production }!!
+            val bestCity = civInfo.cities.filterNot { it.isPuppet }.maxByOrNull { it.cityStats.currentCityStats.production }!!
             if (bestCity.cityConstructions.builtBuildings.size > 1) // 2 buildings or more, otherwise focus on self first
                 bestCity.cityConstructions.currentConstructionFromQueue = settlerUnits.minByOrNull { it.cost }!!.name
         }
@@ -934,13 +942,41 @@ object NextTurnAutomation {
         diplomacyManager.removeFlag(DiplomacyFlags.SettledCitiesNearUs)
     }
 
+    /** Handle decision making after city conquest, namely whether the AI should liberate, puppet,
+     * or raze a city */
+    fun onConquerCity(civInfo: CivilizationInfo, city: CityInfo) {
+        if (!city.hasDiplomaticMarriage()) {
+            val foundingCiv = civInfo.gameInfo.getCivilization(city.foundingCiv)
+            var valueAlliance = valueCityStateAlliance(civInfo, foundingCiv)
+            if (civInfo.getHappiness() < 0)
+                valueAlliance -= civInfo.getHappiness() // put extra weight on liberating if unhappy
+            if (foundingCiv.isCityState() && city.civInfo != civInfo && foundingCiv != civInfo
+                    && !civInfo.isAtWarWith(foundingCiv)
+                    && valueAlliance > 0) {
+                city.liberateCity(civInfo)
+                return
+            }
+        }
+
+        city.puppetCity(civInfo)
+        if ((city.population.population < 4 || civInfo.isCityState())
+                && city.foundingCiv != civInfo.civName && city.canBeDestroyed(justCaptured = true)) {
+            // raze if attacker is a city state
+            city.annexCity()
+            city.isBeingRazed = true
+        }
+    }
+
     fun getMinDistanceBetweenCities(civ1: CivilizationInfo, civ2: CivilizationInfo): Int {
-        return getClosestCities(civ1, civ2).aerialDistance
+        return getClosestCities(civ1, civ2)?.aerialDistance ?: Int.MAX_VALUE
     }
 
     data class CityDistance(val city1: CityInfo, val city2: CityInfo, val aerialDistance: Int)
 
-    fun getClosestCities(civ1: CivilizationInfo, civ2: CivilizationInfo): CityDistance {
+    fun getClosestCities(civ1: CivilizationInfo, civ2: CivilizationInfo): CityDistance? {
+        if (civ1.cities.isEmpty() || civ2.cities.isEmpty())
+            return null
+
         val cityDistances = arrayListOf<CityDistance>()
         for (civ1city in civ1.cities)
             for (civ2city in civ2.cities)

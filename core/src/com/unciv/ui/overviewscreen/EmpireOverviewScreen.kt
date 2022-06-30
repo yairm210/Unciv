@@ -5,14 +5,16 @@ import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.ui.overviewscreen.EmpireOverviewTab.EmpireOverviewTabPersistableData
 import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.utils.RecreateOnResize
 import com.unciv.ui.utils.TabbedPager
 
 class EmpireOverviewScreen(
     private var viewingPlayer: CivilizationInfo,
     defaultPage: String = "",
     selection: String = ""
-) : BaseScreen() {
+) : BaseScreen(), RecreateOnResize {
     // 50 normal button height + 2*10 topTable padding + 2 Separator + 2*5 centerTable padding
     // Since a resize recreates this screen this should be fine as a val
     internal val centerAreaHeight = stage.height - 82f
@@ -44,17 +46,15 @@ class EmpireOverviewScreen(
             else game.settings.lastOverviewPage
         val iconSize = Constants.defaultFontSize.toFloat()
 
-        onBackButtonClicked { game.resetToWorldScreen() }
+        globalShortcuts.add(KeyCharAndCode.BACK) { game.popScreen() }
 
         tabbedPager = TabbedPager(
             stage.width, stage.width,
             centerAreaHeight, centerAreaHeight,
             separatorColor = Color.WHITE,
-            keyPressDispatcher = keyPressDispatcher,
             capacity = EmpireOverviewCategories.values().size)
 
-        tabbedPager.bindArrowKeys()
-        tabbedPager.addClosePage { game.resetToWorldScreen() }
+        tabbedPager.addClosePage { game.popScreen() }
 
         for (category in EmpireOverviewCategories.values()) {
             val tabState = category.stateTester(viewingPlayer)
@@ -81,12 +81,9 @@ class EmpireOverviewScreen(
         stage.addActor(tabbedPager)
    }
 
-    override fun resize(width: Int, height: Int) {
-        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
-            updatePersistState(pageObjects)
-            game.setScreen(EmpireOverviewScreen(viewingPlayer, game.settings.lastOverviewPage))
-            dispose()
-        }
+    override fun recreate(): BaseScreen {
+        updatePersistState(pageObjects)
+        return EmpireOverviewScreen(viewingPlayer, game.settings.lastOverviewPage)
     }
 
     fun resizePage(tab: EmpireOverviewTab) {

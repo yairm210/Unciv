@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
+import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.tr
@@ -32,16 +33,14 @@ fun displayTab(
     optionsPopup.addCheckbox(this, "Show unit movement arrows", settings.showUnitMovements, true) { settings.showUnitMovements = it }
     optionsPopup.addCheckbox(this, "Show tile yields", settings.showTileYields, true) { settings.showTileYields = it } // JN
     optionsPopup.addCheckbox(this, "Show worked tiles", settings.showWorkedTiles, true) { settings.showWorkedTiles = it }
-    optionsPopup.addCheckbox(this, "Show resources and improvements", settings.showResourcesAndImprovements, true) {
-        settings.showResourcesAndImprovements = it
-    }
+    optionsPopup.addCheckbox(this, "Show resources and improvements", settings.showResourcesAndImprovements, true) { settings.showResourcesAndImprovements = it }
     optionsPopup.addCheckbox(this, "Show tutorials", settings.showTutorials, true) { settings.showTutorials = it }
     optionsPopup.addCheckbox(this, "Show pixel units", settings.showPixelUnits, true) { settings.showPixelUnits = it }
     optionsPopup.addCheckbox(this, "Show pixel improvements", settings.showPixelImprovements, true) { settings.showPixelImprovements = it }
     optionsPopup.addCheckbox(this, "Experimental Demographics scoreboard", settings.useDemographics, true) { settings.useDemographics = it }
     optionsPopup.addCheckbox(this, "Show zoom buttons in world screen", settings.showZoomButtons, true) { settings.showZoomButtons = it }
 
-    addMinimapSizeSlider(this, settings, optionsPopup.screen, optionsPopup.selectBoxMinWidth)
+    addMinimapSizeSlider(this, settings, optionsPopup.selectBoxMinWidth)
 
     addResolutionSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onResolutionChange)
 
@@ -62,7 +61,7 @@ fun displayTab(
 
 }
 
-private fun addMinimapSizeSlider(table: Table, settings: GameSettings, screen: BaseScreen, selectBoxMinWidth: Float) {
+private fun addMinimapSizeSlider(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
     table.add("Show minimap".toLabel()).left().fillX()
 
     // The meaning of the values needs a formula to be synchronized between here and
@@ -88,8 +87,9 @@ private fun addMinimapSizeSlider(table: Table, settings: GameSettings, screen: B
             settings.minimapSize = size
         }
         settings.save()
-        if (screen is WorldScreen)
-            screen.shouldUpdate = true
+        val worldScreen = UncivGame.Current.getWorldScreenIfActive()
+        if (worldScreen != null)
+            worldScreen.shouldUpdate = true
     }
     table.add(minimapSlider).minWidth(selectBoxMinWidth).pad(10f).row()
 }

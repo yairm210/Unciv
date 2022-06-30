@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.UncivTextField
 import com.unciv.ui.utils.extensions.onChange
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.surroundWithCircle
@@ -60,7 +61,7 @@ class AskNumberPopup(
         wrapper.add(label.toLabel())
         add(wrapper).colspan(2).row()
 
-        val nameField = TextField(defaultValue, skin)
+        val nameField = UncivTextField.create(label, defaultValue)
         nameField.textFieldFilter = TextField.TextFieldFilter { _, char -> char.isDigit() || char == '-' }
 
         fun isValidInt(input: String): Boolean {
@@ -116,6 +117,7 @@ class AskNumberPopup(
         val errorLabel = errorText.toLabel()
         errorLabel.color = Color.RED
 
+        addCloseButton()
         addOKButton(
             validate = {
                 val errorFound = !isValidInt(nameField.text) || !validate(nameField.text.toInt())
@@ -125,7 +127,6 @@ class AskNumberPopup(
         ) {
             actionOnOk(nameField.text.toInt())
         }
-        addCloseButton()
         equalizeLastTwoButtonWidths()
 
         keyboardFocus = nameField

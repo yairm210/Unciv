@@ -4,7 +4,11 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.ui.Button
+import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.MainMenuScreen
 import com.unciv.json.fromJsonFile
@@ -13,20 +17,34 @@ import com.unciv.models.ruleset.ModOptions
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.crashhandling.launchCrashHandling
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.pickerscreens.ModManagementOptions.SortType
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.popup.YesNoPopup
-import com.unciv.ui.utils.*
-import com.unciv.ui.utils.extensions.*
+import com.unciv.ui.utils.AutoScrollPane
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.ExpanderTab
+import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.RecreateOnResize
+import com.unciv.ui.utils.UncivTextField
+import com.unciv.ui.utils.WrappableLabel
 import com.unciv.ui.utils.extensions.UncivDateFormat.formatDate
 import com.unciv.ui.utils.extensions.UncivDateFormat.parseDate
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.enable
+import com.unciv.ui.utils.extensions.isEnabled
+import com.unciv.ui.utils.extensions.keyShortcuts
+import com.unciv.ui.utils.extensions.onActivation
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toCheckBox
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
+import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.launchOnGLThread
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
-import java.util.*
 import kotlin.math.max
 
 /**
@@ -38,7 +56,7 @@ import kotlin.math.max
 class ModManagementScreen(
     previousInstalledMods: HashMap<String, ModUIData>? = null,
     previousOnlineMods: HashMap<String, ModUIData>? = null
-): PickerScreen(disableScroll = true) {
+): PickerScreen(disableScroll = true), RecreateOnResize {
 
     private val modTable = Table().apply { defaults().pad(10f) }
     private val scrollInstalledMods = AutoScrollPane(modTable)
@@ -81,16 +99,14 @@ class ModManagementScreen(
 
     init {
         //setDefaultCloseAction(screen) // this would initialize the new MainMenuScreen immediately
-        val closeAction = {
+        closeButton.onActivation {
             val tileSets = ImageGetter.getAvailableTilesets()
             if (game.settings.tileSet !in tileSets) {
                 game.settings.tileSet = tileSets.first()
             }
-            game.setScreen(MainMenuScreen())
-            dispose()
+            game.popScreen()
         }
-        closeButton.onClick(closeAction)
-        onBackButtonClicked(closeAction)
+        closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
 
         val labelWidth = max(stage.width / 2f - 60f,60f)
         modDescriptionLabel = WrappableLabel("", labelWidth)
@@ -109,8 +125,6 @@ class ModManagementScreen(
 
         if (isNarrowerThan4to3()) initPortrait()
         else initLandscape()
-
-        keyPressDispatcher[KeyCharAndCode.RETURN] = optionsManager.filterAction
 
         if (onlineModInfo.isEmpty())
             reloadOnlineMods()
@@ -191,23 +205,23 @@ class ModManagementScreen(
      *  calls itself for the next page of search results
      */
     private fun tryDownloadPage(pageNum: Int) {
-        runningSearchJob = launchCrashHandling("GitHubSearch") {
+        runningSearchJob = Concurrency.run("GitHubSearch") {
             val repoSearch: Github.RepoSearch
             try {
                 repoSearch = Github.tryGetGithubReposWithTopic(amountPerPage, pageNum)!!
             } catch (ex: Exception) {
-                postCrashHandlingRunnable {
+                launchOnGLThread {
                     ToastPopup("Could not download mod list", this@ModManagementScreen)
                 }
                 runningSearchJob = null
-                return@launchCrashHandling
+                return@run
             }
 
             if (!isActive) {
-                return@launchCrashHandling
+                return@run
             }
 
-            postCrashHandlingRunnable { addModInfoFromRepoSearch(repoSearch, pageNum) }
+            launchOnGLThread { addModInfoFromRepoSearch(repoSearch, pageNum) }
             runningSearchJob = null
         }
     }
@@ -356,13 +370,13 @@ class ModManagementScreen(
         downloadButton.onClick {
             val popup = Popup(this)
             popup.addGoodSizedLabel("Please enter the mod repository -or- archive zip url:").row()
-            val textArea = TextArea("https://github.com/...", skin)
-            popup.add(textArea).width(stage.width / 2).row()
+            val textField = UncivTextField.create("")
+            popup.add(textField).width(stage.width / 2).row()
             val actualDownloadButton = "Download".toTextButton()
             actualDownloadButton.onClick {
                 actualDownloadButton.setText("Downloading...".tr())
                 actualDownloadButton.disable()
-                downloadMod(Github.Repo().parseUrl(textArea.text)) { popup.close() }
+                downloadMod(Github.Repo().parseUrl(textField.text)) { popup.close() }
             }
             popup.add(actualDownloadButton).row()
             popup.addCloseButton()
@@ -395,13 +409,13 @@ class ModManagementScreen(
 
     /** Download and install a mod in the background, called both from the right-bottom button and the URL entry popup */
     private fun downloadMod(repo: Github.Repo, postAction: () -> Unit = {}) {
-        launchCrashHandling("DownloadMod") { // to avoid ANRs - we've learnt our lesson from previous download-related actions
+        Concurrency.run("DownloadMod") { // to avoid ANRs - we've learnt our lesson from previous download-related actions
             try {
                 val modFolder = Github.downloadAndExtract(repo.html_url, repo.default_branch,
                     Gdx.files.local("mods"))
                     ?: throw Exception()    // downloadAndExtract returns null for 404 errors and the like -> display something!
                 Github.rewriteModOptions(repo, modFolder)
-                postCrashHandlingRunnable {
+                launchOnGLThread {
                     ToastPopup("[${repo.name}] Downloaded!", this@ModManagementScreen)
                     RulesetCache.loadRulesets()
                     RulesetCache[repo.name]?.let {
@@ -413,7 +427,7 @@ class ModManagementScreen(
                     postAction()
                 }
             } catch (ex: Exception) {
-                postCrashHandlingRunnable {
+                launchOnGLThread {
                     ToastPopup("Could not download [${repo.name}]", this@ModManagementScreen)
                     postAction()
                 }
@@ -515,23 +529,24 @@ class ModManagementScreen(
     private fun installedButtonAction(mod: ModUIData) {
         syncInstalledSelected(mod.name, mod.button)
         refreshInstalledModActions(mod.ruleset!!)
-        rightSideButton.setText("Delete [${mod.name}]".tr())
+        val deleteText = "Delete [${mod.name}]"
+        rightSideButton.setText(deleteText.tr())
         // Don't let the player think he can delete Vanilla and G&K rulesets
         rightSideButton.isEnabled = mod.ruleset.folderLocation!=null
         showModDescription(mod.name)
         rightSideButton.clearListeners()
         rightSideButton.onClick {
             rightSideButton.isEnabled = false
-            YesNoPopup(
-                question = "Are you SURE you want to delete this mod?",
-                action = {
-                    deleteMod(mod.ruleset)
-                    modActionTable.clear()
-                    rightSideButton.setText("[${mod.name}] was deleted.".tr())
-                },
+            ConfirmPopup(
                 screen = this,
+                question = "Are you SURE you want to delete this mod?",
+                confirmText = deleteText,
                 restoreDefault = { rightSideButton.isEnabled = true }
-            ).open()
+            ) {
+                deleteMod(mod.ruleset)
+                modActionTable.clear()
+                rightSideButton.setText("[${mod.name}] was deleted.".tr())
+            }.open()
         }
     }
 
@@ -578,12 +593,7 @@ class ModManagementScreen(
         modDescriptionLabel.setText(onlineModDescription + separator + installedModDescription)
     }
 
-    override fun resize(width: Int, height: Int) {
-        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
-            game.setScreen(ModManagementScreen(installedModInfo, onlineModInfo))
-            dispose()  // interrupt background loader - sorry, the resized new screen won't continue
-        }
-    }
+    override fun recreate(): BaseScreen = ModManagementScreen(installedModInfo, onlineModInfo)
 
     companion object {
         val modsToHideAsUrl by lazy {

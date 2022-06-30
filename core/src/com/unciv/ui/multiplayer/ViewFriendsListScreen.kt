@@ -4,14 +4,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.Popup
-import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.enable
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toTextButton
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
-class ViewFriendsListScreen(previousScreen: BaseScreen) : PickerScreen() {
+class ViewFriendsListScreen : PickerScreen() {
     private val rightSideTable = Table()
     private val leftSideTable = Table()
     private var friendsTable = Table()
@@ -25,7 +24,7 @@ class ViewFriendsListScreen(previousScreen: BaseScreen) : PickerScreen() {
     private lateinit var selectedFriend: FriendList.Friend
 
     init {
-        setDefaultCloseAction(previousScreen)
+        setDefaultCloseAction()
         rightSideButton.remove()
 
         //Help Button Setup
@@ -53,12 +52,12 @@ class ViewFriendsListScreen(previousScreen: BaseScreen) : PickerScreen() {
         rightSideTable.defaults().pad(20.0f)
 
         addFriendButton.onClick {
-            game.setScreen(AddFriendScreen(this))
+            game.pushScreen(AddFriendScreen())
         }
         rightSideTable.add(addFriendButton).padBottom(10f).row()
 
         editFriendButton.onClick {
-            game.setScreen(EditFriendScreen(selectedFriend,this))
+            game.pushScreen(EditFriendScreen(selectedFriend))
             editFriendButton.disable()
         }
         rightSideTable.add(editFriendButton).padBottom(30f).row()

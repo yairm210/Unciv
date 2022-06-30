@@ -1,3 +1,90 @@
+## 4.1.14
+
+By OptimizedForDensity:
+- Make mounted vs city penalties attack-only
+- Logistics allows move after attack
+- Fix crash when melee unit captures civilian then tries to attack it
+- Allow modded harbor-type buildings to connect cities
+- Fix "Religions to be founded" count
+
+By Azzurite:
+- Save uncaught exception to file
+
+Better exploring AI for ruins - By Skekdog
+
+By alexban011:
+- added gameParameter option to disable start bias
+- Added option to select font size
+- Add Notifications Log
+
+## 4.1.13
+
+By Azzurite:
+- Make popups and text fields nicer to interact with on Android
+
+Rework Policy and Diplomacy buttons  - By SomeTroglodyte
+
+By OptimizedForDensity:
+- Fix cases where AI GP get stuck building improvements
+- Fix disappearing terrain when switching between mods
+- Fix policies not contributing stats from city-states
+- AI missionaries avoid cities with inquisitors
+
+By alexban011:
+- CityScreen plays sound when opened
+- Religion no longer "majority" when it's exactly 50% of the cities
+
+## 4.1.12
+
+By Azzurite:
+- Many, many UX improvements!
+- Fixed memory leaks
+
+By OptimizedForDensity:
+- Moddable game speeds
+- Population reassignment bug fixes
+
+Civilopedia tweaks - By SomeTroglodyte
+
+Translation improvements - By J0anJosep
+
+Trigger Time Victory only if enabled  - By JackRainy
+
+Fix crash for "no strategic resource" mods - By Skekdog
+
+Shortcut fixes and additions - By doublep
+
+Maintain Fortify bonus after Fortify until Healed  - By itanasi
+
+## 4.1.11
+
+AI considers liberating city-states from other civilizations  - By OptimizedForDensity
+
+By Azzurite:
+- Fix OutOfMemory error when loading game state after already having a game loaded
+- Fix unit overlay not being closed when performing an action with a new unit
+- Fix option change not reloading main menu properly
+- Fix cutout options crash
+
+Better key handling  - By doublep
+
+## 4.1.10
+
+Added cutout support - By alexban011
+
+By OptimizedForDensity:
+- Improvements to AI military unit usage
+- Fix spectator's fog of war toggle
+- Stop AI puppets from building settlers and military
+
+By Azzurite:
+- Fix scroll to wonder in the map editor
+- Fix unit being captured two times
+- Fix NPE in Nation selection & editor mods popup
+- Add more extensive multiplayer documentation
+
+UI: Do not enter city while performing air strikes - By JackRainy
+
 ## 4.1.9
 
 Peace cooldown with city-states

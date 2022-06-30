@@ -51,7 +51,7 @@ private fun Duration.toParts(): SortedMap<ChronoUnit, Long> {
 fun Duration.formatShort(): String {
     val parts = toParts()
     for ((unit, part) in parts) {
-        if (part > 2) return "[${part}] $unit".tr()
+        if (part > 0) return "[${part}] $unit".tr()
     }
     return "[${parts[ChronoUnit.SECONDS]}] ${ChronoUnit.SECONDS}".tr()
 }

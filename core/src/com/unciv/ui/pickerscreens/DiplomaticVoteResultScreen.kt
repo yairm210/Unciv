@@ -25,7 +25,7 @@ class DiplomaticVoteResultScreen(val votesCast: HashMap<String, String>, val vie
 
         rightSideButton.onClick(UncivSound.Click) {
             viewingCiv.addFlag(CivFlags.ShowDiplomaticVotingResults.name, -1)
-            UncivGame.Current.resetToWorldScreen()
+            UncivGame.Current.popScreen()
         }
         rightSideButton.enable()
         rightSideButton.setText("Continue".tr())

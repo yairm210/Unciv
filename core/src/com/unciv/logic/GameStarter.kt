@@ -22,8 +22,10 @@ import kotlin.collections.HashSet
 object GameStarter {
     // temporary instrumentation while tuning/debugging
     private const val consoleTimings = false
+    private lateinit var gameSetupInfo: GameSetupInfo
 
     fun startNewGame(gameSetupInfo: GameSetupInfo): GameInfo {
+        this.gameSetupInfo = gameSetupInfo
         if (consoleTimings)
             debug("\nGameStarter run with parameters %s, map %s", gameSetupInfo.gameParameters, gameSetupInfo.mapParameters)
 
@@ -46,13 +48,18 @@ object GameStarter {
         val ruleset = RulesetCache.getComplexRuleset(gameInfo.gameParameters)
         val mapGen = MapGenerator(ruleset)
 
+        // Make sure that a valid game speed is loaded (catches a base ruleset not using the default game speed)
+        if (!ruleset.speeds.containsKey(gameSetupInfo.gameParameters.speed)) {
+            gameSetupInfo.gameParameters.speed = ruleset.speeds.keys.first()
+        }
+
         if (gameSetupInfo.mapParameters.name != "") runAndMeasure("loadMap") {
             tileMap = MapSaver.loadMap(gameSetupInfo.mapFile!!)
             // Don't override the map parameters - this can include if we world wrap or not!
         } else runAndMeasure("generateMap") {
             // The mapgen needs to know what civs are in the game to generate regions, starts and resources
             addCivilizations(gameSetupInfo.gameParameters, gameInfo, ruleset, existingMap = false)
-            tileMap = mapGen.generateMap(gameSetupInfo.mapParameters, gameInfo.civilizations)
+            tileMap = mapGen.generateMap(gameSetupInfo.mapParameters, gameSetupInfo.gameParameters, gameInfo.civilizations)
             tileMap.mapParameters = gameSetupInfo.mapParameters
             // Now forget them for a moment! MapGen can silently fail to place some city states, so then we'll use the old fallback method to place those.
             gameInfo.civilizations.clear()
@@ -202,8 +209,8 @@ object GameStarter {
         val startingEra = gameInfo.gameParameters.startingEra
         val era = ruleSet.eras[startingEra]!!
         for (civInfo in gameInfo.civilizations.filter { !it.isBarbarian() }) {
-            civInfo.addGold((era.startingGold * gameInfo.gameParameters.gameSpeed.modifier).toInt())
-            civInfo.policies.addCulture((era.startingCulture * gameInfo.gameParameters.gameSpeed.modifier).toInt())
+            civInfo.addGold((era.startingGold * gameInfo.speed.goldCostModifier).toInt())
+            civInfo.policies.addCulture((era.startingCulture * gameInfo.speed.cultureCostModifier).toInt())
         }
     }
 
@@ -410,9 +417,9 @@ object GameStarter {
             .sortedBy { civ ->
             when {
                 civ.civName in tileMap.startingLocationsByNation -> 1 // harshest requirements
-                civ.nation.startBias.any { it in tileMap.naturalWonders } -> 2
-                civ.nation.startBias.contains(Constants.tundra) -> 3    // Tundra starts are hard to find, so let's do them first
-                civ.nation.startBias.isNotEmpty() -> 4 // less harsh
+                civ.nation.startBias.any { it in tileMap.naturalWonders } && !gameSetupInfo.gameParameters.noStartBias -> 2
+                civ.nation.startBias.contains(Constants.tundra) && !gameSetupInfo.gameParameters.noStartBias -> 3    // Tundra starts are hard to find, so let's do them first
+                civ.nation.startBias.isNotEmpty() && !gameSetupInfo.gameParameters.noStartBias -> 4 // less harsh
                 else -> 5  // no requirements
             }
         }
@@ -452,6 +459,9 @@ object GameStarter {
         freeTiles: MutableList<TileInfo>,
         startScores: HashMap<TileInfo, Float>
     ): TileInfo {
+        if (gameSetupInfo.gameParameters.noStartBias) {
+            return freeTiles.random()
+        }
         if (civ.nation.startBias.any { it in tileMap.naturalWonders }) {
             // startPref wants Natural wonder neighbor: Rare and very likely to be outside getDistanceFromEdge
             val wonderNeighbor = tileMap.values.asSequence()
@@ -480,6 +490,6 @@ object GameStarter {
                 }
             }
         }
-        return preferredTiles.lastOrNull() ?: freeTiles.last()
+        return preferredTiles.randomOrNull() ?: freeTiles.random()
     }
 }

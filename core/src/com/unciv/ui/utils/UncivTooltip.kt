@@ -181,7 +181,7 @@ class UncivTooltip <T: Actor>(
             targetAlign: Int = Align.topRight,
             tipAlign: Int = Align.top
         ) {
-            if (!(always || KeyPressDispatcher.keyboardAvailable) || text.isEmpty()) return
+            if (!(always || KeyCharAndCode.keyboardAvailable) || text.isEmpty()) return
 
             val label = text.toLabel(ImageGetter.getBlue(), 38)
             label.setAlignment(Align.center)

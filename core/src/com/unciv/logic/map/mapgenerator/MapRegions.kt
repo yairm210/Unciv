@@ -9,6 +9,7 @@ import com.unciv.logic.map.MapResources
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
@@ -211,7 +212,7 @@ class MapRegions (val ruleset: Ruleset){
         return Pair(splitOffRegion, regionToSplit)
     }
 
-    fun assignRegions(tileMap: TileMap, civilizations: List<CivilizationInfo>) {
+    fun assignRegions(tileMap: TileMap, civilizations: List<CivilizationInfo>, gameParameters: GameParameters) {
         if (civilizations.isEmpty()) return
 
         // first assign region types
@@ -269,6 +270,12 @@ class MapRegions (val ruleset: Ruleset){
 
         // First assign coast bias civs
         for (civ in coastBiasCivs) {
+            // If noStartBias is enabled consider these to be randomCivs
+            if (gameParameters.noStartBias) {
+                randomCivs.addAll(coastBiasCivs)
+                break
+            }
+
             // Try to find a coastal start, preferably a really coastal one
             var startRegion = unpickedRegions.filter { tileMap[it.startPosition!!].isCoastalTile() }
                     .maxByOrNull { it.terrainCounts["Coastal"] ?: 0 }
@@ -307,6 +314,12 @@ class MapRegions (val ruleset: Ruleset){
 
         // Next do positive bias civs
         for (civ in positiveBiasCivs) {
+            // If noStartBias is enabled consider these to be randomCivs
+            if (gameParameters.noStartBias) {
+                randomCivs.addAll(positiveBiasCivs)
+                break
+            }
+
             // Try to find a start that matches any of the desired regions, ideally with lots of desired terrain
             val preferred = ruleset.nations[civ.civName]!!.startBias
             val startRegion = unpickedRegions.filter { it.type in preferred }
@@ -331,6 +344,12 @@ class MapRegions (val ruleset: Ruleset){
 
         // Next do negative bias ones (ie "Avoid []")
         for (civ in negativeBiasCivs) {
+            // If noStartBias is enabled consider these to be randomCivs
+            if (gameParameters.noStartBias) {
+                randomCivs.addAll(negativeBiasCivs)
+                break
+            }
+
             val avoided = ruleset.nations[civ.civName]!!.startBias.map { it.getPlaceholderParameters()[0] }
             // Try to find a region not of the avoided types, secondary sort by least number of undesired terrains
             val startRegion = unpickedRegions.filterNot { it.type in avoided }

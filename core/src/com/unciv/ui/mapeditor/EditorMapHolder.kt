@@ -122,10 +122,17 @@ class EditorMapHolder(
         return null
     }
 
+    /**
+     * Copy-pasted from [com.unciv.ui.worldscreen.WorldMapHolder.setCenterPosition]
+     * TODO remove code duplication
+     */
     fun setCenterPosition(vector: Vector2, blink: Boolean = false) {
         val tileGroup = allTileGroups.firstOrNull { it.tileInfo.position == vector } ?: return
-        scrollX = tileGroup.x + tileGroup.width / 2 - width / 2
-        scrollY = maxY - (tileGroup.y + tileGroup.width / 2 - height / 2)
+
+        // The Y axis of [scrollY] is inverted - when at 0 we're at the top, not bottom - so we invert it back.
+        if (!scrollTo(tileGroup.x + tileGroup.width / 2, maxY - (tileGroup.y + tileGroup.width / 2)))
+            return
+
         if (!blink) return
 
         removeAction(blinkAction) // so we don't have multiple blinks at once

@@ -4,22 +4,24 @@ import com.unciv.Constants
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
-import com.unciv.ui.crashhandling.launchCrashHandling
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
+import com.unciv.ui.multiplayer.MultiplayerHelpers
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.worldscreen.WorldScreen
+import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.launchOnGLThread
+import com.unciv.utils.Log
 
 
 //todo reduce code duplication
 
 object QuickSave {
     fun save(gameInfo: GameInfo, screen: WorldScreen) {
-        val gameSaver = UncivGame.Current.gameSaver
+        val files = UncivGame.Current.files
         val toast = ToastPopup("Quicksaving...", screen)
-        launchCrashHandling("QuickSaveGame", runAsDaemon = false) {
-            gameSaver.saveGame(gameInfo, "QuickSave") {
-                postCrashHandlingRunnable {
+        Concurrency.runOnNonDaemonThreadPool("QuickSaveGame") {
+            files.saveGame(gameInfo, "QuickSave") {
+                launchOnGLThread {
                     toast.close()
                     if (it != null)
                         ToastPopup("Could not save game!", screen)
@@ -31,18 +33,18 @@ object QuickSave {
     }
 
     fun load(screen: WorldScreen) {
-        val gameSaver = UncivGame.Current.gameSaver
+        val files = UncivGame.Current.files
         val toast = ToastPopup("Quickloading...", screen)
-        launchCrashHandling("QuickLoadGame") {
+        Concurrency.run("QuickLoadGame") {
             try {
-                val loadedGame = gameSaver.loadGameByName("QuickSave")
-                postCrashHandlingRunnable {
+                val loadedGame = files.loadGameByName("QuickSave")
+                launchOnGLThread {
                     toast.close()
                     UncivGame.Current.loadGame(loadedGame)
                     ToastPopup("Quickload successful.", screen)
                 }
             } catch (ex: Exception) {
-                postCrashHandlingRunnable {
+                launchOnGLThread {
                     toast.close()
                     ToastPopup("Could not load game!", screen)
                 }
@@ -54,10 +56,10 @@ object QuickSave {
         val loadingPopup = Popup(screen)
         loadingPopup.addGoodSizedLabel(Constants.loading)
         loadingPopup.open()
-        launchCrashHandling("autoLoadGame") {
+        Concurrency.run("autoLoadGame") {
             // Load game from file to class on separate thread to avoid ANR...
             fun outOfMemory() {
-                postCrashHandlingRunnable {
+                launchOnGLThread {
                     loadingPopup.close()
                     ToastPopup("Not enough memory on phone to load game!", screen)
                 }
@@ -65,16 +67,17 @@ object QuickSave {
 
             val savedGame: GameInfo
             try {
-                savedGame = screen.game.gameSaver.loadLatestAutosave()
+                savedGame = screen.game.files.loadLatestAutosave()
             } catch (oom: OutOfMemoryError) {
                 outOfMemory()
-                return@launchCrashHandling
+                return@run
             } catch (ex: Exception) {
-                postCrashHandlingRunnable {
+                Log.error("Could not autoload game", ex)
+                launchOnGLThread {
                     loadingPopup.close()
                     ToastPopup("Cannot resume game!", screen)
                 }
-                return@launchCrashHandling
+                return@run
             }
 
             if (savedGame.gameParameters.isOnlineMultiplayer) {
@@ -82,13 +85,24 @@ object QuickSave {
                     screen.game.onlineMultiplayer.loadGame(savedGame)
                 } catch (oom: OutOfMemoryError) {
                     outOfMemory()
+                } catch (ex: Exception) {
+                    val message = MultiplayerHelpers.getLoadExceptionMessage(ex)
+                    Log.error("Could not autoload game", ex)
+                    launchOnGLThread {
+                        loadingPopup.close()
+                        ToastPopup(message, screen)
+                    }
                 }
             } else {
-                postCrashHandlingRunnable { /// ... and load it into the screen on main thread for GL context
-                    try {
-                        screen.game.loadGame(savedGame)
-                    } catch (oom: OutOfMemoryError) {
-                        outOfMemory()
+                try {
+                    screen.game.loadGame(savedGame)
+                } catch (oom: OutOfMemoryError) {
+                    outOfMemory()
+                } catch (ex: Exception) {
+                    launchOnGLThread {
+                        Log.error("Could not autoload game", ex)
+                        loadingPopup.close()
+                        ToastPopup("Cannot resume game!", screen)
                     }
                 }
             }

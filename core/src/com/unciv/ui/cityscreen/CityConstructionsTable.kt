@@ -21,11 +21,9 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.crashhandling.launchCrashHandling
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.Popup
-import com.unciv.ui.popup.YesNoPopup
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.closeAllPopups
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ExpanderTab
@@ -38,11 +36,15 @@ import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.getConsumesAmountString
 import com.unciv.ui.utils.extensions.isEnabled
+import com.unciv.ui.utils.extensions.keyShortcuts
+import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.packIfNeeded
 import com.unciv.ui.utils.extensions.surroundWithCircle
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
+import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.launchOnGLThread
 import kotlin.math.max
 import kotlin.math.min
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
@@ -225,10 +227,10 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             availableConstructionsTable.add(Constants.loading.toLabel()).pad(10f)
         }
 
-        launchCrashHandling("Construction info gathering - ${cityScreen.city.name}") {
+        Concurrency.run("Construction info gathering - ${cityScreen.city.name}") {
             // Since this can be a heavy operation and leads to many ANRs on older phones we put the metadata-gathering in another thread.
             val constructionButtonDTOList = getConstructionButtonDTOs()
-            postCrashHandlingRunnable {
+            launchOnGLThread {
                 val units = ArrayList<Table>()
                 val buildableWonders = ArrayList<Table>()
                 val buildableNationalWonders = ArrayList<Table>()
@@ -469,11 +471,12 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             val constructionBuyCost = construction.getStatBuyCost(city, stat)!!
             button.setText("Buy".tr() + " " + constructionBuyCost + stat.character)
 
-            button.onClick {
+            button.onActivation {
                 button.disable()
                 buyButtonOnClick(construction, stat)
             }
             button.isEnabled = isConstructionPurchaseAllowed(construction, stat, constructionBuyCost)
+            button.keyShortcuts.add('B')
             button.addTooltip('B')  // The key binding is done in CityScreen constructor
             preferredBuyStat = stat  // Not very intelligent, but the least common currency "wins"
         }
@@ -514,12 +517,13 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         val purchasePrompt = "Currently you have [${city.getStatReserve(stat)}] [${stat.name}].".tr() + "\n\n" +
                 "Would you like to purchase [${construction.name}] for [$constructionBuyCost] [${stat.character}]?".tr()
-        YesNoPopup(
+        ConfirmPopup(
+            cityScreen,
             purchasePrompt,
-            action = { purchaseConstruction(construction, stat, tile) },
-            screen = cityScreen,
+            "Purchase",
+            true,
             restoreDefault = { cityScreen.update() }
-        ).open()
+        ) { purchaseConstruction(construction, stat, tile) }.open()
     }
 
     /** This tests whether the buy button should be _shown_ */

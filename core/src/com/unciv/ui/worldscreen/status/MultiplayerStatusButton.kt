@@ -20,12 +20,12 @@ import com.unciv.logic.multiplayer.MultiplayerGameUpdateStarted
 import com.unciv.logic.multiplayer.MultiplayerGameUpdated
 import com.unciv.logic.multiplayer.OnlineMultiplayerGame
 import com.unciv.logic.multiplayer.isUsersTurn
-import com.unciv.ui.crashhandling.launchCrashHandling
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.setSize
+import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.launchOnGLThread
 import kotlinx.coroutines.delay
 import java.time.Duration
 import java.time.Instant
@@ -55,7 +55,7 @@ class MultiplayerStatusButton(
             } else {
                 gameNamesWithCurrentTurn.remove(it.name)
             }
-            if (shouldUpdate) postCrashHandlingRunnable {
+            if (shouldUpdate) Concurrency.runOnGLThread {
                 updateTurnIndicator()
             }
         }
@@ -96,9 +96,9 @@ class MultiplayerStatusButton(
         } else {
             Duration.ZERO
         }
-        launchCrashHandling("Hide loading indicator") {
+        Concurrency.run("Hide loading indicator") {
             delay(waitFor.toMillis())
-            postCrashHandlingRunnable {
+            launchOnGLThread {
                 loadingImage.clearActions()
                 loadingImage.isVisible = false
                 multiplayerImage.color.a = 1f
@@ -175,9 +175,9 @@ private class TurnIndicator : HorizontalGroup() {
         if (alternations == 0) return
         gameAmount.color = nextColor
         image.color = nextColor
-        launchCrashHandling("StatusButton color flash") {
+        Concurrency.run("StatusButton color flash") {
             delay(500)
-            postCrashHandlingRunnable {
+            launchOnGLThread {
                 flash(alternations - 1, nextColor, curColor)
             }
         }

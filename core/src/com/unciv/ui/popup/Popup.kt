@@ -1,25 +1,30 @@
 package com.unciv.ui.popup
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.logic.event.EventBus
+import com.unciv.ui.UncivStage
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.AutoScrollPane
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyCharAndCode
-import com.unciv.ui.utils.KeyPressDispatcher
 import com.unciv.ui.utils.extensions.addSeparator
 import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.darken
-import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.keyShortcuts
+import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
 
@@ -27,29 +32,33 @@ import com.unciv.ui.utils.extensions.toTextButton
  * Base class for all Popups, i.e. Tables that get rendered in the middle of a screen and on top of everything else
  */
 @Suppress("MemberVisibilityCanBePrivate")
-open class Popup(val screen: BaseScreen): Table(BaseScreen.skin) {
+open class Popup(
+    val stageToShowOn: Stage,
+    scrollable: Boolean = true
+): Table(BaseScreen.skin) {
+
+    constructor(screen: BaseScreen) : this(screen.stage)
+
     // This exists to differentiate the actual popup (the inner table)
     // from the 'screen blocking' part of the popup (which covers the entire screen)
     val innerTable = Table(BaseScreen.skin)
 
-    /** The [KeyPressDispatcher] for the popup - Key handlers from the parent screen are inactive
-     * while the popup is active through the [hasOpenPopups][BaseScreen.hasOpenPopups] mechanism.
-     * @see [KeyPressDispatcher.install]
-     */
-    val keyPressDispatcher = KeyPressDispatcher(this.javaClass.simpleName)
+    val showListeners = mutableListOf<() -> Unit>()
+    val closeListeners = mutableListOf<() -> Unit>()
+
+    val events = EventBus.EventReceiver()
 
     init {
         // Set actor name for debugging
         name = javaClass.simpleName
-
-        val scrollPane = AutoScrollPane(innerTable, BaseScreen.skin)
 
         background = ImageGetter.getBackground(Color.GRAY.cpy().apply { a=.5f })
         innerTable.background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.5f))
 
         innerTable.pad(20f)
         innerTable.defaults().pad(5f)
-        super.add(scrollPane)
+
+        super.add(if (scrollable) AutoScrollPane(innerTable, BaseScreen.skin) else innerTable)
 
         this.isVisible = false
         touchable = Touchable.enabled // don't allow clicking behind
@@ -61,30 +70,41 @@ open class Popup(val screen: BaseScreen): Table(BaseScreen.skin) {
      * closed. Use [force] = true if you want to open this popup above the other one anyway.
      */
     fun open(force: Boolean = false) {
-        screen.stage.addActor(this)
+        stageToShowOn.addActor(this)
         innerTable.pack()
         pack()
-        center(screen.stage)
-        if (force || !screen.hasOpenPopups()) {
+        center(stageToShowOn)
+        events.receive(UncivStage.VisibleAreaChanged::class) {
+            fitContentIntoVisibleArea(it.visibleArea)
+        }
+        fitContentIntoVisibleArea((stageToShowOn as UncivStage).lastKnownVisibleArea)
+        if (force || !stageToShowOn.hasOpenPopups()) {
             show()
         }
     }
 
-    /** Subroutine for [open] handles only visibility and [keyPressDispatcher] */
+    private fun fitContentIntoVisibleArea(visibleArea: Rectangle) {
+        padLeft(visibleArea.x)
+        padBottom(visibleArea.y)
+        padRight(stageToShowOn.width - visibleArea.x - visibleArea.width)
+        padTop(stageToShowOn.height - visibleArea.y - visibleArea.height)
+        invalidate()
+    }
+
+    /** Subroutine for [open] handles only visibility */
     private fun show() {
         this.isVisible = true
-        val currentCount = screen.countOpenPopups()
-        // the lambda is for stacked key dispatcher precedence:
-        keyPressDispatcher.install(screen.stage) { screen.countOpenPopups() > currentCount }
+        for (listener in showListeners) listener()
     }
 
     /**
      * Close this popup and - if any other popups are pending - display the next one.
      */
     open fun close() {
-        keyPressDispatcher.uninstall()
+        events.stopReceiving()
+        for (listener in closeListeners) listener()
         remove()
-        val nextPopup = screen.stage.actors.firstOrNull { it is Popup }
+        val nextPopup = stageToShowOn.actors.firstOrNull { it is Popup }
         if (nextPopup != null) (nextPopup as Popup).show()
     }
 
@@ -104,59 +124,43 @@ open class Popup(val screen: BaseScreen): Table(BaseScreen.skin) {
         val label = text.toLabel(fontSize = size)
         label.wrap = true
         label.setAlignment(Align.center)
-        return add(label).width(screen.stage.width / 2)
+        return add(label).width(stageToShowOn.width / 2)
     }
 
     /**
-     * Adds an inline [TextButton].
+     * Adds a [TextButton].
      * @param text The button's caption.
      * @param key Associate a key with this button's action.
      * @param action A lambda to be executed when the button is clicked.
      * @return The new [Cell]
      */
-    fun addButtonInRow(text: String, key: KeyCharAndCode? = null, action: () -> Unit): Cell<TextButton> {
-        val button = text.toTextButton()
-        button.onClick(action)
-        if (key != null) {
-            keyPressDispatcher[key] = action
-        }
+    fun addButton(text: String, key: KeyCharAndCode? = null, style: TextButtonStyle? = null, action: () -> Unit): Cell<TextButton> {
+        val button = text.toTextButton(style)
+        button.onActivation { action() }
+        button.keyShortcuts.add(key)
         return add(button)
     }
-    fun addButtonInRow(text: String, key: Char, action: () -> Unit)
-        = addButtonInRow(text, KeyCharAndCode(key), action)
-    fun addButtonInRow(text: String, key: Int, action: () -> Unit)
-        = addButtonInRow(text, KeyCharAndCode(key), action)
-
-    /**
-     * Adds a [TextButton] and ends the current row.
-     * @param text The button's caption.
-     * @param key Associate a key with this button's action.
-     * @param action A lambda to be executed when the button is clicked.
-     * @return The new [Cell]
-     */
-    fun addButton(text: String, key: KeyCharAndCode? = null, action: () -> Unit)
-        = addButtonInRow(text, key, action).apply { row() }
-    /** @link [addButton] */
-    fun addButton(text: String, key: Char, action: () -> Unit)
-        = addButtonInRow(text, key, action).apply { row() }
-    fun addButton(text: String, key: Int, action: () -> Unit)
-        = addButtonInRow(text, key, action).apply { row() }
+    fun addButton(text: String, key: Char, style: TextButtonStyle? = null, action: () -> Unit)
+        = addButton(text, KeyCharAndCode(key), style, action).apply { row() }
+    fun addButton(text: String, key: Int, style: TextButtonStyle? = null, action: () -> Unit)
+        = addButton(text, KeyCharAndCode(key), style, action).apply { row() }
 
     /**
      * Adds a [TextButton] that closes the popup, with [BACK][KeyCharAndCode.BACK] already mapped.
      * @param text The button's caption, defaults to "Close".
      * @param additionalKey An additional key that should act like a click.
      * @param action A lambda to be executed after closing the popup when the button is clicked.
-     * @return The new [Cell], marked as end of row.
+     * @return The new [Cell]
      */
     fun addCloseButton(
         text: String = Constants.close,
         additionalKey: KeyCharAndCode? = null,
+        style: TextButtonStyle? = null,
         action: (()->Unit)? = null
     ): Cell<TextButton> {
-        val closeAction = { close(); if(action!=null) action()  }
-        keyPressDispatcher[KeyCharAndCode.BACK] = closeAction
-        return addButton(text, additionalKey, closeAction)
+        val cell = addButton(text, additionalKey, style) { close(); if(action!=null) action() }
+        cell.getActor().keyShortcuts.add(KeyCharAndCode.BACK)
+        return cell
     }
 
     /**
@@ -166,22 +170,23 @@ open class Popup(val screen: BaseScreen): Table(BaseScreen.skin) {
      * @param validate Function that should return true when the popup can be closed and `action` can be run.
      * When this function returns false, nothing happens.
      * @param action A lambda to be executed after closing the popup when the button is clicked.
-     * @return The new [Cell], NOT marked as end of row.
+     * @return The new [Cell]
      */
     fun addOKButton(
         text: String = Constants.OK,
         additionalKey: KeyCharAndCode? = null,
+        style: TextButtonStyle? = null,
         validate: (() -> Boolean) = { true },
         action: (() -> Unit),
     ): Cell<TextButton> {
-        val okAction = {
+        val cell = addButton(text, additionalKey, style) {
             if (validate()) {
                 close()
                 action()
             }
         }
-        keyPressDispatcher[KeyCharAndCode.RETURN] = okAction
-        return addButtonInRow(text, additionalKey, okAction)
+        cell.getActor().keyShortcuts.add(KeyCharAndCode.RETURN)
+        return cell
     }
 
     /**
@@ -194,8 +199,8 @@ open class Popup(val screen: BaseScreen): Table(BaseScreen.skin) {
         val cell1 = innerTable.cells[n-2]
         val cell2 = innerTable.cells[n-1]
         if (cell1.actor !is Button || cell2.actor !is Button) throw UnsupportedOperationException()
-        cell1.minWidth(cell2.actor.width)
-        cell2.minWidth(cell1.actor.width)
+        cell1.minWidth(cell2.actor.width).uniformX()
+        cell2.minWidth(cell1.actor.width).uniformX()
     }
 
     /**
@@ -219,36 +224,37 @@ open class Popup(val screen: BaseScreen): Table(BaseScreen.skin) {
      * [FocusListener][com.badlogic.gdx.scenes.scene2d.utils.FocusListener] cancels the event.
      */
     var keyboardFocus: Actor?
-        get() = screen.stage.keyboardFocus
+        get() = stageToShowOn.keyboardFocus
         set(value) {
-            if (screen.stage.setKeyboardFocus(value))
+            if (stageToShowOn.setKeyboardFocus(value))
                 (value as? TextField)?.selectAll()
         }
 }
+
+
+/** @return A [List] of currently active or pending [Popup] screens. */
+val BaseScreen.popups
+    get() = stage.popups
+private val Stage.popups: List<Popup>
+    get() = actors.filterIsInstance<Popup>()
+
+/** @return The currently active [Popup] or [null] if none. */
+val BaseScreen.activePopup: Popup?
+    get() = popups.lastOrNull { it.isVisible }
 
 /**
  * Checks if there are visible [Popup]s.
  * @return `true` if any were found.
  */
-fun BaseScreen.hasOpenPopups(): Boolean = stage.actors.any { it is Popup && it.isVisible }
+fun BaseScreen.hasOpenPopups(): Boolean = stage.hasOpenPopups()
+private fun Stage.hasOpenPopups(): Boolean = actors.any { it is Popup && it.isVisible }
 
 /**
  * Counts number of visible[Popup]s.
  *
  * Used for key dispatcher precedence.
  */
-fun BaseScreen.countOpenPopups() = stage.actors.count { it is Popup && it.isVisible }
+private fun Stage.countOpenPopups() = actors.count { it is Popup && it.isVisible }
 
 /** Closes all [Popup]s. */
 fun BaseScreen.closeAllPopups() = popups.forEach { it.close() }
-
-/**
- * Closes the topmost visible [Popup].
- * @return The [name][Popup.name] of the closed [Popup] if any popup was closed and if it had a name.
- */
-fun BaseScreen.closeOneVisiblePopup() = popups.lastOrNull { it.isVisible }?.apply { close() }?.name
-
-/** @return A [List] of currently active or pending [Popup] screens. */
-val BaseScreen.popups: List<Popup>
-    get() = stage.actors.filterIsInstance<Popup>()
-

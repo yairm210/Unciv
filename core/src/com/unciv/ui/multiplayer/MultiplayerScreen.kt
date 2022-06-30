@@ -44,7 +44,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
     private val events = EventBus.EventReceiver()
 
     init {
-        setDefaultCloseAction(previousScreen)
+        setDefaultCloseAction()
 
         scrollPane.setScrollingDisabled(false, true)
 
@@ -89,7 +89,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
     fun createAddGameButton(): TextButton {
         val btn = addGameText.toTextButton()
         btn.onClick {
-            game.setScreen(AddMultiplayerGameScreen(this))
+            game.pushScreen(AddMultiplayerGameScreen())
         }
         return btn
     }
@@ -97,7 +97,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
     fun createEditButton(): TextButton {
         val btn = editButtonText.toTextButton().apply { disable() }
         btn.onClick {
-            game.setScreen(EditMultiplayerGameInfoScreen(selectedGame!!, this))
+            game.pushScreen(EditMultiplayerGameInfoScreen(selectedGame!!))
         }
         return btn
     }
@@ -117,7 +117,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
     fun createFriendsListButton(): TextButton {
         val btn = friendsListText.toTextButton()
         btn.onClick {
-            game.setScreen(ViewFriendsListScreen(this))
+            game.pushScreen(ViewFriendsListScreen())
         }
         return btn
     }

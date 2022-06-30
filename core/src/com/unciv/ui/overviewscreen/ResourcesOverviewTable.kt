@@ -79,12 +79,12 @@ class ResourcesOverviewTab(
         ImageGetter.getResourceImage(name, iconSize).apply {
             onClick {
                 if (viewingPlayer.gameInfo.notifyExploredResources(viewingPlayer, name, 0, true))
-                    overviewScreen.game.resetToWorldScreen()
+                    overviewScreen.game.popScreen()
             }
         }
     private fun TileResource.getLabel() = name.toLabel().apply {
         onClick {
-            overviewScreen.game.setScreen(CivilopediaScreen(gameInfo.ruleSet, overviewScreen, CivilopediaCategories.Resource, this@getLabel.name))
+            overviewScreen.game.pushScreen(CivilopediaScreen(gameInfo.ruleSet, CivilopediaCategories.Resource, this@getLabel.name))
         }
     }
 

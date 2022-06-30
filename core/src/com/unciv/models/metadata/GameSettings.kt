@@ -32,6 +32,7 @@ class GameSettings {
     var hasCrashedRecently = false
 
     var soundEffectsVolume = 0.5f
+    var citySoundsVolume = 0.5f
     var musicVolume = 0.5f
     var pauseBetweenTracks = 10
 
@@ -55,6 +56,10 @@ class GameSettings {
     var useDemographics: Boolean = false
     var showZoomButtons: Boolean = false
 
+    var notificationsLogMaxTurns = 5
+  
+    var androidCutout: Boolean = false
+
     var multiplayer = GameSettingsMultiplayer()
 
     var showExperimentalWorldWrap = false // We're keeping this as a config due to ANR problems on Android phones for people who don't know what they're doing :/
@@ -67,6 +72,7 @@ class GameSettings {
     var lastGameSetup: GameSetupInfo? = null
 
     var fontFamily: String = Fonts.DEFAULT_FONT_FAMILY
+    var fontSizeMultiplier: Float = 1f
 
     /** Maximum zoom-out of the map - performance heavy */
     var maxWorldZoomOut = 2f
@@ -85,7 +91,7 @@ class GameSettings {
         if (!isFreshlyCreated && Gdx.app?.type == Application.ApplicationType.Desktop) {
             windowState = WindowState(Gdx.graphics.width, Gdx.graphics.height)
         }
-        UncivGame.Current.gameSaver.setGeneralSettings(this)
+        UncivGame.Current.files.setGeneralSettings(this)
     }
 
     fun addCompletedTutorialTask(tutorialTask: String) {

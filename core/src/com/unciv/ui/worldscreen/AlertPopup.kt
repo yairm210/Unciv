@@ -22,7 +22,8 @@ import com.unciv.ui.popup.Popup
 import com.unciv.ui.trade.LeaderIntroTable
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.extensions.disable
-import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.keyShortcuts
+import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.pad
 import com.unciv.ui.utils.extensions.surroundWithCircle
 import com.unciv.ui.utils.extensions.toLabel
@@ -45,17 +46,16 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
     private fun getCloseButton(text: String, key: Char = Char.MIN_VALUE, action: (() -> Unit)? = null): TextButton {
         // Popup.addCloseButton is close but AlertPopup needs the flexibility to add these inside a wrapper
         val button = text.toTextButton()
-        val buttonAction = {
+        button.onActivation {
             if (action != null) action()
             worldScreen.shouldUpdate = true
             close()
         }
-        button.onClick(buttonAction)
         if (key == Char.MIN_VALUE) {
-            keyPressDispatcher[KeyCharAndCode.BACK] = buttonAction
-            keyPressDispatcher[KeyCharAndCode.SPACE] = buttonAction
+            button.keyShortcuts.add(KeyCharAndCode.BACK)
+            button.keyShortcuts.add(KeyCharAndCode.SPACE)
         } else {
-            keyPressDispatcher[key] = buttonAction
+            button.keyShortcuts.add(key)
         }
         return button
     }
@@ -370,21 +370,27 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
     }
 
     private fun addDestroyOption(destroyAction: () -> Unit) {
-        add("Destroy".toTextButton().onClick(function = destroyAction)).row()
-        keyPressDispatcher['d'] = destroyAction
+        val button = "Destroy".toTextButton()
+        button.onActivation { destroyAction() }
+        button.keyShortcuts.add('d')
+        add(button).row()
         addGoodSizedLabel("Destroying the city instantly razes the city to the ground.").row()
     }
 
     private fun addAnnexOption(annexAction: () -> Unit) {
-        add("Annex".toTextButton().onClick(function = annexAction)).row()
-        keyPressDispatcher['a'] = annexAction
+        val button = "Annex".toTextButton()
+        button.onActivation { annexAction() }
+        button.keyShortcuts.add('a')
+        add(button).row()
         addGoodSizedLabel("Annexed cities become part of your regular empire.").row()
         addGoodSizedLabel("Their citizens generate 2x the unhappiness, unless you build a courthouse.").row()
     }
 
     private fun addPuppetOption(puppetAction: () -> Unit) {
-        add("Puppet".toTextButton().onClick(function = puppetAction) ).row()
-        keyPressDispatcher['p'] = puppetAction
+        val button = "Puppet".toTextButton()
+        button.onActivation { puppetAction() }
+        button.keyShortcuts.add('p')
+        add(button).row()
         addGoodSizedLabel("Puppeted cities do not increase your tech or policy cost, but their citizens generate 1.5x the regular unhappiness.").row()
         addGoodSizedLabel("You have no control over the the production of puppeted cities.").row()
         addGoodSizedLabel("Puppeted cities also generate 25% less Gold and Science.").row()
@@ -392,20 +398,23 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
     }
 
     private fun addLiberateOption(foundingCiv: String, liberateAction: () -> Unit) {
-        val liberateText = "Liberate (city returns to [originalOwner])".fillPlaceholders(foundingCiv)
-        add(liberateText.toTextButton().onClick(function = liberateAction)).row()
-        keyPressDispatcher['l'] = liberateAction
+        val button = "Liberate (city returns to [originalOwner])".fillPlaceholders(foundingCiv).toTextButton()
+        button.onActivation { liberateAction() }
+        button.keyShortcuts.add('l')
+        add(button).row()
         addGoodSizedLabel("Liberating a city returns it to its original owner, giving you a massive relationship boost with them!")
     }
 
     private fun addRazeOption(canRaze: () -> Boolean, razeAction: () -> Unit) {
-        add("Raze".toTextButton().apply {
+        val button = "Raze".toTextButton()
+        button.apply {
             if (!canRaze()) disable()
             else {
-                onClick(function = razeAction)
-                keyPressDispatcher['r'] = razeAction
+                onActivation { razeAction() }
+                keyShortcuts.add('r')
             }
-        }).row()
+        }
+        add(button).row()
         if (canRaze()) {
             addGoodSizedLabel("Razing the city annexes it, and starts burning the city to the ground.").row()
             addGoodSizedLabel("The population will gradually dwindle until the city is destroyed.").row()

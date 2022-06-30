@@ -38,7 +38,7 @@ class GreatPersonPickerScreen(val civInfo:CivilizationInfo) : PickerScreen() {
                 civInfo.greatPeople.mayaLimitedFreeGP--
                 civInfo.greatPeople.longCountGPPool.remove(theChosenOne!!.name)
             }
-            UncivGame.Current.resetToWorldScreen()
+            UncivGame.Current.popScreen()
         }
 
     }

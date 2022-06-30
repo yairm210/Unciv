@@ -3,7 +3,6 @@ package com.unciv.logic.civilization
 import com.unciv.Constants
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.RoadStatus
-import com.unciv.models.metadata.BASE_GAME_DURATION_TURNS
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.tile.ResourceType
@@ -62,7 +61,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         val numberOfUnitsToPayFor = max(0.0, costsToPay.asSequence().drop(freeUnits).sumOf { it.toDouble() } ).toFloat()
 
         // as game progresses Maintenance cost rises
-        val turnLimit = BASE_GAME_DURATION_TURNS * civInfo.gameInfo.gameParameters.gameSpeed.modifier
+        val turnLimit = civInfo.gameInfo.speed.numTotalTurns().toFloat()
         val gameProgress = min(civInfo.gameInfo.turns / turnLimit, 1f)
 
         var cost = baseUnitCost * numberOfUnitsToPayFor * (1 + gameProgress)

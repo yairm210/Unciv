@@ -1,51 +1,60 @@
 package com.unciv.ui.multiplayer
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.TextField
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
 import com.unciv.logic.multiplayer.OnlineMultiplayerGame
 import com.unciv.models.translations.tr
-import com.unciv.ui.crashhandling.launchCrashHandling
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.pickerscreens.PickerScreen
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.popup.YesNoPopup
+import com.unciv.ui.utils.UncivTextField
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.enable
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
+import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.launchOnGLThread
 
 /** Subscreen of MultiplayerScreen to edit and delete saves
  * backScreen is used for getting back to the MultiplayerScreen so it doesn't have to be created over and over again */
-class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame, backScreen: MultiplayerScreen) : PickerScreen() {
+class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame) : PickerScreen() {
     init {
-        val textField = TextField(multiplayerGame.name, skin)
+        val textField = UncivTextField.create("Game name", multiplayerGame.name)
 
         topTable.add("Rename".toLabel()).row()
         topTable.add(textField).pad(10f).padBottom(30f).width(stage.width / 2).row()
 
-        val deleteButton = "Delete save".toTextButton()
+        val negativeButtonStyle = skin.get("negative", TextButtonStyle::class.java)
+        val deleteButton = "Delete save".toTextButton(negativeButtonStyle)
         deleteButton.onClick {
-            val askPopup = YesNoPopup("Are you sure you want to delete this map?", {
+            val askPopup = ConfirmPopup(
+                this,
+                "Are you sure you want to delete this save?",
+                "Delete save",
+            ) {
                 try {
                     game.onlineMultiplayer.deleteGame(multiplayerGame)
-                    game.setScreen(backScreen)
+                    game.popScreen()
                 } catch (ex: Exception) {
                     ToastPopup("Could not delete game!", this)
                 }
-            }, this)
-            askPopup.open()
-        }.apply { color = Color.RED }
-
-        val giveUpButton = "Resign".toTextButton()
-        giveUpButton.onClick {
-            val askPopup = YesNoPopup("Are you sure you want to resign?", {
-                resign(multiplayerGame, backScreen)
-            }, this)
+            }
             askPopup.open()
         }
-        giveUpButton.apply { color = Color.RED }
+
+        val giveUpButton = "Resign".toTextButton(negativeButtonStyle)
+        giveUpButton.onClick {
+            val askPopup = ConfirmPopup(
+                this,
+                "Are you sure you want to resign?",
+                "Resign",
+            ) {
+                resign(multiplayerGame)
+            }
+            askPopup.open()
+        }
 
         topTable.add(deleteButton).pad(10f).row()
         topTable.add(giveUpButton)
@@ -53,7 +62,7 @@ class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame, 
         //CloseButton Setup
         closeButton.setText("Back".tr())
         closeButton.onClick {
-            backScreen.game.setScreen(backScreen)
+            game.popScreen()
         }
 
         //RightSideButton Setup
@@ -63,8 +72,10 @@ class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame, 
             rightSideButton.setText("Saving...".tr())
             val newName = textField.text.trim()
             game.onlineMultiplayer.changeGameName(multiplayerGame, newName)
-            backScreen.selectGame(newName)
-            backScreen.game.setScreen(backScreen)
+            val newScreen = game.popScreen()
+            if (newScreen is MultiplayerScreen) {
+                newScreen.selectGame(newName)
+            }
         }
 
         if (multiplayerGame.preview == null) {
@@ -79,29 +90,28 @@ class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame, 
      * Helper function to decrease indentation
      * Turns the current playerCiv into an AI civ and uploads the game afterwards.
      */
-    private fun resign(multiplayerGame: OnlineMultiplayerGame, backScreen: MultiplayerScreen) {
+    private fun resign(multiplayerGame: OnlineMultiplayerGame) {
         //Create a popup
         val popup = Popup(this)
         popup.addGoodSizedLabel("Working...").row()
         popup.open()
 
-        launchCrashHandling("Resign", runAsDaemon = false) {
+        Concurrency.runOnNonDaemonThreadPool("Resign") {
             try {
                 val resignSuccess = game.onlineMultiplayer.resign(multiplayerGame)
                 if (resignSuccess) {
-                    postCrashHandlingRunnable {
+                    launchOnGLThread {
                         popup.close()
-                        //go back to the MultiplayerScreen
-                        game.setScreen(backScreen)
+                        game.popScreen()
                     }
                 } else {
-                    postCrashHandlingRunnable {
+                    launchOnGLThread {
                         popup.reuseWith("You can only resign if it's your turn", true)
                     }
                 }
             } catch (ex: Exception) {
                 val message = MultiplayerHelpers.getLoadExceptionMessage(ex)
-                postCrashHandlingRunnable {
+                launchOnGLThread {
                     popup.reuseWith(message, true)
                 }
             }

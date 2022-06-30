@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.models.ruleset.Ruleset
@@ -15,9 +14,11 @@ import com.unciv.ui.newgamescreen.TranslatedSelectBox
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ExpanderTab
 import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.UncivTextField
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.utils.extensions.keyShortcuts
+import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.onChange
-import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.surroundWithCircle
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
@@ -71,9 +72,8 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
         }
     }
 
-    private val textField = TextField("", BaseScreen.skin)
+    private val textField = UncivTextField.create("Enter search text")
     fun getFilterText(): String = textField.text
-    val filterAction: ()->Unit
 
     var sortInstalled = SortType.Name
     var sortOnline = SortType.Stars
@@ -85,8 +85,6 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
     val expander: ExpanderTab
 
     init {
-        textField.messageText = "Enter search text"
-
         val searchIcon = ImageGetter.getImage("OtherIcons/Search")
             .surroundWithCircle(50f, color = Color.CLEAR)
 
@@ -133,7 +131,7 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
         }
 
         searchIcon.touchable = Touchable.enabled
-        filterAction = {
+        searchIcon.onActivation {
             if (expander.isOpen) {
                 modManagementScreen.refreshInstalledModTable()
                 modManagementScreen.refreshOnlineModTable()
@@ -142,7 +140,7 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
             }
             expander.toggle()
         }
-        searchIcon.onClick(filterAction)
+        searchIcon.keyShortcuts.add(KeyCharAndCode.RETURN)
         searchIcon.addTooltip(KeyCharAndCode.RETURN, 18f)
     }
 

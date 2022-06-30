@@ -3,11 +3,13 @@ package com.unciv.ui.options
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.unciv.MainMenuScreen
+import com.unciv.UncivGame
 import com.unciv.logic.event.EventBus
 import com.unciv.models.UncivSound
 import com.unciv.models.metadata.BaseRuleset
@@ -27,6 +29,8 @@ import com.unciv.ui.utils.extensions.toCheckBox
 import com.unciv.ui.utils.extensions.toGdxArray
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.worldscreen.WorldScreen
+import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.withGLContext
 import kotlin.reflect.KMutableProperty0
 
 /**
@@ -38,7 +42,7 @@ class OptionsPopup(
     screen: BaseScreen,
     private val selectPage: Int = defaultPage,
     private val onClose: () -> Unit = {}
-) : Popup(screen) {
+) : Popup(screen.stage, /** [TabbedPager] handles scrolling */ scrollable = false ) {
     val settings = screen.game.settings
     val tabs: TabbedPager
     val selectBoxMinWidth: Float
@@ -64,7 +68,7 @@ class OptionsPopup(
         }
         tabs = TabbedPager(
             tabMinWidth, tabMaxWidth, 0f, tabMaxHeight,
-            headerFontSize = 21, backgroundColor = Color.CLEAR, keyPressDispatcher = this.keyPressDispatcher, capacity = 8
+            headerFontSize = 21, backgroundColor = Color.CLEAR, capacity = 8
         )
         add(tabs).pad(0f).grow().row()
 
@@ -111,7 +115,6 @@ class OptionsPopup(
         if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT) && (Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT) || Gdx.input.isKeyPressed(Input.Keys.ALT_RIGHT))) {
             tabs.addPage("Debug", debugTab(), ImageGetter.getImage("OtherIcons/SecretOptions"), 24f, secret = true)
         }
-        tabs.bindArrowKeys() // If we're sharing WorldScreen's dispatcher that's OK since it does revertToCheckPoint on update
 
         addCloseButton {
             screen.game.musicController.onChange(null)
@@ -132,21 +135,28 @@ class OptionsPopup(
 
     /** Reload this Popup after major changes (resolution, tileset, language, font) */
     private fun reloadWorldAndOptions() {
-        settings.save()
-        if (screen is WorldScreen) {
-            screen.game.resetToWorldScreen(WorldScreen(screen.gameInfo, screen.viewingCiv))
-        } else if (screen is MainMenuScreen) {
-            screen.game.setScreen(MainMenuScreen())
+        Concurrency.run("Reload from options") {
+            settings.save()
+            val screen = UncivGame.Current.screen
+            if (screen is WorldScreen) {
+                UncivGame.Current.reloadWorldscreen()
+            } else if (screen is MainMenuScreen) {
+                withGLContext {
+                    UncivGame.Current.replaceCurrentScreen(MainMenuScreen())
+                }
+            }
+            withGLContext {
+                UncivGame.Current.screen?.openOptionsPopup(tabs.activePage)
+            }
         }
-        (screen.game.screen as BaseScreen).openOptionsPopup(tabs.activePage)
     }
 
     fun addCheckbox(table: Table, text: String, initialState: Boolean, updateWorld: Boolean = false, action: ((Boolean) -> Unit)) {
         val checkbox = text.toCheckBox(initialState) {
             action(it)
             settings.save()
-            if (updateWorld && screen is WorldScreen)
-                screen.shouldUpdate = true
+            val worldScreen = UncivGame.Current.getWorldScreenIfActive()
+            if (updateWorld && worldScreen != null) worldScreen.shouldUpdate = true
         }
         table.add(checkbox).colspan(2).left().row()
     }
@@ -156,7 +166,10 @@ class OptionsPopup(
                     settingsProperty: KMutableProperty0<Boolean>,
                     updateWorld: Boolean = false,
                     action: (Boolean) -> Unit = {}) {
-        addCheckbox(table, text, settingsProperty.get(), updateWorld, action)
+        addCheckbox(table, text, settingsProperty.get(), updateWorld) {
+            action(it)
+            settingsProperty.set(it)
+        }
     }
 
 }
@@ -181,9 +194,15 @@ open class SettingsSelect<T : Any>(
     settings: GameSettings
 ) {
     private val settingsProperty: KMutableProperty0<T> = setting.getProperty(settings)
-    private val label = labelText.toLabel()
+    private val label = createLabel(labelText)
     protected val refreshSelectBox = createSelectBox(items.toGdxArray(), settings)
     val items by refreshSelectBox::items
+
+    private fun createLabel(labelText: String): Label {
+        val selectLabel = labelText.toLabel()
+        selectLabel.wrap = true
+        return selectLabel
+    }
 
     private fun createSelectBox(initialItems: Array<SelectItem<T>>, settings: GameSettings): SelectBox<SelectItem<T>> {
         val selectBox = SelectBox<SelectItem<T>>(BaseScreen.skin)
@@ -205,7 +224,7 @@ open class SettingsSelect<T : Any>(
     }
 
     fun addTo(table: Table) {
-        table.add(label).left()
+        table.add(label).growX().left()
         table.add(refreshSelectBox).row()
     }
 

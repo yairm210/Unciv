@@ -78,7 +78,7 @@ class UnitOverviewTab(
     private fun showWorldScreenAt(position: Vector2, unit: MapUnit?) {
         val game = overviewScreen.game
         game.resetToWorldScreen()
-        game.worldScreen.mapHolder.setCenterPosition(position, forceSelectUnit = unit)
+        game.worldScreen!!.mapHolder.setCenterPosition(position, forceSelectUnit = unit)
     }
     private fun showWorldScreenAt(unit: MapUnit) = showWorldScreenAt(unit.currentTile.position, unit)
     private fun showWorldScreenAt(tile: TileInfo) = showWorldScreenAt(tile.position, null)
@@ -190,15 +190,14 @@ class UnitOverviewTab(
             if (unit.promotions.canBePromoted())
                 promotionsTable.add(
                     ImageGetter.getImage("OtherIcons/Star").apply {
-                        color = if (game.worldScreen.canChangeState && unit.currentMovement > 0f && unit.attacksThisTurn == 0)
+                        color = if (game.worldScreen!!.canChangeState && unit.currentMovement > 0f && unit.attacksThisTurn == 0)
                                 Color.GOLDENROD
                             else Color.GOLDENROD.darken(0.25f)
                     }
                 ).size(24f).padLeft(8f)
             promotionsTable.onClick {
                 if (unit.promotions.canBePromoted() || unit.promotions.promotions.isNotEmpty()) {
-                    game.setScreen(PromotionPickerScreen(unit))
-                    overviewScreen.dispose()
+                    game.pushScreen(PromotionPickerScreen(unit))
                 }
             }
             add(promotionsTable)

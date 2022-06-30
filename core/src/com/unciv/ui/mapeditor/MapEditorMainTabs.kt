@@ -10,7 +10,6 @@ class MapEditorMainTabs(
     minimumHeight = editorScreen.stage.height,
     maximumHeight = editorScreen.stage.height,
     headerFontSize = 24,
-    keyPressDispatcher = editorScreen.keyPressDispatcher,
     capacity = 7
 ) {
     val view = MapEditorViewTab(editorScreen)
