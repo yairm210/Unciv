@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
+import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.UnitGroup
 import com.unciv.ui.utils.extensions.center
@@ -65,7 +66,7 @@ class TileGroupIcons(val tileGroup: TileGroup) {
         oldUnitGroup?.remove()
 
         if (unit != null && isViewable) { // Tile is visible
-            newImage = UnitGroup(unit, 25f)
+            newImage = UnitGroup(unit, UncivGame.Current.settings.unitIconSize)
             if (UncivGame.Current.settings.continuousRendering && oldUnitGroup?.blackSpinningCircle != null) {
                 newImage.blackSpinningCircle = ImageGetter.getCircle()
                         .apply { rotation = oldUnitGroup.blackSpinningCircle!!.rotation }
@@ -99,13 +100,20 @@ class TileGroupIcons(val tileGroup: TileGroup) {
                 newImage.addActor(holder)
             }
 
+            /*
+            // HOW TO HANDLE WITH NEW ICON OPACITY CONTROL?
             // Instead of fading out the entire unit with its background, we just fade out its central icon,
             // that way it remains much more visible on the map
             if (!unit.isIdle() && unit.civInfo == viewingCiv) {
                 newImage.unitBaseImage.color.a = 0.5f
                 newImage.actionGroup?.color?.a = 0.5f
             }
+             */
+
         }
+        newImage?.unitBaseImage?.color?.a = UncivGame.Current.settings.unitIconOpacity //0f (invisible) to 1f (fully opaque)
+        newImage?.actionGroup?.color?.a = UncivGame.Current.settings.unitIconOpacity //0f (invisible) to 1f (fully opaque)
+
         return newImage
     }
 

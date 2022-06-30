@@ -42,6 +42,10 @@ fun displayTab(
 
     addMinimapSizeSlider(this, settings, optionsPopup.selectBoxMinWidth)
 
+    addUnitIconAlphaSlider(this, settings, optionsPopup.selectBoxMinWidth)
+
+    addUnitIconSizeSlider(this, settings, optionsPopup.selectBoxMinWidth)
+
     addResolutionSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onResolutionChange)
 
     addTileSetSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onTilesetChange)
@@ -92,6 +96,56 @@ private fun addMinimapSizeSlider(table: Table, settings: GameSettings, selectBox
             worldScreen.shouldUpdate = true
     }
     table.add(minimapSlider).minWidth(selectBoxMinWidth).pad(10f).row()
+}
+
+private fun addUnitIconAlphaSlider(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
+    table.add("Unit icon opacity".toLabel()).left().fillX()
+
+    val offTranslated = "off".tr()
+    val onTranslated = "opaque".tr()
+    val getTipText: (Float) -> String = {
+        when (it) {
+            0f -> offTranslated
+            in 0.01f..0.99f -> "%.0f".format(it*100) + "%"
+            else -> onTranslated
+        }
+    }
+    val unitIconAlphaSlider = UncivSlider(
+        0f, 1f, 0.1f, initial = settings.unitIconOpacity, getTipText = getTipText
+    ) {
+        settings.unitIconOpacity = it
+        settings.save()
+
+        val worldScreen = UncivGame.Current.getWorldScreenIfActive()
+        if (worldScreen != null)
+            worldScreen.shouldUpdate = true
+
+    }
+    table.add(unitIconAlphaSlider).minWidth(selectBoxMinWidth).pad(10f).row()
+}
+
+private fun addUnitIconSizeSlider(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
+    table.add("Unit icon size".toLabel()).left().fillX()
+
+    val minTranslated = "minimum".tr()
+    val maxTranslated = "maximum".tr()
+    val getTipText: (Float) -> String = {
+        when (it) {
+            10f -> minTranslated
+            in 11f..24f -> "%.0f".format(it)
+            else -> maxTranslated
+        }
+    }
+    val unitIconSizeSlider = UncivSlider(
+        10f, 25f, 1f, initial = settings.unitIconSize, getTipText = getTipText) {
+        settings.unitIconSize = it
+        settings.save()
+
+        val worldScreen = UncivGame.Current.getWorldScreenIfActive()
+        if (worldScreen != null)
+            worldScreen.shouldUpdate = true
+    }
+    table.add(unitIconSizeSlider).minWidth(selectBoxMinWidth).pad(10f).row()
 }
 
 private fun addResolutionSelectBox(table: Table, settings: GameSettings, selectBoxMinWidth: Float, onResolutionChange: () -> Unit) {

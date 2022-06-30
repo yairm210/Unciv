@@ -21,6 +21,7 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
         val background = getBackgroundImageForUnit()
         background.apply {
             this.color = unit.civInfo.nation.getOuterColor()
+            this.color.a = UncivGame.Current.settings.unitIconOpacity;
             setSize(size, size)
         }
         setSize(size, size)
@@ -69,8 +70,9 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
 
     fun selectUnit() {
         val whiteHalo = getBackgroundImageForUnit()
-        val whiteHaloSize = 30f
+        val whiteHaloSize = UncivGame.Current.settings.unitIconSize * 1.2f //Halo is now 20% bigger than icon to match previous scaling of 30f to 25f
         whiteHalo.setSize(whiteHaloSize, whiteHaloSize)
+        whiteHalo.color.a = UncivGame.Current.settings.unitIconOpacity
         whiteHalo.center(this)
         addActor(whiteHalo)
         whiteHalo.toBack()

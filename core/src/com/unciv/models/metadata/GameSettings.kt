@@ -45,6 +45,8 @@ class GameSettings {
 
     var showMinimap: Boolean = true
     var minimapSize: Int = 6    // default corresponds to 15% screen space
+    var unitIconOpacity = 1f // default corresponds to fully opaque
+    var unitIconSize = 25f // default corresponds to maximum size
     var showPixelUnits: Boolean = true
     var showPixelImprovements: Boolean = true
     var continuousRendering = false
@@ -57,7 +59,6 @@ class GameSettings {
     var showZoomButtons: Boolean = false
 
     var notificationsLogMaxTurns = 5
-  
     var androidCutout: Boolean = false
 
     var multiplayer = GameSettingsMultiplayer()
