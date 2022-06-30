@@ -162,7 +162,7 @@ enum class UniqueParameterType(
     },
 
     /** [UniqueType.DamageUnitsPlunder] and others near that one */
-    PlunderableStatName("plunderableStat", "Gold", "All the following stats can be plundered: `Gold`, `Science`, `Culture`, `Faith`") {
+    CivWideStatName("civWideStat", "Gold", "All the following stats have civ-wide fields: `Gold`, `Science`, `Culture`, `Faith`") {
         private val knownValues = Stat.statsWithCivWideField.map { it.name }.toSet()
         override fun getErrorSeverity(
             parameterText: String,

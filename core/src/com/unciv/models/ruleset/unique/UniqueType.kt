@@ -192,9 +192,11 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     BuyBuildingsByProductionCost("May buy [buildingFilter] buildings with [stat] for [amount] times their normal Production cost", UniqueTarget.FollowerBelief, UniqueTarget.Global),
 
 
-    // ToDo: Unify
+    @Deprecated("As of 4.1.14", ReplaceWith("Enables conversion of city production to [Gold]"))
     EnablesGoldProduction("Enables conversion of city production to gold", UniqueTarget.Global),
+    @Deprecated("s of 4.1.14", ReplaceWith("Enables conversion of city production to [Science]"))
     EnablesScienceProduction("Enables conversion of city production to science", UniqueTarget.Global),
+    EnablesCivWideStatProduction("Enables conversion of city production to [civWideStat]", UniqueTarget.Global),
 
     BuyItemsDiscount("[stat] cost of purchasing items in cities [relativeAmount]%", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     BuyBuildingsDiscount("[stat] cost of purchasing [buildingFilter] buildings [relativeAmount]%", UniqueTarget.Global, UniqueTarget.FollowerBelief),
@@ -226,7 +228,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     EnablesConstructionOfSpaceshipParts("Enables construction of Spaceship parts", UniqueTarget.Global),
     EnemyLandUnitsSpendExtraMovement("Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)", UniqueTarget.Global),
 
+    @Deprecated("s of 4.1.14", ReplaceWith("Production to [Science] conversion in cities changed by [33]%"))
     ProductionToScienceConversionBonus("Production to science conversion in cities increased by 33%", UniqueTarget.Global),
+    ProductionToCivWideStatConversionBonus("Production to [civWideStat] conversion in cities changed by [relativeAmount]%", UniqueTarget.Global),
 
     // Misc national uniques
     NotifiedOfBarbarianEncampments("Notified of new Barbarian encampments", UniqueTarget.Global),
@@ -489,10 +493,10 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     UnitUpgradeCost("[relativeAmount]% Gold cost of upgrading", UniqueTarget.Unit, UniqueTarget.Global),
     GreatPersonEarnedFaster("[greatPerson] is earned [relativeAmount]% faster", UniqueTarget.Unit, UniqueTarget.Global),
 
-    DamageUnitsPlunder("Earn [amount]% of the damage done to [combatantFilter] units as [plunderableStat]", UniqueTarget.Unit, UniqueTarget.Global),
-    CaptureCityPlunder("Upon capturing a city, receive [amount] times its [stat] production as [plunderableStat] immediately", UniqueTarget.Unit, UniqueTarget.Global),
-    KillUnitPlunder("Earn [amount]% of killed [mapUnitFilter] unit's [costOrStrength] as [plunderableStat]", UniqueTarget.Unit, UniqueTarget.Global),
-    KillUnitPlunderNearCity("Earn [amount]% of [mapUnitFilter] unit's [costOrStrength] as [plunderableStat] when killed within 4 tiles of a city following this religion", UniqueTarget.FollowerBelief),
+    DamageUnitsPlunder("Earn [amount]% of the damage done to [combatantFilter] units as [civWideStat]", UniqueTarget.Unit, UniqueTarget.Global),
+    CaptureCityPlunder("Upon capturing a city, receive [amount] times its [stat] production as [civWideStat] immediately", UniqueTarget.Unit, UniqueTarget.Global),
+    KillUnitPlunder("Earn [amount]% of killed [mapUnitFilter] unit's [costOrStrength] as [civWideStat]", UniqueTarget.Unit, UniqueTarget.Global),
+    KillUnitPlunderNearCity("Earn [amount]% of [mapUnitFilter] unit's [costOrStrength] as [civWideStat] when killed within 4 tiles of a city following this religion", UniqueTarget.FollowerBelief),
     KillUnitCapture("May capture killed [mapUnitFilter] units", UniqueTarget.Unit),
 
     FlatXPGain("[amount] XP gained from combat", UniqueTarget.Unit, UniqueTarget.Global),

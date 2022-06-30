@@ -107,17 +107,22 @@ class CityStats(val cityInfo: CityInfo) {
     private fun getStatsFromProduction(production: Float): Stats {
         val stats = Stats()
 
-        when (cityInfo.cityConstructions.currentConstructionFromQueue) {
-            "Gold" -> stats.gold += production / 4
-            "Science" -> stats.science += production * getScienceConversionRate()
+        if (cityInfo.cityConstructions.currentConstructionFromQueue in Stat.statsWithCivWideField.map { it.name }) {
+            val stat = Stat.valueOf(cityInfo.cityConstructions.currentConstructionFromQueue)
+            stats[stat] = production * getStatConversionRate(stat)
         }
         return stats
     }
 
-    fun getScienceConversionRate(): Float {
+    fun getStatConversionRate(stat: Stat): Float {
         var conversionRate = 1 / 4f
-        if (cityInfo.civInfo.hasUnique(UniqueType.ProductionToScienceConversionBonus))
+        val conversionUnique = cityInfo.civInfo.getMatchingUniques(UniqueType.ProductionToCivWideStatConversionBonus).firstOrNull { it.params[0] == stat.name }
+        if (conversionUnique != null) {
+            conversionRate *= conversionUnique.params[1].toPercent()
+        } else if (stat == Stat.Science && cityInfo.civInfo.hasUnique(UniqueType.ProductionToScienceConversionBonus)) {
+            // backwards compatibility
             conversionRate *= 1.33f
+        }
         return conversionRate
     }
 
