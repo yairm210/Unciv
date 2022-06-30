@@ -607,7 +607,7 @@ class CivilizationInfo {
             otherCiv.addNotification(meetString, NotificationIcon.Gold, color = NotificationColor.Gold)
 
         if (otherCiv.isCityState() && otherCiv.canGiveStat(Stat.Faith)){
-            otherCiv.addNotification(religionMeetString, NotificationIcon.Faith, color = NotificationColor.Faith)
+            otherCiv.addNotification(religionMeetString, NotificationIcon.Faith, color = NotificationColor.Quest)
 
             for ((key, value) in faithAmount)
                 otherCiv.addStat(key, value.toInt())

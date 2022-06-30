@@ -1205,20 +1205,20 @@ class MapUnit {
                 "An enemy [Citadel] has destroyed our [$name]",
                 locations,
                 NotificationIcon.Citadel, NotificationIcon.Death, name,
-                color = NotificationColor.Bad
+                color = NotificationColor.VeryBad
             )
             citadelTile.getOwner()?.addNotification(
                 "Your [Citadel] has destroyed an enemy [$name]",
                 locations,
                 NotificationIcon.Citadel, NotificationIcon.Death, name,
-                color = NotificationColor.Good
+                color = NotificationColor.VeryGood
             )
             destroy()
         } else civInfo.addNotification(
             "An enemy [Citadel] has attacked our [$name]",
             locations,
             NotificationIcon.Citadel, NotificationIcon.War, name,
-            color = NotificationColor.Bad
+            color = NotificationColor.VeryBad
         )
     }
 

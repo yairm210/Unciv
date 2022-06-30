@@ -497,7 +497,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             diplomacy.setFlag(DiplomacyFlags.AngerFreeIntrusion, 5)
 
         otherCiv.addNotification("[${civInfo.civName}] is grateful that you killed a Barbarian that was threatening them!",
-            DiplomacyAction(civInfo.civName), civInfo.civName, color = NotificationColor.LessGood)
+            DiplomacyAction(civInfo.civName), civInfo.civName, color = NotificationColor.Good)
     }
 
     /** A city state was bullied. What are its protectors going to do about it??? */

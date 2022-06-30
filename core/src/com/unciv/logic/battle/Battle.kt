@@ -335,7 +335,7 @@ object Battle {
             val attackerIcon = if (attacker is CityCombatant) NotificationIcon.City else attacker.getName()
             val defenderIcon = if (defender is CityCombatant) NotificationIcon.City else defender.getName()
             val locations = LocationAction(attackedTile.position, attackerTile?.position)
-            defender.getCivInfo().addNotification(notificationString, locations, attackerIcon, whatHappenedIcon, defenderIcon, color = NotificationColor.Bad)
+            defender.getCivInfo().addNotification(notificationString, locations, attackerIcon, whatHappenedIcon, defenderIcon, color = NotificationColor.VeryBad)
         }
     }
 
@@ -869,10 +869,10 @@ object Battle {
                 "Our [$interceptorName] intercepted and destroyed an enemy [$attackerName]"
             else "Our [$interceptorName] intercepted and attacked an enemy [$attackerName]"
             attacker.getCivInfo().addNotification(attackerText, interceptor.currentTile.position,
-                    attackerName, NotificationIcon.War, interceptorName, color = NotificationColor.Bad
+                    attackerName, NotificationIcon.War, interceptorName, color = NotificationColor.VeryBad
             )
             interceptingCiv.addNotification(interceptorText, locations,
-                    interceptorName, NotificationIcon.War, attackerName, color = NotificationColor.Good
+                    interceptorName, NotificationIcon.War, attackerName, color = NotificationColor.VeryGood
             )
             return
         }
