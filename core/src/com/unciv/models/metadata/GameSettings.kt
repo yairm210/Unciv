@@ -57,7 +57,7 @@ class GameSettings {
     var showZoomButtons: Boolean = false
 
     var notificationsLogMaxTurns = 5
-  
+
     var androidCutout: Boolean = false
 
     var multiplayer = GameSettingsMultiplayer()
@@ -94,9 +94,10 @@ class GameSettings {
         UncivGame.Current.files.setGeneralSettings(this)
     }
 
-    fun addCompletedTutorialTask(tutorialTask: String) {
-        if (tutorialTasksCompleted.add(tutorialTask))
-            save()
+    fun addCompletedTutorialTask(tutorialTask: String): Boolean {
+        if (!tutorialTasksCompleted.add(tutorialTask)) return false
+        save()
+        return true
     }
 
     fun updateLocaleFromLanguage() {
