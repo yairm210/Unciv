@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization
 
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.map.MapSize
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Policy.PolicyBranchType
@@ -14,7 +15,7 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 
 
-class PolicyManager {
+class PolicyManager : IsPartOfGameInfoSerialization {
 
     @Transient
     lateinit var civInfo: CivilizationInfo

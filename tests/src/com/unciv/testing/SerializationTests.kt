@@ -60,7 +60,7 @@ class SerializationTests {
             seed = 42L
         }
         val setup = GameSetupInfo(param, mapParameters)
-        UncivGame.Current = UncivGame("")
+        UncivGame.Current = UncivGame()
         UncivGame.Current.files = UncivFiles(Gdx.files)
 
         // Both startNewGame and makeCivilizationsMeet will cause a save to storage of our empty settings

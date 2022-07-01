@@ -30,7 +30,7 @@ class TestGame {
 
     init {
         // Set UncivGame.Current so that debug variables are initialized
-        UncivGame.Current = UncivGame("Test")
+        UncivGame.Current = UncivGame()
         // And the settings can be reached for the locale used in .tr()
         UncivGame.Current.settings = GameSettings()
 

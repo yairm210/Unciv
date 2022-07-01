@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PlayerType
@@ -27,7 +28,7 @@ import kotlin.math.abs
 import kotlin.math.min
 import kotlin.random.Random
 
-open class TileInfo {
+open class TileInfo : IsPartOfGameInfoSerialization {
     @Transient
     lateinit var tileMap: TileMap
 
