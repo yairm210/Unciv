@@ -10,6 +10,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.WrappableLabel
 import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.worldscreen.WorldScreen
 
 class NotificationsOverviewTable(
@@ -50,10 +51,11 @@ class NotificationsOverviewTable(
 
     private fun notificationsArrayTable(index: String, notifications: ArrayList<Notification>): Table {
         val turnTable = Table(BaseScreen.skin)
-        if (index != "Current")
-            turnTable.add("Turn [$index]").row()
-        else
-            turnTable.add("Current turn").row()
+        val turnLabel = if (index != "Current")
+                            "Turn [$index]".toLabel()
+                        else
+                            "Current turn".toLabel()
+        turnTable.add(turnLabel).row()
 
         for (notification in notifications) {
             val notificationTable = Table(BaseScreen.skin)
