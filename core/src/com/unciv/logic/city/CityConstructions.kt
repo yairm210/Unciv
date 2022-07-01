@@ -585,8 +585,9 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                     && (getConstruction(currentConstructionFromQueue) !is PerpetualConstruction || currentConstructionIsUserSet)) return
         }
 
-        val isCurrentPlayersTurn = cityInfo.civInfo.gameInfo.isUsersTurn() || cityInfo.civInfo.playerId == ""
-        if ((UncivGame.Current.settings.autoAssignCityProduction && isCurrentPlayersTurn) // only automate if the active player has the setting to automate production
+        val isCurrentPlayersTurn = cityInfo.civInfo.gameInfo.isUsersTurn()
+                || !cityInfo.civInfo.gameInfo.gameParameters.isOnlineMultiplayer
+        if ((UncivGame.Current.settings.autoAssignCityProduction && isCurrentPlayersTurn) // only automate if the active human player has the setting to automate production
                 || !cityInfo.civInfo.isPlayerCivilization() || cityInfo.isPuppet) {
             ConstructionAutomation(this).chooseNextConstruction()
         }
