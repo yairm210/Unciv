@@ -21,7 +21,7 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
         val background = getBackgroundImageForUnit()
         background.apply {
             this.color = unit.civInfo.nation.getOuterColor()
-            this.color.a = UncivGame.Current.settings.unitIconOpacity;
+            this.color.a = UncivGame.Current.settings.unitIconOpacity
             setSize(size, size)
         }
         setSize(size, size)
