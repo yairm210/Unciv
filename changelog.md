@@ -1,26 +1,21 @@
 ## 4.1.15
 
-Un-broke version release
-
-4.1.14-patch1
+By OptimizedForDensity:
+- Add support for era-specific unit sprites
+- Don't wake civilians to danger if they're in a city
+- Fix translation issues from nested brackets and braces
 
 By alexban011:
-- fix notification log not removing `[ ]` used for translations 
-- fixing translatable 
-- Exception handleing when loading mod options 
+- Fixed brackets in notification logs
+- Exception handling when loading mod options
 
-By OptimizedForDensity:
-- Add support for era-specific unit sprites 
-- Don't wake sleeping civilians if they're in a city 
-- Fix translation issues caused by nested brackets and braces 
-
-Moddable prettier Tutorials - Step 1   - By SomeTroglodyte
+Moddable prettier Tutorials - By SomeTroglodyte
 
 By Azzurite:
-- Save compatibility handling 
-- Fix OutOfMemoryError when loading a game and another is already loaded 
+- Save compatibility handling
+- Fix OutOfMemoryError when loading a game and another is already loaded
 
-Fix crash when exploring  - By Skekdog
+Fix crash when exploring - By Skekdog
 
 ## 4.1.14
 
