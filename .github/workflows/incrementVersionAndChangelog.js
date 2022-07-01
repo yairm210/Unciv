@@ -8,14 +8,25 @@ const fs = require("fs");
 
 //region Executed Code
 (async () => {
-    const nextVersion = await createChangeLog();
-    const nextIncrementalVersion = updateBuildConfig(nextVersion);
-    updateGameVersion(nextVersion, nextIncrementalVersion);
+    versionAndChangelog = await parseCommits();
+    const newVersionString = versionAndChangelog[0]
+    const changelogString = versionAndChangelog[1]
+
+    writeChangelog(newVersionString, changelogString)
+
+    const newAppCodeNumber = updateBuildConfig(newVersionString);
+    if (newAppCodeNumber){ // is false if buildConfig already contains the newVersionString
+        createFastlaneFile(newAppCodeNumber, changelogString)
+        updateGameVersion(newVersionString, newAppCodeNumber);
+    }
 })();
 //endregion
 
+
 //region Function Definitions
-async function createChangeLog() {
+
+// Returns: [nextVersionString, changelogString]
+async function parseCommits() {
     // no need to add auth: token since we're only reading from the commit list, which is public anyway
     const octokit = new Octokit({});
 
@@ -65,8 +76,11 @@ async function createChangeLog() {
         }
     })
     console.log(commitSummary);
+    return [nextVersionString, commitSummary];
+}
 
-    var textToAddToChangelog = "## " + nextVersionString + commitSummary + "\n\n";
+function writeChangelog(nextVersionString, changelogString){
+    var textToAddToChangelog = "## " + nextVersionString + changelogString + "\n\n";
 
     var changelogPath = 'changelog.md';
     var currentChangelog = fs.readFileSync(changelogPath).toString();
@@ -74,7 +88,6 @@ async function createChangeLog() {
         var newChangelog = textToAddToChangelog + currentChangelog;
         fs.writeFileSync(changelogPath, newChangelog);
     }
-    return nextVersionString;
 }
 
 function updateBuildConfig(nextVersionString) {
@@ -90,38 +103,40 @@ function updateBuildConfig(nextVersionString) {
     const curVersion = appVersionMatch[1];
     if (curVersion !== nextVersionString) {
         buildConfigString = buildConfigString.replace(appVersionMatch[0], appVersionMatch[0].replace(curVersion, nextVersionString));
-        var incrementalVersionMatch = buildConfigString.match(/appCodeNumber = (\d*)/);
-        let curIncrementalVersion = incrementalVersionMatch[1];
-        console.log("Current incremental version: " + curIncrementalVersion);
-        const nextIncrementalVersion = Number(curIncrementalVersion) + 1;
-        console.log("Next incremental version: " + nextIncrementalVersion);
-        buildConfigString = buildConfigString.replace(incrementalVersionMatch[0],
-            incrementalVersionMatch[0].replace(curIncrementalVersion, nextIncrementalVersion));
+        var appCodeNumberMatch = buildConfigString.match(/appCodeNumber = (\d*)/);
+        let currentAppCodeNumber = appCodeNumberMatch[1];
+        console.log("Current incremental version: " + currentAppCodeNumber);
+        const nextAppCodeNumber = Number(currentAppCodeNumber) + 1;
+        console.log("Next incremental version: " + nextAppCodeNumber);
+        buildConfigString = buildConfigString.replace(appCodeNumberMatch[0],
+            appCodeNumberMatch[0].replace(currentAppCodeNumber, nextAppCodeNumber));
 
         console.log("Final: " + buildConfigString);
         fs.writeFileSync(buildConfigPath, buildConfigString);
-
-        // A new, discrete changelog file for fastlane (F-Droid support):
-        var fastlaneChangelogPath = "fastlane/metadata/android/en-US/changelogs/" + nextIncrementalVersion + ".txt";
-        fs.writeFileSync(fastlaneChangelogPath, textToAddToChangelog);
-        return nextIncrementalVersion;
+        return nextAppCodeNumber;
     }
-    return appVersionMatch;
+    return false
 }
 
-function updateGameVersion(nextVersion, nextIncrementalVersion) {
+function createFastlaneFile(newAppCodeNumber, changelogString){
+    // A new, discrete changelog file for fastlane (F-Droid support):
+    var fastlaneChangelogPath = "fastlane/metadata/android/en-US/changelogs/" + newAppCodeNumber + ".txt";
+    fs.writeFileSync(fastlaneChangelogPath, changelogString);
+}
+
+function updateGameVersion(newVersionString, newAppCodeNumber) {
     const gameInfoPath = "core/src/com/unciv/UncivGame.kt";
     const gameInfoSource = fs.readFileSync(gameInfoPath).toString();
     const regexp = /(\/\/region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT)[\s\S]*(\/\/endregion)/;
     const withNewVersion = gameInfoSource.replace(regexp, function(match, grp1, grp2) {
-        const versionClassStr = createVersionClassString(nextVersion, nextIncrementalVersion);
+        const versionClassStr = createVersionClassString(newVersionString, newAppCodeNumber);
         return `${grp1}\n        val VERSION = ${versionClassStr}\n        ${grp2}`;
     })
     fs.writeFileSync(gameInfoPath, withNewVersion);
 }
 
-function createVersionClassString(nextVersion, nextIncrementalVersion) {
-    return `Version("${nextVersion}", ${nextIncrementalVersion})`;
+function createVersionClassString(newVersionString, newAppCodeNumber) {
+    return `Version("${newVersionString}", ${newAppCodeNumber})`;
 }
 
 //endregion
