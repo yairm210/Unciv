@@ -1,3 +1,41 @@
+## 4.1.15
+
+By OptimizedForDensity:
+- Add support for era-specific unit sprites
+- Don't wake civilians to danger if they're in a city
+- Fix translation issues from nested brackets and braces
+
+By alexban011:
+- Fixed brackets in notification logs
+- Exception handling when loading mod options
+
+Moddable prettier Tutorials - By SomeTroglodyte
+
+By Azzurite:
+- Save compatibility handling
+- Fix OutOfMemoryError when loading a game and another is already loaded
+
+Fix crash when exploring - By Skekdog
+
+## 4.1.14
+
+By OptimizedForDensity:
+- Make mounted vs city penalties attack-only
+- Logistics allows move after attack
+- Fix crash when melee unit captures civilian then tries to attack it
+- Allow modded harbor-type buildings to connect cities
+- Fix "Religions to be founded" count
+
+By Azzurite:
+- Save uncaught exception to file
+
+Better exploring AI for ruins - By Skekdog
+
+By alexban011:
+- added gameParameter option to disable start bias
+- Added option to select font size
+- Add Notifications Log
+
 ## 4.1.13
 
 By Azzurite:

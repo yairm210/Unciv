@@ -3,7 +3,10 @@ package com.unciv.ui.options
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.UncivSlider
+import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.worldscreen.WorldScreen
 
 fun gameplayTab(
@@ -35,4 +38,20 @@ fun gameplayTab(
     ) { settings.automatedWorkersReplaceImprovements = it }
     optionsPopup.addCheckbox(this, "Order trade offers by amount", settings.orderTradeOffersByAmount) { settings.orderTradeOffersByAmount = it }
     optionsPopup.addCheckbox(this, "Ask for confirmation when pressing next turn", settings.confirmNextTurn) { settings.confirmNextTurn = it }
+
+    addNotificationLogMaxTurnsSlider(this, settings, UncivGame.Current.worldScreen, optionsPopup.selectBoxMinWidth)
+}
+
+private fun addNotificationLogMaxTurnsSlider(table: Table, settings: GameSettings, screen: BaseScreen?, selectBoxMinWidth: Float) {
+    table.add("Notifications log max turns".toLabel()).left().fillX()
+
+    val minimapSlider = UncivSlider(
+        3f, 15f, 1f,
+        initial = settings.notificationsLogMaxTurns.toFloat()
+    ) {
+        val turns = it.toInt()
+        settings.notificationsLogMaxTurns = turns
+        settings.save()
+    }
+    table.add(minimapSlider).minWidth(selectBoxMinWidth).pad(10f).row()
 }

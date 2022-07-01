@@ -65,6 +65,8 @@ fun advancedTab(
 
     addFontFamilySelect(this, settings, optionsPopup.selectBoxMinWidth, onFontChange)
 
+    addFontSizeMultiplier(this, settings, onFontChange)
+
     addTranslationGeneration(this, optionsPopup)
 
     addSetUserId(this, settings)
@@ -87,8 +89,7 @@ private fun addAutosaveTurnsSelectBox(table: Table, settings: GameSettings) {
     }
 }
 
-private
-fun addFontFamilySelect(table: Table, settings: GameSettings, selectBoxMinWidth: Float, onFontChange: () -> Unit) {
+private fun addFontFamilySelect(table: Table, settings: GameSettings, selectBoxMinWidth: Float, onFontChange: () -> Unit) {
     table.add("Font family".toLabel()).left().fillX()
     val selectCell = table.add()
     table.row()
@@ -129,6 +130,29 @@ fun addFontFamilySelect(table: Table, settings: GameSettings, selectBoxMinWidth:
         }
         launchOnGLThread { loadFontSelect(fonts, selectCell) }
     }
+}
+
+private fun addFontSizeMultiplier(
+    table: Table,
+    settings: GameSettings,
+    onFontChange: () -> Unit
+) {
+    table.add("Font size multiplier".toLabel()).left().fillX()
+
+    val fontSizeSlider = UncivSlider(
+        0.7f, 1.5f, 0.05f,
+        initial = settings.fontSizeMultiplier
+    ) {
+        settings.fontSizeMultiplier = it
+        settings.save()
+    }
+    fontSizeSlider.onChange {
+        if (!fontSizeSlider.isDragging) {
+            Fonts.resetFont(settings.fontFamily)
+            onFontChange()
+        }
+    }
+    table.add(fontSizeSlider).pad(5f).row()
 }
 
 private fun addMaxZoomSlider(table: Table, settings: GameSettings) {

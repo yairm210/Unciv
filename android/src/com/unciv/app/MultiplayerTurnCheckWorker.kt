@@ -20,10 +20,9 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.backends.android.AndroidApplication
 import com.badlogic.gdx.backends.android.DefaultAndroidFiles
 import com.unciv.logic.GameInfo
-import com.unciv.logic.GameSaver
+import com.unciv.logic.UncivFiles
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
-import com.unciv.models.metadata.GameSettings
-import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
+import com.unciv.logic.multiplayer.storage.OnlineMultiplayerFiles
 import com.unciv.models.metadata.GameSettingsMultiplayer
 import kotlinx.coroutines.runBlocking
 import java.io.FileNotFoundException
@@ -181,16 +180,16 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
             }
         }
 
-        fun startTurnChecker(applicationContext: Context, gameSaver: GameSaver, currentGameInfo: GameInfo, settings: GameSettingsMultiplayer) {
+        fun startTurnChecker(applicationContext: Context, files: UncivFiles, currentGameInfo: GameInfo, settings: GameSettingsMultiplayer) {
             Log.i(LOG_TAG, "startTurnChecker")
-            val gameFiles = gameSaver.getMultiplayerSaves()
+            val gameFiles = files.getMultiplayerSaves()
             val gameIds = Array(gameFiles.count()) {""}
             val gameNames = Array(gameFiles.count()) {""}
 
             var count = 0
             for (gameFile in gameFiles) {
                 try {
-                    val gamePreview = gameSaver.loadGamePreviewFromFile(gameFile)
+                    val gamePreview = files.loadGamePreviewFromFile(gameFile)
                     gameIds[count] = gamePreview.gameId
                     gameNames[count] = gameFile.name()
                     count++
@@ -260,14 +259,14 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
      */
     private val notFoundRemotely = mutableMapOf<String, Boolean>()
 
-    private val gameSaver: GameSaver
+    private val files: UncivFiles
     init {
         // We can't use Gdx.files since that is only initialized within a com.badlogic.gdx.backends.android.AndroidApplication.
         // Worker instances may be stopped & recreated by the Android WorkManager, so no AndroidApplication and thus no Gdx.files available
-        val files = DefaultAndroidFiles(applicationContext.assets, ContextWrapper(applicationContext), true)
+        val gdxFiles = DefaultAndroidFiles(applicationContext.assets, ContextWrapper(applicationContext), true)
         // GDX's AndroidFileHandle uses Gdx.files internally, so we need to set that to our new instance
-        Gdx.files = files
-        gameSaver = GameSaver(files, null, true)
+        Gdx.files = gdxFiles
+        files = UncivFiles(gdxFiles, null, true)
     }
 
     override fun doWork(): Result = runBlocking {
@@ -297,7 +296,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
 
                 try {
                     Log.d(LOG_TAG, "doWork download ${gameId}")
-                    val gamePreview = OnlineMultiplayerGameSaver(fileStorage).tryDownloadGamePreview(gameId)
+                    val gamePreview = OnlineMultiplayerFiles(fileStorage).tryDownloadGamePreview(gameId)
                     Log.d(LOG_TAG, "doWork download ${gameId} done")
                     val currentTurnPlayer = gamePreview.getCivilization(gamePreview.currentPlayer)
 
@@ -310,7 +309,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                     Lets hope it works with gamePreview as they are a lot smaller and faster to save
                      */
                     Log.i(LOG_TAG, "doWork save gameName: ${gameNames[idx]}")
-                    gameSaver.saveGame(gamePreview, gameNames[idx])
+                    files.saveGame(gamePreview, gameNames[idx])
                     Log.i(LOG_TAG, "doWork save ${gameNames[idx]} done")
 
                     if (currentTurnPlayer.playerId == inputData.getString(USER_ID)!! && foundGame == null) {

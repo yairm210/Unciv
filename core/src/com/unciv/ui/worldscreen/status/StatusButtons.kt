@@ -1,11 +1,12 @@
 package com.unciv.ui.worldscreen.status
 
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup
+import com.badlogic.gdx.utils.Disposable
 
 class StatusButtons(
     nextTurnButton: NextTurnButton,
     multiplayerStatusButton: MultiplayerStatusButton? = null
-) : HorizontalGroup() {
+) : HorizontalGroup(), Disposable {
     var multiplayerStatusButton: MultiplayerStatusButton? = multiplayerStatusButton
         set(button) {
             multiplayerStatusButton?.remove()
@@ -22,5 +23,9 @@ class StatusButtons(
             addActor(multiplayerStatusButton)
         }
         addActor(nextTurnButton)
+    }
+
+    override fun dispose() {
+        multiplayerStatusButton?.dispose()
     }
 }

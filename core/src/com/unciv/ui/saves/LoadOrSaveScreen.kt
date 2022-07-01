@@ -77,7 +77,7 @@ abstract class LoadOrSaveScreen(
         if (selectedSave.isEmpty()) return
         ConfirmPopup(this, "Are you sure you want to delete this save?", "Delete save") {
             val result = try {
-                if (game.gameSaver.deleteSave(selectedSave)) {
+                if (game.files.deleteSave(selectedSave)) {
                     resetWindowState()
                     "[$selectedSave] deleted successfully."
                 } else {
@@ -93,7 +93,7 @@ abstract class LoadOrSaveScreen(
     }
 
     private fun updateShownSaves(showAutosaves: Boolean) {
-        savesScrollPane.updateSaveGames(game.gameSaver, showAutosaves)
+        savesScrollPane.updateSaveGames(game.files, showAutosaves)
     }
 
     private fun selectExistingSave(saveGameFile: FileHandle) {
@@ -109,7 +109,7 @@ abstract class LoadOrSaveScreen(
         Concurrency.run("LoadMetaData") { // Even loading the game to get its metadata can take a long time on older phones
             val textToSet = try {
                 val savedAt = Date(saveGameFile.lastModified())
-                val game = game.gameSaver.loadGamePreviewFromFile(saveGameFile)
+                val game = game.files.loadGamePreviewFromFile(saveGameFile)
                 val playerCivNames = game.civilizations
                     .filter { it.isPlayerCivilization() }.joinToString { it.civName.tr() }
                 val mods = if (game.gameParameters.mods.isEmpty()) ""

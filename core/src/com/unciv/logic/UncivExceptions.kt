@@ -11,8 +11,8 @@ import com.unciv.models.translations.tr
  */
 open class UncivShowableException(
     errorText: String,
-    override val cause: Throwable? = null
-) : Exception(errorText) {
+    cause: Throwable? = null
+) : Exception(errorText, cause) {
     // override because we _definitely_ have a non-null message from [errorText]
     override val message: String
         get() = super.message!!

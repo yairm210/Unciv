@@ -48,6 +48,7 @@ enum class UniqueTarget(val inheritsFrom: UniqueTarget? = null) {
     Ruins(Triggerable),
 
     // Other
+    Tutorial,
     CityState,
     ModOptions,
     Conditional,

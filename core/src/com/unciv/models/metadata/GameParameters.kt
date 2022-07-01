@@ -1,5 +1,6 @@
 package com.unciv.models.metadata
 
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.ruleset.Speed
 
@@ -8,7 +9,7 @@ enum class BaseRuleset(val fullName:String){
     Civ_V_GnK("Civ V - Gods & Kings"),
 }
 
-class GameParameters { // Default values are the default new game
+class GameParameters : IsPartOfGameInfoSerialization { // Default values are the default new game
     var difficulty = "Prince"
     var speed = Speed.DEFAULT
 
@@ -26,6 +27,7 @@ class GameParameters { // Default values are the default new game
     var godMode = false
     var nuclearWeaponsEnabled = true
     var religionEnabled = false
+    var noStartBias = false
 
     var victoryTypes: ArrayList<String> = arrayListOf()
     var startingEra = "Ancient era"

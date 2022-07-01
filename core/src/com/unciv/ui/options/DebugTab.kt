@@ -2,7 +2,7 @@ package com.unciv.ui.options
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
-import com.unciv.logic.GameSaver
+import com.unciv.logic.UncivFiles
 import com.unciv.logic.MapSaver
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.ResourceType
@@ -51,8 +51,8 @@ fun debugTab() = Table(BaseScreen.skin).apply {
             curGameInfo.gameParameters.godMode = it
         }).colspan(2).row()
     }
-    add("Save games compressed".toCheckBox(GameSaver.saveZipped) {
-        GameSaver.saveZipped = it
+    add("Save games compressed".toCheckBox(UncivFiles.saveZipped) {
+        UncivFiles.saveZipped = it
     }).colspan(2).row()
     add("Save maps compressed".toCheckBox(MapSaver.saveZipped) {
         MapSaver.saveZipped = it

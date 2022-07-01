@@ -15,5 +15,5 @@ Le monde n'attend plus que vous! Bâtirez-vous une civilisation capable de rési
 L'autorisation 'bénéficier d'un accès complet au réseau' est requise pour les fonctionnalités suivantes:
 - Lister et télécharger les mods disponibles
 - Télécharger la musique
-- Envoyer et télécharger l'état des parties en mode multijoueurs en ligne
-Toutes les autres autorisations répertoriées sont gérées automatiquement par l'API pour la fonction de notification des tours en mode multijoueurs.
+- Envoyer et télécharger l'état des parties en mode multijoueur en ligne
+Toutes les autres autorisations répertoriées sont gérées automatiquement par l'API pour la fonction de notification des tours en mode multijoueur.
