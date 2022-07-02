@@ -5,6 +5,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.WondersInfo
+import com.unciv.logic.civilization.diplomacy.DiplomacyManager
+import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toLabel
@@ -116,7 +119,14 @@ class GlobalPoliticsOverviewTable (
         }
         politicsTable.row()
 
-        //todo allied CS
+        //allied CS
+        for (cityState in gameInfo.getAliveCityStates()) {
+            if (cityState.diplomacy[civ.civName]?.relationshipLevel() == RelationshipLevel.Ally) {
+                val alliedText = "Allied with ${cityState.civName}".toLabel()
+                alliedText.color = Color.GREEN
+                politicsTable.add(alliedText).row()
+            }
+        }
 
         return politicsTable
     }
