@@ -74,7 +74,7 @@ Unit images can be changed according to civ-specific styles (if a mod specifies 
 3. unitName-styleName (example: "Archer-customStyle1.png")
 4. unitName (example: "Archer.png")
 
-Era-specific sprites do not need to be specified for each era, only on eras where the sprites change. If a modder wants a Great General unit to change sprites starting in the Modern era, they only need to create a "Great general-Modern era.png" image. The Great General unit would use the default "Great General.png" sprite for all eras up to the Modern era then the Modern era sprite for the Modern era and all eras after unless there is a later era sprite for this unit.
+Era-specific sprites do not need to be specified for each era, only on eras where the sprites change. If a modder wants a Great General unit to change sprites starting in the Modern era, they only need to create a "Great General-Modern era.png" image. The Great General unit would use the default "Great General.png" sprite for all eras up to the Modern era then the Modern era sprite for the Modern era and all eras after unless there is a later era sprite for this unit.
 
 ### Nation-coloured units
 
