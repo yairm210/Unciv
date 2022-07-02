@@ -44,8 +44,6 @@ fun displayTab(
 
     addUnitIconAlphaSlider(this, settings, optionsPopup.selectBoxMinWidth)
 
-    addUnitIconSizeSlider(this, settings, optionsPopup.selectBoxMinWidth)
-
     addResolutionSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onResolutionChange)
 
     addTileSetSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onTilesetChange)
@@ -115,23 +113,6 @@ private fun addUnitIconAlphaSlider(table: Table, settings: GameSettings, selectB
 
     }
     table.add(unitIconAlphaSlider).minWidth(selectBoxMinWidth).pad(10f).row()
-}
-
-private fun addUnitIconSizeSlider(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
-    table.add("Unit icon size".toLabel()).left().fillX()
-
-    val getTipText: (Float) -> String = {"%.0f".format((it/25)*100) + "%"}
-
-    val unitIconSizeSlider = UncivSlider(
-        10f, 25f, 1.25f, initial = settings.unitIconSize, getTipText = getTipText) {
-        settings.unitIconSize = it
-        settings.save()
-
-        val worldScreen = UncivGame.Current.getWorldScreenIfActive()
-        if (worldScreen != null)
-            worldScreen.shouldUpdate = true
-    }
-    table.add(unitIconSizeSlider).minWidth(selectBoxMinWidth).pad(10f).row()
 }
 
 private fun addResolutionSelectBox(table: Table, settings: GameSettings, selectBoxMinWidth: Float, onResolutionChange: () -> Unit) {
