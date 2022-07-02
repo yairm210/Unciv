@@ -24,6 +24,7 @@ import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
+import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ExpanderTab
 import com.unciv.ui.utils.RecreateOnResize
@@ -35,6 +36,7 @@ import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.pad
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
+import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
@@ -293,7 +295,19 @@ class NewGameScreen(
             }
         }
 
-        val worldScreen = game.loadGame(newGame)
+        val worldScreen: WorldScreen
+
+        val loadingGamePopup = UncivGame.Current.screen?.stage?.let { Popup(it) }
+        try {
+            worldScreen = game.loadGame(newGame)
+        } catch (ex: Exception) {
+            val (message) = LoadGameScreen.getLoadExceptionMessage(ex)
+            launchOnGLThread {
+                loadingGamePopup?.addGoodSizedLabel(message)
+                loadingGamePopup?.open()
+            }
+            return@coroutineScope
+        }
 
         if (newGame.gameParameters.isOnlineMultiplayer) {
             launchOnGLThread {

@@ -23,19 +23,6 @@ object MultiplayerHelpers {
         loadingGamePopup.addGoodSizedLabel("Loading latest game state...")
         loadingGamePopup.open()
 
-        if (selectedGame.preview?.gameParameters?.anyoneCanSpectate == false) {
-            if (selectedGame.preview!!.civilizations.any { it.playerId == UncivGame.Current.settings.multiplayer.userId }) {
-                actuallyLoadGame(selectedGame, loadingGamePopup)
-            } else {
-                loadingGamePopup.close()
-                ToastPopup("You are not allowed to watch this game!", screen).open()
-            }
-        } else {
-            actuallyLoadGame(selectedGame, loadingGamePopup)
-        }
-    }
-
-    private fun actuallyLoadGame(selectedGame: OnlineMultiplayerGame, loadingGamePopup: Popup) {
         Concurrency.run("JoinMultiplayerGame") {
             try {
                 UncivGame.Current.onlineMultiplayer.loadGame(selectedGame)
