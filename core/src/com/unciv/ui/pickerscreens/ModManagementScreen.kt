@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
+import com.badlogic.gdx.utils.SerializationException
 import com.unciv.MainMenuScreen
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
@@ -41,6 +42,7 @@ import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toCheckBox
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
+import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import kotlinx.coroutines.Job
@@ -258,7 +260,15 @@ class ModManagementScreen(
                 }
 
                 if (installedMod.modOptions.author.isEmpty()) {
-                    Github.rewriteModOptions(repo, installedMod.folderLocation!!)
+                    try {
+                        Github.rewriteModOptions(repo, installedMod.folderLocation!!)
+                    } catch (ex: SerializationException) {
+                        Log.error("Error while adding mod info from repo search:", ex)
+                        return
+                    } catch (ex: Exception) {
+                        Log.error("Error while adding mod info from repo search:", ex)
+                        return
+                    }
                     installedMod.modOptions.author = repo.owner.login
                     installedMod.modOptions.modSize = repo.size
                 }

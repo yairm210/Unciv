@@ -1,11 +1,12 @@
 package com.unciv.logic.trade
 
 import com.unciv.Constants
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 
-class Trade{
+class Trade : IsPartOfGameInfoSerialization {
 
     val theirOffers = TradeOffersList()
     val ourOffers = TradeOffersList()
@@ -48,7 +49,7 @@ class Trade{
 }
 
 
-class TradeRequest {
+class TradeRequest : IsPartOfGameInfoSerialization {
     fun decline(decliningCiv:CivilizationInfo) {
         val requestingCivInfo = decliningCiv.gameInfo.getCivilization(requestingCiv)
         val diplomacyManager = requestingCivInfo.getDiplomacyManager(decliningCiv)

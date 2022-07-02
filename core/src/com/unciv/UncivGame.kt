@@ -8,6 +8,7 @@ import com.badlogic.gdx.Screen
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.UncivFiles
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.multiplayer.OnlineMultiplayer
@@ -24,9 +25,9 @@ import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.crashhandling.CrashScreen
 import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.multiplayer.MultiplayerHelpers
 import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.Popup
+import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.worldscreen.PlayerReadyScreen
@@ -37,15 +38,14 @@ import com.unciv.utils.concurrency.launchOnGLThread
 import com.unciv.utils.concurrency.withGLContext
 import com.unciv.utils.concurrency.withThreadPoolContext
 import com.unciv.utils.debug
+import kotlinx.coroutines.CancellationException
 import java.io.PrintWriter
 import java.util.*
 import kotlin.collections.ArrayDeque
 
 class UncivGame(parameters: UncivGameParameters) : Game() {
-    // we need this secondary constructor because Java code for iOS can't handle Kotlin lambda parameters
-    constructor(version: String) : this(UncivGameParameters(version, null))
+    constructor() : this(UncivGameParameters())
 
-    val version = parameters.version
     val crashReportSysInfo = parameters.crashReportSysInfo
     val cancelDiscordEvent = parameters.cancelDiscordEvent
     var fontImplementation = parameters.fontImplementation
@@ -332,7 +332,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
                 val mainMenu = MainMenuScreen()
                 replaceCurrentScreen(mainMenu)
                 val popup = Popup(mainMenu)
-                popup.addGoodSizedLabel(MultiplayerHelpers.getLoadExceptionMessage(ex))
+                val (message) = LoadGameScreen.getLoadExceptionMessage(ex)
+                popup.addGoodSizedLabel(message)
                 popup.row()
                 popup.addCloseButton()
                 popup.open()
@@ -405,6 +406,9 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     /** Handles an uncaught exception or error. First attempts a platform-specific handler, and if that didn't handle the exception or error, brings the game to a [CrashScreen]. */
     fun handleUncaughtThrowable(ex: Throwable) {
+        if (ex is CancellationException) {
+            return // kotlin coroutines use this for control flow... so we can just ignore them.
+        }
         Log.error("Uncaught throwable", ex)
         try {
             PrintWriter(files.fileWriter("lasterror.txt")).use {
@@ -440,10 +444,22 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     }
 
     companion object {
+        //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
+        val VERSION = Version("4.1.15", 733)
+        //endregion
+
         lateinit var Current: UncivGame
         fun isCurrentInitialized() = this::Current.isInitialized
         fun isCurrentGame(gameId: String): Boolean = isCurrentInitialized() && Current.gameInfo != null && Current.gameInfo!!.gameId == gameId
         fun isDeepLinkedGameLoading() = isCurrentInitialized() && Current.deepLinkedMultiplayerGame != null
+    }
+
+    data class Version(
+        val text: String,
+        val number: Int
+    ) : IsPartOfGameInfoSerialization {
+        @Suppress("unused") // used by json serialization
+        constructor() : this("", -1)
     }
 }
 

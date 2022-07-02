@@ -1,5 +1,6 @@
 package com.unciv.ui.utils.extensions
 
+import com.unciv.UncivGame
 import com.unciv.models.translations.tr
 import java.text.SimpleDateFormat
 import java.time.Duration
@@ -15,9 +16,8 @@ fun Int.toPercent() = toFloat().toPercent()
 /** Translate a percentage number - e.g. 25 - to the multiplication value - e.g. 1.25f */
 fun Float.toPercent() = 1 + this/100
 
-/** Convert a [resource name][this] into "Consumes [amount] $resource" string (untranslated, using separate templates for 1 and other amounts) */
-//todo some day... remove and use just one translatable where this is called
-fun String.getConsumesAmountString(amount: Int) = if (amount == 1) "Consumes 1 [$this]" else "Consumes [$amount] [$this]"
+/** Convert a [resource name][this] into "Consumes [amount] $resource" string (untranslated) */
+fun String.getConsumesAmountString(amount: Int) = "Consumes [$amount] [$this]"
 
 /** Formats the [Duration] into a translated string */
 fun Duration.format(): String {
@@ -92,3 +92,5 @@ fun <T> String.filterCompositeLogic(predicate: (String) -> T?, operation: (T, T)
  *  otherwise return `null` for Elvis chaining of the individual filter. */
 fun String.filterAndLogic(predicate: (String) -> Boolean): Boolean? =
         if (contains('{')) filterCompositeLogic(predicate) { a, b -> a && b } else null
+
+fun UncivGame.Version.toNiceString() = "$text (Build $number)"

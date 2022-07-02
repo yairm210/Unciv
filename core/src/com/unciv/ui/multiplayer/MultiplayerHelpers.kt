@@ -2,28 +2,20 @@ package com.unciv.ui.multiplayer
 
 import com.badlogic.gdx.Gdx
 import com.unciv.UncivGame
-import com.unciv.logic.UncivShowableException
 import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.logic.multiplayer.OnlineMultiplayerGame
-import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.models.translations.tr
 import com.unciv.ui.popup.Popup
+import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.extensions.formatShort
 import com.unciv.ui.utils.extensions.toCheckBox
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
-import java.io.FileNotFoundException
 import java.time.Duration
 import java.time.Instant
 
 object MultiplayerHelpers {
-    fun getLoadExceptionMessage(ex: Throwable) = when (ex) {
-        is FileStorageRateLimitReached -> "Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds"
-        is FileNotFoundException -> "File could not be found on the multiplayer server"
-        is UncivShowableException -> ex.message // If this is already translated, it's an error on the throwing side!
-        else -> "Unhandled problem, [${ex::class.simpleName} ${ex.localizedMessage}]"
-    }
 
     fun loadMultiplayerGame(screen: BaseScreen, selectedGame: OnlineMultiplayerGame) {
         val loadingGamePopup = Popup(screen)
@@ -34,7 +26,7 @@ object MultiplayerHelpers {
             try {
                 UncivGame.Current.onlineMultiplayer.loadGame(selectedGame)
             } catch (ex: Exception) {
-                val message = getLoadExceptionMessage(ex)
+                val (message) = LoadGameScreen.getLoadExceptionMessage(ex)
                 launchOnGLThread {
                     loadingGamePopup.reuseWith(message, true)
                 }
@@ -46,9 +38,8 @@ object MultiplayerHelpers {
         val descriptionText = StringBuilder()
         val ex = multiplayerGame.error
         if (ex != null) {
-            descriptionText.append("Error while refreshing:".tr()).append(' ')
-            val message = getLoadExceptionMessage(ex)
-            descriptionText.appendLine(message.tr())
+            val (message) = LoadGameScreen.getLoadExceptionMessage(ex, "Error while refreshing:")
+            descriptionText.appendLine(message)
         }
         val lastUpdate = multiplayerGame.lastUpdate
         descriptionText.appendLine("Last refresh: [${Duration.between(lastUpdate, Instant.now()).formatShort()}] ago".tr())

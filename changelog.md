@@ -1,3 +1,22 @@
+## 4.1.15
+
+By OptimizedForDensity:
+- Add support for era-specific unit sprites
+- Don't wake civilians to danger if they're in a city
+- Fix translation issues from nested brackets and braces
+
+By alexban011:
+- Fixed brackets in notification logs
+- Exception handling when loading mod options
+
+Moddable prettier Tutorials - By SomeTroglodyte
+
+By Azzurite:
+- Save compatibility handling
+- Fix OutOfMemoryError when loading a game and another is already loaded
+
+Fix crash when exploring - By Skekdog
+
 ## 4.1.14
 
 By OptimizedForDensity:

@@ -1,6 +1,7 @@
 package com.unciv.logic.city
 
 import com.unciv.Constants
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.Counter
 import com.unciv.models.Religion
@@ -8,7 +9,7 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.utils.extensions.toPercent
 
-class CityInfoReligionManager {
+class CityInfoReligionManager : IsPartOfGameInfoSerialization {
     @Transient
     lateinit var cityInfo: CityInfo
 

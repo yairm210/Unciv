@@ -350,8 +350,15 @@ fun String.tr(): String {
         return fullyTranslatedString
     }
 
+    // curly and square brackets can be nested inside of each other so find the leftmost curly/square
+    // bracket then process that first
+    val indexSquare = this.indexOf('[')
+    val indexCurly = this.indexOf('{')
+    val processSquare = indexSquare >= 0 && (indexCurly < 0 || indexSquare < indexCurly)
+    val processCurly =  indexCurly >= 0 && (indexSquare < 0 || indexCurly < indexSquare)
+
     // There might still be optimization potential here!
-    if (contains('[')) { // Placeholders!
+    if (processSquare) { // Placeholders!
         /**
          * I'm SURE there's an easier way to do this but I can't think of it =\
          * So what's all this then?
@@ -399,11 +406,9 @@ fun String.tr(): String {
         return languageSpecificPlaceholder      // every component is already translated
     }
 
-
-    if (contains('{')) { // Translating partial sentences
+    if (processCurly) { // Translating partial sentences
         return curlyBraceRegex.replace(this) { it.groups[1]!!.value.tr() }
     }
-
 
     if (Stats.isStats(this)) return Stats.parse(this).toString()
 
