@@ -43,6 +43,7 @@ import com.unciv.ui.utils.extensions.toPercent
 import com.unciv.ui.utils.extensions.withItem
 import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
+import kotlin.collections.HashMap
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -240,6 +241,11 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
     @Transient
     var hasLongCountDisplayUnique = false
+
+    // (CivName, turnWhenThisHappened)
+    var atWarWith = mutableListOf<String>()
+    var friendCivs = HashMap<String, Int>()
+    var denouncedCivs = HashMap<String, Int>()
 
     constructor()
 
@@ -861,6 +867,11 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
         hasLongCountDisplayUnique = hasUnique(UniqueType.MayanCalendarDisplay)
 
+    }
+
+    fun updateGlobalPoliticsInfo() {
+        var friendCivs = HashMap<String, Int>()
+        var denouncedCivs = HashMap<String, Int>()
     }
 
     fun updateSightAndResources() {

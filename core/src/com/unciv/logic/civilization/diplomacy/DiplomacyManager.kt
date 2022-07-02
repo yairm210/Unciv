@@ -706,6 +706,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         onWarDeclared()
         otherCivDiplomacy.onWarDeclared()
 
+        civInfo.atWarWith.add(otherCivName)
+
         otherCiv.addNotification("[${civInfo.civName}] has declared war on us!", NotificationIcon.War, civInfo.civName)
         otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration, civInfo.civName))
 
@@ -771,6 +773,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         makePeaceOneSide()
         otherCivDiplomacy().makePeaceOneSide()
 
+        civInfo.atWarWith.remove(otherCivName)
+
         for (civ in getCommonKnownCivs()) {
             civ.addNotification(
                     "[${civInfo.civName}] and [$otherCivName] have signed a Peace Treaty!",
@@ -821,6 +825,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         otherCivDiplomacy().setModifier(DiplomaticModifiers.DeclarationOfFriendship, 35f)
         setFlag(DiplomacyFlags.DeclarationOfFriendship, 30)
         otherCivDiplomacy().setFlag(DiplomacyFlags.DeclarationOfFriendship, 30)
+
+        civInfo.friendCivs[otherCivName] = civInfo.gameInfo.turns
+
         if (otherCiv().playerType == PlayerType.Human)
             otherCiv().addNotification("[${civInfo.civName}] and [$otherCivName] have signed the Declaration of Friendship!",
                     civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
@@ -852,6 +859,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         otherCivDiplomacy().setModifier(DiplomaticModifiers.Denunciation, -35f)
         setFlag(DiplomacyFlags.Denunciation, 30)
         otherCivDiplomacy().setFlag(DiplomacyFlags.Denunciation, 30)
+
+        civInfo.denouncedCivs[otherCivName] = civInfo.gameInfo.turns
 
         otherCiv().addNotification("[${civInfo.civName}] has denounced us!", NotificationIcon.Diplomacy, civInfo.civName)
 

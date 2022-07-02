@@ -66,9 +66,9 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
      * This exists so that when debugging we can see the entire map.
      * Remember to turn this to false before commit and upload!
      */
-    var viewEntireMapForDebug = false
+    var viewEntireMapForDebug = true
     /** For when you need to test something in an advanced game and don't have time to faff around */
-    var superchargedForDebug = false
+    var superchargedForDebug = true
 
     /** Simulate until this turn on the first "Next turn" button press.
      *  Does not update World View changes until finished.

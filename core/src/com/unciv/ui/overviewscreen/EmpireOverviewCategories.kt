@@ -63,7 +63,11 @@ enum class EmpireOverviewCategories(
     Notifications("OtherIcons/Notifications", 'N', Align.top,
         fun (viewingPlayer: CivilizationInfo, overviewScreen: EmpireOverviewScreen, _: EmpireOverviewTabPersistableData?)
                 = NotificationsOverviewTable(worldScreen = UncivGame.Current.worldScreen!!, viewingPlayer, overviewScreen),
-        fun (_: CivilizationInfo) = EmpireOverviewTabState.Normal);
+        fun (_: CivilizationInfo) = EmpireOverviewTabState.Normal),
+    Diplomacy2("OtherIcons/Notifications", 'D', Align.top,
+    fun (viewingPlayer: CivilizationInfo, overviewScreen: EmpireOverviewScreen, _: EmpireOverviewTabPersistableData?)
+            = GlobalPoliticsOverviewTable(worldScreen = UncivGame.Current.worldScreen!!, viewingPlayer, overviewScreen),
+    fun (_: CivilizationInfo) = EmpireOverviewTabState.Normal);
 
     constructor(iconName: String, shortcutChar: Char, scrollAlign: Int, factory: FactoryType, stateTester: StateTesterType = { _ -> EmpireOverviewTabState.Normal })
         : this(iconName, KeyCharAndCode(shortcutChar), scrollAlign, factory, stateTester)
