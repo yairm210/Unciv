@@ -1012,7 +1012,8 @@ class DiplomacyScreen(
         super.resize(width, height)
         positionCloseButton()
     }
-    val selectedCiv = selectCiv
-    val selectedTrade = selectTrade
+
+    private val selectedCiv = selectCiv
+    private val selectedTrade = selectTrade
     override fun recreate(): BaseScreen = DiplomacyScreen(viewingCiv, selectedCiv, selectedTrade)
 }
