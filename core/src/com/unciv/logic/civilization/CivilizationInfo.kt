@@ -1377,7 +1377,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
     fun moveCapitalToNextLargest() {
         moveCapitalTo(cities
-            .filterNot { it.isCapital() }
+            .filterNot { it.isCapital() || it.isPuppet }
             .maxByOrNull { it.population.population})
     }
 
