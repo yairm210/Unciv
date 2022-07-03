@@ -9,12 +9,14 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.addSeparatorVertical
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.worldscreen.WorldScreen
 
 class GlobalPoliticsOverviewTable (
-    val worldScreen: WorldScreen,
+    val worldScreen: WorldScreen, //unused
     viewingPlayer: CivilizationInfo,
     overviewScreen: EmpireOverviewScreen
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
@@ -32,8 +34,8 @@ class GlobalPoliticsOverviewTable (
         val civs = mutableListOf<CivilizationInfo>()
         civs.add(viewingPlayer)
         civs.addAll(viewingPlayer.getKnownCivs())
+        civs.removeAll(civs.filter { it.isBarbarian() || it.isCityState() || it.isSpectator() })
         for (civ in civs) {
-            if (civ.isBarbarian() || civ.isCityState() || civ.isSpectator()) continue
             val civTable = Table(skin)
 
             // civ image
@@ -63,6 +65,8 @@ class GlobalPoliticsOverviewTable (
             civTable.add(getPoliticsOfCivTable(civ))
 
             globalPoliticsTable.add(civTable).row()
+            if (civs.indexOf(civ) != civs.lastIndex)
+                globalPoliticsTable.addSeparator(Color.GRAY)
         }
 
         return globalPoliticsTable
@@ -85,6 +89,7 @@ class GlobalPoliticsOverviewTable (
                 wonderTable.add(wonderName).row()
             }
         }
+
         return wonderTable
     }
 
