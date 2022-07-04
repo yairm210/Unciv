@@ -74,6 +74,7 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
         //Make unit icons fully opaque when units are selected
         unitBaseImage.color.a = 1f
         background?.color?.a = 1f
+        actionGroup?.color?.a = 1f
 
         val whiteHalo = getBackgroundImageForUnit()
         val whiteHaloSize = 30f
