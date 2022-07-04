@@ -123,7 +123,7 @@ object ChooseBeliefsAutomation {
         // adjusts scores of certain beliefs as game evolves (adapted from Civ 5 DLL files on AI belief selection)
         // enable differentiation of early vs late founding of religion and early vs late enhancement of religion
         // this is mainly for mods which may shuffle enhancer and founder beliefs w.r.t. base UnCiv
-        var gameTimeScalingPercent = 50
+        var gameTimeScalingPercent = 100
         when (civInfo.religionManager.religionState) {
             ReligionState.FoundingReligion -> {
                 gameTimeScalingPercent = 100 - ((numberOfFoundedReligions * 100) / maxNumberOfReligions)
