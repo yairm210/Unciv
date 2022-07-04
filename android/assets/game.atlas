@@ -1196,21 +1196,21 @@ TileSets/Default/Road
   index: -1
 TileSets/Default/Tiles/River-Bottom
   rotate: false
-  xy: 1524, 411
+  xy: 1484, 379
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/Default/Tiles/River-BottomLeft
   rotate: false
-  xy: 1604, 486
+  xy: 1564, 454
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/Default/Tiles/River-BottomRight
   rotate: false
-  xy: 1604, 450
+  xy: 1564, 418
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
@@ -2265,352 +2265,345 @@ TileSets/FantasyHex/Tiles/Plains+Forest+Lumber mill
   orig: 32, 32
   offset: 0, 0
   index: -1
-TileSets/FantasyHex/Tiles/Plains+Hill+Forest+Camp
+TileSets/FantasyHex/Tiles/Plains+Hill+Forest+Lumber mill
   rotate: false
   xy: 1604, 630
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
-TileSets/FantasyHex/Tiles/Plains+Hill+Forest+Lumber mill
-  rotate: false
-  xy: 1444, 451
-  size: 32, 28
-  orig: 32, 28
-  offset: 0, 0
-  index: -1
 TileSets/FantasyHex/Tiles/Plains+Jungle+Trading post
   rotate: false
-  xy: 1484, 488
+  xy: 1444, 447
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/PlainsForest
   rotate: false
-  xy: 1524, 520
+  xy: 1484, 488
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/PlainsJungle
   rotate: false
-  xy: 1564, 558
+  xy: 1524, 520
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Plantation
   rotate: false
-  xy: 1604, 594
+  xy: 1564, 562
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Plantation+Bananas
   rotate: false
-  xy: 1444, 415
+  xy: 1604, 594
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Plantation+Cotton
   rotate: false
-  xy: 1484, 452
+  xy: 1444, 411
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Polder
   rotate: false
-  xy: 1524, 483
+  xy: 1484, 451
   size: 32, 29
   orig: 32, 29
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Quarry
   rotate: false
-  xy: 1444, 379
+  xy: 1604, 558
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Quarry+Marble
   rotate: false
-  xy: 1484, 416
+  xy: 1444, 375
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Quarry+Stone
   rotate: false
-  xy: 1524, 447
+  xy: 1484, 415
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/River-Bottom
   rotate: false
-  xy: 1484, 380
+  xy: 1604, 522
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/River-BottomLeft
   rotate: false
-  xy: 1564, 450
+  xy: 1524, 412
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/River-BottomRight
   rotate: false
-  xy: 1564, 414
+  xy: 1604, 486
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Rock of Gibraltar
   rotate: false
-  xy: 1604, 410
+  xy: 1604, 446
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Salt
   rotate: false
-  xy: 1524, 339
+  xy: 1404, 315
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Sheep
   rotate: false
-  xy: 1444, 307
+  xy: 1604, 338
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Sheep+Pasture
   rotate: false
-  xy: 1484, 304
+  xy: 1444, 299
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Silk
   rotate: false
-  xy: 1604, 302
+  xy: 1564, 309
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Silk+Plantation
   rotate: false
-  xy: 1644, 888
+  xy: 1604, 302
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Silver
   rotate: false
-  xy: 1644, 852
+  xy: 1404, 279
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Snow
   rotate: false
-  xy: 1644, 780
+  xy: 1524, 268
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Snow+Farm
   rotate: false
-  xy: 1684, 814
+  xy: 1564, 273
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Spices
   rotate: false
-  xy: 1684, 778
+  xy: 1644, 888
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Spices+Plantation
   rotate: false
-  xy: 1644, 708
+  xy: 1644, 852
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Sri Pada
   rotate: false
-  xy: 1684, 738
+  xy: 1684, 884
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Stone
   rotate: false
-  xy: 1644, 672
+  xy: 1644, 816
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Sugar
   rotate: false
-  xy: 1644, 636
+  xy: 1644, 780
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Sugar+Plantation
   rotate: false
-  xy: 1684, 668
+  xy: 1684, 814
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Terrace farm
   rotate: false
-  xy: 1684, 596
+  xy: 1684, 742
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Trading post
   rotate: false
-  xy: 1684, 560
+  xy: 1684, 706
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Truffles
   rotate: false
-  xy: 1644, 456
+  xy: 1644, 600
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Truffles+Camp
   rotate: false
-  xy: 1684, 488
+  xy: 1684, 634
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Tundra
   rotate: false
-  xy: 1644, 420
+  xy: 1644, 564
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Tundra+Farm
   rotate: false
-  xy: 1684, 452
+  xy: 1684, 598
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Tundra+Forest+Camp
   rotate: false
-  xy: 1644, 380
+  xy: 1644, 524
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Tundra+Forest+Camp+Furs
   rotate: false
-  xy: 1684, 412
+  xy: 1684, 558
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Tundra+Forest+Deer+Camp
   rotate: false
-  xy: 1644, 340
+  xy: 1644, 484
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Tundra+Forest+Lumber mill
   rotate: false
-  xy: 1684, 372
+  xy: 1684, 518
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Tundra+Forest+Truffles+Camp
   rotate: false
-  xy: 1644, 300
+  xy: 1644, 444
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/TundraForest
   rotate: false
-  xy: 1684, 332
+  xy: 1684, 478
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Uluru
   rotate: false
-  xy: 1724, 824
+  xy: 1684, 438
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Uranium
   rotate: false
-  xy: 1724, 788
+  xy: 1644, 372
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Whales
   rotate: false
-  xy: 1764, 756
+  xy: 1684, 330
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Whales+Fishing Boats
   rotate: false
-  xy: 1724, 682
+  xy: 1644, 266
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Wheat
   rotate: false
-  xy: 1764, 720
+  xy: 1684, 294
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Wine
   rotate: false
-  xy: 1724, 646
+  xy: 1684, 258
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Wine+Plantation
   rotate: false
-  xy: 1764, 684
+  xy: 1724, 828
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/TopBorder
   rotate: false
-  xy: 1644, 528
+  xy: 1644, 672
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
@@ -3359,231 +3352,231 @@ TileSets/FantasyHex/Units/Pikeman
   index: -1
 TileSets/FantasyHex/Units/Pracinha
   rotate: false
-  xy: 1564, 522
+  xy: 1524, 484
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/Privateer
   rotate: false
-  xy: 1604, 558
+  xy: 1564, 526
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/Quinquereme
   rotate: false
-  xy: 1564, 486
+  xy: 1524, 448
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/Rifleman
   rotate: false
-  xy: 1604, 522
+  xy: 1564, 490
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/Rocket Artillery
   rotate: false
-  xy: 1524, 375
+  xy: 1524, 376
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/SS Booster
   rotate: false
-  xy: 1564, 378
+  xy: 1564, 382
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/SS Cockpit
   rotate: false
-  xy: 1604, 374
+  xy: 1604, 410
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/SS Engine
   rotate: false
-  xy: 1444, 343
+  xy: 1604, 374
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/SS Stasis Chamber
   rotate: false
-  xy: 1484, 344
+  xy: 1364, 311
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/Samurai
   rotate: false
-  xy: 1564, 342
+  xy: 1444, 339
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/Scout
   rotate: false
-  xy: 1604, 338
+  xy: 1484, 343
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/Sea Beggar
   rotate: false
-  xy: 1364, 311
+  xy: 1524, 340
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/Settler
   rotate: false
-  xy: 1404, 314
+  xy: 1564, 345
   size: 32, 29
   orig: 32, 29
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/Ship of the Line
   rotate: false
-  xy: 1524, 302
+  xy: 1484, 306
   size: 32, 29
   orig: 32, 29
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/Siege Tower
   rotate: false
-  xy: 1564, 306
+  xy: 1524, 304
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/Sipahi
   rotate: false
-  xy: 1684, 886
+  xy: 1128, 241
   size: 32, 30
   orig: 32, 30
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/Skirmisher
   rotate: false
-  xy: 1644, 816
+  xy: 1444, 263
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/Slinger
   rotate: false
-  xy: 1684, 850
+  xy: 1484, 270
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/Spearman
   rotate: false
-  xy: 1644, 744
+  xy: 1604, 266
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/Submarine
   rotate: false
-  xy: 1684, 704
+  xy: 1684, 850
   size: 32, 26
   orig: 32, 26
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/Swordsman
   rotate: false
-  xy: 1644, 600
+  xy: 1644, 744
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/Tank
   rotate: false
-  xy: 1684, 632
+  xy: 1684, 778
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/Tercio
   rotate: false
-  xy: 1644, 564
+  xy: 1644, 708
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/Trebuchet
   rotate: false
-  xy: 1644, 492
+  xy: 1644, 636
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/Trireme
   rotate: false
-  xy: 1684, 524
+  xy: 1684, 670
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/Turtle Ship
   rotate: false
-  xy: 1684, 296
+  xy: 1644, 408
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/War Chariot
   rotate: false
-  xy: 1764, 828
+  xy: 1684, 402
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/War Elephant
   rotate: false
-  xy: 1724, 752
+  xy: 1644, 336
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/Warrior
   rotate: false
-  xy: 1764, 792
+  xy: 1684, 366
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/WaterUnit
   rotate: false
-  xy: 1724, 718
+  xy: 1644, 302
   size: 32, 26
   orig: 32, 26
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/Winged Hussar
   rotate: false
-  xy: 1724, 610
+  xy: 1724, 792
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/Work Boats
   rotate: false
-  xy: 1764, 648
+  xy: 1764, 828
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/Worker
   rotate: false
-  xy: 1724, 574
+  xy: 1724, 756
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
