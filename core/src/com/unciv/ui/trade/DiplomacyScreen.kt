@@ -63,8 +63,8 @@ import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 @Suppress("KDocUnresolvedReference")  // Mentioning non-field parameters is flagged, but they work anyway
 class DiplomacyScreen(
     val viewingCiv: CivilizationInfo,
-    selectCiv: CivilizationInfo? = null,
-    selectTrade: Trade? = null
+    private val selectCiv: CivilizationInfo? = null,
+    private val selectTrade: Trade? = null
 ): BaseScreen(), RecreateOnResize {
     companion object {
         private const val nationIconSize = 100f
@@ -1013,7 +1013,5 @@ class DiplomacyScreen(
         positionCloseButton()
     }
 
-    private val selectedCiv = selectCiv
-    private val selectedTrade = selectTrade
-    override fun recreate(): BaseScreen = DiplomacyScreen(viewingCiv, selectedCiv, selectedTrade)
+    override fun recreate(): BaseScreen = DiplomacyScreen(viewingCiv, selectCiv, selectTrade)
 }
