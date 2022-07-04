@@ -1,0 +1,8 @@
+
+
+By OptimizedForDensity:
+- Generalize production-to-stat conversion uniques 
+- Slight optimization of getAttackableEnemies 
+- Better AI targeting 
+
+Unit icon alpha control  - By letstalkaboutdune
