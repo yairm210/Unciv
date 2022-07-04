@@ -1376,7 +1376,13 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     }
 
     fun moveCapitalToNextLargest() {
-        moveCapitalTo(cities
+        val availableCities = cities.filterNot { it.isCapital() }
+        if (availableCities.filterNot { it.isPuppet }.isEmpty()) {
+            availableCities
+                .filter { it.isPuppet }
+                .maxByOrNull { it.population.population }!!.annexCity()
+        }
+        moveCapitalTo(availableCities
             .filterNot { it.isCapital() || it.isPuppet }
             .maxByOrNull { it.population.population})
     }
