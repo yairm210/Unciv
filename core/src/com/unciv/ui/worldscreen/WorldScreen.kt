@@ -15,6 +15,7 @@ import com.unciv.Constants
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
+import com.unciv.logic.UncivShowableException
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -829,6 +830,12 @@ private fun startNewScreenJob(gameInfo: GameInfo) {
     Concurrency.run {
         val newWorldScreen = try {
             UncivGame.Current.loadGame(gameInfo)
+        } catch (notAPlayer: UncivShowableException) {
+            withGLContext {
+                val mainMenu = UncivGame.Current.goToMainMenu()
+                ToastPopup("Not enough memory on phone to load game!", mainMenu)
+            }
+            return@run
         } catch (oom: OutOfMemoryError) {
             withGLContext {
                 val mainMenu = UncivGame.Current.goToMainMenu()

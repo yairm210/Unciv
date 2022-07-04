@@ -175,7 +175,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         gameInfo = newGameInfo
 
         if (gameInfo?.gameParameters?.anyoneCanSpectate == false) {
-            if (gameInfo!!.civilizations.any { it.playerId == settings.multiplayer.userId }) {
+            if (!gameInfo!!.civilizations.any { it.playerId == settings.multiplayer.userId }) {
                 throw UncivShowableException("You are not allowed to watch this game!")
             }
         }

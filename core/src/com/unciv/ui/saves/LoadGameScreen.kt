@@ -117,6 +117,12 @@ class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
                 // This is what can lead to ANRs - reading the file and setting the transients, that's why this is in another thread
                 val loadedGame = game.files.loadGameByName(selectedSave)
                 game.loadGame(loadedGame)
+            } catch (notAPlayer: UncivShowableException) {
+                launchOnGLThread {
+                    val (message) = getLoadExceptionMessage(notAPlayer)
+                    loadingPopup.reuseWith(message, true)
+                    handleLoadGameException(notAPlayer)
+                }
             } catch (ex: Exception) {
                 launchOnGLThread {
                     loadingPopup.close()

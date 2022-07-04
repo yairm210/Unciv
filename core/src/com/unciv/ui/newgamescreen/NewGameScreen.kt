@@ -296,16 +296,16 @@ class NewGameScreen(
         }
 
         val worldScreen: WorldScreen
-
-        val loadingGamePopup = UncivGame.Current.screen?.stage?.let { Popup(it) }
         try {
             worldScreen = game.loadGame(newGame)
         } catch (ex: Exception) {
             val (message) = LoadGameScreen.getLoadExceptionMessage(ex)
             launchOnGLThread {
-                loadingGamePopup?.addGoodSizedLabel(message)
-                loadingGamePopup?.open()
+                popup.reuseWith(message, true)
+                rightSideButton.enable()
+                rightSideButton.setText("Start game!".tr())
             }
+            Gdx.input.inputProcessor = stage
             return@coroutineScope
         }
 
