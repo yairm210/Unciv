@@ -16,11 +16,13 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
     var actionGroup :Group? = null
     val unitBaseImage = ImageGetter.getUnitIcon(unit.name, unit.civInfo.nation.getInnerColor())
         .apply { setSize(size * 0.75f, size * 0.75f) }
+    var background: Image? = null
 
     init {
-        val background = getBackgroundImageForUnit()
-        background.apply {
+        background = getBackgroundImageForUnit()
+        background?.apply {
             this.color = unit.civInfo.nation.getOuterColor()
+            this.color.a = UncivGame.Current.settings.unitIconOpacity
             setSize(size, size)
         }
         setSize(size, size)
@@ -68,12 +70,18 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
 
 
     fun selectUnit() {
+
+        //Make unit icons fully opaque when units are selected
+        unitBaseImage.color.a = 1f
+        background?.color?.a = 1f
+
         val whiteHalo = getBackgroundImageForUnit()
         val whiteHaloSize = 30f
         whiteHalo.setSize(whiteHaloSize, whiteHaloSize)
         whiteHalo.center(this)
         addActor(whiteHalo)
         whiteHalo.toBack()
+
 
         if (UncivGame.Current.settings.continuousRendering) {
             val spinningCircle = if (blackSpinningCircle != null) blackSpinningCircle!!
