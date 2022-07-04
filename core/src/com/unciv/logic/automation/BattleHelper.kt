@@ -166,11 +166,35 @@ object BattleHelper {
             enemyTileToAttack = capturableCity // enter it quickly, top priority!
 
         else if (nonCityTilesToAttack.isNotEmpty()) // second priority, units
-            enemyTileToAttack = nonCityTilesToAttack.minByOrNull {
-                Battle.getMapCombatantOfTile(it.tileToAttack)!!.getHealth()
-            }
+            enemyTileToAttack = chooseUnitToAttack(unit, nonCityTilesToAttack)
         else if (cityWithHealthLeft != null) enemyTileToAttack = cityWithHealthLeft // third priority, city
 
         return enemyTileToAttack
+    }
+
+    private fun chooseUnitToAttack(unit: MapUnit, attackableUnits: List<AttackableTile>): AttackableTile {
+        val militaryUnits = attackableUnits.filter { it.tileToAttack.militaryUnit != null }
+
+        // prioritize attacking military
+        if (militaryUnits.isNotEmpty()) {
+            // associate enemy units with number of hits from this unit to kill them
+            val attacksToKill = militaryUnits
+                .associateWith { it.tileToAttack.militaryUnit!!.health.toFloat() / BattleDamage.calculateDamageToDefender(
+                        MapUnitCombatant(unit),
+                        MapUnitCombatant(it.tileToAttack.militaryUnit!!)
+                    ).toFloat().coerceAtLeast(1f) }
+
+            // kill a unit if possible, prioritizing by attack strength
+            val canKill = attacksToKill.filter { it.value <= 1 }.maxByOrNull { MapUnitCombatant(it.key.tileToAttack.militaryUnit!!).getAttackingStrength() }?.key
+            if (canKill != null) return canKill
+
+            // otherwise pick the unit we can kill the fastest
+            return attacksToKill.minByOrNull { it.value }!!.key
+        }
+
+        // only civilians in attacking range
+        return attackableUnits.minByOrNull {
+            Battle.getMapCombatantOfTile(it.tileToAttack)!!.getHealth()
+        }!!
     }
 }
