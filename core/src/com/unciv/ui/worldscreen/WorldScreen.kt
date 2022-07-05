@@ -154,11 +154,7 @@ class WorldScreen(
         stage.addActor(statusButtons)
         stage.addActor(techPolicyAndDiplomacy)
         stage.addActor(tutorialTaskTable)
-
-        if (UncivGame.Current.settings.showZoomButtons) {
-            stage.addActor(zoomController)
-        }
-
+        stage.addActor(zoomController)
         stage.addActor(fogOfWarButton)
         stage.addActor(bottomUnitTable)
         stage.addActor(bottomTileInfoTable)
@@ -167,6 +163,8 @@ class WorldScreen(
         stage.addActor(battleTable)
 
         stage.addActor(unitActionsTable)
+
+        zoomController.isVisible = UncivGame.Current.settings.showZoomButtons
 
         val tileToCenterOn: Vector2 =
                 when {
@@ -393,6 +391,8 @@ class WorldScreen(
                         .map { (_, source, target) -> source to target }
             )
         }
+
+        zoomController.isVisible = UncivGame.Current.settings.showZoomButtons
 
         // if we use the clone, then when we update viewable tiles
         // it doesn't update the explored tiles of the civ... need to think about that harder
