@@ -1377,14 +1377,14 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
     fun moveCapitalToNextLargest() {
         val availableCities = cities.filterNot { it.isCapital() }
-        if (availableCities.filterNot { it.isPuppet }.isEmpty()) {
-            availableCities
-                .filter { it.isPuppet }
-                .maxByOrNull { it.population.population }!!.annexCity()
+        if (availableCities.none()) return
+        var newCapital = availableCities.filterNot { it.isPuppet }.maxByOrNull { it.population.population }
+
+        if (newCapital == null) { // No non-puppets, take largest puppet and annex
+            newCapital = availableCities.maxByOrNull { it.population.population }!!
+            newCapital.annexCity()
         }
-        moveCapitalTo(availableCities
-            .filterNot { it.isCapital() || it.isPuppet }
-            .maxByOrNull { it.population.population})
+        moveCapitalTo(newCapital)
     }
 
     //////////////////////// City State wrapper functions ////////////////////////
