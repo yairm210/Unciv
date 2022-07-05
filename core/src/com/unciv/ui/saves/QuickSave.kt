@@ -90,7 +90,6 @@ object QuickSave {
                 } catch (oom: OutOfMemoryError) {
                     outOfMemory()
                 } catch (notAPlayer: UncivShowableException) {
-                    Log.error("You are not allowed to watch this game!", notAPlayer)
                     val (message) = LoadGameScreen.getLoadExceptionMessage(notAPlayer)
                     launchOnGLThread {
                         loadingPopup.close()

@@ -115,6 +115,16 @@ class NewGameScreen(
                         return@onClick
                     }
                 }
+
+                if (!gameSetupInfo.gameParameters.anyoneCanSpectate) {
+                    if (gameSetupInfo.gameParameters.players.none { it.playerId == UncivGame.Current.settings.multiplayer.userId }) {
+                        val notAllowedToSpectate = Popup(this)
+                        notAllowedToSpectate.addGoodSizedLabel("You are not allowed to spectate!".tr()).row()
+                        notAllowedToSpectate.addCloseButton()
+                        notAllowedToSpectate.open()
+                        return@onClick
+                    }
+                }
             }
 
             if (gameSetupInfo.gameParameters.players.none {
@@ -295,19 +305,7 @@ class NewGameScreen(
             }
         }
 
-        val worldScreen: WorldScreen
-        try {
-            worldScreen = game.loadGame(newGame)
-        } catch (ex: Exception) {
-            val (message) = LoadGameScreen.getLoadExceptionMessage(ex)
-            launchOnGLThread {
-                popup.reuseWith(message, true)
-                rightSideButton.enable()
-                rightSideButton.setText("Start game!".tr())
-            }
-            Gdx.input.inputProcessor = stage
-            return@coroutineScope
-        }
+        val worldScreen = game.loadGame(newGame)
 
         if (newGame.gameParameters.isOnlineMultiplayer) {
             launchOnGLThread {
