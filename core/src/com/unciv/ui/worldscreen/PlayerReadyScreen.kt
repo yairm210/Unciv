@@ -13,23 +13,23 @@ import com.unciv.ui.utils.extensions.toTextButton
 import java.security.MessageDigest
 
 class PlayerReadyScreen(worldScreen: WorldScreen) : BaseScreen() {
-    var startTurn = true
-    val curCiv = worldScreen.viewingCiv
-    var enteredPassword = curCiv.hotseatPassword
+    var startTurn = true // used to disable screen change when clicking on the textbox or buttons
+    val currentCiv = worldScreen.viewingCiv
+    var password = currentCiv.hotseatPassword
     var confirmPassword = ""
 
     init {
         val table = Table()
         table.touchable = Touchable.enabled
-        table.background = ImageGetter.getBackground(curCiv.nation.getOuterColor())
+        table.background = ImageGetter.getBackground(currentCiv.nation.getOuterColor())
 
-        table.add("[$curCiv] ready?".toLabel(curCiv.nation.getInnerColor(), Constants.headingFontSize)).padBottom(20f).row()
+        table.add("[$currentCiv] ready?".toLabel(currentCiv.nation.getInnerColor(), Constants.headingFontSize)).padBottom(20f).row()
 
         val savePasswordButton = "Save password".toTextButton()
         savePasswordButton.onClick {
             startTurn = false
-            if (enteredPassword == confirmPassword) {
-                curCiv.hotseatPassword = hash(enteredPassword)
+            if (password == confirmPassword) {
+                currentCiv.hotseatPassword = hash(password)
                 game.replaceCurrentScreen(worldScreen)
             } else {
                 ToastPopup("Passwords do not match!", this)
@@ -41,21 +41,21 @@ class PlayerReadyScreen(worldScreen: WorldScreen) : BaseScreen() {
             startTurn = false
             table.removeActor(createPasswordButton)
             table.add(getPasswordTable()).row()
-            if (enteredPassword == "")
+            if (password == "")
                 table.add(savePasswordButton).padTop(10f).row()
         }
 
         val removePasswordButton = "Remove password".toTextButton()
         removePasswordButton.onClick {
-            if (hash(enteredPassword) == curCiv.hotseatPassword) {
-                curCiv.hotseatPassword = ""
+            if (hash(password) == currentCiv.hotseatPassword) {
+                currentCiv.hotseatPassword = ""
             } else {
                 startTurn = false
-                ToastPopup("You need to enter the current password first!", this)
+                ToastPopup("Wrong password!", this)
             }
         }
 
-        if (enteredPassword == "") {
+        if (password == "") {
             table.add(createPasswordButton).row()
         } else {
             table.add(getPasswordTable()).row()
@@ -64,9 +64,9 @@ class PlayerReadyScreen(worldScreen: WorldScreen) : BaseScreen() {
 
         table.onClick {
             if (startTurn) {
-                if (curCiv.hotseatPassword == "")
+                if (currentCiv.hotseatPassword == "")
                     game.replaceCurrentScreen(worldScreen)
-                if (hash(enteredPassword) == curCiv.hotseatPassword)
+                if (hash(password) == currentCiv.hotseatPassword)
                     game.replaceCurrentScreen(worldScreen)
                 else
                     ToastPopup("Wrong password!", this)
@@ -82,18 +82,18 @@ class PlayerReadyScreen(worldScreen: WorldScreen) : BaseScreen() {
     private fun getPasswordTable(): Table {
         val passwordTable = Table()
 
-        passwordTable.add("Password: ".toLabel(curCiv.nation.getInnerColor(), Constants.headingFontSize)).padTop(10f)
+        passwordTable.add("Password ".toLabel(currentCiv.nation.getInnerColor(), Constants.headingFontSize)).padTop(10f)
 
         val passwordTextField = UncivTextField.create("Password")
         passwordTextField.isPasswordMode = true
         passwordTextField.setPasswordCharacter('*')
-        passwordTextField.addListener { enteredPassword = passwordTextField.text; true }
+        passwordTextField.addListener { password = passwordTextField.text; true }
         passwordTextField.onClick { startTurn = false }
 
         passwordTable.add(passwordTextField).padTop(10f).row()
 
-        if (curCiv.hotseatPassword == "") {
-            passwordTable.add("Confirm password: ".toLabel(curCiv.nation.getInnerColor(), Constants.headingFontSize)).padTop(10f)
+        if (currentCiv.hotseatPassword == "") {
+            passwordTable.add("Confirm password ".toLabel(currentCiv.nation.getInnerColor(), Constants.headingFontSize)).padTop(10f)
 
             val confirmPasswordTextField = UncivTextField.create("Confirm password")
             confirmPasswordTextField.isPasswordMode = true
