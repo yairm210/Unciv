@@ -227,8 +227,9 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             // Can fail when starting the game...
             try {
                 newGame = GameStarter.startNewGame(GameSetupInfo.fromSettings("Chieftain"))
-            } catch (ex: UncivShowableException) {
-                launchOnGLThread { ToastPopup("You are not allowed to watch this game!", this@MainMenuScreen) }
+            } catch (notAPlayer: UncivShowableException) {
+                val (message) = LoadGameScreen.getLoadExceptionMessage(notAPlayer)
+                launchOnGLThread { ToastPopup(message, this@MainMenuScreen) }
                 return@run
             } catch (ex: Exception) {
                 launchOnGLThread { ToastPopup(errorText, this@MainMenuScreen) }
@@ -242,9 +243,10 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
                 launchOnGLThread {
                     ToastPopup("Not enough memory on phone to load game!", this@MainMenuScreen)
                 }
-            } catch (ex: UncivShowableException) {
+            } catch (notAPlayer: UncivShowableException) {
+                val (message) = LoadGameScreen.getLoadExceptionMessage(notAPlayer)
                 launchOnGLThread {
-                    ToastPopup("You are not allowed to watch this game!", this@MainMenuScreen)
+                    ToastPopup(message, this@MainMenuScreen)
                 }
             } catch (ex: Exception) {
                 launchOnGLThread {

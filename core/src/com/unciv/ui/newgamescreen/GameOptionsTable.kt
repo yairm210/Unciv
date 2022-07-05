@@ -72,7 +72,7 @@ class GameOptionsTable(
         checkboxTable.addNuclearWeaponsCheckbox()
         checkboxTable.addIsOnlineMultiplayerCheckbox()
         if (gameParameters.isOnlineMultiplayer)
-            checkboxTable.addNoUnwelcomeSpectators()
+            checkboxTable.addAnyoneCanSpectateCheckbox()
         checkboxTable.addReligionCheckbox(cityStateSlider)
         checkboxTable.addNoStartBiasCheckbox()
         add(checkboxTable).center().row()
@@ -116,7 +116,7 @@ class GameOptionsTable(
                 update()
             }
 
-    private fun Table.addNoUnwelcomeSpectators() =
+    private fun Table.addAnyoneCanSpectateCheckbox() =
             addCheckbox("Allow anyone to spectate", gameParameters.anyoneCanSpectate)
             {
                 gameParameters.anyoneCanSpectate = it
