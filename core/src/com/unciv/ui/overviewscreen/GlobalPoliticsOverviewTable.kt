@@ -39,35 +39,22 @@ class GlobalPoliticsOverviewTable (
             val civTable = Table(skin)
 
             // civ image
-            val civIndicator = ImageGetter.getNationIndicator(civ.nation, 100f)
-            civTable.add(civIndicator)
+            civTable.add(ImageGetter.getNationIndicator(civ.nation, 100f))
 
             civTable.addSeparatorVertical(Color.GRAY)
 
             // info about civ
-            val civInfoTable = Table(skin)
-            val leaderName = civ.getLeaderDisplayName().removeSuffix(" of " + civ.civName)
-            civInfoTable.add(leaderName.toLabel()).row()
-            civInfoTable.add(civ.civName.toLabel()).row()
-            civInfoTable.add(civ.tech.era.name.toLabel()).row()
-            civTable.add(civInfoTable)
+            civTable.add(getCivInfoTable(civ))
 
             civTable.addSeparatorVertical(Color.GRAY)
 
             // policies
-            val policiesTable = Table(skin)
-            for (policy in civ.policies.branchCompletionMap) {
-                if (policy.value != 0)
-                    policiesTable.add(policy.key.name + ": " + policy.value).row()
-            }
-            civTable.add(policiesTable)
+            civTable.add(getPoliciesTable(civ))
 
             civTable.addSeparatorVertical(Color.GRAY)
 
             // wonders
-            val wondersTable = Table(skin)
-            wondersTable.add(getWondersOfCivTable(civ))
-            civTable.add(wondersTable)
+            civTable.add(getWondersOfCivTable(civ))
 
             civTable.addSeparatorVertical(Color.GRAY)
 
@@ -80,6 +67,25 @@ class GlobalPoliticsOverviewTable (
         }
 
         return globalPoliticsTable
+    }
+
+    private fun getCivInfoTable(civ: CivilizationInfo): Table {
+        val civInfoTable = Table(skin)
+        val leaderName = civ.getLeaderDisplayName().removeSuffix(" of " + civ.civName)
+        civInfoTable.add(leaderName.toLabel(fontSize = 30)).row()
+        civInfoTable.add(civ.civName.toLabel()).row()
+        civInfoTable.add(civ.tech.era.name.toLabel()).row()
+        return civInfoTable
+    }
+
+    private fun getPoliciesTable(civ: CivilizationInfo): Table {
+        val policiesTable = Table(skin)
+        policiesTable.add("Social Policies:".toLabel())
+        for (policy in civ.policies.branchCompletionMap) {
+            if (policy.value != 0)
+                policiesTable.add(policy.key.name + ": " + policy.value).row()
+        }
+        return policiesTable
     }
 
     private fun getWondersOfCivTable(civ: CivilizationInfo): Table {
