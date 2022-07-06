@@ -42,6 +42,8 @@ class GlobalPoliticsOverviewTable (
             val civIndicator = ImageGetter.getNationIndicator(civ.nation, 100f)
             civTable.add(civIndicator)
 
+            civTable.addSeparatorVertical(Color.GRAY)
+
             // info about civ
             val civInfoTable = Table(skin)
             val leaderName = civ.getLeaderDisplayName().removeSuffix(" of " + civ.civName)
@@ -49,6 +51,8 @@ class GlobalPoliticsOverviewTable (
             civInfoTable.add(civ.civName.toLabel()).row()
             civInfoTable.add(civ.tech.era.name.toLabel()).row()
             civTable.add(civInfoTable)
+
+            civTable.addSeparatorVertical(Color.GRAY)
 
             // policies
             val policiesTable = Table(skin)
@@ -58,8 +62,14 @@ class GlobalPoliticsOverviewTable (
             }
             civTable.add(policiesTable)
 
+            civTable.addSeparatorVertical(Color.GRAY)
+
             // wonders
-            civTable.add(getWondersOfCivTable(civ))
+            val wondersTable = Table(skin)
+            wondersTable.add(getWondersOfCivTable(civ))
+            civTable.add(wondersTable)
+
+            civTable.addSeparatorVertical(Color.GRAY)
 
             //politics
             civTable.add(getPoliticsOfCivTable(civ))
