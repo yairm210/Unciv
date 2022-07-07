@@ -60,12 +60,13 @@ object BattleDamage {
 
             //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
             val adjacentUnits = combatant.getTile().neighbors.flatMap { it.getUnits() }
-            for (unique in adjacentUnits.filter { it.civInfo.isAtWarWith(civInfo) }
-                    .flatMap { it.getMatchingUniques(UniqueType.StrengthForAdjacentEnemies) })
-                if (combatant.matchesCategory(unique.params[1]) && combatant.getTile()
-                        .matchesFilter(unique.params[2])
-                )
-                    modifiers.add("Adjacent enemy units", unique.params[0].toInt())
+            val strengthMalus = adjacentUnits.filter { it.civInfo.isAtWarWith(civInfo) }
+                    .flatMap { it.getMatchingUniques(UniqueType.StrengthForAdjacentEnemies) }
+                    .filter { combatant.matchesCategory(it.params[1]) && combatant.getTile().matchesFilter(it.params[2]) }
+                    .maxByOrNull { it.params[0] }
+            if (strengthMalus != null) {
+                modifiers.add("Adjacent enemy units", strengthMalus.params[0].toInt())
+            }
 
             val civResources = civInfo.getCivResourcesByName()
             for (resource in combatant.unit.baseUnit.getResourceRequirements().keys)
