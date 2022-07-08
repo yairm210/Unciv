@@ -19,6 +19,8 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
+import com.unciv.ui.audio.MusicMood
+import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.civilopedia.CivilopediaCategories
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
@@ -418,6 +420,10 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                             cityInfo.location, NotificationIcon.Construction, buildingIcon)
                 else
                     civ.addNotification("[${construction.name}] has been built in a faraway land", buildingIcon)
+            }
+
+            if (cityInfo.civInfo.isPlayerCivilization() && (cityInfo.civInfo.gameInfo.currentPlayerCiv == cityInfo.civInfo)) {
+                UncivGame.Current.musicController.chooseTrack(construction.name, MusicMood.Built, MusicTrackChooserFlags.setSpecific)
             }
         } else {
             val icon = if (construction is Building) buildingIcon else construction.name // could be a unit, in which case take the unit name.
