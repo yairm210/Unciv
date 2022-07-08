@@ -1,3 +1,12 @@
+## 4.1.16
+
+By OptimizedForDensity:
+- Better AI targeting
+- Generalize production-to-stat conversion uniques
+- Performance improvements
+
+Unit icon opacity control - By letstalkaboutdune
+
 ## 4.1.15
 
 By OptimizedForDensity:

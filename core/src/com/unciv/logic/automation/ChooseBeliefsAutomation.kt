@@ -94,8 +94,6 @@ object ChooseBeliefsAutomation {
                         }
                         else -> 0f
                     }
-                UniqueType.StatsFromXPopulation ->
-                    unique.stats.values.sum() // Modified by personality
                 UniqueType.StatsFromTradeRoute ->
                     unique.stats.values.sum() *
                         if (city.isConnectedToCapital()) 2f

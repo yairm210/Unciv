@@ -346,8 +346,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     // This is ALWAYS called after create() on Android - google "Android life cycle"
     override fun resume() {
         super.resume()
-        musicController.resume()
         if (!isInitialized) return // The stuff from Create() is still happening, so the main screen will load eventually
+        musicController.resume()
 
         // This is also needed in resume to open links and notifications
         // correctly when the app was already running. The handling in onCreate
@@ -445,7 +445,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.1.15", 733)
+        val VERSION = Version("4.1.16", 734)
         //endregion
 
         lateinit var Current: UncivGame

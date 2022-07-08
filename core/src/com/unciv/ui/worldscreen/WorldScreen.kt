@@ -155,9 +155,8 @@ class WorldScreen(
         stage.addActor(techPolicyAndDiplomacy)
         stage.addActor(tutorialTaskTable)
 
-        if (UncivGame.Current.settings.showZoomButtons) {
-            stage.addActor(zoomController)
-        }
+        stage.addActor(zoomController)
+        zoomController.isVisible = UncivGame.Current.settings.showZoomButtons
 
         stage.addActor(fogOfWarButton)
         stage.addActor(bottomUnitTable)
@@ -393,6 +392,8 @@ class WorldScreen(
                         .map { (_, source, target) -> source to target }
             )
         }
+
+        zoomController.isVisible = UncivGame.Current.settings.showZoomButtons
 
         // if we use the clone, then when we update viewable tiles
         // it doesn't update the explored tiles of the civ... need to think about that harder

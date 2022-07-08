@@ -810,7 +810,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         policies.civInfo = this
         if (policies.adoptedPolicies.size > 0 && policies.numberOfAdoptedPolicies == 0)
             policies.numberOfAdoptedPolicies = policies.adoptedPolicies.count { !Policy.isBranchCompleteByName(it) }
-        policies.setTransients()
 
         questManager.civInfo = this
         questManager.setTransients()
@@ -1376,9 +1375,15 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     }
 
     fun moveCapitalToNextLargest() {
-        moveCapitalTo(cities
-            .filterNot { it.isCapital() }
-            .maxByOrNull { it.population.population})
+        val availableCities = cities.filterNot { it.isCapital() }
+        if (availableCities.none()) return
+        var newCapital = availableCities.filterNot { it.isPuppet }.maxByOrNull { it.population.population }
+
+        if (newCapital == null) { // No non-puppets, take largest puppet and annex
+            newCapital = availableCities.maxByOrNull { it.population.population }!!
+            newCapital.annexCity()
+        }
+        moveCapitalTo(newCapital)
     }
 
     //////////////////////// City State wrapper functions ////////////////////////

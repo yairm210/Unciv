@@ -791,18 +791,6 @@ object Battle {
             } else if (Random().nextFloat() < 0.5f && !tile.terrainFeatures.contains("Fallout")) {
                 tile.addTerrainFeature("Fallout")
             }
-            if (!tile.terrainHasUnique(UniqueType.DestroyableByNukes)) return
-
-            // Deprecated as of 3.19.19 -- If removed, the two successive `if`s above should be merged
-                val destructionChance = if (tile.terrainHasUnique(UniqueType.ResistsNukes)) 0.25f
-                else 0.5f
-                if (Random().nextFloat() < destructionChance) {
-                    for (terrainFeature in tile.terrainFeatureObjects)
-                        if (terrainFeature.hasUnique(UniqueType.DestroyableByNukes))
-                            tile.removeTerrainFeature(terrainFeature.name)
-                    tile.addTerrainFeature("Fallout")
-                }
-            //
         }
     }
 

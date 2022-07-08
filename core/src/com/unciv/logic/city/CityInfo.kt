@@ -506,9 +506,7 @@ class CityInfo : IsPartOfGameInfoSerialization {
 
     fun getGreatPersonPercentageBonus(): Int{
         var allGppPercentageBonus = 0
-        for (unique in getMatchingUniques(UniqueType.GreatPersonPointPercentage)
-            + getMatchingUniques(UniqueType.GreatPersonPointPercentageDeprecated)
-        ) {
+        for (unique in getMatchingUniques(UniqueType.GreatPersonPointPercentage)) {
             if (!matchesFilter(unique.params[1])) continue
             allGppPercentageBonus += unique.params[0].toInt()
         }

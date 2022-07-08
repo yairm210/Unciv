@@ -430,6 +430,6 @@ class IncompatibleGameInfoVersionException(
     cause: Throwable? = null
 ) : UncivShowableException(
     "The save was created with an incompatible version of Unciv: [${version.createdWith.toNiceString()}]. " +
-            "Please update Unciv to at least [${version.createdWith.toNiceString()}] and try again.",
+            "Please update Unciv to this version or later and try again.",
     cause
 ), HasGameInfoSerializationVersion
