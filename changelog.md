@@ -1,21 +1,20 @@
 ## 4.1.17
 
-Removed deprecated uniques
+Puppet cities generate no extra unhappiness (per Civ V)
 
-Resolved  - puppet cities generate no extra unhappiness (per Civ V)
+Resolved crash when resuming game after closing it quickly
 
-Resolved crash when resuming before music controller initialized
+Modding: Removed deprecated uniques
 
 By OptimizedForDensity:
-- Prevent theme music tracks from randomly playing 
-- Improve AI belief picking 
-- Fix latest untranslated strings 
-- Unstack enemy unit strength modifiers 
+- Improve AI belief picking
+- Unstack enemy unit strength modifiers
+- Prevent theme music tracks from randomly playing
+- Fix latest untranslated strings
 
 By alexban011:
-- feature 
-- Increase mod search request page size 
-- Puppeted cities can no longer become capitals 
+- Increase mod search request page size
+- Puppeted cities can no longer become capitals
 
 ## 4.1.16
 
