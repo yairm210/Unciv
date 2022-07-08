@@ -150,8 +150,6 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun amountOfFoundableReligions() = civInfo.gameInfo.civilizations.count { it.isMajorCiv() } / 2 + 1
-
     fun remainingFoundableReligions(): Int {
         val foundedReligionsCount = civInfo.gameInfo.civilizations.count {
             it.religionManager.religion != null && it.religionManager.religionState >= ReligionState.Religion
@@ -159,7 +157,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
 
         // count the number of foundable religions left given defined ruleset religions and number of civs in game
         val maxNumberOfAdditionalReligions = min(civInfo.gameInfo.ruleSet.religions.size,
-            amountOfFoundableReligions()) - foundedReligionsCount
+            civInfo.gameInfo.civilizations.count { it.isMajorCiv() } / 2 + 1) - foundedReligionsCount
 
         val availableBeliefsToFound = min(
             civInfo.gameInfo.ruleSet.beliefs.values.count {

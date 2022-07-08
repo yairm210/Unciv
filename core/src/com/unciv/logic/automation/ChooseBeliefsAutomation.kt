@@ -2,6 +2,7 @@ package com.unciv.logic.automation
 
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
@@ -112,15 +113,35 @@ object ChooseBeliefsAutomation {
 
     private fun beliefBonusForPlayer(civInfo: CivilizationInfo, belief: Belief): Float {
         var score = 0f
-        val amountOfEnhancedReligions = civInfo.religionManager.amountOfFoundableReligions()
+        val numberOfFoundedReligions = civInfo.gameInfo.civilizations.count {
+            it.religionManager.religion != null && it.religionManager.religionState >= ReligionState.Religion
+        }
+        val maxNumberOfReligions = numberOfFoundedReligions + civInfo.religionManager.remainingFoundableReligions()
+
+        // adjusts scores of certain beliefs as game evolves (adapted from Civ 5 DLL files on AI belief selection)
+        // enable differentiation of early vs late founding of religion and early vs late enhancement of religion
+        // this is mainly for mods which may shuffle enhancer and founder beliefs w.r.t. base UnCiv
+        var gameTimeScalingPercent = 100
+        when (civInfo.religionManager.religionState) {
+            ReligionState.FoundingReligion -> {
+                gameTimeScalingPercent = 100 - ((numberOfFoundedReligions * 100) / maxNumberOfReligions)
+            }
+            ReligionState.EnhancingReligion -> {
+                val amountOfEnhancedReligions = civInfo.gameInfo.civilizations.count {
+                    it.religionManager.religion != null && it.religionManager.religionState == ReligionState.EnhancedReligion
+                }
+                gameTimeScalingPercent = 100 - ((amountOfEnhancedReligions * 100) / maxNumberOfReligions)
+            }
+            else -> {} // pantheon shouldn't matter
+        }
         val goodEarlyModifier = when {
-            amountOfEnhancedReligions < 33 -> 1f
-            amountOfEnhancedReligions < 66 -> 2f
+            gameTimeScalingPercent < 33 -> 1f
+            gameTimeScalingPercent < 66 -> 2f
             else -> 4f
         }
         val goodLateModifier = when {
-            amountOfEnhancedReligions < 33 -> 2f
-            amountOfEnhancedReligions < 66 -> 1f
+            gameTimeScalingPercent < 33 -> 2f
+            gameTimeScalingPercent < 66 -> 1f
             else -> 1/2f
         }
 
@@ -153,27 +174,32 @@ object ChooseBeliefsAutomation {
                 UniqueType.BuyUnitsByProductionCost ->
                     15f * if (civInfo.wantsToFocusOn(Victory.Focus.Military)) 2f else 1f
                 UniqueType.StatsWhenSpreading ->
-                    unique.params[0].toInt() / 5f
+                    unique.params[0].toFloat() / 5f
                 UniqueType.StatsWhenAdoptingReligion, UniqueType.StatsWhenAdoptingReligionSpeed ->
                     unique.stats.values.sum() / 50f
                 UniqueType.RestingPointOfCityStatesFollowingReligionChange ->
-                    unique.params[0].toInt() / 7f
+                    if (civInfo.wantsToFocusOn(Victory.Focus.CityStates))
+                        unique.params[0].toFloat() / 3.5f
+                    else
+                        unique.params[0].toFloat() / 7f
                 UniqueType.StatsFromGlobalCitiesFollowingReligion ->
-                    50f / unique.stats.values.sum()
+                    unique.stats.values.sum()
+                UniqueType.StatsFromGlobalFollowers ->
+                    4f * (unique.stats.values.sum() / unique.params[1].toFloat())
                 UniqueType.StatsSpendingGreatPeople ->
                     unique.stats.values.sum() / 2f
                 UniqueType.Strength ->
-                    unique.params[0].toInt() / 4f
+                    unique.params[0].toFloat() / 4f
                 UniqueType.ReligionSpreadDistance ->
-                    (10 + unique.params[0].toInt()) / goodEarlyModifier
+                    (10f + unique.params[0].toFloat()) * goodEarlyModifier
                 UniqueType.NaturalReligionSpreadStrength ->
-                    (10 + unique.params[0].toInt()) / goodEarlyModifier
+                    unique.params[0].toFloat() * goodEarlyModifier / 5f
                 UniqueType.SpreadReligionStrength ->
-                    unique.params[0].toInt() / goodLateModifier
+                    unique.params[0].toFloat() * goodLateModifier / 5f
                 UniqueType.FaithCostOfGreatProphetChange ->
-                    unique.params[0].toInt() / goodLateModifier / 2f
+                    -unique.params[0].toFloat() * goodLateModifier / 2f
                 UniqueType.BuyBuildingsDiscount, UniqueType.BuyItemsDiscount, UniqueType.BuyUnitsDiscount ->
-                    unique.params[2].toInt() / goodLateModifier
+                    -unique.params[2].toFloat() * goodLateModifier / 5f
                 else -> 0f
             }
         }
