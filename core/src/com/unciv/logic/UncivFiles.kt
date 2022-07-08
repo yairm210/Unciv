@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.JsonReader
 import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
+import com.unciv.logic.BackwardCompatibility.migrateCurrentCivName
 import com.unciv.logic.multiplayer.MultiplayerGameStatus
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.doMigrations
@@ -228,7 +229,9 @@ class UncivFiles(
     }
 
     fun loadGamePreviewFromFile(gameFile: FileHandle): GameInfoPreview {
-        return json().fromJson(GameInfoPreview::class.java, gameFile)
+        val preview = json().fromJson(GameInfoPreview::class.java, gameFile)
+        preview.migrateCurrentCivName()
+        return preview
     }
 
     fun loadMultiplayerGameStatusByName(gameName: String) =
@@ -401,7 +404,7 @@ class UncivFiles(
 
         // keep auto-saves for the last 10 turns for debugging purposes
         val newAutosaveFilename =
-            SAVE_FILES_FOLDER + File.separator + AUTOSAVE_FILE_NAME + "-${gameInfo.currentPlayer}-${gameInfo.turns}"
+            SAVE_FILES_FOLDER + File.separator + AUTOSAVE_FILE_NAME + "-${gameInfo.currentCivName}-${gameInfo.turns}"
         getSaveFile(AUTOSAVE_FILE_NAME).copyTo(files.local(newAutosaveFilename))
 
         fun getAutosaves(): Sequence<FileHandle> {

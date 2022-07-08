@@ -10,13 +10,13 @@ import com.unciv.models.metadata.GameParameters
  * Reduced variant of GameInfo used for multiplayer saves.
  * Contains additional data for multiplayer settings.
  */
-class MultiplayerGameStatus() : HasGameId, HasGameTurnData {
+class MultiplayerGameStatus private constructor() : HasGameId, HasGameTurnData {
     var civilizations = mutableListOf<CivilizationInfoPreview>()
     var difficulty = "Chieftain"
     var gameParameters = GameParameters()
     override var gameId = ""
     override var turns = 0
-    override var currentPlayer = ""
+    override var currentCivName = ""
     override var currentTurnStartTime = 0L
 
     /**
@@ -27,11 +27,14 @@ class MultiplayerGameStatus() : HasGameId, HasGameTurnData {
         civilizations = gameInfo.getCivilizationsAsPreviews()
         difficulty = gameInfo.difficulty
         gameParameters = gameInfo.gameParameters
-        turns = gameInfo.turns
         gameId = gameInfo.gameId
-        currentPlayer = gameInfo.currentPlayer
+        turns = gameInfo.turns
+        currentCivName = gameInfo.currentCivName
         currentTurnStartTime = gameInfo.currentTurnStartTime
     }
 
     fun getCivilization(civName: String) = civilizations.first { it.civName == civName }
+    override fun toString(): String {
+        return "MultiplayerGameStatus(gameId='$gameId', turns=$turns, currentCivName='$currentCivName', currentPlayerId='$currentPlayerId', currentTurnStartTime=$currentTurnStartTime)"
+    }
 }

@@ -209,7 +209,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
 
             Log.d(LOG_TAG, "start gameNames: ${Arrays.toString(gameNames)}")
 
-            if (currentGameInfo.currentPlayerCiv.playerId == settings.userId) {
+            if (currentGameInfo.currentCiv.playerId == settings.userId) {
                 // May be useful to remind a player that he forgot to complete his turn.
                 val gameIndex = gameIds.indexOf(currentGameInfo.gameId)
                 // If reading the game status file threw an exception, gameIndex will be -1

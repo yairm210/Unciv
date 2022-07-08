@@ -7,7 +7,6 @@ import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.UncivSlider
 import com.unciv.ui.utils.extensions.toLabel
-import com.unciv.ui.worldscreen.WorldScreen
 
 fun gameplayTab(
     optionsPopup: OptionsPopup
@@ -25,7 +24,7 @@ fun gameplayTab(
         if (shouldAutoAssignCityProduction && worldScreen != null &&
                 worldScreen.viewingCiv.isCurrentPlayer() && worldScreen.viewingCiv.playerType == PlayerType.Human
         ) {
-            worldScreen.gameInfo.currentPlayerCiv.cities.forEach { city ->
+            worldScreen.gameInfo.currentCiv.cities.forEach { city ->
                 city.cityConstructions.chooseNextConstruction()
             }
         }

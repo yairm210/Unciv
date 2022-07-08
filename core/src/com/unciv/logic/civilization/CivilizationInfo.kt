@@ -1408,8 +1408,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     fun setAllyCiv(newAllyName: String?) { allyCivName = newAllyName }
 
     //endregion
-
-    fun asPreview() = CivilizationInfoPreview(this)
 }
 
 /**

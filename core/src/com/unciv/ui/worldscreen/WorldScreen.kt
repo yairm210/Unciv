@@ -92,7 +92,7 @@ class WorldScreen(
     var shouldUpdate = false
 
     /** Indicates it's the player's ([viewingCiv]) turn */
-    var isPlayersTurn = viewingCiv == gameInfo.currentPlayerCiv
+    var isPlayersTurn = viewingCiv == gameInfo.currentCiv
         private set     // only this class is allowed to make changes
 
     /** Selected civilization, used in spectator and replay mode, equals viewingCiv in ordinary games */
@@ -237,7 +237,7 @@ class WorldScreen(
         globalShortcuts.add(Input.Keys.F11) { QuickSave.save(gameInfo, this) }    // Quick Save
         globalShortcuts.add(Input.Keys.F12) { QuickSave.load(this) }    // Quick Load
         globalShortcuts.add(Input.Keys.HOME) {    // Capital City View
-            val capital = gameInfo.currentPlayerCiv.getCapital()
+            val capital = gameInfo.currentCiv.getCapital()
             if (capital != null && !mapHolder.setCenterPosition(capital.location))
                 game.pushScreen(CityScreen(capital))
         }
@@ -318,11 +318,11 @@ class WorldScreen(
 
         try {
             debug("loadLatestMultiplayerState current game: gameId: %s, turn: %s, curCiv: %s",
-                gameInfo.gameId, gameInfo.turns, gameInfo.currentPlayer)
+                gameInfo.gameId, gameInfo.turns, gameInfo.currentCivName)
             val latestGame = game.onlineMultiplayer.downloadGame(gameInfo.gameId)
             debug("loadLatestMultiplayerState downloaded game: gameId: %s, turn: %s, curCiv: %s",
-                latestGame.gameId, latestGame.turns, latestGame.currentPlayer)
-            if (viewingCiv.civName == latestGame.currentPlayer || viewingCiv.civName == Constants.spectator) {
+                latestGame.gameId, latestGame.turns, latestGame.currentCivName)
+            if (viewingCiv.civName == latestGame.currentCivName || viewingCiv.civName == Constants.spectator) {
                 game.platformSpecificHelper?.notifyTurnStarted()
             }
             launchOnGLThread {
@@ -653,7 +653,7 @@ class WorldScreen(
             isNextTurnUpdateRunning() ->
                 NextTurnAction("Working...", Color.GRAY) {}
             !isPlayersTurn && gameInfo.gameParameters.isOnlineMultiplayer ->
-                NextTurnAction("Waiting for [${gameInfo.currentPlayerCiv}]...", Color.GRAY) {}
+                NextTurnAction("Waiting for [${gameInfo.currentCiv}]...", Color.GRAY) {}
             !isPlayersTurn && !gameInfo.gameParameters.isOnlineMultiplayer ->
                 NextTurnAction("Waiting for other players...",Color.GRAY) {}
 

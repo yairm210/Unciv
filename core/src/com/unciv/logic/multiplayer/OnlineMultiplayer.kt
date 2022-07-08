@@ -4,6 +4,7 @@ import com.badlogic.gdx.files.FileHandle
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
+import com.unciv.logic.HasGameTurnData
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
@@ -185,7 +186,7 @@ class OnlineMultiplayer {
         val oldStatus = game.status ?: throw game.error!!
         // download to work with the latest game state
         val gameInfo = multiplayerFiles.tryDownloadGame(oldStatus.gameId)
-        val playerCiv = gameInfo.currentPlayerCiv
+        val playerCiv = gameInfo.currentCiv
 
         if (!gameInfo.isUsersTurn()) {
             return false
@@ -226,13 +227,12 @@ class OnlineMultiplayer {
      */
     suspend fun loadGame(gameId: String) = coroutineScope {
         val newGameInfo = downloadGame(gameId)
-        val newStatus = MultiplayerGameStatus(newGameInfo)
         val onlineGame = getGameByGameId(gameId)
         val oldStatus = onlineGame?.status
         if (onlineGame == null) {
             createGame(newGameInfo)
-        } else if (oldStatus != null && !oldStatus.hasLatestGameState(newStatus)){
-            onlineGame.doManualUpdate(newStatus)
+        } else if (oldStatus != null && !oldStatus.hasLatestGameState(newGameInfo)){
+            onlineGame.doManualUpdate(newGameInfo)
         }
         UncivGame.Current.loadGame(newGameInfo)
     }
@@ -372,7 +372,5 @@ suspend fun <T> attemptAction(
     }
 }
 
-
-fun MultiplayerGameStatus.isUsersTurn() = getCivilization(currentPlayer).playerId == UncivGame.Current.settings.multiplayer.userId
-fun GameInfo.isUsersTurn() = getCivilization(currentPlayer).playerId == UncivGame.Current.settings.multiplayer.userId
+fun HasGameTurnData.isUsersTurn() = currentPlayerId == UncivGame.Current.settings.multiplayer.userId
 

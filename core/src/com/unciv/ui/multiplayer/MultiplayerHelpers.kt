@@ -44,9 +44,9 @@ object MultiplayerHelpers {
         val lastUpdate = multiplayerGame.lastUpdate
         descriptionText.appendLine("Last refresh: [${Duration.between(lastUpdate, Instant.now()).formatShort()}] ago".tr())
         val status = multiplayerGame.status
-        if (status?.currentPlayer != null) {
+        if (status?.currentCivName != null) {
             val currentTurnStartTime = Instant.ofEpochMilli(status.currentTurnStartTime)
-            descriptionText.appendLine("Current Turn: [${status.currentPlayer}] since [${Duration.between(currentTurnStartTime, Instant.now()).formatShort()}] ago".tr())
+            descriptionText.appendLine("Current Turn: [${status.currentCivName}] since [${Duration.between(currentTurnStartTime, Instant.now()).formatShort()}] ago".tr())
         }
         return descriptionText
     }

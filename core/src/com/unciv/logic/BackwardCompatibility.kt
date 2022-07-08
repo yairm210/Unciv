@@ -10,6 +10,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.TechManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
+import com.unciv.logic.multiplayer.MultiplayerGameStatus
 import com.unciv.models.ruleset.ModOptions
 import com.unciv.models.ruleset.Ruleset
 
@@ -224,6 +225,24 @@ object BackwardCompatibility {
         if (gameParameters.gameSpeed != "" && gameParameters.gameSpeed in ruleSet.speeds.keys) {
             gameParameters.speed = gameParameters.gameSpeed
             gameParameters.gameSpeed = ""
+        }
+    }
+
+    /** Remove this completely once users migrated their saves. When removing this, also remove [GameInfo.currentPlayer] and [GameInfoPreview.currentPlayer] */
+    @Suppress("DEPRECATION")
+    fun GameInfo.migrateCurrentCivName() {
+        if (currentPlayer != "") {
+            currentCivName = currentPlayer
+            currentPlayer = ""
+        }
+    }
+
+    /** Remove this completely once users migrated their saves. When removing this, also remove [GameInfo.currentPlayer] and [GameInfoPreview.currentPlayer] */
+    @Suppress("DEPRECATION")
+    fun GameInfoPreview.migrateCurrentCivName() {
+        if (currentPlayer != "") {
+            currentCivName = currentPlayer
+            currentPlayer = ""
         }
     }
 }

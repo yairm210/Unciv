@@ -139,7 +139,7 @@ class Nation : RulesetObject() {
         textList += FormattedLine("{Type}: {$cityStateType}", header = 4, color = cityStateType!!.color)
 
         val era = if (UncivGame.isCurrentInitialized() && UncivGame.Current.gameInfo != null) {
-            UncivGame.Current.gameInfo!!.currentPlayerCiv.getEra()
+            UncivGame.Current.gameInfo!!.currentCiv.getEra()
         } else {
             ruleset.eras.values.first()
         }
