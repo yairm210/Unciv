@@ -44,6 +44,8 @@ interface HasGameTurnData {
     var turns: Int
     /** The civ whose turn it is currently. */
     var currentCivName: String
+    /** The playerId whose turn it is currently, the empty String in a single-player game. */
+    val currentPlayerId: String
     /** Start of the current turn in milliseconds since epoch. */
     var currentTurnStartTime: Long
 
@@ -109,6 +111,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion,
     var currentPlayer = ""
     override var currentCivName = ""
     override var currentTurnStartTime = 0L
+    override val currentPlayerId: String get() = getCivilization(currentCivName).playerId
     var oneMoreTurnMode = false
     override var gameId = UUID.randomUUID().toString() // random string
 
@@ -573,6 +576,7 @@ class GameInfoPreview private constructor() : HasGameTurnData { // constructor o
     var currentPlayer = ""
     override var currentCivName = ""
     override var currentTurnStartTime = 0L
+    override val currentPlayerId get() = getCivilization(currentCivName).playerId
 
     fun getCivilization(civName: String) = civilizations.first { it.civName == civName }
 }

@@ -30,6 +30,7 @@ class MultiplayerGameStatus private constructor() : HasGameId, HasGameTurnData {
         gameId = gameInfo.gameId
         turns = gameInfo.turns
         currentCivName = gameInfo.currentCivName
+        currentPlayerId = gameInfo.getCivilization(currentCivName).playerId
         currentTurnStartTime = gameInfo.currentTurnStartTime
     }
 

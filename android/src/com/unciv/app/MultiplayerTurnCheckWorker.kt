@@ -305,14 +305,13 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                     Log.d(LOG_TAG, "doWork download ${gameId}")
                     val status = OnlineMultiplayerFiles(fileStorage).tryDownloadGameStatus(gameId)
                     Log.d(LOG_TAG, "doWork download ${gameId} done")
-                    val currentTurnPlayer = status.getCivilization(status.currentPlayer)
 
                     //Save game so MultiplayerScreen gets updated
                     Log.i(LOG_TAG, "doWork save gameName: ${gameNames[idx]}")
                     files.saveMultiplayerGameStatus(status, gameNames[idx])
                     Log.i(LOG_TAG, "doWork save ${gameNames[idx]} done")
 
-                    if (currentTurnPlayer.playerId == inputData.getString(USER_ID)!! && foundGame == null) {
+                    if (status.currentPlayerId == inputData.getString(USER_ID)!! && foundGame == null) {
                         foundGame = Pair(gameNames[idx], gameIds[idx])
                     }
                 } catch (ex: FileStorageRateLimitReached) {
