@@ -428,9 +428,7 @@ class CityStats(val cityInfo: CityInfo) {
                     unhappinessFromCitizens += unique.params[0].toFloat() / 100f * cityInfo.population.population
         //
 
-        if (cityInfo.isPuppet)
-            unhappinessFromCitizens *= 1.5f
-        else if (hasExtraAnnexUnhappiness())
+        if (hasExtraAnnexUnhappiness())
             unhappinessFromCitizens *= 2f
 
         if (unhappinessFromCitizens < 0) unhappinessFromCitizens = 0f
