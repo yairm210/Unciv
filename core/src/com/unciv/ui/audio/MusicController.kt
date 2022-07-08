@@ -349,7 +349,7 @@ class MusicController {
     fun chooseTrack (
         prefix: String = "",
         suffix: String = "Ambient",
-        flags: EnumSet<MusicTrackChooserFlags> = EnumSet.noneOf(MusicTrackChooserFlags::class.java)
+        flags: EnumSet<MusicTrackChooserFlags> = EnumSet.of(MusicTrackChooserFlags.SuffixMustMatch)
     ): Boolean {
         if (baseVolume == 0f) return false
 
@@ -389,6 +389,13 @@ class MusicController {
                     current?.startFade(MusicTrackController.State.FadeOut, fadingStep)
                 ControllerState.Pause ->
                     if (current?.state == MusicTrackController.State.Idle) clearCurrent()
+                ControllerState.Idle -> {
+                    if (current == null) {
+                        // force track to begin now
+                        current = next
+                        next = null
+                    }
+                }
                 else -> Unit
             }
         })

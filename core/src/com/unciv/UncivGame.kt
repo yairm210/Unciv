@@ -146,6 +146,9 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             // This stuff needs to run on the main thread because it needs the GL context
             launchOnGLThread {
                 musicController.chooseTrack(suffix = MusicMood.Menu)
+                if (!musicController.isPlaying()) {
+                    musicController.chooseTrack() // play any Ambient track as a backup
+                }
 
                 ImageGetter.ruleset = RulesetCache.getVanillaRuleset() // so that we can enter the map editor without having to load a game first
 
