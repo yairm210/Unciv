@@ -21,6 +21,7 @@ import com.unciv.ui.LoadingScreen
 import com.unciv.ui.audio.GameSounds
 import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicMood
+import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.crashhandling.CrashScreen
 import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
@@ -145,10 +146,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
             // This stuff needs to run on the main thread because it needs the GL context
             launchOnGLThread {
-                musicController.chooseTrack(suffix = MusicMood.Menu)
-                if (!musicController.isPlaying()) {
-                    musicController.chooseTrack() // play any Ambient track as a backup
-                }
+                musicController.chooseTrack(suffixes = listOf(MusicMood.Menu, "Ambient"),
+                    flags = EnumSet.of(MusicTrackChooserFlags.SuffixMustMatch))
 
                 ImageGetter.ruleset = RulesetCache.getVanillaRuleset() // so that we can enter the map editor without having to load a game first
 
