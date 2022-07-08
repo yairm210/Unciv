@@ -5,7 +5,6 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.ruleset.BeliefType
-import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.stats.Stats
 import com.unciv.testing.GdxTestRunner
 import com.unciv.ui.worldscreen.unit.UnitActions
@@ -82,7 +81,7 @@ class GlobalUniquesTests {
         val civInfo = game.addCiv()
         val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
         val cityInfo = game.addCity(civInfo, tile, true, initialPopulation = 2)
-        val building = game.createBuilding("[+3 Gold] in cities with [3] or more population")
+        val building = game.createBuilding("[+3 Gold] <in cities with at least [3] [Population]>")
 
         cityInfo.cityConstructions.addBuilding(building.name)
 

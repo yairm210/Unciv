@@ -114,7 +114,7 @@ object BattleDamage {
             modifiers.add(getTileSpecificModifiers(attacker, defender.getTile()))
 
             if (attacker.unit.isEmbarked()
-                    && !(attacker.unit.hasUnique(UniqueType.AttackAcrossCoast)) || attacker.unit.hasUnique(UniqueType.AttackFromSea))
+                    && !(attacker.unit.hasUnique(UniqueType.AttackAcrossCoast)))
                 modifiers["Landing"] = -50
 
             // Land Melee Unit attacking to Water
@@ -150,12 +150,6 @@ object BattleDamage {
                     ) {
                         modifiers["Across river"] = -20
                     }
-                }
-            }
-
-            for (unique in attacker.getCivInfo().getMatchingUniques(UniqueType.TimedAttackStrength)) {
-                if (attacker.matchesCategory(unique.params[1])) {
-                    modifiers.add("Temporary Bonus", unique.params[0].toInt())
                 }
             }
 

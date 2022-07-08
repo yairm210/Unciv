@@ -8,8 +8,6 @@ import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.translations.equalsPlaceholderText
-import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.ui.utils.extensions.toPercent
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -100,22 +98,6 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     @Suppress("MemberVisibilityCanBePrivate")
     fun getPolicyByName(name: String): Policy = getRulesetPolicies()[name]!!
 
-    fun setTransients() {
-        for (policyName in adoptedPolicies) addPolicyToTransients(
-            getPolicyByName(policyName)
-        )
-    }
-
-    private fun addPolicyToTransients(policy: Policy) {
-        for (unique in policy.uniqueObjects) {
-            // Should be deprecated together with TimedAttackStrength so
-            // I'm putting this here so the compiler will complain if we don't
-            val rememberToDeprecate = UniqueType.TimedAttackStrength
-            if (!unique.text.contains(turnCountRegex))
-                policyUniques.addUnique(unique)
-        }
-    }
-
     fun addCulture(culture: Int) {
         val couldAdoptPolicyBefore = canAdoptPolicy()
         storedCulture += culture
@@ -166,9 +148,6 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         if (policy.policyBranchType == PolicyBranchType.BranchComplete) return false
         if (!getAdoptedPolicies().containsAll(policy.requires!!)) return false
         if (checkEra && civInfo.gameInfo.ruleSet.eras[policy.branch.era]!!.eraNumber > civInfo.getEraNumber()) return false
-        if (policy.getMatchingUniques(UniqueType.IncompatibleWith)
-                .any { adoptedPolicies.contains(it.params[0]) }
-        ) return false
         if (policy.uniqueObjects.filter { it.type == UniqueType.OnlyAvailableWhen }
                 .any { !it.conditionalsApply(civInfo) }) return false
         return true
@@ -198,7 +177,6 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         }
 
         adoptedPolicies.add(policy.name)
-        addPolicyToTransients(policy)
 
         if (!branchCompletion) {
             val branch = policy.branch
