@@ -810,6 +810,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         policies.civInfo = this
         if (policies.adoptedPolicies.size > 0 && policies.numberOfAdoptedPolicies == 0)
             policies.numberOfAdoptedPolicies = policies.adoptedPolicies.count { !Policy.isBranchCompleteByName(it) }
+        policies.setTransients()
 
         questManager.civInfo = this
         questManager.setTransients()
