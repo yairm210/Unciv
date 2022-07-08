@@ -6,6 +6,7 @@ object MusicMood {
     const val War = "War"
     const val Defeat = "Defeat"
     const val Menu = "Menu"
+    const val Ambient = "Ambient"
 
     val themeOrPeace = listOf(Theme, Peace)
     fun peaceOrWar(isAtWar: Boolean) = if (isAtWar) War else Peace

@@ -348,7 +348,7 @@ class MusicController {
      */
     fun chooseTrack (
         prefix: String = "",
-        suffix: String = "Ambient",
+        suffix: String = MusicMood.Ambient,
         flags: EnumSet<MusicTrackChooserFlags> = EnumSet.of(MusicTrackChooserFlags.SuffixMustMatch)
     ): Boolean {
         if (baseVolume == 0f) return false
