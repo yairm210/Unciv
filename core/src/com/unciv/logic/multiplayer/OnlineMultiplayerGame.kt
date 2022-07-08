@@ -104,7 +104,7 @@ class OnlineMultiplayerGame(
     private suspend fun update(): GameUpdateResult {
         val curStatus = if (status != null) status!! else loadStatusFromFile()
         val newStatus = OnlineMultiplayerFiles().tryDownloadGameStatus(curStatus.gameId)
-        if (newStatus.turns == curStatus.turns && newStatus.currentPlayer == curStatus.currentPlayer) return GameUpdateResult.UNCHANGED
+        if (curStatus.hasLatestGameState(newStatus)) return GameUpdateResult.UNCHANGED
         UncivGame.Current.files.saveMultiplayerGameStatus(newStatus, fileHandle)
         status = newStatus
         return GameUpdateResult.CHANGED

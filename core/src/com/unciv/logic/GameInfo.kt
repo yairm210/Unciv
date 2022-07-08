@@ -35,6 +35,24 @@ import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.utils.debug
 import java.util.*
 
+interface HasGameId {
+    var gameId: String
+}
+
+interface HasGameTurnData {
+    var turns: Int
+    /** The civ whose turn it is currently. */
+    var currentPlayer: String
+    /** Start of the current turn in milliseconds since epoch. */
+    var currentTurnStartTime: Long
+
+    /**
+     * Checks if this has the same turn as [latestGameState].
+     */
+    fun hasLatestGameState(latestGameState: HasGameTurnData): Boolean {
+        return currentPlayer == latestGameState.currentPlayer && turns == latestGameState.turns
+    }
+}
 
 /**
  * A class that implements this interface is part of [GameInfo] serialization, i.e. save files.
@@ -64,7 +82,7 @@ data class CompatibilityVersion(
 
 }
 
-class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion {
+class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion, HasGameId, HasGameTurnData {
     companion object {
         /** The current compatibility version of [GameInfo]. This number is incremented whenever changes are made to the save file structure that guarantee that
          * previous versions of the game will not be able to load or play a game normally. */
@@ -85,11 +103,11 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     var difficulty = "Chieftain" // difficulty is game-wide, think what would happen if 2 human players could play on different difficulties?
     var tileMap: TileMap = TileMap()
     var gameParameters = GameParameters()
-    var turns = 0
+    override var turns = 0
     var oneMoreTurnMode = false
-    var currentPlayer = ""
-    var currentTurnStartTime = 0L
-    var gameId = UUID.randomUUID().toString() // random string
+    override var currentPlayer = ""
+    override var currentTurnStartTime = 0L
+    override var gameId = UUID.randomUUID().toString() // random string
 
     // Maps a civ to the civ they voted for
     var diplomaticVictoryVotesCast = HashMap<String, String>()

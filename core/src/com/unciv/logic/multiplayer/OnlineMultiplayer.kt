@@ -231,7 +231,7 @@ class OnlineMultiplayer {
         val oldStatus = onlineGame?.status
         if (onlineGame == null) {
             createGame(newGameInfo)
-        } else if (oldStatus != null && hasNewerGameState(newStatus, oldStatus)){
+        } else if (oldStatus != null && !oldStatus.hasLatestGameState(newStatus)){
             onlineGame.doManualUpdate(newStatus)
         }
         UncivGame.Current.loadGame(newGameInfo)
@@ -243,7 +243,7 @@ class OnlineMultiplayer {
     suspend fun loadGame(gameInfo: GameInfo) = coroutineScope {
         val gameId = gameInfo.gameId
         val status = multiplayerFiles.tryDownloadGameStatus(gameId)
-        if (hasLatestGameState(gameInfo, status)) {
+        if (gameInfo.hasLatestGameState(status)) {
             gameInfo.isUpToDate = true
             UncivGame.Current.loadGame(gameInfo)
         } else {
@@ -313,22 +313,6 @@ class OnlineMultiplayer {
         } else {
             game.doManualUpdate(gameInfo)
         }
-    }
-
-    /**
-     * Checks if [gameInfo] and [status] are up-to-date with each other.
-     */
-    fun hasLatestGameState(gameInfo: GameInfo, status: MultiplayerGameStatus): Boolean {
-        // TODO look into how to maybe extract interfaces to not make this take two different methods
-        return gameInfo.currentPlayer == status.currentPlayer
-                && gameInfo.turns == status.turns
-    }
-
-    /**
-     * Checks if [status1] has a more recent game state than [status2]
-     */
-    private fun hasNewerGameState(status1: MultiplayerGameStatus, status2: MultiplayerGameStatus): Boolean {
-        return status1.turns > status2.turns
     }
 
     companion object {
