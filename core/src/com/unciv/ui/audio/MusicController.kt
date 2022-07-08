@@ -389,7 +389,7 @@ class MusicController {
                     current?.startFade(MusicTrackController.State.FadeOut, fadingStep)
                 ControllerState.Pause ->
                     if (current?.state == MusicTrackController.State.Idle) clearCurrent()
-                ControllerState.Idle -> {
+                ControllerState.Idle, ControllerState.Silence -> {
                     if (current == null) {
                         // force track to begin now
                         current = next
