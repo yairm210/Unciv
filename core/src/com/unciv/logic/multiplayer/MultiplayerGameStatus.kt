@@ -11,9 +11,6 @@ import com.unciv.models.metadata.GameParameters
  * Contains additional data for multiplayer settings.
  */
 class MultiplayerGameStatus private constructor() : HasGameId, HasGameTurnData {
-    var civilizations = mutableListOf<CivilizationInfoPreview>()
-    var difficulty = "Chieftain"
-    var gameParameters = GameParameters()
     override var gameId = ""
     override var turns = 0
     override var currentCivName = ""
@@ -24,9 +21,6 @@ class MultiplayerGameStatus private constructor() : HasGameId, HasGameTurnData {
      * Sets all multiplayer settings to default.
      */
     constructor(gameInfo: GameInfo) : this() {
-        civilizations = gameInfo.getCivilizationsAsPreviews()
-        difficulty = gameInfo.difficulty
-        gameParameters = gameInfo.gameParameters
         gameId = gameInfo.gameId
         turns = gameInfo.turns
         currentCivName = gameInfo.currentCivName
@@ -34,7 +28,6 @@ class MultiplayerGameStatus private constructor() : HasGameId, HasGameTurnData {
         currentTurnStartTime = gameInfo.currentTurnStartTime
     }
 
-    fun getCivilization(civName: String) = civilizations.first { it.civName == civName }
     override fun toString(): String {
         return "MultiplayerGameStatus(gameId='$gameId', turns=$turns, currentCivName='$currentCivName', currentPlayerId='$currentPlayerId', currentTurnStartTime=$currentTurnStartTime)"
     }

@@ -1,8 +1,10 @@
 package com.unciv.logic
 
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import com.unciv.json.HashMapVector2
+import com.unciv.json.MultiplayerGameStatusSerializer
 import com.unciv.json.json
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.PerpetualConstruction
@@ -244,5 +246,17 @@ object BackwardCompatibility {
             currentCivName = currentPlayer
             currentPlayer = ""
         }
+    }
+
+    /** Remove this completely once users migrated their saves. When removing this, also remove [GameInfo.currentPlayer] and [GameInfoPreview.currentPlayer] */
+    fun MultiplayerGameStatusSerializer.readOldFormat(json: Json, jsonData: JsonValue, status: MultiplayerGameStatus) {
+        val preview = json.readValue(GameInfoPreview::class.java, jsonData)
+        preview.migrateCurrentCivName()
+
+        status.gameId = json.readValue("gameId", String::class.java, "", jsonData)
+        status.turns = preview.turns
+        status.currentCivName = preview.currentCivName
+        status.currentPlayerId = preview.currentPlayerId
+        status.currentTurnStartTime = preview.currentTurnStartTime
     }
 }

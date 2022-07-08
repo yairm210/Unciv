@@ -363,12 +363,6 @@ class UncivFiles(
             val plainJson = json().toJson(game)
             return if (forceZip ?: saveZipped) Gzip.zip(plainJson) else plainJson
         }
-
-        /** Returns gzipped serialization of [status] */
-        fun multiplayerGameStatusToString(status: MultiplayerGameStatus): String {
-            return Gzip.zip(json().toJson(status))
-        }
-
     }
 
     //endregion

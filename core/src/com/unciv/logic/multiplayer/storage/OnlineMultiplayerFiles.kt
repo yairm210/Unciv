@@ -2,6 +2,7 @@ package com.unciv.logic.multiplayer.storage
 
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.json.json
 import com.unciv.logic.GameInfo
 import com.unciv.logic.multiplayer.MultiplayerGameStatus
 import com.unciv.logic.UncivFiles
@@ -52,7 +53,7 @@ class OnlineMultiplayerFiles(
      * @see tryUploadGame
      */
     suspend fun tryUploadGameStatus(status: MultiplayerGameStatus) {
-        val zippedGameInfo = UncivFiles.multiplayerGameStatusToString(status)
+        val zippedGameInfo = json().toJson(status) // no gzip because gzip actually has more overhead than it saves in compression
         fileStorage().saveFileData("${status.gameId}_Preview", zippedGameInfo, true)
     }
 

@@ -3,6 +3,8 @@ package com.unciv.json
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Json
+import com.unciv.logic.BackwardCompatibility
+import com.unciv.logic.multiplayer.MultiplayerGameStatus
 import java.time.Duration
 
 
@@ -15,6 +17,7 @@ fun json() = Json().apply {
 
     setSerializer(HashMapVector2.getSerializerClass(), HashMapVector2.createSerializer())
     setSerializer(Duration::class.java, DurationSerializer())
+    setSerializer(MultiplayerGameStatus::class.java, MultiplayerGameStatusSerializer())
 }
 
 /**
