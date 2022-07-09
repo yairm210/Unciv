@@ -13,4 +13,5 @@ object MusicMood {
 
     val themeOrPeace = listOf(Theme, Peace)
     fun peaceOrWar(isAtWar: Boolean) = if (isAtWar) War else Peace
+    fun tryCivOrGeneral(civName: String) = listOf(civName, "Any civ")
 }

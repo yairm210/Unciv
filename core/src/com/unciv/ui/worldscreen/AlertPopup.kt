@@ -85,7 +85,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 addLeaderName(civInfo)
                 addGoodSizedLabel(civInfo.nation.defeated).row()
                 add(getCloseButton("Farewell."))
-                music.chooseTrack(civInfo.civName, MusicMood.Defeat, EnumSet.of(MusicTrackChooserFlags.SuffixMustMatch))
+                music.chooseTrack(MusicMood.tryCivOrGeneral(civInfo.civName), MusicMood.Defeat, EnumSet.of(MusicTrackChooserFlags.SuffixMustMatch))
             }
             AlertType.FirstContact -> {
                 val civInfo = worldScreen.gameInfo.getCivilization(popupAlert.value)
