@@ -78,11 +78,6 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     private val branches: Set<PolicyBranch>
         get() = civInfo.gameInfo.ruleSet.policyBranches.values.toSet()
 
-    // Only instantiate a single value for all policy managers
-    companion object {
-        private val turnCountRegex by lazy { Regex("for \\[[0-9]*\\] turns") }
-    }
-
     fun clone(): PolicyManager {
         val toReturn = PolicyManager()
         toReturn.numberOfAdoptedPolicies = numberOfAdoptedPolicies
@@ -97,6 +92,18 @@ class PolicyManager : IsPartOfGameInfoSerialization {
 
     @Suppress("MemberVisibilityCanBePrivate")
     fun getPolicyByName(name: String): Policy = getRulesetPolicies()[name]!!
+
+    fun setTransients() {
+        for (policyName in adoptedPolicies) addPolicyToTransients(
+            getPolicyByName(policyName)
+        )
+    }
+
+    private fun addPolicyToTransients(policy: Policy) {
+        for (unique in policy.uniqueObjects) {
+            policyUniques.addUnique(unique)
+        }
+    }
 
     fun addCulture(culture: Int) {
         val couldAdoptPolicyBefore = canAdoptPolicy()
@@ -177,6 +184,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         }
 
         adoptedPolicies.add(policy.name)
+        addPolicyToTransients(policy)
 
         if (!branchCompletion) {
             val branch = policy.branch
