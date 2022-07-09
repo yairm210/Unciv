@@ -1,10 +1,7 @@
 package com.unciv.logic.civilization
 
-import com.unciv.UncivGame
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.audio.MusicMood
-import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.utils.extensions.toPercent
 
 class GoldenAgeManager : IsPartOfGameInfoSerialization {
@@ -37,9 +34,6 @@ class GoldenAgeManager : IsPartOfGameInfoSerialization {
         turnsLeftForCurrentGoldenAge += turnsToGoldenAge.toInt()
         civInfo.addNotification("You have entered a Golden Age!", "StatIcons/Happiness")
         civInfo.popupAlerts.add(PopupAlert(AlertType.GoldenAge, ""))
-        if (civInfo.isPlayerCivilization() && (civInfo.gameInfo.currentPlayerCiv == civInfo)) {
-            UncivGame.Current.musicController.chooseTrack(civInfo.civName, MusicMood.Golden, MusicTrackChooserFlags.setSpecific)
-        }
     }
 
     fun endTurn(happiness: Int) {

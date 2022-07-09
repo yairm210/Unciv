@@ -1,6 +1,5 @@
 package com.unciv.logic.civilization
 
-import com.unciv.UncivGame
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapSize
@@ -11,8 +10,6 @@ import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
-import com.unciv.ui.audio.MusicMood
-import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.utils.MayaCalendar
 import com.unciv.ui.utils.extensions.toPercent
 import com.unciv.ui.utils.extensions.withItem
@@ -335,9 +332,6 @@ class TechManager : IsPartOfGameInfoSerialization {
         for (unique in civInfo.getMatchingUniques(UniqueType.MayanGainGreatPerson)) {
             if (unique.params[1] != techName) continue
             civInfo.addNotification("You have unlocked [The Long Count]!", MayaLongCountAction(), MayaCalendar.notificationIcon)
-        }
-        if (civInfo.isPlayerCivilization() && (civInfo.gameInfo.currentPlayerCiv == civInfo)) {
-            UncivGame.Current.musicController.chooseTrack(techName, MusicMood.Researched, MusicTrackChooserFlags.setSpecific)
         }
 
         updateEra()
