@@ -66,9 +66,14 @@ fun multiplayerTab(
 
     addSeparator(tab)
 
-    val turnCheckerSelect = addTurnCheckerOptions(tab, optionsPopup)
-
-    addSeparator(tab)
+    // at the moment the notification service only exists on Android
+    val turnCheckerSelect: RefreshSelect?
+    if (Gdx.app.type != Application.ApplicationType.Android) {
+        turnCheckerSelect = addTurnCheckerOptions(tab, optionsPopup)
+        addSeparator(tab)
+    } else {
+        turnCheckerSelect = null
+    }
 
     addSelectAsSeparateTable(tab, SettingsSelect("Sound notification for when it's your turn in your currently open game:",
         createNotificationSoundOptions(),
@@ -182,9 +187,6 @@ private fun addTurnCheckerOptions(
     tab: Table,
     optionsPopup: OptionsPopup
 ): RefreshSelect? {
-    // at the moment the notification service only exists on Android
-    if (Gdx.app.type != Application.ApplicationType.Android) return null
-
     val settings = optionsPopup.settings
 
     optionsPopup.addCheckbox(tab, "Enable out-of-game turn notifications", settings.multiplayer::turnCheckerEnabled)
