@@ -231,23 +231,28 @@ object Battle {
 
         if (!defender.isDefeated() || defender.unit.isCivilian()) return false
 
-        fun unitCapturedPrizeShipsUnique():Boolean {
+        fun unitCapturedPrizeShipsUnique(): Boolean {
             if (attacker.unit.getMatchingUniques(UniqueType.KillUnitCapture)
                         .none { defender.matchesCategory(it.params[0]) }
             ) return false
 
-            val captureChance = min(0.8f, 0.1f + attacker.getAttackingStrength().toFloat() / defender.getDefendingStrength().toFloat() * 0.4f)
+            val captureChance = min(
+                0.8f,
+                0.1f + attacker.getAttackingStrength().toFloat() / defender.getDefendingStrength()
+                    .toFloat() * 0.4f
+            )
             return Random().nextFloat() <= captureChance
         }
 
-        fun unitCapturedGermanyUnique():Boolean{
-            if (!defender.getCivInfo().isBarbarian() || attackedTile.improvement != Constants.barbarianEncampment)
-                return false
+        fun unitGainFromEncampment(): Boolean {
+            if (!defender.getCivInfo().isBarbarian()) return false
+            if (attackedTile.improvement != Constants.barbarianEncampment) return false
 
             var unitCaptured = false
             // German unique - needs to be checked before we try to move to the enemy tile, since the encampment disappears after we move in
 
-            for (unique in attacker.getCivInfo().getMatchingUniques(UniqueType.GainFromEncampment)) {
+            for (unique in attacker.getCivInfo()
+                .getMatchingUniques(UniqueType.GainFromEncampment)) {
                 attacker.getCivInfo().addGold(unique.params[0].toInt())
                 unitCaptured = true
             }
@@ -255,12 +260,12 @@ object Battle {
         }
 
 
-        fun unitCapturedOttomanUnique():Boolean{
+        fun unitGainFromDefeatingUnit(): Boolean {
+            if (!attacker.isMelee()) return false
             var unitCaptured = false
-            for (unique in attacker.getCivInfo().getMatchingUniques(UniqueType.GainFromDefeatingUnit)) {
-                if (defender.unit.matchesFilter(unique.params[0])
-                        && attacker.isMelee()
-                ) {
+            for (unique in attacker.getCivInfo()
+                .getMatchingUniques(UniqueType.GainFromDefeatingUnit)) {
+                if (defender.unit.matchesFilter(unique.params[0])) {
                     attacker.getCivInfo().addGold(unique.params[1].toInt())
                     unitCaptured = true
                 }
@@ -270,7 +275,11 @@ object Battle {
 
         // Due to the way OR operators short-circuit, calling just A() || B() means B isn't called if A is true.
         // Therefore we run all functions before checking if one is true.
-        val wasUnitCaptured = listOf(unitCapturedPrizeShipsUnique(), unitCapturedGermanyUnique(), unitCapturedOttomanUnique()).any()
+        val wasUnitCaptured = listOf(
+            unitCapturedPrizeShipsUnique(),
+            unitGainFromEncampment(),
+            unitGainFromDefeatingUnit()
+        ).any()
 
         if (!wasUnitCaptured) return false
 
