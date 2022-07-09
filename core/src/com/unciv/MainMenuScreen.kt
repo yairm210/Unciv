@@ -225,7 +225,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             label.color = Color.BLACK
         val updateButton = label
             .apply { setAlignment(Align.center) }
-            .surroundWithCircle(80f, color = Color.YELLOW)
+            .surroundWithCircle(80f, color = ImageGetter.getBlue())
             .apply { actor.y -= 2.5f } // compensate font baseline (empirical)
             .surroundWithCircle(84f, resizeActor = false)
         updateButton.touchable = Touchable.enabled
