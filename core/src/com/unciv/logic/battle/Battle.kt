@@ -268,7 +268,9 @@ object Battle {
             return unitCaptured
         }
 
-        val wasUnitCaptured = unitCapturedPrizeShipsUnique() || unitCapturedGermanyUnique() || unitCapturedOttomanUnique()
+        // Due to the way OR operators short-circuit, calling just A() || B() means B isn't called if A is true.
+        // Therefore we run all functions before checking if one is true.
+        val wasUnitCaptured = listOf(unitCapturedPrizeShipsUnique(), unitCapturedGermanyUnique(), unitCapturedOttomanUnique()).any()
 
         if (!wasUnitCaptured) return false
 
