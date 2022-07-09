@@ -13,6 +13,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
+import kotlin.collections.ArrayList
 
 
 /**
@@ -306,11 +307,26 @@ object Github {
         }
     }
 
+    class LatestRelease {
+        var tag_name = ""
+    }
+
     /** Part of [Repo] in Github API response */
     @Suppress("PropertyName")
     class RepoOwner {
         var login = ""
         var avatar_url: String? = null
+    }
+
+    fun getLatestVersion(): LatestRelease? {
+        try {
+            val url = "https://api.github.com/repos/yairm210/Unciv/releases/latest"
+            val response = download(url)
+            return json().fromJson(LatestRelease::class.java, response?.bufferedReader()?.readText())
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+        }
+        return null
     }
 
     /** Rewrite modOptions file for a mod we just installed to include metadata we got from the GitHub api

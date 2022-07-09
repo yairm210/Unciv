@@ -25,6 +25,7 @@ import com.unciv.ui.mapeditor.EditorMapHolder
 import com.unciv.ui.mapeditor.MapEditorScreen
 import com.unciv.ui.multiplayer.MultiplayerScreen
 import com.unciv.ui.newgamescreen.NewGameScreen
+import com.unciv.ui.pickerscreens.Github
 import com.unciv.ui.pickerscreens.ModManagementScreen
 import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.Popup
@@ -50,10 +51,6 @@ import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.worldscreen.mainmenu.WorldScreenMenuPopup
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
-import java.io.IOException
-import java.io.InputStream
-import java.net.URL
-import java.util.*
 import kotlin.math.min
 
 
@@ -213,8 +210,8 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         stage.addActor(helpButton)
 
         if (UncivGame.Current.platformSpecificHelper?.isInstalledFromGP() == false) {
-            val latestVersion = getLatestVersion()
-            if (latestVersion > UncivGame.Current.version) {
+            val latestVersion = Github.getLatestVersion()
+            if (latestVersion?.tag_name!! > UncivGame.Current.version) {
                 addUpdateButton()
             }
         }
@@ -292,31 +289,4 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
     }
 
     override fun recreate(): BaseScreen = MainMenuScreen()
-
-    fun getLatestVersion(): String {
-        var response: InputStream? = null
-        var version = ""
-
-        try {
-            val url = "https://github.com/yairm210/Unciv/releases/latest"
-            response = URL(url).openStream()
-            val scanner = Scanner(response)
-            val responseBody = scanner.useDelimiter("\\A").next()
-
-            version = responseBody.substring(
-                responseBody.indexOf("<title>") + 7,
-                responseBody.indexOf("</title>")
-            )
-            version = version.removePrefix("Release ").removeSuffix(" · yairm210/Unciv · GitHub")
-        } catch (ex: IOException) {
-            ex.printStackTrace()
-        } finally {
-            try {
-                response!!.close()
-            } catch (ex: IOException) {
-                ex.printStackTrace()
-            }
-        }
-        return version
-    }
 }
