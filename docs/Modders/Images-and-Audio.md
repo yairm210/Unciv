@@ -85,7 +85,7 @@ The current list of triggers is as follows:
 | War declaration[^5] | (civ name) | [^M] | War | [^X] | |
 | Civ defeated | (civ name) | | Defeat | [^X] | |
 | Golden Age | (civ name) | [^M] | Golden | [^X] | |
-| Wonder built | (wonder name) | [^M] | Built | [^X] | |
+| Wonder built | (wonder name) | [^M] | Wonder | [^X] | |
 | Tech researched | (tech name) | [^M] | Researched | [^X] | |
 | Map editor: Select nation start location | (nation name) | [^M] | Theme | | [^S] |
 | Options: Volume slider or Default track downloaded | | | | | [^D] |

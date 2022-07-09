@@ -411,18 +411,6 @@ class MusicController {
         return false
     }
 
-    /** Variant of [chooseTrack] that tries several [prefixes] until a match is chosen */
-    fun chooseTrack (
-        prefixes: List<String>,
-        suffix: String = MusicMood.Ambient,
-        flags: EnumSet<MusicTrackChooserFlags> = EnumSet.noneOf(MusicTrackChooserFlags::class.java)
-    ): Boolean {
-        for (prefix in prefixes) {
-            if (chooseTrack(prefix, suffix, flags)) return true
-        }
-        return false
-    }
-
     /**
      * Pause playback with fade-out
      *

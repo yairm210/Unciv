@@ -423,7 +423,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             }
 
             if (cityInfo.civInfo.isPlayerCivilization() && (cityInfo.civInfo.gameInfo.currentPlayerCiv == cityInfo.civInfo)) {
-                UncivGame.Current.musicController.chooseTrack(construction.name, MusicMood.Built, MusicTrackChooserFlags.setSpecific)
+                UncivGame.Current.musicController.chooseTrack(construction.name, MusicMood.Wonder, MusicTrackChooserFlags.setSpecific)
             }
         } else {
             val icon = if (construction is Building) buildingIcon else construction.name // could be a unit, in which case take the unit name.
