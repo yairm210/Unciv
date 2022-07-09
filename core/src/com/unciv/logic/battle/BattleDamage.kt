@@ -158,6 +158,12 @@ object BattleDamage {
         return modifiers
     }
 
+    fun getAirSweepAttackModifiers(
+        attacker: ICombatant
+    ): Counter<String> {
+        // TODO!!!!!!
+    }
+
     fun getDefenceModifiers(attacker: ICombatant, defender: ICombatant): Counter<String> {
         val modifiers = getGeneralModifiers(defender, attacker, CombatAction.Defend)
         val tile = defender.getTile()

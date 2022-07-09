@@ -82,6 +82,9 @@ object BattleHelper {
                 else if (checkTile(unit, tile, tilesToCheck)) {
                     tilesWithEnemies += tile
                     attackableTiles += AttackableTile(reachableTile, tile, movementLeft)
+                } else if (unit.isPreparingAirSweep()){
+                    tilesWithEnemies += tile
+                    attackableTiles += AttackableTile(reachableTile, tile, movementLeft)
                 } else {
                     tilesWithoutEnemies += tile
                 }

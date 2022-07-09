@@ -190,7 +190,7 @@ class WorldMapHolder(
                             it.movement.canMoveTo(tileInfo) ||
                                     it.movement.isUnknownTileWeShouldAssumeToBePassable(tileInfo) && !it.baseUnit.movesLikeAirUnits()
                         }
-                )) {
+                ) && previousSelectedUnits.any { !it.isPreparingAirSweep()}) {
             if (previousSelectedUnitIsSwapping) {
                 addTileOverlaysWithUnitSwapping(previousSelectedUnits.first(), tileInfo)
             }
