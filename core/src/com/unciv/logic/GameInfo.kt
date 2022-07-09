@@ -112,7 +112,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     lateinit var speed: Speed
 
     @Transient
-    lateinit var currentPlayerCiv: CivilizationInfo // this is called thousands of times, no reason to search for it with a find{} every time
+    var currentPlayerCiv: CivilizationInfo? = null // this is called thousands of times, no reason to search for it with a find{} every time
 
     /** This is used in multiplayer games, where I may have a saved game state on my phone
      * that is inconsistent with the saved game on the cloud */
@@ -131,6 +131,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     var simulateMaxTurns: Int = 1000
     @Transient
     var simulateUntilWin = false
+    @Transient
+    var achievementsEnabled = true
 
     @Transient
     var spaceResources = HashSet<String>()
@@ -157,7 +159,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     }
 
     fun getPlayerToViewAs(): CivilizationInfo {
-        if (!gameParameters.isOnlineMultiplayer) return currentPlayerCiv // non-online, play as human player
+        if (!gameParameters.isOnlineMultiplayer) return currentPlayerCiv!! // non-online, play as human player
         val userId = UncivGame.Current.settings.multiplayer.userId
 
         // Iterating on all civs, starting from the the current player, gives us the one that will have the next turn
@@ -178,7 +180,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     /** Get a civ by name
      *  @throws NoSuchElementException if no civ of that name is in the game (alive or dead)! */
     fun getCivilization(civName: String) = civilizations.first { it.civName == civName }
-    fun getCurrentPlayerCivilization() = currentPlayerCiv
+    fun getCurrentPlayerCivilization() = currentPlayerCiv!!
     fun getCivilizationsAsPreviews() = civilizations.map { it.asPreview() }.toMutableList()
     /** Get barbarian civ
      *  @throws NoSuchElementException in no-barbarians games! */
@@ -238,7 +240,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     //region State changing functions
 
     fun nextTurn() {
-        val previousHumanPlayer = getCurrentPlayerCivilization()
+        val previousHumanPlayer = getCurrentPlayerCivilization()!!
         var thisPlayer = previousHumanPlayer // not calling it currentPlayer because that's already taken and I can't think of a better name
         var currentPlayerIndex = civilizations.indexOf(thisPlayer)
 
@@ -291,12 +293,12 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         currentTurnStartTime = System.currentTimeMillis()
         currentPlayer = thisPlayer.civName
         currentPlayerCiv = getCivilization(currentPlayer)
-        if (currentPlayerCiv.isSpectator()) currentPlayerCiv.popupAlerts.clear() // no popups for spectators
+        if (currentPlayerCiv!!.isSpectator()) currentPlayerCiv!!.popupAlerts.clear() // no popups for spectators
 
         if (turns % 10 == 0) //todo measuring actual play time might be nicer
             UncivGame.Current.musicController.chooseTrack(
-                currentPlayerCiv.civName,
-                MusicMood.peaceOrWar(currentPlayerCiv.isAtWar()), MusicTrackChooserFlags.setNextTurn
+                currentPlayerCiv!!.civName,
+                MusicMood.peaceOrWar(currentPlayerCiv!!.isAtWar()), MusicTrackChooserFlags.setNextTurn
             )
 
         // Start our turn immediately before the player can make decisions - affects

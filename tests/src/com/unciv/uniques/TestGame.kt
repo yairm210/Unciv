@@ -40,11 +40,13 @@ class TestGame {
         gameInfo.ruleSet = ruleset
         gameInfo.difficultyObject = ruleset.difficulties["Prince"]!!
         gameInfo.speed = ruleset.speeds[Speed.DEFAULTFORSIMULATION]!!
+        gameInfo.achievementsEnabled = false
 
         // Create a tilemap, needed for city centers
         gameInfo.tileMap = TileMap(1, ruleset, false)
         tileMap.mapParameters.mapSize = MapSizeNew(0, 0)
         tileMap.ruleset = ruleset
+        tileMap.gameInfo = gameInfo
     }
 
     /** Makes a new rectangular tileMap and sets it in gameInfo. Removes all existing tiles. All new tiles have terrain [baseTerrain] */
@@ -58,6 +60,7 @@ class TestGame {
                     tile.baseTerrain = baseTerrain
 
         gameInfo.tileMap = newTileMap
+        tileMap.gameInfo = gameInfo
     }
 
     /** Makes a new hexagonal tileMap with radius [newRadius] and sets it in gameInfo.
@@ -73,6 +76,7 @@ class TestGame {
                     tile.baseTerrain = baseTerrain
 
         gameInfo.tileMap = newTileMap
+        tileMap.gameInfo = gameInfo
     }
 
     fun getTile(position: Vector2) = tileMap[position]

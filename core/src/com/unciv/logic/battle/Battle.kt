@@ -548,7 +548,7 @@ object Battle {
             NextTurnAutomation.onConquerCity(attackerCiv, city)
         }
 
-        if (attackerCiv.isPlayerCivilization())
+        if (attackerCiv.isCurrentPlayer())
             UncivGame.Current.settings.addCompletedTutorialTask("Conquer a city")
     }
 

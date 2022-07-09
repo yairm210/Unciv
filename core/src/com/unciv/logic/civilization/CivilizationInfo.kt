@@ -584,7 +584,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         if (!otherCiv.isSpectator())
             otherCiv.popupAlerts.add(PopupAlert(AlertType.FirstContact, civName))
 
-        if (isCurrentPlayer())
+        if (gameInfo.achievementsEnabled && isCurrentPlayer())
             UncivGame.Current.settings.addCompletedTutorialTask("Meet another civilization")
 
         if (!(isCityState() && otherCiv.isMajorCiv())) return

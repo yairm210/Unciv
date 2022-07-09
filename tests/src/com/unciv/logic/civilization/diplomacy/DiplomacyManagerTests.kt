@@ -34,6 +34,7 @@ class DiplomacyManagerTests {
         every { mockGameInfo.getCivilization(capture(slot)) } answers { civilizations.getValue(slot.captured) }
         // Just return the default CivilizationInfo, since the .meetCivilization() includes the tutorial logic and crashes otherwise
         every { mockGameInfo.getCurrentPlayerCivilization() } returns CivilizationInfo()
+        every { mockGameInfo.achievementsEnabled } returns true
 
         // Initialize test civilizations so they pass certain criteria
         civilizations.values.forEach {
