@@ -279,7 +279,7 @@ object Battle {
             unitCapturedPrizeShipsUnique(),
             unitGainFromEncampment(),
             unitGainFromDefeatingUnit()
-        ).any()
+        ).any { it }
 
         if (!wasUnitCaptured) return false
 
