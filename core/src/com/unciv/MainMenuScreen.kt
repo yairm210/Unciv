@@ -218,7 +218,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
     }
 
     private fun addUpdateButton() {
-        val label = "⟱".toLabel(fontSize = 50) // Unicode U+27F1
+        val label = "↻".toLabel(fontSize = 50) // Unicode U+21BB
             label.color = Color.BLACK
         val updateButton = label
             .apply { setAlignment(Align.center) }
