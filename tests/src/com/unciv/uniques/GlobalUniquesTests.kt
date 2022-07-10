@@ -347,23 +347,24 @@ class GlobalUniquesTests {
     @Test
     fun bonusStatsFromCityStates() {
         game.makeHexagonalMap(1)
-        val cityState = game.addCiv(cityState = CityStateType.Maritime)
         val civInfo = game.addCiv()
+        val cityState = game.addCiv(cityState = CityStateType.Maritime)
+
+
         val tile = game.getTile(Vector2(0f,0f))
         val city = game.addCity(civInfo, tile, true)
         val cityStateTile = game.getTile(Vector2(0f, 1f))
+        @Suppress("UNUSED_VARIABLE")
         val cityStateCity = game.addCity(cityState, cityStateTile, true)
         civInfo.makeCivilizationsMeet(cityState)
         cityState.getDiplomacyManager(civInfo).addInfluence(100f)
 
         city.cityStats.update()
-        println(city.cityStats.finalStatList)
         Assert.assertTrue(city.cityStats.finalStatList[Constants.cityStates]!!.food == 3f)
 
         val building = game.createBuilding("[+100]% [Food] from City-States")
         city.cityConstructions.addBuilding(building.name)
         city.cityStats.update()
-        println(city.cityStats.baseStatTree.totalStats)
         Assert.assertTrue(city.cityStats.finalStatList[Constants.cityStates]!!.food == 6f)
     }
 
