@@ -702,6 +702,12 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             return true
         }
 
+        if (cityHealth > 0) {
+            // city built a building that increases health so add a portion of this added health that is
+            // proportional to the city's current health
+            cityConstructions.cityInfo.health += (cityHealth.toFloat() * cityConstructions.cityInfo.health.toFloat() / cityConstructions.cityInfo.getMaxHealth().toFloat()).toInt()
+        }
+
         cityConstructions.addBuilding(name)
 
         /** Support for [UniqueType.CreatesOneImprovement] */

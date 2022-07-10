@@ -400,11 +400,6 @@ class CityConstructions {
     }
 
     private fun constructionComplete(construction: INonPerpetualConstruction) {
-        if (construction is Building && construction.cityHealth > 0) {
-            // city built a building that increases health so add a portion of this added health that is
-            // proportional to the city's current health
-            cityInfo.health += (construction.cityHealth.toFloat() * cityInfo.health.toFloat() / cityInfo.getMaxHealth().toFloat()).toInt()
-        }
         construction.postBuildEvent(this)
         if (construction.name in inProgressConstructions)
             inProgressConstructions.remove(construction.name)
