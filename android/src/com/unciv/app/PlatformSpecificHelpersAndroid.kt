@@ -67,7 +67,7 @@ Sources for Info about current orientation in case need:
 
         // The package name of the app that has installed Unciv
         val installer: String? =
-                activity.window.context.packageManager.getInstallerPackageName(activity.window.context.packageName)
+                activity.packageManager.getInstallerPackageName(activity.packageName)
 
         // true if Unciv has been downloaded from Play Store
         return installer != null && validInstallers.contains(installer)
