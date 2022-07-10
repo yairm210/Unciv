@@ -513,13 +513,7 @@ class ModManagementScreen(
         for (mod in installedModInfo.values.sortedWith(optionsManager.sortInstalled.comparator)) {
             if (!mod.matchesFilter(filter)) continue
             if (optionsManager.category != ModManagementOptions.Category.All) {
-                try {
-                    if (mod.ruleset?.modOptions?.topics!![1] != optionsManager.category.topic) continue
-                } catch (ex: IndexOutOfBoundsException) {
-                    continue //mod does not have a category -> don't show it
-                } catch (ex: Exception) {
-                    Log.error("Error while filtering category for installed mods: ", ex)
-                }
+                if (!categoryFilter(mod.ruleset?.modOptions?.topics)) continue
             }
             // Prevent building up listeners. The virgin Button has one: for mouseover styling.
             // The captures for our listener shouldn't need updating, so assign only once
@@ -534,6 +528,17 @@ class ModManagementScreen(
             mod.y = currentY
             mod.height = cell.prefHeight
             currentY += cell.padBottom + cell.prefHeight + cell.padTop
+        }
+    }
+
+    private fun categoryFilter(modTopic: ArrayList<String>?): Boolean {
+        return try {
+            modTopic!![1] == optionsManager.category.topic
+        } catch (ex: IndexOutOfBoundsException) {
+            false //mod does not have a category -> don't show it
+        } catch (ex: Exception) {
+            Log.error("Error while filtering category for installed mods: ", ex)
+            false
         }
     }
 
@@ -585,13 +590,7 @@ class ModManagementScreen(
         // We update y and height here, we do not replace the ModUIData instances do the referenced buttons stay valid.
         val sortedMods = onlineModInfo.values.asSequence().sortedWith(optionsManager.sortOnline.comparator)
         for (mod in sortedMods) {
-            try {
-                if (mod.repo?.topics!![1] != optionsManager.category.topic) continue
-            } catch (ex: IndexOutOfBoundsException) {
-                continue //mod does not have a category -> don't show it
-            } catch (ex: Exception) {
-                Log.error("Error while filtering category for online mods: ", ex)
-            }
+            if (!categoryFilter(mod.repo?.topics)) continue
             if (!mod.matchesFilter(filter)) continue
             val cell = downloadTable.add(mod.button)
             downloadTable.row()
