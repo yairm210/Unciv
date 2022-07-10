@@ -157,7 +157,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     }
 
     fun getPlayerToViewAs(): CivilizationInfo {
-        if (!gameParameters.isOnlineMultiplayer) return currentPlayerCiv // non-online, play as human player
+        if (!gameParameters.isOnlineMultiplayer) return getCurrentPlayerCivilization() // non-online, play as human player
         val userId = UncivGame.Current.settings.multiplayer.userId
 
         // Iterating on all civs, starting from the the current player, gives us the one that will have the next turn
@@ -238,7 +238,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     //region State changing functions
 
     fun nextTurn() {
-        val previousHumanPlayer = getCurrentPlayerCivilization()
+        val previousHumanPlayer = getCurrentPlayerCivilization()!!
         var thisPlayer = previousHumanPlayer // not calling it currentPlayer because that's already taken and I can't think of a better name
         var currentPlayerIndex = civilizations.indexOf(thisPlayer)
 

@@ -176,7 +176,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
             else if (!civInfo.gameInfo.gameParameters.godMode) {
                 val cultureNeededForNextPolicy = getCultureNeededForNextPolicy()
                 if (cultureNeededForNextPolicy > storedCulture) throw Exception(
-                    "How is this possible??????"
+                    "Trying to adopt a policy without enough culture????"
                 )
                 storedCulture -= cultureNeededForNextPolicy
                 numberOfAdoptedPolicies++
