@@ -211,7 +211,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
 
         if (UncivGame.Current.platformSpecificHelper?.isInstalledFromGP() == false) {
             val latestVersion = Github.getLatestVersion()
-            if (latestVersion?.tag_name!! > UncivGame.Current.version) {
+            if (latestVersion?.tag_name!! > UncivGame.VERSION.toString()) {
                 addUpdateButton()
             }
         }
