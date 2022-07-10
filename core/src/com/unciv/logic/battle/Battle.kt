@@ -843,9 +843,6 @@ object Battle {
             if (damage > 0)
                 addXp(MapUnitCombatant(interceptor), 2, attacker)
 
-            if (damage > 0)
-                addXp(MapUnitCombatant(interceptor), 2, attacker)
-
             val attackerName = attacker.getName()
             val interceptorName = interceptor.name
             val locations = LocationAction(interceptor.currentTile.position, attacker.unit.currentTile.position)
