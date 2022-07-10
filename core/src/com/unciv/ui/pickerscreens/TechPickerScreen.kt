@@ -17,7 +17,6 @@ import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.Fonts
-import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.extensions.addBorder
 import com.unciv.ui.utils.extensions.colorFromRGB
 import com.unciv.ui.utils.extensions.darken
@@ -270,12 +269,6 @@ class TechPickerScreen(
 
         val pathToTech = civTech.getRequiredTechsToDestination(tech)
         for (requiredTech in pathToTech) {
-            for (unique in requiredTech.getMatchingUniques(UniqueType.IncompatibleWith))
-                if (civTech.isResearched(unique.params[0])) {
-                    rightSideButton.setText(unique.text.tr())
-                    rightSideButton.disable()
-                    return
-                }
             for (unique in requiredTech.uniqueObjects
                 .filter { it.type == UniqueType.OnlyAvailableWhen && !it.conditionalsApply(civInfo) }) {
                 rightSideButton.setText(unique.text.tr())

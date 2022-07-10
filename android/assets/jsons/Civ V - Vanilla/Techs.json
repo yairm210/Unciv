@@ -170,7 +170,7 @@
 				"name": "Currency",
 				"row": 7,
 				"prerequisites": ["Mathematics"],
-				"uniques": ["Enables conversion of city production to gold"],
+				"uniques": ["Enables conversion of city production to [Gold]"],
 				"quote": "'Better is bread with a happy heart than wealth with vexation.' - Amenemope"
 			},
 			{
@@ -206,7 +206,7 @@
 				"name": "Education",
 				"row": 3,
 				"prerequisites": ["Theology","Civil Service"],
-				"uniques": ["Enables conversion of city production to science"],
+				"uniques": ["Enables conversion of city production to [Science]"],
 				"quote": "'Education is the best provision for old age.' - Aristotle"
 			},
 			{

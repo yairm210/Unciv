@@ -348,8 +348,8 @@ class MusicController {
      */
     fun chooseTrack (
         prefix: String = "",
-        suffix: String = "Ambient",
-        flags: EnumSet<MusicTrackChooserFlags> = EnumSet.noneOf(MusicTrackChooserFlags::class.java)
+        suffix: String = MusicMood.Ambient,
+        flags: EnumSet<MusicTrackChooserFlags> = EnumSet.of(MusicTrackChooserFlags.SuffixMustMatch)
     ): Boolean {
         if (baseVolume == 0f) return false
 

@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization
 
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.RoadStatus
@@ -17,7 +18,7 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 
-class TechManager {
+class TechManager : IsPartOfGameInfoSerialization {
     @Transient
     var era: Era = Era()
 
@@ -131,9 +132,6 @@ class TechManager {
     fun canBeResearched(techName: String): Boolean {
         val tech = getRuleset().technologies[techName]!!
         if (tech.uniqueObjects.any { it.type == UniqueType.OnlyAvailableWhen && !it.conditionalsApply(civInfo) })
-            return false
-
-        if (tech.getMatchingUniques(UniqueType.IncompatibleWith).any { isResearched(it.params[0]) })
             return false
 
         if (isResearched(tech.name) && !tech.isContinuallyResearchable())
@@ -380,15 +378,11 @@ class TechManager {
     }
 
     private fun updateTransientBooleans() {
-        val wayfinding = civInfo.hasUnique(UniqueType.EmbarkAndEnterOcean)
-        unitsCanEmbark = wayfinding ||
-                civInfo.hasUnique(UniqueType.LandUnitEmbarkation)
+        unitsCanEmbark = civInfo.hasUnique(UniqueType.LandUnitEmbarkation)
         val enterOceanUniques = civInfo.getMatchingUniques(UniqueType.UnitsMayEnterOcean)
         allUnitsCanEnterOcean = enterOceanUniques.any { it.params[0] == "All" }
-        embarkedUnitsCanEnterOcean = wayfinding ||
-                allUnitsCanEnterOcean ||
-                enterOceanUniques.any { it.params[0] == "Embarked" } ||
-                civInfo.hasUnique(UniqueType.EmbarkedUnitsMayEnterOcean)
+        embarkedUnitsCanEnterOcean = allUnitsCanEnterOcean ||
+                enterOceanUniques.any { it.params[0] == "Embarked" }
         specificUnitsCanEnterOcean = enterOceanUniques.any { it.params[0] != "All" && it.params[0] != "Embarked" }
 
         movementSpeedOnRoads = if (civInfo.hasUnique(UniqueType.RoadMovementSpeed))

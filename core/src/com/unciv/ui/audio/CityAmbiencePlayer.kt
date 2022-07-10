@@ -18,33 +18,32 @@ class CityAmbiencePlayer(
         play(city)
     }
 
-    private fun getFile(path: String): FileHandle {
+    private fun getModsFolder(): FileHandle {
+        val path = "mods"
         val internal = Gdx.files.internal(path)
         if (internal.exists()) return internal
         return Gdx.files.local(path)
     }
 
-    private fun getSoundFolders() = sequence {
+    private fun getModSoundFolders(): Sequence<FileHandle> {
         val visualMods = UncivGame.Current.settings.visualMods
         val mods = UncivGame.Current.gameInfo!!.gameParameters.getModsAndBaseRuleset()
-        val modSoundFolders = (visualMods + mods).asSequence()
+        return (visualMods + mods).asSequence()
             .map { modName ->
-                getFile("mods")
+                getModsFolder()
                     .child(modName)
                     .child("sounds")
             }
-
-        yieldAll(modSoundFolders)
-        yield(getFile("sounds"))
     }
 
-    private fun getSoundFile(fileName: String): FileHandle? {
-        return getSoundFolders()
-            .filter { it.exists() && it.isDirectory }
+    private fun getSoundFile(fileName: String): FileHandle {
+        val fileFromMods = getModSoundFolders()
+            .filter { it.isDirectory }
             .flatMap { it.list().asSequence() }
-            // ensure only normal files with common sound extension
             .filter { !it.isDirectory && it.extension() in MusicController.gdxSupportedFileExtensions }
             .firstOrNull { it.nameWithoutExtension() == fileName }
+
+        return fileFromMods ?: Gdx.files.internal("sounds/$fileName.ogg")
     }
 
     private fun play(city: CityInfo) {

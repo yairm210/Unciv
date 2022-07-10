@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization
 
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.models.Counter
 import java.util.HashSet
 
@@ -7,7 +8,7 @@ import java.util.HashSet
 // todo: Free GP from policies and wonders should increase threshold according to the wiki
 // todo: GP from Maya long count should increase threshold as well - implement together
 
-class GreatPersonManager {
+class GreatPersonManager : IsPartOfGameInfoSerialization {
     var pointsForNextGreatPerson = 100
     var pointsForNextGreatGeneral = 200
 

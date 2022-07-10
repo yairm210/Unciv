@@ -188,7 +188,7 @@ class Nation : RulesetObject() {
             when {
                 building.uniqueTo != name -> continue
                 building.hasUnique(UniqueType.HiddenFromCivilopedia) -> continue
-                religionEnabled && building.hasUnique(UniqueType.HiddenWithoutReligion) -> continue
+                !religionEnabled && building.hasUnique(UniqueType.HiddenWithoutReligion) -> continue
             }
             yield(FormattedLine("{${building.name}} -", link=building.makeLink()))
             if (building.replaces != null && ruleset.buildings.containsKey(building.replaces!!)) {

@@ -45,6 +45,7 @@ class GameSettings {
 
     var showMinimap: Boolean = true
     var minimapSize: Int = 6    // default corresponds to 15% screen space
+    var unitIconOpacity = 1f // default corresponds to fully opaque
     var showPixelUnits: Boolean = true
     var showPixelImprovements: Boolean = true
     var continuousRendering = false
@@ -55,6 +56,8 @@ class GameSettings {
     var visualMods = HashSet<String>()
     var useDemographics: Boolean = false
     var showZoomButtons: Boolean = false
+
+    var notificationsLogMaxTurns = 5
 
     var androidCutout: Boolean = false
 
@@ -70,6 +73,7 @@ class GameSettings {
     var lastGameSetup: GameSetupInfo? = null
 
     var fontFamily: String = Fonts.DEFAULT_FONT_FAMILY
+    var fontSizeMultiplier: Float = 1f
 
     /** Maximum zoom-out of the map - performance heavy */
     var maxWorldZoomOut = 2f
@@ -88,12 +92,13 @@ class GameSettings {
         if (!isFreshlyCreated && Gdx.app?.type == Application.ApplicationType.Desktop) {
             windowState = WindowState(Gdx.graphics.width, Gdx.graphics.height)
         }
-        UncivGame.Current.gameSaver.setGeneralSettings(this)
+        UncivGame.Current.files.setGeneralSettings(this)
     }
 
-    fun addCompletedTutorialTask(tutorialTask: String) {
-        if (tutorialTasksCompleted.add(tutorialTask))
-            save()
+    fun addCompletedTutorialTask(tutorialTask: String): Boolean {
+        if (!tutorialTasksCompleted.add(tutorialTask)) return false
+        save()
+        return true
     }
 
     fun updateLocaleFromLanguage() {

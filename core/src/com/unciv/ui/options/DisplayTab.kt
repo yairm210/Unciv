@@ -42,6 +42,8 @@ fun displayTab(
 
     addMinimapSizeSlider(this, settings, optionsPopup.selectBoxMinWidth)
 
+    addUnitIconAlphaSlider(this, settings, optionsPopup.selectBoxMinWidth)
+
     addResolutionSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onResolutionChange)
 
     addTileSetSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onTilesetChange)
@@ -92,6 +94,25 @@ private fun addMinimapSizeSlider(table: Table, settings: GameSettings, selectBox
             worldScreen.shouldUpdate = true
     }
     table.add(minimapSlider).minWidth(selectBoxMinWidth).pad(10f).row()
+}
+
+private fun addUnitIconAlphaSlider(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
+    table.add("Unit icon opacity".toLabel()).left().fillX()
+
+    val getTipText: (Float) -> String = {"%.0f".format(it*100) + "%"}
+
+    val unitIconAlphaSlider = UncivSlider(
+        0f, 1f, 0.1f, initial = settings.unitIconOpacity, getTipText = getTipText
+    ) {
+        settings.unitIconOpacity = it
+        settings.save()
+
+        val worldScreen = UncivGame.Current.getWorldScreenIfActive()
+        if (worldScreen != null)
+            worldScreen.shouldUpdate = true
+
+    }
+    table.add(unitIconAlphaSlider).minWidth(selectBoxMinWidth).pad(10f).row()
 }
 
 private fun addResolutionSelectBox(table: Table, settings: GameSettings, selectBoxMinWidth: Float, onResolutionChange: () -> Unit) {

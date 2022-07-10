@@ -54,7 +54,8 @@ class OptionsPopup(
     }
 
     init {
-        settings.addCompletedTutorialTask("Open the options table")
+        if (settings.addCompletedTutorialTask("Open the options table"))
+            (screen as? WorldScreen)?.shouldUpdate = true
 
         innerTable.pad(0f)
         val tabMaxWidth: Float
@@ -166,7 +167,10 @@ class OptionsPopup(
                     settingsProperty: KMutableProperty0<Boolean>,
                     updateWorld: Boolean = false,
                     action: (Boolean) -> Unit = {}) {
-        addCheckbox(table, text, settingsProperty.get(), updateWorld, action)
+        addCheckbox(table, text, settingsProperty.get(), updateWorld) {
+            action(it)
+            settingsProperty.set(it)
+        }
     }
 
 }

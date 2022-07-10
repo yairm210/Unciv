@@ -5,9 +5,8 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
-import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
+import com.unciv.logic.multiplayer.storage.OnlineMultiplayerFiles
 import com.unciv.ui.utils.extensions.isLargerThan
-import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import com.unciv.utils.concurrency.withGLContext
 import com.unciv.utils.debug
@@ -53,7 +52,7 @@ class OnlineMultiplayerGame(
     }
 
     private fun loadPreviewFromFile(): GameInfoPreview {
-        val previewFromFile = UncivGame.Current.gameSaver.loadGamePreviewFromFile(fileHandle)
+        val previewFromFile = UncivGame.Current.files.loadGamePreviewFromFile(fileHandle)
         preview = previewFromFile
         return previewFromFile
     }
@@ -64,7 +63,7 @@ class OnlineMultiplayerGame(
      * Fires: [MultiplayerGameUpdateStarted], [MultiplayerGameUpdated], [MultiplayerGameUpdateUnchanged], [MultiplayerGameUpdateFailed]
      *
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
-     * @throws FileNotFoundException if the file can't be found
+     * @throws MultiplayerFileNotFoundException if the file can't be found
      */
     suspend fun requestUpdate(forceUpdate: Boolean = false) = coroutineScope {
         val onUnchanged = { GameUpdateResult.UNCHANGED }
@@ -104,9 +103,9 @@ class OnlineMultiplayerGame(
 
     private suspend fun update(): GameUpdateResult {
         val curPreview = if (preview != null) preview!! else loadPreviewFromFile()
-        val newPreview = OnlineMultiplayerGameSaver().tryDownloadGamePreview(curPreview.gameId)
+        val newPreview = OnlineMultiplayerFiles().tryDownloadGamePreview(curPreview.gameId)
         if (newPreview.turns == curPreview.turns && newPreview.currentPlayer == curPreview.currentPlayer) return GameUpdateResult.UNCHANGED
-        UncivGame.Current.gameSaver.saveGame(newPreview, fileHandle)
+        UncivGame.Current.files.saveGame(newPreview, fileHandle)
         preview = newPreview
         return GameUpdateResult.CHANGED
     }

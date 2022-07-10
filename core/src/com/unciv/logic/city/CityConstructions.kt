@@ -1,6 +1,7 @@
 package com.unciv.logic.city
 
 import com.unciv.UncivGame
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ConstructionAutomation
 import com.unciv.logic.civilization.AlertType
@@ -8,6 +9,7 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.logic.multiplayer.isUsersTurn
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.LocalUniqueCache
@@ -36,7 +38,7 @@ import kotlin.math.roundToInt
  * @property currentConstructionIsUserSet a flag indicating if the [currentConstructionFromQueue] has been set by the user or by the AI
  * @property constructionQueue a list of constructions names enqueued
  */
-class CityConstructions {
+class CityConstructions : IsPartOfGameInfoSerialization {
     //region Non-Serialized Properties
     @Transient
     lateinit var cityInfo: CityInfo
@@ -583,7 +585,12 @@ class CityConstructions {
                     && (getConstruction(currentConstructionFromQueue) !is PerpetualConstruction || currentConstructionIsUserSet)) return
         }
 
-        ConstructionAutomation(this).chooseNextConstruction()
+        val isCurrentPlayersTurn = cityInfo.civInfo.gameInfo.isUsersTurn()
+                || !cityInfo.civInfo.gameInfo.gameParameters.isOnlineMultiplayer
+        if ((UncivGame.Current.settings.autoAssignCityProduction && isCurrentPlayersTurn) // only automate if the active human player has the setting to automate production
+                || !cityInfo.civInfo.isPlayerCivilization() || cityInfo.isPuppet) {
+            ConstructionAutomation(this).chooseNextConstruction()
+        }
 
         /** Support for [UniqueType.CreatesOneImprovement] - if an Improvement-creating Building was auto-queued, auto-choose a tile: */
         val building = getCurrentConstruction() as? Building ?: return

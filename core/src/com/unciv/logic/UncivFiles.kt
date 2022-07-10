@@ -11,18 +11,20 @@ import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.doMigrations
 import com.unciv.models.metadata.isMigrationNecessary
 import com.unciv.ui.saves.Gzip
+import com.unciv.ui.utils.extensions.toNiceString
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import kotlinx.coroutines.Job
 import java.io.File
+import java.io.Writer
 
 private const val SAVE_FILES_FOLDER = "SaveFiles"
 private const val MULTIPLAYER_FILES_FOLDER = "MultiplayerGames"
 private const val AUTOSAVE_FILE_NAME = "Autosave"
 private const val SETTINGS_FILE_NAME = "GameSettings.json"
 
-class GameSaver(
+class UncivFiles(
     /**
      * This is necessary because the Android turn check background worker does not hold any reference to the actual [com.badlogic.gdx.Application],
      * which is normally responsible for keeping the [Gdx] static variables from being garbage collected.
@@ -32,7 +34,7 @@ class GameSaver(
     private val preferExternalStorage: Boolean = false
 ) {
     init {
-        debug("Creating GameSaver, localStoragePath: %s, externalStoragePath: %s, preferExternalStorage: %s",
+        debug("Creating UncivFiles, localStoragePath: %s, externalStoragePath: %s, preferExternalStorage: %s",
             files.localStoragePath, files.externalStoragePath, preferExternalStorage)
     }
     //region Data
@@ -64,6 +66,18 @@ class GameSaver(
 
         debug("Save found: %s", toReturn.file().absolutePath)
         return toReturn
+    }
+
+    /**
+     * @throws GdxRuntimeException if the [path] represents a directory
+     */
+    fun fileWriter(path: String, append: Boolean = false): Writer {
+        val file = if (preferExternalStorage && files.isExternalStorageAvailable) {
+            files.external(path)
+        } else {
+            files.local(path)
+        }
+        return file.writer(append)
     }
 
     fun getMultiplayerSaves(): Sequence<FileHandle> {
@@ -229,6 +243,8 @@ class GameSaver(
 
     /**
      * Calls the [loadCompleteCallback] on the main thread with the [GameInfo] on success or the [Exception] on error or null in both on cancel.
+     *
+     * The exception may be [IncompatibleGameInfoVersionException] if the [gameData] was created by a version of this game that is incompatible with the current one.
      */
     fun loadGameFromCustomLocation(loadCompletionCallback: (CustomLoadResult<GameInfo>) -> Unit) {
         customFileLocationHelper!!.loadGame { result ->
@@ -303,10 +319,27 @@ class GameSaver(
             else GameSettings().apply { isFreshlyCreated = true }
         }
 
+        /** @throws IncompatibleGameInfoVersionException if the [gameData] was created by a version of this game that is incompatible with the current one. */
         fun gameInfoFromString(gameData: String): GameInfo {
-            return gameInfoFromStringWithoutTransients(gameData).apply {
-                setTransients()
+            val unzippedJson = try {
+                Gzip.unzip(gameData)
+            } catch (ex: Exception) {
+                gameData
             }
+            val gameInfo = try {
+                json().fromJson(GameInfo::class.java, unzippedJson)
+            } catch (ex: Exception) {
+                Log.error("Exception while deserializing GameInfo JSON", ex)
+                val onlyVersion = json().fromJson(GameInfoSerializationVersion::class.java, unzippedJson)
+                throw IncompatibleGameInfoVersionException(onlyVersion.version, ex)
+            }
+            if (gameInfo.version > GameInfo.CURRENT_COMPATIBILITY_VERSION) {
+                // this means there wasn't an immediate error while serializing, but this version will cause other errors later down the line
+                throw IncompatibleGameInfoVersionException(gameInfo.version)
+            }
+            gameInfo.version = GameInfo.CURRENT_COMPATIBILITY_VERSION
+            gameInfo.setTransients()
+            return gameInfo
         }
 
         /**
@@ -315,22 +348,6 @@ class GameSaver(
          */
         fun gameInfoPreviewFromString(gameData: String): GameInfoPreview {
             return json().fromJson(GameInfoPreview::class.java, Gzip.unzip(gameData))
-        }
-
-        /**
-         * WARNING! transitive GameInfo data not initialized
-         * The returned GameInfo can not be used for most circumstances because its not initialized!
-         * It is therefore stateless and save to call for Multiplayer Turn Notifier, unlike gameInfoFromString().
-         *
-         * @throws SerializationException
-         */
-        private fun gameInfoFromStringWithoutTransients(gameData: String): GameInfo {
-            val unzippedJson = try {
-                Gzip.unzip(gameData)
-            } catch (ex: Exception) {
-                gameData
-            }
-            return json().fromJson(GameInfo::class.java, unzippedJson)
         }
 
         /** Returns gzipped serialization of [game], optionally gzipped ([forceZip] overrides [saveZipped]) */
@@ -407,3 +424,12 @@ class GameSaver(
 
     // endregion
 }
+
+class IncompatibleGameInfoVersionException(
+    override val version: CompatibilityVersion,
+    cause: Throwable? = null
+) : UncivShowableException(
+    "The save was created with an incompatible version of Unciv: [${version.createdWith.toNiceString()}]. " +
+            "Please update Unciv to this version or later and try again.",
+    cause
+), HasGameInfoSerializationVersion
