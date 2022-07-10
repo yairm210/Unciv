@@ -177,7 +177,9 @@ class WorldMapHolder(
         val previousSelectedUnits = unitTable.selectedUnits.toList() // create copy
         val previousSelectedCity = unitTable.selectedCity
         val previousSelectedUnitIsSwapping = unitTable.selectedUnitIsSwapping
-        unitTable.tileSelected(tileInfo)
+        // while in Air Sweep mode, don't select units on tile clicked
+        if (previousSelectedUnits.isNotEmpty() && previousSelectedUnits.any{ !it.isPreparingAirSweep() })
+            unitTable.tileSelected(tileInfo)
         val newSelectedUnit = unitTable.selectedUnit
 
         if (previousSelectedUnits.isNotEmpty() && previousSelectedUnits.any { it.getTile() != tileInfo }

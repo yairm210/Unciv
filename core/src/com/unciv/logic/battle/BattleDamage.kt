@@ -162,6 +162,9 @@ object BattleDamage {
         attacker: ICombatant
     ): Counter<String> {
         // TODO!!!!!!
+        val modifiers = Counter<String>()
+
+        return modifiers
     }
 
     fun getDefenceModifiers(attacker: ICombatant, defender: ICombatant): Counter<String> {

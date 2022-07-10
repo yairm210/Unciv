@@ -817,6 +817,56 @@ object Battle {
         if (targetedCity.population.population < 1) targetedCity.population.setPopulation(1)
     }
 
+    fun airSweep(attacker: MapUnitCombatant, attackedTile: TileInfo) {
+        // Handle which Civ Intercepts
+        for (interceptingCiv in UncivGame.Current.gameInfo!!.civilizations) {
+            // only count if at war
+            if (!attacker.getCivInfo().isAtWarWith(interceptingCiv))
+                continue
+            // Pick highest chance interceptor
+            for (interceptor in interceptingCiv.getCivUnits()
+                .filter { it.canIntercept(attackedTile) }
+                .sortedByDescending { it.interceptChance() }) {
+                // Does Intercept happen? If not, exit
+                if (Random().nextFloat() > interceptor.interceptChance() / 100f) return
+
+                var damage = BattleDamage.calculateDamageToDefender(
+                    MapUnitCombatant(interceptor),
+                    attacker
+                )
+
+                var damageFactor = 1f + interceptor.interceptDamagePercentBonus().toFloat() / 100f
+                damageFactor *= attacker.unit.receivedInterceptDamageFactor()
+
+                damage = (damage.toFloat() * damageFactor).toInt()
+
+                // Land units deal 0 damage
+                if (interceptor.baseUnit.isLandUnit())
+                    damage = 0
+
+                attacker.takeDamage(damage)
+                interceptor.attacksThisTurn++
+                if (damage > 0)
+                    addXp(MapUnitCombatant(interceptor), 2, attacker)
+
+                val attackerName = attacker.getName()
+                val interceptorName = interceptor.name
+                val locations = LocationAction(interceptor.currentTile.position, attacker.unit.currentTile.position)
+                val attackerText = if (attacker.isDefeated())
+                    "Our [$attackerName] was destroyed by an intercepting [$interceptorName]"
+                else "Our [$attackerName] was attacked by an intercepting [$interceptorName]"
+                val interceptorText = if (attacker.isDefeated())
+                    "Our [$interceptorName] intercepted and destroyed an enemy [$attackerName]"
+                else "Our [$interceptorName] intercepted and attacked an enemy [$attackerName]"
+                attacker.getCivInfo().addNotification(attackerText, interceptor.currentTile.position,
+                    attackerName, NotificationIcon.War, interceptorName)
+                interceptingCiv.addNotification(interceptorText, locations,
+                    interceptorName, NotificationIcon.War, attackerName)
+                return
+            }
+        }
+    }
+
     private fun tryInterceptAirAttack(attacker: MapUnitCombatant, attackedTile: TileInfo, interceptingCiv: CivilizationInfo, defender: ICombatant?) {
         if (attacker.unit.hasUnique(UniqueType.CannotBeIntercepted)) return
         // Pick highest chance interceptor
@@ -840,9 +890,6 @@ object Battle {
 
             attacker.takeDamage(damage)
             interceptor.attacksThisTurn++
-            if (damage > 0)
-                addXp(MapUnitCombatant(interceptor), 2, attacker)
-
             if (damage > 0)
                 addXp(MapUnitCombatant(interceptor), 2, attacker)
 

@@ -374,7 +374,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         }
         else {
             attackButton.onClick(attacker.getAttackSound()) {
-                Battle.NUKE(attacker, targetTile)
+                Battle.airSweep(attacker, targetTile)
                 worldScreen.mapHolder.removeUnitActionOverlay() // the overlay was one of attacking
                 worldScreen.shouldUpdate = true
             }
