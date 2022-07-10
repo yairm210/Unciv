@@ -318,7 +318,7 @@ object Github {
         var avatar_url: String? = null
     }
 
-    fun getLatestVersion(): LatestRelease? {
+    suspend fun getLatestVersion(): LatestRelease? {
         try {
             val url = "https://api.github.com/repos/yairm210/Unciv/releases/latest"
             val response = download(url)
