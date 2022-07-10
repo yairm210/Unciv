@@ -719,9 +719,10 @@ open class TileGroup(
             newImageLocation = tileSetStrings.getThisUnit() ?: tileSetStrings.fallback?.getThisUnit() ?: ""
         }
 
-        if (pixelMilitaryUnitImageLocation != newImageLocation) {
+        val currentUnitName = if (militaryUnit != null) "${militaryUnit}:" else ""
+        if (pixelMilitaryUnitImageLocation != "$currentUnitName$newImageLocation") {
             pixelMilitaryUnitGroup.clear()
-            pixelMilitaryUnitImageLocation = newImageLocation
+            pixelMilitaryUnitImageLocation = "$currentUnitName$newImageLocation"
 
             if (newImageLocation != "" && ImageGetter.imageExists(newImageLocation)) {
                 val nation = militaryUnit!!.civInfo.nation
@@ -753,9 +754,10 @@ open class TileGroup(
             newImageLocation = tileSetStrings.getThisUnit() ?: tileSetStrings.fallback?.getThisUnit() ?: ""
         }
 
-        if (pixelCivilianUnitImageLocation != newImageLocation) {
+        val currentUnitName = if (civilianUnit != null) "${civilianUnit}:" else ""
+        if (pixelCivilianUnitImageLocation != "$currentUnitName$newImageLocation") {
             pixelCivilianUnitGroup.clear()
-            pixelCivilianUnitImageLocation = newImageLocation
+            pixelCivilianUnitImageLocation = "$currentUnitName$newImageLocation"
 
             if (newImageLocation != "" && ImageGetter.imageExists(newImageLocation)) {
                 val nation = civilianUnit!!.civInfo.nation
