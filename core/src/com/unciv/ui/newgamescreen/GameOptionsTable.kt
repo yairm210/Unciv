@@ -3,7 +3,6 @@ package com.unciv.ui.newgamescreen
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CityStateType
-import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.UniqueType
@@ -65,17 +64,13 @@ class GameOptionsTable(
             }).colspan(2).fillX().row()
         }).row()
         addVictoryTypeCheckboxes()
-
-        val religionDisabledByRuleset = (ruleset.eras[gameParameters.startingEra]!!.hasUnique(UniqueType.DisablesReligion)
-                || ruleset.modOptions.uniques.contains(ModOptionsConstants.disableReligion))
-
         val checkboxTable = Table().apply { defaults().left().pad(2.5f) }
         checkboxTable.addNoBarbariansCheckbox()
         checkboxTable.addRagingBarbariansCheckbox()
         checkboxTable.addOneCityChallengeCheckbox()
         checkboxTable.addNuclearWeaponsCheckbox()
         checkboxTable.addIsOnlineMultiplayerCheckbox()
-        checkboxTable.addReligionCheckbox(cityStateSlider, religionDisabledByRuleset)
+        checkboxTable.addReligionCheckbox(cityStateSlider)
         checkboxTable.addNoStartBiasCheckbox()
         add(checkboxTable).center().row()
 
@@ -123,7 +118,9 @@ class GameOptionsTable(
                 && !it.hasUnique(UniqueType.CityStateDeprecated)
             }
 
-    private fun Table.addReligionCheckbox(cityStateSlider: UncivSlider?, religionDisabledByRuleset: Boolean) {
+    private fun Table.addReligionCheckbox(cityStateSlider: UncivSlider?) {
+                val religionDisabledByRuleset = (ruleset.eras[gameParameters.startingEra]!!.hasUnique(UniqueType.DisablesReligion)
+                        || ruleset.modOptions.uniques.contains(ModOptionsConstants.disableReligion))
                 if (!religionDisabledByRuleset) {
                     addCheckbox("Enable Religion", gameParameters.religionEnabled) {
                         gameParameters.religionEnabled = it
