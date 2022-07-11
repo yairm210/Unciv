@@ -1,20 +1,13 @@
+Fix multiple capture uniques resulting in double-capture
 
-
-Fix multiple capture uniques resulting in double-capture 
-
-4.1.17-patch1
-
-Hopefully resolved ANRs caused by available fonts taking too long to load
-
-Refactorings & three more unit tests for uniques  - By xlenstra
+Resolved ANRs caused by fonts taking too long to load
 
 By OptimizedForDensity:
-- Fix monastery purchase cost 
-- Fix any civ being able to capture barbarians 
-- Stop automate production setting from automating other players' production in MP 
-- Fix policy uniques not being applied 
-- Sort game speeds in Civilopedia by game speed modifier 
+- Fixed image problems in combat
+- Stop automate production setting from affecting other players' production in MP
+- Sort game speeds in Civilopedia by speed
+- Fix monastery purchase cost
 
 Remove double XP gain from Intercept  - By itanasi
 
-Fix Desktop multiplayer options showing a double separator  - By Azzurite
+Multiplayer options UI fix - By Azzurite
