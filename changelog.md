@@ -1,3 +1,37 @@
+## 4.1.18
+
+Fix multiple capture uniques resulting in double-capture
+
+Resolved ANRs caused by fonts taking too long to load
+
+By OptimizedForDensity:
+- Fixed image problems in combat
+- Stop automate production setting from affecting other players' production in MP
+- Sort game speeds in Civilopedia by speed
+- Fix monastery purchase cost
+
+Remove double XP gain from Intercept  - By itanasi
+
+Multiplayer options UI fix - By Azzurite
+
+## 4.1.17
+
+Puppet cities generate no extra unhappiness (per Civ V)
+
+Resolved crash when resuming game after closing it quickly
+
+Modding: Removed deprecated uniques
+
+By OptimizedForDensity:
+- Improve AI belief picking
+- Unstack enemy unit strength modifiers
+- Prevent theme music tracks from randomly playing
+- Fix latest untranslated strings
+
+By alexban011:
+- Increase mod search request page size
+- Puppeted cities can no longer become capitals
+
 ## 4.1.16
 
 By OptimizedForDensity:

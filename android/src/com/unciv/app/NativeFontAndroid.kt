@@ -22,13 +22,15 @@ class NativeFontAndroid(
     private val size: Int,
     private val fontFamily: String
 ) : NativeFontImplementation {
-    private val fontList =
+    private val fontList by lazy{
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) emptySet()
         else SystemFonts.getAvailableFonts()
+    }
 
-    private val paint = Paint().apply {
+    private val paint by lazy{ createPaint() }
+    fun createPaint() = Paint().apply {
         typeface = if (fontFamily.isNotBlank() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            // Helper within the VERSION_CODES.Q gate: Evaluate a Font's desirability (lower = better) for a given family. 
+            // Helper within the VERSION_CODES.Q gate: Evaluate a Font's desirability (lower = better) for a given family.
             fun Font.matchesFamily(family: String): Int {
                 val name = file?.nameWithoutExtension ?: return Int.MAX_VALUE
                 if (name == family) return 0
@@ -94,7 +96,7 @@ class NativeFontAndroid(
 
         // To get _all_ Languages a user has in their Android settings, we would need more help
         // from the launcher: (Activity).resources.configuration.locales
-        val languageTag = Locale.getDefault().toLanguageTag()  // e.g. he-IL, corresponds to the _first_ Language in Android settings 
+        val languageTag = Locale.getDefault().toLanguageTag()  // e.g. he-IL, corresponds to the _first_ Language in Android settings
         val supportedLocales = arrayOf(languageTag, "en-US")
         val supportedLanguages = supportedLocales.map { it.take(2) }
         return fontList.asSequence()

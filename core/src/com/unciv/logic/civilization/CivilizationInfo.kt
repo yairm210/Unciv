@@ -335,7 +335,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
             playerType == PlayerType.Human &&
                     gameInfo.gameParameters.oneCityChallenge)
 
-    fun isCurrentPlayer() = gameInfo.getCurrentPlayerCivilization() == this
+    fun isCurrentPlayer() = gameInfo.currentPlayerCiv == this
     fun isBarbarian() = nation.isBarbarian()
     fun isSpectator() = nation.isSpectator()
     fun isCityState(): Boolean = nation.isCityState()
@@ -1376,9 +1376,15 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     }
 
     fun moveCapitalToNextLargest() {
-        moveCapitalTo(cities
-            .filterNot { it.isCapital() }
-            .maxByOrNull { it.population.population})
+        val availableCities = cities.filterNot { it.isCapital() }
+        if (availableCities.none()) return
+        var newCapital = availableCities.filterNot { it.isPuppet }.maxByOrNull { it.population.population }
+
+        if (newCapital == null) { // No non-puppets, take largest puppet and annex
+            newCapital = availableCities.maxByOrNull { it.population.population }!!
+            newCapital.annexCity()
+        }
+        moveCapitalTo(newCapital)
     }
 
     //////////////////////// City State wrapper functions ////////////////////////

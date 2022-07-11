@@ -27,12 +27,14 @@ object BattleTableHelpers {
                         combatant.isCivilian() -> {
                             for (tileGroup in tilegroups) {
                                 tileGroup.icons.civilianUnitIcon?.let { yield(it) }
+                                tileGroup.update(viewingCiv)
                                 yieldAll(tileGroup.pixelCivilianUnitGroup.children)
                             }
                         }
                         else -> {
                             for (tileGroup in tilegroups) {
                                 tileGroup.icons.militaryUnitIcon?.let { yield(it) }
+                                tileGroup.update(viewingCiv)
                                 yieldAll(tileGroup.pixelMilitaryUnitGroup.children)
                             }
                         }

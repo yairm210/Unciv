@@ -237,7 +237,7 @@ class WorldScreen(
         globalShortcuts.add(Input.Keys.F11) { QuickSave.save(gameInfo, this) }    // Quick Save
         globalShortcuts.add(Input.Keys.F12) { QuickSave.load(this) }    // Quick Load
         globalShortcuts.add(Input.Keys.HOME) {    // Capital City View
-            val capital = gameInfo.currentPlayerCiv.getCapital()
+            val capital = gameInfo.getCurrentPlayerCivilization().getCapital()
             if (capital != null && !mapHolder.setCenterPosition(capital.location))
                 game.pushScreen(CityScreen(capital))
         }

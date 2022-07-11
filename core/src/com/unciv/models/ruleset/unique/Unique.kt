@@ -179,10 +179,6 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 state.cityInfo != null && !state.cityInfo.cityConstructions.containsBuildingOrEquivalent(condition.params[0])
             UniqueType.ConditionalPopulationFilter ->
                 state.cityInfo != null && state.cityInfo.population.getPopulationFilterAmount(condition.params[1]) >= condition.params[0].toInt()
-            UniqueType.ConditionalSpecialistCount ->
-                state.cityInfo != null && state.cityInfo.population.getNumberOfSpecialists() >= condition.params[0].toInt()
-            UniqueType.ConditionalFollowerCount ->
-                state.cityInfo != null && state.cityInfo.religion.getFollowersOfMajorityReligion() >= condition.params[0].toInt()
             UniqueType.ConditionalWhenGarrisoned ->
                 state.cityInfo != null && state.cityInfo.getCenterTile().militaryUnit != null && state.cityInfo.getCenterTile().militaryUnit!!.canGarrison()
 

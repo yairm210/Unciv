@@ -186,7 +186,7 @@ class OnlineMultiplayer {
         val preview = game.preview ?: throw game.error!!
         // download to work with the latest game state
         val gameInfo = multiplayerFiles.tryDownloadGame(preview.gameId)
-        val playerCiv = gameInfo.currentPlayerCiv
+        val playerCiv = gameInfo.getCurrentPlayerCivilization()
 
         if (!gameInfo.isUsersTurn()) {
             return false

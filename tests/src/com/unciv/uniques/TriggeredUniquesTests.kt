@@ -13,11 +13,6 @@ import org.junit.runner.RunWith
 
 @RunWith(GdxTestRunner::class)
 class TriggeredUniquesTests {
-    /**
-     *  Autocracy Complete was [UniqueType.TimedAttackStrength]
-     *  Now: [UniqueType.Strength], ConditionalAttacking, ConditionalOurUnit, [UniqueType.ConditionalTimedUnique]
-     */
-
     private val game = TestGame().apply { makeHexagonalMap(2) }
     private val civInfo = game.addCiv()
     private val policy =

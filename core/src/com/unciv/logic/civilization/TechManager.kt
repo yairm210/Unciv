@@ -134,9 +134,6 @@ class TechManager : IsPartOfGameInfoSerialization {
         if (tech.uniqueObjects.any { it.type == UniqueType.OnlyAvailableWhen && !it.conditionalsApply(civInfo) })
             return false
 
-        if (tech.getMatchingUniques(UniqueType.IncompatibleWith).any { isResearched(it.params[0]) })
-            return false
-
         if (isResearched(tech.name) && !tech.isContinuallyResearchable())
             return false
 
@@ -381,15 +378,11 @@ class TechManager : IsPartOfGameInfoSerialization {
     }
 
     private fun updateTransientBooleans() {
-        val wayfinding = civInfo.hasUnique(UniqueType.EmbarkAndEnterOcean)
-        unitsCanEmbark = wayfinding ||
-                civInfo.hasUnique(UniqueType.LandUnitEmbarkation)
+        unitsCanEmbark = civInfo.hasUnique(UniqueType.LandUnitEmbarkation)
         val enterOceanUniques = civInfo.getMatchingUniques(UniqueType.UnitsMayEnterOcean)
         allUnitsCanEnterOcean = enterOceanUniques.any { it.params[0] == "All" }
-        embarkedUnitsCanEnterOcean = wayfinding ||
-                allUnitsCanEnterOcean ||
-                enterOceanUniques.any { it.params[0] == "Embarked" } ||
-                civInfo.hasUnique(UniqueType.EmbarkedUnitsMayEnterOcean)
+        embarkedUnitsCanEnterOcean = allUnitsCanEnterOcean ||
+                enterOceanUniques.any { it.params[0] == "Embarked" }
         specificUnitsCanEnterOcean = enterOceanUniques.any { it.params[0] != "All" && it.params[0] != "Embarked" }
 
         movementSpeedOnRoads = if (civInfo.hasUnique(UniqueType.RoadMovementSpeed))
