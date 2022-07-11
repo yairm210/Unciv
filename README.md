@@ -3,9 +3,10 @@
 ![](/extraImages/GithubPreviewImage.png)
 
 [![Google Play](https://img.shields.io/static/v1?label=Google&message=Play&color=607D8B&logo=google-play)](https://play.google.com/store/apps/details?id=com.unciv.app)
-[![F-Droid](https://img.shields.io/f-droid/v/com.unciv.app)](https://f-droid.org/en/packages/com.unciv.app/)
+[![F-Droid](https://img.shields.io/f-droid/v/com.unciv.app?logo=f-droid)](https://f-droid.org/en/packages/com.unciv.app/)
 [![itch.io](https://img.shields.io/static/v1?label=itch.io&message=Unciv&color=607D8B&logo=itch.io)](https://yairm210.itch.io/unciv)
-[![Flathub](https://img.shields.io/flathub/v/io.github.yairm210.unciv)](https://flathub.org/apps/details/io.github.yairm210.unciv)
+[![Flathub](https://img.shields.io/flathub/v/io.github.yairm210.unciv?logo=flathub)](https://flathub.org/apps/details/io.github.yairm210.unciv)
+[![pi-apps](https://img.shields.io/static/v1?label=pi-apps&message=Unciv&color=607D8B&logo=raspberry-pi)](https://github.com/Botspot/pi-apps)
 
 ![Build and deploy](https://github.com/yairm210/Unciv/workflows/Build%20and%20deploy/badge.svg)
 [![Discord Chat](https://img.shields.io/discord/586194543280390151.svg)](https://discord.gg/bjrB4Xw)
