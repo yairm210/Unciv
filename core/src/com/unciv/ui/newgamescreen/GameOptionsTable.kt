@@ -91,8 +91,8 @@ class GameOptionsTable(
             { gameParameters.noBarbarians = it }
 
     private fun Table.addRagingBarbariansCheckbox() =
-        addCheckbox("Raging Barbarians", gameParameters.ragingBarbarians)
-        { gameParameters.ragingBarbarians = it }
+            addCheckbox("Raging Barbarians", gameParameters.ragingBarbarians)
+            { gameParameters.ragingBarbarians = it }
 
     private fun Table.addOneCityChallengeCheckbox() =
             addCheckbox("One City Challenge", gameParameters.oneCityChallenge)
@@ -239,6 +239,7 @@ class GameOptionsTable(
         val eras = ruleset.eras.keys
         addSelectBox("{Starting Era}:", eras, gameParameters.startingEra)
         { gameParameters.startingEra = it; null }
+        update()
     }
 
     private fun addVictoryTypeCheckboxes() {
