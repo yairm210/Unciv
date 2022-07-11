@@ -4,6 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CityStateType
 import com.unciv.models.metadata.BaseRuleset
+import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
@@ -65,6 +66,8 @@ class GameOptionsTable(
         }).row()
         addVictoryTypeCheckboxes()
 
+        val religionDisabledByRuleset = (ruleset.eras[gameParameters.startingEra]!!.hasUnique(UniqueType.DisablesReligion)
+                || ruleset.modOptions.uniques.contains(ModOptionsConstants.disableReligion))
 
         val checkboxTable = Table().apply { defaults().left().pad(2.5f) }
         checkboxTable.addNoBarbariansCheckbox()
@@ -72,10 +75,7 @@ class GameOptionsTable(
         checkboxTable.addOneCityChallengeCheckbox()
         checkboxTable.addNuclearWeaponsCheckbox()
         checkboxTable.addIsOnlineMultiplayerCheckbox()
-        if (gameParameters.baseRuleset != BaseRuleset.Civ_V_Vanilla.fullName)
-            checkboxTable.addReligionCheckbox(cityStateSlider)
-        else
-            gameParameters.religionEnabled = false
+        checkboxTable.addReligionCheckbox(cityStateSlider, religionDisabledByRuleset)
         checkboxTable.addNoStartBiasCheckbox()
         add(checkboxTable).center().row()
 
@@ -118,16 +118,22 @@ class GameOptionsTable(
             }
 
     private fun numberOfCityStates() = ruleset.nations.values.count {
-        it.isCityState()
-        && (it.cityStateType != CityStateType.Religious || gameParameters.religionEnabled)
-        && !it.hasUnique(UniqueType.CityStateDeprecated)
-    }
+                it.isCityState()
+                && (it.cityStateType != CityStateType.Religious || gameParameters.religionEnabled)
+                && !it.hasUnique(UniqueType.CityStateDeprecated)
+            }
 
-    private fun Table.addReligionCheckbox(cityStateSlider: UncivSlider?) =
-        addCheckbox("Enable Religion", gameParameters.religionEnabled) {
-            gameParameters.religionEnabled = it
-            cityStateSlider?.run { setRange(0f, numberOfCityStates().toFloat()) }
-        }
+    private fun Table.addReligionCheckbox(cityStateSlider: UncivSlider?, religionDisabledByRuleset: Boolean) {
+                if (!religionDisabledByRuleset) {
+                    addCheckbox("Enable Religion", gameParameters.religionEnabled) {
+                        gameParameters.religionEnabled = it
+                        cityStateSlider?.run { setRange(0f, numberOfCityStates().toFloat()) }
+                    }
+                } else {
+                    gameParameters.religionEnabled = false
+                }
+            }
+
 
     private fun Table.addNoStartBiasCheckbox() =
             addCheckbox("Disable starting bias", gameParameters.noStartBias)
