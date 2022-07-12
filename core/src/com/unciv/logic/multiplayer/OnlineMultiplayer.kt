@@ -21,7 +21,6 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
-import java.io.FileNotFoundException
 import java.time.Duration
 import java.time.Instant
 import java.util.*
@@ -155,9 +154,9 @@ class OnlineMultiplayer {
         return addGame(fileHandle, preview)
     }
 
-    private suspend fun addGame(fileHandle: FileHandle, preview: GameInfoPreview = files.loadGamePreviewFromFile(fileHandle)) {
-        debug("Adding game %s", preview.gameId)
-        val game = OnlineMultiplayerGame(fileHandle, preview, Instant.now())
+    private suspend fun addGame(fileHandle: FileHandle, preview: GameInfoPreview? = null) {
+        debug("Adding game %s", fileHandle.name())
+        val game = OnlineMultiplayerGame(fileHandle, preview, if (preview != null) Instant.now() else null)
         savedGames[fileHandle] = game
         withGLContext {
             EventBus.send(MultiplayerGameAdded(game.name))
