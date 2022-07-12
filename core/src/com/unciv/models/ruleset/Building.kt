@@ -188,11 +188,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             stats.add(unique.stats)
         }
 
-        @Suppress("RemoveRedundantQualifierName")  // make it clearer Building inherits Stats
-        for (unique in getMatchingUniques(UniqueType.StatsWithResource))
-            if (civInfo.hasResource(unique.params[1]))
-                stats.add(unique.stats)
-
         if (!isWonder)
             for (unique in localUniqueCache.get("StatsFromBuildings", city.getMatchingUniques(UniqueType.StatsFromBuildings))) {
                 if (matchesFilter(unique.params[1]))
@@ -508,15 +503,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                         .none { it.matchesFilter(unique.params[0], civInfo) && it.getOwner() == cityConstructions.cityInfo.civInfo }
                     )
                         rejectionReasons.add(RejectionReason.MustOwnTile.toInstance(unique.text))
-
-                // Deprecated since 3.16.11
-                    UniqueType.CanOnlyBeBuiltInAnnexedCities ->
-                        if (
-                            cityConstructions.cityInfo.isPuppet
-                            || cityConstructions.cityInfo.civInfo.civName == cityConstructions.cityInfo.foundingCiv
-                        )
-                            rejectionReasons.add(RejectionReason.CanOnlyBeBuiltInSpecificCities.toInstance(unique.text))
-                //
 
                 UniqueType.CanOnlyBeBuiltInCertainCities ->
                     if (!cityConstructions.cityInfo.matchesFilter(unique.params[0]))
