@@ -34,9 +34,9 @@ In this order:
 * G&K mechanics - espionage, the Maya's, etc.
 * BNW mechanics - trade routes, world congress, etc.
 
-# Contributing
+## Contributing
 
-## How can I help?
+### How can I help?
 
 Programmers start [here](https://yairm210.github.io/Unciv/Developers/Building-Locally/)!
 
@@ -49,9 +49,9 @@ You can join us in any of the open issue, or work on improving anything you want
 If not, you can help by spreading the word - vote for Unciv where you can, mention it on Reddit or Twitter etc, and help us with new ideas of how to get the word out!
 
 
-# FAQ
+## FAQ
 
-## Will you implement {feature}?
+### Will you implement {feature}?
 
 If it's in the original Civ V, then yes!
 
@@ -59,7 +59,7 @@ There's a lot left to implement, so it's hard to give an estimation of when exac
 
 If not, then the feature won't be added until we've finished all the features from the original Civ - as mentioned, this will take a while!
 
-### Why not? This is its own game, why not add features that weren't in Civ V?
+#### Why not? This is its own game, why not add features that weren't in Civ V?
 
 Having a clear vision is important for actually getting things done.
 
@@ -69,11 +69,11 @@ As an open source project, this stuff is done in our spare time, of which there 
 
 We need a clear-cut criteria to decide what to work on and what not to work on.
 
-## Will you implement Civ VI?
+### Will you implement Civ VI?
 
 Considering how long it took to get this far, no.
 
-## Is there a desktop version?
+### Is there a desktop version?
 
 Yes! Windows and Linux versions are available at [itch.io](https://yairm210.itch.io/unciv), and if you're using the Itch app, your game will stay up-to-date - and we release pretty frequently so that's an issue ;)
 
@@ -86,14 +86,14 @@ If you use Flatpaks, there's a Flatpak by [MayeulC](https://github.com/MayeulC) 
 
 If you want to build it from scratch for some reason, [we have instructions for that as well](https://yairm210.github.io/Unciv/Developers/Building-locally-without-Android-Studio/)
 
-## How about IOS?
+### How about IOS?
 
 I'm not planning on it.
 
 It means paying money to Apple, yet another release path,
  and since I don't have an IOS device it means I can't test it properly.
 
-## How can I learn to play? Where's the wiki?
+### How can I learn to play? Where's the wiki?
 
 All the tutorial information is available in-game at menu > civilopedia > tutorials
 
@@ -103,7 +103,7 @@ Since this is a Civ V clone, you can search Google for how to play Civ V and the
 
 Alternatively, you could [join us on Discord](https://discord.gg/bjrB4Xw) and ask there =D
 
-## Aren't you basically making a Civ V clone? Is that even legal?
+### Aren't you basically making a Civ V clone? Is that even legal?
 
 This is a subject that I've heard a lot of hearsay on but no solid sources of law.
 
