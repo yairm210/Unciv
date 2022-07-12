@@ -13,7 +13,7 @@
 
 
 
-# What is this?
+## What is this?
 
 An open-source, mod-friendly Android+Desktop remake of Civ V, made with LibGDX
 
@@ -25,7 +25,7 @@ If you want a small, fast, moddable, FOSS, in-depth 4X that can still run on a p
 
 ## What's the roadmap?
 
-Is this order:
+In this order:
 
 * Polish! As you may have noticed, Unciv is fully functional but rough around the edges. This means:
     * UI+UX improvements (suggestions welcome!)
@@ -137,4 +137,4 @@ And if you are using docker desktop:
 * ```$ docker compose build && docker compose up```
 * http://localhost:6901/vnc.html?password=headless
 
-# [Credits and 3rd parties](docs/Credits.md)
+## [Credits and 3rd parties](docs/Credits.md)
