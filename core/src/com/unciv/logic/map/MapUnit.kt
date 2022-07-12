@@ -675,6 +675,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun useMovementPoints(amount: Float) {
+        movement.resetPathsToTilesWithinTurn()
         turnsFortified = 0
         currentMovement -= amount
         if (currentMovement < 0) currentMovement = 0f

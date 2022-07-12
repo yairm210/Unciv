@@ -9,6 +9,10 @@ import com.unciv.models.ruleset.unique.UniqueType
 
 class UnitMovementAlgorithms(val unit: MapUnit) {
 
+    private var tilesWithinTurn: PathsToTilesWithinTurn = PathsToTilesWithinTurn()
+
+    fun resetPathsToTilesWithinTurn() = tilesWithinTurn.clear()
+
     // This function is called ALL THE TIME and should be as time-optimal as possible!
     private fun getMovementCostBetweenAdjacentTiles(
         from: TileInfo,
@@ -138,6 +142,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
      * If a tile can be reached within the turn, but it cannot be passed through, the total distance to it is set to unitMovement
      */
     fun getDistanceToTilesWithinTurn(origin: Vector2, unitMovement: Float, considerZoneOfControl: Boolean = true): PathsToTilesWithinTurn {
+        if (tilesWithinTurn.isNotEmpty()) return tilesWithinTurn
         val distanceToTiles = PathsToTilesWithinTurn()
         if (unitMovement == 0f) return distanceToTiles
 
@@ -179,6 +184,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
             tilesToCheck = updatedTiles
         }
 
+        tilesWithinTurn = distanceToTiles
         return distanceToTiles
     }
 

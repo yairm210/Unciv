@@ -59,14 +59,14 @@ object NextTurnAutomation {
             protectCityStates(civInfo)
             bullyCityStates(civInfo)
         }
-        automateUnits(civInfo)  // this is the most expensive part
+        automateUnits(civInfo)  // very expensive
 
         if (civInfo.isMajorCiv()) {
             // Can only be done now, as the prophet first has to decide to found/enhance a religion
             chooseReligiousBeliefs(civInfo)
         }
 
-        reassignWorkedTiles(civInfo)  // second most expensive
+        reassignWorkedTiles(civInfo)  // very expensive
         trainSettler(civInfo)
         tryVoteForDiplomaticVictory(civInfo)
     }
