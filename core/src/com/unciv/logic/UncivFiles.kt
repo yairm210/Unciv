@@ -245,7 +245,7 @@ class UncivFiles(
     /**
      * GDX JSON deserialization does not throw when the file is empty, it just returns `null`.
      *
-     * Since we work with non-nullable types, we convert this to an actual exception here ot have a nice exception message instead of a NPE.
+     * Since we work with non-nullable types, we convert this to an actual exception here to have a nice exception message instead of a NPE.
      */
     private fun emptyFile(gameFile: FileHandle): SerializationException {
         return SerializationException("The file for the game ${gameFile.name()} is empty")
