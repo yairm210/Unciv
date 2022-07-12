@@ -66,7 +66,7 @@ class ModManagementScreen(
     private val modActionTable = Table().apply { defaults().pad(10f) }
     private val optionsManager = ModManagementOptions(this)
 
-    val amountPerPage = 100
+    val amountPerPage = 30
 
     private var lastSelectedButton: Button? = null
     private var lastSyncMarkedButton: Button? = null
