@@ -94,6 +94,15 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
         }
     }
 
+    class Filter(
+        val text: String,
+        val topic: String
+    )
+
+    fun getFilter(): Filter {
+        return Filter(getFilterText(), category.topic)
+    }
+
     private val textField = UncivTextField.create("Enter search text")
     fun getFilterText(): String = textField.text
 
@@ -232,19 +241,19 @@ class ModUIData(
     fun lastUpdated() = ruleset?.modOptions?.lastUpdated ?: repo?.pushed_at ?: ""
     fun stargazers() = repo?.stargazers_count ?: 0
     fun author() = ruleset?.modOptions?.author ?: repo?.owner?.login ?: ""
-    fun matchesFilter(filterText: String, optionsManager: ModManagementOptions, modTopic: ArrayList<String>?): Boolean = when {
-        filterText.isEmpty() && categoryFilter(modTopic, optionsManager) -> true
-        name.contains(filterText, true) && categoryFilter(modTopic, optionsManager) -> true
+    fun matchesFilter(filter: ModManagementOptions.Filter): Boolean = when {
+        filter.text.isEmpty() && categoryFilter(filter) -> true
+        name.contains(filter.text, true) && categoryFilter(filter) -> true
         // description.contains(filterText, true) -> true // too many surprises as description is different in the two columns
-        author().contains(filterText, true) && categoryFilter(modTopic, optionsManager) -> true
+        author().contains(filter.text, true) && categoryFilter(filter) -> true
         else -> false
     }
-
-    private fun categoryFilter(modTopic: ArrayList<String>?, optionsManager: ModManagementOptions): Boolean {
-        if (optionsManager.category == ModManagementOptions.Category.All)
+    private fun categoryFilter(filter: ModManagementOptions.Filter): Boolean {
+        val modTopic = repo?.topics ?: ruleset?.modOptions?.topics!!
+        if (filter.topic == ModManagementOptions.Category.All.topic)
             return true
         return try {
-            modTopic!![1] == optionsManager.category.topic
+            modTopic[1] == filter.topic
         } catch (ex: IndexOutOfBoundsException) {
             false // mod does not have a category -> don't show it
         } catch (ex: Exception) {

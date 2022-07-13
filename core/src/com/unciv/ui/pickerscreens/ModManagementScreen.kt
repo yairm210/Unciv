@@ -66,7 +66,7 @@ class ModManagementScreen(
     private val modActionTable = Table().apply { defaults().pad(10f) }
     private val optionsManager = ModManagementOptions(this)
 
-    val amountPerPage = 30
+    val amountPerPage = 100
 
     private var lastSelectedButton: Button? = null
     private var lastSyncMarkedButton: Button? = null
@@ -509,9 +509,9 @@ class ModManagementScreen(
 
         modTable.clear()
         var currentY = -1f
-        val filter = optionsManager.getFilterText()
+        val filter = optionsManager.getFilter()
         for (mod in installedModInfo.values.sortedWith(optionsManager.sortInstalled.comparator)) {
-            if (!mod.matchesFilter(filter, optionsManager, mod.ruleset?.modOptions?.topics)) continue
+            if (!mod.matchesFilter(filter)) continue
             // Prevent building up listeners. The virgin Button has one: for mouseover styling.
             // The captures for our listener shouldn't need updating, so assign only once
             if (mod.button.listeners.none { it.javaClass.`package`.name.startsWith("com.unciv") })
@@ -571,12 +571,12 @@ class ModManagementScreen(
         downloadTable.add(getDownloadFromUrlButton()).row()
         onlineScrollCurrentY = -1f
 
-        val filter = optionsManager.getFilterText()
+        val filter = optionsManager.getFilter()
         // Important: sortedMods holds references to the original values, so the referenced buttons stay valid.
         // We update y and height here, we do not replace the ModUIData instances do the referenced buttons stay valid.
         val sortedMods = onlineModInfo.values.asSequence().sortedWith(optionsManager.sortOnline.comparator)
         for (mod in sortedMods) {
-            if (!mod.matchesFilter(filter, optionsManager, mod.repo?.topics)) continue
+            if (!mod.matchesFilter(filter)) continue
             val cell = downloadTable.add(mod.button)
             downloadTable.row()
             if (onlineScrollCurrentY < 0f) onlineScrollCurrentY = cell.padTop
