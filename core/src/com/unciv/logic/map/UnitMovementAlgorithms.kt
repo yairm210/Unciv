@@ -206,7 +206,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         val newTilesToCheck = ArrayList<TileInfo>()
         val distanceToDestination = HashMap<TileInfo, Float>()
         var considerZoneOfControl = true // only for first distance!
-        val visitedTiles: HashSet<TileInfo> = HashSet()
+        val visitedTiles: HashSet<TileInfo> = hashSetOf(currentTile)
         while (true) {
             if (distance == 2) { // only set this once after distance > 1
                 movementThisTurn = unit.getMaxMovement().toFloat()
@@ -220,15 +220,15 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
                     // Avoid damaging terrain on first pass
                     if (avoidDamagingTerrain && unit.getDamageFromTerrain(reachableTile) > 0)
                         continue
-                    if (reachableTile == destination)
+                    if (reachableTile == destination) {
                         distanceToDestination[tileToCheck] = distanceToTilesThisTurn[reachableTile]!!.totalDistance
-                    else {
+                        break
+                    } else {
                         if (movementTreeParents.containsKey(reachableTile)) continue // We cannot be faster than anything existing...
                         if (!isUnknownTileWeShouldAssumeToBePassable(reachableTile) &&
                                  !canMoveTo(reachableTile)) continue // This is a tile that we can't actually enter - either an intermediary tile containing our unit, or an enemy unit/city
                         movementTreeParents[reachableTile] = tileToCheck
                         newTilesToCheck.add(reachableTile)
-                        visitedTiles.add(reachableTile)
                     }
                 }
             }
@@ -251,6 +251,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
             // no need to check tiles that are surrounded by reachable tiles, only need to check the edgemost tiles.
             // Because anything we can reach from intermediate tiles, can be more easily reached by the edgemost tiles,
             // since we'll have to pass through an edgemost tile in order to reach the destination anyway
+            visitedTiles.addAll(newTilesToCheck)
             tilesToCheck = newTilesToCheck.filterNot { tile -> tile.neighbors.all { it in newTilesToCheck || it in tilesToCheck } }
 
             distance++
