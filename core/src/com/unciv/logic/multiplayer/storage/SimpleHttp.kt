@@ -3,21 +3,32 @@ package com.unciv.logic.multiplayer.storage
 import com.badlogic.gdx.Net
 import com.unciv.UncivGame
 import com.unciv.ui.utils.extensions.toNiceString
+import com.unciv.utils.concurrency.withThreadPoolContext
 import com.unciv.utils.debug
 import java.io.BufferedReader
 import java.io.DataOutputStream
 import java.io.InputStreamReader
-import java.net.*
+import java.net.DatagramSocket
+import java.net.HttpURLConnection
+import java.net.InetAddress
+import java.net.URI
+import java.net.URL
 import java.nio.charset.Charset
 
-private typealias SendRequestCallback = (success: Boolean, result: String, code: Int?)->Unit
 
 object SimpleHttp {
-    fun sendGetRequest(url: String, timeout: Int = 5000, action: SendRequestCallback) {
-        sendRequest(Net.HttpMethods.GET, url, "", timeout, action)
+    data class RequestResult(
+        val success: Boolean,
+        /** Contains the result body if the request was successful, or the error message if not */
+        val body: String,
+        val code: Int? = null
+    )
+
+    suspend fun sendGetRequest(url: String, timeout: Int = 5000): RequestResult {
+        return sendRequest(Net.HttpMethods.GET, url, "", timeout)
     }
 
-    fun sendRequest(method: String, url: String, content: String, timeout: Int = 5000, action: SendRequestCallback) {
+    suspend fun sendRequest(method: String, url: String, content: String, timeout: Int = 500) = withThreadPoolContext toplevel@{
         var uri = URI(url)
         if (uri.host == null) uri = URI("http://$url")
 
@@ -25,18 +36,18 @@ object SimpleHttp {
         try {
             urlObj = uri.toURL()
         } catch (t: Throwable) {
-            action(false, "Bad URL", null)
-            return
+            return@toplevel RequestResult(false, "Bad URL")
         }
 
         with(urlObj.openConnection() as HttpURLConnection) {
             requestMethod = method  // default is GET
             connectTimeout = timeout
             instanceFollowRedirects = true
-            if (UncivGame.isCurrentInitialized())
+            if (UncivGame.isCurrentInitialized()) {
                 setRequestProperty("User-Agent", "Unciv/${UncivGame.VERSION.toNiceString()}-GNU-Terry-Pratchett")
-            else
+            } else {
                 setRequestProperty("User-Agent", "Unciv/Turn-Checker-GNU-Terry-Pratchett")
+            }
 
             try {
                 if (content.isNotEmpty()) {
@@ -49,14 +60,16 @@ object SimpleHttp {
                 }
 
                 val text = BufferedReader(InputStreamReader(inputStream)).readText()
-                action(true, text, responseCode)
+                return@toplevel RequestResult(true, text, responseCode)
             } catch (t: Throwable) {
                 debug("Error during HTTP request", t)
-                val errorMessageToReturn =
-                    if (errorStream != null) BufferedReader(InputStreamReader(errorStream)).readText()
-                    else t.message!!
+                val errorMessageToReturn = if (errorStream != null) {
+                    BufferedReader(InputStreamReader(errorStream)).readText()
+                } else {
+                    t.message!!
+                }
                 debug("Returning error message [%s]", errorMessageToReturn)
-                action(false, errorMessageToReturn, if (errorStream != null) responseCode else null)
+                return@toplevel RequestResult(false, errorMessageToReturn, if (errorStream != null) responseCode else null)
             }
         }
     }
@@ -65,6 +78,22 @@ object SimpleHttp {
         DatagramSocket().use { socket ->
             socket.connect(InetAddress.getByName("8.8.8.8"), 10002)
             return socket.localAddress.hostAddress
+        }
+    }
+
+    /** Builds an URL out of the provided components, automatically joining them with a `/`. The components are only allowed to have no slashes or one slash at the end. */
+    fun buildURL(vararg components: String): String {
+        val joined = components.reduce { acc, cur ->
+            if (acc.endsWith('/')) {
+                acc + cur
+            } else {
+                acc + "/" + cur
+            }
+        }
+        return if (joined.endsWith('/')) {
+            joined.substring(0, joined.length - 1)
+        } else {
+            joined
         }
     }
 }

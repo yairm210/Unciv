@@ -5,48 +5,41 @@ import com.unciv.utils.debug
 import kotlin.Exception
 
 class UncivServerFileStorage(val serverUrl: String, val timeout: Int = 30000) : FileStorage {
-    override fun saveFileData(fileName: String, data: String, overwrite: Boolean) {
-        SimpleHttp.sendRequest(Net.HttpMethods.PUT, fileUrl(fileName), data, timeout) {
-                success, result, _ ->
-            if (!success) {
-                debug("Error from UncivServer during save: %s", result)
-                throw Exception(result)
-            }
+    override suspend fun saveFileData(fileName: String, data: String, overwrite: Boolean) {
+        val (success, error, code) = SimpleHttp.sendRequest(Net.HttpMethods.PUT, fileUrl(fileName), data, timeout)
+        if (!success) {
+            debug("Error from UncivServer during save: %s", error)
+            throwException(error, code)
         }
     }
 
-    override fun loadFileData(fileName: String): String {
-        var fileData = ""
-        SimpleHttp.sendGetRequest(fileUrl(fileName), timeout = timeout){
-                success, result, code ->
-            if (!success) {
-                debug("Error from UncivServer during load: %s", result)
-                when (code) {
-                    404 -> throw MultiplayerFileNotFoundException(Exception(result))
-                    else -> throw Exception(result)
-                }
-
-            }
-            else fileData = result
+    override suspend fun loadFileData(fileName: String): String {
+        val (success, body, code) = SimpleHttp.sendGetRequest(fileUrl(fileName), timeout = timeout)
+        if (!success) {
+            debug("Error from UncivServer during load: %s", body)
+            throwException(body, code)
         }
-        return fileData
+        return body
     }
 
-    override fun getFileMetaData(fileName: String): FileMetaData {
+    override suspend fun getFileMetaData(fileName: String): FileMetaData {
         TODO("Not yet implemented")
     }
 
-    override fun deleteFile(fileName: String) {
-        SimpleHttp.sendRequest(Net.HttpMethods.DELETE, fileUrl(fileName), "", timeout) {
-                success, result, code ->
-            if (!success) {
-                when (code) {
-                    404 -> throw MultiplayerFileNotFoundException(Exception(result))
-                    else -> throw Exception(result)
-                }
-            }
+    override suspend fun deleteFile(fileName: String) {
+        val (success, error, code) = SimpleHttp.sendRequest(Net.HttpMethods.DELETE, fileUrl(fileName), "", timeout)
+        if (!success) {
+            debug("Error from UncivServer during delete: %s", error)
+            throwException(error, code)
         }
     }
 
-    private fun fileUrl(fileName: String) = "$serverUrl/files/$fileName"
+    private fun throwException(errorMessage: String, code: Int?) {
+        when (code) {
+            404 -> throw MultiplayerFileNotFoundException(Exception(errorMessage))
+            else -> throw Exception(errorMessage)
+        }
+    }
+
+    private fun fileUrl(fileName: String) = SimpleHttp.buildURL(serverUrl, "files", fileName)
 }

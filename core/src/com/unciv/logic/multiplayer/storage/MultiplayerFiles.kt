@@ -9,13 +9,10 @@ import com.unciv.logic.multiplayer.Multiplayer.GameStatus
 
 /**
  * Allows access to games stored on a server for multiplayer purposes.
- * Defaults to using UncivGame.Current.settings.multiplayerServer if fileStorageIdentifier is not given.
  *
- * For low-level access only, use [UncivGame.multiplayer] on [UncivGame.Current] if you're looking to load/save a game.
+ * This is for low-level access only: use [UncivGame.multiplayer] on [UncivGame.Current] instead if you're looking to load/save a game.
  *
- * @param fileStorageIdentifier must be given if UncivGame.Current might not be initialized
  * @see FileStorage
- * @see UncivGame.Current.settings.multiplayerServer
  */
 @Suppress("RedundantSuspendModifier") // Methods can take a long time, so force users to use them in a coroutine to not get ANRs on Android
 class MultiplayerFiles(
@@ -28,7 +25,7 @@ class MultiplayerFiles(
     }
 
     /** @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time */
-    suspend fun tryUploadGame(gameInfo: GameInfo, withGameStatus: Boolean) {
+    suspend fun tryUploadGame(gameInfo: GameInfo) {
         val zippedGameInfo = UncivFiles.gameInfoToString(gameInfo, forceZip = true)
         fileStorage().saveFileData(gameInfo.gameId, zippedGameInfo, true)
 
@@ -38,9 +35,7 @@ class MultiplayerFiles(
         // Current player starts full game info upload
         // Other player sees update in preview -> Downloads game, gets old state
         // Current player finishes uploading game
-        if (withGameStatus) {
-            tryUploadGameStatus(GameStatus(gameInfo))
-        }
+        tryUploadGameStatus(gameInfo.gameId, GameStatus(gameInfo))
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
@@ -52,9 +47,9 @@ class MultiplayerFiles(
      *
      * @see tryUploadGame
      */
-    suspend fun tryUploadGameStatus(status: GameStatus) {
+    suspend fun tryUploadGameStatus(gameId: String, status: GameStatus) {
         val zippedGameInfo = json().toJson(status) // no gzip because gzip actually has more overhead than it saves in compression
-        fileStorage().saveFileData("${status.gameId}_Preview", zippedGameInfo, true)
+        fileStorage().saveFileData("${gameId}_Preview", zippedGameInfo, true)
     }
 
     /**

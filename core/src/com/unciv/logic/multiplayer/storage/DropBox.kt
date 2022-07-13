@@ -20,7 +20,7 @@ object DropBox: FileStorage {
     private var remainingRateLimitSeconds = 0
     private var rateLimitTimer: Timer? = null
 
-    private fun dropboxApi(url: String, data: String = "", contentType: String = "", dropboxApiArg: String = ""): InputStream? {
+    private suspend fun dropboxApi(url: String, data: String = "", contentType: String = "", dropboxApiArg: String = ""): InputStream? {
 
         if (remainingRateLimitSeconds > 0)
             throw FileStorageRateLimitReached(remainingRateLimitSeconds)
@@ -72,7 +72,7 @@ object DropBox: FileStorage {
     // This is the location in Dropbox only
     private fun getLocalGameLocation(fileName: String) = "/MultiplayerGames/$fileName"
 
-    override fun deleteFile(fileName: String){
+    override suspend fun deleteFile(fileName: String){
         dropboxApi(
             url="https://api.dropboxapi.com/2/files/delete_v2",
             data="{\"path\":\"${getLocalGameLocation(fileName)}\"}",
@@ -80,7 +80,7 @@ object DropBox: FileStorage {
         )
     }
 
-    override fun getFileMetaData(fileName: String): FileMetaData {
+    override suspend fun getFileMetaData(fileName: String): FileMetaData {
         val stream = dropboxApi(
             url="https://api.dropboxapi.com/2/files/get_metadata",
             data="{\"path\":\"${getLocalGameLocation(fileName)}\"}",
@@ -90,7 +90,7 @@ object DropBox: FileStorage {
         return json().fromJson(MetaData::class.java, reader.readText())
     }
 
-    override fun saveFileData(fileName: String, data: String, overwrite: Boolean) {
+    override suspend fun saveFileData(fileName: String, data: String, overwrite: Boolean) {
         val overwriteModeString = if(!overwrite) "" else ""","mode":{".tag":"overwrite"}"""
         dropboxApi(
             url="https://content.dropboxapi.com/2/files/upload",
@@ -100,12 +100,12 @@ object DropBox: FileStorage {
         )
     }
 
-    override fun loadFileData(fileName: String): String {
+    override suspend fun loadFileData(fileName: String): String {
         val inputStream = downloadFile(getLocalGameLocation(fileName))
         return BufferedReader(InputStreamReader(inputStream)).readText()
     }
 
-    fun downloadFile(fileName: String): InputStream {
+    suspend fun downloadFile(fileName: String): InputStream {
         val response = dropboxApi("https://content.dropboxapi.com/2/files/download",
                 contentType = "text/plain", dropboxApiArg = "{\"path\":\"$fileName\"}")
         return response!!
@@ -128,7 +128,7 @@ object DropBox: FileStorage {
         throw FileStorageRateLimitReached(remainingRateLimitSeconds)
     }
 
-    fun fileExists(fileName: String): Boolean = try {
+    suspend fun fileExists(fileName: String): Boolean = try {
             dropboxApi("https://api.dropboxapi.com/2/files/get_metadata",
                 "{\"path\":\"$fileName\"}", "application/json")
             true

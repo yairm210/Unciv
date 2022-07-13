@@ -121,7 +121,7 @@ class Multiplayer {
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
      */
     suspend fun createGame(newGame: GameInfo) {
-        multiplayerFiles.tryUploadGame(newGame, withGameStatus = true)
+        multiplayerFiles.tryUploadGame(newGame)
         addGame(newGame)
     }
 
@@ -207,7 +207,7 @@ class Multiplayer {
 
         val newStatus = GameStatus(gameInfo)
         files.saveMultiplayerGameStatus(newStatus, game.fileHandle)
-        multiplayerFiles.tryUploadGame(gameInfo, withGameStatus = true)
+        multiplayerFiles.tryUploadGame(gameInfo)
         game.doManualUpdate(newStatus)
         return true
     }
@@ -305,7 +305,7 @@ class Multiplayer {
      */
     suspend fun updateGame(gameInfo: GameInfo) {
         debug("Updating remote game %s", gameInfo.gameId)
-        multiplayerFiles.tryUploadGame(gameInfo, withGameStatus = true)
+        multiplayerFiles.tryUploadGame(gameInfo)
         val game = getGameById(gameInfo.gameId)
         debug("Existing OnlineMultiplayerGame: %s", game)
         if (game == null) {

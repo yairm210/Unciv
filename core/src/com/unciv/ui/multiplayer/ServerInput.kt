@@ -100,10 +100,9 @@ private fun fixTextFieldUrlOnType(TextField: TextField) {
 
 private fun successfullyConnectedToServer(settings: GameSettings, action: (Boolean, String, Int?) -> Unit) {
     Concurrency.run("TestIsAlive") {
-        SimpleHttp.sendGetRequest("${settings.multiplayer.server}/isalive") { success, result, code ->
-            launchOnGLThread {
-                action(success, result, code)
-            }
+        val (success, result, code) = SimpleHttp.sendGetRequest("${settings.multiplayer.server}/isalive")
+        launchOnGLThread {
+            action(success, result, code)
         }
     }
 }

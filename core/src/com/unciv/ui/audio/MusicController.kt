@@ -8,6 +8,7 @@ import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
 import com.unciv.logic.multiplayer.storage.DropBox
 import com.unciv.utils.Log
+import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.debug
 import java.util.*
 import kotlin.concurrent.thread
@@ -466,7 +467,7 @@ class MusicController {
     }
 
     /** Download Thatched Villagers */
-    fun downloadDefaultFile() {
+    suspend fun downloadDefaultFile() {
         val file = DropBox.downloadFile(musicFallbackLocation)
         getFile(musicFallbackLocalName).write(file, false)
     }
