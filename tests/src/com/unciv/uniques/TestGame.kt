@@ -18,6 +18,8 @@ import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.ruleset.unit.UnitType
 
 class TestGame {
 
@@ -145,7 +147,7 @@ class TestGame {
         return mapUnit
     }
 
-    fun addEmptySpecialist(): String {
+    fun createSpecialist(): String {
         val name = "specialist-${objectsCreated++}"
         ruleset.specialists[name] = Specialist()
         return name
@@ -172,12 +174,21 @@ class TestGame {
         return obj
     }
 
+    fun createBaseUnit(unitType: String = createUnitType().name, vararg uniques: String) =
+        createRulesetObject(ruleset.units, *uniques) {
+            val baseUnit = BaseUnit()
+            baseUnit.ruleset = gameInfo.ruleSet
+            baseUnit.unitType = unitType
+            baseUnit
+        }
     fun createBelief(type: BeliefType = BeliefType.Any, vararg uniques: String) =
-            createRulesetObject(ruleset.beliefs, *uniques) { Belief(type) }
+        createRulesetObject(ruleset.beliefs, *uniques) { Belief(type) }
     fun createBuilding(vararg uniques: String) =
-            createRulesetObject(ruleset.buildings, *uniques) { Building() }
+        createRulesetObject(ruleset.buildings, *uniques) { Building() }
     fun createPolicy(vararg uniques: String) =
-            createRulesetObject(ruleset.policies, *uniques) { Policy() }
+        createRulesetObject(ruleset.policies, *uniques) { Policy() }
     fun createTileImprovement(vararg uniques: String) =
-            createRulesetObject(ruleset.tileImprovements, *uniques) { TileImprovement() }
+        createRulesetObject(ruleset.tileImprovements, *uniques) { TileImprovement() }
+    fun createUnitType(vararg uniques: String) =
+        createRulesetObject(ruleset.unitTypes, *uniques) { UnitType() }
 }
