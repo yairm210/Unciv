@@ -66,6 +66,7 @@ class Era : RulesetObject() {
         yield(FormattedLine("{See also}:"))
         yieldAll(eraGatedObjects.map { FormattedLine(it.name, it.makeLink()) })
     }.toList()
+    override fun getSortGroup(ruleset: Ruleset): Int = eraNumber
 
     private fun getEraGatedObjects(ruleset: Ruleset): Sequence<IRulesetObject> {
         val policyBranches = ruleset.policyBranches.values.asSequence()
