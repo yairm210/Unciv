@@ -1,7 +1,6 @@
 package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -51,8 +50,14 @@ class NotificationsScroll(
         maxNotificationsHeight: Float,
         tileInfoTableHeight: Float
     ) {
+
+        val previousScrollY = scrollY
+
         updateContent(notifications)
         updateLayout(maxNotificationsHeight, tileInfoTableHeight)
+
+        scrollY = previousScrollY
+        updateVisualScroll()
     }
 
     private fun updateContent(notifications: MutableList<Notification>) {
@@ -102,7 +107,7 @@ class NotificationsScroll(
         pack()
         if (height == newHeight) return
         height = newHeight  // after this, maxY is still incorrect until layout()
-        invalidateHierarchy()
+        layout()
     }
 
     /** Add some empty space that can be scrolled under the TileInfoTable which is covering our lower part */
