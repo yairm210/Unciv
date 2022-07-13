@@ -209,7 +209,7 @@ open class SettingsSelect<T : Any>(
         val selectBox = SelectBox<SelectItem<T>>(BaseScreen.skin)
         selectBox.items = initialItems
 
-        selectBox.selected = initialItems.firstOrNull() { it.value == settingsProperty.get() } ?: items.first()
+        selectBox.selected = initialItems.firstOrNull() { it.value == settingsProperty.get() }
         selectBox.onChange {
             val newValue = selectBox.selected.value
             settingsProperty.set(newValue)

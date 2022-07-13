@@ -676,7 +676,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
      */
     fun getLeaderDisplayName(): String {
         val severalHumans = gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1
-        val online = gameInfo.gameParameters.isOnlineMultiplayer
+        val online = gameInfo.isOnlineMultiplayer()
         return nation.getLeaderDisplayName().tr() +
             when {
                 !online && !severalHumans ->

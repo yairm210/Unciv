@@ -2,6 +2,8 @@ package com.unciv.models.metadata
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.multiplayer.HasMultiplayerGameName
+import com.unciv.logic.multiplayer.Multiplayer.ServerData
 import com.unciv.models.ruleset.Speed
 
 enum class BaseRuleset(val fullName:String){
@@ -32,7 +34,17 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var victoryTypes: ArrayList<String> = arrayListOf()
     var startingEra = "Ancient era"
 
+    /** if this is non-null, this game is a multiplayer game */
+    var multiplayer: GameParametersMultiplayer? = null
+
+    @Deprecated(
+        "Now represented by the `multiplayer` property - when removing this, rename `isOnlineMultiplayerEnabled()`",
+        ReplaceWith("GameInfo.isOnlineMultiplayer()")
+    )
     var isOnlineMultiplayer = false
+        private set
+    fun isOnlineMultiplayerEnabled() = multiplayer != null
+
     var baseRuleset: String = BaseRuleset.Civ_V_GnK.fullName
     var mods = LinkedHashSet<String>()
 
@@ -51,7 +63,6 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
         parameters.religionEnabled = religionEnabled
         parameters.victoryTypes = ArrayList(victoryTypes)
         parameters.startingEra = startingEra
-        parameters.isOnlineMultiplayer = isOnlineMultiplayer
         parameters.baseRuleset = baseRuleset
         parameters.mods = LinkedHashSet(mods)
         parameters.maxTurns = maxTurns
@@ -64,7 +75,7 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
             yield("${players.count { it.playerType == PlayerType.Human }} ${PlayerType.Human}")
             yield("${players.count { it.playerType == PlayerType.AI }} ${PlayerType.AI}")
             yield("$numberOfCityStates CS")
-            if (isOnlineMultiplayer) yield("Online Multiplayer")
+            if (multiplayer != null) yield(multiplayer.toString())
             if (noBarbarians) yield("No barbs")
             if (ragingBarbarians) yield("Raging barbs")
             if (oneCityChallenge) yield("OCC")
@@ -79,4 +90,12 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     fun getModsAndBaseRuleset(): HashSet<String> {
         return mods.toHashSet().apply { add(baseRuleset) }
     }
+}
+
+class GameParametersMultiplayer(
+    var serverData: ServerData,
+    var name: String?
+) {
+    @Suppress("unused") // used by json serialization
+    private constructor() : this(ServerData(null), null)
 }

@@ -7,8 +7,11 @@ interface HasMultiplayerGameName {
     val name: String
 }
 
+/** Gets sent when a game's data has changed */
+interface MultiplayerGameChanged : Event, HasMultiplayerGameName
+
 interface MultiplayerGameUpdateEnded : Event, HasMultiplayerGameName
-interface MultiplayerGameUpdateSucceeded : Event, HasMultiplayerGameName {
+interface MultiplayerGameUpdateSucceeded : MultiplayerGameChanged {
     val status: GameStatus
 }
 
@@ -17,14 +20,14 @@ interface MultiplayerGameUpdateSucceeded : Event, HasMultiplayerGameName {
  */
 class MultiplayerGameAdded(
     override val name: String
-) : Event, HasMultiplayerGameName
+) : MultiplayerGameChanged
 /**
  * Gets sent when a game successfully updated
  */
 class MultiplayerGameUpdated(
     override val name: String,
     override val status: GameStatus,
-) : MultiplayerGameUpdateEnded, MultiplayerGameUpdateSucceeded
+) : MultiplayerGameChanged, MultiplayerGameUpdateEnded, MultiplayerGameUpdateSucceeded
 
 /**
  * Gets sent when a game errored while updating
@@ -54,11 +57,12 @@ class MultiplayerGameUpdateStarted(
 class MultiplayerGameNameChanged(
     override val name: String,
     val newName: String
-) : Event, HasMultiplayerGameName
+) : MultiplayerGameChanged
 
 /**
  * Gets sent when a game is deleted
  */
 class MultiplayerGameDeleted(
     override val name: String
-) : Event, HasMultiplayerGameName
+) : MultiplayerGameChanged
+

@@ -3,9 +3,12 @@ package com.unciv.ui.multiplayer
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.unciv.UncivGame
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.MultiplayerGameDeleted
 import com.unciv.logic.multiplayer.MultiplayerGame
+import com.unciv.logic.multiplayer.MultiplayerGameUpdateEnded
+import com.unciv.logic.multiplayer.MultiplayerGameUpdated
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.Popup
@@ -58,6 +61,11 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
             unselectGame()
         }
 
+        events.receive(MultiplayerGameUpdateEnded::class, { it.name == selectedGame?.name }) {
+            val game = UncivGame.Current.multiplayer.getGameByName(it.name)!!
+            descriptionLabel.setText(MultiplayerHelpers.buildDescriptionText(game))
+        }
+
         game.multiplayer.requestUpdate()
     }
 
@@ -105,11 +113,8 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
     fun createCopyGameIdButton(): TextButton {
         val btn = copyGameIdText.toTextButton().apply { disable() }
         btn.onClick {
-            val status = selectedGame?.status
-            if (status != null) {
-                Gdx.app.clipboard.contents = status.gameId
-                ToastPopup("Game ID copied to clipboard!", this)
-            }
+            Gdx.app.clipboard.contents = selectedGame?.gameId // button is disabled when no game is selected, so this is fine
+            ToastPopup("Game ID copied to clipboard!", this)
         }
         return btn
     }

@@ -505,7 +505,7 @@ class WorldMapHolder(
     }
 
     /** Returns true when the civ is a human player defeated in singleplayer game */
-    private fun isMapRevealEnabled(viewingCiv: CivilizationInfo) = !viewingCiv.gameInfo.gameParameters.isOnlineMultiplayer
+    private fun isMapRevealEnabled(viewingCiv: CivilizationInfo) = !viewingCiv.gameInfo.isOnlineMultiplayer()
             && viewingCiv.isCurrentPlayer()
             && viewingCiv.isDefeated()
 

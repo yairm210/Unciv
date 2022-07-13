@@ -188,12 +188,12 @@ class WorldScreen(
         addKeyboardPresses()  // shortcut keys like F1
 
 
-        if (gameInfo.gameParameters.isOnlineMultiplayer && !gameInfo.isUpToDate)
+        if (gameInfo.isOnlineMultiplayer() && !gameInfo.isUpToDate)
             isPlayersTurn = false // until we're up to date, don't let the player do anything
 
-        if (gameInfo.gameParameters.isOnlineMultiplayer) {
-            val gameId = gameInfo.gameId
-            events.receive(MultiplayerGameUpdated::class, { it.status.gameId == gameId }) {
+        if (gameInfo.isOnlineMultiplayer()) {
+            val name = UncivGame.Current.multiplayer.getGameById(gameInfo.gameId)?.name
+            events.receive(MultiplayerGameUpdated::class, { it.name == name }) {
                 if (isNextTurnUpdateRunning() || gameInfo.hasLatestGameState(it.status)) {
                     return@receive
                 }
@@ -319,7 +319,7 @@ class WorldScreen(
         try {
             debug("loadLatestMultiplayerState current game: gameId: %s, turn: %s, curCiv: %s",
                 gameInfo.gameId, gameInfo.turns, gameInfo.currentCivName)
-            val latestGame = game.multiplayer.downloadGame(gameInfo.gameId)
+            val latestGame = game.multiplayer.downloadGame(gameInfo.gameParameters.multiplayer?.serverData!!, gameInfo.gameId)
             debug("loadLatestMultiplayerState downloaded game: gameId: %s, turn: %s, curCiv: %s",
                 latestGame.gameId, latestGame.turns, latestGame.currentCivName)
             if (viewingCiv.civName == latestGame.currentCivName || viewingCiv.civName == Constants.spectator) {
@@ -579,9 +579,10 @@ class WorldScreen(
 
             gameInfoClone.nextTurn()
 
-            if (originalGameInfo.gameParameters.isOnlineMultiplayer) {
+            val serverData = originalGameInfo.gameParameters.multiplayer?.serverData
+            if (serverData != null) {
                 try {
-                    game.multiplayer.updateGame(gameInfoClone)
+                    game.multiplayer.updateGame(serverData, gameInfoClone)
                 } catch (ex: Exception) {
                     val message = when (ex) {
                         is FileStorageRateLimitReached -> "Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds"
@@ -639,7 +640,7 @@ class WorldScreen(
     }
 
     private fun updateMultiplayerStatusButton() {
-        if (gameInfo.gameParameters.isOnlineMultiplayer || game.settings.multiplayer.statusButtonInSinglePlayer) {
+        if (gameInfo.isOnlineMultiplayer() || game.settings.multiplayer.statusButtonInSinglePlayer) {
             if (statusButtons.multiplayerStatusButton != null) return
             statusButtons.multiplayerStatusButton = MultiplayerStatusButton(this, game.multiplayer.getGameById(gameInfo.gameId))
         } else {
@@ -652,9 +653,9 @@ class WorldScreen(
         return when {
             isNextTurnUpdateRunning() ->
                 NextTurnAction("Working...", Color.GRAY) {}
-            !isPlayersTurn && gameInfo.gameParameters.isOnlineMultiplayer ->
+            !isPlayersTurn && gameInfo.isOnlineMultiplayer() ->
                 NextTurnAction("Waiting for [${gameInfo.currentCiv}]...", Color.GRAY) {}
-            !isPlayersTurn && !gameInfo.gameParameters.isOnlineMultiplayer ->
+            !isPlayersTurn && !gameInfo.isOnlineMultiplayer() ->
                 NextTurnAction("Waiting for other players...",Color.GRAY) {}
 
             viewingCiv.shouldGoToDueUnit() ->

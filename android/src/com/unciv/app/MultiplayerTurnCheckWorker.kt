@@ -28,6 +28,8 @@ import com.badlogic.gdx.backends.android.AndroidApplication
 import com.badlogic.gdx.backends.android.DefaultAndroidFiles
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivFiles
+import com.unciv.logic.multiplayer.Multiplayer.ServerData
+import com.unciv.logic.multiplayer.MultiplayerGame
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerFiles
 import com.unciv.models.metadata.GameSettingsMultiplayer
@@ -60,12 +62,9 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
         private const val NOTIFICATION_CHANNEL_ID_SERVICE = "UNCIV_NOTIFICATION_CHANNEL_SERVICE_02"
 
         private const val FAIL_COUNT = "FAIL_COUNT"
-        private const val GAME_ID = "GAME_ID"
-        private const val GAME_NAME = "GAME_NAME"
         private const val USER_ID = "USER_ID"
         private const val CONFIGURED_DELAY = "CONFIGURED_DELAY"
         private const val PERSISTENT_NOTIFICATION_ENABLED = "PERSISTENT_NOTIFICATION_ENABLED"
-        private const val FILE_STORAGE = "FILE_STORAGE"
 
         fun enqueue(appContext: Context, delay: Duration, inputData: Data) {
 
@@ -158,11 +157,11 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
             }
         }
 
-        fun notifyUserAboutTurn(applicationContext: Context, game: Pair<String, String>) {
-            Log.i(LOG_TAG, "notifyUserAboutTurn ${game.first}")
+        fun notifyUserAboutTurn(applicationContext: Context, gameName: String, gameId: String) {
+            Log.i(LOG_TAG, "notifyUserAboutTurn ${gameName}")
             val intent = Intent(applicationContext, AndroidLauncher::class.java).apply {
                 action = Intent.ACTION_VIEW
-                data = Uri.parse("https://unciv.app/multiplayer?id=${game.second}")
+                data = Uri.parse("https://unciv.app/multiplayer?id=${gameId}")
             }
             val flags = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) FLAG_IMMUTABLE else 0) or
                     FLAG_UPDATE_CURRENT
@@ -172,7 +171,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
             val notification: NotificationCompat.Builder = NotificationCompat.Builder(applicationContext, NOTIFICATION_CHANNEL_ID_INFO)
                     .setPriority(NotificationManagerCompat.IMPORTANCE_HIGH) // people are waiting!
                     .setContentTitle(contentTitle)
-                    .setContentText(applicationContext.resources.getString(R.string.Notify_YourTurn_Long).replace("[gameName]", game.first))
+                    .setContentText(applicationContext.resources.getString(R.string.Notify_YourTurn_Long).replace("[gameName]", gameName))
                     .setTicker(contentTitle)
                     // without at least vibrate, some Android versions don't show a heads-up notification
                     .setDefaults(DEFAULT_VIBRATE)
@@ -189,38 +188,26 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
 
         fun startTurnChecker(applicationContext: Context, files: UncivFiles, currentGameInfo: GameInfo, settings: GameSettingsMultiplayer) {
             Log.i(LOG_TAG, "startTurnChecker")
-            val statusFiles = files.getMultiplayerGameStatuses()
-            val gameIds = Array(statusFiles.count()) {""}
-            val gameNames = Array(statusFiles.count()) {""}
-
-            var count = 0
-            for (statusFile in statusFiles) {
-                try {
-                    val status = files.loadMultiplayerGameStatusFromFile(statusFile)
-                    gameIds[count] = status.gameId
-                    gameNames[count] = statusFile.name()
-                    count++
-                } catch (ex: Throwable) {
-                    //only loadMultiplayerGameStatusFromFile can throw an exception
-                    //nothing will be added to the arrays if it fails
-                    //just skip one file
-                }
+            val multiplayerGames = runBlocking {
+                files.loadMultiplayerGames()
             }
 
-            Log.d(LOG_TAG, "start gameNames: ${gameNames.contentToString()}")
+            Log.d(LOG_TAG, "start gameNames: ${multiplayerGames.keys}")
 
-            if (currentGameInfo.currentCiv.playerId == settings.userId) {
+            if (currentGameInfo.currentPlayerId == settings.userId) {
                 // May be useful to remind a player that he forgot to complete his turn.
-                val gameIndex = gameIds.indexOf(currentGameInfo.gameId)
+                val currentGame = multiplayerGames.values.firstOrNull { it.gameId == currentGameInfo.gameId }
                 // If reading the game status file threw an exception, gameIndex will be -1
-                if (gameIndex != -1) {
-                    notifyUserAboutTurn(applicationContext, Pair(gameNames[gameIndex], gameIds[gameIndex]))
+                if (currentGame != null) {
+                    notifyUserAboutTurn(applicationContext, currentGame.name, currentGame.gameId)
                 }
             } else {
-                val inputData = workDataOf(Pair(FAIL_COUNT, 0), Pair(GAME_ID, gameIds), Pair(GAME_NAME, gameNames),
-                        Pair(USER_ID, settings.userId), Pair(CONFIGURED_DELAY, settings.turnCheckerDelay.seconds),
-                        Pair(PERSISTENT_NOTIFICATION_ENABLED, settings.turnCheckerPersistentNotificationEnabled),
-                        Pair(FILE_STORAGE, settings.server))
+                val inputData = workDataOf(
+                    FAIL_COUNT to 0,
+                    USER_ID to settings.userId,
+                    CONFIGURED_DELAY to settings.turnCheckerDelay.seconds,
+                    PERSISTENT_NOTIFICATION_ENABLED to settings.turnCheckerPersistentNotificationEnabled
+                )
 
                 if (settings.turnCheckerPersistentNotificationEnabled) {
                     showPersistentNotification(applicationContext, "—", settings.turnCheckerDelay)
@@ -280,39 +267,30 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
         Log.i(LOG_TAG, "doWork")
         val showPersistNotific = inputData.getBoolean(PERSISTENT_NOTIFICATION_ENABLED, true)
         val configuredDelay = getConfiguredDelay(inputData)
-        val fileStorage = inputData.getString(FILE_STORAGE)
 
         try {
-            val gameIds = inputData.getStringArray(GAME_ID)!!
-            val gameNames = inputData.getStringArray(GAME_NAME)!!
-            Log.d(LOG_TAG, "doWork gameNames: ${Arrays.toString(gameNames)}")
-            // We only want to notify the user or update persisted notification once but still want
-            // to download all games to update the files so we save the first one we find
-            var foundGame: Pair<String, String>? = null
+            val multiplayerGames = runBlocking {
+                files.loadMultiplayerGames()
+            }
+            Log.d(LOG_TAG, "doWork gameNames: ${multiplayerGames.keys}")
 
-            for (idx in 0 until gameIds.size){
-                val gameId = gameIds[idx]
-                //gameId could be an empty string if startTurnChecker fails to load all files
-                if (gameId.isEmpty())
-                    continue
 
-                if (notFoundRemotely[gameId] == true) {
+            var foundGame: MultiplayerGame? = null
+            for (game in multiplayerGames.values){
+
+                if (notFoundRemotely[game.gameId] == true) {
                     // Since the save was not found on the remote server, we do not need to check again, it'll only fail again.
                     continue
                 }
 
                 try {
-                    Log.d(LOG_TAG, "doWork download ${gameId}")
-                    val status = MultiplayerFiles(fileStorage).tryDownloadGameStatus(gameId)
-                    Log.d(LOG_TAG, "doWork download ${gameId} done")
+                    Log.d(LOG_TAG, "doWork download ${game.gameId}")
+                    val newStatus = MultiplayerFiles().tryDownloadGameStatus(game.serverData, game.gameId)
+                    game.doManualUpdate(newStatus, false)
+                    Log.d(LOG_TAG, "doWork download ${game.gameId} done")
 
-                    //Save game so MultiplayerScreen gets updated
-                    Log.i(LOG_TAG, "doWork save gameName: ${gameNames[idx]}")
-                    files.saveMultiplayerGameStatus(status, gameNames[idx])
-                    Log.i(LOG_TAG, "doWork save ${gameNames[idx]} done")
-
-                    if (status.currentPlayerId == inputData.getString(USER_ID)!! && foundGame == null) {
-                        foundGame = Pair(gameNames[idx], gameIds[idx])
+                    if (newStatus.currentPlayerId == inputData.getString(USER_ID)!! && foundGame == null) {
+                        foundGame = game
                     }
                 } catch (ex: FileStorageRateLimitReached) {
                     Log.i(LOG_TAG, "doWork FileStorageRateLimitReached ${ex.message}")
@@ -323,12 +301,16 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                     // FileNotFoundException is thrown by OnlineMultiplayer().tryDownloadGameStatus(gameId)
                     // and indicates that there is no game status file present for this game
                     // in the dropbox so we should not check for this game in the future anymore
-                    notFoundRemotely[gameId] = true
+                    notFoundRemotely[game.gameId] = true
                 }
             }
 
+            Log.i(LOG_TAG, "doWork save games")
+            files.saveMultiplayerGames(multiplayerGames)
+            Log.i(LOG_TAG, "doWork save games done")
+
             if (foundGame != null){
-                notifyUserAboutTurn(applicationContext, foundGame)
+                notifyUserAboutTurn(applicationContext, foundGame.name, foundGame.gameId)
                 with(NotificationManagerCompat.from(applicationContext)) {
                     cancel(NOTIFICATION_ID_SERVICE)
                 }

@@ -1,12 +1,17 @@
 package com.unciv.logic.multiplayer
 
-import com.badlogic.gdx.files.FileHandle
-import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
+import com.unciv.logic.HasGameId
+import com.unciv.logic.HasGameTurnData
 import com.unciv.logic.event.EventBus
+import com.unciv.logic.multiplayer.GameUpdateResult.Type.CHANGED
+import com.unciv.logic.multiplayer.GameUpdateResult.Type.FAILURE
+import com.unciv.logic.multiplayer.GameUpdateResult.Type.UNCHANGED
+import com.unciv.logic.multiplayer.Multiplayer.GameStatus
+import com.unciv.logic.multiplayer.Multiplayer.ServerData
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerFiles
-import com.unciv.ui.utils.extensions.isLargerThan
+import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import com.unciv.utils.concurrency.withGLContext
 import com.unciv.utils.debug
@@ -21,39 +26,41 @@ private const val DROPBOX_THROTTLE_PERIOD = 8L
 /** @see getUpdateThrottleInterval */
 private const val CUSTOM_SERVER_THROTTLE_PERIOD = 1L
 
+/** Create a new multiplayer game. If [name] is null, will use the [gameId] as the name. */
 class MultiplayerGame(
-    val fileHandle: FileHandle,
-    var status: Multiplayer.GameStatus? = null,
-    lastOnlineUpdate: Instant? = null
-) {
-    private val lastOnlineUpdate: AtomicReference<Instant?> = AtomicReference(lastOnlineUpdate)
-    val lastUpdate: Instant
-        get() {
-            val lastFileUpdateTime = Instant.ofEpochMilli(fileHandle.lastModified())
-            val lastOnlineUpdateTime = lastOnlineUpdate.get()
-            return if (lastOnlineUpdateTime == null || lastFileUpdateTime.isLargerThan(lastOnlineUpdateTime)) {
-                lastFileUpdateTime
-            } else {
-                lastOnlineUpdateTime
+    override val gameId: String,
+    serverData: ServerData,
+    name: String? = null,
+    status: GameStatus? = null
+) : HasGameId {
+
+    var serverData: ServerData = serverData
+        set(value) {
+            field = value
+            Concurrency.run("MultiplayerGame Update") {
+                requestUpdate(forceUpdate = true)
             }
         }
-    val name get() = fileHandle.name()
+
+    val name: String = name ?: gameId
+
+    var status = status
+        private set
+
+    @Transient
+    val lastUpdate = AtomicReference<Instant?>()
+
+    @Transient
     var error: Exception? = null
+        private set
+
+    @Suppress("unused") // used by json serialization
+    private constructor() : this("", ServerData(null))
 
     init {
-        if (status == null) {
-            try {
-                loadStatusFromFile()
-            } catch (e: Exception) {
-                error = e
-            }
+        if (status != null) {
+            lastUpdate.set(Instant.now())
         }
-    }
-
-    private fun loadStatusFromFile(): Multiplayer.GameStatus {
-        val statusFromFile = UncivGame.Current.files.loadMultiplayerGameStatusFromFile(fileHandle)
-        status = statusFromFile
-        return statusFromFile
     }
 
     private fun needsUpdate(): Boolean = status == null || error != null
@@ -65,35 +72,36 @@ class MultiplayerGame(
      * @throws MultiplayerFileNotFoundException if the file can't be found
      */
     suspend fun requestUpdate(forceUpdate: Boolean = false) = coroutineScope {
-        val onUnchanged = { GameUpdateResult.UNCHANGED }
+        val onUnchanged = { GameUpdateResult(UNCHANGED, status!!) }
         val onError = { e: Exception ->
             error = e
-            GameUpdateResult.FAILURE
+            GameUpdateResult(e)
         }
-        debug("Starting multiplayer game update for %s with id %s", name, status?.gameId)
+        debug("Starting multiplayer game update for %s with id %s", name, gameId)
         launchOnGLThread {
             EventBus.send(MultiplayerGameUpdateStarted(name))
         }
         val throttleInterval = if (forceUpdate) Duration.ZERO else getUpdateThrottleInterval()
         val updateResult = if (forceUpdate || needsUpdate()) {
-            attemptAction(lastOnlineUpdate, onUnchanged, onError, ::update)
+            attemptAction(lastUpdate, onUnchanged, onError, ::update)
         } else {
-            throttle(lastOnlineUpdate, throttleInterval, onUnchanged, onError, ::update)
+            throttle(lastUpdate, throttleInterval, onUnchanged, onError, ::update)
         }
-        val updateEvent = when (updateResult) {
-            GameUpdateResult.CHANGED -> {
-                debug("Game update for %s with id %s had remote change", name, status?.gameId)
-                MultiplayerGameUpdated(name, status!!)
+        val updateEvent = when {
+            updateResult.type == CHANGED && updateResult.status != null -> {
+                debug("Game update for %s with id %s had remote change", name, gameId)
+                MultiplayerGameUpdated(name, updateResult.status)
             }
-            GameUpdateResult.FAILURE -> {
-                debug("Game update for %s with id %s failed: %s", name, status?.gameId, error)
-                MultiplayerGameUpdateFailed(name, error!!)
+            updateResult.type == FAILURE && updateResult.error != null -> {
+                debug("Game update for %s with id %s failed: %s", name, gameId, updateResult.error)
+                MultiplayerGameUpdateFailed(name, updateResult.error)
             }
-            GameUpdateResult.UNCHANGED -> {
-                debug("Game update for %s with id %s had no changes", name, status?.gameId)
+            updateResult.type == UNCHANGED && updateResult.status != null -> {
+                debug("Game update for %s with id %s had no changes", name, gameId)
                 error = null
-                MultiplayerGameUpdateUnchanged(name, status!!)
+                MultiplayerGameUpdateUnchanged(name, updateResult.status)
             }
+            else -> throw IllegalStateException()
         }
         launchOnGLThread {
             EventBus.send(updateEvent)
@@ -101,38 +109,51 @@ class MultiplayerGame(
     }
 
     private suspend fun update(): GameUpdateResult {
-        val curStatus = if (status != null) status!! else loadStatusFromFile()
-        val newStatus = MultiplayerFiles().tryDownloadGameStatus(curStatus.gameId)
-        if (curStatus.hasLatestGameState(newStatus)) return GameUpdateResult.UNCHANGED
-        UncivGame.Current.files.saveMultiplayerGameStatus(newStatus, fileHandle)
+        val curStatus = status
+        val newStatus = MultiplayerFiles().tryDownloadGameStatus(serverData, gameId)
+        if (curStatus?.hasLatestGameState(newStatus) == true) return GameUpdateResult(UNCHANGED, curStatus)
         status = newStatus
-        return GameUpdateResult.CHANGED
+        return GameUpdateResult(CHANGED, newStatus)
     }
 
-    suspend fun doManualUpdate(newStatus: Multiplayer.GameStatus) {
-        debug("Doing manual update of game %s", newStatus.gameId)
-        lastOnlineUpdate.set(Instant.now())
+    fun doManualUpdate(newStatus: GameStatus, sendEvent: Boolean = true) {
+        debug("Doing manual update of game %s", gameId)
+        lastUpdate.set(Instant.now())
         error = null
         status = newStatus
-        withGLContext {
-            EventBus.send(MultiplayerGameUpdated(name, newStatus))
+        if (sendEvent) {
+            Concurrency.runOnGLThread {
+                EventBus.send(MultiplayerGameUpdated(name, newStatus))
+            }
         }
     }
-    suspend fun doManualUpdate(gameInfo: GameInfo) {
-        doManualUpdate(Multiplayer.GameStatus(gameInfo))
+    fun doManualUpdate(gameInfo: GameInfo) {
+        doManualUpdate(GameStatus(gameInfo))
     }
 
-    override fun equals(other: Any?): Boolean = other is MultiplayerGame && fileHandle == other.fileHandle
-    override fun hashCode(): Int = fileHandle.hashCode()
+    /**
+     * How often this game can be checked for remote updates. More attempted checks within this time period will do nothing.
+     */
+    private fun getUpdateThrottleInterval(): Duration {
+        val throttleIntervalSeconds = if (serverData.type == Multiplayer.ServerType.CUSTOM) {
+            CUSTOM_SERVER_THROTTLE_PERIOD
+        } else {
+            DROPBOX_THROTTLE_PERIOD
+        }
+        return Duration.ofSeconds(throttleIntervalSeconds)
+    }
+
+    override fun equals(other: Any?): Boolean = other is MultiplayerGame && gameId == other.gameId
+    override fun hashCode(): Int = gameId.hashCode()
 }
 
-private enum class GameUpdateResult {
-    CHANGED, UNCHANGED, FAILURE
-}
+private class GameUpdateResult private constructor(
+    val type: Type,
+    val status: GameStatus?,
+    val error: Exception?
+) {
+    constructor(type: Type, status: GameStatus) : this(type, status, null)
+    constructor(error: Exception) : this(FAILURE, null, error)
 
-/**
- * How often games can be checked for remote updates. More attempted checks within this time period will do nothing.
- */
-private fun getUpdateThrottleInterval(): Duration {
-    return Duration.ofSeconds(if (Multiplayer.usesCustomServer()) CUSTOM_SERVER_THROTTLE_PERIOD else DROPBOX_THROTTLE_PERIOD)
+    enum class Type { CHANGED, UNCHANGED, FAILURE }
 }

@@ -128,13 +128,11 @@ Thumbs.db
 /ios-moe/xcode/native/
 SaveFiles/
 android/android-release.apk
-android/assets/GameSettings.json
 android/release/output.json
 android/release/android-release.apk
 android/release/release/android.aab
 android/assets/fonts/
 android/release/android.aab
-android/assets/maps/
 android/release/android.aab.sig
 android/release/android-release.aab
 tests/build/
@@ -145,11 +143,14 @@ server/packrCache/
 deploy/
 android/release/
 
+android/assets/GameSettings.json
+android/assets/MultiplayerGames.json
+android/assets/maps/
 android/assets/mods/
-android/assets/SaveFiles/
-android/assets/scenarios/
 android/assets/MultiplayerGames/
 android/assets/music/
+android/assets/SaveFiles/
+android/assets/scenarios/
 
 # Visual Studio Code
 .vscode/

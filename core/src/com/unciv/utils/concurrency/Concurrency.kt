@@ -7,6 +7,7 @@ import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.asCoroutineDispatcher
@@ -91,14 +92,44 @@ fun CoroutineScope.launchCrashHandling(
 fun CoroutineScope.launchOnThreadPool(name: String? = null, block: suspend CoroutineScope.() -> Unit) = launchCrashHandling(Dispatcher.DAEMON, name, block)
 /** See [launch]. Runs on a non-daemon thread pool. Use this if you do something that should always finish if possible, like saving the game. */
 fun CoroutineScope.launchOnNonDaemonThreadPool(name: String? = null, block: suspend CoroutineScope.() -> Unit) = launchCrashHandling(Dispatcher.NON_DAEMON, name, block)
-/** See [launch]. Runs on the GDX GL thread. Use this for all code that manipulates the GDX UI classes. */
+/** See [launch]. Runs on the GDX GL thread. Use this for code that manipulates the GDX UI classes in a way that requires GL context. */
 fun CoroutineScope.launchOnGLThread(name: String? = null, block: suspend CoroutineScope.() -> Unit) = launchCrashHandling(Dispatcher.GL, name, block)
 
 /** See [withContext]. Runs on a daemon thread pool. Use this for code that does not necessarily need to finish executing. */
 suspend fun <T> withThreadPoolContext(block: suspend CoroutineScope.() -> T): T = withContext(Dispatcher.DAEMON, block)
 /** See [withContext]. Runs on a non-daemon thread pool. Use this if you do something that should always finish if possible, like saving the game. */
 suspend fun <T> withNonDaemonThreadPoolContext(block: suspend CoroutineScope.() -> T): T = withContext(Dispatcher.NON_DAEMON, block)
-/** See [withContext]. Runs on the GDX GL thread. Use this for all code that manipulates the GDX UI classes. */
+
+/**
+ * See [withContext]. Runs on the GDX GL thread. Use this for code that manipulates the GDX UI classes in a way that requires GL context.
+ *
+ * **Take care:** this only runs on a single thread. Any constructs that wait for the execution of something to happen on the GL thread while trying
+ * to run something else also on the GL thread will block indefinitely, essentially deadlocking the game. As such, you almost never want to call other
+ * `suspend` functions from within `withGLContext`, unless you're sure they won't use the GL thread.
+ *
+ * Example:
+ *
+ * ```
+ * suspend fun something() = withThreadPoolContext {
+ *     // do something
+ *
+ *     // wait for something on the GL thread
+ *     withGLContext {
+ *         // do some UI stuff
+ *     }
+ *
+ *     // do something else
+ * }
+ * ...
+ * Concurrency.run {
+ *     withGLContext {
+ *         // this will never finish, as we're blocking the GL thread to wait for something() to finish,
+ *         // but something() also wants to wait for code to run on the GL thread
+ *         something()
+ *     }
+ * }
+ * ```
+ */
 suspend fun <T> withGLContext(block: suspend CoroutineScope.() -> T): T = withContext(Dispatcher.GL, block)
 
 

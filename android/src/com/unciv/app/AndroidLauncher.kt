@@ -118,12 +118,16 @@ open class AndroidLauncher : AndroidApplication() {
         if (UncivGame.isCurrentInitialized()
                 && UncivGame.Current.gameInfo != null
                 && UncivGame.Current.settings.multiplayer.turnCheckerEnabled
-                && UncivGame.Current.files.getMultiplayerGameStatuses().any()
+                && !UncivGame.Current.multiplayer.games.isEmpty()
         ) {
-            MultiplayerTurnCheckWorker.startTurnChecker(
-                applicationContext, UncivGame.Current.files,
-                UncivGame.Current.gameInfo!!, UncivGame.Current.settings.multiplayer
-            )
+            try {
+                MultiplayerTurnCheckWorker.startTurnChecker(
+                    applicationContext, UncivGame.Current.files,
+                    UncivGame.Current.gameInfo!!, UncivGame.Current.settings.multiplayer
+                )
+            } catch (ex: Exception) {
+                Log.debug("Could not start turnchecker!", ex)
+            }
         }
         super.onPause()
     }

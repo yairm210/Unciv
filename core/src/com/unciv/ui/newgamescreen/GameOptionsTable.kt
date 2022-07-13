@@ -3,6 +3,8 @@ package com.unciv.ui.newgamescreen
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CityStateType
+import com.unciv.logic.multiplayer.Multiplayer
+import com.unciv.models.metadata.GameParametersMultiplayer
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
@@ -10,9 +12,11 @@ import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.multiplayer.MultiplayerHelpers
+import com.unciv.ui.multiplayer.ServerInput
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.UncivSlider
+import com.unciv.ui.utils.UncivTextField
 import com.unciv.ui.utils.extensions.onChange
 import com.unciv.ui.utils.extensions.toCheckBox
 import com.unciv.ui.utils.extensions.toLabel
@@ -70,13 +74,15 @@ class GameOptionsTable(
         checkboxTable.addRagingBarbariansCheckbox()
         checkboxTable.addOneCityChallengeCheckbox()
         checkboxTable.addNuclearWeaponsCheckbox()
-        checkboxTable.addIsOnlineMultiplayerCheckbox()
         checkboxTable.addReligionCheckbox(cityStateSlider)
         checkboxTable.addNoStartBiasCheckbox()
         add(checkboxTable).center().row()
 
-        if (!isPortrait)
+        addOnlineMultiplayer(checkboxTable)
+
+        if (!isPortrait) {
             add(modCheckboxes).row()
+        }
 
         pack()
     }
@@ -103,15 +109,44 @@ class GameOptionsTable(
             addCheckbox("Enable Nuclear Weapons", gameParameters.nuclearWeaponsEnabled)
             { gameParameters.nuclearWeaponsEnabled = it }
 
-    private fun Table.addIsOnlineMultiplayerCheckbox() =
-            addCheckbox("Online Multiplayer", gameParameters.isOnlineMultiplayer)
-            { shouldUseMultiplayer ->
-                gameParameters.isOnlineMultiplayer = shouldUseMultiplayer
-                updatePlayerPickerTable("")
-                if (shouldUseMultiplayer) {
-                    MultiplayerHelpers.showDropboxWarning(previousScreen as BaseScreen)
-                }
+    private fun addOnlineMultiplayer(checkboxTable: Table) {
+        val parameters = GameParametersMultiplayer(Multiplayer.ServerData.default, null)
+        val serverInput = ServerInput.create(parameters::serverData)
+        val nameLabel = "{Game name}:".toLabel()
+        val nameTextField = UncivTextField.create("Game name")
+        nameTextField.onChange {
+            val text = nameTextField.text
+            parameters.name = if (text.isBlank()) null else text
+        }
+
+        val checkbox = "Online Multiplayer".toCheckBox(gameParameters.isOnlineMultiplayerEnabled())
+        checkboxTable.add(checkbox).colspan(2)
+
+        val table = Table()
+        fun updateTable(shouldUseMultiplayer: Boolean) {
+            table.clear()
+            if (shouldUseMultiplayer) {
+                table.add(serverInput).colspan(2).padBottom(10f).row()
+                table.add(nameLabel).padRight(10f).left()
+                table.add(nameTextField).growX().row()
             }
+        }
+
+        checkbox.onChange {
+            val shouldUseMultiplayer = checkbox.isChecked
+            if (shouldUseMultiplayer) {
+                gameParameters.multiplayer = parameters
+                MultiplayerHelpers.showDropboxWarning(previousScreen as BaseScreen, parameters.serverData)
+            } else {
+                gameParameters.multiplayer = null
+            }
+            updateTable(shouldUseMultiplayer)
+            updatePlayerPickerTable("")
+        }
+
+        updateTable(checkbox.isChecked)
+        add(table).row()
+    }
 
     private fun numberOfCityStates() = ruleset.nations.values.count {
         it.isCityState()

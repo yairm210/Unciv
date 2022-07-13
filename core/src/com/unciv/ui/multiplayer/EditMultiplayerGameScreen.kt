@@ -1,7 +1,9 @@
 package com.unciv.ui.multiplayer
 
-import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
+import com.badlogic.gdx.scenes.scene2d.ui.Button
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.TextField
+import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.unciv.logic.multiplayer.MultiplayerGame
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
@@ -10,7 +12,6 @@ import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.utils.UncivTextField
-import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.enable
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toLabel
@@ -21,14 +22,59 @@ import com.unciv.utils.concurrency.launchOnGLThread
 /** Subscreen of MultiplayerScreen to edit and delete saves
  * backScreen is used for getting back to the MultiplayerScreen so it doesn't have to be created over and over again */
 class EditMultiplayerGameScreen(val multiplayerGame: MultiplayerGame) : PickerScreen() {
+    private var serverData = multiplayerGame.serverData
     init {
         val textField = UncivTextField.create("Game name", multiplayerGame.name)
 
         topTable.add("Rename".toLabel()).row()
         topTable.add(textField).pad(10f).padBottom(30f).width(stage.width / 2).row()
+        topTable.add(ServerInput.create(this::serverData)).padBottom(30f).row()
+        topTable.add(createDeleteButton()).pad(10f).row()
+        topTable.add(createGiveUpButton())
 
-        val negativeButtonStyle = skin.get("negative", TextButtonStyle::class.java)
-        val deleteButton = "Delete save".toTextButton(negativeButtonStyle)
+        setupCloseButton()
+        setupRightSideButton(textField)
+    }
+
+    private fun setupCloseButton() {
+        closeButton.setText("Back".tr())
+        closeButton.onClick {
+            game.popScreen()
+        }
+    }
+
+    private fun setupRightSideButton(textField: TextField) {
+        rightSideButton.setText("Save game".tr())
+        rightSideButton.enable()
+        rightSideButton.onClick {
+            rightSideButton.setText("Saving...".tr())
+            val newName = textField.text.trim()
+            game.multiplayer.changeGameName(multiplayerGame, newName)
+            multiplayerGame.serverData = serverData
+            val newScreen = game.popScreen()
+            if (newScreen is MultiplayerScreen) {
+                newScreen.selectGame(newName)
+            }
+        }
+    }
+
+    private fun createGiveUpButton(): TextButton {
+        val giveUpButton = "Resign".toTextButton("negative")
+        giveUpButton.onClick {
+            val askPopup = ConfirmPopup(
+                this,
+                "Are you sure you want to resign?",
+                "Resign",
+            ) {
+                resign(multiplayerGame)
+            }
+            askPopup.open()
+        }
+        return giveUpButton
+    }
+
+    private fun createDeleteButton(): Button {
+        val deleteButton = "Delete save".toTextButton("negative")
         deleteButton.onClick {
             val askPopup = ConfirmPopup(
                 this,
@@ -44,47 +90,7 @@ class EditMultiplayerGameScreen(val multiplayerGame: MultiplayerGame) : PickerSc
             }
             askPopup.open()
         }
-
-        val giveUpButton = "Resign".toTextButton(negativeButtonStyle)
-        giveUpButton.onClick {
-            val askPopup = ConfirmPopup(
-                this,
-                "Are you sure you want to resign?",
-                "Resign",
-            ) {
-                resign(multiplayerGame)
-            }
-            askPopup.open()
-        }
-
-        topTable.add(deleteButton).pad(10f).row()
-        topTable.add(giveUpButton)
-
-        //CloseButton Setup
-        closeButton.setText("Back".tr())
-        closeButton.onClick {
-            game.popScreen()
-        }
-
-        //RightSideButton Setup
-        rightSideButton.setText("Save game".tr())
-        rightSideButton.enable()
-        rightSideButton.onClick {
-            rightSideButton.setText("Saving...".tr())
-            val newName = textField.text.trim()
-            game.multiplayer.changeGameName(multiplayerGame, newName)
-            val newScreen = game.popScreen()
-            if (newScreen is MultiplayerScreen) {
-                newScreen.selectGame(newName)
-            }
-        }
-
-        if (multiplayerGame.status == null) {
-            textField.isDisabled = true
-            textField.color = Color.GRAY
-            rightSideButton.disable()
-            giveUpButton.disable()
-        }
+        return deleteButton
     }
 
     /**

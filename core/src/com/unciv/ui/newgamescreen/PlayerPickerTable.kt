@@ -162,7 +162,7 @@ class PlayerPickerTable(
                         update()
                     }).pad(5f).right().row()
         }
-        if (gameParameters.isOnlineMultiplayer && player.playerType == PlayerType.Human) {
+        if (gameParameters.isOnlineMultiplayerEnabled() && player.playerType == PlayerType.Human) {
 
             val playerIdTextField = UncivTextField.create("Please input Player ID!", player.playerId)
             playerTable.add(playerIdTextField).colspan(2).fillX().pad(5f)

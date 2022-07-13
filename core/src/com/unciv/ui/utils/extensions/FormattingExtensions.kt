@@ -19,6 +19,14 @@ fun Float.toPercent() = 1 + this/100
 /** Convert a [resource name][this] into "Consumes [amount] $resource" string (untranslated) */
 fun String.getConsumesAmountString(amount: Int) = "Consumes [$amount] [$this]"
 
+/** Sets the first char to uppercase and all others to lowercase. */
+fun String.firstUpperRestLowerCase(): String {
+    if (length < 2) {
+        return uppercase()
+    }
+    return first().uppercase() + drop(1).lowercase()
+}
+
 /** Formats the [Duration] into a translated string */
 fun Duration.format(): String {
     val sb = StringBuilder()

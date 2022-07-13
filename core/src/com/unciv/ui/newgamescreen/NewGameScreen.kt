@@ -39,7 +39,6 @@ import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import kotlinx.coroutines.coroutineScope
-import java.net.URL
 import java.util.*
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
@@ -74,6 +73,10 @@ class NewGameScreen(
         if (isNarrowerThan4to3()) initPortrait()
         else initLandscape()
 
+        setupRightSideButtons()
+    }
+
+    private fun setupRightSideButtons() {
         if (UncivGame.Current.settings.lastGameSetup != null) {
             rightSideGroup.addActorAt(0, VerticalGroup().padBottom(5f))
             val resetToDefaultsButton = "Reset to defaults".toTextButton()
@@ -92,10 +95,18 @@ class NewGameScreen(
         rightSideButton.enable()
         rightSideButton.setText("Start game!".tr())
         rightSideButton.onClick {
-            if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
-                if (!checkConnectionToMultiplayerServer()) {
+            val mpParameters = gameSetupInfo.gameParameters.multiplayer
+            if (mpParameters != null) {
+                val success = Concurrency.runBlocking { // TODO Make game creation not block the GL thread
+                    UncivGame.Current.multiplayer.checkConnection(mpParameters.serverData)
+                }
+                if (success != true) {
                     val noInternetConnectionPopup = Popup(this)
-                    val label = if (Multiplayer.usesCustomServer()) "Couldn't connect to Multiplayer Server!" else "Couldn't connect to Dropbox!"
+                    val label = if (mpParameters.serverData.type == Multiplayer.ServerType.CUSTOM) {
+                        "Couldn't connect to Multiplayer Server!"
+                    } else {
+                        "Couldn't connect to Dropbox!"
+                    }
                     noInternetConnectionPopup.addGoodSizedLabel(label.tr()).row()
                     noInternetConnectionPopup.addCloseButton()
                     noInternetConnectionPopup.open()
@@ -116,11 +127,11 @@ class NewGameScreen(
             }
 
             if (gameSetupInfo.gameParameters.players.none {
-                it.playerType == PlayerType.Human &&
-                    // do not allow multiplayer with only remote spectator(s) and AI(s) - non-MP that works
-                    !(it.chosenCiv == Constants.spectator && gameSetupInfo.gameParameters.isOnlineMultiplayer &&
-                            it.playerId != UncivGame.Current.settings.multiplayer.userId)
-            }) {
+                        it.playerType == PlayerType.Human &&
+                                // do not allow multiplayer with only remote spectator(s) and AI(s) - non-MP that works
+                                !(it.chosenCiv == Constants.spectator && gameSetupInfo.gameParameters.isOnlineMultiplayerEnabled() &&
+                                        it.playerId != UncivGame.Current.settings.multiplayer.userId)
+                    }) {
                 val noHumanPlayersPopup = Popup(this)
                 noHumanPlayersPopup.addGoodSizedLabel("No human players selected!".tr()).row()
                 noHumanPlayersPopup.addCloseButton()
@@ -151,7 +162,7 @@ class NewGameScreen(
                 if (rulesetIncompatibilities.isNotEmpty()) {
                     val incompatibleMap = Popup(this)
                     incompatibleMap.addGoodSizedLabel("Map is incompatible with the chosen ruleset!".tr()).row()
-                    for(incompatibility in rulesetIncompatibilities)
+                    for (incompatibility in rulesetIncompatibilities)
                         incompatibleMap.addGoodSizedLabel(incompatibility).row()
                     incompatibleMap.addCloseButton()
                     incompatibleMap.open()
@@ -163,8 +174,8 @@ class NewGameScreen(
                 val mapSize = gameSetupInfo.mapParameters.mapSize
                 val message = mapSize.fixUndesiredSizes(gameSetupInfo.mapParameters.worldWrap)
                 if (message != null) {
-                    ToastPopup( message, UncivGame.Current.screen!!, 4000 )
-                    with (mapOptionsTable.generatedMapOptionsTable) {
+                    ToastPopup(message, UncivGame.Current.screen!!, 4000)
+                    with(mapOptionsTable.generatedMapOptionsTable) {
                         customMapSizeRadius.text = mapSize.radius.toString()
                         customMapWidth.text = mapSize.width.toString()
                         customMapHeight.text = mapSize.height.toString()
@@ -228,20 +239,6 @@ class NewGameScreen(
         }).expandX().fillX().row()
     }
 
-    private fun checkConnectionToMultiplayerServer(): Boolean {
-        return try {
-            val multiplayerServer = UncivGame.Current.settings.multiplayer.server
-            val u =  URL(if (Multiplayer.usesDropbox()) "https://content.dropboxapi.com" else multiplayerServer)
-            val con = u.openConnection()
-            con.connectTimeout = 3000
-            con.connect()
-
-            true
-        } catch(ex: Throwable) {
-            false
-        }
-    }
-
     private suspend fun startNewGame() = coroutineScope {
         val popup = Popup(this@NewGameScreen)
         launchOnGLThread {
@@ -268,10 +265,10 @@ class NewGameScreen(
             return@coroutineScope
         }
 
-        if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
-            newGame.isUpToDate = true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
+        val multiplayer = gameSetupInfo.gameParameters.multiplayer
+        if (multiplayer != null) {
             try {
-                game.multiplayer.createGame(newGame)
+                game.multiplayer.createGame(multiplayer.serverData, newGame, multiplayer.name)
                 game.files.requestAutoSave(newGame)
             } catch (ex: FileStorageRateLimitReached) {
                 launchOnGLThread {
@@ -295,7 +292,7 @@ class NewGameScreen(
 
         val worldScreen = game.loadGame(newGame)
 
-        if (newGame.gameParameters.isOnlineMultiplayer) {
+        if (newGame.isOnlineMultiplayer()) {
             launchOnGLThread {
                     // Save gameId to clipboard because you have to do it anyway.
                     Gdx.app.clipboard.contents = newGame.gameId

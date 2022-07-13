@@ -267,9 +267,9 @@ fun Actor.centerY(parent: Stage) { y = parent.height / 2 - height / 2 }
 fun Actor.center(parent: Stage) { centerX(parent); centerY(parent) }
 
 /** same as [onClick], but sends the [InputEvent] and coordinates along */
-fun Actor.onClickEvent(sound: UncivSound = UncivSound.Click, function: (event: InputEvent?, x: Float, y: Float) -> Unit) {
+fun Actor.onClickEvent(sound: UncivSound = UncivSound.Click, function: (event: InputEvent, x: Float, y: Float) -> Unit) {
     this.addListener(object : ClickListener() {
-        override fun clicked(event: InputEvent?, x: Float, y: Float) {
+        override fun clicked(event: InputEvent, x: Float, y: Float) {
             Concurrency.run("Sound") { SoundPlayer.play(sound) }
             function(event, x, y)
         }
@@ -420,6 +420,11 @@ fun Image.setSize(size: Float) {
 fun String.toTextButton(style: TextButtonStyle? = null): TextButton {
     val text = this.tr()
     return if (style == null) TextButton(text, BaseScreen.skin) else TextButton(text, style)
+}
+
+/** Translate a [String] and make a [TextButton] widget from it */
+fun String.toTextButton(styleName: String): TextButton {
+    return toTextButton(BaseScreen.skin.get(styleName, TextButtonStyle::class.java))
 }
 
 /** Translate a [String] and make a [Label] widget from it */

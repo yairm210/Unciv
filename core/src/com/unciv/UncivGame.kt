@@ -199,7 +199,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             worldScreen = newWorldScreen
 
             val moreThanOnePlayer = newGameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1
-            val isSingleplayer = !newGameInfo.gameParameters.isOnlineMultiplayer
+            val isSingleplayer = !newGameInfo.isOnlineMultiplayer()
             val screenToShow = if (moreThanOnePlayer && isSingleplayer) {
                 PlayerReadyScreen(newWorldScreen)
             } else {
@@ -324,15 +324,23 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     }
 
     private fun tryLoadDeepLinkedGame() = Concurrency.run("LoadDeepLinkedGame") {
-        if (deepLinkedMultiplayerGame == null) return@run
+        val gameId = deepLinkedMultiplayerGame
+        if (gameId == null) return@run
+        val game = multiplayer.getGameById(gameId)
+        if (game == null) {
+            if (screenStack.isEmpty()) {
+                setAsRootScreen(MainMenuScreen())
+            }
+            return@run
+        }
 
         launchOnGLThread {
             if (screenStack.isEmpty() || screenStack[0] !is GameStartScreen) {
-                setAsRootScreen(LoadingScreen(getScreen()!!))
+                setAsRootScreen(LoadingScreen(getScreen()))
             }
         }
         try {
-            multiplayer.loadGame(deepLinkedMultiplayerGame!!)
+            multiplayer.loadGame(game)
         } catch (ex: Exception) {
             launchOnGLThread {
                 val mainMenu = MainMenuScreen()
@@ -377,6 +385,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     override fun dispose() {
         Gdx.input.inputProcessor = null // don't allow ANRs when shutting down, that's silly
 
+        multiplayer.dispose()
         cancelDiscordEvent?.invoke()
         SoundPlayer.clearCache()
         if (::musicController.isInitialized) musicController.gracefulShutdown()  // Do allow fade-out
@@ -465,7 +474,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         val number: Int
     ) : IsPartOfGameInfoSerialization {
         @Suppress("unused") // used by json serialization
-        constructor() : this("", -1)
+        private constructor() : this("", -1)
     }
 }
 

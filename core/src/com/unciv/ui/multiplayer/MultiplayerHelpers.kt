@@ -41,8 +41,10 @@ object MultiplayerHelpers {
             val (message) = LoadGameScreen.getLoadExceptionMessage(ex, "Error while refreshing:")
             descriptionText.appendLine(message)
         }
-        val lastUpdate = multiplayerGame.lastUpdate
-        descriptionText.appendLine("Last refresh: [${Duration.between(lastUpdate, Instant.now()).formatShort()}] ago".tr())
+        val lastUpdate = multiplayerGame.lastUpdate.get()
+        if (lastUpdate != null) {
+            descriptionText.appendLine("Last refresh: [${Duration.between(lastUpdate, Instant.now()).formatShort()}] ago".tr())
+        }
         val status = multiplayerGame.status
         if (status?.currentCivName != null) {
             val currentTurnStartTime = Instant.ofEpochMilli(status.currentTurnStartTime)
@@ -51,8 +53,9 @@ object MultiplayerHelpers {
         return descriptionText
     }
 
-    fun showDropboxWarning(screen: BaseScreen) {
-        if (!Multiplayer.usesDropbox() || UncivGame.Current.settings.multiplayer.hideDropboxWarning) return
+    fun showDropboxWarning(screen: BaseScreen, serverData: Multiplayer.ServerData) {
+        val mpSettings = UncivGame.Current.settings.multiplayer
+        if (serverData.type == Multiplayer.ServerType.CUSTOM || mpSettings.hideDropboxWarning) return
 
         val dropboxWarning = Popup(screen)
         dropboxWarning.addGoodSizedLabel(
@@ -67,7 +70,7 @@ object MultiplayerHelpers {
         val checkBox = "Don't show again".toCheckBox()
         dropboxWarning.add(checkBox)
         dropboxWarning.addCloseButton {
-            UncivGame.Current.settings.multiplayer.hideDropboxWarning = checkBox.isChecked
+            mpSettings.hideDropboxWarning = checkBox.isChecked
         }
         dropboxWarning.open()
     }

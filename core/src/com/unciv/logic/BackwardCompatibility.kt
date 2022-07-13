@@ -1,7 +1,9 @@
 package com.unciv.logic
 
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Json
+import com.badlogic.gdx.utils.JsonReader
 import com.badlogic.gdx.utils.JsonValue
 import com.unciv.json.HashMapVector2
 import com.unciv.json.MultiplayerGameStatusSerializer
@@ -13,8 +15,14 @@ import com.unciv.logic.civilization.TechManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.multiplayer.Multiplayer
+import com.unciv.logic.multiplayer.MultiplayerGame
+import com.unciv.logic.multiplayer.storage.MultiplayerFiles
+import com.unciv.models.metadata.GameParameters
+import com.unciv.models.metadata.GameParametersMultiplayer
 import com.unciv.models.ruleset.ModOptions
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.ui.saves.Gzip
+import com.unciv.utils.Log
 
 /**
  * Container for all temporarily used code managing transitions from deprecated elements to their replacements.
@@ -54,9 +62,9 @@ object BackwardCompatibility {
             }
 
             fun isInvalidConstruction(construction: String) =
-                !ruleSet.buildings.containsKey(construction)
-                        && !ruleSet.units.containsKey(construction)
-                        && !PerpetualConstruction.perpetualConstructionsMap.containsKey(construction)
+                    !ruleSet.buildings.containsKey(construction)
+                            && !ruleSet.units.containsKey(construction)
+                            && !PerpetualConstruction.perpetualConstructionsMap.containsKey(construction)
 
             // Remove invalid buildings or units from the queue - don't just check buildings and units because it might be a special construction as well
             for (construction in city.cityConstructions.constructionQueue.toList()) {
@@ -253,12 +261,69 @@ object BackwardCompatibility {
         val preview = json.readValue(GameInfoPreview::class.java, jsonData)
         preview.migrateCurrentCivName()
 
-        val gameId = json.readValue("gameId", String::class.java, "", jsonData)
         val turns = preview.turns
         val currentTurnStartTime = preview.currentTurnStartTime
         val currentCivName = preview.currentCivName
         val currentPlayerId = preview.currentPlayerId
 
-        return Multiplayer.GameStatus(gameId, turns, currentTurnStartTime, currentCivName, currentPlayerId)
+        return Multiplayer.GameStatus(turns, currentTurnStartTime, currentCivName, currentPlayerId)
+    }
+
+    const val OLD_MULTIPLAYER_FILES_FOLDER = "MultiplayerGames"
+    /** Remove this completely once users migrated their multiplayer games. */
+    suspend fun UncivFiles.migrateOldMultiplayerGames(files: Collection<FileHandle>): Map<String, MultiplayerGame> {
+        val multiplayerGames = files
+            .map {
+                try {
+                    val fileAsString = it.readString()
+
+                    val jsonValue = JsonReader().parse(fileAsString)
+                    val gameIdValue = jsonValue["gameId"]
+                    val gameId = gameIdValue.asString()
+
+                    val gameStatus = json().fromJson(Multiplayer.GameStatus::class.java, fileAsString)
+
+                    // We purposefully don't migrate the lastUpdate property, which we theoretically could by looking at when the file was last modified.
+                    // But it gets overwritten almost immediately afterwards anyway most likely, so it's really just wasted effort.
+                    val multiplayerGame = MultiplayerGame(gameId, Multiplayer.ServerData.default, it.name(), gameStatus)
+
+                    deleteFile(it) // don't need the old file anymore
+
+                    multiplayerGame
+                } catch (ex: Exception) {
+                    Log.error("Error while migrating multiplayer game %s", it.name())
+                    Log.error("Stacktrace:", ex)
+                    return@map null
+                }
+            }
+            .filterNotNull()
+            .associateBy { it.name }
+
+        saveMultiplayerGames(multiplayerGames)
+
+        val oldFolder = getFile(OLD_MULTIPLAYER_FILES_FOLDER)
+        if (oldFolder.list().isEmpty()) {
+            deleteFile(oldFolder)
+        }
+
+        return multiplayerGames
+    }
+
+    /** Remove this completely once users migrated their saves & settings. */
+    fun GameParameters.migrateMultiplayerParameters(defaultServerData: Multiplayer.ServerData) {
+        if (isOnlineMultiplayer && multiplayer == null) {
+            val mpParams = GameParametersMultiplayer(defaultServerData, null)
+            mpParams.serverData = defaultServerData
+            multiplayer = mpParams
+        }
+    }
+
+    /** Remove this completely once users migrated their multiplayer games. */
+    fun MultiplayerFiles.migrateGameStatus(gameStatusString: String): String {
+        return try {
+            Gzip.unzip(gameStatusString)
+        } catch (ex: Exception) {
+            gameStatusString
+        }
     }
 }

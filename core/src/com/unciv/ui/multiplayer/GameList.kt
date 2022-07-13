@@ -7,9 +7,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.UncivGame
+import com.unciv.logic.HasGameTurnData
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.HasMultiplayerGameName
-import com.unciv.logic.multiplayer.Multiplayer.GameStatus
 import com.unciv.logic.multiplayer.MultiplayerGameAdded
 import com.unciv.logic.multiplayer.MultiplayerGameDeleted
 import com.unciv.logic.multiplayer.MultiplayerGameNameChanged
@@ -59,7 +59,7 @@ class GameList(
         }
     }
 
-    private fun addGame(name: String, status: GameStatus?, error: Exception?, onSelected: (String) -> Unit) {
+    private fun addGame(name: String, status: HasGameTurnData?, error: Exception?, onSelected: (String) -> Unit) {
         val gameDisplay = GameDisplay(name, status, error, onSelected)
         gameDisplays[name] = gameDisplay
         addActor(gameDisplay)
@@ -69,7 +69,7 @@ class GameList(
 
 private class GameDisplay(
     multiplayerGameName: String,
-    status: GameStatus?,
+    status: HasGameTurnData?,
     error: Exception?,
     private val onSelected: (String) -> Unit
 ) : Table(), Comparable<GameDisplay> {
@@ -115,7 +115,7 @@ private class GameDisplay(
         gameButton.setText(newName)
     }
 
-    private fun updateTurnIndicator(status: GameStatus?) {
+    private fun updateTurnIndicator(status: HasGameTurnData?) {
         if (status?.isUsersTurn() == true) {
             statusIndicators.addActor(turnIndicator)
         } else {

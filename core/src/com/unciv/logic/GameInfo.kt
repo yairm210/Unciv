@@ -79,7 +79,7 @@ data class CompatibilityVersion(
     val createdWith: Version
 ) : IsPartOfGameInfoSerialization {
     @Suppress("unused") // used by json serialization
-    constructor() : this(-1, Version())
+    private constructor() : this(-1, Version("", -1))
 
     operator fun compareTo(other: CompatibilityVersion) = number.compareTo(other.number)
 
@@ -181,7 +181,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion,
     }
 
     fun getPlayerToViewAs(): CivilizationInfo {
-        if (!gameParameters.isOnlineMultiplayer) return currentCiv // non-online, play as human player
+        if (!isOnlineMultiplayer()) return currentCiv // non-online, play as human player
         val userId = UncivGame.Current.settings.multiplayer.userId
 
         // Iterating on all civs, starting from the the current player, gives us the one that will have the next turn
@@ -257,6 +257,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion,
         return year.toInt()
     }
 
+    fun isOnlineMultiplayer() = gameParameters.isOnlineMultiplayerEnabled()
+
     //endregion
     //region State changing functions
 
@@ -289,7 +291,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion,
                 || turns < simulateMaxTurns && simulateUntilWin
                 // For multiplayer, if there are 3+ players and one is defeated or spectator,
                 // we'll want to skip over their turn
-                || gameParameters.isOnlineMultiplayer && (thisPlayer.isDefeated() || thisPlayer.isSpectator() && thisPlayer.playerId != UncivGame.Current.settings.multiplayer.userId)
+                || isOnlineMultiplayer() && (thisPlayer.isDefeated() || thisPlayer.isSpectator() && thisPlayer.playerId != UncivGame.Current.settings.multiplayer.userId)
         ) {
             thisPlayer.startTurn()
             if (!thisPlayer.isDefeated() || thisPlayer.isBarbarian()) {
@@ -461,8 +463,6 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion,
     // All cross-game data which needs to be altered (e.g. when removing or changing a name of a building/tech)
     // will be done here, and not in CivInfo.setTransients or CityInfo
     fun setTransients() {
-        migrateCurrentCivName()
-
         tileMap.gameInfo = this
 
         // [TEMPORARY] Convert old saves to newer ones by moving base rulesets from the mod list to the base ruleset field

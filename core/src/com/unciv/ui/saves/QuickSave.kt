@@ -83,9 +83,10 @@ object QuickSave {
                 return@run
             }
 
-            if (savedGame.gameParameters.isOnlineMultiplayer) {
+            val serverData = savedGame.gameParameters.multiplayer?.serverData
+            if (serverData != null) {
                 try {
-                    screen.game.multiplayer.loadGame(savedGame)
+                    screen.game.multiplayer.loadGame(serverData, savedGame.gameId)
                 } catch (oom: OutOfMemoryError) {
                     outOfMemory()
                 } catch (ex: Exception) {
