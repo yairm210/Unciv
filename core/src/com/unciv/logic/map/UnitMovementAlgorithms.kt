@@ -137,7 +137,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
      * Does not consider if tiles can actually be entered, use canMoveTo for that.
      * If a tile can be reached within the turn, but it cannot be passed through, the total distance to it is set to unitMovement
      */
-    fun getDistanceToTilesWithinTurn(origin: Vector2, unitMovement: Float, considerZoneOfControl: Boolean = true): PathsToTilesWithinTurn {
+    fun getDistanceToTilesWithinTurn(origin: Vector2, unitMovement: Float, considerZoneOfControl: Boolean = true, tilesToIgnore: HashSet<TileInfo>? = null): PathsToTilesWithinTurn {
         val distanceToTiles = PathsToTilesWithinTurn()
         if (unitMovement == 0f) return distanceToTiles
 
@@ -151,6 +151,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
             val updatedTiles = ArrayList<TileInfo>()
             for (tileToCheck in tilesToCheck)
                 for (neighbor in tileToCheck.neighbors) {
+                    if (tilesToIgnore?.contains(neighbor) == true) continue // ignore this tile
                     var totalDistanceToTile: Float = when {
                         !unit.civInfo.exploredTiles.contains(neighbor.position) ->
                             distanceToTiles[tileToCheck]!!.totalDistance + 1f  // If we don't know then we just guess it to be 1.
@@ -205,6 +206,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         val newTilesToCheck = ArrayList<TileInfo>()
         val distanceToDestination = HashMap<TileInfo, Float>()
         var considerZoneOfControl = true // only for first distance!
+        val visitedTiles: HashSet<TileInfo> = hashSetOf(currentTile)
         while (true) {
             if (distance == 2) { // only set this once after distance > 1
                 movementThisTurn = unit.getMaxMovement().toFloat()
@@ -213,14 +215,15 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
             newTilesToCheck.clear()
             distanceToDestination.clear()
             for (tileToCheck in tilesToCheck) {
-                val distanceToTilesThisTurn = getDistanceToTilesWithinTurn(tileToCheck.position, movementThisTurn, considerZoneOfControl)
+                val distanceToTilesThisTurn = getDistanceToTilesWithinTurn(tileToCheck.position, movementThisTurn, considerZoneOfControl, visitedTiles)
                 for (reachableTile in distanceToTilesThisTurn.keys) {
                     // Avoid damaging terrain on first pass
                     if (avoidDamagingTerrain && unit.getDamageFromTerrain(reachableTile) > 0)
                         continue
-                    if (reachableTile == destination)
+                    if (reachableTile == destination) {
                         distanceToDestination[tileToCheck] = distanceToTilesThisTurn[reachableTile]!!.totalDistance
-                    else {
+                        break
+                    } else {
                         if (movementTreeParents.containsKey(reachableTile)) continue // We cannot be faster than anything existing...
                         if (!isUnknownTileWeShouldAssumeToBePassable(reachableTile) &&
                                  !canMoveTo(reachableTile)) continue // This is a tile that we can't actually enter - either an intermediary tile containing our unit, or an enemy unit/city
@@ -245,6 +248,8 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
 
             if (newTilesToCheck.isEmpty()) return emptyList() // there is NO PATH (eg blocked by enemy units)
 
+            // add newTilesToCheck to visitedTiles so we do not path over these tiles in a later iteration
+            visitedTiles.addAll(newTilesToCheck)
             // no need to check tiles that are surrounded by reachable tiles, only need to check the edgemost tiles.
             // Because anything we can reach from intermediate tiles, can be more easily reached by the edgemost tiles,
             // since we'll have to pass through an edgemost tile in order to reach the destination anyway
