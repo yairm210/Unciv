@@ -28,7 +28,8 @@ class GameOptionsTable(
     var locked = false
     var modCheckboxes: ModCheckboxTable? = null
     private set
-
+    var religionDisabledByRuleset = (ruleset.eras[gameParameters.startingEra]!!.hasUnique(UniqueType.DisablesReligion)
+            || ruleset.modOptions.uniques.contains(ModOptionsConstants.disableReligion))
     init {
         getGameOptionsTable()
     }
@@ -119,8 +120,6 @@ class GameOptionsTable(
             }
 
     private fun Table.addReligionCheckbox(cityStateSlider: UncivSlider?) {
-                val religionDisabledByRuleset = (ruleset.eras[gameParameters.startingEra]!!.hasUnique(UniqueType.DisablesReligion)
-                        || ruleset.modOptions.uniques.contains(ModOptionsConstants.disableReligion))
                 if (!religionDisabledByRuleset) {
                     addCheckbox("Enable Religion", gameParameters.religionEnabled) {
                         gameParameters.religionEnabled = it
@@ -239,7 +238,8 @@ class GameOptionsTable(
         val eras = ruleset.eras.keys
         addSelectBox("{Starting Era}:", eras, gameParameters.startingEra) {
             gameParameters.startingEra = it
-            update()
+            religionDisabledByRuleset = (ruleset.eras[gameParameters.startingEra]!!.hasUnique(UniqueType.DisablesReligion)
+                    || ruleset.modOptions.uniques.contains(ModOptionsConstants.disableReligion))
             null
         }
     }
