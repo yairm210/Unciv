@@ -308,18 +308,29 @@ open class TileGroup(
 
             var locationToCheck = baseLocation
             if (tileInfo.owningCity != null) {
-                val ownersEra = tileInfo.getOwner()!!.getEra()
-                val eraSpecificLocation =
-                    tileSetStrings.getString(locationToCheck, tileSetStrings.tag, ownersEra.name)
-                if (ImageGetter.imageExists(eraSpecificLocation))
-                    locationToCheck = eraSpecificLocation
-
                 var ownersStyle = tileInfo.getOwner()!!.nation.style
                 if (ownersStyle == "") ownersStyle = tileInfo.getOwner()!!.civName
+                var eraImageFound = false
+                for (eraNumber in tileInfo.getOwner()!!.getEraNumber() downTo 0) {
+                    val era = tileInfo.getOwner()!!.gameInfo.ruleSet.eras.keys.elementAt(eraNumber)
+                    val eraStyleSpecificLocation = tileSetStrings.getString(locationToCheck, tileSetStrings.tag, ownersStyle, tileSetStrings.tag, era)
+                    val eraSpecificLocation = tileSetStrings.getString(locationToCheck, tileSetStrings.tag, era)
+
+                    if (ImageGetter.imageExists(eraStyleSpecificLocation)) {
+                        locationToCheck = eraStyleSpecificLocation
+                        eraImageFound = true
+                        break
+                    } else if (ImageGetter.imageExists(eraSpecificLocation)) {
+                        locationToCheck = eraSpecificLocation
+                        eraImageFound = true
+                        break
+                    }
+                }
+
                 val styleSpecificLocation =
                     tileSetStrings.getString(locationToCheck, tileSetStrings.tag, ownersStyle)
 
-                if (ImageGetter.imageExists(styleSpecificLocation))
+                if (!eraImageFound && ImageGetter.imageExists(styleSpecificLocation))
                     locationToCheck = styleSpecificLocation
             }
 
