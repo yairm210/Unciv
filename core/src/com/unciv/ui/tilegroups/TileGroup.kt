@@ -85,6 +85,7 @@ open class TileGroup(
     class MiscLayerGroupClass(groupSize: Float) : ActionlessGroup(groupSize) {
         override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
     }
+    val borderLayerGroup = MiscLayerGroupClass(groupSize)
     val miscLayerGroup = MiscLayerGroupClass(groupSize)
 
     var tileYieldGroupInitialized = false
@@ -195,6 +196,7 @@ open class TileGroup(
         this.setSize(groupSize, groupSize)
         this.addActor(baseLayerGroup)
         this.addActor(terrainFeatureLayerGroup)
+        this.addActor(borderLayerGroup)
         this.addActor(miscLayerGroup)
         this.addActor(pixelMilitaryUnitGroup)
         this.addActor(pixelCivilianUnitGroup)
@@ -562,7 +564,7 @@ open class TileGroup(
                 val innerBorderImage = ImageGetter.getImage(
                         tileSetStrings.orFallback { getBorder(borderShapeString,"Inner") }
                 )
-                miscLayerGroup.addActor(innerBorderImage)
+                borderLayerGroup.addActor(innerBorderImage)
                 images.add(innerBorderImage)
                 setHexagonImageSize(innerBorderImage)
                 innerBorderImage.rotateBy(angle)
@@ -571,7 +573,7 @@ open class TileGroup(
                 val outerBorderImage = ImageGetter.getImage(
                         tileSetStrings.orFallback { getBorder(borderShapeString, "Outer") }
                 )
-                miscLayerGroup.addActor(outerBorderImage)
+                borderLayerGroup.addActor(outerBorderImage)
                 images.add(outerBorderImage)
                 setHexagonImageSize(outerBorderImage)
                 outerBorderImage.rotateBy(angle)
