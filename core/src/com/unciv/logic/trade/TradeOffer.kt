@@ -3,19 +3,19 @@ package com.unciv.logic.trade
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.trade.TradeType.TradeTypeNumberType
 import com.unciv.models.ruleset.Speed
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.Fonts
-import com.unciv.logic.trade.TradeType.TradeTypeNumberType
 
-data class TradeOffer(val name: String, val type: TradeType, var amount: Int = 1, var duration: Int) : IsPartOfGameInfoSerialization {
+data class TradeOffer(val name: String, val type: TradeType, var amount: Int = 1, var duration: Int, val tradable: Boolean=true) : IsPartOfGameInfoSerialization {
 
     constructor(
         name: String,
         type: TradeType,
         amount: Int = 1,
         speed: Speed = UncivGame.Current.gameInfo!!.speed
-    ) : this(name, type, amount, duration = -1) {
+    ) : this(name, type, amount, duration = -1, amount > 0) {
         duration = when {
             type.isImmediate -> -1 // -1 for offers that are immediate (e.g. gold transfer)
             name == Constants.peaceTreaty -> speed.peaceDealDuration
