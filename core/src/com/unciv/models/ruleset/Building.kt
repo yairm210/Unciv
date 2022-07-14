@@ -188,11 +188,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             stats.add(unique.stats)
         }
 
-        @Suppress("RemoveRedundantQualifierName")  // make it clearer Building inherits Stats
-        for (unique in getMatchingUniques(UniqueType.StatsWithResource))
-            if (civInfo.hasResource(unique.params[1]))
-                stats.add(unique.stats)
-
         if (!isWonder)
             for (unique in localUniqueCache.get("StatsFromBuildings", city.getMatchingUniques(UniqueType.StatsFromBuildings))) {
                 if (matchesFilter(unique.params[1]))
@@ -509,15 +504,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     )
                         rejectionReasons.add(RejectionReason.MustOwnTile.toInstance(unique.text))
 
-                // Deprecated since 3.16.11
-                    UniqueType.CanOnlyBeBuiltInAnnexedCities ->
-                        if (
-                            cityConstructions.cityInfo.isPuppet
-                            || cityConstructions.cityInfo.civInfo.civName == cityConstructions.cityInfo.foundingCiv
-                        )
-                            rejectionReasons.add(RejectionReason.CanOnlyBeBuiltInSpecificCities.toInstance(unique.text))
-                //
-
                 UniqueType.CanOnlyBeBuiltInCertainCities ->
                     if (!cityConstructions.cityInfo.matchesFilter(unique.params[0]))
                         rejectionReasons.add(RejectionReason.CanOnlyBeBuiltInSpecificCities.toInstance(unique.text))
@@ -659,6 +645,12 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (civInfo.gameInfo.spaceResources.contains(name)) {
             civInfo.victoryManager.currentsSpaceshipParts.add(name, 1)
             return true
+        }
+
+        if (cityHealth > 0) {
+            // city built a building that increases health so add a portion of this added health that is
+            // proportional to the city's current health
+            cityConstructions.cityInfo.health += (cityHealth.toFloat() * cityConstructions.cityInfo.health.toFloat() / cityConstructions.cityInfo.getMaxHealth().toFloat()).toInt()
         }
 
         cityConstructions.addBuilding(name)

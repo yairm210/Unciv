@@ -4,6 +4,7 @@ import com.badlogic.gdx.Files
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.JsonReader
+import com.badlogic.gdx.utils.SerializationException
 import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
@@ -225,20 +226,40 @@ class UncivFiles(
             loadGameFromFile(getSaveFile(gameName))
 
     fun loadGameFromFile(gameFile: FileHandle): GameInfo {
-        return gameInfoFromString(gameFile.readString())
+        val gameData = gameFile.readString()
+        if (gameData.isNullOrBlank()) {
+            throw emptyFile(gameFile)
+        }
+        return gameInfoFromString(gameData)
     }
 
     fun loadGamePreviewFromFile(gameFile: FileHandle): GameInfoPreview {
         val preview = json().fromJson(GameInfoPreview::class.java, gameFile)
+        if (preview == null) {
+            throw emptyFile(gameFile)
+        }
         preview.migrateCurrentCivName()
         return preview
+    }
+
+    /**
+     * GDX JSON deserialization does not throw when the file is empty, it just returns `null`.
+     *
+     * Since we work with non-nullable types, we convert this to an actual exception here to have a nice exception message instead of a NPE.
+     */
+    private fun emptyFile(gameFile: FileHandle): SerializationException {
+        return SerializationException("The file for the game ${gameFile.name()} is empty")
     }
 
     fun loadMultiplayerGameStatusByName(gameName: String) =
             loadMultiplayerGameStatusFromFile(getMultiplayerGameStatusFile(gameName))
 
     fun loadMultiplayerGameStatusFromFile(gameFile: FileHandle): Multiplayer.GameStatus {
-        return json().fromJson(Multiplayer.GameStatus::class.java, gameFile)
+        val status = json().fromJson(Multiplayer.GameStatus::class.java, gameFile)
+        if (status == null) {
+            throw emptyFile(gameFile)
+        }
+        return status
     }
 
     class CustomLoadResult<T>(

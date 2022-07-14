@@ -1,6 +1,5 @@
 package com.unciv.logic.battle
 
-import com.unciv.logic.map.TileInfo
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.GlobalUniques
 import com.unciv.models.ruleset.unique.StateForConditionals
@@ -111,8 +110,6 @@ object BattleDamage {
         val modifiers = getGeneralModifiers(attacker, defender, CombatAction.Attack)
 
         if (attacker is MapUnitCombatant) {
-            modifiers.add(getTileSpecificModifiers(attacker, defender.getTile()))
-
             if (attacker.unit.isEmbarked()
                     && !(attacker.unit.hasUnique(UniqueType.AttackAcrossCoast)))
                 modifiers["Landing"] = -50
@@ -166,15 +163,12 @@ object BattleDamage {
 
             if (defender.unit.isEmbarked()) {
                 // embarked units get no defensive modifiers apart from this unique
-                if (defender.unit.hasUnique(UniqueType.DefenceBonusWhenEmbarked, checkCivInfoUniques = true) ||
-                    defender.getCivInfo().hasUnique(UniqueType.DefenceBonusWhenEmbarkedCivwide)
+                if (defender.unit.hasUnique(UniqueType.DefenceBonusWhenEmbarked, checkCivInfoUniques = true)
                 )
                     modifiers["Embarked"] = 100
 
                 return modifiers
             }
-
-            modifiers.putAll(getTileSpecificModifiers(defender, tile))
 
             val tileDefenceBonus = tile.getDefensiveBonus()
             if (!defender.unit.hasUnique(UniqueType.NoDefensiveTerrainBonus, checkCivInfoUniques = true) && tileDefenceBonus > 0
@@ -190,19 +184,6 @@ object BattleDamage {
         return modifiers
     }
 
-    @Deprecated("As of 4.0.3", level=DeprecationLevel.WARNING)
-    private fun getTileSpecificModifiers(unit: MapUnitCombatant, tile: TileInfo): Counter<String> {
-        val modifiers = Counter<String>()
-
-        for (unique in unit.getCivInfo().getMatchingUniques(UniqueType.StrengthWithinTilesOfTile)) {
-            if (tile.getTilesInDistance(unique.params[1].toInt())
-                    .any { it.matchesFilter(unique.params[2]) }
-            )
-                modifiers[unique.params[2]] = unique.params[0].toInt()
-        }
-
-        return modifiers
-    }
 
     private fun modifiersToMultiplicationBonus(modifiers: Counter<String>): Float {
         var finalModifier = 1f
@@ -213,7 +194,6 @@ object BattleDamage {
     private fun getHealthDependantDamageRatio(combatant: ICombatant): Float {
         return if (combatant !is MapUnitCombatant
             || combatant.unit.hasUnique(UniqueType.NoDamagePenalty, checkCivInfoUniques = true)
-            || combatant.getCivInfo().hasUnique(UniqueType.UnitsFightFullStrengthWhenDamaged)
         ) {
             1f
         }

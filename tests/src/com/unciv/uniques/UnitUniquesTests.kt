@@ -29,7 +29,6 @@ class UnitUniquesTests {
         val mainCiv = game.addCiv("Gain [90] Influence with a [Great Person] gift to a City-State",
             isPlayer = true
         )
-        game.gameInfo.currentCiv = mainCiv
 
         val unitTile = game.getTile(Vector2(1f, 0f))
         cityStateCapital.expansion.takeOwnership(unitTile)

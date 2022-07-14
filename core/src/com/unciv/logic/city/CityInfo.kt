@@ -366,7 +366,7 @@ class CityInfo : IsPartOfGameInfoSerialization {
     fun getWorkableTiles() = tilesInRange.asSequence().filter { it.getOwner() == civInfo }
     fun isWorked(tileInfo: TileInfo) = workedTiles.contains(tileInfo.position)
 
-    fun isCapital(): Boolean = cityConstructions.builtBuildings.contains(capitalCityIndicator())
+    fun isCapital(): Boolean = cityConstructions.getBuiltBuildings().any { it.hasUnique(UniqueType.IndicatesCapital) }
     fun isCoastal(): Boolean = centerTileInfo.isCoastalTile()
     fun capitalCityIndicator(): String {
         val indicatorBuildings = getRuleset().buildings.values

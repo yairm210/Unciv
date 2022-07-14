@@ -144,6 +144,10 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
                 settings.save()
             }
 
+            // Loading available fonts can take a long time on Android phones.
+            // Therefore we initialize the lazy parameters in the font implementation, while we're in another thread, to avoid ANRs on main thread
+            fontImplementation?.getCharPixmap('S')
+
             // This stuff needs to run on the main thread because it needs the GL context
             launchOnGLThread {
                 musicController.chooseTrack(suffixes = listOf(MusicMood.Menu, MusicMood.Ambient),
@@ -447,7 +451,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.1.17", 735)
+        val VERSION = Version("4.1.18", 737)
         //endregion
 
         lateinit var Current: UncivGame

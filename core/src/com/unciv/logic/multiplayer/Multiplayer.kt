@@ -155,9 +155,9 @@ class Multiplayer {
         return addGame(fileHandle, status)
     }
 
-    private suspend fun addGame(fileHandle: FileHandle, status: GameStatus = files.loadMultiplayerGameStatusFromFile(fileHandle)) {
-        debug("Adding game %s", status.gameId)
-        val game = MultiplayerGame(fileHandle, status, Instant.now())
+    private suspend fun addGame(fileHandle: FileHandle, status: GameStatus? = null) {
+        debug("Adding game %s", fileHandle.name())
+        val game = MultiplayerGame(fileHandle, status, if (status != null) Instant.now() else null)
         savedGames[fileHandle] = game
         withGLContext {
             EventBus.send(MultiplayerGameAdded(game.name))

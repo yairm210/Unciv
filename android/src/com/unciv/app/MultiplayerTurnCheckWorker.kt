@@ -207,7 +207,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                 }
             }
 
-            Log.d(LOG_TAG, "start gameNames: ${Arrays.toString(gameNames)}")
+            Log.d(LOG_TAG, "start gameNames: ${gameNames.contentToString()}")
 
             if (currentGameInfo.currentCiv.playerId == settings.userId) {
                 // May be useful to remind a player that he forgot to complete his turn.
