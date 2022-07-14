@@ -59,7 +59,7 @@ class Simulation(
                     val step = SimulationStep(gameInfo)
 
                     if (step.victoryType != null) {
-                        step.winner = step.currentPlayer
+                        step.winner = step.currentCivName
                         printWinner(step)
                     }
                     else

@@ -31,10 +31,10 @@ import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import java.util.*
 
-fun advancedTab(
-    optionsPopup: OptionsPopup,
+fun OptionsPopup.advancedTab(
     onFontChange: () -> Unit
 ) = Table(BaseScreen.skin).apply {
+    val optionsPopup = this@advancedTab
     pad(10f)
     defaults().pad(5f)
 

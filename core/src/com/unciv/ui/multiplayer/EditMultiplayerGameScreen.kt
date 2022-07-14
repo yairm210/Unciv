@@ -2,7 +2,7 @@ package com.unciv.ui.multiplayer
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
-import com.unciv.logic.multiplayer.OnlineMultiplayerGame
+import com.unciv.logic.multiplayer.MultiplayerGame
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.ConfirmPopup
@@ -20,7 +20,7 @@ import com.unciv.utils.concurrency.launchOnGLThread
 
 /** Subscreen of MultiplayerScreen to edit and delete saves
  * backScreen is used for getting back to the MultiplayerScreen so it doesn't have to be created over and over again */
-class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame) : PickerScreen() {
+class EditMultiplayerGameScreen(val multiplayerGame: MultiplayerGame) : PickerScreen() {
     init {
         val textField = UncivTextField.create("Game name", multiplayerGame.name)
 
@@ -36,7 +36,7 @@ class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame) 
                 "Delete save",
             ) {
                 try {
-                    game.onlineMultiplayer.deleteGame(multiplayerGame)
+                    game.multiplayer.deleteGame(multiplayerGame)
                     game.popScreen()
                 } catch (ex: Exception) {
                     ToastPopup("Could not delete game!", this)
@@ -72,14 +72,14 @@ class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame) 
         rightSideButton.onClick {
             rightSideButton.setText("Saving...".tr())
             val newName = textField.text.trim()
-            game.onlineMultiplayer.changeGameName(multiplayerGame, newName)
+            game.multiplayer.changeGameName(multiplayerGame, newName)
             val newScreen = game.popScreen()
             if (newScreen is MultiplayerScreen) {
                 newScreen.selectGame(newName)
             }
         }
 
-        if (multiplayerGame.preview == null) {
+        if (multiplayerGame.status == null) {
             textField.isDisabled = true
             textField.color = Color.GRAY
             rightSideButton.disable()
@@ -91,7 +91,7 @@ class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame) 
      * Helper function to decrease indentation
      * Turns the current playerCiv into an AI civ and uploads the game afterwards.
      */
-    private fun resign(multiplayerGame: OnlineMultiplayerGame) {
+    private fun resign(multiplayerGame: MultiplayerGame) {
         //Create a popup
         val popup = Popup(this)
         popup.addGoodSizedLabel("Working...").row()
@@ -99,7 +99,7 @@ class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame) 
 
         Concurrency.runOnNonDaemonThreadPool("Resign") {
             try {
-                val resignSuccess = game.onlineMultiplayer.resign(multiplayerGame)
+                val resignSuccess = game.multiplayer.resign(multiplayerGame)
                 if (resignSuccess) {
                     launchOnGLThread {
                         popup.close()

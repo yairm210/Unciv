@@ -11,7 +11,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.UncivFiles
 import com.unciv.logic.civilization.PlayerType
-import com.unciv.logic.multiplayer.OnlineMultiplayer
+import com.unciv.logic.multiplayer.Multiplayer
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
@@ -60,7 +60,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         private set
     lateinit var settings: GameSettings
     lateinit var musicController: MusicController
-    lateinit var onlineMultiplayer: OnlineMultiplayer
+    lateinit var multiplayer: Multiplayer
     lateinit var files: UncivFiles
 
     /**
@@ -121,7 +121,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             musicController.getAudioExceptionHandler()
         )
 
-        onlineMultiplayer = OnlineMultiplayer()
+        multiplayer = Multiplayer()
 
         ImageGetter.resetAtlases()
         ImageGetter.setNewRuleset(ImageGetter.ruleset)  // This needs to come after the settings, since we may have default visual mods
@@ -328,7 +328,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             }
         }
         try {
-            onlineMultiplayer.loadGame(deepLinkedMultiplayerGame!!)
+            multiplayer.loadGame(deepLinkedMultiplayerGame!!)
         } catch (ex: Exception) {
             launchOnGLThread {
                 val mainMenu = MainMenuScreen()

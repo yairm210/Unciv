@@ -174,7 +174,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
         copyButton.onActivation {
             Concurrency.run(copyExistingSaveToClipboard) {
                 try {
-                    val gameText = game.files.getSave(selectedSave).readString()
+                    val gameText = game.files.getSaveFile(selectedSave).readString()
                     Gdx.app.clipboard.contents = if (gameText[0] == '{') Gzip.zip(gameText) else gameText
                 } catch (ex: Throwable) {
                     ex.printStackTrace()

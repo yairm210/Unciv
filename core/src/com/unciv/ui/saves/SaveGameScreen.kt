@@ -34,7 +34,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
 
         rightSideButton.setText("Save game".tr())
         rightSideButton.onActivation {
-            if (game.files.getSave(gameNameTextField.text).exists())
+            if (game.files.getSaveFile(gameNameTextField.text).exists())
                 ConfirmPopup(
                     this,
                     "Overwrite existing file?",
@@ -65,7 +65,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
 
     private fun Table.addGameNameField() {
         gameNameTextField.setTextFieldFilter { _, char -> char != '\\' && char != '/' }
-        val defaultSaveName = "[${gameInfo.currentPlayer}] - [${gameInfo.turns}] turns".tr()
+        val defaultSaveName = "[${gameInfo.currentCivName}] - [${gameInfo.turns}] turns".tr()
         gameNameTextField.text = defaultSaveName
         gameNameTextField.setSelection(0, defaultSaveName.length)
 

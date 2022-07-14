@@ -19,7 +19,7 @@ import com.unciv.logic.multiplayer.MultiplayerGameNameChanged
 import com.unciv.logic.multiplayer.MultiplayerGameUpdateEnded
 import com.unciv.logic.multiplayer.MultiplayerGameUpdateStarted
 import com.unciv.logic.multiplayer.MultiplayerGameUpdated
-import com.unciv.logic.multiplayer.OnlineMultiplayerGame
+import com.unciv.logic.multiplayer.MultiplayerGame
 import com.unciv.logic.multiplayer.isUsersTurn
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
@@ -34,7 +34,7 @@ import java.time.Instant
 
 class MultiplayerStatusButton(
     screen: BaseScreen,
-    curGame: OnlineMultiplayerGame?
+    curGame: MultiplayerGame?
 ) : Button(BaseScreen.skin), Disposable {
     private var curGameName = curGame?.name
     private val multiplayerImage = createMultiplayerImage()
@@ -53,7 +53,7 @@ class MultiplayerStatusButton(
 
         updateTurnIndicator(flash = false) // no flash since this is just the initial construction
         events.receive(MultiplayerGameUpdated::class) {
-            val shouldUpdate = if (it.preview.isUsersTurn()) {
+            val shouldUpdate = if (it.status.isUsersTurn()) {
                 gameNamesWithCurrentTurn.add(it.name)
             } else {
                 gameNamesWithCurrentTurn.remove(it.name)
@@ -110,14 +110,14 @@ class MultiplayerStatusButton(
     }
 
     private fun getInitialGamesWithCurrentTurn(): MutableSet<String> {
-        return findGamesToBeNotifiedAbout(UncivGame.Current.onlineMultiplayer.games)
+        return findGamesToBeNotifiedAbout(UncivGame.Current.multiplayer.games)
     }
 
     /** @return set of gameIds */
-    private fun findGamesToBeNotifiedAbout(games: Iterable<OnlineMultiplayerGame>): MutableSet<String> {
+    private fun findGamesToBeNotifiedAbout(games: Iterable<MultiplayerGame>): MutableSet<String> {
         return games
             .filter { it.name != curGameName }
-            .filter { it.preview?.isUsersTurn() == true }
+            .filter { it.status?.isUsersTurn() == true }
             .map { it.name }
             .toMutableSet()
     }

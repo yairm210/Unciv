@@ -2,16 +2,15 @@ package com.unciv.logic.multiplayer
 
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
-import com.unciv.logic.GameInfoPreview
+import com.unciv.logic.GameInfo
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
-import com.unciv.logic.multiplayer.storage.OnlineMultiplayerFiles
+import com.unciv.logic.multiplayer.storage.MultiplayerFiles
 import com.unciv.ui.utils.extensions.isLargerThan
 import com.unciv.utils.concurrency.launchOnGLThread
 import com.unciv.utils.concurrency.withGLContext
 import com.unciv.utils.debug
 import kotlinx.coroutines.coroutineScope
-import java.io.FileNotFoundException
 import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.atomic.AtomicReference
@@ -22,9 +21,9 @@ private const val DROPBOX_THROTTLE_PERIOD = 8L
 /** @see getUpdateThrottleInterval */
 private const val CUSTOM_SERVER_THROTTLE_PERIOD = 1L
 
-class OnlineMultiplayerGame(
+class MultiplayerGame(
     val fileHandle: FileHandle,
-    var preview: GameInfoPreview? = null,
+    var status: Multiplayer.GameStatus? = null,
     lastOnlineUpdate: Instant? = null
 ) {
     private val lastOnlineUpdate: AtomicReference<Instant?> = AtomicReference(lastOnlineUpdate)
@@ -42,22 +41,22 @@ class OnlineMultiplayerGame(
     var error: Exception? = null
 
     init {
-        if (preview == null) {
+        if (status == null) {
             try {
-                loadPreviewFromFile()
+                loadStatusFromFile()
             } catch (e: Exception) {
                 error = e
             }
         }
     }
 
-    private fun loadPreviewFromFile(): GameInfoPreview {
-        val previewFromFile = UncivGame.Current.files.loadGamePreviewFromFile(fileHandle)
-        preview = previewFromFile
-        return previewFromFile
+    private fun loadStatusFromFile(): Multiplayer.GameStatus {
+        val statusFromFile = UncivGame.Current.files.loadMultiplayerGameStatusFromFile(fileHandle)
+        status = statusFromFile
+        return statusFromFile
     }
 
-    private fun needsUpdate(): Boolean = preview == null || error != null
+    private fun needsUpdate(): Boolean = status == null || error != null
 
     /**
      * Fires: [MultiplayerGameUpdateStarted], [MultiplayerGameUpdated], [MultiplayerGameUpdateUnchanged], [MultiplayerGameUpdateFailed]
@@ -71,7 +70,7 @@ class OnlineMultiplayerGame(
             error = e
             GameUpdateResult.FAILURE
         }
-        debug("Starting multiplayer game update for %s with id %s", name, preview?.gameId)
+        debug("Starting multiplayer game update for %s with id %s", name, status?.gameId)
         launchOnGLThread {
             EventBus.send(MultiplayerGameUpdateStarted(name))
         }
@@ -83,17 +82,17 @@ class OnlineMultiplayerGame(
         }
         val updateEvent = when (updateResult) {
             GameUpdateResult.CHANGED -> {
-                debug("Game update for %s with id %s had remote change", name, preview?.gameId)
-                MultiplayerGameUpdated(name, preview!!)
+                debug("Game update for %s with id %s had remote change", name, status?.gameId)
+                MultiplayerGameUpdated(name, status!!)
             }
             GameUpdateResult.FAILURE -> {
-                debug("Game update for %s with id %s failed: %s", name, preview?.gameId, error)
+                debug("Game update for %s with id %s failed: %s", name, status?.gameId, error)
                 MultiplayerGameUpdateFailed(name, error!!)
             }
             GameUpdateResult.UNCHANGED -> {
-                debug("Game update for %s with id %s had no changes", name, preview?.gameId)
+                debug("Game update for %s with id %s had no changes", name, status?.gameId)
                 error = null
-                MultiplayerGameUpdateUnchanged(name, preview!!)
+                MultiplayerGameUpdateUnchanged(name, status!!)
             }
         }
         launchOnGLThread {
@@ -102,25 +101,28 @@ class OnlineMultiplayerGame(
     }
 
     private suspend fun update(): GameUpdateResult {
-        val curPreview = if (preview != null) preview!! else loadPreviewFromFile()
-        val newPreview = OnlineMultiplayerFiles().tryDownloadGamePreview(curPreview.gameId)
-        if (newPreview.turns == curPreview.turns && newPreview.currentPlayer == curPreview.currentPlayer) return GameUpdateResult.UNCHANGED
-        UncivGame.Current.files.saveGame(newPreview, fileHandle)
-        preview = newPreview
+        val curStatus = if (status != null) status!! else loadStatusFromFile()
+        val newStatus = MultiplayerFiles().tryDownloadGameStatus(curStatus.gameId)
+        if (curStatus.hasLatestGameState(newStatus)) return GameUpdateResult.UNCHANGED
+        UncivGame.Current.files.saveMultiplayerGameStatus(newStatus, fileHandle)
+        status = newStatus
         return GameUpdateResult.CHANGED
     }
 
-    suspend fun doManualUpdate(gameInfo: GameInfoPreview) {
-        debug("Doing manual update of game %s", gameInfo.gameId)
+    suspend fun doManualUpdate(newStatus: Multiplayer.GameStatus) {
+        debug("Doing manual update of game %s", newStatus.gameId)
         lastOnlineUpdate.set(Instant.now())
         error = null
-        preview = gameInfo
+        status = newStatus
         withGLContext {
-            EventBus.send(MultiplayerGameUpdated(name, gameInfo))
+            EventBus.send(MultiplayerGameUpdated(name, newStatus))
         }
     }
+    suspend fun doManualUpdate(gameInfo: GameInfo) {
+        doManualUpdate(Multiplayer.GameStatus(gameInfo))
+    }
 
-    override fun equals(other: Any?): Boolean = other is OnlineMultiplayerGame && fileHandle == other.fileHandle
+    override fun equals(other: Any?): Boolean = other is MultiplayerGame && fileHandle == other.fileHandle
     override fun hashCode(): Int = fileHandle.hashCode()
 }
 
@@ -132,5 +134,5 @@ private enum class GameUpdateResult {
  * How often games can be checked for remote updates. More attempted checks within this time period will do nothing.
  */
 private fun getUpdateThrottleInterval(): Duration {
-    return Duration.ofSeconds(if (OnlineMultiplayer.usesCustomServer()) CUSTOM_SERVER_THROTTLE_PERIOD else DROPBOX_THROTTLE_PERIOD)
+    return Duration.ofSeconds(if (Multiplayer.usesCustomServer()) CUSTOM_SERVER_THROTTLE_PERIOD else DROPBOX_THROTTLE_PERIOD)
 }
