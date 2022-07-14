@@ -24,7 +24,7 @@ class GlobalUniquesTests {
         game = TestGame()
     }
 
-    // region stat uniques
+    // region base stat bonus providing uniques
 
     @Test
     fun stats() {
@@ -56,7 +56,7 @@ class GlobalUniquesTests {
         val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
         val cityInfo = game.addCity(civInfo, tile, true, initialPopulation = 2)
         val building = game.createBuilding("[+3 Gold] from every specialist [in this city]")
-        val specialistName = game.addEmptySpecialist()
+        val specialistName = game.createSpecialist()
         building.specialistSlots.add(specialistName, 2)
         cityInfo.population.specialistAllocations[specialistName] = 2
 
@@ -145,7 +145,7 @@ class GlobalUniquesTests {
         val civInfo = game.addCiv()
         val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
         val cityInfo = game.addCity(civInfo, tile, true, initialPopulation = 2)
-        val specialist = game.addEmptySpecialist()
+        val specialist = game.createSpecialist()
         val building = game.createBuilding("[+3 Faith] from every [${specialist}]")
 
         cityInfo.cityConstructions.addBuilding(building.name)
@@ -350,7 +350,6 @@ class GlobalUniquesTests {
         val civInfo = game.addCiv()
         val cityState = game.addCiv(cityState = CityStateType.Maritime)
 
-
         val tile = game.getTile(Vector2(0f,0f))
         val city = game.addCity(civInfo, tile, true)
         val cityStateTile = game.getTile(Vector2(0f, 1f))
@@ -393,6 +392,109 @@ class GlobalUniquesTests {
 
     // endregion
 
+    // region stat nullifying uniques
+
+    @Test
+    fun nullifiesStat() {
+        game.makeHexagonalMap(1)
+        val civInfo = game.addCiv()
+        val tile = game.getTile(Vector2(0f,0f))
+        val city = game.addCity(civInfo, tile, true, 1)
+
+        val building = game.createBuilding("Nullifies [Faith] [in this city]", "[+10 Gold, +10 Faith] [in this city]")
+        city.cityConstructions.addBuilding(building.name)
+        city.cityStats.update()
+        Assert.assertTrue(city.cityStats.finalStatList.map { it.value.gold }.sum() >= 10f)
+        Assert.assertTrue(city.cityStats.finalStatList.map { it.value.faith }.sum() == 0f)
+    }
+
+    @Test
+    fun nullifiesGrowth() {
+        game.makeHexagonalMap(1)
+        val civInfo = game.addCiv()
+        val tile = game.getTile(Vector2(0f,0f))
+        val city = game.addCity(civInfo, tile, true, 1)
+
+        val building = game.createBuilding("Nullifies Growth [in this city]", "[+10 Food, +10 Gold] [in this city]")
+        city.cityConstructions.addBuilding(building.name)
+        city.cityStats.update()
+        Assert.assertTrue(city.cityStats.finalStatList.map { it.value.gold }.sum() >= 10f)
+        Assert.assertTrue(city.cityStats.finalStatList.map { it.value.food }.sum() == 0f)
+
+        city.population.addPopulation(1)
+        city.cityStats.update()
+        Assert.assertTrue(city.cityStats.finalStatList.map { it.value.food }.sum() == 0f)
+    }
+
+    // endregion
+
+    //region production percentage bonus providing uniques based on production
+
+    @Test
+    fun percentProductionBuildings() {
+        val civInfo = game.addCiv()
+        val tile = game.getTile(Vector2(0f,0f))
+        val city = game.addCity(civInfo, tile, true, 0)
+
+        val buildingToConstruct = game.createBuilding()
+        val building = game.createBuilding("[+300]% Production when constructing [${buildingToConstruct.name}] buildings [in all cities]", "[+1 Production]")
+        city.cityConstructions.addBuilding(building.name)
+        city.cityConstructions.addToQueue(buildingToConstruct.name)
+        city.cityStats.update()
+        Assert.assertTrue(city.cityStats.statPercentBonusTree.totalStats.production == 300f)
+    }
+
+    @Test
+    fun percentProductionUnits() {
+        val civInfo = game.addCiv()
+        val tile = game.getTile(Vector2(0f,0f))
+        val city = game.addCity(civInfo, tile, true, 0)
+
+        val unitToConstruct = game.createBaseUnit()
+        val building = game.createBuilding("[+300]% Production when constructing [${unitToConstruct.name}] units [in all cities]", "[+1 Production]")
+        city.cityConstructions.addBuilding(building.name)
+        city.cityConstructions.addToQueue(unitToConstruct.name)
+        city.cityStats.update()
+        Assert.assertTrue(city.cityStats.statPercentBonusTree.totalStats.production == 300f)
+    }
+
+    @Test
+    fun percentProductionWonders() {
+        val civInfo = game.addCiv()
+        val tile = game.getTile(Vector2(0f,0f))
+        val city = game.addCity(civInfo, tile, true, 0)
+
+        val buildingToConstruct = game.createBuilding()
+        val building = game.createBuilding("[+300]% Production when constructing [${buildingToConstruct.name}] wonders [in all cities]", "[+1 Production]")
+        city.cityConstructions.addBuilding(building.name)
+        city.cityConstructions.addToQueue(buildingToConstruct.name)
+        city.cityStats.update()
+        Assert.assertTrue(city.cityStats.statPercentBonusTree.totalStats.production == 0f)
+
+        buildingToConstruct.isWonder = true
+        city.cityStats.update()
+        Assert.assertTrue(city.cityStats.statPercentBonusTree.totalStats.production == 300f)
+    }
+
+    @Test
+    fun percentProductionBuildingsInCapital() {
+        game.makeHexagonalMap(3)
+        val civInfo = game.addCiv("[+300]% Production towards any buildings that already exist in the Capital")
+        val tile = game.getTile(Vector2(0f,2f))
+        val city = game.addCity(civInfo, tile, true, 0)
+        val city2 = game.addCity(civInfo, game.getTile(Vector2(0f, -2f)), initialPopulation = 0)
+
+        val buildingToConstruct = game.createBuilding()
+        city2.cityConstructions.addToQueue(buildingToConstruct.name)
+        city2.cityStats.update()
+        Assert.assertTrue(city2.cityStats.statPercentBonusTree.totalStats.production == 0f)
+
+        city.cityConstructions.addBuilding(buildingToConstruct.name)
+        city2.cityStats.update()
+        Assert.assertTrue(city2.cityStats.statPercentBonusTree.totalStats.production == 300f)
+    }
+
+    //endregion
 
     @Test
     fun statsSpendingGreatPeople() {
