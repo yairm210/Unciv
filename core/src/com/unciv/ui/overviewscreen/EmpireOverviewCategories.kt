@@ -64,7 +64,7 @@ enum class EmpireOverviewCategories(
         fun (viewingPlayer: CivilizationInfo, overviewScreen: EmpireOverviewScreen, _: EmpireOverviewTabPersistableData?)
                 = NotificationsOverviewTable(worldScreen = UncivGame.Current.worldScreen!!, viewingPlayer, overviewScreen),
         fun (_: CivilizationInfo) = EmpireOverviewTabState.Normal),
-    Politics("OtherIcons/Notifications", 'G', Align.top,
+    Politics("OtherIcons/Politics", 'G', Align.top,
     fun (viewingPlayer: CivilizationInfo, overviewScreen: EmpireOverviewScreen, _: EmpireOverviewTabPersistableData?)
             = GlobalPoliticsOverviewTable(viewingPlayer, overviewScreen),
     fun (_: CivilizationInfo) = EmpireOverviewTabState.Normal);
