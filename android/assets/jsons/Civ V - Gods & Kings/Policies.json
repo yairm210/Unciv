@@ -76,7 +76,7 @@
             "Cultural": 0,
             "Diplomatic": 10,
             "Domination": 10,
-            "Scientific": 0
+            "Scientific": 10
         },
         "uniques": ["[+1 Culture] [in all cities]"],
         "policies": [
@@ -142,7 +142,7 @@
             "Cultural": 0,
             "Diplomatic": 10,
             "Domination": 10,
-            "Scientific": 10
+            "Scientific": 0
         },
         "uniques": [
             "[+33]% Strength <vs [Barbarian] units>",
@@ -414,7 +414,7 @@
             "Cultural": 10,
             "Diplomatic": 10,
             "Domination": 10,
-            "Scientific": 20
+            "Scientific": 60
         },
         "uniques": [
             "[+15]% [Science] <while the empire is happy>",

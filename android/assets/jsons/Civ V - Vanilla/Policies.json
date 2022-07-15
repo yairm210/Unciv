@@ -417,7 +417,7 @@
             "Cultural": 10,
             "Diplomatic": 0,
             "Domination": 0,
-            "Scientific": 20
+            "Scientific": 40
         },
         "uniques": [
             "Science gained from research agreements [+50]%",
