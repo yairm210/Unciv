@@ -25,7 +25,7 @@ fun gameplayTab(
         if (shouldAutoAssignCityProduction && worldScreen != null &&
                 worldScreen.viewingCiv.isCurrentPlayer() && worldScreen.viewingCiv.playerType == PlayerType.Human
         ) {
-            worldScreen.gameInfo.currentPlayerCiv.cities.forEach { city ->
+            worldScreen.gameInfo.getCurrentPlayerCivilization().cities.forEach { city ->
                 city.cityConstructions.chooseNextConstruction()
             }
         }

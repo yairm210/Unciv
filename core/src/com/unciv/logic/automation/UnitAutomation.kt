@@ -528,13 +528,22 @@ object UnitAutomation {
 
         val siegeUnits = targets
                 .filter { it is MapUnitCombatant && it.unit.baseUnit.isProbablySiegeUnit() }
-        if (siegeUnits.any()) targets = siegeUnits
+        val nonEmbarkedSiege = siegeUnits.filter { it is MapUnitCombatant && !it.unit.isEmbarked() }
+        if (nonEmbarkedSiege.any()) targets = nonEmbarkedSiege
+        else if (siegeUnits.any()) targets = siegeUnits
         else {
             val rangedUnits = targets
                     .filter { it.isRanged() }
             if (rangedUnits.any()) targets = rangedUnits
         }
-        return targets.minByOrNull { it.getHealth() }
+
+        val hitsToKill = targets.associateWith { it.getHealth().toFloat() / BattleDamage.calculateDamageToDefender(
+            CityCombatant(city),
+            it
+        ).toFloat().coerceAtLeast(1f) }
+        val target = hitsToKill.filter { it.value <= 1 }.maxByOrNull { it.key.getAttackingStrength() }?.key
+        if (target != null) return target
+        return hitsToKill.minByOrNull { it.value }?.key
     }
 
     private fun tryTakeBackCapturedCity(unit: MapUnit): Boolean {

@@ -155,9 +155,8 @@ class WorldScreen(
         stage.addActor(techPolicyAndDiplomacy)
         stage.addActor(tutorialTaskTable)
 
-        if (UncivGame.Current.settings.showZoomButtons) {
-            stage.addActor(zoomController)
-        }
+        stage.addActor(zoomController)
+        zoomController.isVisible = UncivGame.Current.settings.showZoomButtons
 
         stage.addActor(fogOfWarButton)
         stage.addActor(bottomUnitTable)
@@ -238,7 +237,7 @@ class WorldScreen(
         globalShortcuts.add(Input.Keys.F11) { QuickSave.save(gameInfo, this) }    // Quick Save
         globalShortcuts.add(Input.Keys.F12) { QuickSave.load(this) }    // Quick Load
         globalShortcuts.add(Input.Keys.HOME) {    // Capital City View
-            val capital = gameInfo.currentPlayerCiv.getCapital()
+            val capital = gameInfo.getCurrentPlayerCivilization().getCapital()
             if (capital != null && !mapHolder.setCenterPosition(capital.location))
                 game.pushScreen(CityScreen(capital))
         }
@@ -393,6 +392,8 @@ class WorldScreen(
                         .map { (_, source, target) -> source to target }
             )
         }
+
+        zoomController.isVisible = UncivGame.Current.settings.showZoomButtons
 
         // if we use the clone, then when we update viewable tiles
         // it doesn't update the explored tiles of the civ... need to think about that harder

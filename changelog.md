@@ -1,3 +1,64 @@
+## 4.1.19
+
+Interception always takes an attack  - By itanasi
+
+By OptimizedForDensity:
+- Add more music triggers
+- Move border below icons
+- Significantly reduce AI turn time
+- City health updates when finishing health-increasing buildings
+
+By Azzurite:
+- Fix potential race condition in multiplayer game update
+- Fix game crashing when a multiplayer game can not be read
+
+Sorted Civilopedia eras - By alexban011
+
+Remove in-game mentions of 1.5x unhappiness for puppeted cities  - By Ouaz
+
+## 4.1.18
+
+Fix multiple capture uniques resulting in double-capture
+
+Resolved ANRs caused by fonts taking too long to load
+
+By OptimizedForDensity:
+- Fixed image problems in combat
+- Stop automate production setting from affecting other players' production in MP
+- Sort game speeds in Civilopedia by speed
+- Fix monastery purchase cost
+
+Remove double XP gain from Intercept  - By itanasi
+
+Multiplayer options UI fix - By Azzurite
+
+## 4.1.17
+
+Puppet cities generate no extra unhappiness (per Civ V)
+
+Resolved crash when resuming game after closing it quickly
+
+Modding: Removed deprecated uniques
+
+By OptimizedForDensity:
+- Improve AI belief picking
+- Unstack enemy unit strength modifiers
+- Prevent theme music tracks from randomly playing
+- Fix latest untranslated strings
+
+By alexban011:
+- Increase mod search request page size
+- Puppeted cities can no longer become capitals
+
+## 4.1.16
+
+By OptimizedForDensity:
+- Better AI targeting
+- Generalize production-to-stat conversion uniques
+- Performance improvements
+
+Unit icon opacity control - By letstalkaboutdune
+
 ## 4.1.15
 
 By OptimizedForDensity:

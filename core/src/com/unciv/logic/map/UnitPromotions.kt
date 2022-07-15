@@ -97,11 +97,6 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
             .asSequence()
             .filter { unit.type.name in it.unitTypes && it.name !in promotions }
             .filter { it.prerequisites.isEmpty() || it.prerequisites.any { p->p in promotions } }
-            .filter {
-                it.getMatchingUniques(UniqueType.IncompatibleWith).all {
-                    unique -> !promotions.contains(unique.params[0])
-                }
-            }
             .filter { promotion -> promotion.uniqueObjects
                 .none { it.type == UniqueType.OnlyAvailableWhen
                         && !it.conditionalsApply(StateForConditionals(unit.civInfo, unit = unit))  }

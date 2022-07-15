@@ -4,6 +4,7 @@ import com.badlogic.gdx.Files
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.JsonReader
+import com.badlogic.gdx.utils.SerializationException
 import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
@@ -223,14 +224,31 @@ class UncivFiles(
             loadGameFromFile(getSave(gameName))
 
     fun loadGameFromFile(gameFile: FileHandle): GameInfo {
-        return gameInfoFromString(gameFile.readString())
+        val gameData = gameFile.readString()
+        if (gameData.isNullOrBlank()) {
+            throw emptyFile(gameFile)
+        }
+        return gameInfoFromString(gameData)
     }
 
     fun loadGamePreviewByName(gameName: String) =
             loadGamePreviewFromFile(getMultiplayerSave(gameName))
 
     fun loadGamePreviewFromFile(gameFile: FileHandle): GameInfoPreview {
-        return json().fromJson(GameInfoPreview::class.java, gameFile)
+        val preview = json().fromJson(GameInfoPreview::class.java, gameFile)
+        if (preview == null) {
+            throw emptyFile(gameFile)
+        }
+        return preview
+    }
+
+    /**
+     * GDX JSON deserialization does not throw when the file is empty, it just returns `null`.
+     *
+     * Since we work with non-nullable types, we convert this to an actual exception here to have a nice exception message instead of a NPE.
+     */
+    private fun emptyFile(gameFile: FileHandle): SerializationException {
+        return SerializationException("The file for the game ${gameFile.name()} is empty")
     }
 
     class CustomLoadResult<T>(
@@ -430,6 +448,6 @@ class IncompatibleGameInfoVersionException(
     cause: Throwable? = null
 ) : UncivShowableException(
     "The save was created with an incompatible version of Unciv: [${version.createdWith.toNiceString()}]. " +
-            "Please update Unciv to at least [${version.createdWith.toNiceString()}] and try again.",
+            "Please update Unciv to this version or later and try again.",
     cause
 ), HasGameInfoSerializationVersion

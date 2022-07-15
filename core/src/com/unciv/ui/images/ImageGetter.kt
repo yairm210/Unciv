@@ -247,18 +247,10 @@ object ImageGetter {
     fun wonderImageExists(wonderName: String) = imageExists("WonderImages/$wonderName")
     fun getWonderImage(wonderName: String) = getImage("WonderImages/$wonderName")
 
-    private val foodCircleColor = colorFromRGB(129, 199, 132)
-    private val productionCircleColor = Color.BROWN.brighten(0.5f)
-    private val goldCircleColor = Color.GOLD.brighten(0.5f)
-    private val cultureCircleColor = Color.PURPLE.brighten(0.5f)
-    private val scienceCircleColor = Color.BLUE.brighten(0.5f)
-    private fun getColorFromStats(stats: Stats) = when {
-        stats.food > 0 -> foodCircleColor
-        stats.production > 0 -> productionCircleColor
-        stats.gold > 0 -> goldCircleColor
-        stats.culture > 0 -> cultureCircleColor
-        stats.science > 0 -> scienceCircleColor
-        else -> Color.WHITE
+    private fun getColorFromStats(stats: Stats): Color? {
+        if (stats.asSequence().none { it.value > 0 }) return Color.WHITE
+        val highestStat = stats.asSequence().maxByOrNull { it.value }!!
+        return highestStat.key.color
     }
 
 
