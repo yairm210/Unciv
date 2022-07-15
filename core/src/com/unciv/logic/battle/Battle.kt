@@ -139,7 +139,7 @@ object Battle {
                 defender.takeDamage(-1) // Back to 2 HP
                 val ransom = min(200, defender.city.civInfo.gold)
                 defender.city.civInfo.addGold(-ransom)
-                defender.city.civInfo.addNotification("Barbarians raided [${defender.city.name}] and stole [$ransom] Gold from your treasury!", defender.city.location, NotificationIcon.War)
+                defender.city.civInfo.addNotification("Barbarians raided [${defender.city.name}] and stole [$ransom] Gold from your treasury!", defender.city.location, NotificationIcon.War, color = NotificationColor.Bad)
                 attacker.unit.destroy() // Remove the barbarian
             } else
                 conquerCity(defender.city, attacker)
@@ -298,7 +298,7 @@ object Battle {
                 "Your [${plunderingUnit.getName()}] plundered [${plunderedAmount}] [${key.name}] from [${plunderedUnit.getName()}]",
                 plunderedUnit.getTile().position,
                 plunderingUnit.getName(), NotificationIcon.War, "StatIcons/${key.name}",
-                if (plunderedUnit is CityCombatant) NotificationIcon.City else plunderedUnit.getName()
+                if (plunderedUnit is CityCombatant) NotificationIcon.City else plunderedUnit.getName(), color = NotificationColor.Bad
             )
         }
     }
@@ -516,7 +516,7 @@ object Battle {
         val attackerCiv = attacker.getCivInfo()
 
 
-        attackerCiv.addNotification("We have conquered the city of [${city.name}]!", city.location, NotificationIcon.War)
+        attackerCiv.addNotification("We have conquered the city of [${city.name}]!", city.location, NotificationIcon.War, color = NotificationColor.Good)
 
         city.hasJustBeenConquered = true
         city.getCenterTile().apply {
@@ -624,10 +624,10 @@ object Battle {
 
         if (!wasDestroyedInstead)
             defenderCiv.addNotification("An enemy [" + attacker.getName() + "] has captured our [" + defender.getName() + "]",
-                defender.getTile().position, attacker.getName(), NotificationIcon.War, defender.getName())
+                defender.getTile().position, attacker.getName(), NotificationIcon.War, defender.getName(), color = NotificationColor.Bad)
         else
             defenderCiv.addNotification("An enemy [" + attacker.getName() + "] has destroyed our [" + defender.getName() + "]",
-                defender.getTile().position, attacker.getName(), NotificationIcon.War, defender.getName())
+                defender.getTile().position, attacker.getName(), NotificationIcon.War, defender.getName(), color = NotificationColor.Bad)
 
         if (checkDefeat)
             destroyIfDefeated(defenderCiv, attacker.getCivInfo())
@@ -675,7 +675,7 @@ object Battle {
                 && civSuffered.getDiplomacyManager(attackingCiv).diplomaticStatus != DiplomaticStatus.War
             ) {
                 attackingCiv.getDiplomacyManager(civSuffered).declareWar()
-                attackingCiv.addNotification("After being hit by our [${attacker.getName()}], [${civSuffered}] has declared war on us!", targetTile.position, NotificationIcon.War)
+                attackingCiv.addNotification("After being hit by our [${attacker.getName()}], [${civSuffered}] has declared war on us!", targetTile.position, NotificationIcon.War, color = NotificationColor.VeryBad)
             }
         }
 
@@ -690,7 +690,7 @@ object Battle {
 
         // Declare war on the owners of all hit tiles
         for (hitCiv in hitTiles.mapNotNull { it.getOwner() }.distinct()) {
-            hitCiv.addNotification("A(n) [${attacker.getName()}] exploded in our territory!", targetTile.position, NotificationIcon.War)
+            hitCiv.addNotification("A(n) [${attacker.getName()}] exploded in our territory!", targetTile.position, NotificationIcon.War, color = NotificationColor.VeryBad)
             tryDeclareWar(hitCiv)
         }
 
@@ -930,8 +930,8 @@ object Battle {
         val attackingUnit = attackBaseUnit.name; val defendingUnit = defendBaseUnit.name
         val notificationString = "[$defendingUnit] withdrew from a [$attackingUnit]"
         val locations = LocationAction(toTile.position, attacker.getTile().position)
-        defender.getCivInfo().addNotification(notificationString, locations, defendingUnit, NotificationIcon.War, attackingUnit)
-        attacker.getCivInfo().addNotification(notificationString, locations, defendingUnit, NotificationIcon.War, attackingUnit)
+        defender.getCivInfo().addNotification(notificationString, locations, defendingUnit, NotificationIcon.War, attackingUnit, color = NotificationColor.Good)
+        attacker.getCivInfo().addNotification(notificationString, locations, defendingUnit, NotificationIcon.War, attackingUnit, color = NotificationColor.Bad)
         return true
     }
 

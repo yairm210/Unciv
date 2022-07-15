@@ -2,6 +2,7 @@ package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.logic.civilization.NotificationColor
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
@@ -84,13 +85,13 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
             tradeLogic.acceptTrade()
             close()
             TradeThanksPopup(leaderIntroTable, worldScreen)
-            requestingCiv.addNotification("[${viewingCiv.civName}] has accepted your trade request", viewingCiv.civName, NotificationIcon.Trade)
+            requestingCiv.addNotification("[${viewingCiv.civName}] has accepted your trade request", viewingCiv.civName, NotificationIcon.Trade, color = NotificationColor.Good)
         }.row()
 
         addButton("Not this time.", 'n') {
             tradeRequest.decline(viewingCiv)
             close()
-            requestingCiv.addNotification("[${viewingCiv.civName}] has denied your trade request", viewingCiv.civName, NotificationIcon.Trade)
+            requestingCiv.addNotification("[${viewingCiv.civName}] has denied your trade request", viewingCiv.civName, NotificationIcon.Trade, color = NotificationColor.Bad)
             worldScreen.shouldUpdate = true
         }.row()
 

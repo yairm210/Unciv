@@ -310,19 +310,19 @@ class TechManager {
                 val city = cities.first()
                 if (construction is BaseUnit && construction.upgradesTo != null) {
                     val text = "[${city.name}] changed production from [$unit] to [${construction.upgradesTo!!}]"
-                    civInfo.addNotification(text, city.location, unit, NotificationIcon.Construction, construction.upgradesTo!!)
+                    civInfo.addNotification(text, city.location, unit, NotificationIcon.Construction, construction.upgradesTo!!, color = NotificationColor.Construction)
                 } else {
                     val text = "[$unit] has become obsolete and was removed from the queue in [${city.name}]!"
-                    civInfo.addNotification(text, city.location, NotificationIcon.Construction)
+                    civInfo.addNotification(text, city.location, NotificationIcon.Construction, color = NotificationColor.Construction)
                 }
             } else {
                 val locationAction = LocationAction(cities.asSequence().map { it.location })
                 if (construction is BaseUnit && construction.upgradesTo != null) {
                     val text = "[${cities.size}] cities changed production from [$unit] to [${construction.upgradesTo!!}]"
-                    civInfo.addNotification(text, locationAction, unit, NotificationIcon.Construction, construction.upgradesTo!!)
+                    civInfo.addNotification(text, locationAction, unit, NotificationIcon.Construction, construction.upgradesTo!!, color = NotificationColor.Construction)
                 } else {
                     val text = "[$unit] has become obsolete and was removed from the queue in [${cities.size}] cities!"
-                    civInfo.addNotification(text, locationAction, NotificationIcon.Construction)
+                    civInfo.addNotification(text, locationAction, NotificationIcon.Construction, color = NotificationColor.Construction)
                 }
             }
         }

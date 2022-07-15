@@ -1163,13 +1163,13 @@ class MapUnit {
                 "Our [$name] took [$tileDamage] tile damage and was destroyed",
                 currentTile.position,
                 name,
-                NotificationIcon.Death
+                NotificationIcon.Death, color = NotificationColor.Bad
             )
             destroy()
         } else if (tileDamage > 0) civInfo.addNotification(
             "Our [$name] took [$tileDamage] tile damage",
             currentTile.position,
-            name
+            name, color = NotificationColor.Bad
         )
     }
 

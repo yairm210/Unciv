@@ -238,8 +238,8 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             if (newAllyName != null) {
                 val newAllyCiv = civInfo.gameInfo.getCivilization(newAllyName)
                 val text = "We have allied with [${civInfo.civName}]."
-                if (capitalLocation != null) newAllyCiv.addNotification(text, capitalLocation, civInfo.civName, NotificationIcon.Diplomacy)
-                else newAllyCiv.addNotification(text, civInfo.civName, NotificationIcon.Diplomacy)
+                if (capitalLocation != null) newAllyCiv.addNotification(text, capitalLocation, civInfo.civName, NotificationIcon.Diplomacy, color = NotificationColor.Good)
+                else newAllyCiv.addNotification(text, civInfo.civName, NotificationIcon.Diplomacy, color = NotificationColor.Good)
                 newAllyCiv.updateViewableTiles()
                 newAllyCiv.updateDetailedCivResources()
                 for (unique in newAllyCiv.getMatchingUniques(UniqueType.CityStateCanBeBoughtForGold))
@@ -259,8 +259,8 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             if (oldAllyName != null) {
                 val oldAllyCiv = civInfo.gameInfo.getCivilization(oldAllyName)
                 val text = "We have lost alliance with [${civInfo.civName}]."
-                if (capitalLocation != null) oldAllyCiv.addNotification(text, capitalLocation, civInfo.civName, NotificationIcon.Diplomacy)
-                else oldAllyCiv.addNotification(text, civInfo.civName, NotificationIcon.Diplomacy)
+                if (capitalLocation != null) oldAllyCiv.addNotification(text, capitalLocation, civInfo.civName, NotificationIcon.Diplomacy, color = NotificationColor.Bad)
+                else oldAllyCiv.addNotification(text, civInfo.civName, NotificationIcon.Diplomacy, color = NotificationColor.Bad)
                 oldAllyCiv.updateViewableTiles()
                 oldAllyCiv.updateDetailedCivResources()
             }
@@ -496,7 +496,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             diplomacy.setFlag(DiplomacyFlags.AngerFreeIntrusion, 5)
 
         otherCiv.addNotification("[${civInfo.civName}] is grateful that you killed a Barbarian that was threatening them!",
-            DiplomacyAction(civInfo.civName), civInfo.civName, color = NotificationColor.Good)
+            DiplomacyAction(civInfo.civName), civInfo.civName)
     }
 
     /** A city state was bullied. What are its protectors going to do about it??? */
@@ -516,7 +516,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
 
             if (protector.playerType != PlayerType.Human)   // Humans can have their own emotions
                 bully.addNotification("[${protector.civName}] is upset that you demanded tribute from [${civInfo.civName}], whom they have pledged to protect!",
-                    NotificationIcon.Diplomacy, protector.civName)
+                    NotificationIcon.Diplomacy, protector.civName, color = NotificationColor.Bad)
             else    // Let humans choose who to side with
                 protector.popupAlerts.add(PopupAlert(AlertType.BulliedProtectedMinor,
                     bully.civName + "@" + civInfo.civName))   // we need to pass both civs as argument, hence the horrible chimera
@@ -598,7 +598,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
 
             if (protector.playerType != PlayerType.Human)   // Humans can have their own emotions
                 attacker.addNotification("[${protector.civName}] is upset that you attacked [${civInfo.civName}], whom they have pledged to protect!",
-                    NotificationIcon.Diplomacy, protector.civName)
+                    NotificationIcon.Diplomacy, protector.civName, color = NotificationColor.Bad)
             else    // Let humans choose who to side with
                 protector.popupAlerts.add(PopupAlert(AlertType.AttackedProtectedMinor,
                     attacker.civName + "@" + civInfo.civName))   // we need to pass both civs as argument, hence the horrible chimera
@@ -625,9 +625,9 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
 
             if (protector.playerType != PlayerType.Human)   // Humans can have their own emotions
                 attacker.addNotification("[${protector.civName}] is outraged that you destroyed [${civInfo.civName}], whom they had pledged to protect!",
-                    NotificationIcon.Diplomacy, protector.civName)
+                    NotificationIcon.Diplomacy, protector.civName, color = NotificationColor.Bad)
             protector.addNotification("[${attacker.civName}] has destroyed [${civInfo.civName}], whom you had pledged to protect!", attacker.civName,
-                NotificationIcon.Death, civInfo.civName)
+                NotificationIcon.Death, civInfo.civName, color = NotificationColor.Bad)
         }
 
         // Notify all City-States that we were killed (for quest completion)

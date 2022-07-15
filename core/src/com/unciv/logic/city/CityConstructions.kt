@@ -421,7 +421,7 @@ class CityConstructions {
                         buildingIcon
                     )
                 else
-                    civ.addNotification("[${construction.name}] has been built in a faraway land", buildingIcon)
+                    civ.addNotification("[${construction.name}] has been built in a faraway land", buildingIcon, color = NotificationColor.Construction)
             }
         } else {
             val icon = if (construction is Building) buildingIcon else construction.name // could be a unit, in which case take the unit name.

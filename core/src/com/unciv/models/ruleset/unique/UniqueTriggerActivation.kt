@@ -51,7 +51,8 @@ object UniqueTriggerActivation {
                     civInfo.addNotification(
                         notification,
                         placedUnit.getTile().position,
-                        placedUnit.name
+                        placedUnit.name,
+                        color = NotificationColor.Good
                     )
                 }
                 return true
@@ -72,7 +73,8 @@ object UniqueTriggerActivation {
                     civInfo.addNotification(
                         notification,
                         LocationAction(tilesUnitsWerePlacedOn),
-                        civInfo.getEquivalentUnit(unit).name
+                        civInfo.getEquivalentUnit(unit).name,
+                        color = NotificationColor.Good
                     )
                 }
                 return true
@@ -91,7 +93,8 @@ object UniqueTriggerActivation {
                     civInfo.addNotification(
                         notificationText,
                         LocationAction(placedUnit.getTile().position, tile?.position),
-                        placedUnit.name
+                        placedUnit.name,
+                        color = NotificationColor.Good
                     )
                 }
 
@@ -103,7 +106,7 @@ object UniqueTriggerActivation {
                 if (civInfo.isSpectator()) return false
                 civInfo.policies.freePolicies++
                 if (notification != null) {
-                    civInfo.addNotification(notification, NotificationIcon.Culture)
+                    civInfo.addNotification(notification, NotificationIcon.Culture, color = NotificationColor.Good)
                 }
                 return true
             }
@@ -111,7 +114,7 @@ object UniqueTriggerActivation {
                 if (civInfo.isSpectator()) return false
                 civInfo.policies.freePolicies += unique.params[0].toInt()
                 if (notification != null) {
-                    civInfo.addNotification(notification, NotificationIcon.Culture)
+                    civInfo.addNotification(notification, NotificationIcon.Culture, color = NotificationColor.Good)
                 }
                 return true
             }
@@ -133,9 +136,9 @@ object UniqueTriggerActivation {
                     // Anyone an idea for a good icon?
                     if (unique.type == MayanGainGreatPerson) {
                         civInfo.greatPeople.mayaLimitedFreeGP++
-                        civInfo.addNotification(notification!!, MayaLongCountAction(), MayaCalendar.notificationIcon)
+                        civInfo.addNotification(notification!!, MayaLongCountAction(), MayaCalendar.notificationIcon, color = NotificationColor.Good)
                     } else if (notification != null)
-                        civInfo.addNotification(notification)
+                        civInfo.addNotification(notification, color = NotificationColor.Good)
                     return true
                 } else {
                     if (unique.type == MayanGainGreatPerson)
@@ -200,7 +203,7 @@ object UniqueTriggerActivation {
                 if (civInfo.isSpectator()) return false
                 civInfo.tech.freeTechs += 1
                 if (notification != null) {
-                    civInfo.addNotification(notification, NotificationIcon.Science)
+                    civInfo.addNotification(notification, NotificationIcon.Science, color = NotificationColor.Good)
                 }
                 return true
             }
@@ -208,7 +211,7 @@ object UniqueTriggerActivation {
                 if (civInfo.isSpectator()) return false
                 civInfo.tech.freeTechs += unique.params[0].toInt()
                 if (notification != null) {
-                    civInfo.addNotification(notification, NotificationIcon.Science)
+                    civInfo.addNotification(notification, NotificationIcon.Science, color = NotificationColor.Good)
                 }
                 return true
             }
@@ -231,7 +234,7 @@ object UniqueTriggerActivation {
                             notification.fillPlaceholders(*(techsToResearch.map { it.name }
                                 .toTypedArray()))
                         else notification
-                    civInfo.addNotification(notificationText, LocationAction(tile?.position), NotificationIcon.Science)
+                    civInfo.addNotification(notificationText, LocationAction(tile?.position), NotificationIcon.Science, color = NotificationColor.Good)
                 }
 
                 return true
@@ -259,7 +262,7 @@ object UniqueTriggerActivation {
 
             OneTimeRevealEntireMap -> {
                 if (notification != null) {
-                    civInfo.addNotification(notification, LocationAction(tile?.position), NotificationIcon.Scout)
+                    civInfo.addNotification(notification, LocationAction(tile?.position), NotificationIcon.Scout, color = NotificationColor.Good)
                 }
                 return civInfo.exploredTiles.addAll(
                     civInfo.gameInfo.tileMap.values.asSequence().map { it.position })
@@ -297,7 +300,7 @@ object UniqueTriggerActivation {
                     civInfo.turnsForGreatPersonFromCityState() / 2
                 )
                 if (notification != null) {
-                    civInfo.addNotification(notification, NotificationIcon.CityState)
+                    civInfo.addNotification(notification, NotificationIcon.CityState, color = NotificationColor.Good)
                 }
                 return true
             }
@@ -369,7 +372,7 @@ object UniqueTriggerActivation {
                         if (notification.hasPlaceholderParameters())
                             notification.fillPlaceholders(gainedFaith.toString())
                         else notification
-                    civInfo.addNotification(notificationText, LocationAction(tile?.position), NotificationIcon.Faith)
+                    civInfo.addNotification(notificationText, LocationAction(tile?.position), NotificationIcon.Faith, color = NotificationColor.Good)
                 }
 
                 return true
@@ -387,7 +390,7 @@ object UniqueTriggerActivation {
                         if (notification.hasPlaceholderParameters())
                             notification.fillPlaceholders(gainedFaith.toString())
                         else notification
-                    civInfo.addNotification(notificationText, LocationAction(tile?.position), NotificationIcon.Faith)
+                    civInfo.addNotification(notificationText, LocationAction(tile?.position), NotificationIcon.Faith, color = NotificationColor.Good)
                 }
 
                 return true
@@ -459,7 +462,7 @@ object UniqueTriggerActivation {
                             civInfo.getTurnsBetweenDiplomaticVotes()
                         )
                 if (notification != null)
-                    civInfo.addNotification(notification, NotificationIcon.Diplomacy)
+                    civInfo.addNotification(notification, NotificationIcon.Diplomacy, color = NotificationColor.Good)
                 return true
             }
 

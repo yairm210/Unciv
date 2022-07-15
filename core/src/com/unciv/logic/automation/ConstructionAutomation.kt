@@ -4,6 +4,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.CityAction
+import com.unciv.logic.civilization.NotificationColor
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.BFS
@@ -105,7 +106,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         civInfo.addNotification(
             "Work has started on [$chosenConstruction]",
             CityAction(cityInfo.location),
-            NotificationIcon.Construction
+            NotificationIcon.Construction,
+            color = NotificationColor.Construction
         )
         cityConstructions.currentConstructionFromQueue = chosenConstruction
 

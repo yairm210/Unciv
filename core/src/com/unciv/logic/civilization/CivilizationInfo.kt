@@ -913,7 +913,7 @@ class CivilizationInfo {
             if (offeringCiv.isDefeated() || !TradeEvaluation().isTradeValid(tradeRequest.trade, this, offeringCiv)) {
                 tradeRequests.remove(tradeRequest)
                 // Yes, this is the right direction. I checked.
-                offeringCiv.addNotification("Our proposed trade is no longer relevant!", NotificationIcon.Trade)
+                offeringCiv.addNotification("Our proposed trade is no longer relevant!", NotificationIcon.Trade, color = NotificationColor.Bad)
             }
         }
     }
@@ -948,7 +948,7 @@ class CivilizationInfo {
                     unitToDisband.disband()
                     civMilitaryUnits -= unitToDisband
                     val unitName = unitToDisband.shortDisplayName()
-                    addNotification("Cannot provide unit upkeep for $unitName - unit has been disbanded!", unitName, NotificationIcon.Death)
+                    addNotification("Cannot provide unit upkeep for $unitName - unit has been disbanded!", unitName, NotificationIcon.Death, color = NotificationColor.Bad)
                 }
             }
         }
@@ -1112,7 +1112,7 @@ class CivilizationInfo {
         // Will be automatically added again as long as unhappiness is still low enough
         removeFlag(CivFlags.RevoltSpawning.name)
 
-        addNotification("Your citizens are revolting due to very high unhappiness!", spawnTile.position, unitToSpawn.name, "StatIcons/Malcontent")
+        addNotification("Your citizens are revolting due to very high unhappiness!", spawnTile.position, unitToSpawn.name, "StatIcons/Malcontent", color = NotificationColor.Bad)
     }
 
     // Higher is better

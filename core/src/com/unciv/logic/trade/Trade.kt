@@ -2,6 +2,7 @@ package com.unciv.logic.trade
 
 import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.NotificationColor
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 
@@ -60,7 +61,7 @@ class TradeRequest {
             diplomacyManager.setFlag(DiplomacyFlags.DeclinedResearchAgreement,20)
         if (trade.isPeaceTreaty()) diplomacyManager.setFlag(DiplomacyFlags.DeclinedPeace, 5)
 
-        requestingCivInfo.addNotification("[${decliningCiv.civName}] has denied your trade request", decliningCiv.civName, NotificationIcon.Trade)
+        requestingCivInfo.addNotification("[${decliningCiv.civName}] has denied your trade request", decliningCiv.civName, NotificationIcon.Trade, color = NotificationColor.Bad)
     }
 
 
