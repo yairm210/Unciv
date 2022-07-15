@@ -307,7 +307,7 @@ open class TileGroup(
             if (!ImageGetter.imageExists(baseLocation)) continue
 
             var locationToCheck = baseLocation
-            fun TileSetStrings.getThisTile(): String? {
+            fun getThisTile(): String? {
                 var ownersStyle = tileInfo.getOwner()!!.nation.style
                 if (ownersStyle == "") ownersStyle = tileInfo.getOwner()!!.civName
                 return ImageAttempter(locationToCheck)
@@ -316,7 +316,7 @@ open class TileGroup(
                     .tryImage { tileSetStrings.getString(locationToCheck, tileSetStrings.tag, ownersStyle) }
                     .getPathOrNull()
             }
-            if (tileInfo.owningCity != null) locationToCheck = tileSetStrings.getThisTile() ?: locationToCheck
+            if (tileInfo.owningCity != null) locationToCheck = getThisTile() ?: locationToCheck
 
             val existingImages = ArrayList<String>()
             existingImages.add(locationToCheck)
