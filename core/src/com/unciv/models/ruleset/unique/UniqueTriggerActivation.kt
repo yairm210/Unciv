@@ -78,7 +78,13 @@ object UniqueTriggerActivation {
                 return true
             }
             OneTimeFreeUnitRuins -> {
-                val unit = civInfo.getEquivalentUnit(unique.params[0])
+                var unit = civInfo.getEquivalentUnit(unique.params[0])
+                if ( unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger()) {
+                     val replacementUnit = ruleSet.units.values.firstOrNull{it.getMatchingUniques(UniqueType.BuildImprovements)
+                            .any { it.params[0] == "Land" }} ?: return false
+                    unit = civInfo.getEquivalentUnit(replacementUnit.name)
+                }
+                
                 val placingTile =
                     tile ?: civInfo.cities.random().getCenterTile()
 
