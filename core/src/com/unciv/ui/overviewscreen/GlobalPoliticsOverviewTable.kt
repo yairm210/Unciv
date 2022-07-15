@@ -17,13 +17,9 @@ class GlobalPoliticsOverviewTable (
     overviewScreen: EmpireOverviewScreen
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
 
-    private val fixedContent = Table()
-
     init {
         addSeparator(Color.GRAY)
         createGlobalPoliticsTable()
-
-        equalizeColumns(fixedContent, this)
     }
 
     private fun createGlobalPoliticsTable() {
