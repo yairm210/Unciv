@@ -71,6 +71,14 @@ var Button.isEnabled: Boolean
     get() = touchable == Touchable.enabled
     set(value) = if (value) enable() else disable()
 
+fun colorFromHex(hexColor: Int): Color {
+    val colorSize = 16 * 16 // 2 hexadecimal digits
+    val r = hexColor / (colorSize * colorSize)
+    val g = (hexColor / colorSize) % colorSize
+    val b = hexColor % colorSize
+    return colorFromRGB(r, g, b)
+}
+
 /** Create a new [Color] instance from [r]/[g]/[b] given as Integers in the range 0..255 */
 fun colorFromRGB(r: Int, g: Int, b: Int) = Color(r / 255f, g / 255f, b / 255f, 1f)
 /** Create a new [Color] instance from r/g/b given as Integers in the range 0..255 in the form of a 3-element List [rgb] */
