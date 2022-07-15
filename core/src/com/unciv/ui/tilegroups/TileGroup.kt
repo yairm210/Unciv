@@ -311,8 +311,8 @@ open class TileGroup(
                 var ownersStyle = tileInfo.getOwner()!!.nation.style
                 if (ownersStyle == "") ownersStyle = tileInfo.getOwner()!!.civName
                 return ImageAttempter(locationToCheck)
-                    .tryTileEraImage(locationToCheck, true, ownersStyle)
-                    .tryTileEraImage(locationToCheck, false)
+                    .tryEraImage(tileInfo.getOwner()!!, locationToCheck, ownersStyle)
+                    .tryEraImage(tileInfo.getOwner()!!, locationToCheck, null)
                     .tryImage { tileSetStrings.getString(locationToCheck, tileSetStrings.tag, ownersStyle) }
                     .getPathOrNull()
             }
@@ -343,16 +343,20 @@ open class TileGroup(
         }
     }
 
-    private fun ImageAttempter<String>.tryTileEraImage(locationToCheck: String, tryStyle: Boolean, ownersStyle: String? = null): ImageAttempter<String> {
+    /** Try to load era-specific image variants
+     * [civInfo]: the civ who owns the tile or unit
+     * [locationToCheck]: the beginning of the filename to check
+     * [style]: an optional string to load a civ- or style-specific sprite
+     * */
+    private fun ImageAttempter<String>.tryEraImage(civInfo: CivilizationInfo, locationToCheck: String, style: String? = null): ImageAttempter<String> {
         return this.tryImages(
-            (tileInfo.getOwner()!!.getEraNumber() downTo 0).asSequence().map {
+            (civInfo.getEraNumber() downTo 0).asSequence().map {
                 {
-                    val era = tileInfo.getOwner()!!.gameInfo.ruleSet.eras.keys.elementAt(it)
-                    if (tryStyle && ownersStyle != null) {
-                        tileSetStrings.getString(locationToCheck, tileSetStrings.tag, ownersStyle, tileSetStrings.tag, era)
-                    } else {
+                    val era = civInfo.gameInfo.ruleSet.eras.keys.elementAt(it)
+                    if (style != null)
+                        tileSetStrings.getString(locationToCheck, tileSetStrings.tag, style, tileSetStrings.tag, era)
+                    else
                         tileSetStrings.getString(locationToCheck, tileSetStrings.tag, era)
-                    }
                 }
             }
         )
@@ -707,23 +711,26 @@ open class TileGroup(
         if (militaryUnit != null && showMilitaryUnit) {
             fun TileSetStrings.getThisUnit(): String? {
                 val specificUnitIconLocation = this.unitsLocation + militaryUnit.name
-                return ImageAttempter(militaryUnit)
+                val civInfo = militaryUnit.civInfo
+                val style = civInfo.nation.style.ifEmpty { null }
+                return ImageAttempter(specificUnitIconLocation)
                         .forceImage { if (!UncivGame.Current.settings.showPixelUnits) "" else null }
-                        .tryGetUnitEraSprite(militaryUnit, specificUnitIconLocation)
+                        .tryEraImage(civInfo, specificUnitIconLocation, style)
                         .tryImage { if (civInfo.nation.style.isNotEmpty()) "$specificUnitIconLocation-${civInfo.nation.style}" else null }
                         .tryImage { specificUnitIconLocation }
-                        .tryImage { if (baseUnit.replaces != null) "$unitsLocation${baseUnit.replaces}" else null }
+                        .tryImage { if (militaryUnit.baseUnit.replaces != null) "$unitsLocation${militaryUnit.baseUnit.replaces}" else null }
                         .tryImages(
-                                militaryUnit.civInfo.gameInfo.ruleSet.units.values.asSequence().map {
-                                    @Suppress("unused")  // yes receiver unused but we want the signature to match ImageAttempter instance
-                                    fun MapUnit.() = if (it.unitType == militaryUnit.type.name)
+                            civInfo.gameInfo.ruleSet.units.values.asSequence().map {
+                                {
+                                    if (it.unitType == militaryUnit.type.name)
                                         "$unitsLocation${it.name}"
                                     else
                                         null
-                                } // .tryImage/.tryImages takes functions as parameters, for lazy eval. Include the check as part of the .tryImage's lazy candidate parameter, and *not* as part of the .map's transform parameter, so even the name check will be skipped by ImageAttempter if an image has already been found.
+                                }
+                            } // .tryImage/.tryImages takes functions as parameters, for lazy eval. Include the check as part of the .tryImage's lazy candidate parameter, and *not* as part of the .map's transform parameter, so even the name check will be skipped by ImageAttempter if an image has already been found.
                         )
-                        .tryImage { if (type.isLandUnit()) landUnit else null }
-                        .tryImage { if (type.isWaterUnit()) waterUnit else null }
+                        .tryImage { if (militaryUnit.type.isLandUnit()) landUnit else null }
+                        .tryImage { if (militaryUnit.type.isWaterUnit()) waterUnit else null }
                         .getPathOrNull()
             }
             newImageLocation = tileSetStrings.getThisUnit() ?: tileSetStrings.fallback?.getThisUnit() ?: ""
@@ -753,9 +760,11 @@ open class TileGroup(
         if (civilianUnit != null && tileIsViewable) {
             fun TileSetStrings.getThisUnit(): String? {
                 val specificUnitIconLocation = this.unitsLocation + civilianUnit.name
-                return ImageAttempter(civilianUnit)
+                val civInfo = civilianUnit.civInfo
+                val style = civInfo.nation.style.ifEmpty { null }
+                return ImageAttempter(specificUnitIconLocation)
                         .forceImage { if (!UncivGame.Current.settings.showPixelUnits) "" else null }
-                        .tryGetUnitEraSprite(civilianUnit, specificUnitIconLocation)
+                        .tryEraImage(civInfo, specificUnitIconLocation, style)
                         .tryImage { if (civInfo.nation.style.isNotEmpty()) "$specificUnitIconLocation-${civInfo.nation.style}" else null }
                         .tryImage { specificUnitIconLocation }
                         .tryImage { civilianLandUnit }
@@ -778,21 +787,6 @@ open class TileGroup(
                 }
             }
         }
-    }
-
-    private fun ImageAttempter<MapUnit>.tryGetUnitEraSprite(unit: MapUnit, specificUnitIconLocation: String): ImageAttempter<MapUnit> {
-        return this.tryImages(
-            // iterate in reverse order to get the most recent era-specific image
-            (unit.civInfo.getEraNumber() downTo 0).asSequence().map {
-                {
-                    val era = civInfo.gameInfo.ruleSet.eras.keys.elementAt(it)
-                    if (civInfo.nation.style.isNotEmpty())
-                        "$specificUnitIconLocation-${civInfo.nation.style}-$era"
-                    else
-                        "$specificUnitIconLocation-$era"
-                }
-            }
-        )
     }
 
     private var bottomRightRiverImage :Image?=null
