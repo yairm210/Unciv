@@ -105,7 +105,7 @@ class OffersListScroll(
                         if (offer.type == Gold) 50
                         else 1
 
-                if (offer.tradable && offer.name != Constants.peaceTreaty && // can't disable peace treaty!
+                if (offer.isTradable() && offer.name != Constants.peaceTreaty && // can't disable peace treaty!
                         offer.name != Constants.researchAgreement) {
 
                     // highlight unique suggestions

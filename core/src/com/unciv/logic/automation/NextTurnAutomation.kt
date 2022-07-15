@@ -155,7 +155,7 @@ object NextTurnAutomation {
             if ((offer.type == TradeType.Gold || offer.type == TradeType.Gold_Per_Turn)
                     && tradeRequest.trade.ourOffers.any { it.type == offer.type })
                     continue // Don't want to counteroffer straight gold for gold, that's silly
-            if (!offer.tradable)
+            if (!offer.isTradable())
                 continue // For example resources gained by trade or CS
             if (offer.type == TradeType.City)
                 continue // Players generally don't want to give up their cities, and they might misclick
@@ -220,7 +220,7 @@ object NextTurnAutomation {
             delta = (delta * 2) / 3 // Only compensate some of it though, they're the ones asking us
             // First give some GPT, then lump sum - but only if they're not already offering the same
             for (ourGold in tradeLogic.ourAvailableOffers
-                    .filter { it.tradable && it.type == TradeType.Gold || it.type == TradeType.Gold_Per_Turn }
+                    .filter { it.isTradable() && it.type == TradeType.Gold || it.type == TradeType.Gold_Per_Turn }
                     .sortedByDescending { it.type.ordinal }) {
                 if (tradeLogic.currentTrade.theirOffers.none { it.type == ourGold.type } &&
                         counterofferAsks.keys.none { it.type == ourGold.type } ) {

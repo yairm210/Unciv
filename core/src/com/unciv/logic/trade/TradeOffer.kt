@@ -8,14 +8,14 @@ import com.unciv.models.ruleset.Speed
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.Fonts
 
-data class TradeOffer(val name: String, val type: TradeType, var amount: Int = 1, var duration: Int, val tradable: Boolean=true) : IsPartOfGameInfoSerialization {
+data class TradeOffer(val name: String, val type: TradeType, var amount: Int = 1, var duration: Int) : IsPartOfGameInfoSerialization {
 
     constructor(
         name: String,
         type: TradeType,
         amount: Int = 1,
         speed: Speed = UncivGame.Current.gameInfo!!.speed
-    ) : this(name, type, amount, duration = -1, amount > 0) {
+    ) : this(name, type, amount, duration = -1) {
         duration = when {
             type.isImmediate -> -1 // -1 for offers that are immediate (e.g. gold transfer)
             name == Constants.peaceTreaty -> speed.peaceDealDuration
@@ -31,6 +31,8 @@ data class TradeOffer(val name: String, val type: TradeType, var amount: Int = 1
                 && offer.type == type
                 && offer.amount == amount
     }
+
+    fun isTradable() = amount > 0
 
     fun getOfferText(untradable: Int = 0): String {
         var offerText = when(type){
