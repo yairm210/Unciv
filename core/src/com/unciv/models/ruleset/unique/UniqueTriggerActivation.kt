@@ -80,8 +80,11 @@ object UniqueTriggerActivation {
             OneTimeFreeUnitRuins -> {
                 var unit = civInfo.getEquivalentUnit(unique.params[0])
                 if ( unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger()) {
-                    unit = civInfo.getEquivalentUnit(Constants.worker)
-                    if (unit == null) return false
+                    if (ruleSet.units[Constants.worker] != null) {
+                        unit = civInfo.getEquivalentUnit(Constants.worker)
+                    } else {
+                        return false
+                    }
                 }
                 
                 val placingTile =
