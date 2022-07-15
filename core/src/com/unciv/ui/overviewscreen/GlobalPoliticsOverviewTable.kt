@@ -2,22 +2,17 @@ package com.unciv.ui.overviewscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.WondersInfo
-import com.unciv.logic.civilization.diplomacy.DiplomacyManager
-import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.extensions.addSeparator
 import com.unciv.ui.utils.extensions.addSeparatorVertical
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toLabel
-import com.unciv.ui.worldscreen.WorldScreen
 
 class GlobalPoliticsOverviewTable (
-    val worldScreen: WorldScreen, //unused
     viewingPlayer: CivilizationInfo,
     overviewScreen: EmpireOverviewScreen
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
@@ -25,17 +20,18 @@ class GlobalPoliticsOverviewTable (
     private val fixedContent = Table()
 
     init {
+        addSeparator(Color.GRAY)
         createGlobalPoliticsTable()
 
         equalizeColumns(fixedContent, this)
     }
 
     private fun createGlobalPoliticsTable() {
-        val civs = mutableListOf<CivilizationInfo>()
-        civs.add(viewingPlayer)
-        civs.addAll(viewingPlayer.getKnownCivs())
-        civs.removeAll(civs.filter { it.isBarbarian() || it.isCityState() || it.isSpectator() })
-        for (civ in civs) {
+        val civilizations = mutableListOf<CivilizationInfo>()
+        civilizations.add(viewingPlayer)
+        civilizations.addAll(viewingPlayer.getKnownCivs())
+        civilizations.removeAll(civilizations.filter { it.isBarbarian() || it.isCityState() || it.isSpectator() })
+        for (civ in civilizations) {
             // civ image
             add(ImageGetter.getNationIndicator(civ.nation, 100f)).pad(20f)
 
@@ -59,7 +55,7 @@ class GlobalPoliticsOverviewTable (
             //politics
             add(getPoliticsOfCivTable(civ)).pad(20f)
 
-            if (civs.indexOf(civ) != civs.lastIndex)
+            if (civilizations.indexOf(civ) != civilizations.lastIndex)
                 addSeparator(Color.GRAY)
         }
     }
@@ -75,7 +71,7 @@ class GlobalPoliticsOverviewTable (
 
     private fun getPoliciesTable(civ: CivilizationInfo): Table {
         val policiesTable = Table(skin)
-        policiesTable.add("Social Policies:".toLabel()).row()
+        policiesTable.add("Social Policies:".toLabel(fontSize = 30)).row()
         for (policy in civ.policies.branchCompletionMap) {
             if (policy.value != 0)
                 policiesTable.add("${policy.key.name}: ${policy.value}".toLabel()).row()
@@ -117,9 +113,9 @@ class GlobalPoliticsOverviewTable (
 
         // declaration of friendships
         for (friend in civ.friendCivs) {
-            val friendtext = ("Friends with " + civ.civName).toLabel()
+            val friendtext = "Friends with ${civ.civName}".toLabel()
             friendtext.color = Color.GREEN
-            val turnsLeftText = ("(" + (viewingPlayer.gameInfo.turns - friend.value) + " Turns Left )").toLabel()
+            val turnsLeftText = "( ${viewingPlayer.gameInfo.turns - friend.value} Turns Left)".toLabel()
             politicsTable.add(friendtext)
             politicsTable.add(turnsLeftText).row()
         }
@@ -127,9 +123,9 @@ class GlobalPoliticsOverviewTable (
 
         // denounced civs
         for (denouncedCiv in civ.denouncedCivs) {
-            val denouncedText = ("Denounced " + denouncedCiv.key).toLabel()
+            val denouncedText = "Denounced ${denouncedCiv.key}".toLabel()
             denouncedText.color = Color.RED
-            val turnsLeftText = ("(" + (viewingPlayer.gameInfo.turns - denouncedCiv.value) + " Turns Left )").toLabel()
+            val turnsLeftText = "( ${(viewingPlayer.gameInfo.turns - denouncedCiv.value)} Turns Left)".toLabel()
             politicsTable.add(denouncedText)
             politicsTable.add(turnsLeftText).row()
         }
