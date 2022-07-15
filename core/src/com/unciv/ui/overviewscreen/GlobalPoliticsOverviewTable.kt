@@ -18,6 +18,18 @@ class GlobalPoliticsOverviewTable (
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
 
     init {
+        add()
+        addSeparatorVertical(Color.GRAY)
+        add("Civilization Info".toLabel())
+        addSeparatorVertical(Color.GRAY)
+        add("Social Policies".toLabel())
+        addSeparatorVertical(Color.GRAY)
+        add("Wonders".toLabel())
+        addSeparatorVertical(Color.GRAY)
+        add("Relations".toLabel())
+        row()
+        addSeparator(Color.GRAY)
+
         createGlobalPoliticsTable()
     }
 
@@ -66,7 +78,6 @@ class GlobalPoliticsOverviewTable (
 
     private fun getPoliciesTable(civ: CivilizationInfo): Table {
         val policiesTable = Table(skin)
-        policiesTable.add("Social Policies:".toLabel(fontSize = 30)).row()
         for (policy in civ.policies.branchCompletionMap) {
             if (policy.value != 0)
                 policiesTable.add("${policy.key.name}: ${policy.value}".toLabel()).row()
