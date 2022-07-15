@@ -11,7 +11,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaCategories
 
-class WondersInfo {
+class WonderInfo {
     val gameInfo = UncivGame.Current.gameInfo!!
     val viewingPlayer = gameInfo.getCurrentPlayerCivilization()
     val ruleSet = gameInfo.ruleSet

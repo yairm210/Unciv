@@ -4,7 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.WondersInfo
+import com.unciv.logic.civilization.WonderInfo
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.extensions.onClick
@@ -16,8 +16,8 @@ class WonderOverviewTab(
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
     val ruleSet = gameInfo.ruleSet
 
-    val wonderInfo = WondersInfo()
-    private val wonders: Array<WondersInfo.WonderInfo> = wonderInfo.collectInfo()
+    val wonderInfo = WonderInfo()
+    private val wonders: Array<WonderInfo.WonderInfo> = wonderInfo.collectInfo()
 
     private val fixedContent = Table()
     override fun getFixedContent() = fixedContent
@@ -47,7 +47,7 @@ class WonderOverviewTab(
         var lastGroup = ""
 
         for (wonder in wonders) {
-            if (wonder.status == WondersInfo.WonderStatus.Hidden) continue
+            if (wonder.status == WonderInfo.WonderStatus.Hidden) continue
             if (wonder.groupName != lastGroup) {
                 lastGroup = wonder.groupName
                 val groupRow = Table().apply {

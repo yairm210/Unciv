@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.WondersInfo
+import com.unciv.logic.civilization.WonderInfo
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.extensions.addSeparator
@@ -87,8 +87,8 @@ class GlobalPoliticsOverviewTable (
 
     private fun getWondersOfCivTable(civ: CivilizationInfo): Table {
         val wonderTable = Table(skin)
-        val wondersInfo = WondersInfo()
-        val allWorldWonders = wondersInfo.collectInfo()
+        val wonderInfo = WonderInfo()
+        val allWorldWonders = wonderInfo.collectInfo()
 
         for (wonder in allWorldWonders) {
             if (wonder.civ?.civName == civ.civName) {
@@ -131,7 +131,7 @@ class GlobalPoliticsOverviewTable (
         for (denouncedCiv in civ.denouncedCivs) {
             val denouncedText = "Denounced ${denouncedCiv.key}".toLabel()
             denouncedText.color = Color.RED
-            val turnsLeftText = "( ${(viewingPlayer.gameInfo.turns - denouncedCiv.value)} Turns Left)".toLabel()
+            val turnsLeftText = "( {${(viewingPlayer.gameInfo.turns - denouncedCiv.value)} Turns Left})".toLabel()
             politicsTable.add(denouncedText)
             politicsTable.add(turnsLeftText).row()
         }

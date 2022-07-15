@@ -242,10 +242,12 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     @Transient
     var hasLongCountDisplayUnique = false
 
-    // (CivName, turnWhenThisHappened)
+    @Transient
     var atWarWith = mutableListOf<String>()
-    var friendCivs = HashMap<String, Int>()
-    var denouncedCivs = HashMap<String, Int>()
+    @Transient
+    var friendCivs = HashMap<String, Int>() // (CivName, turnWhenThisHappened)
+    @Transient
+    var denouncedCivs = HashMap<String, Int>() // (CivName, turnWhenThisHappened)
 
     constructor()
 

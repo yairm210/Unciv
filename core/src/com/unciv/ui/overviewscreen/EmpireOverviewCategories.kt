@@ -44,6 +44,10 @@ enum class EmpireOverviewCategories(
         fun (viewingPlayer: CivilizationInfo, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?)
                 = DiplomacyOverviewTab(viewingPlayer, overviewScreen, persistedData),
         fun (viewingPlayer: CivilizationInfo) = viewingPlayer.diplomacy.isEmpty().toState()),
+    Politics("OtherIcons/Politics", 'G', Align.top,
+        fun (viewingPlayer: CivilizationInfo, overviewScreen: EmpireOverviewScreen, _: EmpireOverviewTabPersistableData?)
+                = GlobalPoliticsOverviewTable(viewingPlayer, overviewScreen),
+        fun (_: CivilizationInfo) = EmpireOverviewTabState.Normal),
     Resources("StatIcons/Happiness", 'R', Align.topLeft,
         fun (viewingPlayer: CivilizationInfo, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?)
                 = ResourcesOverviewTab(viewingPlayer, overviewScreen, persistedData),
@@ -63,11 +67,7 @@ enum class EmpireOverviewCategories(
     Notifications("OtherIcons/Notifications", 'N', Align.top,
         fun (viewingPlayer: CivilizationInfo, overviewScreen: EmpireOverviewScreen, _: EmpireOverviewTabPersistableData?)
                 = NotificationsOverviewTable(worldScreen = UncivGame.Current.worldScreen!!, viewingPlayer, overviewScreen),
-        fun (_: CivilizationInfo) = EmpireOverviewTabState.Normal),
-    Politics("OtherIcons/Politics", 'G', Align.top,
-    fun (viewingPlayer: CivilizationInfo, overviewScreen: EmpireOverviewScreen, _: EmpireOverviewTabPersistableData?)
-            = GlobalPoliticsOverviewTable(viewingPlayer, overviewScreen),
-    fun (_: CivilizationInfo) = EmpireOverviewTabState.Normal);
+        fun (_: CivilizationInfo) = EmpireOverviewTabState.Normal);
 
     constructor(iconName: String, shortcutChar: Char, scrollAlign: Int, factory: FactoryType, stateTester: StateTesterType = { _ -> EmpireOverviewTabState.Normal })
         : this(iconName, KeyCharAndCode(shortcutChar), scrollAlign, factory, stateTester)
