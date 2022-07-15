@@ -2,6 +2,7 @@ package com.unciv.ui.overviewscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.WondersInfo
@@ -21,52 +22,46 @@ class GlobalPoliticsOverviewTable (
     overviewScreen: EmpireOverviewScreen
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
 
-    init {
-        val tablePadding = 30f
-        defaults().pad(tablePadding).top()
+    private val fixedContent = Table()
 
-        add(createGlobalPoliticsTable())
+    init {
+        createGlobalPoliticsTable()
+
+        equalizeColumns(fixedContent, this)
     }
 
-    private fun createGlobalPoliticsTable(): Table {
-        val globalPoliticsTable = Table(skin)
-
+    private fun createGlobalPoliticsTable() {
         val civs = mutableListOf<CivilizationInfo>()
         civs.add(viewingPlayer)
         civs.addAll(viewingPlayer.getKnownCivs())
         civs.removeAll(civs.filter { it.isBarbarian() || it.isCityState() || it.isSpectator() })
         for (civ in civs) {
-            val civTable = Table(skin)
-
             // civ image
-            civTable.add(ImageGetter.getNationIndicator(civ.nation, 100f))
+            add(ImageGetter.getNationIndicator(civ.nation, 100f)).pad(20f)
 
-            civTable.addSeparatorVertical(Color.GRAY)
+            addSeparatorVertical(Color.GRAY)
 
             // info about civ
-            civTable.add(getCivInfoTable(civ))
+            add(getCivInfoTable(civ)).pad(20f)
 
-            civTable.addSeparatorVertical(Color.GRAY)
+            addSeparatorVertical(Color.GRAY)
 
             // policies
-            civTable.add(getPoliciesTable(civ))
+            add(getPoliciesTable(civ)).pad(20f)
 
-            civTable.addSeparatorVertical(Color.GRAY)
+            addSeparatorVertical(Color.GRAY)
 
             // wonders
-            civTable.add(getWondersOfCivTable(civ))
+            add(getWondersOfCivTable(civ)).pad(20f)
 
-            civTable.addSeparatorVertical(Color.GRAY)
+            addSeparatorVertical(Color.GRAY)
 
             //politics
-            civTable.add(getPoliticsOfCivTable(civ))
+            add(getPoliticsOfCivTable(civ)).pad(20f)
 
-            globalPoliticsTable.add(civTable).row()
             if (civs.indexOf(civ) != civs.lastIndex)
-                globalPoliticsTable.addSeparator(Color.GRAY)
+                addSeparator(Color.GRAY)
         }
-
-        return globalPoliticsTable
     }
 
     private fun getCivInfoTable(civ: CivilizationInfo): Table {
@@ -80,10 +75,10 @@ class GlobalPoliticsOverviewTable (
 
     private fun getPoliciesTable(civ: CivilizationInfo): Table {
         val policiesTable = Table(skin)
-        policiesTable.add("Social Policies:".toLabel())
+        policiesTable.add("Social Policies:".toLabel()).row()
         for (policy in civ.policies.branchCompletionMap) {
             if (policy.value != 0)
-                policiesTable.add(policy.key.name + ": " + policy.value).row()
+                policiesTable.add("${policy.key.name}: ${policy.value}".toLabel()).row()
         }
         return policiesTable
     }
