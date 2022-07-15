@@ -254,6 +254,13 @@ object Battle {
         } else if (attacker.isRanged() && !attacker.isAirUnit()) {  // Air Units are Ranged, but take damage as well
             defender.takeDamage(potentialDamageToDefender) // straight up
         } else {
+            // If Intercepting during an Air Sweep, add in Intercept Damage bonuses
+            if (attacker is MapUnitCombatant && attacker.unit.isPreparingAirSweep())
+            {
+                var damageFactor = 1f + defender.getInterceptDamageBonus().toFloat() / 100f
+                damageFactor *= attacker.unit.receivedInterceptDamageFactor()
+                potentialDamageToAttacker = (potentialDamageToAttacker.toFloat() * damageFactor).toInt()
+            }
             //melee attack is complicated, because either side may defeat the other midway
             //so...for each round, we randomize who gets the attack in. Seems to be a good way to work for now.
 
@@ -818,12 +825,13 @@ object Battle {
     }
 
     // Should draw an Interception if available on the tile
-    // Land Units deal 0 damage
+    // Land Units deal 0 damage, and no XP for either party
     // Air Interceptors do Air Combat as if Melee but using Ranged Strength. 5XP to both
     // Counts as an Attack even if no Interception Response
     fun airSweep(attacker: MapUnitCombatant, attackedTile: TileInfo) {
         // Air Sweep counts as an attack, even if nothing else happens
         attacker.unit.attacksThisTurn++
+        attacker.unit.useMovementPoints(1f)
 
         // Handle which Civ Intercepts
         for (interceptingCiv in UncivGame.Current.gameInfo!!.civilizations) {
@@ -834,34 +842,22 @@ object Battle {
             for (interceptor in interceptingCiv.getCivUnits()
                 .filter { it.canIntercept(attackedTile) }
                 .sortedByDescending { it.interceptChance() }) {
+                interceptor.attacksThisTurn++  // even if you miss, you took the shot
                 // Does Intercept happen? If not, exit
-                if (Random().nextFloat() > interceptor.interceptChance() / 100f) return
+                if (Random().nextFloat() > interceptor.interceptChance() / 100f) {
+                    attacker.unit.action = null
+                    return
+                }
 
                 if (interceptor.baseUnit.isLandUnit()) {
-                    // Deal no damage
+                    // Deal no damage (moddable in future?) and no XP
                 } else {
                     // Damage if Air v Air should work similar to Melee
-                    var damage = BattleDamage.calculateDamageToDefender(
-                        MapUnitCombatant(interceptor),
-                        attacker
-                    )
+                    takeDamage(attacker, MapUnitCombatant(interceptor))
 
-                    var damageFactor = 1f + interceptor.interceptDamagePercentBonus().toFloat() / 100f
-                    damageFactor *= attacker.unit.receivedInterceptDamageFactor()
-
-                    damage = (damage.toFloat() * damageFactor).toInt()
-
-                    // Land units deal 0 damage
-                    if (interceptor.baseUnit.isLandUnit())
-                        damage = 0
-
-                    attacker.takeDamage(damage)
-                    interceptor.attacksThisTurn++
-                    // if damage > 0, must be Air v Air
-                    if (damage > 0) {
-                        addXp(MapUnitCombatant(interceptor), 5, attacker)
-                        addXp(attacker, 5, MapUnitCombatant(interceptor))
-                    }
+                    // 5 XP to both
+                    addXp(MapUnitCombatant(interceptor), 5, attacker)
+                    addXp(attacker, 5, MapUnitCombatant(interceptor))
                 }
 
                 val attackerName = attacker.getName()
@@ -877,9 +873,16 @@ object Battle {
                     attackerName, NotificationIcon.War, interceptorName)
                 interceptingCiv.addNotification(interceptorText, locations,
                     interceptorName, NotificationIcon.War, attackerName)
+                attacker.unit.action = null
                 return
             }
         }
+
+        // No Interceptions
+        val attackerName = attacker.getName()
+        val attackerText = "Nothing tried to Intercept our [$attackerName]"
+        attacker.getCivInfo().addNotification(attackerText, attackerName)
+        attacker.unit.action = null
     }
 
     private fun tryInterceptAirAttack(attacker: MapUnitCombatant, attackedTile: TileInfo, interceptingCiv: CivilizationInfo, defender: ICombatant?) {
@@ -890,6 +893,7 @@ object Battle {
                 .sortedByDescending { it.interceptChance() }) {
             // defender can't also intercept
             if (defender != null && defender is MapUnitCombatant && interceptor == defender.unit) continue
+            interceptor.attacksThisTurn++  // even if you miss, you took the shot
             // Does Intercept happen? If not, exit
             if (Random().nextFloat() > interceptor.interceptChance() / 100f) return
 
@@ -904,7 +908,6 @@ object Battle {
             damage = (damage.toFloat() * damageFactor).toInt()
 
             attacker.takeDamage(damage)
-            interceptor.attacksThisTurn++
             if (damage > 0)
                 addXp(MapUnitCombatant(interceptor), 2, attacker)
 

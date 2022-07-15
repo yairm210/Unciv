@@ -69,5 +69,9 @@ class CityCombatant(val city: CityInfo) : ICombatant {
         return strength.roundToInt()
     }
 
+    override fun getInterceptDamageBonus(): Int {
+        return 0
+    }
+
     override fun toString() = city.name // for debug
 }
