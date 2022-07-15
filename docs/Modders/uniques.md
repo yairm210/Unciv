@@ -163,11 +163,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
-??? example  "[relativeAmount]% Production when constructing [buildingFilter] wonders [cityFilter]"
-	Example: "[+20]% Production when constructing [Culture] wonders [in all cities]"
-
-	Applicable to: Global, FollowerBelief
-
 ??? example  "[relativeAmount]% Production when constructing [buildingFilter] buildings [cityFilter]"
 	Example: "[+20]% Production when constructing [Culture] buildings [in all cities]"
 
@@ -178,13 +173,15 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
+??? example  "[relativeAmount]% Production when constructing [buildingFilter] wonders [cityFilter]"
+	Example: "[+20]% Production when constructing [Culture] wonders [in all cities]"
+
+	Applicable to: Global, FollowerBelief
+
 ??? example  "[relativeAmount]% Production towards any buildings that already exist in the Capital"
 	Example: "[+20]% Production towards any buildings that already exist in the Capital"
 
 	Applicable to: Global, FollowerBelief
-
-??? example  "Tile yields from Natural Wonders doubled"
-	Applicable to: Global
 
 ??? example  "Military Units gifted from City-States start with [amount] XP"
 	Example: "Military Units gifted from City-States start with [3] XP"

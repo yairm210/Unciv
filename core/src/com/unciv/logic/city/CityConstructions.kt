@@ -496,7 +496,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
     /**
-     *  Purchase a construction for gold
+     *  Purchase a construction for gold (or another stat)
      *  called from NextTurnAutomation and the City UI
      *  Build / place the new item, deduct cost, and maintain queue.
      *

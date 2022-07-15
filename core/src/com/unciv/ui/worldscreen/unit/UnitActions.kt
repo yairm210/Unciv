@@ -627,8 +627,8 @@ object UnitActions {
             if (!unit.abilityUsesLeft.containsKey(action)) continue
             if (unit.abilityUsesLeft[action]!! <= 0) continue
             when (action) {
-                Constants.spreadReligionAbilityCount -> addSpreadReligionActions(unit, actionList, city)
-                Constants.removeHeresyAbilityCount -> addRemoveHeresyActions(unit, actionList, city)
+                Constants.spreadReligion -> addSpreadReligionActions(unit, actionList, city)
+                Constants.removeHeresy -> addRemoveHeresyActions(unit, actionList, city)
             }
         }
     }
@@ -661,7 +661,7 @@ object UnitActions {
                 if (unit.hasUnique(UniqueType.RemoveOtherReligions))
                     city.religion.removeAllPressuresExceptFor(unit.religion!!)
                 unit.currentMovement = 0f
-                useActionWithLimitedUses(unit, Constants.spreadReligionAbilityCount)
+                useActionWithLimitedUses(unit, Constants.spreadReligion)
             }.takeIf { unit.currentMovement > 0 && !blockedByInquisitor }
         )
     }
@@ -677,7 +677,7 @@ object UnitActions {
             action = {
                 city.religion.removeAllPressuresExceptFor(unit.religion!!)
                 unit.currentMovement = 0f
-                useActionWithLimitedUses(unit, Constants.removeHeresyAbilityCount)
+                useActionWithLimitedUses(unit, Constants.removeHeresy)
             }.takeIf { unit.currentMovement > 0f }
         )
     }

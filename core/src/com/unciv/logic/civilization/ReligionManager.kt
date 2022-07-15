@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.Counter
 import com.unciv.models.Religion
@@ -150,6 +151,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         }
     }
 
+    /** Calculates the amount of religions that can still be founded */
     fun remainingFoundableReligions(): Int {
         val foundedReligionsCount = civInfo.gameInfo.civilizations.count {
             it.religionManager.religion != null && it.religionManager.religionState >= ReligionState.Religion
@@ -355,6 +357,11 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         return civInfo.gameInfo.getCities()
             .filter { it.matchesFilter(cityFilter, civInfo) }
             .sumOf { it.religion.getFollowersOf(religion!!.name)!! }
+    }
+
+    fun getHolyCity(): CityInfo? {
+        if (religion == null) return null
+        return civInfo.gameInfo.getCities().firstOrNull { it.religion.religionThisIsTheHolyCityOf == religion!!.name }
     }
 }
 
