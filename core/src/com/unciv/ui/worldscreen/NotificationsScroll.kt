@@ -107,7 +107,7 @@ class NotificationsScroll(
         pack()
         if (height == newHeight) return
         height = newHeight  // after this, maxY is still incorrect until layout()
-        layout()
+        invalidateHierarchy()
     }
 
     /** Add some empty space that can be scrolled under the TileInfoTable which is covering our lower part */
