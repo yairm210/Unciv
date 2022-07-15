@@ -817,10 +817,17 @@ object Battle {
         if (targetedCity.population.population < 1) targetedCity.population.setPopulation(1)
     }
 
+    // Should draw an Interception if available on the tile
+    // Land Units deal 0 damage
+    // Air Interceptors do Air Combat as if Melee but using Ranged Strength. 5XP to both
+    // Counts as an Attack even if no Interception Response
     fun airSweep(attacker: MapUnitCombatant, attackedTile: TileInfo) {
+        // Air Sweep counts as an attack, even if nothing else happens
+        attacker.unit.attacksThisTurn++
+
         // Handle which Civ Intercepts
         for (interceptingCiv in UncivGame.Current.gameInfo!!.civilizations) {
-            // only count if at war
+            // only try to intercept if at war
             if (!attacker.getCivInfo().isAtWarWith(interceptingCiv))
                 continue
             // Pick highest chance interceptor
@@ -830,24 +837,32 @@ object Battle {
                 // Does Intercept happen? If not, exit
                 if (Random().nextFloat() > interceptor.interceptChance() / 100f) return
 
-                var damage = BattleDamage.calculateDamageToDefender(
-                    MapUnitCombatant(interceptor),
-                    attacker
-                )
+                if (interceptor.baseUnit.isLandUnit()) {
+                    // Deal no damage
+                } else {
+                    // Damage if Air v Air should work similar to Melee
+                    var damage = BattleDamage.calculateDamageToDefender(
+                        MapUnitCombatant(interceptor),
+                        attacker
+                    )
 
-                var damageFactor = 1f + interceptor.interceptDamagePercentBonus().toFloat() / 100f
-                damageFactor *= attacker.unit.receivedInterceptDamageFactor()
+                    var damageFactor = 1f + interceptor.interceptDamagePercentBonus().toFloat() / 100f
+                    damageFactor *= attacker.unit.receivedInterceptDamageFactor()
 
-                damage = (damage.toFloat() * damageFactor).toInt()
+                    damage = (damage.toFloat() * damageFactor).toInt()
 
-                // Land units deal 0 damage
-                if (interceptor.baseUnit.isLandUnit())
-                    damage = 0
+                    // Land units deal 0 damage
+                    if (interceptor.baseUnit.isLandUnit())
+                        damage = 0
 
-                attacker.takeDamage(damage)
-                interceptor.attacksThisTurn++
-                if (damage > 0)
-                    addXp(MapUnitCombatant(interceptor), 2, attacker)
+                    attacker.takeDamage(damage)
+                    interceptor.attacksThisTurn++
+                    // if damage > 0, must be Air v Air
+                    if (damage > 0) {
+                        addXp(MapUnitCombatant(interceptor), 5, attacker)
+                        addXp(attacker, 5, MapUnitCombatant(interceptor))
+                    }
+                }
 
                 val attackerName = attacker.getName()
                 val interceptorName = interceptor.name
