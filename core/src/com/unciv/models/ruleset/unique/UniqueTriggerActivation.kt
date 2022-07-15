@@ -80,9 +80,17 @@ object UniqueTriggerActivation {
             OneTimeFreeUnitRuins -> {
                 var unit = civInfo.getEquivalentUnit(unique.params[0])
                 if ( unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger()) {
-                    if (ruleSet.units[Constants.worker] != null) {
-                        unit = civInfo.getEquivalentUnit(Constants.worker)
-                    } else {
+                    var found = false
+                    for (unitForReplace in ruleSet.units.values) {
+                        if(unitForReplace.getMatchingUniques(UniqueType.BuildImprovements)
+                           .any { it.params[0] == "Land" } ) {
+
+                            unit = civInfo.getEquivalentUnit(unitForReplace.name)
+                            found = true
+                            break
+                        }
+                    }
+                    if (!found) {
                         return false
                     }
                 }
