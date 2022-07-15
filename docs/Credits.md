@@ -742,6 +742,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [turn right](https://thenounproject.com/icon/turn-right-1920867/) by Alice Design for Resource Overview
 - [Tyrannosaurus Rex](https://thenounproject.com/icon/tyrannosaurus-rex-4130976/) by Amethyst Studio for Civilopedia Eras header
 - [Timer](https://www.flaticon.com/free-icons/timer) created by Gregor Cresnar Premium - Flaticon
+- [Political Science](https://www.flaticon.com/premium-icon/political-science_5403775) created by Hilmy Abiyyu A. - Flaticon
 
 ### Main menu
 
