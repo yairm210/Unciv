@@ -75,7 +75,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
      *  Does not update World View changes until finished.
      *  Set to 0 to disable.
      */
-    var simulateUntilTurnForDebug: Int = 150
+    var simulateUntilTurnForDebug: Int = 0
 
     var worldScreen: WorldScreen? = null
         private set
