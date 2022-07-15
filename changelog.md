@@ -1,3 +1,31 @@
+## 4.1.19
+
+Unique deprecation 
+
+Added pi-apps badge to readme
+
+Interception always takes an attack  - By itanasi
+
+By OptimizedForDensity:
+- Add more music triggers 
+- Better era-specific tile image support 
+- Move border below icons 
+- Significantly reduce AI turn time 
+- City health updates when finishing health-increasing buildings 
+
+By Azzurite:
+- Fix potential race condition in multiplayer game update 
+- Fix game crashing when a multiplayer game can not be read 
+- Add a simple GDX application to help with developing UI components 
+
+Added more unit tests  - By xlenstra
+
+sorted eras by eraNumber  - By alexban011
+
+small readme fixes  - By b1tt0
+
+Remove all in-game mentions of 1.5x unhappiness for puppeted cities  - By Ouaz
+
 ## 4.1.18
 
 Fix multiple capture uniques resulting in double-capture
