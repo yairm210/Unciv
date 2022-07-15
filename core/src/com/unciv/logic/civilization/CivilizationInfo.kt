@@ -871,11 +871,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
     }
 
-    fun updateGlobalPoliticsInfo() {
-        var friendCivs = HashMap<String, Int>()
-        var denouncedCivs = HashMap<String, Int>()
-    }
-
     fun updateSightAndResources() {
         updateViewableTiles()
         updateHasActiveGreatWall()
