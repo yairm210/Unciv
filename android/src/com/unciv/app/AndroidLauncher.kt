@@ -50,7 +50,6 @@ open class AndroidLauncher : AndroidApplication() {
         platformSpecificHelper.toggleDisplayCutout(settings.androidCutout)
 
         val androidParameters = UncivGameParameters(
-            version = BuildConfig.VERSION_NAME,
             crashReportSysInfo = CrashReportSysInfoAndroid,
             fontImplementation = NativeFontAndroid((Fonts.ORIGINAL_FONT_SIZE * settings.fontSizeMultiplier).toInt(), fontFamily),
             customFileLocationHelper = customFileLocationHelper,

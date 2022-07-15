@@ -540,6 +540,7 @@ object NextTurnAutomation {
     }
 
     private fun enhanceReligion(civInfo: CivilizationInfo) {
+        if (civInfo.religionManager.religionState != ReligionState.EnhancingReligion) return
         civInfo.religionManager.chooseBeliefs(
             null,
             null,

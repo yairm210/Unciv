@@ -2,12 +2,13 @@ package com.unciv.logic.trade
 
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.models.ruleset.Speed
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.Fonts
 import com.unciv.logic.trade.TradeType.TradeTypeNumberType
 
-data class TradeOffer(val name: String, val type: TradeType, var amount: Int = 1, var duration: Int) {
+data class TradeOffer(val name: String, val type: TradeType, var amount: Int = 1, var duration: Int) : IsPartOfGameInfoSerialization {
 
     constructor(
         name: String,

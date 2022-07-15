@@ -163,7 +163,7 @@
     {
         "name": "Monasteries",
         "type": "Follower",
-        "uniques": ["May buy [Monastery] buildings with [Faith] [in cities following this religion]"]
+        "uniques": ["May buy [Monastery] buildings for [150] [Faith] [in cities following this religion]"]
     },
     {
         "name": "Mosques",

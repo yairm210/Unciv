@@ -3,6 +3,7 @@ package com.unciv.logic.map
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.battle.Battle
@@ -34,7 +35,7 @@ import kotlin.math.pow
 /**
  * The immutable properties and mutable game state of an individual unit present on the map
  */
-class MapUnit {
+class MapUnit : IsPartOfGameInfoSerialization {
 
     @Transient
     lateinit var civInfo: CivilizationInfo
@@ -190,7 +191,7 @@ class MapUnit {
      * @property type Category of the last change in position that brought the unit to this position.
      * @see [movementMemories]
      * */
-    class UnitMovementMemory(position: Vector2, val type: UnitMovementMemoryType) {
+    class UnitMovementMemory(position: Vector2, val type: UnitMovementMemoryType) : IsPartOfGameInfoSerialization {
         @Suppress("unused") // needed because this is part of a save and gets deserialized
         constructor(): this(Vector2.Zero, UnitMovementMemoryType.UnitMoved)
         val position = Vector2(position)
@@ -335,11 +336,8 @@ class MapUnit {
             .none { it.value != DoubleMovementTerrainTarget.Feature }
         noFilteredDoubleMovementUniques = doubleMovementInTerrain
             .none { it.value == DoubleMovementTerrainTarget.Filter }
-        costToDisembark = (getMatchingUniques(UniqueType.ReducedDisembarkCost, checkCivInfoUniques = true)
-            // Deprecated as of 4.0.3
-                + getMatchingUniques(UniqueType.DisembarkCostDeprecated, checkCivInfoUniques = true)
-            //
-            ).minOfOrNull { it.params[0].toFloat() }
+        costToDisembark = (getMatchingUniques(UniqueType.ReducedDisembarkCost, checkCivInfoUniques = true))
+            .minOfOrNull { it.params[0].toFloat() }
         costToEmbark = getMatchingUniques(UniqueType.ReducedEmbarkCost, checkCivInfoUniques = true)
             .minOfOrNull { it.params[0].toFloat() }
 
@@ -909,7 +907,7 @@ class MapUnit {
 
         // Wake sleeping units if there's an enemy in vision range:
         // Military units always but civilians only if not protected.
-        if (isSleeping() && (isMilitary() || currentTile.militaryUnit == null) &&
+        if (isSleeping() && (isMilitary() || (currentTile.militaryUnit == null && !currentTile.isCityCenter())) &&
             this.viewableTiles.any {
                 it.militaryUnit != null && it.militaryUnit!!.civInfo.isAtWarWith(civInfo)
             }

@@ -163,7 +163,7 @@ class TranslationTests {
     @Test
     fun allStringsTranslate() {
         // Needed for .tr() to work
-        UncivGame.Current = UncivGame("")
+        UncivGame.Current = UncivGame()
         UncivGame.Current.settings = GameSettings()
 
         for ((key, value) in translations)
@@ -231,7 +231,7 @@ class TranslationTests {
         superNestedString.getPlaceholderParametersIgnoringLowerLevelBraces()[0]
             .getPlaceholderParametersIgnoringLowerLevelBraces())
 
-        UncivGame.Current = UncivGame("")
+        UncivGame.Current = UncivGame()
         UncivGame.Current.settings = GameSettings()
 
         fun addTranslation(original:String, result:String){

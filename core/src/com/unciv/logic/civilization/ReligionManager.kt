@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization
 
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.Counter
 import com.unciv.models.Religion
@@ -10,7 +11,7 @@ import com.unciv.ui.utils.extensions.toPercent
 import java.lang.Integer.min
 import kotlin.random.Random
 
-class ReligionManager {
+class ReligionManager : IsPartOfGameInfoSerialization {
 
     @Transient
     lateinit var civInfo: CivilizationInfo
@@ -149,8 +150,6 @@ class ReligionManager {
         }
     }
 
-    fun amountOfFoundableReligions() = civInfo.gameInfo.civilizations.count { it.isMajorCiv() } / 2 + 1
-
     fun remainingFoundableReligions(): Int {
         val foundedReligionsCount = civInfo.gameInfo.civilizations.count {
             it.religionManager.religion != null && it.religionManager.religionState >= ReligionState.Religion
@@ -158,7 +157,7 @@ class ReligionManager {
 
         // count the number of foundable religions left given defined ruleset religions and number of civs in game
         val maxNumberOfAdditionalReligions = min(civInfo.gameInfo.ruleSet.religions.size,
-            amountOfFoundableReligions()) - foundedReligionsCount
+            civInfo.gameInfo.civilizations.count { it.isMajorCiv() } / 2 + 1) - foundedReligionsCount
 
         val availableBeliefsToFound = min(
             civInfo.gameInfo.ruleSet.beliefs.values.count {
@@ -359,7 +358,7 @@ class ReligionManager {
     }
 }
 
-enum class ReligionState {
+enum class ReligionState : IsPartOfGameInfoSerialization {
     None,
     Pantheon,
     FoundingReligion, // Great prophet used, but religion has not yet been founded

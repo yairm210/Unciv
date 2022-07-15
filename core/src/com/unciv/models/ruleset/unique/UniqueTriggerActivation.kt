@@ -251,15 +251,6 @@ object UniqueTriggerActivation {
                 return true
             }
 
-            TimedAttackStrength -> {
-                val temporaryUnique = TemporaryUnique(unique, unique.params[2].toInt())
-                civInfo.temporaryUniques.add(temporaryUnique)
-                if (notification != null) {
-                    civInfo.addNotification(notification, NotificationIcon.War)
-                }
-                return true
-            }
-
             OneTimeRevealEntireMap -> {
                 if (notification != null) {
                     civInfo.addNotification(notification, LocationAction(tile?.position), NotificationIcon.Scout, color = NotificationColor.Good)

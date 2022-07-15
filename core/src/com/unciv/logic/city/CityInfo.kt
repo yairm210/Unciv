@@ -1,6 +1,7 @@
 package com.unciv.logic.city
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.NotificationColor
@@ -37,7 +38,7 @@ enum class CityFlags {
 }
 
 // if tableEnabled == true, then Stat != null
-enum class CityFocus(val label: String, val tableEnabled: Boolean, val stat: Stat? = null) {
+enum class CityFocus(val label: String, val tableEnabled: Boolean, val stat: Stat? = null) : IsPartOfGameInfoSerialization {
     NoFocus("Default Focus", true, null) {
         override fun getStatMultiplier(stat: Stat) = 1f  // actually redundant, but that's two steps to see
     },
@@ -79,7 +80,7 @@ enum class CityFocus(val label: String, val tableEnabled: Boolean, val stat: Sta
 }
 
 
-class CityInfo {
+class CityInfo : IsPartOfGameInfoSerialization {
     @Suppress("JoinDeclarationAndAssignment")
     @Transient
     lateinit var civInfo: CivilizationInfo
@@ -366,7 +367,7 @@ class CityInfo {
     fun getWorkableTiles() = tilesInRange.asSequence().filter { it.getOwner() == civInfo }
     fun isWorked(tileInfo: TileInfo) = workedTiles.contains(tileInfo.position)
 
-    fun isCapital(): Boolean = cityConstructions.builtBuildings.contains(capitalCityIndicator())
+    fun isCapital(): Boolean = cityConstructions.getBuiltBuildings().any { it.hasUnique(UniqueType.IndicatesCapital) }
     fun isCoastal(): Boolean = centerTileInfo.isCoastalTile()
     fun capitalCityIndicator(): String {
         val indicatorBuildings = getRuleset().buildings.values
@@ -506,9 +507,7 @@ class CityInfo {
 
     fun getGreatPersonPercentageBonus(): Int{
         var allGppPercentageBonus = 0
-        for (unique in getMatchingUniques(UniqueType.GreatPersonPointPercentage)
-            + getMatchingUniques(UniqueType.GreatPersonPointPercentageDeprecated)
-        ) {
+        for (unique in getMatchingUniques(UniqueType.GreatPersonPointPercentage)) {
             if (!matchesFilter(unique.params[1])) continue
             allGppPercentageBonus += unique.params[0].toInt()
         }

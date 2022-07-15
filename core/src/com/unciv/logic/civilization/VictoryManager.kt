@@ -1,11 +1,12 @@
 package com.unciv.logic.civilization
 
 import com.unciv.Constants
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Milestone
 import com.unciv.models.ruleset.unique.UniqueType
 
-class VictoryManager {
+class VictoryManager : IsPartOfGameInfoSerialization {
     @Transient
     lateinit var civInfo: CivilizationInfo
 

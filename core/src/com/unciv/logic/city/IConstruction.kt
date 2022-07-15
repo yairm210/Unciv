@@ -212,35 +212,19 @@ data class RejectionReasonInstance(val rejectionReason:RejectionReason,
 open class PerpetualConstruction(override var name: String, val description: String) : IConstruction {
 
     override fun shouldBeDisplayed(cityConstructions: CityConstructions) = isBuildable(cityConstructions)
-    open fun getProductionTooltip(cityInfo: CityInfo) : String
-            = "\r\n${(cityInfo.cityStats.currentCityStats.production / CONVERSION_RATE).roundToInt()}/${Fonts.turn}"
-    open fun getConversionRate(cityInfo: CityInfo) : Int
-            = CONVERSION_RATE
+    open fun getProductionTooltip(cityInfo: CityInfo) : String = ""
 
     companion object {
-        const val CONVERSION_RATE: Int = 4
-        val science = object : PerpetualConstruction("Science", "Convert production to science at a rate of [rate] to 1") {
-            override fun isBuildable(cityConstructions: CityConstructions): Boolean {
-                return cityConstructions.cityInfo.civInfo.hasUnique(UniqueType.EnablesScienceProduction)
-            }
-            override fun getProductionTooltip(cityInfo: CityInfo): String {
-                return "\r\n${(cityInfo.cityStats.currentCityStats.production / getConversionRate(cityInfo)).roundToInt()}/${Fonts.turn}"
-            }
-            override fun getConversionRate(cityInfo: CityInfo) = (1/cityInfo.cityStats.getScienceConversionRate()).roundToInt()
-        }
-        val gold = object : PerpetualConstruction("Gold", "Convert production to gold at a rate of $CONVERSION_RATE to 1") {
-            override fun isBuildable(cityConstructions: CityConstructions): Boolean {
-                return cityConstructions.cityInfo.civInfo.hasUnique(UniqueType.EnablesGoldProduction)
-            }
-        }
+        val science = PerpetualStatConversion(Stat.Science)
+        val gold = PerpetualStatConversion(Stat.Gold)
+        val culture = PerpetualStatConversion(Stat.Culture)
+        val faith = PerpetualStatConversion(Stat.Faith)
         val idle = object : PerpetualConstruction("Nothing", "The city will not produce anything.") {
             override fun isBuildable(cityConstructions: CityConstructions): Boolean = true
-
-            override fun getProductionTooltip(cityInfo: CityInfo): String = ""
         }
 
         val perpetualConstructionsMap: Map<String, PerpetualConstruction>
-                = mapOf(science.name to science, gold.name to gold, idle.name to idle)
+                = mapOf(science.name to science, gold.name to gold, culture.name to culture, faith.name to faith, idle.name to idle)
     }
 
     override fun isBuildable(cityConstructions: CityConstructions): Boolean =
@@ -250,4 +234,25 @@ open class PerpetualConstruction(override var name: String, val description: Str
 
     override fun requiresResource(resource: String) = false
 
+}
+
+open class PerpetualStatConversion(val stat: Stat) :
+    PerpetualConstruction(stat.name, "Convert production to [${stat.name}] at a rate of [rate] to 1") {
+
+    override fun getProductionTooltip(cityInfo: CityInfo) : String
+            = "\r\n${(cityInfo.cityStats.currentCityStats.production / getConversionRate(cityInfo)).roundToInt()}/${Fonts.turn}"
+    fun getConversionRate(cityInfo: CityInfo) : Int = (1/cityInfo.cityStats.getStatConversionRate(stat)).roundToInt()
+
+    override fun isBuildable(cityConstructions: CityConstructions): Boolean {
+        val hasProductionUnique = cityConstructions.cityInfo.civInfo.getMatchingUniques(UniqueType.EnablesCivWideStatProduction).any { it.params[0] == stat.name }
+        return when (stat) {
+            Stat.Science -> hasProductionUnique
+                    || cityConstructions.cityInfo.civInfo.hasUnique(UniqueType.EnablesScienceProduction) // backwards compatibility
+            Stat.Gold -> hasProductionUnique
+                    || cityConstructions.cityInfo.civInfo.hasUnique(UniqueType.EnablesGoldProduction) // backwards compatibility
+            Stat.Culture -> hasProductionUnique
+            Stat.Faith -> cityConstructions.cityInfo.civInfo.gameInfo.isReligionEnabled() && hasProductionUnique
+            else -> false
+        }
+    }
 }

@@ -18,6 +18,8 @@ import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.ruleset.unit.UnitType
 
 class TestGame {
 
@@ -30,7 +32,7 @@ class TestGame {
 
     init {
         // Set UncivGame.Current so that debug variables are initialized
-        UncivGame.Current = UncivGame("Test")
+        UncivGame.Current = UncivGame()
         // And the settings can be reached for the locale used in .tr()
         UncivGame.Current.settings = GameSettings()
 
@@ -40,11 +42,13 @@ class TestGame {
         gameInfo.ruleSet = ruleset
         gameInfo.difficultyObject = ruleset.difficulties["Prince"]!!
         gameInfo.speed = ruleset.speeds[Speed.DEFAULTFORSIMULATION]!!
+        gameInfo.currentPlayerCiv = CivilizationInfo()
 
         // Create a tilemap, needed for city centers
         gameInfo.tileMap = TileMap(1, ruleset, false)
         tileMap.mapParameters.mapSize = MapSizeNew(0, 0)
         tileMap.ruleset = ruleset
+        tileMap.gameInfo = gameInfo
     }
 
     /** Makes a new rectangular tileMap and sets it in gameInfo. Removes all existing tiles. All new tiles have terrain [baseTerrain] */
@@ -58,6 +62,7 @@ class TestGame {
                     tile.baseTerrain = baseTerrain
 
         gameInfo.tileMap = newTileMap
+        tileMap.gameInfo = gameInfo
     }
 
     /** Makes a new hexagonal tileMap with radius [newRadius] and sets it in gameInfo.
@@ -73,6 +78,7 @@ class TestGame {
                     tile.baseTerrain = baseTerrain
 
         gameInfo.tileMap = newTileMap
+        tileMap.gameInfo = gameInfo
     }
 
     fun getTile(position: Vector2) = tileMap[position]
@@ -141,7 +147,7 @@ class TestGame {
         return mapUnit
     }
 
-    fun addEmptySpecialist(): String {
+    fun createSpecialist(): String {
         val name = "specialist-${objectsCreated++}"
         ruleset.specialists[name] = Specialist()
         return name
@@ -168,12 +174,21 @@ class TestGame {
         return obj
     }
 
+    fun createBaseUnit(unitType: String = createUnitType().name, vararg uniques: String) =
+        createRulesetObject(ruleset.units, *uniques) {
+            val baseUnit = BaseUnit()
+            baseUnit.ruleset = gameInfo.ruleSet
+            baseUnit.unitType = unitType
+            baseUnit
+        }
     fun createBelief(type: BeliefType = BeliefType.Any, vararg uniques: String) =
-            createRulesetObject(ruleset.beliefs, *uniques) { Belief(type) }
+        createRulesetObject(ruleset.beliefs, *uniques) { Belief(type) }
     fun createBuilding(vararg uniques: String) =
-            createRulesetObject(ruleset.buildings, *uniques) { Building() }
+        createRulesetObject(ruleset.buildings, *uniques) { Building() }
     fun createPolicy(vararg uniques: String) =
-            createRulesetObject(ruleset.policies, *uniques) { Policy() }
+        createRulesetObject(ruleset.policies, *uniques) { Policy() }
     fun createTileImprovement(vararg uniques: String) =
-            createRulesetObject(ruleset.tileImprovements, *uniques) { TileImprovement() }
+        createRulesetObject(ruleset.tileImprovements, *uniques) { TileImprovement() }
+    fun createUnitType(vararg uniques: String) =
+        createRulesetObject(ruleset.unitTypes, *uniques) { UnitType() }
 }
