@@ -1077,7 +1077,8 @@ object NextTurnAutomation {
         missionaries = missionaries.map { civInfo.getEquivalentUnit(it).name }
         val missionaryConstruction = missionaries
             .map { civInfo.cities.first().cityConstructions.getConstruction(it) as INonPerpetualConstruction }
-            .firstOrNull { unit -> civInfo.cities.any { unit.isPurchasable(it.cityConstructions) && unit.canBePurchasedWithStat(it, Stat.Faith) } }
+            .filter { unit -> civInfo.cities.any { unit.isPurchasable(it.cityConstructions) && unit.canBePurchasedWithStat(it, Stat.Faith) } }
+            .minByOrNull { it.getStatBuyCost(civInfo.getCapital()!!, Stat.Faith)!! }
             ?: return
 
 
@@ -1123,14 +1124,15 @@ object NextTurnAutomation {
 
     private fun buyInquisitorNear(civInfo: CivilizationInfo, city: CityInfo) {
         if (civInfo.religionManager.religionState < ReligionState.Religion) return
-        if (civInfo.religionManager.religionState < ReligionState.Religion) return
         var inquisitors = civInfo.gameInfo.ruleSet.units.values.filter { unit ->
-            unit.getMatchingUniques(UniqueType.CanActionSeveralTimes).filter { it.params[0] == Constants.spreadReligion }.any()
+            unit.getMatchingUniques(UniqueType.CanActionSeveralTimes).filter { it.params[0] == Constants.removeHeresy }.any()
+            || unit.hasUnique(UniqueType.PreventSpreadingReligion)
         }.map { it.name }
         inquisitors = inquisitors.map { civInfo.getEquivalentUnit(it).name }
         val inquisitorConstruction = inquisitors
             .map { civInfo.cities.first().cityConstructions.getConstruction(it) as INonPerpetualConstruction }
-            .firstOrNull { unit -> civInfo.cities.any { unit.isPurchasable(it.cityConstructions) } }
+            .filter { unit -> civInfo.cities.any { unit.isPurchasable(it.cityConstructions) } }
+            .minByOrNull { it.getStatBuyCost(civInfo.getCapital()!!, Stat.Faith)!! }
             ?: return
 
         val hasUniqueToTakeCivReligion = civInfo.gameInfo.ruleSet.units[inquisitorConstruction.name]!!.hasUnique(UniqueType.TakeReligionOverBirthCity)
