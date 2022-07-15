@@ -2561,28 +2561,28 @@ TileSets/FantasyHex/Tiles/Whales
   index: -1
 TileSets/FantasyHex/Tiles/Whales+Fishing Boats
   rotate: false
-  xy: 1684, 696
+  xy: 1644, 660
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Wheat
   rotate: false
-  xy: 1644, 624
+  xy: 1684, 696
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Wine
   rotate: false
-  xy: 1684, 660
+  xy: 1644, 624
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Wine+Plantation
   rotate: false
-  xy: 1644, 588
+  xy: 1684, 660
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
@@ -3539,25 +3539,18 @@ TileSets/FantasyHex/Units/Warrior
   orig: 32, 28
   offset: 0, 0
   index: -1
-TileSets/FantasyHex/Units/Warrior-Classical era
-  rotate: false
-  xy: 1644, 660
-  size: 32, 28
-  orig: 32, 28
-  offset: 0, 0
-  index: -1
-TileSets/FantasyHex/Units/Winged Hussar
-  rotate: false
-  xy: 1644, 660
-  size: 32, 28
-  orig: 32, 28
-  offset: 0, 0
-  index: -1
 TileSets/FantasyHex/Units/WaterUnit
   rotate: false
   xy: 1168, 241
   size: 32, 26
   orig: 32, 26
+  offset: 0, 0
+  index: -1
+TileSets/FantasyHex/Units/Winged Hussar
+  rotate: false
+  xy: 1644, 588
+  size: 32, 28
+  orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/Work Boats
