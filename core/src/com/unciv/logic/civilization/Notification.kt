@@ -43,10 +43,7 @@ enum class NotificationColor(val color: Color) {
     VeryBad(Color(0.996f, 0.752f, 0.698f, 1f)),
     Bad(Color(1f, 0.835f, 0.8f, 1f)),
     VeryGood(Color(0.745f, 1f, 0.698f, 1f)),
-    Good(Color(0.843f, 1f, 0.811f, 1f)),
-    WLTK(Color(0.956f, 0.988f, 0.678f, 1f)),
-    Gold(Color(0.976f, 1f, 0.784f, 1f)),
-    Quest(Color(0.733f, 0.945f, 1f, 1f))
+    Good(Color(0.843f, 1f, 0.811f, 1f))
 }
 
 /**

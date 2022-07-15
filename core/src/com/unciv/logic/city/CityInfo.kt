@@ -850,7 +850,7 @@ class CityInfo {
         if (demandedResource == "") // Failed to get a valid resource, try again some time later
             setFlag(CityFlags.ResourceDemand, 15 + Random().nextInt(10))
         else
-            civInfo.addNotification("[$name] demands [$demandedResource]!", location, NotificationIcon.City, "ResourceIcons/$demandedResource", color = NotificationColor.WLTK)
+            civInfo.addNotification("[$name] demands [$demandedResource]!", location, NotificationIcon.City, "ResourceIcons/$demandedResource")
     }
 
     private fun tryWeLoveTheKing() {
@@ -859,7 +859,7 @@ class CityInfo {
             setFlag(CityFlags.WeLoveTheKing, 20 + 1) // +1 because it will be decremented by 1 in the same startTurn()
             civInfo.addNotification(
                     "Because they have [$demandedResource], the citizens of [$name] are celebrating We Love The King Day!",
-                    location, NotificationIcon.City, NotificationIcon.Happiness, color = NotificationColor.WLTK)
+                    location, NotificationIcon.City, NotificationIcon.Happiness)
         }
     }
 

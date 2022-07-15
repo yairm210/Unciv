@@ -602,12 +602,12 @@ class CivilizationInfo {
             meetString = "[${civName}] has given us [${giftAmount}] as we are the first major civ to meet them"
         }
         if (cityStateLocation != null)
-            otherCiv.addNotification(meetString, cityStateLocation, NotificationIcon.Gold, color = NotificationColor.Gold)
+            otherCiv.addNotification(meetString, cityStateLocation, NotificationIcon.Gold)
         else
-            otherCiv.addNotification(meetString, NotificationIcon.Gold, color = NotificationColor.Gold)
+            otherCiv.addNotification(meetString, NotificationIcon.Gold)
 
         if (otherCiv.isCityState() && otherCiv.canGiveStat(Stat.Faith)){
-            otherCiv.addNotification(religionMeetString, NotificationIcon.Faith, color = NotificationColor.Quest)
+            otherCiv.addNotification(religionMeetString, NotificationIcon.Faith)
 
             for ((key, value) in faithAmount)
                 otherCiv.addStat(key, value.toInt())

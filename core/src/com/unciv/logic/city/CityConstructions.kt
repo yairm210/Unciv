@@ -390,12 +390,12 @@ class CityConstructions {
             when {
                 (otherCiv.exploredTiles.contains(cityInfo.location) && otherCiv != cityInfo.civInfo) ->
                     otherCiv.addNotification("The city of [${cityInfo.name}] has started constructing [${construction.name}]!",
-                        cityInfo.location, NotificationIcon.Construction, buildingIcon)
+                        cityInfo.location, NotificationIcon.Construction, buildingIcon, color = NotificationColor.Bad)
                 (otherCiv.knows(cityInfo.civInfo)) ->
                     otherCiv.addNotification("[${cityInfo.civInfo.civName}] has started constructing [${construction.name}]!",
-                        NotificationIcon.Construction, buildingIcon)
+                        NotificationIcon.Construction, buildingIcon, color = NotificationColor.Bad)
                 else -> otherCiv.addNotification("An unknown civilization has started constructing [${construction.name}]!",
-                    NotificationIcon.Construction, buildingIcon)
+                    NotificationIcon.Construction, buildingIcon, color = NotificationColor.Bad)
             }
         }
     }
@@ -418,8 +418,7 @@ class CityConstructions {
                         "[${construction.name}] has been built in [${cityInfo.name}]",
                         cityInfo.location,
                         NotificationIcon.Construction,
-                        buildingIcon,
-                        color = NotificationColor.Construction
+                        buildingIcon
                     )
                 else
                     civ.addNotification("[${construction.name}] has been built in a faraway land", buildingIcon)
@@ -427,7 +426,7 @@ class CityConstructions {
         } else {
             val icon = if (construction is Building) buildingIcon else construction.name // could be a unit, in which case take the unit name.
             cityInfo.civInfo.addNotification("[${construction.name}] has been built in [" + cityInfo.name + "]",
-                    cityInfo.location, NotificationIcon.Construction, icon, color = NotificationColor.Construction)
+                    cityInfo.location, NotificationIcon.Construction, icon)
         }
 
         if (construction is Building && construction.hasUnique(UniqueType.TriggersAlertOnCompletion,

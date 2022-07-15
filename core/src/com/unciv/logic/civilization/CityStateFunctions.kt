@@ -83,7 +83,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         val placedUnit = receivingCiv.placeUnitNearTile(cities.city1.location, giftedUnit.name)
             ?: return
         val locations = LocationAction(placedUnit.getTile().position, cities.city2.location)
-        receivingCiv.addNotification( "[${civInfo.civName}] gave us a [${giftedUnit.name}] as a gift!", locations, civInfo.civName, giftedUnit.name, color = NotificationColor.Gold)
+        receivingCiv.addNotification( "[${civInfo.civName}] gave us a [${giftedUnit.name}] as a gift!", locations, civInfo.civName, giftedUnit.name)
     }
 
     fun giveMilitaryUnitToPatron(receivingCiv: CivilizationInfo) {
@@ -126,8 +126,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             "[${civInfo.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!",
             locations,
             civInfo.civName,
-            militaryUnit.name,
-            color = NotificationColor.Gold
+            militaryUnit.name
         )
     }
 

@@ -57,7 +57,7 @@ class GameSettings {
     var showZoomButtons: Boolean = false
     var coloredNotifications: Boolean = true
 
-    var notificationsLogMaxTurns = 5
+    var notificationsLogMaxTurns = 100
 
     var androidCutout: Boolean = false
 

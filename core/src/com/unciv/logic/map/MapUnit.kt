@@ -781,7 +781,7 @@ class MapUnit {
             val locations = LocationAction(tile.position, closestCity.location)
             civInfo.addNotification(
                 "Clearing a [$removedTerrainFeature] has created [$productionPointsToAdd] Production for [${closestCity.name}]",
-                locations, NotificationIcon.Construction, color = NotificationColor.Construction
+                locations, NotificationIcon.Construction
             )
         }
     }
