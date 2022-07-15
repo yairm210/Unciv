@@ -14,8 +14,6 @@ class YieldGroup : HorizontalGroup() {
         isTransform = false // performance helper - nothing here is rotated or scaled
     }
 
-    val isSimplified = true
-
     var currentStats = Stats()
 
     fun setStats(stats: Stats) {
@@ -30,10 +28,8 @@ class YieldGroup : HorizontalGroup() {
     }
 
     fun getIcon(stat: Stat): IconCircleGroup {
-        if (isSimplified) return ImageGetter.getCircle().apply { color = stat.color }
+        return ImageGetter.getCircle().apply { color = stat.color }
             .surroundWithCircle(15f)
-            .apply { circle.color = Color.BLACK;circle.color.a = 0.5f }
-        return ImageGetter.getStatIcon(stat.name).surroundWithCircle(20f)
             .apply { circle.color = Color.BLACK;circle.color.a = 0.5f }
     }
 
