@@ -307,32 +307,16 @@ open class TileGroup(
             if (!ImageGetter.imageExists(baseLocation)) continue
 
             var locationToCheck = baseLocation
-            if (tileInfo.owningCity != null) {
+            fun TileSetStrings.getThisTile(): String? {
                 var ownersStyle = tileInfo.getOwner()!!.nation.style
                 if (ownersStyle == "") ownersStyle = tileInfo.getOwner()!!.civName
-                var eraImageFound = false
-                for (eraNumber in tileInfo.getOwner()!!.getEraNumber() downTo 0) {
-                    val era = tileInfo.getOwner()!!.gameInfo.ruleSet.eras.keys.elementAt(eraNumber)
-                    val eraStyleSpecificLocation = tileSetStrings.getString(locationToCheck, tileSetStrings.tag, ownersStyle, tileSetStrings.tag, era)
-                    val eraSpecificLocation = tileSetStrings.getString(locationToCheck, tileSetStrings.tag, era)
-
-                    if (ImageGetter.imageExists(eraStyleSpecificLocation)) {
-                        locationToCheck = eraStyleSpecificLocation
-                        eraImageFound = true
-                        break
-                    } else if (ImageGetter.imageExists(eraSpecificLocation)) {
-                        locationToCheck = eraSpecificLocation
-                        eraImageFound = true
-                        break
-                    }
-                }
-
-                val styleSpecificLocation =
-                    tileSetStrings.getString(locationToCheck, tileSetStrings.tag, ownersStyle)
-
-                if (!eraImageFound && ImageGetter.imageExists(styleSpecificLocation))
-                    locationToCheck = styleSpecificLocation
+                return ImageAttempter(locationToCheck)
+                    .tryTileEraImage(locationToCheck, true, ownersStyle)
+                    .tryTileEraImage(locationToCheck, false)
+                    .tryImage { tileSetStrings.getString(locationToCheck, tileSetStrings.tag, ownersStyle) }
+                    .getPathOrNull()
             }
+            if (tileInfo.owningCity != null) locationToCheck = tileSetStrings.getThisTile() ?: locationToCheck
 
             val existingImages = ArrayList<String>()
             existingImages.add(locationToCheck)
@@ -357,6 +341,21 @@ open class TileGroup(
             baseLayerGroup.addActor(image)
             setHexagonImageSize(image)
         }
+    }
+
+    private fun ImageAttempter<String>.tryTileEraImage(locationToCheck: String, tryStyle: Boolean, ownersStyle: String? = null): ImageAttempter<String> {
+        return this.tryImages(
+            (tileInfo.getOwner()!!.getEraNumber() downTo 0).asSequence().map {
+                {
+                    val era = tileInfo.getOwner()!!.gameInfo.ruleSet.eras.keys.elementAt(it)
+                    if (tryStyle && ownersStyle != null) {
+                        tileSetStrings.getString(locationToCheck, tileSetStrings.tag, ownersStyle, tileSetStrings.tag, era)
+                    } else {
+                        tileSetStrings.getString(locationToCheck, tileSetStrings.tag, era)
+                    }
+                }
+            }
+        )
     }
 
     fun showMilitaryUnit(viewingCiv: CivilizationInfo) = showEntireMap
