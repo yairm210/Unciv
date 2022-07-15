@@ -18,7 +18,6 @@ class GlobalPoliticsOverviewTable (
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
 
     init {
-        addSeparator(Color.GRAY)
         createGlobalPoliticsTable()
     }
 
