@@ -17,6 +17,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.CivilizationInfoPreview
 import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.NotificationColor
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.TechManager
