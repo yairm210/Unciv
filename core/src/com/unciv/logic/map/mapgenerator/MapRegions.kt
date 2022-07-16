@@ -1389,8 +1389,8 @@ class MapRegions (val ruleset: Ruleset){
 
         // Third add some minor deposits to land tiles
         // Note: In G&K there is a bug where minor deposits are never placed on hills. We're not replicating that.
-        val frequency = (baseMinorDepositFrequency * bonusMultiplier).toInt()
-        val minorDepositsToAdd = (landList.size / frequency) + 1 // I sometimes have division by zero errors on this line
+        val frequency = maxOf((baseMinorDepositFrequency * bonusMultiplier).toInt(),1) 
+        val minorDepositsToAdd = (landList.size / frequency) + 1 
         var minorDepositsAdded = 0
         for (tile in landList) {
             if (tile.resource != null || tileData[tile.position]!!.impacts.containsKey(ImpactType.Strategic))
@@ -1452,7 +1452,7 @@ class MapRegions (val ruleset: Ruleset){
                 // If there is no matching list, it is because the rule was determined to be impossible and so can be safely skipped
                     ?: continue
                 // Place the resources
-                placeResourcesInTiles((rule.params[0].toFloat() * bonusMultiplier).toInt(), list, listOf(resource), 0 + extraImpact, 2 + extraImpact, false)
+                placeResourcesInTiles(maxOf((rule.params[0].toFloat() * bonusMultiplier).toInt(),1), list, listOf(resource), 0 + extraImpact, 2 + extraImpact, false)
             }
             if(fallbackBonuses && resource.resourceType == ResourceType.Bonus) {
                 // Since we haven't been able to generate any rule-based lists, just generate new ones on the fly
