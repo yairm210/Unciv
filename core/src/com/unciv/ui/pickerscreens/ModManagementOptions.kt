@@ -100,11 +100,10 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
     )
 
     fun getFilter(): Filter {
-        return Filter(getFilterText(), category.topic)
+        return Filter(textField.text, category.topic)
     }
 
     private val textField = UncivTextField.create("Enter search text")
-    private fun getFilterText(): String = textField.text
 
     var category = Category.All
     var sortInstalled = SortType.Name
