@@ -192,8 +192,7 @@ class WorldScreen(
             isPlayersTurn = false // until we're up to date, don't let the player do anything
 
         if (gameInfo.isOnlineMultiplayer()) {
-            val name = UncivGame.Current.multiplayer.getGameById(gameInfo.gameId)?.name
-            events.receive(MultiplayerGameUpdated::class, { it.name == name }) {
+            events.receive(MultiplayerGameUpdated::class, { it.game.gameId == gameInfo.gameId }) {
                 if (isNextTurnUpdateRunning() || gameInfo.hasLatestGameState(it.status)) {
                     return@receive
                 }

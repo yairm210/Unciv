@@ -141,16 +141,16 @@ class Multiplayer : Disposable {
         }
 
         for (gameFromFile in gamesFromFile) {
-            val currentGame = savedGames[gameFromFile.name]!!
+            val currentGame = savedGames[gameFromFile.gameId]!!
             if (currentGame.lastUpdate.get() != gameFromFile.lastUpdate.get()) {
                 val fileStatus = gameFromFile.status
                 val fileError = gameFromFile.error
                 val event = if (fileError != null) {
-                    MultiplayerGameUpdateFailed(gameFromFile.name, fileError)
+                    MultiplayerGameUpdateFailed(gameFromFile, fileError)
                 } else if (fileStatus != null && fileStatus == currentGame.status) {
-                    MultiplayerGameUpdateUnchanged(gameFromFile.name, fileStatus)
+                    MultiplayerGameUpdateUnchanged(gameFromFile, fileStatus)
                 } else {
-                    MultiplayerGameUpdated(gameFromFile.name, fileStatus!!)
+                    MultiplayerGameUpdated(gameFromFile, fileStatus!!)
                 }
                 launchOnGLThread {
                     EventBus.send(event)
@@ -202,18 +202,18 @@ class Multiplayer : Disposable {
     }
 
     private suspend fun addGame(game: MultiplayerGame) {
-        savedGames[game.name] = game
+        savedGames[game.gameId] = game
         withGLContext {
-            EventBus.send(MultiplayerGameAdded(game.name))
+            EventBus.send(MultiplayerGameAdded(game))
         }
     }
 
     fun getGameByName(name: String): MultiplayerGame? {
-        return savedGames[name]
+        return savedGames.values.firstOrNull { it.name == name }
     }
 
     fun getGameById(gameId: String): MultiplayerGame? {
-        return savedGames.values.firstOrNull { it.gameId == gameId }
+        return savedGames[gameId]
     }
 
     /**
@@ -309,27 +309,11 @@ class Multiplayer : Disposable {
      */
     fun deleteGame(toDelete: MultiplayerGame) {
         debug("Deleting game %s with id %s", toDelete.name, toDelete.gameId)
-        if (savedGames.remove(toDelete.name) != null) {
+        if (savedGames.remove(toDelete.gameId) != null) {
             Concurrency.runOnGLThread {
-                EventBus.send(MultiplayerGameDeleted(toDelete.name))
+                EventBus.send(MultiplayerGameDeleted(toDelete))
             }
         }
-    }
-
-    /**
-     * Only changes the game name if it actually changed.
-     *
-     * Fires [MultiplayerGameNameChanged].
-     */
-    fun changeGameName(game: MultiplayerGame, newName: String) {
-        if (game.name == newName) return
-        debug("Changing name of game %s to", game.name, newName)
-
-        savedGames.remove(game.name) ?: return
-
-        val newGame = MultiplayerGame(game.gameId, game.serverData, newName, game.status)
-        savedGames[newGame.name] = newGame
-        EventBus.send(MultiplayerGameNameChanged(game.name, newName))
     }
 
     /**
@@ -374,11 +358,6 @@ class Multiplayer : Disposable {
             }
         }
         gameUpdateJob?.cancel()
-    }
-
-    fun isCurrentGame(name: String): Boolean {
-        val game = getGameByName(name)
-        return game != null && UncivGame.isCurrentGame(game.gameId)
     }
 
     enum class ServerType {

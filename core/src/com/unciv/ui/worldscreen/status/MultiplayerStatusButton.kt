@@ -14,8 +14,7 @@ import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Disposable
 import com.unciv.UncivGame
 import com.unciv.logic.event.EventBus
-import com.unciv.logic.multiplayer.HasMultiplayerGameName
-import com.unciv.logic.multiplayer.MultiplayerGameNameChanged
+import com.unciv.logic.multiplayer.HasMultiplayerGame
 import com.unciv.logic.multiplayer.MultiplayerGameUpdateEnded
 import com.unciv.logic.multiplayer.MultiplayerGameUpdateStarted
 import com.unciv.logic.multiplayer.MultiplayerGameUpdated
@@ -34,14 +33,13 @@ import java.time.Instant
 
 class MultiplayerStatusButton(
     screen: BaseScreen,
-    curGame: MultiplayerGame?
+    private var curGame: MultiplayerGame?
 ) : Button(BaseScreen.skin), Disposable {
-    private var curGameName = curGame?.name
     private val multiplayerImage = createMultiplayerImage()
     private val loadingImage = createLoadingImage()
     private val turnIndicator = TurnIndicator()
     private val turnIndicatorCell: Cell<Actor>
-    private val gameNamesWithCurrentTurn = getInitialGamesWithCurrentTurn()
+    private val gamesWithCurrentTurn = getInitialGamesWithCurrentTurn()
     private var loadingStarted: Instant? = null
 
     private val events = EventBus.EventReceiver()
@@ -54,20 +52,16 @@ class MultiplayerStatusButton(
         updateTurnIndicator(flash = false) // no flash since this is just the initial construction
         events.receive(MultiplayerGameUpdated::class) {
             val shouldUpdate = if (it.status.isUsersTurn()) {
-                gameNamesWithCurrentTurn.add(it.name)
+                gamesWithCurrentTurn.add(it.game)
             } else {
-                gameNamesWithCurrentTurn.remove(it.name)
+                gamesWithCurrentTurn.remove(it.game)
             }
             if (shouldUpdate) Concurrency.runOnGLThread {
                 updateTurnIndicator()
             }
         }
 
-        val curGameFilter: (HasMultiplayerGameName) -> Boolean = { it.name == curGameName }
-
-        events.receive(MultiplayerGameNameChanged::class, curGameFilter) {
-            curGameName = it.newName
-        }
+        val curGameFilter: (HasMultiplayerGame) -> Boolean = { it.game == curGame }
 
         events.receive(MultiplayerGameUpdateStarted::class, curGameFilter) { startLoading() }
         events.receive(MultiplayerGameUpdateEnded::class, curGameFilter) { stopLoading() }
@@ -109,19 +103,12 @@ class MultiplayerStatusButton(
         }
     }
 
-    private fun getInitialGamesWithCurrentTurn(): MutableSet<String> {
-        return findGamesToBeNotifiedAbout(UncivGame.Current.multiplayer.games)
-    }
-
-    /** @return set of gameIds */
-    private fun findGamesToBeNotifiedAbout(games: Iterable<MultiplayerGame>): MutableSet<String> {
-        return games
-            .filter { it.name != curGameName }
+    private fun getInitialGamesWithCurrentTurn(): MutableSet<MultiplayerGame> {
+        return UncivGame.Current.multiplayer.games
+            .filter { it != curGame }
             .filter { it.status?.isUsersTurn() == true }
-            .map { it.name }
             .toMutableSet()
     }
-
 
     private fun createMultiplayerImage(): Image {
         val img = ImageGetter.getImage("OtherIcons/Multiplayer")
@@ -138,11 +125,11 @@ class MultiplayerStatusButton(
     }
 
     private fun updateTurnIndicator(flash: Boolean = true) {
-        if (gameNamesWithCurrentTurn.size == 0) {
+        if (gamesWithCurrentTurn.size == 0) {
             turnIndicatorCell.clearActor()
         } else {
             turnIndicatorCell.setActor(turnIndicator)
-            turnIndicator.update(gameNamesWithCurrentTurn.size)
+            turnIndicator.update(gamesWithCurrentTurn.size)
         }
 
         // flash so the user sees an better update

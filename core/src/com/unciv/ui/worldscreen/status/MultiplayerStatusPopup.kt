@@ -37,12 +37,11 @@ class MultiplayerStatusPopup(
         }
     }
 
-    private fun gameSelected(gameName: String) {
-        val multiplayerGame = UncivGame.Current.multiplayer.getGameByName(gameName)!!
-        selectedGame = multiplayerGame
+    private fun gameSelected(game: MultiplayerGame) {
+        selectedGame = game
         pickerPane.setRightSideButtonEnabled(true)
-        pickerPane.rightSideButton.setText("Load [$gameName]".tr())
-        pickerPane.descriptionLabel.setText(MultiplayerHelpers.buildDescriptionText(multiplayerGame))
+        pickerPane.rightSideButton.setText("Load [${game.name}]".tr())
+        pickerPane.descriptionLabel.setText(MultiplayerHelpers.buildDescriptionText(game))
     }
 
 }

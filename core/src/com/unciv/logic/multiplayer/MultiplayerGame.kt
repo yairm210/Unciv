@@ -2,7 +2,6 @@ package com.unciv.logic.multiplayer
 
 import com.unciv.logic.GameInfo
 import com.unciv.logic.HasGameId
-import com.unciv.logic.HasGameTurnData
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.GameUpdateResult.Type.CHANGED
 import com.unciv.logic.multiplayer.GameUpdateResult.Type.FAILURE
@@ -13,7 +12,6 @@ import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerFiles
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
-import com.unciv.utils.concurrency.withGLContext
 import com.unciv.utils.debug
 import kotlinx.coroutines.coroutineScope
 import java.time.Duration
@@ -42,7 +40,14 @@ class MultiplayerGame(
             }
         }
 
-    val name: String = name ?: gameId
+    var name: String = name ?: gameId
+        set(newName) {
+            val oldName = field
+            field = newName
+            Concurrency.runOnGLThread {
+                EventBus.send(MultiplayerGameNameChanged(this@MultiplayerGame, oldName))
+            }
+        }
 
     var status = status
         private set
@@ -79,7 +84,7 @@ class MultiplayerGame(
         }
         debug("Starting multiplayer game update for %s with id %s", name, gameId)
         launchOnGLThread {
-            EventBus.send(MultiplayerGameUpdateStarted(name))
+            EventBus.send(MultiplayerGameUpdateStarted(this@MultiplayerGame))
         }
         val throttleInterval = if (forceUpdate) Duration.ZERO else getUpdateThrottleInterval()
         val updateResult = if (forceUpdate || needsUpdate()) {
@@ -90,16 +95,16 @@ class MultiplayerGame(
         val updateEvent = when {
             updateResult.type == CHANGED && updateResult.status != null -> {
                 debug("Game update for %s with id %s had remote change", name, gameId)
-                MultiplayerGameUpdated(name, updateResult.status)
+                MultiplayerGameUpdated(this@MultiplayerGame, updateResult.status)
             }
             updateResult.type == FAILURE && updateResult.error != null -> {
                 debug("Game update for %s with id %s failed: %s", name, gameId, updateResult.error)
-                MultiplayerGameUpdateFailed(name, updateResult.error)
+                MultiplayerGameUpdateFailed(this@MultiplayerGame, updateResult.error)
             }
             updateResult.type == UNCHANGED && updateResult.status != null -> {
                 debug("Game update for %s with id %s had no changes", name, gameId)
                 error = null
-                MultiplayerGameUpdateUnchanged(name, updateResult.status)
+                MultiplayerGameUpdateUnchanged(this@MultiplayerGame, updateResult.status)
             }
             else -> throw IllegalStateException()
         }
@@ -123,7 +128,7 @@ class MultiplayerGame(
         status = newStatus
         if (sendEvent) {
             Concurrency.runOnGLThread {
-                EventBus.send(MultiplayerGameUpdated(name, newStatus))
+                EventBus.send(MultiplayerGameUpdated(this@MultiplayerGame, newStatus))
             }
         }
     }

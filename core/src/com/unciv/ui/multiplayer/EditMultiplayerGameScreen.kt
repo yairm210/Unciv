@@ -49,11 +49,11 @@ class EditMultiplayerGameScreen(val multiplayerGame: MultiplayerGame) : PickerSc
         rightSideButton.onClick {
             rightSideButton.setText("Saving...".tr())
             val newName = textField.text.trim()
-            game.multiplayer.changeGameName(multiplayerGame, newName)
+            multiplayerGame.name = newName
             multiplayerGame.serverData = serverData
             val newScreen = game.popScreen()
             if (newScreen is MultiplayerScreen) {
-                newScreen.selectGame(newName)
+                newScreen.selectGame(multiplayerGame)
             }
         }
     }

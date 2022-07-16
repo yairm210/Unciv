@@ -9,7 +9,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.UncivGame
 import com.unciv.logic.HasGameTurnData
 import com.unciv.logic.event.EventBus
-import com.unciv.logic.multiplayer.HasMultiplayerGameName
+import com.unciv.logic.multiplayer.HasMultiplayerGame
+import com.unciv.logic.multiplayer.MultiplayerGame
 import com.unciv.logic.multiplayer.MultiplayerGameAdded
 import com.unciv.logic.multiplayer.MultiplayerGameDeleted
 import com.unciv.logic.multiplayer.MultiplayerGameNameChanged
@@ -25,10 +26,10 @@ import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.setSize
 
 class GameList(
-    onSelected: (String) -> Unit
+    onSelected: (MultiplayerGame) -> Unit
 ) : VerticalGroup() {
 
-    private val gameDisplays = mutableMapOf<String, GameDisplay>()
+    private val gameDisplays = mutableMapOf<MultiplayerGame, GameDisplay>()
 
     private val events = EventBus.EventReceiver()
 
@@ -37,45 +38,37 @@ class GameList(
         padBottom(10f)
 
         events.receive(MultiplayerGameAdded::class) {
-            val multiplayerGame = UncivGame.Current.multiplayer.getGameByName(it.name)
-            if (multiplayerGame == null) return@receive
-            addGame(it.name, multiplayerGame.status, multiplayerGame.error, onSelected)
+            addGame(it.game, onSelected)
         }
         events.receive(MultiplayerGameNameChanged::class) {
-            val gameDisplay = gameDisplays.remove(it.name)
+            val gameDisplay = gameDisplays.get(it.game)
             if (gameDisplay == null) return@receive
-            gameDisplay.changeName(it.newName)
-            gameDisplays[it.newName] = gameDisplay
             children.sort()
         }
         events.receive(MultiplayerGameDeleted::class) {
-            val gameDisplay = gameDisplays.remove(it.name)
+            val gameDisplay = gameDisplays.remove(it.game)
             if (gameDisplay == null) return@receive
             gameDisplay.remove()
         }
 
         for (game in UncivGame.Current.multiplayer.games) {
-            addGame(game.name, game.status, game.error, onSelected)
+            addGame(game, onSelected)
         }
     }
 
-    private fun addGame(name: String, status: HasGameTurnData?, error: Exception?, onSelected: (String) -> Unit) {
-        val gameDisplay = GameDisplay(name, status, error, onSelected)
-        gameDisplays[name] = gameDisplay
+    private fun addGame(game: MultiplayerGame, onSelected: (MultiplayerGame) -> Unit) {
+        val gameDisplay = GameDisplay(game, onSelected)
+        gameDisplays[game] = gameDisplay
         addActor(gameDisplay)
         children.sort()
     }
 }
 
 private class GameDisplay(
-    multiplayerGameName: String,
-    status: HasGameTurnData?,
-    error: Exception?,
-    private val onSelected: (String) -> Unit
+    val game: MultiplayerGame,
+    private val onSelected: (MultiplayerGame) -> Unit
 ) : Table(), Comparable<GameDisplay> {
-    var gameName: String = multiplayerGameName
-        private set
-    val gameButton = TextButton(gameName, BaseScreen.skin)
+    val gameButton = TextButton(game.name, BaseScreen.skin)
     val turnIndicator = createIndicator("OtherIcons/ExclamationMark")
     val errorIndicator = createIndicator("StatIcons/Malcontent")
     val refreshIndicator = createIndicator("EmojiIcons/Turn")
@@ -86,18 +79,21 @@ private class GameDisplay(
     init {
         padBottom(5f)
 
-        updateTurnIndicator(status)
-        updateErrorIndicator(error != null)
+        updateTurnIndicator(game.status)
+        updateErrorIndicator(game.error != null)
         add(statusIndicators)
         add(gameButton)
-        onClick { onSelected(gameName) }
+        onClick { onSelected(game) }
 
-        val isOurGame: (HasMultiplayerGameName) -> Boolean = { it.name == gameName }
+        val isOurGame: (HasMultiplayerGame) -> Boolean = { it.game == game }
         events.receive(MultiplayerGameUpdateStarted::class, isOurGame, {
             statusIndicators.addActor(refreshIndicator)
         })
         events.receive(MultiplayerGameUpdateEnded::class, isOurGame) {
             refreshIndicator.remove()
+        }
+        events.receive(MultiplayerGameNameChanged::class, isOurGame) {
+            gameButton.setText(it.game.name)
         }
         events.receive(MultiplayerGameUpdated::class, isOurGame) {
             updateTurnIndicator(it.status)
@@ -110,10 +106,6 @@ private class GameDisplay(
         }
     }
 
-    fun changeName(newName: String) {
-        gameName = newName
-        gameButton.setText(newName)
-    }
 
     private fun updateTurnIndicator(status: HasGameTurnData?) {
         if (status?.isUsersTurn() == true) {
@@ -139,7 +131,7 @@ private class GameDisplay(
         return container
     }
 
-    override fun compareTo(other: GameDisplay): Int = gameName.compareTo(other.gameName)
-    override fun equals(other: Any?): Boolean = (other is GameDisplay) && (gameName == other.gameName)
-    override fun hashCode(): Int = gameName.hashCode()
+    override fun compareTo(other: GameDisplay): Int = game.name.compareTo(other.game.name)
+    override fun equals(other: Any?): Boolean = (other is GameDisplay) && (game == other.game)
+    override fun hashCode(): Int = game.hashCode()
 }

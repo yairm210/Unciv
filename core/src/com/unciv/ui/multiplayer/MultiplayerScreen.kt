@@ -3,12 +3,11 @@ package com.unciv.ui.multiplayer
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.unciv.UncivGame
 import com.unciv.logic.event.EventBus
+import com.unciv.logic.multiplayer.HasMultiplayerGame
 import com.unciv.logic.multiplayer.MultiplayerGameDeleted
 import com.unciv.logic.multiplayer.MultiplayerGame
 import com.unciv.logic.multiplayer.MultiplayerGameUpdateEnded
-import com.unciv.logic.multiplayer.MultiplayerGameUpdated
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.Popup
@@ -57,13 +56,12 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
 
         setupRightSideButton()
 
-        events.receive(MultiplayerGameDeleted::class, { it.name == selectedGame?.name }) {
+        val isSelectedGame: (HasMultiplayerGame) -> Boolean = { it.game == selectedGame }
+        events.receive(MultiplayerGameDeleted::class, isSelectedGame) {
             unselectGame()
         }
-
-        events.receive(MultiplayerGameUpdateEnded::class, { it.name == selectedGame?.name }) {
-            val game = UncivGame.Current.multiplayer.getGameByName(it.name)!!
-            descriptionLabel.setText(MultiplayerHelpers.buildDescriptionText(game))
+        events.receive(MultiplayerGameUpdateEnded::class, isSelectedGame) {
+            descriptionLabel.setText(MultiplayerHelpers.buildDescriptionText(it.game))
         }
 
         game.multiplayer.requestUpdate()
@@ -181,17 +179,10 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
         descriptionLabel.setText("")
     }
 
-    fun selectGame(name: String) {
-        val multiplayerGame = game.multiplayer.getGameByName(name)
-        if (multiplayerGame == null) {
-            // Should never happen
-            unselectGame()
-            return
-        }
+    fun selectGame(game: MultiplayerGame) {
+        selectedGame = game
 
-        selectedGame = multiplayerGame
-
-        if (multiplayerGame.status != null) {
+        if (game.status != null) {
             copyGameIdButton.enable()
         } else {
             copyGameIdButton.disable()
@@ -199,6 +190,6 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
         editButton.enable()
         rightSideButton.enable()
 
-        descriptionLabel.setText(MultiplayerHelpers.buildDescriptionText(multiplayerGame))
+        descriptionLabel.setText(MultiplayerHelpers.buildDescriptionText(game))
     }
 }

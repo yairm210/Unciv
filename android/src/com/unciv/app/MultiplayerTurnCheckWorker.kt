@@ -192,11 +192,11 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                 files.loadMultiplayerGames()
             }
 
-            Log.d(LOG_TAG, "start gameNames: ${multiplayerGames.keys}")
+            Log.d(LOG_TAG, "start gameNames: ${multiplayerGames.values.map { it.name }}")
 
             if (currentGameInfo.currentPlayerId == settings.userId) {
                 // May be useful to remind a player that he forgot to complete his turn.
-                val currentGame = multiplayerGames.values.firstOrNull { it.gameId == currentGameInfo.gameId }
+                val currentGame = multiplayerGames[currentGameInfo.gameId]
                 // If reading the game status file threw an exception, gameIndex will be -1
                 if (currentGame != null) {
                     notifyUserAboutTurn(applicationContext, currentGame.name, currentGame.gameId)
@@ -272,7 +272,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
             val multiplayerGames = runBlocking {
                 files.loadMultiplayerGames()
             }
-            Log.d(LOG_TAG, "doWork gameNames: ${multiplayerGames.keys}")
+            Log.d(LOG_TAG, "doWork gameNames: ${multiplayerGames.values.map { it.name }}")
 
 
             var foundGame: MultiplayerGame? = null

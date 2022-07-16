@@ -297,7 +297,7 @@ object BackwardCompatibility {
                 }
             }
             .filterNotNull()
-            .associateBy { it.name }
+            .associateBy { it.gameId }
 
         saveMultiplayerGames(multiplayerGames)
 

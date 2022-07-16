@@ -2,7 +2,6 @@ package com.unciv.models.metadata
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.PlayerType
-import com.unciv.logic.multiplayer.HasMultiplayerGameName
 import com.unciv.logic.multiplayer.Multiplayer.ServerData
 import com.unciv.models.ruleset.Speed
 
