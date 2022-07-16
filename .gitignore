@@ -143,6 +143,7 @@ server/packrCache/
 deploy/
 android/release/
 
+android/assets/lasterror.txt
 android/assets/GameSettings.json
 android/assets/MultiplayerGames.json
 android/assets/maps/
