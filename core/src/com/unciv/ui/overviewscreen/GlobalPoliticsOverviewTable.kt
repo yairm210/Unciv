@@ -121,7 +121,7 @@ class GlobalPoliticsOverviewTable (
         for (friend in civ.friendCivs) {
             val friendtext = "Friends with ${civ.civName}".toLabel()
             friendtext.color = Color.GREEN
-            val turnsLeftText = "( ${viewingPlayer.gameInfo.turns - friend.value} Turns Left)".toLabel()
+            val turnsLeftText = "(${viewingPlayer.gameInfo.turns - friend.value} Turns Left)".toLabel()
             politicsTable.add(friendtext)
             politicsTable.add(turnsLeftText).row()
         }
@@ -131,7 +131,7 @@ class GlobalPoliticsOverviewTable (
         for (denouncedCiv in civ.denouncedCivs) {
             val denouncedText = "Denounced ${denouncedCiv.key}".toLabel()
             denouncedText.color = Color.RED
-            val turnsLeftText = "( {${(viewingPlayer.gameInfo.turns - denouncedCiv.value)} Turns Left})".toLabel()
+            val turnsLeftText = "({${(viewingPlayer.gameInfo.turns - denouncedCiv.value)} Turns Left})".toLabel()
             politicsTable.add(denouncedText)
             politicsTable.add(turnsLeftText).row()
         }
