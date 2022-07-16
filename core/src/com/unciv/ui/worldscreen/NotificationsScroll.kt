@@ -1,7 +1,6 @@
 package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -51,8 +50,14 @@ class NotificationsScroll(
         maxNotificationsHeight: Float,
         tileInfoTableHeight: Float
     ) {
+
+        val previousScrollY = scrollY
+
         updateContent(notifications)
         updateLayout(maxNotificationsHeight, tileInfoTableHeight)
+
+        scrollY = previousScrollY
+        updateVisualScroll()
     }
 
     private fun updateContent(notifications: MutableList<Notification>) {
