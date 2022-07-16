@@ -18,6 +18,7 @@ import com.unciv.ui.utils.extensions.addSeparator
 import com.unciv.ui.utils.extensions.brighten
 import com.unciv.ui.utils.extensions.format
 import com.unciv.ui.utils.extensions.toGdxArray
+import com.unciv.ui.utils.extensions.toLabel
 import java.time.Duration
 import java.time.temporal.ChronoUnit
 
@@ -83,8 +84,22 @@ fun OptionsPopup.multiplayerTab(): Table {
     val serverInput = ServerInput(settings.multiplayer::defaultServerData) { serverData ->
         for (select in refreshSelects) select.update(serverData.type)
         UncivGame.Current.settings.save()
-    }.standalone()
-    tab.add(serverInput).colspan(2).growX()
+    }
+
+    val serverDataTable = Table()
+    val defaultServerLabel = "{Default server for all new games}:".toLabel()
+    defaultServerLabel.wrap = true
+    serverDataTable.add(defaultServerLabel)
+        .left()
+        .minWidth(100f)
+        .spaceRight(10f)
+        .growX()
+    serverDataTable.add(serverInput.standalone(true))
+        .right()
+        .minWidth(200f)
+        .maxWidth(600f)
+        .growX()
+    tab.add(serverDataTable).colspan(2).growX()
 
     return tab
 }
