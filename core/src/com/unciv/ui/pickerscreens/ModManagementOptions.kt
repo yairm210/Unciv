@@ -252,14 +252,9 @@ class ModUIData(
         val modTopic = repo?.topics ?: ruleset?.modOptions?.topics!!
         if (filter.topic == ModManagementOptions.Category.All.topic)
             return true
-        return try {
-            modTopic[1] == filter.topic
-        } catch (ex: IndexOutOfBoundsException) {
-            false // mod does not have a category -> don't show it
-        } catch (ex: Exception) {
-            Log.error("Error while filtering category for installed mods: ", ex)
-            false
-        }
+        if (modTopic.size < 2) return false
+        if (modTopic[1] == filter.topic) return true
+        return false
     }
 }
 
