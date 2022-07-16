@@ -22,7 +22,7 @@ class GlobalPoliticsOverviewTable (
         addSeparatorVertical(Color.GRAY)
         add("Civilization Info".toLabel())
         addSeparatorVertical(Color.GRAY)
-        add("Social Policies".toLabel())
+        add("Social policies".toLabel())
         addSeparatorVertical(Color.GRAY)
         add("Wonders".toLabel())
         addSeparatorVertical(Color.GRAY)
