@@ -175,9 +175,9 @@ class UncivFiles(
     /**
      * Saves the given [games] in the [MULTIPLAYER_GAMES_FILE_NAME] file. Thread-safe.
      */
-    suspend fun saveMultiplayerGames(games: Map<String, MultiplayerGame>) = withNonDaemonThreadPoolContext {
+    suspend fun saveMultiplayerGames(games: Set<MultiplayerGame>) = withNonDaemonThreadPoolContext {
         MULTIPLAYER_GAMES_FILE_MUTEX.withLock {
-            json().toJson(games, files.local(MULTIPLAYER_GAMES_FILE_NAME))
+            json().toJson(ArrayList(games), ArrayList::class.java, MultiplayerGame::class.java, files.local(MULTIPLAYER_GAMES_FILE_NAME))
         }
     }
 
@@ -242,24 +242,24 @@ class UncivFiles(
     }
 
     /** Loads saved multiplayer games. Thread-safe. */
-    suspend fun loadMultiplayerGames(): Map<String, MultiplayerGame> = withThreadPoolContext toplevel@{
+    suspend fun loadMultiplayerGames(): Set<MultiplayerGame> = withThreadPoolContext toplevel@{
         val fileHandle = files.local(MULTIPLAYER_GAMES_FILE_NAME)
-        val multiplayerGames = mutableMapOf<String, MultiplayerGame>()
+        val multiplayerGames = mutableSetOf<MultiplayerGame>()
 
         if (fileHandle.exists()) {
             MULTIPLAYER_GAMES_FILE_MUTEX.withLock {
-                val newGames = json().fromJson(HashMap::class.java, MultiplayerGame::class.java, fileHandle)
+                val newGames = json().fromJson(ArrayList::class.java, MultiplayerGame::class.java, fileHandle)
                 if (newGames == null) {
                     throw emptyFile(fileHandle)
                 }
-                @Suppress("UNCHECKED_CAST") // gdx.Json always deserializes maps with a String key and the second argument as the value class
-                multiplayerGames.putAll(newGames as Map<String, MultiplayerGame>)
+                @Suppress("UNCHECKED_CAST") // Since we used the `MultiplayerGame` class as argument for `fromJson` and that succeeded, this will as well
+                multiplayerGames.addAll(newGames.toSet() as Set<MultiplayerGame>)
             }
         }
         val oldMultiplayerFiles = listFilesInFolder(OLD_MULTIPLAYER_FILES_FOLDER).toList()
         if (oldMultiplayerFiles.isNotEmpty()){
             val oldGames = migrateOldMultiplayerGames(oldMultiplayerFiles)
-            multiplayerGames.putAll(oldGames)
+            multiplayerGames.addAll(oldGames)
         }
 
         return@toplevel multiplayerGames

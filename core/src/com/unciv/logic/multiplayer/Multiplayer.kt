@@ -68,11 +68,11 @@ class Multiplayer : Disposable {
 
     private suspend fun loadGamesFromFile() {
         val gamesFromFile = files.loadMultiplayerGames()
-        savedGames.putAll(gamesFromFile) // initial game addition does not get events sent
+        savedGames.putAll(gamesFromFile.associateBy(MultiplayerGame::gameId)) // initial game addition does not get events sent
     }
 
     private suspend fun writeGamesToFile() {
-        files.saveMultiplayerGames(savedGames)
+        files.saveMultiplayerGames(games)
     }
 
     private fun startGameUpdateJob() {
@@ -127,8 +127,7 @@ class Multiplayer : Disposable {
     }
 
     private suspend fun updateSavesFromFiles() = coroutineScope {
-        val multiplayerGames = files.loadMultiplayerGames()
-        val gamesFromFile = multiplayerGames.values.toSet()
+        val gamesFromFile = files.loadMultiplayerGames()
 
         val removedGames = games - gamesFromFile
         for (game in removedGames) {

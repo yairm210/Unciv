@@ -271,7 +271,7 @@ object BackwardCompatibility {
 
     const val OLD_MULTIPLAYER_FILES_FOLDER = "MultiplayerGames"
     /** Remove this completely once users migrated their multiplayer games. */
-    suspend fun UncivFiles.migrateOldMultiplayerGames(files: Collection<FileHandle>): Map<String, MultiplayerGame> {
+    suspend fun UncivFiles.migrateOldMultiplayerGames(files: Collection<FileHandle>): Set<MultiplayerGame> {
         val multiplayerGames = files
             .map {
                 try {
@@ -297,7 +297,7 @@ object BackwardCompatibility {
                 }
             }
             .filterNotNull()
-            .associateBy { it.gameId }
+            .toSet()
 
         saveMultiplayerGames(multiplayerGames)
 
