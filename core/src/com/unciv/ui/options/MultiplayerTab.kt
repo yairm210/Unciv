@@ -80,10 +80,10 @@ fun OptionsPopup.multiplayerTab(): Table {
     addSeparator(tab)
 
     val refreshSelects = listOf(curRefreshSelect, allRefreshSelect, turnCheckerSelect).filterNotNull()
-    val serverInput = ServerInput.create(settings.multiplayer::defaultServerData) { serverData ->
+    val serverInput = ServerInput(settings.multiplayer::defaultServerData) { serverData ->
         for (select in refreshSelects) select.update(serverData.type)
         UncivGame.Current.settings.save()
-    }
+    }.standalone()
     tab.add(serverInput).colspan(2).growX()
 
     return tab

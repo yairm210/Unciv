@@ -28,7 +28,7 @@ class EditMultiplayerGameScreen(val multiplayerGame: MultiplayerGame) : PickerSc
 
         topTable.add("Rename".toLabel()).row()
         topTable.add(textField).pad(10f).padBottom(30f).width(stage.width / 2).row()
-        topTable.add(ServerInput.create(this::serverData)).padBottom(30f).row()
+        topTable.add(ServerInput(::serverData).standalone()).padBottom(30f).width(stage.width / 2).row()
         topTable.add(createDeleteButton()).pad(10f).row()
         topTable.add(createGiveUpButton())
 

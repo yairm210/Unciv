@@ -2,15 +2,16 @@ package com.unciv.ui.multiplayer
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
-import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.unciv.UncivGame
 import com.unciv.logic.multiplayer.Multiplayer.ServerData
 import com.unciv.logic.multiplayer.Multiplayer.ServerType
+import com.unciv.models.translations.tr
 import com.unciv.ui.options.SelectItem
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.BaseScreen
@@ -19,7 +20,6 @@ import com.unciv.ui.utils.extensions.firstUpperRestLowerCase
 import com.unciv.ui.utils.extensions.onChange
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.onClickEvent
-import com.unciv.ui.utils.extensions.pad
 import com.unciv.ui.utils.extensions.toGdxArray
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
@@ -27,53 +27,71 @@ import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import kotlin.reflect.KMutableProperty0
 
-object ServerInput {
-    fun create(
-        serverDataProperty: KMutableProperty0<ServerData>? = null,
-        default: ServerData = serverDataProperty?.get() ?: ServerData.default,
-        onUpdate: (ServerData) -> Unit = { _ -> }
-    ): Actor {
-        val table = Table()
-        table.defaults().pad(0f, 5f)
+/**
+ * After creating the server input, use either [standalone] or [addToTable] to add it to the UI.
+ *
+ * @param serverDataProperty the property that is backing this [ServerInput]. Can be `null`, which means
+ * @param default the [ServerData] that should be used as the default. If not set explicitly, will use the value of the property or [ServerData.default] if this is not backed by a property.
+ * @param onUpdate function that is called with the current [ServerData] value whenever it changes.
+ */
+class ServerInput(
+    private val serverDataProperty: KMutableProperty0<ServerData>? = null,
+    default: ServerData = serverDataProperty?.get() ?: ServerData.default,
+    private val onUpdate: (ServerData) -> Unit = { _ -> }
+) {
+    private lateinit var table: Table
+    private lateinit var recreateTable: () -> Unit
 
-        val serverUrlTextField = createServerUrlTextField(serverDataProperty, default.url, onUpdate)
-        val serverAddressLabel = createServerAddressLabel(serverUrlTextField)
-        val connectionToServerButton = createCheckConnectionButton(serverUrlTextField)
-        val serverTypeLabel = "Server type".toLabel()
-        val selectBox = createServerTypeSelect(default.type, serverDataProperty, onUpdate, table, serverTypeLabel, serverAddressLabel, serverUrlTextField, connectionToServerButton)
+    private var serverTypeLabel = "".toLabel()
+    private var serverTypeSelect = createServerTypeSelect(default.type)
+    private val serverUrlLabel = createServerUrlLabel()
+    private val serverUrlTextField = createServerUrlTextField(default.url)
+    private var connectionToServerButton = createCheckConnectionButton(serverUrlTextField)
 
-        addElementsToTable(table, default.type, serverTypeLabel, serverAddressLabel, selectBox, serverUrlTextField, connectionToServerButton)
+    /** The server data this server input currently contains. */
+    var serverData: ServerData = default
 
+    /** Creates a new [Actor] that contains all input elements.
+     * @param verticalLayout if this is false, will use a horizontal layout. The horizontal layout is 3 columns wide and 2 rows high, where the first row contains the labels
+     *                       and the second row contains the input fields. The vertical one is 2 columns wide and 3 rows high, where the first column contains the labels
+     *                       and the second column contains the input fields.
+     */
+    fun standalone(verticalLayout: Boolean = false): Actor {
+        table = Table()
+        recreateTable = {
+            table.clearChildren()
+            addToTable(verticalLayout)
+        }
+        addToTable(verticalLayout)
         return table
     }
 
-    private fun addElementsToTable(
-        table: Table,
-        serverType: ServerType,
-        serverTypeLabel: Label,
-        serverAddressLabel: Label,
-        selectBox: SelectBox<SelectItem<ServerType>>,
-        serverUrlTextField: TextField,
-        connectionToServerButton: TextButton
-    ) {
-        val serverTypeCell = table.add(serverTypeLabel).padBottom(10f)
-        if (serverType == ServerType.DROPBOX) {
-            serverTypeCell.row()
-        } else {
-            table.add(serverAddressLabel).padBottom(10f).row()
-        }
+    /**
+     * Adds the input elements to an existing [tableToAddTo]. The [recreate] function should be a function that does [Table.clearChildren] and adds all of them again,
+     * including calling this function again.
+     *
+     * @param verticalLayout if this is false, will use a horizontal layout. The horizontal layout is 3 columns wide and 2 rows high, where the first row contains the labels
+     *                       and the second row contains the input fields. The vertical one is 2 columns wide and 3 rows high, where the first column contains the labels
+     *                       and the second column contains the input fields.
+     * @return the defaults for the new row after this element
+     */
+    fun addToTable(tableToAddTo: Table, verticalLayout: Boolean, recreate: () -> Unit): Cell<Actor> {
+        table = tableToAddTo
+        recreateTable = recreate
 
-        val typeSelectCell = table.add(selectBox)
-        if (serverType == ServerType.DROPBOX) {
-            typeSelectCell.row()
+        return addToTable(verticalLayout)
+    }
+
+    private fun addToTable(verticalLayout: Boolean): Cell<Actor> {
+        return if (verticalLayout) {
+            addVerticalLayout()
         } else {
-            table.add(serverUrlTextField).growX().minWidth(300f)
-            table.add(connectionToServerButton).row()
+            addHorizontalLayout()
         }
     }
 
-    private fun createServerAddressLabel(serverUrlTextField: TextField): Label {
-        val label = "Server address".toLabel()
+    private fun createServerUrlLabel(): Label {
+        val label = "".toLabel()
         label.onClick {
             serverUrlTextField.text = Gdx.app.clipboard.contents
         }
@@ -81,9 +99,7 @@ object ServerInput {
     }
 
     private fun createServerUrlTextField(
-        serverDataProperty: KMutableProperty0<ServerData>?,
-        initialUrl: String?,
-        onUpdate: (ServerData) -> Unit
+        initialUrl: String?
     ): TextField {
         val initialText = initialUrl ?: "https://"
         val serverUrlTextField = UncivTextField.create("Server address", initialText)
@@ -91,8 +107,7 @@ object ServerInput {
         serverUrlTextField.onChange {
             fixTextFieldUrl(serverUrlTextField)
             val newServerData = ServerData(serverUrlTextField.text)
-            serverDataProperty?.set(newServerData)
-            onUpdate(newServerData)
+            serverDataChanged(newServerData)
         }
         return serverUrlTextField
     }
@@ -117,42 +132,71 @@ object ServerInput {
     }
 
     private fun createServerTypeSelect(
-        initialSelection: ServerType,
-        serverTypeProperty: KMutableProperty0<ServerData>?,
-        onUpdate: (ServerData) -> Unit,
-        table: Table,
-        serverTypeLabel: Label,
-        serverAddressLabel: Label,
-        serverTextField: TextField,
-        connectionToServerButton: TextButton
+        initialSelection: ServerType
     ): SelectBox<SelectItem<ServerType>> {
-        val selectBox = SelectBox<SelectItem<ServerType>>(BaseScreen.skin)
-        selectBox.items = ServerType.values().map { SelectItem(it.toString().firstUpperRestLowerCase(), it) }.toGdxArray()
-        selectBox.selected = selectBox.items.filter { it.value == initialSelection }.first()
+        val serverTypeSelect = SelectBox<SelectItem<ServerType>>(BaseScreen.skin)
+        serverTypeSelect.items = ServerType.values().map { SelectItem(it.toString().firstUpperRestLowerCase(), it) }.toGdxArray()
+        serverTypeSelect.selected = serverTypeSelect.items.filter { it.value == initialSelection }.first()
 
-        selectBox.onChange {
-            val selectedType = selectBox.selected.value
+        serverTypeSelect.onChange {
+            val selectedType = serverTypeSelect.selected.value
             val newServerData = if (selectedType == ServerType.DROPBOX) {
                 ServerData(null)
             } else {
-                ServerData(serverTextField.text)
+                ServerData(serverUrlTextField.text)
             }
-            serverTypeProperty?.set(newServerData)
-            onUpdate(newServerData)
+            serverDataChanged(newServerData)
 
-            table.clearChildren()
-            addElementsToTable(
-                table,
-                selectedType,
-                serverTypeLabel,
-                serverAddressLabel,
-                selectBox,
-                serverTextField,
-                connectionToServerButton
-            )
+            recreateTable()
         }
 
-        return selectBox
+        return serverTypeSelect
+    }
+
+    private fun serverDataChanged(newServerData: ServerData) {
+        serverData = newServerData
+        serverDataProperty?.set(newServerData)
+        onUpdate(newServerData)
+    }
+
+    private fun addVerticalLayout(): Cell<Actor> {
+        table.row().spaceBottom(10f)
+        serverTypeLabel.setText("{Server type}:".tr())
+        table.add(serverTypeLabel).left().spaceRight(5f)
+        table.add(serverTypeSelect).growX()
+        var lastRow = table.row()
+        lastRow.spaceBottom(10f)
+
+        if (serverTypeSelect.selected.value == ServerType.CUSTOM) {
+            serverUrlLabel.setText("{Server address}:".tr())
+            table.add(serverUrlLabel).left().spaceRight(5f)
+            table.add(serverUrlTextField).growX()
+            table.row().spaceBottom(10f)
+
+            table.add()
+            table.add(connectionToServerButton).growX()
+            lastRow = table.row()
+        }
+        return lastRow
+    }
+
+    private fun addHorizontalLayout(): Cell<Actor> {
+        serverTypeLabel.setText("Server type".tr())
+        val serverTypeCell = table.add(serverTypeLabel).spaceBottom(10f).spaceRight(5f)
+        val serverType = serverTypeSelect.selected.value
+        if (serverType == ServerType.DROPBOX) {
+            serverTypeCell.row()
+        } else {
+            serverUrlLabel.setText("Server address".tr())
+            table.add(serverUrlLabel).spaceBottom(10f).row()
+        }
+
+        val typeSelectCell = table.add(serverTypeSelect).spaceRight(5f)
+        if (serverType == ServerType.CUSTOM) {
+            table.add(serverUrlTextField).growX().spaceRight(5f)
+            table.add(connectionToServerButton)
+        }
+        return table.row()
     }
 }
 

@@ -110,8 +110,10 @@ class GameOptionsTable(
             { gameParameters.nuclearWeaponsEnabled = it }
 
     private fun addOnlineMultiplayer(checkboxTable: Table) {
+        val table = Table()
+        table.name = "OnlineMultiplayerOptions"
         val parameters = GameParametersMultiplayer(Multiplayer.ServerData.default, null)
-        val serverInput = ServerInput.create(parameters::serverData)
+        val serverInput = ServerInput(parameters::serverData)
         val nameLabel = "{Game name}:".toLabel()
         val nameTextField = UncivTextField.create("Game name")
         nameTextField.onChange {
@@ -122,13 +124,14 @@ class GameOptionsTable(
         val checkbox = "Online Multiplayer".toCheckBox(gameParameters.isOnlineMultiplayerEnabled())
         checkboxTable.add(checkbox).colspan(2)
 
-        val table = Table()
         fun updateTable(shouldUseMultiplayer: Boolean) {
             table.clear()
             if (shouldUseMultiplayer) {
-                table.add(serverInput).colspan(2).padBottom(10f).row()
-                table.add(nameLabel).padRight(10f).left()
-                table.add(nameTextField).growX().row()
+                table.add(nameLabel).left().spaceRight(5f)
+                table.add(nameTextField).growX()
+                table.row().spaceTop(10f)
+
+                serverInput.addToTable(table, true) { updateTable(shouldUseMultiplayer) }
             }
         }
 
@@ -145,7 +148,7 @@ class GameOptionsTable(
         }
 
         updateTable(checkbox.isChecked)
-        add(table).row()
+        add(table).growX().row()
     }
 
     private fun numberOfCityStates() = ruleset.nations.values.count {

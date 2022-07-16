@@ -34,7 +34,7 @@ class AddMultiplayerGameScreen : PickerScreen() {
         val gameNameTextField = UncivTextField.create("Game name")
         topTable.add(gameNameTextField).pad(10f).padBottom(30f).width(stage.width / 2).row()
 
-        topTable.add(ServerInput.create(::serverData, serverData)).width(stage.width / 2).row()
+        topTable.add(ServerInput(::serverData).standalone()).width(stage.width / 2).row()
 
         setupCloseButton()
         setupRightSideButton(gameIDTextField, gameNameTextField)
