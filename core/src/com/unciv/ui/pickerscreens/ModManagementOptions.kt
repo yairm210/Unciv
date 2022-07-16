@@ -241,14 +241,14 @@ class ModUIData(
     fun stargazers() = repo?.stargazers_count ?: 0
     fun author() = ruleset?.modOptions?.author ?: repo?.owner?.login ?: ""
     fun matchesFilter(filter: ModManagementOptions.Filter): Boolean = when {
-        !categoryFilter(filter) -> false
+        !matchesCategory(filter) -> false
         filter.text.isEmpty() -> true
         name.contains(filter.text, true) -> true
         // description.contains(filterText, true) -> true // too many surprises as description is different in the two columns
         author().contains(filter.text, true) -> true
         else -> false
     }
-    private fun categoryFilter(filter: ModManagementOptions.Filter): Boolean {
+    private fun matchesCategory(filter: ModManagementOptions.Filter): Boolean {
         val modTopic = repo?.topics ?: ruleset?.modOptions?.topics!!
         if (filter.topic == ModManagementOptions.Category.All.topic)
             return true
