@@ -82,18 +82,7 @@ object SimpleHttp {
     }
 
     /** Builds an URL out of the provided components, automatically joining them with a `/`. The components are only allowed to have no slashes or one slash at the end. */
-    fun buildURL(vararg components: String): String {
-        val joined = components.reduce { acc, cur ->
-            if (acc.endsWith('/')) {
-                acc + cur
-            } else {
-                acc + "/" + cur
-            }
-        }
-        return if (joined.endsWith('/')) {
-            joined.substring(0, joined.length - 1)
-        } else {
-            joined
-        }
+    fun buildURL(vararg components: String): String = components.reduce { acc, cur ->
+        acc.removeSuffix("/") + "/" + cur.removeSuffix("/")
     }
 }
