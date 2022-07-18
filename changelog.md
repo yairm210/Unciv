@@ -1,3 +1,19 @@
+## 4.1.20
+
+Resolve  -Can no longer receive negative gold offers from AI 
+
+Keep progress in notification scroll when updating 
+
+Stat colors unified - for use in notifications, improvements, yield icons, etc
+
+Gray out city state friend bonus when allied  - By Azzurite
+
+By OptimizedForDensity:
+- Minor reweight of AI policy selection 
+- Stop transported units from being able to pillage tiles 
+
+Fix getting settlers from ancient ruins on one-city challenge   - By MindaugasRumsa51
+
 ## 4.1.19
 
 Interception always takes an attack  - By itanasi
