@@ -220,7 +220,7 @@ object NextTurnAutomation {
             delta = (delta * 2) / 3 // Only compensate some of it though, they're the ones asking us
             // First give some GPT, then lump sum - but only if they're not already offering the same
             for (ourGold in tradeLogic.ourAvailableOffers
-                    .filter { it.isTradable() && it.type == TradeType.Gold || it.type == TradeType.Gold_Per_Turn }
+                    .filter { it.isTradable() && (it.type == TradeType.Gold || it.type == TradeType.Gold_Per_Turn) }
                     .sortedByDescending { it.type.ordinal }) {
                 if (tradeLogic.currentTrade.theirOffers.none { it.type == ourGold.type } &&
                         counterofferAsks.keys.none { it.type == ourGold.type } ) {
