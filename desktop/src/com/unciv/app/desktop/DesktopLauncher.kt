@@ -30,7 +30,8 @@ internal object DesktopLauncher {
         // There must be a reason for lwjgl3 being so stingy, which for me meant to stay conservative.
         System.setProperty("org.lwjgl.system.stackSize", "384")
 
-        ImagePacker.packImages()
+        val isRunFromJAR = DesktopLauncher.javaClass.`package`.specificationVersion != null
+        ImagePacker.packImages(isRunFromJAR)
 
         val config = Lwjgl3ApplicationConfiguration()
         config.setWindowIcon("ExtraImages/Icon.png")
@@ -47,8 +48,7 @@ internal object DesktopLauncher {
             config.setWindowedMode(settings.windowState.width.coerceAtLeast(120), settings.windowState.height.coerceAtLeast(80))
         }
 
-        val isRunFromIDE = DesktopLauncher.javaClass.`package`.specificationVersion == null
-        if (isRunFromIDE) {
+        if (!isRunFromJAR) {
             UniqueDocsWriter().write()
         }
 
