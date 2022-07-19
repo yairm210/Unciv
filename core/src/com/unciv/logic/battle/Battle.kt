@@ -814,8 +814,11 @@ object Battle {
         if (attacker.unit.hasUnique(UniqueType.CannotBeIntercepted)) return
         // Pick highest chance interceptor
         for (interceptor in interceptingCiv.getCivUnits()
-                .filter { it.canIntercept(attackedTile) }
-                .sortedByDescending { it.interceptChance() }) {
+            .filter { it.canIntercept(attackedTile) }
+            .filter { interceptor -> interceptor.getMatchingUniques(UniqueType.CannotInterceptUnits)
+                .none { attacker.matchesCategory(it.params[0]) }
+            }.sortedByDescending { it.interceptChance() }
+        ) {
             // defender can't also intercept
             if (defender != null && defender is MapUnitCombatant && interceptor == defender.unit) continue
             interceptor.attacksThisTurn++  // even if you miss, you took the shot
