@@ -868,7 +868,7 @@ object Battle {
                     return
                 }
 
-                if (interceptor.baseUnit.isLandUnit()) {
+                if (!interceptor.baseUnit.isAirUnit()) {
                     // Deal no damage (moddable in future?) and no XP
                     val attackerText = "Our [$attackerName] was attacked by an intercepting [$interceptorName]"
                     val interceptorText = "Our [$interceptorName] intercepted and attacked an enemy [$attackerName]"

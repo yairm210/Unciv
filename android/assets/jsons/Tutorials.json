@@ -365,5 +365,14 @@
         "During the We Love The King Day, the city will grow 25% faster.",
         "This means exploration and trade is important to grow your cities!"
     ]
+  },
+  {
+    "name": "Air Sweeps",
+    "steps": [
+        "Certain Units are able to perform Air Sweeps over a tile helping clear out potential enemy Interceptors.",
+        "While this Action will take an Attack, the benefit is drawing out Interceptions to help protect your other Air Units. Especially your Bombers.",
+        "In addition, if the Interceptor is not an Air Unit (eg Land or Sea), the Air Sweeping unit takes no damage!",
+        "Intercepting Air Units will damage each other. Unlike a normal Interception that only hurts the attacker."
+    ]
   }
 ]
