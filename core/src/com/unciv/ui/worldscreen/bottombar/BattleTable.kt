@@ -361,7 +361,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         }
 
         add(getHealthBar(attacker.getHealth(), attacker.getMaxHealth(), 0))
-
+        add(getHealthBar(attacker.getMaxHealth(), attacker.getMaxHealth(), 0))
         row().pad(5f)
 
         val attackButton = "Air Sweep".toTextButton().apply { color = Color.RED }
