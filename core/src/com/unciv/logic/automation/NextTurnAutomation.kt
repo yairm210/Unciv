@@ -1012,8 +1012,7 @@ object NextTurnAutomation {
             4 * civInfo.getCivUnits().count { it.canDoReligiousAction(Constants.spreadReligion) || it.canDoReligiousAction(Constants.removeHeresy) }
         ) {
             val cityWithTheLargestPressureDifference = citiesWithoutOurReligion.map { city ->
-                val pressures = city.religion.getPressures()
-                city to (pressures.map { it.value }.maxOrNull() ?: 0) - (pressures[civInfo.religionManager.religion?.name] ?: 0)
+                city to city.religion.getPressureDeficit(civInfo.religionManager.religion?.name)
             }.maxByOrNull { it.second }!!
             if (cityWithTheLargestPressureDifference.second >= 3000)
                 buyInquisitorNear(civInfo, cityWithTheLargestPressureDifference.first)

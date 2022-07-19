@@ -167,11 +167,10 @@ object UnitAutomation {
             if (unit.hasCitadelPlacementUnique || unit.hasStrengthBonusInRadiusUnique)
                 return SpecificUnitAutomation.automateGreatGeneralFallback(unit)
 
-            if (unit.getMatchingUniques(UniqueType.CanActionSeveralTimes).any{ it.params[0] == "Spread Religion" }
-                    && unit.civInfo.religionManager.maySpreadReligionAtAll(unit))
+            if (unit.civInfo.religionManager.maySpreadReligionAtAll(unit))
                 return SpecificUnitAutomation.automateMissionary(unit)
 
-            if (unit.hasUnique(UniqueType.PreventSpreadingReligion))
+            if (unit.hasUnique(UniqueType.PreventSpreadingReligion) || unit.canDoReligiousAction(Constants.removeHeresy))
                 return SpecificUnitAutomation.automateInquisitor(unit)
 
             if (unit.hasUnique(UniqueType.ConstructImprovementConsumingUnit)

@@ -259,8 +259,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun getTile(): TileInfo = currentTile
 
 
-    // This SHOULD NOT be a HashSet, because if it is, then promotions with the same text (e.g. barrage I, barrage II)
-    //  will not get counted twice!
+    // This SHOULD NOT be a HashSet, because if it is, then e.g. promotions with the same uniques
+    //  (e.g. barrage I, barrage II) will not get counted twice!
     @Transient
     private var tempUniques = ArrayList<Unique>()
 

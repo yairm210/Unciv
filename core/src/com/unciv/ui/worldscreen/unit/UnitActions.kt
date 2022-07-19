@@ -641,15 +641,7 @@ object UnitActions {
     }
 
     fun addSpreadReligionActions(unit: MapUnit, actionList: ArrayList<UnitAction>, city: CityInfo) {
-        if (!unit.civInfo.gameInfo.isReligionEnabled()) return
-        val blockedByInquisitor =
-            city.getCenterTile()
-                .getTilesInDistance(1)
-                .flatMap { it.getUnits() }
-                .any {
-                    it.hasUnique(UniqueType.PreventSpreadingReligion)
-                    && it.religion != unit.religion
-                }
+        if (!unit.civInfo.religionManager.maySpreadReligionAtAll(unit)) return
         actionList += UnitAction(UnitActionType.SpreadReligion,
             title = "Spread [${unit.getReligionDisplayName()!!}]",
             action = {
@@ -662,7 +654,7 @@ object UnitActions {
                     city.religion.removeAllPressuresExceptFor(unit.religion!!)
                 unit.currentMovement = 0f
                 useActionWithLimitedUses(unit, Constants.spreadReligion)
-            }.takeIf { unit.currentMovement > 0 && !blockedByInquisitor }
+            }.takeIf { unit.currentMovement > 0 && unit.civInfo.religionManager.maySpreadReligionNow(unit) }
         )
     }
 

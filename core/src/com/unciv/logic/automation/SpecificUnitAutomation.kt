@@ -304,17 +304,17 @@ object SpecificUnitAutomation {
 
         val city =
             if (ourCitiesWithoutReligion.any())
-                ourCitiesWithoutReligion.minByOrNull { it.getCenterTile().aerialDistanceTo(unit.currentTile) }
+                ourCitiesWithoutReligion.minByOrNull { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
             else unit.civInfo.gameInfo.getCities().asSequence()
                 .filter { it.religion.getMajorityReligion() != unit.civInfo.religionManager.religion }
                 .filter { it.civInfo.knows(unit.civInfo) && !it.civInfo.isAtWarWith(unit.civInfo) }
-                .filterNot { it.religion.isProtectedByInquisitor() }
-                .minByOrNull { it.getCenterTile().aerialDistanceTo(unit.currentTile) }
+                .filterNot { it.religion.isProtectedByInquisitor(unit.religion) }
+                .minByOrNull { it.getCenterTile().aerialDistanceTo(unit.civInfo.religionManager.getHolyCity()?.getCenterTile() ?: unit.getTile()) }
 
         if (city == null) return
         val destination = city.getTiles().asSequence()
             .filter { unit.movement.canMoveTo(it) || it == unit.getTile() }
-            .sortedBy { it.aerialDistanceTo(unit.currentTile) }
+            .sortedBy { it.aerialDistanceTo(unit.getTile()) }
             .firstOrNull { unit.movement.canReach(it) } ?: return
 
         unit.movement.headTowards(destination)
@@ -325,66 +325,75 @@ object SpecificUnitAutomation {
     }
 
     fun automateInquisitor(unit: MapUnit) {
-        val cityToConvert =
-            if (unit.religion != unit.civInfo.religionManager.religion?.name && unit.canDoReligiousAction(Constants.removeHeresy))
-                unit.civInfo.cities.asSequence()
-                    .filter { it.religion.getMajorityReligion() != null }
-                    .filter { it.religion.getMajorityReligion()!! != unit.civInfo.religionManager.religion }
-                    .filter { it.getCenterTile().aerialDistanceTo(unit.currentTile) <= 20 } // Don't go if it takes too long
-                    .maxByOrNull { it.religion.getPressures()[it.religion.getMajorityReligionName()]!! }
-            else null
+        if (unit.religion != unit.civInfo.religionManager.religion?.name)
+            unit.disband() // No need to keep a unit we can't use, as it only blocks religion spreads of religions other that its own
+
+        val holyCity = unit.civInfo.religionManager.getHolyCity()
+        val cityToConvert = determineBestInquisitorCityToConvert(unit) // Also returns null if the inquisitor can't convert cities
+        val pressureDeficit =
+            if (cityToConvert == null) 0
+            else cityToConvert.religion.getPressureDeficit(unit.civInfo.religionManager.religion?.name)
 
         val citiesToProtect = unit.civInfo.cities.asSequence()
-            .filter { it.religion.getMajorityReligion() != null }
-            .filter { isInquisitorInTheCity(it, unit) }
+            .filter { it.religion.getMajorityReligion() == unit.civInfo.religionManager.religion }
+            // We only look at cities that are not currently protected or are protected by us
+            .filter { !it.religion.isProtectedByInquisitor() || unit.getTile() in it.getCenterTile().getTilesInDistance(1) }
 
-        val cityToProtect =
-            if (unit.civInfo.religionManager.getHolyCity() in citiesToProtect) {
-                unit.civInfo.religionManager.getHolyCity()
-            } else {
-                // cities with most populations will be prioritized by the AI
-                citiesToProtect.maxByOrNull { it.population.population }
+        // cities with most populations will be prioritized by the AI
+        val cityToProtect = citiesToProtect.maxByOrNull { it.population.population }
+
+        var destination: TileInfo?
+
+        destination = when {
+            cityToConvert != null
+            && unit.civInfo.religionManager.religion?.name == unit.religion
+            && (cityToConvert == holyCity || pressureDeficit > 3000f)
+            && unit.canDoReligiousAction(Constants.removeHeresy) -> {
+                cityToConvert.getCenterTile()
             }
-
-        var destination: TileInfo? = null
-
-        if (cityToProtect != null && unit.hasUnique(UniqueType.PreventSpreadingReligion)) {
-            destination = cityToProtect.getCenterTile().neighbors.asSequence()
-                .filter { unit.movement.canMoveTo(it) || it == unit.getTile() }
-                .sortedBy { it.aerialDistanceTo(unit.currentTile) }
-                .firstOrNull { unit.movement.canReach(it) }
-        }
-        if (destination == null) {
-            if (cityToConvert == null) return
-            destination = cityToConvert.getCenterTile().neighbors.asSequence()
-                .filter { unit.movement.canMoveTo(it) || it == unit.getTile() }
-                .sortedBy { it.aerialDistanceTo(unit.currentTile) }
-                .firstOrNull { unit.movement.canReach(it) }
+            cityToProtect != null && unit.hasUnique(UniqueType.PreventSpreadingReligion) -> {
+                if (holyCity != null && !holyCity.religion.isProtectedByInquisitor())
+                    holyCity.getCenterTile()
+                else cityToProtect.getCenterTile()
+            }
+            cityToConvert != null -> cityToConvert.getCenterTile()
+            else -> null
         }
 
         if (destination == null) return
 
-        unit.movement.headTowards(destination)
-
-
-        if (cityToConvert != null && unit.currentTile.getCity() == destination.getCity()) {
-            doReligiousAction(unit, destination)
+        if (!unit.movement.canReach(destination)) {
+            destination = destination.neighbors.asSequence()
+                .filter { unit.movement.canMoveTo(it) || it == unit.getTile() }
+                .sortedBy { it.aerialDistanceTo(unit.currentTile) }
+                .firstOrNull { unit.movement.canReach(it) }
+                ?: return
         }
 
+        unit.movement.headTowards(destination)
+
+        if (cityToConvert != null && unit.getTile().getCity() == destination.getCity()) {
+            doReligiousAction(unit, destination)
+        }
     }
 
-    private fun isInquisitorInTheCity(city: CityInfo, unit: MapUnit): Boolean {
-        if (!city.religion.isProtectedByInquisitor())
-            return false
+    private fun determineBestInquisitorCityToConvert(
+        unit: MapUnit,
+    ): CityInfo? {
+        if (unit.religion != unit.civInfo.religionManager.religion?.name || !unit.canDoReligiousAction(Constants.removeHeresy))
+            return null
 
-        for (tile in city.getCenterTile().neighbors)
-            if (unit.currentTile == tile)
-                return true
-        return false
+        val holyCity = unit.civInfo.religionManager.getHolyCity()
+        if (holyCity != null && holyCity.religion.getMajorityReligion() != unit.civInfo.religionManager.religion!!)
+            return holyCity
+
+        return unit.civInfo.cities.asSequence()
+            .filter { it.religion.getMajorityReligion() != null }
+            .filter { it.religion.getMajorityReligion()!! != unit.civInfo.religionManager.religion }
+            // Don't go if it takes too long
+            .filter { it.getCenterTile().aerialDistanceTo(unit.currentTile) <= 20 }
+            .maxByOrNull { it.religion.getPressureDeficit(unit.civInfo.religionManager.religion?.name) }
     }
-
-
-
 
     fun automateFighter(unit: MapUnit) {
         val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange())
@@ -529,7 +538,7 @@ object SpecificUnitAutomation {
         UnitActions.getEnhanceReligionAction(unit)()
     }
 
-    private fun doReligiousAction(unit: MapUnit, destination: TileInfo){
+    private fun doReligiousAction(unit: MapUnit, destination: TileInfo) {
         val religiousActions = ArrayList<UnitAction>()
         UnitActions.addActionsWithLimitedUses(unit, religiousActions, destination)
         if (religiousActions.firstOrNull()?.action == null) return

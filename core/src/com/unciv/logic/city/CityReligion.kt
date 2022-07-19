@@ -283,10 +283,21 @@ class CityInfoReligionManager : IsPartOfGameInfoSerialization {
         return addedPressure
     }
 
-    fun isProtectedByInquisitor(): Boolean {
-        for (tile in cityInfo.getCenterTile().getTilesInDistance(1))
-            if (tile.civilianUnit?.hasUnique(UniqueType.PreventSpreadingReligion) == true)
+    fun isProtectedByInquisitor(fromReligion: String? = null): Boolean {
+        for (tile in cityInfo.getCenterTile().getTilesInDistance(1)) {
+            if (tile.civilianUnit != null
+                && (fromReligion == null || tile.civilianUnit!!.religion != fromReligion)
+                && tile.civilianUnit!!.hasUnique(UniqueType.PreventSpreadingReligion)
+            ) {
                 return true
+            }
+            if (tile.militaryUnit != null
+                && (fromReligion == null || tile.militaryUnit!!.religion != fromReligion)
+                && tile.militaryUnit!!.hasUnique(UniqueType.PreventSpreadingReligion)
+            ) {
+                return true
+            }
+        }
         return false
     }
 
@@ -307,5 +318,9 @@ class CityInfoReligionManager : IsPartOfGameInfoSerialization {
         }
 
         return pressure.toInt()
+    }
+
+    fun getPressureDeficit(otherReligion: String?): Int {
+        return (getPressures()[getMajorityReligionName()] ?: 0) - (getPressures()[otherReligion] ?: 0)
     }
 }

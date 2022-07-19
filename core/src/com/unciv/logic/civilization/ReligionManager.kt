@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization
 
+import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapUnit
@@ -330,10 +331,10 @@ class ReligionManager : IsPartOfGameInfoSerialization {
 
     fun maySpreadReligionAtAll(missionary: MapUnit): Boolean {
         if (!civInfo.gameInfo.isReligionEnabled()) return false // No religion, no spreading
-        if (religion == null) return false // need a religion
+        if (religion == null) return false // Need a religion
         if (religionState < ReligionState.Religion) return false // First found an actual religion
         if (!civInfo.isMajorCiv()) return false // Only major civs
-
+        if (!missionary.canDoReligiousAction(Constants.spreadReligion)) return false
         return true
     }
 
@@ -342,7 +343,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         if (missionary.getTile().getOwner() == null) return false
         if (missionary.currentTile.owningCity?.religion?.getMajorityReligion()?.name == missionary.religion)
             return false
-        if (missionary.getTile().getCity()!!.religion.isProtectedByInquisitor()) return false
+        if (missionary.getTile().getCity()!!.religion.isProtectedByInquisitor(religion!!.name)) return false
         return true
     }
 
