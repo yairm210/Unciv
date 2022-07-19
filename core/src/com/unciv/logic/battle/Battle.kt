@@ -316,13 +316,6 @@ object Battle {
         } else if (attacker.isRanged() && !attacker.isAirUnit()) {  // Air Units are Ranged, but take damage as well
             defender.takeDamage(potentialDamageToDefender) // straight up
         } else {
-            // If Intercepting during an Air Sweep, add in Intercept Damage bonuses
-            if (attacker is MapUnitCombatant && attacker.unit.isPreparingAirSweep())
-            {
-                var damageFactor = 1f + defender.getInterceptDamageBonus().toFloat() / 100f
-                damageFactor *= attacker.unit.receivedInterceptDamageFactor()
-                potentialDamageToAttacker = (potentialDamageToAttacker.toFloat() * damageFactor).toInt()
-            }
             //melee attack is complicated, because either side may defeat the other midway
             //so...for each round, we randomize who gets the attack in. Seems to be a good way to work for now.
 
