@@ -621,6 +621,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [survival knife](https://thenounproject.com/search/?q=survival&i=2663392) by b faris for Survivalism
 -   [Shamrock](https://thenounproject.com/term/shamrock/358507/) By P Thanga Vignesh for Pictish Courage
 -   [home sweet home](https://thenounproject.com/term/home-sweet-home/3817166/) By Silviu Ojog for Home Sweet Home
+-   [Star](https://thenounproject.com/icon/star-35340/) by Trent Kuhn for Dogfighting
 
 ### Religions
 

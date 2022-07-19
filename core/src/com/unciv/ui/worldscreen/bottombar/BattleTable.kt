@@ -340,7 +340,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         val canAttack = attacker.canAttack()
 
-        val defenderLabel = Label(targetTile.position.toString(), skin)
+        val defenderLabel = Label("???", skin)
         add(defenderLabel).row()
 
         addSeparator().pad(0f)

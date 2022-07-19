@@ -35,6 +35,7 @@ object NotificationIcon {
     const val Scout = "UnitIcons/Scout"
     const val Ruins = "ImprovementIcons/Ancient ruins"
     const val Barbarians = "ImprovementIcons/Barbarian encampment"
+    const val Question = "OtherIcons/Question"
 }
 
 /**
