@@ -831,7 +831,14 @@ object Battle {
     fun airSweep(attacker: MapUnitCombatant, attackedTile: TileInfo) {
         // Air Sweep counts as an attack, even if nothing else happens
         attacker.unit.attacksThisTurn++
-        attacker.unit.useMovementPoints(1f)
+        // copied and modified from reduceAttackerMovementPointsAndAttacks()
+        if (attacker.unit.hasUnique(UniqueType.CanMoveAfterAttacking) || attacker.unit.maxAttacksPerTurn() > attacker.unit.attacksThisTurn) {
+            // if it was a melee attack and we won, then the unit ALREADY got movement points deducted,
+            // for the movement to the enemy's tile!
+            // and if it's an air unit, it only has 1 movement anyway, so...
+            if (!attacker.unit.baseUnit.movesLikeAirUnits())
+                attacker.unit.useMovementPoints(1f)
+        } else attacker.unit.currentMovement = 0f
         val attackerName = attacker.getName()
 
         // Handle which Civ Intercepts
@@ -845,6 +852,7 @@ object Battle {
                 .sortedByDescending { it.interceptChance() }) {
 
                 val interceptorName = interceptor.name
+                // pairs of LocationAction for Notification
                 val locations = LocationAction(interceptor.currentTile.position, attacker.unit.currentTile.position)
                 val locationsAttackerUnk = LocationAction(interceptor.currentTile.position, attackedTile.position)
                 val locationsInterceptorUnk = LocationAction(attackedTile.position, attacker.unit.currentTile.position)
