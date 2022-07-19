@@ -102,11 +102,12 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     NullifiesStat("Nullifies [stat] [cityFilter]", UniqueTarget.Global),
     NullifiesGrowth("Nullifies Growth [cityFilter]", UniqueTarget.Global),
 
-    PercentProductionWonders("[relativeAmount]% Production when constructing [buildingFilter] wonders [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     PercentProductionBuildings("[relativeAmount]% Production when constructing [buildingFilter] buildings [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     PercentProductionUnits("[relativeAmount]% Production when constructing [baseUnitFilter] units [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    PercentProductionWonders("[relativeAmount]% Production when constructing [buildingFilter] wonders [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     PercentProductionBuildingsInCapital("[relativeAmount]% Production towards any buildings that already exist in the Capital", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     // todo: maybe should be converted to "[+100]% Yield from every [Natural Wonder]"?
+    @Deprecated("As of 4.1.19", ReplaceWith("[+100]% Yield from every [Natural Wonder]"))
     DoubleStatsFromNaturalWonders("Tile yields from Natural Wonders doubled", UniqueTarget.Global),
 
     //endregion Stat providing uniques
@@ -223,18 +224,12 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     // Misc national uniques
     NotifiedOfBarbarianEncampments("Notified of new Barbarian encampments", UniqueTarget.Global),
     BorrowsCityNames("\"Borrows\" city names from other civilizations in the game", UniqueTarget.Global),
-    @Deprecated("as of 4.0.3", ReplaceWith("Damage is ignored when determining unit Strength <for [All] units>"))
-    UnitsFightFullStrengthWhenDamaged("Units fight as though they were at full strength even when damaged", UniqueTarget.Global),
     GoldWhenDiscoveringNaturalWonder("100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it)", UniqueTarget.Global),
     UnhappinessFromCitiesDoubled("Unhappiness from number of Cities doubled", UniqueTarget.Global),
     GreatGeneralProvidesDoubleCombatBonus("Great General provides double combat bonus", UniqueTarget.Unit, UniqueTarget.Global),
     TechBoostWhenScientificBuildingsBuiltInCapital("Receive a tech boost when scientific buildings/wonders are built in capital", UniqueTarget.Global),
     MayNotGenerateGreatProphet("May not generate great prophet equivalents naturally", UniqueTarget.Global),
-    @Deprecated("as of 4.0.3", ReplaceWith("When conquering an encampment, earn [25] Gold and recruit a Barbarian unit <with [67]% chance>"))
-    ChanceToRecruitBarbarianFromEncampment("67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment", UniqueTarget.Global),
     GainFromEncampment("When conquering an encampment, earn [amount] Gold and recruit a Barbarian unit", UniqueTarget.Global),
-    @Deprecated("as of 4.0.3", ReplaceWith("When defeating a [{Barbarian} {Water}] unit, earn [25] Gold and recruit it <with [50]% chance>"))
-    ChanceToRecruitNavalBarbarian("50% chance of capturing defeated Barbarian naval units and earning 25 Gold", UniqueTarget.Global),
     GainFromDefeatingUnit("When defeating a [mapUnitFilter] unit, earn [amount] Gold and recruit it", UniqueTarget.Global),
     TripleGoldFromEncampmentsAndCities("Receive triple Gold from Barbarian encampments and pillaging Cities", UniqueTarget.Global),
     CitiesAreRazedXTimesFaster("Cities are razed [amount] times as fast", UniqueTarget.Global),
@@ -245,8 +240,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     GainInfluenceWithUnitGiftToCityState("Gain [amount] Influence with a [baseUnitFilter] gift to a City-State", UniqueTarget.Global),
     FaithCostOfGreatProphetChange("[relativeAmount]% Faith cost of generating Great Prophet equivalents", UniqueTarget.Global),
     RestingPointOfCityStatesFollowingReligionChange("Resting point for Influence with City-States following this religion [amount]", UniqueTarget.Global),
-    @Deprecated("as of 4.0.3", ReplaceWith("[+amount]% Strength <within [amount2] tiles of a [tileFilter]>"))
-    StrengthWithinTilesOfTile("+[amount]% Strength if within [amount2] tiles of a [tileFilter]", UniqueTarget.Global),
     StatBonusPercentFromCityStates("[relativeAmount]% [stat] from City-States", UniqueTarget.Global),
 
     ProvidesGoldWheneverGreatPersonExpended("Provides a sum of gold each time you spend a Great Person", UniqueTarget.Global),
@@ -330,13 +323,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     RequiresBuildingInAllCities("Requires a [buildingName] in all cities", UniqueTarget.Building),
     RequiresBuildingInSomeCities("Requires a [buildingName] in at least [amount] cities", UniqueTarget.Building),
     CanOnlyBeBuiltInCertainCities("Can only be built [cityFilter]", UniqueTarget.Building),
-    @Deprecated("as of 3.19.16", ReplaceWith("Can only be built [in annexed cities]"))
-    CanOnlyBeBuiltInAnnexedCities("Can only be built in annexed cities", UniqueTarget.Building),
 
     MustHaveOwnedWithinTiles("Must have an owned [tileFilter] within [amount] tiles", UniqueTarget.Building),
 
-    @Deprecated("as of 3.19.7", ReplaceWith("[stats] <with [resource]>"))
-    StatsWithResource("[stats] with [resource]", UniqueTarget.Building),
 
     // Todo nuclear weapon and spaceship enabling requires a rethink.
     // This doesn't actually directly affect anything, the "Only available <if [Manhattan Project] is constructed>" of the nuclear weapons does that.
@@ -424,8 +413,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     NormalVisionWhenEmbarked("Normal vision when embarked", UniqueTarget.Unit, UniqueTarget.Global),
     DefenceBonusWhenEmbarked("Defense bonus when embarked", UniqueTarget.Unit, UniqueTarget.Global),
-    @Deprecated("as of 4.0.3", ReplaceWith("Defense bonus when embarked <for [All] units>"))
-    DefenceBonusWhenEmbarkedCivwide("Embarked units can defend themselves", UniqueTarget.Global),
     AttackAcrossCoast("Eliminates combat penalty for attacking across a coast", UniqueTarget.Unit),
     AttackOnSea("May attack when embarked", UniqueTarget.Unit),
     AttackAcrossRiver("Eliminates combat penalty for attacking over a river", UniqueTarget.Unit),
@@ -477,8 +464,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     CanEnterForeignTilesButLosesReligiousStrength("May enter foreign tiles without open borders, but loses [amount] religious strength each turn it ends there", UniqueTarget.Unit),
     ReducedDisembarkCost("[amount] Movement point cost to disembark", UniqueTarget.Global, UniqueTarget.Unit),
     ReducedEmbarkCost("[amount] Movement point cost to embark", UniqueTarget.Global, UniqueTarget.Unit),
-    @Deprecated("as of 4.0.3", ReplaceWith("[1] Movement point cost to disembark <for [All] units>"))
-    DisembarkCostDeprecated("Units pay only 1 movement point to disembark", UniqueTarget.Global),
 
     CannotBeBarbarian("Never appears as a Barbarian unit", UniqueTarget.Unit, flags = UniqueFlag.setOfHiddenToUsers),
 
@@ -719,6 +704,24 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     // endregion
 
     // region DEPRECATED AND REMOVED
+    @Deprecated("as of 4.0.3", ReplaceWith("Damage is ignored when determining unit Strength <for [All] units>"), DeprecationLevel.ERROR)
+    UnitsFightFullStrengthWhenDamaged("Units fight as though they were at full strength even when damaged", UniqueTarget.Global),
+    @Deprecated("as of 4.0.3", ReplaceWith("[+amount]% Strength <within [amount2] tiles of a [tileFilter]>"), DeprecationLevel.ERROR)
+    StrengthWithinTilesOfTile("+[amount]% Strength if within [amount2] tiles of a [tileFilter]", UniqueTarget.Global),
+    @Deprecated("as of 3.19.7", ReplaceWith("[stats] <with [resource]>"), DeprecationLevel.ERROR)
+    StatsWithResource("[stats] with [resource]", UniqueTarget.Building),
+    @Deprecated("as of 3.19.16", ReplaceWith("Can only be built [in annexed cities]"), DeprecationLevel.ERROR)
+    CanOnlyBeBuiltInAnnexedCities("Can only be built in annexed cities", UniqueTarget.Building),
+    @Deprecated("as of 4.0.3", ReplaceWith("Defense bonus when embarked <for [All] units>"), DeprecationLevel.ERROR)
+    DefenceBonusWhenEmbarkedCivwide("Embarked units can defend themselves", UniqueTarget.Global),
+    @Deprecated("as of 4.0.3", ReplaceWith("[1] Movement point cost to disembark <for [All] units>"), DeprecationLevel.ERROR)
+    DisembarkCostDeprecated("Units pay only 1 movement point to disembark", UniqueTarget.Global),
+
+    @Deprecated("as of 4.0.3", ReplaceWith("When conquering an encampment, earn [25] Gold and recruit a Barbarian unit <with [67]% chance>"), DeprecationLevel.ERROR)
+    ChanceToRecruitBarbarianFromEncampment("67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment", UniqueTarget.Global),
+    @Deprecated("as of 4.0.3", ReplaceWith("When defeating a [{Barbarian} {Water}] unit, earn [25] Gold and recruit it <with [50]% chance>"), DeprecationLevel.ERROR)
+    ChanceToRecruitNavalBarbarian("50% chance of capturing defeated Barbarian naval units and earning 25 Gold", UniqueTarget.Global),
+
     @Deprecated("as of 3.19.8", ReplaceWith("Eliminates combat penalty for attacking across a coast"), DeprecationLevel.ERROR)
     AttackFromSea("Eliminates combat penalty for attacking from the sea", UniqueTarget.Unit),
     @Deprecated("as of 3.19.19", ReplaceWith("[+4] Sight\", \"Can see over obstacles"), DeprecationLevel.ERROR)

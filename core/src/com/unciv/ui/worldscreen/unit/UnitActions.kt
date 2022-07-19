@@ -828,6 +828,7 @@ object UnitActions {
     }
 
     fun canPillage(unit: MapUnit, tile: TileInfo): Boolean {
+        if (unit.isTransported) return false
         val tileImprovement = tile.getTileImprovement()
         // City ruins, Ancient Ruins, Barbarian Camp, City Center marked in json
         if (tileImprovement == null || tileImprovement.hasUnique(UniqueType.Unpillagable)) return false

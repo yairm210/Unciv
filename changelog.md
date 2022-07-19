@@ -1,3 +1,51 @@
+## 4.1.20
+
+Can no longer receive negative gold offers from AI
+
+Keep progress in notification scroll when updating
+
+Gray out city state friend bonus when allied - By Azzurite
+
+By OptimizedForDensity:
+- Minor reweight of AI policy selection
+- Stop transported units from being able to pillage tiles
+
+Fix getting settlers from ancient ruins on one-city challenge - By MindaugasRumsa51
+
+## 4.1.19
+
+Interception always takes an attack  - By itanasi
+
+By OptimizedForDensity:
+- Add more music triggers
+- Move border below icons
+- Significantly reduce AI turn time
+- City health updates when finishing health-increasing buildings
+
+By Azzurite:
+- Fix potential race condition in multiplayer game update
+- Fix game crashing when a multiplayer game can not be read
+
+Sorted Civilopedia eras - By alexban011
+
+Remove in-game mentions of 1.5x unhappiness for puppeted cities  - By Ouaz
+
+## 4.1.18
+
+Fix multiple capture uniques resulting in double-capture
+
+Resolved ANRs caused by fonts taking too long to load
+
+By OptimizedForDensity:
+- Fixed image problems in combat
+- Stop automate production setting from affecting other players' production in MP
+- Sort game speeds in Civilopedia by speed
+- Fix monastery purchase cost
+
+Remove double XP gain from Intercept  - By itanasi
+
+Multiplayer options UI fix - By Azzurite
+
 ## 4.1.17
 
 Puppet cities generate no extra unhappiness (per Civ V)

@@ -335,7 +335,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
             playerType == PlayerType.Human &&
                     gameInfo.gameParameters.oneCityChallenge)
 
-    fun isCurrentPlayer() = gameInfo.getCurrentPlayerCivilization() == this
+    fun isCurrentPlayer() = gameInfo.currentPlayerCiv == this
     fun isBarbarian() = nation.isBarbarian()
     fun isSpectator() = nation.isSpectator()
     fun isCityState(): Boolean = nation.isCityState()
@@ -810,6 +810,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         policies.civInfo = this
         if (policies.adoptedPolicies.size > 0 && policies.numberOfAdoptedPolicies == 0)
             policies.numberOfAdoptedPolicies = policies.adoptedPolicies.count { !Policy.isBranchCompleteByName(it) }
+        policies.setTransients()
 
         questManager.civInfo = this
         questManager.setTransients()

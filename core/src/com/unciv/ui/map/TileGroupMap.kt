@@ -108,6 +108,7 @@ class TileGroupMap<T: TileGroup>(
 
         val baseLayers = ArrayList<ActionlessGroup>()
         val featureLayers = ArrayList<ActionlessGroup>()
+        val borderLayers = ArrayList<ActionlessGroup>()
         val miscLayers = ArrayList<ActionlessGroup>()
         val pixelUnitLayers = ArrayList<ActionlessGroup>()
         val circleFogCrosshairLayers = ArrayList<ActionlessGroup>()
@@ -120,6 +121,7 @@ class TileGroupMap<T: TileGroup>(
             // now, we steal the subgroups from all the tilegroups, that's how we form layers!
             baseLayers.add(group.baseLayerGroup.apply { setPosition(group.x,group.y) })
             featureLayers.add(group.terrainFeatureLayerGroup.apply { setPosition(group.x,group.y) })
+            borderLayers.add(group.borderLayerGroup.apply { setPosition(group.x,group.y) })
             miscLayers.add(group.miscLayerGroup.apply { setPosition(group.x,group.y) })
             pixelUnitLayers.add(group.pixelMilitaryUnitGroup.apply { setPosition(group.x,group.y) })
             pixelUnitLayers.add(group.pixelCivilianUnitGroup.apply { setPosition(group.x,group.y) })
@@ -132,6 +134,7 @@ class TileGroupMap<T: TileGroup>(
                 for (mirrorTile in mirrorTileGroups[group.tileInfo]!!.toList()) {
                     baseLayers.add(mirrorTile.baseLayerGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
                     featureLayers.add(mirrorTile.terrainFeatureLayerGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
+                    borderLayers.add(mirrorTile.borderLayerGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
                     miscLayers.add(mirrorTile.miscLayerGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
                     pixelUnitLayers.add(mirrorTile.pixelMilitaryUnitGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
                     pixelUnitLayers.add(mirrorTile.pixelCivilianUnitGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
@@ -144,6 +147,7 @@ class TileGroupMap<T: TileGroup>(
         }
         for (group in baseLayers) addActor(group)
         for (group in featureLayers) addActor(group)
+        for (group in borderLayers) addActor(group)
         for (group in miscLayers) addActor(group)
         for (group in pixelUnitLayers) addActor(group)
         for (group in circleFogCrosshairLayers) addActor(group)
