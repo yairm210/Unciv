@@ -187,6 +187,10 @@ object BattleDamage {
                 return modifiers
             }
 
+            // Air unit attacking with Air Sweep
+            if (attacker is MapUnitCombatant && attacker.unit.isPreparingAirSweep())
+                modifiers.add(getAirSweepAttackModifiers(defender))
+
             val tileDefenceBonus = tile.getDefensiveBonus()
             if (!defender.unit.hasUnique(UniqueType.NoDefensiveTerrainBonus, checkCivInfoUniques = true) && tileDefenceBonus > 0
                 || !defender.unit.hasUnique(UniqueType.NoDefensiveTerrainPenalty, checkCivInfoUniques = true) && tileDefenceBonus < 0
