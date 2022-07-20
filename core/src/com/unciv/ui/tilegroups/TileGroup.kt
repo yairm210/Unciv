@@ -11,7 +11,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.helpers.MapArrowType
@@ -19,7 +18,6 @@ import com.unciv.models.helpers.MiscArrowTypes
 import com.unciv.models.helpers.TintedMapArrow
 import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.ui.cityscreen.YieldGroup
-import com.unciv.ui.images.ImageAttempter
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.extensions.center
 import kotlin.math.PI
@@ -308,17 +306,10 @@ open class TileGroup(
             // so it stays consistent throughout the game
             if (!ImageGetter.imageExists(baseLocation)) continue
 
-            var locationToCheck = baseLocation
-            fun getThisTile(): String? {
-                var ownersStyle = tileInfo.getOwner()!!.nation.style
-                if (ownersStyle == "") ownersStyle = tileInfo.getOwner()!!.civName
-                return ImageAttempter(locationToCheck)
-                    .tryEraImage(tileInfo.getOwner()!!, locationToCheck, ownersStyle)
-                    .tryEraImage(tileInfo.getOwner()!!, locationToCheck, null)
-                    .tryImage { tileSetStrings.getString(locationToCheck, tileSetStrings.tag, ownersStyle) }
-                    .getPathOrNull()
-            }
-            if (tileInfo.owningCity != null) locationToCheck = getThisTile() ?: locationToCheck
+            val locationToCheck =
+                    if (tileInfo.owningCity != null)
+                        tileSetStrings.getOwnedTileImageLocation(baseLocation, tileInfo.getOwner()!!)
+                    else baseLocation
 
             val existingImages = ArrayList<String>()
             existingImages.add(locationToCheck)
@@ -343,25 +334,6 @@ open class TileGroup(
             baseLayerGroup.addActor(image)
             setHexagonImageSize(image)
         }
-    }
-
-    /** Try to load era-specific image variants
-     * [civInfo]: the civ who owns the tile or unit
-     * [locationToCheck]: the beginning of the filename to check
-     * [style]: an optional string to load a civ- or style-specific sprite
-     * */
-    private fun ImageAttempter<String>.tryEraImage(civInfo: CivilizationInfo, locationToCheck: String, style: String? = null): ImageAttempter<String> {
-        return this.tryImages(
-            (civInfo.getEraNumber() downTo 0).asSequence().map {
-                {
-                    val era = civInfo.gameInfo.ruleSet.eras.keys.elementAt(it)
-                    if (style != null)
-                        tileSetStrings.getString(locationToCheck, tileSetStrings.tag, style, tileSetStrings.tag, era)
-                    else
-                        tileSetStrings.getString(locationToCheck, tileSetStrings.tag, era)
-                }
-            }
-        )
     }
 
     fun showMilitaryUnit(viewingCiv: CivilizationInfo) = showEntireMap
@@ -710,32 +682,8 @@ open class TileGroup(
         var newImageLocation = ""
 
         val militaryUnit = tileInfo.militaryUnit
-        if (militaryUnit != null && showMilitaryUnit) {
-            fun TileSetStrings.getThisUnit(): String? {
-                val specificUnitIconLocation = this.unitsLocation + militaryUnit.name
-                val civInfo = militaryUnit.civInfo
-                val style = civInfo.nation.style.ifEmpty { null }
-                return ImageAttempter(specificUnitIconLocation)
-                        .forceImage { if (!UncivGame.Current.settings.showPixelUnits) "" else null }
-                        .tryEraImage(civInfo, specificUnitIconLocation, style)
-                        .tryImage { if (civInfo.nation.style.isNotEmpty()) "$specificUnitIconLocation-${civInfo.nation.style}" else null }
-                        .tryImage { specificUnitIconLocation }
-                        .tryImage { if (militaryUnit.baseUnit.replaces != null) "$unitsLocation${militaryUnit.baseUnit.replaces}" else null }
-                        .tryImages(
-                            civInfo.gameInfo.ruleSet.units.values.asSequence().map {
-                                {
-                                    if (it.unitType == militaryUnit.type.name)
-                                        "$unitsLocation${it.name}"
-                                    else
-                                        null
-                                }
-                            } // .tryImage/.tryImages takes functions as parameters, for lazy eval. Include the check as part of the .tryImage's lazy candidate parameter, and *not* as part of the .map's transform parameter, so even the name check will be skipped by ImageAttempter if an image has already been found.
-                        )
-                        .tryImage { if (militaryUnit.type.isLandUnit()) landUnit else null }
-                        .tryImage { if (militaryUnit.type.isWaterUnit()) waterUnit else null }
-                        .getPathOrNull()
-            }
-            newImageLocation = tileSetStrings.getThisUnit() ?: tileSetStrings.fallback?.getThisUnit() ?: ""
+        if (militaryUnit != null && showMilitaryUnit && UncivGame.Current.settings.showPixelUnits) {
+            newImageLocation = tileSetStrings.getImageLocation(militaryUnit)
         }
 
         val nationName = if (militaryUnit != null) "${militaryUnit.civInfo.civName}-" else ""
@@ -759,20 +707,8 @@ open class TileGroup(
         var newImageLocation = ""
         val civilianUnit = tileInfo.civilianUnit
 
-        if (civilianUnit != null && tileIsViewable) {
-            fun TileSetStrings.getThisUnit(): String? {
-                val specificUnitIconLocation = this.unitsLocation + civilianUnit.name
-                val civInfo = civilianUnit.civInfo
-                val style = civInfo.nation.style.ifEmpty { null }
-                return ImageAttempter(specificUnitIconLocation)
-                        .forceImage { if (!UncivGame.Current.settings.showPixelUnits) "" else null }
-                        .tryEraImage(civInfo, specificUnitIconLocation, style)
-                        .tryImage { if (civInfo.nation.style.isNotEmpty()) "$specificUnitIconLocation-${civInfo.nation.style}" else null }
-                        .tryImage { specificUnitIconLocation }
-                        .tryImage { civilianLandUnit }
-                        .getPathOrNull()
-            }
-            newImageLocation = tileSetStrings.getThisUnit() ?: tileSetStrings.fallback?.getThisUnit() ?: ""
+        if (civilianUnit != null && tileIsViewable && UncivGame.Current.settings.showPixelUnits) {
+            newImageLocation = tileSetStrings.getImageLocation(civilianUnit)
         }
 
         val nationName = if (civilianUnit != null) "${civilianUnit.civInfo.civName}-" else ""
