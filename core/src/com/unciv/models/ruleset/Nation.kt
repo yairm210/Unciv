@@ -139,7 +139,7 @@ class Nation : RulesetObject() {
         textList += FormattedLine("{Type}: {$cityStateType}", header = 4, color = cityStateType!!.color)
 
         val era = if (UncivGame.isCurrentInitialized() && UncivGame.Current.gameInfo != null) {
-            UncivGame.Current.gameInfo!!.currentPlayerCiv.getEra()
+            UncivGame.Current.gameInfo!!.getCurrentPlayerCivilization().getEra()
         } else {
             ruleset.eras.values.first()
         }
@@ -188,7 +188,7 @@ class Nation : RulesetObject() {
             when {
                 building.uniqueTo != name -> continue
                 building.hasUnique(UniqueType.HiddenFromCivilopedia) -> continue
-                religionEnabled && building.hasUnique(UniqueType.HiddenWithoutReligion) -> continue
+                !religionEnabled && building.hasUnique(UniqueType.HiddenWithoutReligion) -> continue
             }
             yield(FormattedLine("{${building.name}} -", link=building.makeLink()))
             if (building.replaces != null && ruleset.buildings.containsKey(building.replaces!!)) {

@@ -13,7 +13,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
 
-class BarbarianManager {
+class BarbarianManager : IsPartOfGameInfoSerialization {
     val camps = HashMapVector2<Encampment>()
 
     @Transient
@@ -165,7 +165,7 @@ class BarbarianManager {
     }
 }
 
-class Encampment() {
+class Encampment() : IsPartOfGameInfoSerialization {
     val position = Vector2()
     var countdown = 0
     var spawnedUnits = -1

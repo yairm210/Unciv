@@ -65,7 +65,18 @@ The ruleVariants are the most powerful part of the tileset config. With this, yo
 
 An example is given in the code above. For the tile "Grassland+Jungle+Dyes+Trading post" we then use the images "Grassland", "JungleForGrasslandBack", "Dyes+Trading post" and "JungleForGrasslandFront" in that order.
 
-## Nation-coloured units
+## Unit images
+
+Unit images can be changed according to civ-specific styles (if a mod specifies a "style" variable for each civilization) and according to the owning civ's current era. Unciv attempts to load the unit images in the following order (where unitName is the unit name given in Units.json, styleName is optionally specified in Nations.json, and eraName is the era name given in Eras.json (including " era")).
+
+1. unitName-styleName-eraName (example: "Archer-customStyle1-Classical era.png")
+2. unitName-eraName (example: "Archer-Classical era.png")
+3. unitName-styleName (example: "Archer-customStyle1.png")
+4. unitName (example: "Archer.png")
+
+Era-specific sprites do not need to be specified for each era, only on eras where the sprites change. If a modder wants a Great General unit to change sprites starting in the Modern era, they only need to create a "Great General-Modern era.png" image. The Great General unit would use the default "Great General.png" sprite for all eras up to the Modern era then the Modern era sprite for the Modern era and all eras after unless there is a later era sprite for this unit.
+
+### Nation-coloured units
 
 Unciv can colour units according to the civilization that owns them. [[PR3231]](https://github.com/yairm210/Unciv/pull/3231)
 
@@ -75,6 +86,6 @@ This is used by providing multiple images per unit, each representing a coloured
 | ----- | ----------- | ------ |
 | Archer.png | Base image | Untinted |
 | Archer-1.png | Colour layer | Nation inner colour |
-| Arhcer-2.png | Colour layer | Nation outer colour |
+| Archer-2.png | Colour layer | Nation outer colour |
 
 The [Civ Army Color Style Sheet](https://github.com/AdityaMH/Civ-Army-Color-Style-Sheet/tree/main/Images/TileSets/FantasyHex/Units) mod by @AdityaMH and the [5Hex Tileset](https://github.com/ravignir/5Hex-Tileset/tree/master/Images/TileSets/5Hex/Units) by @ravignir are very good practical examples of how this can be used.

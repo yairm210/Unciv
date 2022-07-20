@@ -6,10 +6,8 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
-import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
-import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
@@ -25,11 +23,9 @@ import com.unciv.logic.map.MapVisualization
 import com.unciv.logic.multiplayer.MultiplayerGameUpdated
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.trade.TradeEvaluation
-import com.unciv.models.Tutorial
-import com.unciv.models.UncivSound
+import com.unciv.models.TutorialTrigger
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.translations.tr
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.images.ImageGetter
@@ -41,7 +37,6 @@ import com.unciv.ui.pickerscreens.GreatPersonPickerScreen
 import com.unciv.ui.pickerscreens.PantheonPickerScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.ReligiousBeliefsPickerScreen
-import com.unciv.ui.pickerscreens.TechButton
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.Popup
@@ -50,12 +45,10 @@ import com.unciv.ui.popup.hasOpenPopups
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.saves.QuickSave
 import com.unciv.ui.saves.SaveGameScreen
-import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.extensions.centerX
-import com.unciv.ui.utils.extensions.colorFromRGB
 import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.enable
@@ -114,32 +107,25 @@ class WorldScreen(
 
     val mapHolder = WorldMapHolder(this, gameInfo.tileMap)
 
-    /** Bottom left widget holding information about a selected unit or city */
-    val bottomUnitTable = UnitTable(this)
-
     private var waitingForAutosave = false
     private val mapVisualization = MapVisualization(gameInfo, viewingCiv)
 
-    private val minimapWrapper = MinimapHolder(mapHolder)
-
-    private val topBar = WorldScreenTopBar(this)
-
-
-    private val bottomTileInfoTable = TileInfoTable(viewingCiv)
-    private val battleTable = BattleTable(this)
-    private val unitActionsTable = UnitActionsTable(this)
-
-    private val techPolicyAndVictoryHolder = Table()
-    private val techButtonHolder = Table()
-    private val diplomacyButtonHolder = Table()
+    // Floating Widgets going counter-clockwise
+    val topBar = WorldScreenTopBar(this)
+    private val techPolicyAndDiplomacy = TechPolicyDiplomacyButtons(this)
     private val fogOfWarButton = createFogOfWarButton()
+    private val unitActionsTable = UnitActionsTable(this)
+    /** Bottom left widget holding information about a selected unit or city */
+    val bottomUnitTable = UnitTable(this)
+    private val battleTable = BattleTable(this)
+    private val zoomController = ZoomButtonPair(mapHolder)
+    private val minimapWrapper = MinimapHolder(mapHolder)
+    private val bottomTileInfoTable = TileInfoTable(viewingCiv)
+    private val notificationsScroll = NotificationsScroll(this)
     private val nextTurnButton = NextTurnButton()
     private val statusButtons = StatusButtons(nextTurnButton)
     private val tutorialTaskTable = Table().apply { background = ImageGetter.getBackground(
         ImageGetter.getBlue().darken(0.5f)) }
-    private val notificationsScroll = NotificationsScroll(this)
-
-    private val zoomController = ZoomButtonPair(mapHolder)
 
     private var nextTurnUpdateJob: Job? = null
 
@@ -158,21 +144,7 @@ class WorldScreen(
         // resume music (in case choices from the menu lead to instantiation of a new WorldScreen)
         UncivGame.Current.musicController.resume()
 
-        techButtonHolder.touchable = Touchable.enabled
-        techButtonHolder.onClick(UncivSound.Paper) {
-            game.pushScreen(TechPickerScreen(viewingCiv))
-        }
-        techPolicyAndVictoryHolder.add(techButtonHolder)
-
         fogOfWarButton.isVisible = viewingCiv.isSpectator()
-
-        // Don't show policies until they become relevant
-        if (viewingCiv.policies.adoptedPolicies.isNotEmpty() || viewingCiv.policies.canAdoptPolicy()) {
-            val policyScreenButton = Button(skin)
-            policyScreenButton.add(ImageGetter.getImage("PolicyIcons/Constitution")).size(30f).pad(15f)
-            policyScreenButton.onClick { game.pushScreen(PolicyPickerScreen(this)) }
-            techPolicyAndVictoryHolder.add(policyScreenButton).pad(10f)
-        }
 
         stage.addActor(mapHolder)
         stage.scrollFocus = mapHolder
@@ -180,16 +152,13 @@ class WorldScreen(
         stage.addActor(minimapWrapper)
         stage.addActor(topBar)
         stage.addActor(statusButtons)
-        stage.addActor(techPolicyAndVictoryHolder)
+        stage.addActor(techPolicyAndDiplomacy)
         stage.addActor(tutorialTaskTable)
 
-        if (UncivGame.Current.settings.showZoomButtons) {
-            stage.addActor(zoomController)
-        }
+        stage.addActor(zoomController)
+        zoomController.isVisible = UncivGame.Current.settings.showZoomButtons
 
-        diplomacyButtonHolder.defaults().pad(5f)
         stage.addActor(fogOfWarButton)
-        stage.addActor(diplomacyButtonHolder)
         stage.addActor(bottomUnitTable)
         stage.addActor(bottomTileInfoTable)
         battleTable.width = stage.width / 3
@@ -197,9 +166,6 @@ class WorldScreen(
         stage.addActor(battleTable)
 
         stage.addActor(unitActionsTable)
-
-        topBar.update(viewingCiv)
-        fogOfWarButton.setPosition(10f, topBar.y - fogOfWarButton.height - 10f)
 
         val tileToCenterOn: Vector2 =
                 when {
@@ -245,8 +211,9 @@ class WorldScreen(
     }
 
     override fun dispose() {
-        super.dispose()
         events.stopReceiving()
+        statusButtons.dispose()
+        super.dispose()
     }
 
     private fun addKeyboardPresses() {
@@ -270,7 +237,7 @@ class WorldScreen(
         globalShortcuts.add(Input.Keys.F11) { QuickSave.save(gameInfo, this) }    // Quick Save
         globalShortcuts.add(Input.Keys.F12) { QuickSave.load(this) }    // Quick Load
         globalShortcuts.add(Input.Keys.HOME) {    // Capital City View
-            val capital = gameInfo.currentPlayerCiv.getCapital()
+            val capital = gameInfo.getCurrentPlayerCivilization().getCapital()
             if (capital != null && !mapHolder.setCenterPosition(capital.location))
                 game.pushScreen(CityScreen(capital))
         }
@@ -364,9 +331,8 @@ class WorldScreen(
             startNewScreenJob(latestGame)
         } catch (ex: Throwable) {
             launchOnGLThread {
-                val message = MultiplayerHelpers.getLoadExceptionMessage(ex)
+                val (message) = LoadGameScreen.getLoadExceptionMessage(ex, "Couldn't download the latest game state!")
                 loadingGamePopup.innerTable.clear()
-                loadingGamePopup.addGoodSizedLabel("Couldn't download the latest game state!").colspan(2).row()
                 loadingGamePopup.addGoodSizedLabel(message).colspan(2).row()
                 loadingGamePopup.addButton("Retry") {
                     launchOnThreadPool("Load latest multiplayer state after error") {
@@ -394,8 +360,6 @@ class WorldScreen(
         battleTable.update()
 
         updateSelectedCiv()
-
-        fogOfWarButton.isEnabled = !selectedCiv.isSpectator()
 
         tutorialTaskTable.clear()
         val tutorialTask = getCurrentTutorialTask()
@@ -429,6 +393,8 @@ class WorldScreen(
             )
         }
 
+        zoomController.isVisible = UncivGame.Current.settings.showZoomButtons
+
         // if we use the clone, then when we update viewable tiles
         // it doesn't update the explored tiles of the civ... need to think about that harder
         // it causes a bug when we move a unit to an unexplored tile (for instance a cavalry unit which can move far)
@@ -438,10 +404,11 @@ class WorldScreen(
 
         topBar.update(selectedCiv)
 
-        updateTechButton()
-        techPolicyAndVictoryHolder.pack()
-        techPolicyAndVictoryHolder.setPosition(10f, topBar.y - techPolicyAndVictoryHolder.height - 5f)
-        updateDiplomacyButton(viewingCiv)
+        if (techPolicyAndDiplomacy.update())
+            displayTutorial(TutorialTrigger.OtherCivEncountered)
+
+        fogOfWarButton.isEnabled = !selectedCiv.isSpectator()
+        fogOfWarButton.setPosition(10f, topBar.y - fogOfWarButton.height - 10f)
 
         if (!hasOpenPopups() && isPlayersTurn) {
             when {
@@ -524,9 +491,9 @@ class WorldScreen(
 
     private fun displayTutorialsOnUpdate() {
 
-        displayTutorial(Tutorial.Introduction)
+        displayTutorial(TutorialTrigger.Introduction)
 
-        displayTutorial(Tutorial.EnemyCityNeedsConqueringWithMeleeUnit) {
+        displayTutorial(TutorialTrigger.EnemyCityNeedsConqueringWithMeleeUnit) {
             viewingCiv.diplomacy.values.asSequence()
                     .filter { it.diplomaticStatus == DiplomaticStatus.War }
                     .map { it.otherCiv() } // we're now lazily enumerating over CivilizationInfo's we're at war with
@@ -538,55 +505,15 @@ class WorldScreen(
                     //    no matter whether civilian, air or ranged, tell user he needs melee
                     .any { it.getUnits().any { unit -> unit.civInfo == viewingCiv } }
         }
-        displayTutorial(Tutorial.AfterConquering) { viewingCiv.cities.any { it.hasJustBeenConquered } }
+        displayTutorial(TutorialTrigger.AfterConquering) { viewingCiv.cities.any { it.hasJustBeenConquered } }
 
-        displayTutorial(Tutorial.InjuredUnits) { gameInfo.getCurrentPlayerCivilization().getCivUnits().any { it.health < 100 } }
+        displayTutorial(TutorialTrigger.InjuredUnits) { gameInfo.getCurrentPlayerCivilization().getCivUnits().any { it.health < 100 } }
 
-        displayTutorial(Tutorial.Workers) {
+        displayTutorial(TutorialTrigger.Workers) {
             gameInfo.getCurrentPlayerCivilization().getCivUnits().any {
                 it.hasUniqueToBuildImprovements && it.isCivilian() && !it.isGreatPerson()
             }
         }
-    }
-
-    private fun updateDiplomacyButton(civInfo: CivilizationInfo) {
-        diplomacyButtonHolder.clear()
-        if (!civInfo.isDefeated() && !civInfo.isSpectator() && civInfo.getKnownCivs()
-                        .filterNot { it == viewingCiv || it.isBarbarian() }
-                        .any()) {
-            displayTutorial(Tutorial.OtherCivEncountered)
-            val btn = "Diplomacy".toTextButton()
-            btn.onClick { game.pushScreen(DiplomacyScreen(viewingCiv)) }
-            btn.label.setFontSize(30)
-            btn.labelCell.pad(10f)
-            diplomacyButtonHolder.add(btn)
-        }
-        diplomacyButtonHolder.pack()
-        diplomacyButtonHolder.y = techPolicyAndVictoryHolder.y - 20 - diplomacyButtonHolder.height
-    }
-
-    private fun updateTechButton() {
-        if (gameInfo.ruleSet.technologies.isEmpty()) return
-        techButtonHolder.isVisible = viewingCiv.cities.isNotEmpty()
-        techButtonHolder.clearChildren()
-
-        if (viewingCiv.tech.currentTechnology() != null) {
-            val currentTech = viewingCiv.tech.currentTechnologyName()!!
-            val innerButton = TechButton(currentTech, viewingCiv.tech)
-            innerButton.color = colorFromRGB(7, 46, 43)
-            techButtonHolder.add(innerButton)
-            val turnsToTech = viewingCiv.tech.turnsToTech(currentTech)
-            innerButton.text.setText(currentTech.tr() + "\r\n" + turnsToTech + Fonts.turn)
-        } else if (viewingCiv.tech.canResearchTech() || viewingCiv.tech.researchedTechnologies.any()) {
-            val buttonPic = Table()
-            buttonPic.background = ImageGetter.getRoundedEdgeRectangle(colorFromRGB(7, 46, 43))
-            buttonPic.defaults().pad(20f)
-            val text = if (viewingCiv.tech.canResearchTech()) "{Pick a tech}!" else "Technologies"
-            buttonPic.add(text.toLabel(Color.WHITE, 30))
-            techButtonHolder.add(buttonPic)
-        }
-
-        techButtonHolder.pack()
     }
 
     private fun updateSelectedCiv() {
@@ -843,27 +770,27 @@ class WorldScreen(
 
     private fun showTutorialsOnNextTurn() {
         if (!game.settings.showTutorials) return
-        displayTutorial(Tutorial.SlowStart)
-        displayTutorial(Tutorial.CityExpansion) { viewingCiv.cities.any { it.expansion.tilesClaimed() > 0 } }
-        displayTutorial(Tutorial.BarbarianEncountered) { viewingCiv.viewableTiles.any { it.getUnits().any { unit -> unit.civInfo.isBarbarian() } } }
-        displayTutorial(Tutorial.RoadsAndRailroads) { viewingCiv.cities.size > 2 }
-        displayTutorial(Tutorial.Happiness) { viewingCiv.getHappiness() < 5 }
-        displayTutorial(Tutorial.Unhappiness) { viewingCiv.getHappiness() < 0 }
-        displayTutorial(Tutorial.GoldenAge) { viewingCiv.goldenAges.isGoldenAge() }
-        displayTutorial(Tutorial.IdleUnits) { gameInfo.turns >= 50 && game.settings.checkForDueUnits }
-        displayTutorial(Tutorial.ContactMe) { gameInfo.turns >= 100 }
+        displayTutorial(TutorialTrigger.SlowStart)
+        displayTutorial(TutorialTrigger.CityExpansion) { viewingCiv.cities.any { it.expansion.tilesClaimed() > 0 } }
+        displayTutorial(TutorialTrigger.BarbarianEncountered) { viewingCiv.viewableTiles.any { it.getUnits().any { unit -> unit.civInfo.isBarbarian() } } }
+        displayTutorial(TutorialTrigger.RoadsAndRailroads) { viewingCiv.cities.size > 2 }
+        displayTutorial(TutorialTrigger.Happiness) { viewingCiv.getHappiness() < 5 }
+        displayTutorial(TutorialTrigger.Unhappiness) { viewingCiv.getHappiness() < 0 }
+        displayTutorial(TutorialTrigger.GoldenAge) { viewingCiv.goldenAges.isGoldenAge() }
+        displayTutorial(TutorialTrigger.IdleUnits) { gameInfo.turns >= 50 && game.settings.checkForDueUnits }
+        displayTutorial(TutorialTrigger.ContactMe) { gameInfo.turns >= 100 }
         val resources = viewingCiv.detailedCivResources.asSequence().filter { it.origin == "All" }  // Avoid full list copy
-        displayTutorial(Tutorial.LuxuryResource) { resources.any { it.resource.resourceType == ResourceType.Luxury } }
-        displayTutorial(Tutorial.StrategicResource) { resources.any { it.resource.resourceType == ResourceType.Strategic } }
-        displayTutorial(Tutorial.EnemyCity) {
+        displayTutorial(TutorialTrigger.LuxuryResource) { resources.any { it.resource.resourceType == ResourceType.Luxury } }
+        displayTutorial(TutorialTrigger.StrategicResource) { resources.any { it.resource.resourceType == ResourceType.Strategic } }
+        displayTutorial(TutorialTrigger.EnemyCity) {
             viewingCiv.getKnownCivs().asSequence().filter { viewingCiv.isAtWarWith(it) }
                     .flatMap { it.cities.asSequence() }.any { viewingCiv.exploredTiles.contains(it.location) }
         }
-        displayTutorial(Tutorial.ApolloProgram) { viewingCiv.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts) }
-        displayTutorial(Tutorial.SiegeUnits) { viewingCiv.getCivUnits().any { it.baseUnit.isProbablySiegeUnit() } }
-        displayTutorial(Tutorial.Embarking) { viewingCiv.hasUnique(UniqueType.LandUnitEmbarkation) }
-        displayTutorial(Tutorial.NaturalWonders) { viewingCiv.naturalWonders.size > 0 }
-        displayTutorial(Tutorial.WeLoveTheKingDay) { viewingCiv.cities.any { it.demandedResource != "" } }
+        displayTutorial(TutorialTrigger.ApolloProgram) { viewingCiv.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts) }
+        displayTutorial(TutorialTrigger.SiegeUnits) { viewingCiv.getCivUnits().any { it.baseUnit.isProbablySiegeUnit() } }
+        displayTutorial(TutorialTrigger.Embarking) { viewingCiv.hasUnique(UniqueType.LandUnitEmbarkation) }
+        displayTutorial(TutorialTrigger.NaturalWonders) { viewingCiv.naturalWonders.size > 0 }
+        displayTutorial(TutorialTrigger.WeLoveTheKingDay) { viewingCiv.cities.any { it.demandedResource != "" } }
     }
 
     private fun backButtonAndESCHandler() {
@@ -890,7 +817,7 @@ class WorldScreen(
     fun autoSave() {
         waitingForAutosave = true
         shouldUpdate = true
-        UncivGame.Current.gameSaver.requestAutoSave(gameInfo).invokeOnCompletion {
+        UncivGame.Current.files.requestAutoSave(gameInfo).invokeOnCompletion {
             // only enable the user to next turn once we've saved the current one
             waitingForAutosave = false
             shouldUpdate = true

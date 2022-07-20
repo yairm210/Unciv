@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset
 
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
@@ -7,7 +8,7 @@ import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
 import kotlin.math.abs
 
-class Speed : RulesetObject() {
+class Speed : RulesetObject(), IsPartOfGameInfoSerialization {
     var modifier: Float = 1f
     var goldCostModifier: Float = modifier
     var productionCostModifier: Float = modifier
@@ -32,14 +33,19 @@ class Speed : RulesetObject() {
     }
 
     val statCostModifiers: HashMap<Stat, Float> by lazy {
-        HashMap<Stat, Float>().apply {
-            this[Stat.Faith] = 1f;
-            this[Stat.Production] = productionCostModifier;
-            this[Stat.Gold] = goldCostModifier;
-            this[Stat.Science] = scienceCostModifier;
-            this[Stat.Faith] = faithCostModifier;
-            this[Stat.Happiness] = 1f;
+        val map = HashMap<Stat, Float>()
+        for (stat in Stat.values()) {
+            val modifier = when (stat) {
+                Stat.Production -> productionCostModifier
+                Stat.Gold -> goldCostModifier
+                Stat.Science -> scienceCostModifier
+                Stat.Faith -> faithCostModifier
+                else -> 1f
+            }
+            map[stat] = modifier
         }
+
+        map
     }
 
     companion object {
@@ -66,8 +72,9 @@ class Speed : RulesetObject() {
         yield(FormattedLine("Golden age length modifier: [${goldenAgeLengthModifier * 100}]%${Fonts.happiness}"))
         yield(FormattedLine("Adjacent city religious pressure: [$religiousPressureAdjacentCity]${Fonts.faith}"))
         yield(FormattedLine("Peace deal duration: [$peaceDealDuration] turns${Fonts.turn}"))
-        yield(FormattedLine("Start year: " + ("[${abs(startYear).toInt()}] " + (if (startYear < 0) "BC" else "AD")).tr()))
+        yield(FormattedLine("Start year: [" + ("{[${abs(startYear).toInt()}] " + (if (startYear < 0) "BC" else "AD") + "}]").tr()))
     }.toList()
+    override fun getSortGroup(ruleset: Ruleset): Int = (modifier * 1000).toInt()
 
     fun numTotalTurns(): Int = yearsPerTurn.last().untilTurn
 }

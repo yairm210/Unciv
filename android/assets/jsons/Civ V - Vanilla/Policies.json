@@ -3,11 +3,11 @@
         "name": "Tradition",
         "era": "Ancient era",
         "priorities": {
-            "Neutral": 40,
-            "Cultural": 40,
+            "Neutral": 0,
+            "Cultural": 10,
             "Diplomatic": 0,
             "Domination": 0,
-            "Scientific": 40
+            "Scientific": 10
         },
         "uniques": [
             "[+3 Culture] [in capital]",
@@ -72,10 +72,10 @@
         "name": "Liberty",
         "era": "Ancient era",
         "priorities": {
-            "Neutral": 40,
+            "Neutral": 0,
             "Cultural": 0,
-            "Diplomatic": 40,
-            "Domination": 40,
+            "Diplomatic": 10,
+            "Domination": 10,
             "Scientific": 0
         },
         "uniques": ["[+1 Culture] [in all cities]"],
@@ -417,10 +417,10 @@
             "Cultural": 10,
             "Diplomatic": 0,
             "Domination": 0,
-            "Scientific": 20
+            "Scientific": 40
         },
         "uniques": [
-            "Science gained from research agreements [+50]%"
+            "Science gained from research agreements [+50]%",
             "Only available <before adopting [Piety]>"
         ],
         "policies": [
@@ -480,9 +480,9 @@
         "priorities": {
             "Neutral": 30,
             "Cultural": 30,
-            "Diplomatic": 20,
+            "Diplomatic": 30,
             "Domination": 0,
-            "Scientific": 20
+            "Scientific": 30
         },
         "uniques": [
             "[+25]% Great Person generation [in all cities]",
@@ -608,7 +608,7 @@
             "Cultural": 0,
             "Diplomatic": 30,
             "Domination": 0,
-            "Scientific": 20
+            "Scientific": 30
         },
         "uniques": [
             "[+1 Happiness] [in all cities]",

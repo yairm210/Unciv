@@ -2,13 +2,13 @@ package com.unciv.ui.multiplayer
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.UncivGame
 import com.unciv.logic.IdChecker
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.ToastPopup
+import com.unciv.ui.utils.UncivTextField
 import com.unciv.ui.utils.extensions.enable
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toLabel
@@ -17,13 +17,12 @@ import java.util.*
 
 class AddFriendScreen : PickerScreen() {
     init {
-        val friendNameTextField = TextField("", skin)
+        val friendNameTextField = UncivTextField.create("Please input a name for your friend!")
         val pastePlayerIDButton = "Paste player ID from clipboard".toTextButton()
-        val playerIDTextField = TextField("", skin)
+        val playerIDTextField = UncivTextField.create("Please input a player ID for your friend!")
         val friendlist = FriendList()
 
         topTable.add("Friend name".toLabel()).row()
-        friendNameTextField.messageText = "Please input a name for your friend!".tr()
         topTable.add(friendNameTextField).pad(10f).padBottom(30f).width(stage.width/2).row()
 
         pastePlayerIDButton.onClick {
@@ -32,7 +31,6 @@ class AddFriendScreen : PickerScreen() {
 
         topTable.add("Player ID".toLabel()).row()
         val gameIDTable = Table()
-        playerIDTextField.messageText = "Please input a player ID for your friend!".tr()
         gameIDTable.add(playerIDTextField).pad(10f).width(2*stage.width/3 - pastePlayerIDButton.width)
         gameIDTable.add(pastePlayerIDButton)
         topTable.add(gameIDTable).padBottom(30f).row()

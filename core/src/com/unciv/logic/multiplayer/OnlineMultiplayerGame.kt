@@ -4,10 +4,12 @@ import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.event.EventBus
+import com.unciv.logic.multiplayer.GameUpdateResult.Type.CHANGED
+import com.unciv.logic.multiplayer.GameUpdateResult.Type.FAILURE
+import com.unciv.logic.multiplayer.GameUpdateResult.Type.UNCHANGED
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
-import com.unciv.logic.multiplayer.storage.OnlineMultiplayerGameSaver
+import com.unciv.logic.multiplayer.storage.OnlineMultiplayerFiles
 import com.unciv.ui.utils.extensions.isLargerThan
-import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import com.unciv.utils.concurrency.withGLContext
 import com.unciv.utils.debug
@@ -53,7 +55,7 @@ class OnlineMultiplayerGame(
     }
 
     private fun loadPreviewFromFile(): GameInfoPreview {
-        val previewFromFile = UncivGame.Current.gameSaver.loadGamePreviewFromFile(fileHandle)
+        val previewFromFile = UncivGame.Current.files.loadGamePreviewFromFile(fileHandle)
         preview = previewFromFile
         return previewFromFile
     }
@@ -64,13 +66,13 @@ class OnlineMultiplayerGame(
      * Fires: [MultiplayerGameUpdateStarted], [MultiplayerGameUpdated], [MultiplayerGameUpdateUnchanged], [MultiplayerGameUpdateFailed]
      *
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
-     * @throws FileNotFoundException if the file can't be found
+     * @throws MultiplayerFileNotFoundException if the file can't be found
      */
     suspend fun requestUpdate(forceUpdate: Boolean = false) = coroutineScope {
-        val onUnchanged = { GameUpdateResult.UNCHANGED }
+        val onUnchanged = { GameUpdateResult(UNCHANGED, preview!!) }
         val onError = { e: Exception ->
             error = e
-            GameUpdateResult.FAILURE
+            GameUpdateResult(e)
         }
         debug("Starting multiplayer game update for %s with id %s", name, preview?.gameId)
         launchOnGLThread {
@@ -82,20 +84,21 @@ class OnlineMultiplayerGame(
         } else {
             throttle(lastOnlineUpdate, throttleInterval, onUnchanged, onError, ::update)
         }
-        val updateEvent = when (updateResult) {
-            GameUpdateResult.CHANGED -> {
-                debug("Game update for %s with id %s had remote change", name, preview?.gameId)
-                MultiplayerGameUpdated(name, preview!!)
+        val updateEvent = when {
+            updateResult.type == CHANGED && updateResult.status != null -> {
+                debug("Game update for %s with id %s had remote change", name, updateResult.status.gameId)
+                MultiplayerGameUpdated(name, updateResult.status)
             }
-            GameUpdateResult.FAILURE -> {
-                debug("Game update for %s with id %s failed: %s", name, preview?.gameId, error)
-                MultiplayerGameUpdateFailed(name, error!!)
+            updateResult.type == FAILURE && updateResult.error != null -> {
+                debug("Game update for %s with id %s failed: %s", name, preview?.gameId, updateResult.error)
+                MultiplayerGameUpdateFailed(name, updateResult.error)
             }
-            GameUpdateResult.UNCHANGED -> {
-                debug("Game update for %s with id %s had no changes", name, preview?.gameId)
+            updateResult.type == UNCHANGED && updateResult.status != null -> {
+                debug("Game update for %s with id %s had no changes", name, updateResult.status.gameId)
                 error = null
-                MultiplayerGameUpdateUnchanged(name, preview!!)
+                MultiplayerGameUpdateUnchanged(name, updateResult.status)
             }
+            else -> throw IllegalStateException()
         }
         launchOnGLThread {
             EventBus.send(updateEvent)
@@ -104,11 +107,11 @@ class OnlineMultiplayerGame(
 
     private suspend fun update(): GameUpdateResult {
         val curPreview = if (preview != null) preview!! else loadPreviewFromFile()
-        val newPreview = OnlineMultiplayerGameSaver().tryDownloadGamePreview(curPreview.gameId)
-        if (newPreview.turns == curPreview.turns && newPreview.currentPlayer == curPreview.currentPlayer) return GameUpdateResult.UNCHANGED
-        UncivGame.Current.gameSaver.saveGame(newPreview, fileHandle)
+        val newPreview = OnlineMultiplayerFiles().tryDownloadGamePreview(curPreview.gameId)
+        if (newPreview.turns == curPreview.turns && newPreview.currentPlayer == curPreview.currentPlayer) return GameUpdateResult(UNCHANGED, newPreview)
+        UncivGame.Current.files.saveGame(newPreview, fileHandle)
         preview = newPreview
-        return GameUpdateResult.CHANGED
+        return GameUpdateResult(CHANGED, newPreview)
     }
 
     suspend fun doManualUpdate(gameInfo: GameInfoPreview) {
@@ -125,8 +128,15 @@ class OnlineMultiplayerGame(
     override fun hashCode(): Int = fileHandle.hashCode()
 }
 
-private enum class GameUpdateResult {
-    CHANGED, UNCHANGED, FAILURE
+private class GameUpdateResult private constructor(
+    val type: Type,
+    val status: GameInfoPreview?,
+    val error: Exception?
+) {
+    constructor(type: Type, status: GameInfoPreview) : this(type, status, null)
+    constructor(error: Exception) : this(FAILURE, null, error)
+
+    enum class Type { CHANGED, UNCHANGED, FAILURE }
 }
 
 /**

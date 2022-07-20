@@ -1,3 +1,155 @@
+## 4.1.20
+
+Can no longer receive negative gold offers from AI
+
+Keep progress in notification scroll when updating
+
+Gray out city state friend bonus when allied - By Azzurite
+
+By OptimizedForDensity:
+- Minor reweight of AI policy selection
+- Stop transported units from being able to pillage tiles
+
+Fix getting settlers from ancient ruins on one-city challenge - By MindaugasRumsa51
+
+## 4.1.19
+
+Interception always takes an attack  - By itanasi
+
+By OptimizedForDensity:
+- Add more music triggers
+- Move border below icons
+- Significantly reduce AI turn time
+- City health updates when finishing health-increasing buildings
+
+By Azzurite:
+- Fix potential race condition in multiplayer game update
+- Fix game crashing when a multiplayer game can not be read
+
+Sorted Civilopedia eras - By alexban011
+
+Remove in-game mentions of 1.5x unhappiness for puppeted cities  - By Ouaz
+
+## 4.1.18
+
+Fix multiple capture uniques resulting in double-capture
+
+Resolved ANRs caused by fonts taking too long to load
+
+By OptimizedForDensity:
+- Fixed image problems in combat
+- Stop automate production setting from affecting other players' production in MP
+- Sort game speeds in Civilopedia by speed
+- Fix monastery purchase cost
+
+Remove double XP gain from Intercept  - By itanasi
+
+Multiplayer options UI fix - By Azzurite
+
+## 4.1.17
+
+Puppet cities generate no extra unhappiness (per Civ V)
+
+Resolved crash when resuming game after closing it quickly
+
+Modding: Removed deprecated uniques
+
+By OptimizedForDensity:
+- Improve AI belief picking
+- Unstack enemy unit strength modifiers
+- Prevent theme music tracks from randomly playing
+- Fix latest untranslated strings
+
+By alexban011:
+- Increase mod search request page size
+- Puppeted cities can no longer become capitals
+
+## 4.1.16
+
+By OptimizedForDensity:
+- Better AI targeting
+- Generalize production-to-stat conversion uniques
+- Performance improvements
+
+Unit icon opacity control - By letstalkaboutdune
+
+## 4.1.15
+
+By OptimizedForDensity:
+- Add support for era-specific unit sprites
+- Don't wake civilians to danger if they're in a city
+- Fix translation issues from nested brackets and braces
+
+By alexban011:
+- Fixed brackets in notification logs
+- Exception handling when loading mod options
+
+Moddable prettier Tutorials - By SomeTroglodyte
+
+By Azzurite:
+- Save compatibility handling
+- Fix OutOfMemoryError when loading a game and another is already loaded
+
+Fix crash when exploring - By Skekdog
+
+## 4.1.14
+
+By OptimizedForDensity:
+- Make mounted vs city penalties attack-only
+- Logistics allows move after attack
+- Fix crash when melee unit captures civilian then tries to attack it
+- Allow modded harbor-type buildings to connect cities
+- Fix "Religions to be founded" count
+
+By Azzurite:
+- Save uncaught exception to file
+
+Better exploring AI for ruins - By Skekdog
+
+By alexban011:
+- added gameParameter option to disable start bias
+- Added option to select font size
+- Add Notifications Log
+
+## 4.1.13
+
+By Azzurite:
+- Make popups and text fields nicer to interact with on Android
+
+Rework Policy and Diplomacy buttons  - By SomeTroglodyte
+
+By OptimizedForDensity:
+- Fix cases where AI GP get stuck building improvements
+- Fix disappearing terrain when switching between mods
+- Fix policies not contributing stats from city-states
+- AI missionaries avoid cities with inquisitors
+
+By alexban011:
+- CityScreen plays sound when opened
+- Religion no longer "majority" when it's exactly 50% of the cities
+
+## 4.1.12
+
+By Azzurite:
+- Many, many UX improvements!
+- Fixed memory leaks
+
+By OptimizedForDensity:
+- Moddable game speeds
+- Population reassignment bug fixes
+
+Civilopedia tweaks - By SomeTroglodyte
+
+Translation improvements - By J0anJosep
+
+Trigger Time Victory only if enabled  - By JackRainy
+
+Fix crash for "no strategic resource" mods - By Skekdog
+
+Shortcut fixes and additions - By doublep
+
+Maintain Fortify bonus after Fortify until Healed  - By itanasi
+
 ## 4.1.11
 
 AI considers liberating city-states from other civilizations  - By OptimizedForDensity

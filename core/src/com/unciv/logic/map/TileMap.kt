@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.HexMath
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.mapgenerator.MapLandmassGenerator
 import com.unciv.models.metadata.Player
@@ -14,11 +15,11 @@ import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.math.abs
 
 /** An Unciv map with all properties as produced by the [map editor][com.unciv.ui.mapeditor.MapEditorScreen]
- * or [MapGenerator][com.unciv.logic.map.mapgenerator.MapGenerator]; or as part of a running [game][GameInfo]. 
- * 
- * Note: Will be Serialized -> Take special care with lateinit and lazy! 
+ * or [MapGenerator][com.unciv.logic.map.mapgenerator.MapGenerator]; or as part of a running [game][GameInfo].
+ *
+ * Note: Will be Serialized -> Take special care with lateinit and lazy!
  */
-class TileMap {
+class TileMap : IsPartOfGameInfoSerialization {
     companion object {
         /** Legacy way to store starting locations - now this is used only in [translateStartingLocationsFromMap] */
         const val startingLocationPrefix = "StartingLocation "
@@ -41,11 +42,11 @@ class TileMap {
      * @param position [Vector2] of the location
      * @param nation Name of the nation
      */
-    private data class StartingLocation(val position: Vector2 = Vector2.Zero, val nation: String = "")
+    private data class StartingLocation(val position: Vector2 = Vector2.Zero, val nation: String = "") : IsPartOfGameInfoSerialization
     private val startingLocations = arrayListOf(StartingLocation(Vector2.Zero, legacyMarker))
 
     //endregion
-    //region Fields, Transient 
+    //region Fields, Transient
 
     /** Attention: lateinit will _stay uninitialized_ while in MapEditorScreen! */
     @Transient
@@ -354,7 +355,7 @@ class TileMap {
 
                 val containsViewableNeighborThatCanSeeOver = cTile.neighbors.any { bNeighbor: TileInfo ->
                     val bNeighborHeight = bNeighbor.height
-                    viewableTiles.contains(bNeighbor) 
+                    viewableTiles.contains(bNeighbor)
                     && (
                         currentTileHeight > bNeighborHeight // a>b
                         || cTileHeight > bNeighborHeight // c>b
@@ -380,7 +381,7 @@ class TileMap {
     }
 
     /** Build a list of incompatibilities of a map with a ruleset for the new game loader
-     * 
+     *
      *  Is run before setTransients, so make do without startingLocationsByNation
      */
     fun getRulesetIncompatibility(ruleset: Ruleset): HashSet<String> {
@@ -428,7 +429,7 @@ class TileMap {
             leftX = tileList.asSequence().map { it.position.x.toInt() }.minOrNull()!!
 
             // Initialize arrays with enough capacity to avoid re-allocations (+Arrays.copyOf).
-            // We have just calculated the dimensions above, so we know the final size. 
+            // We have just calculated the dimensions above, so we know the final size.
             tileMatrix.ensureCapacity(rightX - leftX + 1)
             for (x in leftX..rightX) {
                 val row = ArrayList<TileInfo?>(topY - bottomY + 1)
@@ -545,9 +546,9 @@ class TileMap {
 
     /** Strips all units and starting locations from [TileMap] for specified [Player]
      * Operation in place
-     * 
+     *
      * Currently unreachable code
-     * 
+     *
      * @param player units of this player will be removed
      */
     fun stripPlayer(player: Player) {
@@ -560,9 +561,9 @@ class TileMap {
 
     /** Finds all units and starting location of [Player] and changes their [Nation]
      * Operation in place
-     * 
+     *
      * Currently unreachable code
-     * 
+     *
      * @param player player whose all units will be changed
      * @param newNation new nation to be set up
      */
@@ -611,7 +612,7 @@ class TileMap {
         setStartingLocationsTransients()
     }
 
-    /** Adds a starting position, maintaining the transients 
+    /** Adds a starting position, maintaining the transients
      * @return true if the starting position was not already stored as per [Collection]'s add */
     fun addStartingLocation(nationName: String, tile: TileInfo): Boolean {
         if (startingLocationsByNation[nationName]?.contains(tile) == true) return false
@@ -658,7 +659,7 @@ class TileMap {
      *  @param mode As follows:
      *  [Assign][AssignContinentsMode.Assign] = initial assign, throw if tiles have continents.
      *  [Reassign][AssignContinentsMode.Reassign] = clear continent data and redo for map editor.
-     *  [Ensure][AssignContinentsMode.Ensure] = regenerate continent sizes from tile data, and if that is empty, Assign. 
+     *  [Ensure][AssignContinentsMode.Ensure] = regenerate continent sizes from tile data, and if that is empty, Assign.
      *  @throws Exception when `mode==Assign` and any land tile already has a continent ID
      *  @return A map of continent sizes (continent ID to tile count)
      */

@@ -3,6 +3,7 @@ package com.unciv.logic.map
 import com.unciv.logic.HexMath.getEquivalentHexagonalRadius
 import com.unciv.logic.HexMath.getEquivalentRectangularSize
 import com.unciv.logic.HexMath.getNumberOfTilesInHexagon
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.models.metadata.BaseRuleset
 
 
@@ -29,7 +30,7 @@ enum class MapSize(val radius: Int, val width: Int, val height: Int) {
     }
 }
 
-class MapSizeNew {
+class MapSizeNew : IsPartOfGameInfoSerialization {
     var radius = 0
     var width = 0
     var height = 0
@@ -121,12 +122,12 @@ class MapSizeNew {
     override fun toString() = if (name == MapSize.custom) "${width}x${height}" else name
 }
 
-object MapShape {
+object MapShape : IsPartOfGameInfoSerialization {
     const val hexagonal = "Hexagonal"
     const val rectangular = "Rectangular"
 }
 
-object MapType {
+object MapType : IsPartOfGameInfoSerialization {
     const val pangaea = "Pangaea"
     const val continents = "Continents"
     const val fourCorners = "Four Corners"
@@ -152,7 +153,7 @@ object MapResources {
     const val legendaryStart = "Legendary Start"
 }
 
-class MapParameters {
+class MapParameters : IsPartOfGameInfoSerialization {
     var name = ""
     var type = MapType.pangaea
     var shape = MapShape.hexagonal

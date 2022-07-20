@@ -12,7 +12,7 @@ import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.extensions.colorFromRGB
 
-class Era : RulesetObject(), IHasUniques {
+class Era : RulesetObject() {
     var eraNumber: Int = -1
     var researchAgreementCost = 300
     var startingSettlerCount = 1
@@ -29,6 +29,7 @@ class Era : RulesetObject(), IHasUniques {
     var baseUnitBuyCost = 200
     var embarkDefense = 3
     var startPercent = 0
+    var citySound = "cityClassical"
 
     var friendBonus = HashMap<String, List<String>>()
     var allyBonus = HashMap<String, List<String>>()
@@ -65,6 +66,7 @@ class Era : RulesetObject(), IHasUniques {
         yield(FormattedLine("{See also}:"))
         yieldAll(eraGatedObjects.map { FormattedLine(it.name, it.makeLink()) })
     }.toList()
+    override fun getSortGroup(ruleset: Ruleset): Int = eraNumber
 
     private fun getEraGatedObjects(ruleset: Ruleset): Sequence<IRulesetObject> {
         val policyBranches = ruleset.policyBranches.values.asSequence()

@@ -33,9 +33,7 @@ fun displayTab(
     optionsPopup.addCheckbox(this, "Show unit movement arrows", settings.showUnitMovements, true) { settings.showUnitMovements = it }
     optionsPopup.addCheckbox(this, "Show tile yields", settings.showTileYields, true) { settings.showTileYields = it } // JN
     optionsPopup.addCheckbox(this, "Show worked tiles", settings.showWorkedTiles, true) { settings.showWorkedTiles = it }
-    optionsPopup.addCheckbox(this, "Show resources and improvements", settings.showResourcesAndImprovements, true) {
-        settings.showResourcesAndImprovements = it
-    }
+    optionsPopup.addCheckbox(this, "Show resources and improvements", settings.showResourcesAndImprovements, true) { settings.showResourcesAndImprovements = it }
     optionsPopup.addCheckbox(this, "Show tutorials", settings.showTutorials, true) { settings.showTutorials = it }
     optionsPopup.addCheckbox(this, "Show pixel units", settings.showPixelUnits, true) { settings.showPixelUnits = it }
     optionsPopup.addCheckbox(this, "Show pixel improvements", settings.showPixelImprovements, true) { settings.showPixelImprovements = it }
@@ -43,6 +41,8 @@ fun displayTab(
     optionsPopup.addCheckbox(this, "Show zoom buttons in world screen", settings.showZoomButtons, true) { settings.showZoomButtons = it }
 
     addMinimapSizeSlider(this, settings, optionsPopup.selectBoxMinWidth)
+
+    addUnitIconAlphaSlider(this, settings, optionsPopup.selectBoxMinWidth)
 
     addResolutionSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onResolutionChange)
 
@@ -94,6 +94,25 @@ private fun addMinimapSizeSlider(table: Table, settings: GameSettings, selectBox
             worldScreen.shouldUpdate = true
     }
     table.add(minimapSlider).minWidth(selectBoxMinWidth).pad(10f).row()
+}
+
+private fun addUnitIconAlphaSlider(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
+    table.add("Unit icon opacity".toLabel()).left().fillX()
+
+    val getTipText: (Float) -> String = {"%.0f".format(it*100) + "%"}
+
+    val unitIconAlphaSlider = UncivSlider(
+        0f, 1f, 0.1f, initial = settings.unitIconOpacity, getTipText = getTipText
+    ) {
+        settings.unitIconOpacity = it
+        settings.save()
+
+        val worldScreen = UncivGame.Current.getWorldScreenIfActive()
+        if (worldScreen != null)
+            worldScreen.shouldUpdate = true
+
+    }
+    table.add(unitIconAlphaSlider).minWidth(selectBoxMinWidth).pad(10f).row()
 }
 
 private fun addResolutionSelectBox(table: Table, settings: GameSettings, selectBoxMinWidth: Float, onResolutionChange: () -> Unit) {

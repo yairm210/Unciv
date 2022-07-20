@@ -370,13 +370,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 UniqueType.OnlyAvailableWhen -> if (!unique.conditionalsApply(civInfo, cityConstructions.cityInfo))
                     rejectionReasons.add(RejectionReason.ShouldNotBeDisplayed)
 
-                UniqueType.NotDisplayedWithout -> {
-                    val filter = unique.params[0]
-                    if (filter in civInfo.gameInfo.ruleSet.tileResources && !civInfo.hasResource(filter)
-                            || filter in civInfo.gameInfo.ruleSet.buildings && !cityConstructions.containsBuildingOrEquivalent(filter))
-                        rejectionReasons.add(RejectionReason.ShouldNotBeDisplayed)
-                }
-
                 UniqueType.RequiresPopulation -> if (unique.params[0].toInt() > cityConstructions.cityInfo.population.population)
                     rejectionReasons.add(RejectionReason.PopulationRequirement.toInstance(unique.text))
 
@@ -412,25 +405,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             when (unique.type) {
                 UniqueType.Unbuildable ->
                     rejectionReasons.add(RejectionReason.Unbuildable)
-
-                // This should be deprecated and replaced with the already-existing "only available when" unique, see above
-                UniqueType.UnlockedWith, UniqueType.Requires -> {
-                    val filter = unique.params[0]
-                    when {
-                        ruleSet.technologies.contains(filter) ->
-                            if (!civInfo.tech.isResearched(filter))
-                                rejectionReasons.add(RejectionReason.RequiresTech.toInstance(unique.text))
-                        ruleSet.policies.contains(filter) ->
-                            if (!civInfo.policies.isAdopted(filter))
-                                rejectionReasons.add(RejectionReason.RequiresPolicy.toInstance(unique.text))
-                        ruleSet.eras.contains(filter) ->
-                            if (civInfo.getEraNumber() < ruleSet.eras[filter]!!.eraNumber)
-                                rejectionReasons.add(RejectionReason.UnlockedWithEra.toInstance(unique.text))
-                        ruleSet.buildings.contains(filter) ->
-                            if (civInfo.cities.none { it.cityConstructions.containsBuildingOrEquivalent(filter) })
-                                rejectionReasons.add(RejectionReason.RequiresBuildingInSomeCity.toInstance(unique.text))
-                    }
-                }
 
                 UniqueType.FoundCity -> if (civInfo.isCityState() || civInfo.isOneCityChallenger())
                     rejectionReasons.add(RejectionReason.NoSettlerForOneCityPlayers)

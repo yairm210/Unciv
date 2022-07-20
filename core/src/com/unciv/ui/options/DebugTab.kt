@@ -1,14 +1,14 @@
 package com.unciv.ui.options
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.UncivGame
-import com.unciv.logic.GameSaver
+import com.unciv.logic.UncivFiles
 import com.unciv.logic.MapSaver
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.UncivSlider
+import com.unciv.ui.utils.UncivTextField
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toCheckBox
 import com.unciv.ui.utils.extensions.toLabel
@@ -22,7 +22,7 @@ fun debugTab() = Table(BaseScreen.skin).apply {
     val worldScreen = game.worldScreen
     if (worldScreen != null) {
         val simulateButton = "Simulate until turn:".toTextButton()
-        val simulateTextField = TextField(game.simulateUntilTurnForDebug.toString(), BaseScreen.skin)
+        val simulateTextField = UncivTextField.create("Turn", game.simulateUntilTurnForDebug.toString())
         val invalidInputLabel = "This is not a valid integer!".toLabel().also { it.isVisible = false }
         simulateButton.onClick {
             val simulateUntilTurns = simulateTextField.text.toIntOrNull()
@@ -51,8 +51,8 @@ fun debugTab() = Table(BaseScreen.skin).apply {
             curGameInfo.gameParameters.godMode = it
         }).colspan(2).row()
     }
-    add("Save games compressed".toCheckBox(GameSaver.saveZipped) {
-        GameSaver.saveZipped = it
+    add("Save games compressed".toCheckBox(UncivFiles.saveZipped) {
+        UncivFiles.saveZipped = it
     }).colspan(2).row()
     add("Save maps compressed".toCheckBox(MapSaver.saveZipped) {
         MapSaver.saveZipped = it

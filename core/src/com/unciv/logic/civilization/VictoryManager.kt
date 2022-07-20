@@ -1,11 +1,12 @@
 package com.unciv.logic.civilization
 
 import com.unciv.Constants
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Milestone
 import com.unciv.models.ruleset.unique.UniqueType
 
-class VictoryManager {
+class VictoryManager : IsPartOfGameInfoSerialization {
     @Transient
     lateinit var civInfo: CivilizationInfo
 
@@ -55,7 +56,8 @@ class VictoryManager {
 
     fun getVictoryTypeAchieved(): String? {
         if (!civInfo.isMajorCiv()) return null
-        for (victoryName in civInfo.gameInfo.gameParameters.victoryTypes.filter { it != Constants.neutralVictoryType}) {
+        for (victoryName in civInfo.gameInfo.gameParameters.victoryTypes
+            .filter { it != Constants.neutralVictoryType && it in civInfo.gameInfo.ruleSet.victories}) {
             if (getNextMilestone(victoryName) == null)
                 return victoryName
         }

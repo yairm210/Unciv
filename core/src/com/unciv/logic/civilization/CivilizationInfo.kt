@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.json.HashMapVector2
 import com.unciv.logic.GameInfo
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.automation.WorkerAutomation
@@ -47,7 +48,7 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
-enum class Proximity {
+enum class Proximity : IsPartOfGameInfoSerialization {
     None, // ie no cities
     Neighbors,
     Close,
@@ -55,7 +56,7 @@ enum class Proximity {
     Distant
 }
 
-class CivilizationInfo {
+class CivilizationInfo : IsPartOfGameInfoSerialization {
 
     @Transient
     private var workerAutomationCache: WorkerAutomation? = null
@@ -158,10 +159,16 @@ class CivilizationInfo {
     var ruinsManager = RuinsManager()
     var diplomacy = HashMap<String, DiplomacyManager>()
     var proximity = HashMap<String, Proximity>()
-    var notifications = ArrayList<Notification>()
     val popupAlerts = ArrayList<PopupAlert>()
     private var allyCivName: String? = null
     var naturalWonders = ArrayList<String>()
+
+    var notifications = ArrayList<Notification>()
+
+    var notificationsLog = ArrayList<NotificationsLog>()
+    class NotificationsLog(val turn: Int = 0) {
+        var notifications = ArrayList<Notification>()
+    }
 
     /** for trades here, ourOffers is the current civ's offers, and theirOffers is what the requesting civ offers  */
     val tradeRequests = ArrayList<TradeRequest>()
@@ -210,7 +217,7 @@ class CivilizationInfo {
      * @property target Position of the tile targeted by the attack.
      * @see [MapUnit.UnitMovementMemory], [attacksSinceTurnStart]
      */
-    class HistoricalAttackMemory() {
+    class HistoricalAttackMemory() : IsPartOfGameInfoSerialization {
         constructor(attackingUnit: String?, source: Vector2, target: Vector2): this() {
             this.attackingUnit = attackingUnit
             this.source = source
@@ -267,6 +274,7 @@ class CivilizationInfo {
         toReturn.exploredTiles.addAll(gameInfo.tileMap.values.asSequence().map { it.position }.filter { it in exploredTiles })
         toReturn.lastSeenImprovement.putAll(lastSeenImprovement)
         toReturn.notifications.addAll(notifications)
+        toReturn.notificationsLog.addAll(notificationsLog)
         toReturn.citiesCreated = citiesCreated
         toReturn.popupAlerts.addAll(popupAlerts)
         toReturn.tradeRequests.addAll(tradeRequests)
@@ -327,7 +335,7 @@ class CivilizationInfo {
             playerType == PlayerType.Human &&
                     gameInfo.gameParameters.oneCityChallenge)
 
-    fun isCurrentPlayer() = gameInfo.getCurrentPlayerCivilization() == this
+    fun isCurrentPlayer() = gameInfo.currentPlayerCiv == this
     fun isBarbarian() = nation.isBarbarian()
     fun isSpectator() = nation.isSpectator()
     fun isCityState(): Boolean = nation.isCityState()
@@ -912,8 +920,18 @@ class CivilizationInfo {
     }
 
     fun endTurn() {
-        notifications.clear()
+        val notificationsThisTurn = NotificationsLog(gameInfo.turns)
+        notificationsThisTurn.notifications.addAll(notifications)
 
+        while (notificationsLog.size >= UncivGame.Current.settings.notificationsLogMaxTurns) {
+            notificationsLog.removeFirst()
+        }
+
+        if (notificationsThisTurn.notifications.isNotEmpty())
+            notificationsLog.add(notificationsThisTurn)
+
+        notifications.clear()
+        updateStatsForNextTurn()
         val nextTurnStats = statsForNextTurn
 
         policies.endTurn(nextTurnStats.culture.toInt())
@@ -1358,9 +1376,15 @@ class CivilizationInfo {
     }
 
     fun moveCapitalToNextLargest() {
-        moveCapitalTo(cities
-            .filterNot { it.isCapital() }
-            .maxByOrNull { it.population.population})
+        val availableCities = cities.filterNot { it.isCapital() }
+        if (availableCities.none()) return
+        var newCapital = availableCities.filterNot { it.isPuppet }.maxByOrNull { it.population.population }
+
+        if (newCapital == null) { // No non-puppets, take largest puppet and annex
+            newCapital = availableCities.maxByOrNull { it.population.population }!!
+            newCapital.annexCity()
+        }
+        moveCapitalTo(newCapital)
     }
 
     //////////////////////// City State wrapper functions ////////////////////////

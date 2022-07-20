@@ -7,7 +7,13 @@ import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.PerpetualConstruction
-import com.unciv.logic.civilization.*
+import com.unciv.logic.civilization.AlertType
+import com.unciv.logic.civilization.CityStateType
+import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -15,9 +21,20 @@ import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
-import com.unciv.logic.trade.*
+import com.unciv.logic.trade.Trade
+import com.unciv.logic.trade.TradeEvaluation
+import com.unciv.logic.trade.TradeLogic
+import com.unciv.logic.trade.TradeOffer
+import com.unciv.logic.trade.TradeRequest
+import com.unciv.logic.trade.TradeType
 import com.unciv.models.Counter
-import com.unciv.models.ruleset.*
+import com.unciv.models.ruleset.Belief
+import com.unciv.models.ruleset.BeliefType
+import com.unciv.models.ruleset.MilestoneType
+import com.unciv.models.ruleset.ModOptionsConstants
+import com.unciv.models.ruleset.Policy
+import com.unciv.models.ruleset.PolicyBranch
+import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
@@ -135,10 +152,10 @@ object NextTurnAutomation {
         val counterofferGifts = ArrayList<TradeOffer>()
 
         for (offer in tradeLogic.theirAvailableOffers) {
-            if (offer.type == TradeType.Gold && tradeRequest.trade.ourOffers.any { it.type == TradeType.Gold } ||
-                offer.type == TradeType.Gold_Per_Turn && tradeRequest.trade.ourOffers.any { it.type == TradeType.Gold_Per_Turn })
+            if ((offer.type == TradeType.Gold || offer.type == TradeType.Gold_Per_Turn)
+                    && tradeRequest.trade.ourOffers.any { it.type == offer.type })
                     continue // Don't want to counteroffer straight gold for gold, that's silly
-            if (offer.amount == 0)
+            if (!offer.isTradable())
                 continue // For example resources gained by trade or CS
             if (offer.type == TradeType.City)
                 continue // Players generally don't want to give up their cities, and they might misclick
@@ -203,7 +220,7 @@ object NextTurnAutomation {
             delta = (delta * 2) / 3 // Only compensate some of it though, they're the ones asking us
             // First give some GPT, then lump sum - but only if they're not already offering the same
             for (ourGold in tradeLogic.ourAvailableOffers
-                    .filter { it.type == TradeType.Gold || it.type == TradeType.Gold_Per_Turn }
+                    .filter { it.isTradable() && (it.type == TradeType.Gold || it.type == TradeType.Gold_Per_Turn) }
                     .sortedByDescending { it.type.ordinal }) {
                 if (tradeLogic.currentTrade.theirOffers.none { it.type == ourGold.type } &&
                         counterofferAsks.keys.none { it.type == ourGold.type } ) {
@@ -540,6 +557,7 @@ object NextTurnAutomation {
     }
 
     private fun enhanceReligion(civInfo: CivilizationInfo) {
+        if (civInfo.religionManager.religionState != ReligionState.EnhancingReligion) return
         civInfo.religionManager.chooseBeliefs(
             null,
             null,
@@ -698,7 +716,7 @@ object NextTurnAutomation {
     }
 
     private fun motivationToAttack(civInfo: CivilizationInfo, otherCiv: CivilizationInfo): Int {
-        if(civInfo.cities.isEmpty() || otherCiv.cities.isEmpty()) return 0
+        val closestCities = getClosestCities(civInfo, otherCiv) ?: return 0
         val baseForce = 30f
 
         val ourCombatStrength = civInfo.getStatForRanking(RankingType.Force).toFloat() + baseForce
@@ -711,7 +729,6 @@ object NextTurnAutomation {
 
         if (theirCombatStrength > ourCombatStrength) return 0
 
-        val closestCities = getClosestCities(civInfo, otherCiv)
         val ourCity = closestCities.city1
         val theirCity = closestCities.city2
 
@@ -969,12 +986,15 @@ object NextTurnAutomation {
     }
 
     fun getMinDistanceBetweenCities(civ1: CivilizationInfo, civ2: CivilizationInfo): Int {
-        return getClosestCities(civ1, civ2).aerialDistance
+        return getClosestCities(civ1, civ2)?.aerialDistance ?: Int.MAX_VALUE
     }
 
     data class CityDistance(val city1: CityInfo, val city2: CityInfo, val aerialDistance: Int)
 
-    fun getClosestCities(civ1: CivilizationInfo, civ2: CivilizationInfo): CityDistance {
+    fun getClosestCities(civ1: CivilizationInfo, civ2: CivilizationInfo): CityDistance? {
+        if (civ1.cities.isEmpty() || civ2.cities.isEmpty())
+            return null
+
         val cityDistances = arrayListOf<CityDistance>()
         for (civ1city in civ1.cities)
             for (civ2city in civ2.cities)

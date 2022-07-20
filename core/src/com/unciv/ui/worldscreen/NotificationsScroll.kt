@@ -1,7 +1,6 @@
 package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -51,8 +50,14 @@ class NotificationsScroll(
         maxNotificationsHeight: Float,
         tileInfoTableHeight: Float
     ) {
+
+        val previousScrollY = scrollY
+
         updateContent(notifications)
         updateLayout(maxNotificationsHeight, tileInfoTableHeight)
+
+        scrollY = previousScrollY
+        updateVisualScroll()
     }
 
     private fun updateContent(notifications: MutableList<Notification>) {
@@ -78,18 +83,7 @@ class NotificationsScroll(
                 listItem.add(label).padRight(10f)
             }
 
-            if (notification.icons.isNotEmpty()) {
-                val ruleset = worldScreen.gameInfo.ruleSet
-                for (icon in notification.icons.reversed()) {
-                    val image: Actor = when {
-                        ruleset.technologies.containsKey(icon) -> ImageGetter.getTechIcon(icon)
-                        ruleset.nations.containsKey(icon) -> ImageGetter.getNationIndicator(ruleset.nations[icon]!!, iconSize)
-                        ruleset.units.containsKey(icon) -> ImageGetter.getUnitIcon(icon)
-                        else -> ImageGetter.getImage(icon)
-                    }
-                    listItem.add(image).size(iconSize).padRight(5f)
-                }
-            }
+            notification.addNotificationIcons(worldScreen.gameInfo.ruleSet, iconSize, listItem)
 
             // using a large click area with no gap in between each message item.
             // this avoids accidentally clicking in between the messages, resulting in a map click

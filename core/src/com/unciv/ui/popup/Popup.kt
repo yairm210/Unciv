@@ -1,6 +1,7 @@
 package com.unciv.ui.popup
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.Touchable
@@ -13,6 +14,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.logic.event.EventBus
+import com.unciv.ui.UncivStage
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.AutoScrollPane
 import com.unciv.ui.utils.BaseScreen
@@ -30,7 +33,8 @@ import com.unciv.ui.utils.extensions.toTextButton
  */
 @Suppress("MemberVisibilityCanBePrivate")
 open class Popup(
-    val stageToShowOn: Stage
+    val stageToShowOn: Stage,
+    scrollable: Boolean = true
 ): Table(BaseScreen.skin) {
 
     constructor(screen: BaseScreen) : this(screen.stage)
@@ -39,22 +43,22 @@ open class Popup(
     // from the 'screen blocking' part of the popup (which covers the entire screen)
     val innerTable = Table(BaseScreen.skin)
 
+    val showListeners = mutableListOf<() -> Unit>()
     val closeListeners = mutableListOf<() -> Unit>()
 
-    val scrollPane: AutoScrollPane
+    val events = EventBus.EventReceiver()
 
     init {
         // Set actor name for debugging
         name = javaClass.simpleName
-
-        scrollPane = AutoScrollPane(innerTable, BaseScreen.skin)
 
         background = ImageGetter.getBackground(Color.GRAY.cpy().apply { a=.5f })
         innerTable.background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.5f))
 
         innerTable.pad(20f)
         innerTable.defaults().pad(5f)
-        super.add(scrollPane)
+
+        super.add(if (scrollable) AutoScrollPane(innerTable, BaseScreen.skin) else innerTable)
 
         this.isVisible = false
         touchable = Touchable.enabled // don't allow clicking behind
@@ -70,20 +74,34 @@ open class Popup(
         innerTable.pack()
         pack()
         center(stageToShowOn)
+        events.receive(UncivStage.VisibleAreaChanged::class) {
+            fitContentIntoVisibleArea(it.visibleArea)
+        }
+        fitContentIntoVisibleArea((stageToShowOn as UncivStage).lastKnownVisibleArea)
         if (force || !stageToShowOn.hasOpenPopups()) {
             show()
         }
     }
 
+    private fun fitContentIntoVisibleArea(visibleArea: Rectangle) {
+        padLeft(visibleArea.x)
+        padBottom(visibleArea.y)
+        padRight(stageToShowOn.width - visibleArea.x - visibleArea.width)
+        padTop(stageToShowOn.height - visibleArea.y - visibleArea.height)
+        invalidate()
+    }
+
     /** Subroutine for [open] handles only visibility */
     private fun show() {
         this.isVisible = true
+        for (listener in showListeners) listener()
     }
 
     /**
      * Close this popup and - if any other popups are pending - display the next one.
      */
     open fun close() {
+        events.stopReceiving()
         for (listener in closeListeners) listener()
         remove()
         val nextPopup = stageToShowOn.actors.firstOrNull { it is Popup }

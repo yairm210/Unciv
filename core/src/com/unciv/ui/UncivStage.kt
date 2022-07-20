@@ -1,11 +1,14 @@
 package com.unciv.ui
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.Viewport
+import com.unciv.logic.event.Event
+import com.unciv.logic.event.EventBus
 import com.unciv.ui.crashhandling.wrapCrashHandling
 import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
+import com.unciv.utils.Log
 
 
 /** Main stage for the game. Catches all exceptions or errors thrown by event handlers, calling [com.unciv.UncivGame.handleUncaughtThrowable] with the thrown exception or error. */
@@ -17,8 +20,31 @@ class UncivStage(viewport: Viewport) : Stage(viewport) {
      */
     var performPointerEnterExitEvents: Boolean = true
 
+    var lastKnownVisibleArea: Rectangle
+        private set
+
+    private val events = EventBus.EventReceiver()
+
+    init {
+        lastKnownVisibleArea = Rectangle(0f, 0f, width, height)
+        events.receive(VisibleAreaChanged::class) {
+            Log.debug("Visible stage area changed: %s", it.visibleArea)
+            lastKnownVisibleArea = it.visibleArea
+        }
+    }
+
+    override fun dispose() {
+        events.stopReceiving()
+        super.dispose()
+
+        /** [Stage.dispose] is supposed to clear all references it holds. But it forgets the mouse over properties:
+         the [Stage.mouseOverActor] and [Stage.pointerOverActors]. [Stage.act] updates those properties,
+         and since there aren't any children left, sets all those properties to `null`. */
+        super.act()
+    }
+
     override fun draw() =
-        { super.draw() }.wrapCrashHandlingUnit()()
+            { super.draw() }.wrapCrashHandlingUnit()()
 
     /** libGDX has no built-in way to disable/enable pointer enter/exit events. It is simply being done in [Stage.act]. So to disable this, we have
      * to replicate the [Stage.act] method without the code for pointer enter/exit events. This is of course inherently brittle, but the only way. */
@@ -34,30 +60,33 @@ class UncivStage(viewport: Viewport) : Stage(viewport) {
     }.wrapCrashHandlingUnit()()
 
     override fun act(delta: Float) =
-        { super.act(delta) }.wrapCrashHandlingUnit()()
+            { super.act(delta) }.wrapCrashHandlingUnit()()
 
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int) =
-        { super.touchDown(screenX, screenY, pointer, button) }.wrapCrashHandling()() ?: true
+            { super.touchDown(screenX, screenY, pointer, button) }.wrapCrashHandling()() ?: true
 
     override fun touchDragged(screenX: Int, screenY: Int, pointer: Int) =
-        { super.touchDragged(screenX, screenY, pointer) }.wrapCrashHandling()() ?: true
+            { super.touchDragged(screenX, screenY, pointer) }.wrapCrashHandling()() ?: true
 
     override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int) =
-        { super.touchUp(screenX, screenY, pointer, button) }.wrapCrashHandling()() ?: true
+            { super.touchUp(screenX, screenY, pointer, button) }.wrapCrashHandling()() ?: true
 
     override fun mouseMoved(screenX: Int, screenY: Int) =
-        { super.mouseMoved(screenX, screenY) }.wrapCrashHandling()() ?: true
+            { super.mouseMoved(screenX, screenY) }.wrapCrashHandling()() ?: true
 
     override fun scrolled(amountX: Float, amountY: Float) =
-        { super.scrolled(amountX, amountY) }.wrapCrashHandling()() ?: true
+            { super.scrolled(amountX, amountY) }.wrapCrashHandling()() ?: true
 
     override fun keyDown(keyCode: Int) =
-        { super.keyDown(keyCode) }.wrapCrashHandling()() ?: true
+            { super.keyDown(keyCode) }.wrapCrashHandling()() ?: true
 
     override fun keyUp(keyCode: Int) =
-        { super.keyUp(keyCode) }.wrapCrashHandling()() ?: true
+            { super.keyUp(keyCode) }.wrapCrashHandling()() ?: true
 
     override fun keyTyped(character: Char) =
-        { super.keyTyped(character) }.wrapCrashHandling()() ?: true
+            { super.keyTyped(character) }.wrapCrashHandling()() ?: true
 
+    class VisibleAreaChanged(
+        val visibleArea: Rectangle
+    ) : Event
 }

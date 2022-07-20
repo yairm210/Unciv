@@ -60,9 +60,6 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
 
     fun chooseNextConstruction() {
-        if (!UncivGame.Current.settings.autoAssignCityProduction
-                && civInfo.playerType == PlayerType.Human && !cityInfo.isPuppet)
-            return
         if (cityConstructions.getCurrentConstruction() !is PerpetualConstruction) return  // don't want to be stuck on these forever
 
         addFoodBuildingChoice()
@@ -286,8 +283,10 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
             if (isAtWar) modifier = 0.5f
 
             // If this city is the closest city to another civ, that makes it a likely candidate for attack
-            if (civInfo.getKnownCivs().filter { it.cities.isNotEmpty() }
-                            .any { NextTurnAutomation.getClosestCities(civInfo, it).city1 == cityInfo })
+            if (civInfo.getKnownCivs()
+                        .map { NextTurnAutomation.getClosestCities(civInfo, it) }
+                        .filterNotNull()
+                        .any { it.city1 == cityInfo })
                 modifier *= 1.5f
 
             addChoice(relativeCostEffectiveness, defensiveBuilding.name, modifier)
