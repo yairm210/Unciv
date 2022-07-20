@@ -315,7 +315,7 @@ object SpecificUnitAutomation {
                 .filter { it.religion.getMajorityReligion() != unit.civInfo.religionManager.religion }
                 .filter { it.civInfo.knows(unit.civInfo) && !it.civInfo.isAtWarWith(unit.civInfo) }
                 .filterNot { it.religion.isProtectedByInquisitor(unit.religion) }
-                .minByOrNull { it.getCenterTile().aerialDistanceTo(unit.civInfo.religionManager.getHolyCity()?.getCenterTile() ?: unit.getTile()) }
+                .minByOrNull { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
 
         if (city == null) return
         val destination = city.getTiles().asSequence()

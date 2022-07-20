@@ -17,7 +17,7 @@ import kotlin.random.Random
 
 object ReligionAutomation {
 
-    // Region faith spending
+    // region faith spending
 
     fun spendFaithOnReligion(civInfo: CivilizationInfo) {
         if (civInfo.cities.isEmpty()) return
@@ -45,7 +45,7 @@ object ReligionAutomation {
         ) {
             val (city, pressureDifference) = citiesWithoutOurReligion.map { city ->
                 city to city.religion.getPressureDeficit(civInfo.religionManager.religion?.name)
-            }.maxByOrNull { it.second }!!
+            }.maxBy { it.second }
             if (pressureDifference >= 3000)
                 buyInquisitorNear(civInfo, city)
             buyMissionaryInAnyCity(civInfo)
