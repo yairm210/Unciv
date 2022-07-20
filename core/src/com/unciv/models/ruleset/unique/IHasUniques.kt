@@ -9,12 +9,12 @@ interface IHasUniques {
     val uniqueObjects: List<Unique>
 
     val uniqueMap: Map<String, List<Unique>>
-    
+
     /** Technically not currently needed, since the unique target can be retrieved from every unique in the uniqueObjects,
      * But making this a function is relevant for future "unify Unciv object" plans ;)
      * */
     fun getUniqueTarget(): UniqueTarget
-  
+
     fun getMatchingUniques(uniqueTemplate: String, stateForConditionals: StateForConditionals? = null): Sequence<Unique> {
         val matchingUniques = uniqueMap[uniqueTemplate] ?: return sequenceOf()
         return matchingUniques.asSequence().filter { it.conditionalsApply(stateForConditionals) }
@@ -29,3 +29,4 @@ interface IHasUniques {
     fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null) =
         getMatchingUniques(uniqueType.placeholderText, stateForConditionals).any()
 }
+

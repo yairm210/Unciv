@@ -387,7 +387,12 @@ object Automation {
 
         // Improvements are good: less points
         if (tile.improvement != null &&
-            tile.getImprovementStats(tile.getTileImprovement()!!, cityInfo.civInfo, cityInfo).values.sum() > 0f
+            tile.getImprovementStats(
+                tile.getTileImprovement()!!,
+                cityInfo.civInfo,
+                cityInfo,
+                localUniqueCache
+            ).values.sum() > 0f
         ) score -= 5
 
         if (tile.naturalWonder != null) score -= 105
