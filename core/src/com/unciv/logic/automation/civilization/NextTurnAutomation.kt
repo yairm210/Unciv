@@ -1,6 +1,9 @@
 package com.unciv.logic.automation
 
 import com.unciv.Constants
+import com.unciv.logic.automation.civilization.BarbarianAutomation
+import com.unciv.logic.automation.civilization.ChooseBeliefsAutomation
+import com.unciv.logic.automation.units.UnitAutomation
 import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.MapUnitCombatant
@@ -1011,11 +1014,11 @@ object NextTurnAutomation {
         if (citiesWithoutOurReligion.count() >
             4 * civInfo.getCivUnits().count { it.canDoReligiousAction(Constants.spreadReligion) || it.canDoReligiousAction(Constants.removeHeresy) }
         ) {
-            val cityWithTheLargestPressureDifference = citiesWithoutOurReligion.map { city ->
+            val (city, pressureDifference) = citiesWithoutOurReligion.map { city ->
                 city to city.religion.getPressureDeficit(civInfo.religionManager.religion?.name)
             }.maxByOrNull { it.second }!!
-            if (cityWithTheLargestPressureDifference.second >= 3000)
-                buyInquisitorNear(civInfo, cityWithTheLargestPressureDifference.first)
+            if (pressureDifference >= 3000)
+                buyInquisitorNear(civInfo, city)
             buyMissionaryInAnyCity(civInfo)
             return
         }

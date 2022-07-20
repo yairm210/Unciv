@@ -1,4 +1,4 @@
-package com.unciv.logic.automation
+package com.unciv.logic.automation.civilization
 
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo

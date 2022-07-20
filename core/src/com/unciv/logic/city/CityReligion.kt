@@ -285,17 +285,13 @@ class CityInfoReligionManager : IsPartOfGameInfoSerialization {
 
     fun isProtectedByInquisitor(fromReligion: String? = null): Boolean {
         for (tile in cityInfo.getCenterTile().getTilesInDistance(1)) {
-            if (tile.civilianUnit != null
-                && (fromReligion == null || tile.civilianUnit!!.religion != fromReligion)
-                && tile.civilianUnit!!.hasUnique(UniqueType.PreventSpreadingReligion)
-            ) {
-                return true
-            }
-            if (tile.militaryUnit != null
-                && (fromReligion == null || tile.militaryUnit!!.religion != fromReligion)
-                && tile.militaryUnit!!.hasUnique(UniqueType.PreventSpreadingReligion)
-            ) {
-                return true
+            for (unit in listOf(tile.civilianUnit, tile.militaryUnit)) {
+                if (unit?.religion != null
+                    && (fromReligion == null || unit.religion != fromReligion)
+                    && unit.hasUnique(UniqueType.PreventSpreadingReligion)
+                ) {
+                    return true
+                }
             }
         }
         return false

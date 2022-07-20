@@ -1,6 +1,7 @@
-﻿package com.unciv.logic.automation
+﻿package com.unciv.logic.automation.units
 
 import com.unciv.Constants
+import com.unciv.logic.automation.Automation
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.GreatGeneralImplementation
 import com.unciv.logic.battle.MapUnitCombatant
@@ -115,7 +116,7 @@ object SpecificUnitAutomation {
         val tileForCitadel = cityToGarrison.getTilesInDistanceRange(3..4)
             .firstOrNull {
                 reachableTest(it) &&
-                WorkerAutomation.evaluateFortPlacement(it, unit.civInfo, true)
+                        WorkerAutomation.evaluateFortPlacement(it, unit.civInfo, true)
             }
         if (tileForCitadel == null) {
             unit.movement.headTowards(cityToGarrison)
@@ -272,7 +273,12 @@ object SpecificUnitAutomation {
             }
 
             // if we got here, we're pretty close, start looking!
-            val chosenTile = applicableTiles.sortedByDescending { Automation.rankTile(it, unit.civInfo) }
+            val chosenTile = applicableTiles.sortedByDescending {
+                Automation.rankTile(
+                    it,
+                    unit.civInfo
+                )
+            }
                 .firstOrNull { unit.movement.canReach(it) }
                 ?: continue // to another city
 
@@ -501,7 +507,12 @@ object SpecificUnitAutomation {
 
         for (city in immediatelyReachableCitiesAndCarriers) {
             if (city.getTilesInDistance(unit.getRange())
-                            .any { BattleHelper.containsAttackableEnemy(it, MapUnitCombatant(unit)) }) {
+                            .any {
+                                BattleHelper.containsAttackableEnemy(
+                                    it,
+                                    MapUnitCombatant(unit)
+                                )
+                            }) {
                 unit.movement.moveToTile(city)
                 return true
             }
