@@ -17,6 +17,7 @@ import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -72,6 +73,16 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     @Transient
     var terrainFeatureObjects: List<Terrain> = listOf()
         private set
+
+    @Transient
+    /** Saves a sequence of a list */
+    var allTerrains: Sequence<Terrain> = sequenceOf()
+        private set
+
+    @Transient
+    var terrainUniqueMap = UniqueMap()
+        private set
+
 
 
     var naturalWonder: String? = null
@@ -223,7 +234,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
 
     @delegate:Transient
     val height : Int by lazy {
-        getAllTerrains().flatMap { it.uniqueObjects }
+        allTerrains.flatMap { it.uniqueObjects }
             .filter { it.isOfType(UniqueType.VisibilityElevation) }
             .map { it.params[0].toInt() }.sum()
     }
@@ -251,26 +262,28 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         return civInfo.isAtWarWith(tileOwner)
     }
 
-    fun getAllTerrains(): Sequence<Terrain> = sequence {
-        yield(baseTerrainObject)
-        if (naturalWonder != null) yield(getNaturalWonder())
-        yieldAll(terrainFeatureObjects)
-    }
-
-    fun isRoughTerrain() = getAllTerrains().any{ it.isRough() }
+    fun isRoughTerrain() = allTerrains.any{ it.isRough() }
 
     /** Checks whether any of the TERRAINS of this tile has a certain unique */
-    fun terrainHasUnique(uniqueType: UniqueType) = getAllTerrains().any { it.hasUnique(uniqueType) }
+    fun terrainHasUnique(uniqueType: UniqueType) = terrainUniqueMap.getUniques(uniqueType).any()
     /** Get all uniques of this type that any TERRAIN on this tile has */
     fun getTerrainMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(tile=this) ): Sequence<Unique> {
-        return getAllTerrains().flatMap { it.getMatchingUniques(uniqueType, stateForConditionals) }
+        return terrainUniqueMap.getMatchingUniques(uniqueType, stateForConditionals)
     }
 
     /** Get all uniques of this type that any part of this tile has: terrains, improvement, resource */
-    fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(tile=this)) =
-        getTerrainMatchingUniques(uniqueType, stateForConditionals) +
-        (getTileImprovement()?.getMatchingUniques(uniqueType, stateForConditionals) ?: sequenceOf()) +
-        if (resource == null) sequenceOf() else tileResource.getMatchingUniques(uniqueType, stateForConditionals)
+    fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(tile=this)): Sequence<Unique> {
+        var uniques = getTerrainMatchingUniques(uniqueType, stateForConditionals)
+        if (improvement != null){
+            val tileImprovement = getTileImprovement()
+            if (tileImprovement != null) {
+                uniques += tileImprovement.getMatchingUniques(uniqueType, stateForConditionals)
+            }
+        }
+        if (resource != null)
+            uniques += tileResource.getMatchingUniques(uniqueType, stateForConditionals)
+        return uniques
+    }
 
     fun getWorkingCity(): CityInfo? {
         val civInfo = getOwner() ?: return null
@@ -460,9 +473,8 @@ open class TileInfo : IsPartOfGameInfoSerialization {
 
     // For dividing the map into Regions to determine start locations
     fun getTileFertility(checkCoasts: Boolean): Int {
-        val terrains = getAllTerrains()
         var fertility = 0
-        for (terrain in terrains) {
+        for (terrain in allTerrains) {
             if (terrain.hasUnique(UniqueType.OverrideFertility))
                 return terrain.getMatchingUniques(UniqueType.OverrideFertility).first().params[0].toInt()
             else
@@ -756,7 +768,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
             Constants.freshWaterFilter -> isAdjacentTo(Constants.freshWater)
             else -> {
                 if (terrainFeatures.contains(filter)) return true
-                if (getAllTerrains().any { it.hasUnique(filter) }) return true
+                if (terrainUniqueMap.getUniques(filter).any()) return true
 
                 // Resource type check is last - cannot succeed if no resource here
                 if (resource == null) return false
@@ -1088,7 +1100,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         // We can't replicate the MapRegions resource distributor, so let's try to get
         // a close probability of major deposits per tile
         var probability = 0.0
-        for (unique in getAllTerrains().flatMap { it.getMatchingUniques(UniqueType.MajorStrategicFrequency) }) {
+        for (unique in allTerrains.flatMap { it.getMatchingUniques(UniqueType.MajorStrategicFrequency) }) {
             val frequency = unique.params[0].toIntOrNull() ?: continue
             if (frequency <= 0) continue
             // The unique param is literally "every N tiles", so to get a probability p=1/f
@@ -1101,6 +1113,16 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     fun setTerrainFeatures(terrainFeatureList:List<String>) {
         terrainFeatures = terrainFeatureList
         terrainFeatureObjects = terrainFeatureList.mapNotNull { ruleset.terrains[it] }
+        allTerrains = sequence {
+            yield(baseTerrainObject) // There is an assumption here that base terrains do not change
+            if (naturalWonder != null) yield(getNaturalWonder())
+            yieldAll(terrainFeatureObjects)
+        }.toList().asSequence() //Save in memory, and return as sequence
+
+        val newUniqueMap = UniqueMap()
+        for (terrain in allTerrains)
+            newUniqueMap.addUniques(terrain.uniqueObjects)
+        terrainUniqueMap = newUniqueMap
     }
 
     fun addTerrainFeature(terrainFeature:String) =
@@ -1222,7 +1244,8 @@ open class TileInfo : IsPartOfGameInfoSerialization {
             val newTerrainFeatures = ArrayList<String>()
             newTerrainFeatures.add(Constants.hill)
             newTerrainFeatures.addAll(copy)
-            setTerrainFeatures(newTerrainFeatures)
+            // We set this directly since this is BEFORE the initial setTerrainFeatures
+            terrainFeatures = newTerrainFeatures
         }
     }
 
