@@ -443,7 +443,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun isSetUpForSiege() = action == UnitActionType.SetUp.value
 
     /** For display in Unit Overview */
-    fun getActionLabel() = if (action == null) "" else if (isFortified()) UnitActionType.Fortify.value else action!!
+    fun getActionLabel() = if (action == null) "" else if (isFortified()) UnitActionType.Fortify.value else if (isMoving()) "Moving" else action!!
 
     fun isMilitary() = baseUnit.isMilitary()
     fun isCivilian() = baseUnit.isCivilian()

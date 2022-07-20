@@ -818,6 +818,7 @@ object Battle {
                 .sortedByDescending { it.interceptChance() }) {
             // defender can't also intercept
             if (defender != null && defender is MapUnitCombatant && interceptor == defender.unit) continue
+            interceptor.attacksThisTurn++  // even if you miss, you took the shot
             // Does Intercept happen? If not, exit
             if (Random().nextFloat() > interceptor.interceptChance() / 100f) return
 
@@ -832,7 +833,6 @@ object Battle {
             damage = (damage.toFloat() * damageFactor).toInt()
 
             attacker.takeDamage(damage)
-            interceptor.attacksThisTurn++
             if (damage > 0)
                 addXp(MapUnitCombatant(interceptor), 2, attacker)
 

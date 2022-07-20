@@ -84,12 +84,12 @@ The current list of triggers is as follows:
 | First contact[^4] | (civ name) | [^M] | Theme or Peace | [^X] | |
 | War declaration[^5] | (civ name) | [^M] | War | [^X] | |
 | Civ defeated | (civ name) | | Defeat | [^X] | |
-| Golden Age | (civ name) | [^M] | Golden | [^X] | [^N] |
-| Wonder built | (wonder name) | [^M] | Built | [^X] | [^N] |
-| Tech researched | (tech name) | [^M] | Researched | [^X] | [^N] |
-| Map editor: Select nation start location | (nation name) | [^M] | Theme | | [^S] [^N] |
+| Golden Age | (civ name) | [^M] | Golden | [^X] | |
+| Wonder built | (wonder name) | [^M] | Wonder | [^X] | |
+| Tech researched | (tech name) | [^M] | Researched | [^X] | |
+| Map editor: Select nation start location | (nation name) | [^M] | Theme | | [^S] |
 | Options: Volume slider or Default track downloaded | | | | | [^D] |
-| Options: Click currently playing label[^6] | | [^M] | Ambient | | [^S] | 
+| Options: Click currently playing label[^6] | | [^M] | Ambient | | [^S] |
 
 Legend:
 
