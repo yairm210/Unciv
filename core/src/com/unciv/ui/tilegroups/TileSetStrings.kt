@@ -33,7 +33,6 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, fallb
     val naturalWonderOverlay = tileSetLocation + "NaturalWonderOverlay"
 
     val tilesLocation = tileSetLocation + "Tiles/"
-    val cityTile = tilesLocation + "City"
     val bottomRightRiver by lazy { orFallback { tilesLocation + "River-BottomRight"} }
     val bottomRiver by lazy { orFallback { tilesLocation + "River-Bottom"} }
     val bottomLeftRiver  by lazy { orFallback { tilesLocation + "River-BottomLeft"} }
@@ -72,16 +71,6 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, fallb
     fun getBaseTerrainOverlay(baseTerrain: String) = getString(tileSetLocation, baseTerrain, overlay)
     fun getTerrainFeatureOverlay(terrainFeature: String) = getString(tileSetLocation, terrainFeature, overlay)
 
-    fun getCityTile(baseTerrain: String?, era: String?): String {
-        if (baseTerrain != null && era != null)
-            return getString(tilesLocation, baseTerrain, city, tag, era)
-        if (era != null)
-            return getString(tilesLocation, city, tag, era)
-        if (baseTerrain != null)
-            return getString(tilesLocation, baseTerrain, "+", city)
-        else
-            return cityTile
-    }
 
     fun getBorder(borderShapeString: String, innerOrOuter:String) = getString(bordersLocation, borderShapeString, innerOrOuter)
 
@@ -102,16 +91,12 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, fallb
     fun orFallback(image: String, fallbackImage: TileSetStrings.() -> String): String {
         return if (fallback == null || ImageGetter.imageExists(image))
             image
-        else
-            fallback!!.run(fallbackImage)
+        else fallback!!.run(fallbackImage)
     }
-    /** @see orFallback */
-    @Suppress("MemberVisibilityCanBePrivate")
-    fun orFallback(image: TileSetStrings.() -> String, fallbackImage: TileSetStrings.() -> String)
-            = orFallback(this.run(image), fallbackImage)
+
     /** @see orFallback */
     fun orFallback(image: TileSetStrings.() -> String)
-            = orFallback(image, image)
+            = orFallback(this.run(image), image)
 
 
 
@@ -152,7 +137,23 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, fallb
         return imageAttempter.getPathOrNull()
     }
 
-    /** Only for owned tiles! */
+    fun getUnitImageLocation(unit: MapUnit):String {
+        val imageKey = getString(
+            unit.name, tag,
+            unit.civInfo.getEra().name, tag,
+            unit.civInfo.nation.getStyleOrCivName()
+        )
+        // if in cache return that
+        val currentImageMapping = imageParamsToImageLocation[imageKey]
+        if (currentImageMapping!=null) return currentImageMapping
+
+        val imageLocation = tryGetUnitImageLocation(unit)
+            ?: fallback?.tryGetUnitImageLocation(unit)
+            ?: ""
+        imageParamsToImageLocation[imageKey] = imageLocation
+        return imageLocation
+    }
+
     private fun tryGetOwnedTileImageLocation(baseLocation:String, owner:CivilizationInfo): String? {
         val ownersStyle = owner.nation.getStyleOrCivName()
         return ImageAttempter(baseLocation)
@@ -175,22 +176,4 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, fallb
         imageParamsToImageLocation[imageKey] = imageLocation
         return imageLocation
     }
-
-    fun getImageLocation(unit: MapUnit):String {
-        val imageKey = getString(
-            unit.name, tag,
-            unit.civInfo.getEra().name, tag,
-            unit.civInfo.nation.getStyleOrCivName()
-        )
-        // if in cache return that
-        val currentImageMapping = imageParamsToImageLocation[imageKey]
-        if (currentImageMapping!=null) return currentImageMapping
-
-        val imageLocation = tryGetUnitImageLocation(unit)
-            ?: fallback?.tryGetUnitImageLocation(unit)
-            ?: ""
-        imageParamsToImageLocation[imageKey] = imageLocation
-        return imageLocation
-    }
-
 }

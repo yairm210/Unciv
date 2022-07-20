@@ -683,7 +683,7 @@ open class TileGroup(
 
         val militaryUnit = tileInfo.militaryUnit
         if (militaryUnit != null && showMilitaryUnit && UncivGame.Current.settings.showPixelUnits) {
-            newImageLocation = tileSetStrings.getImageLocation(militaryUnit)
+            newImageLocation = tileSetStrings.getUnitImageLocation(militaryUnit)
         }
 
         val nationName = if (militaryUnit != null) "${militaryUnit.civInfo.civName}-" else ""
@@ -708,7 +708,7 @@ open class TileGroup(
         val civilianUnit = tileInfo.civilianUnit
 
         if (civilianUnit != null && tileIsViewable && UncivGame.Current.settings.showPixelUnits) {
-            newImageLocation = tileSetStrings.getImageLocation(civilianUnit)
+            newImageLocation = tileSetStrings.getUnitImageLocation(civilianUnit)
         }
 
         val nationName = if (civilianUnit != null) "${civilianUnit.civInfo.civName}-" else ""
