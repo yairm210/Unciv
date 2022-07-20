@@ -17,6 +17,7 @@ import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -72,6 +73,16 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     @Transient
     var terrainFeatureObjects: List<Terrain> = listOf()
         private set
+
+    @Transient
+    /** Saves a sequence of a list */
+    var allTerrainObjects: Sequence<Terrain> = sequenceOf()
+        private set
+
+    @Transient
+    var terrainUniqueMap = UniqueMap()
+        private set
+
 
 
     var naturalWonder: String? = null
@@ -251,26 +262,26 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         return civInfo.isAtWarWith(tileOwner)
     }
 
-    fun getAllTerrains(): Sequence<Terrain> = sequence {
-        yield(baseTerrainObject)
-        if (naturalWonder != null) yield(getNaturalWonder())
-        yieldAll(terrainFeatureObjects)
-    }
+    fun getAllTerrains() = allTerrainObjects
 
     fun isRoughTerrain() = getAllTerrains().any{ it.isRough() }
 
     /** Checks whether any of the TERRAINS of this tile has a certain unique */
-    fun terrainHasUnique(uniqueType: UniqueType) = getAllTerrains().any { it.hasUnique(uniqueType) }
+    fun terrainHasUnique(uniqueType: UniqueType) = terrainUniqueMap.getUniques(uniqueType).any()
     /** Get all uniques of this type that any TERRAIN on this tile has */
     fun getTerrainMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(tile=this) ): Sequence<Unique> {
-        return getAllTerrains().flatMap { it.getMatchingUniques(uniqueType, stateForConditionals) }
+        return terrainUniqueMap.getMatchingUniques(uniqueType, stateForConditionals)
     }
 
     /** Get all uniques of this type that any part of this tile has: terrains, improvement, resource */
-    fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(tile=this)) =
-        getTerrainMatchingUniques(uniqueType, stateForConditionals) +
-        (getTileImprovement()?.getMatchingUniques(uniqueType, stateForConditionals) ?: sequenceOf()) +
-        if (resource == null) sequenceOf() else tileResource.getMatchingUniques(uniqueType, stateForConditionals)
+    fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(tile=this)): Sequence<Unique> {
+        var uniques = getTerrainMatchingUniques(uniqueType, stateForConditionals)
+        if (improvement != null)
+            uniques += getTileImprovement()!!.getMatchingUniques(uniqueType, stateForConditionals)
+        if (resource != null)
+            uniques += tileResource.getMatchingUniques(uniqueType, stateForConditionals)
+        return uniques
+    }
 
     fun getWorkingCity(): CityInfo? {
         val civInfo = getOwner() ?: return null
@@ -1101,6 +1112,16 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     fun setTerrainFeatures(terrainFeatureList:List<String>) {
         terrainFeatures = terrainFeatureList
         terrainFeatureObjects = terrainFeatureList.mapNotNull { ruleset.terrains[it] }
+        allTerrainObjects = sequence {
+            yield(baseTerrainObject) // There is an assumption here that base terrains do not change
+            if (naturalWonder != null) yield(getNaturalWonder())
+            yieldAll(terrainFeatureObjects)
+        }.toList().asSequence() //Save in memory, and return as sequence
+
+        val newUniqueMap = UniqueMap()
+        for (terrain in allTerrainObjects)
+            newUniqueMap.addUniques(terrain.uniqueObjects)
+        terrainUniqueMap = newUniqueMap
     }
 
     fun addTerrainFeature(terrainFeature:String) =
