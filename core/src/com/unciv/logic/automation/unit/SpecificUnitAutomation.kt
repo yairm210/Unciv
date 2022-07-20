@@ -1,4 +1,4 @@
-﻿package com.unciv.logic.automation.units
+﻿package com.unciv.logic.automation.unit
 
 import com.unciv.Constants
 import com.unciv.logic.automation.Automation
@@ -301,7 +301,7 @@ object SpecificUnitAutomation {
     }
 
     fun automateMissionary(unit: MapUnit) {
-        if (unit.religion != unit.civInfo.religionManager.religion?.name)
+        if (unit.religion != unit.civInfo.religionManager.religion?.name || unit.religion == null)
             return unit.disband()
 
         val ourCitiesWithoutReligion = unit.civInfo.cities.filter {
@@ -331,8 +331,8 @@ object SpecificUnitAutomation {
     }
 
     fun automateInquisitor(unit: MapUnit) {
-        if (unit.religion != unit.civInfo.religionManager.religion?.name)
-            unit.disband() // No need to keep a unit we can't use, as it only blocks religion spreads of religions other that its own
+        if (unit.religion != unit.civInfo.religionManager.religion?.name || unit.religion == null)
+            return unit.disband() // No need to keep a unit we can't use, as it only blocks religion spreads of religions other that its own
 
         val holyCity = unit.civInfo.religionManager.getHolyCity()
         val cityToConvert = determineBestInquisitorCityToConvert(unit) // Also returns null if the inquisitor can't convert cities
@@ -352,7 +352,6 @@ object SpecificUnitAutomation {
 
         destination = when {
             cityToConvert != null
-            && unit.civInfo.religionManager.religion?.name == unit.religion
             && (cityToConvert == holyCity || pressureDeficit > 3000f)
             && unit.canDoReligiousAction(Constants.removeHeresy) -> {
                 cityToConvert.getCenterTile()

@@ -1,7 +1,8 @@
-package com.unciv.logic.automation
+package com.unciv.logic.automation.city
 
+import com.unciv.logic.automation.Automation
+import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.city.CityConstructions
-import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.CityAction
 import com.unciv.logic.civilization.NotificationIcon
@@ -176,7 +177,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     private fun addCultureBuildingChoice() {
         val cultureBuilding = buildableNotWonders
                 .filter { it.isStatRelated(Stat.Culture)
-                        && Automation.allowAutomatedConstruction(civInfo, cityInfo, it) }.minByOrNull { it.cost }
+                        && Automation.allowAutomatedConstruction(civInfo, cityInfo, it)
+                }.minByOrNull { it.cost }
         if (cultureBuilding != null) {
             var modifier = 0.5f
             if (cityInfo.cityStats.currentCityStats.culture == 0f) // It won't grow if we don't help it
@@ -251,7 +253,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     private fun addUnitTrainingBuildingChoice() {
         val unitTrainingBuilding = buildableNotWonders.asSequence()
                 .filter { it.hasUnique(UniqueType.UnitStartingExperience)
-                        && Automation.allowAutomatedConstruction(civInfo, cityInfo, it) }.minByOrNull { it.cost }
+                        && Automation.allowAutomatedConstruction(civInfo, cityInfo, it)
+                }.minByOrNull { it.cost }
         if (unitTrainingBuilding != null && (!civInfo.wantsToFocusOn(Victory.Focus.Culture) || isAtWar)) {
             var modifier = if (cityIsOverAverageProduction) 0.5f else 0.1f // You shouldn't be cranking out units anytime soon
             if (isAtWar) modifier *= 2
@@ -264,7 +267,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     private fun addDefenceBuildingChoice() {
         val defensiveBuilding = buildableNotWonders.asSequence()
                 .filter { it.cityStrength > 0
-                        && Automation.allowAutomatedConstruction(civInfo, cityInfo, it)}.minByOrNull { it.cost }
+                        && Automation.allowAutomatedConstruction(civInfo, cityInfo, it)
+                }.minByOrNull { it.cost }
         if (defensiveBuilding != null && (isAtWar || !civInfo.wantsToFocusOn(Victory.Focus.Culture))) {
             var modifier = 0.2f
             if (isAtWar) modifier = 0.5f
@@ -284,7 +288,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         val happinessBuilding = buildableNotWonders.asSequence()
                 .filter { (it.isStatRelated(Stat.Happiness)
                         || it.uniques.contains("Remove extra unhappiness from annexed cities"))
-                        && Automation.allowAutomatedConstruction(civInfo, cityInfo, it) }
+                        && Automation.allowAutomatedConstruction(civInfo, cityInfo, it)
+                }
             .minByOrNull { it.cost }
         if (happinessBuilding != null) {
             var modifier = 1f

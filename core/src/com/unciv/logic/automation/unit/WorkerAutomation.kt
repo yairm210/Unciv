@@ -1,4 +1,4 @@
-package com.unciv.logic.automation.units
+package com.unciv.logic.automation.unit
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
@@ -7,7 +7,7 @@ import com.unciv.logic.HexMath
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.automation.ThreatLevel
-import com.unciv.logic.automation.units.UnitAutomation.wander
+import com.unciv.logic.automation.unit.UnitAutomation.wander
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.BFS

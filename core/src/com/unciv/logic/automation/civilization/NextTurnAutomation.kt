@@ -1,9 +1,9 @@
-package com.unciv.logic.automation
+package com.unciv.logic.automation.civilization
 
 import com.unciv.Constants
-import com.unciv.logic.automation.civilization.BarbarianAutomation
-import com.unciv.logic.automation.civilization.ChooseBeliefsAutomation
-import com.unciv.logic.automation.units.UnitAutomation
+import com.unciv.logic.automation.Automation
+import com.unciv.logic.automation.ThreatLevel
+import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.MapUnitCombatant
@@ -46,7 +46,7 @@ object NextTurnAutomation {
 //            offerDeclarationOfFriendship(civInfo)
             }
             if (civInfo.gameInfo.isReligionEnabled()) {
-                spendFaithOnReligion(civInfo)
+                ReligionAutomation.spendFaithOnReligion(civInfo)
             }
             offerResearchAgreement(civInfo)
             exchangeLuxuries(civInfo)
@@ -579,7 +579,7 @@ object NextTurnAutomation {
                     .flatMap { religion -> religion.getBeliefs(beliefType) }.contains(it.value)
             }
             .map { it.value }
-            .maxByOrNull { ChooseBeliefsAutomation.rateBelief(civInfo, it) }
+            .maxByOrNull { ReligionAutomation.rateBelief(civInfo, it) }
     }
 
     private fun potentialLuxuryTrades(civInfo: CivilizationInfo, otherCivInfo: CivilizationInfo): ArrayList<Trade> {
@@ -991,169 +991,5 @@ object NextTurnAutomation {
                         civ1city.getCenterTile().aerialDistanceTo(civ2city.getCenterTile()))
 
         return cityDistances.minByOrNull { it.aerialDistance }!!
-    }
-
-    private fun spendFaithOnReligion(civInfo: CivilizationInfo) {
-        if (civInfo.cities.isEmpty()) return
-        // Save for great prophet
-        if (civInfo.religionManager.religionState != ReligionState.EnhancedReligion
-            && (civInfo.religionManager.remainingFoundableReligions() != 0 || civInfo.religionManager.religionState > ReligionState.Pantheon)
-        ) {
-            buyGreatProphetInAnyCity(civInfo)
-            return
-        }
-        // We don't have a religion and no more change of getting it :(
-        if (civInfo.religionManager.religionState <= ReligionState.Pantheon) {
-            tryBuyAnyReligiousBuilding(civInfo)
-            // Todo: buy Great People post industrial era
-            return
-        }
-        // If we don't have majority in our own nation, build missionaries and inquisitors to solve this
-        val citiesWithoutOurReligion = civInfo.cities.filter { it.religion.getMajorityReligion() != civInfo.religionManager.religion!! }
-        // The original had a cap at 4 missionaries + 1 inquisitor total, but 1/4 * the number of cities should be more appropriate imo
-        if (citiesWithoutOurReligion.count() >
-            4 * civInfo.getCivUnits().count { it.canDoReligiousAction(Constants.spreadReligion) || it.canDoReligiousAction(Constants.removeHeresy) }
-        ) {
-            val (city, pressureDifference) = citiesWithoutOurReligion.map { city ->
-                city to city.religion.getPressureDeficit(civInfo.religionManager.religion?.name)
-            }.maxByOrNull { it.second }!!
-            if (pressureDifference >= 3000)
-                buyInquisitorNear(civInfo, city)
-            buyMissionaryInAnyCity(civInfo)
-            return
-        }
-
-        val holyCity = civInfo.religionManager.getHolyCity()
-
-        // Get an inquisitor to defend our holy city
-        if (holyCity != null
-            && holyCity in civInfo.cities
-            && civInfo.getCivUnits().count { it.hasUnique(UniqueType.PreventSpreadingReligion) } == 0
-            && !holyCity.religion.isProtectedByInquisitor()
-        ) {
-            buyInquisitorNear(civInfo, holyCity)
-            return
-        }
-
-        // Buy religious buildings in cities if possible
-        val citiesWithMissingReligiousBuildings = civInfo.cities.filter { city ->
-            city.religion.getMajorityReligion() != null
-            && !city.religion.getMajorityReligion()!!.buildingsPurchasableByBeliefs
-                .all { it in city.cityConstructions.getBuiltBuildings().map { it.name } }
-        }
-        if (citiesWithMissingReligiousBuildings.any()) {
-            tryBuyAnyReligiousBuilding(civInfo)
-            return
-        }
-
-        // Todo: buy Great People post industrial era
-
-        // Just buy missionaries to spread our religion outside of our civ
-        if (civInfo.getCivUnits().count { it.canDoReligiousAction(Constants.spreadReligion) } < 4) {
-            buyMissionaryInAnyCity(civInfo)
-        }
-    }
-
-    private fun tryBuyAnyReligiousBuilding(civInfo: CivilizationInfo) {
-        for (city in civInfo.cities) {
-            if (city.religion.getMajorityReligion() == null) continue
-            val buildings = city.religion.getMajorityReligion()!!.buildingsPurchasableByBeliefs
-            val buildingToBePurchased = buildings
-                .asSequence()
-                .map { civInfo.getEquivalentBuilding(it).name }
-                .map { city.cityConstructions.getConstruction(it) as INonPerpetualConstruction }
-                .filter { (it.getStatBuyCost(city, Stat.Faith) ?: 0) <= civInfo.religionManager.storedFaith }
-                .filter { it.isPurchasable(city.cityConstructions) }
-                .minByOrNull { it.getStatBuyCost(city, Stat.Faith)!! }
-                ?: continue
-            city.cityConstructions.purchaseConstruction(buildingToBePurchased.name, -1, true, Stat.Faith)
-            return
-        }
-    }
-
-    private fun buyMissionaryInAnyCity(civInfo: CivilizationInfo) {
-        if (civInfo.religionManager.religionState < ReligionState.Religion) return
-        var missionaries = civInfo.gameInfo.ruleSet.units.values.filter { unit ->
-            unit.getMatchingUniques(UniqueType.CanActionSeveralTimes).filter { it.params[0] == Constants.spreadReligion }.any()
-        }.map { it.name }
-        missionaries = missionaries.map { civInfo.getEquivalentUnit(it).name }
-        val missionaryConstruction = missionaries
-            .map { civInfo.cities.first().cityConstructions.getConstruction(it) as INonPerpetualConstruction }
-            .filter { unit -> civInfo.cities.any { unit.isPurchasable(it.cityConstructions) && unit.canBePurchasedWithStat(it, Stat.Faith) } }
-            .minByOrNull { it.getStatBuyCost(civInfo.getCapital()!!, Stat.Faith)!! }
-            ?: return
-
-
-        val hasUniqueToTakeCivReligion = civInfo.gameInfo.ruleSet.units[missionaryConstruction.name]!!.hasUnique(UniqueType.TakeReligionOverBirthCity)
-
-        val validCitiesToBuy = civInfo.cities.filter {
-            (hasUniqueToTakeCivReligion || it.religion.getMajorityReligion() == civInfo.religionManager.religion)
-            && (missionaryConstruction.getStatBuyCost(it, Stat.Faith) ?: 0) <= civInfo.religionManager.storedFaith
-            && missionaryConstruction.isPurchasable(it.cityConstructions)
-            && missionaryConstruction.canBePurchasedWithStat(it, Stat.Faith)
-        }
-        if (validCitiesToBuy.isEmpty()) return
-
-        val citiesWithBonusCharges = validCitiesToBuy.filter { city ->
-            city.getLocalMatchingUniques(UniqueType.UnitStartingActions).filter { it.params[2] == Constants.spreadReligion }.any()
-        }
-        val holyCity = validCitiesToBuy.firstOrNull { it.religion.religionThisIsTheHolyCityOf == civInfo.religionManager.religion!!.name }
-
-        val cityToBuyMissionary = when {
-            citiesWithBonusCharges.any() -> citiesWithBonusCharges.first()
-            holyCity != null -> holyCity
-            else -> validCitiesToBuy.first()
-        }
-
-        cityToBuyMissionary.cityConstructions.purchaseConstruction(missionaryConstruction.name, -1, true, Stat.Faith)
-        return
-    }
-
-    private fun buyGreatProphetInAnyCity(civInfo: CivilizationInfo) {
-        if (civInfo.religionManager.religionState < ReligionState.Religion) return
-        var greatProphetUnit = civInfo.religionManager.getGreatProphetEquivalent() ?: return
-        greatProphetUnit = civInfo.getEquivalentUnit(greatProphetUnit).name
-        val greatProphetConstruction = civInfo.cities.first().cityConstructions.getConstruction(greatProphetUnit) as INonPerpetualConstruction
-        val cityToBuyGreatProphet = civInfo.cities
-            .asSequence()
-            .filter { greatProphetConstruction.isPurchasable(it.cityConstructions) }
-            .filter { greatProphetConstruction.canBePurchasedWithStat(it, Stat.Faith) }
-            .filter { (greatProphetConstruction.getStatBuyCost(it, Stat.Faith) ?: 0) <= civInfo.religionManager.storedFaith }
-            .minByOrNull { greatProphetConstruction.getStatBuyCost(it, Stat.Faith)!! }
-            ?: return
-        cityToBuyGreatProphet.cityConstructions.purchaseConstruction(greatProphetUnit, -1, true, Stat.Faith)
-    }
-
-    private fun buyInquisitorNear(civInfo: CivilizationInfo, city: CityInfo) {
-        if (civInfo.religionManager.religionState < ReligionState.Religion) return
-        var inquisitors = civInfo.gameInfo.ruleSet.units.values.filter { unit ->
-            unit.getMatchingUniques(UniqueType.CanActionSeveralTimes).filter { it.params[0] == Constants.removeHeresy }.any()
-            || unit.hasUnique(UniqueType.PreventSpreadingReligion)
-        }.map { it.name }
-        inquisitors = inquisitors.map { civInfo.getEquivalentUnit(it).name }
-        val inquisitorConstruction = inquisitors
-            .map { civInfo.cities.first().cityConstructions.getConstruction(it) as INonPerpetualConstruction }
-            .filter { unit -> civInfo.cities.any { unit.isPurchasable(it.cityConstructions) } }
-            .minByOrNull { it.getStatBuyCost(civInfo.getCapital()!!, Stat.Faith)!! }
-            ?: return
-
-        val hasUniqueToTakeCivReligion = civInfo.gameInfo.ruleSet.units[inquisitorConstruction.name]!!.hasUnique(UniqueType.TakeReligionOverBirthCity)
-
-        val validCitiesToBuy = civInfo.cities.filter {
-            (hasUniqueToTakeCivReligion || it.religion.getMajorityReligion() == civInfo.religionManager.religion)
-            && (inquisitorConstruction.getStatBuyCost(it, Stat.Faith) ?: 0) <= civInfo.religionManager.storedFaith
-            && inquisitorConstruction.isPurchasable(it.cityConstructions)
-            && inquisitorConstruction.canBePurchasedWithStat(it, Stat.Faith)
-        }
-        if (validCitiesToBuy.isEmpty()) return
-
-        val cityToBuy = validCitiesToBuy
-            .filter {
-                inquisitorConstruction.isPurchasable(it.cityConstructions)
-                && inquisitorConstruction.canBePurchasedWithStat(it, Stat.Faith)
-            }
-            .minByOrNull { it.getCenterTile().aerialDistanceTo(city.getCenterTile()) } ?: return
-
-        cityToBuy.cityConstructions.purchaseConstruction(inquisitorConstruction.name, -1, true, Stat.Faith)
     }
 }
