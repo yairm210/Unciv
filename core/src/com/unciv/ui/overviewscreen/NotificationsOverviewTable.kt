@@ -16,8 +16,23 @@ import com.unciv.ui.worldscreen.WorldScreen
 class NotificationsOverviewTable(
     val worldScreen: WorldScreen,
     viewingPlayer: CivilizationInfo,
-    overviewScreen: EmpireOverviewScreen
+    overviewScreen: EmpireOverviewScreen,
+    persistedData: EmpireOverviewTabPersistableData? = null
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
+    class NotificationsTabPersistableData(
+            var scrollY: Float? = null
+    ) : EmpireOverviewTabPersistableData() {
+        override fun isEmpty() = scrollY == null
+    }
+    override val persistableData = (persistedData as? NotificationsTabPersistableData) ?: NotificationsTabPersistableData()
+    override fun activated(index: Int, caption: String, pager: TabbedPager) {
+        if (persistableData.scrollY != null)
+            pager.setPageScrollY(index, persistableData.scrollY!!)
+        super.activated(index, caption, pager)
+    }
+    override fun deactivated(index: Int, caption: String, pager: TabbedPager) {
+        persistableData.scrollY = pager.getPageScrollY(index)
+    }
 
     val notificationLog = viewingPlayer.notificationsLog
 
