@@ -1,3 +1,17 @@
+## 4.1.21
+
+Simplified and optimized image attempter use 
+
+40% performance save on tileInfo.getImprovementStats() by caching citywide uniques 
+
+Save all tile terrains and terrain uniques in transients, for better performance 
+
+HexaRealm as default tileset 
+
+Mod categories  - By alexban011
+
+Replace "moveTo" in unit overview with "Moving"  - By itanasi
+
 ## 4.1.20
 
 Can no longer receive negative gold offers from AI
