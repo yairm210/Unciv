@@ -1790,10 +1790,10 @@ class Region (val tileMap: TileMap, val rect: Rectangle, val continentID: Int = 
         // Count terrains in the region
         terrainCounts.clear()
         for (tile in tiles) {
-            val terrainsToCount = if (tile.getAllTerrains().any { it.hasUnique(UniqueType.IgnoreBaseTerrainForRegion) })
+            val terrainsToCount = if (tile.terrainHasUnique(UniqueType.IgnoreBaseTerrainForRegion))
                 tile.terrainFeatureObjects.map { it.name }.asSequence()
             else
-                tile.getAllTerrains().map { it.name }
+                tile.allTerrains.map { it.name }
             for (terrain in terrainsToCount) {
                 terrainCounts[terrain] = (terrainCounts[terrain] ?: 0) + 1
             }

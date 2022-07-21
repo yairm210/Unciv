@@ -9,9 +9,9 @@ import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.OLD_MULTIPLAYER_FILES_FOLDER
-import com.unciv.logic.BackwardCompatibility.migrateOldMultiplayerGames
 import com.unciv.logic.BackwardCompatibility.migrateCurrentCivName
 import com.unciv.logic.BackwardCompatibility.migrateMultiplayerParameters
+import com.unciv.logic.BackwardCompatibility.migrateOldMultiplayerGames
 import com.unciv.logic.multiplayer.Multiplayer
 import com.unciv.logic.multiplayer.MultiplayerGame
 import com.unciv.models.metadata.GameSettings

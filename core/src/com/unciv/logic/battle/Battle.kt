@@ -811,13 +811,22 @@ object Battle {
     }
 
     private fun tryInterceptAirAttack(attacker: MapUnitCombatant, attackedTile: TileInfo, interceptingCiv: CivilizationInfo, defender: ICombatant?) {
-        if (attacker.unit.hasUnique(UniqueType.CannotBeIntercepted)) return
+        if (attacker.unit.hasUnique(UniqueType.CannotBeIntercepted, StateForConditionals(attacker.getCivInfo(), ourCombatant = attacker, theirCombatant = defender, attackedTile = attackedTile)))
+            return
         // Pick highest chance interceptor
         for (interceptor in interceptingCiv.getCivUnits()
-                .filter { it.canIntercept(attackedTile) }
-                .sortedByDescending { it.interceptChance() }) {
-            // defender can't also intercept
+            .filter { it.canIntercept(attackedTile) }
+            .sortedByDescending { it.interceptChance() }
+        ) {
+            // Can't intercept if we have a unique preventing it
+            val conditionalState = StateForConditionals(interceptingCiv, ourCombatant = MapUnitCombatant(interceptor), theirCombatant = attacker, combatAction = CombatAction.Intercept, attackedTile = attackedTile)
+            if (interceptor.getMatchingUniques(UniqueType.CannotInterceptUnits, conditionalState)
+                .any { attacker.matchesCategory(it.params[0]) }
+            ) continue
+
+            // Defender can't intercept either
             if (defender != null && defender is MapUnitCombatant && interceptor == defender.unit) continue
+            interceptor.attacksThisTurn++  // even if you miss, you took the shot
             // Does Intercept happen? If not, exit
             if (Random().nextFloat() > interceptor.interceptChance() / 100f) return
 
@@ -832,7 +841,6 @@ object Battle {
             damage = (damage.toFloat() * damageFactor).toInt()
 
             attacker.takeDamage(damage)
-            interceptor.attacksThisTurn++
             if (damage > 0)
                 addXp(MapUnitCombatant(interceptor), 2, attacker)
 

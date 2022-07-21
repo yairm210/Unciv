@@ -463,6 +463,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion,
     // All cross-game data which needs to be altered (e.g. when removing or changing a name of a building/tech)
     // will be done here, and not in CivInfo.setTransients or CityInfo
     fun setTransients() {
+        migrateCurrentCivName()
+
         tileMap.gameInfo = this
 
         // [TEMPORARY] Convert old saves to newer ones by moving base rulesets from the mod list to the base ruleset field
@@ -513,14 +515,13 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion,
         for (religion in religions.values) religion.setTransients(this)
 
         for (civInfo in civilizations) civInfo.setTransients()
-        for (civInfo in civilizations) civInfo.updateSightAndResources()
 
         convertFortify()
 
         for (civInfo in civilizations) {
             for (unit in civInfo.getCivUnits())
                 unit.updateVisibleTiles(false) // this needs to be done after all the units are assigned to their civs and all other transients are set
-            civInfo.updateViewableTiles() // only run ONCE and not for each unit - this is a huge performance saver!
+            civInfo.updateSightAndResources() // only run ONCE and not for each unit - this is a huge performance saver!
 
             // Since this depends on the cities of ALL civilizations,
             // we need to wait until we've set the transients of all the cities before we can run this.

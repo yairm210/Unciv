@@ -443,7 +443,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun isSetUpForSiege() = action == UnitActionType.SetUp.value
 
     /** For display in Unit Overview */
-    fun getActionLabel() = if (action == null) "" else if (isFortified()) UnitActionType.Fortify.value else action!!
+    fun getActionLabel() = if (action == null) "" else if (isFortified()) UnitActionType.Fortify.value else if (isMoving()) "Moving" else action!!
 
     fun isMilitary() = baseUnit.isMilitary()
     fun isCivilian() = baseUnit.isCivilian()
@@ -1000,7 +1000,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
 
         val promotionUniques = tile.neighbors
-            .flatMap { it.getAllTerrains() }
+            .flatMap { it.allTerrains }
             .flatMap { it.getMatchingUniques(UniqueType.TerrainGrantsPromotion) }
         for (unique in promotionUniques) {
             if (!this.matchesFilter(unique.params[2])) continue
@@ -1173,13 +1173,13 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun getDamageFromTerrain(tile: TileInfo = currentTile): Int {
         if (civInfo.nonStandardTerrainDamage) {
             for (unique in getMatchingUniques(UniqueType.DamagesContainingUnits)) {
-                if (unique.params[0] in tile.getAllTerrains().map { it.name }) {
+                if (unique.params[0] in tile.allTerrains.map { it.name }) {
                     return unique.params[1].toInt() // Use the damage from the unique
                 }
             }
         }
         // Otherwise fall back to the defined standard damage
-        return  tile.getAllTerrains().sumOf { it.damagePerTurn }
+        return  tile.allTerrains.sumOf { it.damagePerTurn }
     }
 
     private fun doCitadelDamage() {

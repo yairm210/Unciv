@@ -3,9 +3,9 @@ package com.unciv.models.metadata
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.unciv.UncivGame
-import com.unciv.models.UncivSound
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.logic.multiplayer.Multiplayer.ServerData
+import com.unciv.models.UncivSound
 import com.unciv.ui.utils.Fonts
 import java.text.Collator
 import java.time.Duration
@@ -37,7 +37,7 @@ class GameSettings {
     var pauseBetweenTracks = 10
 
     var turnsBetweenAutosaves = 1
-    var tileSet: String = "FantasyHex"
+    var tileSet: String = "HexaRealm"
     var showTutorials: Boolean = true
     var autoAssignCityProduction: Boolean = true
     var autoBuildingRoads: Boolean = true

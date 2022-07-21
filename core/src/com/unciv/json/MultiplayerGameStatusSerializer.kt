@@ -3,6 +3,7 @@ package com.unciv.json
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import com.unciv.logic.BackwardCompatibility.readOldFormat
+import com.unciv.logic.multiplayer.Multiplayer
 import com.unciv.logic.multiplayer.Multiplayer.GameStatus
 
 /**

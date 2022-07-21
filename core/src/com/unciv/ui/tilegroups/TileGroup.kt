@@ -11,7 +11,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.helpers.MapArrowType
@@ -19,7 +18,6 @@ import com.unciv.models.helpers.MiscArrowTypes
 import com.unciv.models.helpers.TintedMapArrow
 import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.ui.cityscreen.YieldGroup
-import com.unciv.ui.images.ImageAttempter
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.extensions.center
 import kotlin.math.PI
@@ -85,6 +83,7 @@ open class TileGroup(
     class MiscLayerGroupClass(groupSize: Float) : ActionlessGroup(groupSize) {
         override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
     }
+    val borderLayerGroup = MiscLayerGroupClass(groupSize)
     val miscLayerGroup = MiscLayerGroupClass(groupSize)
 
     var tileYieldGroupInitialized = false
@@ -195,6 +194,7 @@ open class TileGroup(
         this.setSize(groupSize, groupSize)
         this.addActor(baseLayerGroup)
         this.addActor(terrainFeatureLayerGroup)
+        this.addActor(borderLayerGroup)
         this.addActor(miscLayerGroup)
         this.addActor(pixelMilitaryUnitGroup)
         this.addActor(pixelCivilianUnitGroup)
@@ -306,22 +306,10 @@ open class TileGroup(
             // so it stays consistent throughout the game
             if (!ImageGetter.imageExists(baseLocation)) continue
 
-            var locationToCheck = baseLocation
-            if (tileInfo.owningCity != null) {
-                val ownersEra = tileInfo.getOwner()!!.getEra()
-                val eraSpecificLocation =
-                    tileSetStrings.getString(locationToCheck, tileSetStrings.tag, ownersEra.name)
-                if (ImageGetter.imageExists(eraSpecificLocation))
-                    locationToCheck = eraSpecificLocation
-
-                var ownersStyle = tileInfo.getOwner()!!.nation.style
-                if (ownersStyle == "") ownersStyle = tileInfo.getOwner()!!.civName
-                val styleSpecificLocation =
-                    tileSetStrings.getString(locationToCheck, tileSetStrings.tag, ownersStyle)
-
-                if (ImageGetter.imageExists(styleSpecificLocation))
-                    locationToCheck = styleSpecificLocation
-            }
+            val locationToCheck =
+                    if (tileInfo.owningCity != null)
+                        tileSetStrings.getOwnedTileImageLocation(baseLocation, tileInfo.getOwner()!!)
+                    else baseLocation
 
             val existingImages = ArrayList<String>()
             existingImages.add(locationToCheck)
@@ -562,7 +550,7 @@ open class TileGroup(
                 val innerBorderImage = ImageGetter.getImage(
                         tileSetStrings.orFallback { getBorder(borderShapeString,"Inner") }
                 )
-                miscLayerGroup.addActor(innerBorderImage)
+                borderLayerGroup.addActor(innerBorderImage)
                 images.add(innerBorderImage)
                 setHexagonImageSize(innerBorderImage)
                 innerBorderImage.rotateBy(angle)
@@ -571,7 +559,7 @@ open class TileGroup(
                 val outerBorderImage = ImageGetter.getImage(
                         tileSetStrings.orFallback { getBorder(borderShapeString, "Outer") }
                 )
-                miscLayerGroup.addActor(outerBorderImage)
+                borderLayerGroup.addActor(outerBorderImage)
                 images.add(outerBorderImage)
                 setHexagonImageSize(outerBorderImage)
                 outerBorderImage.rotateBy(angle)
@@ -694,29 +682,8 @@ open class TileGroup(
         var newImageLocation = ""
 
         val militaryUnit = tileInfo.militaryUnit
-        if (militaryUnit != null && showMilitaryUnit) {
-            fun TileSetStrings.getThisUnit(): String? {
-                val specificUnitIconLocation = this.unitsLocation + militaryUnit.name
-                return ImageAttempter(militaryUnit)
-                        .forceImage { if (!UncivGame.Current.settings.showPixelUnits) "" else null }
-                        .tryGetUnitEraSprite(militaryUnit, specificUnitIconLocation)
-                        .tryImage { if (civInfo.nation.style.isNotEmpty()) "$specificUnitIconLocation-${civInfo.nation.style}" else null }
-                        .tryImage { specificUnitIconLocation }
-                        .tryImage { if (baseUnit.replaces != null) "$unitsLocation${baseUnit.replaces}" else null }
-                        .tryImages(
-                                militaryUnit.civInfo.gameInfo.ruleSet.units.values.asSequence().map {
-                                    @Suppress("unused")  // yes receiver unused but we want the signature to match ImageAttempter instance
-                                    fun MapUnit.() = if (it.unitType == militaryUnit.type.name)
-                                        "$unitsLocation${it.name}"
-                                    else
-                                        null
-                                } // .tryImage/.tryImages takes functions as parameters, for lazy eval. Include the check as part of the .tryImage's lazy candidate parameter, and *not* as part of the .map's transform parameter, so even the name check will be skipped by ImageAttempter if an image has already been found.
-                        )
-                        .tryImage { if (type.isLandUnit()) landUnit else null }
-                        .tryImage { if (type.isWaterUnit()) waterUnit else null }
-                        .getPathOrNull()
-            }
-            newImageLocation = tileSetStrings.getThisUnit() ?: tileSetStrings.fallback?.getThisUnit() ?: ""
+        if (militaryUnit != null && showMilitaryUnit && UncivGame.Current.settings.showPixelUnits) {
+            newImageLocation = tileSetStrings.getUnitImageLocation(militaryUnit)
         }
 
         val nationName = if (militaryUnit != null) "${militaryUnit.civInfo.civName}-" else ""
@@ -740,18 +707,8 @@ open class TileGroup(
         var newImageLocation = ""
         val civilianUnit = tileInfo.civilianUnit
 
-        if (civilianUnit != null && tileIsViewable) {
-            fun TileSetStrings.getThisUnit(): String? {
-                val specificUnitIconLocation = this.unitsLocation + civilianUnit.name
-                return ImageAttempter(civilianUnit)
-                        .forceImage { if (!UncivGame.Current.settings.showPixelUnits) "" else null }
-                        .tryGetUnitEraSprite(civilianUnit, specificUnitIconLocation)
-                        .tryImage { if (civInfo.nation.style.isNotEmpty()) "$specificUnitIconLocation-${civInfo.nation.style}" else null }
-                        .tryImage { specificUnitIconLocation }
-                        .tryImage { civilianLandUnit }
-                        .getPathOrNull()
-            }
-            newImageLocation = tileSetStrings.getThisUnit() ?: tileSetStrings.fallback?.getThisUnit() ?: ""
+        if (civilianUnit != null && tileIsViewable && UncivGame.Current.settings.showPixelUnits) {
+            newImageLocation = tileSetStrings.getUnitImageLocation(civilianUnit)
         }
 
         val nationName = if (civilianUnit != null) "${civilianUnit.civInfo.civName}-" else ""
@@ -768,21 +725,6 @@ open class TileGroup(
                 }
             }
         }
-    }
-
-    private fun ImageAttempter<MapUnit>.tryGetUnitEraSprite(unit: MapUnit, specificUnitIconLocation: String): ImageAttempter<MapUnit> {
-        return this.tryImages(
-            // iterate in reverse order to get the most recent era-specific image
-            (unit.civInfo.getEraNumber() downTo 0).asSequence().map {
-                {
-                    val era = civInfo.gameInfo.ruleSet.eras.keys.elementAt(it)
-                    if (civInfo.nation.style.isNotEmpty())
-                        "$specificUnitIconLocation-${civInfo.nation.style}-$era"
-                    else
-                        "$specificUnitIconLocation-$era"
-                }
-            }
-        )
     }
 
     private var bottomRightRiverImage :Image?=null
