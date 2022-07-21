@@ -1,14 +1,10 @@
 ## 4.1.21
 
-Simplified and optimized image attempter use 
+Memory performance improvements
 
-40% performance save on tileInfo.getImprovementStats() by caching citywide uniques 
+HexaRealm is now default tileset
 
-Save all tile terrains and terrain uniques in transients, for better performance 
-
-HexaRealm as default tileset 
-
-Mod categories  - By alexban011
+Mod categories - By alexban011
 
 Replace "moveTo" in unit overview with "Moving"  - By itanasi
 
