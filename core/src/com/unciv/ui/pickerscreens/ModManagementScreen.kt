@@ -272,6 +272,7 @@ class ModManagementScreen(
                     }
                     installedMod.modOptions.author = repo.owner.login
                     installedMod.modOptions.modSize = repo.size
+                    installedMod.modOptions.topics = repo.topics
                 }
             }
 
@@ -519,7 +520,7 @@ class ModManagementScreen(
 
         modTable.clear()
         var currentY = -1f
-        val filter = optionsManager.getFilterText()
+        val filter = optionsManager.getFilter()
         for (mod in installedModInfo.values.sortedWith(optionsManager.sortInstalled.comparator)) {
             if (!mod.matchesFilter(filter)) continue
             // Prevent building up listeners. The virgin Button has one: for mouseover styling.
@@ -581,9 +582,10 @@ class ModManagementScreen(
         onlineExpanderTab?.setText(newHeaderText)
 
         downloadTable.clear()
+        downloadTable.add(getDownloadFromUrlButton()).row()
         onlineScrollCurrentY = -1f
 
-        val filter = optionsManager.getFilterText()
+        val filter = optionsManager.getFilter()
         // Important: sortedMods holds references to the original values, so the referenced buttons stay valid.
         // We update y and height here, we do not replace the ModUIData instances do the referenced buttons stay valid.
         val sortedMods = onlineModInfo.values.asSequence().sortedWith(optionsManager.sortOnline.comparator)
