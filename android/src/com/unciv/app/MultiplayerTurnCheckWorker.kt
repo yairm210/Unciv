@@ -15,14 +15,21 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.DEFAULT_VIBRATE
 import androidx.core.app.NotificationManagerCompat
-import androidx.work.*
+import androidx.work.Constraints
+import androidx.work.Data
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.Worker
+import androidx.work.WorkerParameters
+import androidx.work.workDataOf
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.backends.android.AndroidApplication
 import com.badlogic.gdx.backends.android.DefaultAndroidFiles
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivFiles
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
-import com.unciv.logic.multiplayer.storage.OnlineMultiplayerFiles
+import com.unciv.logic.multiplayer.storage.MultiplayerFiles
 import com.unciv.models.metadata.GameSettingsMultiplayer
 import kotlinx.coroutines.runBlocking
 import java.io.FileNotFoundException
@@ -182,19 +189,19 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
 
         fun startTurnChecker(applicationContext: Context, files: UncivFiles, currentGameInfo: GameInfo, settings: GameSettingsMultiplayer) {
             Log.i(LOG_TAG, "startTurnChecker")
-            val gameFiles = files.getMultiplayerSaves()
-            val gameIds = Array(gameFiles.count()) {""}
-            val gameNames = Array(gameFiles.count()) {""}
+            val statusFiles = files.getMultiplayerGameStatuses()
+            val gameIds = Array(statusFiles.count()) {""}
+            val gameNames = Array(statusFiles.count()) {""}
 
             var count = 0
-            for (gameFile in gameFiles) {
+            for (statusFile in statusFiles) {
                 try {
-                    val gamePreview = files.loadGamePreviewFromFile(gameFile)
-                    gameIds[count] = gamePreview.gameId
-                    gameNames[count] = gameFile.name()
+                    val status = files.loadMultiplayerGameStatusFromFile(statusFile)
+                    gameIds[count] = status.gameId
+                    gameNames[count] = statusFile.name()
                     count++
                 } catch (ex: Throwable) {
-                    //only loadGamePreviewFromFile can throw an exception
+                    //only loadMultiplayerGameStatusFromFile can throw an exception
                     //nothing will be added to the arrays if it fails
                     //just skip one file
                 }
@@ -202,10 +209,10 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
 
             Log.d(LOG_TAG, "start gameNames: ${gameNames.contentToString()}")
 
-            if (currentGameInfo.getCurrentPlayerCivilization().playerId == settings.userId) {
+            if (currentGameInfo.currentCiv.playerId == settings.userId) {
                 // May be useful to remind a player that he forgot to complete his turn.
                 val gameIndex = gameIds.indexOf(currentGameInfo.gameId)
-                // If reading the preview file threw an exception, gameIndex will be -1
+                // If reading the game status file threw an exception, gameIndex will be -1
                 if (gameIndex != -1) {
                     notifyUserAboutTurn(applicationContext, Pair(gameNames[gameIndex], gameIds[gameIndex]))
                 }
@@ -296,23 +303,15 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
 
                 try {
                     Log.d(LOG_TAG, "doWork download ${gameId}")
-                    val gamePreview = OnlineMultiplayerFiles(fileStorage).tryDownloadGamePreview(gameId)
+                    val status = MultiplayerFiles(fileStorage).tryDownloadGameStatus(gameId)
                     Log.d(LOG_TAG, "doWork download ${gameId} done")
-                    val currentTurnPlayer = gamePreview.getCivilization(gamePreview.currentPlayer)
 
                     //Save game so MultiplayerScreen gets updated
-                    /*
-                    I received multiple reports regarding broken save games.
-                    All of them where missing a few thousand chars at the end of the save game.
-                    I assume this happened because the TurnCheckerWorker gets canceled by the AndroidLauncher
-                    while saves are getting saved right here.
-                    Lets hope it works with gamePreview as they are a lot smaller and faster to save
-                     */
                     Log.i(LOG_TAG, "doWork save gameName: ${gameNames[idx]}")
-                    files.saveGame(gamePreview, gameNames[idx])
+                    files.saveMultiplayerGameStatus(status, gameNames[idx])
                     Log.i(LOG_TAG, "doWork save ${gameNames[idx]} done")
 
-                    if (currentTurnPlayer.playerId == inputData.getString(USER_ID)!! && foundGame == null) {
+                    if (status.currentPlayerId == inputData.getString(USER_ID)!! && foundGame == null) {
                         foundGame = Pair(gameNames[idx], gameIds[idx])
                     }
                 } catch (ex: FileStorageRateLimitReached) {
@@ -321,8 +320,8 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                     break
                 } catch (ex: FileNotFoundException){
                     Log.i(LOG_TAG, "doWork FileNotFoundException ${ex.message}")
-                    // FileNotFoundException is thrown by OnlineMultiplayer().tryDownloadGamePreview(gameId)
-                    // and indicates that there is no game preview present for this game
+                    // FileNotFoundException is thrown by OnlineMultiplayer().tryDownloadGameStatus(gameId)
+                    // and indicates that there is no game status file present for this game
                     // in the dropbox so we should not check for this game in the future anymore
                     notFoundRemotely[gameId] = true
                 }

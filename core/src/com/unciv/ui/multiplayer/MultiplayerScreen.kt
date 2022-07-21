@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.MultiplayerGameDeleted
-import com.unciv.logic.multiplayer.OnlineMultiplayerGame
+import com.unciv.logic.multiplayer.MultiplayerGame
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.Popup
@@ -18,7 +18,7 @@ import com.unciv.ui.utils.extensions.toTextButton
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
-    private var selectedGame: OnlineMultiplayerGame? = null
+    private var selectedGame: MultiplayerGame? = null
 
     private val editButtonText = "Game settings"
     private val editButton = createEditButton()
@@ -58,7 +58,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
             unselectGame()
         }
 
-        game.onlineMultiplayer.requestUpdate()
+        game.multiplayer.requestUpdate()
     }
 
     private fun setupRightSideButton() {
@@ -82,7 +82,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
 
     fun createRefreshButton(): TextButton {
         val btn = refreshText.toTextButton()
-        btn.onClick { game.onlineMultiplayer.requestUpdate() }
+        btn.onClick { game.multiplayer.requestUpdate() }
         return btn
     }
 
@@ -97,7 +97,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
     fun createEditButton(): TextButton {
         val btn = editButtonText.toTextButton().apply { disable() }
         btn.onClick {
-            game.pushScreen(EditMultiplayerGameInfoScreen(selectedGame!!))
+            game.pushScreen(EditMultiplayerGameScreen(selectedGame!!))
         }
         return btn
     }
@@ -105,9 +105,9 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
     fun createCopyGameIdButton(): TextButton {
         val btn = copyGameIdText.toTextButton().apply { disable() }
         btn.onClick {
-            val gameInfo = selectedGame?.preview
-            if (gameInfo != null) {
-                Gdx.app.clipboard.contents = gameInfo.gameId
+            val status = selectedGame?.status
+            if (status != null) {
+                Gdx.app.clipboard.contents = status.gameId
                 ToastPopup("Game ID copied to clipboard!", this)
             }
         }
@@ -177,7 +177,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
     }
 
     fun selectGame(name: String) {
-        val multiplayerGame = game.onlineMultiplayer.getGameByName(name)
+        val multiplayerGame = game.multiplayer.getGameByName(name)
         if (multiplayerGame == null) {
             // Should never happen
             unselectGame()
@@ -186,7 +186,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
 
         selectedGame = multiplayerGame
 
-        if (multiplayerGame.preview != null) {
+        if (multiplayerGame.status != null) {
             copyGameIdButton.enable()
         } else {
             copyGameIdButton.disable()

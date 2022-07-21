@@ -3,36 +3,24 @@ package com.unciv.ui.options
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextField
-import com.unciv.Constants
-import com.unciv.logic.multiplayer.OnlineMultiplayer
-import com.unciv.logic.multiplayer.storage.SimpleHttp
+import com.unciv.logic.multiplayer.Multiplayer
 import com.unciv.models.UncivSound
 import com.unciv.models.metadata.GameSetting
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popup.Popup
+import com.unciv.ui.multiplayer.ServerInput
 import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.UncivTextField
 import com.unciv.ui.utils.extensions.addSeparator
 import com.unciv.ui.utils.extensions.brighten
 import com.unciv.ui.utils.extensions.format
-import com.unciv.ui.utils.extensions.isEnabled
-import com.unciv.ui.utils.extensions.onChange
-import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toGdxArray
-import com.unciv.ui.utils.extensions.toLabel
-import com.unciv.ui.utils.extensions.toTextButton
-import com.unciv.utils.concurrency.Concurrency
-import com.unciv.utils.concurrency.launchOnGLThread
 import java.time.Duration
 import java.time.temporal.ChronoUnit
 
-fun multiplayerTab(
-    optionsPopup: OptionsPopup
-): Table {
+fun OptionsPopup.multiplayerTab(): Table {
+    val optionsPopup = this
     val tab = Table(BaseScreen.skin)
     tab.pad(10f)
     tab.defaults().pad(5f)
@@ -89,7 +77,11 @@ fun multiplayerTab(
 
     addSeparator(tab)
 
-    addMultiplayerServerOptions(tab, optionsPopup, listOf(curRefreshSelect, allRefreshSelect, turnCheckerSelect).filterNotNull())
+    val refreshSelects = listOf(curRefreshSelect, allRefreshSelect, turnCheckerSelect).filterNotNull()
+    val serverInput = ServerInput.create { isCustomServer, _ ->
+        for (select in refreshSelects) select.update(isCustomServer)
+    }
+    tab.add(serverInput).colspan(2).growX()
 
     return tab
 }
@@ -123,66 +115,6 @@ private fun buildUnitAttackSoundOptions(): List<SelectItem<UncivSound>> {
         .map { SelectItem("[${it.name}] Attack Sound", UncivSound(it.attackSound!!)) }
 }
 
-private fun addMultiplayerServerOptions(
-    tab: Table,
-    optionsPopup: OptionsPopup,
-    toUpdate: Iterable<RefreshSelect>
-) {
-    val settings = optionsPopup.settings
-
-    val connectionToServerButton = "Check connection to server".toTextButton()
-
-    val textToShowForMultiplayerAddress = if (OnlineMultiplayer.usesCustomServer()) {
-        settings.multiplayer.server
-    } else {
-        "https://"
-    }
-    val multiplayerServerTextField = UncivTextField.create("Server address", textToShowForMultiplayerAddress)
-    multiplayerServerTextField.setTextFieldFilter { _, c -> c !in " \r\n\t\\" }
-    multiplayerServerTextField.programmaticChangeEvents = true
-    val serverIpTable = Table()
-
-    serverIpTable.add("Server address".toLabel().onClick {
-        multiplayerServerTextField.text = Gdx.app.clipboard.contents
-        }).row()
-    multiplayerServerTextField.onChange {
-        val isCustomServer = OnlineMultiplayer.usesCustomServer()
-        connectionToServerButton.isEnabled = isCustomServer
-
-        for (refreshSelect in toUpdate) refreshSelect.update(isCustomServer)
-
-        if (isCustomServer) {
-            fixTextFieldUrlOnType(multiplayerServerTextField)
-            // we can't trim on 'fixTextFieldUrlOnType' for reasons
-            settings.multiplayer.server = multiplayerServerTextField.text.trimEnd('/')
-        } else {
-            settings.multiplayer.server = multiplayerServerTextField.text
-        }
-        settings.save()
-    }
-
-    serverIpTable.add(multiplayerServerTextField).minWidth(optionsPopup.stageToShowOn.width / 2).growX()
-    tab.add(serverIpTable).colspan(2).fillX().row()
-
-    tab.add("Reset to Dropbox".toTextButton().onClick {
-        multiplayerServerTextField.text = Constants.dropboxMultiplayerServer
-        for (refreshSelect in toUpdate) refreshSelect.update(false)
-        settings.save()
-    }).colspan(2).row()
-
-    tab.add(connectionToServerButton.onClick {
-        val popup = Popup(optionsPopup.stageToShowOn).apply {
-            addGoodSizedLabel("Awaiting response...").row()
-        }
-        popup.open(true)
-
-        successfullyConnectedToServer(settings) { success, _, _ ->
-            popup.addGoodSizedLabel(if (success) "Success!" else "Failed!").row()
-            popup.addCloseButton()
-        }
-    }).colspan(2).row()
-}
-
 private fun addTurnCheckerOptions(
     tab: Table,
     optionsPopup: OptionsPopup
@@ -211,16 +143,6 @@ private fun addTurnCheckerOptions(
     return turnCheckerSelect
 }
 
-private fun successfullyConnectedToServer(settings: GameSettings, action: (Boolean, String, Int?) -> Unit) {
-    Concurrency.run("TestIsAlive") {
-        SimpleHttp.sendGetRequest("${settings.multiplayer.server}/isalive") { success, result, code ->
-            launchOnGLThread {
-                action(success, result, code)
-            }
-        }
-    }
-}
-
 private class RefreshSelect(
     labelText: String,
     extraCustomServerOptions: List<SelectItem<Duration>>,
@@ -243,27 +165,7 @@ private class RefreshSelect(
 private fun getInitialOptions(extraCustomServerOptions: List<SelectItem<Duration>>, dropboxOptions: List<SelectItem<Duration>>): Iterable<SelectItem<Duration>> {
     val customServerItems = (extraCustomServerOptions + dropboxOptions).toGdxArray()
     val dropboxItems = dropboxOptions.toGdxArray()
-    return if (OnlineMultiplayer.usesCustomServer()) customServerItems else dropboxItems
-}
-
-private fun fixTextFieldUrlOnType(TextField: TextField) {
-    var text: String = TextField.text
-    var cursor: Int = minOf(TextField.cursorPosition, text.length)
-
-    val textBeforeCursor: String = text.substring(0, cursor)
-
-    // replace multiple slash with a single one, except when it's a ://
-    val multipleSlashes = Regex("(?<!:)/{2,}")
-    text = multipleSlashes.replace(text, "/")
-
-    // calculate updated cursor
-    cursor = multipleSlashes.replace(textBeforeCursor, "/").length
-
-    // update TextField
-    if (text != TextField.text) {
-        TextField.text = text
-        TextField.cursorPosition = cursor
-    }
+    return if (Multiplayer.usesCustomServer()) customServerItems else dropboxItems
 }
 
 private fun createRefreshOptions(unit: ChronoUnit, vararg options: Long): List<SelectItem<Duration>> {

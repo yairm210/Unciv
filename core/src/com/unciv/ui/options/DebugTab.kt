@@ -14,7 +14,7 @@ import com.unciv.ui.utils.extensions.toCheckBox
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
 
-fun debugTab() = Table(BaseScreen.skin).apply {
+fun OptionsPopup.debugTab() = Table(BaseScreen.skin).apply {
     pad(10f)
     defaults().pad(5f)
     val game = UncivGame.Current

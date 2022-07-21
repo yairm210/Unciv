@@ -58,7 +58,7 @@ class AddMultiplayerGameScreen : PickerScreen() {
 
             Concurrency.run("AddMultiplayerGame") {
                 try {
-                    game.onlineMultiplayer.addGame(gameIDTextField.text.trim(), gameNameTextField.text.trim())
+                    game.multiplayer.addGame(gameIDTextField.text.trim(), gameNameTextField.text.trim())
                     launchOnGLThread {
                         popup.close()
                         game.popScreen()

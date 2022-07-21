@@ -1,8 +1,10 @@
 package com.unciv.logic
 
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import com.unciv.json.HashMapVector2
+import com.unciv.json.MultiplayerGameStatusSerializer
 import com.unciv.json.json
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.PerpetualConstruction
@@ -10,6 +12,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.TechManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
+import com.unciv.logic.multiplayer.Multiplayer
 import com.unciv.models.ruleset.ModOptions
 import com.unciv.models.ruleset.Ruleset
 
@@ -225,5 +228,37 @@ object BackwardCompatibility {
             gameParameters.speed = gameParameters.gameSpeed
             gameParameters.gameSpeed = ""
         }
+    }
+
+    /** Remove this completely once users migrated their saves. When removing this, also remove [GameInfo.currentPlayer] and [GameInfoPreview.currentPlayer] */
+    @Suppress("DEPRECATION")
+    fun GameInfo.migrateCurrentCivName() {
+        if (currentPlayer != "") {
+            currentCivName = currentPlayer
+            currentPlayer = ""
+        }
+    }
+
+    /** Remove this completely once users migrated their saves. When removing this, also remove [GameInfo.currentPlayer] and [GameInfoPreview.currentPlayer] */
+    @Suppress("DEPRECATION")
+    fun GameInfoPreview.migrateCurrentCivName() {
+        if (currentPlayer != "") {
+            currentCivName = currentPlayer
+            currentPlayer = ""
+        }
+    }
+
+    /** Remove this completely once users migrated their saves. */
+    fun MultiplayerGameStatusSerializer.readOldFormat(json: Json, jsonData: JsonValue): Multiplayer.GameStatus {
+        val preview = json.readValue(GameInfoPreview::class.java, jsonData)
+        preview.migrateCurrentCivName()
+
+        val gameId = json.readValue("gameId", String::class.java, "", jsonData)
+        val turns = preview.turns
+        val currentTurnStartTime = preview.currentTurnStartTime
+        val currentCivName = preview.currentCivName
+        val currentPlayerId = preview.currentPlayerId
+
+        return Multiplayer.GameStatus(gameId, turns, currentTurnStartTime, currentCivName, currentPlayerId)
     }
 }

@@ -75,37 +75,37 @@ class OptionsPopup(
 
         tabs.addPage(
             "About",
-            aboutTab(screen),
+            aboutTab(),
             ImageGetter.getExternalImage("Icon.png"), 24f
         )
         tabs.addPage(
             "Display",
-            displayTab(this, ::reloadWorldAndOptions, ::reloadWorldAndOptions),
+            displayTab(::reloadWorldAndOptions, ::reloadWorldAndOptions),
             ImageGetter.getImage("UnitPromotionIcons/Scouting"), 24f
         )
         tabs.addPage(
             "Gameplay",
-            gameplayTab(this),
+            gameplayTab(),
             ImageGetter.getImage("OtherIcons/Options"), 24f
         )
         tabs.addPage(
             "Language",
-            languageTab(this, ::reloadWorldAndOptions),
+            languageTab(::reloadWorldAndOptions),
             ImageGetter.getImage("FlagIcons/${settings.language}"), 24f
         )
         tabs.addPage(
             "Sound",
-            soundTab(this),
+            soundTab(),
             ImageGetter.getImage("OtherIcons/Speaker"), 24f
         )
         tabs.addPage(
             "Multiplayer",
-            multiplayerTab(this),
+            multiplayerTab(),
             ImageGetter.getImage("OtherIcons/Multiplayer"), 24f
         )
         tabs.addPage(
             "Advanced",
-            advancedTab(this, ::reloadWorldAndOptions),
+            advancedTab(::reloadWorldAndOptions),
             ImageGetter.getImage("OtherIcons/Settings"), 24f
         )
 

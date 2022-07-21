@@ -7,6 +7,7 @@ import com.unciv.logic.BackwardCompatibility.convertFortify
 import com.unciv.logic.BackwardCompatibility.convertOldGameSpeed
 import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
 import com.unciv.logic.BackwardCompatibility.migrateBarbarianCamps
+import com.unciv.logic.BackwardCompatibility.migrateCurrentCivName
 import com.unciv.logic.BackwardCompatibility.migrateSeenImprovements
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
 import com.unciv.logic.BackwardCompatibility.updateGreatGeneralUniques
@@ -35,6 +36,26 @@ import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.utils.debug
 import java.util.*
 
+interface HasGameId {
+    val gameId: String
+}
+
+interface HasGameTurnData {
+    val turns: Int
+    /** The civ whose turn it is currently. */
+    val currentCivName: String
+    /** The playerId whose turn it is currently, the empty String in a single-player game. */
+    val currentPlayerId: String
+    /** Start of the current turn in milliseconds since epoch. */
+    val currentTurnStartTime: Long
+
+    /**
+     * Checks if this has the same turn as [latestGameState].
+     */
+    fun hasLatestGameState(latestGameState: HasGameTurnData): Boolean {
+        return currentCivName == latestGameState.currentCivName && turns == latestGameState.turns
+    }
+}
 
 /**
  * A class that implements this interface is part of [GameInfo] serialization, i.e. save files.
@@ -64,7 +85,7 @@ data class CompatibilityVersion(
 
 }
 
-class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion {
+class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion, HasGameId, HasGameTurnData {
     companion object {
         /** The current compatibility version of [GameInfo]. This number is incremented whenever changes are made to the save file structure that guarantee that
          * previous versions of the game will not be able to load or play a game normally. */
@@ -85,11 +106,14 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     var difficulty = "Chieftain" // difficulty is game-wide, think what would happen if 2 human players could play on different difficulties?
     var tileMap: TileMap = TileMap()
     var gameParameters = GameParameters()
-    var turns = 0
-    var oneMoreTurnMode = false
+    override var turns = 0
+    @Deprecated("Remove this completely once users migrated their saves.", ReplaceWith("currentCivName"))
     var currentPlayer = ""
-    var currentTurnStartTime = 0L
-    var gameId = UUID.randomUUID().toString() // random string
+    override var currentCivName = ""
+    override var currentTurnStartTime = 0L
+    override val currentPlayerId: String get() = getCivilization(currentCivName).playerId
+    var oneMoreTurnMode = false
+    override var gameId = UUID.randomUUID().toString() // random string
 
     // Maps a civ to the civ they voted for
     var diplomaticVictoryVotesCast = HashMap<String, String>()
@@ -112,7 +136,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     lateinit var speed: Speed
 
     @Transient
-    lateinit var currentPlayerCiv: CivilizationInfo // this is called thousands of times, no reason to search for it with a find{} every time
+    lateinit var currentCiv: CivilizationInfo // this is called thousands of times, no reason to search for it with a find{} every time
 
     /** This is used in multiplayer games, where I may have a saved game state on my phone
      * that is inconsistent with the saved game on the cloud */
@@ -144,7 +168,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         toReturn.civilizations.addAll(civilizations.map { it.clone() })
         toReturn.barbarians = barbarians.clone()
         toReturn.religions.putAll(religions.map { Pair(it.key, it.value.clone()) })
-        toReturn.currentPlayer = currentPlayer
+        toReturn.currentCivName = currentCivName
         toReturn.currentTurnStartTime = currentTurnStartTime
         toReturn.turns = turns
         toReturn.difficulty = difficulty
@@ -157,13 +181,13 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     }
 
     fun getPlayerToViewAs(): CivilizationInfo {
-        if (!gameParameters.isOnlineMultiplayer) return getCurrentPlayerCivilization() // non-online, play as human player
+        if (!gameParameters.isOnlineMultiplayer) return currentCiv // non-online, play as human player
         val userId = UncivGame.Current.settings.multiplayer.userId
 
         // Iterating on all civs, starting from the the current player, gives us the one that will have the next turn
         // This allows multiple civs from the same UserID
         if (civilizations.any { it.playerId == userId }) {
-            var civIndex = civilizations.map { it.civName }.indexOf(currentPlayer)
+            var civIndex = civilizations.map { it.civName }.indexOf(currentCivName)
             while (true) {
                 val civToCheck = civilizations[civIndex % civilizations.size]
                 if (civToCheck.playerId == userId) return civToCheck
@@ -178,8 +202,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     /** Get a civ by name
      *  @throws NoSuchElementException if no civ of that name is in the game (alive or dead)! */
     fun getCivilization(civName: String) = civilizations.first { it.civName == civName }
-    fun getCurrentPlayerCivilization() = currentPlayerCiv
-    fun getCivilizationsAsPreviews() = civilizations.map { it.asPreview() }.toMutableList()
+    fun getCurrentPlayerCivilization() = currentCiv
     /** Get barbarian civ
      *  @throws NoSuchElementException in no-barbarians games! */
     fun getBarbarianCivilization() = getCivilization(Constants.barbarians)
@@ -289,15 +312,15 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             UncivGame.Current.simulateUntilTurnForDebug = 0
 
         currentTurnStartTime = System.currentTimeMillis()
-        currentPlayer = thisPlayer.civName
-        currentPlayerCiv = getCivilization(currentPlayer)
+        currentCivName = thisPlayer.civName
+        currentCiv = getCivilization(currentCivName)
         thisPlayer.startTurn()
-        if (currentPlayerCiv.isSpectator()) currentPlayerCiv.popupAlerts.clear() // no popups for spectators
+        if (currentCiv.isSpectator()) currentCiv.popupAlerts.clear() // no popups for spectators
 
         if (turns % 10 == 0) //todo measuring actual play time might be nicer
             UncivGame.Current.musicController.chooseTrack(
-                currentPlayerCiv.civName,
-                MusicMood.peaceOrWar(currentPlayerCiv.isAtWar()), MusicTrackChooserFlags.setNextTurn
+                currentCiv.civName,
+                MusicMood.peaceOrWar(currentCiv.isAtWar()), MusicTrackChooserFlags.setNextTurn
             )
 
         // Start our turn immediately before the player can make decisions - affects
@@ -438,6 +461,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     // All cross-game data which needs to be altered (e.g. when removing or changing a name of a building/tech)
     // will be done here, and not in CivInfo.setTransients or CityInfo
     fun setTransients() {
+        migrateCurrentCivName()
+
         tileMap.gameInfo = this
 
         // [TEMPORARY] Convert old saves to newer ones by moving base rulesets from the mod list to the base ruleset field
@@ -478,8 +503,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         tileMap.setTransients(ruleSet)
 
-        if (currentPlayer == "") currentPlayer = civilizations.first { it.isPlayerCivilization() }.civName
-        currentPlayerCiv = getCivilization(currentPlayer)
+        if (currentCivName == "") currentCivName = civilizations.first { it.isPlayerCivilization() }.civName
+        currentCiv = getCivilization(currentCivName)
 
         difficultyObject = ruleSet.difficulties[difficulty]!!
 
@@ -538,36 +563,21 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     }
 
     //endregion
-
-    fun asPreview() = GameInfoPreview(this)
 }
 
 /**
- * Reduced variant of GameInfo used for load preview and multiplayer saves.
- * Contains additional data for multiplayer settings.
+ * Reduced variant of [GameInfo] used for load preview.
  */
-class GameInfoPreview() {
+class GameInfoPreview private constructor() : HasGameTurnData { // constructor only for serialization
     var civilizations = mutableListOf<CivilizationInfoPreview>()
     var difficulty = "Chieftain"
     var gameParameters = GameParameters()
-    var turns = 0
-    var gameId = ""
+    override var turns = 0
+    @Deprecated("Remove this once players have migrated their saves", ReplaceWith("currentCivName"))
     var currentPlayer = ""
-    var currentTurnStartTime = 0L
-
-    /**
-     * Converts a GameInfo object (can be uninitialized) into a GameInfoPreview object.
-     * Sets all multiplayer settings to default.
-     */
-    constructor(gameInfo: GameInfo) : this() {
-        civilizations = gameInfo.getCivilizationsAsPreviews()
-        difficulty = gameInfo.difficulty
-        gameParameters = gameInfo.gameParameters
-        turns = gameInfo.turns
-        gameId = gameInfo.gameId
-        currentPlayer = gameInfo.currentPlayer
-        currentTurnStartTime = gameInfo.currentTurnStartTime
-    }
+    override var currentCivName = ""
+    override var currentTurnStartTime = 0L
+    override val currentPlayerId get() = getCivilization(currentCivName).playerId
 
     fun getCivilization(civName: String) = civilizations.first { it.civName == civName }
 }

@@ -335,7 +335,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
             playerType == PlayerType.Human &&
                     gameInfo.gameParameters.oneCityChallenge)
 
-    fun isCurrentPlayer() = gameInfo.currentPlayerCiv == this
+    fun isCurrentPlayer() = gameInfo.currentCiv == this
     fun isBarbarian() = nation.isBarbarian()
     fun isSpectator() = nation.isSpectator()
     fun isCityState(): Boolean = nation.isCityState()
@@ -1409,8 +1409,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     fun setAllyCiv(newAllyName: String?) { allyCivName = newAllyName }
 
     //endregion
-
-    fun asPreview() = CivilizationInfoPreview(this)
 }
 
 /**

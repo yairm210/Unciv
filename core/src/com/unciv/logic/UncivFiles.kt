@@ -8,6 +8,8 @@ import com.badlogic.gdx.utils.SerializationException
 import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
+import com.unciv.logic.BackwardCompatibility.migrateCurrentCivName
+import com.unciv.logic.multiplayer.Multiplayer
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.doMigrations
 import com.unciv.models.metadata.isMigrationNecessary
@@ -45,14 +47,14 @@ class UncivFiles(
     //endregion
     //region Helpers
 
-    fun getSave(gameName: String): FileHandle {
-        return getSave(SAVE_FILES_FOLDER, gameName)
+    fun getSaveFile(gameName: String): FileHandle {
+        return getFile(SAVE_FILES_FOLDER, gameName)
     }
-    fun getMultiplayerSave(gameName: String): FileHandle {
-        return getSave(MULTIPLAYER_FILES_FOLDER, gameName)
+    fun getMultiplayerGameStatusFile(gameName: String): FileHandle {
+        return getFile(MULTIPLAYER_FILES_FOLDER, gameName)
     }
 
-    private fun getSave(saveFolder: String, gameName: String): FileHandle {
+    private fun getFile(saveFolder: String, gameName: String): FileHandle {
         debug("Getting save %s from folder %s, preferExternal: %s",
             gameName, saveFolder, preferExternalStorage, files.externalStoragePath)
         val location = "${saveFolder}/$gameName"
@@ -81,17 +83,17 @@ class UncivFiles(
         return file.writer(append)
     }
 
-    fun getMultiplayerSaves(): Sequence<FileHandle> {
-        return getSaves(MULTIPLAYER_FILES_FOLDER)
+    fun getMultiplayerGameStatuses(): Sequence<FileHandle> {
+        return listFilesInFolder(MULTIPLAYER_FILES_FOLDER)
     }
 
     fun getSaves(autoSaves: Boolean = true): Sequence<FileHandle> {
-        val saves = getSaves(SAVE_FILES_FOLDER)
+        val saves = listFilesInFolder(SAVE_FILES_FOLDER)
         val filteredSaves = if (autoSaves) { saves } else { saves.filter { !it.name().startsWith(AUTOSAVE_FILE_NAME) }}
         return filteredSaves
     }
 
-    private fun getSaves(saveFolder: String): Sequence<FileHandle> {
+    private fun listFilesInFolder(saveFolder: String): Sequence<FileHandle> {
         debug("Getting saves from folder %s, externalStoragePath: %s", saveFolder, files.externalStoragePath)
         val localFiles = files.local(saveFolder).list().asSequence()
 
@@ -114,15 +116,15 @@ class UncivFiles(
      * @throws SecurityException when delete access was denied
      */
     fun deleteSave(gameName: String): Boolean {
-        return deleteSave(getSave(gameName))
+        return deleteFile(getSaveFile(gameName))
     }
 
     /**
      * @return `true` if successful.
      * @throws SecurityException when delete access was denied
      */
-    fun deleteMultiplayerSave(gameName: String): Boolean {
-        return deleteSave(getMultiplayerSave(gameName))
+    fun deleteMultiplayerGameStatus(gameName: String): Boolean {
+        return deleteFile(getMultiplayerGameStatusFile(gameName))
     }
 
     /**
@@ -131,7 +133,7 @@ class UncivFiles(
      * @return `true` if successful.
      * @throws SecurityException when delete access was denied
      */
-    fun deleteSave(file: FileHandle): Boolean {
+    fun deleteFile(file: FileHandle): Boolean {
         debug("Deleting save %s", file.path())
         return file.delete()
     }
@@ -149,7 +151,7 @@ class UncivFiles(
     //region Saving
 
     fun saveGame(game: GameInfo, GameName: String, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }): FileHandle {
-        val file = getSave(GameName)
+        val file = getSaveFile(GameName)
         saveGame(game, file, saveCompletionCallback)
         return file
     }
@@ -168,20 +170,20 @@ class UncivFiles(
     }
 
     /**
-     * Overload of function saveGame to save a GameInfoPreview in the MultiplayerGames folder
+     * Saves a [MultiplayerGameStatus] in the MultiplayerGames folder
      */
-    fun saveGame(game: GameInfoPreview, gameName: String, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }): FileHandle {
-        val file = getMultiplayerSave(gameName)
-        saveGame(game, file, saveCompletionCallback)
+    fun saveMultiplayerGameStatus(game: Multiplayer.GameStatus, gameName: String, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }): FileHandle {
+        val file = getMultiplayerGameStatusFile(gameName)
+        saveMultiplayerGameStatus(game, file, saveCompletionCallback)
         return file
     }
 
     /**
      * Only use this with a [FileHandle] obtained by one of the methods of this class!
      */
-    fun saveGame(game: GameInfoPreview, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }) {
+    fun saveMultiplayerGameStatus(game: Multiplayer.GameStatus, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }) {
         try {
-            debug("Saving GameInfoPreview %s to %s", game.gameId, file.path())
+            debug("Saving multiplayer game status %s to %s", game.gameId, file.path())
             json().toJson(game, file)
             saveCompletionCallback(null)
         } catch (ex: Exception) {
@@ -221,7 +223,7 @@ class UncivFiles(
     //region Loading
 
     fun loadGameByName(gameName: String) =
-            loadGameFromFile(getSave(gameName))
+            loadGameFromFile(getSaveFile(gameName))
 
     fun loadGameFromFile(gameFile: FileHandle): GameInfo {
         val gameData = gameFile.readString()
@@ -231,14 +233,12 @@ class UncivFiles(
         return gameInfoFromString(gameData)
     }
 
-    fun loadGamePreviewByName(gameName: String) =
-            loadGamePreviewFromFile(getMultiplayerSave(gameName))
-
     fun loadGamePreviewFromFile(gameFile: FileHandle): GameInfoPreview {
         val preview = json().fromJson(GameInfoPreview::class.java, gameFile)
         if (preview == null) {
             throw emptyFile(gameFile)
         }
+        preview.migrateCurrentCivName()
         return preview
     }
 
@@ -249,6 +249,17 @@ class UncivFiles(
      */
     private fun emptyFile(gameFile: FileHandle): SerializationException {
         return SerializationException("The file for the game ${gameFile.name()} is empty")
+    }
+
+    fun loadMultiplayerGameStatusByName(gameName: String) =
+            loadMultiplayerGameStatusFromFile(getMultiplayerGameStatusFile(gameName))
+
+    fun loadMultiplayerGameStatusFromFile(gameFile: FileHandle): Multiplayer.GameStatus {
+        val status = json().fromJson(Multiplayer.GameStatus::class.java, gameFile)
+        if (status == null) {
+            throw emptyFile(gameFile)
+        }
+        return status
     }
 
     class CustomLoadResult<T>(
@@ -361,11 +372,11 @@ class UncivFiles(
         }
 
         /**
-         * Parses [gameData] as gzipped serialization of a [GameInfoPreview]
+         * Parses [status] as gzipped serialization of a [MultiplayerGameStatus]
          * @throws SerializationException
          */
-        fun gameInfoPreviewFromString(gameData: String): GameInfoPreview {
-            return json().fromJson(GameInfoPreview::class.java, Gzip.unzip(gameData))
+        fun multiplayerGameStatusFromString(status: String): Multiplayer.GameStatus {
+            return json().fromJson(Multiplayer.GameStatus::class.java, Gzip.unzip(status))
         }
 
         /** Returns gzipped serialization of [game], optionally gzipped ([forceZip] overrides [saveZipped]) */
@@ -373,12 +384,6 @@ class UncivFiles(
             val plainJson = json().toJson(game)
             return if (forceZip ?: saveZipped) Gzip.zip(plainJson) else plainJson
         }
-
-        /** Returns gzipped serialization of preview [game] */
-        fun gameInfoToString(game: GameInfoPreview): String {
-            return Gzip.zip(json().toJson(game))
-        }
-
     }
 
     //endregion
@@ -414,8 +419,8 @@ class UncivFiles(
 
         // keep auto-saves for the last 10 turns for debugging purposes
         val newAutosaveFilename =
-            SAVE_FILES_FOLDER + File.separator + AUTOSAVE_FILE_NAME + "-${gameInfo.currentPlayer}-${gameInfo.turns}"
-        getSave(AUTOSAVE_FILE_NAME).copyTo(files.local(newAutosaveFilename))
+            SAVE_FILES_FOLDER + File.separator + AUTOSAVE_FILE_NAME + "-${gameInfo.currentCivName}-${gameInfo.turns}"
+        getSaveFile(AUTOSAVE_FILE_NAME).copyTo(files.local(newAutosaveFilename))
 
         fun getAutosaves(): Sequence<FileHandle> {
             return getSaves().filter { it.name().startsWith(AUTOSAVE_FILE_NAME) }
@@ -437,7 +442,7 @@ class UncivFiles(
     }
 
     fun autosaveExists(): Boolean {
-        return getSave(AUTOSAVE_FILE_NAME).exists()
+        return getSaveFile(AUTOSAVE_FILE_NAME).exists()
     }
 
     // endregion

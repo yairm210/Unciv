@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.utils.Array
 import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.tilesets.TileSetCache
@@ -17,14 +16,15 @@ import com.unciv.ui.utils.extensions.brighten
 import com.unciv.ui.utils.extensions.onChange
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.worldscreen.WorldScreen
+import com.badlogic.gdx.utils.Array as GdxArray
 
-private val resolutionArray = com.badlogic.gdx.utils.Array(arrayOf("750x500", "900x600", "1050x700", "1200x800", "1500x1000"))
+private val resolutionArray = GdxArray(arrayOf("750x500", "900x600", "1050x700", "1200x800", "1500x1000"))
 
-fun displayTab(
-    optionsPopup: OptionsPopup,
+fun OptionsPopup.displayTab(
     onResolutionChange: () -> Unit,
     onTilesetChange: () -> Unit
 ) = Table(BaseScreen.skin).apply {
+    val optionsPopup = this@displayTab
     pad(10f)
     defaults().pad(2.5f)
 
@@ -133,7 +133,7 @@ private fun addTileSetSelectBox(table: Table, settings: GameSettings, selectBoxM
     table.add("Tileset".toLabel()).left().fillX()
 
     val tileSetSelectBox = SelectBox<String>(table.skin)
-    val tileSetArray = Array<String>()
+    val tileSetArray = GdxArray<String>()
     val tileSets = ImageGetter.getAvailableTilesets()
     for (tileset in tileSets) tileSetArray.add(tileset)
     tileSetSelectBox.items = tileSetArray

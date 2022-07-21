@@ -103,7 +103,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
             AlertType.CityConquered -> {
                 val city = worldScreen.gameInfo.getCities().first { it.id == popupAlert.value }
                 addQuestionAboutTheCity(city.name)
-                val conqueringCiv = worldScreen.gameInfo.getCurrentPlayerCivilization()
+                val conqueringCiv = worldScreen.gameInfo.currentCiv
 
                 if (city.foundingCiv != ""
                         && city.civInfo.civName != city.foundingCiv // can't liberate if the city actually belongs to those guys
@@ -151,7 +151,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
             AlertType.CityTraded -> {
                 val city = worldScreen.gameInfo.getCities().first { it.id == popupAlert.value }
                 addQuestionAboutTheCity(city.name)
-                val conqueringCiv = worldScreen.gameInfo.getCurrentPlayerCivilization()
+                val conqueringCiv = worldScreen.gameInfo.currentCiv
 
                 addLiberateOption(city.foundingCiv) {
                     city.liberateCity(conqueringCiv)
@@ -260,7 +260,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 val city = worldScreen.gameInfo.getCities().first { it.id == popupAlert.value }
                 addGoodSizedLabel(city.name.tr() + ": " + "What would you like to do with the city?".tr(), Constants.headingFontSize) // Add name because there might be several cities
                     .padBottom(20f).row()
-                val marryingCiv = worldScreen.gameInfo.getCurrentPlayerCivilization()
+                val marryingCiv = worldScreen.gameInfo.currentCiv
 
                 if (marryingCiv.isOneCityChallenger()) {
                     addDestroyOption {

@@ -22,6 +22,7 @@ import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
+import com.unciv.utils.debug
 import java.util.*
 
 
@@ -110,17 +111,18 @@ abstract class LoadOrSaveScreen(
         Concurrency.run("LoadMetaData") { // Even loading the game to get its metadata can take a long time on older phones
             val textToSet = try {
                 val savedAt = Date(saveGameFile.lastModified())
-                val game = game.files.loadGamePreviewFromFile(saveGameFile)
-                val playerCivNames = game.civilizations
+                val preview = game.files.loadGamePreviewFromFile(saveGameFile)
+                val playerCivNames = preview.civilizations
                     .filter { it.isPlayerCivilization() }.joinToString { it.civName.tr() }
-                val mods = if (game.gameParameters.mods.isEmpty()) ""
-                    else "\n{Mods:} " + game.gameParameters.mods.joinToString()
+                val mods = if (preview.gameParameters.mods.isEmpty()) ""
+                    else "\n{Mods:} " + preview.gameParameters.mods.joinToString()
 
                 // Format result for textToSet
                 "${saveGameFile.name()}\n{Saved at}: ${savedAt.formatDate()}\n" +
-                "$playerCivNames, ${game.difficulty.tr()}, ${Fonts.turn}${game.turns}\n" +
-                "{Base ruleset:} ${game.gameParameters.baseRuleset}$mods"
+                "$playerCivNames, ${preview.difficulty.tr()}, ${Fonts.turn}${preview.turns}\n" +
+                "{Base ruleset:} ${preview.gameParameters.baseRuleset}$mods"
             } catch (ex: Exception) {
+                debug("Exception while loading game preview", ex)
                 "\n{Could not load game}!"
             }
 

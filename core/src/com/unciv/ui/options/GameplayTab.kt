@@ -7,11 +7,9 @@ import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.UncivSlider
 import com.unciv.ui.utils.extensions.toLabel
-import com.unciv.ui.worldscreen.WorldScreen
 
-fun gameplayTab(
-    optionsPopup: OptionsPopup
-) = Table(BaseScreen.skin).apply {
+fun OptionsPopup.gameplayTab() = Table(BaseScreen.skin).apply {
+    val optionsPopup = this@gameplayTab
     pad(10f)
     defaults().pad(5f)
 
@@ -25,7 +23,7 @@ fun gameplayTab(
         if (shouldAutoAssignCityProduction && worldScreen != null &&
                 worldScreen.viewingCiv.isCurrentPlayer() && worldScreen.viewingCiv.playerType == PlayerType.Human
         ) {
-            worldScreen.gameInfo.getCurrentPlayerCivilization().cities.forEach { city ->
+            worldScreen.gameInfo.currentCiv.cities.forEach { city ->
                 city.cityConstructions.chooseNextConstruction()
             }
         }

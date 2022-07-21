@@ -19,9 +19,8 @@ import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import kotlin.math.floor
 
-fun soundTab(
-    optionsPopup: OptionsPopup
-): Table = Table(BaseScreen.skin).apply {
+fun OptionsPopup.soundTab(): Table = Table(BaseScreen.skin).apply {
+    val optionsPopup = this@soundTab
     pad(10f)
     defaults().pad(5f)
 
@@ -57,7 +56,7 @@ private fun addDownloadMusic(table: Table, optionsPopup: OptionsPopup) {
             try {
                 UncivGame.Current.musicController.downloadDefaultFile()
                 launchOnGLThread {
-                    optionsPopup.tabs.replacePage("Sound", soundTab(optionsPopup))
+                    optionsPopup.tabs.replacePage("Sound", optionsPopup.soundTab())
                     UncivGame.Current.musicController.chooseTrack(flags = MusicTrackChooserFlags.setPlayDefault)
                 }
             } catch (ex: Exception) {

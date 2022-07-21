@@ -2,8 +2,8 @@ package com.unciv.ui.multiplayer
 
 import com.badlogic.gdx.Gdx
 import com.unciv.UncivGame
-import com.unciv.logic.multiplayer.OnlineMultiplayer
-import com.unciv.logic.multiplayer.OnlineMultiplayerGame
+import com.unciv.logic.multiplayer.Multiplayer
+import com.unciv.logic.multiplayer.MultiplayerGame
 import com.unciv.models.translations.tr
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.saves.LoadGameScreen
@@ -17,14 +17,14 @@ import java.time.Instant
 
 object MultiplayerHelpers {
 
-    fun loadMultiplayerGame(screen: BaseScreen, selectedGame: OnlineMultiplayerGame) {
+    fun loadMultiplayerGame(screen: BaseScreen, selectedGame: MultiplayerGame) {
         val loadingGamePopup = Popup(screen)
         loadingGamePopup.addGoodSizedLabel("Loading latest game state...")
         loadingGamePopup.open()
 
         Concurrency.run("JoinMultiplayerGame") {
             try {
-                UncivGame.Current.onlineMultiplayer.loadGame(selectedGame)
+                UncivGame.Current.multiplayer.loadGame(selectedGame)
             } catch (ex: Exception) {
                 val (message) = LoadGameScreen.getLoadExceptionMessage(ex)
                 launchOnGLThread {
@@ -34,7 +34,7 @@ object MultiplayerHelpers {
         }
     }
 
-    fun buildDescriptionText(multiplayerGame: OnlineMultiplayerGame): StringBuilder {
+    fun buildDescriptionText(multiplayerGame: MultiplayerGame): StringBuilder {
         val descriptionText = StringBuilder()
         val ex = multiplayerGame.error
         if (ex != null) {
@@ -43,16 +43,16 @@ object MultiplayerHelpers {
         }
         val lastUpdate = multiplayerGame.lastUpdate
         descriptionText.appendLine("Last refresh: [${Duration.between(lastUpdate, Instant.now()).formatShort()}] ago".tr())
-        val preview = multiplayerGame.preview
-        if (preview?.currentPlayer != null) {
-            val currentTurnStartTime = Instant.ofEpochMilli(preview.currentTurnStartTime)
-            descriptionText.appendLine("Current Turn: [${preview.currentPlayer}] since [${Duration.between(currentTurnStartTime, Instant.now()).formatShort()}] ago".tr())
+        val status = multiplayerGame.status
+        if (status?.currentCivName != null) {
+            val currentTurnStartTime = Instant.ofEpochMilli(status.currentTurnStartTime)
+            descriptionText.appendLine("Current Turn: [${status.currentCivName}] since [${Duration.between(currentTurnStartTime, Instant.now()).formatShort()}] ago".tr())
         }
         return descriptionText
     }
 
     fun showDropboxWarning(screen: BaseScreen) {
-        if (!OnlineMultiplayer.usesDropbox() || UncivGame.Current.settings.multiplayer.hideDropboxWarning) return
+        if (!Multiplayer.usesDropbox() || UncivGame.Current.settings.multiplayer.hideDropboxWarning) return
 
         val dropboxWarning = Popup(screen)
         dropboxWarning.addGoodSizedLabel(
