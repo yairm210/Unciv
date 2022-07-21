@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.WonderInfo
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.extensions.addSeparator
@@ -110,30 +111,36 @@ class GlobalPoliticsOverviewTable (
         val politicsTable = Table(skin)
 
         // wars
-        for (enemy in civ.atWarWith) {
-            val warText = "At war with $enemy".toLabel()
-            warText.color = Color.RED
-            politicsTable.add(warText).row()
+        for (otherCiv in civ.getKnownCivs()) {
+            if(civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.DeclaredWar) == true) {
+                val warText = "At war with ${otherCiv.civName}".toLabel()
+                warText.color = Color.RED
+                politicsTable.add(warText).row()
+            }
         }
         politicsTable.row()
 
         // declaration of friendships
-        for (friend in civ.friendCivs) {
-            val friendtext = "Friends with ${civ.civName}".toLabel()
-            friendtext.color = Color.GREEN
-            val turnsLeftText = "(${viewingPlayer.gameInfo.turns - friend.value} Turns Left)".toLabel()
-            politicsTable.add(friendtext)
-            politicsTable.add(turnsLeftText).row()
+        for (otherCiv in civ.getKnownCivs()) {
+            if(civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.DeclarationOfFriendship) == true) {
+                val friendtext = "Friends with ${otherCiv.civName} ".toLabel()
+                friendtext.color = Color.GREEN
+                val turnsLeftText = "(${civ.diplomacy[otherCiv.civName]?.getFlag(DiplomacyFlags.DeclarationOfFriendship)} Turns Left)".toLabel()
+                politicsTable.add(friendtext)
+                politicsTable.add(turnsLeftText).row()
+            }
         }
         politicsTable.row()
 
         // denounced civs
-        for (denouncedCiv in civ.denouncedCivs) {
-            val denouncedText = "Denounced ${denouncedCiv.key}".toLabel()
-            denouncedText.color = Color.RED
-            val turnsLeftText = "({${(viewingPlayer.gameInfo.turns - denouncedCiv.value)} Turns Left})".toLabel()
-            politicsTable.add(denouncedText)
-            politicsTable.add(turnsLeftText).row()
+        for (otherCiv in civ.getKnownCivs()) {
+            if(civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.Denunciation) == true) {
+                val denouncedText = "Denounced ${otherCiv.civName} ".toLabel()
+                denouncedText.color = Color.RED
+                val turnsLeftText = "({${civ.diplomacy[otherCiv.civName]?.getFlag(DiplomacyFlags.Denunciation)} Turns Left})".toLabel()
+                politicsTable.add(denouncedText)
+                politicsTable.add(turnsLeftText).row()
+            }
         }
         politicsTable.row()
 
