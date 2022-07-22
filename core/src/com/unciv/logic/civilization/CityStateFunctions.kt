@@ -10,6 +10,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.ui.victoryscreen.RankingType
+import com.unciv.utils.debug
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
@@ -303,11 +304,20 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                 civInfo.getCapital()!!.location, civInfo.civName, NotificationIcon.Diplomacy, otherCiv.civName)
         for (unit in civInfo.getCivUnits())
             unit.gift(otherCiv)
+
+        // We want to get rid of the original capital flag for this city state so it can't be liberated in the future.
+        // We do this step to be extra certain to find the correct one since a CS can rarely capture and lose cities
+        val originalCapital = civInfo.gameInfo.getCities().firstOrNull {
+            it.isOriginalCapital && it.foundingCiv == civInfo.civName
+        }
+        if (originalCapital != null) {
+            originalCapital.foundingCiv = ""
+            originalCapital.isOriginalCapital = false
+        }
+
         for (city in civInfo.cities) {
             city.moveToCiv(otherCiv)
             city.isPuppet = true // Human players get a popup that allows them to annex instead
-            city.foundingCiv = "" // This is no longer a city-state
-            city.isOriginalCapital = false // It's now an ordinary city and can be razed in later conquests
         }
         civInfo.destroy()
     }
