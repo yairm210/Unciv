@@ -10,7 +10,6 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.ui.victoryscreen.RankingType
-import com.unciv.utils.debug
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
