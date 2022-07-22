@@ -31,8 +31,8 @@ import kotlin.math.pow
 class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     override var requiredTech: String? = null
+    override var cost: Int = 0
 
-    var cost: Int = 0
     var maintenance = 0
     private var percentStatBonus: Stats? = null
     var specialistSlots: Counter<String> = Counter()
@@ -181,7 +181,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                  localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Stats {
         // Calls the clone function of the NamedStats this class is derived from, not a clone function of this class
         val stats = cloneStats()
-        val civInfo = city.civInfo
 
         for (unique in localUniqueCache.get("StatsFromObject", city.getMatchingUniques(UniqueType.StatsFromObject))) {
             if (!matchesFilter(unique.params[1])) continue
