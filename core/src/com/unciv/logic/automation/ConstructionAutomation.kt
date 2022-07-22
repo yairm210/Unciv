@@ -202,10 +202,10 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     }
 
     private fun addSpaceshipPartChoice() {
-        val spaceshipPart = (nonWonders + units).firstOrNull { it.name in spaceshipParts }
-        if (spaceshipPart != null && spaceshipPart.isBuildable(cityConstructions)) {
+        val spaceshipPart = (nonWonders + units).filter { it.name in spaceshipParts }.filter { it.isBuildable(cityConstructions) }
+        if (spaceshipPart.isNotEmpty()) {
             val modifier = 2f
-            addChoice(relativeCostEffectiveness, spaceshipPart.name, modifier)
+            addChoice(relativeCostEffectiveness, spaceshipPart.first().name, modifier)
         }
     }
 
