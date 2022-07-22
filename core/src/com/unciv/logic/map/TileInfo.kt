@@ -585,7 +585,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         if (city != null) {
             // As above, since the conditional is tile-dependant,
             //  we save uniques in the cache without conditional filtering, and use only filtered ones
-            val allStatPercentUniques = cityUniqueCache.get("allSatPercentFromObject",
+            val allStatPercentUniques = cityUniqueCache.get("allStatPercentFromObject",
                 city.getMatchingUniques(UniqueType.AllStatsPercentFromObject, StateForConditionals.IgnoreConditionals))
                     .filter { it.conditionalsApply(conditionalState) }
             for (unique in allStatPercentUniques) {
@@ -596,7 +596,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
             }
 
             // Same trick different unique - not sure if worth generalizing this 'late apply' of conditions?
-            val statPercentUniques = cityUniqueCache.get("allSatPercentFromObject",
+            val statPercentUniques = cityUniqueCache.get("statPercentFromObject",
                 city.getMatchingUniques(UniqueType.StatPercentFromObject, StateForConditionals.IgnoreConditionals))
                     .filter { it.conditionalsApply(conditionalState) }
 
