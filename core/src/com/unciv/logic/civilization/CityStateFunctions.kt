@@ -305,14 +305,12 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         for (unit in civInfo.getCivUnits())
             unit.gift(otherCiv)
 
-        // We want to get rid of the original capital flag for this city state so it can't be liberated in the future.
-        // We do this step to be extra certain to find the correct one since a CS can rarely capture and lose cities
-        val originalCapital = civInfo.gameInfo.getCities().firstOrNull {
-            it.isOriginalCapital && it.foundingCiv == civInfo.civName
-        }
-        if (originalCapital != null) {
-            originalCapital.foundingCiv = ""
-            originalCapital.isOriginalCapital = false
+        // Make sure this CS can never be liberated
+        civInfo.gameInfo.getCities().filter {
+            it.foundingCiv == civInfo.civName
+        }.forEach {
+            it.foundingCiv = ""
+            it.isOriginalCapital = false
         }
 
         for (city in civInfo.cities) {
