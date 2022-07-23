@@ -1,6 +1,8 @@
-package com.unciv.logic.automation
+package com.unciv.logic.automation.unit
 
 import com.unciv.Constants
+import com.unciv.logic.automation.Automation
+import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.battle.*
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.ReligionState
@@ -160,18 +162,20 @@ object UnitAutomation {
 
             //todo this now supports "Great General"-like mod units not combining 'aura' and citadel
             // abilities, but not additional capabilities if automation finds no use for those two
-            if (unit.hasStrengthBonusInRadiusUnique && SpecificUnitAutomation.automateGreatGeneral(unit))
+            if (unit.hasStrengthBonusInRadiusUnique && SpecificUnitAutomation.automateGreatGeneral(
+                        unit
+                    )
+            )
                 return
             if (unit.hasCitadelPlacementUnique && SpecificUnitAutomation.automateCitadelPlacer(unit))
                 return
             if (unit.hasCitadelPlacementUnique || unit.hasStrengthBonusInRadiusUnique)
                 return SpecificUnitAutomation.automateGreatGeneralFallback(unit)
 
-            if (unit.getMatchingUniques(UniqueType.CanActionSeveralTimes).any{ it.params[0] == "Spread Religion" }
-                    && unit.civInfo.religionManager.maySpreadReligionAtAll(unit))
+            if (unit.civInfo.religionManager.maySpreadReligionAtAll(unit))
                 return SpecificUnitAutomation.automateMissionary(unit)
 
-            if (unit.hasUnique(UniqueType.PreventSpreadingReligion))
+            if (unit.hasUnique(UniqueType.PreventSpreadingReligion) || unit.canDoReligiousAction(Constants.removeHeresy))
                 return SpecificUnitAutomation.automateInquisitor(unit)
 
             if (unit.hasUnique(UniqueType.ConstructImprovementConsumingUnit)
@@ -365,9 +369,9 @@ object UnitAutomation {
                 unit.getMaxMovement() * CLOSE_ENEMY_TURNS_AWAY_LIMIT
         )
         var closeEnemies = BattleHelper.getAttackableEnemies(
-                unit,
-                unitDistanceToTiles,
-                tilesToCheck = unit.getTile().getTilesInDistance(CLOSE_ENEMY_TILES_AWAY_LIMIT).toList()
+            unit,
+            unitDistanceToTiles,
+            tilesToCheck = unit.getTile().getTilesInDistance(CLOSE_ENEMY_TILES_AWAY_LIMIT).toList()
         ).filter {
             // Ignore units that would 1-shot you if you attacked. Account for taking terrain damage after the fact.
             BattleDamage.calculateDamageToAttacker(

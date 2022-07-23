@@ -1,5 +1,7 @@
-package com.unciv.logic.automation
+package com.unciv.logic.automation.city
 
+import com.unciv.logic.automation.Automation
+import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.PerpetualConstruction
@@ -11,7 +13,6 @@ import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import kotlin.math.max
 import kotlin.math.sqrt
@@ -47,8 +48,6 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private val relativeCostEffectiveness = ArrayList<ConstructionChoice>()
 
-    private val faithConstruction = arrayListOf<BaseUnit>()
-
     private data class ConstructionChoice(val choice: String, var choiceModifier: Float, val remainingWork: Int)
 
     private fun addChoice(choices: ArrayList<ConstructionChoice>, choice: String, choiceModifier: Float) {
@@ -79,7 +78,6 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
             addWorkerChoice()
             addWorkBoatChoice()
             addMilitaryUnitChoice()
-            addReligiousUnit()
         }
 
         val production = cityInfo.cityStats.currentCityStats.production
@@ -106,14 +104,6 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
             NotificationIcon.Construction
         )
         cityConstructions.currentConstructionFromQueue = chosenConstruction
-
-        if (civInfo.isPlayerCivilization()) return // don't want the ai to control what a player uses faith for
-
-        val chosenItem = faithConstruction.firstOrNull {
-            it.getStatBuyCost(cityInfo, stat = Stat.Faith)!! <= civInfo.religionManager.storedFaith
-        } ?: return
-
-        cityConstructions.purchaseConstruction(chosenItem.name, -1, false, stat=Stat.Faith)
     }
 
     private fun addMilitaryUnitChoice() {
@@ -189,9 +179,10 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private fun addCultureBuildingChoice() {
         val cultureBuilding = nonWonders
-                .filter { it.isStatRelated(Stat.Culture)
-                        && Automation.allowAutomatedConstruction(civInfo, cityInfo, it) }
-                .isBuildable().minByOrNull { it.cost }
+            .filter { it.isStatRelated(Stat.Culture)
+                    && Automation.allowAutomatedConstruction(civInfo, cityInfo, it)
+            }.isBuildable()
+            .minByOrNull { it.cost }
         if (cultureBuilding != null) {
             var modifier = 0.5f
             if (cityInfo.cityStats.currentCityStats.culture == 0f) // It won't grow if we don't help it
@@ -266,9 +257,10 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private fun addUnitTrainingBuildingChoice() {
         val unitTrainingBuilding = nonWonders
-                .filter { it.hasUnique(UniqueType.UnitStartingExperience)
-                        && Automation.allowAutomatedConstruction(civInfo, cityInfo, it) }
-                .isBuildable().minByOrNull { it.cost }
+            .filter { it.hasUnique(UniqueType.UnitStartingExperience)
+                    && Automation.allowAutomatedConstruction(civInfo, cityInfo, it)
+            }.isBuildable()
+            .minByOrNull { it.cost }
         if (unitTrainingBuilding != null && (!civInfo.wantsToFocusOn(Victory.Focus.Culture) || isAtWar)) {
             var modifier = if (cityIsOverAverageProduction) 0.5f else 0.1f // You shouldn't be cranking out units anytime soon
             if (isAtWar) modifier *= 2
@@ -280,9 +272,10 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private fun addDefenceBuildingChoice() {
         val defensiveBuilding = nonWonders
-                .filter { it.cityStrength > 0
-                        && Automation.allowAutomatedConstruction(civInfo, cityInfo, it)}
-                .isBuildable().minByOrNull { it.cost }
+            .filter { it.cityStrength > 0
+                    && Automation.allowAutomatedConstruction(civInfo, cityInfo, it)
+            }.isBuildable()
+            .minByOrNull { it.cost }
         if (defensiveBuilding != null && (isAtWar || !civInfo.wantsToFocusOn(Victory.Focus.Culture))) {
             var modifier = 0.2f
             if (isAtWar) modifier = 0.5f
@@ -299,10 +292,11 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private fun addHappinessBuildingChoice() {
         val happinessBuilding = nonWonders
-                .filter { (it.isStatRelated(Stat.Happiness)
-                        || it.uniques.contains("Remove extra unhappiness from annexed cities"))
-                        && Automation.allowAutomatedConstruction(civInfo, cityInfo, it) }
-                .isBuildable().minByOrNull { it.cost }
+            .filter { (it.isStatRelated(Stat.Happiness)
+                    || it.uniques.contains("Remove extra unhappiness from annexed cities"))
+                    && Automation.allowAutomatedConstruction(civInfo, cityInfo, it) }
+            .isBuildable()
+            .minByOrNull { it.cost }
         if (happinessBuilding != null) {
             var modifier = 1f
             val civHappiness = civInfo.getHappiness()
@@ -359,48 +353,4 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
             addChoice(relativeCostEffectiveness, foodBuilding.name, modifier)
         }
     }
-
-    private fun addReligiousUnit() {
-        // these 4 if conditions are used to determine if an AI should buy units to spread religion, or spend faith to buy things like new military units or new buildings.
-        // currently this AI can only buy inquisitors and missionaries with faith
-        // this system will have to be reengineered to support buying other stuff with faith
-        if (civInfo.wantsToFocusOn(Victory.Focus.Military)) return
-        if (civInfo.religionManager.religion?.name == null) return
-        if (cityInfo.religion.getMajorityReligion()?.name != civInfo.religionManager.religion?.name)
-            return // you don't want to build units of opposing religions.
-
-
-        var modifier = 0f
-
-        // The performance of the regular getMatchingUniques is better, since it only tries to find one unique,
-        //  while the canBePurchasedWithStat tries (at time of writing) *6* different uniques.
-        val missionary = units
-            .firstOrNull { it -> it.getMatchingUniques("Can [] [] times").any { it.params[0] == "Spread Religion"}
-                    && it.canBePurchasedWithStat(cityInfo, Stat.Faith) }
-
-
-        val inquisitor = units
-            .firstOrNull { it.hasUnique("Prevents spreading of religion to the city it is next to")
-                    && it.canBePurchasedWithStat(cityInfo, Stat.Faith) }
-
-
-        if (civInfo.wantsToFocusOn(Victory.Focus.Culture)) modifier += 1
-        if (isAtWar) modifier -= 0.5f
-
-        val citiesNotFollowingOurReligion = civInfo.cities.asSequence()
-            .filterNot { it.religion.getMajorityReligion()?.name == civInfo.religionManager.religion!!.name }
-
-        val buildInquisitor = citiesNotFollowingOurReligion
-            .filter { it.religion.getMajorityReligion()?.name == civInfo.religionManager.religion?.name }
-            .toList().size.toFloat() / 10 + modifier
-
-        val possibleSpreadReligionTargets = civInfo.gameInfo.getCities()
-            .filter { it.getCenterTile().aerialDistanceTo(cityInfo.getCenterTile()) < 30 }
-
-        val buildMissionary = possibleSpreadReligionTargets.toList().size.toFloat() / 15 + modifier
-
-        if (buildMissionary > buildInquisitor && missionary != null && missionary.isBuildable(cityConstructions)) faithConstruction.add(missionary)
-        else if (inquisitor != null && inquisitor.isBuildable(cityConstructions)) faithConstruction.add(inquisitor)
-    }
-
 }
