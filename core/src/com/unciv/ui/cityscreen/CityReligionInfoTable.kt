@@ -44,9 +44,9 @@ class CityReligionInfoTable(
             add(linkedReligionIcon(iconName, religionManager.religionThisIsTheHolyCityOf)).pad(5f)
             add()
             if (!religionManager.isBlockedHolyCity) {
-                add("Holy city of: [$label]".toLabel()).colspan(3).center().row()
+                add("Holy City of: [$label]".toLabel()).colspan(3).center().row()
             } else {
-                add("Former holy city of: [$label]".toLabel()).colspan(3).center().row()
+                add("Former Holy City of: [$label]".toLabel()).colspan(3).center().row()
             }
         }
 

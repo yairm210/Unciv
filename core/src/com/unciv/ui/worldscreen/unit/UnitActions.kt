@@ -677,7 +677,14 @@ object UnitActions {
             action = {
                 city.religion.removeAllPressuresExceptFor(unit.religion!!)
                 if (city.religion.religionThisIsTheHolyCityOf != null) {
-                    city.religion.isBlockedHolyCity = city.religion.religionThisIsTheHolyCityOf != unit.religion
+                    val religion = unit.civInfo.gameInfo.religions[city.religion.religionThisIsTheHolyCityOf]!!
+                    if (city.religion.religionThisIsTheHolyCityOf == unit.religion) {
+                        religion.getFounder().addNotification("An [${unit.baseUnit.name}] has removed your religion [${religion.getReligionDisplayName()}] from its Holy City [${city.name}]!")
+                        city.religion.isBlockedHolyCity = false
+                    } else {
+                        religion.getFounder().addNotification("An [${unit.baseUnit.name}] has restored [${city.name}] as the Holy City of your religion [${religion.getReligionDisplayName()}]!")
+                        city.religion.isBlockedHolyCity = true
+                    }
                 }
                 unit.currentMovement = 0f
                 useActionWithLimitedUses(unit, Constants.removeHeresyAbilityCount)
