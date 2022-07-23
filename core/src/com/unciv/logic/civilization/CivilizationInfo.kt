@@ -7,8 +7,8 @@ import com.unciv.json.HashMapVector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.UncivShowableException
-import com.unciv.logic.automation.NextTurnAutomation
-import com.unciv.logic.automation.WorkerAutomation
+import com.unciv.logic.automation.civilization.NextTurnAutomation
+import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.RuinsManager.RuinsManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -483,7 +483,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         // exception will happen), also rearrange existing units so that
         // 'nextPotentiallyDueAt' becomes 0.  This way new units are always last to be due
         // (can be changed as wanted, just have a predictable place).
-        var newList = getCivUnitsStartingAtNextDue().toMutableList()
+        val newList = getCivUnitsStartingAtNextDue().toMutableList()
         newList.add(mapUnit)
         units = newList
         nextPotentiallyDueAt = 0
@@ -492,19 +492,21 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
             // Not relevant when updating TileInfo transients, since some info of the civ itself isn't yet available,
             // and in any case it'll be updated once civ info transients are
             updateStatsForNextTurn() // unit upkeep
-            updateDetailedCivResources()
+            if (mapUnit.baseUnit.getResourceRequirements().isNotEmpty())
+                updateDetailedCivResources()
         }
     }
 
     fun removeUnit(mapUnit: MapUnit) {
         // See comment in addUnit().
-        var newList = getCivUnitsStartingAtNextDue().toMutableList()
+        val newList = getCivUnitsStartingAtNextDue().toMutableList()
         newList.remove(mapUnit)
         units = newList
         nextPotentiallyDueAt = 0
 
         updateStatsForNextTurn() // unit upkeep
-        updateDetailedCivResources()
+        if (mapUnit.baseUnit.getResourceRequirements().isNotEmpty())
+            updateDetailedCivResources()
     }
 
     fun getIdleUnits() = getCivUnits().filter { it.isIdle() }

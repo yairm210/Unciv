@@ -1,3 +1,13 @@
+## 4.1.21
+
+Memory performance improvements
+
+HexaRealm is now default tileset
+
+Mod categories - By alexban011
+
+Replace "moveTo" in unit overview with "Moving"  - By itanasi
+
 ## 4.1.20
 
 Can no longer receive negative gold offers from AI
