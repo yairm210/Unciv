@@ -303,11 +303,18 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                 civInfo.getCapital()!!.location, civInfo.civName, NotificationIcon.Diplomacy, otherCiv.civName)
         for (unit in civInfo.getCivUnits())
             unit.gift(otherCiv)
+
+        // Make sure this CS can never be liberated
+        civInfo.gameInfo.getCities().filter {
+            it.foundingCiv == civInfo.civName
+        }.forEach {
+            it.foundingCiv = ""
+            it.isOriginalCapital = false
+        }
+
         for (city in civInfo.cities) {
             city.moveToCiv(otherCiv)
             city.isPuppet = true // Human players get a popup that allows them to annex instead
-            city.foundingCiv = "" // This is no longer a city-state
-            city.isOriginalCapital = false // It's now an ordinary city and can be razed in later conquests
         }
         civInfo.destroy()
     }
