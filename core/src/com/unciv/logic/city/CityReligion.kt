@@ -26,6 +26,7 @@ class CityInfoReligionManager : IsPartOfGameInfoSerialization {
     private val pressureFromAdjacentCities: Int by lazy { cityInfo.civInfo.gameInfo.speed.religiousPressureAdjacentCity }
 
     var religionThisIsTheHolyCityOf: String? = null
+    var isBlockedHolyCity = false
 
     init {
         clearAllPressures()
@@ -38,6 +39,7 @@ class CityInfoReligionManager : IsPartOfGameInfoSerialization {
         toReturn.pressures.putAll(pressures)
         toReturn.followers.putAll(followers)
         toReturn.religionThisIsTheHolyCityOf = religionThisIsTheHolyCityOf
+        toReturn.isBlockedHolyCity = isBlockedHolyCity
         return toReturn
     }
 

@@ -676,6 +676,9 @@ object UnitActions {
             title = "Remove Heresy",
             action = {
                 city.religion.removeAllPressuresExceptFor(unit.religion!!)
+                if (city.religion.religionThisIsTheHolyCityOf != null) {
+                    city.religion.isBlockedHolyCity = city.religion.religionThisIsTheHolyCityOf != unit.religion
+                }
                 unit.currentMovement = 0f
                 useActionWithLimitedUses(unit, Constants.removeHeresyAbilityCount)
             }.takeIf { unit.currentMovement > 0f }

@@ -142,7 +142,7 @@ class ReligionOverviewTab(
             else Constants.unknownNationName
         statsTable.add(foundingCivName.toLabel()).right().row()
         if (religion.isMajorReligion()) {
-            val holyCity = gameInfo.getCities().firstOrNull { it.religion.religionThisIsTheHolyCityOf == religion.name }
+            val holyCity = gameInfo.getCities().firstOrNull { !it.religion.isBlockedHolyCity && it.religion.religionThisIsTheHolyCityOf == religion.name }
             if (holyCity != null) {
                 statsTable.add("Holy City:".toLabel())
                 val cityName =

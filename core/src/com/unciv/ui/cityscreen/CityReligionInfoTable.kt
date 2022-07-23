@@ -43,7 +43,11 @@ class CityReligionInfoTable(
             val (iconName, label) = getIconAndLabel(religionManager.religionThisIsTheHolyCityOf)
             add(linkedReligionIcon(iconName, religionManager.religionThisIsTheHolyCityOf)).pad(5f)
             add()
-            add("Holy city of: [$label]".toLabel()).colspan(3).center().row()
+            if (!religionManager.isBlockedHolyCity) {
+                add("Holy city of: [$label]".toLabel()).colspan(3).center().row()
+            } else {
+                add("Former holy city of: [$label]".toLabel()).colspan(3).center().row()
+            }
         }
 
         if (!followers.isEmpty()) {
