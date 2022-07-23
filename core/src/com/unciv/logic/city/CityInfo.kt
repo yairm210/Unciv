@@ -919,7 +919,7 @@ class CityInfo : IsPartOfGameInfoSerialization {
             "in foreign cities" -> viewingCiv != civInfo
             "in annexed cities" -> foundingCiv != civInfo.civName && !isPuppet
             "in puppeted cities" -> isPuppet
-            "in holy cities" -> religion.religionThisIsTheHolyCityOf != null && !religion.isBlockedHolyCity
+            "in holy cities" -> isHolyCity()
             "in City-State cities" -> civInfo.isCityState()
             // This is only used in communication to the user indicating that only in cities with this
             // religion a unique is active. However, since religion uniques only come from the city itself,
