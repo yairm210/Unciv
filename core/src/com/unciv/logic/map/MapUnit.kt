@@ -885,6 +885,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun startTurn() {
+        movement.clearTilesWithinTurnCache()
         currentMovement = getMaxMovement().toFloat()
         attacksThisTurn = 0
         due = true
