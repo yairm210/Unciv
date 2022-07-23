@@ -352,7 +352,7 @@ object SpecificUnitAutomation {
 
         destination = when {
             cityToConvert != null
-            && (cityToConvert == holyCity || pressureDeficit > 3000f)
+            && (cityToConvert == holyCity || pressureDeficit > Constants.aiPreferInquisitorOverMissionaryPressureDifference)
             && unit.canDoReligiousAction(Constants.removeHeresy) -> {
                 cityToConvert.getCenterTile()
             }
