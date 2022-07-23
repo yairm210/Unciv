@@ -4,8 +4,8 @@ object Constants {
     const val worker = "Worker"
     const val settler = "Settler"
     const val eraSpecificUnit = "Era Starting Unit"
-    const val spreadReligionAbilityCount = "Spread Religion"
-    const val removeHeresyAbilityCount = "Remove Foreign religions from your own cities"
+    const val spreadReligion = "Spread Religion"
+    const val removeHeresy = "Remove Foreign religions from your own cities"
 
     const val impassable = "Impassable"
     const val ocean = "Ocean"
@@ -85,6 +85,7 @@ object Constants {
      * _Most_ checks do compare to 0!
      */
     const val minimumMovementEpsilon = 0.05f  // 0.1f was used previously, too - here for global searches
+    const val aiPreferInquisitorOverMissionaryPressureDifference = 3000f
 
     const val defaultFontSize = 18
     const val headingFontSize = 24

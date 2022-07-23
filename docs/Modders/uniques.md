@@ -1139,6 +1139,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Cannot be intercepted"
 	Applicable to: Unit
 
+??? example  "Cannot intercept [mapUnitFilter] units"
+	Example: "Cannot intercept [Wounded] units"
+
+	Applicable to: Unit
+
 ??? example  "May capture killed [mapUnitFilter] units"
 	Example: "May capture killed [Wounded] units"
 

@@ -1,0 +1,7 @@
+Memory performance improvements
+
+HexaRealm is now default tileset
+
+Mod categories - By alexban011
+
+Replace "moveTo" in unit overview with "Moving"  - By itanasi

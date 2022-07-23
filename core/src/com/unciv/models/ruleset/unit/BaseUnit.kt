@@ -28,7 +28,7 @@ import kotlin.math.pow
  in contrast to MapUnit, which is a specific unit of a certain type that appears on the map */
 class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
-    var cost: Int = 0
+    override var cost: Int = 0
     override var hurryCostModifier: Int = 0
     var movement: Int = 0
     var strength: Int = 0

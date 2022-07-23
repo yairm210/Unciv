@@ -580,7 +580,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                     else civInfo.addNotification("[${offer.name}] to [$otherCivName] has ended", otherCivName, NotificationIcon.Trade)
 
                     civInfo.updateStatsForNextTurn() // if they were bringing us gold per turn
-                    civInfo.updateDetailedCivResources() // if they were giving us resources
+                    if (trade.theirOffers.union(trade.ourOffers) // if resources were involved
+                                .any { it.type == TradeType.Luxury_Resource || it.type == TradeType.Strategic_Resource })
+                        civInfo.updateDetailedCivResources()
                 }
             }
         }

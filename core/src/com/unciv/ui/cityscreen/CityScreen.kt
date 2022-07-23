@@ -13,6 +13,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.TileImprovement
+import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.ui.audio.CityAmbiencePlayer
@@ -31,7 +32,6 @@ import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.packIfNeeded
 import com.unciv.ui.utils.extensions.toTextButton
-import kotlin.collections.ArrayList
 import com.unciv.ui.worldscreen.WorldScreen
 
 class CityScreen(
@@ -208,13 +208,25 @@ class CityScreen(
     }
 
     private fun updateTileGroups() {
+        val cityUniqueCache = LocalUniqueCache()
         fun isExistingImprovementValuable(tileInfo: TileInfo, improvementToPlace: TileImprovement): Boolean {
             if (tileInfo.improvement == null) return false
             val civInfo = city.civInfo
-            val existingStats = tileInfo.getImprovementStats(tileInfo.getTileImprovement()!!, civInfo, city)
-            val replacingStats = tileInfo.getImprovementStats(improvementToPlace, civInfo, city)
+            val existingStats = tileInfo.getImprovementStats(
+                tileInfo.getTileImprovement()!!,
+                civInfo,
+                city,
+                cityUniqueCache
+            )
+            val replacingStats = tileInfo.getImprovementStats(
+                improvementToPlace,
+                civInfo,
+                city,
+                cityUniqueCache
+            )
             return Automation.rankStatsValue(existingStats, civInfo) > Automation.rankStatsValue(replacingStats, civInfo)
         }
+
         fun getPickImprovementColor(tileInfo: TileInfo): Pair<Color, Float> {
             val improvementToPlace = pickTileData!!.improvement
             return when {
