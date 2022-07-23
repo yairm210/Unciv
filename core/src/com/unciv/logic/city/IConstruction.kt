@@ -19,6 +19,7 @@ interface IConstruction : INamed {
 }
 
 interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
+    var cost: Int
     val hurryCostModifier: Int
     var requiredTech: String?
 

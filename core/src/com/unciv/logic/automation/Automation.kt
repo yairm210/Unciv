@@ -137,7 +137,7 @@ object Automation {
         val currentChoice = city.cityConstructions.getCurrentConstruction()
         if (currentChoice is BaseUnit && !currentChoice.isCivilian()) return city.cityConstructions.currentConstructionFromQueue
 
-        var militaryUnits = city.getRuleset().units.values.asSequence()
+        var militaryUnits = city.getRuleset().units.values
             .filter { !it.isCivilian() }
             .filter { allowSpendingResource(city.civInfo, it) }
 
@@ -154,14 +154,14 @@ object Automation {
         val carryingOnlyUnits = militaryUnits.filter {
             it.hasUnique(UniqueType.CarryAirUnits)
                 && it.hasUnique(UniqueType.CannotAttack)
-        }.toList()
+        }
 
         for (unit in carryingOnlyUnits)
             if (providesUnneededCarryingSlots(unit, city.civInfo))
                 militaryUnits = militaryUnits.filterNot { it == unit }
 
         // Only now do we filter out the constructable units because that's a heavier check
-        militaryUnits = militaryUnits.filter { it.isBuildable(city.cityConstructions) }.toList().asSequence() // gather once because we have a .any afterwards
+        militaryUnits = militaryUnits.filter { it.isBuildable(city.cityConstructions) } // gather once because we have a .any afterwards
 
         val chosenUnit: BaseUnit
         if (!city.civInfo.isAtWar()
@@ -183,7 +183,7 @@ object Automation {
             }
             // Check the maximum force evaluation for the shortlist so we can prune useless ones (ie scouts)
             val bestForce = bestUnitsForType.maxOf { it.getForceEvaluation() }
-            chosenUnit = bestUnitsForType.filter { it.uniqueTo != null || it.getForceEvaluation() > bestForce / 3 }.toList().random()
+            chosenUnit = bestUnitsForType.filter { it.uniqueTo != null || it.getForceEvaluation() > bestForce / 3 }.random()
         }
         return chosenUnit.name
     }
@@ -387,7 +387,12 @@ object Automation {
 
         // Improvements are good: less points
         if (tile.improvement != null &&
-            tile.getImprovementStats(tile.getTileImprovement()!!, cityInfo.civInfo, cityInfo).values.sum() > 0f
+            tile.getImprovementStats(
+                tile.getTileImprovement()!!,
+                cityInfo.civInfo,
+                cityInfo,
+                localUniqueCache
+            ).values.sum() > 0f
         ) score -= 5
 
         if (tile.naturalWonder != null) score -= 105

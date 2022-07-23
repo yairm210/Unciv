@@ -538,7 +538,9 @@ class TileMap : IsPartOfGameInfoSerialization {
 
         // And update civ stats, since the new unit changes both unit upkeep and resource consumption
         civInfo.updateStatsForNextTurn()
-        civInfo.updateDetailedCivResources()
+
+        if (unit.baseUnit.getResourceRequirements().isNotEmpty())
+            civInfo.updateDetailedCivResources()
 
         return unit
     }

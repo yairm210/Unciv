@@ -233,15 +233,12 @@ class CityInfoReligionManager : IsPartOfGameInfoSerialization {
             addPressure(religionThisIsTheHolyCityOf!!,5 * pressureFromAdjacentCities, false)
         }
 
-        val allCitiesWithinSpreadRange =
-            cityInfo.civInfo.gameInfo.getCities()
-                .filter {
-                    it != cityInfo
-                    && it.getCenterTile().aerialDistanceTo(cityInfo.getCenterTile()) <= it.religion.getSpreadRange()
-                }
-        for (city in allCitiesWithinSpreadRange) {
+        for (city in cityInfo.civInfo.gameInfo.getCities()) {
+            if (city == cityInfo) continue
             val majorityReligionOfCity = city.religion.getMajorityReligionName() ?: continue
             if (!cityInfo.civInfo.gameInfo.religions[majorityReligionOfCity]!!.isMajorReligion()) continue
+            if (city.getCenterTile().aerialDistanceTo(cityInfo.getCenterTile())
+                    > city.religion.getSpreadRange()) continue
             addPressure(majorityReligionOfCity, city.religion.pressureAmountToAdjacentCities(cityInfo), false)
         }
 
