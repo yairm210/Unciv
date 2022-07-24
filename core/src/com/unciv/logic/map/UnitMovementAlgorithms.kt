@@ -9,7 +9,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 
 class UnitMovementAlgorithms(val unit: MapUnit) {
 
-    private val tilesWithinTurnCache = TilesWithinTurnCache(unit)
+    private val pathfindingCache = PathfindingCache(unit)
 
     // This function is called ALL THE TIME and should be as time-optimal as possible!
     private fun getMovementCostBetweenAdjacentTiles(
@@ -229,13 +229,14 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
                         continue
                     if (reachableTile == destination) {
                         distanceToDestination[tileToCheck] = distanceToTilesThisTurn[reachableTile]!!.totalDistance
-                        break
+                        pathfindingCache.setCanReach(reachableTile)
                     } else {
                         if (movementTreeParents.containsKey(reachableTile)) continue // We cannot be faster than anything existing...
                         if (!isUnknownTileWeShouldAssumeToBePassable(reachableTile) &&
                                  !canMoveTo(reachableTile)) continue // This is a tile that we can't actually enter - either an intermediary tile containing our unit, or an enemy unit/city
                         movementTreeParents[reachableTile] = tileToCheck
                         newTilesToCheck.add(reachableTile)
+                        pathfindingCache.setCanReach(reachableTile)
                     }
                 }
             }
@@ -312,6 +313,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
     fun canReach(destination: TileInfo): Boolean {
         if (unit.baseUnit.movesLikeAirUnits() || unit.isPreparingParadrop())
             return canReachInCurrentTurn(destination)
+        if (pathfindingCache.getCanReach(destination)) return true
         return getShortestPath(destination).any()
     }
 
@@ -699,12 +701,12 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
 
 
     fun getDistanceToTiles(considerZoneOfControl: Boolean = true): PathsToTilesWithinTurn {
-        val cacheResults = tilesWithinTurnCache.get(considerZoneOfControl)
+        val cacheResults = pathfindingCache.getDistanceToTiles(considerZoneOfControl)
         if (cacheResults != null) {
             return cacheResults
         }
         val toReturn = getDistanceToTilesWithinTurn(unit.currentTile.position, unit.currentMovement, considerZoneOfControl)
-        return tilesWithinTurnCache.set(considerZoneOfControl, toReturn)
+        return pathfindingCache.setDistanceToTiles(considerZoneOfControl, toReturn)
     }
 
     fun getAerialPathsToCities(): HashMap<TileInfo, ArrayList<TileInfo>> {
@@ -762,7 +764,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         return bfs.getReachedTiles()
     }
 
-    fun clearTilesWithinTurnCache() = tilesWithinTurnCache.clear()
+    fun clearPathfindingCache() = pathfindingCache.clear()
 
 }
 
@@ -772,21 +774,31 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
  * being able to skip redundant calculations helps out over a long game (especially with high level
  * AI or a big map)
  */
-class TilesWithinTurnCache(private val unit: MapUnit) {
+class PathfindingCache(private val unit: MapUnit) {
+    private val canReach = hashSetOf<TileInfo>()
     private val cache = mutableMapOf<Boolean, PathsToTilesWithinTurn>()
     private var movement = -1f
     private var currentTile: TileInfo? = null
 
     private fun isValid(): Boolean = (movement == unit.currentMovement) && (unit.getTile() == currentTile)
 
-    fun get(zoneOfControl: Boolean): PathsToTilesWithinTurn? {
+    fun getCanReach(tile: TileInfo): Boolean {
+        if (unit.civInfo.isPlayerCivilization()) return false // don't use cache for human movement
+        return canReach.contains(tile)
+    }
+    fun setCanReach(tile: TileInfo) {
+        if (unit.civInfo.isPlayerCivilization()) return // don't use cache for human movement
+        canReach.add(tile)
+    }
+
+    fun getDistanceToTiles(zoneOfControl: Boolean): PathsToTilesWithinTurn? {
         if (unit.civInfo.isPlayerCivilization()) return null
         if (isValid())
             return cache[zoneOfControl]
         return null
     }
 
-    fun set(zoneOfControl: Boolean, paths: PathsToTilesWithinTurn): PathsToTilesWithinTurn {
+    fun setDistanceToTiles(zoneOfControl: Boolean, paths: PathsToTilesWithinTurn): PathsToTilesWithinTurn {
         if (unit.civInfo.isPlayerCivilization()) return paths // don't cache human movement
         if (!isValid()) {
             movement = unit.currentMovement
@@ -797,7 +809,10 @@ class TilesWithinTurnCache(private val unit: MapUnit) {
         return paths
     }
 
-    fun clear() = cache.clear()
+    fun clear() {
+        cache.clear()
+        canReach.clear()
+    }
 }
 
 class PathsToTilesWithinTurn : LinkedHashMap<TileInfo, UnitMovementAlgorithms.ParentTileAndTotalDistance>() {
