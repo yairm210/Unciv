@@ -362,7 +362,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
 
     fun getHolyCity(): CityInfo? {
         if (religion == null) return null
-        return civInfo.gameInfo.getCities().firstOrNull { !it.religion.isBlockedHolyCity && it.religion.religionThisIsTheHolyCityOf == religion!!.name }
+        return civInfo.gameInfo.getCities().firstOrNull { it.isHolyCityOf(religion!!.name) }
     }
 }
 
