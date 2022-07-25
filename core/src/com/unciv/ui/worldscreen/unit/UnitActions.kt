@@ -2,8 +2,8 @@ package com.unciv.ui.worldscreen.unit
 
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.automation.UnitAutomation
-import com.unciv.logic.automation.WorkerAutomation
+import com.unciv.logic.automation.unit.UnitAutomation
+import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.NotificationIcon
@@ -643,8 +643,8 @@ object UnitActions {
             if (!unit.abilityUsesLeft.containsKey(action)) continue
             if (unit.abilityUsesLeft[action]!! <= 0) continue
             when (action) {
-                Constants.spreadReligionAbilityCount -> addSpreadReligionActions(unit, actionList, city)
-                Constants.removeHeresyAbilityCount -> addRemoveHeresyActions(unit, actionList, city)
+                Constants.spreadReligion -> addSpreadReligionActions(unit, actionList, city)
+                Constants.removeHeresy -> addRemoveHeresyActions(unit, actionList, city)
             }
         }
     }
@@ -657,15 +657,7 @@ object UnitActions {
     }
 
     fun addSpreadReligionActions(unit: MapUnit, actionList: ArrayList<UnitAction>, city: CityInfo) {
-        if (!unit.civInfo.gameInfo.isReligionEnabled()) return
-        val blockedByInquisitor =
-            city.getCenterTile()
-                .getTilesInDistance(1)
-                .flatMap { it.getUnits() }
-                .any {
-                    it.hasUnique(UniqueType.PreventSpreadingReligion)
-                    && it.religion != unit.religion
-                }
+        if (!unit.civInfo.religionManager.maySpreadReligionAtAll(unit)) return
         actionList += UnitAction(UnitActionType.SpreadReligion,
             title = "Spread [${unit.getReligionDisplayName()!!}]",
             action = {
@@ -677,8 +669,8 @@ object UnitActions {
                 if (unit.hasUnique(UniqueType.RemoveOtherReligions))
                     city.religion.removeAllPressuresExceptFor(unit.religion!!)
                 unit.currentMovement = 0f
-                useActionWithLimitedUses(unit, Constants.spreadReligionAbilityCount)
-            }.takeIf { unit.currentMovement > 0 && !blockedByInquisitor }
+                useActionWithLimitedUses(unit, Constants.spreadReligion)
+            }.takeIf { unit.currentMovement > 0 && unit.civInfo.religionManager.maySpreadReligionNow(unit) }
         )
     }
 
@@ -693,7 +685,7 @@ object UnitActions {
             action = {
                 city.religion.removeAllPressuresExceptFor(unit.religion!!)
                 unit.currentMovement = 0f
-                useActionWithLimitedUses(unit, Constants.removeHeresyAbilityCount)
+                useActionWithLimitedUses(unit, Constants.removeHeresy)
             }.takeIf { unit.currentMovement > 0f }
         )
     }

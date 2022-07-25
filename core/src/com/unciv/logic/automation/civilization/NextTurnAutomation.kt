@@ -1,6 +1,9 @@
-package com.unciv.logic.automation
+package com.unciv.logic.automation.civilization
 
 import com.unciv.Constants
+import com.unciv.logic.automation.Automation
+import com.unciv.logic.automation.ThreatLevel
+import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.MapUnitCombatant
@@ -54,10 +57,13 @@ object NextTurnAutomation {
         respondToTradeRequests(civInfo)
 
         if (civInfo.isMajorCiv()) {
-            if (!civInfo.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
+            if (!civInfo.gameInfo.ruleSet.modOptions.hasUnique(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
                 declareWar(civInfo)
                 offerPeaceTreaty(civInfo)
 //            offerDeclarationOfFriendship(civInfo)
+            }
+            if (civInfo.gameInfo.isReligionEnabled()) {
+                ReligionAutomation.spendFaithOnReligion(civInfo)
             }
             offerResearchAgreement(civInfo)
             exchangeLuxuries(civInfo)
@@ -590,7 +596,7 @@ object NextTurnAutomation {
                     .flatMap { religion -> religion.getBeliefs(beliefType) }.contains(it.value)
             }
             .map { it.value }
-            .maxByOrNull { ChooseBeliefsAutomation.rateBelief(civInfo, it) }
+            .maxByOrNull { ReligionAutomation.rateBelief(civInfo, it) }
     }
 
     private fun potentialLuxuryTrades(civInfo: CivilizationInfo, otherCivInfo: CivilizationInfo): ArrayList<Trade> {

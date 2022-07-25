@@ -1,9 +1,12 @@
 package com.unciv.ui.images
 
+import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.ui.tilegroups.TileSetStrings
+
 /**
  * Metaprogrammy class for short-circuitingly finding the first existing of multiple image options according to [ImageGetter.imageExists].
  *
- * Has a [tryImage] method that can be chain-called with functions which return candidate image paths. The first function to return a valid image path stops subsequently chained calls from having any effect, and its result is saved to be retrieved by the [getPath] and [getImage] methods at the end of the candidate chain. Has a [forceImage] method that can be used in place of [tryImage] to force a candidate image path to be treated as valid.
+ * Has a [tryImage] method that can be chain-called with functions which return candidate image paths. The first function to return a valid image path stops subsequently chained calls from having any effect, and its result is saved to be retrieved by the [getPath] and [getImage] methods at the end of the candidate chain.
  *
  * Binds candidate functions to a [scope] instance provided to primary constructor, for syntactic convenience. Bind to [Unit] when not needed.
  *
@@ -22,7 +25,6 @@ class ImageAttempter<out T: Any>(val scope: T) {
      * Chainable method that uses [ImageGetter.imageExists] to check whether an image exists. [getPath] and [getImage] will return either the first valid image passed here, or the last invalid image if none were valid. Calls after the first valid one are short-circuited.
      *
      * @see ImageAttempter
-     * @see forceImage
      * @param fileName Function that returns the filename of the image to check. Bound to [scope]. Will not be run if a valid image has already been found. May return `null` to skip this candidate entirely.
      * @return This [ImageAttempter], for chaining.
      */
@@ -48,23 +50,26 @@ class ImageAttempter<out T: Any>(val scope: T) {
         } // *Could* skip calls/break loop if already imageFound. But that means needing an internal guarantee/spec of tryImage being same as no-op when imageFound.
         return this
     }
-    /**
-     * Chainable method that forces an image candidate chain to be terminated. Passing a function here is exactly like passing a function to [tryImage] and pretending [ImageGetter.imageExists] always returns `true`.
-     *
-     * @see tryImage
-     * @param fileName Function that returns the filename of the image to check. Bound to [scope]. Will not be run if a valid image has already been found. When returning a string, causes the candidate chain to be terminated, all subsequent calls to [tryImage] to be short-circuited, and [getImage] and [getPath] to return the resulting image. May return `null` to skip this candidate entirely.
-     * @return This [ImageAttempter], for chaining.
-     */
-    fun forceImage(fileName: T.() -> String?): ImageAttempter<T> {
-        if (!imageFound) {
-            val imagePath = scope.run(fileName)
-            if (imagePath != null) {
-                lastTriedFileName = imagePath
-                imageFound = true
+
+    /** Try to load era-specific image variants
+     * [civInfo]: the civ who owns the tile or unit
+     * [locationToCheck]: the beginning of the filename to check
+     * [style]: an optional string to load a civ- or style-specific sprite
+     * */
+     fun tryEraImage(civInfo: CivilizationInfo, locationToCheck: String, style: String?, tileSetStrings:TileSetStrings): ImageAttempter<T> {
+        return tryImages(
+            (civInfo.getEraNumber() downTo 0).asSequence().map {
+                {
+                    val era = civInfo.gameInfo.ruleSet.eras.keys.elementAt(it)
+                    if (style != null)
+                        tileSetStrings.getString(locationToCheck, tileSetStrings.tag, style, tileSetStrings.tag, era)
+                    else
+                        tileSetStrings.getString(locationToCheck, tileSetStrings.tag, era)
+                }
             }
-        }
-        return this
+        )
     }
+
     /** @return The first valid image filename given to [tryImage] if any, or the last tried image filename otherwise. */
     fun getPath() = lastTriedFileName
     /** @return The first valid image filename given to [tryImage] if any, or `null` if no valid image was tried. */

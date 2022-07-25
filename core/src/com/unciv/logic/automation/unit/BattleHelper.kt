@@ -1,4 +1,4 @@
-package com.unciv.logic.automation
+package com.unciv.logic.automation.unit
 
 import com.unciv.Constants
 import com.unciv.logic.battle.Battle

@@ -3,7 +3,7 @@ package com.unciv.logic.city
 import com.unciv.UncivGame
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.automation.Automation
-import com.unciv.logic.automation.ConstructionAutomation
+import com.unciv.logic.automation.city.ConstructionAutomation
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
@@ -496,7 +496,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
     /**
-     *  Purchase a construction for gold
+     *  Purchase a construction for gold (or another stat)
      *  called from NextTurnAutomation and the City UI
      *  Build / place the new item, deduct cost, and maintain queue.
      *
