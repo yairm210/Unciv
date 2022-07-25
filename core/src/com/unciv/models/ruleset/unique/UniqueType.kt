@@ -582,6 +582,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     PillageYieldRandom("Pillaging this improvement yields approximately [stats]", UniqueTarget.Improvement),
     PillageYieldFixed("Pillaging this improvement yields [stats]", UniqueTarget.Improvement),
     Irremovable("Irremovable", UniqueTarget.Improvement),
+    AutomatedWorkersWillReplace("Will be replaced by automated workers", UniqueTarget.Improvement),
     //endregion
 
     ///////////////////////////////////////// region CONDITIONALS /////////////////////////////////////////
