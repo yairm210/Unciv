@@ -647,16 +647,15 @@ class WorldMapHolder(
 
         for (tile in tilesInMoveRange) {
             for (tileToColor in tileGroups[tile]!!) {
-                if (isAirUnit)
-                    if (!unit.isPreparingAirSweep()) {
-                        if (tile.aerialDistanceTo(unit.getTile()) <= unit.getRange()) {
-                            // The tile is within attack range
-                            tileToColor.showHighlight(Color.RED, 0.3f)
-                        } else {
-                            // The tile is within move range
-                            tileToColor.showHighlight(Color.BLUE, 0.3f)
-                        }
+                if (isAirUnit && !unit.isPreparingAirSweep()) {
+                    if (tile.aerialDistanceTo(unit.getTile()) <= unit.getRange()) {
+                        // The tile is within attack range
+                        tileToColor.showHighlight(Color.RED, 0.3f)
+                    } else {
+                        // The tile is within move range
+                        tileToColor.showHighlight(Color.BLUE, 0.3f)
                     }
+                }
                 if (unit.movement.canMoveTo(tile) ||
                         unit.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !unit.baseUnit.movesLikeAirUnits())
                     tileToColor.showHighlight(moveTileOverlayColor,

@@ -21,7 +21,6 @@ interface ICombatant {
     /** Implements [UniqueParameterType.CombatantFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CombatantFilter] */
     fun matchesCategory(category: String): Boolean
     fun getAttackSound(): UncivSound
-    fun getInterceptDamageBonus(): Int
 
     fun isMelee(): Boolean = !isRanged()
     fun isRanged(): Boolean {

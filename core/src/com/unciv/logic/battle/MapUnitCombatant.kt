@@ -57,7 +57,4 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
         if (conditionalState == null) unit.hasUnique(uniqueType)
         else unit.hasUnique(uniqueType, conditionalState)
 
-    override fun getInterceptDamageBonus(): Int {
-        return unit.interceptDamagePercentBonus()
-    }
 }
