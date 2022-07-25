@@ -19,7 +19,7 @@ Creating and editing mods from your phone is NOT RECOMMENDED - it's *much easier
 
 ## Audiovisual Mods
 
-I addition to changing the rules - or even without doing so, mods can override existing graphics or sounds, or add music tracks. The game also has the ability to display graphics that are not included in the base game at all, such as leader portrait or wonder splash images, that must be provided by mods. For details, see [Audiovisual Mods](Images-and-Audio.md).
+In addition to changing the rules - or even without doing so, mods can override existing graphics or sounds, or add music tracks. The game also has the ability to display graphics that are not included in the base game at all, such as leader portrait or wonder splash images, that must be provided by mods. For details, see [Audiovisual Mods](Images-and-Audio.md).
 
 Custom tilesets are closely related, see [Creating a custom tileset](Creating-a-custom-tileset.md).
 
