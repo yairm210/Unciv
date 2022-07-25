@@ -848,7 +848,7 @@ object Battle {
         // first priority, only Air Units
         if (potentialInterceptors.any { it.baseUnit.isAirUnit() })
             potentialInterceptors = potentialInterceptors.filter { it.baseUnit.isAirUnit() }
-        println("${potentialInterceptors.toList().size}")
+
         // Pick highest chance interceptor
         for (interceptor in potentialInterceptors
             .shuffled()  // randomize Civ
