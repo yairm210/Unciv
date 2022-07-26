@@ -360,19 +360,19 @@
 	},
 	{
 		"name": "Dogfighting I",
-		"uniques": ["[+33]% Strength bonus when performing air sweep"],
+		"uniques": ["[+33]% Strength when performing Air Sweep"],
 		"unitTypes": ["Fighter"]
 	},
 	{
 		"name": "Dogfighting II",
 		"prerequisites": ["Dogfighting I"],
-		"uniques": ["[+33]% Strength bonus when performing air sweep"],
+		"uniques": ["[+33]% Strength when performing Air Sweep"],
 		"unitTypes": ["Fighter"]
 	},
 	{
 		"name": "Dogfighting III",
 		"prerequisites": ["Dogfighting II"],
-		"uniques": ["[+34]% Strength bonus when performing air sweep"],
+		"uniques": ["[+34]% Strength when performing Air Sweep"],
 		"unitTypes": ["Fighter"]
 	},
 	{

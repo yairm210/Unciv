@@ -818,11 +818,13 @@ object Battle {
 
     // Should draw an Interception if available on the tile from any Civ
     // Land Units deal 0 damage, and no XP for either party
-    // Air Interceptors do Air Combat as if Melee but using Ranged Strength. 5XP to both
+    // Air Interceptors do Air Combat as if Melee (mutual damage) but using Ranged Strength. 5XP to both
     // But does not use the Interception mechanic bonuses/promotions
     // Counts as an Attack for both units
     // Will always draw out an Interceptor's attack (they cannot miss)
     // This means the combat against Air Units will execute and always deal damage
+    // Random Civ at War will Intercept, prioritizing Air Units,
+    // sorted by highest Intercept chance (same as regular Intercept)
     fun airSweep(attacker: MapUnitCombatant, attackedTile: TileInfo) {
         // Air Sweep counts as an attack, even if nothing else happens
         attacker.unit.attacksThisTurn++
