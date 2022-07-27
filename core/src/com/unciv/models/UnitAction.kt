@@ -101,6 +101,8 @@ enum class UnitActionType(
         { ImageGetter.getImage("OtherIcons/Pillage") }, 'p'),
     Paradrop("Paradrop",
         { ImageGetter.getUnitIcon("Paratrooper") }, 'p'),
+    AirSweep("Air Sweep",
+        { ImageGetter.getImage("OtherIcons/AirSweep") }, 'a'),
     SetUp("Set up",
         { ImageGetter.getUnitIcon("Catapult") }, 't', UncivSound.Setup),
     FoundCity("Found city",

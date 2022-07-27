@@ -440,6 +440,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun isAutomated() = action == UnitActionType.Automate.value
     fun isExploring() = action == UnitActionType.Explore.value
     fun isPreparingParadrop() = action == UnitActionType.Paradrop.value
+    fun isPreparingAirSweep() = action == UnitActionType.AirSweep.value
     fun isSetUpForSiege() = action == UnitActionType.SetUp.value
 
     /** For display in Unit Overview */
@@ -858,7 +859,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 action = null // wake up when healed
             }
 
-        if (isPreparingParadrop())
+        if (isPreparingParadrop() || isPreparingAirSweep())
             action = null
 
         if (hasUnique(UniqueType.ReligiousUnit)
@@ -1302,7 +1303,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun actionsOnDeselect() {
         showAdditionalActions = false
-        if (isPreparingParadrop()) action = null
+        if (isPreparingParadrop() || isPreparingAirSweep()) action = null
     }
 
     fun getForceEvaluation(): Int {

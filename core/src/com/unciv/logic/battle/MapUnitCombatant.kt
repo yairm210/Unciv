@@ -56,4 +56,5 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     fun hasUnique(uniqueType: UniqueType, conditionalState: StateForConditionals? = null): Boolean =
         if (conditionalState == null) unit.hasUnique(uniqueType)
         else unit.hasUnique(uniqueType, conditionalState)
+
 }

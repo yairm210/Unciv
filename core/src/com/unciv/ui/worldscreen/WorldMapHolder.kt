@@ -190,7 +190,7 @@ class WorldMapHolder(
                             it.movement.canMoveTo(tileInfo) ||
                                     it.movement.isUnknownTileWeShouldAssumeToBePassable(tileInfo) && !it.baseUnit.movesLikeAirUnits()
                         }
-                )) {
+                ) && previousSelectedUnits.any { !it.isPreparingAirSweep()}) {
             if (previousSelectedUnitIsSwapping) {
                 addTileOverlaysWithUnitSwapping(previousSelectedUnits.first(), tileInfo)
             }
@@ -647,7 +647,7 @@ class WorldMapHolder(
 
         for (tile in tilesInMoveRange) {
             for (tileToColor in tileGroups[tile]!!) {
-                if (isAirUnit)
+                if (isAirUnit && !unit.isPreparingAirSweep()) {
                     if (tile.aerialDistanceTo(unit.getTile()) <= unit.getRange()) {
                         // The tile is within attack range
                         tileToColor.showHighlight(Color.RED, 0.3f)
@@ -655,6 +655,7 @@ class WorldMapHolder(
                         // The tile is within move range
                         tileToColor.showHighlight(Color.BLUE, 0.3f)
                     }
+                }
                 if (unit.movement.canMoveTo(tile) ||
                         unit.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !unit.baseUnit.movesLikeAirUnits())
                     tileToColor.showHighlight(moveTileOverlayColor,

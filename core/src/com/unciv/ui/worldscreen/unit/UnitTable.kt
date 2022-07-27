@@ -255,6 +255,8 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
         // Do not select a different unit or city center if we click on it to swap our current unit to it
         if (selectedUnitIsSwapping && selectedUnit != null && selectedUnit!!.movement.canUnitSwapTo(selectedTile)) return
+        // Do no select a different unit while in Air Sweep mode
+        if (selectedUnit != null && selectedUnit!!.isPreparingAirSweep()) return
 
         when {
             forceSelectUnit != null ->

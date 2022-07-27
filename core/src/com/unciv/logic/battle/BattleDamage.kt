@@ -122,6 +122,9 @@ object BattleDamage {
             if (attacker.unit.type.isWaterUnit() && attacker.isMelee() && !defender.getTile().isWater
                     && !attacker.unit.hasUnique(UniqueType.AttackAcrossCoast) && !defender.isCity())
                 modifiers["Landing"] = -50
+            // Air unit attacking with Air Sweep
+            if (attacker.unit.isPreparingAirSweep())
+                modifiers.add(getAirSweepAttackModifiers(attacker))
 
             if (attacker.isMelee()) {
                 val numberOfAttackersSurroundingDefender = defender.getTile().neighbors.count {
@@ -150,6 +153,20 @@ object BattleDamage {
                 }
             }
 
+        }
+
+        return modifiers
+    }
+
+    fun getAirSweepAttackModifiers(
+        attacker: ICombatant
+    ): Counter<String> {
+        val modifiers = Counter<String>()
+
+        if (attacker is MapUnitCombatant) {
+            for (unique in attacker.unit.getUniques().filter{it.isOfType(UniqueType.StrengthWhenAirsweep)}) {
+                modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
+            }
         }
 
         return modifiers
