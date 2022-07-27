@@ -1,3 +1,33 @@
+## 4.1.22
+
+4.1.21-patch2
+
+Quick win for  - check religion spread range for cities only after checking it's with a majority major religion
+
+Quick win for  - only update resources after trade/unit if resources are relevant
+
+Quick win for  - when creating a unit, only update civ resources if the unit has resource requirements
+
+Disabled autosave when resizing worldScreen
+
+Resolved  - Fixed Civilopedia crash on terrains
+
+Allows inquisitors to block holy cities  - By xlenstra
+
+Add Air Sweep  - By itanasi
+
+By SimonCeder:
+- change wording
+- workers will replace city ruins
+- cover more cases
+- avoid potential marriage bug
+
+Fix games not being loadable  - By Azzurite
+
+Construction automation optimization  - By OptimizedForDensity
+
+Allow HexaRealm to render jungles on hills  - By ArchDuque-Pancake
+
 ## 4.1.21
 
 Memory performance improvements
