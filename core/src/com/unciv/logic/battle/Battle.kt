@@ -306,11 +306,7 @@ object Battle {
         return true
     }
 
-    private class DamageDealt(attackerDealt: Int, defenderDealt: Int)
-    {
-        val attackerDealt = attackerDealt
-        val defenderDealt = defenderDealt
-    }
+    private data class DamageDealt(val attackerDealt: Int, val defenderDealt: Int) {}
 
     private fun takeDamage(attacker: ICombatant, defender: ICombatant): DamageDealt {
         var potentialDamageToDefender = BattleDamage.calculateDamageToDefender(attacker, defender)
@@ -869,9 +865,9 @@ object Battle {
                 interceptor.currentTile.position,
                 attacker.unit.currentTile.position
             )
-            val locationsAttackerUnk =
+            val locationsAttackerUnknown =
                     LocationAction(interceptor.currentTile.position, attackedTile.position)
-            val locationsInterceptorUnk =
+            val locationsInterceptorUnknown =
                     LocationAction(attackedTile.position, attacker.unit.currentTile.position)
 
             interceptor.attacksThisTurn++  // even if you miss, you took the shot
@@ -913,7 +909,7 @@ object Battle {
                     val attackerText =
                             "Our [$attackerName] (${damageDealt.attackerDealt}) was destroyed by an unknown interceptor"
                     attacker.getCivInfo().addNotification(
-                        attackerText, locationsInterceptorUnk,
+                        attackerText, locationsInterceptorUnknown,
                         attackerName, NotificationIcon.War, NotificationIcon.Question
                     )
                 }
@@ -941,7 +937,7 @@ object Battle {
                     val interceptorText =
                             "Our [$interceptorName] (${damageDealt.defenderDealt}) intercepted and was destroyed by an unknown enemy"
                     interceptingCiv.addNotification(
-                        interceptorText, locationsAttackerUnk,
+                        interceptorText, locationsAttackerUnknown,
                         interceptorName, NotificationIcon.War, NotificationIcon.Question
                     )
                 }
