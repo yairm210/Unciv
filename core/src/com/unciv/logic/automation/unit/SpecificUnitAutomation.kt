@@ -331,17 +331,19 @@ object SpecificUnitAutomation {
     }
 
     fun automateInquisitor(unit: MapUnit) {
-        if (unit.religion != unit.civInfo.religionManager.religion?.name || unit.religion == null)
+        val civReligion = unit.civInfo.religionManager.religion
+
+        if (unit.religion != civReligion?.name || unit.religion == null)
             return unit.disband() // No need to keep a unit we can't use, as it only blocks religion spreads of religions other that its own
 
         val holyCity = unit.civInfo.religionManager.getHolyCity()
         val cityToConvert = determineBestInquisitorCityToConvert(unit) // Also returns null if the inquisitor can't convert cities
         val pressureDeficit =
             if (cityToConvert == null) 0
-            else cityToConvert.religion.getPressureDeficit(unit.civInfo.religionManager.religion?.name)
+            else cityToConvert.religion.getPressureDeficit(civReligion?.name)
 
         val citiesToProtect = unit.civInfo.cities.asSequence()
-            .filter { it.religion.getMajorityReligion() == unit.civInfo.religionManager.religion }
+            .filter { it.religion.getMajorityReligion() == civReligion }
             // We only look at cities that are not currently protected or are protected by us
             .filter { !it.religion.isProtectedByInquisitor() || unit.getTile() in it.getCenterTile().getTilesInDistance(1) }
 
@@ -352,8 +354,10 @@ object SpecificUnitAutomation {
 
         destination = when {
             cityToConvert != null
-            && (cityToConvert == holyCity || pressureDeficit > Constants.aiPreferInquisitorOverMissionaryPressureDifference)
-            && unit.canDoReligiousAction(Constants.removeHeresy) -> {
+            && (cityToConvert == holyCity
+                || pressureDeficit > Constants.aiPreferInquisitorOverMissionaryPressureDifference
+                || cityToConvert.religion.isBlockedHolyCity && cityToConvert.religion.religionThisIsTheHolyCityOf == civReligion?.name
+            ) && unit.canDoReligiousAction(Constants.removeHeresy) -> {
                 cityToConvert.getCenterTile()
             }
             cityToProtect != null && unit.hasUnique(UniqueType.PreventSpreadingReligion) -> {
@@ -391,6 +395,10 @@ object SpecificUnitAutomation {
         val holyCity = unit.civInfo.religionManager.getHolyCity()
         if (holyCity != null && holyCity.religion.getMajorityReligion() != unit.civInfo.religionManager.religion!!)
             return holyCity
+
+        val blockedHolyCity = unit.civInfo.cities.firstOrNull { it.religion.isBlockedHolyCity && it.religion.religionThisIsTheHolyCityOf == unit.religion }
+        if (blockedHolyCity != null)
+            return blockedHolyCity
 
         return unit.civInfo.cities.asSequence()
             .filter { it.religion.getMajorityReligion() != null }

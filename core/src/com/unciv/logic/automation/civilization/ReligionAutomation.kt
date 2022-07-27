@@ -127,7 +127,7 @@ object ReligionAutomation {
         val citiesWithBonusCharges = validCitiesToBuy.filter { city ->
             city.getLocalMatchingUniques(UniqueType.UnitStartingActions).filter { it.params[2] == Constants.spreadReligion }.any()
         }
-        val holyCity = validCitiesToBuy.firstOrNull { it.religion.religionThisIsTheHolyCityOf == civInfo.religionManager.religion!!.name }
+        val holyCity = validCitiesToBuy.firstOrNull { it.isHolyCityOf(civInfo.religionManager.religion!!.name) }
 
         val cityToBuyMissionary = when {
             citiesWithBonusCharges.any() -> citiesWithBonusCharges.first()
