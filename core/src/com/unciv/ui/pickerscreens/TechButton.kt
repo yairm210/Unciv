@@ -10,7 +10,13 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.extensions.addBorder
+import com.unciv.ui.utils.extensions.brighten
+import com.unciv.ui.utils.extensions.center
+import com.unciv.ui.utils.extensions.darken
+import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.ui.utils.extensions.toLabel
 
 class TechButton(techName:String, private val techManager: TechManager, isWorldScreen: Boolean = true) : Table(BaseScreen.skin) {
     val text = "".toLabel().apply { setAlignment(Align.center) }
@@ -81,7 +87,7 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
 
         for (improvement in ruleset.tileImprovements.values.asSequence()
             .filter {
-                it.techRequired == techName 
+                it.techRequired == techName
                 || it.uniqueObjects.any { u -> u.allParams.contains(techName) }
             }
             .filter { it.uniqueTo == null || it.uniqueTo == civName }

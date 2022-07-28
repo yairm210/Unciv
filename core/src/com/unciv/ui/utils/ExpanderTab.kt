@@ -10,10 +10,12 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
 
 /**
  * A widget with a header that when clicked shows/hides a sub-Table.
- * 
+ *
  * @param title The header text, automatically translated.
  * @param fontSize Size applied to header text (only)
  * @param icon Optional icon - please use [Image][com.badlogic.gdx.scenes.scene2d.ui.Image] or [IconCircleGroup]
@@ -21,7 +23,7 @@ import com.unciv.ui.images.ImageGetter
  * @param headerPad Default padding for the header Table.
  * @param expanderWidth If set initializes header width
  * @param persistenceID If specified, the ExpanderTab will remember its open/closed state for the duration of one app run
- * @param onChange If specified, this will be called after the visual change for a change in [isOpen] completes (e.g. to react to changed size) 
+ * @param onChange If specified, this will be called after the visual change for a change in [isOpen] completes (e.g. to react to changed size)
  * @param initContent Optional lambda with [innerTable] as parameter, to help initialize content.
  */
 class ExpanderTab(

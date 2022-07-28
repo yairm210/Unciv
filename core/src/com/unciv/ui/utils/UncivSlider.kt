@@ -5,29 +5,39 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.scenes.scene2d.*
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.EventListener
+import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.ui.Container
+import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.badlogic.gdx.scenes.scene2d.ui.Slider
+import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Timer
 import com.unciv.Constants
 import com.unciv.models.UncivSound
-import com.unciv.ui.audio.Sounds
+import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.images.IconCircleGroup
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.ui.utils.extensions.toLabel
 import kotlin.math.abs
 import kotlin.math.sign
 
 /**
  * Modified Gdx [Slider]
- * 
+ *
  * Has +/- buttons at the end for easier single steps
  * Shows a timed tip with the actual value every time it changes
  * Disables listeners of any ScrollPanes this is nested in while dragging
- * 
+ *
  * Note: No attempt is made to distinguish sources of value changes, so the initial setting
  * of the value when a screen is initialized will also trigger the 'tip'. This is intentional.
- * 
+ *
  * @param min           Initializes [Slider.min]
  * @param max           Initializes [Slider.max]
  * @param step          Initializes [Slider.stepSize]
@@ -41,7 +51,7 @@ class UncivSlider (
     step: Float,
     vertical: Boolean = false,
     plusMinus: Boolean = true,
-    initial: Float = min,
+    initial: Float,
     sound: UncivSound = UncivSound.Slider,
     private val getTipText: ((Float) -> String)? = null,
     onChange: ((Float) -> Unit)? = null
@@ -112,7 +122,7 @@ class UncivSlider (
         slider.setSnapToValues(values, threshold)
     }
 
-    // java format string for the value tip, set by changing stepSize 
+    // java format string for the value tip, set by changing stepSize
     private var tipFormat = "%.1f"
 
     /** Prevents hiding the value tooltip over the slider knob */
@@ -139,9 +149,9 @@ class UncivSlider (
             minusButton.onClick {
                 addToValue(-stepSize)
             }
-            add(minusButton).apply { 
+            add(minusButton).apply {
                 if (vertical) padBottom(padding) else padLeft(padding)
-            } 
+            }
             if (vertical) row()
         } else minusButton = null
 
@@ -161,7 +171,7 @@ class UncivSlider (
         } else plusButton = null
 
         row()
-        value = initial  // set initial value late so the tooltip can work with the layout 
+        value = initial  // set initial value late so the tooltip can work with the layout
 
         // Add the listener late so the setting of the initial value is silent
         slider.addListener(object : ChangeListener() {
@@ -175,7 +185,7 @@ class UncivSlider (
                 }
                 valueChanged()
                 onChange?.invoke(slider.value)
-                Sounds.play(sound)
+                SoundPlayer.play(sound)
             }
         })
     }

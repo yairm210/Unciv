@@ -60,6 +60,43 @@ Each era can have the following attributes:
 | settlerBuildings | List of Strings | defaults to none | Buildings that should automatically be built whenever a city is settled when starting a game in this era |
 | startingObsoleteWonders | List of Strings | defaults to none | Wonders (and technically buildings) that should be impossible to built when starting a game in this era. Used in the base game to remove all wonders older than 2 era's |
 
+## Speeds.json
+
+[Link to original](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Speeds.json)
+
+This file should contain all the speeds you want to use in your mod.
+
+Each speed can have the following attributes:
+
+| Attribute | Type | Optional | Notes |
+| --------- | ---- | -------- | ----- |
+| name | String | required | Name of the speed |
+| modifier | Float (≥0) | defaults to 1.0 | Overall game speed modifier |
+| productionCostModifier | Float (≥0) | defaults to the value of `modifier` | Scales production cost of units and buildings |
+| goldCostModifier | Float (≥0) | defaults to the value of `modifier` | Scales gold costs |
+| scienceCostModifier | Float (≥0) | defaults to the value of `modifier` | Scales science costs |
+| cultureCostModifier | Float (≥0) | defaults to the value of `modifier` | Scales culture costs |
+| faithCostModifier | Float (≥0) | defaults to the value of `modifier` | Scales faith costs |
+| improvementBuildLengthModifier | Float (≥0) | defaults to the value of `modifier` | Scales the time it takes for a worker to build tile improvements |
+| barbarianModifier | Float (≥0) | defaults to the value of `modifier` | Scales the time between barbarian spawns |
+| goldGiftModifier | Float (≥0) | defaults to the value of `modifier` | Scales the influence gained from gifting gold to city-states |
+| cityStateTributeScalingInterval | Float (≥0) | defaults to 6.5 | The number of turns it takes for the amount of gold a player demands from city-states to increase by 5 gold |
+| goldenAgeLengthModifier | Float (≥0) | defaults to the value of `modifier` | Scales the length of golden ages |
+| religiousPressureAdjacentCity | Integer (≥0) | defaults to 6 | Defines how much religious pressure a city exerts on nearby cities |
+| peaceDealDuration | Integer (≥0) | defaults to 10 | The number of turns a peace deal lasts |
+| dealDuration | Integer (≥0) | defaults to 30 | The number of turns a non-peace deal (research agreement, open borders, etc.) lasts |
+| startYear | Float | defaults to -4000 | The start year of the game (negative is BC/BCE) |
+| turns | List of HashMaps | required | The amount of time passed between turns ("yearsPerTurn") and the range of turn numbers ("untilTurn") that this duration applies to |
+
+The below code is an example of a valid "turns" definition and it specifies that the first 50 turns of a game last for 60 years each, then the next 30 turns (and any played after the 80th) last for 40 years each.
+
+```json
+"turns": [
+{"yearsPerTurn": 60, "untilTurn":  50},
+{"yearsPerTurn": 40, "untilTurn":  80}
+]
+```
+
 ## ModOptions.json
 
 <!-- [Link to original](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/ModOptions.json) -->
@@ -89,8 +126,10 @@ The file can have the following attributes, including the values Unciv sets (no 
 ### ModConstants
 
 Stored in ModOptions.constants, this is a collection of constants used internally in Unciv.
+This is the only structure that is _merged_ field by field from mods, not overwritten, so you can change XP from Barbarians in one mod
+and city distance in another. In case of conflicts, there is no guarantee which mod wins, only that _default_ values are ignored.
 
-| Attribute | Type | Optional | Notes |
+| Attribute | Type | Default | Notes |
 | --------- | ---- | -------- | ----- |
 | maxXPfromBarbarians | Int | 30 | [^A] |
 | cityStrengthBase| Float | 8.0 | [^B] |
@@ -102,6 +141,7 @@ Stored in ModOptions.constants, this is a collection of constants used internall
 | unitSupplyPerPopulation| Float | 0.5 | [^C] |
 | minimalCityDistance| Int | 3 | [^D] |
 | minimalCityDistanceOnDifferentContinents| Int | 2 | [^D] |
+| unitUpgradeCost | Object | see below | [^J] |
 | naturalWonderCountMultiplier| Float | 0.124 | [^E] |
 | naturalWonderCountAddedConstant| Float | 0.1 | [^E] |
 | ancientRuinCountMultiplier| Float | 0.02 | [^F] |
@@ -134,6 +174,26 @@ Legend:
 -   [^F]: MapGenerator.spreadAncientRuins: number of ruins = suitable tile count * this
 -   [^H]: MapGenerator.spawnLakesAndCoasts: Water bodies up to this tile count become Lakes
 -   [^I]: RiverGenerator: river frequency and length bounds
+-   [^J]: A [UnitUpgradeCost](#UnitUpgradeCost) sub-structure.
+
+#### UnitUpgradeCost
+
+These values are not merged individually, only the entire sub-structure is.
+
+| Attribute | Type | Default | Notes |
+| --------- | ---- | -------- | ----- |
+| base | Float | 10 |  |
+| perProduction | Float | 2 |  |
+| eraMultiplier | Float | 0 |  |
+| exponent | Float | 1 |  |
+| roundTo | Int | 5 |  |
+
+The formula for the gold cost of a unit upgrade is (rounded down to a multiple of `roundTo`):
+        ( max((`base` + `perProduction` * (new_unit_cost - old_unit_cost)), 0)
+            * (1 + eraNumber * `eraMultiplier`) * `civModifier`
+        ) ^ `exponent`
+With `civModifier` being the multiplicative aggregate of ["\[relativeAmount\]% Gold cost of upgrading"](../uniques.md#global_uniques) uniques that apply.
+
 
 ## VictoryTypes.json
 
@@ -162,13 +222,13 @@ Currently the following milestones are supported:
 | --------- | ----------- |
 | Build [building] | Build the building [building] in any city |
 | Anyone build [building] | Anyone must build the building [building] for all players to have this milestone |
-| Add all [comment] in capital | Add all units in the `requiredSpaceshipParts` field of this victory to the capital | 
+| Add all [comment] in capital | Add all units in the `requiredSpaceshipParts` field of this victory to the capital |
 | Destroy all players | You must be the only major civilization with any cities left |
 | Capture all capitals | Capture all the original capitals of major civilizations in the game |
 | Complete [amount] Policy branches | Fully complete at least [amount] policy branches |
 | Win diplomatic vote | At any point in the game win a diplomatic vote (UN). You may lose afterwards and still retain this milestone |
 | Become the world religion | Have your religion be the majority religion in a majority of cities of all major civs |
-| Have highest score after max turns | Basically time victory. Enables the 'max turn' slider and calculates score when that amount is reached |  
+| Have highest score after max turns | Basically time victory. Enables the 'max turn' slider and calculates score when that amount is reached |
 
 
 ## Civilopedia text

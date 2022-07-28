@@ -1,15 +1,11 @@
 package com.unciv.ui.mapeditor
 
-import com.unciv.Constants
-import com.unciv.UncivGame
-import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.translations.tr
-import com.unciv.ui.newgamescreen.GameOptionsTable
 import com.unciv.models.metadata.GameSetupInfo
-import com.unciv.ui.newgamescreen.PlayerPickerTable
+import com.unciv.models.ruleset.RulesetCache
+import com.unciv.ui.newgamescreen.GameOptionsTable
 import com.unciv.ui.newgamescreen.IPreviousScreen
+import com.unciv.ui.newgamescreen.PlayerPickerTable
 import com.unciv.ui.pickerscreens.PickerScreen
-import com.unciv.ui.utils.*
 
 /**
  * As of MapEditor V2, the editor no longer deals with GameParameters, **only** with MapParameters,

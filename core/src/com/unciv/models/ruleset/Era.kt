@@ -3,12 +3,16 @@ package com.unciv.models.ruleset
 import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.civilization.CityStateType
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
-import com.unciv.models.ruleset.unique.*
+import com.unciv.models.ruleset.unique.IHasUniques
+import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTarget
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
-import com.unciv.ui.utils.colorFromRGB
+import com.unciv.ui.utils.extensions.colorFromRGB
 
-class Era : RulesetObject(), IHasUniques {
+class Era : RulesetObject() {
     var eraNumber: Int = -1
     var researchAgreementCost = 300
     var startingSettlerCount = 1
@@ -25,13 +29,16 @@ class Era : RulesetObject(), IHasUniques {
     var baseUnitBuyCost = 200
     var embarkDefense = 3
     var startPercent = 0
+    var citySound = "cityClassical"
 
     var friendBonus = HashMap<String, List<String>>()
     var allyBonus = HashMap<String, List<String>>()
+    @Suppress("MemberVisibilityCanBePrivate")
     val friendBonusObjects: Map<CityStateType, List<Unique>> by lazy { initBonuses(friendBonus) }
+    @Suppress("MemberVisibilityCanBePrivate")
     val allyBonusObjects: Map<CityStateType, List<Unique>> by lazy { initBonuses(allyBonus) }
 
-    var iconRGB: List<Int>? = null
+    private var iconRGB: List<Int>? = null
 
     companion object {
         private val eraConditionals = setOf(UniqueType.ConditionalBeforeEra, UniqueType.ConditionalDuringEra, UniqueType.ConditionalStartingFromEra)
@@ -59,6 +66,7 @@ class Era : RulesetObject(), IHasUniques {
         yield(FormattedLine("{See also}:"))
         yieldAll(eraGatedObjects.map { FormattedLine(it.name, it.makeLink()) })
     }.toList()
+    override fun getSortGroup(ruleset: Ruleset): Int = eraNumber
 
     private fun getEraGatedObjects(ruleset: Ruleset): Sequence<IRulesetObject> {
         val policyBranches = ruleset.policyBranches.values.asSequence()

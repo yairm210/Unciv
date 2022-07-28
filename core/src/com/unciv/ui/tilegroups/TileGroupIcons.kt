@@ -9,7 +9,12 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.UnitGroup
+import com.unciv.ui.utils.extensions.center
+import com.unciv.ui.utils.extensions.centerX
+import com.unciv.ui.utils.extensions.darken
+import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.ui.utils.extensions.toLabel
 import kotlin.math.min
 
 /** Helper class for TileGroup, which was getting too full */
@@ -61,6 +66,7 @@ class TileGroupIcons(val tileGroup: TileGroup) {
 
         if (unit != null && isViewable) { // Tile is visible
             newImage = UnitGroup(unit, 25f)
+
             if (UncivGame.Current.settings.continuousRendering && oldUnitGroup?.blackSpinningCircle != null) {
                 newImage.blackSpinningCircle = ImageGetter.getCircle()
                         .apply { rotation = oldUnitGroup.blackSpinningCircle!!.rotation }
@@ -94,13 +100,18 @@ class TileGroupIcons(val tileGroup: TileGroup) {
                 newImage.addActor(holder)
             }
 
+            newImage.unitBaseImage.color.a = UncivGame.Current.settings.unitIconOpacity //0f (invisible) to 1f (fully opaque)
+            newImage.actionGroup?.color?.a = UncivGame.Current.settings.unitIconOpacity //0f (invisible) to 1f (fully opaque)
+
             // Instead of fading out the entire unit with its background, we just fade out its central icon,
             // that way it remains much more visible on the map
             if (!unit.isIdle() && unit.civInfo == viewingCiv) {
-                newImage.unitBaseImage.color.a = 0.5f
-                newImage.actionGroup?.color?.a = 0.5f
+                newImage.unitBaseImage.color.a *= 0.5f
+                newImage.actionGroup?.color?.a = 0.5f * UncivGame.Current.settings.unitIconOpacity
             }
+
         }
+
         return newImage
     }
 
@@ -167,7 +178,7 @@ class TileGroupIcons(val tileGroup: TileGroup) {
             val shouldDisplayResource =
                     if (tileGroup.showEntireMap) showResourcesAndImprovements
                     else showResourcesAndImprovements
-                            && tileGroup.tileInfo.hasViewableResource(UncivGame.Current.worldScreen.viewingCiv)
+                            && tileGroup.tileInfo.hasViewableResource(UncivGame.Current.worldScreen!!.viewingCiv)
             tileGroup.resourceImage!!.isVisible = shouldDisplayResource
         }
     }

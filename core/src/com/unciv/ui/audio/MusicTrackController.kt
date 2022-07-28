@@ -3,6 +3,8 @@ package com.unciv.ui.audio
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.audio.Music
 import com.badlogic.gdx.files.FileHandle
+import com.unciv.utils.Log
+import com.unciv.utils.debug
 
 /** Wraps one Gdx Music instance and manages loading, playback, fading and cleanup */
 internal class MusicTrackController(private var volume: Float) {
@@ -54,8 +56,7 @@ internal class MusicTrackController(private var volume: Float) {
                 clear()
             } else {
                 state = State.Idle
-                if (MusicController.consoleLog)
-                    println("Music loaded: $file")
+                debug("Music loaded %s", file)
                 onSuccess?.invoke(this)
             }
         } catch (ex: Exception) {
@@ -73,7 +74,7 @@ internal class MusicTrackController(private var volume: Float) {
     }
 
     /** Starts fadeIn or fadeOut.
-     * 
+     *
      *  Note this does _not_ set the current fade "percentage" to allow smoothly changing direction mid-fade
      *  @param step Overrides current fade step only if >0
      */
@@ -165,12 +166,7 @@ internal class MusicTrackController(private var volume: Float) {
 
     private fun audioExceptionHandler(ex: Throwable) {
         clear()
-        if (MusicController.consoleLog) {
-            println("${ex.javaClass.simpleName} playing music: ${ex.message}")
-            if (ex.stackTrace != null) ex.printStackTrace()
-        } else {
-            println("Error playing music: ${ex.message ?: ""}")
-        }
+        Log.error("Error playing music", ex)
     }
 
     //endregion

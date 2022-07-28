@@ -13,4 +13,6 @@ class PlatformSpecificHelpersDesktop(config: Lwjgl3ApplicationConfiguration) : G
         turnNotifier.turnStarted()
     }
 
+    /** On desktop, external is likely some document folder, while local is the game directory. We'd like to keep everything in the game directory */
+    override fun shouldPreferExternalStorage(): Boolean = false
 }

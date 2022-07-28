@@ -6,7 +6,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.*
+import com.unciv.logic.civilization.AlertType
+import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.ruleset.unique.UniqueType
@@ -17,18 +20,25 @@ import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.trade.LeaderIntroTable
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.keyShortcuts
+import com.unciv.ui.utils.extensions.onActivation
+import com.unciv.ui.utils.extensions.pad
+import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
 import java.util.*
 
 /**
  * [Popup] communicating events other than trade offers to the player.
- * (e.g. First Contact, Wonder built, Tech researched,...) 
+ * (e.g. First Contact, Wonder built, Tech researched,...)
  *
  * Called in [WorldScreen].update, which pulls them from viewingCiv.popupAlerts.
- * 
+ *
  * @param worldScreen The parent screen
  * @param popupAlert The [PopupAlert] entry to present
- * 
+ *
  * @see AlertType
  */
 class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popup(worldScreen) {
@@ -36,17 +46,16 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
     private fun getCloseButton(text: String, key: Char = Char.MIN_VALUE, action: (() -> Unit)? = null): TextButton {
         // Popup.addCloseButton is close but AlertPopup needs the flexibility to add these inside a wrapper
         val button = text.toTextButton()
-        val buttonAction = {
+        button.onActivation {
             if (action != null) action()
             worldScreen.shouldUpdate = true
             close()
         }
-        button.onClick(buttonAction)
         if (key == Char.MIN_VALUE) {
-            keyPressDispatcher[KeyCharAndCode.BACK] = buttonAction
-            keyPressDispatcher[KeyCharAndCode.SPACE] = buttonAction
+            button.keyShortcuts.add(KeyCharAndCode.BACK)
+            button.keyShortcuts.add(KeyCharAndCode.SPACE)
         } else {
-            keyPressDispatcher[key] = buttonAction
+            button.keyShortcuts.add(key)
         }
         return button
     }
@@ -94,7 +103,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
             AlertType.CityConquered -> {
                 val city = worldScreen.gameInfo.getCities().first { it.id == popupAlert.value }
                 addQuestionAboutTheCity(city.name)
-                val conqueringCiv = worldScreen.gameInfo.currentPlayerCiv
+                val conqueringCiv = worldScreen.gameInfo.getCurrentPlayerCivilization()
 
                 if (city.foundingCiv != ""
                         && city.civInfo.civName != city.foundingCiv // can't liberate if the city actually belongs to those guys
@@ -142,7 +151,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
             AlertType.CityTraded -> {
                 val city = worldScreen.gameInfo.getCities().first { it.id == popupAlert.value }
                 addQuestionAboutTheCity(city.name)
-                val conqueringCiv = worldScreen.gameInfo.currentPlayerCiv
+                val conqueringCiv = worldScreen.gameInfo.getCurrentPlayerCivilization()
 
                 addLiberateOption(city.foundingCiv) {
                     city.liberateCity(conqueringCiv)
@@ -207,6 +216,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                         .toLabel().apply { wrap = true }).width(worldScreen.stage.width / 3).pad(10f)
                 add(centerTable).row()
                 add(getCloseButton(Constants.close))
+                UncivGame.Current.musicController.chooseTrack(wonder.name, MusicMood.Wonder, MusicTrackChooserFlags.setSpecific)
             }
             AlertType.TechResearched -> {
                 val gameBasics = worldScreen.gameInfo.ruleSet
@@ -220,12 +230,14 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 centerTable.add(descriptionScroll).width(worldScreen.stage.width / 3).maxHeight(worldScreen.stage.height / 2)
                 add(centerTable).row()
                 add(getCloseButton(Constants.close))
+                UncivGame.Current.musicController.chooseTrack(tech.name, MusicMood.Researched, MusicTrackChooserFlags.setSpecific)
             }
             AlertType.GoldenAge -> {
                 addGoodSizedLabel("GOLDEN AGE")
                 addSeparator()
                 addGoodSizedLabel("Your citizens have been happy with your rule for so long that the empire enters a Golden Age!").row()
                 add(getCloseButton(Constants.close))
+                UncivGame.Current.musicController.chooseTrack(worldScreen.viewingCiv.civName, MusicMood.Golden, MusicTrackChooserFlags.setSpecific)
             }
             AlertType.DeclarationOfFriendship -> {
                 val otherciv = worldScreen.gameInfo.getCivilization(popupAlert.value)
@@ -248,7 +260,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 val city = worldScreen.gameInfo.getCities().first { it.id == popupAlert.value }
                 addGoodSizedLabel(city.name.tr() + ": " + "What would you like to do with the city?".tr(), Constants.headingFontSize) // Add name because there might be several cities
                     .padBottom(20f).row()
-                val marryingCiv = worldScreen.gameInfo.currentPlayerCiv
+                val marryingCiv = worldScreen.gameInfo.getCurrentPlayerCivilization()
 
                 if (marryingCiv.isOneCityChallenger()) {
                     addDestroyOption {
@@ -361,21 +373,27 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
     }
 
     private fun addDestroyOption(destroyAction: () -> Unit) {
-        add("Destroy".toTextButton().onClick(function = destroyAction)).row()
-        keyPressDispatcher['d'] = destroyAction
+        val button = "Destroy".toTextButton()
+        button.onActivation { destroyAction() }
+        button.keyShortcuts.add('d')
+        add(button).row()
         addGoodSizedLabel("Destroying the city instantly razes the city to the ground.").row()
     }
 
     private fun addAnnexOption(annexAction: () -> Unit) {
-        add("Annex".toTextButton().onClick(function = annexAction)).row()
-        keyPressDispatcher['a'] = annexAction
+        val button = "Annex".toTextButton()
+        button.onActivation { annexAction() }
+        button.keyShortcuts.add('a')
+        add(button).row()
         addGoodSizedLabel("Annexed cities become part of your regular empire.").row()
         addGoodSizedLabel("Their citizens generate 2x the unhappiness, unless you build a courthouse.").row()
     }
 
     private fun addPuppetOption(puppetAction: () -> Unit) {
-        add("Puppet".toTextButton().onClick(function = puppetAction) ).row()
-        keyPressDispatcher['p'] = puppetAction
+        val button = "Puppet".toTextButton()
+        button.onActivation { puppetAction() }
+        button.keyShortcuts.add('p')
+        add(button).row()
         addGoodSizedLabel("Puppeted cities do not increase your tech or policy cost, but their citizens generate 1.5x the regular unhappiness.").row()
         addGoodSizedLabel("You have no control over the the production of puppeted cities.").row()
         addGoodSizedLabel("Puppeted cities also generate 25% less Gold and Science.").row()
@@ -383,20 +401,23 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
     }
 
     private fun addLiberateOption(foundingCiv: String, liberateAction: () -> Unit) {
-        val liberateText = "Liberate (city returns to [originalOwner])".fillPlaceholders(foundingCiv)
-        add(liberateText.toTextButton().onClick(function = liberateAction)).row()
-        keyPressDispatcher['l'] = liberateAction
+        val button = "Liberate (city returns to [originalOwner])".fillPlaceholders(foundingCiv).toTextButton()
+        button.onActivation { liberateAction() }
+        button.keyShortcuts.add('l')
+        add(button).row()
         addGoodSizedLabel("Liberating a city returns it to its original owner, giving you a massive relationship boost with them!")
     }
 
     private fun addRazeOption(canRaze: () -> Boolean, razeAction: () -> Unit) {
-        add("Raze".toTextButton().apply {
+        val button = "Raze".toTextButton()
+        button.apply {
             if (!canRaze()) disable()
             else {
-                onClick(function = razeAction)
-                keyPressDispatcher['r'] = razeAction
+                onActivation { razeAction() }
+                keyShortcuts.add('r')
             }
-        }).row()
+        }
+        add(button).row()
         if (canRaze()) {
             addGoodSizedLabel("Razing the city annexes it, and starts burning the city to the ground.").row()
             addGoodSizedLabel("The population will gradually dwindle until the city is destroyed.").row()

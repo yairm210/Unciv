@@ -6,9 +6,10 @@ import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.unique.UniqueParameterType.Companion.guessTypeForTranslationWriter
 import com.unciv.models.stats.Stat
-import com.unciv.models.translations.TranslationFileWriter  // for  Kdoc only
-import com.unciv.ui.utils.filterCompositeLogic
+import com.unciv.models.translations.TranslationFileWriter
+import com.unciv.ui.utils.extensions.filterCompositeLogic
 
 // 'region' names beginning with an underscore are used here for a prettier "Structure window" - they go in front ot the rest.
 
@@ -161,7 +162,7 @@ enum class UniqueParameterType(
     },
 
     /** [UniqueType.DamageUnitsPlunder] and others near that one */
-    PlunderableStatName("plunderableStat", "Gold", "All the following stats can be plundered: `Gold`, `Science`, `Culture`, `Faith`") {
+    CivWideStatName("civWideStat", "Gold", "All the following stats have civ-wide fields: `Gold`, `Science`, `Culture`, `Faith`") {
         private val knownValues = Stat.statsWithCivWideField.map { it.name }.toSet()
         override fun getErrorSeverity(
             parameterText: String,
@@ -485,8 +486,8 @@ enum class UniqueParameterType(
     },
 
     /** For untyped "Can [] [] times" unique */
-    Action("action", Constants.spreadReligionAbilityCount, "An action that a unit can perform. Currently, there are only two actions part of this: 'Spread Religion' and 'Remove Foreign religions from your own cities'", "Religious Action Filters") {
-        private val knownValues = setOf(Constants.spreadReligionAbilityCount, Constants.removeHeresyAbilityCount)
+    Action("action", Constants.spreadReligion, "An action that a unit can perform. Currently, there are only two actions part of this: 'Spread Religion' and 'Remove Foreign religions from your own cities'", "Religious Action Filters") {
+        private val knownValues = setOf(Constants.spreadReligion, Constants.removeHeresy)
         override fun getErrorSeverity(
             parameterText: String,
             ruleset: Ruleset

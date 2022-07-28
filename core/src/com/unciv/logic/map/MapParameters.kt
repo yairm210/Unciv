@@ -3,6 +3,7 @@ package com.unciv.logic.map
 import com.unciv.logic.HexMath.getEquivalentHexagonalRadius
 import com.unciv.logic.HexMath.getEquivalentRectangularSize
 import com.unciv.logic.HexMath.getNumberOfTilesInHexagon
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.models.metadata.BaseRuleset
 
 
@@ -29,7 +30,7 @@ enum class MapSize(val radius: Int, val width: Int, val height: Int) {
     }
 }
 
-class MapSizeNew {
+class MapSizeNew : IsPartOfGameInfoSerialization {
     var radius = 0
     var width = 0
     var height = 0
@@ -70,7 +71,7 @@ class MapSizeNew {
         this.radius = getEquivalentHexagonalRadius(width, height)
     }
 
-    fun clone() = MapSizeNew().also { 
+    fun clone() = MapSizeNew().also {
         it.name = name
         it.radius = radius
         it.width = width
@@ -121,12 +122,12 @@ class MapSizeNew {
     override fun toString() = if (name == MapSize.custom) "${width}x${height}" else name
 }
 
-object MapShape {
+object MapShape : IsPartOfGameInfoSerialization {
     const val hexagonal = "Hexagonal"
     const val rectangular = "Rectangular"
 }
 
-object MapType {
+object MapType : IsPartOfGameInfoSerialization {
     const val pangaea = "Pangaea"
     const val continents = "Continents"
     const val fourCorners = "Four Corners"
@@ -152,7 +153,7 @@ object MapResources {
     const val legendaryStart = "Legendary Start"
 }
 
-class MapParameters {
+class MapParameters : IsPartOfGameInfoSerialization {
     var name = ""
     var type = MapType.pangaea
     var shape = MapShape.hexagonal
@@ -164,7 +165,7 @@ class MapParameters {
 
     /** This is used mainly for the map editor, so you can continue editing a map under the same ruleset you started with */
     var mods = LinkedHashSet<String>()
-    var baseRuleset = BaseRuleset.Civ_V_GnK.fullName // Hardcoded as the Rulesetcache is not yet initialized when starting up
+    var baseRuleset = BaseRuleset.Civ_V_GnK.fullName // Hardcoded as the RulesetCache is not yet initialized when starting up
 
     /** Unciv Version of creation for support cases */
     var createdWithVersion = ""
@@ -178,6 +179,11 @@ class MapParameters {
     var rareFeaturesRichness = 0.05f
     var resourceRichness = 0.1f
     var waterThreshold = 0f
+
+    /** Shifts temperature (after random, latitude and temperatureExtremeness).
+     *  For seasonal main menu background only, not user-accessible, thus transient and not cloned. */
+    @Transient
+    var temperatureShift = 0f
 
     fun clone() = MapParameters().also {
         it.name = name
@@ -236,14 +242,16 @@ class MapParameters {
     override fun toString() = sequence {
         if (name.isNotEmpty()) yield("\"$name\" ")
         yield("(")
-        if (mapSize.name != MapSize.custom) yield(mapSize.name + " ")
-        if (worldWrap) yield("{wrapped} ")
-        yield(shape)
+        if (mapSize.name != MapSize.custom) yield("{${mapSize.name}} ")
+        if (worldWrap) yield("{World Wrap} ")
+        yield("{$shape}")
         yield(" " + displayMapDimensions() + ")")
-        yield(mapResources)
+        if(mapResources != MapResources.default) yield(" {Resource Setting}: {$mapResources}")
         if (name.isEmpty()) return@sequence
-        yield("\n$type, {Seed} $seed")
-        yield(", {Map Height}=" + elevationExponent.niceToString(2))
+        yield("\n")
+        if (type != MapType.custom && type != MapType.empty) yield("{Map Generation Type}: {$type}, ")
+        yield("{RNG Seed} $seed")
+        yield(", {Map Elevation}=" + elevationExponent.niceToString(2))
         yield(", {Temperature extremeness}=" + temperatureExtremeness.niceToString(2))
         yield(", {Resource richness}=" + resourceRichness.niceToString(3))
         yield(", {Vegetation richness}=" + vegetationRichness.niceToString(2))
@@ -252,7 +260,7 @@ class MapParameters {
         yield(", {Biome areas extension}=$tilesPerBiomeArea")
         yield(", {Water level}=" + waterThreshold.niceToString(2))
     }.joinToString("")
-    
+
     fun numberOfTiles() =
         if (shape == MapShape.hexagonal) {
             1 + 3 * mapSize.radius * (mapSize.radius - 1)

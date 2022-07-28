@@ -13,7 +13,14 @@ import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.AskTextPopup
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.AutoScrollPane
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.addSeparatorVertical
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.enable
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.packIfNeeded
+import com.unciv.ui.utils.extensions.surroundWithCircle
 
 class ReligiousBeliefsPickerScreen (
     choosingCiv: CivilizationInfo,

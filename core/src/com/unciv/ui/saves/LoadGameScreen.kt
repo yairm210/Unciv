@@ -3,254 +3,260 @@ package com.unciv.ui.saves
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.badlogic.gdx.utils.Align
-import com.unciv.UncivGame
-import com.unciv.logic.GameSaver
+import com.badlogic.gdx.utils.SerializationException
+import com.unciv.Constants
+import com.unciv.logic.UncivFiles
 import com.unciv.logic.MissingModsException
 import com.unciv.logic.UncivShowableException
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.crashhandling.launchCrashHandling
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.pickerscreens.Github
-import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.utils.*
-import com.unciv.ui.utils.UncivDateFormat.formatDate
-import java.util.*
-import java.util.concurrent.CancellationException
-import com.unciv.ui.utils.AutoScrollPane as ScrollPane
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.enable
+import com.unciv.ui.utils.extensions.isEnabled
+import com.unciv.ui.utils.extensions.keyShortcuts
+import com.unciv.ui.utils.extensions.onActivation
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
+import com.unciv.utils.Log
+import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.launchOnGLThread
+import java.io.FileNotFoundException
 
-class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = true) {
-    lateinit var selectedSave: String
-    private val copySavedGameToClipboardButton = "Copy saved game to clipboard".toTextButton()
-    private val saveTable = Table()
-    private val deleteSaveButton = "Delete save".toTextButton()
-    private val errorLabel = "".toLabel(Color.RED)
-    private val loadMissingModsButton = "Download missing mods".toTextButton()
-    private val showAutosavesCheckbox = CheckBox("Show autosaves".tr(), skin)
+class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
+    private val copySavedGameToClipboardButton = getCopyExistingSaveToClipboardButton()
+    private val errorLabel = "".toLabel(Color.RED).apply { isVisible = false }
+    private val loadMissingModsButton = getLoadMissingModsButton()
     private var missingModsToLoad = ""
 
+    companion object {
+        private const val loadGame = "Load game"
+        private const val loadFromCustomLocation = "Load from custom location"
+        private const val loadFromClipboard = "Load copied data"
+        private const val copyExistingSaveToClipboard = "Copy saved game to clipboard"
+        private const val downloadMissingMods = "Download missing mods"
+
+        /** Gets a translated exception message to show to the user.
+         * @return The first returned value is the message, the second is signifying if the user can likely fix this problem. */
+        fun getLoadExceptionMessage(ex: Throwable, primaryText: String = "Could not load game!"): Pair<String, Boolean> {
+            val errorText = StringBuilder(primaryText.tr())
+
+            val isUserFixable: Boolean
+            errorText.appendLine()
+            when (ex) {
+                is UncivShowableException -> {
+                    errorText.append("${ex.localizedMessage}")
+                    isUserFixable = true
+                }
+                is SerializationException -> {
+                    errorText.append("The file data seems to be corrupted.".tr())
+                    isUserFixable = false
+                }
+                is FileNotFoundException -> {
+                    if (ex.cause?.message?.contains("Permission denied") == true) {
+                        errorText.append("You do not have sufficient permissions to access the file.".tr())
+                        isUserFixable = true
+                    } else {
+                        isUserFixable = false
+                    }
+                }
+                else -> {
+                    errorText.append("Unhandled problem, [${ex::class.simpleName} ${ex.localizedMessage}]".tr())
+                    isUserFixable = false
+                }
+            }
+            return Pair(errorText.toString(), isUserFixable)
+        }
+    }
+
     init {
-        setDefaultCloseAction(previousScreen)
+        setDefaultCloseAction()
+        rightSideTable.initRightSideTable()
+        rightSideButton.onActivation { onLoadGame() }
+        rightSideButton.keyShortcuts.add(KeyCharAndCode.RETURN)
+        rightSideButton.isVisible = false
+    }
 
-        resetWindowState()
-        topTable.add(ScrollPane(saveTable))
+    override fun resetWindowState() {
+        super.resetWindowState()
+        copySavedGameToClipboardButton.disable()
+        rightSideButton.setText(loadGame.tr())
+        rightSideButton.disable()
+    }
 
-        val rightSideTable = getRightSideTable()
+    override fun onExistingSaveSelected(saveGameFile: FileHandle) {
+        copySavedGameToClipboardButton.enable()
+        rightSideButton.isVisible = true
+        rightSideButton.setText("Load [$selectedSave]".tr())
+        rightSideButton.enable()
+    }
 
-        topTable.add(rightSideTable)
+    private fun Table.initRightSideTable() {
+        add(getLoadFromClipboardButton()).row()
+        addLoadFromCustomLocationButton()
+        add(errorLabel).row()
+        add(loadMissingModsButton).row()
+        add(deleteSaveButton).row()
+        add(copySavedGameToClipboardButton).row()
+        add(showAutosavesCheckbox).row()
+    }
 
-        rightSideButton.onClick {
-            val loadingPopup = Popup( this)
-            loadingPopup.addGoodSizedLabel("Loading...")
-            loadingPopup.open()
-            launchCrashHandling("Load Game") {
+    private fun onLoadGame() {
+        if (selectedSave.isEmpty()) return
+        val loadingPopup = Popup( this)
+        loadingPopup.addGoodSizedLabel(Constants.loading)
+        loadingPopup.open()
+        Concurrency.run(loadGame) {
+            try {
+                // This is what can lead to ANRs - reading the file and setting the transients, that's why this is in another thread
+                val loadedGame = game.files.loadGameByName(selectedSave)
+                game.loadGame(loadedGame)
+            } catch (ex: Exception) {
+                launchOnGLThread {
+                    loadingPopup.close()
+                    handleLoadGameException(ex)
+                }
+            }
+        }
+    }
+
+    private fun getLoadFromClipboardButton(): TextButton {
+        val pasteButton = loadFromClipboard.toTextButton()
+        pasteButton.onActivation {
+            Concurrency.run(loadFromClipboard) {
                 try {
-                    // This is what can lead to ANRs - reading the file and setting the transients, that's why this is in another thread
-                    val loadedGame = GameSaver.loadGameByName(selectedSave)
-                    postCrashHandlingRunnable { UncivGame.Current.loadGame(loadedGame) }
+                    val clipboardContentsString = Gdx.app.clipboard.contents.trim()
+                    val loadedGame = UncivFiles.gameInfoFromString(clipboardContentsString)
+                    game.loadGame(loadedGame)
                 } catch (ex: Exception) {
-                    postCrashHandlingRunnable {
-                        loadingPopup.close()
-                        val cantLoadGamePopup = Popup(this@LoadGameScreen)
-                        cantLoadGamePopup.addGoodSizedLabel("It looks like your saved game can't be loaded!").row()
-                        if (ex is UncivShowableException && ex.localizedMessage != null) {
-                            // thrown exceptions are our own tests and can be shown to the user
-                            cantLoadGamePopup.addGoodSizedLabel(ex.localizedMessage).row()
-                            cantLoadGamePopup.addCloseButton()
-                            cantLoadGamePopup.open()
-                        } else {
-                            cantLoadGamePopup.addGoodSizedLabel("If you could copy your game data (\"Copy saved game to clipboard\" - ").row()
-                            cantLoadGamePopup.addGoodSizedLabel("  paste into an email to yairm210@hotmail.com)").row()
-                            cantLoadGamePopup.addGoodSizedLabel("I could maybe help you figure out what went wrong, since this isn't supposed to happen!").row()
-                            cantLoadGamePopup.addCloseButton()
-                            cantLoadGamePopup.open()
-                            ex.printStackTrace()
+                    launchOnGLThread { handleLoadGameException(ex, "Could not load game from clipboard!") }
+                }
+            }
+        }
+        val ctrlV = KeyCharAndCode.ctrl('v')
+        pasteButton.keyShortcuts.add(ctrlV)
+        pasteButton.addTooltip(ctrlV)
+        return pasteButton
+    }
+
+    private fun Table.addLoadFromCustomLocationButton() {
+        if (!game.files.canLoadFromCustomSaveLocation()) return
+        val loadFromCustomLocation = loadFromCustomLocation.toTextButton()
+        loadFromCustomLocation.onClick {
+            errorLabel.isVisible = false
+            loadFromCustomLocation.setText(Constants.loading.tr())
+            loadFromCustomLocation.disable()
+            Concurrency.run(Companion.loadFromCustomLocation) {
+                game.files.loadGameFromCustomLocation { result ->
+                    if (result.isError()) {
+                        handleLoadGameException(result.exception!!, "Could not load game from custom location!")
+                    } else if (result.isSuccessful()) {
+                        Concurrency.run {
+                            game.loadGame(result.gameData!!)
                         }
                     }
                 }
             }
         }
-
+        add(loadFromCustomLocation).row()
     }
 
-    private fun getRightSideTable(): Table {
-        val rightSideTable = Table()
-        rightSideTable.defaults().pad(10f)
-
-        val loadFromClipboardButton = "Load copied data".toTextButton()
-        loadFromClipboardButton.onClick {
-            try {
-                val clipboardContentsString = Gdx.app.clipboard.contents.trim()
-                val loadedGame = GameSaver.gameInfoFromString(clipboardContentsString)
-                UncivGame.Current.loadGame(loadedGame)
-            } catch (ex: Exception) {
-                handleLoadGameException("Could not load game from clipboard!", ex)
-            }
-        }
-        rightSideTable.add(loadFromClipboardButton).row()
-        if (GameSaver.canLoadFromCustomSaveLocation()) {
-            val loadFromCustomLocation = "Load from custom location".toTextButton()
-            loadFromCustomLocation.onClick {
-                GameSaver.loadGameFromCustomLocation { gameInfo, exception ->
-                    if (gameInfo != null) {
-                        postCrashHandlingRunnable {
-                            game.loadGame(gameInfo)
-                        }
-                    } else if (exception !is CancellationException)
-                        handleLoadGameException("Could not load game from custom location!", exception)
+    private fun getCopyExistingSaveToClipboardButton(): TextButton {
+        val copyButton = copyExistingSaveToClipboard.toTextButton()
+        copyButton.onActivation {
+            Concurrency.run(copyExistingSaveToClipboard) {
+                try {
+                    val gameText = game.files.getSave(selectedSave).readString()
+                    Gdx.app.clipboard.contents = if (gameText[0] == '{') Gzip.zip(gameText) else gameText
+                } catch (ex: Throwable) {
+                    ex.printStackTrace()
+                    ToastPopup("Could not save game to clipboard!", this@LoadGameScreen)
                 }
             }
-            rightSideTable.add(loadFromCustomLocation).row()
         }
-        rightSideTable.add(errorLabel).row()
-
-        loadMissingModsButton.onClick {
-            loadMissingMods()
-        }
-        loadMissingModsButton.isVisible = false
-        rightSideTable.add(loadMissingModsButton).row()
-
-        deleteSaveButton.onClick {
-            GameSaver.deleteSave(selectedSave)
-            resetWindowState()
-        }
-        deleteSaveButton.disable()
-        rightSideTable.add(deleteSaveButton).row()
-
-        copySavedGameToClipboardButton.disable()
-        copySavedGameToClipboardButton.onClick {
-            val gameText = GameSaver.getSave(selectedSave).readString()
-            val gzippedGameText = Gzip.zip(gameText)
-            Gdx.app.clipboard.contents = gzippedGameText
-        }
-        rightSideTable.add(copySavedGameToClipboardButton).row()
-
-        showAutosavesCheckbox.isChecked = false
-        showAutosavesCheckbox.onChange {
-            updateLoadableGames(showAutosavesCheckbox.isChecked)
-        }
-        rightSideTable.add(showAutosavesCheckbox).row()
-        return rightSideTable
+        copyButton.disable()
+        val ctrlC = KeyCharAndCode.ctrl('c')
+        copyButton.keyShortcuts.add(ctrlC)
+        copyButton.addTooltip(ctrlC)
+        return copyButton
     }
 
-    private fun handleLoadGameException(primaryText: String, ex: Exception?) {
-        var errorText = primaryText.tr()
-        if (ex is UncivShowableException) errorText += "\n${ex.message}"
-        errorLabel.setText(errorText)
-        ex?.printStackTrace()
-        if (ex is MissingModsException) {
-            loadMissingModsButton.isVisible = true
-            missingModsToLoad = ex.missingMods
+    private fun getLoadMissingModsButton(): TextButton {
+        val button = downloadMissingMods.toTextButton()
+        button.onClick {
+            loadMissingMods()
+        }
+        button.isVisible = false
+        return button
+    }
+
+    private fun handleLoadGameException(ex: Exception, primaryText: String = "Could not load game!") {
+        Log.error("Error while loading game", ex)
+        val (errorText, isUserFixable) = getLoadExceptionMessage(ex, primaryText)
+
+        if (!isUserFixable) {
+            val cantLoadGamePopup = Popup(this@LoadGameScreen)
+            cantLoadGamePopup.addGoodSizedLabel("It looks like your saved game can't be loaded!").row()
+            cantLoadGamePopup.addGoodSizedLabel("If you could copy your game data (\"Copy saved game to clipboard\" - ").row()
+            cantLoadGamePopup.addGoodSizedLabel("  paste into an email to yairm210@hotmail.com)").row()
+            cantLoadGamePopup.addGoodSizedLabel("I could maybe help you figure out what went wrong, since this isn't supposed to happen!").row()
+            cantLoadGamePopup.addCloseButton()
+            cantLoadGamePopup.open()
+        }
+
+        Concurrency.runOnGLThread {
+            errorLabel.setText(errorText)
+            errorLabel.isVisible = true
+            if (ex is MissingModsException) {
+                loadMissingModsButton.isVisible = true
+                missingModsToLoad = ex.missingMods
+            }
         }
     }
 
     private fun loadMissingMods() {
         loadMissingModsButton.isEnabled = false
-        descriptionLabel.setText("Loading...".tr())
-        launchCrashHandling("DownloadMods", runAsDaemon = false) {
+        descriptionLabel.setText(Constants.loading.tr())
+        Concurrency.runOnNonDaemonThreadPool(downloadMissingMods) {
             try {
                 val mods = missingModsToLoad.replace(' ', '-').lowercase().splitToSequence(",-")
                 for (modName in mods) {
                     val repos = Github.tryGetGithubReposWithTopic(10, 1, modName)
-                        ?: throw UncivShowableException("Could not download mod list.".tr())
+                        ?: throw UncivShowableException("Could not download mod list.")
                     val repo = repos.items.firstOrNull { it.name.lowercase() == modName }
-                        ?: throw UncivShowableException("Could not find a mod named \"[$modName]\".".tr())
+                        ?: throw UncivShowableException("Could not find a mod named \"[$modName]\".")
                     val modFolder = Github.downloadAndExtract(
                         repo.html_url, repo.default_branch,
                         Gdx.files.local("mods")
                     )
                         ?: throw Exception() // downloadAndExtract returns null for 404 errors and the like -> display something!
                     Github.rewriteModOptions(repo, modFolder)
+                    val labelText = descriptionLabel.text // Surprise - a StringBuilder
+                    labelText.appendLine()
+                    labelText.append("[${repo.name}] Downloaded!".tr())
+                    launchOnGLThread { descriptionLabel.setText(labelText) }
                 }
-                postCrashHandlingRunnable {
+                launchOnGLThread {
                     RulesetCache.loadRulesets()
                     missingModsToLoad = ""
                     loadMissingModsButton.isVisible = false
-                    errorLabel.setText("")
+                    errorLabel.isVisible = false
+                    rightSideTable.pack()
                     ToastPopup("Missing mods are downloaded successfully.", this@LoadGameScreen)
                 }
             } catch (ex: Exception) {
-                handleLoadGameException("Could not load the missing mods!", ex)
+                handleLoadGameException(ex, "Could not load the missing mods!")
             } finally {
                 loadMissingModsButton.isEnabled = true
                 descriptionLabel.setText("")
-            }
-
-        }
-    }
-
-    private fun resetWindowState() {
-        updateLoadableGames(showAutosavesCheckbox.isChecked)
-        deleteSaveButton.disable()
-        copySavedGameToClipboardButton.disable()
-        rightSideButton.setText("Load game".tr())
-        rightSideButton.disable()
-        descriptionLabel.setText("")
-    }
-
-    private fun updateLoadableGames(showAutosaves: Boolean) {
-        saveTable.clear()
-
-        val loadImage = ImageGetter.getImage("OtherIcons/Load")
-        loadImage.setSize(50f, 50f) // So the origin sets correctly
-        loadImage.setOrigin(Align.center)
-        loadImage.addAction(Actions.rotateBy(360f, 2f))
-        saveTable.add(loadImage).size(50f)
-
-        // Apparently, even just getting the list of saves can cause ANRs -
-        // not sure how many saves these guys had but Google Play reports this to have happened hundreds of times
-        launchCrashHandling("GetSaves") {
-            // .toList() because otherwise the lastModified will only be checked inside the postRunnable
-            val saves = GameSaver.getSaves().sortedByDescending { it.lastModified() }.toList()
-
-            postCrashHandlingRunnable {
-                saveTable.clear()
-                for (save in saves) {
-                    if (save.name().startsWith(GameSaver.autoSaveFileName) && !showAutosaves) continue
-                    val textButton = TextButton(save.name(), skin)
-                    textButton.onClick { onSaveSelected(save) }
-                    saveTable.add(textButton).pad(5f).row()
-                }
-            }
-        }
-    }
-
-    private fun onSaveSelected(save: FileHandle) {
-        selectedSave = save.name()
-        copySavedGameToClipboardButton.enable()
-
-        rightSideButton.setText("Load [${save.name()}]".tr())
-        rightSideButton.enable()
-        deleteSaveButton.enable()
-        deleteSaveButton.color = Color.RED
-        descriptionLabel.setText("Loading...".tr())
-
-
-        val savedAt = Date(save.lastModified())
-        var textToSet = save.name() + "\n${"Saved at".tr()}: " + savedAt.formatDate()
-        launchCrashHandling("LoadMetaData") { // Even loading the game to get its metadata can take a long time on older phones
-            try {
-                val game = GameSaver.loadGamePreviewFromFile(save)
-                val playerCivNames = game.civilizations.filter { it.isPlayerCivilization() }.joinToString { it.civName.tr() }
-                textToSet += "\n" + playerCivNames +
-                        ", " + game.difficulty.tr() + ", ${Fonts.turn}" + game.turns
-                textToSet += "\n${"Base ruleset:".tr()} " + game.gameParameters.baseRuleset
-                if (game.gameParameters.mods.isNotEmpty())
-                    textToSet += "\n${"Mods:".tr()} " + game.gameParameters.mods.joinToString()
-            } catch (ex: Exception) {
-                textToSet += "\n${"Could not load game".tr()}!"
-            }
-
-            postCrashHandlingRunnable {
-                descriptionLabel.setText(textToSet)
             }
         }
     }

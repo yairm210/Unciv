@@ -4,11 +4,12 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.collections.set
 
 class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
     private val citiesReachedToMediums = HashMap<CityInfo, MutableSet<String>>()
-    private var citiesToCheck = mutableListOf(civInfo.getCapital())
+    private var citiesToCheck = mutableListOf(civInfo.getCapital()!!)
     private lateinit var newCitiesToCheck: MutableList<CityInfo>
 
     private val openBordersCivCities = civInfo.gameInfo.getCities().filter { civInfo.canEnterBordersOf(it.civInfo) }
@@ -24,7 +25,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
     private val railroadIsResearched = ruleset.tileImprovements.containsKey(railroad) && civInfo.tech.isResearched(ruleset.tileImprovements[railroad]!!.techRequired!!)
 
     init {
-        citiesReachedToMediums[civInfo.getCapital()] = hashSetOf("Start")
+        citiesReachedToMediums[civInfo.getCapital()!!] = hashSetOf("Start")
     }
 
     fun find(): Map<CityInfo, Set<String>> {
@@ -80,7 +81,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
     }
 
     private fun CityInfo.containsHarbor() =
-            this.cityConstructions.containsBuildingOrEquivalent(harbor)
+            this.cityConstructions.builtBuildingUniqueMap.getUniques(UniqueType.ConnectTradeRoutes).any()
 
     private fun check(cityToConnectFrom: CityInfo,
                       transportType: String,

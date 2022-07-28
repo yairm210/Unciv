@@ -1,21 +1,19 @@
 package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Notification
-import com.unciv.ui.utils.WrappableLabel
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.WrappableLabel
+import com.unciv.ui.utils.extensions.onClick
 import kotlin.math.min
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class NotificationsScroll(
-    private val worldScreen: WorldScreen,
-    private val maxNotificationsHeight: Float
+    private val worldScreen: WorldScreen
 ) : ScrollPane(null) {
     private companion object {
         /** Scale the entire ScrollPane by this factor */
@@ -41,15 +39,32 @@ class NotificationsScroll(
         setScale(scaleFactor)
     }
 
-    internal fun update(notifications: MutableList<Notification>, tileInfoTableHeight: Float) {
+    /**
+     * Update widget contents if necessary and recalculate layout
+     * @param notifications Data to display
+     * @param maxNotificationsHeight Total height in world screen coordinates
+     * @param tileInfoTableHeight Height of the portion that may be covered on the bottom - make sure we can scroll up far enough so the bottom entry is visible above this
+     */
+    internal fun update(
+        notifications: MutableList<Notification>,
+        maxNotificationsHeight: Float,
+        tileInfoTableHeight: Float
+    ) {
 
+        val previousScrollY = scrollY
+
+        updateContent(notifications)
+        updateLayout(maxNotificationsHeight, tileInfoTableHeight)
+
+        scrollY = previousScrollY
+        updateVisualScroll()
+    }
+
+    private fun updateContent(notifications: MutableList<Notification>) {
         // no news? - keep our list as it is, especially don't reset scroll position
-        if (notificationsHash == notifications.hashCode()) {
-            sizeScrollingSpacer(tileInfoTableHeight)
-            layout()
-            return
-        }
-        notificationsHash = notifications.hashCode()
+        val newHash = notifications.hashCode()
+        if (notificationsHash == newHash) return
+        notificationsHash = newHash
 
         notificationsTable.clearChildren()
         endOfTableSpacerCell = null
@@ -68,18 +83,7 @@ class NotificationsScroll(
                 listItem.add(label).padRight(10f)
             }
 
-            if (notification.icons.isNotEmpty()) {
-                val ruleset = worldScreen.gameInfo.ruleSet
-                for (icon in notification.icons.reversed()) {
-                    val image: Actor = when {
-                        ruleset.technologies.containsKey(icon) -> ImageGetter.getTechIcon(icon)
-                        ruleset.nations.containsKey(icon) -> ImageGetter.getNationIndicator(ruleset.nations[icon]!!, iconSize)
-                        ruleset.units.containsKey(icon) -> ImageGetter.getUnitIcon(icon)
-                        else -> ImageGetter.getImage(icon)
-                    }
-                    listItem.add(image).size(iconSize).padRight(5f)
-                }
-            }
+            notification.addNotificationIcons(worldScreen.gameInfo.ruleSet, iconSize, listItem)
 
             // using a large click area with no gap in between each message item.
             // this avoids accidentally clicking in between the messages, resulting in a map click
@@ -93,12 +97,17 @@ class NotificationsScroll(
         }
 
         notificationsTable.pack()  // needed to get height - prefHeight is set and close but not quite the same value
-        val filledHeight = notificationsTable.height
+    }
+
+    private fun updateLayout(maxNotificationsHeight: Float, tileInfoTableHeight: Float) {
+        val newHeight = min(notificationsTable.height, maxNotificationsHeight * inverseScaleFactor)
 
         sizeScrollingSpacer(tileInfoTableHeight)
 
         pack()
-        height = min(filledHeight, maxNotificationsHeight * inverseScaleFactor)  // after this, maxY is still incorrect until layout()
+        if (height == newHeight) return
+        height = newHeight  // after this, maxY is still incorrect until layout()
+        invalidateHierarchy()
     }
 
     /** Add some empty space that can be scrolled under the TileInfoTable which is covering our lower part */

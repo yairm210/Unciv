@@ -3,11 +3,11 @@
         "name": "Tradition",
         "era": "Ancient era",
         "priorities": {
-            "Neutral": 30,
-            "Cultural": 30,
+            "Neutral": 0,
+            "Cultural": 10,
             "Diplomatic": 0,
             "Domination": 0,
-            "Scientific": 30
+            "Scientific": 10
         },
         "uniques": [
             "[+3 Culture] [in capital]",
@@ -72,11 +72,11 @@
         "name": "Liberty",
         "era": "Ancient era",
         "priorities": {
-            "Neutral": 30,
+            "Neutral": 0,
             "Cultural": 0,
-            "Diplomatic": 30,
-            "Domination": 30,
-            "Scientific": 0
+            "Diplomatic": 10,
+            "Domination": 10,
+            "Scientific": 10
         },
         "uniques": ["[+1 Culture] [in all cities]"],
         "policies": [
@@ -142,7 +142,7 @@
             "Cultural": 0,
             "Diplomatic": 10,
             "Domination": 10,
-            "Scientific": 10
+            "Scientific": 0
         },
         "uniques": [
             "[+33]% Strength <vs [Barbarian] units>",
@@ -264,7 +264,7 @@
             {
                 "name": "Piety Complete",
                 "uniques": [
-                    "[Faith] cost of purchasing items in cities [-20]% ",
+                    "[Faith] cost of purchasing items in cities [-20]%",
                     "[+3 Gold, +3 Culture] from every [Holy site]"
                 ]
             }
@@ -414,7 +414,7 @@
             "Cultural": 10,
             "Diplomatic": 10,
             "Domination": 10,
-            "Scientific": 20
+            "Scientific": 60
         },
         "uniques": [
             "[+15]% [Science] <while the empire is happy>",

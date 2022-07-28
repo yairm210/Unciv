@@ -5,8 +5,8 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeOffersList
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.utils.addSeparator
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.toLabel
 
 class TradesOverviewTab(
     viewingPlayer: CivilizationInfo,

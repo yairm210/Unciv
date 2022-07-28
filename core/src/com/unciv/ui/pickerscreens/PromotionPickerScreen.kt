@@ -5,16 +5,23 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
-import com.unciv.models.Tutorial
+import com.unciv.models.TutorialTrigger
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.AskTextPopup
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.RecreateOnResize
+import com.unciv.ui.utils.extensions.isEnabled
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
 
-class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
+class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResize {
     private var selectedPromotion: Promotion? = null
 
     private fun acceptPromotion(promotion: Promotion?) {
@@ -23,15 +30,12 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
 
         unit.promotions.addPromotion(promotion.name)
         if (unit.promotions.canBePromoted())
-            game.setScreen(PromotionPickerScreen(unit).setScrollY(scrollPane.scrollY))
+            game.replaceCurrentScreen(recreate())
         else
-            game.setWorldScreen()
-        dispose()
-        game.worldScreen.shouldUpdate = true
+            game.popScreen()
     }
 
     init {
-        onBackButtonClicked { UncivGame.Current.setWorldScreen() }
         setDefaultCloseAction()
 
         rightSideButton.setText("Pick promotion".tr())
@@ -39,7 +43,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
             acceptPromotion(selectedPromotion)
         }
         val canBePromoted = unit.promotions.canBePromoted()
-        val canChangeState = game.worldScreen.canChangeState
+        val canChangeState = game.worldScreen!!.canChangeState
         val canPromoteNow = canBePromoted && canChangeState
                 && unit.currentMovement > 0 && unit.attacksThisTurn == 0
         rightSideButton.isEnabled = canPromoteNow
@@ -49,7 +53,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
 
         val unitType = unit.type
         val promotionsForUnitType = unit.civInfo.gameInfo.ruleSet.unitPromotions.values.filter {
-            it.unitTypes.contains(unitType.name) || unit.promotions.promotions.contains(it.name) 
+            it.unitTypes.contains(unitType.name) || unit.promotions.promotions.contains(it.name)
         }
         val unitAvailablePromotions = unit.promotions.getAvailablePromotions()
 
@@ -63,9 +67,9 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
                     icon = ImageGetter.getUnitIcon(unit.name).surroundWithCircle(80f),
                     defaultText = unit.name,
                     validate = { it != unit.name},
-                    actionOnOk = { userInput -> 
+                    actionOnOk = { userInput ->
                         unit.instanceName = userInput
-                        this.game.setScreen(PromotionPickerScreen(unit))
+                        this.game.replaceCurrentScreen(PromotionPickerScreen(unit))
                     }
                 ).open()
             }
@@ -77,7 +81,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
             val isPromotionAvailable = promotion in unitAvailablePromotions
             val unitHasPromotion = unit.promotions.promotions.contains(promotion.name)
 
-            val selectPromotionButton = getPickerOptionButton(ImageGetter.getPromotionIcon(promotion.name), promotion.name)
+            val selectPromotionButton = PickerPane.getPickerOptionButton(ImageGetter.getPromotionIcon(promotion.name), promotion.name)
             selectPromotionButton.isEnabled = true
             selectPromotionButton.onClick {
                 val enable = canBePromoted && isPromotionAvailable && !unitHasPromotion && canChangeState
@@ -106,19 +110,18 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
         }
         topTable.add(availablePromotionsGroup)
 
-        displayTutorial(Tutorial.Experience)
+        displayTutorial(TutorialTrigger.Experience)
     }
 
-    private fun setScrollY(scrollY: Float): PromotionPickerScreen {
+    private fun setScrollY(scrollY: Float) {
         splitPane.pack()    // otherwise scrollPane.maxY == 0
         scrollPane.scrollY = scrollY
         scrollPane.updateVisualScroll()
-        return this
     }
 
-    override fun resize(width: Int, height: Int) {
-        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
-            game.setScreen(PromotionPickerScreen(unit).setScrollY(scrollPane.scrollY))
-        }
+    override fun recreate(): BaseScreen {
+        val newScreen = PromotionPickerScreen(unit)
+        newScreen.setScrollY(scrollPane.scrollY)
+        return newScreen
     }
 }

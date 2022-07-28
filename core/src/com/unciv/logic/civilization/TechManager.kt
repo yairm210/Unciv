@@ -1,25 +1,24 @@
 package com.unciv.logic.civilization
 
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.ruleset.Era
+import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
-import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.utils.MayaCalendar
-import com.unciv.ui.utils.toPercent
-import com.unciv.ui.utils.withItem
+import com.unciv.ui.utils.extensions.toPercent
+import com.unciv.ui.utils.extensions.withItem
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashSet
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 
-class TechManager {
+class TechManager : IsPartOfGameInfoSerialization {
     @Transient
     var era: Era = Era()
 
@@ -49,7 +48,7 @@ class TechManager {
 
     var freeTechs = 0
     // For calculating score
-    var repeatingTechsResearched = 0 
+    var repeatingTechsResearched = 0
 
     /** For calculating Great Scientist yields - see https://civilization.fandom.com/wiki/Great_Scientist_(Civ5)  */
     var scienceOfLast8Turns = IntArray(8) { 0 }
@@ -88,7 +87,7 @@ class TechManager {
         var techCost = getRuleset().technologies[techName]!!.cost.toFloat()
         if (civInfo.isPlayerCivilization())
             techCost *= civInfo.getDifficulty().researchCostModifier
-        techCost *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
+        techCost *= civInfo.gameInfo.speed.scienceCostModifier
         val techsResearchedKnownCivs = civInfo.getKnownCivs()
                 .count { it.isMajorCiv() && it.tech.isResearched(techName) }
         val undefeatedCivs = civInfo.gameInfo.civilizations
@@ -110,8 +109,7 @@ class TechManager {
     }
 
     fun currentTechnology(): Technology? {
-        val currentTechnologyName = currentTechnologyName()
-        if (currentTechnologyName == null) return null
+        val currentTechnologyName = currentTechnologyName() ?: return null
         return getRuleset().technologies[currentTechnologyName]
     }
 
@@ -121,7 +119,7 @@ class TechManager {
 
     fun researchOfTech(TechName: String?) = techsInProgress[TechName] ?: 0
     // Was once duplicated as fun scienceSpentOnTech(tech: String): Int
-    
+
     fun remainingScienceToTech(techName: String) = costOfTech(techName) - researchOfTech(techName)
 
     fun turnsToTech(techName: String) = when {
@@ -134,10 +132,11 @@ class TechManager {
     fun canBeResearched(techName: String): Boolean {
         val tech = getRuleset().technologies[techName]!!
         if (tech.uniqueObjects.any { it.type == UniqueType.OnlyAvailableWhen && !it.conditionalsApply(civInfo) })
-        if (tech.getMatchingUniques(UniqueType.IncompatibleWith).any { isResearched(it.params[0]) })
             return false
+
         if (isResearched(tech.name) && !tech.isContinuallyResearchable())
             return false
+
         return tech.prerequisites.all { isResearched(it) }
     }
 
@@ -166,7 +165,7 @@ class TechManager {
 
     fun getScienceFromGreatScientist(): Int {
         // https://civilization.fandom.com/wiki/Great_Scientist_(Civ5)
-        return (scienceOfLast8Turns.sum() * civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt()
+        return (scienceOfLast8Turns.sum() * civInfo.gameInfo.speed.scienceCostModifier).toInt()
     }
 
     private fun addCurrentScienceToScienceOfLast8Turns() {
@@ -221,8 +220,7 @@ class TechManager {
     }
 
     fun addScience(scienceGet: Int) {
-        val currentTechnology = currentTechnologyName()
-        if (currentTechnology == null) return
+        val currentTechnology = currentTechnologyName() ?: return
         techsInProgress[currentTechnology] = researchOfTech(currentTechnology) + scienceGet
         if (techsInProgress[currentTechnology]!! < costOfTech(currentTechnology))
             return
@@ -257,6 +255,9 @@ class TechManager {
             UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
         }
         updateTransientBooleans()
+        for (city in civInfo.cities) {
+            city.updateCitizens = true
+        }
 
         civInfo.addNotification("Research of [$techName] has completed!", TechAction(techName), NotificationIcon.Science, techName)
         civInfo.popupAlerts.add(PopupAlert(AlertType.TechResearched, techName))
@@ -365,7 +366,7 @@ class TechManager {
         else minEra
     }
 
-    fun addTechToTransients(tech: Technology) {
+    private fun addTechToTransients(tech: Technology) {
         techUniques.addUniques(tech.uniqueObjects)
     }
 
@@ -377,15 +378,11 @@ class TechManager {
     }
 
     private fun updateTransientBooleans() {
-        val wayfinding = civInfo.hasUnique(UniqueType.EmbarkAndEnterOcean)
-        unitsCanEmbark = wayfinding ||
-                civInfo.hasUnique(UniqueType.LandUnitEmbarkation)
+        unitsCanEmbark = civInfo.hasUnique(UniqueType.LandUnitEmbarkation)
         val enterOceanUniques = civInfo.getMatchingUniques(UniqueType.UnitsMayEnterOcean)
         allUnitsCanEnterOcean = enterOceanUniques.any { it.params[0] == "All" }
-        embarkedUnitsCanEnterOcean = wayfinding ||
-                allUnitsCanEnterOcean ||
-                enterOceanUniques.any { it.params[0] == "Embarked" } ||
-                civInfo.hasUnique(UniqueType.EmbarkedUnitsMayEnterOcean)
+        embarkedUnitsCanEnterOcean = allUnitsCanEnterOcean ||
+                enterOceanUniques.any { it.params[0] == "Embarked" }
         specificUnitsCanEnterOcean = enterOceanUniques.any { it.params[0] != "All" && it.params[0] != "Embarked" }
 
         movementSpeedOnRoads = if (civInfo.hasUnique(UniqueType.RoadMovementSpeed))

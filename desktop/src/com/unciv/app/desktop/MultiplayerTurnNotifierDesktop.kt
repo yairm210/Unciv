@@ -7,6 +7,7 @@ import com.sun.jna.Pointer
 import com.sun.jna.platform.win32.User32
 import com.sun.jna.platform.win32.WinNT
 import com.sun.jna.platform.win32.WinUser
+import com.unciv.utils.Log
 import org.lwjgl.glfw.GLFWNativeWin32
 
 class MultiplayerTurnNotifierDesktop: Lwjgl3WindowAdapter() {
@@ -18,7 +19,7 @@ class MultiplayerTurnNotifierDesktop: Lwjgl3WindowAdapter() {
                 null
             }
         } catch (e: UnsatisfiedLinkError) {
-            println("Error while initializing turn notifier: " + e.message)
+            Log.error("Error while initializing turn notifier", e)
             null
         }
     }
@@ -58,7 +59,7 @@ class MultiplayerTurnNotifierDesktop: Lwjgl3WindowAdapter() {
             user32.FlashWindowEx(flashwinfo)
         } catch (e: Throwable) {
             /** try to ignore even if we get an [Error], just log it */
-            println("Error while notifying the user of their turn: " + e.message)
+            Log.error("Error while notifying the user of their turn", e)
         }
     }
 }

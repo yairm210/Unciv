@@ -8,12 +8,11 @@ import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.map.MapType
-import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.onChange
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.extensions.onChange
+import com.unciv.ui.utils.extensions.toLabel
 
 class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
 
@@ -98,7 +97,7 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
                 Popup(newGameScreen).apply {
                     addGoodSizedLabel("Could not load map!").row()
                     if (ex is UncivShowableException)
-                        addGoodSizedLabel(ex.message!!).row()
+                        addGoodSizedLabel(ex.message).row()
                     addCloseButton()
                     open()
                 }

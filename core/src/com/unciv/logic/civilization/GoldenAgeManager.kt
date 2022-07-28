@@ -1,9 +1,10 @@
 package com.unciv.logic.civilization
 
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.utils.toPercent
+import com.unciv.ui.utils.extensions.toPercent
 
-class GoldenAgeManager {
+class GoldenAgeManager : IsPartOfGameInfoSerialization {
     @Transient
     lateinit var civInfo: CivilizationInfo
 
@@ -29,7 +30,7 @@ class GoldenAgeManager {
         var turnsToGoldenAge = unmodifiedNumberOfTurns.toFloat()
         for (unique in civInfo.getMatchingUniques(UniqueType.GoldenAgeLength))
             turnsToGoldenAge *= unique.params[0].toPercent()
-        turnsToGoldenAge *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
+        turnsToGoldenAge *= civInfo.gameInfo.speed.goldenAgeLengthModifier
         turnsLeftForCurrentGoldenAge += turnsToGoldenAge.toInt()
         civInfo.addNotification("You have entered a Golden Age!", "StatIcons/Happiness")
         civInfo.popupAlerts.add(PopupAlert(AlertType.GoldenAge, ""))

@@ -1,0 +1,8 @@
+version: "3.6"
+services:
+  unciv:
+    build: .
+    ports:
+      - "6901:6901"
+      - "5901:5901"
+    command: /home/headless/Desktop/Unciv.sh

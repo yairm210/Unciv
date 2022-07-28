@@ -19,13 +19,14 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.json.json
-import com.unciv.logic.GameSaver
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stats
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.ui.utils.*
+import com.unciv.ui.utils.extensions.*
+import com.unciv.utils.debug
 import kotlin.math.atan2
 import kotlin.math.max
 import kotlin.math.min
@@ -89,7 +90,7 @@ object ImageGetter {
             val extraAtlas = if (mod.isEmpty()) fileName else if (fileName == "game") mod else "$mod/$fileName"
             var tempAtlas = atlases[extraAtlas]  // fetch if cached
             if (tempAtlas == null) {
-                println("Loading $extraAtlas = ${file.path()}")
+                debug("Loading %s = %s", extraAtlas, file.path())
                 tempAtlas = TextureAtlas(file)  // load if not
                 atlases[extraAtlas] = tempAtlas  // cache the freshly loaded
             }
@@ -163,16 +164,15 @@ object ImageGetter {
         // loading screen and Tutorial.WorldScreen quite a bit. More anisotropy barely helps.
         val texture = Texture("ExtraImages/$fileName")
         texture.setFilter(TextureFilter.Linear, TextureFilter.Linear)
-        return Image(TextureRegion(texture))
+        return ImageWithCustomSize(TextureRegion(texture))
     }
 
     fun getImage(fileName: String?): Image {
-        return Image(getDrawable(fileName))
+        return ImageWithCustomSize(getDrawable(fileName))
     }
 
     fun getDrawable(fileName: String?): TextureRegionDrawable {
-        return if (fileName != null && textureRegionDrawables.containsKey(fileName)) textureRegionDrawables[fileName]!!
-        else textureRegionDrawables[whiteDotLocation]!!
+        return textureRegionDrawables[fileName] ?: textureRegionDrawables[whiteDotLocation]!!
     }
 
     fun getRoundedEdgeRectangle(tintColor: Color? = null): NinePatchDrawable {
@@ -247,18 +247,10 @@ object ImageGetter {
     fun wonderImageExists(wonderName: String) = imageExists("WonderImages/$wonderName")
     fun getWonderImage(wonderName: String) = getImage("WonderImages/$wonderName")
 
-    val foodCircleColor = colorFromRGB(129, 199, 132)
-    private val productionCircleColor = Color.BROWN.brighten(0.5f)
-    private val goldCircleColor = Color.GOLD.brighten(0.5f)
-    private val cultureCircleColor = Color.PURPLE.brighten(0.5f)
-    private val scienceCircleColor = Color.BLUE.brighten(0.5f)
-    private fun getColorFromStats(stats: Stats) = when {
-        stats.food > 0 -> foodCircleColor
-        stats.production > 0 -> productionCircleColor
-        stats.gold > 0 -> goldCircleColor
-        stats.culture > 0 -> cultureCircleColor
-        stats.science > 0 -> scienceCircleColor
-        else -> Color.WHITE
+    private fun getColorFromStats(stats: Stats): Color? {
+        if (stats.asSequence().none { it.value > 0 }) return Color.WHITE
+        val highestStat = stats.asSequence().maxByOrNull { it.value }!!
+        return highestStat.key.color
     }
 
 

@@ -17,7 +17,12 @@ import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.civilopedia.MarkupRenderer
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.WrappableLabel
+import com.unciv.ui.utils.extensions.darken
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.enable
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
 
 abstract class ReligionPickerScreenCommon(
     private val choosingCiv: CivilizationInfo,
@@ -61,8 +66,7 @@ abstract class ReligionPickerScreenCommon(
         rightSideButton.setText(buttonText.tr())
         rightSideButton.onClick(UncivSound.Choir) {
             choosingCiv.religionManager.action()
-            UncivGame.Current.setWorldScreen()
-            dispose()
+            UncivGame.Current.popScreen()
         }
     }
 
@@ -103,7 +107,7 @@ abstract class ReligionPickerScreenCommon(
                 add(MarkupRenderer.render(
                     belief.getCivilopediaTextLines(withHeader = true), width - 20f
                 ) {
-                    UncivGame.Current.setScreen(CivilopediaScreen(ruleset, this@ReligionPickerScreenCommon, link = it))
+                    UncivGame.Current.pushScreen(CivilopediaScreen(ruleset,  link = it))
                 }).growX()
                 // Icon should it be needed:  CivilopediaImageGetters.belief(belief.getIconName(), 50f)
             }

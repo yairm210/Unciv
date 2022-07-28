@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--
+        Known Lint warning: MissingTranslation. Yes, _fr_ is incomplete. Suppressed in android/build.gradle.kts
+    -->
     <string name="app_name">UnCiv</string>
     <string name="Notify_YourTurn_Short">Unciv - It\'s your turn!</string>
     <string name="Notify_YourTurn_Long">Your friends are waiting for your turn in [gameName].</string>

@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization
 
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.map.MapSize
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Policy.PolicyBranchType
@@ -7,14 +8,12 @@ import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.translations.equalsPlaceholderText
-import com.unciv.models.translations.getPlaceholderParameters
-import com.unciv.ui.utils.toPercent
+import com.unciv.ui.utils.extensions.toPercent
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
 
-class PolicyManager {
+class PolicyManager : IsPartOfGameInfoSerialization {
 
     @Transient
     lateinit var civInfo: CivilizationInfo
@@ -42,9 +41,6 @@ class PolicyManager {
             }
             return value
         }
-    /** A [Set] of adopted [PolicyBranch]es regardless of its completeness. */
-    val adoptedBranches: Set<PolicyBranch>
-        get() = branches.filter { isAdopted(it.name) }.toSet()
     /** A [Set] of newly adoptable [PolicyBranch]es. */
     val adoptableBranches: Set<PolicyBranch>
         get() = branches.filter { isAdoptable(it) }.toSet()
@@ -82,11 +78,6 @@ class PolicyManager {
     private val branches: Set<PolicyBranch>
         get() = civInfo.gameInfo.ruleSet.policyBranches.values.toSet()
 
-    // Only instantiate a single value for all policy managers
-    companion object {
-        private val turnCountRegex by lazy { Regex("for \\[[0-9]*\\] turns") }
-    }
-
     fun clone(): PolicyManager {
         val toReturn = PolicyManager()
         toReturn.numberOfAdoptedPolicies = numberOfAdoptedPolicies
@@ -99,6 +90,7 @@ class PolicyManager {
 
     private fun getRulesetPolicies() = civInfo.gameInfo.ruleSet.policies
 
+    @Suppress("MemberVisibilityCanBePrivate")
     fun getPolicyByName(name: String): Policy = getRulesetPolicies()[name]!!
 
     fun setTransients() {
@@ -107,13 +99,9 @@ class PolicyManager {
         )
     }
 
-    fun addPolicyToTransients(policy: Policy) {
+    private fun addPolicyToTransients(policy: Policy) {
         for (unique in policy.uniqueObjects) {
-            // Should be deprecated together with TimedAttackStrength so
-            // I'm putting this here so the compiler will complain if we don't
-            val rememberToDeprecate = UniqueType.TimedAttackStrength
-            if (!unique.text.contains(turnCountRegex)) 
-                policyUniques.addUnique(unique)
+            policyUniques.addUnique(unique)
         }
     }
 
@@ -146,7 +134,7 @@ class PolicyManager {
         for (unique in civInfo.getMatchingUniques(UniqueType.LessPolicyCostFromCities)) cityModifier *= 1 - unique.params[0].toFloat() / 100
         for (unique in civInfo.getMatchingUniques(UniqueType.LessPolicyCost)) policyCultureCost *= unique.params[0].toPercent()
         if (civInfo.isPlayerCivilization()) policyCultureCost *= civInfo.getDifficulty().policyCostModifier
-        policyCultureCost *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
+        policyCultureCost *= civInfo.gameInfo.speed.cultureCostModifier
         val cost: Int = (policyCultureCost * (1 + cityModifier)).roundToInt()
         return cost - (cost % 5)
     }
@@ -167,9 +155,6 @@ class PolicyManager {
         if (policy.policyBranchType == PolicyBranchType.BranchComplete) return false
         if (!getAdoptedPolicies().containsAll(policy.requires!!)) return false
         if (checkEra && civInfo.gameInfo.ruleSet.eras[policy.branch.era]!!.eraNumber > civInfo.getEraNumber()) return false
-        if (policy.getMatchingUniques(UniqueType.IncompatibleWith)
-                .any { adoptedPolicies.contains(it.params[0]) }
-        ) return false
         if (policy.uniqueObjects.filter { it.type == UniqueType.OnlyAvailableWhen }
                 .any { !it.conditionalsApply(civInfo) }) return false
         return true
@@ -191,7 +176,7 @@ class PolicyManager {
             else if (!civInfo.gameInfo.gameParameters.godMode) {
                 val cultureNeededForNextPolicy = getCultureNeededForNextPolicy()
                 if (cultureNeededForNextPolicy > storedCulture) throw Exception(
-                    "How is this possible??????"
+                    "Trying to adopt a policy without enough culture????"
                 )
                 storedCulture -= cultureNeededForNextPolicy
                 numberOfAdoptedPolicies++
@@ -208,9 +193,9 @@ class PolicyManager {
             }
         }
 
-        for (unique in policy.uniques) {
-            if (unique.equalsPlaceholderText("Triggers the following global alert: []")) triggerGlobalAlerts(
-                policy, unique.getPlaceholderParameters()[0]
+        for (unique in policy.getMatchingUniques(UniqueType.OneTimeGlobalAlert)) {
+            triggerGlobalAlerts(
+                policy, unique.params[0]
             )
         }
 

@@ -1,15 +1,15 @@
 package com.unciv.logic.multiplayer.storage
 
 import com.badlogic.gdx.Net
-import java.io.FileNotFoundException
-import java.lang.Exception
+import com.unciv.utils.debug
+import kotlin.Exception
 
-class UncivServerFileStorage(val serverUrl:String): FileStorage {
+class UncivServerFileStorage(val serverUrl: String, val timeout: Int = 30000) : FileStorage {
     override fun saveFileData(fileName: String, data: String, overwrite: Boolean) {
-        SimpleHttp.sendRequest(Net.HttpMethods.PUT, "$serverUrl/files/$fileName", data) {
-                success, result, code ->
+        SimpleHttp.sendRequest(Net.HttpMethods.PUT, fileUrl(fileName), data, timeout) {
+                success, result, _ ->
             if (!success) {
-                println(result)
+                debug("Error from UncivServer during save: %s", result)
                 throw Exception(result)
             }
         }
@@ -17,12 +17,12 @@ class UncivServerFileStorage(val serverUrl:String): FileStorage {
 
     override fun loadFileData(fileName: String): String {
         var fileData = ""
-        SimpleHttp.sendGetRequest("$serverUrl/files/$fileName"){
+        SimpleHttp.sendGetRequest(fileUrl(fileName), timeout = timeout){
                 success, result, code ->
             if (!success) {
-                println(result)
+                debug("Error from UncivServer during load: %s", result)
                 when (code) {
-                    404 -> throw FileNotFoundException(result)
+                    404 -> throw MultiplayerFileNotFoundException(Exception(result))
                     else -> throw Exception(result)
                 }
 
@@ -37,15 +37,16 @@ class UncivServerFileStorage(val serverUrl:String): FileStorage {
     }
 
     override fun deleteFile(fileName: String) {
-        SimpleHttp.sendRequest(Net.HttpMethods.DELETE, "$serverUrl/files/$fileName", "") {
+        SimpleHttp.sendRequest(Net.HttpMethods.DELETE, fileUrl(fileName), "", timeout) {
                 success, result, code ->
             if (!success) {
                 when (code) {
-                    404 -> throw FileNotFoundException(result)
+                    404 -> throw MultiplayerFileNotFoundException(Exception(result))
                     else -> throw Exception(result)
                 }
             }
         }
     }
 
+    private fun fileUrl(fileName: String) = "$serverUrl/files/$fileName"
 }

@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.extensions.toLabel
 
 /**
  * Translate a [String] and make a [Button] widget from it, with control over font size, font colour, an optional icon, and custom formatting.

@@ -17,7 +17,12 @@ import com.unciv.ui.civilopedia.CivilopediaCategories
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.UnitGroup
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.darken
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.worldscreen.WorldScreen
 
 class UnitTable(val worldScreen: WorldScreen) : Table(){
@@ -49,7 +54,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
     }
 
     var selectedCity : CityInfo? = null
-    val deselectUnitButton = Table()
+    private val deselectUnitButton = Table()
 
     // This is so that not on every update(), we will update the unit table.
     // Most of the time it's the same unit with the same stats so why waste precious time?
@@ -130,7 +135,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                 }
                 unitIconNameGroup.clearListeners()
                 unitIconNameGroup.onClick {
-                    worldScreen.game.setScreen(CivilopediaScreen(worldScreen.gameInfo.ruleSet, worldScreen, CivilopediaCategories.Unit, unit.name))
+                    worldScreen.game.pushScreen(CivilopediaScreen(worldScreen.gameInfo.ruleSet, CivilopediaCategories.Unit, unit.name))
                 }
 
                 unitDescriptionTable.clear()
@@ -163,17 +168,17 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                     unitDescriptionTable.add("XP")
                     unitDescriptionTable.add(unit.promotions.XP.toString() + "/" + unit.promotions.xpForNextPromotion())
                 }
-                
-                if (unit.canDoReligiousAction(Constants.spreadReligionAbilityCount)) {
+
+                if (unit.canDoReligiousAction(Constants.spreadReligion)) {
                     unitDescriptionTable.add(ImageGetter.getStatIcon("Faith")).size(20f)
-                    unitDescriptionTable.add(unit.getActionString(Constants.spreadReligionAbilityCount))
+                    unitDescriptionTable.add(unit.getActionString(Constants.spreadReligion))
                 }
-                
-                if (unit.canDoReligiousAction(Constants.removeHeresyAbilityCount)) {
+
+                if (unit.canDoReligiousAction(Constants.removeHeresy)) {
                     unitDescriptionTable.add(ImageGetter.getImage("OtherIcons/Remove Heresy")).size(20f)
-                    unitDescriptionTable.add(unit.getActionString(Constants.removeHeresyAbilityCount))
+                    unitDescriptionTable.add(unit.getActionString(Constants.removeHeresy))
                 }
-                
+
                 if (unit.baseUnit.religiousStrength > 0) {
                     unitDescriptionTable.add(ImageGetter.getStatIcon("ReligiousStrength")).size(20f)
                     unitDescriptionTable.add((unit.baseUnit.religiousStrength - unit.religiousStrengthLost).toString())
@@ -222,7 +227,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                 // Since Clear also clears the listeners, we need to re-add it every time
                 promotionsTable.onClick {
                     if (selectedUnit == null || selectedUnit!!.promotions.promotions.isEmpty()) return@onClick
-                    UncivGame.Current.setScreen(PromotionPickerScreen(selectedUnit!!))
+                    UncivGame.Current.pushScreen(PromotionPickerScreen(selectedUnit!!))
                 }
             } else { // multiple selected units
                 for (unit in selectedUnits)
@@ -250,6 +255,8 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
         // Do not select a different unit or city center if we click on it to swap our current unit to it
         if (selectedUnitIsSwapping && selectedUnit != null && selectedUnit!!.movement.canUnitSwapTo(selectedTile)) return
+        // Do no select a different unit while in Air Sweep mode
+        if (selectedUnit != null && selectedUnit!!.isPreparingAirSweep()) return
 
         when {
             forceSelectUnit != null ->

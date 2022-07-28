@@ -1,17 +1,17 @@
 package com.unciv.logic.civilization
 
+import com.unciv.Constants
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.RoadStatus
-import com.unciv.models.metadata.BASE_GAME_DURATION_TURNS
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Policy
-import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
 import com.unciv.models.stats.Stats
-import com.unciv.ui.utils.toPercent
+import com.unciv.ui.utils.extensions.toPercent
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
@@ -61,12 +61,12 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         val numberOfUnitsToPayFor = max(0.0, costsToPay.asSequence().drop(freeUnits).sumOf { it.toDouble() } ).toFloat()
 
         // as game progresses Maintenance cost rises
-        val turnLimit = BASE_GAME_DURATION_TURNS * civInfo.gameInfo.gameParameters.gameSpeed.modifier
+        val turnLimit = civInfo.gameInfo.speed.numTotalTurns().toFloat()
         val gameProgress = min(civInfo.gameInfo.turns / turnLimit, 1f)
-        
+
         var cost = baseUnitCost * numberOfUnitsToPayFor * (1 + gameProgress)
         cost = cost.pow(1 + gameProgress / 3) // Why 3? To spread 1 to 1.33
-        
+
         if (!civInfo.isPlayerCivilization())
             cost *= civInfo.gameInfo.getDifficulty().aiUnitMaintenanceModifier
 
@@ -109,16 +109,16 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
     }
 
     fun getBaseUnitSupply(): Int {
-        return civInfo.getDifficulty().unitSupplyBase + 
+        return civInfo.getDifficulty().unitSupplyBase +
             civInfo.getMatchingUniques(UniqueType.BaseUnitSupply).sumOf { it.params[0].toInt() }
     }
     fun getUnitSupplyFromCities(): Int {
-        return civInfo.cities.size * 
-            (civInfo.getDifficulty().unitSupplyPerCity + civInfo.getMatchingUniques(UniqueType.UnitSupplyPerCity).sumOf { it.params[0].toInt() }) 
-    } 
+        return civInfo.cities.size *
+            (civInfo.getDifficulty().unitSupplyPerCity + civInfo.getMatchingUniques(UniqueType.UnitSupplyPerCity).sumOf { it.params[0].toInt() })
+    }
     fun getUnitSupplyFromPop(): Int {
         var totalSupply = civInfo.cities.sumOf { it.population.population } * civInfo.gameInfo.ruleSet.modOptions.constants.unitSupplyPerPopulation
-        
+
         for (unique in civInfo.getMatchingUniques(UniqueType.UnitSupplyPerPop)) {
             val applicablePopulation = civInfo.cities
                 .filter { it.matchesFilter(unique.params[1]) }
@@ -169,7 +169,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                     cityStateBonus[Stat.valueOf(unique.params[1])] *= unique.params[0].toPercent()
                 }
 
-                statMap.add("City-States", cityStateBonus)
+                statMap.add(Constants.cityStates, cityStateBonus)
             }
 
             if (otherCiv.isCityState())
@@ -178,7 +178,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                             .relationshipLevel() != RelationshipLevel.Ally
                     ) continue
                     statMap.add(
-                        "City-States",
+                        Constants.cityStates,
                         Stats().add(
                             Stat.valueOf(unique.params[0]),
                             otherCiv.statsForNextTurn[Stat.valueOf(unique.params[0])] * unique.params[1].toFloat() / 100f
@@ -270,7 +270,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             .filter { !ownedLuxuries.contains(it) }
 
         statMap["Traded Luxuries"] =
-            luxuriesAllOfWhichAreTradedAway.count() * happinessPerUniqueLuxury *
+            luxuriesAllOfWhichAreTradedAway.size * happinessPerUniqueLuxury *
                     civInfo.getMatchingUniques(UniqueType.RetainHappinessFromLuxury)
                         .sumOf { it.params[0].toInt() } / 100f
 
@@ -308,7 +308,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                         civInfo.religionManager.numberOfCitiesFollowingThisReligion()
                     religionHappiness += unique.stats.happiness * followingCities
                 }
-                if (unique.placeholderText == "[] for every [] global followers []") {
+                if (unique.type == UniqueType.StatsFromGlobalFollowers) {
                     val followers =
                         civInfo.religionManager.numberOfFollowersFollowingThisReligion(unique.params[2])
                     religionHappiness +=
@@ -346,7 +346,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             }
         }
 
-        if (cityStatesHappiness > 0) statMap["City-States"] = cityStatesHappiness
+        if (cityStatesHappiness > 0) statMap[Constants.cityStates] = cityStatesHappiness
 
         return statMap
     }

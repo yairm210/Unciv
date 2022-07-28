@@ -2,17 +2,15 @@
 
 ## Icon Credits
 
-Flag Icons made by [Freepik](https://www.flaticon.com/authors/freepik) from [www.flaticon.com](https://www.flaticon.com) and licensed by Creative Commons 3.0
+Flag Icons made by [Freepik](https://www.flaticon.com/authors/freepik) from [www.flaticon.com](https://www.flaticon.com) and licensed by Creative Commons 3.0, except for:
+
+-   [Catalan flag] by J0anJosep licensed under Public Domain
 
 New Unciv logo made by u-ndefined on Discord
 
-Base tile icons for the "Fantasy Hex" tileset belong to CuddlyClover @ https://cuddlyclover.itch.io/fantasy-hex-tiles with a few additions by me
+Base tile icons for the "Fantasy Hex" tileset belong to CuddlyClover @ https://cuddlyclover.itch.io/fantasy-hex-tiles with a few additions by various contributors
 
-Trees for the jungle tiles in the "Fantasy Hex" are extracted from [Desert Strike for the Amiga](http://eab.abime.net/showthread.php?t=67078&styleid=4)
-
-Almost all the improvements and units made by The Bucketeer on Discord
-
-Tile icons for the "ThorfMaps tileset belong to Thorfinn Tait and are licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License. Based on work at www.thorfmaps.com.
+Tile improvements and units, as well as the entire HexaRealm tileset, are made by The Bucketeer / @GeneralWadaling and are licenced under Creative Commons 3.0
 
 Unless otherwise specified, all the following are from [the Noun Project](https://thenounproject.com) licenced under either Creative Commons or Public Domain
 
@@ -623,6 +621,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [survival knife](https://thenounproject.com/search/?q=survival&i=2663392) by b faris for Survivalism
 -   [Shamrock](https://thenounproject.com/term/shamrock/358507/) By P Thanga Vignesh for Pictish Courage
 -   [home sweet home](https://thenounproject.com/term/home-sweet-home/3817166/) By Silviu Ojog for Home Sweet Home
+-   [Star](https://thenounproject.com/icon/star-35340/) by Trent Kuhn for Dogfighting
 
 ### Religions
 
@@ -645,49 +644,107 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 
 ### Others
 
--   [Circle](https://thenounproject.com/term/circle/1841891/) By Aybige
--   [Arrow](https://thenounproject.com/term/arrow/18123/) By Joe Mortell for movement
--   [Swap](https://thenounproject.com/search/?q=swap&i=1259600) By iconomania for swapping units
--   [Connection](https://thenounproject.com/search/?q=connection&i=1521886) By Travis Avery
--   [Skull](https://thenounproject.com/search/?q=Skull&i=1030702) By Vladimir Belochkin for disbanding units
--   [Crosshair](https://thenounproject.com/search/?q=crosshairs&i=916030) By Bakunetsu Kaito for selecting enemies to attack
--   [City](https://thenounproject.com/search/?q=city&i=571332) By Felix Westphal
--   [Fire](https://thenounproject.com/search/?q=Fire&i=96564) By Lloyd Humphreys for "city being razed" icon
--   [Sleep](https://thenounproject.com/search/?q=sleep&i=1760085) By Saeful Muslim
--   [Banner](https://thenounproject.com/term/banner/866282/) By Emir Palavan for embarked units
--   [Arrow](https://thenounproject.com/term/arrow/18123/) By uzeir syarief for moving between idle units
--   [Replace](https://thenounproject.com/search/?q=replace&i=17858) By Mike Rowe for switching tiles between cities
--   [Resistance](https://thenounproject.com/term/revolution/1315305/) By HeadsOfBirds
--   [Viking Hat](https://thenounproject.com/search/?q=pillage&i=185405) By my name is mud for pillaging improvements
--   [Aim](https://thenounproject.com/search/?q=aim&i=2034920) By Kaviashri for ranged strength
--   [Capitol](https://thenounproject.com/search/?q=capitol&i=160031) By Loren Klein for City-States
--   [Aircraft](https://thenounproject.com/search/?q=aircraft&i=1629000) By Tom Fricker for aircraft icon in city button
--   [radar scan](https://thenounproject.com/search/?q=range&i=1500234) By icon 54 for Range
--   [short range radar](https://thenounproject.com/search/?q=air%20range&i=2612731) by Vectors Point for Intercept range
--   [Puppet](https://thenounproject.com/search/?q=puppet&i=285735) By Ben Davis for puppeted cities
--   [City](https://thenounproject.com/search/?q=city&i=1765370) By Muhajir ila Robbi in the Icon center
--   [Lock](https://thenounproject.com/search/?q=lock&i=3217613) by Vadim Solomakhin for locked tiles
--   [Hourglass](https://thenounproject.com/search/?q=hourglass&i=142268) by I Create Stuff for the 'Turn' icon
--   [Shield](https://thenounproject.com/search/?q=shield&i=813568) by Gregor Cresnar for Religious Strength
--   [skill sword flame](https://thenounproject.com/term/skill-sword-flame/2360212/) by Maxicons) for Remove Heresy
--   [Pencil](https://thenounproject.com/search/?q=pencil&i=4195852) by Muhamad Aldi Maulana for Enter Text Prompt Button / Pencil
--   [Parchment](https://thenounproject.com/term/parchment/1516378/) by hans draiman for Cultured City-States
--   [connection](https://thenounproject.com/term/connection/1365233/) by Popular for Mercantile City-States
--   [crossed sword](https://thenounproject.com/term/crossed-sword/2427559/) by ProSymbols for Militaristic City-States
--   [ship helm](https://thenounproject.com/term/ship-helm/2170591/) by Vectors Market for Maritime City-States
--   [Magnifying Glass](https://thenounproject.com/term/magnifying-glass/1311/) by John Caserta for Mod filter
--   [tick](https://thenounproject.com/term/tick/3968142/) by Adrien Coquet on Nation picker
--   [people](https://thenounproject.com/term/people/458671) by Wilson Joseph as base for Civilopedia category Nations
--   [Mountains ](https://thenounproject.com/term/mountains/15616/) by Andrew J. Young as base for Civilopedia category Terrains
--   [File:Maya.svg](https://en.wikipedia.org/wiki/File:Maya.svg) for Mayan numerals
--   [East side of stela C, Quirigua](https://en.wikipedia.org/wiki/File:East_side_of_stela_C,_Quirigua.PNG) for Mayan calendar symbols
--   [Footprints](https://thenounproject.com/icon/footprints-1393611/) by Abdul Wahhab for movement overlay toggle, slightly modified. Currently unused.
--   Arrows.svg by Intralexical (@will-ca), CC0.
--   [favor](https://thenounproject.com/icon/favor-1029350/) by MICHAEL G BROWN for WLTK marker on City Overview
--   [Party](https://thenounproject.com/icon/party-1784941/) by Adrien Coquet for WLTK header on City Overview
--   [Party](https://thenounproject.com/icon/party-2955155/) by Lars Meiertoberens as additional WLKT decoration
--   [turn right](https://thenounproject.com/icon/turn-right-1920867/) by Alice Design for Resource Overview
--   [Tyrannosaurus Rex](https://thenounproject.com/icon/tyrannosaurus-rex-4130976/) by Amethyst Studio for Civilopedia Eras header
+- [Circle](https://thenounproject.com/term/circle/1841891/) By Aybige
+- [Arrow](https://thenounproject.com/term/arrow/18123/) By Joe Mortell for movement
+- [Swap](https://thenounproject.com/search/?q=swap&i=1259600) By iconomania for swapping units
+- [Connection](https://thenounproject.com/search/?q=connection&i=1521886) By Travis Avery
+- [Skull](https://thenounproject.com/search/?q=Skull&i=1030702) By Vladimir Belochkin for disbanding units
+- [Crosshair](https://thenounproject.com/search/?q=crosshairs&i=916030) By Bakunetsu Kaito for selecting enemies to attack
+- [City](https://thenounproject.com/search/?q=city&i=571332) By Felix Westphal
+- [Fire](https://thenounproject.com/search/?q=Fire&i=96564) By Lloyd Humphreys for "city being razed" icon
+- [Sleep](https://thenounproject.com/search/?q=sleep&i=1760085) By Saeful Muslim
+- [Banner](https://thenounproject.com/term/banner/866282/) By Emir Palavan for embarked units
+- [Arrow](https://thenounproject.com/term/arrow/18123/) By uzeir syarief for moving between idle units
+- [Replace](https://thenounproject.com/search/?q=replace&i=17858) By Mike Rowe for switching tiles between cities
+- [Resistance](https://thenounproject.com/term/revolution/1315305/) By HeadsOfBirds
+- [Viking Hat](https://thenounproject.com/search/?q=pillage&i=185405) By my name is mud for pillaging improvements
+- [Aim](https://thenounproject.com/search/?q=aim&i=2034920) By Kaviashri for ranged strength
+- [Capitol](https://thenounproject.com/search/?q=capitol&i=160031) By Loren Klein for City-States
+- [Aircraft](https://thenounproject.com/search/?q=aircraft&i=1629000) By Tom Fricker for aircraft icon in city button
+- [radar scan](https://thenounproject.com/search/?q=range&i=1500234) By icon 54 for Range
+- [short range radar](https://thenounproject.com/search/?q=air%20range&i=2612731) by Vectors Point for Intercept range
+- [Puppet](https://thenounproject.com/search/?q=puppet&i=285735) By Ben Davis for puppeted cities
+- [City](https://thenounproject.com/search/?q=city&i=1765370) By Muhajir ila Robbi in the Icon center
+- [Lock](https://thenounproject.com/search/?q=lock&i=3217613) by Vadim Solomakhin for locked tiles
+- [Hourglass](https://thenounproject.com/search/?q=hourglass&i=142268) by I Create Stuff for the 'Turn' icon
+- [Shield](https://thenounproject.com/search/?q=shield&i=813568) by Gregor Cresnar for Religious Strength
+- [skill sword flame](https://thenounproject.com/term/skill-sword-flame/2360212/) by Maxicons) for Remove Heresy
+- [Pencil](https://thenounproject.com/search/?q=pencil&i=4195852) by Muhamad Aldi Maulana for Enter Text Prompt Button / Pencil
+- [Parchment](https://thenounproject.com/term/parchment/1516378/) by hans draiman for Cultured City-States
+- [connection](https://thenounproject.com/term/connection/1365233/) by Popular for Mercantile City-States
+- [crossed sword](https://thenounproject.com/term/crossed-sword/2427559/) by ProSymbols for Militaristic City-States
+- [ship helm](https://thenounproject.com/term/ship-helm/2170591/) by Vectors Market for Maritime City-States
+- [Magnifying Glass](https://thenounproject.com/term/magnifying-glass/1311/) by John Caserta for Mod filter
+- [tick](https://thenounproject.com/term/tick/3968142/) by Adrien Coquet on Nation picker
+- [people](https://thenounproject.com/term/people/458671) by Wilson Joseph as base for Civilopedia category Nations
+- [Mountains ](https://thenounproject.com/term/mountains/15616/) by Andrew J. Young as base for Civilopedia category Terrains
+- [File:Maya.svg](https://en.wikipedia.org/wiki/File:Maya.svg) for Mayan numerals
+- [East side of stela C, Quirigua](https://en.wikipedia.org/wiki/File:East_side_of_stela_C,_Quirigua.PNG) for Mayan calendar symbols
+- [Footprints](https://thenounproject.com/icon/footprints-1393611/) by Abdul Wahhab for movement overlay toggle, slightly modified. Currently unused.
+- Arrows.svg by Intralexical (@will-ca), CC0.
+- [favor](https://thenounproject.com/icon/favor-1029350/) by MICHAEL G BROWN for WLTK marker on City Overview
+- [Party](https://thenounproject.com/icon/party-1784941/) by Adrien Coquet for WLTK header on City Overview
+- [Party](https://thenounproject.com/icon/party-2955155/) by Lars Meiertoberens as additional WLKT decoration
+- [turn right](https://thenounproject.com/icon/turn-right-1920867/) by Alice Design for Resource Overview
+- [Tyrannosaurus Rex](https://thenounproject.com/icon/tyrannosaurus-rex-4130976/) by Amethyst Studio for Civilopedia Eras header
+- [Realistic easter day eggs with curvy lines and dots](https://www.freepik.com/free-vector/realistic-easter-day-eggs-with-curvy-lines-dots_6839373.htm) by freepik
+- [Eggs Easter Scrapbook](https://pixabay.com/illustrations/eggs-easter-scrapbooking-672457/) by Claudette Gallant
+- [Pumpkin vector](https://www.freepik.com/vectors/pumpkin) by freepik
+- [Lollipop vector](https://www.freepik.com/vectors/lollipop) by macrovector
+- Part of [Christmas symbols vector](https://www.freepik.com/vectors/christmas-symbols) by vikayatskina
+- Part of [Christmas tree 3d vector](https://www.freepik.com/vectors/christmas-tree-3d) rawpixel.com
+- [Present card vector](https://www.freepik.com/vectors/present-card) by katemangostar
+- [Ribbon box vector](https://www.freepik.com/vectors/ribbon-box) by nikapeshkov
+- [Funny christmas vector](https://www.freepik.com/free-vector/reindeer-santa-hat-peeping-out_1430479.htm) by katemangostar
+- [Santa beard vector](https://www.freepik.com/free-vector/positive-santa-ringing-bell-waving-hand_3636285.htm) by katemangostar
+- [Funny christmas vector](https://www.freepik.com/free-vector/snowman-wearing-santa-hat-scarf-mittens_3636292.htm) by katemangostar
+
+- [Circle](https://thenounproject.com/term/circle/1841891/) By Aybige
+- [Arrow](https://thenounproject.com/term/arrow/18123/) By Joe Mortell for movement
+- [Swap](https://thenounproject.com/search/?q=swap&i=1259600) By iconomania for swapping units
+- [Connection](https://thenounproject.com/search/?q=connection&i=1521886) By Travis Avery
+- [Skull](https://thenounproject.com/search/?q=Skull&i=1030702) By Vladimir Belochkin for disbanding units
+- [Crosshair](https://thenounproject.com/search/?q=crosshairs&i=916030) By Bakunetsu Kaito for selecting enemies to attack
+- [City](https://thenounproject.com/search/?q=city&i=571332) By Felix Westphal
+- [Fire](https://thenounproject.com/search/?q=Fire&i=96564) By Lloyd Humphreys for "city being razed" icon
+- [Sleep](https://thenounproject.com/search/?q=sleep&i=1760085) By Saeful Muslim
+- [Banner](https://thenounproject.com/term/banner/866282/) By Emir Palavan for embarked units
+- [Arrow](https://thenounproject.com/term/arrow/18123/) By uzeir syarief for moving between idle units
+- [Replace](https://thenounproject.com/search/?q=replace&i=17858) By Mike Rowe for switching tiles between cities
+- [Resistance](https://thenounproject.com/term/revolution/1315305/) By HeadsOfBirds
+- [Viking Hat](https://thenounproject.com/search/?q=pillage&i=185405) By my name is mud for pillaging improvements
+- [Aim](https://thenounproject.com/search/?q=aim&i=2034920) By Kaviashri for ranged strength
+- [Capitol](https://thenounproject.com/search/?q=capitol&i=160031) By Loren Klein for City-States
+- [Aircraft](https://thenounproject.com/search/?q=aircraft&i=1629000) By Tom Fricker for aircraft icon in city button
+- [radar scan](https://thenounproject.com/search/?q=range&i=1500234) By icon 54 for Range
+- [short range radar](https://thenounproject.com/search/?q=air%20range&i=2612731) by Vectors Point for Intercept range
+- [AirSweep](https://thenounproject.com/icon/jet-134340/) by Creative Stall for Air Sweep icon
+- [Puppet](https://thenounproject.com/search/?q=puppet&i=285735) By Ben Davis for puppeted cities
+- [City](https://thenounproject.com/search/?q=city&i=1765370) By Muhajir ila Robbi in the Icon center
+- [Lock](https://thenounproject.com/search/?q=lock&i=3217613) by Vadim Solomakhin for locked tiles
+- [Hourglass](https://thenounproject.com/search/?q=hourglass&i=142268) by I Create Stuff for the 'Turn' icon
+- [Shield](https://thenounproject.com/search/?q=shield&i=813568) by Gregor Cresnar for Religious Strength
+- [skill sword flame](https://thenounproject.com/term/skill-sword-flame/2360212/) by Maxicons) for Remove Heresy
+- [Pencil](https://thenounproject.com/search/?q=pencil&i=4195852) by Muhamad Aldi Maulana for Enter Text Prompt Button / Pencil
+- [Parchment](https://thenounproject.com/term/parchment/1516378/) by hans draiman for Cultured City-States
+- [connection](https://thenounproject.com/term/connection/1365233/) by Popular for Mercantile City-States
+- [crossed sword](https://thenounproject.com/term/crossed-sword/2427559/) by ProSymbols for Militaristic City-States
+- [ship helm](https://thenounproject.com/term/ship-helm/2170591/) by Vectors Market for Maritime City-States
+- [Magnifying Glass](https://thenounproject.com/term/magnifying-glass/1311/) by John Caserta for Mod filter
+- [tick](https://thenounproject.com/term/tick/3968142/) by Adrien Coquet on Nation picker
+- [people](https://thenounproject.com/term/people/458671) by Wilson Joseph as base for Civilopedia category Nations
+- [Mountains ](https://thenounproject.com/term/mountains/15616/) by Andrew J. Young as base for Civilopedia category Terrains
+- [File:Maya.svg](https://en.wikipedia.org/wiki/File:Maya.svg) for Mayan numerals
+- [East side of stela C, Quirigua](https://en.wikipedia.org/wiki/File:East_side_of_stela_C,_Quirigua.PNG) for Mayan calendar symbols
+- [Footprints](https://thenounproject.com/icon/footprints-1393611/) by Abdul Wahhab for movement overlay toggle, slightly modified. Currently unused.
+- Arrows.svg by Intralexical (@will-ca), CC0.
+- [favor](https://thenounproject.com/icon/favor-1029350/) by MICHAEL G BROWN for WLTK marker on City Overview
+- [Party](https://thenounproject.com/icon/party-1784941/) by Adrien Coquet for WLTK header on City Overview
+- [Party](https://thenounproject.com/icon/party-2955155/) by Lars Meiertoberens as additional WLKT decoration
+- [turn right](https://thenounproject.com/icon/turn-right-1920867/) by Alice Design for Resource Overview
+- [Tyrannosaurus Rex](https://thenounproject.com/icon/tyrannosaurus-rex-4130976/) by Amethyst Studio for Civilopedia Eras header
+- [Timer](https://www.flaticon.com/free-icons/timer) created by Gregor Cresnar Premium - Flaticon
+- [Question](https://thenounproject.com/icon/question-1157126/) created by Aneeque Ahmed for Question Icon
 
 ### Main menu
 
@@ -703,47 +760,55 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 
 Sounds are from FreeSound.org unless otherwise noted and are either Creative Commons or Public Domain unless otherwise noted
 
--   [Soft two-fingered snap](https://freesound.org/people/EathanMarkson/sounds/388958/) By EathanMarkson as 'click' for most clicks
--   [Pencil1](https://freesound.org/people/stijn/sounds/43673/) By stijn as 'paper' for opening and closing the tech picker
--   [SawInOut01](https://freesound.org/people/kingof_thelab/sounds/340243/) By kingof_thelab for construction picking?
--   [Chain Snare #1](https://freesound.org/people/lovesbody/sounds/322079/) By lovesbody as 'fortify'
--   [Level up](https://freesound.org/people/Marregheriti/sounds/266100/) By Marregheriti as 'upgrade' for upgrading units
--   [levelup](https://freesound.org/people/Seidhepriest/sounds/382915/) By Seidhepriest as 'chimes' for special actions (free tech, build city, hurry wonder etc.)
--   [Coin](https://freesound.org/people/TheDJoe93/sounds/97373/) By TheDJoe93 as 'coin' for purchasing tiles and constructions
--   [fast simple chop 1](https://freesound.org/people/dave.des/sounds/127196/) By dave.dev as 'whoosh' for moving units around, also in edited form to produce the 'swap units' sound.
--   [Military kick](https://freesound.org/people/Dodgy%20C/sounds/72070/) By Dodgy C as 'promote' for unit promotions
--   [Tank reload](https://freesound.org/people/KieranKeegan/sounds/418882/) By KieranKeegan as 'setup' for siege unit setup
--   [Scribble_short](https://freesound.org/people/waldram/sounds/257518/) By waldram as 'policy' for adopting policies
--   [Hit Impact](https://freesound.org/people/Mrguff/sounds/369711/) by Mrguff as 'throw' for catapult & trebuchet attacks
--   [Slingshot fly by 2](https://freesound.org/people/saturdaysoundguy/sounds/394186/) by saturdaysoundguy as 'arrow' for arrow attacks
--   [Metal hit slide](https://freesound.org/people/orginaljun/sounds/149102/) by orginaljun as 'nonmetalhit' for pre-metal melee sounds
--   [klick_anlauf](https://freesound.org/people/jascha/sounds/16576/) By jascha as 'metalhit' for metal melee sounds
--   [Horse's whinny](https://freesound.org/people/Kubuzz/sounds/347036/) By Kubuzz as 'horse' for cavalry attack sounds
--   [machine gun 001 - loop](https://freesound.org/people/pgi/sounds/212602/) By pgi as 'machinegun' for machine gun attack sound
--   [uzzi_full_single](https://freesound.org/people/Deganoth/sounds/348685/) By Deganoth as 'shot' for bullet attacks
--   [Grenade Launcher 2](https://soundbible.com/2140-Grenade-Launcher-2.html) By Daniel Simon as city bombard sound (CC Attribution 3.0 license)
--   [Woosh](https://soundbible.com/2068-Woosh.html) by Mark DiAngelo as 'slider' sound (CC Attribution 3.0 license)
--   [Tornado-Siren-II](https://soundbible.com/1937-Tornado-Siren-II.html) by Delilah as part of 'nuke' sound (CC Attribution 3.0 license)
--   [Explosion-Ultra-Bass](https://soundbible.com/1807-Explosion-Ultra-Bass.html) by Mark DiAngelo as part of 'nuke' sound (CC Attribution 3.0 license)
--   [Short Choir](https://freesound.org/people/Breviceps/sounds/444491/) by Breviceps as 'choir' for free great person pick
--   [Death Robot! Robotic scream](https://freesound.org/people/vultraz168/sounds/334660/) by vultraz168 for Giant Death Robot Attack (CC0 1.0 Universal license)
--   [ceremonial cannon fire](https://freesound.org/people/DylanSmithSound/sounds/274826/) by DylanSmithSound for cannon
--   [artillery fire](https://freesound.org/people/Tomashevsky/sounds/476664/) by Tomashevsky for artillery
--   [20mm cannons](https://freesound.org/people/Piotr123/sounds/551534/) by Piotr123 for ship guns
--   "bombing" is made by the Unciv team using Audacity from
+- [Soft two-fingered snap](https://freesound.org/people/EathanMarkson/sounds/388958/) By EathanMarkson as 'click' for most clicks
+- [Pencil1](https://freesound.org/people/stijn/sounds/43673/) By stijn as 'paper' for opening and closing the tech picker
+- [SawInOut01](https://freesound.org/people/kingof_thelab/sounds/340243/) By kingof_thelab for construction picking?
+- [Chain Snare #1](https://freesound.org/people/lovesbody/sounds/322079/) By lovesbody as 'fortify'
+- [Level up](https://freesound.org/people/Marregheriti/sounds/266100/) By Marregheriti as 'upgrade' for upgrading units
+- [levelup](https://freesound.org/people/Seidhepriest/sounds/382915/) By Seidhepriest as 'chimes' for special actions (free tech, build city, hurry wonder etc.)
+- [Coin](https://freesound.org/people/TheDJoe93/sounds/97373/) By TheDJoe93 as 'coin' for purchasing tiles and constructions
+- [fast simple chop 1](https://freesound.org/people/dave.des/sounds/127196/) By dave.dev as 'whoosh' for moving units around, also in edited form to produce the 'swap units' sound.
+- [Military kick](https://freesound.org/people/Dodgy%20C/sounds/72070/) By Dodgy C as 'promote' for unit promotions
+- [Tank reload](https://freesound.org/people/KieranKeegan/sounds/418882/) By KieranKeegan as 'setup' for siege unit setup
+- [Scribble_short](https://freesound.org/people/waldram/sounds/257518/) By waldram as 'policy' for adopting policies
+- [Hit Impact](https://freesound.org/people/Mrguff/sounds/369711/) by Mrguff as 'throw' for catapult & trebuchet attacks
+- [Slingshot fly by 2](https://freesound.org/people/saturdaysoundguy/sounds/394186/) by saturdaysoundguy as 'arrow' for arrow attacks
+- [Metal hit slide](https://freesound.org/people/orginaljun/sounds/149102/) by orginaljun as 'nonmetalhit' for pre-metal melee sounds
+- [klick_anlauf](https://freesound.org/people/jascha/sounds/16576/) By jascha as 'metalhit' for metal melee sounds
+- [Horse's whinny](https://freesound.org/people/Kubuzz/sounds/347036/) By Kubuzz as 'horse' for cavalry attack sounds
+- [machine gun 001 - loop](https://freesound.org/people/pgi/sounds/212602/) By pgi as 'machinegun' for machine gun attack sound
+- [uzzi_full_single](https://freesound.org/people/Deganoth/sounds/348685/) By Deganoth as 'shot' for bullet attacks
+- [Grenade Launcher 2](https://soundbible.com/2140-Grenade-Launcher-2.html) By Daniel Simon as city bombard sound (CC Attribution 3.0 license)
+- [Woosh](https://soundbible.com/2068-Woosh.html) by Mark DiAngelo as 'slider' sound (CC Attribution 3.0 license)
+- [Tornado-Siren-II](https://soundbible.com/1937-Tornado-Siren-II.html) by Delilah as part of 'nuke' sound (CC Attribution 3.0 license)
+- [Explosion-Ultra-Bass](https://soundbible.com/1807-Explosion-Ultra-Bass.html) by Mark DiAngelo as part of 'nuke' sound (CC Attribution 3.0 license)
+- [Short Choir](https://freesound.org/people/Breviceps/sounds/444491/) by Breviceps as 'choir' for free great person pick
+- [Death Robot! Robotic scream](https://freesound.org/people/vultraz168/sounds/334660/) by vultraz168 for Giant Death Robot Attack (CC0 1.0 Universal license)
+- [ceremonial cannon fire](https://freesound.org/people/DylanSmithSound/sounds/274826/) by DylanSmithSound for cannon
+- [artillery fire](https://freesound.org/people/Tomashevsky/sounds/476664/) by Tomashevsky for artillery
+- [20mm cannons](https://freesound.org/people/Piotr123/sounds/551534/) by Piotr123 for ship guns
+- "bombing" is made by the Unciv team using Audacity from
     -   [lancaster bomber](https://freesound.org/people/confusion_music/sounds/103439/) by confusion_music - aircraft
     -   [Artillery Explosion (Close) (Mixed)](https://freesound.org/people/EFlexMusic/sounds/388528/) by EFlexMusic - impact
     -   [SFX Hit drop/bomb effect 5](https://freesound.org/people/old_waveplay/sounds/187502/) by old_waveplay - bass
--   "jetgun" for Jet Fighter attack is made by the Unciv team using Audacity from
+- "jetgun" for Jet Fighter attack is made by the Unciv team using Audacity from
     -   [Fighter Jet Aircraft Fly by (synthesised)](https://freesound.org/people/Headphaze/sounds/347795/) by Headphaze
     -   [Machine Gun 001 - triple shot](https://freesound.org/people/pgi/sounds/212600/) by pgi
--   Excerpt from [Tanks Shooting](https://freesound.org/people/qubodup/sounds/189344/) by qubodup for tankshot
--   "torpedo" is made by the Unciv team using Audacity from
+- Excerpt from [Tanks Shooting](https://freesound.org/people/qubodup/sounds/189344/) by qubodup for tankshot
+- "torpedo" is made by the Unciv team using Audacity from
     -   [Torpedo launch underwater](https://freesound.org/people/jobro/sounds/35530/) by jobro
     -   [Artillery Explosion (Close) (Mixed)](https://freesound.org/people/EFlexMusic/sounds/388528/) by EFlexMusic
--   [elephant 44](https://freesound.org/people/y89312/sounds/139875/) by y89312 for Naruesan's Elephant sound
--   Excerpt from [Missile Strike](https://freesound.org/people/BaDoink/sounds/570690/) by BaDoink for guided missile
--   Excerpt from [FireBurning_v2.wav](https://freesound.org/people/pcaeldries/sounds/30322/) by pcaeldries for 'remove heresy' action of inquisitor ([License](http://creativecommons.org/licenses/by/3.0/))
+- [elephant 44](https://freesound.org/people/y89312/sounds/139875/) by y89312 for Naruesan's Elephant sound
+- Excerpt from [Missile Strike](https://freesound.org/people/BaDoink/sounds/570690/) by BaDoink for guided missile
+- Excerpt from [FireBurning_v2.wav](https://freesound.org/people/pcaeldries/sounds/30322/) by pcaeldries for 'remove heresy' action of inquisitor ([License](http://creativecommons.org/licenses/by/3.0/))
+- [Up Chime 2](https://freesound.org/people/FoolBoyMedia/sounds/352666/) by FoolBoyMedia for notifications
+- [dingaling](https://freesound.org/people/morrisjm/sounds/268756/) by morrisjm (based on [Calling_Bell_02.wav](https://freesound.org/people/RSilveira_88/sounds/216306/) by RSilveira_88) for notifications
+- City ambience sounds made by Unciv Team using Audacity from CC0 sounds and
+    -   [Street Musician Playing Renaissance Melody on Glockenspiel](https://freesound.org/people/_MC5_/sounds/542107/) by MC5 for Renaissance city sound
+    -   [Ambience, Machine Factory](https://freesound.org/people/InspectorJ/sounds/385943/) by InspectorJ for Industrial city sound
+    -   [Rock_Hammer_Chisel_01](https://freesound.org/people/dheming/sounds/240981/#) by dheming for Ancient city sound
+    -   [Future City ambience](https://freesound.org/people/bolkmar/sounds/502896/) by bolkmar for Future city sound
+    -   [Jingle_Achievement](https://freesound.org/people/LittleRobotSoundFactory/sounds/270404/) by LittleRobotSoundFactory for We Love The King sound
 
 ## Music
 

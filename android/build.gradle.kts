@@ -31,7 +31,7 @@ android {
         versionCode = BuildConfig.appCodeNumber
         versionName = BuildConfig.appVersion
 
-        base.archivesBaseName = "Unciv"
+        base.archivesName.set("Unciv")
     }
 
     // necessary for Android Work lib
@@ -53,18 +53,20 @@ android {
 
     buildTypes {
         getByName("release") {
-            // If you make this true you get a version of the game that just flat-out does't run
+            // If you make this true you get a version of the game that just flat-out doesn't run
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
         }
 
     }
     lint {
-        disable.add("MissingTranslation")
+        disable += "MissingTranslation"   // see res/values/strings.xml
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+
+        isCoreLibraryDesugaringEnabled = true
     }
     androidResources {
         // Don't add local save files and fonts to release, obviously
@@ -123,8 +125,10 @@ tasks.register<JavaExec>("run") {
 }
 
 dependencies {
-    // Updating to latest version would require upgrading sourceCompatability and targetCompatability to 1_8 -
+    // Updating to latest version would require upgrading sourceCompatibility and targetCompatibility to 1_8, and targetSdk to 31 -
     //   run `./gradlew build --scan` to see details
+    // Known Android Lint warning: "GradleDependency"
     implementation("androidx.core:core-ktx:1.6.0")
     implementation("androidx.work:work-runtime-ktx:2.6.0")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 }

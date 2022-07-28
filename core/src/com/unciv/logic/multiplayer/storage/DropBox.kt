@@ -1,13 +1,18 @@
 package com.unciv.logic.multiplayer.storage
 
 import com.unciv.json.json
-import com.unciv.ui.utils.UncivDateFormat.parseDate
-import java.io.*
+import com.unciv.ui.utils.extensions.UncivDateFormat.parseDate
+import com.unciv.utils.Log
+import com.unciv.utils.debug
+import java.io.BufferedReader
+import java.io.DataOutputStream
+import java.io.FileNotFoundException
+import java.io.InputStream
+import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.Charset
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.concurrent.timer
 
 
@@ -42,24 +47,23 @@ object DropBox: FileStorage {
 
                 return inputStream
             } catch (ex: Exception) {
-                println(ex.message)
+                debug("Dropbox exception", ex)
                 val reader = BufferedReader(InputStreamReader(errorStream))
                 val responseString = reader.readText()
-                println(responseString)
+                debug("Response: %s", responseString)
 
                 val error = json().fromJson(ErrorResponse::class.java, responseString)
                 // Throw Exceptions based on the HTTP response from dropbox
                 when {
                     error.error_summary.startsWith("too_many_requests/") -> triggerRateLimit(error)
-                    error.error_summary.startsWith("path/not_found/") -> throw FileNotFoundException()
+                    error.error_summary.startsWith("path/not_found/") -> throw MultiplayerFileNotFoundException(ex)
                     error.error_summary.startsWith("path/conflict/file") -> throw FileStorageConflictException()
                 }
-                
+
                 return null
             } catch (error: Error) {
-                println(error.message)
-                val reader = BufferedReader(InputStreamReader(errorStream))
-                println(reader.readText())
+                Log.error("Dropbox error", error)
+                debug("Error stream: %s", { BufferedReader(InputStreamReader(errorStream)).readText() })
                 return null
             }
         }
@@ -124,33 +128,13 @@ object DropBox: FileStorage {
         throw FileStorageRateLimitReached(remainingRateLimitSeconds)
     }
 
-    fun getFolderList(folder: String): ArrayList<FileMetaData> {
-        val folderList = ArrayList<FileMetaData>()
-        // The DropBox API returns only partial file listings from one request. list_folder and
-        // list_folder/continue return similar responses, but list_folder/continue requires a cursor
-        // instead of the path.
-        val response = dropboxApi("https://api.dropboxapi.com/2/files/list_folder",
-                "{\"path\":\"$folder\"}", "application/json")
-        var currentFolderListChunk = json().fromJson(FolderList::class.java, response)
-        folderList.addAll(currentFolderListChunk.entries)
-        while (currentFolderListChunk.has_more) {
-            val continuationResponse = dropboxApi("https://api.dropboxapi.com/2/files/list_folder/continue",
-                    "{\"cursor\":\"${currentFolderListChunk.cursor}\"}", "application/json")
-            currentFolderListChunk = json().fromJson(FolderList::class.java, continuationResponse)
-            folderList.addAll(currentFolderListChunk.entries)
-        }
-        return folderList
-    }
-
-    fun fileExists(fileName: String): Boolean {
-        try {
+    fun fileExists(fileName: String): Boolean = try {
             dropboxApi("https://api.dropboxapi.com/2/files/get_metadata",
-                    "{\"path\":\"$fileName\"}", "application/json")
-            return true
-        } catch (ex: FileNotFoundException) {
-            return false
+                "{\"path\":\"$fileName\"}", "application/json")
+            true
+        } catch (ex: MultiplayerFileNotFoundException) {
+            false
         }
-    }
 
 //
 //    fun createTemplate(): String {
@@ -160,16 +144,15 @@ object DropBox: FileStorage {
 //        return BufferedReader(InputStreamReader(result)).readText()
 //    }
 
-    @Suppress("PropertyName")
-    private class FolderList{
-        var entries = ArrayList<MetaData>()
-        var cursor = ""
-        var has_more = false
-    }
+//    private class FolderList{
+//        var entries = ArrayList<MetaData>()
+//        var cursor = ""
+//        var has_more = false
+//    }
 
     @Suppress("PropertyName")
     private class MetaData: FileMetaData {
-        var name = ""
+//        var name = ""
         private var server_modified = ""
 
         override fun getLastModified(): Date {

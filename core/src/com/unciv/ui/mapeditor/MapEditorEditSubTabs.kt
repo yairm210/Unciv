@@ -9,17 +9,26 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.tile.*
+import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.tile.Terrain
+import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.ruleset.tile.TileImprovement
+import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
+import com.unciv.ui.audio.MusicMood
+import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.MarkupRenderer
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.mapeditor.MapEditorEditTab.BrushHandlerType
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
-import com.unciv.ui.utils.*
-import kotlin.random.Random
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.TabbedPager
+import com.unciv.ui.utils.extensions.center
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
 
 internal interface IMapEditorEditSubTabs {
     fun isDisabled(): Boolean
@@ -270,6 +279,7 @@ class MapEditorEditStartsTab(
             getNations(),
             iconDisplay = FormattedLine.IconDisplay.NoLink
         ) {
+            UncivGame.Current.musicController.chooseTrack(it, MusicMood.Theme, MusicTrackChooserFlags.setSpecific)
             editTab.setBrush(BrushHandlerType.Direct, it, "Nation/$it") { tile ->
                 // toggle the starting location here, note this allows
                 // both multiple locations per nation and multiple nations per tile

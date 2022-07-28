@@ -4,7 +4,6 @@ import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.map.MapParameters
-import com.unciv.models.ruleset.Difficulty
 
 class GameSetupInfo(
     var gameParameters: GameParameters = GameParameters(),

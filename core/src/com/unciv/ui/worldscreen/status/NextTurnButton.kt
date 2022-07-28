@@ -4,22 +4,33 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.models.translations.tr
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.KeyShortcut
+import com.unciv.ui.utils.extensions.isEnabled
+import com.unciv.ui.utils.extensions.keyShortcuts
+import com.unciv.ui.utils.extensions.onActivation
+import com.unciv.ui.utils.extensions.setFontSize
 
 class NextTurnButton(
-    keyPressDispatcher: KeyPressDispatcher
 ) : TextButton("", BaseScreen.skin) {
-    lateinit var nextTurnAction: NextTurnAction
+    private var nextTurnAction = NextTurnAction("", Color.BLACK) {}
+
     init {
         label.setFontSize(30)
         labelCell.pad(10f)
-        val action = { nextTurnAction.action() }
-        onClick(action)
-        keyPressDispatcher[Input.Keys.SPACE] = action
-        keyPressDispatcher['n'] = action
+        onActivation { nextTurnAction.action() }
+        keyShortcuts.add(Input.Keys.SPACE)
+        keyShortcuts.add('n')
+        // Let unit actions override this for command "Wait".
+        keyShortcuts.add(KeyShortcut(KeyCharAndCode('z'), -100))
     }
 
-    fun update(isSomethingOpen: Boolean, isPlayersTurn: Boolean, waitingForAutosave: Boolean, nextTurnAction: NextTurnAction? = null) {
+    fun update(isSomethingOpen: Boolean,
+               isPlayersTurn: Boolean,
+               waitingForAutosave: Boolean,
+               isNextTurnUpdateRunning: Boolean,
+               nextTurnAction: NextTurnAction? = null) {
         if (nextTurnAction != null) {
             this.nextTurnAction = nextTurnAction
             setText(nextTurnAction.text.tr())
@@ -27,7 +38,7 @@ class NextTurnButton(
             pack()
         }
 
-        isEnabled = !isSomethingOpen && isPlayersTurn && !waitingForAutosave
+        isEnabled = !isSomethingOpen && isPlayersTurn && !waitingForAutosave && !isNextTurnUpdateRunning
     }
 }
 

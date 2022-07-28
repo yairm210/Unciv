@@ -8,25 +8,20 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.GameSaver
+import com.unciv.logic.UncivFiles
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.AutoScrollPane
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.extensions.addBorder
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.setFontSize
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toNiceString
 import java.io.PrintWriter
 import java.io.StringWriter
-import kotlin.concurrent.thread
-
-/*
-Crashes are now handled from:
-- Event listeners, by [CrashHandlingStage].
-- The main rendering loop, by [UncivGame.render].
-- Threads, by [crashHandlingThread].
-- Main loop runnables, by [postCrashHandlingRunnable].
-
-Altogether, I *think* that should cover 90%-99% of all potential crashes.
- */
 
 /** Screen to crash to when an otherwise unhandled exception or error is thrown. */
 class CrashScreen(val exception: Throwable): BaseScreen() {
@@ -40,8 +35,8 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
     }
 
     /** Qualified class name of the game screen that was active at the construction of this instance, or an error note. */
-    val lastScreenType = try {
-        UncivGame.Current.screen::class.qualifiedName.toString()
+    private val lastScreenType = try {
+        UncivGame.Current.screen!!::class.qualifiedName.toString()
     } catch (e: Throwable) {
         "Could not get screen type: $e"
     }
@@ -52,11 +47,11 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
 
     /** @return The last active save game serialized as a compressed string if any, or an informational note otherwise. */
     private fun tryGetSaveGame(): String {
-        if (!UncivGame.isCurrentInitialized() || !UncivGame.Current.isGameInfoInitialized())
+        if (!UncivGame.isCurrentInitialized() || UncivGame.Current.gameInfo == null)
             return ""
-        return "\n**Save Data:**\n<details><summary>Show Saved Game</summary>\n\n```" +
+        return "\n**Save Data:**\n<details><summary>Show Saved Game</summary>\n\n```\n" +
             try {
-                GameSaver.gameInfoToString(UncivGame.Current.gameInfo, forceZip = true)
+                UncivFiles.gameInfoToString(UncivGame.Current.gameInfo!!, forceZip = true)
             } catch (e: Throwable) {
                 "No save data: $e" // In theory .toString() could still error here.
             } + "\n```\n</details>\n"
@@ -64,11 +59,11 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
 
     /** @return Mods from the last active save game if any, or an informational note otherwise. */
     private fun tryGetSaveMods(): String {
-        if (!UncivGame.isCurrentInitialized() || !UncivGame.Current.isGameInfoInitialized())
+        if (!UncivGame.isCurrentInitialized() || UncivGame.Current.gameInfo == null)
             return ""
         return "\n**Save Mods:**\n```\n" +
             try { // Also from old CrashController().buildReport(), also could still error at .toString().
-                LinkedHashSet(UncivGame.Current.gameInfo.gameParameters.getModsAndBaseRuleset()).toString()
+                LinkedHashSet(UncivGame.Current.gameInfo!!.gameParameters.getModsAndBaseRuleset()).toString()
             } catch (e: Throwable) {
                 "No mod data: $e"
             } + "\n```\n"
@@ -88,7 +83,7 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
         /// The $lastScreenType substitution is the only one completely under the control of this class— Everything else can, in theory, have new lines in it due to containing strings or custom .toString behaviour with new lines (which… I think Table.toString or something actually does). So normalize indentation for basically everything.
         return """
             **Platform:** ${Gdx.app.type.toString().prependIndentToOnlyNewLines(subIndent)}
-            **Version:** ${UncivGame.Current.version.prependIndentToOnlyNewLines(subIndent)}
+            **Version:** ${UncivGame.VERSION.toNiceString().prependIndentToOnlyNewLines(subIndent)}
             **Rulesets:** ${RulesetCache.keys.toString().prependIndentToOnlyNewLines(subIndent)}
             **Last Screen:** `$lastScreenType`
 
@@ -107,8 +102,6 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
     }
 
     init {
-        println(text) // Also print to system terminal.
-        thread { throw exception } // this is so the GPC logs catch the exception
         stage.addActor(makeLayoutTable())
     }
 

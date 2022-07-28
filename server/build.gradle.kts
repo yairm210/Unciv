@@ -31,7 +31,7 @@ tasks.register<JavaExec>("run") {
 
     dependsOn(tasks.getByName("classes"))
 
-    main = mainClassName
+    mainClass.set(mainClassName)
     classpath = sourceSets.main.get().runtimeClasspath
     standardInput = System.`in`
     workingDir = assetsDir
@@ -41,7 +41,7 @@ tasks.register<JavaExec>("run") {
 tasks.register<JavaExec>("debug") {
     jvmArgs = jvmArgsForMac
     dependsOn(tasks.getByName("classes"))
-    main = mainClassName
+    mainClass.set(mainClassName)
     classpath = sourceSets.main.get().runtimeClasspath
     standardInput = System.`in`
     workingDir = assetsDir

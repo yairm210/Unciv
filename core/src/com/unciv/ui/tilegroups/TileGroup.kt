@@ -11,7 +11,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.helpers.MapArrowType
@@ -19,44 +18,45 @@ import com.unciv.models.helpers.MiscArrowTypes
 import com.unciv.models.helpers.TintedMapArrow
 import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.ui.cityscreen.YieldGroup
-import com.unciv.ui.images.ImageAttempter
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.utils.*
-import java.lang.IllegalStateException
-import kotlin.math.*
+import com.unciv.ui.utils.extensions.center
+import kotlin.math.PI
+import kotlin.math.atan
+import kotlin.math.atan2
+import kotlin.math.pow
+import kotlin.math.sqrt
 import kotlin.random.Random
 
-/** A lot of the render time was spent on snapshot arrays of the TileGroupMap's groups, in the act() function.
- * This class is to avoid the overhead of useless act() calls. */
-open class ActionlessGroup(val checkHit:Boolean=false):Group() {
-    override fun act(delta: Float) {}
-    override fun hit(x: Float, y: Float, touchable: Boolean): Actor? {
-        if (checkHit)
-            return super.hit(x, y, touchable)
-        return null
-    }
-}
-
-open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, private val groupSize: Float = 54f) : ActionlessGroup(true) {
+open class TileGroup(
+    var tileInfo: TileInfo,
+    val tileSetStrings: TileSetStrings,
+    groupSize: Float = 54f
+) : ActionlessGroupWithHit() {
     /*
-    Layers:
-    Base image (+ overlay)
-    Feature overlay / city overlay
-    Misc: Units, improvements, resources, border, arrows
-    Highlight, Crosshair, Fog layer
-    City name
+        Layers (reordered in TileGroupMap):
+        Base image (+ overlay)
+        Terrain Feature overlay (including roads)
+        Misc: improvements, resources, yields, worked, resources, border, arrows, and starting locations in editor
+        Pixel Units
+        Highlight, Fog, Crosshair layer (in that order)
+        Units
+        City button
+        City name
     */
 
     /** Cache simple but frequent calculations. */
     private val hexagonImageWidth = groupSize * 1.5f
     /** Cache simple but frequent calculations. */
-    private val hexagonImageOrigin = Pair(hexagonImageWidth/2f, sqrt((hexagonImageWidth/2f).pow(2) - (hexagonImageWidth/4f).pow(2))) // Pair, not Vector2, for immutability. Second number is triangle height for hex center.
+    private val hexagonImageOrigin = Pair(hexagonImageWidth / 2f, sqrt((hexagonImageWidth / 2f).pow(2) - (hexagonImageWidth / 4f).pow(2)))
+    // Pair, not Vector2, for immutability. Second number is triangle height for hex center.
     /** Cache simple but frequent calculations. */
-    private val hexagonImagePosition = Pair(-hexagonImageOrigin.first/3f, -hexagonImageOrigin.second/4f) // Honestly, I got these numbers empirically by printing `.x` and `.y` after `.center()`, and I'm not totally clear on the stack of transformations that makes them work. But they are still exact ratios, AFAICT.
+    private val hexagonImagePosition = Pair(-hexagonImageOrigin.first / 3f, -hexagonImageOrigin.second / 4f)
+    // Honestly, I got these numbers empirically by printing `.x` and `.y` after `.center()`, and I'm not totally
+    // clear on the stack of transformations that makes them work. But they are still exact ratios, AFAICT.
 
     // For recognizing the group in the profiler
-    class BaseLayerGroupClass:ActionlessGroup()
-    val baseLayerGroup = BaseLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize)  }
+    class BaseLayerGroupClass(groupSize: Float) : ActionlessGroup(groupSize)
+    val baseLayerGroup = BaseLayerGroupClass(groupSize)
 
     val tileBaseImages: ArrayList<Image> = ArrayList()
     /** List of image locations comprising the layers so we don't need to change images all the time */
@@ -66,9 +66,8 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
     private  var baseTerrainOverlayImage: Image? = null
     private  var baseTerrain: String = ""
 
-    class TerrainFeatureLayerGroupClass:ActionlessGroup()
-    val terrainFeatureLayerGroup = TerrainFeatureLayerGroupClass()
-            .apply { isTransform = false; setSize(groupSize, groupSize) }
+    class TerrainFeatureLayerGroupClass(groupSize: Float) : ActionlessGroup(groupSize)
+    val terrainFeatureLayerGroup = TerrainFeatureLayerGroupClass(groupSize)
 
     // These are for OLD tiles - for instance the "forest" symbol on the forest
     private var terrainFeatureOverlayImage: Image? = null
@@ -77,14 +76,15 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
     private var naturalWonderImage: Image? = null
 
     private var pixelMilitaryUnitImageLocation = ""
-    var pixelMilitaryUnitGroup = ActionlessGroup().apply { isTransform = false; setSize(groupSize, groupSize) }
+    var pixelMilitaryUnitGroup = ActionlessGroup(groupSize)
     private var pixelCivilianUnitImageLocation = ""
-    var pixelCivilianUnitGroup = ActionlessGroup().apply { isTransform = false; setSize(groupSize, groupSize) }
+    var pixelCivilianUnitGroup = ActionlessGroup(groupSize)
 
-    class MiscLayerGroupClass:ActionlessGroup(){
+    class MiscLayerGroupClass(groupSize: Float) : ActionlessGroup(groupSize) {
         override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
     }
-    val miscLayerGroup = MiscLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize) }
+    val borderLayerGroup = MiscLayerGroupClass(groupSize)
+    val miscLayerGroup = MiscLayerGroupClass(groupSize)
 
     var tileYieldGroupInitialized = false
     val tileYieldGroup: YieldGroup by lazy { YieldGroup() }
@@ -110,22 +110,31 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
     @Suppress("LeakingThis")    // we trust TileGroupIcons not to use our `this` in its constructor except storing it for later
     val icons = TileGroupIcons(this)
 
-    class UnitLayerGroupClass:Group(){
+    class UnitLayerGroupClass(groupSize: Float) : Group() {
+        init {
+            isTransform = false
+            touchable = Touchable.disabled
+            setSize(groupSize, groupSize)
+        }
+
         override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
-        override fun act(delta: Float) { // No 'snapshotting' since we trust it wil remain the same
+        override fun act(delta: Float) { // No 'snapshotting' since we trust it will remain the same
             for (child in children)
                 child.act(delta)
         }
     }
 
-    class UnitImageLayerGroupClass:ActionlessGroup(){
+    class UnitImageLayerGroupClass(groupSize: Float) : ActionlessGroup(groupSize) {
         override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
+        init {
+            touchable = Touchable.disabled
+        }
     }
     // We separate the units from the units' backgrounds, because all the background elements are in the same texture, and the units' aren't
-    val unitLayerGroup = UnitLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize);touchable = Touchable.disabled }
-    val unitImageLayerGroup = UnitImageLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize);touchable = Touchable.disabled }
+    val unitLayerGroup = UnitLayerGroupClass(groupSize)
+    val unitImageLayerGroup = UnitImageLayerGroupClass(groupSize)
 
-    class CityButtonLayerGroupClass(val tileInfo: TileInfo) :Group() {
+    class CityButtonLayerGroupClass(val tileInfo: TileInfo, groupSize: Float) : Group() {
         override fun draw(batch: Batch?, parentAlpha: Float) {
             if (!tileInfo.isCityCenter()) return
             super.draw(batch, parentAlpha)
@@ -138,12 +147,17 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
             if (!tileInfo.isCityCenter()) return null
             return super.hit(x, y, touchable)
         }
+        init {
+            isTransform = false
+            setSize(groupSize, groupSize)
+            touchable = Touchable.childrenOnly
+            setOrigin(Align.center)
+        }
     }
 
-    val cityButtonLayerGroup = CityButtonLayerGroupClass(tileInfo).apply { isTransform = false; setSize(groupSize, groupSize)
-        touchable = Touchable.childrenOnly; setOrigin(Align.center);  }
+    val cityButtonLayerGroup = CityButtonLayerGroupClass(tileInfo, groupSize)
 
-    val highlightCrosshairFogLayerGroup = ActionlessGroup().apply { isTransform = false; setSize(groupSize, groupSize) }
+    val highlightFogCrosshairLayerGroup = ActionlessGroup(groupSize)
     val highlightImage = ImageGetter.getImage(tileSetStrings.highlight) // for blue and red circles/emphasis on the tile
     private val crosshairImage = ImageGetter.getImage(tileSetStrings.crosshair) // for when a unit is targeted
     private val fogImage = ImageGetter.getImage(tileSetStrings.crosshatchHexagon )
@@ -180,13 +194,13 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
         this.setSize(groupSize, groupSize)
         this.addActor(baseLayerGroup)
         this.addActor(terrainFeatureLayerGroup)
+        this.addActor(borderLayerGroup)
         this.addActor(miscLayerGroup)
+        this.addActor(pixelMilitaryUnitGroup)
+        this.addActor(pixelCivilianUnitGroup)
         this.addActor(unitLayerGroup)
         this.addActor(cityButtonLayerGroup)
-        this.addActor(highlightCrosshairFogLayerGroup)
-
-        terrainFeatureLayerGroup.addActor(pixelMilitaryUnitGroup)
-        terrainFeatureLayerGroup.addActor(pixelCivilianUnitGroup)
+        this.addActor(highlightFogCrosshairLayerGroup)
 
         updateTileImage(null)
 
@@ -196,25 +210,25 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
         isTransform = false // performance helper - nothing here is rotated or scaled
     }
 
-    open fun clone(): TileGroup = TileGroup(tileInfo, tileSetStrings)
+    open fun clone() = TileGroup(tileInfo, tileSetStrings)
 
 
     //region init functions
     private fun addHighlightImage() {
-        highlightCrosshairFogLayerGroup.addActor(highlightImage)
+        highlightFogCrosshairLayerGroup.addActor(highlightImage)
         setHexagonImageSize(highlightImage)
         highlightImage.isVisible = false
     }
 
     private fun addFogImage() {
         fogImage.color = Color.WHITE.cpy().apply { a = 0.2f }
-        highlightCrosshairFogLayerGroup.addActor(fogImage)
+        highlightFogCrosshairLayerGroup.addActor(fogImage)
         setHexagonImageSize(fogImage)
     }
 
     private fun addCrosshairImage() {
         crosshairImage.isVisible = false
-        highlightCrosshairFogLayerGroup.addActor(crosshairImage)
+        highlightFogCrosshairLayerGroup.addActor(crosshairImage)
         setHexagonImageSize(crosshairImage)
     }
     //endregion
@@ -292,22 +306,10 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
             // so it stays consistent throughout the game
             if (!ImageGetter.imageExists(baseLocation)) continue
 
-            var locationToCheck = baseLocation
-            if (tileInfo.owningCity != null) {
-                val ownersEra = tileInfo.getOwner()!!.getEra()
-                val eraSpecificLocation =
-                    tileSetStrings.getString(locationToCheck, tileSetStrings.tag, ownersEra.name)
-                if (ImageGetter.imageExists(eraSpecificLocation))
-                    locationToCheck = eraSpecificLocation
-
-                var ownersStyle = tileInfo.getOwner()!!.nation.style
-                if (ownersStyle == "") ownersStyle = tileInfo.getOwner()!!.civName
-                val styleSpecificLocation =
-                    tileSetStrings.getString(locationToCheck, tileSetStrings.tag, ownersStyle)
-
-                if (ImageGetter.imageExists(styleSpecificLocation))
-                    locationToCheck = styleSpecificLocation
-            }
+            val locationToCheck =
+                    if (tileInfo.owningCity != null)
+                        tileSetStrings.getOwnedTileImageLocation(baseLocation, tileInfo.getOwner()!!)
+                    else baseLocation
 
             val existingImages = ArrayList<String>()
             existingImages.add(locationToCheck)
@@ -544,11 +546,11 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
 
                 val sign = if (relativeWorldPosition.x < 0) -1 else 1
                 val angle = sign * (atan(sign * relativeWorldPosition.y / relativeWorldPosition.x) * 180 / PI - 90.0).toFloat()
-                
+
                 val innerBorderImage = ImageGetter.getImage(
                         tileSetStrings.orFallback { getBorder(borderShapeString,"Inner") }
                 )
-                miscLayerGroup.addActor(innerBorderImage)
+                borderLayerGroup.addActor(innerBorderImage)
                 images.add(innerBorderImage)
                 setHexagonImageSize(innerBorderImage)
                 innerBorderImage.rotateBy(angle)
@@ -557,7 +559,7 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
                 val outerBorderImage = ImageGetter.getImage(
                         tileSetStrings.orFallback { getBorder(borderShapeString, "Outer") }
                 )
-                miscLayerGroup.addActor(outerBorderImage)
+                borderLayerGroup.addActor(outerBorderImage)
                 images.add(outerBorderImage)
                 setHexagonImageSize(outerBorderImage)
                 outerBorderImage.rotateBy(angle)
@@ -568,7 +570,7 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
 
     /** Create and setup Actors for all arrows to be drawn from this tile. */
     private fun updateArrows() {
-        for (actorList in arrows.values) 
+        for (actorList in arrows.values)
             for (actor in actorList)
                 actor.remove()
         arrows.clear()
@@ -680,34 +682,14 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
         var newImageLocation = ""
 
         val militaryUnit = tileInfo.militaryUnit
-        if (militaryUnit != null && showMilitaryUnit) {
-            fun TileSetStrings.getThisUnit(): String? {
-                val specificUnitIconLocation = this.unitsLocation + militaryUnit.name
-                return ImageAttempter(militaryUnit)
-                        .forceImage { if (!UncivGame.Current.settings.showPixelUnits) "" else null }
-                        .tryImage { if (civInfo.nation.style.isEmpty()) specificUnitIconLocation else null }
-                        .tryImage { "$specificUnitIconLocation-${civInfo.nation.style}" }
-                        .tryImage { specificUnitIconLocation }
-                        .tryImage { if (baseUnit.replaces != null) "$unitsLocation${baseUnit.replaces}" else null }
-                        .tryImages(
-                                militaryUnit.civInfo.gameInfo.ruleSet.units.values.asSequence().map {
-                                    @Suppress("unused")  // yes receiver unused but we want the signature to match ImageAttempter instance
-                                    fun MapUnit.() = if (it.unitType == militaryUnit.type.name)
-                                        "$unitsLocation${it.name}"
-                                    else
-                                        null
-                                } // .tryImage/.tryImages takes functions as parameters, for lazy eval. Include the check as part of the .tryImage's lazy candidate parameter, and *not* as part of the .map's transform parameter, so even the name check will be skipped by ImageAttempter if an image has already been found.
-                        )
-                        .tryImage { if (type.isLandUnit()) landUnit else null }
-                        .tryImage { if (type.isWaterUnit()) waterUnit else null }
-                        .getPathOrNull()
-            }
-            newImageLocation = tileSetStrings.getThisUnit() ?: tileSetStrings.fallback?.getThisUnit() ?: ""
+        if (militaryUnit != null && showMilitaryUnit && UncivGame.Current.settings.showPixelUnits) {
+            newImageLocation = tileSetStrings.getUnitImageLocation(militaryUnit)
         }
 
-        if (pixelMilitaryUnitImageLocation != newImageLocation) {
+        val nationName = if (militaryUnit != null) "${militaryUnit.civInfo.civName}-" else ""
+        if (pixelMilitaryUnitImageLocation != "$nationName$newImageLocation") {
             pixelMilitaryUnitGroup.clear()
-            pixelMilitaryUnitImageLocation = newImageLocation
+            pixelMilitaryUnitImageLocation = "$nationName$newImageLocation"
 
             if (newImageLocation != "" && ImageGetter.imageExists(newImageLocation)) {
                 val nation = militaryUnit!!.civInfo.nation
@@ -725,22 +707,14 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
         var newImageLocation = ""
         val civilianUnit = tileInfo.civilianUnit
 
-        if (civilianUnit != null && tileIsViewable) {
-            fun TileSetStrings.getThisUnit(): String? {
-                val specificUnitIconLocation = this.unitsLocation + civilianUnit.name
-                return ImageAttempter(civilianUnit)
-                        .forceImage { if (!UncivGame.Current.settings.showPixelUnits) "" else null }
-                        .tryImage { if (civInfo.nation.style.isNotEmpty()) "$specificUnitIconLocation-${civInfo.nation.style}" else null }
-                        .tryImage { specificUnitIconLocation }
-                        .tryImage { civilianLandUnit }
-                        .getPathOrNull()
-            }
-            newImageLocation = tileSetStrings.getThisUnit() ?: tileSetStrings.fallback?.getThisUnit() ?: ""
+        if (civilianUnit != null && tileIsViewable && UncivGame.Current.settings.showPixelUnits) {
+            newImageLocation = tileSetStrings.getUnitImageLocation(civilianUnit)
         }
 
-        if (pixelCivilianUnitImageLocation != newImageLocation) {
+        val nationName = if (civilianUnit != null) "${civilianUnit.civInfo.civName}-" else ""
+        if (pixelCivilianUnitImageLocation != "$nationName$newImageLocation") {
             pixelCivilianUnitGroup.clear()
-            pixelCivilianUnitImageLocation = newImageLocation
+            pixelCivilianUnitImageLocation = "$nationName$newImageLocation"
 
             if (newImageLocation != "" && ImageGetter.imageExists(newImageLocation)) {
                 val nation = civilianUnit!!.civInfo.nation
@@ -752,7 +726,6 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
             }
         }
     }
-
 
     private var bottomRightRiverImage :Image?=null
     private var bottomRiverImage :Image?=null

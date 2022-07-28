@@ -43,13 +43,14 @@ class NonStringKeyMapSerializer<MT: MutableMap<KT, Any>, KT>(
         if (entries == null) {
             readOldFormat(jsonData, json, result)
         } else {
-            readNewFormat(entries!!, json, result)
+            readNewFormat(entries, json, result)
         }
         return result
     }
 
     @Deprecated("This is only here temporarily until all users migrate the old properties to the new ones")
     private fun readOldFormat(jsonData: JsonValue, json: Json, result: MT) {
+        @Suppress("UNCHECKED_CAST")  // We know better
         val map = result as MutableMap<String, Any>
         var child: JsonValue? = jsonData.child
         while (child != null) {

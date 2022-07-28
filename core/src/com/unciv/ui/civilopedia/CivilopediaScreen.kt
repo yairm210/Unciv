@@ -4,18 +4,28 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.ui.Button
+import com.badlogic.gdx.scenes.scene2d.ui.SplitPane
+import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.models.ruleset.*
+import com.unciv.models.ruleset.Belief
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.Fonts
+import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.RecreateOnResize
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.utils.extensions.colorFromRGB
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 /** Screen displaying the Civilopedia
@@ -26,10 +36,9 @@ import com.unciv.ui.utils.AutoScrollPane as ScrollPane
  */
 class CivilopediaScreen(
     val ruleset: Ruleset,
-    val previousScreen: BaseScreen,
     category: CivilopediaCategories = CivilopediaCategories.Tutorial,
     link: String = ""
-) : BaseScreen() {
+) : BaseScreen(), RecreateOnResize {
 
     /** Container collecting data per Civilopedia entry
      * @param name From [Ruleset] object [INamed.name]
@@ -109,10 +118,9 @@ class CivilopediaScreen(
             // Alphabetical order of localized names, using system default locale
             entries = entries.sortedWith(
                 compareBy<CivilopediaEntry>{ it.sortBy }
-                    .thenBy (UncivGame.Current.settings.getCollatorFromLocale(), {
+                    .thenBy (UncivGame.Current.settings.getCollatorFromLocale()) {
                         // In order for the extra icons on Happiness and Faith to not affect sort order
                         it.name.tr().replace(Fonts.happiness.toString(),"").replace(Fonts.faith.toString(),"") })
-            )
 
         var currentY = -1f
 
@@ -173,12 +181,10 @@ class CivilopediaScreen(
 
     init {
         val imageSize = 50f
-        onBackButtonClicked { game.setScreen(previousScreen) }
+        globalShortcuts.add(KeyCharAndCode.BACK) { game.popScreen() }
 
-        val religionEnabled = if (game.isGameInfoInitialized()) game.gameInfo.isReligionEnabled()
-            else ruleset.beliefs.isNotEmpty()
-        val victoryTypes = if (game.isGameInfoInitialized()) game.gameInfo.gameParameters.victoryTypes
-            else listOf()
+        val religionEnabled = showReligionInCivilopedia(ruleset)
+        val victoryTypes = game.gameInfo?.gameParameters?.victoryTypes ?: ruleset.victories.keys
 
         fun shouldBeDisplayed(obj: IHasUniques): Boolean {
             return when {
@@ -206,6 +212,7 @@ class CivilopediaScreen(
                 CivilopediaCategories.Belief -> (ruleset.beliefs.values.asSequence() +
                         Belief.getCivilopediaReligionEntry(ruleset)).toList()
                 CivilopediaCategories.Era -> ruleset.eras.values
+                CivilopediaCategories.Speed -> ruleset.speeds.values
             }
 
         for (loopCategory in CivilopediaCategories.values()) {
@@ -245,8 +252,7 @@ class CivilopediaScreen(
 
         val goToGameButton = Constants.close.toTextButton()
         goToGameButton.onClick {
-            game.setScreen(previousScreen)
-            dispose()
+            game.popScreen()
         }
 
         val topTable = Table()
@@ -283,16 +289,16 @@ class CivilopediaScreen(
                 selectEntry(link, noScrollAnimation = true)
 
         for (categoryKey in CivilopediaCategories.values()) {
-            keyPressDispatcher[categoryKey.key] = { navigateCategories(categoryKey.key) }
+            globalShortcuts.add(categoryKey.key) { navigateCategories(categoryKey.key) }
         }
-        keyPressDispatcher[Input.Keys.LEFT] = { selectCategory(currentCategory.getByOffset(-1)) }
-        keyPressDispatcher[Input.Keys.RIGHT] = { selectCategory(currentCategory.getByOffset(1)) }
-        keyPressDispatcher[Input.Keys.UP] = { navigateEntries(-1) }
-        keyPressDispatcher[Input.Keys.DOWN] = { navigateEntries(1) }
-        keyPressDispatcher[Input.Keys.PAGE_UP] = { navigateEntries(-10) }
-        keyPressDispatcher[Input.Keys.PAGE_DOWN] = { navigateEntries(10) }
-        keyPressDispatcher[Input.Keys.HOME] = { navigateEntries(Int.MIN_VALUE) }
-        keyPressDispatcher[Input.Keys.END] = { navigateEntries(Int.MAX_VALUE) }
+        globalShortcuts.add(Input.Keys.LEFT) { selectCategory(currentCategory.getByOffset(-1)) }
+        globalShortcuts.add(Input.Keys.RIGHT) { selectCategory(currentCategory.getByOffset(1)) }
+        globalShortcuts.add(Input.Keys.UP) { navigateEntries(-1) }
+        globalShortcuts.add(Input.Keys.DOWN) { navigateEntries(1) }
+        globalShortcuts.add(Input.Keys.PAGE_UP) { navigateEntries(-10) }
+        globalShortcuts.add(Input.Keys.PAGE_DOWN) { navigateEntries(10) }
+        globalShortcuts.add(Input.Keys.HOME) { navigateEntries(Int.MIN_VALUE) }
+        globalShortcuts.add(Input.Keys.END) { navigateEntries(Int.MAX_VALUE) }
     }
 
     private fun navigateCategories(key: KeyCharAndCode) {
@@ -300,7 +306,7 @@ class CivilopediaScreen(
     }
 
     private fun navigateEntries(direction: Int) {
-        //todo this is abusing a Map as Array - there must be a collection allowing both easy positional and associative access 
+        //todo this is abusing a Map as Array - there must be a collection allowing both easy positional and associative access
         val index = entryIndex.keys.indexOf(currentEntry)
         if (index < 0) return selectEntry(entryIndex.keys.first(), true)
         val newIndex = when (direction) {
@@ -311,9 +317,16 @@ class CivilopediaScreen(
         selectEntry(entryIndex.keys.drop(newIndex).first())
     }
 
-    override fun resize(width: Int, height: Int) {
-        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
-            game.setScreen(CivilopediaScreen(ruleset, previousScreen, currentCategory, currentEntry))
+    override fun recreate(): BaseScreen = CivilopediaScreen(ruleset, currentCategory, currentEntry)
+
+    companion object {
+        /** Test whether to show Religion-specific items, does not require a game to be running */
+        // Here we decide whether to show Religion in Civilopedia from Main Menu (no gameInfo loaded)
+        fun showReligionInCivilopedia(ruleset: Ruleset? = null) = when {
+            UncivGame.isCurrentInitialized() && UncivGame.Current.gameInfo != null ->
+                UncivGame.Current.gameInfo!!.isReligionEnabled()
+            ruleset != null -> ruleset.beliefs.isNotEmpty()
+            else -> true
         }
     }
 }

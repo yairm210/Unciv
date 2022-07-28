@@ -14,12 +14,16 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaCategories
 import com.unciv.ui.civilopedia.CivilopediaScreen
-import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.utils.*
-import java.util.*
-import kotlin.collections.ArrayList
+import com.unciv.ui.utils.Fonts
+import com.unciv.ui.utils.extensions.addBorder
+import com.unciv.ui.utils.extensions.colorFromRGB
+import com.unciv.ui.utils.extensions.darken
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.utils.concurrency.Concurrency
 
 
 class TechPickerScreen(
@@ -57,12 +61,11 @@ class TechPickerScreen(
 
     init {
         setDefaultCloseAction()
-        onBackButtonClicked { UncivGame.Current.setWorldScreen() }
         scrollPane.setOverscroll(false, false)
 
         descriptionLabel.onClick {
             if (selectedTech != null)
-                game.setScreen(CivilopediaScreen(civInfo.gameInfo.ruleSet, this, CivilopediaCategories.Technology, selectedTech!!.name))
+                game.pushScreen(CivilopediaScreen(civInfo.gameInfo.ruleSet, CivilopediaCategories.Technology, selectedTech!!.name))
         }
 
         tempTechsToResearch = ArrayList(civTech.techsToResearch)
@@ -83,9 +86,7 @@ class TechPickerScreen(
 
             game.settings.addCompletedTutorialTask("Pick technology")
 
-            game.setWorldScreen()
-            game.worldScreen.shouldUpdate = true
-            dispose()
+            game.popScreen()
         }
 
         // per default show current/recent technology,
@@ -109,8 +110,8 @@ class TechPickerScreen(
     private fun createTechTable() {
         val allTechs = civInfo.gameInfo.ruleSet.technologies.values
         if (allTechs.isEmpty()) return
-        val columns = allTechs.map { it.column!!.columnNumber }.maxOrNull()!! + 1
-        val rows = allTechs.map { it.row }.maxOrNull()!! + 1
+        val columns = allTechs.maxOf { it.column!!.columnNumber } + 1
+        val rows = allTechs.maxOf { it.row } + 1
         val techMatrix = Array<Array<Technology?>>(columns) { arrayOfNulls(rows) } // Divided into columns, then rows
 
         for (technology in allTechs) {
@@ -261,19 +262,13 @@ class TechPickerScreen(
             return
         }
 
-        if (!UncivGame.Current.worldScreen.canChangeState) {
+        if (!UncivGame.Current.worldScreen!!.canChangeState) {
             rightSideButton.disable()
             return
         }
 
         val pathToTech = civTech.getRequiredTechsToDestination(tech)
         for (requiredTech in pathToTech) {
-            for (unique in requiredTech.getMatchingUniques(UniqueType.IncompatibleWith))
-                if (civTech.isResearched(unique.params[0])) {
-                    rightSideButton.setText(unique.text.tr())
-                    rightSideButton.disable()
-                    return
-                }
             for (unique in requiredTech.uniqueObjects
                 .filter { it.type == UniqueType.OnlyAvailableWhen && !it.conditionalsApply(civInfo) }) {
                 rightSideButton.setText(unique.text.tr())
@@ -287,11 +282,11 @@ class TechPickerScreen(
 
         val label = "Research [${tempTechsToResearch[0]}]".tr()
         val techProgression = getTechProgressLabel(tempTechsToResearch)
-        
+
         pick("${label}\n${techProgression}")
         setButtonsInfo()
     }
-    
+
     private fun getTechProgressLabel(techs: List<String>): String {
         val progress = techs.sumOf { tech -> civTech.researchOfTech(tech) }
         val techCost = techs.sumOf { tech -> civInfo.tech.costOfTech(tech) }
@@ -299,7 +294,7 @@ class TechPickerScreen(
     }
 
     private fun centerOnTechnology(tech: Technology) {
-        postCrashHandlingRunnable {
+        Concurrency.runOnGLThread {
             techNameToButton[tech.name]?.let {
                 scrollPane.scrollTo(it.x, it.y, it.width, it.height, true, true)
                 scrollPane.updateVisualScroll()

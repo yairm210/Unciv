@@ -51,7 +51,7 @@ class Technology: RulesetObject() {
             }
         }
 
-        val viewingCiv = UncivGame.Current.worldScreen.viewingCiv
+        val viewingCiv = UncivGame.Current.worldScreen!!.viewingCiv
         val enabledUnits = getEnabledUnits(ruleset, viewingCiv)
         if (enabledUnits.any()) {
             lineList += "{Units enabled}: "
@@ -158,11 +158,11 @@ class Technology: RulesetObject() {
         ruleset.tileImprovements.values
             .asSequence()
             .filter { improvement ->
-                improvement.uniqueObjects.any { 
-                    unique -> unique.conditionals.any { 
-                        (it.isOfType(UniqueType.ConditionalTech) || it.isOfType(UniqueType.ConditionalNoTech)) 
-                        && it.params[0] == name 
-                    } 
+                improvement.uniqueObjects.any {
+                    unique -> unique.conditionals.any {
+                        (it.isOfType(UniqueType.ConditionalTech) || it.isOfType(UniqueType.ConditionalNoTech))
+                        && it.params[0] == name
+                    }
                 }
             }
 
@@ -225,7 +225,7 @@ class Technology: RulesetObject() {
                 }
             }
 
-        val viewingCiv = UncivGame.Current.getWorldScreenOrNull()?.viewingCiv
+        val viewingCiv = UncivGame.Current.worldScreen?.viewingCiv
         val enabledUnits = getEnabledUnits(ruleset, viewingCiv)
         if (enabledUnits.any()) {
             lineList += FormattedLine()

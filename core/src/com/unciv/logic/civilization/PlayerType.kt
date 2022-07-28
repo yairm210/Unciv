@@ -1,6 +1,8 @@
 package com.unciv.logic.civilization
 
-enum class PlayerType{
+import com.unciv.logic.IsPartOfGameInfoSerialization
+
+enum class PlayerType : IsPartOfGameInfoSerialization {
     AI,
     Human
 }

@@ -2,7 +2,6 @@ package com.unciv.models.translations
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
-import com.badlogic.gdx.utils.Array
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.models.metadata.BaseRuleset
@@ -16,6 +15,7 @@ import com.unciv.models.ruleset.unique.*
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
+import com.unciv.utils.debug
 import java.io.File
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
@@ -48,7 +48,7 @@ object TranslationFileWriter {
                 writeLanguagePercentages(modPercentages, modFolder)  // unused by the game but maybe helpful for the mod developer
             }
 
-            return "Translation files are generated successfully.\n" +
+            return "Translation files are generated successfully.".tr() + "\n" +
                     writeTranslatedFastlaneFiles(translations)
         } catch (ex: Throwable) {
             ex.printStackTrace()
@@ -93,7 +93,9 @@ object TranslationFileWriter {
                     fileNameToGeneratedStrings[entry.key + " from " + baseRuleset.fullName] = entry.value
             }
 
-            fileNameToGeneratedStrings["Tutorials"] = generateTutorialsStrings()
+            // Tutorials reside one level above the base rulesets - if they were per-ruleset the following lines would be unnecessary
+            val tutorialStrings = GenerateStringsFromJSONs(Gdx.files.local("jsons")) { it.name == "Tutorials.json" }
+            fileNameToGeneratedStrings["Tutorials"] = tutorialStrings.values.first()
         } else {
             fileNameToGeneratedStrings.putAll(GenerateStringsFromJSONs(modFolder.child("jsons")))
         }
@@ -103,7 +105,7 @@ object TranslationFileWriter {
             linesToTranslate.add("\n#################### Lines from $key ####################\n")
             linesToTranslate.addAll(value)
         }
-
+        fileNameToGeneratedStrings.clear()  // No longer needed
 
         if (modFolder == null) { // base game
             linesToTranslate.add("\n\n#################### Lines from Unique Types #######################\n")
@@ -134,16 +136,14 @@ object TranslationFileWriter {
                 if (!line.contains(" = ")) {
                     // small hack to insert empty lines
                     if (line.startsWith(specialNewLineCode)) {
-                        if (!stringBuilder.endsWith("\r\n\r\n")) // don't double-add line breaks -
-                        // this stops lots of line breaks between removed translations in G&K
-                            stringBuilder.appendLine()
+                        stringBuilder.appendLine()
                     } else // copy as-is
                         stringBuilder.appendLine(line)
                     continue
                 }
 
                 val translationKey = line.split(" = ")[0].replace("\\n", "\n")
-                val hashMapKey = 
+                val hashMapKey =
                     if (translationKey == Translations.englishConditionalOrderingString)
                         Translations.englishConditionalOrderingString
                     else translationKey
@@ -218,22 +218,6 @@ object TranslationFileWriter {
             .writeString(output, false)
     }
 
-    private fun generateTutorialsStrings(): MutableSet<String> {
-        val tutorialsStrings = mutableSetOf<String>()
-        val tutorials = json().fromJsonFile(LinkedHashMap<String, Array<String>>().javaClass, "jsons/Tutorials.json")
-
-        var uniqueIndexOfNewLine = 0
-        for (tutorial in tutorials) {
-            if (!tutorial.key.startsWith('_'))
-                tutorialsStrings.add("${tutorial.key.replace('_', ' ')} = ")
-            for (str in tutorial.value)
-                if (str != "") tutorialsStrings.add("$str = ")
-            // This is a small hack to insert multiple /n into the set, which can't contain identical lines
-            tutorialsStrings.add("$specialNewLineCode ${uniqueIndexOfNewLine++}")
-        }
-        return tutorialsStrings
-    }
-
     // used for unit test only
     fun getGeneratedStringsSize(): Int {
         return GenerateStringsFromJSONs(Gdx.files.local("jsons/Civ V - Vanilla")).values.sumOf {
@@ -266,7 +250,8 @@ object TranslationFileWriter {
      *  All work is done right on instantiation.
       */
     private class GenerateStringsFromJSONs(
-        jsonsFolder: FileHandle
+        jsonsFolder: FileHandle,
+        fileFilter: (File) -> Boolean = { file -> file.name.endsWith(".json", true) }
     ): LinkedHashMap<String, MutableSet<String>>() {
         // Using LinkedHashMap (instead of HashMap) is important to maintain the order of sections in the translation file
 
@@ -275,11 +260,11 @@ object TranslationFileWriter {
 
         var uniqueIndexOfNewLine = 0
         val listOfJSONFiles = jsonsFolder
-                .list { file -> file.name.endsWith(".json", true) }
-                .sortedBy { it.name() }       // generatedStrings maintains order, so let's feed it a predictable one
+            .list(fileFilter)
+            .sortedBy { it.name() }       // generatedStrings maintains order, so let's feed it a predictable one
 
         // One set per json file, secondary loop var. Could be nicer to isolate all per-file
-        // processing into another class, but then we'd have to pass uniqueIndexOfNewLine around. 
+        // processing into another class, but then we'd have to pass uniqueIndexOfNewLine around.
         lateinit var resultStrings: MutableSet<String>
 
         init {
@@ -295,6 +280,7 @@ object TranslationFileWriter {
                 resultStrings = mutableSetOf()
                 this[filename] = resultStrings
 
+                @Suppress("RemoveRedundantQualifierName")  // to clarify this is the kotlin way
                 if (array is kotlin.Array<*>)
                     for (element in array) {
                         serializeElement(element!!) // let's serialize the strings recursively
@@ -303,11 +289,12 @@ object TranslationFileWriter {
                     }
             }
             val displayName = if (jsonsFolder.name() != "jsons") jsonsFolder.name()
-                else jsonsFolder.parent().name()  // Show mod name
-            println("Translation writer took ${System.currentTimeMillis() - startMillis}ms for $displayName")
+                else jsonsFolder.parent().name().ifEmpty { "Tutorials" }  // Show mod name - or special case
+            debug("Translation writer took %sms for %s", System.currentTimeMillis() - startMillis, displayName)
         }
 
         fun submitString(string: String) {
+            if (string.isEmpty()) return  // entries in Collection<String> do not pass isFieldTranslatable
             if ('{' in string) {
                 val matches = curlyBraceRegex.findAll(string)
                 if (matches.any()) {
@@ -384,14 +371,18 @@ object TranslationFileWriter {
                 val fieldValue = field.get(element)
                 // skip fields which must not be translated
                 if (!isFieldTranslatable(element.javaClass, field, fieldValue)) continue
+                // Some Tutorial names need no translation
+                if (element is Tutorial && field.name == "name"
+                        && UniqueType.HiddenFromCivilopedia.placeholderText in element.uniques)
+                    continue
                 // this field can contain sub-objects, let's serialize them as well
                 @Suppress("RemoveRedundantQualifierName")  // to clarify List does _not_ inherit from anything in java.util
                 when {
                     // Promotion names are not uniques but since we did the "[unitName] ability"
                     // they need the "parameters" treatment too
                     // Same for victory milestones
-                    (field.name == "uniques" || field.name == "promotions" || field.name == "milestones") 
-                    && (fieldValue is java.util.AbstractCollection<*>) ->
+                    (field.name == "uniques" || field.name == "promotions" || field.name == "milestones")
+                            && (fieldValue is java.util.AbstractCollection<*>) ->
                         for (item in fieldValue)
                             if (item is String) submitString(item, Unique(item)) else serializeElement(item!!)
                     fieldValue is java.util.AbstractCollection<*> ->
@@ -455,6 +446,7 @@ object TranslationFileWriter {
                     "Buildings" -> emptyArray<Building>().javaClass
                     "Difficulties" -> emptyArray<Difficulty>().javaClass
                     "Eras" -> emptyArray<Era>().javaClass
+                    "Speeds" -> emptyArray<Speed>().javaClass
                     "GlobalUniques" -> GlobalUniques().javaClass
                     "Nations" -> emptyArray<Nation>().javaClass
                     "Policies" -> emptyArray<PolicyBranch>().javaClass
@@ -466,7 +458,7 @@ object TranslationFileWriter {
                     "Terrains" -> emptyArray<Terrain>().javaClass
                     "TileImprovements" -> emptyArray<TileImprovement>().javaClass
                     "TileResources" -> emptyArray<TileResource>().javaClass
-                    "Tutorials" -> this.javaClass // dummy value
+                    "Tutorials" -> emptyArray<Tutorial>().javaClass
                     "UnitPromotions" -> emptyArray<Promotion>().javaClass
                     "Units" -> emptyArray<BaseUnit>().javaClass
                     "UnitTypes" -> emptyArray<UnitType>().javaClass
@@ -478,19 +470,20 @@ object TranslationFileWriter {
     }
 
     //endregion
-    //region Fastlane 
+    //region Fastlane
 
     /** This writes translated short_description.txt and full_description.txt files into the Fastlane structure.
      *  @param [translations] A [Translations] instance with all languages loaded.
      *  @return Success or error message.
      */
     private fun writeTranslatedFastlaneFiles(translations: Translations): String {
+        @Suppress("LiftReturnOrAssignment")  // clearer with explicit returns
         try {
             writeFastlaneFiles(shortDescriptionFile, translations[shortDescriptionKey], false)
             writeFastlaneFiles(fullDescriptionFile, translations[fullDescriptionKey], true)
             updateFastlaneChangelog()
 
-            return "Fastlane files are generated successfully."
+            return "Fastlane files are generated successfully.".tr()
         } catch (ex: Throwable) {
             ex.printStackTrace()
             return ex.localizedMessage ?: ex.javaClass.simpleName
@@ -505,13 +498,13 @@ object TranslationFileWriter {
                 !endWithNewline && translated.endsWith('\n') -> translated.removeSuffix("\n")
                 else -> translated
             }
-            val localeCode = LocaleCode.valueOf(language)
+            val localeCode = LocaleCode.valueOf(language.replace("_",""))
             val path = fastlanePath + localeCode.language
             File(path).mkdirs()
             File(path + File.separator + fileName).writeText(fileContent)
         }
     }
-    
+
     // Original changelog entry, written by incrementVersionAndChangelog, is often changed manually for readability.
     // This updates the fastlane changelog entry to match the latest one in changelog.md
     private fun updateFastlaneChangelog() {

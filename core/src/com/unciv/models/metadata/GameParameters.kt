@@ -1,15 +1,20 @@
 package com.unciv.models.metadata
 
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.models.ruleset.Speed
 
 enum class BaseRuleset(val fullName:String){
     Civ_V_Vanilla("Civ V - Vanilla"),
     Civ_V_GnK("Civ V - Gods & Kings"),
 }
 
-class GameParameters { // Default values are the default new game
+class GameParameters : IsPartOfGameInfoSerialization { // Default values are the default new game
     var difficulty = "Prince"
-    var gameSpeed = GameSpeed.Standard
+    var speed = Speed.DEFAULT
+
+    @Deprecated("Since 4.1.11")
+    var gameSpeed = ""
     var players = ArrayList<Player>().apply {
         add(Player().apply { playerType = PlayerType.Human })
         for (i in 1..3) add(Player())
@@ -22,20 +27,21 @@ class GameParameters { // Default values are the default new game
     var godMode = false
     var nuclearWeaponsEnabled = true
     var religionEnabled = false
-    
-    var victoryTypes: ArrayList<String> = arrayListOf()  
+    var noStartBias = false
+
+    var victoryTypes: ArrayList<String> = arrayListOf()
     var startingEra = "Ancient era"
 
     var isOnlineMultiplayer = false
     var baseRuleset: String = BaseRuleset.Civ_V_GnK.fullName
     var mods = LinkedHashSet<String>()
-    
+
     var maxTurns = 500
 
     fun clone(): GameParameters {
         val parameters = GameParameters()
         parameters.difficulty = difficulty
-        parameters.gameSpeed = gameSpeed
+        parameters.speed = speed
         parameters.players = ArrayList(players)
         parameters.numberOfCityStates = numberOfCityStates
         parameters.noBarbarians = noBarbarians
@@ -53,8 +59,8 @@ class GameParameters { // Default values are the default new game
     }
 
     // For debugging and GameStarter console output
-    override fun toString() = sequence<String> {
-            yield("$difficulty $gameSpeed $startingEra")
+    override fun toString() = sequence {
+            yield("$difficulty $speed $startingEra")
             yield("${players.count { it.playerType == PlayerType.Human }} ${PlayerType.Human}")
             yield("${players.count { it.playerType == PlayerType.AI }} ${PlayerType.AI}")
             yield("$numberOfCityStates CS")
@@ -69,7 +75,7 @@ class GameParameters { // Default values are the default new game
             yield(baseRuleset)
             yield(if (mods.isEmpty()) "no mods" else mods.joinToString(",", "mods=(", ")", 6) )
         }.joinToString(prefix = "(", postfix = ")")
-    
+
     fun getModsAndBaseRuleset(): HashSet<String> {
         return mods.toHashSet().apply { add(baseRuleset) }
     }

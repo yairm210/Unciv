@@ -1,6 +1,5 @@
 package com.unciv.logic.battle
 
-import com.unciv.logic.map.TileInfo
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.GlobalUniques
 import com.unciv.models.ruleset.unique.StateForConditionals
@@ -8,7 +7,7 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
-import com.unciv.ui.utils.toPercent
+import com.unciv.ui.utils.extensions.toPercent
 import java.util.*
 import kotlin.collections.set
 import kotlin.math.max
@@ -16,7 +15,7 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 
 object BattleDamage {
-    
+
     private fun getModifierStringFromUnique(unique: Unique): String {
         val source = when (unique.sourceObjectType) {
             UniqueTarget.Unit -> "Unit ability"
@@ -49,9 +48,9 @@ object BattleDamage {
             for (unique in combatant.getMatchingUniques(
                 UniqueType.StrengthNearCapital, conditionalState, true
             )) {
-                if (civInfo.cities.isEmpty()) break
+                if (civInfo.cities.isEmpty() || civInfo.getCapital() == null) break
                 val distance =
-                    combatant.getTile().aerialDistanceTo(civInfo.getCapital().getCenterTile())
+                    combatant.getTile().aerialDistanceTo(civInfo.getCapital()!!.getCenterTile())
                 // https://steamcommunity.com/sharedfiles/filedetails/?id=326411722#464287
                 val effect = unique.params[0].toInt() - 3 * distance
                 if (effect <= 0) continue
@@ -60,12 +59,13 @@ object BattleDamage {
 
             //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
             val adjacentUnits = combatant.getTile().neighbors.flatMap { it.getUnits() }
-            for (unique in adjacentUnits.filter { it.civInfo.isAtWarWith(civInfo) }
-                    .flatMap { it.getMatchingUniques(UniqueType.StrengthForAdjacentEnemies) })
-                if (combatant.matchesCategory(unique.params[1]) && combatant.getTile()
-                        .matchesFilter(unique.params[2])
-                )
-                    modifiers.add("Adjacent enemy units", unique.params[0].toInt())
+            val strengthMalus = adjacentUnits.filter { it.civInfo.isAtWarWith(civInfo) }
+                    .flatMap { it.getMatchingUniques(UniqueType.StrengthForAdjacentEnemies) }
+                    .filter { combatant.matchesCategory(it.params[1]) && combatant.getTile().matchesFilter(it.params[2]) }
+                    .maxByOrNull { it.params[0] }
+            if (strengthMalus != null) {
+                modifiers.add("Adjacent enemy units", strengthMalus.params[0].toInt())
+            }
 
             val civResources = civInfo.getCivResourcesByName()
             for (resource in combatant.unit.baseUnit.getResourceRequirements().keys)
@@ -110,12 +110,8 @@ object BattleDamage {
         val modifiers = getGeneralModifiers(attacker, defender, CombatAction.Attack)
 
         if (attacker is MapUnitCombatant) {
-            modifiers.add(getTileSpecificModifiers(attacker, defender.getTile()))
-
-            // Depreciated Version
-            if (attacker.unit.isEmbarked() && !attacker.unit.hasUnique(UniqueType.AttackFromSea))
-                modifiers["Landing"] = -50
-            if (attacker.unit.isEmbarked() && !attacker.unit.hasUnique(UniqueType.AttackAcrossCoast))
+            if (attacker.unit.isEmbarked()
+                    && !(attacker.unit.hasUnique(UniqueType.AttackAcrossCoast)))
                 modifiers["Landing"] = -50
 
             // Land Melee Unit attacking to Water
@@ -126,6 +122,9 @@ object BattleDamage {
             if (attacker.unit.type.isWaterUnit() && attacker.isMelee() && !defender.getTile().isWater
                     && !attacker.unit.hasUnique(UniqueType.AttackAcrossCoast) && !defender.isCity())
                 modifiers["Landing"] = -50
+            // Air unit attacking with Air Sweep
+            if (attacker.unit.isPreparingAirSweep())
+                modifiers.add(getAirSweepAttackModifiers(attacker))
 
             if (attacker.isMelee()) {
                 val numberOfAttackersSurroundingDefender = defender.getTile().neighbors.count {
@@ -154,12 +153,20 @@ object BattleDamage {
                 }
             }
 
-            for (unique in attacker.getCivInfo().getMatchingUniques(UniqueType.TimedAttackStrength)) {
-                if (attacker.matchesCategory(unique.params[1])) {
-                    modifiers.add("Temporary Bonus", unique.params[0].toInt())
-                }
-            }
+        }
 
+        return modifiers
+    }
+
+    fun getAirSweepAttackModifiers(
+        attacker: ICombatant
+    ): Counter<String> {
+        val modifiers = Counter<String>()
+
+        if (attacker is MapUnitCombatant) {
+            for (unique in attacker.unit.getUniques().filter{it.isOfType(UniqueType.StrengthWhenAirsweep)}) {
+                modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
+            }
         }
 
         return modifiers
@@ -168,20 +175,17 @@ object BattleDamage {
     fun getDefenceModifiers(attacker: ICombatant, defender: ICombatant): Counter<String> {
         val modifiers = getGeneralModifiers(defender, attacker, CombatAction.Defend)
         val tile = defender.getTile()
-    
+
         if (defender is MapUnitCombatant) {
 
             if (defender.unit.isEmbarked()) {
                 // embarked units get no defensive modifiers apart from this unique
-                if (defender.unit.hasUnique(UniqueType.DefenceBonusWhenEmbarked, checkCivInfoUniques = true) ||
-                    defender.getCivInfo().hasUnique(UniqueType.DefenceBonusWhenEmbarkedCivwide)
+                if (defender.unit.hasUnique(UniqueType.DefenceBonusWhenEmbarked, checkCivInfoUniques = true)
                 )
                     modifiers["Embarked"] = 100
 
                 return modifiers
             }
-
-            modifiers.putAll(getTileSpecificModifiers(defender, tile))
 
             val tileDefenceBonus = tile.getDefensiveBonus()
             if (!defender.unit.hasUnique(UniqueType.NoDefensiveTerrainBonus, checkCivInfoUniques = true) && tileDefenceBonus > 0
@@ -196,20 +200,7 @@ object BattleDamage {
 
         return modifiers
     }
-    
-    @Deprecated("As of 4.0.3", level=DeprecationLevel.WARNING)
-    private fun getTileSpecificModifiers(unit: MapUnitCombatant, tile: TileInfo): Counter<String> {
-        val modifiers = Counter<String>()
 
-        for (unique in unit.getCivInfo().getMatchingUniques(UniqueType.StrengthWithinTilesOfTile)) {
-            if (tile.getTilesInDistance(unique.params[1].toInt())
-                    .any { it.matchesFilter(unique.params[2]) }
-            )
-                modifiers[unique.params[2]] = unique.params[0].toInt()
-        }
-
-        return modifiers
-    }
 
     private fun modifiersToMultiplicationBonus(modifiers: Counter<String>): Float {
         var finalModifier = 1f
@@ -220,12 +211,11 @@ object BattleDamage {
     private fun getHealthDependantDamageRatio(combatant: ICombatant): Float {
         return if (combatant !is MapUnitCombatant
             || combatant.unit.hasUnique(UniqueType.NoDamagePenalty, checkCivInfoUniques = true)
-            || combatant.getCivInfo().hasUnique(UniqueType.UnitsFightFullStrengthWhenDamaged)
         ) {
             1f
         }
         // Each 3 points of health reduces damage dealt by 1%
-        else 1 - (100 - combatant.getHealth()) / 300f 
+        else 1 - (100 - combatant.getHealth()) / 300f
     }
 
 

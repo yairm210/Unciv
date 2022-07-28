@@ -12,7 +12,12 @@ import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.overviewscreen.EmpireOverviewCategories
 import com.unciv.ui.overviewscreen.EmpireOverviewScreen
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.ExpanderTab
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.addSeparatorVertical
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
 
 class CityReligionInfoTable(
     private val religionManager: CityInfoReligionManager,
@@ -38,7 +43,11 @@ class CityReligionInfoTable(
             val (iconName, label) = getIconAndLabel(religionManager.religionThisIsTheHolyCityOf)
             add(linkedReligionIcon(iconName, religionManager.religionThisIsTheHolyCityOf)).pad(5f)
             add()
-            add("Holy city of: [$label]".toLabel()).colspan(3).center().row()
+            if (!religionManager.isBlockedHolyCity) {
+                add("Holy City of: [$label]".toLabel()).colspan(3).center().row()
+            } else {
+                add("Former Holy City of: [$label]".toLabel()).colspan(3).center().row()
+            }
         }
 
         if (!followers.isEmpty()) {
@@ -67,17 +76,19 @@ class CityReligionInfoTable(
     private fun getIconAndLabel(religionName: String?) =
         getIconAndLabel(gameInfo.religions[religionName])
     private fun getIconAndLabel(religion: Religion?): Pair<String, String> {
-        return if (religion == null) "Religion" to "None" 
+        return if (religion == null) "Religion" to "None"
             else religion.getIconName() to religion.getReligionDisplayName()
     }
     private fun linkedReligionIcon(iconName: String, religion: String?): IconCircleGroup {
         val icon = ImageGetter.getCircledReligionIcon(iconName, 30f)
         if (religion == null) return icon
         icon.onClick {
-            val newScreen = if (religion == iconName)
+            val newScreen = if (religion == iconName) {
                 EmpireOverviewScreen(civInfo, EmpireOverviewCategories.Religion.name, religion)
-            else CivilopediaScreen(gameInfo.ruleSet, UncivGame.Current.screen as BaseScreen, CivilopediaCategories.Belief, religion )
-            UncivGame.Current.setScreen(newScreen)
+            } else {
+                CivilopediaScreen(gameInfo.ruleSet, CivilopediaCategories.Belief, religion)
+            }
+            UncivGame.Current.pushScreen(newScreen)
         }
         return icon
     }

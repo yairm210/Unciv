@@ -1,8 +1,12 @@
 package com.unciv.ui.mapeditor
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.scenes.scene2d.*
+import com.badlogic.gdx.scenes.scene2d.Action
+import com.badlogic.gdx.scenes.scene2d.EventListener
+import com.badlogic.gdx.scenes.scene2d.InputEvent
+import com.badlogic.gdx.scenes.scene2d.InputListener
+import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
@@ -11,7 +15,10 @@ import com.unciv.logic.map.TileMap
 import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.ZoomableScrollPane
+import com.unciv.ui.utils.extensions.center
+import com.unciv.ui.utils.extensions.onClick
 
 
 /**
@@ -22,15 +29,12 @@ class EditorMapHolder(
     parentScreen: BaseScreen,
     internal val tileMap: TileMap,
     private val onTileClick: (TileInfo) -> Unit
-): ZoomableScrollPane() {
+): ZoomableScrollPane(20f, 20f) {
     val editorScreen = parentScreen as? MapEditorScreen
 
     val tileGroups = HashMap<TileInfo, List<TileGroup>>()
     private lateinit var tileGroupMap: TileGroupMap<TileGroup>
     private val allTileGroups = ArrayList<TileGroup>()
-
-    private val maxWorldZoomOut = UncivGame.Current.settings.maxWorldZoomOut
-    private val minZoomScale = 1f / maxWorldZoomOut
 
     private var blinkAction: Action? = null
 
@@ -51,8 +55,6 @@ class EditorMapHolder(
 
         tileGroupMap = TileGroupMap(
             daTileGroups,
-            stage.width * maxWorldZoomOut / 2,
-            stage.height * maxWorldZoomOut / 2,
             continuousScrollingX)
         actor = tileGroupMap
         val mirrorTileGroups = tileGroupMap.getMirrorTiles()
@@ -92,9 +94,7 @@ class EditorMapHolder(
                 tileGroup.onClick { onTileClick(tileGroup.tileInfo) }
         }
 
-        setSize(stage.width * maxWorldZoomOut, stage.height * maxWorldZoomOut)
-        setOrigin(width / 2,height / 2)
-        center(stage)
+        setSize(stage.width, stage.height)
 
         layout()
 
@@ -122,10 +122,17 @@ class EditorMapHolder(
         return null
     }
 
+    /**
+     * Copy-pasted from [com.unciv.ui.worldscreen.WorldMapHolder.setCenterPosition]
+     * TODO remove code duplication
+     */
     fun setCenterPosition(vector: Vector2, blink: Boolean = false) {
         val tileGroup = allTileGroups.firstOrNull { it.tileInfo.position == vector } ?: return
-        scrollX = tileGroup.x + tileGroup.width / 2 - width / 2
-        scrollY = maxY - (tileGroup.y + tileGroup.width / 2 - height / 2)
+
+        // The Y axis of [scrollY] is inverted - when at 0 we're at the top, not bottom - so we invert it back.
+        if (!scrollTo(tileGroup.x + tileGroup.width / 2, maxY - (tileGroup.y + tileGroup.width / 2)))
+            return
+
         if (!blink) return
 
         removeAction(blinkAction) // so we don't have multiple blinks at once
@@ -136,11 +143,6 @@ class EditorMapHolder(
             Actions.delay(.3f)
         ))
         addAction(blinkAction) // Don't set it on the group because it's an actionless group
-    }
-
-    override fun zoom(zoomScale: Float) {
-        if (zoomScale < minZoomScale || zoomScale > 2f) return
-        setScale(zoomScale)
     }
 
     /*
@@ -193,7 +195,7 @@ class EditorMapHolder(
                 if (!isPainting) return
 
                 editorScreen!!.hideSelection()
-                val stageCoords = actor.stageToLocalCoordinates(Vector2(event!!.stageX, event.stageY))
+                val stageCoords = actor?.stageToLocalCoordinates(Vector2(event!!.stageX, event.stageY)) ?: return
                 val centerTileInfo = getClosestTileTo(stageCoords)
                     ?: return
                 editorScreen.tabs.edit.paintTilesWithBrush(centerTileInfo)

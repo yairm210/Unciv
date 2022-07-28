@@ -1,6 +1,5 @@
 package com.unciv.ui.mapeditor
 
-import com.unciv.logic.MapSaver
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.TabbedPager
@@ -11,7 +10,6 @@ class MapEditorMainTabs(
     minimumHeight = editorScreen.stage.height,
     maximumHeight = editorScreen.stage.height,
     headerFontSize = 24,
-    keyPressDispatcher = editorScreen.keyPressDispatcher,
     capacity = 7
 ) {
     val view = MapEditorViewTab(editorScreen)

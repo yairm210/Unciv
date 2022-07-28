@@ -10,9 +10,10 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.squareBraceRegex
 import com.unciv.models.translations.tr
+import com.unciv.ui.civilopedia.CivilopediaScreen.Companion.showReligionInCivilopedia
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
-import com.unciv.ui.utils.colorFromRGB
+import com.unciv.ui.utils.extensions.colorFromRGB
 
 class Nation : RulesetObject() {
     var leaderName = ""
@@ -20,6 +21,8 @@ class Nation : RulesetObject() {
     else "[$leaderName] of [$name]"
 
     val style = ""
+    fun getStyleOrCivName() = style.ifEmpty { name }
+
     var cityStateType: CityStateType? = null
     var preferredVictoryType: String = Constants.neutralVictoryType
     var declaringWar = ""
@@ -37,16 +40,16 @@ class Nation : RulesetObject() {
     var uniqueText = ""
     var innerColor: List<Int>? = null
     var startBias = ArrayList<String>()
-    
+
     var startIntroPart1 = ""
     var startIntroPart2 = ""
 
     /* Properties present in json but not yet implemented:
     var adjective = ArrayList<String>()
      */
-    
+
     var favoredReligion: String? = null
-    
+
     @Transient
     private lateinit var outerColorObject: Color
     fun getOuterColor(): Color = outerColorObject
@@ -118,7 +121,7 @@ class Nation : RulesetObject() {
                 val link = if ('[' !in it.value) it.value
                     else squareBraceRegex.find(it.value)!!.groups[1]!!.value
                 textList += FormattedLine(
-                    (if (it.index == 0) "[Start bias:] " else "") + it.value.tr(),  // extra tr because tr cannot nest {[]} 
+                    (if (it.index == 0) "[Start bias:] " else "") + it.value.tr(),  // extra tr because tr cannot nest {[]}
                     link = "Terrain/$link",
                     indent = if (it.index == 0) 0 else 1,
                     iconCrossed = it.value.startsWith("Avoid "))
@@ -137,10 +140,11 @@ class Nation : RulesetObject() {
 
         textList += FormattedLine("{Type}: {$cityStateType}", header = 4, color = cityStateType!!.color)
 
-        val era = if (UncivGame.isCurrentInitialized() && UncivGame.Current.isGameInfoInitialized())
-            UncivGame.Current.gameInfo.currentPlayerCiv.getEra()
-        else
+        val era = if (UncivGame.isCurrentInitialized() && UncivGame.Current.gameInfo != null) {
+            UncivGame.Current.gameInfo!!.getCurrentPlayerCivilization().getEra()
+        } else {
             ruleset.eras.values.first()
+        }
         var showResources = false
 
         val friendBonus = era.friendBonus[cityStateType!!.name]
@@ -170,7 +174,7 @@ class Nation : RulesetObject() {
             if (allMercantileResources.isNotEmpty()) {
                 textList += FormattedLine()
                 textList += FormattedLine("The unique luxury is one of:")
-                allMercantileResources.forEach { 
+                allMercantileResources.forEach {
                     textList += FormattedLine(it.name, it.makeLink(), indent = 1)
                 }
             }
@@ -181,11 +185,12 @@ class Nation : RulesetObject() {
     }
 
     private fun getUniqueBuildingsText(ruleset: Ruleset) = sequence {
+        val religionEnabled = showReligionInCivilopedia(ruleset)
         for (building in ruleset.buildings.values) {
             when {
                 building.uniqueTo != name -> continue
                 building.hasUnique(UniqueType.HiddenFromCivilopedia) -> continue
-                UncivGame.Current.isGameInfoInitialized() && !UncivGame.Current.gameInfo.isReligionEnabled() && building.hasUnique(UniqueType.HiddenWithoutReligion) -> continue // This seems consistent with existing behaviour of CivilopediaScreen's init.<locals>.shouldBeDisplayed(), and Technology().getEnabledUnits(). Otherwise there are broken links in the Civilopedia (E.G. to "Pyramid" and "Shrine", from "The Maya").
+                !religionEnabled && building.hasUnique(UniqueType.HiddenWithoutReligion) -> continue
             }
             yield(FormattedLine("{${building.name}} -", link=building.makeLink()))
             if (building.replaces != null && ruleset.buildings.containsKey(building.replaces!!)) {

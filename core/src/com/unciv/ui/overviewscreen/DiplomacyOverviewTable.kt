@@ -6,15 +6,24 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.trade.DiplomacyScreen
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.AutoScrollPane
+import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.utils.extensions.addBorder
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.center
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
 import kotlin.math.roundToInt
 
 class DiplomacyOverviewTab (
@@ -35,7 +44,7 @@ class DiplomacyOverviewTab (
         defaults().pad(5f)
         background = ImageGetter.getBackground(Color.BLACK)
     }
-    val toggleCityStatesButton: TextButton = "City-States".toTextButton().apply {
+    val toggleCityStatesButton: TextButton = Constants.cityStates.toTextButton().apply {
         onClick {
             persistableData.includeCityStates = !persistableData.includeCityStates
             update()
@@ -101,7 +110,11 @@ class DiplomacyOverviewTab (
         }
 
         table.add(floatingTable)
-        toggleCityStatesButton.color = if (persistableData.includeCityStates) Color.RED else Color.GREEN
+        toggleCityStatesButton.style = if (persistableData.includeCityStates) {
+            BaseScreen.skin.get("negative", TextButtonStyle::class.java)
+        } else {
+            BaseScreen.skin.get("positive", TextButtonStyle::class.java)
+        }
         civTableScroll.setScrollingDisabled(portraitMode, portraitMode)
     }
 
@@ -120,8 +133,7 @@ class DiplomacyOverviewTab (
         table.touchable = Touchable.enabled
         table.onClick {
             if (civInfo.isDefeated() || viewingPlayer.isSpectator() || civInfo == viewingPlayer) return@onClick
-            overviewScreen.dispose()
-            UncivGame.Current.setScreen(DiplomacyScreen(viewingPlayer, civInfo))
+            UncivGame.Current.pushScreen(DiplomacyScreen(viewingPlayer, civInfo))
         }
         return table
     }

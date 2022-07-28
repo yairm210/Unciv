@@ -15,8 +15,8 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaCategories
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
 
 class WonderOverviewTab(
     viewingPlayer: CivilizationInfo,
@@ -138,7 +138,7 @@ class WonderOverviewTab(
         val allWonderMap: Map<Int, String> =
             ruleSet.buildings.values.asSequence()
             .filter { it.isWonder }
-            .sortedWith(compareBy<Building> { wonderEraMap[it.name]!!.eraNumber }.thenBy(collator, { it.name.tr() }))
+            .sortedWith(compareBy<Building> { wonderEraMap[it.name]!!.eraNumber }.thenBy(collator) { it.name.tr() })
             .withIndex()
             .associate { it.index to it.value.name }
         val wonderCount = allWonderMap.size
@@ -226,7 +226,7 @@ class WonderOverviewTab(
 
             val image = wonder.getImage()
             image?.onClick {
-                UncivGame.Current.setScreen(CivilopediaScreen(ruleSet, overviewScreen, wonder.category, wonder.name))
+                UncivGame.Current.pushScreen(CivilopediaScreen(ruleSet, wonder.category, wonder.name))
             }
             // Terrain image padding is a bit unpredictable, they need ~5f more. Ensure equal line spacing on name, not image:
             add(image).pad(0f, 10f, 0f, 10f)
@@ -238,8 +238,8 @@ class WonderOverviewTab(
                 val locationLabel = locationText.toLabel()
                 if (wonder.location != null)
                     locationLabel.onClick{
-                        UncivGame.Current.setWorldScreen()
-                        UncivGame.Current.worldScreen.mapHolder.setCenterPosition(wonder.location.position)
+                        val worldScreen = UncivGame.Current.resetToWorldScreen()
+                        worldScreen.mapHolder.setCenterPosition(wonder.location.position)
                     }
                 add(locationLabel).fillY()
             }

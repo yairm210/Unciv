@@ -1,9 +1,17 @@
 package com.unciv.ui.utils
 
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.*
-import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.EventListener
+import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.InputEvent
+import com.badlogic.gdx.scenes.scene2d.InputListener
+import com.badlogic.gdx.scenes.scene2d.ui.Button
+import com.badlogic.gdx.scenes.scene2d.ui.Cell
+import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
@@ -12,13 +20,20 @@ import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.darken
+import com.unciv.ui.utils.extensions.isEnabled
+import com.unciv.ui.utils.extensions.keyShortcuts
+import com.unciv.ui.utils.extensions.onActivation
+import com.unciv.ui.utils.extensions.packIfNeeded
+import com.unciv.ui.utils.extensions.pad
 
 //TODO If keys are assigned, the widget is in a popup not filling stage width, and a button is
 // partially visible on the right end, the key tooltip will show outside the parent.
 
 /**
  * Implements a 'Tabs' widget where different pages can be switched by selecting a header button.
- * 
+ *
  * Each page is an Actor, passed to the Widget via [addPage]. Pages can be [removed][removePage],
  * [replaced][replacePage] or dynamically added after the Widget is already shown.
 
@@ -26,17 +41,15 @@ import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
  * The widget optionally supports "fixed content", an additional Actor that will be inserted above
  * the regular content of any page. It will scroll only horizontally, and its scroll position will
  * synchronize bidirectionally with the scrolling of the main content.
- * 
+ *
  * Pages can be disabled or secret - any 'secret' pages added require a later call to [askForPassword]
  * to activate them (or discard if the password is wrong).
- * 
+ *
  * The size parameters are lower and upper bounds of the page content area. The widget will always report
  * these bounds (plus header height) as layout properties min/max-Width/Height, and measure the content
  * area of added pages and set the reported pref-W/H to their maximum within these bounds. But, if a
  * maximum is not specified, that coordinate will grow with content up to screen size, and layout
  * max-W/H will always report the same as pref-W/H.
- *
- * [keyPressDispatcher] is optional and works with the `shortcutKey` parameter of [addPage] to support key bindings with tooltips.
  */
 //region Fields
 @Suppress("MemberVisibilityCanBePrivate", "unused")  // All members are part of our API
@@ -51,7 +64,7 @@ open class TabbedPager(
     backgroundColor: Color = ImageGetter.getBlue().darken(0.5f),
     private val headerPadding: Float = 10f,
     separatorColor: Color = Color.CLEAR,
-    private val keyPressDispatcher: KeyPressDispatcher? = null,
+    private val shorcutScreen: BaseScreen? = null,
     capacity: Int = 4
 ) : Table() {
 
@@ -273,7 +286,7 @@ open class TabbedPager(
     //region Initialization
 
     init {
-        val screen = (if (UncivGame.isCurrentInitialized()) UncivGame.Current.screen else null) as? BaseScreen
+        val screen = (if (UncivGame.isCurrentInitialized()) UncivGame.Current.screen else null)
         val (screenWidth, screenHeight) = (screen?.stage?.run { width to height }) ?: (Float.MAX_VALUE to Float.MAX_VALUE)
         dimW = DimensionMeasurement.from(minimumWidth, maximumWidth, screenWidth)
         dimH = DimensionMeasurement.from(minimumHeight, maximumHeight, screenHeight)
@@ -313,7 +326,7 @@ open class TabbedPager(
     }
     override fun getMinWidth() = dimW.min
     override fun getMaxWidth() = dimW.max
-    override fun getMinHeight() = dimH.min + headerHeight
+    override fun getMinHeight() = headerHeight
     override fun getMaxHeight() = dimH.max + headerHeight
 
     //endregion
@@ -448,19 +461,6 @@ open class TabbedPager(
         }
     }
 
-    /** Bind arrow keys to navigate pages left/right.
-     *  Needs [keyPressDispatcher] to be set on instantiation.
-     *  Caller is responsible for cleanup if necessary. */
-    fun bindArrowKeys() {
-        if (keyPressDispatcher == null) return
-        fun cyclePageFactory(direction: Int): ()->Unit = {
-            if (activePage != -1 && (stage.keyboardFocus == null || hasKeyboardFocus()))
-                selectPage((activePage + direction).coerceIn(pages.indices))
-        }
-        keyPressDispatcher[KeyCharAndCode(Input.Keys.LEFT)] = cyclePageFactory(-1)
-        keyPressDispatcher[KeyCharAndCode(Input.Keys.RIGHT)] = cyclePageFactory(1)
-    }
-
     /** Remove a page by its index.
      * @return `true` if page successfully removed */
     fun removePage(index: Int): Boolean {
@@ -500,7 +500,7 @@ open class TabbedPager(
      * @param insertBefore -1 to add at the end, or index of existing page to insert this before it.
      * @param secret Marks page as 'secret'. A password is asked once per [TabbedPager] and if it does not match the has passed in the constructor the page and all subsequent secret pages are dropped.
      * @param disabled Initial disabled state. Disabled pages cannot be selected even with [selectPage], their button is dimmed.
-     * @param shortcutKey Optional keyboard key to associate - goes to the [KeyPressDispatcher] passed in the constructor.
+     * @param shortcutKey Optional keyboard key to associate.
      * @param syncScroll If on, the ScrollPanes for [content] and [fixed content][IPageExtensions.getFixedContent] will synchronize horizontally.
      * @return The new page's index or -1 if it could not be immediately added (secret).
      */
@@ -531,9 +531,10 @@ open class TabbedPager(
         )
         page.button.apply {
             isEnabled = !disabled
-            onClick {
+            onActivation {
                 selectPage(page)
             }
+            keyShortcuts.add(shortcutKey)
             addTooltip(shortcutKey, if (iconSize > 0f) iconSize else 18f)
             pack()
             if (height + 2 * headerPadding > headerHeight) {
@@ -571,7 +572,7 @@ open class TabbedPager(
      */
     fun askForPassword(secretHashCode: Int = 0) {
         class PassPopup(screen: BaseScreen, unlockAction: ()->Unit, lockAction: ()->Unit) : Popup(screen) {
-            val passEntry = TextField("", BaseScreen.skin)
+            val passEntry = UncivTextField.create("Password")
             init {
                 passEntry.isPasswordMode = true
                 add(passEntry).row()
@@ -585,7 +586,7 @@ open class TabbedPager(
         if (!UncivGame.isCurrentInitialized() || askPasswordLock || deferredSecretPages.isEmpty()) return
         askPasswordLock = true  // race condition: Popup closes _first_, then deferredSecretPages is emptied -> parent shows and calls us again
 
-        PassPopup(UncivGame.Current.screen as BaseScreen, {
+        PassPopup(UncivGame.Current.screen!!, {
             addDeferredSecrets()
         }, {
             deferredSecretPages.clear()
@@ -628,8 +629,6 @@ open class TabbedPager(
             pages[i].buttonX += page.buttonW
 
         measureContent(page)
-
-        keyPressDispatcher?.set(page.shortcutKey) { selectPage(newIndex) }
 
         return newIndex
     }

@@ -1,13 +1,15 @@
 package com.unciv.logic.city
 
 import com.unciv.UncivGame
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.automation.Automation
-import com.unciv.logic.automation.ConstructionAutomation
+import com.unciv.logic.automation.city.ConstructionAutomation
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
-import com.unciv.logic.map.MapUnit  // for Kdoc only
+import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.logic.multiplayer.isUsersTurn
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.LocalUniqueCache
@@ -21,11 +23,9 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaCategories
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
-import com.unciv.ui.utils.withItem
-import com.unciv.ui.utils.withoutItem
-import com.unciv.ui.worldscreen.unit.UnitActions  // for Kdoc only
-import java.util.*
-import kotlin.collections.ArrayList
+import com.unciv.ui.utils.extensions.withItem
+import com.unciv.ui.utils.extensions.withoutItem
+import com.unciv.ui.worldscreen.unit.UnitActions
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 
@@ -38,7 +38,7 @@ import kotlin.math.roundToInt
  * @property currentConstructionIsUserSet a flag indicating if the [currentConstructionFromQueue] has been set by the user or by the AI
  * @property constructionQueue a list of constructions names enqueued
  */
-class CityConstructions {
+class CityConstructions : IsPartOfGameInfoSerialization {
     //region Non-Serialized Properties
     @Transient
     lateinit var cityInfo: CityInfo
@@ -93,7 +93,7 @@ class CityConstructions {
     fun getConstructableUnits() = cityInfo.getRuleset().units.values
         .asSequence().filter { it.isBuildable(this) }
 
-    fun getBasicStatBuildings(stat: Stat) = cityInfo.getRuleset().buildings.values
+    private fun getBasicStatBuildings(stat: Stat) = cityInfo.getRuleset().buildings.values
         .asSequence()
         .filter { !it.isAnyWonder() && it.replaces == null && it[stat] > 0f }
 
@@ -177,6 +177,7 @@ class CityConstructions {
     fun getCurrentConstruction(): IConstruction = getConstruction(currentConstructionFromQueue)
 
     fun isBuilt(buildingName: String): Boolean = builtBuildings.contains(buildingName)
+    @Suppress("MemberVisibilityCanBePrivate")
     fun isBeingConstructed(constructionName: String): Boolean = currentConstructionFromQueue == constructionName
     fun isEnqueued(constructionName: String): Boolean = constructionQueue.contains(constructionName)
     fun isBeingConstructedOrEnqueued(constructionName: String): Boolean = isBeingConstructed(constructionName) || isEnqueued(constructionName)
@@ -186,6 +187,11 @@ class CityConstructions {
     fun isBuildingWonder(): Boolean {
         val currentConstruction = getCurrentConstruction()
         return currentConstruction is Building && currentConstruction.isWonder
+    }
+
+    fun canBeHurried(): Boolean {
+        val currentConstruction = getCurrentConstruction()
+        return currentConstruction is INonPerpetualConstruction && !currentConstruction.hasUnique(UniqueType.CannotBeHurried)
     }
 
     /** If the city is constructing multiple units of the same type, subsequent units will require the full cost  */
@@ -490,7 +496,7 @@ class CityConstructions {
     }
 
     /**
-     *  Purchase a construction for gold
+     *  Purchase a construction for gold (or another stat)
      *  called from NextTurnAutomation and the City UI
      *  Build / place the new item, deduct cost, and maintain queue.
      *
@@ -579,7 +585,12 @@ class CityConstructions {
                     && (getConstruction(currentConstructionFromQueue) !is PerpetualConstruction || currentConstructionIsUserSet)) return
         }
 
-        ConstructionAutomation(this).chooseNextConstruction()
+        val isCurrentPlayersTurn = cityInfo.civInfo.gameInfo.isUsersTurn()
+                || !cityInfo.civInfo.gameInfo.gameParameters.isOnlineMultiplayer
+        if ((UncivGame.Current.settings.autoAssignCityProduction && isCurrentPlayersTurn) // only automate if the active human player has the setting to automate production
+                || !cityInfo.civInfo.isPlayerCivilization() || cityInfo.isPuppet) {
+            ConstructionAutomation(this).chooseNextConstruction()
+        }
 
         /** Support for [UniqueType.CreatesOneImprovement] - if an Improvement-creating Building was auto-queued, auto-choose a tile: */
         val building = getCurrentConstruction() as? Building ?: return
@@ -620,11 +631,11 @@ class CityConstructions {
             }
         }
 
-        if (constructionQueue.isEmpty()) {
+        currentConstructionIsUserSet = if (constructionQueue.isEmpty()) {
             if (automatic) chooseNextConstruction()
             else constructionQueue.add("Nothing") // To prevent Construction Automation
-            currentConstructionIsUserSet = false
-        } else currentConstructionIsUserSet = true // we're just continuing the regular queue
+            false
+        } else true // we're just continuing the regular queue
     }
 
     fun raisePriority(constructionQueueIndex: Int) {
@@ -659,8 +670,8 @@ class CityConstructions {
         cityInfo.cityStats.update()
         cityInfo.civInfo.updateDetailedCivResources()
         // If bought the worldscreen will not have been marked to update, and the new improvement won't show until later...
-        if (UncivGame.isCurrentInitialized())
-            UncivGame.Current.worldScreen.shouldUpdate = true
+        if (UncivGame.isCurrentInitialized() && UncivGame.Current.worldScreen != null)
+            UncivGame.Current.worldScreen!!.shouldUpdate = true
     }
 
     /** Support for [UniqueType.CreatesOneImprovement]:
@@ -678,10 +689,10 @@ class CityConstructions {
 
         constructionQueue.removeAt(indexToRemove)
 
-        if (constructionQueue.isEmpty()) {
+        currentConstructionIsUserSet = if (constructionQueue.isEmpty()) {
             constructionQueue.add("Nothing")
-            currentConstructionIsUserSet = false
-        } else currentConstructionIsUserSet = true
+            false
+        } else true
     }
 
     /** Support for [UniqueType.CreatesOneImprovement]:

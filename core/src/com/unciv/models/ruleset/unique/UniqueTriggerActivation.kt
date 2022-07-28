@@ -17,7 +17,7 @@ import kotlin.random.Random
 
 // Buildings, techs, policies, ancient ruins and promotions can have 'triggered' effects
 object UniqueTriggerActivation {
-    /** @return boolean whether an action was successfully preformed */
+    /** @return boolean whether an action was successfully performed */
     fun triggerCivwideUnique(
         unique: Unique,
         civInfo: CivilizationInfo,
@@ -25,13 +25,13 @@ object UniqueTriggerActivation {
         tile: TileInfo? = null,
         notification: String? = null
     ): Boolean {
-        if (!unique.conditionalsApply(civInfo, cityInfo)) return false
-
         val timingConditional = unique.conditionals.firstOrNull{it.type == ConditionalTimedUnique}
-        if (timingConditional!=null) {
+        if (timingConditional != null) {
             civInfo.temporaryUniques.add(TemporaryUnique(unique, timingConditional.params[0].toInt()))
             return true
         }
+
+        if (!unique.conditionalsApply(civInfo, cityInfo)) return false
 
         val chosenCity = cityInfo ?: civInfo.cities.firstOrNull { it.isCapital() }
         val tileBasedRandom =
@@ -43,7 +43,7 @@ object UniqueTriggerActivation {
             OneTimeFreeUnit -> {
                 val unitName = unique.params[0]
                 val unit = ruleSet.units[unitName]
-                if (chosenCity == null || unit == null || (unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger()))
+                if (chosenCity == null || unit == null || (unit.hasUnique(FoundCity) && civInfo.isOneCityChallenger()))
                     return false
 
                 val placedUnit = civInfo.addUnit(unitName, chosenCity)
@@ -59,7 +59,7 @@ object UniqueTriggerActivation {
             OneTimeAmountFreeUnits -> {
                 val unitName = unique.params[1]
                 val unit = ruleSet.units[unitName]
-                if (chosenCity == null || unit == null || (unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger()))
+                if (chosenCity == null || unit == null || (unit.hasUnique(FoundCity) && civInfo.isOneCityChallenger()))
                     return false
 
                 val tilesUnitsWerePlacedOn: MutableList<Vector2> = mutableListOf()
@@ -78,7 +78,13 @@ object UniqueTriggerActivation {
                 return true
             }
             OneTimeFreeUnitRuins -> {
-                val unit = civInfo.getEquivalentUnit(unique.params[0])
+                var unit = civInfo.getEquivalentUnit(unique.params[0])
+                if ( unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger()) {
+                     val replacementUnit = ruleSet.units.values.firstOrNull{it.getMatchingUniques(UniqueType.BuildImprovements)
+                            .any { it.params[0] == "Land" }} ?: return false
+                    unit = civInfo.getEquivalentUnit(replacementUnit.name)
+                }
+                
                 val placingTile =
                     tile ?: civInfo.cities.random().getCenterTile()
 
@@ -248,15 +254,6 @@ object UniqueTriggerActivation {
                 return true
             }
 
-            TimedAttackStrength -> {
-                val temporaryUnique = TemporaryUnique(unique, unique.params[2].toInt())
-                civInfo.temporaryUniques.add(temporaryUnique)
-                if (notification != null) {
-                    civInfo.addNotification(notification, NotificationIcon.War)
-                }
-                return true
-            }
-
             OneTimeRevealEntireMap -> {
                 if (notification != null) {
                     civInfo.addNotification(notification, LocationAction(tile?.position), NotificationIcon.Scout)
@@ -339,7 +336,7 @@ object UniqueTriggerActivation {
 
                 val foundStatAmount =
                     (tileBasedRandom.nextInt(unique.params[0].toInt(), unique.params[1].toInt()) *
-                            civInfo.gameInfo.gameParameters.gameSpeed.modifier
+                            civInfo.gameInfo.speed.statCostModifiers[stat]!!
                             ).toInt()
 
                 civInfo.addStat(
@@ -448,6 +445,7 @@ object UniqueTriggerActivation {
                         tile.position,
                         NotificationIcon.Ruins
                     )
+                return true
             }
 
             OneTimeTriggerVoting -> {
@@ -470,7 +468,7 @@ object UniqueTriggerActivation {
         return false
     }
 
-    /** @return boolean whether an action was successfully preformed */
+    /** @return boolean whether an action was successfully performed */
     fun triggerUnitwideUnique(
         unique: Unique,
         unit: MapUnit,

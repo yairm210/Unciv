@@ -31,6 +31,14 @@ interface ICombatant {
         if (this is CityCombatant) return false
         return (this as MapUnitCombatant).unit.baseUnit.isAirUnit()
     }
+    fun isWaterUnit(): Boolean {
+        if (this is CityCombatant) return false
+        return (this as MapUnitCombatant).unit.baseUnit.isWaterUnit()
+    }
+    fun isLandUnit(): Boolean {
+        if (this is CityCombatant) return false
+        return (this as MapUnitCombatant).unit.baseUnit.isLandUnit()
+    }
     fun isCity(): Boolean {
         return this is CityCombatant
     }

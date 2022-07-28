@@ -1,5 +1,6 @@
 package com.unciv.logic.city
 
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CityStateType
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
@@ -8,12 +9,16 @@ import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.GlobalUniques
 import com.unciv.models.ruleset.ModOptionsConstants
-import com.unciv.models.ruleset.unique.*
+import com.unciv.models.ruleset.unique.LocalUniqueCache
+import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTarget
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
 import com.unciv.models.stats.Stats
-import com.unciv.ui.utils.toPercent
+import com.unciv.ui.utils.extensions.toPercent
 import kotlin.math.min
 
 
@@ -55,12 +60,12 @@ class StatTreeNode {
 }
 
 /** Holds and calculates [Stats] for a city.
- * 
+ *
  * No field needs to be saved, all are calculated on the fly,
  * so its field in [CityInfo] is @Transient and no such annotation is needed here.
  */
 class CityStats(val cityInfo: CityInfo) {
-    //region Fields, Transient 
+    //region Fields, Transient
 
     var baseStatTree = StatTreeNode()
 
@@ -83,15 +88,12 @@ class CityStats(val cityInfo: CityInfo) {
         val stats = Stats()
         if (!cityInfo.isCapital() && cityInfo.isConnectedToCapital()) {
             val civInfo = cityInfo.civInfo
-            stats.gold = civInfo.getCapital().population.population * 0.15f + cityInfo.population.population * 1.1f - 1 // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
+            stats.gold = civInfo.getCapital()!!.population.population * 0.15f + cityInfo.population.population * 1.1f - 1 // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
             for (unique in cityInfo.getMatchingUniques(UniqueType.StatsFromTradeRoute))
                 stats.add(unique.stats)
             val percentageStats = Stats()
             for (unique in cityInfo.getMatchingUniques(UniqueType.StatPercentFromTradeRoutes))
                 percentageStats[Stat.valueOf(unique.params[1])] += unique.params[0].toFloat()
-            // Deprecated as of 3.19.19
-                if (civInfo.hasUnique(UniqueType.GoldBonusFromTradeRoutesDeprecated)) percentageStats[Stat.Gold] += 25f // Machu Picchu speciality
-            //
             for ((stat) in stats) {
                 stats[stat] *= percentageStats[stat].toPercent()
             }
@@ -102,17 +104,22 @@ class CityStats(val cityInfo: CityInfo) {
     private fun getStatsFromProduction(production: Float): Stats {
         val stats = Stats()
 
-        when (cityInfo.cityConstructions.currentConstructionFromQueue) {
-            "Gold" -> stats.gold += production / 4
-            "Science" -> stats.science += production * getScienceConversionRate()
+        if (cityInfo.cityConstructions.currentConstructionFromQueue in Stat.statsWithCivWideField.map { it.name }) {
+            val stat = Stat.valueOf(cityInfo.cityConstructions.currentConstructionFromQueue)
+            stats[stat] = production * getStatConversionRate(stat)
         }
         return stats
     }
 
-    fun getScienceConversionRate(): Float {
+    fun getStatConversionRate(stat: Stat): Float {
         var conversionRate = 1 / 4f
-        if (cityInfo.civInfo.hasUnique(UniqueType.ProductionToScienceConversionBonus))
+        val conversionUnique = cityInfo.civInfo.getMatchingUniques(UniqueType.ProductionToCivWideStatConversionBonus).firstOrNull { it.params[0] == stat.name }
+        if (conversionUnique != null) {
+            conversionRate *= conversionUnique.params[1].toPercent()
+        } else if (stat == Stat.Science && cityInfo.civInfo.hasUnique(UniqueType.ProductionToScienceConversionBonus)) {
+            // backwards compatibility
             conversionRate *= 1.33f
+        }
         return conversionRate
     }
 
@@ -161,7 +168,7 @@ class CityStats(val cityInfo: CityInfo) {
                 }
             }
         }
-        
+
         for (unique in cityInfo.civInfo.getMatchingUniques(UniqueType.BonusStatsFromCityStates)) {
             stats[Stat.valueOf(unique.params[1])] *= unique.params[0].toPercent()
         }
@@ -240,10 +247,6 @@ class CityStats(val cityInfo: CityInfo) {
                 sourceToStats.addStats(unique.stats.times(amountOfEffects), getSourceNameForUnique(unique), unique.sourceObjectName ?: "")
             }
 
-        for (unique in cityInfo.getMatchingUniques(UniqueType.StatsFromXPopulation))
-            if (cityInfo.population.population >= unique.params[1].toInt())
-                addUniqueStats(unique)
-
         for (unique in cityInfo.getMatchingUniques(UniqueType.StatsFromCitiesOnSpecificTiles))
             if (cityInfo.getCenterTile().matchesTerrainFilter(unique.params[1]))
                 addUniqueStats(unique)
@@ -314,10 +317,11 @@ class CityStats(val cityInfo: CityInfo) {
                     unique.params[0].toFloat() * cityInfo.religion.getFollowersOfMajorityReligion(),
                     unique.params[2].toFloat()
                 ))
-        
+
         if (currentConstruction is Building
             && cityInfo.civInfo.cities.isNotEmpty()
-            && cityInfo.civInfo.getCapital().cityConstructions.builtBuildings.contains(currentConstruction.name)
+            && cityInfo.civInfo.getCapital() != null
+            && cityInfo.civInfo.getCapital()!!.cityConstructions.builtBuildings.contains(currentConstruction.name)
         ) {
             for (unique in cityInfo.getMatchingUniques(UniqueType.PercentProductionBuildingsInCapital))
                 addUniqueStats(unique, Stat.Production, unique.params[0].toFloat())
@@ -399,31 +403,18 @@ class CityStats(val cityInfo: CityInfo) {
             unhappinessFromCity *= 2f //doubled for the Indian
 
         newHappinessList["Cities"] = unhappinessFromCity * unhappinessModifier
-        
+
         var unhappinessFromCitizens = cityInfo.population.population.toFloat()
-        
+
         for (unique in cityInfo.getMatchingUniques(UniqueType.UnhappinessFromPopulationTypePercentageChange))
             if (cityInfo.matchesFilter(unique.params[2]))
                 unhappinessFromCitizens += (unique.params[0].toFloat() / 100f) * cityInfo.population.getPopulationFilterAmount(unique.params[1])
-        
-        // Deprecated as of 3.19.19
-            for (unique in cityInfo.getMatchingUniques(UniqueType.UnhappinessFromSpecialistsPercentageChange)) {
-                if (cityInfo.matchesFilter(unique.params[1]))
-                    unhappinessFromCitizens += unique.params[0].toFloat() / 100f * cityInfo.population.getNumberOfSpecialists()
-            }
-    
-            for (unique in cityInfo.getMatchingUniques(UniqueType.UnhappinessFromPopulationPercentageChange))
-                if (cityInfo.matchesFilter(unique.params[1]))
-                    unhappinessFromCitizens += unique.params[0].toFloat() / 100f * cityInfo.population.population
-        //
 
-        if (cityInfo.isPuppet)
-            unhappinessFromCitizens *= 1.5f
-        else if (hasExtraAnnexUnhappiness())
+        if (hasExtraAnnexUnhappiness())
             unhappinessFromCitizens *= 2f
 
         if (unhappinessFromCitizens < 0) unhappinessFromCitizens = 0f
-        
+
         newHappinessList["Population"] = -unhappinessFromCitizens * unhappinessModifier
 
         if (hasExtraAnnexUnhappiness()) newHappinessList["Occupied City"] = -2f //annexed city
@@ -453,7 +444,7 @@ class CityStats(val cityInfo: CityInfo) {
         val newBaseStatTree = StatTreeNode()
 
         // We don't edit the existing baseStatList directly, in order to avoid concurrency exceptions
-        val newBaseStatList = StatMap() 
+        val newBaseStatList = StatMap()
 
         newBaseStatTree.addStats(Stats(
             science = cityInfo.population.population.toFloat(),
@@ -464,7 +455,7 @@ class CityStats(val cityInfo: CityInfo) {
             getStatsFromSpecialists(cityInfo.population.getNewSpecialists())
         newBaseStatList["Trade routes"] = getStatsFromTradeRoute()
         newBaseStatTree.children["Buildings"] = statsFromBuildings
-        newBaseStatList["City-States"] = getStatsFromCityStates()
+        newBaseStatList[Constants.cityStates] = getStatsFromCityStates()
 
         for ((source, stats) in newBaseStatList)
             newBaseStatTree.addStats(stats, source)
@@ -539,6 +530,7 @@ class CityStats(val cityInfo: CityInfo) {
             entry.gold *= statPercentBonusesSum.gold.toPercent()
             entry.culture *= statPercentBonusesSum.culture.toPercent()
             entry.food *= statPercentBonusesSum.food.toPercent()
+            entry.faith *= statPercentBonusesSum.faith.toPercent()
         }
 
         // AFTER we've gotten all the gold stats figured out, only THEN do we plonk that gold into Science
@@ -604,17 +596,20 @@ class CityStats(val cityInfo: CityInfo) {
             newFinalStatList["Excess food to production"] =
                 Stats(production = getProductionFromExcessiveFood(totalFood), food = -totalFood)
         }
-        
+
         val growthNullifyingUnique = cityInfo.getMatchingUniques(UniqueType.NullifiesGrowth).firstOrNull()
         if (growthNullifyingUnique != null) {
+            // Note that negative food will also be nullified. Pretty sure that's conform civ V, but haven't checked.
             val amountToRemove = -newFinalStatList.values.sumOf { it[Stat.Food].toDouble() }
-            newFinalStatList[getSourceNameForUnique(growthNullifyingUnique)] =
+            newFinalStatList.add(
+                getSourceNameForUnique(growthNullifyingUnique),
                 Stats().apply { this[Stat.Food] = amountToRemove.toFloat() }
+            )
         }
 
         if (cityInfo.isInResistance())
             newFinalStatList.clear()  // NOPE
-        
+
         if (newFinalStatList.values.map { it.production }.sum() < 1)  // Minimum production for things to progress
             newFinalStatList["Production"] = Stats(production = 1f)
         finalStatList = newFinalStatList

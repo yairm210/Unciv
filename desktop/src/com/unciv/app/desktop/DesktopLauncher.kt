@@ -9,8 +9,10 @@ import com.badlogic.gdx.graphics.glutils.HdpiMode
 import com.sun.jna.Native
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
-import com.unciv.models.metadata.GameSettings
+import com.unciv.logic.UncivFiles
 import com.unciv.ui.utils.Fonts
+import com.unciv.utils.Log
+import com.unciv.utils.debug
 import java.util.*
 import kotlin.concurrent.timer
 
@@ -19,9 +21,14 @@ internal object DesktopLauncher {
 
     @JvmStatic
     fun main(arg: Array<String>) {
+        Log.backend = DesktopLogBackend()
         // Solves a rendering problem in specific GPUs and drivers.
         // For more info see https://github.com/yairm210/Unciv/pull/3202 and https://github.com/LWJGL/lwjgl/issues/119
         System.setProperty("org.lwjgl.opengl.Display.allowSoftwareOpenGL", "true")
+        // This setting (default 64) limits clipboard transfers. Value in kB!
+        // 386 is an almost-arbitrary choice from the saves I had at the moment and their GZipped size.
+        // There must be a reason for lwjgl3 being so stingy, which for me meant to stay conservative.
+        System.setProperty("org.lwjgl.system.stackSize", "384")
 
         ImagePacker.packImages()
 
@@ -35,23 +42,21 @@ internal object DesktopLauncher {
         // Note that means config.setAudioConfig() would be ignored too, those would need to go into the HardenedGdxAudio constructor.
         config.disableAudio(true)
 
-        val settings = GameSettings.getSettingsForPlatformLaunchers()
+        val settings = UncivFiles.getSettingsForPlatformLaunchers()
         if (!settings.isFreshlyCreated) {
             config.setWindowedMode(settings.windowState.width.coerceAtLeast(120), settings.windowState.height.coerceAtLeast(80))
         }
 
-        val versionFromJar = DesktopLauncher.javaClass.`package`.specificationVersion ?: "Desktop"
-
-        if (versionFromJar == "Desktop") {
+        val isRunFromIDE = DesktopLauncher.javaClass.`package`.specificationVersion == null
+        if (isRunFromIDE) {
             UniqueDocsWriter().write()
         }
 
         val platformSpecificHelper = PlatformSpecificHelpersDesktop(config)
         val desktopParameters = UncivGameParameters(
-            versionFromJar,
             cancelDiscordEvent = { discordTimer?.cancel() },
-            fontImplementation = NativeFontDesktop(Fonts.ORIGINAL_FONT_SIZE.toInt(), settings.fontFamily),
-            customSaveLocationHelper = CustomSaveLocationHelperDesktop(),
+            fontImplementation = NativeFontDesktop((Fonts.ORIGINAL_FONT_SIZE * settings.fontSizeMultiplier).toInt(), settings.fontFamily),
+            customFileLocationHelper = CustomFileLocationHelperDesktop(),
             crashReportSysInfo = CrashReportSysInfoDesktop(),
             platformSpecificHelper = platformSpecificHelper,
             audioExceptionHelper = HardenGdxAudio()
@@ -70,7 +75,7 @@ internal object DesktopLauncher {
              This is because if there's a crash when the instance initializes on a similar line,
               it's not within the bounds of the try/catch and thus the app will crash.
              */
-            Native.loadLibrary("discord-rpc", DiscordRPC::class.java)
+            Native.load("discord-rpc", DiscordRPC::class.java)
             val handlers = DiscordEventHandlers()
             DiscordRPC.INSTANCE.Discord_Initialize("647066573147996161", handlers, true, null)
 
@@ -80,21 +85,27 @@ internal object DesktopLauncher {
                 try {
                     updateRpc(game)
                 } catch (ex: Exception) {
+                    debug("Exception while updating Discord Rich Presence", ex)
                 }
             }
         } catch (ex: Throwable) {
             // This needs to be a Throwable because if we can't find the discord_rpc library, we'll get a UnsatisfiedLinkError, which is NOT an exception.
-            println("Could not initialize Discord")
+            debug("Could not initialize Discord")
         }
     }
 
     private fun updateRpc(game: UncivGame) {
         if (!game.isInitialized) return
         val presence = DiscordRichPresence()
-        val currentPlayerCiv = game.gameInfo.getCurrentPlayerCivilization()
-        presence.details = "${currentPlayerCiv.nation.leaderName} of ${currentPlayerCiv.nation.name}"
         presence.largeImageKey = "logo" // The actual image is uploaded to the discord app / applications webpage
-        presence.largeImageText = "Turn" + " " + currentPlayerCiv.gameInfo.turns
+
+        val gameInfo = game.gameInfo
+        if (gameInfo != null) {
+            val currentPlayerCiv = gameInfo.getCurrentPlayerCivilization()
+            presence.details = "${currentPlayerCiv.nation.leaderName} of ${currentPlayerCiv.nation.name}"
+            presence.largeImageText = "Turn" + " " + currentPlayerCiv.gameInfo.turns
+        }
+
         DiscordRPC.INSTANCE.Discord_UpdatePresence(presence)
     }
 }

@@ -2,20 +2,32 @@ package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.newgamescreen.TranslatedSelectBox
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.ExpanderTab
+import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.UncivTextField
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.utils.extensions.keyShortcuts
+import com.unciv.ui.utils.extensions.onActivation
+import com.unciv.ui.utils.extensions.onChange
+import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
+import com.unciv.utils.Log
 import kotlin.math.sign
 
 /**
  * Helper class for Mod Manager - filtering and sorting.
- * 
+ *
  * This isn't a UI Widget, but offers one: [expander] can be used to offer filtering and sorting options.
  * It holds the variables [sortInstalled] and [sortOnline] for the [modManagementScreen] and knows
  * how to sort collections of [ModUIData] by providing comparators.
@@ -28,7 +40,7 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
         val sortByDate = Comparator { mod1, mod2: ModUIData -> mod1.lastUpdated().compareTo(mod2.lastUpdated()) }
         val sortByDateDesc = Comparator { mod1, mod2: ModUIData -> mod2.lastUpdated().compareTo(mod1.lastUpdated()) }
         // comparators for stars or status
-        val sortByStars = Comparator { mod1, mod2: ModUIData -> 
+        val sortByStars = Comparator { mod1, mod2: ModUIData ->
             10 * (mod2.stargazers() - mod1.stargazers()) + mod1.name.compareTo(mod2.name, true).sign
         }
         val sortByStatus = Comparator { mod1, mod2: ModUIData ->
@@ -61,13 +73,43 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
         }
     }
 
-    private val textField = TextField("", BaseScreen.skin)
-    fun getFilterText(): String = textField.text
-    val filterAction: ()->Unit
+    enum class Category(
+        val label: String,
+        val topic: String
+    ) {
+        All("All mods", "unciv-mod"),
+        Rulesets("Rulesets", "unciv-mod-rulesets"),
+        Expansions("Expansions", "unciv-mod-expansions"),
+        Graphics("Graphics", "unciv-mod-graphics"),
+        Audio("Audio", "unciv-mod-audio"),
+        Maps("Maps", "unciv-mod-maps"),
+        Fun("Fun", "unciv-mod-fun"),
+        ModsOfMods("Mods of mods", "unciv-mod-modsofmods");
 
+        companion object {
+            fun fromSelectBox(selectBox: TranslatedSelectBox): Category {
+                val selected = selectBox.selected.value
+                return values().firstOrNull { it.label == selected } ?: All
+            }
+        }
+    }
+
+    class Filter(
+        val text: String,
+        val topic: String
+    )
+
+    fun getFilter(): Filter {
+        return Filter(textField.text, category.topic)
+    }
+
+    private val textField = UncivTextField.create("Enter search text")
+
+    var category = Category.All
     var sortInstalled = SortType.Name
     var sortOnline = SortType.Stars
 
+    private val categorySelect: TranslatedSelectBox
     private val sortInstalledSelect: TranslatedSelectBox
     private val sortOnlineSelect: TranslatedSelectBox
 
@@ -75,8 +117,6 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
     val expander: ExpanderTab
 
     init {
-        textField.messageText = "Enter search text"
-
         val searchIcon = ImageGetter.getImage("OtherIcons/Search")
             .surroundWithCircle(50f, color = Color.CLEAR)
 
@@ -100,6 +140,17 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
             modManagementScreen.refreshOnlineModTable()
         }
 
+        categorySelect = TranslatedSelectBox(
+            Category.values().map { category -> category.label },
+            category.label,
+            BaseScreen.skin
+        )
+        categorySelect.onChange {
+            category = Category.fromSelectBox(categorySelect)
+            modManagementScreen.refreshInstalledModTable()
+            modManagementScreen.refreshOnlineModTable()
+        }
+
         expander = ExpanderTab(
             "Sort and Filter",
             fontSize = Constants.defaultFontSize,
@@ -116,6 +167,8 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
                 add(textField).pad(0f, 5f, 0f, 5f).growX()
                 add(searchIcon).right()
             }).colspan(2).growX().padBottom(7.5f).row()
+            it.add("Category:".toLabel()).left()
+            it.add(categorySelect).right().padBottom(7.5f).row()
             it.add("Sort Current:".toLabel()).left()
             it.add(sortInstalledSelect).right().padBottom(7.5f).row()
             it.add("Sort Downloadable:".toLabel()).left()
@@ -123,7 +176,7 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
         }
 
         searchIcon.touchable = Touchable.enabled
-        filterAction = {
+        searchIcon.onActivation {
             if (expander.isOpen) {
                 modManagementScreen.refreshInstalledModTable()
                 modManagementScreen.refreshOnlineModTable()
@@ -132,7 +185,7 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
             }
             expander.toggle()
         }
-        searchIcon.onClick(filterAction)
+        searchIcon.keyShortcuts.add(KeyCharAndCode.RETURN)
         searchIcon.addTooltip(KeyCharAndCode.RETURN, 18f)
     }
 
@@ -187,12 +240,21 @@ class ModUIData(
     fun lastUpdated() = ruleset?.modOptions?.lastUpdated ?: repo?.pushed_at ?: ""
     fun stargazers() = repo?.stargazers_count ?: 0
     fun author() = ruleset?.modOptions?.author ?: repo?.owner?.login ?: ""
-    fun matchesFilter(filterText: String): Boolean = when {
-        filterText.isEmpty() -> true
-        name.contains(filterText, true) -> true
+    fun matchesFilter(filter: ModManagementOptions.Filter): Boolean = when {
+        !matchesCategory(filter) -> false
+        filter.text.isEmpty() -> true
+        name.contains(filter.text, true) -> true
         // description.contains(filterText, true) -> true // too many surprises as description is different in the two columns
-        author().contains(filterText, true) -> true
+        author().contains(filter.text, true) -> true
         else -> false
+    }
+    private fun matchesCategory(filter: ModManagementOptions.Filter): Boolean {
+        val modTopic = repo?.topics ?: ruleset?.modOptions?.topics!!
+        if (filter.topic == ModManagementOptions.Category.All.topic)
+            return true
+        if (modTopic.size < 2) return false
+        if (modTopic[1] == filter.topic) return true
+        return false
     }
 }
 
@@ -204,8 +266,8 @@ class ModUIData(
 class ModStateImages (
     isVisual: Boolean = false,
     isUpdated: Boolean = false,
-    val visualImage: Image = ImageGetter.getImage("UnitPromotionIcons/Scouting"),
-    val hasUpdateImage: Image = ImageGetter.getImage("OtherIcons/Mods")
+    private val visualImage: Image = ImageGetter.getImage("UnitPromotionIcons/Scouting"),
+    private val hasUpdateImage: Image = ImageGetter.getImage("OtherIcons/Mods")
 ) {
     /** The table containing the indicators (one per mod, narrow, arranges up to three indicators vertically) */
     val container: Table = Table().apply { defaults().size(20f).align(Align.topLeft) }

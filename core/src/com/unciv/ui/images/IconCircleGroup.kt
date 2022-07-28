@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.utils.Align
-import com.unciv.ui.utils.center
+import com.unciv.ui.utils.extensions.center
 
 class IconCircleGroup(size: Float, val actor: Actor, resizeActor: Boolean = true, color: Color = Color.WHITE): Group(){
     val circle = ImageGetter.getCircle().apply {

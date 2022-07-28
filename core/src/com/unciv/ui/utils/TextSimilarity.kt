@@ -21,9 +21,9 @@ package com.unciv.ui.utils
  * @return Approximate distance between them.
  */
 fun getTextDistance(text1: String, text2: String): Int {
-    var dist = 0;
-    var i1 = 0;
-    var i2 = 0;
+    var dist = 0
+    var i1 = 0
+    var i2 = 0
 
 //    fun String.debugTraversal(index: Int) = println(this.substring(0..index-1)+"["+this[index]+"]"+this.substring(index+1..this.lastIndex))
 //    /** Uncomment this and stick it at the start of the `while` if you want to see what's happening. */
@@ -32,8 +32,8 @@ fun getTextDistance(text1: String, text2: String): Int {
     fun inRange() = i1 < text1.length && i2 < text2.length // Length is O(1), apparently.
     while (inRange()) {
 //        debugTraversal()
-        var char1 = text1[i1] // Indexing may not be, though.
-        var char2 = text2[i2]
+        val char1 = text1[i1] // Indexing may not be, though.
+        val char2 = text2[i2]
         if (char1 == char2) {
             i1++
             i2++

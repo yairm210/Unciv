@@ -5,26 +5,34 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.models.Tutorial
+import com.unciv.models.TutorialTrigger
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Policy
-import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.ruleset.Policy.PolicyBranchType
+import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.RecreateOnResize
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.enable
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.pad
+import com.unciv.ui.utils.extensions.toTextButton
 import com.unciv.ui.worldscreen.WorldScreen
 import kotlin.math.min
 
 
 class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo = worldScreen.viewingCiv)
-    : PickerScreen() {
+    : PickerScreen(), RecreateOnResize {
     internal val viewingCiv: CivilizationInfo = civInfo
     private var pickedPolicy: Policy? = null
 
     init {
         val policies = viewingCiv.policies
-        displayTutorial(Tutorial.CultureAndPolicies)
+        displayTutorial(TutorialTrigger.CultureAndPolicies)
 
         rightSideButton.setText(when {
             policies.allPoliciesAdopted(checkEra = false) ->
@@ -39,8 +47,6 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
 
         if (policies.freePolicies > 0 && policies.canAdoptPolicy())
             closeButton.disable()
-        else
-            onBackButtonClicked { UncivGame.Current.setWorldScreen() }
 
         rightSideButton.onClick(UncivSound.Policy) {
             val policy = pickedPolicy!!
@@ -52,14 +58,13 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
 
             // If we've moved to another screen in the meantime (great person pick, victory screen) ignore this
             if (game.screen !is PolicyPickerScreen || !policies.canAdoptPolicy()) {
-                game.setWorldScreen()
-                dispose()
+                game.popScreen()
             } else {
                 val policyScreen = PolicyPickerScreen(worldScreen)
                 policyScreen.scrollPane.scrollPercentX = scrollPane.scrollPercentX
                 policyScreen.scrollPane.scrollPercentY = scrollPane.scrollPercentY
                 policyScreen.scrollPane.updateVisualScroll()
-                game.setScreen(policyScreen)  // update policies
+                game.replaceCurrentScreen(policyScreen)  // update policies
             }
         }
 
@@ -73,6 +78,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         var rowChangeWidth = Float.MAX_VALUE
 
         // estimate how many branch boxes fit using average size (including pad)
+        // TODO If we'd want to use scene2d correctly, this is supposed to happen inside an overridden layout() method
         val numBranchesX = scrollPane.width / 242f
         val numBranchesY = scrollPane.height / 305f
         // plan a nice geometry
@@ -142,7 +148,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         if (viewingCiv.gameInfo.gameParameters.godMode && pickedPolicy == policy
                 && viewingCiv.policies.isAdoptable(policy)) {
             viewingCiv.policies.adopt(policy)
-            game.setScreen(PolicyPickerScreen(worldScreen))
+            game.replaceCurrentScreen(PolicyPickerScreen(worldScreen))
         }
         pickedPolicy = policy
 
@@ -205,9 +211,5 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         return policyButton
     }
 
-    override fun resize(width: Int, height: Int) {
-        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
-            game.setScreen(PolicyPickerScreen(worldScreen,viewingCiv))
-        }
-    }
+    override fun recreate(): BaseScreen = PolicyPickerScreen(worldScreen, viewingCiv)
 }

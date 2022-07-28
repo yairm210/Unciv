@@ -7,9 +7,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.*
-import com.unciv.logic.civilization.diplomacy.*
+import com.unciv.logic.civilization.AlertType
+import com.unciv.logic.civilization.AssignedQuest
+import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.civilization.diplomacy.DiplomacyManager
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers.*
+import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
@@ -26,10 +33,23 @@ import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popup.YesNoPopup
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.tilegroups.CityButton
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.Fonts
+import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.RecreateOnResize
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.disable
+import com.unciv.ui.utils.extensions.keyShortcuts
+import com.unciv.ui.utils.extensions.onActivation
+import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.setFontSize
+import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toPercent
+import com.unciv.ui.utils.extensions.toTextButton
 import kotlin.math.floor
 import kotlin.math.roundToInt
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
@@ -43,9 +63,9 @@ import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 @Suppress("KDocUnresolvedReference")  // Mentioning non-field parameters is flagged, but they work anyway
 class DiplomacyScreen(
     val viewingCiv: CivilizationInfo,
-    selectCiv: CivilizationInfo? = null,
-    selectTrade: Trade? = null
-): BaseScreen() {
+    private val selectCiv: CivilizationInfo? = null,
+    private val selectTrade: Trade? = null
+): BaseScreen(), RecreateOnResize {
     companion object {
         private const val nationIconSize = 100f
         private const val nationIconPad = 10f
@@ -56,10 +76,9 @@ class DiplomacyScreen(
     private val rightSideTable = Table()
     private val closeButton = Constants.close.toTextButton()
 
-    private fun isNotPlayersTurn() = !UncivGame.Current.worldScreen.canChangeState
+    private fun isNotPlayersTurn() = !UncivGame.Current.worldScreen!!.canChangeState
 
     init {
-        onBackButtonClicked { UncivGame.Current.setWorldScreen() }
         val splitPane = SplitPane(leftSideScroll, rightSideTable, false, skin)
         splitPane.splitAmount = 0.2f
 
@@ -68,7 +87,8 @@ class DiplomacyScreen(
         splitPane.setFillParent(true)
         stage.addActor(splitPane)
 
-        closeButton.onClick { UncivGame.Current.setWorldScreen() }
+        closeButton.onActivation { UncivGame.Current.popScreen() }
+        closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
         closeButton.label.setFontSize(Constants.headingFontSize)
         closeButton.labelCell.pad(10f)
         closeButton.pack()
@@ -133,9 +153,12 @@ class DiplomacyScreen(
                 questIcon.x = floor(civIndicator.width - questIcon.width)
             }
 
+            val civNameLabel = civ.civName.toLabel()
             leftSideTable.add(civIndicator).row()
+            leftSideTable.add(civNameLabel).padBottom(20f).row()
 
             civIndicator.onClick { updateRightSide(civ) }
+            civNameLabel.onClick { updateRightSide(civ) }
         }
 
         if (selectCivY != 0f) {
@@ -187,12 +210,7 @@ class DiplomacyScreen(
                 resourcesTable.add(wrapper).padRight(20f)
                 wrapper.addTooltip(name, 18f)
                 wrapper.onClick {
-                    val pedia = CivilopediaScreen(
-                        UncivGame.Current.gameInfo.ruleSet,
-                        this,
-                        link = "Resource/$name"
-                    )
-                    UncivGame.Current.setScreen(pedia)
+                    UncivGame.Current.pushScreen(CivilopediaScreen(UncivGame.Current.gameInfo!!.ruleSet, link = "Resource/$name"))
                 }
             }
             diplomacyTable.add(resourcesTable).row()
@@ -215,7 +233,7 @@ class DiplomacyScreen(
         }
 
         val atWar = otherCiv.isAtWarWith(viewingCiv)
-        
+
         val nextLevelString = when {
             atWar -> ""
             otherCivDiplomacyManager.getInfluence().toInt() < 30 -> "Reach 30 for friendship."
@@ -249,7 +267,7 @@ class DiplomacyScreen(
                     .row()
         }
 
-        val friendBonusLabelColor = if (relationLevel >= RelationshipLevel.Friend) Color.GREEN else Color.GRAY
+        val friendBonusLabelColor = if (relationLevel == RelationshipLevel.Friend) Color.GREEN else Color.GRAY
         val friendBonusLabel = friendBonusText.toLabel(friendBonusLabelColor)
             .apply { setAlignment(Align.center) }
         diplomacyTable.add(friendBonusLabel).row()
@@ -330,29 +348,10 @@ class DiplomacyScreen(
         val improveTileButton = getImproveTilesButton(otherCiv, otherCivDiplomacyManager)
         if (improveTileButton != null) diplomacyTable.add(improveTileButton).row()
 
-        if (otherCivDiplomacyManager.diplomaticStatus == DiplomaticStatus.Protector) {
-            val revokeProtectionButton = "Revoke Protection".toTextButton()
-            revokeProtectionButton.onClick {
-                YesNoPopup("Revoke protection for [${otherCiv.civName}]?", {
-                    otherCiv.removeProtectorCiv(viewingCiv)
-                    updateLeftSideTable(otherCiv)
-                    updateRightSide(otherCiv)
-                }, this).open()
-            }
-            diplomacyTable.add(revokeProtectionButton).row()
-            if (isNotPlayersTurn() || !otherCiv.otherCivCanWithdrawProtection(viewingCiv)) revokeProtectionButton.disable()
-        } else {
-            val protectionButton = "Pledge to protect".toTextButton()
-            protectionButton.onClick {
-                YesNoPopup("Declare Protection of [${otherCiv.civName}]?", {
-                    otherCiv.addProtectorCiv(viewingCiv)
-                    updateLeftSideTable(otherCiv)
-                    updateRightSide(otherCiv)
-                }, this).open()
-            }
-            diplomacyTable.add(protectionButton).row()
-            if (isNotPlayersTurn() || !otherCiv.otherCivCanPledgeProtection(viewingCiv)) protectionButton.disable()
-        }
+        if (otherCivDiplomacyManager.diplomaticStatus != DiplomaticStatus.Protector)
+            diplomacyTable.add(getPledgeToProtectButton(otherCiv)).row()
+        else
+            diplomacyTable.add(getRevokeProtectionButton(otherCiv)).row()
 
         val demandTributeButton = "Demand Tribute".toTextButton()
         demandTributeButton.onClick {
@@ -364,41 +363,13 @@ class DiplomacyScreen(
 
         val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)
         if (!viewingCiv.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
-            if (viewingCiv.isAtWarWith(otherCiv)) {
-                val peaceButton = "Negotiate Peace".toTextButton()
-                peaceButton.onClick {
-                    YesNoPopup("Peace with [${otherCiv.civName}]?", {
-                        val tradeLogic = TradeLogic(viewingCiv, otherCiv)
-                        tradeLogic.currentTrade.ourOffers.add(
-                            TradeOffer(
-                                Constants.peaceTreaty,
-                                TradeType.Treaty
-                            )
-                        )
-                        tradeLogic.currentTrade.theirOffers.add(
-                            TradeOffer(
-                                Constants.peaceTreaty,
-                                TradeType.Treaty
-                            )
-                        )
-                        tradeLogic.acceptTrade()
-                        updateLeftSideTable(otherCiv)
-                        updateRightSide(otherCiv)
-                    }, this).open()
-                }
-                diplomacyTable.add(peaceButton).row()
-                val cityStatesAlly = otherCiv.getAllyCiv()
-                val atWarWithItsAlly = viewingCiv.getKnownCivs()
-                    .any { it.civName == cityStatesAlly && it.isAtWarWith(viewingCiv) }
-                if (isNotPlayersTurn() || atWarWithItsAlly) peaceButton.disable()
-            } else {
-                val declareWarButton = getDeclareWarButton(diplomacyManager, otherCiv)
-                if (isNotPlayersTurn()) declareWarButton.disable()
-                diplomacyTable.add(declareWarButton).row()
-            }
+            if (viewingCiv.isAtWarWith(otherCiv))
+                diplomacyTable.add(getNegotiatePeaceCityStateButton(otherCiv, diplomacyManager)).row()
+            else diplomacyTable.add(getDeclareWarButton(diplomacyManager, otherCiv)).row()
         }
-        
-        diplomacyTable.add(getGoToOnMapButton(otherCiv)).row()
+
+        if (otherCiv.cities.isNotEmpty() && otherCiv.getCapital() != null && otherCiv.getCapital()!!.location in viewingCiv.exploredTiles)
+            diplomacyTable.add(getGoToOnMapButton(otherCiv)).row()
 
         val diplomaticMarriageButton = getDiplomaticMarriageButton(otherCiv)
         if (diplomaticMarriageButton != null) diplomacyTable.add(diplomaticMarriageButton).row()
@@ -416,6 +387,81 @@ class DiplomacyScreen(
         return diplomacyTable
     }
 
+    private fun getRevokeProtectionButton(otherCiv: CivilizationInfo): TextButton {
+        val revokeProtectionButton = "Revoke Protection".toTextButton()
+        revokeProtectionButton.onClick {
+            ConfirmPopup(this, "Revoke protection for [${otherCiv.civName}]?", "Revoke Protection") {
+                otherCiv.removeProtectorCiv(viewingCiv)
+                updateLeftSideTable(otherCiv)
+                updateRightSide(otherCiv)
+            }.open()
+        }
+        if (isNotPlayersTurn() || !otherCiv.otherCivCanWithdrawProtection(viewingCiv)) revokeProtectionButton.disable()
+        return revokeProtectionButton
+    }
+
+    private fun getPledgeToProtectButton(otherCiv: CivilizationInfo): TextButton {
+        val protectionButton = "Pledge to protect".toTextButton()
+        protectionButton.onClick {
+            ConfirmPopup(
+                this,
+                "Declare Protection of [${otherCiv.civName}]?",
+                "Pledge to protect",
+                true
+            ) {
+                otherCiv.addProtectorCiv(viewingCiv)
+                updateLeftSideTable(otherCiv)
+                updateRightSide(otherCiv)
+            }.open()
+        }
+        if (isNotPlayersTurn() || !otherCiv.otherCivCanPledgeProtection(viewingCiv)) protectionButton.disable()
+        return protectionButton
+    }
+
+    private fun getNegotiatePeaceCityStateButton(
+        otherCiv: CivilizationInfo,
+        otherCivDiplomacyManager: DiplomacyManager
+    ): TextButton {
+        val peaceButton = "Negotiate Peace".toTextButton()
+        peaceButton.onClick {
+            ConfirmPopup(
+                this,
+                "Peace with [${otherCiv.civName}]?",
+                "Negotiate Peace",
+                true
+            ) {
+                val tradeLogic = TradeLogic(viewingCiv, otherCiv)
+                tradeLogic.currentTrade.ourOffers.add(
+                    TradeOffer(
+                        Constants.peaceTreaty,
+                        TradeType.Treaty
+                    )
+                )
+                tradeLogic.currentTrade.theirOffers.add(
+                    TradeOffer(
+                        Constants.peaceTreaty,
+                        TradeType.Treaty
+                    )
+                )
+                tradeLogic.acceptTrade()
+                updateLeftSideTable(otherCiv)
+                updateRightSide(otherCiv)
+            }.open()
+        }
+        val cityStatesAlly = otherCiv.getAllyCiv()
+        val atWarWithItsAlly = viewingCiv.getKnownCivs()
+            .any { it.civName == cityStatesAlly && it.isAtWarWith(viewingCiv) }
+        if (isNotPlayersTurn() || atWarWithItsAlly) peaceButton.disable()
+
+        if (otherCivDiplomacyManager.hasFlag(DiplomacyFlags.DeclaredWar)) {
+            peaceButton.disable() // Can't trade for 10 turns after war was declared
+            val turnsLeft = otherCivDiplomacyManager.getFlag(DiplomacyFlags.DeclaredWar)
+            peaceButton.setText(peaceButton.text.toString() + "\n$turnsLeft" + Fonts.turn)
+        }
+
+        return peaceButton
+    }
+
     private fun getImproveTilesButton(
         otherCiv: CivilizationInfo,
         otherCivDiplomacyManager: DiplomacyManager
@@ -428,7 +474,7 @@ class DiplomacyScreen(
 
         for (improvableTile in improvableResourceTiles)
             for (tileImprovement in improvements.values)
-                if (improvableTile.tileResource.isImprovedBy(tileImprovement.name) 
+                if (improvableTile.tileResource.isImprovedBy(tileImprovement.name)
                     && improvableTile.canBuildImprovement(tileImprovement, otherCiv)
                 )
                     needsImprovements = true
@@ -457,7 +503,7 @@ class DiplomacyScreen(
         diplomaticMarriageButton.onClick {
             val newCities = otherCiv.cities
             otherCiv.cityStateFunctions.diplomaticMarriage(viewingCiv)
-            UncivGame.Current.setWorldScreen() // The other civ will no longer exist
+            UncivGame.Current.popScreen() // The other civ will no longer exist
             for (city in newCities)
                 viewingCiv.popupAlerts.add(PopupAlert(AlertType.DiplomaticMarriage, city.id))   // Player gets to choose between annex and puppet
         }
@@ -491,8 +537,8 @@ class DiplomacyScreen(
         return diplomacyTable
     }
 
-    fun getImprovableResourceTiles(otherCiv:CivilizationInfo) = otherCiv.getCapital().getTiles().filter { 
-        it.hasViewableResource(otherCiv) 
+    fun getImprovableResourceTiles(otherCiv:CivilizationInfo) = otherCiv.getCapital()!!.getTiles().filter {
+        it.hasViewableResource(otherCiv)
         && it.tileResource.resourceType != ResourceType.Bonus
         && (it.improvement == null || !it.tileResource.isImprovedBy(it.improvement!!))
     }
@@ -628,6 +674,7 @@ class DiplomacyScreen(
         return warTable
     }
 
+
     private fun getMajorCivDiplomacyTable(otherCiv: CivilizationInfo): Table {
         val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)
 
@@ -644,104 +691,33 @@ class DiplomacyScreen(
         val diplomaticRelationshipsCanChange =
             !viewingCiv.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.diplomaticRelationshipsCannotChange)
 
+        val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)
+
         if (!viewingCiv.isAtWarWith(otherCiv)) {
-            val tradeButton = "Trade".toTextButton()
-            tradeButton.onClick {
-                setTrade(otherCiv).apply {
-                    tradeLogic.ourAvailableOffers.apply { remove(firstOrNull { it.type == TradeType.Treaty }) }
-                    tradeLogic.theirAvailableOffers.apply { remove(firstOrNull { it.type == TradeType.Treaty }) }
-                    offerColumnsTable.update()
-                }
-            }
-            diplomacyTable.add(tradeButton).row()
-            if (isNotPlayersTurn()) tradeButton.disable()
+            diplomacyTable.add(getTradeButton(otherCiv)).row()
+
+
+            if (!diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship))
+                diplomacyTable.add(getDeclareFriendshipButton(otherCiv)).row()
+
+
+            if (viewingCiv.canSignResearchAgreementsWith(otherCiv))
+                diplomacyTable.add(getResearchAgreementButton(otherCiv)).row()
+
+            if (!diplomacyManager.hasFlag(DiplomacyFlags.Denunciation)
+                    && !diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
+            ) diplomacyTable.add(getDenounceButton(otherCiv, diplomacyManager)).row()
+
+            if (diplomaticRelationshipsCanChange)
+                diplomacyTable.add(getDeclareWarButton(diplomacyManager, otherCiv)).row()
+
         } else if (diplomaticRelationshipsCanChange) {
-            val negotiatePeaceButton = "Negotiate Peace".toTextButton()
-            negotiatePeaceButton.onClick {
-                val tradeTable = setTrade(otherCiv)
-                val peaceTreaty = TradeOffer(Constants.peaceTreaty, TradeType.Treaty)
-                tradeTable.tradeLogic.currentTrade.theirOffers.add(peaceTreaty)
-                tradeTable.tradeLogic.currentTrade.ourOffers.add(peaceTreaty)
-                tradeTable.offerColumnsTable.update()
-            }
-            if (isNotPlayersTurn() || otherCivDiplomacyManager.hasFlag(DiplomacyFlags.DeclaredWar)) {
-                negotiatePeaceButton.disable() // Can't trade for 10 turns after war was declared
-                if (otherCivDiplomacyManager.hasFlag(DiplomacyFlags.DeclaredWar)) {
-                    val turnsLeft = otherCivDiplomacyManager.getFlag(DiplomacyFlags.DeclaredWar)
-                    negotiatePeaceButton.setText(negotiatePeaceButton.text.toString() + "\n$turnsLeft" + Fonts.turn)
-                }
-            }
+            val negotiatePeaceButton =
+                    getNegotiatePeaceMajorCivButton(otherCiv, otherCivDiplomacyManager)
 
             diplomacyTable.add(negotiatePeaceButton).row()
         }
 
-        val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)
-
-        if (!viewingCiv.isAtWarWith(otherCiv)) {
-            if (!diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)) {
-                val declareFriendshipButton =
-                    "Offer Declaration of Friendship ([30] turns)".toTextButton()
-                declareFriendshipButton.onClick {
-                    otherCiv.popupAlerts.add(
-                        PopupAlert(
-                            AlertType.DeclarationOfFriendship,
-                            viewingCiv.civName
-                        )
-                    )
-                    declareFriendshipButton.disable()
-                }
-                diplomacyTable.add(declareFriendshipButton).row()
-                if (isNotPlayersTurn() || otherCiv.popupAlerts
-                        .any { it.type == AlertType.DeclarationOfFriendship && it.value == viewingCiv.civName }
-                )
-                    declareFriendshipButton.disable()
-            }
-
-
-            if (viewingCiv.canSignResearchAgreementsWith(otherCiv)) {
-                val researchAgreementButton = "Research Agreement".toTextButton()
-
-                val requiredGold = viewingCiv.getResearchAgreementCost()
-                researchAgreementButton.onClick {
-                    val tradeTable = setTrade(otherCiv)
-                    val researchAgreement =
-                        TradeOffer(Constants.researchAgreement, TradeType.Treaty, requiredGold)
-                    val goldCostOfSignResearchAgreement =
-                        TradeOffer("Gold".tr(), TradeType.Gold, -requiredGold)
-                    tradeTable.tradeLogic.currentTrade.theirOffers.add(researchAgreement)
-                    tradeTable.tradeLogic.ourAvailableOffers.add(researchAgreement)
-                    tradeTable.tradeLogic.ourAvailableOffers.add(goldCostOfSignResearchAgreement)
-                    tradeTable.tradeLogic.currentTrade.ourOffers.add(researchAgreement)
-                    tradeTable.tradeLogic.theirAvailableOffers.add(researchAgreement)
-                    tradeTable.tradeLogic.theirAvailableOffers.add(goldCostOfSignResearchAgreement)
-                    tradeTable.offerColumnsTable.update()
-                }
-                if (isNotPlayersTurn()) researchAgreementButton.disable()
-
-                diplomacyTable.add(researchAgreementButton).row()
-            }
-
-            if (!diplomacyManager.hasFlag(DiplomacyFlags.Denunciation)
-                && !diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
-            ) {
-                val denounceButton = "Denounce ([30] turns)".toTextButton()
-                denounceButton.onClick {
-                    YesNoPopup("Denounce [${otherCiv.civName}]?", {
-                        diplomacyManager.denounce()
-                        updateLeftSideTable(otherCiv)
-                        setRightSideFlavorText(otherCiv, "We will remember this.", "Very well.")
-                    }, this).open()
-                }
-                diplomacyTable.add(denounceButton).row()
-                if (isNotPlayersTurn()) denounceButton.disable()
-            }
-
-            if (diplomaticRelationshipsCanChange) {
-                val declareWarButton = getDeclareWarButton(diplomacyManager, otherCiv)
-                diplomacyTable.add(declareWarButton).row()
-                if (isNotPlayersTurn()) declareWarButton.disable()
-            }
-        }
 
         val demandsButton = "Demands".toTextButton()
         demandsButton.onClick {
@@ -751,9 +727,9 @@ class DiplomacyScreen(
         diplomacyTable.add(demandsButton).row()
         if (isNotPlayersTurn()) demandsButton.disable()
 
-        if (otherCiv.cities.isNotEmpty() && otherCiv.getCapital().location in viewingCiv.exploredTiles)
+        if (otherCiv.cities.isNotEmpty() && otherCiv.getCapital() != null && otherCiv.getCapital()!!.location in viewingCiv.exploredTiles)
             diplomacyTable.add(getGoToOnMapButton(otherCiv)).row()
-        
+
         if (!otherCiv.isPlayerCivilization()) { // human players make their own choices
             diplomacyTable.add(getRelationshipTable(otherCivDiplomacyManager)).row()
             diplomacyTable.add(getDiplomacyModifiersTable(otherCivDiplomacyManager)).row()
@@ -765,6 +741,99 @@ class DiplomacyScreen(
             MusicMood.peaceOrWar(viewingCiv.isAtWarWith(otherCiv)), MusicTrackChooserFlags.setSelectNation)
 
         return diplomacyTable
+    }
+
+    private fun getNegotiatePeaceMajorCivButton(
+        otherCiv: CivilizationInfo,
+        otherCivDiplomacyManager: DiplomacyManager
+    ): TextButton {
+        val negotiatePeaceButton = "Negotiate Peace".toTextButton()
+        negotiatePeaceButton.onClick {
+            val tradeTable = setTrade(otherCiv)
+            val peaceTreaty = TradeOffer(Constants.peaceTreaty, TradeType.Treaty)
+            tradeTable.tradeLogic.currentTrade.theirOffers.add(peaceTreaty)
+            tradeTable.tradeLogic.currentTrade.ourOffers.add(peaceTreaty)
+            tradeTable.offerColumnsTable.update()
+        }
+
+        if (isNotPlayersTurn()) negotiatePeaceButton.disable()
+
+        if (otherCivDiplomacyManager.hasFlag(DiplomacyFlags.DeclaredWar)) {
+            negotiatePeaceButton.disable() // Can't trade for 10 turns after war was declared
+            val turnsLeft = otherCivDiplomacyManager.getFlag(DiplomacyFlags.DeclaredWar)
+            negotiatePeaceButton.setText(negotiatePeaceButton.text.toString() + "\n$turnsLeft" + Fonts.turn)
+        }
+        return negotiatePeaceButton
+    }
+
+    private fun getDenounceButton(
+        otherCiv: CivilizationInfo,
+        diplomacyManager: DiplomacyManager
+    ): TextButton {
+        val denounceButton = "Denounce ([30] turns)".toTextButton()
+        denounceButton.onClick {
+            ConfirmPopup(this, "Denounce [${otherCiv.civName}]?", "Denounce ([30] turns)") {
+                diplomacyManager.denounce()
+                updateLeftSideTable(otherCiv)
+                setRightSideFlavorText(otherCiv, "We will remember this.", "Very well.")
+            }.open()
+        }
+        if (isNotPlayersTurn()) denounceButton.disable()
+        return denounceButton
+    }
+
+    private fun getResearchAgreementButton(otherCiv: CivilizationInfo): TextButton {
+        val researchAgreementButton = "Research Agreement".toTextButton()
+
+        val requiredGold = viewingCiv.getResearchAgreementCost()
+        researchAgreementButton.onClick {
+            val tradeTable = setTrade(otherCiv)
+            val researchAgreement =
+                    TradeOffer(Constants.researchAgreement, TradeType.Treaty, requiredGold)
+            val goldCostOfSignResearchAgreement =
+                    TradeOffer("Gold".tr(), TradeType.Gold, -requiredGold)
+            tradeTable.tradeLogic.currentTrade.theirOffers.add(researchAgreement)
+            tradeTable.tradeLogic.ourAvailableOffers.add(researchAgreement)
+            tradeTable.tradeLogic.ourAvailableOffers.add(goldCostOfSignResearchAgreement)
+            tradeTable.tradeLogic.currentTrade.ourOffers.add(researchAgreement)
+            tradeTable.tradeLogic.theirAvailableOffers.add(researchAgreement)
+            tradeTable.tradeLogic.theirAvailableOffers.add(goldCostOfSignResearchAgreement)
+            tradeTable.offerColumnsTable.update()
+        }
+        if (isNotPlayersTurn()) researchAgreementButton.disable()
+        return researchAgreementButton
+    }
+
+    private fun getDeclareFriendshipButton(otherCiv: CivilizationInfo): TextButton {
+        val declareFriendshipButton =
+                "Offer Declaration of Friendship ([30] turns)".toTextButton()
+        declareFriendshipButton.onClick {
+            otherCiv.popupAlerts.add(
+                PopupAlert(
+                    AlertType.DeclarationOfFriendship,
+                    viewingCiv.civName
+                )
+            )
+            declareFriendshipButton.disable()
+        }
+        if (isNotPlayersTurn() || otherCiv.popupAlerts
+                    .any { it.type == AlertType.DeclarationOfFriendship && it.value == viewingCiv.civName }
+        )
+            declareFriendshipButton.disable()
+        return declareFriendshipButton
+    }
+
+    private fun getTradeButton(otherCiv: CivilizationInfo): TextButton {
+        val tradeButton = "Trade".toTextButton()
+        tradeButton.onClick {
+            setTrade(otherCiv).apply {
+                tradeLogic.ourAvailableOffers.apply { remove(firstOrNull { it.type == TradeType.Treaty }) }
+                tradeLogic.theirAvailableOffers.apply { remove(firstOrNull { it.type == TradeType.Treaty }) }
+                offerColumnsTable.update()
+            }
+        }
+        if (isNotPlayersTurn()) tradeButton.disable()
+        return tradeButton
     }
 
     private fun getPromisesTable(
@@ -797,7 +866,7 @@ class DiplomacyScreen(
                 && otherCivDiplomacyManager.hasModifier(DestroyedProtectedMinor))
                 continue
 
-            var text = when (valueOf(modifier.key)) {
+            var text = when (DiplomaticModifiers.valueOf(modifier.key)) {
                 DeclaredWarOnUs -> "You declared war on us!"
                 WarMongerer -> "Your warmongering ways are unacceptable to us."
                 LiberatedCity -> "We applaud your liberation of conquered cities!"
@@ -890,21 +959,21 @@ class DiplomacyScreen(
         diplomacyManager: DiplomacyManager,
         otherCiv: CivilizationInfo
     ): TextButton {
-        val declareWarButton = "Declare war".toTextButton()
-        declareWarButton.color = Color.RED
+        val declareWarButton = "Declare war".toTextButton(skin.get("negative", TextButton.TextButtonStyle::class.java))
         val turnsToPeaceTreaty = diplomacyManager.turnsToPeaceTreaty()
         if (turnsToPeaceTreaty > 0) {
             declareWarButton.disable()
             declareWarButton.setText(declareWarButton.text.toString() + " ($turnsToPeaceTreaty${Fonts.turn})")
         }
         declareWarButton.onClick {
-            YesNoPopup("Declare war on [${otherCiv.civName}]?", {
+            ConfirmPopup(this, "Declare war on [${otherCiv.civName}]?", "Declare war") {
                 diplomacyManager.declareWar()
                 setRightSideFlavorText(otherCiv, otherCiv.nation.attacked, "Very well.")
                 updateLeftSideTable(otherCiv)
                 UncivGame.Current.musicController.chooseTrack(otherCiv.civName, MusicMood.War, MusicTrackChooserFlags.setSpecific)
-            }, this).open()
+            }.open()
         }
+        if (isNotPlayersTurn()) declareWarButton.disable()
         return declareWarButton
     }
 
@@ -922,12 +991,8 @@ class DiplomacyScreen(
         diplomacyTable.add(flavorText.toLabel()).row()
 
         val responseButton = response.toTextButton()
-        val action = {
-            keyPressDispatcher.remove(KeyCharAndCode.SPACE)
-            updateRightSide(otherCiv)
-        }
-        responseButton.onClick(action)
-        keyPressDispatcher[KeyCharAndCode.SPACE] = action
+        responseButton.onActivation { updateRightSide(otherCiv) }
+        responseButton.keyShortcuts.add(KeyCharAndCode.SPACE)
         diplomacyTable.add(responseButton)
 
         rightSideTable.clear()
@@ -937,14 +1002,16 @@ class DiplomacyScreen(
     private fun getGoToOnMapButton(civilization: CivilizationInfo): TextButton {
         val goToOnMapButton = "Go to on map".toTextButton()
         goToOnMapButton.onClick {
-            UncivGame.Current.setWorldScreen()
-            UncivGame.Current.worldScreen.mapHolder.setCenterPosition(civilization.getCapital().location, selectUnit = false)
+            val worldScreen = UncivGame.Current.resetToWorldScreen()
+            worldScreen.mapHolder.setCenterPosition(civilization.getCapital()!!.location, selectUnit = false)
         }
         return goToOnMapButton
-    } 
+    }
 
     override fun resize(width: Int, height: Int) {
         super.resize(width, height)
         positionCloseButton()
     }
+
+    override fun recreate(): BaseScreen = DiplomacyScreen(viewingCiv, selectCiv, selectTrade)
 }

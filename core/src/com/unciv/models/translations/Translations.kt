@@ -6,9 +6,10 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.utils.Log
+import com.unciv.utils.debug
+import java.time.temporal.ChronoUnit
 import java.util.*
-import kotlin.collections.HashMap
-import kotlin.collections.LinkedHashSet
 
 /**
  *  This collection holds all translations for the game.
@@ -30,7 +31,7 @@ import kotlin.collections.LinkedHashSet
  *  @see    String.tr   for more explanations (below)
  */
 class Translations : LinkedHashMap<String, TranslationEntry>(){
-    
+
     var percentCompleteOfLanguages = HashMap<String,Int>()
             .apply { put("English",100) } // So even if we don't manage to load the percentages, we can still pass the language screen
 
@@ -79,7 +80,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
     /** This reads all translations for a specific language, including _all_ installed mods.
      *  Vanilla translations go into `this` instance, mod translations into [modsWithTranslations].
      */
-    private fun tryReadTranslationForLanguage(language: String, printOutput: Boolean) {
+    private fun tryReadTranslationForLanguage(language: String) {
         val translationStart = System.currentTimeMillis()
 
         val translationFileName = "jsons/translations/$language.properties"
@@ -90,7 +91,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
             // which is super odd because everyone should support UTF-8
             languageTranslations = TranslationFileReader.read(Gdx.files.internal(translationFileName))
         } catch (ex: Exception) {
-            println("Exception reading translations for $language: ${ex.message}")
+            Log.error("Exception reading translations for $language", ex)
             return
         }
 
@@ -106,15 +107,14 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
                 try {
                     translationsForMod.createTranslations(language, TranslationFileReader.read(modTranslationFile))
                 } catch (ex: Exception) {
-                    println("Exception reading translations for ${modFolder.name()} $language: ${ex.message}")
+                    Log.error("Exception reading translations for ${modFolder.name()} $language", ex)
                 }
             }
         }
 
         createTranslations(language, languageTranslations)
 
-        val translationFilesTime = System.currentTimeMillis() - translationStart
-        if (printOutput) println("Loading translation file for $language - " + translationFilesTime + "ms")
+        debug("Loading translation file for %s - %sms", language, System.currentTimeMillis() - translationStart)
     }
 
     private fun createTranslations(language: String, languageTranslations: HashMap<String,String>) {
@@ -132,7 +132,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
     }
 
     fun tryReadTranslationForCurrentLanguage(){
-        tryReadTranslationForLanguage(UncivGame.Current.settings.language, false)
+        tryReadTranslationForLanguage(UncivGame.Current.settings.language)
     }
 
     /** Get a list of supported languages for [readAllLanguagesTranslation] */
@@ -166,7 +166,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
     }
 
     /** Ensure _all_ languages are loaded, used by [TranslationFileWriter] and `TranslationTests` */
-    fun readAllLanguagesTranslation(printOutput:Boolean=false) {
+    fun readAllLanguagesTranslation() {
         // Apparently you can't iterate over the files in a directory when running out of a .jar...
         // https://www.badlogicgames.com/forum/viewtopic.php?f=11&t=27250
         // which means we need to list everything manually =/
@@ -174,11 +174,10 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         val translationStart = System.currentTimeMillis()
 
         for (language in getLanguagesWithTranslationFile()) {
-            tryReadTranslationForLanguage(language, printOutput)
+            tryReadTranslationForLanguage(language)
         }
 
-        val translationFilesTime = System.currentTimeMillis() - translationStart
-        if(printOutput) println("Loading translation files - ${translationFilesTime}ms")
+        debug("Loading translation files - %sms", System.currentTimeMillis() - translationStart)
     }
 
     fun loadPercentageCompleteOfLanguages(){
@@ -186,14 +185,13 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
 
         percentCompleteOfLanguages = TranslationFileReader.readLanguagePercentages()
 
-        val translationFilesTime = System.currentTimeMillis() - startTime
-        println("Loading percent complete of languages - ${translationFilesTime}ms")
+        debug("Loading percent complete of languages - %sms", System.currentTimeMillis() - startTime)
     }
-    
+
     fun getConditionalOrder(language: String): String {
         return getText(englishConditionalOrderingString, language, null)
     }
-    
+
     fun placeConditionalsAfterUnique(language: String): Boolean {
         if (get(conditionalUniqueOrderString, language, null)?.get(language) == "before")
             return false
@@ -207,15 +205,15 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         val translation = getText("\" \"", language, null)
         return translation.substring(1, translation.length-1)
     }
-    
+
     fun shouldCapitalize(language: String): Boolean {
         return get(shouldCapitalizeString, language, null)?.get(language)?.toBoolean() ?: true
     }
-    
+
     companion object {
         // Whenever this string is changed, it should also be changed in the translation files!
-        // It is mostly used as the template for translating the order of conditionals   
-        const val englishConditionalOrderingString = 
+        // It is mostly used as the template for translating the order of conditionals
+        const val englishConditionalOrderingString =
             "<with a garrison> <for [mapUnitFilter] units> <above [amount] HP> <below [amount] HP> <vs cities> <vs [mapUnitFilter] units> <when fighting in [tileFilter] tiles> <when attacking> <when defending> <if this city has at least [amount] specialists> <when at war> <when not at war> <while the empire is happy> <during a Golden Age> <during the [era]> <before the [era]> <starting from the [era]> <with [techOrPolicy]> <without [techOrPolicy]>"
         const val conditionalUniqueOrderString = "ConditionalsPlacement"
         const val shouldCapitalizeString = "StartWithCapitalLetter"
@@ -230,9 +228,6 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
 // Expect a literal [ followed by a captured () group and a literal ].
 // The group may contain any number of any character except ] - pattern [^]]
 val squareBraceRegex = Regex("""\[([^]]*)\]""")
-
-// Just look for either [ or ]
-val eitherSquareBraceRegex = Regex("""\[|\]""")
 
 // Analogous as above: Expect a {} pair with any chars but } in between and capture that
 val curlyBraceRegex = Regex("""\{([^}]*)\}""")
@@ -255,22 +250,28 @@ object TranslationActiveModsCache {
         }
         private set
 
-    private fun getCurrentHash() = UncivGame.Current.run {
-            if (isGameInfoInitialized())
-                gameInfo.gameParameters.mods.hashCode() + gameInfo.gameParameters.baseRuleset.hashCode() * 31
-            else translations.translationActiveMods.hashCode() * 31 * 31
+    private fun getCurrentHash(): Int {
+        val gameInfo = UncivGame.Current.gameInfo
+        return if (gameInfo != null) {
+            gameInfo.gameParameters.mods.hashCode() + gameInfo.gameParameters.baseRuleset.hashCode() * 31
+        } else {
+            UncivGame.Current.translations.translationActiveMods.hashCode() * 31 * 31
         }
+    }
 
-    private fun getCurrentSet() = UncivGame.Current.run {
-            if (isGameInfoInitialized()) {
-                val par = gameInfo.gameParameters
-                // This is equivalent to (par.mods + par.baseRuleset) without the cast down to `Set`
-                LinkedHashSet<String>(par.mods.size + 1).apply {
-                    addAll(par.mods)
-                    add(par.baseRuleset)
-                }
-            } else translations.translationActiveMods
+    private fun getCurrentSet(): LinkedHashSet<String> {
+        val gameInfo = UncivGame.Current.gameInfo
+        return if (gameInfo != null) {
+            val par = gameInfo.gameParameters
+            // This is equivalent to (par.mods + par.baseRuleset) without the cast down to `Set`
+            LinkedHashSet<String>(par.mods.size + 1).apply {
+                addAll(par.mods)
+                add(par.baseRuleset)
+            }
+        } else {
+            UncivGame.Current.translations.translationActiveMods
         }
+    }
 }
 
     /**
@@ -349,12 +350,15 @@ fun String.tr(): String {
         return fullyTranslatedString
     }
 
-    if (contains('{')) { // Translating partial sentences
-        return curlyBraceRegex.replace(this) { it.groups[1]!!.value.tr() }
-    }
+    // curly and square brackets can be nested inside of each other so find the leftmost curly/square
+    // bracket then process that first
+    val indexSquare = this.indexOf('[')
+    val indexCurly = this.indexOf('{')
+    val processSquare = indexSquare >= 0 && (indexCurly < 0 || indexSquare < indexCurly)
+    val processCurly =  indexCurly >= 0 && (indexSquare < 0 || indexCurly < indexSquare)
 
     // There might still be optimization potential here!
-    if (contains('[')) { // Placeholders!
+    if (processSquare) { // Placeholders!
         /**
          * I'm SURE there's an easier way to do this but I can't think of it =\
          * So what's all this then?
@@ -400,6 +404,10 @@ fun String.tr(): String {
             )
         }
         return languageSpecificPlaceholder      // every component is already translated
+    }
+
+    if (processCurly) { // Translating partial sentences
+        return curlyBraceRegex.replace(this) { it.groups[1]!!.value.tr() }
     }
 
     if (Stats.isStats(this)) return Stats.parse(this).toString()
@@ -489,4 +497,3 @@ fun String.removeConditionals(): String {
         .replace("  ", " ")
         .trim()
 }
-

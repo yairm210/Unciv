@@ -6,8 +6,8 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.TabbedPager
-import com.unciv.ui.utils.packIfNeeded
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.extensions.packIfNeeded
+import com.unciv.ui.utils.extensions.toLabel
 
 abstract class EmpireOverviewTab (
     val viewingPlayer: CivilizationInfo,
