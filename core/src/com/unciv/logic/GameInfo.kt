@@ -238,7 +238,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     //region State changing functions
 
     fun nextTurn() {
-        val previousHumanPlayer = getCurrentPlayerCivilization()!!
+        val previousHumanPlayer = getCurrentPlayerCivilization()
         var thisPlayer = previousHumanPlayer // not calling it currentPlayer because that's already taken and I can't think of a better name
         var currentPlayerIndex = civilizations.indexOf(thisPlayer)
 
