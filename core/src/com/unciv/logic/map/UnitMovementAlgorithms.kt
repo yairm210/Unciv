@@ -666,7 +666,6 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         if (tile.isOcean && !unit.civInfo.tech.allUnitsCanEnterOcean) { // Apparently all Polynesian naval units can enter oceans
             if (!unitSpecificAllowOcean && unit.cannotEnterOceanTiles) return false
         }
-        if (tile.naturalWonder != null) return false
 
         if (!unit.canEnterForeignTerrain && !tile.canCivPassThrough(unit.civInfo)) return false
 
