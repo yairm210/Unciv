@@ -18,9 +18,14 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
         .filter { it.type == TerrainType.TerrainFeature }
         .map { it.name }.toSet()
 
+    private val blockedTiles = HashSet<TileInfo>()
+
     /*
     https://gaming.stackexchange.com/questions/95095/do-natural-wonders-spawn-more-closely-to-city-states/96479
     https://www.reddit.com/r/civ/comments/1jae5j/information_on_the_occurrence_of_natural_wonders/
+    Above all, look in assignstartingplots.lua! The wonders are always attempted to be placed in order of
+    which has the least amount of candidate tiles. There is a minimum distance between wonders equal
+    to the map height / 5.
     */
     fun spawnNaturalWonders(tileMap: TileMap) {
         if (tileMap.mapParameters.noNaturalWonders)
@@ -31,22 +36,49 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
             mapRadius * naturalWonderCountMultiplier + naturalWonderCountAddedConstant
         }.roundToInt()
 
-        val spawned = mutableListOf<Terrain>()
+        val chosenWonders = mutableListOf<Terrain>()
+        val wonderCandidateTiles = mutableMapOf<Terrain, Collection<TileInfo>>()
         val allNaturalWonders = ruleset.terrains.values
                 .filter { it.type == TerrainType.NaturalWonder }.toMutableList()
+        val spawned = mutableListOf<Terrain>()
 
-        while (allNaturalWonders.isNotEmpty() && spawned.size < numberToSpawn) {
+        while (allNaturalWonders.isNotEmpty() && chosenWonders.size < numberToSpawn) {
             val totalWeight = allNaturalWonders.sumOf { it.weight }.toFloat()
             val random = randomness.RNG.nextDouble()
             var sum = 0f
             for (wonder in allNaturalWonders) {
                 sum += wonder.weight / totalWeight
                 if (random <= sum) {
-                    if (spawnSpecificWonder(tileMap, wonder))
-                        spawned.add(wonder)
+                    chosenWonders.add(wonder)
                     allNaturalWonders.remove(wonder)
                     break
                 }
+            }
+        }
+
+        // First attempt to spawn the chosen wonders in order of least candidate tiles
+        chosenWonders.forEach {
+            wonderCandidateTiles[it] = getCandidateTilesForWonder(tileMap, it)
+        }
+        chosenWonders.sortBy { wonderCandidateTiles[it]!!.size }
+        for (wonder in chosenWonders) {
+            if (trySpawnOnSuitableLocation(wonderCandidateTiles[wonder]!!.filter { it !in blockedTiles }.toList(), wonder))
+                spawned.add(wonder)
+        }
+
+        // If some wonders were not able to be spawned we will pull a wonder from the fallback list
+        if (spawned.size < numberToSpawn) {
+            // Now we have to do some more calculations. Unfortunately we have to calculate candidate tiles for everyone.
+            allNaturalWonders.forEach {
+                wonderCandidateTiles[it] = getCandidateTilesForWonder(tileMap, it)
+            }
+            allNaturalWonders.sortBy { wonderCandidateTiles[it]!!.size }
+            for (wonder in allNaturalWonders) {
+                if (trySpawnOnSuitableLocation(wonderCandidateTiles[wonder]!!.filter { it !in blockedTiles }
+                            .toList(), wonder))
+                    spawned.add(wonder)
+                if (spawned.size >= numberToSpawn)
+                    break
             }
         }
 
@@ -55,7 +87,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
 
     private fun Unique.getIntParam(index: Int) = params[index].toInt()
 
-    private fun spawnSpecificWonder(tileMap: TileMap, naturalWonder: Terrain): Boolean {
+    private fun getCandidateTilesForWonder(tileMap: TileMap, naturalWonder: Terrain): Collection<TileInfo> {
         val continentsRelevant = naturalWonder.hasUnique(UniqueType.NaturalWonderLargerLandmass) ||
                 naturalWonder.hasUnique(UniqueType.NaturalWonderSmallerLandmass)
         val sortedContinents = if (continentsRelevant)
@@ -98,7 +130,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
             }
         }
 
-        return trySpawnOnSuitableLocation(suitableLocations, naturalWonder)
+        return suitableLocations
     }
 
     private fun trySpawnOnSuitableLocation(suitableLocations: List<TileInfo>, wonder: Terrain): Boolean {
@@ -138,6 +170,8 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
                     clearTile(it)
                     it.naturalWonder = wonder.name
                     it.baseTerrain = wonder.turnsInto!!
+                    // Add all tiles within a certain distance to a blacklist so NW:s don't cluster
+                    blockedTiles.addAll(it.getTilesInDistance(it.tileMap.mapParameters.mapSize.height / 5))
                 }
                 if (convertNeighborsTo != null) {
                     for (tile in location.neighbors) {
