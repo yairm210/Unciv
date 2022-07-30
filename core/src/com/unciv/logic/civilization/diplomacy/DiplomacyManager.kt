@@ -260,7 +260,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     }
 
     private fun getCityStateInfluenceDegrade(): Float {
-        if (getInfluence() < getCityStateInfluenceRestingPoint())
+        if (getInfluence() <= getCityStateInfluenceRestingPoint())
             return 0f
 
         val decrement = when {
@@ -288,7 +288,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     }
 
     private fun getCityStateInfluenceRecovery(): Float {
-        if (getInfluence() > getCityStateInfluenceRestingPoint())
+        if (getInfluence() >= getCityStateInfluenceRestingPoint())
             return 0f
 
         val increment = 1f  // sic: personality does not matter here
