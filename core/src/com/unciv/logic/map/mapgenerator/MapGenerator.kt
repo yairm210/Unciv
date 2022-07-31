@@ -139,17 +139,21 @@ class MapGenerator(val ruleset: Ruleset) {
             runAndMeasure("assignRegions") {
                 regions.assignRegions(map, civilizations.filter { ruleset.nations[it.civName]!!.isMajorCiv() }, gameParameters)
             }
+            // Natural wonders need to go before most resources since there is a minimum distance
+            runAndMeasure("NaturalWonderGenerator") {
+                NaturalWonderGenerator(ruleset, randomness).spawnNaturalWonders(map)
+            }
             runAndMeasure("placeResourcesAndMinorCivs") {
                 regions.placeResourcesAndMinorCivs(map, civilizations.filter { ruleset.nations[it.civName]!!.isCityState() })
             }
         } else {
+            runAndMeasure("NaturalWonderGenerator") {
+                NaturalWonderGenerator(ruleset, randomness).spawnNaturalWonders(map)
+            }
             // Fallback spread resources function - used when generating maps in map editor
             runAndMeasure("spreadResources") {
                 spreadResources(map)
             }
-        }
-        runAndMeasure("NaturalWonderGenerator") {
-            NaturalWonderGenerator(ruleset, randomness).spawnNaturalWonders(map)
         }
         runAndMeasure("spreadAncientRuins") {
             spreadAncientRuins(map)
@@ -288,7 +292,9 @@ class MapGenerator(val ruleset: Ruleset) {
     private fun spreadStrategicResources(tileMap: TileMap, mapRadius: Int) {
         val strategicResources = ruleset.tileResources.values.filter { it.resourceType == ResourceType.Strategic }
         // passable land tiles (no mountains, no wonders) without resources yet
-        val candidateTiles = tileMap.values.filter { it.resource == null && !it.isImpassible() }
+        // can't be next to NW
+        val candidateTiles = tileMap.values.filter { it.resource == null && !it.isImpassible()
+                && it.neighbors.none { neighbor -> neighbor.isNaturalWonder() }}
         val totalNumberOfResources = candidateTiles.count { it.isLand } * tileMap.mapParameters.resourceRichness
         val resourcesPerType = (totalNumberOfResources/strategicResources.size).toInt()
         for (resource in strategicResources) {
@@ -314,7 +320,8 @@ class MapGenerator(val ruleset: Ruleset) {
 
         val suitableTiles = tileMap.values
                 .filterNot { it.baseTerrain == Constants.snow && it.isHill() }
-                .filter { it.resource == null && resourcesOfType.any { r -> r.terrainsCanBeFoundOn.contains(it.getLastTerrain().name) } }
+                .filter { it.resource == null && it.neighbors.none { neighbor -> neighbor.isNaturalWonder() }
+                        && resourcesOfType.any { r -> r.terrainsCanBeFoundOn.contains(it.getLastTerrain().name) } }
         val numberOfResources = tileMap.values.count { it.isLand && !it.isImpassible() } *
                 tileMap.mapParameters.resourceRichness
         val locations = randomness.chooseSpreadOutLocations(numberOfResources.toInt(), suitableTiles, mapRadius)

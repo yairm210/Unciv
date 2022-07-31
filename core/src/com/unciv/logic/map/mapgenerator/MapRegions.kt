@@ -829,10 +829,21 @@ class MapRegions (val ruleset: Ruleset){
     }
 
     fun placeResourcesAndMinorCivs(tileMap: TileMap, minorCivs: List<CivilizationInfo>) {
+        placeNaturalWonderImpacts(tileMap)
         assignLuxuries()
         placeMinorCivs(tileMap, minorCivs)
         placeLuxuries(tileMap)
         placeStrategicAndBonuses(tileMap)
+    }
+
+    /** Places impacts from NWs that have been generated just prior to this step. */
+    private fun placeNaturalWonderImpacts(tileMap: TileMap) {
+        for (tile in tileMap.values.filter { it.isNaturalWonder() }) {
+            placeImpact(ImpactType.Bonus, tile, 1)
+            placeImpact(ImpactType.Strategic, tile, 1)
+            placeImpact(ImpactType.Luxury, tile, 1)
+            placeImpact(ImpactType.MinorCiv, tile, 1)
+        }
     }
 
     /** Assigns a luxury to each region. No luxury can be assigned to too many regions.
