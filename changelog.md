@@ -1,3 +1,21 @@
+## 4.2.1
+
+Resolved error where missionary cost was determined by Capital, and not by cities it could actually be constructed in
+
+Fix erroneous relationship decay notification  - By oynqr
+
+Rename "Show minimap" to "Minimap size"  - By J0anJosep
+
+By SimonCeder:
+- Invalid players removed from global quests
+- Fix NW placement
+
+By OptimizedForDensity:
+- Add unit test for unique translation template keys 
+- Allow passable natural wonders 
+
+Removed duplicate placeholders  - By xlenstra
+
 ## 4.2.0
 
 Add Air Sweep  - By itanasi
