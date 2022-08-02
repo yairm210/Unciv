@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.Notification
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.WrappableLabel
+import com.unciv.ui.utils.TabbedPager
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.worldscreen.WorldScreen
