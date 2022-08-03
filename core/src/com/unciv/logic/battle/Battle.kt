@@ -115,14 +115,14 @@ object Battle {
 
         val isAlreadyDefeatedCity = defender is CityCombatant && defender.isDefeated()
 
-        takeDamage(attacker, defender)
+        val damageDealt = takeDamage(attacker, defender)
 
         // check if unit is captured by the attacker (prize ships unique)
         // As ravignir clarified in issue #4374, this only works for aggressor
         val captureMilitaryUnitSuccess = tryCaptureUnit(attacker, defender, attackedTile)
 
         if (!captureMilitaryUnitSuccess) // capture creates a new unit, but `defender` still is the original, so this function would still show a kill message
-            postBattleNotifications(attacker, defender, attackedTile, attacker.getTile())
+            postBattleNotifications(attacker, defender, attackedTile, attacker.getTile(), damageDealt)
 
         if (defender.getCivInfo().isBarbarian() && attackedTile.improvement == Constants.barbarianEncampment)
             defender.getCivInfo().gameInfo.barbarians.campAttacked(attackedTile.position)
@@ -376,21 +376,25 @@ object Battle {
         attacker: ICombatant,
         defender: ICombatant,
         attackedTile: TileInfo,
-        attackerTile: TileInfo? = null
+        attackerTile: TileInfo? = null,
+        damageDealt: DamageDealt? = null
     ) {
         if (attacker.getCivInfo() != defender.getCivInfo()) {
             // If what happened was that a civilian unit was captured, that's dealt with in the captureCivilianUnit function
             val (whatHappenedIcon, whatHappenedString) = when {
                 attacker !is CityCombatant && attacker.isDefeated() ->
-                    NotificationIcon.War to " was destroyed while attacking"
+                    if (damageDealt != null) NotificationIcon.War to " ([${damageDealt.attackerDealt}]) was destroyed while attacking"
+                    else NotificationIcon.War to " was destroyed while attacking"
                 !defender.isDefeated() ->
-                    NotificationIcon.War to " has attacked"
+                    if (damageDealt != null) NotificationIcon.War to " ([${damageDealt.attackerDealt}]) has attacked"
+                    else NotificationIcon.War to " has attacked"
                 defender.isCity() && attacker.isMelee() && attacker.getCivInfo().isBarbarian() ->
                     NotificationIcon.War to " has raided"
                 defender.isCity() && attacker.isMelee() ->
                     NotificationIcon.War to " has captured"
                 else ->
-                    NotificationIcon.Death to " has destroyed"
+                    if (damageDealt != null) NotificationIcon.Death to " ([${damageDealt.attackerDealt}]) has destroyed"
+                    else NotificationIcon.Death to " has destroyed"
             }
             val attackerString =
                     if (attacker.isCity()) "Enemy city [" + attacker.getName() + "]"
@@ -400,7 +404,8 @@ object Battle {
                         if (defender.isDefeated() && attacker.isRanged()) " the defence of [" + defender.getName() + "]"
                         else " [" + defender.getName() + "]"
                     else " our [" + defender.getName() + "]"
-            val notificationString = attackerString + whatHappenedString + defenderString
+            val defenderDealtString = if (damageDealt != null) " ([${damageDealt.defenderDealt}])" else ""
+            val notificationString = attackerString + whatHappenedString + defenderString + defenderDealtString
             val attackerIcon = if (attacker is CityCombatant) NotificationIcon.City else attacker.getName()
             val defenderIcon = if (defender is CityCombatant) NotificationIcon.City else defender.getName()
             val locations = LocationAction(attackedTile.position, attackerTile?.position)
