@@ -48,22 +48,6 @@ class GlobalPoliticsOverviewTable (
         defaults().pad(5f)
         background = ImageGetter.getBackground(Color.BLACK)
     }
-    val toggleCityStatesButton: TextButton = Constants.cityStates.toTextButton().apply {
-        onClick {
-            persistableData.includeCityStates = !persistableData.includeCityStates
-            updateDiagram()
-        }
-    }
-    private val politicsButton = TextButton("Show global politics", skin).apply { onClick { updatePoliticsTable() } }
-
-    private val civTableScroll = AutoScrollPane(civTable).apply {
-        setOverscroll(false, false)
-    }
-    private val floatingTable = Table().apply {
-        add(toggleCityStatesButton).pad(10f).row()
-        add(politicsButton).row()
-        add(civTableScroll.addBorder(2f, Color.WHITE)).pad(10f)
-    }
 
     // Reusable sequences for the Civilizations to display
     private var undefeatedCivs = sequenceOf<CivilizationInfo>()
@@ -227,6 +211,24 @@ class GlobalPoliticsOverviewTable (
 
     // Refresh content and determine landscape/portrait layout
     private fun updateDiagram() {
+        val politicsButton = TextButton("Show global politics", skin).apply { onClick { updatePoliticsTable() } }
+
+        val toggleCityStatesButton: TextButton = Constants.cityStates.toTextButton().apply {
+            onClick {
+                persistableData.includeCityStates = !persistableData.includeCityStates
+                updateDiagram()
+            }
+        }
+
+        val civTableScroll = AutoScrollPane(civTable).apply {
+            setOverscroll(false, false)
+        }
+        val floatingTable = Table().apply {
+            add(toggleCityStatesButton).pad(10f).row()
+            add(politicsButton).row()
+            add(civTableScroll.addBorder(2f, Color.WHITE)).pad(10f)
+        }
+
         relevantCivsCount = gameInfo.civilizations.count {
             !it.isSpectator() && !it.isBarbarian() && (persistableData.includeCityStates || !it.isCityState())
         }
