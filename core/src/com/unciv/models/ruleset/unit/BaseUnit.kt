@@ -420,7 +420,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (!civInfo.isBarbarian()) { // Barbarians don't need resources
             for ((resource, amount) in getResourceRequirements())
                 if (civInfo.getCivResourcesByName()[resource]!! < amount) {
-                    rejectionReasons.add(RejectionReason.ConsumesResources.toInstance(resource.getNeedMoreAmountString(amount)))
+                    rejectionReasons.add(RejectionReason.ConsumesResources.toInstance(resource.getNeedMoreAmountString(amount - civInfo.getCivResourcesByName()[resource]!!)))
                 }
         }
 

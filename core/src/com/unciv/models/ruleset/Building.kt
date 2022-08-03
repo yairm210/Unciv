@@ -616,7 +616,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
         for ((resource, amount) in getResourceRequirements())
             if (civInfo.getCivResourcesByName()[resource]!! < amount) {
-                rejectionReasons.add(RejectionReason.ConsumesResources.toInstance(resource.getNeedMoreAmountString(amount)))
+                rejectionReasons.add(RejectionReason.ConsumesResources.toInstance(resource.getNeedMoreAmountString(amount - civInfo.getCivResourcesByName()[resource]!!)))
             }
 
         if (requiredNearbyImprovedResources != null) {
