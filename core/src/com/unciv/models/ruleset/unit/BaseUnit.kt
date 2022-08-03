@@ -418,10 +418,12 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
 
         if (!civInfo.isBarbarian()) { // Barbarians don't need resources
-            for ((resource, amount) in getResourceRequirements())
-                if (civInfo.getCivResourcesByName()[resource]!! < amount) {
-                    rejectionReasons.add(RejectionReason.ConsumesResources.toInstance(resource.getNeedMoreAmountString(amount - civInfo.getCivResourcesByName()[resource]!!)))
+            for ((resource, requiredAmount) in getResourceRequirements()) {
+                val availableAmount = civInfo.getCivResourcesByName()[resource]!!
+                if (availableAmount < requiredAmount) {
+                    rejectionReasons.add(RejectionReason.ConsumesResources.toInstance(resource.getNeedMoreAmountString(requiredAmount - availableAmount)))
                 }
+            }
         }
 
         for (unique in civInfo.getMatchingUniques(UniqueType.CannotBuildUnits))

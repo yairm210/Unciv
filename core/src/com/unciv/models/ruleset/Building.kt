@@ -614,10 +614,12 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             rejectionReasons.add(RejectionReason.RequiresBuildingInThisCity.toInstance("Requires a [${civInfo.getEquivalentBuilding(requiredBuilding!!)}] in this city"))
         }
 
-        for ((resource, amount) in getResourceRequirements())
-            if (civInfo.getCivResourcesByName()[resource]!! < amount) {
-                rejectionReasons.add(RejectionReason.ConsumesResources.toInstance(resource.getNeedMoreAmountString(amount - civInfo.getCivResourcesByName()[resource]!!)))
+        for ((resource, requiredAmount) in getResourceRequirements()) {
+            val availableAmount = civInfo.getCivResourcesByName()[resource]!!
+            if (availableAmount < requiredAmount) {
+                rejectionReasons.add(RejectionReason.ConsumesResources.toInstance(resource.getNeedMoreAmountString(requiredAmount - availableAmount)))
             }
+        }
 
         if (requiredNearbyImprovedResources != null) {
             val containsResourceWithImprovement = cityConstructions.cityInfo.getWorkableTiles()
