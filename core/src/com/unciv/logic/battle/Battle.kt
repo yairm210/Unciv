@@ -928,7 +928,7 @@ object Battle {
                 )
                 if (attacker.getTile() in interceptingCiv.viewableTiles) {
                     val interceptorText =
-                            "Our [$interceptorName] ([${damageDealt.defenderDealt}]) intercepted and was destroyed by an enemy [$attackerName]([${damageDealt.attackerDealt}]) "
+                            "Our [$interceptorName] ([${damageDealt.defenderDealt}]) intercepted and was destroyed by an enemy [$attackerName] ([${damageDealt.attackerDealt}])"
                     interceptingCiv.addNotification(
                         interceptorText, locations,
                         interceptorName, NotificationIcon.War, attackerName
