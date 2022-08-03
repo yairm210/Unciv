@@ -260,7 +260,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     }
 
     private fun getCityStateInfluenceDegrade(): Float {
-        if (getInfluence() < getCityStateInfluenceRestingPoint())
+        if (getInfluence() <= getCityStateInfluenceRestingPoint())
             return 0f
 
         val decrement = when {
@@ -288,7 +288,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     }
 
     private fun getCityStateInfluenceRecovery(): Float {
-        if (getInfluence() > getCityStateInfluenceRestingPoint())
+        if (getInfluence() >= getCityStateInfluenceRestingPoint())
             return 0f
 
         val increment = 1f  // sic: personality does not matter here
@@ -580,7 +580,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                     else civInfo.addNotification("[${offer.name}] to [$otherCivName] has ended", otherCivName, NotificationIcon.Trade)
 
                     civInfo.updateStatsForNextTurn() // if they were bringing us gold per turn
-                    civInfo.updateDetailedCivResources() // if they were giving us resources
+                    if (trade.theirOffers.union(trade.ourOffers) // if resources were involved
+                                .any { it.type == TradeType.Luxury_Resource || it.type == TradeType.Strategic_Resource })
+                        civInfo.updateDetailedCivResources()
                 }
             }
         }

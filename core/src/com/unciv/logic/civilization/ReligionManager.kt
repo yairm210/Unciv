@@ -1,6 +1,8 @@
 package com.unciv.logic.civilization
 
+import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.Counter
 import com.unciv.models.Religion
@@ -142,7 +144,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         if (Random(civInfo.gameInfo.turns).nextFloat() < prophetSpawnChange) {
             val birthCity =
                 if (religionState <= ReligionState.Pantheon) civInfo.getCapital()
-                else civInfo.cities.firstOrNull { it.religion.religionThisIsTheHolyCityOf == religion!!.name }
+                else civInfo.religionManager.getHolyCity()
             val prophet = civInfo.addUnit(prophetUnitName, birthCity) ?: return
             prophet.religion = religion!!.name
             storedFaith -= faithForNextGreatProphet()
@@ -150,6 +152,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         }
     }
 
+    /** Calculates the amount of religions that can still be founded */
     fun remainingFoundableReligions(): Int {
         val foundedReligionsCount = civInfo.gameInfo.civilizations.count {
             it.religionManager.religion != null && it.religionManager.religionState >= ReligionState.Religion
@@ -328,10 +331,10 @@ class ReligionManager : IsPartOfGameInfoSerialization {
 
     fun maySpreadReligionAtAll(missionary: MapUnit): Boolean {
         if (!civInfo.gameInfo.isReligionEnabled()) return false // No religion, no spreading
-        if (religion == null) return false // need a religion
+        if (religion == null) return false // Need a religion
         if (religionState < ReligionState.Religion) return false // First found an actual religion
         if (!civInfo.isMajorCiv()) return false // Only major civs
-
+        if (!missionary.canDoReligiousAction(Constants.spreadReligion)) return false
         return true
     }
 
@@ -340,7 +343,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         if (missionary.getTile().getOwner() == null) return false
         if (missionary.currentTile.owningCity?.religion?.getMajorityReligion()?.name == missionary.religion)
             return false
-        if (missionary.getTile().getCity()!!.religion.isProtectedByInquisitor()) return false
+        if (missionary.getTile().getCity()!!.religion.isProtectedByInquisitor(religion!!.name)) return false
         return true
     }
 
@@ -355,6 +358,11 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         return civInfo.gameInfo.getCities()
             .filter { it.matchesFilter(cityFilter, civInfo) }
             .sumOf { it.religion.getFollowersOf(religion!!.name)!! }
+    }
+
+    fun getHolyCity(): CityInfo? {
+        if (religion == null) return null
+        return civInfo.gameInfo.getCities().firstOrNull { it.isHolyCityOf(religion!!.name) }
     }
 }
 

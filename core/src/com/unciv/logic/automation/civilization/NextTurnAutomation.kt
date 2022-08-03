@@ -1,13 +1,22 @@
-package com.unciv.logic.automation
+package com.unciv.logic.automation.civilization
 
 import com.unciv.Constants
+import com.unciv.logic.automation.Automation
+import com.unciv.logic.automation.ThreatLevel
+import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.PerpetualConstruction
-import com.unciv.logic.civilization.*
+import com.unciv.logic.civilization.AlertType
+import com.unciv.logic.civilization.CityStateType
+import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -15,9 +24,20 @@ import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
-import com.unciv.logic.trade.*
+import com.unciv.logic.trade.Trade
+import com.unciv.logic.trade.TradeEvaluation
+import com.unciv.logic.trade.TradeLogic
+import com.unciv.logic.trade.TradeOffer
+import com.unciv.logic.trade.TradeRequest
+import com.unciv.logic.trade.TradeType
 import com.unciv.models.Counter
-import com.unciv.models.ruleset.*
+import com.unciv.models.ruleset.Belief
+import com.unciv.models.ruleset.BeliefType
+import com.unciv.models.ruleset.MilestoneType
+import com.unciv.models.ruleset.ModOptionsConstants
+import com.unciv.models.ruleset.Policy
+import com.unciv.models.ruleset.PolicyBranch
+import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
@@ -37,10 +57,13 @@ object NextTurnAutomation {
         respondToTradeRequests(civInfo)
 
         if (civInfo.isMajorCiv()) {
-            if (!civInfo.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
+            if (!civInfo.gameInfo.ruleSet.modOptions.hasUnique(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
                 declareWar(civInfo)
                 offerPeaceTreaty(civInfo)
 //            offerDeclarationOfFriendship(civInfo)
+            }
+            if (civInfo.gameInfo.isReligionEnabled()) {
+                ReligionAutomation.spendFaithOnReligion(civInfo)
             }
             offerResearchAgreement(civInfo)
             exchangeLuxuries(civInfo)
@@ -135,10 +158,10 @@ object NextTurnAutomation {
         val counterofferGifts = ArrayList<TradeOffer>()
 
         for (offer in tradeLogic.theirAvailableOffers) {
-            if (offer.type == TradeType.Gold && tradeRequest.trade.ourOffers.any { it.type == TradeType.Gold } ||
-                offer.type == TradeType.Gold_Per_Turn && tradeRequest.trade.ourOffers.any { it.type == TradeType.Gold_Per_Turn })
+            if ((offer.type == TradeType.Gold || offer.type == TradeType.Gold_Per_Turn)
+                    && tradeRequest.trade.ourOffers.any { it.type == offer.type })
                     continue // Don't want to counteroffer straight gold for gold, that's silly
-            if (offer.amount == 0)
+            if (!offer.isTradable())
                 continue // For example resources gained by trade or CS
             if (offer.type == TradeType.City)
                 continue // Players generally don't want to give up their cities, and they might misclick
@@ -203,7 +226,7 @@ object NextTurnAutomation {
             delta = (delta * 2) / 3 // Only compensate some of it though, they're the ones asking us
             // First give some GPT, then lump sum - but only if they're not already offering the same
             for (ourGold in tradeLogic.ourAvailableOffers
-                    .filter { it.type == TradeType.Gold || it.type == TradeType.Gold_Per_Turn }
+                    .filter { it.isTradable() && (it.type == TradeType.Gold || it.type == TradeType.Gold_Per_Turn) }
                     .sortedByDescending { it.type.ordinal }) {
                 if (tradeLogic.currentTrade.theirOffers.none { it.type == ourGold.type } &&
                         counterofferAsks.keys.none { it.type == ourGold.type } ) {
@@ -573,7 +596,7 @@ object NextTurnAutomation {
                     .flatMap { religion -> religion.getBeliefs(beliefType) }.contains(it.value)
             }
             .map { it.value }
-            .maxByOrNull { ChooseBeliefsAutomation.rateBelief(civInfo, it) }
+            .maxByOrNull { ReligionAutomation.rateBelief(civInfo, it) }
     }
 
     private fun potentialLuxuryTrades(civInfo: CivilizationInfo, otherCivInfo: CivilizationInfo): ArrayList<Trade> {

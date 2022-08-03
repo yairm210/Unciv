@@ -269,6 +269,7 @@ object Github {
         var html_url = ""
         var pushed_at = "" // don't use updated_at - see https://github.com/yairm210/Unciv/issues/6106
         var size = 0
+        var topics = mutableListOf<String>()
         //var stargazers_url = ""
         //var homepage: String? = null      // might use instead of go to repo?
         //var has_wiki = false              // a wiki could mean proper documentation for the mod?
@@ -324,6 +325,7 @@ object Github {
         modOptions.lastUpdated = repo.pushed_at
         modOptions.author = repo.owner.login
         modOptions.modSize = repo.size
+        modOptions.topics = repo.topics
         modOptions.updateDeprecations()
         json().toJson(modOptions, modOptionsFile)
     }

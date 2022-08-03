@@ -4,7 +4,9 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.INamed
+import com.unciv.models.stats.Stat
 
 /** Data object for Religions */
 class Religion() : INamed, IsPartOfGameInfoSerialization {
@@ -18,6 +20,11 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
 
     @Transient
     lateinit var gameInfo: GameInfo
+
+    @delegate:Transient
+    val buildingsPurchasableByBeliefs by lazy {
+        unlockedBuildingsPurchasable()
+    }
 
     constructor(name: String, gameInfo: GameInfo, foundingCivName: String) : this() {
         this.name = name
@@ -94,4 +101,12 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
     fun isEnhancedReligion() = getBeliefs(BeliefType.Enhancer).any()
 
     fun getFounder() = gameInfo.civilizations.first { it.civName == foundingCivName }
+
+    private fun unlockedBuildingsPurchasable(): List<String> {
+        return getAllBeliefsOrdered().flatMap { belief ->
+            belief.getMatchingUniques(UniqueType.BuyBuildingsWithStat).map { it.params[0] } +
+            belief.getMatchingUniques(UniqueType.BuyBuildingsForAmountStat).map { it.params[0] } +
+            belief.getMatchingUniques(UniqueType.BuyBuildingsIncreasingCost).map { it.params[0] }
+        }.toList()
+    }
 }

@@ -1,3 +1,62 @@
+## 4.2.1
+
+Resolved missionary-related crash
+
+Fix erroneous relationship decay notification  - By oynqr
+
+Rename "Show minimap" to "Minimap size"  - By J0anJosep
+
+By SimonCeder:
+- Invalid players removed from global quests
+- Fix Natural Wonder placement
+
+By OptimizedForDensity:
+- Allow passable natural wonders
+
+Removed duplicate placeholders  - By xlenstra
+
+## 4.2.0
+
+Add Air Sweep  - By itanasi
+
+Allows inquisitors to block holy cities  - By xlenstra
+
+Performance improvements
+
+By SimonCeder:
+- workers will replace city ruins
+- avoid potential marriage bug
+
+Fix games not being loadable  - By Azzurite
+
+Construction automation optimization  - By OptimizedForDensity
+
+Allow HexaRealm to render jungles on hills  - By ArchDuque-Pancake
+
+## 4.1.21
+
+Memory performance improvements
+
+HexaRealm is now default tileset
+
+Mod categories - By alexban011
+
+Replace "moveTo" in unit overview with "Moving"  - By itanasi
+
+## 4.1.20
+
+Can no longer receive negative gold offers from AI
+
+Keep progress in notification scroll when updating
+
+Gray out city state friend bonus when allied - By Azzurite
+
+By OptimizedForDensity:
+- Minor reweight of AI policy selection
+- Stop transported units from being able to pillage tiles
+
+Fix getting settlers from ancient ruins on one-city challenge - By MindaugasRumsa51
+
 ## 4.1.19
 
 Interception always takes an attack  - By itanasi

@@ -127,6 +127,28 @@ class TranslationTests {
     }
 
     @Test
+    fun allTranslationsHaveUniquePlaceholders() {
+        // check that the templates have unique placeholders (the translation entries are checked below)
+        val templateLines = Gdx.files.internal(TranslationFileWriter.templateFileLocation).reader().readLines()
+        var noTwoPlaceholdersAreTheSame = true
+        for (template in templateLines) {
+            if (template.startsWith("#")) continue
+            val placeholders = squareBraceRegex.findAll(template)
+                .map { it.value }.toList()
+
+            for (placeholder in placeholders)
+                if (placeholders.count { it == placeholder } > 1) {
+                    noTwoPlaceholdersAreTheSame = false
+                    println("Template key $template has the parameter $placeholder more than once")
+                    break
+                }
+        }
+        Assert.assertTrue(
+            "This test will only pass when no translation template keys have the same parameter twice",
+            noTwoPlaceholdersAreTheSame)
+    }
+
+    @Test
     fun noTwoPlaceholdersAreTheSame() {
         var noTwoPlaceholdersAreTheSame = true
         for (translationEntry in translations.values) {

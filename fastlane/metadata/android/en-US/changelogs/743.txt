@@ -1,0 +1,15 @@
+Add Air Sweep  - By itanasi
+
+Allows inquisitors to block holy cities  - By xlenstra
+
+Performance improvements
+
+By SimonCeder:
+- workers will replace city ruins
+- avoid potential marriage bug
+
+Fix games not being loadable  - By Azzurite
+
+Construction automation optimization  - By OptimizedForDensity
+
+Allow HexaRealm to render jungles on hills  - By ArchDuque-Pancake

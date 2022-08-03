@@ -274,7 +274,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         // If the tile is far away, we need to build a path how to get there, and then take the first step
         if (!distanceToTiles.containsKey(finalDestination))
             return getShortestPath(finalDestination).firstOrNull()
-                    ?: throw UnreachableDestinationException("$unit ${unit.currentTile.position} cannot reach $finalDestination")
+                ?: throw UnreachableDestinationException("$unit ${unit.currentTile} cannot reach $finalDestination")
 
         // we should be able to get there this turn
         if (canMoveTo(finalDestination))
@@ -666,7 +666,6 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         if (tile.isOcean && !unit.civInfo.tech.allUnitsCanEnterOcean) { // Apparently all Polynesian naval units can enter oceans
             if (!unitSpecificAllowOcean && unit.cannotEnterOceanTiles) return false
         }
-        if (tile.naturalWonder != null) return false
 
         if (!unit.canEnterForeignTerrain && !tile.canCivPassThrough(unit.civInfo)) return false
 

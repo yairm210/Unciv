@@ -19,6 +19,7 @@ interface IConstruction : INamed {
 }
 
 interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
+    var cost: Int
     val hurryCostModifier: Int
     var requiredTech: String?
 
@@ -27,17 +28,18 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     fun getRejectionReasons(cityConstructions: CityConstructions): RejectionReasons
     fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat? = null): Boolean  // Yes I'm hilarious.
 
+    /** Only checks if it has the unique to be bought with this stat, not whether it is purchasable at all */
     fun canBePurchasedWithStat(cityInfo: CityInfo?, stat: Stat): Boolean {
         if (stat == Stat.Production || stat == Stat.Happiness) return false
         if (hasUnique(UniqueType.CannotBePurchased)) return false
         if (stat == Stat.Gold) return !hasUnique(UniqueType.Unbuildable)
         // Can be purchased with [Stat] [cityFilter]
-        if (getMatchingUniques(UniqueType.CanBePurchasedWithStat)
-            .any { cityInfo != null && it.params[0] == stat.name && cityInfo.matchesFilter(it.params[1]) }
+        if (cityInfo != null && getMatchingUniques(UniqueType.CanBePurchasedWithStat)
+            .any { it.params[0] == stat.name && cityInfo.matchesFilter(it.params[1]) }
         ) return true
         // Can be purchased for [amount] [Stat] [cityFilter]
-        if (getMatchingUniques(UniqueType.CanBePurchasedForAmountStat)
-            .any { cityInfo != null && it.params[1] == stat.name && cityInfo.matchesFilter(it.params[2]) }
+        if (cityInfo != null && getMatchingUniques(UniqueType.CanBePurchasedForAmountStat)
+            .any { it.params[1] == stat.name && cityInfo.matchesFilter(it.params[2]) }
         ) return true
         return false
     }

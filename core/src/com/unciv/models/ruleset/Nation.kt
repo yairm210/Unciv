@@ -21,6 +21,8 @@ class Nation : RulesetObject() {
     else "[$leaderName] of [$name]"
 
     val style = ""
+    fun getStyleOrCivName() = style.ifEmpty { name }
+
     var cityStateType: CityStateType? = null
     var preferredVictoryType: String = Constants.neutralVictoryType
     var declaringWar = ""

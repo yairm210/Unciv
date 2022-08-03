@@ -12,7 +12,7 @@ import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
 import com.unciv.logic.BackwardCompatibility.updateGreatGeneralUniques
 import com.unciv.logic.GameInfo.Companion.CURRENT_COMPATIBILITY_NUMBER
 import com.unciv.logic.GameInfo.Companion.FIRST_WITHOUT
-import com.unciv.logic.automation.NextTurnAutomation
+import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.CivilizationInfoPreview
@@ -238,7 +238,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     //region State changing functions
 
     fun nextTurn() {
-        val previousHumanPlayer = getCurrentPlayerCivilization()!!
+        val previousHumanPlayer = getCurrentPlayerCivilization()
         var thisPlayer = previousHumanPlayer // not calling it currentPlayer because that's already taken and I can't think of a better name
         var currentPlayerIndex = civilizations.indexOf(thisPlayer)
 
@@ -488,14 +488,13 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         for (religion in religions.values) religion.setTransients(this)
 
         for (civInfo in civilizations) civInfo.setTransients()
-        for (civInfo in civilizations) civInfo.updateSightAndResources()
 
         convertFortify()
 
         for (civInfo in civilizations) {
             for (unit in civInfo.getCivUnits())
                 unit.updateVisibleTiles(false) // this needs to be done after all the units are assigned to their civs and all other transients are set
-            civInfo.updateViewableTiles() // only run ONCE and not for each unit - this is a huge performance saver!
+            civInfo.updateSightAndResources() // only run ONCE and not for each unit - this is a huge performance saver!
 
             // Since this depends on the cities of ALL civilizations,
             // we need to wait until we've set the transients of all the cities before we can run this.

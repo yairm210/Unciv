@@ -234,6 +234,9 @@ class QuestManager : IsPartOfGameInfoSerialization {
     }
 
     private fun handleGlobalQuests() {
+        // Remove any participants that are no longer valid because of being dead or at war with the CS
+        assignedQuests.removeAll { it.isGlobal() &&
+            !canAssignAQuestTo(civInfo.gameInfo.getCivilization(it.assignee)) }
         val globalQuestsExpired = assignedQuests.filter { it.isGlobal() && it.isExpired() }.map { it.questName }.distinct()
         for (globalQuestName in globalQuestsExpired)
             handleGlobalQuest(globalQuestName)

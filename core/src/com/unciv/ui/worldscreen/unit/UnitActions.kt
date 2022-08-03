@@ -2,8 +2,8 @@ package com.unciv.ui.worldscreen.unit
 
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.automation.UnitAutomation
-import com.unciv.logic.automation.WorkerAutomation
+import com.unciv.logic.automation.unit.UnitAutomation
+import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.NotificationIcon
@@ -57,6 +57,7 @@ object UnitActions {
         addUnitUpgradeAction(unit, actionList)
         addPillageAction(unit, actionList, worldScreen)
         addParadropAction(unit, actionList)
+        addAirSweepAction(unit, actionList)
         addSetupAction(unit, actionList)
         addFoundCityAction(unit, actionList, tile)
         addBuildingImprovementsAction(unit, actionList, tile, worldScreen, unitTable)
@@ -265,6 +266,21 @@ object UnitActions {
                         unit.currentTile.isFriendlyTerritory(unit.civInfo) &&
                         !unit.isEmbarked()
             })
+    }
+
+    private fun addAirSweepAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
+        val airsweepUniques =
+            unit.getMatchingUniques(UniqueType.CanAirsweep)
+        if (!airsweepUniques.any()) return
+        actionList += UnitAction(UnitActionType.AirSweep,
+            isCurrentAction = unit.isPreparingAirSweep(),
+            action = {
+                if (unit.isPreparingAirSweep()) unit.action = null
+                else unit.action = UnitActionType.AirSweep.value
+            }.takeIf {
+                unit.canAttack()
+            }
+        )
     }
 
     private fun addPillageAction(unit: MapUnit, actionList: ArrayList<UnitAction>, worldScreen: WorldScreen) {
@@ -627,8 +643,8 @@ object UnitActions {
             if (!unit.abilityUsesLeft.containsKey(action)) continue
             if (unit.abilityUsesLeft[action]!! <= 0) continue
             when (action) {
-                Constants.spreadReligionAbilityCount -> addSpreadReligionActions(unit, actionList, city)
-                Constants.removeHeresyAbilityCount -> addRemoveHeresyActions(unit, actionList, city)
+                Constants.spreadReligion -> addSpreadReligionActions(unit, actionList, city)
+                Constants.removeHeresy -> addRemoveHeresyActions(unit, actionList, city)
             }
         }
     }
@@ -641,15 +657,7 @@ object UnitActions {
     }
 
     fun addSpreadReligionActions(unit: MapUnit, actionList: ArrayList<UnitAction>, city: CityInfo) {
-        if (!unit.civInfo.gameInfo.isReligionEnabled()) return
-        val blockedByInquisitor =
-            city.getCenterTile()
-                .getTilesInDistance(1)
-                .flatMap { it.getUnits() }
-                .any {
-                    it.hasUnique(UniqueType.PreventSpreadingReligion)
-                    && it.religion != unit.religion
-                }
+        if (!unit.civInfo.religionManager.maySpreadReligionAtAll(unit)) return
         actionList += UnitAction(UnitActionType.SpreadReligion,
             title = "Spread [${unit.getReligionDisplayName()!!}]",
             action = {
@@ -661,8 +669,8 @@ object UnitActions {
                 if (unit.hasUnique(UniqueType.RemoveOtherReligions))
                     city.religion.removeAllPressuresExceptFor(unit.religion!!)
                 unit.currentMovement = 0f
-                useActionWithLimitedUses(unit, Constants.spreadReligionAbilityCount)
-            }.takeIf { unit.currentMovement > 0 && !blockedByInquisitor }
+                useActionWithLimitedUses(unit, Constants.spreadReligion)
+            }.takeIf { unit.currentMovement > 0 && unit.civInfo.religionManager.maySpreadReligionNow(unit) }
         )
     }
 
@@ -676,8 +684,18 @@ object UnitActions {
             title = "Remove Heresy",
             action = {
                 city.religion.removeAllPressuresExceptFor(unit.religion!!)
+                if (city.religion.religionThisIsTheHolyCityOf != null) {
+                    val religion = unit.civInfo.gameInfo.religions[city.religion.religionThisIsTheHolyCityOf]!!
+                    if (city.religion.religionThisIsTheHolyCityOf != unit.religion && !city.religion.isBlockedHolyCity) {
+                        religion.getFounder().addNotification("An [${unit.baseUnit.name}] has removed your religion [${religion.getReligionDisplayName()}] from its Holy City [${city.name}]!")
+                        city.religion.isBlockedHolyCity = false
+                    } else if (city.religion.religionThisIsTheHolyCityOf == unit.religion && city.religion.isBlockedHolyCity) {
+                        religion.getFounder().addNotification("An [${unit.baseUnit.name}] has restored [${city.name}] as the Holy City of your religion [${religion.getReligionDisplayName()}]!")
+                        city.religion.isBlockedHolyCity = true
+                    }
+                }
                 unit.currentMovement = 0f
-                useActionWithLimitedUses(unit, Constants.removeHeresyAbilityCount)
+                useActionWithLimitedUses(unit, Constants.removeHeresy)
             }.takeIf { unit.currentMovement > 0f }
         )
     }
@@ -812,6 +830,7 @@ object UnitActions {
     }
 
     fun canPillage(unit: MapUnit, tile: TileInfo): Boolean {
+        if (unit.isTransported) return false
         val tileImprovement = tile.getTileImprovement()
         // City ruins, Ancient Ruins, Barbarian Camp, City Center marked in json
         if (tileImprovement == null || tileImprovement.hasUnique(UniqueType.Unpillagable)) return false

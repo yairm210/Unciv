@@ -1,4 +1,4 @@
-package com.unciv.logic.automation
+package com.unciv.logic.automation.unit
 
 import com.unciv.Constants
 import com.unciv.logic.battle.Battle
@@ -72,9 +72,16 @@ object BattleHelper {
                     .asSequence()
 
             for (tile in tilesInAttackRange) {
-                if (tile in tilesWithEnemies) attackableTiles += AttackableTile(reachableTile, tile, movementLeft)
+                if (tile in tilesWithEnemies) attackableTiles += AttackableTile(
+                    reachableTile,
+                    tile,
+                    movementLeft
+                )
                 else if (tile in tilesWithoutEnemies) continue // avoid checking the same empty tile multiple times
                 else if (checkTile(unit, tile, tilesToCheck)) {
+                    tilesWithEnemies += tile
+                    attackableTiles += AttackableTile(reachableTile, tile, movementLeft)
+                } else if (unit.isPreparingAirSweep()){
                     tilesWithEnemies += tile
                     attackableTiles += AttackableTile(reachableTile, tile, movementLeft)
                 } else {

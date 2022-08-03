@@ -26,6 +26,7 @@ class CityInfoReligionManager : IsPartOfGameInfoSerialization {
     private val pressureFromAdjacentCities: Int by lazy { cityInfo.civInfo.gameInfo.speed.religiousPressureAdjacentCity }
 
     var religionThisIsTheHolyCityOf: String? = null
+    var isBlockedHolyCity = false
 
     init {
         clearAllPressures()
@@ -38,6 +39,7 @@ class CityInfoReligionManager : IsPartOfGameInfoSerialization {
         toReturn.pressures.putAll(pressures)
         toReturn.followers.putAll(followers)
         toReturn.religionThisIsTheHolyCityOf = religionThisIsTheHolyCityOf
+        toReturn.isBlockedHolyCity = isBlockedHolyCity
         return toReturn
     }
 
@@ -233,15 +235,12 @@ class CityInfoReligionManager : IsPartOfGameInfoSerialization {
             addPressure(religionThisIsTheHolyCityOf!!,5 * pressureFromAdjacentCities, false)
         }
 
-        val allCitiesWithinSpreadRange =
-            cityInfo.civInfo.gameInfo.getCities()
-                .filter {
-                    it != cityInfo
-                    && it.getCenterTile().aerialDistanceTo(cityInfo.getCenterTile()) <= it.religion.getSpreadRange()
-                }
-        for (city in allCitiesWithinSpreadRange) {
+        for (city in cityInfo.civInfo.gameInfo.getCities()) {
+            if (city == cityInfo) continue
             val majorityReligionOfCity = city.religion.getMajorityReligionName() ?: continue
             if (!cityInfo.civInfo.gameInfo.religions[majorityReligionOfCity]!!.isMajorReligion()) continue
+            if (city.getCenterTile().aerialDistanceTo(cityInfo.getCenterTile())
+                    > city.religion.getSpreadRange()) continue
             addPressure(majorityReligionOfCity, city.religion.pressureAmountToAdjacentCities(cityInfo), false)
         }
 
@@ -283,10 +282,17 @@ class CityInfoReligionManager : IsPartOfGameInfoSerialization {
         return addedPressure
     }
 
-    fun isProtectedByInquisitor(): Boolean {
-        for (tile in cityInfo.getCenterTile().getTilesInDistance(1))
-            if (tile.civilianUnit?.hasUnique(UniqueType.PreventSpreadingReligion) == true)
-                return true
+    fun isProtectedByInquisitor(fromReligion: String? = null): Boolean {
+        for (tile in cityInfo.getCenterTile().getTilesInDistance(1)) {
+            for (unit in listOf(tile.civilianUnit, tile.militaryUnit)) {
+                if (unit?.religion != null
+                    && (fromReligion == null || unit.religion != fromReligion)
+                    && unit.hasUnique(UniqueType.PreventSpreadingReligion)
+                ) {
+                    return true
+                }
+            }
+        }
         return false
     }
 
@@ -307,5 +313,9 @@ class CityInfoReligionManager : IsPartOfGameInfoSerialization {
         }
 
         return pressure.toInt()
+    }
+
+    fun getPressureDeficit(otherReligion: String?): Int {
+        return (getPressures()[getMajorityReligionName()] ?: 0) - (getPressures()[otherReligion] ?: 0)
     }
 }

@@ -829,10 +829,21 @@ class MapRegions (val ruleset: Ruleset){
     }
 
     fun placeResourcesAndMinorCivs(tileMap: TileMap, minorCivs: List<CivilizationInfo>) {
+        placeNaturalWonderImpacts(tileMap)
         assignLuxuries()
         placeMinorCivs(tileMap, minorCivs)
         placeLuxuries(tileMap)
         placeStrategicAndBonuses(tileMap)
+    }
+
+    /** Places impacts from NWs that have been generated just prior to this step. */
+    private fun placeNaturalWonderImpacts(tileMap: TileMap) {
+        for (tile in tileMap.values.filter { it.isNaturalWonder() }) {
+            placeImpact(ImpactType.Bonus, tile, 1)
+            placeImpact(ImpactType.Strategic, tile, 1)
+            placeImpact(ImpactType.Luxury, tile, 1)
+            placeImpact(ImpactType.MinorCiv, tile, 1)
+        }
     }
 
     /** Assigns a luxury to each region. No luxury can be assigned to too many regions.
@@ -1790,10 +1801,10 @@ class Region (val tileMap: TileMap, val rect: Rectangle, val continentID: Int = 
         // Count terrains in the region
         terrainCounts.clear()
         for (tile in tiles) {
-            val terrainsToCount = if (tile.getAllTerrains().any { it.hasUnique(UniqueType.IgnoreBaseTerrainForRegion) })
+            val terrainsToCount = if (tile.terrainHasUnique(UniqueType.IgnoreBaseTerrainForRegion))
                 tile.terrainFeatureObjects.map { it.name }.asSequence()
             else
-                tile.getAllTerrains().map { it.name }
+                tile.allTerrains.map { it.name }
             for (terrain in terrainsToCount) {
                 terrainCounts[terrain] = (terrainCounts[terrain] ?: 0) + 1
             }
