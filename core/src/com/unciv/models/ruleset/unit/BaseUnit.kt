@@ -19,6 +19,7 @@ import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.extensions.filterAndLogic
 import com.unciv.ui.utils.extensions.getConsumesAmountString
+import com.unciv.ui.utils.extensions.getNeedMoreAmountString
 import com.unciv.ui.utils.extensions.toPercent
 import kotlin.math.pow
 
@@ -419,7 +420,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (!civInfo.isBarbarian()) { // Barbarians don't need resources
             for ((resource, amount) in getResourceRequirements())
                 if (civInfo.getCivResourcesByName()[resource]!! < amount) {
-                    rejectionReasons.add(RejectionReason.ConsumesResources.toInstance(resource.getConsumesAmountString(amount)))
+                    rejectionReasons.add(RejectionReason.ConsumesResources.toInstance(resource.getNeedMoreAmountString(amount)))
                 }
         }
 
