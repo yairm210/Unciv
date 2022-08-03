@@ -383,18 +383,15 @@ object Battle {
             // If what happened was that a civilian unit was captured, that's dealt with in the captureCivilianUnit function
             val (whatHappenedIcon, whatHappenedString) = when {
                 attacker !is CityCombatant && attacker.isDefeated() ->
-                    if (damageDealt != null) NotificationIcon.War to " ([${damageDealt.attackerDealt}]) was destroyed while attacking"
-                    else NotificationIcon.War to " was destroyed while attacking"
+                    NotificationIcon.War to " was destroyed while attacking"
                 !defender.isDefeated() ->
-                    if (damageDealt != null) NotificationIcon.War to " ([${damageDealt.attackerDealt}]) has attacked"
-                    else NotificationIcon.War to " has attacked"
+                    NotificationIcon.War to " has attacked"
                 defender.isCity() && attacker.isMelee() && attacker.getCivInfo().isBarbarian() ->
                     NotificationIcon.War to " has raided"
                 defender.isCity() && attacker.isMelee() ->
                     NotificationIcon.War to " has captured"
                 else ->
-                    if (damageDealt != null) NotificationIcon.Death to " ([${damageDealt.attackerDealt}]) has destroyed"
-                    else NotificationIcon.Death to " has destroyed"
+                    NotificationIcon.Death to " has destroyed"
             }
             val attackerString =
                     if (attacker.isCity()) "Enemy city [" + attacker.getName() + "]"
@@ -404,8 +401,9 @@ object Battle {
                         if (defender.isDefeated() && attacker.isRanged()) " the defence of [" + defender.getName() + "]"
                         else " [" + defender.getName() + "]"
                     else " our [" + defender.getName() + "]"
+            val attackerDealtString = if (damageDealt != null) " ([${damageDealt.attackerDealt}])" else ""
             val defenderDealtString = if (damageDealt != null) " ([${damageDealt.defenderDealt}])" else ""
-            val notificationString = attackerString + whatHappenedString + defenderString + defenderDealtString
+            val notificationString = attackerString + attackerDealtString + whatHappenedString + defenderString + defenderDealtString
             val attackerIcon = if (attacker is CityCombatant) NotificationIcon.City else attacker.getName()
             val defenderIcon = if (defender is CityCombatant) NotificationIcon.City else defender.getName()
             val locations = LocationAction(attackedTile.position, attackerTile?.position)
