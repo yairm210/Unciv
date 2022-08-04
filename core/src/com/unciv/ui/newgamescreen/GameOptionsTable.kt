@@ -113,7 +113,6 @@ class GameOptionsTable(
 
     private fun numberOfCityStates() = ruleset.nations.values.count {
         it.isCityState()
-        && (it.cityStateType != CityStateType.Religious || gameParameters.religionEnabled)
         && !it.hasUnique(UniqueType.CityStateDeprecated)
     }
 
