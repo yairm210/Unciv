@@ -29,7 +29,6 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.multiplayer.MultiplayerHelpers
 import com.unciv.ui.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.pickerscreens.DiplomaticVotePickerScreen
 import com.unciv.ui.pickerscreens.DiplomaticVoteResultScreen
@@ -748,7 +747,7 @@ class WorldScreen(
 
     override fun resize(width: Int, height: Int) {
         if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
-            startNewScreenJob(gameInfo) // start over
+            startNewScreenJob(gameInfo, true) // start over
         }
     }
 
@@ -826,7 +825,7 @@ class WorldScreen(
 }
 
 /** This exists so that no reference to the current world screen remains, so the old world screen can get garbage collected during [UncivGame.loadGame]. */
-private fun startNewScreenJob(gameInfo: GameInfo) {
+private fun startNewScreenJob(gameInfo: GameInfo, autosaveDisabled:Boolean = false) {
     Concurrency.run {
         val newWorldScreen = try {
             UncivGame.Current.loadGame(gameInfo)
@@ -838,7 +837,8 @@ private fun startNewScreenJob(gameInfo: GameInfo) {
             return@run
         }
 
-        val shouldAutoSave = gameInfo.turns % UncivGame.Current.settings.turnsBetweenAutosaves == 0
+        val shouldAutoSave = !autosaveDisabled
+                && gameInfo.turns % UncivGame.Current.settings.turnsBetweenAutosaves == 0
         if (shouldAutoSave) {
             newWorldScreen.autoSave()
         }

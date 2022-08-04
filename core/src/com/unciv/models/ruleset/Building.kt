@@ -24,6 +24,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.extensions.getConsumesAmountString
+import com.unciv.ui.utils.extensions.getNeedMoreAmountString
 import com.unciv.ui.utils.extensions.toPercent
 import kotlin.math.pow
 
@@ -31,8 +32,8 @@ import kotlin.math.pow
 class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     override var requiredTech: String? = null
+    override var cost: Int = 0
 
-    var cost: Int = 0
     var maintenance = 0
     private var percentStatBonus: Stats? = null
     var specialistSlots: Counter<String> = Counter()
@@ -181,7 +182,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                  localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Stats {
         // Calls the clone function of the NamedStats this class is derived from, not a clone function of this class
         val stats = cloneStats()
-        val civInfo = city.civInfo
 
         for (unique in localUniqueCache.get("StatsFromObject", city.getMatchingUniques(UniqueType.StatsFromObject))) {
             if (!matchesFilter(unique.params[1])) continue
@@ -614,10 +614,12 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             rejectionReasons.add(RejectionReason.RequiresBuildingInThisCity.toInstance("Requires a [${civInfo.getEquivalentBuilding(requiredBuilding!!)}] in this city"))
         }
 
-        for ((resource, amount) in getResourceRequirements())
-            if (civInfo.getCivResourcesByName()[resource]!! < amount) {
-                rejectionReasons.add(RejectionReason.ConsumesResources.toInstance(resource.getConsumesAmountString(amount)))
+        for ((resource, requiredAmount) in getResourceRequirements()) {
+            val availableAmount = civInfo.getCivResourcesByName()[resource]!!
+            if (availableAmount < requiredAmount) {
+                rejectionReasons.add(RejectionReason.ConsumesResources.toInstance(resource.getNeedMoreAmountString(requiredAmount - availableAmount)))
             }
+        }
 
         if (requiredNearbyImprovedResources != null) {
             val containsResourceWithImprovement = cityConstructions.cityInfo.getWorkableTiles()

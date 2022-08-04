@@ -19,6 +19,7 @@ import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.extensions.filterAndLogic
 import com.unciv.ui.utils.extensions.getConsumesAmountString
+import com.unciv.ui.utils.extensions.getNeedMoreAmountString
 import com.unciv.ui.utils.extensions.toPercent
 import kotlin.math.pow
 
@@ -28,7 +29,7 @@ import kotlin.math.pow
  in contrast to MapUnit, which is a specific unit of a certain type that appears on the map */
 class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
-    var cost: Int = 0
+    override var cost: Int = 0
     override var hurryCostModifier: Int = 0
     var movement: Int = 0
     var strength: Int = 0
@@ -417,10 +418,12 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
 
         if (!civInfo.isBarbarian()) { // Barbarians don't need resources
-            for ((resource, amount) in getResourceRequirements())
-                if (civInfo.getCivResourcesByName()[resource]!! < amount) {
-                    rejectionReasons.add(RejectionReason.ConsumesResources.toInstance(resource.getConsumesAmountString(amount)))
+            for ((resource, requiredAmount) in getResourceRequirements()) {
+                val availableAmount = civInfo.getCivResourcesByName()[resource]!!
+                if (availableAmount < requiredAmount) {
+                    rejectionReasons.add(RejectionReason.ConsumesResources.toInstance(resource.getNeedMoreAmountString(requiredAmount - availableAmount)))
                 }
+            }
         }
 
         for (unique in civInfo.getMatchingUniques(UniqueType.CannotBuildUnits))

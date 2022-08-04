@@ -8,7 +8,6 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.utils.Log
 import com.unciv.utils.debug
-import java.time.temporal.ChronoUnit
 import java.util.*
 
 /**
@@ -391,15 +390,14 @@ fun String.tr(): String {
 
         // Take the terms in the message, WITHOUT square brackets
         val termsInMessage = this.getPlaceholderParametersIgnoringLowerLevelBraces()
-        // Take the term from the placeholder, INCLUDING the square brackets
-        val termsInTranslationPlaceholder =
-            squareBraceRegex.findAll(originalEntry).map { it.value }.toList()
+        // Take the terms from the placeholder
+        val termsInTranslationPlaceholder = originalEntry.getPlaceholderParametersIgnoringLowerLevelBraces()
         if (termsInMessage.size != termsInTranslationPlaceholder.size)
             throw Exception("Message $this has a different number of terms than the placeholder $translationEntry!")
 
         for (i in termsInMessage.indices) {
             languageSpecificPlaceholder = languageSpecificPlaceholder.replace(
-                termsInTranslationPlaceholder[i],
+                "[${termsInTranslationPlaceholder[i]}]", // re-add square brackets to placeholder terms
                 termsInMessage[i].tr()
             )
         }

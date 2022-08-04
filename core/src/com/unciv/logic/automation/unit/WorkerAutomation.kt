@@ -1,10 +1,13 @@
-package com.unciv.logic.automation
+package com.unciv.logic.automation.unit
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
-import com.unciv.logic.automation.UnitAutomation.wander
+import com.unciv.logic.automation.Automation
+import com.unciv.logic.automation.civilization.NextTurnAutomation
+import com.unciv.logic.automation.ThreatLevel
+import com.unciv.logic.automation.unit.UnitAutomation.wander
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.BFS
@@ -282,12 +285,13 @@ class WorkerAutomation(
         val city = tile.getCity()
         if (city == null || city.civInfo != civInfo)
             return false
-        if (tile.improvement != null && !UncivGame.Current.settings.automatedWorkersReplaceImprovements) {
+        val junkImprovement = tile.getTileImprovement()?.hasUnique(UniqueType.AutomatedWorkersWillReplace)
+        if (tile.improvement != null && junkImprovement == false && !UncivGame.Current.settings.automatedWorkersReplaceImprovements) {
             if (unit.civInfo.isPlayerCivilization())
                 return false
         }
 
-        if (tile.improvement == null) {
+        if (tile.improvement == null || junkImprovement == true) {
             if (tile.improvementInProgress != null && unit.canBuildImprovement(tile.getTileImprovementInProgress()!!, tile)) return true
             val chosenImprovement = chooseImprovement(unit, tile)
             if (chosenImprovement != null && tile.canBuildImprovement(chosenImprovement, civInfo) && unit.canBuildImprovement(chosenImprovement, tile)) return true
@@ -452,7 +456,9 @@ class WorkerAutomation(
                         ThreatLevel.VeryHigh -> 20
                     }
         }
-        val enemyCivsIsCloseEnough = enemyCivs.filter { NextTurnAutomation.getMinDistanceBetweenCities(civInfo, it) <= threatMapping(it) }
+        val enemyCivsIsCloseEnough = enemyCivs.filter { NextTurnAutomation.getMinDistanceBetweenCities(
+            civInfo,
+            it) <= threatMapping(it) }
         // no threat, let's not build fort
         if (enemyCivsIsCloseEnough.isEmpty()) return false
 

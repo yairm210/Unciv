@@ -429,6 +429,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     DamageWhenIntercepting("[relativeAmount]% Damage when intercepting", UniqueTarget.Unit),
     ExtraInterceptionsPerTurn("[amount] extra interceptions may be made per turn", UniqueTarget.Unit),
     CannotBeIntercepted("Cannot be intercepted", UniqueTarget.Unit),
+    CannotInterceptUnits("Cannot intercept [mapUnitFilter] units", UniqueTarget.Unit),
+    CanAirsweep("Can perform Air Sweep", UniqueTarget.Unit),
+    StrengthWhenAirsweep("[relativeAmount]% Strength when performing Air Sweep", UniqueTarget.Unit),
 
     UnitMaintenanceDiscount("[relativeAmount]% maintenance costs", UniqueTarget.Unit, UniqueTarget.Global),
     UnitUpgradeCost("[relativeAmount]% Gold cost of upgrading", UniqueTarget.Unit, UniqueTarget.Global),
@@ -584,6 +587,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     PillageYieldRandom("Pillaging this improvement yields approximately [stats]", UniqueTarget.Improvement),
     PillageYieldFixed("Pillaging this improvement yields [stats]", UniqueTarget.Improvement),
     Irremovable("Irremovable", UniqueTarget.Improvement),
+    AutomatedWorkersWillReplace("Will be replaced by automated workers", UniqueTarget.Improvement),
     //endregion
 
     ///////////////////////////////////////// region CONDITIONALS /////////////////////////////////////////
@@ -674,6 +678,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     OneTimeGainPantheon("Gain enough Faith for a Pantheon", UniqueTarget.Ruins),
     OneTimeGainProphet("Gain enough Faith for [amount]% of a Great Prophet", UniqueTarget.Ruins),
     // todo: The "up to [All]" used in vanilla json is not nice to read. Split?
+    // Or just reword it without the 'up to', so it reads "Reveal [amount/'all'] [tileFilter] tiles within [amount] tiles"
     OneTimeRevealSpecificMapTiles("Reveal up to [amount/'all'] [tileFilter] within a [amount] tile radius", UniqueTarget.Ruins),
     OneTimeRevealCrudeMap("From a randomly chosen tile [amount] tiles away from the ruins, reveal tiles up to [amount] tiles away with [amount]% chance", UniqueTarget.Ruins),
     OneTimeTriggerVoting("Triggers voting for the Diplomatic Victory", UniqueTarget.Triggerable),  // used in Building

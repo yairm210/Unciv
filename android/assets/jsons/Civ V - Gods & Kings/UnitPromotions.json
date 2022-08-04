@@ -358,29 +358,26 @@
 		"uniques": ["[+34]% Damage when intercepting"],
 		"unitTypes": ["Fighter"]
 	},
-	/*
 	{
 		"name": "Dogfighting I",
-		"uniques": ["Bonus when performing air sweep [33]%"], // todo
+		"uniques": ["[+33]% Strength when performing Air Sweep"],
 		"unitTypes": ["Fighter"]
 	},
 	{
 		"name": "Dogfighting II",
 		"prerequisites": ["Dogfighting I"],
-		"uniques": ["Bonus when performing air sweep [33]%"],
+		"uniques": ["[+33]% Strength when performing Air Sweep"],
 		"unitTypes": ["Fighter"]
 	},
 	{
 		"name": "Dogfighting III",
 		"prerequisites": ["Dogfighting II"],
-		"uniques": ["Bonus when performing air sweep [34]%"],
+		"uniques": ["[+34]% Strength when performing Air Sweep"],
 		"unitTypes": ["Fighter"]
-	}
-	*/
-
+	},
 	{
 		"name": "Air Targeting I",
-		"prerequisites": ["Interception I","Siege I","Bombardment I"],  // "Dogfighting I"
+		"prerequisites": ["Interception I","Siege I","Bombardment I","Dogfighting I"],
 		"uniques": ["[+33]% Strength <vs [Water] units>"],
 		"unitTypes": ["Fighter","Bomber"]
 	},
@@ -393,20 +390,20 @@
 
 	{
 		"name": "Sortie",
-		"prerequisites": ["Interception II"],  // "Dogfighting II"
+		"prerequisites": ["Interception II", "Dogfighting II"],
 		"uniques": ["[1] extra interceptions may be made per turn"],
 		"unitTypes": ["Fighter"]
 	},
 
 	{
 		"name": "Operational Range",
-		"prerequisites": ["Interception I", /*"Dogfighting I",*/ "Siege I", "Bombardment I"],
+		"prerequisites": ["Interception I", "Dogfighting I", "Siege I", "Bombardment I"],
 		"uniques": ["[+2] Range"],
 		"unitTypes": ["Fighter","Bomber"]
 	},
 	{
 		"name": "Air Repair",
-		"prerequisites": ["Interception II", /*"Dogfighting II",*/ "Siege II", "Bombardment II", "Mobility II", "Anti-Armor II"],
+		"prerequisites": ["Interception II", "Dogfighting II", "Siege II", "Bombardment II", "Mobility II", "Anti-Armor II"],
 		"uniques": ["Unit will heal every turn, even if it performs an action"],
 		"unitTypes": ["Fighter", "Bomber", "Helicopter"]
 	},

@@ -4,7 +4,7 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.logic.automation.SpecificUnitAutomation  // for Kdoc
+import com.unciv.logic.automation.unit.SpecificUnitAutomation  // for Kdoc
 
 
 object GreatGeneralImplementation {
@@ -79,7 +79,7 @@ object GreatGeneralImplementation {
                         && !tile.isCityCenter()
             }
 
-        // rank tiles and find best 
+        // rank tiles and find best
         val unitBonusRadius = generalBonusData.maxOfOrNull { it.radius }
             ?: return null
         return militaryUnitTilesInDistance

@@ -1139,6 +1139,19 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Cannot be intercepted"
 	Applicable to: Unit
 
+??? example  "Cannot intercept [mapUnitFilter] units"
+	Example: "Cannot intercept [Wounded] units"
+
+	Applicable to: Unit
+
+??? example  "Can perform Air Sweep"
+	Applicable to: Unit
+
+??? example  "[relativeAmount]% Strength when performing Air Sweep"
+	Example: "[+20]% Strength when performing Air Sweep"
+
+	Applicable to: Unit
+
 ??? example  "May capture killed [mapUnitFilter] units"
 	Example: "May capture killed [Wounded] units"
 
@@ -1497,6 +1510,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Improvement
 
 ??? example  "Irremovable"
+	Applicable to: Improvement
+
+??? example  "Will be replaced by automated workers"
 	Applicable to: Improvement
 
 ## Resource uniques

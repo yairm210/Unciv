@@ -4,8 +4,8 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.IsPartOfGameInfoSerialization
-import com.unciv.logic.automation.UnitAutomation
-import com.unciv.logic.automation.WorkerAutomation
+import com.unciv.logic.automation.unit.UnitAutomation
+import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
@@ -259,8 +259,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun getTile(): TileInfo = currentTile
 
 
-    // This SHOULD NOT be a HashSet, because if it is, then promotions with the same text (e.g. barrage I, barrage II)
-    //  will not get counted twice!
+    // This SHOULD NOT be a HashSet, because if it is, then e.g. promotions with the same uniques
+    //  (e.g. barrage I, barrage II) will not get counted twice!
     @Transient
     private var tempUniques = ArrayList<Unique>()
 
@@ -440,6 +440,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun isAutomated() = action == UnitActionType.Automate.value
     fun isExploring() = action == UnitActionType.Explore.value
     fun isPreparingParadrop() = action == UnitActionType.Paradrop.value
+    fun isPreparingAirSweep() = action == UnitActionType.AirSweep.value
     fun isSetUpForSiege() = action == UnitActionType.SetUp.value
 
     /** For display in Unit Overview */
@@ -858,7 +859,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 action = null // wake up when healed
             }
 
-        if (isPreparingParadrop())
+        if (isPreparingParadrop() || isPreparingAirSweep())
             action = null
 
         if (hasUnique(UniqueType.ReligiousUnit)
@@ -1000,7 +1001,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
 
         val promotionUniques = tile.neighbors
-            .flatMap { it.getAllTerrains() }
+            .flatMap { it.allTerrains }
             .flatMap { it.getMatchingUniques(UniqueType.TerrainGrantsPromotion) }
         for (unique in promotionUniques) {
             if (!this.matchesFilter(unique.params[2])) continue
@@ -1173,13 +1174,13 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun getDamageFromTerrain(tile: TileInfo = currentTile): Int {
         if (civInfo.nonStandardTerrainDamage) {
             for (unique in getMatchingUniques(UniqueType.DamagesContainingUnits)) {
-                if (unique.params[0] in tile.getAllTerrains().map { it.name }) {
+                if (unique.params[0] in tile.allTerrains.map { it.name }) {
                     return unique.params[1].toInt() // Use the damage from the unique
                 }
             }
         }
         // Otherwise fall back to the defined standard damage
-        return  tile.getAllTerrains().sumOf { it.damagePerTurn }
+        return  tile.allTerrains.sumOf { it.damagePerTurn }
     }
 
     private fun doCitadelDamage() {
@@ -1302,7 +1303,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun actionsOnDeselect() {
         showAdditionalActions = false
-        if (isPreparingParadrop()) action = null
+        if (isPreparingParadrop() || isPreparingAirSweep()) action = null
     }
 
     fun getForceEvaluation(): Int {

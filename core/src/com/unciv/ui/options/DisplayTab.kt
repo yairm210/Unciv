@@ -64,7 +64,7 @@ fun displayTab(
 }
 
 private fun addMinimapSizeSlider(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
-    table.add("Show minimap".toLabel()).left().fillX()
+    table.add("Minimap size".toLabel()).left().fillX()
 
     // The meaning of the values needs a formula to be synchronized between here and
     // [Minimap.init]. It goes off-10%-11%..29%-30%-35%-40%-45%-50% - and the percentages
