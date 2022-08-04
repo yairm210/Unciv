@@ -452,7 +452,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     RuinsUpgrade("May upgrade to [baseUnitFilter] through ruins-like effects", UniqueTarget.Unit),
 
-    DestroysImprovementUponAttack("Destroys tile improvements when attacking [tileFilter] tiles", UniqueTarget.Unit),
+    DestroysImprovementUponAttack("Destroys tile improvements when attacking", UniqueTarget.Unit),
 
     // The following block gets cached in MapUnit for faster getMovementCostBetweenAdjacentTiles
     DoubleMovementOnTerrain("Double movement in [terrainFilter]", UniqueTarget.Unit),
