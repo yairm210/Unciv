@@ -599,7 +599,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ConditionalWar("when at war", UniqueTarget.Conditional),
     ConditionalNotWar("when not at war", UniqueTarget.Conditional),
     ConditionalGoldenAge("during a Golden Age", UniqueTarget.Conditional),
-    ConditionalWithResource("with [resource]", UniqueTarget.Conditional),
 
     ConditionalHappy("while the empire is happy", UniqueTarget.Conditional),
     ConditionalBetweenHappiness("when between [amount] and [amount] Happiness", UniqueTarget.Conditional),
@@ -615,7 +614,10 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ConditionalWhenTech("upon discovering [tech]", UniqueTarget.Conditional), //todo no references anywhere
     ConditionalPolicy("after adopting [policy]", UniqueTarget.Conditional),
     ConditionalNoPolicy("before adopting [policy]", UniqueTarget.Conditional),
+
     ConditionalBuildingBuilt("if [buildingName] is constructed", UniqueTarget.Conditional),
+    ConditionalWithResource("with [resource]", UniqueTarget.Conditional),
+    ConditionalWithoutResource("without [resource]", UniqueTarget.Conditional),
 
     /////// city conditionals
     ConditionalCityWithBuilding("in cities with a [buildingFilter]", UniqueTarget.Conditional),
