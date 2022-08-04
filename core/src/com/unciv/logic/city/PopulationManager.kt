@@ -122,10 +122,12 @@ class PopulationManager : IsPartOfGameInfoSerialization {
                 specialistFoodBonus *= unique.params[0].toPercent()
         specialistFoodBonus = 2f - specialistFoodBonus
 
+        val currentCiv = cityInfo.civInfo
+
         for (i in 1..getFreePopulation()) {
             //evaluate tiles
-            val (bestTile, valueBestTile) = cityInfo.getTiles()
-                    .filter { it.aerialDistanceTo(cityInfo.getCenterTile()) <= 3 }
+            val (bestTile, valueBestTile) = cityInfo.getCenterTile().getTilesInDistance(3)
+                    .filter { it.getOwner() == currentCiv }
                     .filterNot { it.providesYield() }
                     .associateWith { Automation.rankTileForCityWork(it, cityInfo, cityStats) }
                     .maxByOrNull { it.value }

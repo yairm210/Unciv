@@ -45,7 +45,7 @@ object ReligionAutomation {
         ) {
             val (city, pressureDifference) = citiesWithoutOurReligion.map { city ->
                 city to city.religion.getPressureDeficit(civInfo.religionManager.religion?.name)
-            }.maxBy { it.second }
+            }.maxByOrNull { it.second }!!
             if (pressureDifference >= Constants.aiPreferInquisitorOverMissionaryPressureDifference)
                 buyInquisitorNear(civInfo, city)
             buyMissionaryInAnyCity(civInfo)
