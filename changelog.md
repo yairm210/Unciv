@@ -1,3 +1,25 @@
+## 4.2.2
+
+Disabled packing base images when running from JAR 
+
+fastlane cleanup for bad translations
+
+fix : Remove duplicate "Consumes ..." lines of city screen  - By kasradzenika
+
+By itanasi:
+- Add Damage numbers to Battle Notifications 
+- Minor Compile change 
+- Fix Air Sweep Notification Translations 
+- Allow Citizen Management to pick any tile owned within 3 tiles 
+
+By OptimizedForDensity:
+- Add translation for XP on World Screen 
+- Fix broken translation 
+
+Reworded a tutorial, deleted unused line  - By xlenstra
+
+Updated the interface introduction content in the Encyclopedia of civilization  - By xk730
+
 ## 4.2.1
 
 Resolved missionary-related crash
