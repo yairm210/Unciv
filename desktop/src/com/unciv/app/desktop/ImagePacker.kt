@@ -3,6 +3,7 @@ package com.unciv.app.desktop
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.tools.texturepacker.TexturePacker
 import com.badlogic.gdx.utils.Json
+import com.unciv.app.desktop.ImagePacker.packImages
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import java.io.File
@@ -54,15 +55,16 @@ internal object ImagePacker {
         filterMag = Texture.TextureFilter.MipMapLinearLinear // I'm pretty sure this doesn't make sense for magnification, but setting it to Linear gives strange results
     }
 
-    fun packImages() {
+    fun packImages(isRunFromJAR:Boolean) {
         val startTime = System.currentTimeMillis()
 
         val defaultSettings = getDefaultSettings()
 
         // Scan for Image folders and build one atlas each
-        packImagesPerMod("..", ".", defaultSettings)
+        if (!isRunFromJAR)
+            packImagesPerMod("..", ".", defaultSettings)
 
-        // pack for mods as well
+        // pack for mods
         val modDirectory = File("mods")
         if (modDirectory.exists()) {
             for (mod in modDirectory.listFiles()!!) {
