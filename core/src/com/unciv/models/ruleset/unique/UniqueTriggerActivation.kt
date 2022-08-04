@@ -6,6 +6,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.*
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.unique.UniqueType.*
 import com.unciv.models.stats.Stat
@@ -84,7 +85,7 @@ object UniqueTriggerActivation {
                             .any { it.params[0] == "Land" }} ?: return false
                     unit = civInfo.getEquivalentUnit(replacementUnit.name)
                 }
-                
+
                 val placingTile =
                     tile ?: civInfo.cities.random().getCenterTile()
 
@@ -387,6 +388,14 @@ object UniqueTriggerActivation {
                     civInfo.addNotification(notificationText, LocationAction(tile?.position), NotificationIcon.Faith)
                 }
 
+                return true
+            }
+            OneTimeFreeBelief -> {
+                val beliefType = BeliefType.valueOf(unique.params[0])
+                if (civInfo.religionManager.numberOfBeliefsAvailable(beliefType) == 0)
+                    return false // no more available beliefs of this type
+
+                civInfo.religionManager.freeBeliefs.add(beliefType, 1)
                 return true
             }
 

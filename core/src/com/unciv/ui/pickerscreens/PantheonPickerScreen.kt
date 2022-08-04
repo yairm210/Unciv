@@ -29,7 +29,7 @@ class PantheonPickerScreen(
         }
 
         setOKAction("Choose a pantheon") {
-            choosePantheonBelief(selectedPantheon!!)
+            chooseBeliefs(null, null, listOf(selectedPantheon!!))
         }
     }
 }

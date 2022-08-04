@@ -10,6 +10,7 @@ import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.utils.extensions.toPercent
+import java.lang.Integer.max
 import java.lang.Integer.min
 import kotlin.random.Random
 
@@ -34,6 +35,9 @@ class ReligionManager : IsPartOfGameInfoSerialization {
 
     var religionState = ReligionState.None
         private set
+
+    // Counter containing the number of free beliefs types that this civ can add to its religion this turn
+    var freeBeliefs: Counter<BeliefType> = Counter()
 
     // These cannot be transient, as saving and loading after using a great prophet but before
     // founding a religion would break :(
@@ -89,6 +93,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         if (civInfo.gameInfo.civilizations.any { it.religionManager.religionState == ReligionState.EnhancedReligion })
             return false
         return storedFaith >= faithForPantheon()
+                || (freeBeliefs[BeliefType.Pantheon] != null && freeBeliefs[BeliefType.Pantheon]!! > 0)
     }
 
     fun isPickablePantheonBelief(belief: Belief): Boolean {
@@ -96,15 +101,16 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         return (civInfo.gameInfo.civilizations.none { it.religionManager.religion?.followerBeliefs?.contains(belief.name) == true })
     }
 
-    fun choosePantheonBelief(belief: Belief) {
-        storedFaith -= faithForPantheon()
+    private fun choosePantheonBelief(belief: Belief) {
+        if (freeBeliefs[belief.type] == null || freeBeliefs[belief.type]!! == 0) {
+            // paid faith for this pantheon
+            storedFaith -= faithForPantheon()
+        }
         religion = Religion(belief.name, civInfo.gameInfo, civInfo.civName)
-        religion!!.followerBeliefs.add(belief.name)
         civInfo.gameInfo.religions[belief.name] = religion!!
         for (city in civInfo.cities)
             city.religion.addPressure(belief.name, 200 * city.population.population)
         religionState = ReligionState.Pantheon
-        civInfo.updateStatsForNextTurn()  // a belief can have an immediate effect on stats
     }
 
     // https://www.reddit.com/r/civ/comments/2m82wu/can_anyone_detail_the_finer_points_of_great/
@@ -152,6 +158,13 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         }
     }
 
+    fun numberOfBeliefsAvailable(type: BeliefType): Int {
+        return civInfo.gameInfo.ruleSet.beliefs.values.count {
+            it.type == type
+                    && civInfo.gameInfo.religions.values.none { religion -> it in religion.getBeliefs(type) }
+        }
+    }
+
     /** Calculates the amount of religions that can still be founded */
     fun remainingFoundableReligions(): Int {
         val foundedReligionsCount = civInfo.gameInfo.civilizations.count {
@@ -163,14 +176,8 @@ class ReligionManager : IsPartOfGameInfoSerialization {
             civInfo.gameInfo.civilizations.count { it.isMajorCiv() } / 2 + 1) - foundedReligionsCount
 
         val availableBeliefsToFound = min(
-            civInfo.gameInfo.ruleSet.beliefs.values.count {
-                it.type == BeliefType.Follower
-                && civInfo.gameInfo.religions.values.none { religion -> it in religion.getBeliefs(BeliefType.Follower) }
-            },
-            civInfo.gameInfo.ruleSet.beliefs.values.count {
-                it.type == BeliefType.Founder
-                && civInfo.gameInfo.religions.values.none { religion -> it in religion.getBeliefs(BeliefType.Founder) }
-            }
+            numberOfBeliefsAvailable(BeliefType.Follower),
+            numberOfBeliefsAvailable(BeliefType.Founder)
         )
 
         return min(maxNumberOfAdditionalReligions, availableBeliefsToFound)
@@ -227,35 +234,47 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     }
 
     fun chooseBeliefs(iconName: String?, religionName: String?, beliefs: List<Belief>) {
-        when(religionState) {
+        when (religionState) {
             ReligionState.FoundingReligion ->
-                foundReligion(iconName!!, religionName!!, beliefs)
+                foundReligion(iconName!!, religionName!!)
             ReligionState.EnhancingReligion ->
-                enhanceReligion(beliefs)
-            else -> return
+                religionState = ReligionState.EnhancedReligion
+            ReligionState.None -> {
+                val belief = beliefs[0] // can only have one pantheon
+                choosePantheonBelief(belief)
+            }
+            else -> {}
+        }
+        // add beliefs (religion exists at this point)
+        religion!!.followerBeliefs.addAll(
+            beliefs
+                .filter { it.type == BeliefType.Pantheon || it.type == BeliefType.Follower }
+                .map { it.name }
+        )
+        religion!!.founderBeliefs.addAll(
+            beliefs
+                .filter { it.type == BeliefType.Founder || it.type == BeliefType.Enhancer }
+                .map { it.name }
+        )
+        // decrement free beliefs if used
+        if (freeBeliefs.sumValues() > 0) {
+            for (belief in beliefs) {
+                if (freeBeliefs[belief.type] == null) continue
+                val newAmount = max(freeBeliefs[belief.type]!! - 1, 0)
+                freeBeliefs[belief.type] = newAmount
+            }
         }
         civInfo.updateStatsForNextTurn()  // a belief can have an immediate effect on stats
     }
 
 
-    fun foundReligion(displayName: String, name: String, beliefs: List<Belief>) {
+    private fun foundReligion(displayName: String, name: String) {
         val newReligion = Religion(name, civInfo.gameInfo, civInfo.civName)
         newReligion.displayName = displayName
         if (religion != null) {
             newReligion.followerBeliefs.addAll(religion!!.followerBeliefs)
             newReligion.founderBeliefs.addAll(religion!!.founderBeliefs)
         }
-
-        newReligion.followerBeliefs.addAll(
-            beliefs
-                .filter { it.type == BeliefType.Pantheon || it.type == BeliefType.Follower }
-                .map { it.name }
-        )
-        newReligion.founderBeliefs.addAll(
-            beliefs
-                .filter { it.type == BeliefType.Founder || it.type == BeliefType.Enhancer }
-                .map { it.name }
-        )
 
         religion = newReligion
         civInfo.gameInfo.religions[name] = newReligion
@@ -282,15 +301,11 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         if (prophet.abilityUsesLeft.any { it.value != prophet.maxAbilityUses[it.key] }) return false
         if (!civInfo.isMajorCiv()) return false // Only major civs
 
-        if (civInfo.gameInfo.ruleSet.beliefs.values.none {
-            it.type == BeliefType.Follower
-            && civInfo.gameInfo.religions.values.none { religion -> religion.getBeliefs(BeliefType.Follower).contains(it) }
-        }) return false // Mod maker did not provide enough follower beliefs
+        if (numberOfBeliefsAvailable(BeliefType.Follower) == 0)
+            return false // Mod maker did not provide enough follower beliefs
 
-        if (civInfo.gameInfo.ruleSet.beliefs.values.none {
-            it.type == BeliefType.Enhancer
-            && civInfo.gameInfo.religions.values.none { religion -> religion.getBeliefs(BeliefType.Enhancer).contains(it) }
-        }) return false // Mod maker did not provide enough enhancer beliefs
+        if (numberOfBeliefsAvailable(BeliefType.Enhancer) == 0)
+            return false // Mod maker did not provide enough enhancer beliefs
 
         return true
     }
@@ -321,12 +336,6 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         }
 
         return beliefsToChoose
-    }
-
-    fun enhanceReligion(beliefs: List<Belief>) {
-        religion!!.followerBeliefs.addAll(beliefs.filter { it.type == BeliefType.Follower || it.type == BeliefType.Pantheon }.map { it.name })
-        religion!!.founderBeliefs.addAll(beliefs.filter { it.type == BeliefType.Enhancer || it.type == BeliefType.Founder }.map { it.name })
-        religionState = ReligionState.EnhancedReligion
     }
 
     fun maySpreadReligionAtAll(missionary: MapUnit): Boolean {

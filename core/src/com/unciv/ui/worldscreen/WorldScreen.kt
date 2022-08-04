@@ -708,6 +708,21 @@ class WorldScreen(
                     )
                 }
 
+            viewingCiv.religionManager.freeBeliefs.sumValues() > 0 -> {
+                val displayString = if (viewingCiv.religionManager.religionState == ReligionState.Pantheon)
+                    "Expand Pantheon"
+                else "Reform Religion"
+                NextTurnAction(displayString, Color.GREEN) {
+                    game.pushScreen(
+                        ReligiousBeliefsPickerScreen(
+                            viewingCiv,
+                            viewingCiv.religionManager.freeBeliefs,
+                            pickIconAndName = false
+                        )
+                    )
+                }
+            }
+
             viewingCiv.mayVoteForDiplomaticVictory() ->
                 NextTurnAction("Vote for World Leader", Color.MAROON) {
                     game.pushScreen(DiplomaticVotePickerScreen(viewingCiv))

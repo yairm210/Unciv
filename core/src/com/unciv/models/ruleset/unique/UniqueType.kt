@@ -673,6 +673,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     OneTimeGainStat("Gain [amount] [stat]", UniqueTarget.Ruins),
     OneTimeGainStatRange("Gain [amount]-[amount] [stat]", UniqueTarget.Ruins),
     OneTimeGainPantheon("Gain enough Faith for a Pantheon", UniqueTarget.Ruins),
+    OneTimeFreeBelief("Gain a free [beliefType] belief", UniqueTarget.Triggerable),
     OneTimeGainProphet("Gain enough Faith for [amount]% of a Great Prophet", UniqueTarget.Ruins),
     // todo: The "up to [All]" used in vanilla json is not nice to read. Split?
     // Or just reword it without the 'up to', so it reads "Reveal [amount/'all'] [tileFilter] tiles within [amount] tiles"

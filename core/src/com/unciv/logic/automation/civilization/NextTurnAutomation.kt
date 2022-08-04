@@ -547,7 +547,7 @@ object NextTurnAutomation {
         // Should probably be changed later, but it works for now.
         val chosenPantheon = chooseBeliefOfType(civInfo, BeliefType.Pantheon)
             ?: return // panic!
-        civInfo.religionManager.choosePantheonBelief(chosenPantheon)
+        civInfo.religionManager.chooseBeliefs(null, null, listOf(chosenPantheon))
     }
 
     private fun foundReligion(civInfo: CivilizationInfo) {
