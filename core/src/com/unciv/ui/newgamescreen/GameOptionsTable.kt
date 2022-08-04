@@ -38,7 +38,6 @@ class GameOptionsTable(
     }
 
     private fun getGameOptionsTable() {
-        val cityStateSlider: UncivSlider?
         top()
         defaults().pad(5f)
 
@@ -59,7 +58,7 @@ class GameOptionsTable(
                 val turnSlider = addMaxTurnsSlider()
                 if (turnSlider != null)
                     add(turnSlider).padTop(10f).row()
-                cityStateSlider = addCityStatesSlider()
+                addCityStatesSlider()
             }).colspan(2).fillX().row()
         }).row()
         addVictoryTypeCheckboxes()
@@ -71,7 +70,6 @@ class GameOptionsTable(
         checkboxTable.addOneCityChallengeCheckbox()
         checkboxTable.addNuclearWeaponsCheckbox()
         checkboxTable.addIsOnlineMultiplayerCheckbox()
-        checkboxTable.addReligionCheckbox(cityStateSlider)
         checkboxTable.addNoStartBiasCheckbox()
         add(checkboxTable).center().row()
 
@@ -119,19 +117,13 @@ class GameOptionsTable(
         && !it.hasUnique(UniqueType.CityStateDeprecated)
     }
 
-    private fun Table.addReligionCheckbox(cityStateSlider: UncivSlider?) =
-        addCheckbox("Enable Religion", gameParameters.religionEnabled) {
-            gameParameters.religionEnabled = it
-            cityStateSlider?.run { setRange(0f, numberOfCityStates().toFloat()) }
-        }
-
     private fun Table.addNoStartBiasCheckbox() =
             addCheckbox("Disable starting bias", gameParameters.noStartBias)
             { gameParameters.noStartBias = it }
 
-    private fun Table.addCityStatesSlider(): UncivSlider? {
+    private fun Table.addCityStatesSlider() {
         val maxCityStates = numberOfCityStates()
-        if (maxCityStates == 0) return null
+        if (maxCityStates == 0) return
 
         add("{Number of City-States}:".toLabel()).left().expandX()
         val slider = UncivSlider(0f, maxCityStates.toFloat(), 1f, initial = gameParameters.numberOfCityStates.toFloat()) {
@@ -140,7 +132,6 @@ class GameOptionsTable(
         slider.permanentTip = true
         slider.isDisabled = locked
         add(slider).padTop(10f).row()
-        return slider
     }
 
     private fun Table.addMaxTurnsSlider(): UncivSlider? {
