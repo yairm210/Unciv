@@ -165,7 +165,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                 }
 
                 if (!unit.isCivilian()) {
-                    unitDescriptionTable.add("XP")
+                    unitDescriptionTable.add("XP".tr())
                     unitDescriptionTable.add(unit.promotions.XP.toString() + "/" + unit.promotions.xpForNextPromotion())
                 }
 

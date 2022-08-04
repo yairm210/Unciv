@@ -45,7 +45,7 @@ object ReligionAutomation {
         ) {
             val (city, pressureDifference) = citiesWithoutOurReligion.map { city ->
                 city to city.religion.getPressureDeficit(civInfo.religionManager.religion?.name)
-            }.maxBy { it.second }
+            }.maxByOrNull { it.second }!!
             if (pressureDifference >= Constants.aiPreferInquisitorOverMissionaryPressureDifference)
                 buyInquisitorNear(civInfo, city)
             buyMissionaryInAnyCity(civInfo)
@@ -105,12 +105,15 @@ object ReligionAutomation {
         if (civInfo.religionManager.religionState < ReligionState.Religion) return
         var missionaries = civInfo.gameInfo.ruleSet.units.values.filter { unit ->
             unit.getMatchingUniques(UniqueType.CanActionSeveralTimes).filter { it.params[0] == Constants.spreadReligion }.any()
-        }.map { it.name }
-        missionaries = missionaries.map { civInfo.getEquivalentUnit(it).name }
+        }
+        missionaries = missionaries.map { civInfo.getEquivalentUnit(it) }
+
         val missionaryConstruction = missionaries
-            .map { civInfo.cities.first().cityConstructions.getConstruction(it) as INonPerpetualConstruction }
-            .filter { unit -> civInfo.cities.any { unit.isPurchasable(it.cityConstructions) && unit.canBePurchasedWithStat(it, Stat.Faith) } }
-            .minByOrNull { it.getStatBuyCost(civInfo.getCapital()!!, Stat.Faith)!! }
+            // Get list of cities it can be built in
+            .associateBy({unit -> unit}) { unit -> civInfo.cities.filter { unit.isPurchasable(it.cityConstructions) && unit.canBePurchasedWithStat(it, Stat.Faith) } }
+            .filter { it.value.isNotEmpty() }
+            // And from that list determine the cheapest price
+            .minByOrNull { it.value.minOf { city -> it.key.getStatBuyCost(city, Stat.Faith)!!  }}?.key
             ?: return
 
 

@@ -1,3 +1,20 @@
+## 4.2.1
+
+Resolved missionary-related crash
+
+Fix erroneous relationship decay notification  - By oynqr
+
+Rename "Show minimap" to "Minimap size"  - By J0anJosep
+
+By SimonCeder:
+- Invalid players removed from global quests
+- Fix Natural Wonder placement
+
+By OptimizedForDensity:
+- Allow passable natural wonders
+
+Removed duplicate placeholders  - By xlenstra
+
 ## 4.2.0
 
 Add Air Sweep  - By itanasi

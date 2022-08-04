@@ -19,6 +19,9 @@ fun Float.toPercent() = 1 + this/100
 /** Convert a [resource name][this] into "Consumes [amount] $resource" string (untranslated) */
 fun String.getConsumesAmountString(amount: Int) = "Consumes [$amount] [$this]"
 
+/** Convert a [resource name][this] into "Need [amount] more $resource" string (untranslated) */
+fun String.getNeedMoreAmountString(amount: Int) = "Need [$amount] more [$this]"
+
 /** Formats the [Duration] into a translated string */
 fun Duration.format(): String {
     val sb = StringBuilder()

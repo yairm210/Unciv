@@ -24,6 +24,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.extensions.getConsumesAmountString
+import com.unciv.ui.utils.extensions.getNeedMoreAmountString
 import com.unciv.ui.utils.extensions.toPercent
 import kotlin.math.pow
 
@@ -613,10 +614,12 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             rejectionReasons.add(RejectionReason.RequiresBuildingInThisCity.toInstance("Requires a [${civInfo.getEquivalentBuilding(requiredBuilding!!)}] in this city"))
         }
 
-        for ((resource, amount) in getResourceRequirements())
-            if (civInfo.getCivResourcesByName()[resource]!! < amount) {
-                rejectionReasons.add(RejectionReason.ConsumesResources.toInstance(resource.getConsumesAmountString(amount)))
+        for ((resource, requiredAmount) in getResourceRequirements()) {
+            val availableAmount = civInfo.getCivResourcesByName()[resource]!!
+            if (availableAmount < requiredAmount) {
+                rejectionReasons.add(RejectionReason.ConsumesResources.toInstance(resource.getNeedMoreAmountString(requiredAmount - availableAmount)))
             }
+        }
 
         if (requiredNearbyImprovedResources != null) {
             val containsResourceWithImprovement = cityConstructions.cityInfo.getWorkableTiles()
