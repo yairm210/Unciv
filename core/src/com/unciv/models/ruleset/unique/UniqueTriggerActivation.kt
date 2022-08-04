@@ -394,6 +394,9 @@ object UniqueTriggerActivation {
                 val beliefType = BeliefType.valueOf(unique.params[0])
                 if (beliefType != BeliefType.Pantheon && civInfo.religionManager.religionState <= ReligionState.Pantheon)
                     return false // situation where we're trying to add a non-pantheon belief to a civ that hasn't founded a religion
+                if (civInfo.religionManager.religionState < ReligionState.FoundingReligion
+                        && civInfo.religionManager.remainingFoundableReligions() == 0)
+                    return false // can't found anymore religions and this civ hasn't founded a religion
                 if (civInfo.religionManager.numberOfBeliefsAvailable(beliefType) == 0)
                     return false // no more available beliefs of this type
 
