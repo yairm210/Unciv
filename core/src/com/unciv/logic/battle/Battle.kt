@@ -159,6 +159,7 @@ object Battle {
                 attacker.unit.destroy()
             else if (attacker.unit.isMoving())
                 attacker.unit.action = null
+            doDestroyImprovementsAbility(attacker, attackedTile, defender)
         }
 
         // Should be called after tryCaptureUnit(), as that might spawn a unit on the tile we go to
@@ -200,6 +201,7 @@ object Battle {
                 if (defeatedUnitYieldSourceType == "Cost") unitCost else unitStr
             val yieldAmount = (yieldTypeSourceAmount * yieldPercent).toInt()
 
+            // This should be unnecessary as we check this for uniques when reading them in
             try {
                 val stat = Stat.valueOf(unique.params[3])
                 civUnit.getCivInfo().addStat(stat, yieldAmount)
@@ -910,4 +912,13 @@ object Battle {
         return true
     }
 
+    private fun doDestroyImprovementsAbility(attacker: MapUnitCombatant, attackedTile: TileInfo, defender: ICombatant) {
+        val conditionalState = StateForConditionals(attacker.getCivInfo(), ourCombatant = attacker, theirCombatant = defender, combatAction = CombatAction.Attack, attackedTile = attackedTile)
+        if (attackedTile.improvement != Constants.barbarianEncampment
+            && attackedTile.getTileImprovement()?.isAncientRuinsEquivalent() != true
+            && attacker.hasUnique(UniqueType.DestroysImprovementUponAttack, conditionalState)
+        ) {
+            attackedTile.improvement = null
+        }
+    }
 }
