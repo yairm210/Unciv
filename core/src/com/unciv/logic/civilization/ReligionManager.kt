@@ -37,6 +37,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         private set
 
     // Counter containing the number of free beliefs types that this civ can add to its religion this turn
+    // Uses String instead of BeliefType enum for serialization reasons
     var freeBeliefs: Counter<String> = Counter()
 
     // These cannot be transient, as saving and loading after using a great prophet but before
@@ -104,7 +105,8 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     fun faithForPantheon(additionalCivs: Int = 0) =
         10 + (civInfo.gameInfo.civilizations.count { it.isMajorCiv() && it.religionManager.religion != null } + additionalCivs) * 5
 
-    /** Used for each time the player gets additional pantheon beliefs before forming a religion */
+    /** Used for founding the pantheon and for each time the player gets additional pantheon beliefs
+     * before forming a religion */
     fun canFoundOrExpandPantheon(): Boolean {
         if (!civInfo.gameInfo.isReligionEnabled()) return false
         if (religionState > ReligionState.Pantheon) return false
@@ -113,8 +115,8 @@ class ReligionManager : IsPartOfGameInfoSerialization {
             return false // no more available pantheons
         if (civInfo.gameInfo.civilizations.any { it.religionManager.religionState == ReligionState.EnhancedReligion })
             return false
-        return (religionState == ReligionState.None && storedFaith >= faithForPantheon())
-                || (freeBeliefs[BeliefType.Pantheon.name] != null && freeBeliefs[BeliefType.Pantheon.name]!! > 0)
+        return (religionState == ReligionState.None && storedFaith >= faithForPantheon()) // earned pantheon
+                || (freeBeliefs[BeliefType.Pantheon.name] != null && freeBeliefs[BeliefType.Pantheon.name]!! > 0) // free pantheon belief
     }
 
     private fun foundPantheon(beliefName: String, useFreeBelief: Boolean) {
@@ -185,7 +187,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         val maxNumberOfAdditionalReligions = min(gameInfo.ruleSet.religions.size,
             gameInfo.civilizations.count { it.isMajorCiv() } / 2 + 1) - foundedReligionsCount
 
-        val availableBeliefsToFound = Integer.min(
+        val availableBeliefsToFound = min(
             numberOfBeliefsAvailable(BeliefType.Follower),
             numberOfBeliefsAvailable(BeliefType.Founder)
         )
