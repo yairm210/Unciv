@@ -249,14 +249,11 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         val action = if (enhancingReligion) "enhancing" else "founding"
         val beliefsToChoose: Counter<BeliefType> = Counter()
 
+        // Counter of the number of available beliefs of each type
         val availableBeliefs = Counter<BeliefType>()
         for (type in BeliefType.values()) {
             if (type == BeliefType.None) continue
-            availableBeliefs[type] = civInfo.gameInfo.ruleSet.beliefs.count {
-                it.value.type == type // number of total available beliefs of this type
-            } - civInfo.gameInfo.civilizations.sumOf {
-                it.religionManager.religion?.getBeliefs(type)?.count() ?: 0
-            }
+            availableBeliefs[type] = numberOfBeliefsAvailable(type)
         }
 
         // function to help with bookkeeping
@@ -264,6 +261,10 @@ class ReligionManager : IsPartOfGameInfoSerialization {
             val numberToAdd = min(number, availableBeliefs[type]!!)
             beliefsToChoose.add(type, numberToAdd)
             availableBeliefs[type] = availableBeliefs[type]!! - numberToAdd
+            if (type != BeliefType.Any) {
+                // deduct from BeliefType.Any as well
+                availableBeliefs[BeliefType.Any] = availableBeliefs[BeliefType.Any]!! - 1
+            }
         }
 
         if (enhancingReligion) {
