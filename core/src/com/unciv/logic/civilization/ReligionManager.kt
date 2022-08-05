@@ -263,7 +263,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
             availableBeliefs[type] = availableBeliefs[type]!! - numberToAdd
             if (type != BeliefType.Any) {
                 // deduct from BeliefType.Any as well
-                availableBeliefs[BeliefType.Any] = availableBeliefs[BeliefType.Any]!! - 1
+                availableBeliefs[BeliefType.Any] = availableBeliefs[BeliefType.Any]!! - numberToAdd
             }
         }
 
