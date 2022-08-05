@@ -708,7 +708,7 @@ class WorldScreen(
                     )
                 }
 
-            viewingCiv.religionManager.freeBeliefs.sumValues() > 0 -> {
+            !viewingCiv.isSpectator() && viewingCiv.religionManager.freeBeliefs.sumValues() > 0 -> {
                 val displayString = if (viewingCiv.religionManager.religionState == ReligionState.Pantheon)
                     "Expand Pantheon"
                 else "Reform Religion"

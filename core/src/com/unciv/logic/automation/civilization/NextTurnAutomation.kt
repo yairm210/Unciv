@@ -535,6 +535,7 @@ object NextTurnAutomation {
         choosePantheon(civInfo)
         foundReligion(civInfo)
         enhanceReligion(civInfo)
+        chooseFreeBeliefs(civInfo)
     }
 
     private fun choosePantheon(civInfo: CivilizationInfo) {
@@ -568,6 +569,15 @@ object NextTurnAutomation {
             null,
             null,
             chooseBeliefs(civInfo, civInfo.religionManager.getBeliefsToChooseAtEnhancing()).toList()
+        )
+    }
+
+    private fun chooseFreeBeliefs(civInfo: CivilizationInfo) {
+        if (civInfo.religionManager.freeBeliefs.sumValues() == 0) return
+        civInfo.religionManager.chooseBeliefs(
+            null,
+            null,
+            chooseBeliefs(civInfo, civInfo.religionManager.freeBeliefs).toList()
         )
     }
 

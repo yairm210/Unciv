@@ -53,6 +53,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         clone.shouldChoosePantheonBelief = shouldChoosePantheonBelief
         clone.storedFaith = storedFaith
         clone.religionState = religionState
+        clone.freeBeliefs = freeBeliefs
         return clone
     }
 

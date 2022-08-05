@@ -395,8 +395,9 @@ object UniqueTriggerActivation {
                 if (beliefType != BeliefType.Pantheon && civInfo.religionManager.religionState <= ReligionState.Pantheon)
                     return false // situation where we're trying to add a non-pantheon belief to a civ that hasn't founded a religion
                 if (civInfo.religionManager.religionState < ReligionState.FoundingReligion
+                        && beliefType != BeliefType.Pantheon
                         && civInfo.religionManager.remainingFoundableReligions() == 0)
-                    return false // can't found anymore religions and this civ hasn't founded a religion
+                    return false // can't found anymore religions and this civ hasn't founded a religion (but they can still found a pantheon)
                 if (civInfo.religionManager.numberOfBeliefsAvailable(beliefType) == 0)
                     return false // no more available beliefs of this type
 
