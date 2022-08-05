@@ -89,17 +89,12 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         if (!civInfo.gameInfo.isReligionEnabled()) return false
         if (religionState != ReligionState.None) return false
         if (!civInfo.isMajorCiv()) return false
-        if (civInfo.gameInfo.ruleSet.beliefs.values.none { isPickablePantheonBelief(it) })
-            return false
+        if (numberOfBeliefsAvailable(BeliefType.Pantheon) == 0)
+            return false // no more available pantheons
         if (civInfo.gameInfo.civilizations.any { it.religionManager.religionState == ReligionState.EnhancedReligion })
             return false
         return storedFaith >= faithForPantheon()
                 || (freeBeliefs[BeliefType.Pantheon] != null && freeBeliefs[BeliefType.Pantheon]!! > 0)
-    }
-
-    fun isPickablePantheonBelief(belief: Belief): Boolean {
-        if (belief.type != BeliefType.Pantheon) return false
-        return (civInfo.gameInfo.civilizations.none { it.religionManager.religion?.followerBeliefs?.contains(belief.name) == true })
     }
 
     private fun choosePantheonBelief(belief: Belief) {
