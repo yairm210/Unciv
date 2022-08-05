@@ -28,6 +28,7 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var nuclearWeaponsEnabled = true
     @Deprecated("As of 4.2.3")
     var religionEnabled = true
+    var espionageEnabled = false
     var noStartBias = false
 
     var victoryTypes: ArrayList<String> = arrayListOf()
