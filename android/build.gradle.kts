@@ -27,7 +27,7 @@ android {
     defaultConfig {
         applicationId = "com.unciv.app"
         minSdk = 21
-        targetSdk = 30 // See #5044
+        targetSdk = 31 // See #5044
         versionCode = BuildConfig.appCodeNumber
         versionName = BuildConfig.appVersion
 
@@ -70,7 +70,7 @@ android {
         // Don't add local save files and fonts to release, obviously
         ignoreAssetsPattern = "!SaveFiles:!fonts:!maps:!music:!mods"
     }
-    buildToolsVersion = "30.0.3"
+    buildToolsVersion = "32.0.0"
 }
 
 
