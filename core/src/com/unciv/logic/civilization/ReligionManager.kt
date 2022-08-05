@@ -82,6 +82,8 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         return civInfo.cities.count { it.religion.getMajorityReligion() == religion } > civInfo.cities.size / 2
     }
 
+    fun hasFreeBeliefs(): Boolean = freeBeliefs.sumValues() > 0
+
     fun faithForPantheon(additionalCivs: Int = 0) =
         10 + (civInfo.gameInfo.civilizations.count { it.isMajorCiv() && it.religionManager.religion != null } + additionalCivs) * 5
 
@@ -249,7 +251,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
                 .map { it.name }
         )
         // decrement free beliefs if used
-        if (freeBeliefs.sumValues() > 0) {
+        if (hasFreeBeliefs()) {
             for (belief in beliefs) {
                 if (freeBeliefs[belief.type] == null) continue
                 if (religionState == ReligionState.Pantheon && belief.type == BeliefType.Pantheon

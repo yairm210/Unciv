@@ -391,6 +391,7 @@ object UniqueTriggerActivation {
                 return true
             }
             OneTimeFreeBelief -> {
+                if (!civInfo.isMajorCiv()) return false
                 val beliefType = BeliefType.valueOf(unique.params[0])
                 if ((beliefType != BeliefType.Pantheon && beliefType != BeliefType.Any)
                         && civInfo.religionManager.religionState <= ReligionState.Pantheon)

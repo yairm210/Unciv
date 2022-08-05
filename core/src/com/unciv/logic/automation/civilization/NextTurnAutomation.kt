@@ -573,7 +573,7 @@ object NextTurnAutomation {
     }
 
     private fun chooseFreeBeliefs(civInfo: CivilizationInfo) {
-        if (civInfo.religionManager.freeBeliefs.sumValues() == 0) return
+        if (!civInfo.religionManager.hasFreeBeliefs()) return
         civInfo.religionManager.chooseBeliefs(
             null,
             null,
