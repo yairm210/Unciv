@@ -393,16 +393,17 @@ object UniqueTriggerActivation {
             OneTimeFreeBelief -> {
                 if (!civInfo.isMajorCiv()) return false
                 val beliefType = BeliefType.valueOf(unique.params[0])
+                val religionManager = civInfo.religionManager
                 if ((beliefType != BeliefType.Pantheon && beliefType != BeliefType.Any)
-                        && civInfo.religionManager.religionState <= ReligionState.Pantheon)
+                        && religionManager.religionState <= ReligionState.Pantheon)
                     return false // situation where we're trying to add a formal religion belief to a civ that hasn't founded a religion
-                if (civInfo.religionManager.numberOfBeliefsAvailable(beliefType) == 0)
+                if (religionManager.numberOfBeliefsAvailable(beliefType) == 0)
                     return false // no more available beliefs of this type
 
-                if (beliefType == BeliefType.Any && civInfo.religionManager.religionState <= ReligionState.Pantheon)
-                    civInfo.religionManager.freeBeliefs.add(BeliefType.Pantheon, 1) // add pantheon instead of any type
+                if (beliefType == BeliefType.Any && religionManager.religionState <= ReligionState.Pantheon)
+                    religionManager.freeBeliefs.add(BeliefType.Pantheon.name, 1) // add pantheon instead of any type
                 else
-                    civInfo.religionManager.freeBeliefs.add(beliefType, 1)
+                    religionManager.freeBeliefs.add(beliefType.name, 1)
                 return true
             }
 
