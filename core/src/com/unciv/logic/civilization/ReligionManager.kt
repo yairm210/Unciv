@@ -244,7 +244,6 @@ class ReligionManager : IsPartOfGameInfoSerialization {
      * larger number of beliefs to select than there are available for selection ([mayFoundReligionAtAll]
      * and [mayEnhanceReligionAtAll] only check if there is 1 founder/enhancer and 1 follower belief
      * available but the civ may be given more beliefs through uniques or a missing pantheon belief)
-     * @param enhancingReligion: true if enhancing the religion otherwise false
      */
     private fun getBeliefsToChooseAtProphetUse(enhancingReligion: Boolean): Counter<BeliefType> {
         val action = if (enhancingReligion) "enhancing" else "founding"
