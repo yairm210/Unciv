@@ -98,8 +98,8 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     }
 
     private fun choosePantheonBelief(belief: Belief) {
-        if (freeBeliefs[belief.type] == null || freeBeliefs[belief.type]!! == 0) {
-            // paid faith for this pantheon
+        if (storedFaith >= faithForPantheon()) {
+            // pay for this pantheon using faith, otherwise this civ is using a free pantheon belief pick
             storedFaith -= faithForPantheon()
         }
         religion = Religion(belief.name, civInfo.gameInfo, civInfo.civName)
