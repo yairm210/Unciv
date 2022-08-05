@@ -98,10 +98,6 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     }
 
     private fun choosePantheonBelief(belief: Belief) {
-        if (storedFaith >= faithForPantheon()) {
-            // pay for this pantheon using faith, otherwise this civ is using a free pantheon belief pick
-            storedFaith -= faithForPantheon()
-        }
         religion = Religion(belief.name, civInfo.gameInfo, civInfo.civName)
         civInfo.gameInfo.religions[belief.name] = religion!!
         for (city in civInfo.cities)
@@ -256,8 +252,13 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         if (freeBeliefs.sumValues() > 0) {
             for (belief in beliefs) {
                 if (freeBeliefs[belief.type] == null) continue
-                val newAmount = max(freeBeliefs[belief.type]!! - 1, 0)
-                freeBeliefs[belief.type] = newAmount
+                if (religionState == ReligionState.Pantheon && belief.type == BeliefType.Pantheon
+                        && religion!!.followerBeliefs.size == 1 && storedFaith >= faithForPantheon(-1)) {
+                    // paid for the initial pantheon using faith, otherwise this civ is using a free pantheon belief pick
+                    storedFaith -= faithForPantheon(-1) // this civ is included in this calculation now so offset for that
+                    continue
+                }
+                freeBeliefs[belief.type] = max(freeBeliefs[belief.type]!! - 1, 0)
             }
         }
         civInfo.updateStatsForNextTurn()  // a belief can have an immediate effect on stats
