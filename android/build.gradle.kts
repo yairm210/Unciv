@@ -27,7 +27,7 @@ android {
     defaultConfig {
         applicationId = "com.unciv.app"
         minSdk = 21
-        targetSdk = 31 // See #5044
+        targetSdk = 30 // See #5044
         versionCode = BuildConfig.appCodeNumber
         versionName = BuildConfig.appVersion
 
@@ -65,6 +65,8 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+
+        isCoreLibraryDesugaringEnabled = true
     }
     androidResources {
         // Don't add local save files and fonts to release, obviously
@@ -129,4 +131,6 @@ dependencies {
     // Known Android Lint warning: "GradleDependency"
     implementation("androidx.core:core-ktx:1.6.0")
     implementation("androidx.work:work-runtime-ktx:2.6.0")
+    // Needed to convert e.g. Android 26 API calls to Android 21
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 }
