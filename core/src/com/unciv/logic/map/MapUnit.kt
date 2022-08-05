@@ -500,7 +500,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             return true
         if (hasUnique(UniqueType.InvisibleToNonAdjacent))
             return getTile().getTilesInDistance(1).none {
-                it.getOwner() == to || it.getUnits().any { unit -> unit.owner == to.civName }
+                it.getUnits().any { unit -> unit.owner == to.civName }
             }
         return false
     }
