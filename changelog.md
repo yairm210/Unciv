@@ -1,3 +1,20 @@
+## 4.2.2
+
+By itanasi:
+- Add Damage numbers to Battle Notifications
+- Fix Air Sweep Notification Translations
+- Allow Citizen Management to pick any tile owned within 3 tiles
+
+Disabled image packing when running from JAR
+
+Removed duplicate "Consumes ..." lines of city screen  - By kasradzenika
+
+Add translation for "XP" - By OptimizedForDensity
+
+Tutorial rewording - By xlenstra
+
+Updated nation introduction in civilopedia - By xk730
+
 ## 4.2.1
 
 Resolved missionary-related crash
