@@ -154,7 +154,6 @@ class TestGame {
     }
 
     fun addReligion(foundingCiv: CivilizationInfo): Religion {
-        gameInfo.gameParameters.religionEnabled = true
         val religion = Religion("Religion-${objectsCreated++}", gameInfo, foundingCiv.civName)
         foundingCiv.religionManager.religion = religion
         gameInfo.religions[religion.name] = religion

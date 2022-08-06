@@ -255,7 +255,6 @@ object GameStarter {
         availableCityStatesNames.addAll( ruleset.nations
             .filter {
                 it.value.isCityState() &&
-                (it.value.cityStateType != CityStateType.Religious || newGameParameters.religionEnabled) &&
                 !it.value.hasUnique(UniqueType.CityStateDeprecated)
             }.keys
             .shuffled()
