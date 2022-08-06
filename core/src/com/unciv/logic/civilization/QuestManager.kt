@@ -804,7 +804,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
                             && civInfo.gameInfo.getCities().none { it.cityConstructions.isBuilt(building.name) }
                             // Can't be disabled
                             && building.name !in startingEra.startingObsoleteWonders
-                            && (civInfo.gameInfo.gameParameters.religionEnabled || !building.hasUnique(UniqueType.HiddenWithoutReligion))
+                            && (civInfo.gameInfo.isReligionEnabled() || !building.hasUnique(UniqueType.HiddenWithoutReligion))
                             // Can't be more than 25% built anywhere
                             && civInfo.gameInfo.getCities().none {
                         it.cityConstructions.getWorkDone(building.name) * 3 > it.cityConstructions.getRemainingWork(building.name) }

@@ -72,6 +72,7 @@ android {
         // Don't add local save files and fonts to release, obviously
         ignoreAssetsPattern = "!SaveFiles:!fonts:!maps:!music:!mods"
     }
+    buildToolsVersion = "32.0.0"
 }
 
 
@@ -130,5 +131,6 @@ dependencies {
     // Known Android Lint warning: "GradleDependency"
     implementation("androidx.core:core-ktx:1.6.0")
     implementation("androidx.work:work-runtime-ktx:2.6.0")
+    // Needed to convert e.g. Android 26 API calls to Android 21
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 }

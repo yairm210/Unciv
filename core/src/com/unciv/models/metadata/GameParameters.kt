@@ -26,7 +26,8 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var oneCityChallenge = false
     var godMode = false
     var nuclearWeaponsEnabled = true
-    var religionEnabled = false
+    @Deprecated("As of 4.2.3")
+    var religionEnabled = true
     var noStartBias = false
 
     var victoryTypes: ArrayList<String> = arrayListOf()
@@ -69,7 +70,6 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
             if (ragingBarbarians) yield("Raging barbs")
             if (oneCityChallenge) yield("OCC")
             if (!nuclearWeaponsEnabled) yield("No nukes")
-            if (religionEnabled) yield("Religion")
             if (godMode) yield("God mode")
             yield("Enabled Victories: " + victoryTypes.joinToString())
             yield(baseRuleset)
