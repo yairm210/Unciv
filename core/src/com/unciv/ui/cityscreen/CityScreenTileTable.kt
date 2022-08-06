@@ -67,6 +67,9 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
             innerTable.add(buyTileButton).padTop(5f).row()
         }
 
+        if (selectedTile.owningCity != null)
+            innerTable.add("Owned by [${selectedTile.owningCity!!.name}]".toLabel()).row()
+
         if (city.civInfo.cities.filterNot { it == city }.any { it.isWorked(selectedTile) })
             innerTable.add("Worked by [${selectedTile.getWorkingCity()!!.name}]".toLabel()).row()
 
