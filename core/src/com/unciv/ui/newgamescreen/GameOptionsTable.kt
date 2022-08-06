@@ -70,6 +70,8 @@ class GameOptionsTable(
         checkboxTable.addOneCityChallengeCheckbox()
         checkboxTable.addNuclearWeaponsCheckbox()
         checkboxTable.addIsOnlineMultiplayerCheckbox()
+        if (UncivGame.Current.settings.enableEspionageOption)
+            checkboxTable.addEnableEspionageCheckbox()
         checkboxTable.addNoStartBiasCheckbox()
         add(checkboxTable).center().row()
 
@@ -110,6 +112,11 @@ class GameOptionsTable(
                     MultiplayerHelpers.showDropboxWarning(previousScreen as BaseScreen)
                 }
             }
+
+    private fun Table.addEnableEspionageCheckbox() =
+        addCheckbox("Enable Espionage", gameParameters.espionageEnabled)
+        { gameParameters.espionageEnabled = it }
+
 
     private fun numberOfCityStates() = ruleset.nations.values.count {
         it.isCityState()
