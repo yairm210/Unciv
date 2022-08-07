@@ -1,22 +1,14 @@
 ## 4.2.3
 
-Reinstated desugaring since it broke the build
-
-Android gradle update - explicitly state build tools version, update to 32.0.0, remove desugaring.
-
-Android gradle update - explicitly state build tools version, remove desugaring
-
 By OptimizedForDensity:
-- Add unit type to Civilopedia 
-- Fix mod translation file generation 
-- Fix bug related to resuming games 
+- Add unit type to Civilopedia
+- Fix bug related to resuming games
+- Fix mod translation file generation
 
 By xlenstra:
-- Added a hidden option for enabling espionage 
-- Occupied cities have +2 extra unhappiness 
-- Removes the option for disabling religion 
-- Added 'without resource' conditional 
-- Added a unique for destroying improvements on attack 
+- Occupied cities have +2 extra unhappiness
+- Added 'without resource' conditional
+- Added a unique for destroying improvements on attack
 
 Add missing string to the translations template file  - By estorski
 
