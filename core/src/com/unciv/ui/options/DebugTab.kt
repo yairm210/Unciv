@@ -51,6 +51,9 @@ fun debugTab() = Table(BaseScreen.skin).apply {
             curGameInfo.gameParameters.godMode = it
         }).colspan(2).row()
     }
+    add("Enable espionage option".toCheckBox(game.settings.enableEspionageOption) {
+        game.settings.enableEspionageOption = it
+    }).colspan(2).row()
     add("Save games compressed".toCheckBox(UncivFiles.saveZipped) {
         UncivFiles.saveZipped = it
     }).colspan(2).row()

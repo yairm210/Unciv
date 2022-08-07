@@ -111,6 +111,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         val textList = ArrayList<FormattedLine>()
+        textList += FormattedLine("{Unit type}: ${unitType.tr()}")
 
         val stats = ArrayList<String>()
         if (strength != 0) stats += "$strength${Fonts.strength}"
