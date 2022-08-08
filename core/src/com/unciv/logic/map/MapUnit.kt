@@ -840,6 +840,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun endTurn() {
+        movement.clearPathfindingCache()
         if (currentMovement > 0
             && getTile().improvementInProgress != null
             && canBuildImprovement(getTile().getTileImprovementInProgress()!!)
@@ -886,6 +887,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun startTurn() {
+        movement.clearPathfindingCache()
         currentMovement = getMaxMovement().toFloat()
         attacksThisTurn = 0
         due = true
