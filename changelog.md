@@ -1,3 +1,19 @@
+## 4.2.3
+
+By OptimizedForDensity:
+- Add unit type to Civilopedia
+- Fix bug related to resuming games
+- Fix mod translation file generation
+
+By xlenstra:
+- Occupied cities have +2 extra unhappiness
+- Added 'without resource' conditional
+- Added a unique for destroying improvements on attack
+
+Add missing string to the translations template file  - By estorski
+
+Made invisible units not become visible just by being next to an owned tile.  - By kralinc
+
 ## 4.2.2
 
 By itanasi:

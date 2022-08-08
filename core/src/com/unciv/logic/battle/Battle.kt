@@ -403,9 +403,9 @@ object Battle {
                         if (defender.isDefeated() && attacker.isRanged()) " the defence of [" + defender.getName() + "]"
                         else " [" + defender.getName() + "]"
                     else " our [" + defender.getName() + "]"
-            val attackerDealtString = if (damageDealt != null) " ([${damageDealt.attackerDealt}])" else ""
-            val defenderDealtString = if (damageDealt != null) " ([${damageDealt.defenderDealt}])" else ""
-            val notificationString = attackerString + attackerDealtString + whatHappenedString + defenderString + defenderDealtString
+            val attackerHurtString = if (damageDealt != null) " ([-${damageDealt.defenderDealt}] HP)" else ""
+            val defenderHurtString = if (damageDealt != null) " ([-${damageDealt.attackerDealt}] HP)" else ""
+            val notificationString = attackerString + attackerHurtString + whatHappenedString + defenderString + defenderHurtString
             val attackerIcon = if (attacker is CityCombatant) NotificationIcon.City else attacker.getName()
             val defenderIcon = if (defender is CityCombatant) NotificationIcon.City else defender.getName()
             val locations = LocationAction(attackedTile.position, attackerTile?.position)
@@ -880,9 +880,9 @@ object Battle {
             if (!interceptor.baseUnit.isAirUnit()) {
                 // Deal no damage (moddable in future?) and no XP
                 val attackerText =
-                        "Our [$attackerName] ([0]) was attacked by an intercepting [$interceptorName] ([0])"
+                        "Our [$attackerName] ([-0] HP) was attacked by an intercepting [$interceptorName] ([-0] HP)"
                 val interceptorText =
-                        "Our [$interceptorName] ([0]) intercepted and attacked an enemy [$attackerName] ([0])"
+                        "Our [$interceptorName] ([-0] HP) intercepted and attacked an enemy [$attackerName] ([-0] HP)"
                 attacker.getCivInfo().addNotification(
                     attackerText, locations,
                     attackerName, NotificationIcon.War, interceptorName
@@ -905,42 +905,42 @@ object Battle {
             if (attacker.isDefeated()) {
                 if (interceptor.getTile() in attacker.getCivInfo().viewableTiles) {
                     val attackerText =
-                            "Our [$attackerName] ([${damageDealt.attackerDealt}]) was destroyed by an intercepting [$interceptorName] ([${damageDealt.defenderDealt}])"
+                            "Our [$attackerName] ([-${damageDealt.defenderDealt}] HP) was destroyed by an intercepting [$interceptorName] ([-${damageDealt.attackerDealt}] HP)"
                     attacker.getCivInfo().addNotification(
                         attackerText, locations,
                         attackerName, NotificationIcon.War, interceptorName
                     )
                 } else {
                     val attackerText =
-                            "Our [$attackerName] ([${damageDealt.attackerDealt}]) was destroyed by an unknown interceptor"
+                            "Our [$attackerName] ([-${damageDealt.defenderDealt}] HP) was destroyed by an unknown interceptor"
                     attacker.getCivInfo().addNotification(
                         attackerText, locationsInterceptorUnknown,
                         attackerName, NotificationIcon.War, NotificationIcon.Question
                     )
                 }
                 val interceptorText =
-                        "Our [$interceptorName] ([${damageDealt.defenderDealt}]) intercepted and destroyed an enemy [$attackerName] ([${damageDealt.attackerDealt}])"
+                        "Our [$interceptorName] ([-${damageDealt.attackerDealt}] HP) intercepted and destroyed an enemy [$attackerName] ([-${damageDealt.defenderDealt}] HP)"
                 interceptingCiv.addNotification(
                     interceptorText, locations,
                     interceptorName, NotificationIcon.War, attackerName
                 )
             } else if (MapUnitCombatant(interceptor).isDefeated()) {
                 val attackerText =
-                        "Our [$attackerName] ([${damageDealt.attackerDealt}]) destroyed an intercepting [$interceptorName] ([${damageDealt.defenderDealt}])"
+                        "Our [$attackerName] ([-${damageDealt.defenderDealt}] HP) destroyed an intercepting [$interceptorName] ([-${damageDealt.attackerDealt}] HP)"
                 attacker.getCivInfo().addNotification(
                     attackerText, locations,
                     attackerName, NotificationIcon.War, interceptorName
                 )
                 if (attacker.getTile() in interceptingCiv.viewableTiles) {
                     val interceptorText =
-                            "Our [$interceptorName] ([${damageDealt.defenderDealt}]) intercepted and was destroyed by an enemy [$attackerName] ([${damageDealt.attackerDealt}])"
+                            "Our [$interceptorName] ([-${damageDealt.attackerDealt}] HP) intercepted and was destroyed by an enemy [$attackerName] ([-${damageDealt.defenderDealt}] HP)"
                     interceptingCiv.addNotification(
                         interceptorText, locations,
                         interceptorName, NotificationIcon.War, attackerName
                     )
                 } else {
                     val interceptorText =
-                            "Our [$interceptorName] ([${damageDealt.defenderDealt}]) intercepted and was destroyed by an unknown enemy"
+                            "Our [$interceptorName] ([-${damageDealt.attackerDealt}] HP) intercepted and was destroyed by an unknown enemy"
                     interceptingCiv.addNotification(
                         interceptorText, locationsAttackerUnknown,
                         interceptorName, NotificationIcon.War, NotificationIcon.Question
@@ -948,9 +948,9 @@ object Battle {
                 }
             } else {
                 val attackerText =
-                        "Our [$attackerName] ([${damageDealt.attackerDealt}]) was attacked by an intercepting [$interceptorName] ([${damageDealt.defenderDealt}])"
+                        "Our [$attackerName] ([-${damageDealt.defenderDealt}] HP) was attacked by an intercepting [$interceptorName] ([-${damageDealt.attackerDealt}] HP)"
                 val interceptorText =
-                        "Our [$interceptorName] ([${damageDealt.defenderDealt}]) intercepted and attacked an enemy [$attackerName] ([${damageDealt.attackerDealt}])"
+                        "Our [$interceptorName] ([-${damageDealt.attackerDealt}] HP) intercepted and attacked an enemy [$attackerName] ([-${damageDealt.defenderDealt}] HP)"
                 attacker.getCivInfo().addNotification(
                     attackerText, locations,
                     attackerName, NotificationIcon.War, interceptorName
@@ -1007,14 +1007,34 @@ object Battle {
             val attackerName = attacker.getName()
             val interceptorName = interceptor.name
             val locations = LocationAction(interceptor.currentTile.position, attacker.unit.currentTile.position)
-            val attackerText = if (attacker.isDefeated())
-                "Our [$attackerName] was destroyed by an intercepting [$interceptorName]"
-            else "Our [$attackerName] was attacked by an intercepting [$interceptorName]"
+            if (attacker.isDefeated()) {
+                if (interceptor.getTile() in attacker.getCivInfo().viewableTiles) {
+                    val attackerText =
+                            "Our [$attackerName] ([-$damage] HP) was destroyed by an intercepting [$interceptorName] ([-0] HP)"
+                    attacker.getCivInfo().addNotification(
+                        attackerText, interceptor.currentTile.position,
+                        attackerName, NotificationIcon.War, interceptorName
+                    )
+                } else {
+                    val attackerText =
+                            "Our [$attackerName] ([-$damage] HP) was destroyed by an unknown interceptor"
+                    attacker.getCivInfo().addNotification(
+                        attackerText, attackedTile.position,
+                        attackerName, NotificationIcon.War, interceptorName
+                    )
+                }
+            } else {
+                val attackerText =
+                        "Our [$attackerName] ([-$damage] HP) was attacked by an intercepting [$interceptorName] ([-0] HP)"
+                attacker.getCivInfo().addNotification(
+                    attackerText, interceptor.currentTile.position,
+                    attackerName, NotificationIcon.War, interceptorName
+                )
+            }
+
             val interceptorText = if (attacker.isDefeated())
-                "Our [$interceptorName] intercepted and destroyed an enemy [$attackerName]"
-            else "Our [$interceptorName] intercepted and attacked an enemy [$attackerName]"
-            attacker.getCivInfo().addNotification(attackerText, interceptor.currentTile.position,
-                    attackerName, NotificationIcon.War, interceptorName)
+                "Our [$interceptorName] ([-0] HP) intercepted and destroyed an enemy [$attackerName] ([-$damage] HP)"
+            else "Our [$interceptorName] ([-0] HP) intercepted and attacked an enemy [$attackerName] ([-$damage] HP)"
             interceptingCiv.addNotification(interceptorText, locations,
                     interceptorName, NotificationIcon.War, attackerName)
             return
