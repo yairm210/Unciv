@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    compileSdk = 31
+    compileSdk = 32
     sourceSets {
         getByName("main").apply {
             manifest.srcFile("AndroidManifest.xml")
@@ -27,7 +27,7 @@ android {
     defaultConfig {
         applicationId = "com.unciv.app"
         minSdk = 21
-        targetSdk = 31 // See #5044
+        targetSdk = 32 // See #5044
         versionCode = BuildConfig.appCodeNumber
         versionName = BuildConfig.appVersion
 
