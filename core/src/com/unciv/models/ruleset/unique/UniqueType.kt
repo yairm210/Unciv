@@ -18,7 +18,6 @@ enum class UniqueTarget(val inheritsFrom: UniqueTarget? = null) {
     // Civilization-specific
     Nation(Global),
     Era(Global),
-    Speed(Global),
     Tech(Global),
     Policy(Global),
     FounderBelief(Global),
@@ -46,6 +45,7 @@ enum class UniqueTarget(val inheritsFrom: UniqueTarget? = null) {
     Ruins(Triggerable),
 
     // Other
+    Speed,
     Tutorial,
     CityState,
     ModOptions,
@@ -314,7 +314,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     TriggersAlertOnCompletion("Triggers a global alert upon completion", UniqueTarget.Building, UniqueTarget.Unit),
     //endregion
 
-
     ///////////////////////////////////////// region BUILDING UNIQUES /////////////////////////////////////////
 
 
@@ -350,7 +349,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     CreatesOneImprovement("Creates a [improvementName] improvement on a specific tile", UniqueTarget.Building),
     //endregion
-
 
     ///////////////////////////////////////// region UNIT UNIQUES /////////////////////////////////////////
 
@@ -588,6 +586,12 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     PillageYieldFixed("Pillaging this improvement yields [stats]", UniqueTarget.Improvement),
     Irremovable("Irremovable", UniqueTarget.Improvement),
     AutomatedWorkersWillReplace("Will be replaced by automated workers", UniqueTarget.Improvement),
+    //endregion
+
+    ///////////////////////////////////////// region OTHER UNIQUES ////////////////////////////////////////
+
+    SpiesWhenEnteringEra("Every major Civilization gains a spy when entering this era", UniqueTarget.Era),
+
     //endregion
 
     ///////////////////////////////////////// region CONDITIONALS /////////////////////////////////////////

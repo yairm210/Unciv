@@ -2,6 +2,24 @@
     {
         "name": "Quick",
         "modifier": 0.67,
+        /*
+        Why are all of these raw values and not uniques? This is like EXACTLY what uniques are for,
+        and speeds even support uniques?
+        E.g.: [
+            "[-67]% Production cost of [All] buildings",
+            "[-67]% Produciton cost of [All] units",
+            "Gold cost of purchasing [All] units [-67]%"
+            "Gold cost of purchasing [All] buildings [-67]%"
+            "[-67]% Science cost of reseaching new Techs" // Needs to be added
+            "[-67]% Culture cost of adopting new policies"
+            etc.
+        I suppose this is how it is done in civ V, but uniques are one of the major features we have
+        that Civ V doesn't, so why are we not using them?
+        This approach requires adding these modifies for specific things that need to be added, while
+        uniques can just be added anywhere. Only need to change CivilizationInfo.getMatchingUniques()
+        to get the uniques of the current game speed and everything works out of the box.
+        -xlenstra
+        */
         "productionCostModifier": 0.67,
         "goldCostModifier": 0.67,
         "scienceCostModifier": 0.67,
