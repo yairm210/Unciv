@@ -126,6 +126,7 @@
             "Religious": ["Provides [+12 Faith] per turn"],
             "Militaristic": ["Provides military units every ≈[17] turns"]
         },
+        "uniques": ["Every major Civilization gains a spy when entering this era"],
         "iconRGB": [104, 58, 183]
     },
     {
@@ -163,7 +164,8 @@
         "iconRGB": [63, 81, 182],
         "uniques": ["May not generate great prophet equivalents naturally",
             "May buy [Great Prophet] units for [200] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([100])",
-            "Starting in this era disables religion"
+            "Starting in this era disables religion",
+            "Every major Civilization gains a spy when entering this era"
         ]
     },
     {
@@ -202,7 +204,8 @@
         "iconRGB": [33, 150, 243],
         "uniques": ["May not generate great prophet equivalents naturally",
             "May buy [Great Prophet] units for [200] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([100])",
-            "Starting in this era disables religion"
+            "Starting in this era disables religion",
+            "Every major Civilization gains a spy when entering this era"
         ]
     },
     {
@@ -242,7 +245,8 @@
         "iconRGB": [0, 150, 136],
         "uniques": ["May not generate great prophet equivalents naturally",
             "May buy [Great Prophet] units for [200] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([100])",
-            "Starting in this era disables religion"
+            "Starting in this era disables religion",
+            "Every major Civilization gains a spy when entering this era"
         ]
     },
     {
@@ -285,7 +289,8 @@
         "iconRGB": [76, 176, 81],
         "uniques": ["May not generate great prophet equivalents naturally",
             "May buy [Great Prophet] units for [200] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([100])",
-            "Starting in this era disables religion"
+            "Starting in this era disables religion",
+            "Every major Civilization gains a spy when entering this era"
         ]
     },
     { // Technically, this Era doesn't exist in the original game.
@@ -329,7 +334,8 @@
         "iconRGB": [76, 176, 81],
         "uniques": ["May not generate great prophet equivalents naturally",
             "May buy [Great Prophet] units for [200] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([100])",
-            "Starting in this era disables religion"
+            "Starting in this era disables religion",
+            "Every major Civilization gains a spy when entering this era"
         ]
     }
 ]

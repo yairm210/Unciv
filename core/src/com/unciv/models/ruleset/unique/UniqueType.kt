@@ -588,12 +588,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     AutomatedWorkersWillReplace("Will be replaced by automated workers", UniqueTarget.Improvement),
     //endregion
 
-    ///////////////////////////////////////// region OTHER UNIQUES ////////////////////////////////////////
-
-    SpiesWhenEnteringEra("Every major Civilization gains a spy when entering this era", UniqueTarget.Era),
-
-    //endregion
-
     ///////////////////////////////////////// region CONDITIONALS /////////////////////////////////////////
 
 
@@ -688,7 +682,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     OneTimeRevealSpecificMapTiles("Reveal up to [amount/'all'] [tileFilter] within a [amount] tile radius", UniqueTarget.Ruins),
     OneTimeRevealCrudeMap("From a randomly chosen tile [amount] tiles away from the ruins, reveal tiles up to [amount] tiles away with [amount]% chance", UniqueTarget.Ruins),
     OneTimeTriggerVoting("Triggers voting for the Diplomatic Victory", UniqueTarget.Triggerable),  // used in Building
-    OneTimeGlobalAlert("Triggers the following global alert: [comment]", UniqueTarget.Triggerable), // used in Policy
+    OneTimeGlobalAlert("Triggers the following global alert: [comment]", UniqueTarget.Policy), // used in Policy
+    OneTimeGlobalSpiesWhenEnteringEra("Every major Civilization gains a spy when entering this era", UniqueTarget.Era),
 
     OneTimeUnitHeal("Heal this unit by [amount] HP", UniqueTarget.Promotion),
     OneTimeUnitGainXP("This Unit gains [amount] XP", UniqueTarget.Ruins),

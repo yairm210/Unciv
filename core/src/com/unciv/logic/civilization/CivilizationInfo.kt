@@ -155,6 +155,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     var religionManager = ReligionManager()
     var goldenAges = GoldenAgeManager()
     var greatPeople = GreatPersonManager()
+    var espionageManager = EspionageManager()
     var victoryManager = VictoryManager()
     var ruinsManager = RuinsManager()
     var diplomacy = HashMap<String, DiplomacyManager>()
@@ -261,6 +262,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         toReturn.goldenAges = goldenAges.clone()
         toReturn.greatPeople = greatPeople.clone()
         toReturn.ruinsManager = ruinsManager.clone()
+        toReturn.espionageManager = espionageManager.clone()
         toReturn.victoryManager = victoryManager.clone()
         toReturn.allyCivName = allyCivName
         for (diplomacyManager in diplomacy.values.map { it.clone() })
@@ -832,6 +834,8 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
             diplomacyManager.civInfo = this
             diplomacyManager.updateHasOpenBorders()
         }
+
+        espionageManager.setTransients(this)
 
         victoryManager.civInfo = this
 

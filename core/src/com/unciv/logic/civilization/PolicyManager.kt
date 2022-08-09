@@ -193,15 +193,13 @@ class PolicyManager : IsPartOfGameInfoSerialization {
             }
         }
 
+        // Todo make this a triggerable unique for other objects
         for (unique in policy.getMatchingUniques(UniqueType.OneTimeGlobalAlert)) {
-            triggerGlobalAlerts(
-                policy, unique.params[0]
-            )
+            triggerGlobalAlerts(policy, unique.params[0])
         }
 
-        for (unique in policy.uniqueObjects) UniqueTriggerActivation.triggerCivwideUnique(
-            unique, civInfo
-        )
+        for (unique in policy.uniqueObjects)
+            UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
 
         // This ALSO has the side-effect of updating the CivInfo statForNextTurn so we don't need to call it explicitly
         for (cityInfo in civInfo.cities) cityInfo.cityStats.update()
@@ -223,7 +221,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     ) {
         var extraNotificationTextCopy = extraNotificationText
         if (extraNotificationText != "") {
-            extraNotificationTextCopy = "\n${extraNotificationText}"
+            extraNotificationTextCopy = " ${extraNotificationText}"
         }
         for (civ in civInfo.gameInfo.civilizations.filter { it.isMajorCiv() }) {
             if (civ == civInfo) continue

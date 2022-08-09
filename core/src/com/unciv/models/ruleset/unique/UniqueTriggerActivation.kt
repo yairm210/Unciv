@@ -84,7 +84,7 @@ object UniqueTriggerActivation {
                             .any { it.params[0] == "Land" }} ?: return false
                     unit = civInfo.getEquivalentUnit(replacementUnit.name)
                 }
-                
+
                 val placingTile =
                     tile ?: civInfo.cities.random().getCenterTile()
 
@@ -458,6 +458,20 @@ object UniqueTriggerActivation {
                 if (notification != null)
                     civInfo.addNotification(notification, NotificationIcon.Diplomacy)
                 return true
+            }
+
+            OneTimeGlobalSpiesWhenEnteringEra -> {
+                val currentEra = civInfo.getEra().name
+                for (otherCiv in civInfo.gameInfo.getAliveMajorCivs()) {
+                    if (currentEra !in otherCiv.espionageManager.erasSpyEarnedFor) {
+                        val spyName = otherCiv.espionageManager.addSpy()
+                        otherCiv.espionageManager.erasSpyEarnedFor.add(currentEra)
+                        if (otherCiv == civInfo || otherCiv.knows(civInfo))
+                            otherCiv.addNotification("We have recruited [${spyName}] as a spy!", NotificationIcon.Spy)
+                        else
+                            otherCiv.addNotification("After an unknown civilization entered the [${currentEra}], we have recruited [${spyName}] as a spy!", NotificationIcon.Spy)
+                    }
+                }
             }
 
             FreeStatBuildings, FreeSpecificBuildings ->
