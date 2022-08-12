@@ -1,0 +1,16 @@
+
+
+Resolved  - Mod translations loaded upon lod download
+
+Increment sdk version to 32, to see if it passes Github build
+
+Increment sdk version to 31, to see if it passes Github build
+
+Revert ktx version
+
+By OptimizedForDensity:
+- List which city owns each tile in the city screen UI 
+- Add free belief unique + refactor a few religion functions 
+- Several pathfinding optimizations 
+
+Fix missing "HP" in battle notifications  - By Ouaz
