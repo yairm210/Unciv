@@ -683,7 +683,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     OneTimeRevealCrudeMap("From a randomly chosen tile [amount] tiles away from the ruins, reveal tiles up to [amount] tiles away with [amount]% chance", UniqueTarget.Ruins),
     OneTimeTriggerVoting("Triggers voting for the Diplomatic Victory", UniqueTarget.Triggerable),  // used in Building
     OneTimeGlobalAlert("Triggers the following global alert: [comment]", UniqueTarget.Policy), // used in Policy
-    OneTimeGlobalSpiesWhenEnteringEra("Every major Civilization gains a spy when entering this era", UniqueTarget.Era),
+    OneTimeGlobalSpiesWhenEnteringEra("Every major Civilization gains a spy once a civilization enters this era", UniqueTarget.Era),
 
     OneTimeUnitHeal("Heal this unit by [amount] HP", UniqueTarget.Promotion),
     OneTimeUnitGainXP("This Unit gains [amount] XP", UniqueTarget.Ruins),
