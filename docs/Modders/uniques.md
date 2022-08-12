@@ -41,6 +41,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Reveals the entire map"
 	Applicable to: Triggerable
 
+??? example  "Gain a free [beliefType] belief"
+	Example: "Gain a free [Follower] belief"
+
+	Applicable to: Triggerable
+
 ??? example  "Triggers voting for the Diplomatic Victory"
 	Applicable to: Triggerable
 
