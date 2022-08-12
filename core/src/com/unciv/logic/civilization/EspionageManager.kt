@@ -39,7 +39,6 @@ class EspionageManager : IsPartOfGameInfoSerialization {
     fun addSpy(): String {
         val spyName = getSpyName()
         spyList.add(Spy(spyName))
-        println(spyList.size)
         return spyName
     }
 }

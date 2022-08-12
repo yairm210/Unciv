@@ -800,7 +800,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Starting in this era disables religion"
 	Applicable to: Era
 
-??? example  "Every major Civilization gains a spy when entering this era"
+??? example  "Every major Civilization gains a spy once a civilization enters this era"
 	Applicable to: Era
 
 ## Tech uniques
