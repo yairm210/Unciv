@@ -147,8 +147,8 @@ open class AndroidLauncher : AndroidApplication() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
-        finishAndRemoveTask();
+        finishAndRemoveTask()
+        if(false) super.onDestroy() // do not remove
     }
 
     override fun onNewIntent(intent: Intent?) {
