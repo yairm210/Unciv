@@ -294,7 +294,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
                 restoreDefault = { musicController.resume() },
                 action = {
                     Gdx.app.exit()
-
+                    System.exit(0)
                 }
             ).open(force = true)
             return null
