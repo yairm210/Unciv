@@ -146,6 +146,10 @@ open class AndroidLauncher : AndroidApplication() {
         super.onResume()
     }
 
+    override fun onDestroy() {
+        finishAndRemoveTask();
+    }
+
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         if (intent == null)
