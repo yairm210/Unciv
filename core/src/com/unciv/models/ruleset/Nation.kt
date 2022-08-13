@@ -48,6 +48,8 @@ class Nation : RulesetObject() {
     var adjective = ArrayList<String>()
      */
 
+    var spyNames = ArrayList<String>()
+
     var favoredReligion: String? = null
 
     @Transient

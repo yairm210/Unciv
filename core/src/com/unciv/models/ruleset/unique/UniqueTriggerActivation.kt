@@ -477,8 +477,26 @@ object UniqueTriggerActivation {
                 return true
             }
 
-            FreeStatBuildings, FreeSpecificBuildings ->
+            OneTimeGlobalSpiesWhenEnteringEra -> {
+                if (!civInfo.isMajorCiv()) return false
+                val currentEra = civInfo.getEra().name
+                for (otherCiv in civInfo.gameInfo.getAliveMajorCivs()) {
+                    if (currentEra !in otherCiv.espionageManager.erasSpyEarnedFor) {
+                        val spyName = otherCiv.espionageManager.addSpy()
+                        otherCiv.espionageManager.erasSpyEarnedFor.add(currentEra)
+                        if (otherCiv == civInfo || otherCiv.knows(civInfo))
+                            otherCiv.addNotification("We have recruited [${spyName}] as a spy!", NotificationIcon.Spy)
+                        else
+                            otherCiv.addNotification("After an unknown civilization entered the [${currentEra}], we have recruited [${spyName}] as a spy!", NotificationIcon.Spy)
+                    }
+                }
+                return true
+            }
+
+            FreeStatBuildings, FreeSpecificBuildings -> {
                 civInfo.civConstructions.tryAddFreeBuildings()
+                return true // not fully correct
+            }
 
             else -> {}
         }
