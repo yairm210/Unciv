@@ -6,6 +6,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.*
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.unique.UniqueType.*
 import com.unciv.models.stats.Stat
@@ -387,6 +388,22 @@ object UniqueTriggerActivation {
                     civInfo.addNotification(notificationText, LocationAction(tile?.position), NotificationIcon.Faith)
                 }
 
+                return true
+            }
+            OneTimeFreeBelief -> {
+                if (!civInfo.isMajorCiv()) return false
+                val beliefType = BeliefType.valueOf(unique.params[0])
+                val religionManager = civInfo.religionManager
+                if ((beliefType != BeliefType.Pantheon && beliefType != BeliefType.Any)
+                        && religionManager.religionState <= ReligionState.Pantheon)
+                    return false // situation where we're trying to add a formal religion belief to a civ that hasn't founded a religion
+                if (religionManager.numberOfBeliefsAvailable(beliefType) == 0)
+                    return false // no more available beliefs of this type
+
+                if (beliefType == BeliefType.Any && religionManager.religionState <= ReligionState.Pantheon)
+                    religionManager.freeBeliefs.add(BeliefType.Pantheon.name, 1) // add pantheon instead of any type
+                else
+                    religionManager.freeBeliefs.add(beliefType.name, 1)
                 return true
             }
 

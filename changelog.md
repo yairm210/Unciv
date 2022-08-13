@@ -1,3 +1,30 @@
+## 4.2.4
+
+Mod translations are now loaded upon mod download
+
+By OptimizedForDensity:
+- List which city owns each tile in the city screen UI
+- Add free belief unique + refactor a few religion functions
+- Several pathfinding optimizations
+
+Fix missing "HP" in battle notifications - By Ouaz
+
+## 4.2.3
+
+By OptimizedForDensity:
+- Add unit type to Civilopedia
+- Fix bug related to resuming games
+- Fix mod translation file generation
+
+By xlenstra:
+- Occupied cities have +2 extra unhappiness
+- Added 'without resource' conditional
+- Added a unique for destroying improvements on attack
+
+Add missing string to the translations template file  - By estorski
+
+Made invisible units not become visible just by being next to an owned tile.  - By kralinc
+
 ## 4.2.2
 
 By itanasi:

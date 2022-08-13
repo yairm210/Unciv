@@ -41,6 +41,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Reveals the entire map"
 	Applicable to: Triggerable
 
+??? example  "Gain a free [beliefType] belief"
+	Example: "Gain a free [Follower] belief"
+
+	Applicable to: Triggerable
+
 ??? example  "Triggers voting for the Diplomatic Victory"
 	Applicable to: Triggerable
 
@@ -798,6 +803,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ## Era uniques
 ??? example  "Starting in this era disables religion"
+	Applicable to: Era
+
+??? example  "Every major Civilization gains a spy once a civilization enters this era"
 	Applicable to: Era
 
 ??? example  "Every major Civilization gains a spy once a civilization enters this era"
