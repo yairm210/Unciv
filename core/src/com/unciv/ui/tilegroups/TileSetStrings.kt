@@ -26,11 +26,10 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, fallb
     val crosshatchHexagon by lazy { orFallback { tileSetLocation + "CrosshatchHexagon" } }
     val crosshair by lazy { orFallback { getString(tileSetLocation, "Crosshair") } }
     val highlight by lazy { orFallback { getString(tileSetLocation, "Highlight") } }
-    val cityOverlay = tileSetLocation + "CityOverlay"
     val roadsMap = RoadStatus.values()
         .filterNot { it == RoadStatus.None }
         .associateWith { tileSetLocation + it.name }
-    val naturalWonderOverlay = tileSetLocation + "NaturalWonderOverlay"
+    val naturalWonder = tileSetLocation + "Tiles/NaturalWonder"
 
     val tilesLocation = tileSetLocation + "Tiles/"
     val bottomRightRiver by lazy { orFallback { tilesLocation + "River-BottomRight"} }
@@ -64,13 +63,8 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, fallb
         return currentString
     }
 
-    val overlay = "Overlay"
-    val city = "City"
     val tag = "-"
     fun getTile(baseTerrain: String) = getString(tilesLocation, baseTerrain)
-    fun getBaseTerrainOverlay(baseTerrain: String) = getString(tileSetLocation, baseTerrain, overlay)
-    fun getTerrainFeatureOverlay(terrainFeature: String) = getString(tileSetLocation, terrainFeature, overlay)
-
 
     fun getBorder(borderShapeString: String, innerOrOuter:String) = getString(bordersLocation, borderShapeString, innerOrOuter)
 
