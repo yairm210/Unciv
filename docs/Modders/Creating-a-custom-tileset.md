@@ -27,12 +27,19 @@ This is where tileset configs shine. You can use these to alter the way Unicv re
 
 To create a config for your tileset you just need to create a new .json file under Jsons/Tilesets/. Just create a .txt file and rename it to MyCoolTilesetExample.json. You only have to add things if you want to change them. Else the default values will be used.
 
-This is an example of such a config file that I will explain below:
+This is an example of such a config file that will be explain below:
 
-```
+```json
     "useColorAsBaseTerrain": "false",
+    "useSummaryImages": "true",
     "unexploredTileColor": {"r":1,"g":1,"b":1,"a":1},
     "fogOfWarColor": {"r":1,"g":0,"b":0,"a":1},
+    "fallbackTileSet": null,
+    "tileScale":0.9,
+    "tileScales": {
+        "City center":1.2,
+        "Citadel":1.5
+    }
     "ruleVariants": {
         "Grassland+Forest": ["Grassland","ForestForGrassland"],
         "Grassland+Jungle+Dyes+Trading post": ["Grassland","JungleForGrasslandBack","Dyes+Trading post","JungleForGrasslandFront"]
@@ -41,9 +48,19 @@ This is an example of such a config file that I will explain below:
 
 ### useColorAsBaseTerrain
 
-A boolean value ("true" or "false"). Default value: "true"
+A boolean value ("true" or "false"). Default value: "false"
 
-If true all tiles will be colored in their corresponding base terrain color. This is how the "Default" tileset works.
+If true, an additional "Hexagon" image is placed below each tile and colored in the corresponding BaseTerrain color. This removes the necessity to add individual BaseTerrain images. This is how the "Default" tileset works.
+
+### useSummaryImages
+
+A boolean value ("true" or "false"). Default value: "false"
+
+If true, summary images are used for specific groups of images instead of using individual tile images. The summary images must be placed in the same folder as every other tile image. Summary images used:
+
+| Image group | Summary image |
+| ----------- | ------------- |
+| Natural wonders | "NaturalWonder" |
 
 ### unexploredTileColor
 
@@ -57,9 +74,27 @@ A color defined with normalized RGBA values. Default value: "{"r":0, "g":0, "b":
 
 Defines the color of the fog of war. The color gets approximated by 60% to allow the colors of the images below to shine through.
 
+### fallbackTileSet
+
+A string value. Default value: "FantasyHex"
+
+The name of another tileset whose images should be used if this tileset is missing images. Can be set to null to disable the the fallback tileset
+
+### tileScale
+
+A float value. Default value: 1.0
+
+The scale of all tiles. Can be used to increase or decrease the size of every tile. Is being used by the tileset mod [5Hex (made by ravignir)](https://github.com/ravignir/5Hex-Tileset) to fake shadows.
+
+### tileScales
+
+A dictionary mapping string to a float value. Default value: empty
+
+Used by the "Default" tileset to scale all its tiles except the base terrain down. Each entry overrides the tileScale value for the specified tile.
+
 ### ruleVariants
 
-A dictionary mapping string to string[]. Default value: empty
+A dictionary mapping string to a list of strings. Default value: empty
 
 The ruleVariants are the most powerful part of the tileset config. With this, you can define, for a specific tile, which images and in which order these images should be used.
 
