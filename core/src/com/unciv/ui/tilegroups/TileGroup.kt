@@ -64,8 +64,6 @@ open class TileGroup(
     class TerrainFeatureLayerGroupClass(groupSize: Float) : ActionlessGroup(groupSize)
     val terrainFeatureLayerGroup = TerrainFeatureLayerGroupClass(groupSize)
 
-    protected var cityImage: Image? = null
-
     private var pixelMilitaryUnitImageLocation = ""
     var pixelMilitaryUnitGroup = ActionlessGroup(groupSize)
     private var pixelCivilianUnitImageLocation = ""
