@@ -879,7 +879,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
     fun updateSightAndResources() {
         updateViewableTiles()
-        updateHasActiveGreatWall()
+        updateHasActiveEnemyMovementPenalty()
         updateDetailedCivResources()
     }
 
@@ -889,7 +889,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
     // implementation in a separate class, to not clog up CivInfo
     fun initialSetCitiesConnectedToCapitalTransients() = transients().updateCitiesConnectedToCapital(true)
-    fun updateHasActiveGreatWall() = transients().updateHasActiveGreatWall()
+    fun updateHasActiveEnemyMovementPenalty() = transients().updateHasActiveEnemyMovementPenalty()
     fun updateViewableTiles() = transients().updateViewableTiles()
     fun updateDetailedCivResources() = transients().updateCivResources()
 
@@ -992,7 +992,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         goldenAges.endTurn(getHappiness())
         getCivUnits().forEach { it.endTurn() }  // This is the most expensive part of endTurn
         diplomacy.values.toList().forEach { it.nextTurn() } // we copy the diplomacy values so if it changes in-loop we won't crash
-        updateHasActiveGreatWall()
+        updateHasActiveEnemyMovementPenalty()
 
         cachedMilitaryMight = -1    // Reset so we don't use a value from a previous turn
     }

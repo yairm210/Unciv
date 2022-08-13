@@ -139,7 +139,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         }
     }
 
-    fun updateHasActiveGreatWall() {
+    fun updateHasActiveEnemyMovementPenalty() {
         civInfo.hasActiveEnemyMovementPenalty = (!civInfo.tech.isResearched("Dynamite") && civInfo.hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovementDepreciated))
                 || civInfo.hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovement)
     }

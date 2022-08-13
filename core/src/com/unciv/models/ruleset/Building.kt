@@ -668,7 +668,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
         if (hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovement)
                 || hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovementDepreciated))
-            civInfo.updateHasActiveGreatWall()
+            civInfo.updateHasActiveEnemyMovementPenalty()
 
         // Korean unique - apparently gives the same as the research agreement
         if (science > 0 && civInfo.hasUnique(UniqueType.TechBoostWhenScientificBuildingsBuiltInCapital))
