@@ -105,7 +105,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
     /** This is for performance since every movement calculation depends on this, see MapUnit comment */
     @Transient
-    var hasActiveGreatWall = false
+    var hasActiveEnemyMovementPenalty = false
 
     @Transient
     var statsForNextTurn = Stats()
@@ -669,6 +669,18 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
             ?: return false // not encountered yet
         if (otherCiv.isCityState() && diplomacyManager.diplomaticStatus != DiplomaticStatus.War) return true
         return diplomacyManager.hasOpenBorders
+    }
+
+    fun getEnemyMovementPenalty(enemyUnit: MapUnit): Float {
+        val greatWallUnique = getMatchingUniques(UniqueType.EnemyLandUnitsSpendExtraMovement)
+        if (greatWallUnique.any())
+            return greatWallUnique.filter { enemyUnit.matchesFilter(it.params[0]) }
+                .sumOf { it.params[1].toInt() }.toFloat()
+
+        val depreciatedGreatWall = getMatchingUniques(UniqueType.EnemyLandUnitsSpendExtraMovementDepreciated)
+        if (depreciatedGreatWall.any() && enemyUnit.matchesFilter("Land"))
+            return depreciatedGreatWall.count().toFloat() // always 1 per entry
+        return 0f // should not reach this point
     }
 
     /**

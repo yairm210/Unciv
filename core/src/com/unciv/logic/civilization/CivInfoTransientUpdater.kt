@@ -140,8 +140,8 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
     }
 
     fun updateHasActiveGreatWall() {
-        civInfo.hasActiveGreatWall = !civInfo.tech.isResearched("Dynamite") &&
-                civInfo.hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovement)
+        civInfo.hasActiveEnemyMovementPenalty = (!civInfo.tech.isResearched("Dynamite") && civInfo.hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovementDepreciated))
+                || civInfo.hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovement)
     }
 
     fun updateCitiesConnectedToCapital(initialSetup: Boolean = false) {
