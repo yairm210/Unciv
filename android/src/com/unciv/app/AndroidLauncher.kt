@@ -147,6 +147,7 @@ open class AndroidLauncher : AndroidApplication() {
     }
 
     override fun onDestroy() {
+        super.onDestroy()
         finishAndRemoveTask();
     }
 
