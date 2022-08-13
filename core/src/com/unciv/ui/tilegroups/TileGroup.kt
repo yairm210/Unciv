@@ -325,11 +325,6 @@ open class TileGroup(
             val finalLocation = existingImages.random(Random(tileInfo.position.hashCode() + locationToCheck.hashCode()))
             val image = ImageGetter.getImage(finalLocation)
 
-            // Color the base terrain
-            if (index == 0 && tileSetStrings.tileSetConfig.useColorAsBaseTerrain) {
-                image.color = tileInfo.getBaseTerrain().getColor()
-            }
-
             tileBaseImages.add(image)
             baseLayerGroup.addActor(image)
 
@@ -585,9 +580,15 @@ open class TileGroup(
     }
 
     private fun updateTileColor(isViewable: Boolean) {
-        for(image in tileBaseImages)
+        for((index, image) in tileBaseImages.withIndex()) {
+            var color =
+                    if (index == 0 && tileSetStrings.tileSetConfig.useColorAsBaseTerrain)
+                        tileInfo.getBaseTerrain().getColor()
+                    else Color.WHITE.cpy()
             if (!isViewable)
-                image.color = image.color.lerp(tileSetStrings.tileSetConfig.fogOfWarColor, 0.6f)
+                color = color.lerp(tileSetStrings.tileSetConfig.fogOfWarColor, 0.6f)
+            image.color = color
+        }
     }
 
     private fun updatePixelMilitaryUnit(showMilitaryUnit: Boolean) {
