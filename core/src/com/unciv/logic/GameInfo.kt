@@ -212,6 +212,10 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         return !religionDisabledByRuleset && gameParameters.religionEnabled
     }
 
+    fun isEspionageEnabled(): Boolean {
+        return gameParameters.espionageEnabled
+    }
+
     private fun getEquivalentTurn(): Int {
         val totalTurns = speed.numTotalTurns()
         val startPercent = ruleSet.eras[gameParameters.startingEra]!!.startPercent
@@ -540,6 +544,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     //endregion
 
     fun asPreview() = GameInfoPreview(this)
+
 }
 
 /**
