@@ -2,7 +2,13 @@ package com.unciv.logic.civilization
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
 
-class Spy(val name: String) : IsPartOfGameInfoSerialization {
+class Spy() : IsPartOfGameInfoSerialization {
+    lateinit var name: String
+
+    constructor(name: String) : this() {
+        this.name = name
+    }
+
     fun clone(): Spy {
         return Spy(name)
     }
