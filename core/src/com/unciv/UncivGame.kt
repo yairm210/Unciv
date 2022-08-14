@@ -126,7 +126,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         ImageGetter.resetAtlases()
         ImageGetter.setNewRuleset(ImageGetter.ruleset)  // This needs to come after the settings, since we may have default visual mods
         if (settings.tileSet !in ImageGetter.getAvailableTilesets()) { // If one of the tilesets is no longer available, default back
-            settings.tileSet = "FantasyHex"
+            settings.tileSet = Constants.defaultTileset
         }
 
         BaseScreen.setSkin() // needs to come AFTER the Texture reset, since the buttons depend on it

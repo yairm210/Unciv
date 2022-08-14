@@ -37,7 +37,7 @@ class GameSettings {
     var pauseBetweenTracks = 10
 
     var turnsBetweenAutosaves = 1
-    var tileSet: String = "HexaRealm"
+    var tileSet: String = Constants.defaultTileset
     var showTutorials: Boolean = true
     var autoAssignCityProduction: Boolean = true
     var autoBuildingRoads: Boolean = true
