@@ -479,6 +479,7 @@ object UniqueTriggerActivation {
 
             OneTimeGlobalSpiesWhenEnteringEra -> {
                 if (!civInfo.isMajorCiv()) return false
+                if (!civInfo.gameInfo.isEspionageEnabled()) return false
                 val currentEra = civInfo.getEra().name
                 for (otherCiv in civInfo.gameInfo.getAliveMajorCivs()) {
                     if (currentEra !in otherCiv.espionageManager.erasSpyEarnedFor) {
