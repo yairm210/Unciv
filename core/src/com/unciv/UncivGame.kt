@@ -294,7 +294,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
                 restoreDefault = { musicController.resume() },
                 action = {
                     Gdx.app.exit()
-                    System.exit(0)
+
                 }
             ).open(force = true)
             return null
@@ -399,6 +399,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
         // On desktop this should only be this one and "DestroyJavaVM"
         logRunningThreads()
+
+        System.exit(0)
     }
 
     private fun logRunningThreads() {
