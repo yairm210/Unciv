@@ -15,11 +15,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 
         ** Approach **
         Listen to enter and exit events and set focus as needed.
-        The old focus is saved on eneter and restored on exit to make this as side-effect free as possible.
+        The old focus is saved on enter and restored on exit to make this as side-effect free as possible.
 
         ** Implementation **
         The listener is attached per widget (and not, say, to an upper container or the screen, where
-        one listener would suffice but we'd have to do coordinate to target resolution outselves).
+        one listener would suffice but we'd have to do coordinate to target resolution ourselves).
         This is accomplished by subclassing the ScrollPane and replacing usages,
         which in turn can be done either by using this class as drop-in replacement per widget
         or by importing this using an import alias per file.

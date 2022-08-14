@@ -110,10 +110,11 @@ class CityInfo : IsPartOfGameInfoSerialization {
     var health = 200
 
 
-    var religion = CityInfoReligionManager()
     var population = PopulationManager()
     var cityConstructions = CityConstructions()
     var expansion = CityExpansionManager()
+    var religion = CityReligionManager()
+    var espionage = CityEspionageManager()
 
     @Transient  // CityStats has no serializable fields
     var cityStats = CityStats(this)
@@ -624,6 +625,7 @@ class CityInfo : IsPartOfGameInfoSerialization {
         cityConstructions.cityInfo = this
         cityConstructions.setTransients()
         religion.setTransients(this)
+        espionage.setTransients(this)
     }
 
     fun startTurn() {
