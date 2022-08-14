@@ -130,7 +130,7 @@ dependencies {
     //   run `./gradlew build --scan` to see details
     // Known Android Lint warning: "GradleDependency"
     implementation("androidx.core:core-ktx:1.7.0")
-    implementation("androidx.work:work-runtime-ktx:2.6.0")
+    implementation("androidx.work:work-runtime-ktx:2.7.1")
     // Needed to convert e.g. Android 26 API calls to Android 21
     // If you remove this run `./gradlew :android:lintDebug` to ensure everything's okay.
     // If you want to upgrade this, check it's working by building an apk,
