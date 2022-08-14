@@ -578,15 +578,20 @@ open class TileGroup(
     }
 
     private fun updateTileColor(isViewable: Boolean) {
-        for((index, image) in tileBaseImages.withIndex()) {
-            var color =
-                    if (index == 0 && tileSetStrings.tileSetConfig.useColorAsBaseTerrain)
-                        tileInfo.getBaseTerrain().getColor()
-                    else Color.WHITE.cpy()
-            if (!isViewable)
-                color = color.lerp(tileSetStrings.tileSetConfig.fogOfWarColor, 0.6f)
-            image.color = color
+        val baseTerrainColor = when {
+            tileSetStrings.tileSetConfig.useColorAsBaseTerrain && !isViewable -> tileInfo.getBaseTerrain().getColor().lerp(tileSetStrings.tileSetConfig.fogOfWarColor, 0.6f)
+            tileSetStrings.tileSetConfig.useColorAsBaseTerrain -> tileInfo.getBaseTerrain().getColor()
+            !isViewable -> Color.WHITE.cpy().lerp(tileSetStrings.tileSetConfig.fogOfWarColor, 0.6f)
+            else -> Color.WHITE.cpy()
         }
+
+        val color = when {
+            !isViewable -> Color.WHITE.cpy().lerp(tileSetStrings.tileSetConfig.fogOfWarColor, 0.6f)
+            else -> Color.WHITE.cpy()
+        }
+
+        for((index, image) in tileBaseImages.withIndex())
+            image.color = if (index == 0) baseTerrainColor else color
     }
 
     private fun updatePixelMilitaryUnit(showMilitaryUnit: Boolean) {
