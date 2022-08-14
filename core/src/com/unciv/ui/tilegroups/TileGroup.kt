@@ -231,13 +231,13 @@ open class TileGroup(
     private fun getTileBaseImageLocations(viewingCiv: CivilizationInfo?): List<String> {
         if (viewingCiv == null && !showEntireMap) return tileSetStrings.hexagonList
 
-        val out = if (tileSetStrings.tileSetConfig.useColorAsBaseTerrain)
+        val baseHexagon = if (tileSetStrings.tileSetConfig.useColorAsBaseTerrain)
             listOf(tileSetStrings.hexagon)
         else listOf()
 
         if (tileInfo.naturalWonder != null)
-            return if (tileSetStrings.tileSetConfig.useSummaryImages) out + tileSetStrings.naturalWonder
-            else out + tileSetStrings.orFallback{ getTile(tileInfo.naturalWonder!!) }
+            return if (tileSetStrings.tileSetConfig.useSummaryImages) baseHexagon + tileSetStrings.naturalWonder
+            else baseHexagon + tileSetStrings.orFallback{ getTile(tileInfo.naturalWonder!!) }
 
         val shownImprovement = tileInfo.getShownImprovement(viewingCiv)
         val shouldShowImprovement = shownImprovement != null && UncivGame.Current.settings.showPixelImprovements
@@ -255,9 +255,9 @@ open class TileGroup(
         val allTogetherLocation = tileSetStrings.getTile(allTogether)
 
         return when {
-            tileSetStrings.tileSetConfig.ruleVariants[allTogether] != null -> out + tileSetStrings.tileSetConfig.ruleVariants[allTogether]!!.map { tileSetStrings.getTile(it) }
-            ImageGetter.imageExists(allTogetherLocation) -> out + allTogetherLocation
-            else -> out + getTerrainImageLocations(terrainImages) + getImprovementAndResourceImages(resourceAndImprovementSequence)
+            tileSetStrings.tileSetConfig.ruleVariants[allTogether] != null -> baseHexagon + tileSetStrings.tileSetConfig.ruleVariants[allTogether]!!.map { tileSetStrings.getTile(it) }
+            ImageGetter.imageExists(allTogetherLocation) -> baseHexagon + allTogetherLocation
+            else -> baseHexagon + getTerrainImageLocations(terrainImages) + getImprovementAndResourceImages(resourceAndImprovementSequence)
         }
     }
 
