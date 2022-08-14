@@ -30,8 +30,8 @@ In this order:
 * Polish! As you may have noticed, Unciv is fully functional but rough around the edges. This means:
     * UI+UX improvements (suggestions welcome!)
     * Better automation, AI etc. in-game
-* Finishing off Vanilla mechanics - Time Victory, Air sweep action - mostly done!
-* G&K mechanics - espionage, the Maya's, etc.
+* Finishing off Vanilla mechanics - mostly done!
+* G&K mechanics - espionage, small other changes (see [#4697](https://www.github.com/yairm210/Unciv/issues/4697))
 * BNW mechanics - trade routes, world congress, etc.
 
 ## Contributing
