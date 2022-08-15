@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
@@ -22,6 +23,7 @@ import com.unciv.ui.utils.extensions.brighten
 import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.surroundWithCircle
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.worldscreen.unit.UnitActions
 import kotlin.math.abs
@@ -131,6 +133,7 @@ class UnitOverviewTab(
     private fun Table.updateUnitHeaderTable(): Table {
         defaults().pad(5f)
         add("Name".toLabel())
+        add("Edit".toLabel())
         add("Action".toLabel())
         add(Fonts.strength.toString().toLabel())
         add(Fonts.rangedStrength.toString().toLabel())
@@ -167,6 +170,9 @@ class UnitOverviewTab(
             add(button).fillX()
 
             // Columns: action, strength, ranged, moves
+            val editIcon = ImageGetter.getImage("OtherIcons/Pencil").apply { this.color = Color.WHITE }.surroundWithCircle(30f, true, Color.valueOf("000c31"))
+            editIcon.onClick { game.pushScreen(PromotionPickerScreen(unit)) }
+            add(editIcon)
             if (unit.action == null) add() else add(unit.getActionLabel().toLabel())
             if (baseUnit.strength > 0) add(baseUnit.strength.toLabel()) else add()
             if (baseUnit.rangedStrength > 0) add(baseUnit.rangedStrength.toLabel()) else add()
