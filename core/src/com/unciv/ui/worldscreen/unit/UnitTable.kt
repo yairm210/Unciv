@@ -83,7 +83,9 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                 add(prevIdleUnitButton)
                 unitIconNameGroup.add(unitIconHolder)
                 unitIconNameGroup.add(unitNameLabel).pad(5f)
-                unitIconNameGroup.touchable = Touchable.enabled
+                //unitIconNameGroup.touchable = Touchable.enabled
+                unitIconHolder.touchable = Touchable.enabled
+                unitNameLabel.touchable = Touchable.enabled
                 add(unitIconNameGroup)
                 add(nextIdleUnitButton)
             }
@@ -133,9 +135,19 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                     unitNameLabel.setText(nameLabelText)
                     selectedUnitHasChanged = true // We need to reload the health bar of the unit in the icon - happens e.g. when picking the Heal Instantly promotion
                 }
-                unitIconNameGroup.clearListeners()
-                unitIconNameGroup.onClick {
+                //unitIconNameGroup.clearListeners()
+                //unitIconNameGroup.onClick {
+                //    worldScreen.game.pushScreen(CivilopediaScreen(worldScreen.gameInfo.ruleSet, CivilopediaCategories.Unit, unit.name))
+                //}
+
+                unitIconHolder.clearListeners()
+                unitIconHolder.onClick {
                     worldScreen.game.pushScreen(CivilopediaScreen(worldScreen.gameInfo.ruleSet, CivilopediaCategories.Unit, unit.name))
+                }
+
+                unitNameLabel.clearListeners()
+                unitNameLabel.onClick {
+                    UncivGame.Current.pushScreen(PromotionPickerScreen(unit))
                 }
 
                 unitDescriptionTable.clear()
