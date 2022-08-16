@@ -32,12 +32,13 @@ object CivilopediaImageGetters {
                 tileInfo.baseTerrain = terrain.turnsInto ?: Constants.grassland
             }
             TerrainType.TerrainFeature -> {
-                tileInfo.addTerrainFeature(terrain.name)
                 tileInfo.baseTerrain =
                     if (terrain.occursOn.isEmpty() || terrain.occursOn.contains(Constants.grassland))
                         Constants.grassland
                     else
                         terrain.occursOn.lastOrNull()!!
+                tileInfo.setTerrainTransients()
+                tileInfo.addTerrainFeature(terrain.name)
             }
             else ->
                 tileInfo.baseTerrain = terrain.name

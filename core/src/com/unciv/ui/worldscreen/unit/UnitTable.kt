@@ -165,18 +165,18 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                 }
 
                 if (!unit.isCivilian()) {
-                    unitDescriptionTable.add("XP")
+                    unitDescriptionTable.add("XP".tr())
                     unitDescriptionTable.add(unit.promotions.XP.toString() + "/" + unit.promotions.xpForNextPromotion())
                 }
 
-                if (unit.canDoReligiousAction(Constants.spreadReligionAbilityCount)) {
+                if (unit.canDoReligiousAction(Constants.spreadReligion)) {
                     unitDescriptionTable.add(ImageGetter.getStatIcon("Faith")).size(20f)
-                    unitDescriptionTable.add(unit.getActionString(Constants.spreadReligionAbilityCount))
+                    unitDescriptionTable.add(unit.getActionString(Constants.spreadReligion))
                 }
 
-                if (unit.canDoReligiousAction(Constants.removeHeresyAbilityCount)) {
+                if (unit.canDoReligiousAction(Constants.removeHeresy)) {
                     unitDescriptionTable.add(ImageGetter.getImage("OtherIcons/Remove Heresy")).size(20f)
-                    unitDescriptionTable.add(unit.getActionString(Constants.removeHeresyAbilityCount))
+                    unitDescriptionTable.add(unit.getActionString(Constants.removeHeresy))
                 }
 
                 if (unit.baseUnit.religiousStrength > 0) {
@@ -255,6 +255,8 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
         // Do not select a different unit or city center if we click on it to swap our current unit to it
         if (selectedUnitIsSwapping && selectedUnit != null && selectedUnit!!.movement.canUnitSwapTo(selectedTile)) return
+        // Do no select a different unit while in Air Sweep mode
+        if (selectedUnit != null && selectedUnit!!.isPreparingAirSweep()) return
 
         when {
             forceSelectUnit != null ->

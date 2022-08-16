@@ -162,7 +162,7 @@ enum class UniqueParameterType(
     },
 
     /** [UniqueType.DamageUnitsPlunder] and others near that one */
-    PlunderableStatName("plunderableStat", "Gold", "All the following stats can be plundered: `Gold`, `Science`, `Culture`, `Faith`") {
+    CivWideStatName("civWideStat", "Gold", "All the following stats have civ-wide fields: `Gold`, `Science`, `Culture`, `Faith`") {
         private val knownValues = Stat.statsWithCivWideField.map { it.name }.toSet()
         override fun getErrorSeverity(
             parameterText: String,
@@ -486,8 +486,8 @@ enum class UniqueParameterType(
     },
 
     /** For untyped "Can [] [] times" unique */
-    Action("action", Constants.spreadReligionAbilityCount, "An action that a unit can perform. Currently, there are only two actions part of this: 'Spread Religion' and 'Remove Foreign religions from your own cities'", "Religious Action Filters") {
-        private val knownValues = setOf(Constants.spreadReligionAbilityCount, Constants.removeHeresyAbilityCount)
+    Action("action", Constants.spreadReligion, "An action that a unit can perform. Currently, there are only two actions part of this: 'Spread Religion' and 'Remove Foreign religions from your own cities'", "Religious Action Filters") {
+        private val knownValues = setOf(Constants.spreadReligion, Constants.removeHeresy)
         override fun getErrorSeverity(
             parameterText: String,
             ruleset: Ruleset

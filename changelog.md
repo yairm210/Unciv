@@ -1,3 +1,167 @@
+## 4.2.4
+
+Mod translations are now loaded upon mod download
+
+By OptimizedForDensity:
+- List which city owns each tile in the city screen UI
+- Add free belief unique + refactor a few religion functions
+- Several pathfinding optimizations
+
+Fix missing "HP" in battle notifications - By Ouaz
+
+## 4.2.3
+
+By OptimizedForDensity:
+- Add unit type to Civilopedia
+- Fix bug related to resuming games
+- Fix mod translation file generation
+
+By xlenstra:
+- Occupied cities have +2 extra unhappiness
+- Added 'without resource' conditional
+- Added a unique for destroying improvements on attack
+
+Add missing string to the translations template file  - By estorski
+
+Made invisible units not become visible just by being next to an owned tile.  - By kralinc
+
+## 4.2.2
+
+By itanasi:
+- Add Damage numbers to Battle Notifications
+- Fix Air Sweep Notification Translations
+- Allow Citizen Management to pick any tile owned within 3 tiles
+
+Disabled image packing when running from JAR
+
+Removed duplicate "Consumes ..." lines of city screen  - By kasradzenika
+
+Add translation for "XP" - By OptimizedForDensity
+
+Tutorial rewording - By xlenstra
+
+Updated nation introduction in civilopedia - By xk730
+
+## 4.2.1
+
+Resolved missionary-related crash
+
+Fix erroneous relationship decay notification  - By oynqr
+
+Rename "Show minimap" to "Minimap size"  - By J0anJosep
+
+By SimonCeder:
+- Invalid players removed from global quests
+- Fix Natural Wonder placement
+
+By OptimizedForDensity:
+- Allow passable natural wonders
+
+Removed duplicate placeholders  - By xlenstra
+
+## 4.2.0
+
+Add Air Sweep  - By itanasi
+
+Allows inquisitors to block holy cities  - By xlenstra
+
+Performance improvements
+
+By SimonCeder:
+- workers will replace city ruins
+- avoid potential marriage bug
+
+Fix games not being loadable  - By Azzurite
+
+Construction automation optimization  - By OptimizedForDensity
+
+Allow HexaRealm to render jungles on hills  - By ArchDuque-Pancake
+
+## 4.1.21
+
+Memory performance improvements
+
+HexaRealm is now default tileset
+
+Mod categories - By alexban011
+
+Replace "moveTo" in unit overview with "Moving"  - By itanasi
+
+## 4.1.20
+
+Can no longer receive negative gold offers from AI
+
+Keep progress in notification scroll when updating
+
+Gray out city state friend bonus when allied - By Azzurite
+
+By OptimizedForDensity:
+- Minor reweight of AI policy selection
+- Stop transported units from being able to pillage tiles
+
+Fix getting settlers from ancient ruins on one-city challenge - By MindaugasRumsa51
+
+## 4.1.19
+
+Interception always takes an attack  - By itanasi
+
+By OptimizedForDensity:
+- Add more music triggers
+- Move border below icons
+- Significantly reduce AI turn time
+- City health updates when finishing health-increasing buildings
+
+By Azzurite:
+- Fix potential race condition in multiplayer game update
+- Fix game crashing when a multiplayer game can not be read
+
+Sorted Civilopedia eras - By alexban011
+
+Remove in-game mentions of 1.5x unhappiness for puppeted cities  - By Ouaz
+
+## 4.1.18
+
+Fix multiple capture uniques resulting in double-capture
+
+Resolved ANRs caused by fonts taking too long to load
+
+By OptimizedForDensity:
+- Fixed image problems in combat
+- Stop automate production setting from affecting other players' production in MP
+- Sort game speeds in Civilopedia by speed
+- Fix monastery purchase cost
+
+Remove double XP gain from Intercept  - By itanasi
+
+Multiplayer options UI fix - By Azzurite
+
+## 4.1.17
+
+Puppet cities generate no extra unhappiness (per Civ V)
+
+Resolved crash when resuming game after closing it quickly
+
+Modding: Removed deprecated uniques
+
+By OptimizedForDensity:
+- Improve AI belief picking
+- Unstack enemy unit strength modifiers
+- Prevent theme music tracks from randomly playing
+- Fix latest untranslated strings
+
+By alexban011:
+- Increase mod search request page size
+- Puppeted cities can no longer become capitals
+
+## 4.1.16
+
+By OptimizedForDensity:
+- Better AI targeting
+- Generalize production-to-stat conversion uniques
+- Performance improvements
+
+Unit icon opacity control - By letstalkaboutdune
+
 ## 4.1.15
 
 By OptimizedForDensity:

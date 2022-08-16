@@ -3,12 +3,13 @@ package com.unciv.logic.city
 import com.unciv.UncivGame
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.automation.Automation
-import com.unciv.logic.automation.ConstructionAutomation
+import com.unciv.logic.automation.city.ConstructionAutomation
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.logic.multiplayer.isUsersTurn
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.LocalUniqueCache
@@ -495,7 +496,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
     /**
-     *  Purchase a construction for gold
+     *  Purchase a construction for gold (or another stat)
      *  called from NextTurnAutomation and the City UI
      *  Build / place the new item, deduct cost, and maintain queue.
      *
@@ -584,7 +585,12 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                     && (getConstruction(currentConstructionFromQueue) !is PerpetualConstruction || currentConstructionIsUserSet)) return
         }
 
-        ConstructionAutomation(this).chooseNextConstruction()
+        val isCurrentPlayersTurn = cityInfo.civInfo.gameInfo.isUsersTurn()
+                || !cityInfo.civInfo.gameInfo.gameParameters.isOnlineMultiplayer
+        if ((UncivGame.Current.settings.autoAssignCityProduction && isCurrentPlayersTurn) // only automate if the active human player has the setting to automate production
+                || !cityInfo.civInfo.isPlayerCivilization() || cityInfo.isPuppet) {
+            ConstructionAutomation(this).chooseNextConstruction()
+        }
 
         /** Support for [UniqueType.CreatesOneImprovement] - if an Improvement-creating Building was auto-queued, auto-choose a tile: */
         val building = getCurrentConstruction() as? Building ?: return

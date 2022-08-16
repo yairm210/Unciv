@@ -621,6 +621,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [survival knife](https://thenounproject.com/search/?q=survival&i=2663392) by b faris for Survivalism
 -   [Shamrock](https://thenounproject.com/term/shamrock/358507/) By P Thanga Vignesh for Pictish Courage
 -   [home sweet home](https://thenounproject.com/term/home-sweet-home/3817166/) By Silviu Ojog for Home Sweet Home
+-   [Star](https://thenounproject.com/icon/star-35340/) by Trent Kuhn for Dogfighting
 
 ### Religions
 
@@ -652,6 +653,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [City](https://thenounproject.com/search/?q=city&i=571332) By Felix Westphal
 - [Fire](https://thenounproject.com/search/?q=Fire&i=96564) By Lloyd Humphreys for "city being razed" icon
 - [Sleep](https://thenounproject.com/search/?q=sleep&i=1760085) By Saeful Muslim
+- [Clockwise](https://thenounproject.com/icon/clockwise-184528/) By Universal Icons (Louis Dawson) for "Wait" icon. The original work has been slightly modified.
 - [Banner](https://thenounproject.com/term/banner/866282/) By Emir Palavan for embarked units
 - [Arrow](https://thenounproject.com/term/arrow/18123/) By uzeir syarief for moving between idle units
 - [Replace](https://thenounproject.com/search/?q=replace&i=17858) By Mike Rowe for switching tiles between cities
@@ -717,6 +719,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [Aircraft](https://thenounproject.com/search/?q=aircraft&i=1629000) By Tom Fricker for aircraft icon in city button
 - [radar scan](https://thenounproject.com/search/?q=range&i=1500234) By icon 54 for Range
 - [short range radar](https://thenounproject.com/search/?q=air%20range&i=2612731) by Vectors Point for Intercept range
+- [AirSweep](https://thenounproject.com/icon/jet-134340/) by Creative Stall for Air Sweep icon
 - [Puppet](https://thenounproject.com/search/?q=puppet&i=285735) By Ben Davis for puppeted cities
 - [City](https://thenounproject.com/search/?q=city&i=1765370) By Muhajir ila Robbi in the Icon center
 - [Lock](https://thenounproject.com/search/?q=lock&i=3217613) by Vadim Solomakhin for locked tiles
@@ -742,6 +745,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [turn right](https://thenounproject.com/icon/turn-right-1920867/) by Alice Design for Resource Overview
 - [Tyrannosaurus Rex](https://thenounproject.com/icon/tyrannosaurus-rex-4130976/) by Amethyst Studio for Civilopedia Eras header
 - [Timer](https://www.flaticon.com/free-icons/timer) created by Gregor Cresnar Premium - Flaticon
+- [Question](https://thenounproject.com/icon/question-1157126/) created by Aneeque Ahmed for Question Icon
 
 ### Main menu
 

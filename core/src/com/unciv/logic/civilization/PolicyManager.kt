@@ -8,8 +8,6 @@ import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.translations.equalsPlaceholderText
-import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.ui.utils.extensions.toPercent
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -80,11 +78,6 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     private val branches: Set<PolicyBranch>
         get() = civInfo.gameInfo.ruleSet.policyBranches.values.toSet()
 
-    // Only instantiate a single value for all policy managers
-    companion object {
-        private val turnCountRegex by lazy { Regex("for \\[[0-9]*\\] turns") }
-    }
-
     fun clone(): PolicyManager {
         val toReturn = PolicyManager()
         toReturn.numberOfAdoptedPolicies = numberOfAdoptedPolicies
@@ -108,11 +101,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
 
     private fun addPolicyToTransients(policy: Policy) {
         for (unique in policy.uniqueObjects) {
-            // Should be deprecated together with TimedAttackStrength so
-            // I'm putting this here so the compiler will complain if we don't
-            val rememberToDeprecate = UniqueType.TimedAttackStrength
-            if (!unique.text.contains(turnCountRegex))
-                policyUniques.addUnique(unique)
+            policyUniques.addUnique(unique)
         }
     }
 
@@ -166,9 +155,6 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         if (policy.policyBranchType == PolicyBranchType.BranchComplete) return false
         if (!getAdoptedPolicies().containsAll(policy.requires!!)) return false
         if (checkEra && civInfo.gameInfo.ruleSet.eras[policy.branch.era]!!.eraNumber > civInfo.getEraNumber()) return false
-        if (policy.getMatchingUniques(UniqueType.IncompatibleWith)
-                .any { adoptedPolicies.contains(it.params[0]) }
-        ) return false
         if (policy.uniqueObjects.filter { it.type == UniqueType.OnlyAvailableWhen }
                 .any { !it.conditionalsApply(civInfo) }) return false
         return true
@@ -190,7 +176,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
             else if (!civInfo.gameInfo.gameParameters.godMode) {
                 val cultureNeededForNextPolicy = getCultureNeededForNextPolicy()
                 if (cultureNeededForNextPolicy > storedCulture) throw Exception(
-                    "How is this possible??????"
+                    "Trying to adopt a policy without enough culture????"
                 )
                 storedCulture -= cultureNeededForNextPolicy
                 numberOfAdoptedPolicies++
@@ -207,15 +193,13 @@ class PolicyManager : IsPartOfGameInfoSerialization {
             }
         }
 
+        // Todo make this a triggerable unique for other objects
         for (unique in policy.getMatchingUniques(UniqueType.OneTimeGlobalAlert)) {
-            triggerGlobalAlerts(
-                policy, unique.params[0]
-            )
+            triggerGlobalAlerts(policy, unique.params[0])
         }
 
-        for (unique in policy.uniqueObjects) UniqueTriggerActivation.triggerCivwideUnique(
-            unique, civInfo
-        )
+        for (unique in policy.uniqueObjects)
+            UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
 
         // This ALSO has the side-effect of updating the CivInfo statForNextTurn so we don't need to call it explicitly
         for (cityInfo in civInfo.cities) cityInfo.cityStats.update()
@@ -237,7 +221,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     ) {
         var extraNotificationTextCopy = extraNotificationText
         if (extraNotificationText != "") {
-            extraNotificationTextCopy = "\n${extraNotificationText}"
+            extraNotificationTextCopy = " ${extraNotificationText}"
         }
         for (civ in civInfo.gameInfo.civilizations.filter { it.isMajorCiv() }) {
             if (civ == civInfo) continue

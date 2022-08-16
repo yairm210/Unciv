@@ -17,8 +17,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.automation.BattleHelper
-import com.unciv.logic.automation.UnitAutomation
+import com.unciv.logic.automation.unit.BattleHelper
+import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
@@ -190,7 +190,7 @@ class WorldMapHolder(
                             it.movement.canMoveTo(tileInfo) ||
                                     it.movement.isUnknownTileWeShouldAssumeToBePassable(tileInfo) && !it.baseUnit.movesLikeAirUnits()
                         }
-                )) {
+                ) && previousSelectedUnits.any { !it.isPreparingAirSweep()}) {
             if (previousSelectedUnitIsSwapping) {
                 addTileOverlaysWithUnitSwapping(previousSelectedUnits.first(), tileInfo)
             }
@@ -217,7 +217,7 @@ class WorldMapHolder(
     }
 
     private fun onTileRightClicked(unit: MapUnit, tile: TileInfo) {
-        if (UncivGame.Current.gameInfo!!.currentPlayerCiv.isSpectator()) {
+        if (UncivGame.Current.gameInfo!!.getCurrentPlayerCivilization().isSpectator()) {
             return
         }
         removeUnitActionOverlay()
@@ -647,7 +647,7 @@ class WorldMapHolder(
 
         for (tile in tilesInMoveRange) {
             for (tileToColor in tileGroups[tile]!!) {
-                if (isAirUnit)
+                if (isAirUnit && !unit.isPreparingAirSweep()) {
                     if (tile.aerialDistanceTo(unit.getTile()) <= unit.getRange()) {
                         // The tile is within attack range
                         tileToColor.showHighlight(Color.RED, 0.3f)
@@ -655,6 +655,7 @@ class WorldMapHolder(
                         // The tile is within move range
                         tileToColor.showHighlight(Color.BLUE, 0.3f)
                     }
+                }
                 if (unit.movement.canMoveTo(tile) ||
                         unit.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !unit.baseUnit.movesLikeAirUnits())
                     tileToColor.showHighlight(moveTileOverlayColor,

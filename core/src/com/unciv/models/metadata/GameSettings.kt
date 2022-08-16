@@ -4,8 +4,8 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.models.UncivSound
 import com.unciv.logic.multiplayer.FriendList
+import com.unciv.models.UncivSound
 import com.unciv.ui.utils.Fonts
 import java.text.Collator
 import java.time.Duration
@@ -37,7 +37,7 @@ class GameSettings {
     var pauseBetweenTracks = 10
 
     var turnsBetweenAutosaves = 1
-    var tileSet: String = "FantasyHex"
+    var tileSet: String = "HexaRealm"
     var showTutorials: Boolean = true
     var autoAssignCityProduction: Boolean = true
     var autoBuildingRoads: Boolean = true
@@ -45,6 +45,7 @@ class GameSettings {
 
     var showMinimap: Boolean = true
     var minimapSize: Int = 6    // default corresponds to 15% screen space
+    var unitIconOpacity = 1f // default corresponds to fully opaque
     var showPixelUnits: Boolean = true
     var showPixelImprovements: Boolean = true
     var continuousRendering = false
@@ -63,6 +64,7 @@ class GameSettings {
     var multiplayer = GameSettingsMultiplayer()
 
     var showExperimentalWorldWrap = false // We're keeping this as a config due to ANR problems on Android phones for people who don't know what they're doing :/
+    var enableEspionageOption = false
 
     var lastOverviewPage: String = "Cities"
 

@@ -134,9 +134,6 @@ class TechManager : IsPartOfGameInfoSerialization {
         if (tech.uniqueObjects.any { it.type == UniqueType.OnlyAvailableWhen && !it.conditionalsApply(civInfo) })
             return false
 
-        if (tech.getMatchingUniques(UniqueType.IncompatibleWith).any { isResearched(it.params[0]) })
-            return false
-
         if (isResearched(tech.name) && !tech.isContinuallyResearchable())
             return false
 
@@ -241,9 +238,6 @@ class TechManager : IsPartOfGameInfoSerialization {
     }
 
     fun addTechnology(techName: String) {
-        techsInProgress.remove(techName)
-
-        val previousEra = civInfo.getEra()
         techsResearched.add(techName)
 
         // this is to avoid concurrent modification problems
@@ -264,19 +258,6 @@ class TechManager : IsPartOfGameInfoSerialization {
 
         civInfo.addNotification("Research of [$techName] has completed!", TechAction(techName), NotificationIcon.Science, techName)
         civInfo.popupAlerts.add(PopupAlert(AlertType.TechResearched, techName))
-
-        val currentEra = civInfo.getEra()
-        if (previousEra != currentEra) {
-            civInfo.addNotification("You have entered the [$currentEra]!", NotificationIcon.Science)
-            if (civInfo.isMajorCiv()) {
-                for (knownCiv in civInfo.getKnownCivs()) {
-                    knownCiv.addNotification("[${civInfo.civName}] has entered the [$currentEra]!", civInfo.civName, NotificationIcon.Science)
-                }
-            }
-            for (it in getRuleset().policyBranches.values.filter { it.era == currentEra.name && civInfo.policies.isAdoptable(it) }) {
-                civInfo.addNotification("[" + it.name + "] policy branch unlocked!", NotificationIcon.Culture)
-            }
-        }
 
         if (civInfo.playerType == PlayerType.Human) {
             for (revealedResource in getRuleset().tileResources.values.filter { techName == it.revealedBy }) {
@@ -337,7 +318,23 @@ class TechManager : IsPartOfGameInfoSerialization {
             civInfo.addNotification("You have unlocked [The Long Count]!", MayaLongCountAction(), MayaCalendar.notificationIcon)
         }
 
+        val previousEra = civInfo.getEra()
         updateEra()
+        val currentEra = civInfo.getEra()
+        if (previousEra != currentEra) {
+            civInfo.addNotification("You have entered the [$currentEra]!", NotificationIcon.Science)
+            if (civInfo.isMajorCiv()) {
+                for (knownCiv in civInfo.getKnownCivs()) {
+                    knownCiv.addNotification("[${civInfo.civName}] has entered the [$currentEra]!", civInfo.civName, NotificationIcon.Science)
+                }
+            }
+            for (policyBranch in getRuleset().policyBranches.values.filter { it.era == currentEra.name && civInfo.policies.isAdoptable(it) }) {
+                civInfo.addNotification("[" + policyBranch.name + "] policy branch unlocked!", NotificationIcon.Culture)
+            }
+            for (unique in currentEra.uniqueObjects) {
+                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+            }
+        }
     }
 
     fun updateEra() {
@@ -381,15 +378,11 @@ class TechManager : IsPartOfGameInfoSerialization {
     }
 
     private fun updateTransientBooleans() {
-        val wayfinding = civInfo.hasUnique(UniqueType.EmbarkAndEnterOcean)
-        unitsCanEmbark = wayfinding ||
-                civInfo.hasUnique(UniqueType.LandUnitEmbarkation)
+        unitsCanEmbark = civInfo.hasUnique(UniqueType.LandUnitEmbarkation)
         val enterOceanUniques = civInfo.getMatchingUniques(UniqueType.UnitsMayEnterOcean)
         allUnitsCanEnterOcean = enterOceanUniques.any { it.params[0] == "All" }
-        embarkedUnitsCanEnterOcean = wayfinding ||
-                allUnitsCanEnterOcean ||
-                enterOceanUniques.any { it.params[0] == "Embarked" } ||
-                civInfo.hasUnique(UniqueType.EmbarkedUnitsMayEnterOcean)
+        embarkedUnitsCanEnterOcean = allUnitsCanEnterOcean ||
+                enterOceanUniques.any { it.params[0] == "Embarked" }
         specificUnitsCanEnterOcean = enterOceanUniques.any { it.params[0] != "All" && it.params[0] != "Embarked" }
 
         movementSpeedOnRoads = if (civInfo.hasUnique(UniqueType.RoadMovementSpeed))

@@ -17,7 +17,7 @@ class PantheonPickerScreen(
         for (belief in ruleset.beliefs.values) {
             if (belief.type != BeliefType.Pantheon) continue
             val beliefButton = getBeliefButton(belief, withTypeLabel = false)
-            if (choosingCiv.religionManager.isPickablePantheonBelief(belief)) {
+            if (choosingCiv.religionManager.getReligionWithBelief(belief) == null) {
                 beliefButton.onClickSelect(selection, belief) {
                     selectedPantheon = belief
                     pick("Follow [${belief.name}]".tr())
@@ -29,7 +29,7 @@ class PantheonPickerScreen(
         }
 
         setOKAction("Choose a pantheon") {
-            choosePantheonBelief(selectedPantheon!!)
+            chooseBeliefs(listOf(selectedPantheon!!), useFreeBeliefs = usingFreeBeliefs())
         }
     }
 }

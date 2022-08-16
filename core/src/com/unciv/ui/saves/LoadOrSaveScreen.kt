@@ -101,6 +101,7 @@ abstract class LoadOrSaveScreen(
 
         selectedSave = saveGameFile.name()
         showSaveInfo(saveGameFile)
+        rightSideButton.isVisible = true
         onExistingSaveSelected(saveGameFile)
     }
 

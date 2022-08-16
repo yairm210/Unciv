@@ -24,6 +24,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.extensions.getConsumesAmountString
+import com.unciv.ui.utils.extensions.getNeedMoreAmountString
 import com.unciv.ui.utils.extensions.toPercent
 import kotlin.math.pow
 
@@ -31,8 +32,8 @@ import kotlin.math.pow
 class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     override var requiredTech: String? = null
+    override var cost: Int = 0
 
-    var cost: Int = 0
     var maintenance = 0
     private var percentStatBonus: Stats? = null
     var specialistSlots: Counter<String> = Counter()
@@ -181,17 +182,11 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                  localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Stats {
         // Calls the clone function of the NamedStats this class is derived from, not a clone function of this class
         val stats = cloneStats()
-        val civInfo = city.civInfo
 
         for (unique in localUniqueCache.get("StatsFromObject", city.getMatchingUniques(UniqueType.StatsFromObject))) {
             if (!matchesFilter(unique.params[1])) continue
             stats.add(unique.stats)
         }
-
-        @Suppress("RemoveRedundantQualifierName")  // make it clearer Building inherits Stats
-        for (unique in getMatchingUniques(UniqueType.StatsWithResource))
-            if (civInfo.hasResource(unique.params[1]))
-                stats.add(unique.stats)
 
         if (!isWonder)
             for (unique in localUniqueCache.get("StatsFromBuildings", city.getMatchingUniques(UniqueType.StatsFromBuildings))) {
@@ -484,14 +479,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     if (!unique.conditionalsApply(civInfo, cityConstructions.cityInfo))
                         rejectionReasons.add(RejectionReason.ShouldNotBeDisplayed)
 
-                UniqueType.NotDisplayedWithout ->
-                    if (unique.params[0] in ruleSet.tileResources && !civInfo.hasResource(unique.params[0])
-                        || unique.params[0] in ruleSet.buildings && !cityConstructions.containsBuildingOrEquivalent(unique.params[0])
-                        || unique.params[0] in ruleSet.technologies && !civInfo.tech.isResearched(unique.params[0])
-                        || unique.params[0] in ruleSet.policies && !civInfo.policies.isAdopted(unique.params[0])
-                    )
-                        rejectionReasons.add(RejectionReason.ShouldNotBeDisplayed)
-
                 UniqueType.EnablesNuclearWeapons -> if (!cityConstructions.cityInfo.civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled)
                         rejectionReasons.add(RejectionReason.DisabledBySetting)
 
@@ -517,15 +504,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     )
                         rejectionReasons.add(RejectionReason.MustOwnTile.toInstance(unique.text))
 
-                // Deprecated since 3.16.11
-                    UniqueType.CanOnlyBeBuiltInAnnexedCities ->
-                        if (
-                            cityConstructions.cityInfo.isPuppet
-                            || cityConstructions.cityInfo.civInfo.civName == cityConstructions.cityInfo.foundingCiv
-                        )
-                            rejectionReasons.add(RejectionReason.CanOnlyBeBuiltInSpecificCities.toInstance(unique.text))
-                //
-
                 UniqueType.CanOnlyBeBuiltInCertainCities ->
                     if (!cityConstructions.cityInfo.matchesFilter(unique.params[0]))
                         rejectionReasons.add(RejectionReason.CanOnlyBeBuiltInSpecificCities.toInstance(unique.text))
@@ -542,38 +520,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     if (civInfo.civConstructions.countConstructedObjects(this) >= unique.params[0].toInt())
                         rejectionReasons.add(RejectionReason.MaxNumberBuildable)
 
-                // This should be deprecated and replaced with the already-existing "only available when" unique, see above
-                UniqueType.UnlockedWith, UniqueType.Requires -> {
-                    val filter = unique.params[0]
-                    when {
-                        ruleSet.technologies.contains(filter) ->
-                            if (!civInfo.tech.isResearched(filter))
-                                rejectionReasons.add(RejectionReason.RequiresTech.toInstance(unique.text))
-                        ruleSet.policies.contains(filter) ->
-                            if (!civInfo.policies.isAdopted(filter))
-                                rejectionReasons.add(RejectionReason.RequiresPolicy.toInstance(unique.text))
-                        ruleSet.eras.contains(filter) ->
-                            if (civInfo.getEraNumber() < ruleSet.eras[filter]!!.eraNumber)
-                                rejectionReasons.add(RejectionReason.UnlockedWithEra.toInstance(unique.text))
-                        ruleSet.buildings.contains(filter) ->
-                            if (civInfo.cities.none { it.cityConstructions.containsBuildingOrEquivalent(filter) })
-                                rejectionReasons.add(RejectionReason.RequiresBuildingInSomeCity.toInstance(unique.text))
-                    }
-                }
-
                 // To be replaced with `Only available <after [Apollo Project] has been build>`
                 UniqueType.SpaceshipPart -> {
                     if (!civInfo.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts))
                         rejectionReasons.add(RejectionReason.RequiresBuildingInSomeCity.toInstance("Apollo project not built!"))
-                }
-
-                UniqueType.RequiresAnotherBuilding -> {
-                    val filter = unique.params[0]
-                    if (civInfo.gameInfo.ruleSet.buildings.containsKey(filter) && !cityConstructions.containsBuildingOrEquivalent(filter))
-                        rejectionReasons.add(
-                                // replace with civ-specific building for user
-                                RejectionReason.RequiresBuildingInThisCity.toInstance("Requires a [${civInfo.getEquivalentBuilding(filter)}] in this city")
-                        )
                 }
 
                 UniqueType.RequiresBuildingInSomeCities -> {
@@ -664,15 +614,12 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             rejectionReasons.add(RejectionReason.RequiresBuildingInThisCity.toInstance("Requires a [${civInfo.getEquivalentBuilding(requiredBuilding!!)}] in this city"))
         }
 
-        val cannotBeBuiltWithUnique = uniqueObjects
-            .firstOrNull { it.isOfType(UniqueType.CannotBeBuiltWith) }
-        if (cannotBeBuiltWithUnique != null && cityConstructions.containsBuildingOrEquivalent(cannotBeBuiltWithUnique.params[0]))
-            rejectionReasons.add(RejectionReason.CannotBeBuiltWith.toInstance(cannotBeBuiltWithUnique.text))
-
-        for ((resource, amount) in getResourceRequirements())
-            if (civInfo.getCivResourcesByName()[resource]!! < amount) {
-                rejectionReasons.add(RejectionReason.ConsumesResources.toInstance(resource.getConsumesAmountString(amount)))
+        for ((resource, requiredAmount) in getResourceRequirements()) {
+            val availableAmount = civInfo.getCivResourcesByName()[resource]!!
+            if (availableAmount < requiredAmount) {
+                rejectionReasons.add(RejectionReason.ConsumesResources.toInstance(resource.getNeedMoreAmountString(requiredAmount - availableAmount)))
             }
+        }
 
         if (requiredNearbyImprovedResources != null) {
             val containsResourceWithImprovement = cityConstructions.cityInfo.getWorkableTiles()
@@ -700,6 +647,12 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (civInfo.gameInfo.spaceResources.contains(name)) {
             civInfo.victoryManager.currentsSpaceshipParts.add(name, 1)
             return true
+        }
+
+        if (cityHealth > 0) {
+            // city built a building that increases health so add a portion of this added health that is
+            // proportional to the city's current health
+            cityConstructions.cityInfo.health += (cityHealth.toFloat() * cityConstructions.cityInfo.health.toFloat() / cityConstructions.cityInfo.getMaxHealth().toFloat()).toInt()
         }
 
         cityConstructions.addBuilding(name)

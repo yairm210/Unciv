@@ -12,7 +12,7 @@ import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
 import com.unciv.logic.BackwardCompatibility.updateGreatGeneralUniques
 import com.unciv.logic.GameInfo.Companion.CURRENT_COMPATIBILITY_NUMBER
 import com.unciv.logic.GameInfo.Companion.FIRST_WITHOUT
-import com.unciv.logic.automation.NextTurnAutomation
+import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.CivilizationInfoPreview
@@ -157,7 +157,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     }
 
     fun getPlayerToViewAs(): CivilizationInfo {
-        if (!gameParameters.isOnlineMultiplayer) return currentPlayerCiv // non-online, play as human player
+        if (!gameParameters.isOnlineMultiplayer) return getCurrentPlayerCivilization() // non-online, play as human player
         val userId = UncivGame.Current.settings.multiplayer.userId
 
         // Iterating on all civs, starting from the the current player, gives us the one that will have the next turn
@@ -212,6 +212,10 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         return !religionDisabledByRuleset && gameParameters.religionEnabled
     }
 
+    fun isEspionageEnabled(): Boolean {
+        return gameParameters.espionageEnabled
+    }
+
     private fun getEquivalentTurn(): Int {
         val totalTurns = speed.numTotalTurns()
         val startPercent = ruleSet.eras[gameParameters.startingEra]!!.startPercent
@@ -243,7 +247,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         var currentPlayerIndex = civilizations.indexOf(thisPlayer)
 
 
-        fun switchTurn() {
+        fun endTurn() {
             thisPlayer.endTurn()
             currentPlayerIndex = (currentPlayerIndex + 1) % civilizations.size
             if (currentPlayerIndex == 0) {
@@ -252,14 +256,13 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
                     debug("Starting simulation of turn %s", turns)
             }
             thisPlayer = civilizations[currentPlayerIndex]
-            thisPlayer.startTurn()
         }
 
         //check is important or else switchTurn
         //would skip a turn if an AI civ calls nextTurn
         //this happens when resigning a multiplayer game
         if (thisPlayer.isPlayerCivilization()) {
-            switchTurn()
+            endTurn()
         }
 
         while (thisPlayer.playerType == PlayerType.AI
@@ -269,6 +272,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
                 // we'll want to skip over their turn
                 || gameParameters.isOnlineMultiplayer && (thisPlayer.isDefeated() || thisPlayer.isSpectator() && thisPlayer.playerId != UncivGame.Current.settings.multiplayer.userId)
         ) {
+            thisPlayer.startTurn()
             if (!thisPlayer.isDefeated() || thisPlayer.isBarbarian()) {
                 NextTurnAutomation.automateCivMoves(thisPlayer)
 
@@ -283,7 +287,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
                     break
                 }
             }
-            switchTurn()
+            endTurn()
         }
         if (turns == UncivGame.Current.simulateUntilTurnForDebug)
             UncivGame.Current.simulateUntilTurnForDebug = 0
@@ -291,6 +295,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         currentTurnStartTime = System.currentTimeMillis()
         currentPlayer = thisPlayer.civName
         currentPlayerCiv = getCivilization(currentPlayer)
+        thisPlayer.startTurn()
         if (currentPlayerCiv.isSpectator()) currentPlayerCiv.popupAlerts.clear() // no popups for spectators
 
         if (turns % 10 == 0) //todo measuring actual play time might be nicer
@@ -487,14 +492,13 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         for (religion in religions.values) religion.setTransients(this)
 
         for (civInfo in civilizations) civInfo.setTransients()
-        for (civInfo in civilizations) civInfo.updateSightAndResources()
 
         convertFortify()
 
         for (civInfo in civilizations) {
             for (unit in civInfo.getCivUnits())
                 unit.updateVisibleTiles(false) // this needs to be done after all the units are assigned to their civs and all other transients are set
-            civInfo.updateViewableTiles() // only run ONCE and not for each unit - this is a huge performance saver!
+            civInfo.updateSightAndResources() // only run ONCE and not for each unit - this is a huge performance saver!
 
             // Since this depends on the cities of ALL civilizations,
             // we need to wait until we've set the transients of all the cities before we can run this.
@@ -510,8 +514,9 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
                 /** We remove constructions from the queue that aren't defined in the ruleset.
                  * This can lead to situations where the city is puppeted and had its construction removed, and there's no way to user-set it
                  * So for cities like those, we'll auto-set the construction
+                 * Also set construction for human players who have automate production turned on
                  */
-                if (cityInfo.isPuppet && cityInfo.cityConstructions.constructionQueue.isEmpty())
+                if (cityInfo.cityConstructions.constructionQueue.isEmpty())
                     cityInfo.cityConstructions.chooseNextConstruction()
 
                 // We also remove resources that the city may be demanding but are no longer in the ruleset
@@ -539,6 +544,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     //endregion
 
     fun asPreview() = GameInfoPreview(this)
+
 }
 
 /**

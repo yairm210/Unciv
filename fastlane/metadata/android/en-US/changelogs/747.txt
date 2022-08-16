@@ -1,0 +1,8 @@
+Mod translations are now loaded upon mod download
+
+By OptimizedForDensity:
+- List which city owns each tile in the city screen UI
+- Add free belief unique + refactor a few religion functions
+- Several pathfinding optimizations
+
+Fix missing "HP" in battle notifications - By Ouaz

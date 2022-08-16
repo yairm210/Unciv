@@ -4,16 +4,15 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
-import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.tile.TileImprovement
+import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.Fonts
-import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.keyShortcuts
@@ -80,6 +79,8 @@ class ImprovementPickerScreen(
         if (Constants.remove + tileInfoWithoutLastTerrain.getLastTerrain().name in ruleSet.tileImprovements) {
             tileInfoWithoutLastTerrain.removeTerrainFeature(tileInfoWithoutLastTerrain.getLastTerrain().name)
         }
+
+        val cityUniqueCache = LocalUniqueCache()
 
         for (improvement in ruleSet.tileImprovements.values) {
             var suggestRemoval = false
@@ -152,11 +153,21 @@ class ImprovementPickerScreen(
             val statIcons = getStatIconsTable(provideResource, removeImprovement)
 
             // get benefits of the new improvement
-            val stats = tileInfo.getImprovementStats(improvement, currentPlayerCiv, tileInfo.getCity())
+            val stats = tileInfo.getImprovementStats(
+                improvement,
+                currentPlayerCiv,
+                tileInfo.getCity(),
+                cityUniqueCache
+            )
             // subtract the benefits of the replaced improvement, if any
             val existingImprovement = tileInfo.getTileImprovement()
             if (existingImprovement != null && removeImprovement) {
-                val existingStats = tileInfo.getImprovementStats(existingImprovement, currentPlayerCiv, tileInfo.getCity())
+                val existingStats = tileInfo.getImprovementStats(
+                    existingImprovement,
+                    currentPlayerCiv,
+                    tileInfo.getCity(),
+                    cityUniqueCache
+                )
                 stats.add(existingStats.times(-1.0f))
             }
 

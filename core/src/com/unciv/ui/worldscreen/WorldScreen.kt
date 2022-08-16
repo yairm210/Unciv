@@ -25,12 +25,12 @@ import com.unciv.logic.multiplayer.MultiplayerGameUpdated
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.TutorialTrigger
+import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.multiplayer.MultiplayerHelpers
 import com.unciv.ui.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.pickerscreens.DiplomaticVotePickerScreen
 import com.unciv.ui.pickerscreens.DiplomaticVoteResultScreen
@@ -156,9 +156,8 @@ class WorldScreen(
         stage.addActor(techPolicyAndDiplomacy)
         stage.addActor(tutorialTaskTable)
 
-        if (UncivGame.Current.settings.showZoomButtons) {
-            stage.addActor(zoomController)
-        }
+        stage.addActor(zoomController)
+        zoomController.isVisible = UncivGame.Current.settings.showZoomButtons
 
         stage.addActor(fogOfWarButton)
         stage.addActor(bottomUnitTable)
@@ -239,7 +238,7 @@ class WorldScreen(
         globalShortcuts.add(Input.Keys.F11) { QuickSave.save(gameInfo, this) }    // Quick Save
         globalShortcuts.add(Input.Keys.F12) { QuickSave.load(this) }    // Quick Load
         globalShortcuts.add(Input.Keys.HOME) {    // Capital City View
-            val capital = gameInfo.currentPlayerCiv.getCapital()
+            val capital = gameInfo.getCurrentPlayerCivilization().getCapital()
             if (capital != null && !mapHolder.setCenterPosition(capital.location))
                 game.pushScreen(CityScreen(capital))
         }
@@ -394,6 +393,8 @@ class WorldScreen(
                         .map { (_, source, target) -> source to target }
             )
         }
+
+        zoomController.isVisible = UncivGame.Current.settings.showZoomButtons
 
         // if we use the clone, then when we update viewable tiles
         // it doesn't update the explored tiles of the civ... need to think about that harder
@@ -682,13 +683,17 @@ class WorldScreen(
                     viewingCiv.policies.shouldOpenPolicyPicker = false
                 }
 
-            viewingCiv.religionManager.canFoundPantheon() ->
-                NextTurnAction("Found Pantheon", Color.WHITE) {
+            viewingCiv.religionManager.canFoundOrExpandPantheon() -> {
+                val displayString = if (viewingCiv.religionManager.religionState == ReligionState.Pantheon)
+                    "Expand Pantheon"
+                else "Found Pantheon"
+                NextTurnAction(displayString, Color.valueOf(BeliefType.Pantheon.color)) {
                     game.pushScreen(PantheonPickerScreen(viewingCiv))
                 }
+            }
 
             viewingCiv.religionManager.religionState == ReligionState.FoundingReligion ->
-                NextTurnAction("Found Religion", Color.WHITE) {
+                NextTurnAction("Found Religion", Color.valueOf(BeliefType.Founder.color)) {
                     game.pushScreen(
                         ReligiousBeliefsPickerScreen(
                             viewingCiv,
@@ -699,11 +704,22 @@ class WorldScreen(
                 }
 
             viewingCiv.religionManager.religionState == ReligionState.EnhancingReligion ->
-                NextTurnAction("Enhance a Religion", Color.ORANGE) {
+                NextTurnAction("Enhance a Religion", Color.valueOf(BeliefType.Enhancer.color)) {
                     game.pushScreen(
                         ReligiousBeliefsPickerScreen(
                             viewingCiv,
                             viewingCiv.religionManager.getBeliefsToChooseAtEnhancing(),
+                            pickIconAndName = false
+                        )
+                    )
+                }
+
+            viewingCiv.religionManager.hasFreeBeliefs() ->
+                NextTurnAction("Reform Religion", Color.valueOf(BeliefType.Enhancer.color)) {
+                    game.pushScreen(
+                        ReligiousBeliefsPickerScreen(
+                            viewingCiv,
+                            viewingCiv.religionManager.freeBeliefsAsEnums(),
                             pickIconAndName = false
                         )
                     )
@@ -748,7 +764,7 @@ class WorldScreen(
 
     override fun resize(width: Int, height: Int) {
         if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
-            startNewScreenJob(gameInfo) // start over
+            startNewScreenJob(gameInfo, true) // start over
         }
     }
 
@@ -826,7 +842,7 @@ class WorldScreen(
 }
 
 /** This exists so that no reference to the current world screen remains, so the old world screen can get garbage collected during [UncivGame.loadGame]. */
-private fun startNewScreenJob(gameInfo: GameInfo) {
+private fun startNewScreenJob(gameInfo: GameInfo, autosaveDisabled:Boolean = false) {
     Concurrency.run {
         val newWorldScreen = try {
             UncivGame.Current.loadGame(gameInfo)
@@ -845,7 +861,8 @@ private fun startNewScreenJob(gameInfo: GameInfo) {
             return@run
         }
 
-        val shouldAutoSave = gameInfo.turns % UncivGame.Current.settings.turnsBetweenAutosaves == 0
+        val shouldAutoSave = !autosaveDisabled
+                && gameInfo.turns % UncivGame.Current.settings.turnsBetweenAutosaves == 0
         if (shouldAutoSave) {
             newWorldScreen.autoSave()
         }

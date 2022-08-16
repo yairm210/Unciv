@@ -1,7 +1,7 @@
 package com.unciv.logic.civilization
 
 import com.unciv.Constants
-import com.unciv.logic.automation.NextTurnAutomation
+import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.civilization.diplomacy.*
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceSupplyList
@@ -303,11 +303,18 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                 civInfo.getCapital()!!.location, civInfo.civName, NotificationIcon.Diplomacy, otherCiv.civName)
         for (unit in civInfo.getCivUnits())
             unit.gift(otherCiv)
+
+        // Make sure this CS can never be liberated
+        civInfo.gameInfo.getCities().filter {
+            it.foundingCiv == civInfo.civName
+        }.forEach {
+            it.foundingCiv = ""
+            it.isOriginalCapital = false
+        }
+
         for (city in civInfo.cities) {
             city.moveToCiv(otherCiv)
             city.isPuppet = true // Human players get a popup that allows them to annex instead
-            city.foundingCiv = "" // This is no longer a city-state
-            city.isOriginalCapital = false // It's now an ordinary city and can be razed in later conquests
         }
         civInfo.destroy()
     }
@@ -345,7 +352,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         val recentBullying = civInfo.getRecentBullyingCountdown()
         if (recentBullying != null && recentBullying > 10)
             modifiers["Very recently paid tribute"] = -300
-        else if (recentBullying != null)
+        else if (recentBullying != null && recentBullying > 0)
             modifiers["Recently paid tribute"] = -40
         if (civInfo.getDiplomacyManager(demandingCiv).getInfluence() < -30)
             modifiers["Influence below -30"] = -300

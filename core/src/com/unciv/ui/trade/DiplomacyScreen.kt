@@ -38,6 +38,7 @@ import com.unciv.ui.tilegroups.CityButton
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.RecreateOnResize
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.extensions.addSeparator
 import com.unciv.ui.utils.extensions.disable
@@ -62,9 +63,9 @@ import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 @Suppress("KDocUnresolvedReference")  // Mentioning non-field parameters is flagged, but they work anyway
 class DiplomacyScreen(
     val viewingCiv: CivilizationInfo,
-    selectCiv: CivilizationInfo? = null,
-    selectTrade: Trade? = null
-): BaseScreen() {
+    private val selectCiv: CivilizationInfo? = null,
+    private val selectTrade: Trade? = null
+): BaseScreen(), RecreateOnResize {
     companion object {
         private const val nationIconSize = 100f
         private const val nationIconPad = 10f
@@ -152,9 +153,12 @@ class DiplomacyScreen(
                 questIcon.x = floor(civIndicator.width - questIcon.width)
             }
 
+            val civNameLabel = civ.civName.toLabel()
             leftSideTable.add(civIndicator).row()
+            leftSideTable.add(civNameLabel).padBottom(20f).row()
 
             civIndicator.onClick { updateRightSide(civ) }
+            civNameLabel.onClick { updateRightSide(civ) }
         }
 
         if (selectCivY != 0f) {
@@ -263,7 +267,7 @@ class DiplomacyScreen(
                     .row()
         }
 
-        val friendBonusLabelColor = if (relationLevel >= RelationshipLevel.Friend) Color.GREEN else Color.GRAY
+        val friendBonusLabelColor = if (relationLevel == RelationshipLevel.Friend) Color.GREEN else Color.GRAY
         val friendBonusLabel = friendBonusText.toLabel(friendBonusLabelColor)
             .apply { setAlignment(Align.center) }
         diplomacyTable.add(friendBonusLabel).row()
@@ -1008,4 +1012,6 @@ class DiplomacyScreen(
         super.resize(width, height)
         positionCloseButton()
     }
+
+    override fun recreate(): BaseScreen = DiplomacyScreen(viewingCiv, selectCiv, selectTrade)
 }

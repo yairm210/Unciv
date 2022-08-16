@@ -41,12 +41,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Reveals the entire map"
 	Applicable to: Triggerable
 
-??? example  "Triggers voting for the Diplomatic Victory"
+??? example  "Gain a free [beliefType] belief"
+	Example: "Gain a free [Follower] belief"
+
 	Applicable to: Triggerable
 
-??? example  "Triggers the following global alert: [comment]"
-	Example: "Triggers the following global alert: [comment]"
-
+??? example  "Triggers voting for the Diplomatic Victory"
 	Applicable to: Triggerable
 
 ??? example  "This Unit gains the [promotion] promotion"
@@ -70,7 +70,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Triggerable
 
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Triggerable, Global, Nation, Era, Speed, Tech, Policy, FounderBelief, FollowerBelief, Building, Wonder, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, CityState, ModOptions, Conditional
+	Applicable to: Triggerable, Global, Nation, Era, Tech, Policy, FounderBelief, FollowerBelief, Building, Wonder, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Tutorial, CityState, ModOptions, Conditional
 
 ## Global uniques
 ??? example  "[stats]"
@@ -163,11 +163,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
-??? example  "[relativeAmount]% Production when constructing [buildingFilter] wonders [cityFilter]"
-	Example: "[+20]% Production when constructing [Culture] wonders [in all cities]"
-
-	Applicable to: Global, FollowerBelief
-
 ??? example  "[relativeAmount]% Production when constructing [buildingFilter] buildings [cityFilter]"
 	Example: "[+20]% Production when constructing [Culture] buildings [in all cities]"
 
@@ -178,13 +173,15 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
+??? example  "[relativeAmount]% Production when constructing [buildingFilter] wonders [cityFilter]"
+	Example: "[+20]% Production when constructing [Culture] wonders [in all cities]"
+
+	Applicable to: Global, FollowerBelief
+
 ??? example  "[relativeAmount]% Production towards any buildings that already exist in the Capital"
 	Example: "[+20]% Production towards any buildings that already exist in the Capital"
 
 	Applicable to: Global, FollowerBelief
-
-??? example  "Tile yields from Natural Wonders doubled"
-	Applicable to: Global
 
 ??? example  "Military Units gifted from City-States start with [amount] XP"
 	Example: "Military Units gifted from City-States start with [3] XP"
@@ -363,10 +360,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "Enables conversion of city production to gold"
-	Applicable to: Global
+??? example  "Enables conversion of city production to [civWideStat]"
+	Example: "Enables conversion of city production to [Gold]"
 
-??? example  "Enables conversion of city production to science"
 	Applicable to: Global
 
 ??? example  "[stat] cost of purchasing items in cities [relativeAmount]%"
@@ -447,7 +443,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)"
 	Applicable to: Global
 
-??? example  "Production to science conversion in cities increased by 33%"
+??? example  "Production to [civWideStat] conversion in cities changed by [relativeAmount]%"
+	Example: "Production to [Gold] conversion in cities changed by [+20]%"
+
 	Applicable to: Global
 
 ??? example  "Notified of new Barbarian encampments"
@@ -746,22 +744,17 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
-??? example  "[greatPerson] is earned [relativeAmount]% faster"
-	Example: "[Great General] is earned [+20]% faster"
-
-	Applicable to: Global, Unit
-
-??? example  "Earn [amount]% of the damage done to [combatantFilter] units as [plunderableStat]"
+??? example  "Earn [amount]% of the damage done to [combatantFilter] units as [civWideStat]"
 	Example: "Earn [3]% of the damage done to [City] units as [Gold]"
 
 	Applicable to: Global, Unit
 
-??? example  "Upon capturing a city, receive [amount] times its [stat] production as [plunderableStat] immediately"
+??? example  "Upon capturing a city, receive [amount] times its [stat] production as [civWideStat] immediately"
 	Example: "Upon capturing a city, receive [3] times its [Culture] production as [Gold] immediately"
 
 	Applicable to: Global, Unit
 
-??? example  "Earn [amount]% of killed [mapUnitFilter] unit's [costOrStrength] as [plunderableStat]"
+??? example  "Earn [amount]% of killed [mapUnitFilter] unit's [costOrStrength] as [civWideStat]"
 	Example: "Earn [3]% of killed [Wounded] unit's [Cost] as [Gold]"
 
 	Applicable to: Global, Unit
@@ -773,6 +766,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "[relativeAmount]% XP gained from combat"
 	Example: "[+20]% XP gained from combat"
+
+	Applicable to: Global, Unit
+
+??? example  "[greatPerson] is earned [relativeAmount]% faster"
+	Example: "[Great General] is earned [+20]% faster"
 
 	Applicable to: Global, Unit
 
@@ -807,6 +805,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Starting in this era disables religion"
 	Applicable to: Era
 
+??? example  "Every major Civilization gains a spy once a civilization enters this era"
+	Applicable to: Era
+
+??? example  "Every major Civilization gains a spy once a civilization enters this era"
+	Applicable to: Era
+
 ## Tech uniques
 ??? example  "Starting tech"
 	Applicable to: Tech
@@ -816,6 +820,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Cannot be hurried"
 	Applicable to: Tech, Building
+
+## Policy uniques
+??? example  "Triggers the following global alert: [comment]"
+	Example: "Triggers the following global alert: [comment]"
+
+	Applicable to: Policy
 
 ## FounderBelief uniques
 ??? example  "[stats] for each global city following this religion"
@@ -834,7 +844,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: FollowerBelief
 
-??? example  "Earn [amount]% of [mapUnitFilter] unit's [costOrStrength] as [plunderableStat] when killed within 4 tiles of a city following this religion"
+??? example  "Earn [amount]% of [mapUnitFilter] unit's [costOrStrength] as [civWideStat] when killed within 4 tiles of a city following this religion"
 	Example: "Earn [3]% of [Wounded] unit's [Cost] as [Gold] when killed within 4 tiles of a city following this religion"
 
 	Applicable to: FollowerBelief
@@ -1141,6 +1151,19 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Cannot be intercepted"
 	Applicable to: Unit
 
+??? example  "Cannot intercept [mapUnitFilter] units"
+	Example: "Cannot intercept [Wounded] units"
+
+	Applicable to: Unit
+
+??? example  "Can perform Air Sweep"
+	Applicable to: Unit
+
+??? example  "[relativeAmount]% Strength when performing Air Sweep"
+	Example: "[+20]% Strength when performing Air Sweep"
+
+	Applicable to: Unit
+
 ??? example  "May capture killed [mapUnitFilter] units"
 	Example: "May capture killed [Wounded] units"
 
@@ -1160,6 +1183,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "May upgrade to [baseUnitFilter] through ruins-like effects"
 	Example: "May upgrade to [Melee] through ruins-like effects"
 
+	Applicable to: Unit
+
+??? example  "Destroys tile improvements when attacking"
 	Applicable to: Unit
 
 ??? example  "Double movement in [terrainFilter]"
@@ -1501,6 +1527,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Irremovable"
 	Applicable to: Improvement
 
+??? example  "Will be replaced by automated workers"
+	Applicable to: Improvement
+
 ## Resource uniques
 ??? example  "Deposits in [tileFilter] tiles always provide [amount] resources"
 	Example: "Deposits in [Farm] tiles always provide [3] resources"
@@ -1649,11 +1678,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;during a Golden Age&gt;"
 	Applicable to: Conditional
 
-??? example  "&lt;with [resource]&gt;"
-	Example: "&lt;with [Iron]&gt;"
-
-	Applicable to: Conditional
-
 ??? example  "&lt;while the empire is happy&gt;"
 	Applicable to: Conditional
 
@@ -1712,6 +1736,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;if [buildingName] is constructed&gt;"
 	Example: "&lt;if [Library] is constructed&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;with [resource]&gt;"
+	Example: "&lt;with [Iron]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;without [resource]&gt;"
+	Example: "&lt;without [Iron]&gt;"
 
 	Applicable to: Conditional
 
@@ -1841,12 +1875,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[belief]: The name of any belief.
 *[beliefType]: 'Pantheon', 'Follower', 'Founder' or 'Enhancer'
 *[buildingName]: The name of any building.
+*[civWideStat]: All the following stats have civ-wide fields: `Gold`, `Science`, `Culture`, `Faith`.
 *[combatantFilter]: This indicates a combatant, which can either be a unit or a city (when bombarding). Must either be `City` or a `mapUnitFilter`.
 *[costOrStrength]: `Cost` or `Strength`.
 *[era]: The name of any era.
 *[foundingOrEnhancing]: `founding` or `enhancing`.
 *[improvementName]: The name of any improvement.
-*[plunderableStat]: All the following stats can be plundered: `Gold`, `Science`, `Culture`, `Faith`.
 *[policy]: The name of any policy.
 *[promotion]: The name of any promotion.
 *[relativeAmount]: This indicates a number, usually with a + or - sign, such as `+25` (this kind of parameter is often followed by '%' which is nevertheless not part of the value).

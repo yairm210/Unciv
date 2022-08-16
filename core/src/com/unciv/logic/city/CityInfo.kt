@@ -366,7 +366,7 @@ class CityInfo : IsPartOfGameInfoSerialization {
     fun getWorkableTiles() = tilesInRange.asSequence().filter { it.getOwner() == civInfo }
     fun isWorked(tileInfo: TileInfo) = workedTiles.contains(tileInfo.position)
 
-    fun isCapital(): Boolean = cityConstructions.builtBuildings.contains(capitalCityIndicator())
+    fun isCapital(): Boolean = cityConstructions.getBuiltBuildings().any { it.hasUnique(UniqueType.IndicatesCapital) }
     fun isCoastal(): Boolean = centerTileInfo.isCoastalTile()
     fun capitalCityIndicator(): String {
         val indicatorBuildings = getRuleset().buildings.values
@@ -506,9 +506,7 @@ class CityInfo : IsPartOfGameInfoSerialization {
 
     fun getGreatPersonPercentageBonus(): Int{
         var allGppPercentageBonus = 0
-        for (unique in getMatchingUniques(UniqueType.GreatPersonPointPercentage)
-            + getMatchingUniques(UniqueType.GreatPersonPointPercentageDeprecated)
-        ) {
+        for (unique in getMatchingUniques(UniqueType.GreatPersonPointPercentage)) {
             if (!matchesFilter(unique.params[1])) continue
             allGppPercentageBonus += unique.params[0].toInt()
         }
@@ -586,7 +584,8 @@ class CityInfo : IsPartOfGameInfoSerialization {
 
     override fun toString() = name // for debug
 
-    fun isHolyCity(): Boolean = religion.religionThisIsTheHolyCityOf != null
+    fun isHolyCity(): Boolean = religion.religionThisIsTheHolyCityOf != null && !religion.isBlockedHolyCity
+    fun isHolyCityOf(religionName: String?) = isHolyCity() && religion.religionThisIsTheHolyCityOf == religionName
 
     fun canBeDestroyed(justCaptured: Boolean = false): Boolean {
         return !isOriginalCapital && !isHolyCity() && (!isCapital() || justCaptured)
@@ -921,7 +920,7 @@ class CityInfo : IsPartOfGameInfoSerialization {
             "in foreign cities" -> viewingCiv != civInfo
             "in annexed cities" -> foundingCiv != civInfo.civName && !isPuppet
             "in puppeted cities" -> isPuppet
-            "in holy cities" -> religion.religionThisIsTheHolyCityOf != null
+            "in holy cities" -> isHolyCity()
             "in City-State cities" -> civInfo.isCityState()
             // This is only used in communication to the user indicating that only in cities with this
             // religion a unique is active. However, since religion uniques only come from the city itself,

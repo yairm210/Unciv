@@ -103,7 +103,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
             AlertType.CityConquered -> {
                 val city = worldScreen.gameInfo.getCities().first { it.id == popupAlert.value }
                 addQuestionAboutTheCity(city.name)
-                val conqueringCiv = worldScreen.gameInfo.currentPlayerCiv
+                val conqueringCiv = worldScreen.gameInfo.getCurrentPlayerCivilization()
 
                 if (city.foundingCiv != ""
                         && city.civInfo.civName != city.foundingCiv // can't liberate if the city actually belongs to those guys
@@ -151,7 +151,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
             AlertType.CityTraded -> {
                 val city = worldScreen.gameInfo.getCities().first { it.id == popupAlert.value }
                 addQuestionAboutTheCity(city.name)
-                val conqueringCiv = worldScreen.gameInfo.currentPlayerCiv
+                val conqueringCiv = worldScreen.gameInfo.getCurrentPlayerCivilization()
 
                 addLiberateOption(city.foundingCiv) {
                     city.liberateCity(conqueringCiv)
@@ -216,6 +216,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                         .toLabel().apply { wrap = true }).width(worldScreen.stage.width / 3).pad(10f)
                 add(centerTable).row()
                 add(getCloseButton(Constants.close))
+                UncivGame.Current.musicController.chooseTrack(wonder.name, MusicMood.Wonder, MusicTrackChooserFlags.setSpecific)
             }
             AlertType.TechResearched -> {
                 val gameBasics = worldScreen.gameInfo.ruleSet
@@ -229,12 +230,14 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 centerTable.add(descriptionScroll).width(worldScreen.stage.width / 3).maxHeight(worldScreen.stage.height / 2)
                 add(centerTable).row()
                 add(getCloseButton(Constants.close))
+                UncivGame.Current.musicController.chooseTrack(tech.name, MusicMood.Researched, MusicTrackChooserFlags.setSpecific)
             }
             AlertType.GoldenAge -> {
                 addGoodSizedLabel("GOLDEN AGE")
                 addSeparator()
                 addGoodSizedLabel("Your citizens have been happy with your rule for so long that the empire enters a Golden Age!").row()
                 add(getCloseButton(Constants.close))
+                UncivGame.Current.musicController.chooseTrack(worldScreen.viewingCiv.civName, MusicMood.Golden, MusicTrackChooserFlags.setSpecific)
             }
             AlertType.DeclarationOfFriendship -> {
                 val otherciv = worldScreen.gameInfo.getCivilization(popupAlert.value)
@@ -257,7 +260,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 val city = worldScreen.gameInfo.getCities().first { it.id == popupAlert.value }
                 addGoodSizedLabel(city.name.tr() + ": " + "What would you like to do with the city?".tr(), Constants.headingFontSize) // Add name because there might be several cities
                     .padBottom(20f).row()
-                val marryingCiv = worldScreen.gameInfo.currentPlayerCiv
+                val marryingCiv = worldScreen.gameInfo.getCurrentPlayerCivilization()
 
                 if (marryingCiv.isOneCityChallenger()) {
                     addDestroyOption {
@@ -391,7 +394,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
         button.onActivation { puppetAction() }
         button.keyShortcuts.add('p')
         add(button).row()
-        addGoodSizedLabel("Puppeted cities do not increase your tech or policy cost, but their citizens generate 1.5x the regular unhappiness.").row()
+        addGoodSizedLabel("Puppeted cities do not increase your tech or policy cost.").row()
         addGoodSizedLabel("You have no control over the the production of puppeted cities.").row()
         addGoodSizedLabel("Puppeted cities also generate 25% less Gold and Science.").row()
         addGoodSizedLabel("A puppeted city can be annexed at any time.").row()

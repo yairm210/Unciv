@@ -7,8 +7,8 @@ import com.unciv.json.HashMapVector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.UncivShowableException
-import com.unciv.logic.automation.NextTurnAutomation
-import com.unciv.logic.automation.WorkerAutomation
+import com.unciv.logic.automation.civilization.NextTurnAutomation
+import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.RuinsManager.RuinsManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -155,6 +155,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     var religionManager = ReligionManager()
     var goldenAges = GoldenAgeManager()
     var greatPeople = GreatPersonManager()
+    var espionageManager = EspionageManager()
     var victoryManager = VictoryManager()
     var ruinsManager = RuinsManager()
     var diplomacy = HashMap<String, DiplomacyManager>()
@@ -261,6 +262,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         toReturn.goldenAges = goldenAges.clone()
         toReturn.greatPeople = greatPeople.clone()
         toReturn.ruinsManager = ruinsManager.clone()
+        toReturn.espionageManager = espionageManager.clone()
         toReturn.victoryManager = victoryManager.clone()
         toReturn.allyCivName = allyCivName
         for (diplomacyManager in diplomacy.values.map { it.clone() })
@@ -335,7 +337,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
             playerType == PlayerType.Human &&
                     gameInfo.gameParameters.oneCityChallenge)
 
-    fun isCurrentPlayer() = gameInfo.getCurrentPlayerCivilization() == this
+    fun isCurrentPlayer() = gameInfo.currentPlayerCiv == this
     fun isBarbarian() = nation.isBarbarian()
     fun isSpectator() = nation.isSpectator()
     fun isCityState(): Boolean = nation.isCityState()
@@ -483,7 +485,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         // exception will happen), also rearrange existing units so that
         // 'nextPotentiallyDueAt' becomes 0.  This way new units are always last to be due
         // (can be changed as wanted, just have a predictable place).
-        var newList = getCivUnitsStartingAtNextDue().toMutableList()
+        val newList = getCivUnitsStartingAtNextDue().toMutableList()
         newList.add(mapUnit)
         units = newList
         nextPotentiallyDueAt = 0
@@ -492,19 +494,21 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
             // Not relevant when updating TileInfo transients, since some info of the civ itself isn't yet available,
             // and in any case it'll be updated once civ info transients are
             updateStatsForNextTurn() // unit upkeep
-            updateDetailedCivResources()
+            if (mapUnit.baseUnit.getResourceRequirements().isNotEmpty())
+                updateDetailedCivResources()
         }
     }
 
     fun removeUnit(mapUnit: MapUnit) {
         // See comment in addUnit().
-        var newList = getCivUnitsStartingAtNextDue().toMutableList()
+        val newList = getCivUnitsStartingAtNextDue().toMutableList()
         newList.remove(mapUnit)
         units = newList
         nextPotentiallyDueAt = 0
 
         updateStatsForNextTurn() // unit upkeep
-        updateDetailedCivResources()
+        if (mapUnit.baseUnit.getResourceRequirements().isNotEmpty())
+            updateDetailedCivResources()
     }
 
     fun getIdleUnits() = getCivUnits().filter { it.isIdle() }
@@ -830,6 +834,8 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
             diplomacyManager.civInfo = this
             diplomacyManager.updateHasOpenBorders()
         }
+
+        espionageManager.setTransients(this)
 
         victoryManager.civInfo = this
 
@@ -1376,9 +1382,15 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     }
 
     fun moveCapitalToNextLargest() {
-        moveCapitalTo(cities
-            .filterNot { it.isCapital() }
-            .maxByOrNull { it.population.population})
+        val availableCities = cities.filterNot { it.isCapital() }
+        if (availableCities.none()) return
+        var newCapital = availableCities.filterNot { it.isPuppet }.maxByOrNull { it.population.population }
+
+        if (newCapital == null) { // No non-puppets, take largest puppet and annex
+            newCapital = availableCities.maxByOrNull { it.population.population }!!
+            newCapital.annexCity()
+        }
+        moveCapitalTo(newCapital)
     }
 
     //////////////////////// City State wrapper functions ////////////////////////

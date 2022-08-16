@@ -21,6 +21,8 @@ class Nation : RulesetObject() {
     else "[$leaderName] of [$name]"
 
     val style = ""
+    fun getStyleOrCivName() = style.ifEmpty { name }
+
     var cityStateType: CityStateType? = null
     var preferredVictoryType: String = Constants.neutralVictoryType
     var declaringWar = ""
@@ -45,6 +47,8 @@ class Nation : RulesetObject() {
     /* Properties present in json but not yet implemented:
     var adjective = ArrayList<String>()
      */
+
+    var spyNames = ArrayList<String>()
 
     var favoredReligion: String? = null
 
@@ -139,7 +143,7 @@ class Nation : RulesetObject() {
         textList += FormattedLine("{Type}: {$cityStateType}", header = 4, color = cityStateType!!.color)
 
         val era = if (UncivGame.isCurrentInitialized() && UncivGame.Current.gameInfo != null) {
-            UncivGame.Current.gameInfo!!.currentPlayerCiv.getEra()
+            UncivGame.Current.gameInfo!!.getCurrentPlayerCivilization().getEra()
         } else {
             ruleset.eras.values.first()
         }

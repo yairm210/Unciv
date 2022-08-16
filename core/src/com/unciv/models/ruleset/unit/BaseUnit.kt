@@ -19,6 +19,7 @@ import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.extensions.filterAndLogic
 import com.unciv.ui.utils.extensions.getConsumesAmountString
+import com.unciv.ui.utils.extensions.getNeedMoreAmountString
 import com.unciv.ui.utils.extensions.toPercent
 import kotlin.math.pow
 
@@ -28,7 +29,7 @@ import kotlin.math.pow
  in contrast to MapUnit, which is a specific unit of a certain type that appears on the map */
 class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
-    var cost: Int = 0
+    override var cost: Int = 0
     override var hurryCostModifier: Int = 0
     var movement: Int = 0
     var strength: Int = 0
@@ -110,6 +111,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         val textList = ArrayList<FormattedLine>()
+        textList += FormattedLine("{Unit type}: ${unitType.tr()}")
 
         val stats = ArrayList<String>()
         if (strength != 0) stats += "$strength${Fonts.strength}"
@@ -370,13 +372,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 UniqueType.OnlyAvailableWhen -> if (!unique.conditionalsApply(civInfo, cityConstructions.cityInfo))
                     rejectionReasons.add(RejectionReason.ShouldNotBeDisplayed)
 
-                UniqueType.NotDisplayedWithout -> {
-                    val filter = unique.params[0]
-                    if (filter in civInfo.gameInfo.ruleSet.tileResources && !civInfo.hasResource(filter)
-                            || filter in civInfo.gameInfo.ruleSet.buildings && !cityConstructions.containsBuildingOrEquivalent(filter))
-                        rejectionReasons.add(RejectionReason.ShouldNotBeDisplayed)
-                }
-
                 UniqueType.RequiresPopulation -> if (unique.params[0].toInt() > cityConstructions.cityInfo.population.population)
                     rejectionReasons.add(RejectionReason.PopulationRequirement.toInstance(unique.text))
 
@@ -413,25 +408,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 UniqueType.Unbuildable ->
                     rejectionReasons.add(RejectionReason.Unbuildable)
 
-                // This should be deprecated and replaced with the already-existing "only available when" unique, see above
-                UniqueType.UnlockedWith, UniqueType.Requires -> {
-                    val filter = unique.params[0]
-                    when {
-                        ruleSet.technologies.contains(filter) ->
-                            if (!civInfo.tech.isResearched(filter))
-                                rejectionReasons.add(RejectionReason.RequiresTech.toInstance(unique.text))
-                        ruleSet.policies.contains(filter) ->
-                            if (!civInfo.policies.isAdopted(filter))
-                                rejectionReasons.add(RejectionReason.RequiresPolicy.toInstance(unique.text))
-                        ruleSet.eras.contains(filter) ->
-                            if (civInfo.getEraNumber() < ruleSet.eras[filter]!!.eraNumber)
-                                rejectionReasons.add(RejectionReason.UnlockedWithEra.toInstance(unique.text))
-                        ruleSet.buildings.contains(filter) ->
-                            if (civInfo.cities.none { it.cityConstructions.containsBuildingOrEquivalent(filter) })
-                                rejectionReasons.add(RejectionReason.RequiresBuildingInSomeCity.toInstance(unique.text))
-                    }
-                }
-
                 UniqueType.FoundCity -> if (civInfo.isCityState() || civInfo.isOneCityChallenger())
                     rejectionReasons.add(RejectionReason.NoSettlerForOneCityPlayers)
 
@@ -443,10 +419,12 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
 
         if (!civInfo.isBarbarian()) { // Barbarians don't need resources
-            for ((resource, amount) in getResourceRequirements())
-                if (civInfo.getCivResourcesByName()[resource]!! < amount) {
-                    rejectionReasons.add(RejectionReason.ConsumesResources.toInstance(resource.getConsumesAmountString(amount)))
+            for ((resource, requiredAmount) in getResourceRequirements()) {
+                val availableAmount = civInfo.getCivResourcesByName()[resource]!!
+                if (availableAmount < requiredAmount) {
+                    rejectionReasons.add(RejectionReason.ConsumesResources.toInstance(resource.getNeedMoreAmountString(requiredAmount - availableAmount)))
                 }
+            }
         }
 
         for (unique in civInfo.getMatchingUniques(UniqueType.CannotBuildUnits))

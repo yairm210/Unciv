@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.SerializationException
 import com.unciv.MainMenuScreen
+import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.models.ruleset.ModOptions
@@ -67,7 +68,7 @@ class ModManagementScreen(
     private val modActionTable = Table().apply { defaults().pad(10f) }
     private val optionsManager = ModManagementOptions(this)
 
-    val amountPerPage = 30
+    val amountPerPage = 100
 
     private var lastSelectedButton: Button? = null
     private var lastSyncMarkedButton: Button? = null
@@ -101,6 +102,7 @@ class ModManagementScreen(
 
     init {
         //setDefaultCloseAction(screen) // this would initialize the new MainMenuScreen immediately
+        rightSideButton.isVisible = false
         closeButton.onActivation {
             val tileSets = ImageGetter.getAvailableTilesets()
             if (game.settings.tileSet !in tileSets) {
@@ -271,6 +273,7 @@ class ModManagementScreen(
                     }
                     installedMod.modOptions.author = repo.owner.login
                     installedMod.modOptions.modSize = repo.size
+                    installedMod.modOptions.topics = repo.topics
                 }
             }
 
@@ -399,6 +402,7 @@ class ModManagementScreen(
     private fun onlineButtonAction(repo: Github.Repo, button: Button) {
         syncOnlineSelected(repo.name, button)
         showModDescription(repo.name)
+        rightSideButton.isVisible = true
         rightSideButton.clearListeners()
         rightSideButton.enable()
         val label = if (installedModInfo[repo.name]?.state?.hasUpdate == true)
@@ -428,6 +432,7 @@ class ModManagementScreen(
                 launchOnGLThread {
                     ToastPopup("[${repo.name}] Downloaded!", this@ModManagementScreen)
                     RulesetCache.loadRulesets()
+                    UncivGame.Current.translations.tryReadTranslationForCurrentLanguage()
                     RulesetCache[repo.name]?.let {
                         installedModInfo[repo.name] = ModUIData(it)
                     }
@@ -517,13 +522,16 @@ class ModManagementScreen(
 
         modTable.clear()
         var currentY = -1f
-        val filter = optionsManager.getFilterText()
+        val filter = optionsManager.getFilter()
         for (mod in installedModInfo.values.sortedWith(optionsManager.sortInstalled.comparator)) {
             if (!mod.matchesFilter(filter)) continue
             // Prevent building up listeners. The virgin Button has one: for mouseover styling.
             // The captures for our listener shouldn't need updating, so assign only once
             if (mod.button.listeners.none { it.javaClass.`package`.name.startsWith("com.unciv") })
-                mod.button.onClick { installedButtonAction(mod) }
+                mod.button.onClick {
+                    rightSideButton.isVisible = true
+                    installedButtonAction(mod)
+                }
             val decoratedButton = Table()
             decoratedButton.add(mod.button)
             decoratedButton.add(mod.state.container).align(Align.center+Align.left)
@@ -576,9 +584,10 @@ class ModManagementScreen(
         onlineExpanderTab?.setText(newHeaderText)
 
         downloadTable.clear()
+        downloadTable.add(getDownloadFromUrlButton()).row()
         onlineScrollCurrentY = -1f
 
-        val filter = optionsManager.getFilterText()
+        val filter = optionsManager.getFilter()
         // Important: sortedMods holds references to the original values, so the referenced buttons stay valid.
         // We update y and height here, we do not replace the ModUIData instances do the referenced buttons stay valid.
         val sortedMods = onlineModInfo.values.asSequence().sortedWith(optionsManager.sortOnline.comparator)

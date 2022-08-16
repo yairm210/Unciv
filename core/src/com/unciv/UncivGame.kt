@@ -22,6 +22,7 @@ import com.unciv.ui.LoadingScreen
 import com.unciv.ui.audio.GameSounds
 import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicMood
+import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.crashhandling.CrashScreen
 import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
@@ -144,9 +145,14 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
                 settings.save()
             }
 
+            // Loading available fonts can take a long time on Android phones.
+            // Therefore we initialize the lazy parameters in the font implementation, while we're in another thread, to avoid ANRs on main thread
+            fontImplementation?.getCharPixmap('S')
+
             // This stuff needs to run on the main thread because it needs the GL context
             launchOnGLThread {
-                musicController.chooseTrack(suffix = MusicMood.Menu)
+                musicController.chooseTrack(suffixes = listOf(MusicMood.Menu, MusicMood.Ambient),
+                    flags = EnumSet.of(MusicTrackChooserFlags.SuffixMustMatch))
 
                 ImageGetter.ruleset = RulesetCache.getVanillaRuleset() // so that we can enter the map editor without having to load a game first
 
@@ -353,8 +359,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     // This is ALWAYS called after create() on Android - google "Android life cycle"
     override fun resume() {
         super.resume()
-        musicController.resume()
         if (!isInitialized) return // The stuff from Create() is still happening, so the main screen will load eventually
+        musicController.resume()
 
         // This is also needed in resume to open links and notifications
         // correctly when the app was already running. The handling in onCreate
@@ -452,7 +458,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.1.15", 733)
+        val VERSION = Version("4.2.4", 747)
         //endregion
 
         lateinit var Current: UncivGame

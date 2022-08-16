@@ -14,27 +14,30 @@ import com.unciv.ui.worldscreen.WorldScreen
 
 object NotificationIcon {
     // Remember: The typical white-on-transparency icon will not be visible on Notifications
+
+    const val Barbarians = "ImprovementIcons/Barbarian encampment"
+    const val Citadel = "ImprovementIcons/Citadel"
+    const val City = "ImprovementIcons/City center"
+    const val CityState = "OtherIcons/CityState"
+    const val Crosshair = "OtherIcons/CrosshairB"
     const val Culture = "StatIcons/Culture"
     const val Construction = "StatIcons/Production"
-    const val Growth = "StatIcons/Population"
-    const val War = "OtherIcons/Pillage"
-    const val Trade = "StatIcons/Acquire"
-    const val Science = "StatIcons/Science"
-    const val Gold = "StatIcons/Gold"
     const val Death = "OtherIcons/DisbandUnit"
     const val Diplomacy = "OtherIcons/Diplomacy"
-    const val City = "ImprovementIcons/City center"
-    const val Citadel = "ImprovementIcons/Citadel"
+    const val Faith = "StatIcons/Faith"
+    const val Food = "StatIcons/Food"
+    const val Gold = "StatIcons/Gold"
+    const val Growth = "StatIcons/Population"
     const val Happiness = "StatIcons/Happiness"
     const val Population = "StatIcons/Population"
-    const val CityState = "OtherIcons/CityState"
     const val Production = "StatIcons/Production"
-    const val Food = "StatIcons/Food"
-    const val Faith = "StatIcons/Faith"
-    const val Crosshair = "OtherIcons/CrosshairB"
-    const val Scout = "UnitIcons/Scout"
+    const val Question = "OtherIcons/Question"
     const val Ruins = "ImprovementIcons/Ancient ruins"
-    const val Barbarians = "ImprovementIcons/Barbarian encampment"
+    const val Science = "StatIcons/Science"
+    const val Scout = "UnitIcons/Scout"
+    const val Spy = "OtherIcons/Spy"
+    const val Trade = "StatIcons/Acquire"
+    const val War = "OtherIcons/Pillage"
 }
 
 /**

@@ -213,6 +213,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         val curWorldScreen = game.worldScreen
         if (curWorldScreen != null) {
             game.resetToWorldScreen()
+            ImageGetter.ruleset = game.gameInfo!!.ruleSet
             curWorldScreen.popups.filterIsInstance(WorldScreenMenuPopup::class.java).forEach(Popup::close)
         } else {
             QuickSave.autoLoadGame(this)

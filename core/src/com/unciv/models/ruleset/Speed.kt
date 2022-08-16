@@ -74,6 +74,7 @@ class Speed : RulesetObject(), IsPartOfGameInfoSerialization {
         yield(FormattedLine("Peace deal duration: [$peaceDealDuration] turns${Fonts.turn}"))
         yield(FormattedLine("Start year: [" + ("{[${abs(startYear).toInt()}] " + (if (startYear < 0) "BC" else "AD") + "}]").tr()))
     }.toList()
+    override fun getSortGroup(ruleset: Ruleset): Int = (modifier * 1000).toInt()
 
     fun numTotalTurns(): Int = yearsPerTurn.last().untilTurn
 }

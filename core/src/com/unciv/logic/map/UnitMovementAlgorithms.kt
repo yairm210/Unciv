@@ -9,6 +9,8 @@ import com.unciv.models.ruleset.unique.UniqueType
 
 class UnitMovementAlgorithms(val unit: MapUnit) {
 
+    private val pathfindingCache = PathfindingCache(unit)
+
     // This function is called ALL THE TIME and should be as time-optimal as possible!
     private fun getMovementCostBetweenAdjacentTiles(
         from: TileInfo,
@@ -137,7 +139,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
      * Does not consider if tiles can actually be entered, use canMoveTo for that.
      * If a tile can be reached within the turn, but it cannot be passed through, the total distance to it is set to unitMovement
      */
-    fun getDistanceToTilesWithinTurn(origin: Vector2, unitMovement: Float, considerZoneOfControl: Boolean = true): PathsToTilesWithinTurn {
+    fun getDistanceToTilesWithinTurn(origin: Vector2, unitMovement: Float, considerZoneOfControl: Boolean = true, tilesToIgnore: HashSet<TileInfo>? = null): PathsToTilesWithinTurn {
         val distanceToTiles = PathsToTilesWithinTurn()
         if (unitMovement == 0f) return distanceToTiles
 
@@ -151,6 +153,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
             val updatedTiles = ArrayList<TileInfo>()
             for (tileToCheck in tilesToCheck)
                 for (neighbor in tileToCheck.neighbors) {
+                    if (tilesToIgnore?.contains(neighbor) == true) continue // ignore this tile
                     var totalDistanceToTile: Float = when {
                         !unit.civInfo.exploredTiles.contains(neighbor.position) ->
                             distanceToTiles[tileToCheck]!!.totalDistance + 1f  // If we don't know then we just guess it to be 1.
@@ -192,9 +195,23 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
             val damageFreePath = getShortestPath(destination, true)
             if (damageFreePath.isNotEmpty()) return damageFreePath
         }
+        if (unit.baseUnit.isWaterUnit()
+                && destination.neighbors.none { isUnknownTileWeShouldAssumeToBePassable(it) || it.isWater }) {
+            // edge case where this unit is a boat and all of the tiles around the destination are
+            // explored and known to be land so we know a priori that no path exists
+            pathfindingCache.setShortestPathCache(destination, listOf())
+            return listOf()
+        }
+        val cachedPath = pathfindingCache.getShortestPathCache(destination)
+        if (cachedPath.isNotEmpty())
+            return cachedPath
 
         val currentTile = unit.getTile()
-        if (currentTile.position == destination) return listOf(currentTile) // edge case that's needed, so that workers will know that they can reach their own tile. *sigh*
+        if (currentTile.position == destination) {
+            // edge case that's needed, so that workers will know that they can reach their own tile. *sigh*
+            pathfindingCache.setShortestPathCache(destination, listOf(currentTile))
+            return listOf(currentTile)
+        }
 
         var tilesToCheck = listOf(currentTile)
         val movementTreeParents = HashMap<TileInfo, TileInfo?>() // contains a map of "you can get from X to Y in that turn"
@@ -203,52 +220,58 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         var movementThisTurn = unit.currentMovement
         var distance = 1
         val newTilesToCheck = ArrayList<TileInfo>()
-        val distanceToDestination = HashMap<TileInfo, Float>()
         var considerZoneOfControl = true // only for first distance!
+        val visitedTiles: HashSet<TileInfo> = hashSetOf(currentTile)
         while (true) {
             if (distance == 2) { // only set this once after distance > 1
                 movementThisTurn = unit.getMaxMovement().toFloat()
                 considerZoneOfControl = false  // by then units would have moved around, we don't need to consider untenable futures when it harms performance!
             }
             newTilesToCheck.clear()
-            distanceToDestination.clear()
             for (tileToCheck in tilesToCheck) {
-                val distanceToTilesThisTurn = getDistanceToTilesWithinTurn(tileToCheck.position, movementThisTurn, considerZoneOfControl)
+                val distanceToTilesThisTurn = if (distance == 1) {
+                    getDistanceToTiles(considerZoneOfControl) // check cache
+                }
+                else {
+                    getDistanceToTilesWithinTurn(tileToCheck.position, movementThisTurn, considerZoneOfControl, visitedTiles)
+                }
                 for (reachableTile in distanceToTilesThisTurn.keys) {
                     // Avoid damaging terrain on first pass
                     if (avoidDamagingTerrain && unit.getDamageFromTerrain(reachableTile) > 0)
                         continue
-                    if (reachableTile == destination)
-                        distanceToDestination[tileToCheck] = distanceToTilesThisTurn[reachableTile]!!.totalDistance
-                    else {
+                    if (reachableTile == destination) {
+                        val path = mutableListOf(destination)
+                        // Traverse the tree upwards to get the list of tiles leading to the destination
+                        var intermediateTile = tileToCheck
+                        while (intermediateTile != currentTile) {
+                            path.add(intermediateTile)
+                            intermediateTile = movementTreeParents[intermediateTile]!!
+                        }
+                        path.reverse() // and reverse in order to get the list in chronological order
+                        pathfindingCache.setShortestPathCache(destination, path)
+                        return path
+                    } else {
                         if (movementTreeParents.containsKey(reachableTile)) continue // We cannot be faster than anything existing...
                         if (!isUnknownTileWeShouldAssumeToBePassable(reachableTile) &&
-                                 !canMoveTo(reachableTile)) continue // This is a tile that we can't actually enter - either an intermediary tile containing our unit, or an enemy unit/city
+                                !canMoveTo(reachableTile)) continue // This is a tile that we can't actually enter - either an intermediary tile containing our unit, or an enemy unit/city
                         movementTreeParents[reachableTile] = tileToCheck
                         newTilesToCheck.add(reachableTile)
                     }
                 }
             }
 
-            if (distanceToDestination.isNotEmpty()) {
-                val path = mutableListOf(destination) // Traverse the tree upwards to get the list of tiles leading to the destination,
-                // Get the tile from which the distance to the final tile in least -
-                // this is so that when we finally get there, we'll have as many movement points as possible
-                var intermediateTile = distanceToDestination.minByOrNull { it.value }!!.key
-                while (intermediateTile != currentTile) {
-                    path.add(intermediateTile)
-                    intermediateTile = movementTreeParents[intermediateTile]!!
-                }
-                path.reverse() // and reverse in order to get the list in chronological order
-                return path
+            if (newTilesToCheck.isEmpty()) {
+                // there is NO PATH (eg blocked by enemy units)
+                pathfindingCache.setShortestPathCache(destination, emptyList())
+                return emptyList()
             }
 
-            if (newTilesToCheck.isEmpty()) return emptyList() // there is NO PATH (eg blocked by enemy units)
-
+            // add newTilesToCheck to visitedTiles so we do not path over these tiles in a later iteration
+            visitedTiles.addAll(newTilesToCheck)
             // no need to check tiles that are surrounded by reachable tiles, only need to check the edgemost tiles.
             // Because anything we can reach from intermediate tiles, can be more easily reached by the edgemost tiles,
             // since we'll have to pass through an edgemost tile in order to reach the destination anyway
-            tilesToCheck = newTilesToCheck.filterNot { tile -> tile.neighbors.all { it in newTilesToCheck || it in tilesToCheck } }
+            tilesToCheck = newTilesToCheck.filterNot { tile -> tile.neighbors.all { it in visitedTiles } }
 
             distance++
         }
@@ -269,7 +292,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         // If the tile is far away, we need to build a path how to get there, and then take the first step
         if (!distanceToTiles.containsKey(finalDestination))
             return getShortestPath(finalDestination).firstOrNull()
-                    ?: throw UnreachableDestinationException("$unit ${unit.currentTile.position} cannot reach $finalDestination")
+                ?: throw UnreachableDestinationException("$unit ${unit.currentTile} cannot reach $finalDestination")
 
         // we should be able to get there this turn
         if (canMoveTo(finalDestination))
@@ -661,7 +684,6 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         if (tile.isOcean && !unit.civInfo.tech.allUnitsCanEnterOcean) { // Apparently all Polynesian naval units can enter oceans
             if (!unitSpecificAllowOcean && unit.cannotEnterOceanTiles) return false
         }
-        if (tile.naturalWonder != null) return false
 
         if (!unit.canEnterForeignTerrain && !tile.canCivPassThrough(unit.civInfo)) return false
 
@@ -686,7 +708,15 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
     }
 
 
-    fun getDistanceToTiles(considerZoneOfControl: Boolean = true): PathsToTilesWithinTurn = getDistanceToTilesWithinTurn(unit.currentTile.position, unit.currentMovement, considerZoneOfControl)
+    fun getDistanceToTiles(considerZoneOfControl: Boolean = true): PathsToTilesWithinTurn {
+        val cacheResults = pathfindingCache.getDistanceToTiles(considerZoneOfControl)
+        if (cacheResults != null) {
+            return cacheResults
+        }
+        val distanceToTiles = getDistanceToTilesWithinTurn(unit.currentTile.position, unit.currentMovement, considerZoneOfControl)
+        pathfindingCache.setDistanceToTiles(considerZoneOfControl, distanceToTiles)
+        return distanceToTiles
+    }
 
     fun getAerialPathsToCities(): HashMap<TileInfo, ArrayList<TileInfo>> {
         var tilesToCheck = ArrayList<TileInfo>()
@@ -743,6 +773,69 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         return bfs.getReachedTiles()
     }
 
+    fun clearPathfindingCache() = pathfindingCache.clear()
+
+}
+
+/**
+ * Cache for the results of [UnitMovementAlgorithms.getDistanceToTiles] accounting for zone of control.
+ * [UnitMovementAlgorithms.getDistanceToTiles] is called in numerous places for AI pathfinding so
+ * being able to skip redundant calculations helps out over a long game (especially with high level
+ * AI or a big map). Same thing with [UnitMovementAlgorithms.getShortestPath] which is called in
+ * [UnitMovementAlgorithms.canReach] and in [UnitMovementAlgorithms.headTowards]. Often, the AI will
+ * see if it can reach a tile using canReach then if it can, it will headTowards it. We can cache
+ * the result since otherwise this is a redundant calculation that will find the same path.
+ */
+class PathfindingCache(private val unit: MapUnit) {
+    private var shortestPathCache = listOf<TileInfo>()
+    private var destination: TileInfo? = null
+    private val distanceToTilesCache = mutableMapOf<Boolean, PathsToTilesWithinTurn>()
+    private var movement = -1f
+    private var currentTile: TileInfo? = null
+
+    /** Check if the caches are valid (only checking if the unit has moved or consumed movement points;
+     * the isPlayerCivilization check is performed in the functions because we want isValid() == false
+     * to have a specific behavior) */
+    private fun isValid(): Boolean = (movement == unit.currentMovement) && (unit.getTile() == currentTile)
+
+    fun getShortestPathCache(destination: TileInfo): List<TileInfo> {
+        if (unit.civInfo.isPlayerCivilization()) return listOf()
+        if (isValid() && this.destination == destination) {
+            return shortestPathCache
+        }
+        return listOf()
+    }
+
+    fun setShortestPathCache(destination: TileInfo, newShortestPath: List<TileInfo>) {
+        if (unit.civInfo.isPlayerCivilization()) return
+        if (isValid()) {
+            shortestPathCache = newShortestPath
+            this.destination = destination
+        }
+    }
+
+    fun getDistanceToTiles(zoneOfControl: Boolean): PathsToTilesWithinTurn? {
+        if (unit.civInfo.isPlayerCivilization()) return null
+        if (isValid())
+            return distanceToTilesCache[zoneOfControl]
+        return null
+    }
+
+    fun setDistanceToTiles(zoneOfControl: Boolean, paths: PathsToTilesWithinTurn) {
+        if (unit.civInfo.isPlayerCivilization()) return
+        if (!isValid()) {
+            clear() // we want to reset the entire cache at this point
+        }
+        distanceToTilesCache[zoneOfControl] = paths
+    }
+
+    fun clear() {
+        distanceToTilesCache.clear()
+        movement = unit.currentMovement
+        currentTile = unit.getTile()
+        destination = null
+        shortestPathCache = listOf()
+    }
 }
 
 class PathsToTilesWithinTurn : LinkedHashMap<TileInfo, UnitMovementAlgorithms.ParentTileAndTotalDistance>() {
