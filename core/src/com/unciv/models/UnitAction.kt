@@ -136,7 +136,7 @@ enum class UnitActionType(
     GiftUnit("Gift unit",
         { ImageGetter.getImage("OtherIcons/Present") }, UncivSound.Silent),
     Wait("Wait",
-        null, 'z', UncivSound.Silent),
+        { ImageGetter.getImage("OtherIcons/Wait") }, 'z', UncivSound.Silent),
     ShowAdditionalActions("Show more",
         { imageGetShowMore() }, KeyCharAndCode(Input.Keys.PAGE_DOWN)),
     HideAdditionalActions("Back",

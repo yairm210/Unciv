@@ -653,6 +653,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [City](https://thenounproject.com/search/?q=city&i=571332) By Felix Westphal
 - [Fire](https://thenounproject.com/search/?q=Fire&i=96564) By Lloyd Humphreys for "city being razed" icon
 - [Sleep](https://thenounproject.com/search/?q=sleep&i=1760085) By Saeful Muslim
+- [Clockwise](https://thenounproject.com/icon/clockwise-184528/) By Universal Icons (Louis Dawson) for "Wait" icon. The original work has been slightly modified.
 - [Banner](https://thenounproject.com/term/banner/866282/) By Emir Palavan for embarked units
 - [Arrow](https://thenounproject.com/term/arrow/18123/) By uzeir syarief for moving between idle units
 - [Replace](https://thenounproject.com/search/?q=replace&i=17858) By Mike Rowe for switching tiles between cities
