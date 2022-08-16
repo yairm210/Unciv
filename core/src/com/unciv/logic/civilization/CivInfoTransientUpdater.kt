@@ -142,6 +142,9 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
     fun updateHasActiveEnemyMovementPenalty() {
         civInfo.hasActiveEnemyMovementPenalty = (!civInfo.tech.isResearched("Dynamite") && civInfo.hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovementDepreciated))
                 || civInfo.hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovement)
+        civInfo.enemyMovementPenaltyUniques =
+                civInfo.getMatchingUniques(UniqueType.EnemyLandUnitsSpendExtraMovement) +
+                        civInfo.getMatchingUniques(UniqueType.EnemyLandUnitsSpendExtraMovementDepreciated)
     }
 
     fun updateCitiesConnectedToCapital(initialSetup: Boolean = false) {

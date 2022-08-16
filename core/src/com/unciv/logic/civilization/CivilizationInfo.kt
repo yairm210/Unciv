@@ -33,6 +33,7 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.TemporaryUnique
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
@@ -106,6 +107,10 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     /** This is for performance since every movement calculation depends on this, see MapUnit comment */
     @Transient
     var hasActiveEnemyMovementPenalty = false
+
+    /** Same as above variable */
+    @Transient
+    var enemyMovementPenaltyUniques: Sequence<Unique>? = null
 
     @Transient
     var statsForNextTurn = Stats()
@@ -672,14 +677,23 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     }
 
     fun getEnemyMovementPenalty(enemyUnit: MapUnit): Float {
-        val greatWallUnique = getMatchingUniques(UniqueType.EnemyLandUnitsSpendExtraMovement)
-        if (greatWallUnique.any())
-            return greatWallUnique.filter { enemyUnit.matchesFilter(it.params[0]) }
-                .sumOf { it.params[1].toInt() }.toFloat()
-
-        val depreciatedGreatWall = getMatchingUniques(UniqueType.EnemyLandUnitsSpendExtraMovementDepreciated)
-        if (depreciatedGreatWall.any() && enemyUnit.matchesFilter("Land"))
-            return depreciatedGreatWall.count().toFloat() // always 1 per entry
+        if (enemyMovementPenaltyUniques != null && enemyMovementPenaltyUniques!!.any()) {
+            return enemyMovementPenaltyUniques!!.sumOf {
+                when (it.type!!) {
+                    UniqueType.EnemyLandUnitsSpendExtraMovement -> {
+                        if (enemyUnit.matchesFilter(it.params[0]))
+                            it.params[1].toInt()
+                        else 0 // doesn't match
+                    }
+                    UniqueType.EnemyLandUnitsSpendExtraMovementDepreciated -> {
+                        if (enemyUnit.baseUnit.isLandUnit()) {
+                            1 // depreciated unique only works on land units
+                        } else 0
+                    }
+                    else -> 0
+                }
+            }.toFloat()
+        }
         return 0f // should not reach this point
     }
 
