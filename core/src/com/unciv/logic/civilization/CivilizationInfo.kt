@@ -676,7 +676,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         return diplomacyManager.hasOpenBorders
     }
 
-    fun getEnemyMovementPenalty(enemyUnit: MapUnit): Float {
+    fun getEnemyMovementPenalty(enemyUnit: MapUnit, toMoveTo: TileInfo): Float {
         if (enemyMovementPenaltyUniques != null && enemyMovementPenaltyUniques!!.any()) {
             return enemyMovementPenaltyUniques!!.sumOf {
                 when (it.type!!) {
@@ -686,8 +686,8 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
                         else 0 // doesn't match
                     }
                     UniqueType.EnemyLandUnitsSpendExtraMovementDepreciated -> {
-                        if (enemyUnit.baseUnit.isLandUnit()) {
-                            1 // depreciated unique only works on land units
+                        if (toMoveTo.isLand) {
+                            1 // depreciated unique only works on land tiles
                         } else 0
                     }
                     else -> 0

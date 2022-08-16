@@ -36,7 +36,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
             toOwner != null &&
             toOwner.hasActiveEnemyMovementPenalty &&
             civInfo.isAtWarWith(toOwner)
-        ) toOwner.getEnemyMovementPenalty(unit) else 0f
+        ) toOwner.getEnemyMovementPenalty(unit, to) else 0f
 
         if (from.roadStatus == RoadStatus.Railroad && to.roadStatus == RoadStatus.Railroad)
             return RoadStatus.Railroad.movement + extraCost
