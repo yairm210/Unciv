@@ -64,22 +64,11 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
         renameButton.isEnabled = true
 
         renameButton.onClick {
-            AskTextPopup(
-                this,
-                label = "Choose name for [${unit.baseUnit.name}]",
-                icon = ImageGetter.getUnitIcon(unit.name).surroundWithCircle(80f),
-                defaultText = if (unit.instanceName == null) {
-                    unit.baseUnit.name
-                }
-                else {
-                    unit.instanceName.toString()
-                }  ,
-                validate = { it != unit.name},
-                actionOnOk = { userInput ->
-                    unit.instanceName = userInput
-                    this.game.replaceCurrentScreen(PromotionPickerScreen(unit))
-                }
-            ).open()
+            UnitRenamePopup(
+                screen = this,
+                unit = unit,
+                actionOnClose = {
+                    this.game.replaceCurrentScreen(PromotionPickerScreen(unit)) })
         }
         availablePromotionsGroup.add(renameButton)
         availablePromotionsGroup.row()
@@ -128,23 +117,13 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
     }
 
     private fun updateDescriptionLabel(): String {
-        var newDescriptionText = if (unit.instanceName == null) {
-            unit.baseUnit.name
-        }
-        else {
-            unit.instanceName + " (" + unit.baseUnit.name + ")"
-        }
+        var newDescriptionText = unit.displayName().tr()
 
         return newDescriptionText.toString()
     }
 
     private fun updateDescriptionLabel(promotionDescription: String): String {
-        var newDescriptionText = if (unit.instanceName == null) {
-            unit.baseUnit.name
-        }
-        else {
-            unit.instanceName + " (" + unit.baseUnit.name + ")"
-        }
+        var newDescriptionText = unit.displayName().tr()
 
         newDescriptionText += "\n" + promotionDescription
 

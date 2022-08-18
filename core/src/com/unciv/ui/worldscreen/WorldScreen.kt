@@ -74,6 +74,7 @@ import com.unciv.utils.concurrency.withGLContext
 import com.unciv.utils.debug
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
+import com.badlogic.gdx.scenes.scene2d.ui.TextField
 
 /**
  * Do not create this screen without seriously thinking about the implications: this is the single most memory-intensive class in the application.
@@ -264,17 +265,26 @@ class WorldScreen(
                             Input.Keys.UP, Input.Keys.DOWN, Input.Keys.LEFT, Input.Keys.RIGHT)
 
 
-                    override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
-                        if (keycode !in ALLOWED_KEYS) return false
-                        // Without the following Ctrl-S would leave WASD map scrolling stuck
-                        // Might be obsolete with keyboard shortcut refactoring
-                        if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT)) return false
+                    override fun keyDown(event: InputEvent, keycode: Int): Boolean {
+                        if (event.target !is TextField) {
+                            if (keycode !in ALLOWED_KEYS) return false
+                            // Without the following Ctrl-S would leave WASD map scrolling stuck
+                            // Might be obsolete with keyboard shortcut refactoring
+                            if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(
+                                        Input.Keys.CONTROL_RIGHT
+                                    )
+                            ) return false
 
-                        pressedKeys.add(keycode)
-                        if (infiniteAction == null) {
-                            // create a copy of the action, because removeAction() will destroy this instance
-                            infiniteAction = Actions.forever(Actions.delay(0.01f, Actions.run { whileKeyPressedLoop() }))
-                            mapHolder.addAction(infiniteAction)
+                            pressedKeys.add(keycode)
+                            if (infiniteAction == null) {
+                                // create a copy of the action, because removeAction() will destroy this instance
+                                infiniteAction = Actions.forever(
+                                    Actions.delay(
+                                        0.01f,
+                                        Actions.run { whileKeyPressedLoop() })
+                                )
+                                mapHolder.addAction(infiniteAction)
+                            }
                         }
                         return true
                     }
