@@ -18,7 +18,6 @@ enum class UniqueTarget(val inheritsFrom: UniqueTarget? = null) {
     // Civilization-specific
     Nation(Global),
     Era(Global),
-    Speed(Global),
     Tech(Global),
     Policy(Global),
     FounderBelief(Global),
@@ -46,6 +45,7 @@ enum class UniqueTarget(val inheritsFrom: UniqueTarget? = null) {
     Ruins(Triggerable),
 
     // Other
+    Speed,
     Tutorial,
     CityState,
     ModOptions,
@@ -314,7 +314,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     TriggersAlertOnCompletion("Triggers a global alert upon completion", UniqueTarget.Building, UniqueTarget.Unit),
     //endregion
 
-
     ///////////////////////////////////////// region BUILDING UNIQUES /////////////////////////////////////////
 
 
@@ -350,7 +349,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     CreatesOneImprovement("Creates a [improvementName] improvement on a specific tile", UniqueTarget.Building),
     //endregion
-
 
     ///////////////////////////////////////// region UNIT UNIQUES /////////////////////////////////////////
 
@@ -435,7 +433,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     UnitMaintenanceDiscount("[relativeAmount]% maintenance costs", UniqueTarget.Unit, UniqueTarget.Global),
     UnitUpgradeCost("[relativeAmount]% Gold cost of upgrading", UniqueTarget.Unit, UniqueTarget.Global),
-    GreatPersonEarnedFaster("[greatPerson] is earned [relativeAmount]% faster", UniqueTarget.Unit, UniqueTarget.Global),
 
     DamageUnitsPlunder("Earn [amount]% of the damage done to [combatantFilter] units as [civWideStat]", UniqueTarget.Unit, UniqueTarget.Global),
     CaptureCityPlunder("Upon capturing a city, receive [amount] times its [stat] production as [civWideStat] immediately", UniqueTarget.Unit, UniqueTarget.Global),
@@ -445,12 +442,15 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     FlatXPGain("[amount] XP gained from combat", UniqueTarget.Unit, UniqueTarget.Global),
     PercentageXPGain("[relativeAmount]% XP gained from combat", UniqueTarget.Unit, UniqueTarget.Global),
+    GreatPersonEarnedFaster("[greatPerson] is earned [relativeAmount]% faster", UniqueTarget.Unit, UniqueTarget.Global),
 
     Invisible("Invisible to others", UniqueTarget.Unit),
     InvisibleToNonAdjacent("Invisible to non-adjacent units", UniqueTarget.Unit),
     CanSeeInvisibleUnits("Can see invisible [mapUnitFilter] units", UniqueTarget.Unit),
 
     RuinsUpgrade("May upgrade to [baseUnitFilter] through ruins-like effects", UniqueTarget.Unit),
+
+    DestroysImprovementUponAttack("Destroys tile improvements when attacking", UniqueTarget.Unit),
 
     // The following block gets cached in MapUnit for faster getMovementCostBetweenAdjacentTiles
     DoubleMovementOnTerrain("Double movement in [terrainFilter]", UniqueTarget.Unit),
@@ -481,6 +481,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     CanActionSeveralTimes("Can [action] [amount] times", UniqueTarget.Unit),
 
+    // Hurried means: sped up using great engineer/scientist ability, so this is in some sense a unit unique that should be here
     CannotBeHurried("Cannot be hurried", UniqueTarget.Building, UniqueTarget.Tech),
     CanSpeedupConstruction("Can speed up construction of a building", UniqueTarget.Unit),
     CanSpeedupWonderConstruction("Can speed up the construction of a wonder", UniqueTarget.Unit),
@@ -599,7 +600,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ConditionalWar("when at war", UniqueTarget.Conditional),
     ConditionalNotWar("when not at war", UniqueTarget.Conditional),
     ConditionalGoldenAge("during a Golden Age", UniqueTarget.Conditional),
-    ConditionalWithResource("with [resource]", UniqueTarget.Conditional),
 
     ConditionalHappy("while the empire is happy", UniqueTarget.Conditional),
     ConditionalBetweenHappiness("when between [amount] and [amount] Happiness", UniqueTarget.Conditional),
@@ -615,7 +615,10 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ConditionalWhenTech("upon discovering [tech]", UniqueTarget.Conditional), //todo no references anywhere
     ConditionalPolicy("after adopting [policy]", UniqueTarget.Conditional),
     ConditionalNoPolicy("before adopting [policy]", UniqueTarget.Conditional),
+
     ConditionalBuildingBuilt("if [buildingName] is constructed", UniqueTarget.Conditional),
+    ConditionalWithResource("with [resource]", UniqueTarget.Conditional),
+    ConditionalWithoutResource("without [resource]", UniqueTarget.Conditional),
 
     /////// city conditionals
     ConditionalCityWithBuilding("in cities with a [buildingFilter]", UniqueTarget.Conditional),
@@ -673,13 +676,15 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     OneTimeGainStat("Gain [amount] [stat]", UniqueTarget.Ruins),
     OneTimeGainStatRange("Gain [amount]-[amount] [stat]", UniqueTarget.Ruins),
     OneTimeGainPantheon("Gain enough Faith for a Pantheon", UniqueTarget.Ruins),
+    OneTimeFreeBelief("Gain a free [beliefType] belief", UniqueTarget.Triggerable),
     OneTimeGainProphet("Gain enough Faith for [amount]% of a Great Prophet", UniqueTarget.Ruins),
     // todo: The "up to [All]" used in vanilla json is not nice to read. Split?
     // Or just reword it without the 'up to', so it reads "Reveal [amount/'all'] [tileFilter] tiles within [amount] tiles"
     OneTimeRevealSpecificMapTiles("Reveal up to [amount/'all'] [tileFilter] within a [amount] tile radius", UniqueTarget.Ruins),
     OneTimeRevealCrudeMap("From a randomly chosen tile [amount] tiles away from the ruins, reveal tiles up to [amount] tiles away with [amount]% chance", UniqueTarget.Ruins),
     OneTimeTriggerVoting("Triggers voting for the Diplomatic Victory", UniqueTarget.Triggerable),  // used in Building
-    OneTimeGlobalAlert("Triggers the following global alert: [comment]", UniqueTarget.Triggerable), // used in Policy
+    OneTimeGlobalAlert("Triggers the following global alert: [comment]", UniqueTarget.Policy), // used in Policy
+    OneTimeGlobalSpiesWhenEnteringEra("Every major Civilization gains a spy once a civilization enters this era", UniqueTarget.Era),
 
     OneTimeUnitHeal("Heal this unit by [amount] HP", UniqueTarget.Promotion),
     OneTimeUnitGainXP("This Unit gains [amount] XP", UniqueTarget.Ruins),

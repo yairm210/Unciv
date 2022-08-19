@@ -162,13 +162,18 @@ object ReligionAutomation {
         var inquisitors = civInfo.gameInfo.ruleSet.units.values.filter {
             it.getMapUnit(civInfo).canDoReligiousAction(Constants.removeHeresy)
             || it.hasUnique(UniqueType.PreventSpreadingReligion)
-        }.map { it.name }
-        inquisitors = inquisitors.map { civInfo.getEquivalentUnit(it).name }
+        }
+
+        inquisitors = inquisitors.map { civInfo.getEquivalentUnit(it) }
+
         val inquisitorConstruction = inquisitors
-            .map { civInfo.cities.first().cityConstructions.getConstruction(it) as INonPerpetualConstruction }
-            .filter { unit -> civInfo.cities.any { unit.isPurchasable(it.cityConstructions) } }
-            .minByOrNull { it.getStatBuyCost(civInfo.getCapital()!!, Stat.Faith)!! }
+            // Get list of cities it can be built in
+            .associateBy({unit -> unit}) { unit -> civInfo.cities.filter { unit.isPurchasable(it.cityConstructions) && unit.canBePurchasedWithStat(it, Stat.Faith) } }
+            .filter { it.value.isNotEmpty() }
+            // And from that list determine the cheapest price
+            .minByOrNull { it.value.minOf { city -> it.key.getStatBuyCost(city, Stat.Faith)!!  }}?.key
             ?: return
+
 
         val hasUniqueToTakeCivReligion = civInfo.gameInfo.ruleSet.units[inquisitorConstruction.name]!!.hasUnique(UniqueType.TakeReligionOverBirthCity)
 

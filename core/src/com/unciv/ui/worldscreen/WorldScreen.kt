@@ -24,6 +24,7 @@ import com.unciv.logic.multiplayer.MultiplayerGameUpdated
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.TutorialTrigger
+import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.cityscreen.CityScreen
@@ -681,13 +682,17 @@ class WorldScreen(
                     viewingCiv.policies.shouldOpenPolicyPicker = false
                 }
 
-            viewingCiv.religionManager.canFoundPantheon() ->
-                NextTurnAction("Found Pantheon", Color.WHITE) {
+            viewingCiv.religionManager.canFoundOrExpandPantheon() -> {
+                val displayString = if (viewingCiv.religionManager.religionState == ReligionState.Pantheon)
+                    "Expand Pantheon"
+                else "Found Pantheon"
+                NextTurnAction(displayString, Color.valueOf(BeliefType.Pantheon.color)) {
                     game.pushScreen(PantheonPickerScreen(viewingCiv))
                 }
+            }
 
             viewingCiv.religionManager.religionState == ReligionState.FoundingReligion ->
-                NextTurnAction("Found Religion", Color.WHITE) {
+                NextTurnAction("Found Religion", Color.valueOf(BeliefType.Founder.color)) {
                     game.pushScreen(
                         ReligiousBeliefsPickerScreen(
                             viewingCiv,
@@ -698,11 +703,22 @@ class WorldScreen(
                 }
 
             viewingCiv.religionManager.religionState == ReligionState.EnhancingReligion ->
-                NextTurnAction("Enhance a Religion", Color.ORANGE) {
+                NextTurnAction("Enhance a Religion", Color.valueOf(BeliefType.Enhancer.color)) {
                     game.pushScreen(
                         ReligiousBeliefsPickerScreen(
                             viewingCiv,
                             viewingCiv.religionManager.getBeliefsToChooseAtEnhancing(),
+                            pickIconAndName = false
+                        )
+                    )
+                }
+
+            viewingCiv.religionManager.hasFreeBeliefs() ->
+                NextTurnAction("Reform Religion", Color.valueOf(BeliefType.Enhancer.color)) {
+                    game.pushScreen(
+                        ReligiousBeliefsPickerScreen(
+                            viewingCiv,
+                            viewingCiv.religionManager.freeBeliefsAsEnums(),
                             pickIconAndName = false
                         )
                     )

@@ -38,8 +38,14 @@ object TranslationFileWriter {
             val translations = Translations()
             translations.readAllLanguagesTranslation()
 
-            val percentages = generateTranslationFiles(translations)
-            writeLanguagePercentages(percentages)
+            var fastlaneOutput = ""
+            // check to make sure we're not running from a jar since these users shouldn't need to
+            // regenerate base game translation and fastlane files
+            if (TranslationFileWriter.javaClass.`package`.specificationVersion == null) {
+                val percentages = generateTranslationFiles(translations)
+                writeLanguagePercentages(percentages)
+                fastlaneOutput = "\n" + writeTranslatedFastlaneFiles(translations)
+            }
 
             // See #5168 for some background on this
             for ((modName, modTranslations) in translations.modsWithTranslations) {
@@ -48,8 +54,7 @@ object TranslationFileWriter {
                 writeLanguagePercentages(modPercentages, modFolder)  // unused by the game but maybe helpful for the mod developer
             }
 
-            return "Translation files are generated successfully.".tr() + "\n" +
-                    writeTranslatedFastlaneFiles(translations)
+            return "Translation files are generated successfully.".tr() + fastlaneOutput
         } catch (ex: Throwable) {
             ex.printStackTrace()
             return ex.localizedMessage ?: ex.javaClass.simpleName

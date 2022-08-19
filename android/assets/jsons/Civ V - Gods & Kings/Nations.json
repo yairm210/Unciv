@@ -35,7 +35,8 @@
 		"cities": ["Babylon","Akkad","Dur-Kurigalzu","Nippur","Borsippa","Sippar","Opis","Mari","Shushan","Eshnunna",
 			"Ellasar","Erech","Kutha","Sirpurla","Neribtum","Ashur","Ninveh","Nimrud","Arbela","Nuzi",
 			"Arrapkha","Tutub","Shaduppum","Rapiqum","Mashkan Shapir","Tuttul","Ramad","Ana","Haradum","Agrab",
-			"Uqair","Gubba","Hafriyat","Nagar","Shubat Enlil","Urhai","Urkesh","Awan","Riblah","Tayma"]
+			"Uqair","Gubba","Hafriyat","Nagar","Shubat Enlil","Urhai","Urkesh","Awan","Riblah","Tayma"],
+        "spyNames": ["Rim-Sin II", "Smerdis", "Ilum-ma-ili", "Peshgaldaramesh", "Ur-zigurumaš", "Semiramis", "Em", "Ishtar", "Bilit Taauth", "Aruru"]
 	},
 	{
 		"name": "Greece",
@@ -66,8 +67,9 @@
 			"Eretria","Pergamon","Miletos","Megara","Phocaea","Sicyon","Tiryns","Samos","Mytilene","Chios",
 			"Paros","Elis","Syracuse","Herakleia","Gortyn","Chalkis","Pylos","Pella","Naxos","Sicyon",
 			"Larissa","Apollonia","Messene","Orchomenos","Ambracia","Kos","Knidos","Amphipolis",
-			"Patras","Lamia","Nafplion","Apolyton"]
-	},
+			"Patras","Lamia","Nafplion","Apolyton"],
+        "spyNames": ["Jason", "Helena", "Alexa", "Cletus", "Kassandra", "Andres", "Desdemona", "Anthea", "Aeneas", "Leander",]
+    },
 	{
 		"name": "China",
 		"leaderName": "Wu Zetian",
@@ -91,8 +93,10 @@
 		"cities": ["Beijing","Shanghai","Guangzhou","Nanjing","Xian","Chengdu","Hangzhou","Tianjin","Macau","Shandong",
 			"Kaifeng","Ningbo","Baoding","Yangzhou","Harbin","Chongqing","Luoyang","Kunming","Taipei","Shenyang",
 			"Taiyuan","Tainan","Dalian","Lijiang","Wuxi","Suzhou","Maoming","Shaoguan","Yangjiang","Heyuan","Huangshi",
-			"Yichang","Yingtian","Xinyu","Xinzheng","Handan","Dunhuang","Gaoyu","Nantong","Weifang","Xikang"]
-	},
+			"Yichang","Yingtian","Xinyu","Xinzheng","Handan","Dunhuang","Gaoyu","Nantong","Weifang","Xikang"],
+        "spyNames": ["Li", "Chen", "Zhang", "Liu", "Yang", "Huang", "Zhao", "Wu", "Zhou", "Sun"]
+
+    },
 	{
 		"name": "Egypt",
 		"leaderName": "Ramesses II",
@@ -122,8 +126,9 @@
 			   "Hieraconpolis","Abydos","Asyut","Avaris","Lisht","Buto","Edfu","Pithom","Busiris","Kahun","Athribis",
 			   "Mendes","Elashmunein","Tanis","Bubastis","Oryx","Sebennytus","Akhmin","Karnak","Luxor","El Kab","Armant",
 			   "Balat","Ellahun","Hawara","Dashur","Damanhur","Ellahun","Abusir","Ellahun","Herakleopolis","Akoris",
-			   "Benihasan","Badari","Hermopolis","Amrah","Koptos","Ombos","Naqada","Semna","Soleb"]
-	},
+			   "Benihasan","Badari","Hermopolis","Amrah","Koptos","Ombos","Naqada","Semna","Soleb"],
+        "spyNames": ["Refaat", "Heba", "Salah", "Ahmed", "Zakaria", "Bastet", "Ma'at", "Nebhet", "Tefenet", "Neuth"]
+    },
 	{
 		"name": "England",
 		"leaderName": "Elizabeth",
@@ -148,8 +153,9 @@
 		"cities": ["London","York","Nottingham","Hastings","Canterbury","Coventry","Warwick","Newcastle","Oxford","Liverpool",
 			"Dover","Brighton","Norwich","Leeds","Reading","Birmingham","Richmond","Exeter","Cambridge","Gloucester",
 			"Manchester","Bristol","Leicester","Carlisle","Ipswich","Portsmouth","Berwick","Bath","Mumbles","Southampton",
-			"Sheffield","Salisbury","Colchester","Plymouth","Lancaster","Blackpool","Winchester","Hull"]
-	},
+			"Sheffield","Salisbury","Colchester","Plymouth","Lancaster","Blackpool","Winchester","Hull"],
+        "spyNames": ["James", "Scarlett", "Mycroft", "Charlotte", "Gwendolyn", "Mr. Eks", "Dr. Grey", "Andrew", "Scott", "Anne"]
+    },
 	{
 		"name": "France",
 		"leaderName": "Napoleon",
@@ -173,8 +179,9 @@
 		"cities": ["Paris","Orleans","Lyon","Troyes","Tours","Marseille","Chartres","Avignon","Rouen","Grenoble",
 			"Dijon","Amiens","Cherbourg","Poitiers","Toulouse","Bayonne","Strasbourg","Brest","Bordeaux","Rennes",
 			"Nice","Saint Etienne","Nantes","Reims","Le Mans","Montpellier","Limoges","Nancy","Lille","Caen","Toulon",
-			"Le Havre","Lourdes","Cannes","Aix-En-Provence","La Rochelle","Bourges","Calais"]
-	},
+			"Le Havre","Lourdes","Cannes","Aix-En-Provence","La Rochelle","Bourges","Calais"],
+        "spyNames": ["Jean-Paul", "Martine", "Lucien", "François", "Augustine", "Monsieur X", "Dr. Dupont", "Vipère", "Yvette", "Renard"]
+    },
 	{
 		"name": "Russia",
 		"leaderName": "Catherine",
@@ -200,8 +207,9 @@
 		"cities": ["Moscow","St. Petersburg","Novgorod","Rostov","Yaroslavl","Yekaterinburg","Yakutsk","Vladivostok","Smolensk","Orenburg",
 			"Krasnoyarsk","Khabarovsk","Bryansk","Tver","Novosibirsk","Magadan","Murmansk","Irkutsk","Chita","Samara",
 			"Arkhangelsk","Chelyabinsk","Tobolsk","Vologda","Omsk","Astrakhan","Kursk","Saratov","Tula","Vladimir","Perm",
-			"Voronezh","Pskov","Starayarussa","Kostoma","Nizhniy Novgorod","Suzdal","Magnitogorsk"]
-	},
+			"Voronezh","Pskov","Starayarussa","Kostoma","Nizhniy Novgorod","Suzdal","Magnitogorsk"],
+        "spyNames": ["Alexei", "Lena", "Dmitry", "Anastasia", "Tatiana", "Boris", "Doktor Seriy", "Mikhail", "Natacha", "Zmeya"]
+    },
 	{
 		"name": "Rome",
 		"leaderName": "Augustus Caesar",
@@ -227,8 +235,9 @@
 		"cities": ["Rome","Antium","Cumae","Neapolis","Ravenna","Arretium","Mediolanum","Arpinum","Circei","Setia",
 			"Satricum","Ardea","Ostia","Velitrae","Viroconium","Tarentum","Brundisium","Caesaraugusta","Caesarea","Palmyra",
 			"Signia","Aquileia","Clusium","Sutrium","Cremona","Placentia","Hispalis","Artaxata","Aurelianorum","Nicopolis",
-			  "Agrippina","Verona","Corfinium","Treverii","Sirmium","Augustadorum","Curia","Interrama","Adria"]
-	},
+			  "Agrippina","Verona","Corfinium","Treverii","Sirmium","Augustadorum","Curia","Interrama","Adria"],
+        "spyNames": ["Flavius", "Regula", "Servius", "Lucia", "Cornelius", "Licina", "Canus", "Serpens", "Agrippa", "Brutus",]
+    },
 	{
 		"name": "Arabia",
 		"leaderName": "Harun al-Rashid",
@@ -252,8 +261,10 @@
 		"uniques": ["[+1 Gold] from each Trade Route", "Double quantity of [Oil] produced"],
 		"cities": ["Mecca","Medina","Damascus","Baghdad","Najran","Kufah","Basra","Khurasan","Anjar","Fustat",
 			"Aden","Yamama","Muscat","Mansura","Bukhara","Fez","Shiraz","Merw","Balkh","Mosul",
-			"Aydab","Bayt","Suhar","Taif","Hama","Tabuk","Sana'a","Shihr","Tripoli","Tunis","Kairouan","Algiers","Oran"]
-	},
+			"Aydab","Bayt","Suhar","Taif","Hama","Tabuk","Sana'a","Shihr","Tripoli","Tunis","Kairouan","Algiers","Oran"],
+        "spyNames": ["Solhofaat", "Khenzeer", "Zarafah", "Temsaah", "Abyadh", "Mostafa", "Yusuf", "Waddah", "Sameera", "Gamal"]
+
+    },
 	{
 		"name": "America",
 		"leaderName": "George Washington",
@@ -279,7 +290,8 @@
 			"Cleveland","Kansas City","San Diego","Richmond","Las Vegas","Phoenix","Albuquerque","Minneapolis","Pittsburgh",
 			"Oakland","Tampa Bay","Orlando","Tacoma","Santa Fe","Olympia","Hunt Valley","Springfield","Palo Alto","Centralia",
 			"Spokane","Jacksonville","Svannah","Charleston","San Antonio","Birmingham","Anchorage","Sacramento","Reno",
-			"Salt Lake City","Boise","Milwaukee","Santa Cruz","Little Rock"]
+			"Salt Lake City","Boise","Milwaukee","Santa Cruz","Little Rock"],
+        "spyNames": ["Cousin", "Felix", "Dennis", "Edward", "Prof. Rex", "Eliza", "Mary", "Virginia", "Scarlett", "Barbara"]
 	},
 	{
 		"name": "Japan",
@@ -305,8 +317,9 @@
 		"cities": ["Kyoto","Osaka","Tokyo","Satsuma","Kagoshima","Nara","Nagoya","Izumo","Nagasaki","Yokohama",
 			"Shimonoseki","Matsuyama","Sapporo","Hakodate","Ise","Toyama","Fukushima","Suo","Bizen","Echizen",
 			"Izumi","Omi","Echigo","Kozuke","Sado","Kobe","Nagano","Hiroshima","Takayama","Akita","Fukuoka","Aomori",
-			"Kamakura","Kochi","Naha","Sendai","Gifu","Yamaguchi","Ota","Tottori"]
-	},
+			"Kamakura","Kochi","Naha","Sendai","Gifu","Yamaguchi","Ota","Tottori"],
+        "spyNames": ["Akaishi", "Oki", "Hattori", "Morozumi", "Momochi", "Kawashima", "Orin", "Sakanishi", "Kaede", "Mochizuki"]
+    },
 	{
 		"name": "India",
 		"leaderName": "Gandhi",
@@ -330,8 +343,9 @@
 		"uniques": ["Unhappiness from number of Cities doubled", "[-50]% Unhappiness from [Population] [in all cities]"],
 		"cities": ["Delhi","Mumbai","Vijayanagara","Pataliputra","Varanasi","Agra","Calcutta","Lahore","Bangalore","Hyderabad","Madurai","Ahmedabad",
 			"Kolhapur","Prayaga","Ayodhya","Indraprastha","Mathura","Ujjain","Gulbarga","Jaunpur","Rajagriha","Sravasti","Tiruchirapalli","Thanjavur",
-			"Bodhgaya","Kushinagar","Amaravati","Gaur","Gwalior","Jaipur","Karachi"]
-	},
+			"Bodhgaya","Kushinagar","Amaravati","Gaur","Gwalior","Jaipur","Karachi"],
+        "spyNames": ["Ashok", "Shanx", "Hormis", "Sanjeev", "Ananda", "Rani", "Parvati", "Mukta", "Karishma", "Jyotsna"]
+    },
 	{
 		"name": "Germany",
 		"leaderName": "Otto von Bismarck",
@@ -358,8 +372,9 @@
 			"Münster","Rostock","Chemnitz","Braunschweig","Halle","Mönchengladbach","Kiel","Wuppertal","Freiburg","Hagen",
 			"Erfurt","Kaiserslautern","Kassel","Oberhausen","Hamm","Saarbrücken","Krefeld","Pirmasens","Potsdam","Solingen",
 			"Osnabrück","Ludwigshafen","Leverkusen","Oldenburg","Neuss","Mülheim","Darmstadt","Herne","Würzburg",
-			"Recklinghausen","Göttingen","Wolfsburg","Koblenz","Hildesheim","Erlangen"]
-	},
+			"Recklinghausen","Göttingen","Wolfsburg","Koblenz","Hildesheim","Erlangen"],
+        "spyNames": ["Johann", "Marlene", "Wilhelm", "Eva", "Heinz", "Horst", "Carl", "Viper", "Albrecht", "Anton"]
+    },
 
 	{
 		"name": "The Ottomans",
@@ -386,8 +401,9 @@
 		"cities": ["Istanbul","Edirne","Ankara","Bursa","Konya","Samsun","Gaziantep","Diyarbakır","Izmir","Kayseri","Malatya",
 			"Mersin","Antalya","Zonguldak","Denizli","Ordu","Muğla","Eskişehir","Inebolu","Sinop","Adana","Artvin",
 			"Bodrum","Eregli","Silifke","Sivas","Amasya","Marmaris","Trabzon","Erzurum","Urfa","Izmit","Afyonkarahisar",
-			"Bitlis","Yalova"]
-	},
+			"Bitlis","Yalova"],
+        "spyNames": ["Ibrahim", "Bayezid", "Sokollu", "Mahmut", "Uveys", "Roxelana", "Safiye", "Hafsa", "Kosem", "Nurbanu"]
+    },
 	{
 		"name": "Korea",
 		"leaderName": "Sejong",
@@ -412,8 +428,9 @@
         "uniques": ["[+2 Science] from every specialist [in all cities]", "[+2 Science] from every [Great Improvement]","Receive a tech boost when scientific buildings/wonders are built in capital"],
 		"cities": ["Seoul","Busan","Jeonju","Daegu","Pyongyang","Kaesong","Suwon","Gwangju","Gangneung","Hamhung","Wonju","Ulsan",
 			"Changwon","Andong","Gongju","Haeju","Cheongju","Mokpo","Dongducheon","Geoje","Suncheon","Jinju","Sangju",
-			"Rason","Gyeongju","Chungju","Sacheon","Gimje","Anju"]
-	},
+			"Rason","Gyeongju","Chungju","Sacheon","Gimje","Anju"],
+        "spyNames": ["Kim", "Park", "Han", "Na", "Kong", "Yu", "Ahn", "Na", "Da", "Eun"]
+    },
 
 	{
 		"name": "Iroquois",
@@ -439,8 +456,9 @@
 		"cities": ["Onondaga","Osininka","Grand River","Akwesasme","Buffalo Creek","Brantford","Montreal","Genesse River",
 			"Canandaigua Lake","Lake Simcoe","Salamanca","Gowanda","Cuba","Akron","Kanesatake","Ganienkeh","Cayuga Castle",
 			"Chondote","Canajoharie","Nedrow","Oneida Lake","Kanonwalohale","Green Bay","Southwold","Mohawk Valley",
-			"Schoharie","Bay of Quinte","Kanawale","Kanatsiokareke","Tyendinaga","Hahta"]
-	},
+			"Schoharie","Bay of Quinte","Kanawale","Kanatsiokareke","Tyendinaga","Hahta"],
+        "spyNames": ["Onatah", "Oneida", "Oshadagea", "Otetiani", "Genesee", "Dadgayadoh", "Otwtiani", "Kateri", "Onondakai", "Honanyawus"]
+    },
 	{
 		"name": "Persia",
 		"leaderName": "Darius I",
@@ -467,8 +485,9 @@
 			"Dura Europos","Aleppo","Qatna","Kabul","Capisa","Kyreskhata","Marakanda","Peshawar","Van","Pteira","Arshada",
 			"Artakaona","Aspabota","Autiyara","Bagastana","Baxtri","Darmasa","Daphnai","Drapsaka","Eion","Gandutava",
 			"Gaugamela","Harmozeia","Ekatompylos","Izata","Kampada","Kapisa","Karmana","Kounaxa","Kuganaka","Nautaka",
-			"Paishiyauvada","Patigrbana","Phrada"]
-	},
+			"Paishiyauvada","Patigrbana","Phrada"],
+        "spyNames": ["Azi", "Dabir", "Firuz", "Gaspar", "Shahzad", "Aga", "Marjane", "Peri", "Sartaj ", "Yasmin"]
+    },
 	{
 		"name": "Polynesia",
 		"leaderName": "Kamehameha I",
@@ -493,8 +512,9 @@
 		"cities": ["Honolulu","Samoa","Tonga","Nuku Hiva","Raiatea","Aotearoa","Tahiti","Hilo","Te Wai Pounamu","Rapa Nui",
 			"Tuamotu","Rarotonga","Tuvalu","Tubuai","Mangareva","Oahu","Kiritimati","Ontong Java","Niue","Rekohu",
 			"Rakahanga","Bora Bora","Kailua","Uvea","Futuna","Rotuma","Tokelau","Lahaina","Bellona","Mungava","Tikopia",
-			"Emae","Kapingamarangi","Takuu","Nukuoro","Sikaiana","Anuta","Nuguria","Pileni","Nukumanu"]
-	},
+			"Emae","Kapingamarangi","Takuu","Nukuoro","Sikaiana","Anuta","Nuguria","Pileni","Nukumanu"],
+        "spyNames": ["Tiki", "Hotu Matua", "Rongo-ma-tane", "Kupe", "Haloti", "Degei", "Babamik", "Kulu Lau", "Nangananga", "Turua"]
+    },
 	{
 		"name": "Siam",
 		"leaderName": "Ramkhamhaeng",
@@ -519,8 +539,9 @@
 		"cities": ["Sukhothai","Si Satchanalai","Muang Saluang","Lampang","Phitsanulok","Kamphaeng Pet","Nakhom Chum","Vientiane",
 			"Nakhon Si Thammarat","Martaban","Nakhon Sawan","Chainat","Luang Prabang","Uttaradit","Chiang Thong","Phrae",
 			"Nan","Tak","Suphanburi","Hongsawadee","Thawaii","Ayutthaya","Taphan Hin","Uthai Thani","Lap Buri","Ratchasima",
-			"Ban Phai","Loci","Khon Kaen","Surin"]
-	},
+			"Ban Phai","Loci","Khon Kaen","Surin"],
+        "spyNames": ["Aran", "Chanarong", "Kiet", "Niran", "Virote", "Kulap", "Mayuree", "Phueng", "Ratana", "Tola"]
+    },
 	{
 		"name": "Spain",
 		"leaderName": "Isabella",
@@ -546,8 +567,9 @@
 		"cities": ["Madrid","Barcelona","Seville","Cordoba","Toledo","Santiago","Salamanca","Murcia","Valencia","Zaragoza","Pamplona",
 			"Vitoria","Santander","Oviedo","Jaen","Logroño","Valladolid","Palma","Teruel","Almeria","Leon","Zamora","Mida",
 			"Lugo","Alicante","Càdiz","Eiche","Alcorcon","Burgos","Vigo","Badajoz","La Coruña","Guadalquivir","Bilbao",
-			"San Sebastian","Granada","Mérida","Huelva","Ibiza","Las Palmas","Tenerife"]
-	},
+			"San Sebastian","Granada","Mérida","Huelva","Ibiza","Las Palmas","Tenerife"],
+        "spyNames": ["Rodrigo", "Esmeralda", "Leon", "Mathilda", "Ramona", "Señor X", "Topolino", "Serpiente", "Garcia", "El Lobo"]
+    },
 	{
 		"name": "Songhai",
 		"leaderName": "Askia",
@@ -571,8 +593,9 @@
 		"uniques": ["Receive triple Gold from Barbarian encampments and pillaging Cities", "Defense bonus when embarked <for [All] units>", "[Land] units gain the [Amphibious] promotion"],
 		"cities": ["Gao","Tombouctu","Jenne","Taghaza","Tondibi","Kumbi Saleh","Kukia","Walata","Tegdaoust","Argungu","Gwandu",
 			"Kebbi","Boussa","Motpi","Bamako","Wa","Kayes","Awdaghost","Ouadane","Dakar","Tadmekket","Tekedda","Kano",
-			"Agadez","Niamey","Torodi","Ouatagouna","Dori","Bamba","Segou"]
-	},
+			"Agadez","Niamey","Torodi","Ouatagouna","Dori","Bamba","Segou"],
+        "spyNames": ["Ahmadou", "Ayub", "Badru", "Bokhari", "Guedado", "Adhiambo", "Chinaka", "Laila", "Mariama", "Oni"]
+    },
 	{
 		"name": "Mongolia",
 		"leaderName": "Genghis Khan",
@@ -597,8 +620,9 @@
 		"cities": ["Karakorum","Beshbalik","Turfan","Hsia","Old Sarai","New Sarai","Tabriz","Tiflis","Otrar","Sanchu","Kazan",
 			"Almarikh","Ulaanbaatar","Hovd","Darhan","Dalandzadgad","Mandalgovi","Choybalsan","Erdenet","Tsetserieg",
 			"Baruun-Urt","Ereen","Batshireet","Choyr","Ulaangom","Tosontsengel","Altay","Uliastay","Bayanhongor",
-			"Har-Ayrag","Nalayh","Tes"]
-	},
+			"Har-Ayrag","Nalayh","Tes"],
+        "spyNames": ["Asashōryū", "Tömöriin", "Zevegiin", "Jigjidiin", "Enkhbat", "Mönkhbayar", "Gündegmaa", "Ssima", "Batachikhan", "Chulunny"]
+    },
 	{
 		"name": "Aztecs",
 		"leaderName": "Montezuma I",
@@ -627,8 +651,10 @@
 			"Atzcapotzalco","Tzintzuntzan","Malinalco","Tula","Tamuin","Teayo","Cempoala","Chalco","Tlalmanalco",
 			"Ixtapaluca","Huexotla","Tepexpan","Tepetlaoxtoc","Chiconautla","Zitlaltepec","Coyotepec","Tequixquiac",
 			"Jilotzingo","Tlapanaloya","Tultitan","Ecatepec","Coatepec","Chalchiuites","Chiauhita","Chapultepec",
-			"Itzapalapa","Ayotzinco","Iztapam"]
-	},
+			"Itzapalapa","Ayotzinco","Iztapam"],
+        "spyNames": ["Metztli", "Xitllali", "Chimalli", "Quauhtli", "Teyacapan", "Yaotl", "Coatl", "Huitzilin", "Itzli", "Tepin"]
+
+    },
 	{
 		"name": "Inca",
 		"leaderName": "Pachacuti",
@@ -667,8 +693,9 @@
 		"cities": ["Cuzco","Tiwanaku","Machu","Ollantaytambo","Corihuayrachina","Huamanga","Rumicucho","Vilcabamba","Vitcos",
 			"Andahuaylas","Ica","Arequipa","Nasca","Atico","Juli","Chuito","Chuquiapo","Huanuco Pampa","Tamboccocha",
 			"Huaras","Riobamba","Caxamalca","Sausa","Tambo Colorado","Huaca","Tumbes","Chan Chan","Sipan","Pachacamac",
-			"Llactapata","Pisac","Kuelap","Pajaten","Chucuito","Choquequirao"]
-	},
+			"Llactapata","Pisac","Kuelap","Pajaten","Chucuito","Choquequirao"],
+        "spyNames": ["Amaru", "Apichu", "Pariapichiu", "Puma", "Quenti", "Suyuntu", "Uturuncu", "Uturuncu", "Purutu", "Ozcollo"]
+    },
 	{
 		"name": "Denmark",
 		"leaderName": "Harald Bluetooth",
@@ -695,8 +722,9 @@
 			"Bergen","Faeroerne","Reykjavik","Trondheim","Godthab","Helluland","Lillehammer","Markland","Elsinore",
 			"Sarpsborg","Odense","Aalborg","Stavanger","Vorbasse","Schleswig","Kristiansand","Halogaland","Randers",
 			"Fredrikstad","Kolding","Horsens","Tromsoe","Vejle","Koge","Sandnes","Holstebro","Slagelse","Drammen",
-			"Hillerod","Sonderborg","Skien","Svendborg","Holbaek","Hjorring","Fladstrand","Haderslev","Ringsted","Skrive"]
-	},
+			"Hillerod","Sonderborg","Skien","Svendborg","Holbaek","Hjorring","Fladstrand","Haderslev","Ringsted","Skrive"],
+        "spyNames": ["Jørgen", "Mette", "Henrik", "Niels", "Helle", "Frederik", "Ida", "Thea", "Freja", "Morten"]
+    },
 	{
 		"name": "The Huns",
 		"leaderName": "Attila the Hun",
@@ -718,8 +746,9 @@
 		"favoredReligion": "Tengriism",
 		"uniqueName": "Scourge of God",
 		"uniques": ["[+1 Production] from every [Pasture]", "Cities are razed [2] times as fast", "Starts with [Animal Husbandry]", "\"Borrows\" city names from other civilizations in the game"],
-		"cities": ["Atilla's Court"]
-	},
+		"cities": ["Atilla's Court"],
+        "spyNames": ["Balamber", "Uldin", "Donatus", "Charato", "Octar", "Bleda", "Ellac", "Dengizik", "Hildico", "Gudrun"]
+    },
 	{
 		"name": "The Netherlands",
 		"leaderName": "William of Orange",
@@ -741,8 +770,9 @@
 		"favoredReligion": "Christianity",
 		"uniqueName": "Dutch East India Company",
 		"uniques": ["Retain [50]% of the happiness from a luxury after the last copy has been traded away"],
-		"cities": ["Amsterdam", "Rotterdam", "Utrecht", "Groningen", "Breda", "Nijmegen", "Den Haag", "Haarlem", "Arnhem", "Zutphen", "Maastricht", "Tilburg", "Eindhoven", "Dordrecht", "Leiden", "'s Hertogenbosch", "Almere", "Alkmaar", "Brielle", "Vlissingen", "Apeldoorn", "Enschede", "Amersfoort", "Zwolle", "Venlo", "Uden", "Grave", "Delft", "Gouda", "Nieuwstadt", "Weesp", "Coevorden", "Kerkrade"]
-	},
+		"cities": ["Amsterdam", "Rotterdam", "Utrecht", "Groningen", "Breda", "Nijmegen", "Den Haag", "Haarlem", "Arnhem", "Zutphen", "Maastricht", "Tilburg", "Eindhoven", "Dordrecht", "Leiden", "'s Hertogenbosch", "Almere", "Alkmaar", "Brielle", "Vlissingen", "Apeldoorn", "Enschede", "Amersfoort", "Zwolle", "Venlo", "Uden", "Grave", "Delft", "Gouda", "Nieuwstadt", "Weesp", "Coevorden", "Kerkrade"],
+        "spyNames": ["Joost", "Hendrika", "Marten", "Anke", "Guus", "Mr. X", "Dr. Grijs", "Willem", "Thijs", "Neef"]
+    },
 
 	{
 	    "name": "Sweden",
@@ -768,11 +798,13 @@
 		"uniqueName": "Nobel Prize",
 		"uniques": ["Gain [90] Influence with a [Great Person] gift to a City-State", "When declaring friendship, both parties gain a [10]% boost to great person generation"],
 		"cities": ["Stockholm","Uppsala","Gothenburg","Malmö","Linköping","Kalmar","Skara","Västerås","Jönköping",
-		"Visby","Falun","Norrköping","Gävle","Halmstad","Karlskrona","Hudiksvall","Örebro","Umeå","Karlstad",
-		"Helsingborg","Härnösand","Vadstena","Lund","Västervik","Enköping","Skövde","Eskilstuna","Luleå","Lidköping",
-		"Södertälje","Mariestad","Östersund","Borås","Sundsvall","Vimmerby","Köping","Mora","Arboga","Växjö","Gränna",
-		"Kiruna","Borgholm","Strängnäs","Sveg"]
-	},
+            "Visby","Falun","Norrköping","Gävle","Halmstad","Karlskrona","Hudiksvall","Örebro","Umeå","Karlstad",
+            "Helsingborg","Härnösand","Vadstena","Lund","Västervik","Enköping","Skövde","Eskilstuna","Luleå","Lidköping",
+            "Södertälje","Mariestad","Östersund","Borås","Sundsvall","Vimmerby","Köping","Mora","Arboga","Växjö","Gränna",
+            "Kiruna","Borgholm","Strängnäs","Sveg"
+        ],
+        "spyNames": ["Leif", "Ingegard", "Sören", "Ragnhild", "Lars", "Lina", "Herr Grå", "Magnus", "Vilma", "Kusin"]
+    },
 	{
 		"name": "Austria",
 		"leaderName": "Maria Theresa",
@@ -800,8 +832,9 @@
 			"St. Pölten", "Eisenstadt", "Villach", "Zwettl", "Traun", "Wels", "Dornbirn", "Feldkirch",
 			"Amstetten", "Bad Ischl", "Wolfsberg", "Kufstein", "Leoben", "Klosterneuburg", "Leonding",
 			"Kapfenberg", "Hallein", "Bischofshofen", "Waidhofen", "Saalbach", "Lienz", "Steyr"
-		]
-	},
+		],
+        "spyNames": ["Ferdinand", "Johanna", "Franz-Josef", "Astrid", "Anna", "Hubert", "Alois", "Natter", "Georg", "Arnold",]
+    },
 	{
 		"name": "Carthage",
 		"leaderName": "Dido",
@@ -828,8 +861,9 @@
 		"cities": ["Carthage","Utique","Hippo Regius","Gades","Saguntum","Carthago Nova","Panormus","Lilybaeum","Hadrumetum","Zama Regia",
 			"Karalis","Malaca","Leptis Magna","Hippo Diarrhytus","Motya","Sulci","Leptis Parva","Tharros","Soluntum","Lixus",
 			"Oea","Theveste","Ibossim","Thapsus","Aleria","Tingis","Abyla","Sabratha","Rusadir","Baecula",
-			"Saldae"]
-	},
+			"Saldae"],
+        "spyNames": ["Hamilcar", "Mago", "Baalhaan", "Sophoniba", "Yzebel", "Similce", "Kandaulo", "Zinnridi", "Gisgo", "Fierelus"]
+    },
 	{
 		"name": "Byzantium",
 		"leaderName": "Theodora",
@@ -855,8 +889,9 @@
 		"cities": ["Constantinople", "Adrianople", "Nicaea", "Antioch", "Varna", "Ohrid", "Nicomedia", "Trebizond", "Cherson", "Sardica",
 			"Ani", "Dyrrachium", "Edessa", "Chalcedon", "Naissus", "Bari", "Iconium", "Prilep", "Samosata", "Kars", "Nicopolis", "Theodosiopolis",
 			"Tyana", "Gaza", "Kerkyra", "Phoenice", "Selymbria", "Sillyon", "Chrysopolis", "Vodena", "Caesarea", "Traianoupoli", "Constantia", "Athens",
-			"Patra", "Korinthos"]
-	},
+			"Patra", "Korinthos"],
+        "spyNames": ["Basil", "Nikophoros", "Demetrios", "Philippos", "Theophylaktos", "Simonis", "Zoe", "Ioanno", "Xene", "Euphrosyne"]
+    },
 	{
 		"name": "Celts",
 		"leaderName": "Boudicca",
@@ -895,7 +930,8 @@
 			"Belfast","Caernarfon","Newquay","Saint-Nazaire","Castletown","Stirling","Galway","Conwy",
 			"St. Austell","Saint-Malo","Onchan","Dundee","Londonderry","Llanfairpwllgwyngyll","Falmouth","Lorient"]
 		// Llanfairpwllgwyngyll should actually be Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch
-	},
+        "spyNames": ["Crìsdean", "Siobhán", "Seamus", "Ffion", "Pádraig", "Deirdre", "Mr. Quinn", "Éadaoin", "Alwyn", "Col Ceathar"]
+    },
 	{
 		"name": "Ethiopia",
 		"leaderName": "Haile Selassie",
@@ -931,8 +967,9 @@
 		"cities": ["Addis Ababa","Harar","Adwa","Lalibela","Gondar","Axum","Dire Dawa","Bahir Dar","Adama",
 			"Mek'ele","Awasa","Jimma","Jijiga","Dessie","Debre Berhan","Shashamane","Debre Zeyit","Sodo","Hosaena",
 			"Nekemte","Asella","Dila","Adigrat","Debre Markos","Kombolcha","Debre Tabor","Sebeta",
-			"Shire","Ambo","Negele Arsi","Gambela","Ziway","Weldiya"]
-	},
+			"Shire","Ambo","Negele Arsi","Gambela","Ziway","Weldiya"],
+        "spyNames": ["Mulu Ken", "Wendimu", "Li'ol", "Demeke", "Mulu Alem", "Abebech", "Zema", "Mihret", "Kebedech", "Alemnesh"]
+    },
 	{
 		"name": "The Maya",
 		"leaderName": "Pacal",
@@ -972,8 +1009,9 @@
 		"cities": ["Palenque","Tikal","Chichen Itza","Uxmal","Tulum","Copan","Coba","El Mirador","Calakmul",
 			"Edzna","Lamanai","Izapa","Uaxactun","Comalcalco","Piedras Negras","Cancuen","Yaxha","Quirigua",
 			"Q'umarkaj","Nakbe","Cerros","Xunantunich","Takalik Abaj","Cival","San Bartolo","Altar de Sacrificios","Seibal",
-			"Caracol","Naranjo","Dos Pilas","Mayapan","Ixinche","Zaculeu","Kabah"]
-	},
+			"Caracol","Naranjo","Dos Pilas","Mayapan","Ixinche","Zaculeu","Kabah"],
+        "spyNames": ["Camazotz", "Coyopa", "Gukumatz", "Hunahpu", "Huracan", "Ixchel", "Ixtab", "Kukulkán", "Xbalanque", "Zipacna"]
+    },
 
 
 	// City-States sorted by cityStateType, name

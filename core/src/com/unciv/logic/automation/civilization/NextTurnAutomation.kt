@@ -535,10 +535,11 @@ object NextTurnAutomation {
         choosePantheon(civInfo)
         foundReligion(civInfo)
         enhanceReligion(civInfo)
+        chooseFreeBeliefs(civInfo)
     }
 
     private fun choosePantheon(civInfo: CivilizationInfo) {
-        if (!civInfo.religionManager.canFoundPantheon()) return
+        if (!civInfo.religionManager.canFoundOrExpandPantheon()) return
         // So looking through the source code of the base game available online,
         // the functions for choosing beliefs total in at around 400 lines.
         // https://github.com/Gedemon/Civ5-DLL/blob/aa29e80751f541ae04858b6d2a2c7dcca454201e/CvGameCoreDLL_Expansion1/CvReligionClasses.cpp
@@ -547,7 +548,10 @@ object NextTurnAutomation {
         // Should probably be changed later, but it works for now.
         val chosenPantheon = chooseBeliefOfType(civInfo, BeliefType.Pantheon)
             ?: return // panic!
-        civInfo.religionManager.choosePantheonBelief(chosenPantheon)
+        civInfo.religionManager.chooseBeliefs(
+            listOf(chosenPantheon),
+            useFreeBeliefs = civInfo.religionManager.usingFreeBeliefs()
+        )
     }
 
     private fun foundReligion(civInfo: CivilizationInfo) {
@@ -559,15 +563,21 @@ object NextTurnAutomation {
             else availableReligionIcons.randomOrNull()
                 ?: return // Wait what? How did we pass the checking when using a great prophet but not this?
         val chosenBeliefs = chooseBeliefs(civInfo, civInfo.religionManager.getBeliefsToChooseAtFounding()).toList()
-        civInfo.religionManager.chooseBeliefs(religionIcon, religionIcon, chosenBeliefs)
+        civInfo.religionManager.chooseBeliefs(chosenBeliefs, religionIcon, religionIcon)
     }
 
     private fun enhanceReligion(civInfo: CivilizationInfo) {
         if (civInfo.religionManager.religionState != ReligionState.EnhancingReligion) return
         civInfo.religionManager.chooseBeliefs(
-            null,
-            null,
             chooseBeliefs(civInfo, civInfo.religionManager.getBeliefsToChooseAtEnhancing()).toList()
+        )
+    }
+
+    private fun chooseFreeBeliefs(civInfo: CivilizationInfo) {
+        if (!civInfo.religionManager.hasFreeBeliefs()) return
+        civInfo.religionManager.chooseBeliefs(
+            chooseBeliefs(civInfo, civInfo.religionManager.freeBeliefsAsEnums()).toList(),
+            useFreeBeliefs = true
         )
     }
 
@@ -592,8 +602,7 @@ object NextTurnAutomation {
             .filter {
                 (it.value.type == beliefType || beliefType == BeliefType.Any)
                 && !additionalBeliefsToExclude.contains(it.value)
-                && !civInfo.gameInfo.religions.values
-                    .flatMap { religion -> religion.getBeliefs(beliefType) }.contains(it.value)
+                && civInfo.religionManager.getReligionWithBelief(it.value) == null
             }
             .map { it.value }
             .maxByOrNull { ReligionAutomation.rateBelief(civInfo, it) }

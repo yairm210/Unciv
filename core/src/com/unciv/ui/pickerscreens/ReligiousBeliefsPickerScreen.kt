@@ -74,7 +74,7 @@ class ReligiousBeliefsPickerScreen (
             if (pickIconAndName) "Choose a Religion"
             else "Enhance [${currentReligion.getReligionDisplayName()}]"
         ) {
-            chooseBeliefs(displayName, religionName, beliefsToChoose.map { it.belief!! })
+            chooseBeliefs(beliefsToChoose.map { it.belief!! }, displayName, religionName, usingFreeBeliefs())
         }
     }
 
@@ -191,6 +191,7 @@ class ReligiousBeliefsPickerScreen (
         rightSelection.clear()
         val availableBeliefs = ruleset.beliefs.values
             .filter { (it.type == beliefType || beliefType == BeliefType.Any) }
+        val civReligionManager = currentReligion.getFounder().religionManager
         for (belief in availableBeliefs) {
             val beliefButton = getBeliefButton(belief)
             when {
@@ -204,7 +205,8 @@ class ReligiousBeliefsPickerScreen (
                     // The Belief button should be disabled because you already have it selected
                     beliefButton.disable(greenDisableColor)
                 }
-                gameInfo.religions.values.any { it.hasBelief(belief.name) } -> {
+                civReligionManager.getReligionWithBelief(belief) != null
+                        && civReligionManager.getReligionWithBelief(belief) != currentReligion -> {
                     // The Belief is not available because someone already has it
                     beliefButton.disable(redDisableColor)
                 }
