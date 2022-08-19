@@ -126,7 +126,7 @@ class AskNumberPopup(
             }
         ) {
             actionOnOk(nameField.text.toInt())
-        }
+        }.row()
         equalizeLastTwoButtonWidths()
 
         keyboardFocus = nameField

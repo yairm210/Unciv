@@ -58,7 +58,7 @@ class AskTextPopup(
             }
         ) {
             actionOnOk(nameField.text)
-        }
+        }.row()
         equalizeLastTwoButtonWidths()
         keyboardFocus = nameField
     }
