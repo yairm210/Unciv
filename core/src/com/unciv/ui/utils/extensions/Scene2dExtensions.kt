@@ -46,12 +46,14 @@ private class RestorableTextButtonStyle(
     baseStyle: TextButtonStyle,
     val restoreStyle: ButtonStyle
 ) : TextButtonStyle(baseStyle)
+
 /** Disable a [Button] by setting its [touchable][Button.touchable] and [color][Button.color] properties. */
 fun Button.disable() {
-    touchable= Touchable.disabled
+    touchable = Touchable.disabled
     val oldStyle = style
     val disabledStyle = BaseScreen.skin.get("disabled", TextButtonStyle::class.java)
-    style = RestorableTextButtonStyle(disabledStyle, oldStyle)
+    if (oldStyle !is RestorableTextButtonStyle)
+        style = RestorableTextButtonStyle(disabledStyle, oldStyle)
 }
 /** Enable a [Button] by setting its [touchable][Button.touchable] and [color][Button.color] properties. */
 fun Button.enable() {
