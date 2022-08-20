@@ -25,10 +25,13 @@ val deployFolder = file("../deploy")
 // and https://github.com/yairm210/Unciv/issues/5679
 val jvmArgsForMac = listOf("-XstartOnFirstThread", "-Djava.awt.headless=true")
 tasks.register<JavaExec>("run") {
-    jvmArgs = mutableListOf<String>()
-    if ("mac" in System.getProperty("os.name").toLowerCase())
-        (jvmArgs as MutableList<String>).addAll(jvmArgsForMac)
+    jvmArgs = if ("mac" in System.getProperty("os.name").toLowerCase()) {
+        jvmArgsForMac
         // These are non-standard, only available/necessary on Mac.
+    } else {
+        listOf<String>()
+    }
+
 
     dependsOn(tasks.getByName("classes"))
 
