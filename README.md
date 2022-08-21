@@ -28,7 +28,7 @@ If you want a small, fast, moddable, FOSS, in-depth 4X that can still run on a p
 In this order:
 
 * Polish! As you may have noticed, Unciv is fully functional but rough around the edges. This means:
-    * UI+UX improvements (suggestions welcome!)
+    * UI+UX improvements ([suggestions welcome!](https://github.com/yairm210/Unciv/issues/new?assignees=&labels=feature&template=feature_request.md&title=Feature+request%3A+))
     * Better automation, AI etc. in-game
 * Finishing off Vanilla mechanics - mostly done!
 * G&K mechanics - espionage, small other changes (see [#4697](https://www.github.com/yairm210/Unciv/issues/4697))

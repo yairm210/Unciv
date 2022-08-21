@@ -164,7 +164,11 @@ class CityInfo : IsPartOfGameInfoSerialization {
         ) ?: "City Without A Name"
 
         isOriginalCapital = civInfo.citiesCreated == 0
-        if (isOriginalCapital) civInfo.hasEverOwnedOriginalCapital = true
+        if (isOriginalCapital) {
+            civInfo.hasEverOwnedOriginalCapital = true
+            // if you have some culture before the 1st city is found, you may want to adopt the 1st policy
+            civInfo.policies.shouldOpenPolicyPicker = true
+        }
         civInfo.citiesCreated++
 
         civInfo.cities = civInfo.cities.toMutableList().apply { add(this@CityInfo) }
