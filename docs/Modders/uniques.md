@@ -808,9 +808,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Every major Civilization gains a spy once a civilization enters this era"
 	Applicable to: Era
 
-??? example  "Every major Civilization gains a spy once a civilization enters this era"
-	Applicable to: Era
-
 ## Tech uniques
 ??? example  "Starting tech"
 	Applicable to: Tech

@@ -133,7 +133,7 @@ class UnitOverviewTab(
     private fun Table.updateUnitHeaderTable(): Table {
         defaults().pad(5f)
         add("Name".toLabel())
-        add("".toLabel())
+        add()
         add("Action".toLabel())
         add(Fonts.strength.toString().toLabel())
         add(Fonts.rangedStrength.toString().toLabel())

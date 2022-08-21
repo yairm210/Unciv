@@ -27,19 +27,11 @@ class UnitRenamePopup(val screen: BaseScreen, val unit: MapUnit, val actionOnClo
             screen,
             label = "Choose name for [${unit.baseUnit.name}]",
             icon = ImageGetter.getUnitIcon(unit.name).surroundWithCircle(80f),
-            defaultText = if (unit.instanceName == null) {
-                unit.baseUnit.name
-            } else {
-                unit.instanceName.toString()
-            },
+            defaultText = unit.instanceName ?: unit.baseUnit.name.tr(),
             validate = { it != unit.name },
             actionOnOk = { userInput ->
                 //If the user inputs an empty string, clear the unit instanceName so the base name is used
-                if (userInput == "") {
-                    unit.instanceName = null
-                } else {
-                    unit.instanceName = userInput
-                }
+                unit.instanceName = if (userInput == "") null else userInput
                 actionOnClose()
             }
         ).open()

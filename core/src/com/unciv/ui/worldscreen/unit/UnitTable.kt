@@ -129,7 +129,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             if (selectedUnits.size == 1) { //single selected unit
                 separator.isVisible = true
                 val unit = selectedUnit!!
-                var nameLabelText = buildNameLabelText(unit)
+                val nameLabelText = buildNameLabelText(unit)
                 if (nameLabelText != unitNameLabel.text.toString()) {
                     unitNameLabel.setText(nameLabelText)
                     selectedUnitHasChanged = true // We need to reload the health bar of the unit in the icon - happens e.g. when picking the Heal Instantly promotion

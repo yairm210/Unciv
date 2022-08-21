@@ -363,6 +363,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         if (civInfo.isCityState() &&
             (relationshipLevel() >= RelationshipLevel.Friend || otherCiv().hasUnique(UniqueType.CityStateTerritoryAlwaysFriendly)))
             return true
+        println("isConsideredFriendlyTerritory")
+        println(hasOpenBorders)
         return hasOpenBorders
     }
     //endregion
@@ -414,7 +416,13 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     fun updateHasOpenBorders() {
         // City-states can enter ally's territory (the opposite is true anyway even without open borders)
         val newHasOpenBorders = civInfo.getAllyCiv() == otherCivName
-                || trades.flatMap { it.theirOffers }.any { it.name == Constants.openBorders && it.duration > 0 }
+                || trades.flatMap { it.ourOffers }.any { it.name == Constants.openBorders && it.duration > 0 }
+        if (civInfo.civName == "Egypt") {
+            println("updateHasOpenBorders")
+            println(civInfo.civName)
+            println(trades.flatMap { it.theirOffers })
+            println()
+        }
 
         val bordersWereClosed = hasOpenBorders && !newHasOpenBorders
         hasOpenBorders = newHasOpenBorders
