@@ -284,6 +284,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
     fun canBeMarriedBy(otherCiv: CivilizationInfo): Boolean {
         return (!civInfo.isDefeated()
                 && civInfo.isCityState()
+                && civInfo.cities.any()
                 && civInfo.getDiplomacyManager(otherCiv).relationshipLevel() == RelationshipLevel.Ally
                 && !otherCiv.getDiplomacyManager(civInfo).hasFlag(DiplomacyFlags.MarriageCooldown)
                 && otherCiv.getMatchingUniques(UniqueType.CityStateCanBeBoughtForGold).any()
