@@ -73,7 +73,6 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
         terrainFeatureLayerGroup.color.a = 0.5f
         icons.improvementIcon?.setColor(1f, 1f, 1f, 0.5f)
         resourceImage?.setColor(1f, 1f, 1f, 0.5f)
-        cityImage?.setColor(1f, 1f, 1f, 0.5f)
         icons.civilianUnitIcon?.setColor(1f, 1f, 1f, 0.5f)
         icons.militaryUnitIcon?.setColor(1f, 1f, 1f, 0.5f)
         updatePopulationIcon()
