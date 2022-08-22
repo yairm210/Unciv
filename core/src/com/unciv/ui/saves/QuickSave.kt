@@ -4,6 +4,7 @@ import com.unciv.Constants
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
+import com.unciv.logic.UncivShowableException
 import com.unciv.ui.multiplayer.MultiplayerHelpers
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
@@ -88,6 +89,12 @@ object QuickSave {
                     screen.game.onlineMultiplayer.loadGame(savedGame)
                 } catch (oom: OutOfMemoryError) {
                     outOfMemory()
+                } catch (notAPlayer: UncivShowableException) {
+                    val (message) = LoadGameScreen.getLoadExceptionMessage(notAPlayer)
+                    launchOnGLThread {
+                        loadingPopup.close()
+                        ToastPopup(message, screen)
+                    }
                 } catch (ex: Exception) {
                     Log.error("Could not autoload game", ex)
                     val (message) = LoadGameScreen.getLoadExceptionMessage(ex)

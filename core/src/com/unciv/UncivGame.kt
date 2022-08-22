@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.UncivFiles
+import com.unciv.logic.UncivShowableException
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.models.metadata.GameSettings
@@ -178,6 +179,12 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     suspend fun loadGame(newGameInfo: GameInfo): WorldScreen = withThreadPoolContext toplevel@{
         val prevGameInfo = gameInfo
         gameInfo = newGameInfo
+
+        if (gameInfo?.gameParameters?.anyoneCanSpectate == false) {
+            if (gameInfo!!.civilizations.none { it.playerId == settings.multiplayer.userId }) {
+                throw UncivShowableException("You are not allowed to spectate!")
+            }
+        }
 
         initializeResources(prevGameInfo, newGameInfo)
 
