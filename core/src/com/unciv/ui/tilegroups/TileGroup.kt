@@ -301,15 +301,15 @@ open class TileGroup(
 
         for (image in tileBaseImages) image.remove()
         tileBaseImages.clear()
-        for (index in tileBaseImageLocations.indices) {
+        for (baseLocation in tileBaseImageLocations) {
             // Here we check what actual tiles exist, and pick one - not at random, but based on the tile location,
             // so it stays consistent throughout the game
-            if (!ImageGetter.imageExists(tileBaseImageLocations[index])) continue
+            if (!ImageGetter.imageExists(baseLocation)) continue
 
             val locationToCheck =
                     if (tileInfo.owningCity != null)
-                        tileSetStrings.getOwnedTileImageLocation(tileBaseImageLocations[index], tileInfo.getOwner()!!)
-                    else tileBaseImageLocations[index]
+                        tileSetStrings.getOwnedTileImageLocation(baseLocation, tileInfo.getOwner()!!)
+                    else baseLocation
 
             val existingImages = ArrayList<String>()
             existingImages.add(locationToCheck)
@@ -327,7 +327,7 @@ open class TileGroup(
             baseLayerGroup.addActor(image)
 
             if (tileSetStrings.tileSetConfig.tileScales.isNotEmpty()) {
-                val scale = tileSetStrings.tileSetConfig.tileScales[tileBaseImageLocations[index].takeLastWhile { it != '/' }]
+                val scale = tileSetStrings.tileSetConfig.tileScales[baseLocation.takeLastWhile { it != '/' }]
                 setHexagonImageSize(image, scale)
             } else {
                 setHexagonImageSize(image)
