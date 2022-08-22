@@ -703,6 +703,20 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
             if (unit.civInfo.isAtWarWith(firstUnit.civInfo))
                 return false
         }
+        
+        val city = tile.owningCity
+        if (tile.isWater && city !=null &&
+            !unit.civInfo.isPlayerCivilization() &&
+            unit.baseUnit.isLandUnit() &&
+            unit.civInfo.isAtWarWith(tile.getOwner()!!)) {
+
+            //do not die attacking cities from water
+            val distance = getDistance(tile.position, city.location)
+
+            if (distance < 4) {
+                return false
+            }
+        }
 
         return true
     }
