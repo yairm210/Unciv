@@ -399,6 +399,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
         // On desktop this should only be this one and "DestroyJavaVM"
         logRunningThreads()
+
+        System.exit(0)
     }
 
     private fun logRunningThreads() {
