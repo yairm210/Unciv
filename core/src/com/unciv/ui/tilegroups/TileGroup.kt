@@ -585,7 +585,7 @@ open class TileGroup(
             else -> Color.WHITE.cpy()
         }
 
-        if (!isViewable) Color.WHITE.cpy().lerp(tileSetStrings.tileSetConfig.fogOfWarColor, 0.6f)
+        val color = if (!isViewable) Color.WHITE.cpy().lerp(tileSetStrings.tileSetConfig.fogOfWarColor, 0.6f)
         else Color.WHITE.cpy()
 
         for((index, image) in tileBaseImages.withIndex())
