@@ -52,8 +52,11 @@ class AskTextPopup(
         addCloseButton()
         addOKButton(
             validate = {
-                val errorFound = nameField.text == "" || !validate(nameField.text)
-                if (errorFound) add(errorLabel).colspan(2).center()
+                val errorFound = !validate(nameField.text)
+                if (errorFound) {
+                    row()
+                    add(errorLabel).colspan(2).center()
+                }
                 !errorFound
             }
         ) {

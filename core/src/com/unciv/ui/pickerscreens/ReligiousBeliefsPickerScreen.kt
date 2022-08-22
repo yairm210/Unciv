@@ -123,6 +123,7 @@ class ReligiousBeliefsPickerScreen (
                     religionName != Constants.noReligionName
                     && ruleset.religions.none { it == religionName }
                     && gameInfo.religions.none { it.value.name == religionName }
+                    && religionName != ""
                 },
                 actionOnOk = { changeDisplayedReligionName(it) }
             ).open()
