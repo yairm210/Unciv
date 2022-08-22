@@ -394,7 +394,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
         button.onActivation { puppetAction() }
         button.keyShortcuts.add('p')
         add(button).row()
-        addGoodSizedLabel("Puppeted cities do not increase your tech or policy cost, but their citizens generate 1.5x the regular unhappiness.").row()
+        addGoodSizedLabel("Puppeted cities do not increase your tech or policy cost.").row()
         addGoodSizedLabel("You have no control over the the production of puppeted cities.").row()
         addGoodSizedLabel("Puppeted cities also generate 25% less Gold and Science.").row()
         addGoodSizedLabel("A puppeted city can be annexed at any time.").row()

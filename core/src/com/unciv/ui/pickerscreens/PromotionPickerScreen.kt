@@ -42,11 +42,13 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
         rightSideButton.onClick(UncivSound.Promote) {
             acceptPromotion(selectedPromotion)
         }
+
         val canBePromoted = unit.promotions.canBePromoted()
         val canChangeState = game.worldScreen!!.canChangeState
         val canPromoteNow = canBePromoted && canChangeState
                 && unit.currentMovement > 0 && unit.attacksThisTurn == 0
         rightSideButton.isEnabled = canPromoteNow
+        descriptionLabel.setText(updateDescriptionLabel())
 
         val availablePromotionsGroup = Table()
         availablePromotionsGroup.defaults().pad(5f)
@@ -57,25 +59,20 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
         }
         val unitAvailablePromotions = unit.promotions.getAvailablePromotions()
 
-        if (canPromoteNow && unit.instanceName == null) {
-            val renameButton = "Choose name for [${unit.name}]".toTextButton()
-            renameButton.isEnabled = true
-            renameButton.onClick {
-                AskTextPopup(
-                    this,
-                    label = "Choose name for [${unit.baseUnit.name}]",
-                    icon = ImageGetter.getUnitIcon(unit.name).surroundWithCircle(80f),
-                    defaultText = unit.name,
-                    validate = { it != unit.name},
-                    actionOnOk = { userInput ->
-                        unit.instanceName = userInput
-                        this.game.replaceCurrentScreen(PromotionPickerScreen(unit))
-                    }
-                ).open()
-            }
-            availablePromotionsGroup.add(renameButton)
-            availablePromotionsGroup.row()
+        //Always allow the user to rename the unit as many times as they like.
+        val renameButton = "Choose name for [${unit.name}]".toTextButton()
+        renameButton.isEnabled = true
+
+        renameButton.onClick {
+            UnitRenamePopup(
+                screen = this,
+                unit = unit,
+                actionOnClose = {
+                    this.game.replaceCurrentScreen(PromotionPickerScreen(unit)) })
         }
+        availablePromotionsGroup.add(renameButton)
+        availablePromotionsGroup.row()
+
         for (promotion in promotionsForUnitType) {
             if (promotion.hasUnique(UniqueType.OneTimeUnitHeal) && unit.health == 100) continue
             val isPromotionAvailable = promotion in unitAvailablePromotions
@@ -89,7 +86,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
                 rightSideButton.isEnabled = enable
                 rightSideButton.setText(promotion.name.tr())
 
-                descriptionLabel.setText(promotion.getDescription(promotionsForUnitType))
+                descriptionLabel.setText(updateDescriptionLabel(promotion.getDescription(promotionsForUnitType)))
             }
 
             availablePromotionsGroup.add(selectPromotionButton)
@@ -117,6 +114,20 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
         splitPane.pack()    // otherwise scrollPane.maxY == 0
         scrollPane.scrollY = scrollY
         scrollPane.updateVisualScroll()
+    }
+
+    private fun updateDescriptionLabel(): String {
+        var newDescriptionText = unit.displayName().tr()
+
+        return newDescriptionText.toString()
+    }
+
+    private fun updateDescriptionLabel(promotionDescription: String): String {
+        var newDescriptionText = unit.displayName().tr()
+
+        newDescriptionText += "\n" + promotionDescription
+
+        return newDescriptionText.toString()
     }
 
     override fun recreate(): BaseScreen {

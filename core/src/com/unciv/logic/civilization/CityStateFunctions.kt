@@ -284,6 +284,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
     fun canBeMarriedBy(otherCiv: CivilizationInfo): Boolean {
         return (!civInfo.isDefeated()
                 && civInfo.isCityState()
+                && civInfo.cities.any()
                 && civInfo.getDiplomacyManager(otherCiv).relationshipLevel() == RelationshipLevel.Ally
                 && !otherCiv.getDiplomacyManager(civInfo).hasFlag(DiplomacyFlags.MarriageCooldown)
                 && otherCiv.getMatchingUniques(UniqueType.CityStateCanBeBoughtForGold).any()
@@ -352,7 +353,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         val recentBullying = civInfo.getRecentBullyingCountdown()
         if (recentBullying != null && recentBullying > 10)
             modifiers["Very recently paid tribute"] = -300
-        else if (recentBullying != null)
+        else if (recentBullying != null && recentBullying > 0)
             modifiers["Recently paid tribute"] = -40
         if (civInfo.getDiplomacyManager(demandingCiv).getInfluence() < -30)
             modifiers["Influence below -30"] = -300

@@ -49,11 +49,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Triggers voting for the Diplomatic Victory"
 	Applicable to: Triggerable
 
-??? example  "Triggers the following global alert: [comment]"
-	Example: "Triggers the following global alert: [comment]"
-
-	Applicable to: Triggerable
-
 ??? example  "This Unit gains the [promotion] promotion"
 	Example: "This Unit gains the [Shock I] promotion"
 
@@ -75,7 +70,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Triggerable
 
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Triggerable, Global, Nation, Era, Speed, Tech, Policy, FounderBelief, FollowerBelief, Building, Wonder, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Tutorial, CityState, ModOptions, Conditional
+	Applicable to: Triggerable, Global, Nation, Era, Tech, Policy, FounderBelief, FollowerBelief, Building, Wonder, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Tutorial, CityState, ModOptions, Conditional
 
 ## Global uniques
 ??? example  "[stats]"
@@ -810,6 +805,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Starting in this era disables religion"
 	Applicable to: Era
 
+??? example  "Every major Civilization gains a spy once a civilization enters this era"
+	Applicable to: Era
+
+??? example  "Every major Civilization gains a spy once a civilization enters this era"
+	Applicable to: Era
+
 ## Tech uniques
 ??? example  "Starting tech"
 	Applicable to: Tech
@@ -819,6 +820,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Cannot be hurried"
 	Applicable to: Tech, Building
+
+## Policy uniques
+??? example  "Triggers the following global alert: [comment]"
+	Example: "Triggers the following global alert: [comment]"
+
+	Applicable to: Policy
 
 ## FounderBelief uniques
 ??? example  "[stats] for each global city following this religion"

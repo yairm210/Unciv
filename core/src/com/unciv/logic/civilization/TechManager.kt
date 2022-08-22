@@ -238,9 +238,6 @@ class TechManager : IsPartOfGameInfoSerialization {
     }
 
     fun addTechnology(techName: String) {
-        techsInProgress.remove(techName)
-
-        val previousEra = civInfo.getEra()
         techsResearched.add(techName)
 
         // this is to avoid concurrent modification problems
@@ -261,19 +258,6 @@ class TechManager : IsPartOfGameInfoSerialization {
 
         civInfo.addNotification("Research of [$techName] has completed!", TechAction(techName), NotificationIcon.Science, techName)
         civInfo.popupAlerts.add(PopupAlert(AlertType.TechResearched, techName))
-
-        val currentEra = civInfo.getEra()
-        if (previousEra != currentEra) {
-            civInfo.addNotification("You have entered the [$currentEra]!", NotificationIcon.Science)
-            if (civInfo.isMajorCiv()) {
-                for (knownCiv in civInfo.getKnownCivs()) {
-                    knownCiv.addNotification("[${civInfo.civName}] has entered the [$currentEra]!", civInfo.civName, NotificationIcon.Science)
-                }
-            }
-            for (it in getRuleset().policyBranches.values.filter { it.era == currentEra.name && civInfo.policies.isAdoptable(it) }) {
-                civInfo.addNotification("[" + it.name + "] policy branch unlocked!", NotificationIcon.Culture)
-            }
-        }
 
         if (civInfo.playerType == PlayerType.Human) {
             for (revealedResource in getRuleset().tileResources.values.filter { techName == it.revealedBy }) {
@@ -334,7 +318,23 @@ class TechManager : IsPartOfGameInfoSerialization {
             civInfo.addNotification("You have unlocked [The Long Count]!", MayaLongCountAction(), MayaCalendar.notificationIcon)
         }
 
+        val previousEra = civInfo.getEra()
         updateEra()
+        val currentEra = civInfo.getEra()
+        if (previousEra != currentEra) {
+            civInfo.addNotification("You have entered the [$currentEra]!", NotificationIcon.Science)
+            if (civInfo.isMajorCiv()) {
+                for (knownCiv in civInfo.getKnownCivs()) {
+                    knownCiv.addNotification("[${civInfo.civName}] has entered the [$currentEra]!", civInfo.civName, NotificationIcon.Science)
+                }
+            }
+            for (policyBranch in getRuleset().policyBranches.values.filter { it.era == currentEra.name && civInfo.policies.isAdoptable(it) }) {
+                civInfo.addNotification("[" + policyBranch.name + "] policy branch unlocked!", NotificationIcon.Culture)
+            }
+            for (unique in currentEra.uniqueObjects) {
+                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+            }
+        }
     }
 
     fun updateEra() {
