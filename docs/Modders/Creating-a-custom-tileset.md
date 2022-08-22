@@ -50,7 +50,7 @@ This is an example of such a config file that will be explain below:
 
 A boolean value ("true" or "false"). Default value: "false"
 
-If true, an additional "Hexagon" image is placed below each tile and colored in the corresponding BaseTerrain color. This removes the necessity to add individual BaseTerrain images. This is how the "Default" tileset works.
+If true, an additional "Hexagon" image is placed below each tile and colored in the corresponding BaseTerrain color. This removes the necessity to add individual BaseTerrain images. This is how the "Minimal" tileset works.
 
 ### useSummaryImages
 
@@ -90,7 +90,7 @@ The scale of all tiles. Can be used to increase or decrease the size of every ti
 
 A dictionary mapping string to a float value. Default value: empty
 
-Used by the "Default" tileset to scale all its tiles except the base terrain down. Each entry overrides the tileScale value for the specified tile.
+Used by the "Minimal" tileset to scale all its tiles except the base terrain down. Each entry overrides the tileScale value for the specified tile.
 
 ### ruleVariants
 
