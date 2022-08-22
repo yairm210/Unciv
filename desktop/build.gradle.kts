@@ -19,10 +19,8 @@ sourceSets {
 }
 
 dependencies {
-    if(Os.isFamily(Os.FAMILY_MAC)) {
-        // See https://libgdx.com/news/2021/07/devlog-7-lwjgl3#do-i-need-to-do-anything-else
-        api("com.badlogicgames.gdx:gdx-lwjgl3-glfw-awt-macos:$gdxVersion")
-    }
+    // See https://libgdx.com/news/2021/07/devlog-7-lwjgl3#do-i-need-to-do-anything-else
+    api("com.badlogicgames.gdx:gdx-lwjgl3-glfw-awt-macos:$gdxVersion")
 }
 
 val mainClassName = "com.unciv.app.desktop.DesktopLauncher"
