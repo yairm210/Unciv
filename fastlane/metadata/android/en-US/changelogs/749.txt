@@ -1,0 +1,31 @@
+
+
+Resolved  - updated build documentation to build-tools version
+
+Hopefully resolved  by upgrading androidx.work version
+
+By JackRainy:
+- Restore the button's style correctly 
+- Suggest to adopt policy when the game starts with some culture 
+
+Removed legacy tileset code  - By GGGuenni
+
+Improved options to rename units  - By huckdogg
+
+By xlenstra:
+- Fixed a crash when marrying a city-state without cities 
+- Updated readme roadmap 
+- Fix spies being gained in non espionage games 
+- Basic version of `EspionageManger`, added a unique to gain spies 
+
+Add a link in Readme.md  - By heipizhu4
+
+By Ouaz:
+- Add "Wait" command in "Idle Units" tutorial 
+- Add an icon for "Wait" unit action 
+- Fix "1.5x unhappiness" still being mentioned 
+- Fix an untranslated string 
+
+Notificiations tab scroll fix in empire overview  - By MindaugasRumsa51
+
+Fix infinite city-state tribute bug  - By OptimizedForDensity
