@@ -80,6 +80,7 @@ object Constants {
     const val dropboxMultiplayerServer = "Dropbox"
 
     const val defaultTileset = "HexaRealm"
+    const val defaultSkin = "Minimal"
 
     /**
      * Use this to determine whether a [MapUnit][com.unciv.logic.map.MapUnit]'s movement is exhausted

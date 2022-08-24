@@ -176,7 +176,7 @@ object ImageGetter {
     }
 
     fun getRoundedEdgeRectangle(tintColor: Color? = null): NinePatchDrawable {
-        val region = getDrawable("Skin/roundedEdgeRectangle").region
+        val region = getDrawable("Skins/${UncivGame.Current.settings.skin}/roundedEdgeRectangle").region
         val drawable = NinePatchDrawable(NinePatch(region, 25, 25, 0, 0))
         drawable.setPadding(5f, 15f, 5f, 15f)
 
@@ -185,26 +185,26 @@ object ImageGetter {
     }
 
     fun getRectangleWithOutline(): NinePatchDrawable {
-        val region = getDrawable("Skin/rectangleWithOutline").region
+        val region = getDrawable("Skins/${UncivGame.Current.settings.skin}/rectangleWithOutline").region
         return NinePatchDrawable(NinePatch(region, 1, 1, 1, 1))
     }
 
     fun getSelectBox(): NinePatchDrawable {
-        val region = getDrawable("Skin/select-box").region
+        val region = getDrawable("Skins/${UncivGame.Current.settings.skin}/select-box").region
         return NinePatchDrawable(NinePatch(region, 10, 25, 5, 5))
     }
 
     fun getSelectBoxPressed(): NinePatchDrawable {
-        val region = getDrawable("Skin/select-box-pressed").region
+        val region = getDrawable("Skins/${UncivGame.Current.settings.skin}/select-box-pressed").region
         return NinePatchDrawable(NinePatch(region, 10, 25, 5, 5))
     }
 
     fun getCheckBox(): Drawable {
-        return getDrawable("Skin/checkbox")
+        return getDrawable("Skins/${UncivGame.Current.settings.skin}/checkbox")
     }
 
     fun getCheckBoxPressed(): Drawable {
-        return getDrawable("Skin/checkbox-pressed")
+        return getDrawable("Skins/${UncivGame.Current.settings.skin}/checkbox-pressed")
     }
 
     fun imageExists(fileName: String) = textureRegionDrawables.containsKey(fileName)
@@ -458,6 +458,9 @@ object ImageGetter {
         specialist.color = color
         return specialist
     }
+
+    fun getAvailableSkins() = textureRegionDrawables.keys.asSequence().filter { it.startsWith("Skins") }
+        .map { it.split("/")[1] }.distinct()
 
     fun getAvailableTilesets() = textureRegionDrawables.keys.asSequence().filter { it.startsWith("TileSets") }
             .map { it.split("/")[1] }.distinct()
