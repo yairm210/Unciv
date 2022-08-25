@@ -180,7 +180,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         val prevGameInfo = gameInfo
         gameInfo = newGameInfo
 
-        if (gameInfo?.gameParameters?.anyoneCanSpectate == false) {
+
+        if (gameInfo?.gameParameters?.isOnlineMultiplayer == true && gameInfo?.gameParameters?.anyoneCanSpectate == false) {
             if (gameInfo!!.civilizations.none { it.playerId == settings.multiplayer.userId }) {
                 throw UncivShowableException("You are not allowed to spectate!")
             }
