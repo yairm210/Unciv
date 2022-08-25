@@ -17,6 +17,7 @@ import com.unciv.ui.civilopedia.CivilopediaCategories
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
+import com.unciv.ui.pickerscreens.UnitRenamePopup
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.UnitGroup
 import com.unciv.ui.utils.extensions.addSeparator
@@ -83,7 +84,8 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                 add(prevIdleUnitButton)
                 unitIconNameGroup.add(unitIconHolder)
                 unitIconNameGroup.add(unitNameLabel).pad(5f)
-                unitIconNameGroup.touchable = Touchable.enabled
+                unitIconHolder.touchable = Touchable.enabled
+                unitNameLabel.touchable = Touchable.enabled
                 add(unitIconNameGroup)
                 add(nextIdleUnitButton)
             }
@@ -127,15 +129,20 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             if (selectedUnits.size == 1) { //single selected unit
                 separator.isVisible = true
                 val unit = selectedUnit!!
-                var nameLabelText = unit.displayName().tr()
-                if (unit.health < 100) nameLabelText += " (" + unit.health + ")"
+                val nameLabelText = buildNameLabelText(unit)
                 if (nameLabelText != unitNameLabel.text.toString()) {
                     unitNameLabel.setText(nameLabelText)
                     selectedUnitHasChanged = true // We need to reload the health bar of the unit in the icon - happens e.g. when picking the Heal Instantly promotion
                 }
-                unitIconNameGroup.clearListeners()
-                unitIconNameGroup.onClick {
-                    worldScreen.game.pushScreen(CivilopediaScreen(worldScreen.gameInfo.ruleSet, CivilopediaCategories.Unit, unit.name))
+
+                unitNameLabel.clearListeners()
+                unitNameLabel.onClick {
+                    UnitRenamePopup(
+                        screen = worldScreen,
+                        unit = unit,
+                        actionOnClose = {
+                            unitNameLabel.setText(buildNameLabelText(unit))
+                            selectedUnitHasChanged = true })
                 }
 
                 unitDescriptionTable.clear()
@@ -224,10 +231,14 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                 for (promotion in selectedUnit!!.promotions.getPromotions(true))
                     promotionsTable.add(ImageGetter.getPromotionIcon(promotion.name))
 
-                // Since Clear also clears the listeners, we need to re-add it every time
+                // Since Clear also clears the listeners, we need to re-add them every time
                 promotionsTable.onClick {
                     if (selectedUnit == null || selectedUnit!!.promotions.promotions.isEmpty()) return@onClick
                     UncivGame.Current.pushScreen(PromotionPickerScreen(selectedUnit!!))
+                }
+
+                unitIconHolder.onClick {
+                    worldScreen.game.pushScreen(CivilopediaScreen(worldScreen.gameInfo.ruleSet, CivilopediaCategories.Unit, selectedUnit!!.name))
                 }
             } else { // multiple selected units
                 for (unit in selectedUnits)
@@ -237,6 +248,13 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
         pack()
         selectedUnitHasChanged=false
+    }
+
+    private fun buildNameLabelText(unit: MapUnit) : String {
+        var nameLabelText = unit.displayName().tr()
+        if (unit.health < 100) nameLabelText += " (" + unit.health + ")"
+
+        return nameLabelText
     }
 
     fun citySelected(cityInfo: CityInfo) : Boolean {

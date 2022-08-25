@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.UncivFiles
+import com.unciv.logic.UncivShowableException
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.models.metadata.GameSettings
@@ -126,7 +127,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         ImageGetter.resetAtlases()
         ImageGetter.setNewRuleset(ImageGetter.ruleset)  // This needs to come after the settings, since we may have default visual mods
         if (settings.tileSet !in ImageGetter.getAvailableTilesets()) { // If one of the tilesets is no longer available, default back
-            settings.tileSet = "FantasyHex"
+            settings.tileSet = Constants.defaultTileset
         }
 
         BaseScreen.setSkin() // needs to come AFTER the Texture reset, since the buttons depend on it
@@ -178,6 +179,13 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     suspend fun loadGame(newGameInfo: GameInfo): WorldScreen = withThreadPoolContext toplevel@{
         val prevGameInfo = gameInfo
         gameInfo = newGameInfo
+
+
+        if (gameInfo?.gameParameters?.isOnlineMultiplayer == true && gameInfo?.gameParameters?.anyoneCanSpectate == false) {
+            if (gameInfo!!.civilizations.none { it.playerId == settings.multiplayer.userId }) {
+                throw UncivShowableException("You are not allowed to spectate!")
+            }
+        }
 
         initializeResources(prevGameInfo, newGameInfo)
 
@@ -399,6 +407,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
         // On desktop this should only be this one and "DestroyJavaVM"
         logRunningThreads()
+
+        System.exit(0)
     }
 
     private fun logRunningThreads() {
@@ -451,7 +461,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.2.4", 747)
+        val VERSION = Version("4.2.5", 749)
         //endregion
 
         lateinit var Current: UncivGame

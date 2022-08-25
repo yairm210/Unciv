@@ -6,6 +6,7 @@ import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.logic.multiplayer.OnlineMultiplayerGame
 import com.unciv.models.translations.tr
 import com.unciv.ui.popup.Popup
+import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.extensions.formatShort

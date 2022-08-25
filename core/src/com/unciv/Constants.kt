@@ -80,6 +80,8 @@ object Constants {
 
     const val dropboxMultiplayerServer = "Dropbox"
 
+    const val defaultTileset = "HexaRealm"
+
     /**
      * Use this to determine whether a [MapUnit][com.unciv.logic.map.MapUnit]'s movement is exhausted
      * (currentMovement <= this) if and only if a fuzzy comparison is needed to account for Float rounding errors.
