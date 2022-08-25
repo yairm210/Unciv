@@ -3,6 +3,7 @@ package com.unciv.ui.overviewscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
@@ -14,8 +15,6 @@ import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.AutoScrollPane
 import com.unciv.ui.utils.extensions.addSeparator
 import com.unciv.ui.utils.extensions.addSeparatorVertical
-import com.unciv.ui.utils.extensions.disable
-import com.unciv.ui.utils.extensions.enable
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.setSize
 import com.unciv.ui.utils.extensions.toLabel
@@ -32,7 +31,7 @@ class EspionageOverviewScreen(val civInfo: CivilizationInfo) : PickerScreen(true
     private val headerTable = Table(skin)
     private val middlePanes = Table(skin)
 
-    private var selectedSpyButton: Button? = null
+    private var selectedSpyButton: TextButton? = null
     private var selectedSpy: Spy? = null
     // if the value == null, this means the Spy Hideout.
     private var moveSpyHereButtons = hashMapOf<Button,CityInfo?>()
@@ -63,14 +62,18 @@ class EspionageOverviewScreen(val civInfo: CivilizationInfo) : PickerScreen(true
         spySelectionTable.add("Location".toLabel()).pad(5f).row()
         for (spy in civInfo.espionageManager.spyList) {
             spySelectionTable.add(spy.name.toLabel()).pad(5f)
-            spySelectionTable.add(spy.getLocationName(civInfo.gameInfo)).pad(5f)
+            spySelectionTable.add(spy.getLocationName(civInfo.gameInfo).toLabel()).pad(5f)
 
             val moveSpyButton = "Move".toTextButton()
             moveSpyButton.onClick {
+                if (selectedSpyButton == moveSpyButton) {
+                    resetSelection()
+                    return@onClick
+                }
                 resetSelection()
                 selectedSpyButton = moveSpyButton
                 selectedSpy = spy
-                moveSpyButton.disable()
+                selectedSpyButton!!.label = "Cancel".toLabel()
                 for ((button, city) in moveSpyHereButtons)
                     // For now, only allow spies to be send to cities of other major civs
                     // Not own cities as counterintelligence isn't implemented
@@ -79,7 +82,7 @@ class EspionageOverviewScreen(val civInfo: CivilizationInfo) : PickerScreen(true
                     if (city == null || ( // hideout
                         city.civInfo.isMajorCiv()
                         && city.civInfo != civInfo
-                        && (!city.espionage.hasSpyOf(civInfo) || selectedSpy!!.location == city.id)
+                        && !city.espionage.hasSpyOf(civInfo)
                     )) {
                         button.isVisible = true
                     }
@@ -158,7 +161,8 @@ class EspionageOverviewScreen(val civInfo: CivilizationInfo) : PickerScreen(true
 
     private fun resetSelection() {
         selectedSpy = null
-        selectedSpyButton?.enable()
+        if (selectedSpyButton != null)
+            selectedSpyButton!!.label = "Move".toLabel()
         selectedSpyButton = null
         for ((button, _) in moveSpyHereButtons)
             button.isVisible = false
