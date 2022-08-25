@@ -147,6 +147,7 @@ class OptionsPopup(
                 }
             }
             withGLContext {
+                BaseScreen.setSkin()
                 UncivGame.Current.screen?.openOptionsPopup(tabs.activePage)
             }
         }
