@@ -47,6 +47,7 @@ object ImageGetter {
     // We then shove all the drawables into a hashmap, because the atlas specifically tells us
     //   that the search on it is inefficient
     private val textureRegionDrawables = HashMap<String, TextureRegionDrawable>()
+    private val ninePatchDrawables = HashMap<String, NinePatchDrawable>()
 
     fun resetAtlases() {
         atlases.values.forEach { it.dispose() }
@@ -95,8 +96,13 @@ object ImageGetter {
                 atlases[extraAtlas] = tempAtlas  // cache the freshly loaded
             }
             for (region in tempAtlas.regions) {
-                val drawable = TextureRegionDrawable(region)
-                textureRegionDrawables[region.name] = drawable
+                if (region.name.startsWith("Skins")) {
+                    val ninePatch = tempAtlas.createPatch(region.name)
+                    ninePatchDrawables[region.name] = NinePatchDrawable(ninePatch)
+                } else {
+                    val drawable = TextureRegionDrawable(region)
+                    textureRegionDrawables[region.name] = drawable
+                }
             }
         }
     }
@@ -175,36 +181,35 @@ object ImageGetter {
         return textureRegionDrawables[fileName] ?: textureRegionDrawables[whiteDotLocation]!!
     }
 
+    fun getNinePatch(fileName: String?): NinePatchDrawable {
+        return ninePatchDrawables[fileName] ?: NinePatchDrawable(NinePatch(textureRegionDrawables[whiteDotLocation]!!.region))
+    }
+
     fun getRoundedEdgeRectangle(tintColor: Color? = null): NinePatchDrawable {
-        val region = getDrawable("Skins/${UncivGame.Current.settings.skin}/roundedEdgeRectangle").region
-        val drawable = NinePatchDrawable(NinePatch(region, 25, 25, 0, 0))
-        drawable.setPadding(5f, 15f, 5f, 15f)
+        val drawable = getNinePatch("Skins/${UncivGame.Current.settings.skin}/roundedEdgeRectangle")
 
         if (tintColor == null) return drawable
         return drawable.tint(tintColor)
     }
 
     fun getRectangleWithOutline(): NinePatchDrawable {
-        val region = getDrawable("Skins/${UncivGame.Current.settings.skin}/rectangleWithOutline").region
-        return NinePatchDrawable(NinePatch(region, 1, 1, 1, 1))
+        return getNinePatch("Skins/${UncivGame.Current.settings.skin}/rectangleWithOutline")
     }
 
     fun getSelectBox(): NinePatchDrawable {
-        val region = getDrawable("Skins/${UncivGame.Current.settings.skin}/select-box").region
-        return NinePatchDrawable(NinePatch(region, 10, 25, 5, 5))
+        return getNinePatch("Skins/${UncivGame.Current.settings.skin}/select-box")
     }
 
     fun getSelectBoxPressed(): NinePatchDrawable {
-        val region = getDrawable("Skins/${UncivGame.Current.settings.skin}/select-box-pressed").region
-        return NinePatchDrawable(NinePatch(region, 10, 25, 5, 5))
+        return getNinePatch("Skins/${UncivGame.Current.settings.skin}/select-box-pressed")
     }
 
-    fun getCheckBox(): Drawable {
-        return getDrawable("Skins/${UncivGame.Current.settings.skin}/checkbox")
+    fun getCheckBox(): NinePatchDrawable {
+        return getNinePatch("Skins/${UncivGame.Current.settings.skin}/checkbox")
     }
 
-    fun getCheckBoxPressed(): Drawable {
-        return getDrawable("Skins/${UncivGame.Current.settings.skin}/checkbox-pressed")
+    fun getCheckBoxPressed(): NinePatchDrawable {
+        return getNinePatch("Skins/${UncivGame.Current.settings.skin}/checkbox-pressed")
     }
 
     fun imageExists(fileName: String) = textureRegionDrawables.containsKey(fileName)
@@ -459,8 +464,7 @@ object ImageGetter {
         return specialist
     }
 
-    fun getAvailableSkins() = textureRegionDrawables.keys.asSequence().filter { it.startsWith("Skins") }
-        .map { it.split("/")[1] }.distinct()
+    fun getAvailableSkins() = ninePatchDrawables.keys.asSequence().map { it.split("/")[1] }.distinct()
 
     fun getAvailableTilesets() = textureRegionDrawables.keys.asSequence().filter { it.startsWith("TileSets") }
             .map { it.split("/")[1] }.distinct()
