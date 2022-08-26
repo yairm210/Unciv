@@ -1,8 +1,8 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Build and deploy 
+name: Build and deploy
 
-# Controls when the action will run. 
+# Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
@@ -19,7 +19,7 @@ on:
 jobs:
   # This workflow contains a single job called "build"
   build:
-    # On push events only, if it's a "Update X" commit, it's probably something done through the UI - 
+    # On push events only, if it's a "Update X" commit, it's probably something done through the UI -
     #  so an .md or yaml change, and not something we need to rebuild over
     # We can't simply put !startsWith - see https://github.community/t/expression-syntax-for-not-startswith/17040
     if: github.event_name != 'push' || startsWith(github.event.commits[0].message, 'Update ') != true
@@ -38,7 +38,7 @@ jobs:
 
       - name: Compile kotlin and build classes
         run: ./gradlew classes
-        
+
       - name: Run code checks
         run: ./gradlew check
 
@@ -47,37 +47,37 @@ jobs:
 
 
 # RELEASE
-      
+
       - name: Get release tag # We can then get the tag using ${{steps.tag.outputs.tag}} as below
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         id: tag
-        uses: dawidd6/action-get-tag@v1 
-      
+        uses: dawidd6/action-get-tag@v1
+
 
       - name: Read release.md and use it as a body of new release. This will fail for patch releases, since they have no readme.
         continue-on-error: true
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') 
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         id: read_release
         shell: bash
         run: |
           ## To test this in Windows PS:  cat .\changelog.md | wsl grep -Pzo --color '\\#{2}.3.15.7[^\\#]*?\\#{2}' | wsl head -n -2
           r=$(grep -Pzo '\#{2}.${{steps.tag.outputs.tag}}[^\#]*\#' changelog.md)  # grep to get only our release
-          r=$(echo "$r" | head -n -2 | tail -n +3) 
-          
+          r=$(echo "$r" | head -n -2 | tail -n +3)
+
           ## See https://trstringer.com/github-actions-multiline-strings/
-          
+
           echo "--- Set variable manually in github env ---"
 
           echo "RELEASE_BODY<<EOF" >> $GITHUB_ENV
           echo "$r" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
-          
-        
-## ANDROID        
-        
+
+
+## ANDROID
+
       - name: Prepare .aab (for Google Play) and .apk (for Github) files
         continue-on-error: true
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') 
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         shell: bash
         run: |
           mkdir whatsNewDirectory
@@ -130,10 +130,10 @@ jobs:
           mv android/build/outputs/apk/release/Unciv-release-unsigned-signed.apk deploy/Unciv-signed.apk
 
 ## DESKTOP
-      
+
       - name: Upload to itch.io
         continue-on-error: true
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') 
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         env:
           BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
         run: |
@@ -192,6 +192,32 @@ jobs:
             ${{ env.RELEASE_BODY }}
 
 
+      - name: Get AUR PKGBUILD
+        if: github.event_name == 'push' && contains(github.ref, 'ref/tags/')
+        continue-on-error: true
+        run: |
+          curl --silent --output PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=unciv-bin'
+          sed -E -e "s#(_pkgver=).*#\1${{steps.tag.outputs.tag}}#" -e "s#(pkgrel=).*#\10#" -i PKGBUILD
+
+      - name: Publish AUR package
+        if: github.event_name == 'push' && contains(github.ref, 'ref/tags/')
+        continue-on-error: true
+        uses: Thyrum/github-actions-deploy-aur@master
+        with:
+          pkgname: unciv-bin
+          pkgbuild: ./PKGBUILD
+          commit_username: ${{ secrets.AUR_COMMIT_USERNAME }}
+          commit_email: ${{ secrets.AUR_COMMIT_EMAIL }}
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: |
+            Update to ${{steps.tag.outputs.tag}}
+
+            ${{ env.RELEASE_BODY }}
+          ssh_keyscan_types: rsa,dsa,ecdsa,ed25519
+          updpkgsums: true
+          allow_empty_commits: false
+
+
       - name: Post announcement on Discord
         continue-on-error: true
         ## On patch releases, don't notify Discord
@@ -199,7 +225,7 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         uses: Ilshidur/action-discord@0.3.2
-        with: 
+        with:
           args: | # See https://discordjs.guide/miscellaneous/parsing-mention-arguments.html#how-discord-mentions-work
             <@&663705024265715743>
             *${{steps.tag.outputs.tag}} rolling out!*
