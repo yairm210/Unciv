@@ -1,8 +1,13 @@
 package com.unciv.logic.civilization
 
+import com.unciv.Constants
+import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.city.CityInfo
 
 class Spy() : IsPartOfGameInfoSerialization {
+    // `location == null` means that the spy is in its hideout
+    var location: String? = null
     lateinit var name: String
 
     constructor(name: String) : this() {
@@ -10,7 +15,17 @@ class Spy() : IsPartOfGameInfoSerialization {
     }
 
     fun clone(): Spy {
-        return Spy(name)
+        val toReturn = Spy(name)
+        toReturn.location = location
+        return toReturn
+    }
+
+    fun getLocation(gameInfo: GameInfo): CityInfo? {
+        return gameInfo.getCities().firstOrNull { it.id == location }
+    }
+
+    fun getLocationName(gameInfo: GameInfo): String {
+        return getLocation(gameInfo)?.name ?: Constants.spyHideout
     }
 }
 
@@ -45,6 +60,7 @@ class EspionageManager : IsPartOfGameInfoSerialization {
     fun addSpy(): String {
         val spyName = getSpyName()
         spyList.add(Spy(spyName))
+        ++spyCount
         return spyName
     }
 }

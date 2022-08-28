@@ -9,7 +9,7 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.utils.extensions.toPercent
 
-class CityInfoReligionManager : IsPartOfGameInfoSerialization {
+class CityReligionManager : IsPartOfGameInfoSerialization {
     @Transient
     lateinit var cityInfo: CityInfo
 
@@ -32,8 +32,8 @@ class CityInfoReligionManager : IsPartOfGameInfoSerialization {
         clearAllPressures()
     }
 
-    fun clone(): CityInfoReligionManager {
-        val toReturn = CityInfoReligionManager()
+    fun clone(): CityReligionManager {
+        val toReturn = CityReligionManager()
         toReturn.cityInfo = cityInfo
         toReturn.religionsAtSomePointAdopted.addAll(religionsAtSomePointAdopted)
         toReturn.pressures.putAll(pressures)

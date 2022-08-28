@@ -56,6 +56,7 @@ object Constants {
     // Easter egg name. Is to avoid conflicts when players name their own religions.
     // This religion name should never be displayed.
     const val noReligionName = "The religion of TheLegend27"
+    const val spyHideout = "Spy Hideout"
 
     const val neutralVictoryType = "Neutral"
 
