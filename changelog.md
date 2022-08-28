@@ -1,3 +1,19 @@
+## 4.2.6
+
+Added a screen to move spies between cities  - By xlenstra
+
+By nacro711072:
+- JvmArg not work for mac desktop:run. 
+- fix crash for start game with single player. 
+
+Add AUR update workflow  - By Thyrum
+
+Fixed unit not giftable in one-sided open borders agreement.  - By huckdogg
+
+added game option to disable unwanted spectators from a multiplayer game  - By alexban011
+
+close app completely when clicked 'Exit' button  - By CrispyXYZ
+
 ## 4.2.5
 
 By JackRainy:
