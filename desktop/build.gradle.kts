@@ -1,6 +1,8 @@
 import com.badlogicgames.packr.Packr
 import com.badlogicgames.packr.PackrConfig
 import com.unciv.build.BuildConfig
+import com.unciv.build.BuildConfig.gdxVersion
+import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
     id("kotlin")
@@ -16,22 +18,18 @@ sourceSets {
     }
 }
 
+dependencies {
+    // See https://libgdx.com/news/2021/07/devlog-7-lwjgl3#do-i-need-to-do-anything-else
+    api("com.badlogicgames.gdx:gdx-lwjgl3-glfw-awt-macos:$gdxVersion")
+}
+
 val mainClassName = "com.unciv.app.desktop.DesktopLauncher"
 val assetsDir = file("../android/assets")
 val discordDir = file("discord_rpc")
 val deployFolder = file("../deploy")
 
-// See https://github.com/libgdx/libgdx/wiki/Starter-classes-and-configuration#common-issues
-// and https://github.com/yairm210/Unciv/issues/5679
-val jvmArgsForMac = listOf("-XstartOnFirstThread", "-Djava.awt.headless=true")
 tasks.register<JavaExec>("run") {
-    jvmArgs = mutableListOf<String>()
-    if ("mac" in System.getProperty("os.name").toLowerCase())
-        (jvmArgs as MutableList<String>).addAll(jvmArgsForMac)
-        // These are non-standard, only available/necessary on Mac.
-
     dependsOn(tasks.getByName("classes"))
-
     mainClass.set(mainClassName)
     classpath = sourceSets.main.get().runtimeClasspath
     standardInput = System.`in`
@@ -40,7 +38,6 @@ tasks.register<JavaExec>("run") {
 }
 
 tasks.register<JavaExec>("debug") {
-    jvmArgs = jvmArgsForMac
     dependsOn(tasks.getByName("classes"))
     mainClass.set(mainClassName)
     classpath = sourceSets.main.get().runtimeClasspath
@@ -143,10 +140,6 @@ for (platform in PackrConfig.Platform.values()) {
                         " --classpath $jarFile" +
                         " --mainclass $mainClassName" +
                         " --vmargs Xmx1G " +
-                        (if (platform == PackrConfig.Platform.MacOS) jvmArgsForMac.joinToString(" ") {
-                            it.removePrefix("-")
-                        }
-                        else "") +
                         " --output ${config.outDir}"
                 command.runCommand(rootDir)
             }
