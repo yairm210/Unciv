@@ -102,10 +102,12 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
             }
             MilestoneType.WorldReligion -> {
                 civInfo.gameInfo.isReligionEnabled()
-                && civInfo.religionManager.religion != null
-                && civInfo.gameInfo.civilizations.all {
-                    it.religionManager.isMajorityReligionForCiv(civInfo.religionManager.religion!!)
-                }
+                        && civInfo.religionManager.religion != null
+                        && civInfo.gameInfo.civilizations
+                    .filter { it.isMajorCiv() && it.isAlive() }
+                    .all {
+                        it.religionManager.isMajorityReligionForCiv(civInfo.religionManager.religion!!)
+                    }
             }
         }
     }
@@ -154,13 +156,14 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                 "{$uniqueDescription} ($amountDone/$amountToDo)"
             }
             MilestoneType.WorldReligion -> {
-                val amountToDo = civInfo.gameInfo.civilizations.count { it.isMajorCiv() } - 1  // Don't count yourself
+                val amountToDo = civInfo.gameInfo.civilizations.count { it.isMajorCiv() && it.isAlive() } - 1  // Don't count yourself
                 val amountDone =
                     when {
                         completed -> amountToDo
                         civInfo.religionManager.religion == null -> 0
                         civInfo.religionManager.religion!!.isPantheon() -> 1
                         else -> civInfo.gameInfo.civilizations.count {
+                            it.isMajorCiv() && it.isAlive() &&
                             it.religionManager.isMajorityReligionForCiv(civInfo.religionManager.religion!!)
                         }
                     }
