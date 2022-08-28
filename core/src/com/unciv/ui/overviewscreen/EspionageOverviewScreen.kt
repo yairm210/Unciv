@@ -73,7 +73,7 @@ class EspionageOverviewScreen(val civInfo: CivilizationInfo) : PickerScreen(true
                 resetSelection()
                 selectedSpyButton = moveSpyButton
                 selectedSpy = spy
-                selectedSpyButton!!.label = "Cancel".toLabel()
+                selectedSpyButton!!.label.setText("Cancel".tr())
                 for ((button, city) in moveSpyHereButtons)
                     // For now, only allow spies to be send to cities of other major civs
                     // Not own cities as counterintelligence isn't implemented
@@ -162,7 +162,7 @@ class EspionageOverviewScreen(val civInfo: CivilizationInfo) : PickerScreen(true
     private fun resetSelection() {
         selectedSpy = null
         if (selectedSpyButton != null)
-            selectedSpyButton!!.label = "Move".toLabel()
+            selectedSpyButton!!.label.setText("Move".tr())
         selectedSpyButton = null
         for ((button, _) in moveSpyHereButtons)
             button.isVisible = false
