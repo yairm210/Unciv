@@ -230,13 +230,15 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                 }
             }
             MilestoneType.WorldReligion -> {
-                val majorCivs = civInfo.gameInfo.civilizations.filter { it.isMajorCiv() }
+                val majorCivs = civInfo.gameInfo.civilizations.filter { it.isMajorCiv() && it.isAlive() }
                 val civReligion = civInfo.religionManager.religion
                 for (civ in majorCivs) {
                     val milestoneText =
-                        if (civInfo.knows(civ) || !civ.isAlive()) "Majority religion of [${civ.civName}]"
+                        if (civInfo.knows(civ)) "Majority religion of [${civ.civName}]"
                         else "Majority religion of [${Constants.unknownNationName}]"
-                    val milestoneMet = (civReligion != null && (!civReligion.isPantheon() || civInfo == civ) && civ.religionManager.isMajorityReligionForCiv(civReligion))
+                    val milestoneMet = civReligion != null
+                            && (!civReligion.isPantheon() || civInfo == civ)
+                            && civ.religionManager.isMajorityReligionForCiv(civReligion)
                     buttons.add(getMilestoneButton(milestoneText, milestoneMet))
                 }
             }
