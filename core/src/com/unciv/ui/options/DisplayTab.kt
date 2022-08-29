@@ -21,9 +21,7 @@ private val resolutionArray = com.badlogic.gdx.utils.Array(arrayOf("750x500", "9
 
 fun displayTab(
     optionsPopup: OptionsPopup,
-    onResolutionChange: () -> Unit,
-    onTilesetChange: () -> Unit,
-    onSkinChange: () -> Unit,
+    onChange: () -> Unit,
 ) = Table(BaseScreen.skin).apply {
     pad(10f)
     defaults().pad(2.5f)
@@ -44,11 +42,11 @@ fun displayTab(
 
     addUnitIconAlphaSlider(this, settings, optionsPopup.selectBoxMinWidth)
 
-    addResolutionSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onResolutionChange)
+    addResolutionSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
 
-    addTileSetSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onTilesetChange)
+    addTileSetSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
 
-    addSkinSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onSkinChange)
+    addSkinSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
 
     optionsPopup.addCheckbox(this, "Continuous rendering", settings.continuousRendering) {
         settings.continuousRendering = it

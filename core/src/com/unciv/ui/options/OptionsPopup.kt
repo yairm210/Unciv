@@ -80,7 +80,7 @@ class OptionsPopup(
         )
         tabs.addPage(
             "Display",
-            displayTab(this, ::reloadWorldAndOptions, ::reloadWorldAndOptions, ::reloadWorldAndOptions),
+            displayTab(this, ::reloadWorldAndOptions),
             ImageGetter.getImage("UnitPromotionIcons/Scouting"), 24f
         )
         tabs.addPage(
