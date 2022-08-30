@@ -225,21 +225,19 @@ class MapGenerator(val ruleset: Ruleset) {
             val maxLakeSize = ruleset.modOptions.constants.maxLakeSize
 
             while (waterTiles.isNotEmpty()) {
-                val initialWaterTile = waterTiles.random(randomness.RNG)
+                val initialWaterTile = waterTiles.removeFirst()
                 tilesInArea += initialWaterTile
                 tilesToCheck += initialWaterTile
-                waterTiles -= initialWaterTile
 
                 // Floodfill to cluster water tiles
                 while (tilesToCheck.isNotEmpty()) {
-                    val tileWeAreChecking = tilesToCheck.random(randomness.RNG)
+                    val tileWeAreChecking = tilesToCheck.removeFirst()
                     for (vector in tileWeAreChecking.neighbors
                         .filter { !tilesInArea.contains(it) and waterTiles.contains(it) }) {
                         tilesInArea += vector
                         tilesToCheck += vector
                         waterTiles -= vector
                     }
-                    tilesToCheck -= tileWeAreChecking
                 }
 
                 if (tilesInArea.size <= maxLakeSize) {
