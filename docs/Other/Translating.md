@@ -123,3 +123,10 @@ A great example is from @SpacedOutChicken's mod Deciv. @The Bucketeer made some 
 Your warmongering ways are unacceptable to us. = 即使在野蠻的荒土世界，窮兵黷武的行徑還是無法容忍的！
 (English meaning: These warmongering ways are still unaccepable enen in this world of savage)
 ```
+
+In the End
+
+If you are Chinese, congratulations on your good luck!
+Here is a tutorial video (like a nanny) specially prepared for Chinese translators by unciv Chinese developers.
+如果你是中国人，那么恭喜你运气不错！
+这里有unciv中文开发者们专门为中文翻译工作者准备的（保姆一样的）教程视频。：[(Video On Bilibili)](https://www.bilibili.com/video/BV1pY4y1u7WH/)
