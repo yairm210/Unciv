@@ -124,7 +124,7 @@ Your warmongering ways are unacceptable to us. = 即使在野蠻的荒土世界�
 (English meaning: These warmongering ways are still unaccepable enen in this world of savage)
 ```
 
-In the End
+Befor the End
 
 If you are Chinese, congratulations on your good luck!
 Here is a tutorial video (like a nanny) specially prepared for Chinese translators by unciv Chinese developers.
