@@ -491,7 +491,12 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         for (religion in religions.values) religion.setTransients(this)
 
-        for (civInfo in civilizations) civInfo.setTransients()
+        civilizations.forEach { civInfo ->
+            civInfo.setTransients()
+        }
+        civilizations.forEach { civInfo ->
+            civInfo.thingsToFocusOnForVictory = civInfo.getPreferredVictoryTypeObject()?.getThingsToFocus(civInfo) ?: setOf()
+        }
 
         convertFortify()
 
