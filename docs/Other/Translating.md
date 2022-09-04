@@ -60,7 +60,7 @@ Note that Right-to-Left languages such as Arabic and Hebrew are not supported by
 
 A Chinese tutorial for translation was created by our Chinese translators, which can be found here: [(Video On Bilibili)](https://www.bilibili.com/video/BV1pY4y1u7WH/)
 
-如果你是中国人，那么恭喜你运气不错！这里有Unciv中文开发者们专门为中文翻译工作者准备的（保姆一样的）教程视频。：[(Video On Bilibili)](https://www.bilibili.com/video/BV1pY4y1u7WH/)
+如果你是中国人，那么恭喜你运气不错！这里有Unciv中文开发者们专门为中文翻译工作者准备的（十分详尽）教程视频。：[(Video On Bilibili)](https://www.bilibili.com/video/BV1pY4y1u7WH/)
 
 
 # Translation generation - for developers
