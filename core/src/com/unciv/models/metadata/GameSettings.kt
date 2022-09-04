@@ -38,6 +38,7 @@ class GameSettings {
 
     var turnsBetweenAutosaves = 1
     var tileSet: String = Constants.defaultTileset
+    var skin: String = Constants.defaultSkin
     var showTutorials: Boolean = true
     var autoAssignCityProduction: Boolean = true
     var autoBuildingRoads: Boolean = true
