@@ -1,3 +1,15 @@
+## 4.2.7
+
+Better milestones for world religion
+
+Resolve  - correct filtering of civs that need to have majority religion for world religion to activate
+
+Disable spectators from changing unit names  - By xlenstra
+
+By lishaoxia1985:
+- delete unnecessary random(randomness.RNG) 
+- update Chinese mirrors for dependent libraries 
+
 ## 4.2.6
 
 Fixed unit not giftable in one-sided open borders agreement - By huckdogg
