@@ -26,7 +26,7 @@ import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.worldscreen.WorldScreen
 
-class UnitTable(val worldScreen: WorldScreen) : Table(){
+class UnitTable(val worldScreen: WorldScreen) : Table() {
     private val prevIdleUnitButton = IdleUnitButton(this,worldScreen.mapHolder,true)
     private val nextIdleUnitButton = IdleUnitButton(this,worldScreen.mapHolder,false)
     private val unitIconHolder = Table()
@@ -67,7 +67,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         touchable = Touchable.enabled
         background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.5f))
 
-        promotionsTable.touchable=Touchable.enabled
+        promotionsTable.touchable = Touchable.enabled
 
         add(VerticalGroup().apply {
             pad(5f)
@@ -75,7 +75,11 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             deselectUnitButton.add(ImageGetter.getImage("OtherIcons/Close")).size(20f).pad(10f)
             deselectUnitButton.pack()
             deselectUnitButton.touchable = Touchable.enabled
-            deselectUnitButton.onClick { selectUnit(); worldScreen.shouldUpdate=true; this@UnitTable.isVisible=false }
+            deselectUnitButton.onClick {
+                selectUnit()
+                worldScreen.shouldUpdate = true
+                this@UnitTable.isVisible = false
+            }
             addActor(deselectUnitButton)
         }).left()
 
@@ -137,12 +141,15 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
                 unitNameLabel.clearListeners()
                 unitNameLabel.onClick {
+                    if (!worldScreen.canChangeState) return@onClick
                     UnitRenamePopup(
                         screen = worldScreen,
                         unit = unit,
                         actionOnClose = {
                             unitNameLabel.setText(buildNameLabelText(unit))
-                            selectedUnitHasChanged = true })
+                            selectedUnitHasChanged = true
+                        }
+                    )
                 }
 
                 unitDescriptionTable.clear()
@@ -234,7 +241,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                 // Since Clear also clears the listeners, we need to re-add them every time
                 promotionsTable.onClick {
                     if (selectedUnit == null || selectedUnit!!.promotions.promotions.isEmpty()) return@onClick
-                    UncivGame.Current.pushScreen(PromotionPickerScreen(selectedUnit!!))
+                    worldScreen.game.pushScreen(PromotionPickerScreen(selectedUnit!!))
                 }
 
                 unitIconHolder.onClick {
@@ -247,7 +254,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         }
 
         pack()
-        selectedUnitHasChanged=false
+        selectedUnitHasChanged = false
     }
 
     private fun buildNameLabelText(unit: MapUnit) : String {
