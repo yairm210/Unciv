@@ -127,6 +127,6 @@ Your warmongering ways are unacceptable to us. = 即使在野蠻的荒土世界�
 Befor the End
 
 If you are Chinese, congratulations on your good luck!
-Here is a tutorial video (like a nanny) specially prepared for Chinese translators by Unciv Chinese developers.
+Here is a tutorial video (Very detailed) specially prepared for Chinese translators by Unciv Chinese developers.
 如果你是中国人，那么恭喜你运气不错！
-这里有Unciv中文开发者们专门为中文翻译工作者准备的（保姆一样的）教程视频。：[(Video On Bilibili)](https://www.bilibili.com/video/BV1pY4y1u7WH/)
+这里有Unciv中文开发者们专门为中文翻译工作者准备的（Very detailed）教程视频。：[(Video On Bilibili)](https://www.bilibili.com/video/BV1pY4y1u7WH/)
