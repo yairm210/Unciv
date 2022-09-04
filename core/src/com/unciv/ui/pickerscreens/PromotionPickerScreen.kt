@@ -64,11 +64,14 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
         renameButton.isEnabled = true
 
         renameButton.onClick {
+            if (!canChangeState) return@onClick
             UnitRenamePopup(
                 screen = this,
                 unit = unit,
                 actionOnClose = {
-                    this.game.replaceCurrentScreen(PromotionPickerScreen(unit)) })
+                    game.replaceCurrentScreen(PromotionPickerScreen(unit))
+                }
+            )
         }
         availablePromotionsGroup.add(renameButton)
         availablePromotionsGroup.row()
