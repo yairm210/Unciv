@@ -331,6 +331,7 @@ class TechManager : IsPartOfGameInfoSerialization {
             for (policyBranch in getRuleset().policyBranches.values.filter { it.era == currentEra.name && civInfo.policies.isAdoptable(it) }) {
                 civInfo.addNotification("[" + policyBranch.name + "] policy branch unlocked!", NotificationIcon.Culture)
             }
+            // Note that if you somehow skip over an era, its uniques aren't triggered
             for (unique in currentEra.uniqueObjects) {
                 UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
             }

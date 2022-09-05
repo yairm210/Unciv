@@ -56,6 +56,7 @@ object Constants {
     // Easter egg name. Is to avoid conflicts when players name their own religions.
     // This religion name should never be displayed.
     const val noReligionName = "The religion of TheLegend27"
+    const val spyHideout = "Spy Hideout"
 
     const val neutralVictoryType = "Neutral"
 
@@ -78,6 +79,9 @@ object Constants {
     const val uniqueOrDelimiter = "\" OR \""
 
     const val dropboxMultiplayerServer = "Dropbox"
+
+    const val defaultTileset = "HexaRealm"
+    const val defaultSkin = "Minimal"
 
     /**
      * Use this to determine whether a [MapUnit][com.unciv.logic.map.MapUnit]'s movement is exhausted

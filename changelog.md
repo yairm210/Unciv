@@ -1,3 +1,47 @@
+## 4.2.7
+
+Better milestones for world religion
+
+Correct filtering of civs that need to have majority religion for world religion to activate
+
+Moddable UI skins - by GGGuenni
+
+Disable spectators from changing unit names  - By xlenstra
+
+Lots of translations
+
+## 4.2.6
+
+Fixed unit not giftable in one-sided open borders agreement - By huckdogg
+
+Better Mac support for running JARs - By nacro711072
+
+Added game option to disable unwanted spectators from a multiplayer game  - By alexban011
+
+Close app completely when clicked 'Exit' button  - By CrispyXYZ
+
+Lots of background work for future features :)
+
+## 4.2.5
+
+By JackRainy:
+- Suggest to adopt policy when the game starts with some culture
+
+Removed legacy tileset code  - By GGGuenni
+
+Improved options to rename units  - By huckdogg
+
+By xlenstra:
+- Fixed a crash when marrying a city-state without cities
+
+By Ouaz:
+- Translation and Tutorial improvements
+- Add an icon for "Wait" unit action
+
+Notificiations scroll fix in empire overview  - By MindaugasRumsa51
+
+Fix infinite city-state tribute bug  - By OptimizedForDensity
+
 ## 4.2.4
 
 Mod translations are now loaded upon mod download

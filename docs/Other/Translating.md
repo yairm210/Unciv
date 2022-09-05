@@ -58,6 +58,11 @@ Some entries have line breaks expressed as `\n`: Your translation can and in mos
 
 Note that Right-to-Left languages such as Arabic and Hebrew are not supported by the framework :/
 
+A Chinese tutorial for translation was created by our Chinese translators, which can be found here: [(Video On Bilibili)](https://www.bilibili.com/video/BV1pY4y1u7WH/)
+
+如果你是中国人，那么恭喜你运气不错！这里有Unciv中文开发者们专门为中文翻译工作者准备的（十分详尽）教程视频。：[(Video On Bilibili)](https://www.bilibili.com/video/BV1pY4y1u7WH/)
+
+
 # Translation generation - for developers
 
 ## The automatic template generation
@@ -98,7 +103,7 @@ The [], {} and <> bracket types are used internally and cannot be part of a tran
 If you can run desktop with the mod installed, then provide at least one valid translation of something that is present in your mod or the base game in that file. The file can be empty otherwise. Now run Unciv and use options-advanced-"Generate translation files". Reload your translation file and it will have added all the necessary "requires translation" entries specific to your mod (I repeat, works only if there's at least one valid entry already there). AFAIK you can also override base game translations, but those won't be output by the "Generate translation files" tool.
 
 Here's an example:
-Say you have a new nation in your mod named "The Borg". You create the translations folder, create an empty file named, say, "Hungarian.properties", add "The Borg = The Borg" to that, run Unciv and run the translation generator from options. Reload the new file, bingo all what Unciv would like to see is there. 
+Say you have a new nation in your mod named "The Borg". You create the translations folder, create an empty file named, say, "Hungarian.properties", add "The Borg = The Borg" to that, run Unciv and run the translation generator from options. Reload the new file, bingo all what Unciv would like to see is there.
 
 If you're modding on Android only - don't. That said, it's not impossible, just make do without the described tool and add everything yourself, test, rinse, repeat. Be aware that the game does not read changed files from disk if it doesn't need to, so on Droid you could either edit locally and force-stop to ensure changes are read, or edit on a github repo and re-install from there, or...
 

@@ -253,7 +253,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
             tileOwner == null -> false
             tileOwner == civInfo -> true
             !civInfo.knows(tileOwner) -> false
-            else -> tileOwner.getDiplomacyManager(civInfo).isConsideredFriendlyTerritory()
+            else -> civInfo.getDiplomacyManager(tileOwner).isConsideredFriendlyTerritory()
         }
     }
 

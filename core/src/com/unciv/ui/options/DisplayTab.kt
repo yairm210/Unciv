@@ -16,14 +16,12 @@ import com.unciv.ui.utils.WrappableLabel
 import com.unciv.ui.utils.extensions.brighten
 import com.unciv.ui.utils.extensions.onChange
 import com.unciv.ui.utils.extensions.toLabel
-import com.unciv.ui.worldscreen.WorldScreen
 
 private val resolutionArray = com.badlogic.gdx.utils.Array(arrayOf("750x500", "900x600", "1050x700", "1200x800", "1500x1000"))
 
 fun displayTab(
     optionsPopup: OptionsPopup,
-    onResolutionChange: () -> Unit,
-    onTilesetChange: () -> Unit
+    onChange: () -> Unit,
 ) = Table(BaseScreen.skin).apply {
     pad(10f)
     defaults().pad(2.5f)
@@ -44,9 +42,11 @@ fun displayTab(
 
     addUnitIconAlphaSlider(this, settings, optionsPopup.selectBoxMinWidth)
 
-    addResolutionSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onResolutionChange)
+    addResolutionSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
 
-    addTileSetSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onTilesetChange)
+    addTileSetSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
+
+    addSkinSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
 
     optionsPopup.addCheckbox(this, "Continuous rendering", settings.continuousRendering) {
         settings.continuousRendering = it
@@ -145,5 +145,23 @@ private fun addTileSetSelectBox(table: Table, settings: GameSettings, selectBoxM
         // ImageGetter ruleset should be correct no matter what screen we're on
         TileSetCache.assembleTileSetConfigs(ImageGetter.ruleset.mods)
         onTilesetChange()
+    }
+}
+
+private fun addSkinSelectBox(table: Table, settings: GameSettings, selectBoxMinWidth: Float, onSkinChange: () -> Unit) {
+    table.add("UI Skin".toLabel()).left().fillX()
+
+    val skinSelectBox = SelectBox<String>(table.skin)
+    val skinArray = Array<String>()
+    val skins = ImageGetter.getAvailableSkins()
+    for (skin in skins) skinArray.add(skin)
+    skinSelectBox.items = skinArray
+    skinSelectBox.selected = settings.skin
+    table.add(skinSelectBox).minWidth(selectBoxMinWidth).pad(10f).row()
+
+    skinSelectBox.onChange {
+        settings.skin = skinSelectBox.selected
+        // ImageGetter ruleset should be correct no matter what screen we're on
+        onSkinChange()
     }
 }

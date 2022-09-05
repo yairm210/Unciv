@@ -216,7 +216,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         return 0
     }
 
-    @Suppress("unused")  //todo Finish original intent or remove
+    @Suppress("unused")  //todo Finish original intent (usage in uniques) or remove
     fun matchesCityStateRelationshipFilter(filter: String): Boolean {
         val relationshipLevel = relationshipLevel()
         return when (filter) {

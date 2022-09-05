@@ -110,10 +110,11 @@ class CityInfo : IsPartOfGameInfoSerialization {
     var health = 200
 
 
-    var religion = CityInfoReligionManager()
     var population = PopulationManager()
     var cityConstructions = CityConstructions()
     var expansion = CityExpansionManager()
+    var religion = CityReligionManager()
+    var espionage = CityEspionageManager()
 
     @Transient  // CityStats has no serializable fields
     var cityStats = CityStats(this)
@@ -163,7 +164,11 @@ class CityInfo : IsPartOfGameInfoSerialization {
         ) ?: "City Without A Name"
 
         isOriginalCapital = civInfo.citiesCreated == 0
-        if (isOriginalCapital) civInfo.hasEverOwnedOriginalCapital = true
+        if (isOriginalCapital) {
+            civInfo.hasEverOwnedOriginalCapital = true
+            // if you have some culture before the 1st city is found, you may want to adopt the 1st policy
+            civInfo.policies.shouldOpenPolicyPicker = true
+        }
         civInfo.citiesCreated++
 
         civInfo.cities = civInfo.cities.toMutableList().apply { add(this@CityInfo) }
@@ -624,6 +629,7 @@ class CityInfo : IsPartOfGameInfoSerialization {
         cityConstructions.cityInfo = this
         cityConstructions.setTransients()
         religion.setTransients(this)
+        espionage.setTransients(this)
     }
 
     fun startTurn() {

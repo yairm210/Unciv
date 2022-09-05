@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.city.CityInfoReligionManager
+import com.unciv.logic.city.CityReligionManager
 import com.unciv.models.Religion
 import com.unciv.ui.civilopedia.CivilopediaCategories
 import com.unciv.ui.civilopedia.CivilopediaScreen
@@ -20,7 +20,7 @@ import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toLabel
 
 class CityReligionInfoTable(
-    private val religionManager: CityInfoReligionManager,
+    private val religionManager: CityReligionManager,
     showMajority: Boolean = false
 ) : Table(BaseScreen.skin) {
     private val civInfo = religionManager.cityInfo.civInfo
