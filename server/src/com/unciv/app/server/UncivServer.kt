@@ -27,7 +27,7 @@ private class UncivServerRunner : CliktCommand() {
         "-p", "-port",
         envvar = "UncivServerPort",
         help = "Server port"
-    ).int().restrictTo(1024..49151).default(80)
+    ).int().restrictTo(0..65535).default(8080)
 
     private val folder by option(
         "-f", "-folder",
@@ -40,7 +40,8 @@ private class UncivServerRunner : CliktCommand() {
     }
 
     private fun serverRun(serverPort: Int, fileFolderName: String) {
-        echo("Starting UncivServer for ${File(fileFolderName).absolutePath} on port $serverPort")
+        private val portStr: String = if (serverPort == 80) "" else ":$serverPort"
+        echo("Starting UncivServer for ${File(fileFolderName).absolutePath} on http://localhost$portStr")
         embeddedServer(Netty, port = serverPort) {
             routing {
                 get("/isalive") {
