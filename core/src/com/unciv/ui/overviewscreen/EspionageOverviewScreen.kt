@@ -13,8 +13,11 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.AutoScrollPane
+import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.extensions.addSeparator
 import com.unciv.ui.utils.extensions.addSeparatorVertical
+import com.unciv.ui.utils.extensions.keyShortcuts
+import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.setSize
 import com.unciv.ui.utils.extensions.toLabel
@@ -33,8 +36,9 @@ class EspionageOverviewScreen(val civInfo: CivilizationInfo) : PickerScreen(true
 
     private var selectedSpyButton: TextButton? = null
     private var selectedSpy: Spy? = null
+
     // if the value == null, this means the Spy Hideout.
-    private var moveSpyHereButtons = hashMapOf<Button,CityInfo?>()
+    private var moveSpyHereButtons = hashMapOf<Button, CityInfo?>()
 
     init {
         topTable.add(headerTable)
@@ -48,7 +52,12 @@ class EspionageOverviewScreen(val civInfo: CivilizationInfo) : PickerScreen(true
         update()
 
         closeButton.isVisible = true
-        setDefaultCloseAction()
+        closeButton.onActivation {
+            civInfo.updateViewableTiles()
+            game.popScreen()
+        }
+        closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
+        rightSideButton.isVisible = false
     }
 
     private fun update() {
@@ -75,15 +84,16 @@ class EspionageOverviewScreen(val civInfo: CivilizationInfo) : PickerScreen(true
                 selectedSpy = spy
                 selectedSpyButton!!.label.setText("Cancel".tr())
                 for ((button, city) in moveSpyHereButtons)
-                    // For now, only allow spies to be send to cities of other major civs
-                    // Not own cities as counterintelligence isn't implemented
-                    // Not city-state civs as rigging elections isn't implemented
-                    // Technically, stealing techs from other civs also isn't implemented, but its the first thing I'll add so this makes the most sense to allow.
-                    if (city == null || ( // hideout
-                        city.civInfo.isMajorCiv()
-                        && city.civInfo != civInfo
-                        && !city.espionage.hasSpyOf(civInfo)
-                    )) {
+                // For now, only allow spies to be send to cities of other major civs and their hideout
+                // Not own cities as counterintelligence isn't implemented
+                // Not city-state civs as rigging elections isn't implemented
+                // Technically, stealing techs from other civs also isn't implemented, but its the first thing I'll add so this makes the most sense to allow.
+                    if (city == null // hideout
+                        || (city.civInfo.isMajorCiv()
+                            && city.civInfo != civInfo
+                            && !city.espionage.hasSpyOf(civInfo)
+                        )
+                    ) {
                         button.isVisible = true
                     }
             }
@@ -120,7 +130,7 @@ class EspionageOverviewScreen(val civInfo: CivilizationInfo) : PickerScreen(true
                 }.thenBy(collator) {
                     it.name.tr()
                 }
-        )
+            )
         for (city in sortedCities) {
             addCityToSelectionTable(city)
         }
@@ -146,7 +156,7 @@ class EspionageOverviewScreen(val civInfo: CivilizationInfo) : PickerScreen(true
     }
 
     // city == null is interpreted as 'spy hideout'
-    private fun getMoveToCityButton(city: CityInfo?) : Button {
+    private fun getMoveToCityButton(city: CityInfo?): Button {
         val moveSpyHereButton = Button(skin)
         moveSpyHereButton.add(ImageGetter.getArrowImage(Align.left).apply { color = Color.WHITE })
         moveSpyHereButton.onClick {
