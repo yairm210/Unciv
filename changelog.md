@@ -1,23 +1,19 @@
 ## 4.2.8
 
-AI: Recognize when no further techs can be researched, even if some techs are blocked 
+Show Unciv icon when loading game, instead of happy face
 
-Resolves second part of  - don't re-raise tech popups for previously researched techs 
+AI: Recognize when no further techs can be researched, even if some techs are blocked
 
-Resolve  - show Unciv icon when loading game, instead of happy face 
+Don't re-raise tech popups for previously researched techs
 
 By xlenstra:
-- Fixed a wrongly implemented feature disabling pantheon founding 
-- Spies give vision in cities in which they are stationed 
-- Added information on chinese translation video to Translation.md 
+- Fixed bug disabling pantheon founding
 
-Replaced BackgroundActor companion  - By GGGuenni
-
-Improved ports and updated documentation of UncivServer  - By touhidurrr
+UI fix - By GGGuenni
 
 Add "UI Skin" to make it translatable  - By Ouaz
 
-fix: lateinit property cityInfo has not been initialized issue.  - By nacro711072
+Fixed bug on 'resume game' - By nacro711072
 
 ## 4.2.7
 
