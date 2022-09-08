@@ -86,9 +86,15 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         newViewableTiles.addAll(civInfo.getCivUnits().flatMap { unit -> unit.viewableTiles.asSequence().filter { it.getOwner() != civInfo } })
 
         for (otherCiv in civInfo.getKnownCivs()) {
-            if (otherCiv.getAllyCiv() == civInfo.civName || otherCiv.civName ==civInfo.getAllyCiv()) {
+            if (otherCiv.getAllyCiv() == civInfo.civName || otherCiv.civName == civInfo.getAllyCiv()) {
                 newViewableTiles.addAll(otherCiv.cities.asSequence().flatMap { it.getTiles() })
             }
+        }
+
+        for (spy in civInfo.espionageManager.spyList) {
+            val spyCity = spy.getLocation(civInfo.gameInfo) ?: continue
+            newViewableTiles.addAll(spyCity.getCenterTile().neighbors)
+            newViewableTiles.add(spyCity.getCenterTile())
         }
 
         civInfo.viewableTiles = newViewableTiles // to avoid concurrent modification problems
