@@ -5,6 +5,7 @@ import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.Screen
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
@@ -481,12 +482,11 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
 private class GameStartScreen : BaseScreen() {
     init {
-        val happinessImage = ImageGetter.getExternalImage("LoadScreen.png")
-        happinessImage.center(stage)
-        happinessImage.setOrigin(Align.center)
-        happinessImage.addAction(Actions.sequence(
-                Actions.delay(1f),
-                Actions.rotateBy(360f, 0.5f)))
-        stage.addActor(happinessImage)
+        val logoImage = ImageGetter.getExternalImage("banner.png")
+        logoImage.center(stage)
+        logoImage.setOrigin(Align.center)
+        logoImage.color = Color.WHITE.cpy().apply { a = 0f }
+        logoImage.addAction(Actions.alpha(1f, 0.3f))
+        stage.addActor(logoImage)
     }
 }
