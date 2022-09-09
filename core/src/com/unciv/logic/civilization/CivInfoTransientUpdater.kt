@@ -92,9 +92,9 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         }
 
         for (spy in civInfo.espionageManager.spyList) {
-            val spyCity = spy.getLocation(civInfo.gameInfo) ?: continue
-            newViewableTiles.addAll(spyCity.getCenterTile().neighbors)
-            newViewableTiles.add(spyCity.getCenterTile())
+            val spyCity = spy.getLocation() ?: continue
+            if (!spy.isSetUp()) continue // Can't see cities when you haven't set up yet
+            newViewableTiles.addAll(spyCity.getCenterTile().getTilesInDistance(1))
         }
 
         civInfo.viewableTiles = newViewableTiles // to avoid concurrent modification problems
