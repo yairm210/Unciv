@@ -653,6 +653,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [City](https://thenounproject.com/search/?q=city&i=571332) By Felix Westphal
 - [Fire](https://thenounproject.com/search/?q=Fire&i=96564) By Lloyd Humphreys for "city being razed" icon
 - [Sleep](https://thenounproject.com/search/?q=sleep&i=1760085) By Saeful Muslim
+- [Clockwise](https://thenounproject.com/icon/clockwise-184528/) By Universal Icons (Louis Dawson) for "Wait" icon. The original work has been slightly modified.
 - [Banner](https://thenounproject.com/term/banner/866282/) By Emir Palavan for embarked units
 - [Arrow](https://thenounproject.com/term/arrow/18123/) By uzeir syarief for moving between idle units
 - [Replace](https://thenounproject.com/search/?q=replace&i=17858) By Mike Rowe for switching tiles between cities
@@ -685,6 +686,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [favor](https://thenounproject.com/icon/favor-1029350/) by MICHAEL G BROWN for WLTK marker on City Overview
 - [Party](https://thenounproject.com/icon/party-1784941/) by Adrien Coquet for WLTK header on City Overview
 - [Party](https://thenounproject.com/icon/party-2955155/) by Lars Meiertoberens as additional WLKT decoration
+- [spy](https://thenounproject.com/icon/spy-2905374/) by Vectorstall for Spy
 - [turn right](https://thenounproject.com/icon/turn-right-1920867/) by Alice Design for Resource Overview
 - [Tyrannosaurus Rex](https://thenounproject.com/icon/tyrannosaurus-rex-4130976/) by Amethyst Studio for Civilopedia Eras header
 - [Realistic easter day eggs with curvy lines and dots](https://www.freepik.com/free-vector/realistic-easter-day-eggs-with-curvy-lines-dots_6839373.htm) by freepik

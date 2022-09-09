@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameStarter
+import com.unciv.logic.UncivShowableException
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSizeNew
@@ -227,6 +228,10 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             // Can fail when starting the game...
             try {
                 newGame = GameStarter.startNewGame(GameSetupInfo.fromSettings("Chieftain"))
+            } catch (notAPlayer: UncivShowableException) {
+                val (message) = LoadGameScreen.getLoadExceptionMessage(notAPlayer)
+                launchOnGLThread { ToastPopup(message, this@MainMenuScreen) }
+                return@run
             } catch (ex: Exception) {
                 launchOnGLThread { ToastPopup(errorText, this@MainMenuScreen) }
                 return@run
@@ -238,6 +243,11 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             } catch (outOfMemory: OutOfMemoryError) {
                 launchOnGLThread {
                     ToastPopup("Not enough memory on phone to load game!", this@MainMenuScreen)
+                }
+            } catch (notAPlayer: UncivShowableException) {
+                val (message) = LoadGameScreen.getLoadExceptionMessage(notAPlayer)
+                launchOnGLThread {
+                    ToastPopup(message, this@MainMenuScreen)
                 }
             } catch (ex: Exception) {
                 launchOnGLThread {

@@ -163,7 +163,7 @@ object ReligionAutomation {
             it.getMapUnit(civInfo).canDoReligiousAction(Constants.removeHeresy)
             || it.hasUnique(UniqueType.PreventSpreadingReligion)
         }
-        
+
         inquisitors = inquisitors.map { civInfo.getEquivalentUnit(it) }
 
         val inquisitorConstruction = inquisitors
@@ -173,8 +173,8 @@ object ReligionAutomation {
             // And from that list determine the cheapest price
             .minByOrNull { it.value.minOf { city -> it.key.getStatBuyCost(city, Stat.Faith)!!  }}?.key
             ?: return
-        
-    
+
+
         val hasUniqueToTakeCivReligion = civInfo.gameInfo.ruleSet.units[inquisitorConstruction.name]!!.hasUnique(UniqueType.TakeReligionOverBirthCity)
 
         val validCitiesToBuy = civInfo.cities.filter {

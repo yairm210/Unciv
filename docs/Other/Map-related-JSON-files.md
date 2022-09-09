@@ -119,12 +119,16 @@ A few uniques can be added to ancient ruin effects to modify when they can be ea
 
 A mod can define new Tilesets or add to existing ones, namely FantasyHex. There is one json file per Tileset, named same as the Tileset, and placed in a subfolder named "TileSets" relative to the other json files. This is called TileSetConfig and has the following structure:
 
-| Attribute | Type | Optional | Notes |
+| Attribute | Type | Default value | Notes |
 | --------- | ---- | -------- | ----- |
-| useColorAsBaseTerrain | Boolean | Default true | ? *WIP* |
-| unexploredTileColor | Color | Default Dark Gray | `{"r":0.25,"g":0.25,"b":0.25,"a":1}` |
-| fogOfWarColor | Color | Default Black | `{"r":0,"g":0,"b":0,"a":1}` |
-| ruleVariants | List | Default empty | see below |
+| [useColorAsBaseTerrain](../Modders/Creating-a-custom-tileset.md#useColorAsBaseTerrain) | Boolean | false | |
+| [useSummaryImages](../Modders/Creating-a-custom-tileset.md#useSummaryImages) | Boolean | false | |
+| [unexploredTileColor](../Modders/Creating-a-custom-tileset.md#unexploredTileColor) | Color | Dark Gray | `{"r":0.25,"g":0.25,"b":0.25,"a":1}` |
+| [fogOfWarColor](../Modders/Creating-a-custom-tileset.md#fogOfWarColor) | Color | Black | `{"r":0,"g":0,"b":0,"a":1}` |
+| [fallbackTileSet](../Modders/Creating-a-custom-tileset.md#fallbackTileSet) | String | "FantasyHex" | null to disable |
+| [tileScale](../Modders/Creating-a-custom-tileset.md#tileScale) | Float | 1.0 |  |
+| [tileScales](../Modders/Creating-a-custom-tileset.md#tileScales) | Dictionary | empty |  |
+| [ruleVariants](../Modders/Creating-a-custom-tileset.md#ruleVariants) | Dictionary | empty | see below |
 
 ruleVariants control substitutions when layering images for a tile, they are list looking like:
 

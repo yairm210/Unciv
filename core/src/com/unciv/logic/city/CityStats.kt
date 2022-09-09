@@ -399,6 +399,8 @@ class CityStats(val cityInfo: CityInfo) {
             unhappinessModifier *= civInfo.gameInfo.getDifficulty().aiUnhappinessModifier
 
         var unhappinessFromCity = -3f // -3 happiness per city
+        if (hasExtraAnnexUnhappiness())
+            unhappinessFromCity -= 2f
         if (civInfo.hasUnique(UniqueType.UnhappinessFromCitiesDoubled))
             unhappinessFromCity *= 2f //doubled for the Indian
 

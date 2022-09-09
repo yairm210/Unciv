@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.SerializationException
 import com.unciv.MainMenuScreen
+import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.models.ruleset.ModOptions
@@ -431,6 +432,7 @@ class ModManagementScreen(
                 launchOnGLThread {
                     ToastPopup("[${repo.name}] Downloaded!", this@ModManagementScreen)
                     RulesetCache.loadRulesets()
+                    UncivGame.Current.translations.tryReadTranslationForCurrentLanguage()
                     RulesetCache[repo.name]?.let {
                         installedModInfo[repo.name] = ModUIData(it)
                     }

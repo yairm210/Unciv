@@ -37,7 +37,8 @@ class GameSettings {
     var pauseBetweenTracks = 10
 
     var turnsBetweenAutosaves = 1
-    var tileSet: String = "HexaRealm"
+    var tileSet: String = Constants.defaultTileset
+    var skin: String = Constants.defaultSkin
     var showTutorials: Boolean = true
     var autoAssignCityProduction: Boolean = true
     var autoBuildingRoads: Boolean = true
@@ -64,6 +65,7 @@ class GameSettings {
     var multiplayer = GameSettingsMultiplayer()
 
     var showExperimentalWorldWrap = false // We're keeping this as a config due to ANR problems on Android phones for people who don't know what they're doing :/
+    var enableEspionageOption = false
 
     var lastOverviewPage: String = "Cities"
 

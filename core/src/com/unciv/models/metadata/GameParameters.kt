@@ -28,12 +28,14 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var nuclearWeaponsEnabled = true
     @Deprecated("As of 4.2.3")
     var religionEnabled = true
+    var espionageEnabled = false
     var noStartBias = false
 
     var victoryTypes: ArrayList<String> = arrayListOf()
     var startingEra = "Ancient era"
 
     var isOnlineMultiplayer = false
+    var anyoneCanSpectate = false
     var baseRuleset: String = BaseRuleset.Civ_V_GnK.fullName
     var mods = LinkedHashSet<String>()
 

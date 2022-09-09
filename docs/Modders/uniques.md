@@ -41,12 +41,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Reveals the entire map"
 	Applicable to: Triggerable
 
-??? example  "Triggers voting for the Diplomatic Victory"
+??? example  "Gain a free [beliefType] belief"
+	Example: "Gain a free [Follower] belief"
+
 	Applicable to: Triggerable
 
-??? example  "Triggers the following global alert: [comment]"
-	Example: "Triggers the following global alert: [comment]"
-
+??? example  "Triggers voting for the Diplomatic Victory"
 	Applicable to: Triggerable
 
 ??? example  "This Unit gains the [promotion] promotion"
@@ -70,7 +70,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Triggerable
 
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Triggerable, Global, Nation, Era, Speed, Tech, Policy, FounderBelief, FollowerBelief, Building, Wonder, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Tutorial, CityState, ModOptions, Conditional
+	Applicable to: Triggerable, Global, Nation, Era, Tech, Policy, FounderBelief, FollowerBelief, Building, Wonder, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Tutorial, CityState, ModOptions, Conditional
 
 ## Global uniques
 ??? example  "[stats]"
@@ -744,11 +744,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
-??? example  "[greatPerson] is earned [relativeAmount]% faster"
-	Example: "[Great General] is earned [+20]% faster"
-
-	Applicable to: Global, Unit
-
 ??? example  "Earn [amount]% of the damage done to [combatantFilter] units as [civWideStat]"
 	Example: "Earn [3]% of the damage done to [City] units as [Gold]"
 
@@ -771,6 +766,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "[relativeAmount]% XP gained from combat"
 	Example: "[+20]% XP gained from combat"
+
+	Applicable to: Global, Unit
+
+??? example  "[greatPerson] is earned [relativeAmount]% faster"
+	Example: "[Great General] is earned [+20]% faster"
 
 	Applicable to: Global, Unit
 
@@ -805,6 +805,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Starting in this era disables religion"
 	Applicable to: Era
 
+??? example  "Every major Civilization gains a spy once a civilization enters this era"
+	Applicable to: Era
+
 ## Tech uniques
 ??? example  "Starting tech"
 	Applicable to: Tech
@@ -814,6 +817,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Cannot be hurried"
 	Applicable to: Tech, Building
+
+## Policy uniques
+??? example  "Triggers the following global alert: [comment]"
+	Example: "Triggers the following global alert: [comment]"
+
+	Applicable to: Policy
 
 ## FounderBelief uniques
 ??? example  "[stats] for each global city following this religion"
@@ -1171,6 +1180,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "May upgrade to [baseUnitFilter] through ruins-like effects"
 	Example: "May upgrade to [Melee] through ruins-like effects"
 
+	Applicable to: Unit
+
+??? example  "Destroys tile improvements when attacking"
 	Applicable to: Unit
 
 ??? example  "Double movement in [terrainFilter]"
@@ -1663,11 +1675,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;during a Golden Age&gt;"
 	Applicable to: Conditional
 
-??? example  "&lt;with [resource]&gt;"
-	Example: "&lt;with [Iron]&gt;"
-
-	Applicable to: Conditional
-
 ??? example  "&lt;while the empire is happy&gt;"
 	Applicable to: Conditional
 
@@ -1726,6 +1733,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;if [buildingName] is constructed&gt;"
 	Example: "&lt;if [Library] is constructed&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;with [resource]&gt;"
+	Example: "&lt;with [Iron]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;without [resource]&gt;"
+	Example: "&lt;without [Iron]&gt;"
 
 	Applicable to: Conditional
 

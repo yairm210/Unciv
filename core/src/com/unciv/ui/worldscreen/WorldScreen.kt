@@ -15,6 +15,7 @@ import com.unciv.Constants
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
+import com.unciv.logic.UncivShowableException
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -24,6 +25,7 @@ import com.unciv.logic.multiplayer.MultiplayerGameUpdated
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.TutorialTrigger
+import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.cityscreen.CityScreen
@@ -73,6 +75,7 @@ import com.unciv.utils.concurrency.withGLContext
 import com.unciv.utils.debug
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
+import com.badlogic.gdx.scenes.scene2d.ui.TextField
 
 /**
  * Do not create this screen without seriously thinking about the implications: this is the single most memory-intensive class in the application.
@@ -263,17 +266,26 @@ class WorldScreen(
                             Input.Keys.UP, Input.Keys.DOWN, Input.Keys.LEFT, Input.Keys.RIGHT)
 
 
-                    override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
-                        if (keycode !in ALLOWED_KEYS) return false
-                        // Without the following Ctrl-S would leave WASD map scrolling stuck
-                        // Might be obsolete with keyboard shortcut refactoring
-                        if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT)) return false
+                    override fun keyDown(event: InputEvent, keycode: Int): Boolean {
+                        if (event.target !is TextField) {
+                            if (keycode !in ALLOWED_KEYS) return false
+                            // Without the following Ctrl-S would leave WASD map scrolling stuck
+                            // Might be obsolete with keyboard shortcut refactoring
+                            if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(
+                                        Input.Keys.CONTROL_RIGHT
+                                    )
+                            ) return false
 
-                        pressedKeys.add(keycode)
-                        if (infiniteAction == null) {
-                            // create a copy of the action, because removeAction() will destroy this instance
-                            infiniteAction = Actions.forever(Actions.delay(0.01f, Actions.run { whileKeyPressedLoop() }))
-                            mapHolder.addAction(infiniteAction)
+                            pressedKeys.add(keycode)
+                            if (infiniteAction == null) {
+                                // create a copy of the action, because removeAction() will destroy this instance
+                                infiniteAction = Actions.forever(
+                                    Actions.delay(
+                                        0.01f,
+                                        Actions.run { whileKeyPressedLoop() })
+                                )
+                                mapHolder.addAction(infiniteAction)
+                            }
                         }
                         return true
                     }
@@ -681,13 +693,17 @@ class WorldScreen(
                     viewingCiv.policies.shouldOpenPolicyPicker = false
                 }
 
-            viewingCiv.religionManager.canFoundPantheon() ->
-                NextTurnAction("Found Pantheon", Color.WHITE) {
+            viewingCiv.religionManager.canFoundOrExpandPantheon() -> {
+                val displayString = if (viewingCiv.religionManager.religionState == ReligionState.Pantheon)
+                    "Expand Pantheon"
+                else "Found Pantheon"
+                NextTurnAction(displayString, Color.valueOf(BeliefType.Pantheon.color)) {
                     game.pushScreen(PantheonPickerScreen(viewingCiv))
                 }
+            }
 
             viewingCiv.religionManager.religionState == ReligionState.FoundingReligion ->
-                NextTurnAction("Found Religion", Color.WHITE) {
+                NextTurnAction("Found Religion", Color.valueOf(BeliefType.Founder.color)) {
                     game.pushScreen(
                         ReligiousBeliefsPickerScreen(
                             viewingCiv,
@@ -698,11 +714,22 @@ class WorldScreen(
                 }
 
             viewingCiv.religionManager.religionState == ReligionState.EnhancingReligion ->
-                NextTurnAction("Enhance a Religion", Color.ORANGE) {
+                NextTurnAction("Enhance a Religion", Color.valueOf(BeliefType.Enhancer.color)) {
                     game.pushScreen(
                         ReligiousBeliefsPickerScreen(
                             viewingCiv,
                             viewingCiv.religionManager.getBeliefsToChooseAtEnhancing(),
+                            pickIconAndName = false
+                        )
+                    )
+                }
+
+            viewingCiv.religionManager.hasFreeBeliefs() ->
+                NextTurnAction("Reform Religion", Color.valueOf(BeliefType.Enhancer.color)) {
+                    game.pushScreen(
+                        ReligiousBeliefsPickerScreen(
+                            viewingCiv,
+                            viewingCiv.religionManager.freeBeliefsAsEnums(),
                             pickIconAndName = false
                         )
                     )
@@ -829,6 +856,13 @@ private fun startNewScreenJob(gameInfo: GameInfo, autosaveDisabled:Boolean = fal
     Concurrency.run {
         val newWorldScreen = try {
             UncivGame.Current.loadGame(gameInfo)
+        } catch (notAPlayer: UncivShowableException) {
+            withGLContext {
+                val (message) = LoadGameScreen.getLoadExceptionMessage(notAPlayer)
+                val mainMenu = UncivGame.Current.goToMainMenu()
+                ToastPopup(message, mainMenu)
+            }
+            return@run
         } catch (oom: OutOfMemoryError) {
             withGLContext {
                 val mainMenu = UncivGame.Current.goToMainMenu()

@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.overviewscreen.EspionageOverviewScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechButton
 import com.unciv.ui.pickerscreens.TechPickerScreen
@@ -29,15 +30,18 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
     private val policyScreenButton = Button(skin)
     private val diplomacyButtonHolder = Container<Button?>()
     private val diplomacyButton = Button(skin)
+    private val espionageButtonHolder = Container<Button?>()
+    private val espionageButton = Button(skin)
 
     private val viewingCiv = worldScreen.viewingCiv
     private val game = worldScreen.game
 
     init {
         defaults().left()
-        add(techButtonHolder).colspan(3).row()
+        add(techButtonHolder).colspan(4).row()
         add(policyButtonHolder).padTop(10f).padRight(10f)
-        add(diplomacyButtonHolder).padTop(10f)
+        add(diplomacyButtonHolder).padTop(10f).padRight(10f)
+        add(espionageButtonHolder).padTop(10f)
         add().growX()  // Allows Policy and Diplo buttons to keep to the left
 
         pickTechButton.background = ImageGetter.getRoundedEdgeRectangle(colorFromRGB(7, 46, 43))
@@ -56,12 +60,20 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
         diplomacyButtonHolder.onClick {
             game.pushScreen(DiplomacyScreen(viewingCiv))
         }
+        if (game.gameInfo!!.isEspionageEnabled()) {
+            espionageButton.add(ImageGetter.getImage("OtherIcons/Spy_White")).size(30f).pad(15f)
+            espionageButtonHolder.onClick {
+                game.pushScreen(EspionageOverviewScreen(viewingCiv))
+            }
+        }
     }
 
     fun update(): Boolean {
         updateTechButton()
         updatePolicyButton()
         val result = updateDiplomacyButton()
+        if (game.gameInfo!!.isEspionageEnabled())
+            updateEspionageButton()
         pack()
         setPosition(10f, worldScreen.topBar.y - height - 15f)
         return result
@@ -112,6 +124,16 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
             diplomacyButtonHolder.touchable = Touchable.enabled
             diplomacyButtonHolder.actor = diplomacyButton
             true
+        }
+    }
+
+    private fun updateEspionageButton() {
+        if (viewingCiv.espionageManager.spyCount == 0) {
+            espionageButtonHolder.touchable = Touchable.disabled
+            espionageButtonHolder.actor = null
+        } else {
+            espionageButtonHolder.touchable = Touchable.enabled
+            espionageButtonHolder.actor = espionageButton
         }
     }
 }
