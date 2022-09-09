@@ -238,7 +238,7 @@ class TechManager : IsPartOfGameInfoSerialization {
     }
 
     fun addTechnology(techName: String) {
-        techsResearched.add(techName)
+        val isNewTech = techsResearched.add(techName)
 
         // this is to avoid concurrent modification problems
         val newTech = getRuleset().technologies[techName]!!
@@ -257,7 +257,8 @@ class TechManager : IsPartOfGameInfoSerialization {
         }
 
         civInfo.addNotification("Research of [$techName] has completed!", TechAction(techName), NotificationIcon.Science, techName)
-        civInfo.popupAlerts.add(PopupAlert(AlertType.TechResearched, techName))
+        if (isNewTech)
+            civInfo.popupAlerts.add(PopupAlert(AlertType.TechResearched, techName))
 
         if (civInfo.playerType == PlayerType.Human) {
             for (revealedResource in getRuleset().tileResources.values.filter { techName == it.revealedBy }) {

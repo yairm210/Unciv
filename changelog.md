@@ -1,3 +1,20 @@
+## 4.2.8
+
+Show Unciv icon when loading game, instead of happy face
+
+AI: Recognize when no further techs can be researched, even if some techs are blocked
+
+Don't re-raise tech popups for previously researched techs
+
+By xlenstra:
+- Fixed bug disabling pantheon founding
+
+UI fix - By GGGuenni
+
+Add "UI Skin" to make it translatable  - By Ouaz
+
+Fixed bug on 'resume game' - By nacro711072
+
 ## 4.2.7
 
 Better milestones for world religion
