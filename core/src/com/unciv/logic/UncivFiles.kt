@@ -276,7 +276,6 @@ class UncivFiles(
             try {
                 val gameInfo = gameInfoFromString(gameData)
                 gameInfo.customSaveLocation = location
-                gameInfo.setTransients()
                 loadCompletionCallback(CustomLoadResult(location to gameInfo))
             } catch (ex: Exception) {
                 loadCompletionCallback(CustomLoadResult(exception = ex))
