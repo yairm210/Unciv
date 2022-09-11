@@ -11,6 +11,7 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.MapUnit
+import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.Counter
 import com.unciv.models.UncivSound
@@ -291,7 +292,7 @@ object UnitActions {
             actionList += UnitAction(UnitActionType.Pillage, action = null)
         else actionList += UnitAction(type = UnitActionType.Pillage) {
             if (!worldScreen.hasOpenPopups()) {
-                val pillageText = "Are you sure you want to pillage this [${unit.currentTile.improvement}]?"
+                val pillageText = if(unit.currentTile.improvement == null) "Are you sure you want to pillage this [${unit.currentTile.roadStatus.name}]?" else "Are you sure you want to pillage this [${unit.currentTile.improvement}]?"
                 ConfirmPopup(
                     UncivGame.Current.worldScreen!!,
                     pillageText,
@@ -307,11 +308,27 @@ object UnitActions {
 
     fun getPillageAction(unit: MapUnit): UnitAction? {
         val tile = unit.currentTile
-        if (unit.isCivilian() || tile.getUnpillagedImprovement() == null || tile.getOwner() == unit.civInfo) return null
+        if (unit.isCivilian() || (tile.getUnpillagedImprovement() == null && tile.roadStatus == RoadStatus.None) || tile.getOwner() == unit.civInfo) return null
 
         return UnitAction(UnitActionType.Pillage,
                 action = {
-                    tile.getOwner()?.addNotification("An enemy [${unit.baseUnit.name}] has pillaged our [${tile.improvement}]", tile.position, "ImprovementIcons/${tile.improvement!!}", NotificationIcon.War, unit.baseUnit.name)
+                    if (tile.improvement == null) {
+                        tile.getOwner()?.addNotification(
+                            "An enemy [${unit.baseUnit.name}] has pillaged our [${tile.roadStatus.name}]",
+                            tile.position,
+                            "ImprovementIcons/${tile.roadStatus.name}",
+                            NotificationIcon.War,
+                            unit.baseUnit.name
+                        )
+                    } else {
+                        tile.getOwner()?.addNotification(
+                            "An enemy [${unit.baseUnit.name}] has pillaged our [${tile.improvement}]",
+                            tile.position,
+                            "ImprovementIcons/${tile.improvement!!}",
+                            NotificationIcon.War,
+                            unit.baseUnit.name
+                        )
+                    }
                     pillageLooting(tile, unit)
                     tile.setPillaged()
                     if (tile.resource != null) tile.getOwner()?.updateDetailedCivResources()    // this might take away a resource
@@ -330,7 +347,7 @@ object UnitActions {
         val globalPillageYield = Stats()
         val toCityPillageYield = Stats()
         val closestCity = unit.civInfo.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
-        val improvement = tile.ruleset.tileImprovements[tile.improvement]!!
+        val improvement = if (tile.improvement == null) tile.ruleset.tileImprovements[tile.roadStatus.name]!! else tile.ruleset.tileImprovements[tile.improvement]!!
 
         for (unique in improvement.getMatchingUniques(UniqueType.PillageYieldRandom)) {
             for (stat in unique.stats) {
@@ -861,7 +878,7 @@ object UnitActions {
         if (unit.isTransported) return false
         val tileImprovement = tile.getUnpillagedTileImprovement()
         // City ruins, Ancient Ruins, Barbarian Camp, City Center marked in json
-        if (tileImprovement == null || tileImprovement.hasUnique(UniqueType.Unpillagable)) return false
+        if ((tileImprovement == null || tileImprovement.hasUnique(UniqueType.Unpillagable)) && tile.roadStatus == RoadStatus.None) return false
         val tileOwner = tile.getOwner()
         // Can't pillage friendly tiles, just like you can't attack them - it's an 'act of war' thing
         return tileOwner == null || unit.civInfo.isAtWarWith(tileOwner)
