@@ -227,7 +227,13 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             val newGame: GameInfo
             // Can fail when starting the game...
             try {
-                newGame = GameStarter.startNewGame(GameSetupInfo.fromSettings("Chieftain"))
+                val gameInfo = GameSetupInfo.fromSettings("Chieftain")
+                if (gameInfo.gameParameters.victoryTypes.isEmpty()) {
+                    val ruleSet = RulesetCache.getComplexRuleset(gameInfo.gameParameters)
+                    gameInfo.gameParameters.victoryTypes.addAll(ruleSet.victories.keys)
+                }
+                newGame = GameStarter.startNewGame(gameInfo)
+
             } catch (notAPlayer: UncivShowableException) {
                 val (message) = LoadGameScreen.getLoadExceptionMessage(notAPlayer)
                 launchOnGLThread { ToastPopup(message, this@MainMenuScreen) }
