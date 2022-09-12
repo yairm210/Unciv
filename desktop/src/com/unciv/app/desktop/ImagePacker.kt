@@ -21,7 +21,7 @@ internal object ImagePacker {
     private fun getDefaultSettings() = TexturePacker.Settings().apply {
         // Apparently some chipsets, like NVIDIA Tegra 3 graphics chipset (used in Asus TF700T tablet),
         // don't support non-power-of-two texture sizes - kudos @yuroller!
-        // https://github.com/yairm210/UnCiv/issues/1340
+        // https://github.com/yairm210/Unciv/issues/1340
 
         /**
          * These should be as big as possible in order to accommodate ALL the images together in one big file.
