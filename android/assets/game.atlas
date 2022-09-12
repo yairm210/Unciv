@@ -97,7 +97,7 @@ ImprovementIcons/Citadel
   index: -1
 ImprovementIcons/City center
   rotate: false
-  xy: 4, 182
+  xy: 1362, 1944
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -217,6 +217,20 @@ ImprovementIcons/Polder
 ImprovementIcons/Quarry
   rotate: false
   xy: 717, 1404
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+ImprovementIcons/Railroad
+  rotate: false
+  xy: 1149, 1404
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+TileSets/Minimal/Railroad
+  rotate: false
+  xy: 1149, 1404
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -5387,20 +5401,6 @@ TileSets/Minimal/Arrows/UnitHasAttacked
   orig: 100, 60
   offset: 0, 0
   index: -1
-TileSets/Minimal/Railroad
-  rotate: false
-  xy: 1149, 1404
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-ImprovementIcons/Railroad
-  rotate: false
-  xy: 1149, 1404
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
 TileSets/Minimal/Road
   rotate: false
   xy: 404, 1775
@@ -5417,7 +5417,7 @@ TileSets/Minimal/Tiles/Atoll
   index: -1
 TileSets/Minimal/Tiles/City center
   rotate: false
-  xy: 1362, 1944
+  xy: 4, 182
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
