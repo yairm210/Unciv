@@ -88,6 +88,11 @@ object GameStarter {
                     }
         }
 
+        if (tileMap.continentSizes.isEmpty())   // Probably saved map without continent data
+            runAndMeasure("assignContinents") {
+                tileMap.assignContinents(TileMap.AssignContinentsMode.Ensure)
+            }
+
         runAndMeasure("setTransients") {
             tileMap.setTransients(ruleset) // if we're starting from a map with pre-placed units, they need the civs to exist first
             tileMap.setStartingLocationsTransients()
@@ -97,24 +102,20 @@ object GameStarter {
             gameInfo.setTransients() // needs to be before placeBarbarianUnit because it depends on the tilemap having its gameInfo set
         }
 
-        runAndMeasure("Techs and Stats") {
-            addCivTechs(gameInfo, ruleset, gameSetupInfo)
-
-            addCivStats(gameInfo)
+        runAndMeasure("addCivStartingUnits") {
+            addCivStartingUnits(gameInfo)
         }
 
         runAndMeasure("Policies") {
             addCivPolicies(gameInfo, ruleset)
         }
 
-        if (tileMap.continentSizes.isEmpty())   // Probably saved map without continent data
-            runAndMeasure("assignContinents") {
-                tileMap.assignContinents(TileMap.AssignContinentsMode.Ensure)
-            }
+        runAndMeasure("Techs and Stats") {
+            addCivTechs(gameInfo, ruleset, gameSetupInfo)
+        }
 
-        runAndMeasure("addCivStartingUnits") {
-            // and only now do we add units for everyone, because otherwise both the gameInfo.setTransients() and the placeUnit will both add the unit to the civ's unit list!
-            addCivStartingUnits(gameInfo)
+        runAndMeasure("Starting stats") {
+            addCivStats(gameInfo)
         }
 
         // remove starting locations once we're done
