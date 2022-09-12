@@ -6,6 +6,7 @@ and so making our screenshots better leads to a direct increase in interest.
 For us to continue to generate screenshots as the UI improves, we have a saved game named "ScreenshotGenerationGame" in the extraImages folder.
 
 The easiest way to create screenshots is by:
+
 - WRITE DOWN which file you're working on! They all look the same!
 - Editing the gamesettings.json to the required height/width
 - Loading the ScreenshotGenerationGame
