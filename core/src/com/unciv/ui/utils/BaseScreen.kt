@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.unciv.UncivGame
 import com.unciv.models.TutorialTrigger
+import com.unciv.models.skins.SkinStrings
 import com.unciv.ui.UncivStage
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.activePopup
@@ -110,8 +111,10 @@ abstract class BaseScreen : Screen {
         var enableSceneDebug = false
 
         lateinit var skin: Skin
+        lateinit var skinStrings: SkinStrings
         fun setSkin() {
             Fonts.resetFont()
+            skinStrings = SkinStrings()
             skin = Skin().apply {
                 add("Nativefont", Fonts.font, BitmapFont::class.java)
                 add("RoundedEdgeRectangle", ImageGetter.getRoundedEdgeRectangle(), Drawable::class.java)
