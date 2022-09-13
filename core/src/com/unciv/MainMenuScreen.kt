@@ -195,16 +195,16 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             game.popScreen()
         }
 
-        val helpButton = "?".toLabel(fontSize = 32)
+        val helpButton = "?".toLabel(fontSize = 48)
             .apply { setAlignment(Align.center) }
-            .surroundWithCircle(40f, color = ImageGetter.getBlue())
+            .surroundWithCircle(60f, color = ImageGetter.getBlue())
             .apply { actor.y -= 2.5f } // compensate font baseline (empirical)
-            .surroundWithCircle(42f, resizeActor = false)
+            .surroundWithCircle(64f, resizeActor = false)
         helpButton.touchable = Touchable.enabled
         helpButton.onActivation { openCivilopedia() }
         helpButton.keyShortcuts.add(Input.Keys.F1)
-        helpButton.addTooltip(KeyCharAndCode(Input.Keys.F1), 20f)
-        helpButton.setPosition(20f, 20f)
+        helpButton.addTooltip(KeyCharAndCode(Input.Keys.F1), 30f)
+        helpButton.setPosition(30f, 30f)
         stage.addActor(helpButton)
     }
 
@@ -227,7 +227,13 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             val newGame: GameInfo
             // Can fail when starting the game...
             try {
-                newGame = GameStarter.startNewGame(GameSetupInfo.fromSettings("Chieftain"))
+                val gameInfo = GameSetupInfo.fromSettings("Chieftain")
+                if (gameInfo.gameParameters.victoryTypes.isEmpty()) {
+                    val ruleSet = RulesetCache.getComplexRuleset(gameInfo.gameParameters)
+                    gameInfo.gameParameters.victoryTypes.addAll(ruleSet.victories.keys)
+                }
+                newGame = GameStarter.startNewGame(gameInfo)
+
             } catch (notAPlayer: UncivShowableException) {
                 val (message) = LoadGameScreen.getLoadExceptionMessage(notAPlayer)
                 launchOnGLThread { ToastPopup(message, this@MainMenuScreen) }

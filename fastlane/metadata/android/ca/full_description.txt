@@ -2,13 +2,13 @@ Una reimplementació del joc de construcció de civilitzacions més famós - rà
 
 Construïu la vostra civilització, investigueu tecnologies, expandiu les ciutats i derroteu els enemics!
 
-Si teniu suggeriments o trobeu algun error, ho podeu comunicar a la <a href="https://github.com/yairm210/UnCiv/issues">llista de problemes de l’aplicació de GitHub</a>. Qualsevol ajuda, per petita que sigui, serà benvinguda!
+Si teniu suggeriments o trobeu algun error, ho podeu comunicar a la <a href="https://github.com/yairm210/Unciv/issues">llista de problemes de l’aplicació de GitHub</a>. Qualsevol ajuda, per petita que sigui, serà benvinguda!
 
 Uniu-vos al <a href="https://discord.gg/bjrB4Xw">canal del Discord</a> si teniu preguntes, comentaris o esteu avorrits.
 
 Si voleu ajudar en la traducció del joc, seguiu les instruccions a l’<a href="https://yairm210.github.io/Unciv/Other/Translating">article d’instruccions de traducció de l’Unciv</a>.
 
-Sabeu programar amb Grok Java o Kotlin? Podeu col·laborar amb el desenvolupament del joc a la <a href="https://github.com/yairm210/UnCiv">pàgina de GitHub</a>.
+Sabeu programar amb Grok Java o Kotlin? Podeu col·laborar amb el desenvolupament del joc a la <a href="https://github.com/yairm210/Unciv">pàgina de GitHub</a>.
 
 El món espera! Podreu conduir la vostra civilització i convertir-la en un imperi que sobrevisqui al pas del temps?
 
