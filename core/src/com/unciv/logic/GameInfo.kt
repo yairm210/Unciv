@@ -499,7 +499,12 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         convertFortify()
 
-        for (civInfo in civilizations) {
+        sequence {
+            // update city-state resource first since the happiness of major civ depends on it.
+            // See issue: https://github.com/yairm210/Unciv/issues/7781
+            yieldAll(civilizations.filter { it.isCityState() })
+            yieldAll(civilizations.filter { !it.isCityState(); it.isMajorCiv() })
+        }.forEach { civInfo ->
             for (unit in civInfo.getCivUnits())
                 unit.updateVisibleTiles(false) // this needs to be done after all the units are assigned to their civs and all other transients are set
             civInfo.updateSightAndResources() // only run ONCE and not for each unit - this is a huge performance saver!
