@@ -44,9 +44,7 @@ internal object DesktopLauncher {
         config.disableAudio(true)
 
         val settings = UncivFiles.getSettingsForPlatformLaunchers()
-        if (!settings.isFreshlyCreated) {
-            config.setWindowedMode(settings.windowState.width.coerceAtLeast(120), settings.windowState.height.coerceAtLeast(80))
-        }
+        config.setWindowedMode(settings.windowState.width.coerceAtLeast(120), settings.windowState.height.coerceAtLeast(80))
 
         if (!isRunFromJAR) {
             UniqueDocsWriter().write()

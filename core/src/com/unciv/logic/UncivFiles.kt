@@ -9,14 +9,16 @@ import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.models.metadata.GameSettings
+import com.unciv.models.metadata.WindowState
 import com.unciv.models.metadata.doMigrations
 import com.unciv.models.metadata.isMigrationNecessary
 import com.unciv.ui.saves.Gzip
 import com.unciv.ui.utils.extensions.toNiceString
-import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.Log
+import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.debug
 import kotlinx.coroutines.Job
+import java.awt.Toolkit
 import java.io.File
 import java.io.Writer
 
@@ -309,7 +311,9 @@ class UncivFiles(
             }
         }
 
-        return settings ?: GameSettings().apply { isFreshlyCreated = true }
+        return settings ?: GameSettings().apply {
+            isFreshlyCreated = true
+        }
     }
 
     fun setGeneralSettings(gameSettings: GameSettings) {
@@ -328,12 +332,22 @@ class UncivFiles(
             // FileHandle is Gdx, but the class and JsonParser are not dependent on app initialization
             // In fact, at this point Gdx.app or Gdx.files are null but this still works.
             val file = FileHandle(base + File.separator + SETTINGS_FILE_NAME)
+
             return if (file.exists())
                 json().fromJsonFile(
                     GameSettings::class.java,
                     file
                 )
-            else GameSettings().apply { isFreshlyCreated = true }
+            else GameSettings().apply { isFreshlyCreated = true
+                // LibGDX not yet configured, use regular java class
+                val screensize = Toolkit.getDefaultToolkit().screenSize
+                windowState = WindowState(
+                    width = screensize.width,
+                    height = screensize.height
+                )
+                file.writeString(json().toJson(this),false)
+            }
+
         }
 
         /** @throws IncompatibleGameInfoVersionException if the [gameData] was created by a version of this game that is incompatible with the current one. */
