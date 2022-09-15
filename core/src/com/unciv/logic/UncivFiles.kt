@@ -336,7 +336,9 @@ class UncivFiles(
                     GameSettings::class.java,
                     file
                 )
-            else GameSettings().apply { isFreshlyCreated = true
+            else GameSettings().apply {
+                isFreshlyCreated = true
+                resolution = "1200x800" // By default Desktops should have a higher resolution
                 // LibGDX not yet configured, use regular java class
                 val screensize = Toolkit.getDefaultToolkit().screenSize
                 windowState = WindowState(
