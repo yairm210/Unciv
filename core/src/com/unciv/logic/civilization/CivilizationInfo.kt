@@ -33,6 +33,7 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.TemporaryUnique
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
@@ -105,7 +106,11 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
     /** This is for performance since every movement calculation depends on this, see MapUnit comment */
     @Transient
-    var hasActiveGreatWall = false
+    var hasActiveEnemyMovementPenalty = false
+
+    /** Same as above variable */
+    @Transient
+    var enemyMovementPenaltyUniques: Sequence<Unique>? = null
 
     @Transient
     var statsForNextTurn = Stats()
@@ -673,6 +678,27 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         return diplomacyManager.hasOpenBorders
     }
 
+    fun getEnemyMovementPenalty(enemyUnit: MapUnit, toMoveTo: TileInfo): Float {
+        if (enemyMovementPenaltyUniques != null && enemyMovementPenaltyUniques!!.any()) {
+            return enemyMovementPenaltyUniques!!.sumOf {
+                when (it.type!!) {
+                    UniqueType.EnemyLandUnitsSpendExtraMovement -> {
+                        if (enemyUnit.matchesFilter(it.params[0]))
+                            it.params[1].toInt()
+                        else 0 // doesn't match
+                    }
+                    UniqueType.EnemyLandUnitsSpendExtraMovementDepreciated -> {
+                        if (toMoveTo.isLand) {
+                            1 // depreciated unique only works on land tiles
+                        } else 0
+                    }
+                    else -> 0
+                }
+            }.toFloat()
+        }
+        return 0f // should not reach this point
+    }
+
     /**
      * Returns a civilization caption suitable for greetings including player type info:
      * Like "Milan" if the nation is a city state, "Caesar of Rome" otherwise, with an added
@@ -869,7 +895,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
     fun updateSightAndResources() {
         updateViewableTiles()
-        updateHasActiveGreatWall()
+        updateHasActiveEnemyMovementPenalty()
         updateDetailedCivResources()
     }
 
@@ -879,7 +905,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
     // implementation in a separate class, to not clog up CivInfo
     fun initialSetCitiesConnectedToCapitalTransients() = transients().updateCitiesConnectedToCapital(true)
-    fun updateHasActiveGreatWall() = transients().updateHasActiveGreatWall()
+    fun updateHasActiveEnemyMovementPenalty() = transients().updateHasActiveEnemyMovementPenalty()
     fun updateViewableTiles() = transients().updateViewableTiles()
     fun updateDetailedCivResources() = transients().updateCivResources()
 
@@ -982,7 +1008,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         goldenAges.endTurn(getHappiness())
         getCivUnits().forEach { it.endTurn() }  // This is the most expensive part of endTurn
         diplomacy.values.toList().forEach { it.nextTurn() } // we copy the diplomacy values so if it changes in-loop we won't crash
-        updateHasActiveGreatWall()
+        updateHasActiveEnemyMovementPenalty()
 
         cachedMilitaryMight = -1    // Reset so we don't use a value from a previous turn
     }

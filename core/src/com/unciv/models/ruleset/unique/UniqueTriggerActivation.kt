@@ -26,7 +26,7 @@ object UniqueTriggerActivation {
         tile: TileInfo? = null,
         notification: String? = null
     ): Boolean {
-        val timingConditional = unique.conditionals.firstOrNull{it.type == ConditionalTimedUnique}
+        val timingConditional = unique.conditionals.firstOrNull { it.type == ConditionalTimedUnique }
         if (timingConditional != null) {
             civInfo.temporaryUniques.add(TemporaryUnique(unique, timingConditional.params[0].toInt()))
             return true
@@ -486,6 +486,7 @@ object UniqueTriggerActivation {
                         val spyName = otherCiv.espionageManager.addSpy()
                         otherCiv.espionageManager.erasSpyEarnedFor.add(currentEra)
                         if (otherCiv == civInfo || otherCiv.knows(civInfo))
+                            // We don't tell which civilization entered the new era, as that is done in the notification directly above this one
                             otherCiv.addNotification("We have recruited [${spyName}] as a spy!", NotificationIcon.Spy)
                         else
                             otherCiv.addNotification("After an unknown civilization entered the [${currentEra}], we have recruited [${spyName}] as a spy!", NotificationIcon.Spy)
