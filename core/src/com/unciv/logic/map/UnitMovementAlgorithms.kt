@@ -34,10 +34,9 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         val toOwner = to.getOwner()
         val extraCost = if (
             toOwner != null &&
-            to.isLand &&
-            toOwner.hasActiveGreatWall &&
+            toOwner.hasActiveEnemyMovementPenalty &&
             civInfo.isAtWarWith(toOwner)
-        ) 1f else 0f
+        ) toOwner.getEnemyMovementPenalty(unit, to) else 0f
 
         if (from.roadStatus == RoadStatus.Railroad && to.roadStatus == RoadStatus.Railroad)
             return RoadStatus.Railroad.movement + extraCost
