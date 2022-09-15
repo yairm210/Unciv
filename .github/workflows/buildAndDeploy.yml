@@ -182,7 +182,7 @@ jobs:
           ssfnFileContents: ${{ secrets.STEAM_SSFN_FILE_CONTENTS }}
           appId: 2118950
           buildDescription: ${{steps.tag.outputs.tag}}
-          rootPath: deploy
+          rootPath: steam
           depot1Path: Unciv-Windows64
           depot2Path: Unciv-Linux64
           releaseBranch: release
