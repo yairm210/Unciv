@@ -311,9 +311,7 @@ class UncivFiles(
             }
         }
 
-        return settings ?: GameSettings().apply {
-            isFreshlyCreated = true
-        }
+        return settings ?: GameSettings().apply { isFreshlyCreated = true }
     }
 
     fun setGeneralSettings(gameSettings: GameSettings) {
