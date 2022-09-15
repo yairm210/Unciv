@@ -1,3 +1,34 @@
+## 4.2.9
+
+Fixed steam root folder, hopefully now
+
+Steam deploy folders, not zips
+
+Added steam build, let's check it out!
+
+Got rid of uppercase C in Unciv in ALL places!
+
+Added Macedonian flag
+
+Updated preview images and added guide to doing so
+
+Solve CS placement clustering 
+
+Starting in later eras triggers era uniques in all previous eras  - By xlenstra
+
+Generalize Great Wall unique  - By OptimizedForDensity
+
+By nacro711072:
+- fix wrong happiness point on resume game if adopt 'Cultural Diplomacy' policy. 
+- fix no victoryTypes for the first time gaming with "quick game" opion. 
+- Fixed: double unit while loading game from customFile. 
+
+By xk730:
+- Increased help button size 
+- Added missing translatables 
+
+Add files via upload  - By GeneralWadaling
+
 ## 4.2.8
 
 Show Unciv icon when loading game, instead of happy face
