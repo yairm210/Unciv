@@ -5,9 +5,30 @@ import com.badlogic.gdx.graphics.Color
 class SkinElement {
     var image: String? = null
     var tint: Color? = null
+
+    fun clone(): SkinElement {
+        val toReturn = SkinElement()
+        toReturn.image = image
+        toReturn.tint = tint?.cpy()
+        return toReturn
+    }
 }
 
 class SkinConfig {
     var baseColor: Color = Color(0x004085bf)
     var skinVariants: HashMap<String, SkinElement> = HashMap()
+
+    fun clone(): SkinConfig {
+        val toReturn = SkinConfig()
+        toReturn.baseColor = baseColor.cpy()
+        toReturn.skinVariants.putAll(skinVariants.map { Pair(it.key, it.value.clone()) })
+        return toReturn
+    }
+
+    fun updateConfig(other: SkinConfig) {
+        baseColor = other.baseColor.cpy()
+        for ((variantName, element) in other.skinVariants){
+            skinVariants[variantName] = element.clone()
+        }
+    }
 }

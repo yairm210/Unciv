@@ -17,6 +17,7 @@ import com.unciv.models.simulation.Simulation
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Speed
+import com.unciv.models.skins.SkinCache
 import kotlin.time.ExperimentalTime
 
 internal object ConsoleLauncher {
@@ -36,6 +37,7 @@ internal object ConsoleLauncher {
 
         RulesetCache.loadRulesets(true)
         TileSetCache.loadTileSetConfigs(true)
+        SkinCache.loadSkinConfigs(true)
 
         val gameParameters = getGameParameters("China", "Greece")
         val mapParameters = getMapParameters()

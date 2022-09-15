@@ -7,7 +7,7 @@ import com.unciv.ui.images.ImageGetter
 
 class SkinStrings(skin: String = UncivGame.Current.settings.skin) {
     private val skinLocation = "Skins/$skin/"
-    val skinConfig = /* TODO SkinCache[skin] ?:*/ SkinConfig()
+    val skinConfig = SkinCache[skin] ?: SkinConfig()
 
     val roundedEdgeRectangle = skinLocation + "roundedEdgeRectangle"
     val rectangleWithOutline = skinLocation + "rectangleWithOutline"
@@ -33,11 +33,12 @@ class SkinStrings(skin: String = UncivGame.Current.settings.skin) {
      */
     fun getUiBackground(path: String, default: String? = null, tintColor: Color? = null): NinePatchDrawable {
         val locationByName = skinLocation + path
-        val locationByConfigVariant = skinConfig.skinVariants[path]?.image
+        val locationByConfigVariant = skinLocation + skinConfig.skinVariants[path]?.image
         val tint = skinConfig.skinVariants[path]?.tint ?: tintColor
+
         return when {
-            locationByConfigVariant != null && ImageGetter.imageExists(locationByConfigVariant) -> ImageGetter.getNinePatch(locationByConfigVariant, tint)
-            ImageGetter.imageExists(locationByName) -> ImageGetter.getNinePatch(locationByName, tint)
+            ImageGetter.ninePatchImageExists(locationByConfigVariant) -> ImageGetter.getNinePatch(locationByConfigVariant, tint)
+            ImageGetter.ninePatchImageExists(locationByName) -> ImageGetter.getNinePatch(locationByName, tint)
             else -> ImageGetter.getNinePatch(default, tint)
         }
     }
