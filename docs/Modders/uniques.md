@@ -440,7 +440,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Enables construction of Spaceship parts"
 	Applicable to: Global
 
-??? example  "Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)"
+??? example  "Enemy [mapUnitFilter] units must spend [amount] extra movement points when inside your territory"
+	Example: "Enemy [Wounded] units must spend [3] extra movement points when inside your territory"
+
 	Applicable to: Global
 
 ??? example  "Production to [civWideStat] conversion in cities changed by [relativeAmount]%"
