@@ -163,6 +163,23 @@ jobs:
 
           mv desktop/build/libs/Unciv.jar deploy/Unciv.jar
 
+      - name: Steam deploy
+        continue-on-error: true
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+        uses: game-ci/steam-deploy@v1
+        with:
+          username: ${{ secrets.STEAM_USERNAME }}
+          password: ${{ secrets.STEAM_PASSWORD }}
+          configVdf: ${{ secrets.STEAM_CONFIG_VDF}}
+          ssfnFileName: ${{ secrets.STEAM_SSFN_FILE_NAME }}
+          ssfnFileContents: ${{ secrets.STEAM_SSFN_FILE_CONTENTS }}
+          appId: 2118950
+          buildDescription: ${{steps.tag.outputs.tag}}
+          rootPath: deploy
+          depot1Path: Unciv-Windows64.zip
+          depot2Path: Unciv-Linux64.zip
+          releaseBranch: release
+
 ## Server
 
       - name: Build UncivServer.jar

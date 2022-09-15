@@ -21,3 +21,12 @@ Quick dimensions checklist for y'all!
 - Github preview image - 1280*640
 - Feature Graphic - Google Play - 1024*500 - best in 900x600 resolution (options - display)
 - Itch.io image - 630*500 - best in 1050x700 resolution
+
+# Generating Steam images with Gimp
+
+- Open map editor
+- Take a screenshot of a nice-looking piece of map in the required dimensions (I use Shutter)
+- Take the latest Unciv icon, add as another layer, and resize the layer until it's like 90% of the height
+- Go here: https://text.imageonline.co/ and select color-black, font-Nobile, and Bold.
+- Generate text in a good size to fit into the rest of your image, screenshot that (with the white background) and paste in a new layer
+- Use the Bucket Fill, mode-erase, with opacity to get rid of most of the white, this should leave a small outline of white around our black text!
