@@ -145,9 +145,12 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         }
     }
 
-    fun updateHasActiveGreatWall() {
-        civInfo.hasActiveGreatWall = !civInfo.tech.isResearched("Dynamite") &&
-                civInfo.hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovement)
+    fun updateHasActiveEnemyMovementPenalty() {
+        civInfo.hasActiveEnemyMovementPenalty = (!civInfo.tech.isResearched("Dynamite") && civInfo.hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovementDepreciated))
+                || civInfo.hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovement)
+        civInfo.enemyMovementPenaltyUniques =
+                civInfo.getMatchingUniques(UniqueType.EnemyLandUnitsSpendExtraMovement) +
+                        civInfo.getMatchingUniques(UniqueType.EnemyLandUnitsSpendExtraMovementDepreciated)
     }
 
     fun updateCitiesConnectedToCapital(initialSetup: Boolean = false) {

@@ -2,13 +2,13 @@
 
 建立你的文明，研究科技，擴張你的城市並且擊敗你的敵人!
 
-有新發現或Bugs想回報？ 任何進行中的項目皆列在 https://github.com/yairm210/UnCiv/issues, 不管多小的點子都非常歡迎加入討論！
+有新發現或Bugs想回報？ 任何進行中的項目皆列在 https://github.com/yairm210/Unciv/issues, 不管多小的點子都非常歡迎加入討論！
 
 遊玩有問題？ 想找人討論？ 或者單純無聊？ 歡迎加入Discord群聊 https://discord.gg/bjrB4Xw.
 
 想幫這款遊戲翻譯成你的母語？ 歡迎透過Email聯繫： yairm210@hotmail.com.
 
-Java 或 Kotlin高手？ 歡迎加入開發行列 https://github.com/yairm210/UnCiv.
+Java 或 Kotlin高手？ 歡迎加入開發行列 https://github.com/yairm210/Unciv.
 
 世界正在等著你！ 你的文明是否經的起時間考驗？
 

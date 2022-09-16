@@ -333,9 +333,12 @@ class TechManager : IsPartOfGameInfoSerialization {
                 civInfo.addNotification("[" + policyBranch.name + "] policy branch unlocked!", NotificationIcon.Culture)
             }
             // Note that if you somehow skip over an era, its uniques aren't triggered
-            for (unique in currentEra.uniqueObjects) {
-                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
-            }
+            val erasPassed = getRuleset().eras.values
+                .filter { it.eraNumber > previousEra.eraNumber && it.eraNumber <= currentEra.eraNumber }
+                .sortedBy { it.eraNumber }
+            for (era in erasPassed)
+                for (unique in era.uniqueObjects)
+                    UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
         }
     }
 

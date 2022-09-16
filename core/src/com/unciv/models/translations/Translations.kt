@@ -157,11 +157,9 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
 
         languages.remove("template")
         languages.remove("completionPercentages")
-        languages.remove("Thai") // Until we figure out what to do with it
-        languages.remove("Vietnamese") // Until we figure out what to do with it
+        languages.remove("Thai") // Spacing looks horrible, so disable until we figure out what to do with it
 
-        return languages
-                .filter { Gdx.files.internal("jsons/translations/$it.properties").exists() }
+        return languages.filter { Gdx.files.internal("jsons/translations/$it.properties").exists() }
     }
 
     /** Ensure _all_ languages are loaded, used by [TranslationFileWriter] and `TranslationTests` */

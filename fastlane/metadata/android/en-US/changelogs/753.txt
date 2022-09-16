@@ -1,0 +1,13 @@
+Starting in later eras triggers era uniques in all previous eras  - By xlenstra
+
+Generalize Great Wall unique  - By OptimizedForDensity
+
+By nacro711072:
+- fix wrong happiness point on resume game if adopted 'Cultural Diplomacy' policy.
+- fix no victoryTypes for the first time gaming with "quick game" opion.
+- Fixed: double unit while loading game from customFile.
+
+By xk730:
+- Increased help button size
+
+Unit art updates  - By GeneralWadaling
