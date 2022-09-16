@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
+import com.unciv.logic.civilization.SpyAction
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.LocaleCode
 import com.unciv.models.ruleset.*
@@ -124,6 +125,10 @@ object TranslationFileWriter {
 
             for (uniqueTarget in UniqueTarget.values())
                 linesToTranslate.add("$uniqueTarget = ")
+
+            for (spyAction in SpyAction.values()) {
+                linesToTranslate.add("$spyAction = ")
+            }
         }
 
         var countOfTranslatableLines = 0
