@@ -284,7 +284,10 @@ object SpecificUnitAutomation {
 
             unit.movement.headTowards(chosenTile)
             if (unit.currentTile == chosenTile)
-                UnitActions.getImprovementConstructionActions(unit, unit.currentTile).firstOrNull()?.action?.invoke()
+                if (unit.currentTile.isPillaged())
+                    UnitActions.getRepairAction(unit).invoke()
+                else
+                    UnitActions.getImprovementConstructionActions(unit, unit.currentTile).firstOrNull()?.action?.invoke()
             return
         }
     }

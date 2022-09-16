@@ -109,6 +109,8 @@ enum class UnitActionType(
         { ImageGetter.getUnitIcon(Constants.settler) }, 'c', UncivSound.Silent),
     ConstructImprovement("Construct improvement",
         { ImageGetter.getUnitIcon(Constants.worker) }, 'i'),
+    Repair("Repair",
+        { ImageGetter.getUnitIcon(Constants.worker) }, 'r'),
     Create("Create",
         null, 'i', UncivSound.Chimes),
     HurryResearch("Hurry Research",

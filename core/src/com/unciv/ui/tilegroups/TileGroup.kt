@@ -579,6 +579,7 @@ open class TileGroup(
 
     private fun updateTileColor(isViewable: Boolean) {
         val baseTerrainColor = when {
+            isViewable && tileInfo.isPillaged() -> Color.BROWN.cpy()
             tileSetStrings.tileSetConfig.useColorAsBaseTerrain && !isViewable -> tileInfo.getBaseTerrain().getColor().lerp(tileSetStrings.tileSetConfig.fogOfWarColor, 0.6f)
             tileSetStrings.tileSetConfig.useColorAsBaseTerrain -> tileInfo.getBaseTerrain().getColor()
             !isViewable -> Color.WHITE.cpy().lerp(tileSetStrings.tileSetConfig.fogOfWarColor, 0.6f)

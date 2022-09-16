@@ -1190,7 +1190,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         val (citadelTile, damage) = currentTile.neighbors
             .filter {
                 it.getOwner() != null
-                && it.improvement != null
+                && it.getUnpillagedImprovement() != null
                 && civInfo.isAtWarWith(it.getOwner()!!)
             }.map { tile ->
                 tile to tile.getTileImprovement()!!.getMatchingUniques(UniqueType.DamagesAdjacentEnemyUnits)
