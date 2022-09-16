@@ -61,6 +61,7 @@ object UnitActions {
         addSetupAction(unit, actionList)
         addFoundCityAction(unit, actionList, tile)
         addBuildingImprovementsAction(unit, actionList, tile, worldScreen, unitTable)
+        addRepairAction(unit, actionList)
         addCreateWaterImprovements(unit, actionList)
         addGreatPersonActions(unit, actionList, tile)
         addFoundReligionAction(unit, actionList)
@@ -306,14 +307,13 @@ object UnitActions {
 
     fun getPillageAction(unit: MapUnit): UnitAction? {
         val tile = unit.currentTile
-        if (unit.isCivilian() || tile.improvement == null || tile.getOwner() == unit.civInfo) return null
+        if (unit.isCivilian() || tile.getUnpillagedImprovement() == null || tile.getOwner() == unit.civInfo) return null
 
         return UnitAction(UnitActionType.Pillage,
                 action = {
                     tile.getOwner()?.addNotification("An enemy [${unit.baseUnit.name}] has pillaged our [${tile.improvement}]", tile.position, "ImprovementIcons/${tile.improvement!!}", NotificationIcon.War, unit.baseUnit.name)
                     pillageLooting(tile, unit)
                     tile.setPillaged()
-                    unit.civInfo.lastSeenImprovement.remove(tile.position)
                     if (tile.resource != null) tile.getOwner()?.updateDetailedCivResources()    // this might take away a resource
                     tile.getCity()?.updateCitizens = true
 
@@ -480,6 +480,34 @@ object UnitActions {
                 worldScreen.game.pushScreen(ImprovementPickerScreen(tile, unit) { unitTable.selectUnit() })
             }.takeIf { couldConstruct }
         )
+    }
+
+    private fun addRepairAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
+        if (!unit.hasUniqueToBuildImprovements) return
+        if (unit.isEmbarked()) return
+        val tile = unit.getTile()
+        if (!(tile.improvementIsPillaged || tile.roadIsPillaged)) return
+
+        val couldConstruct = unit.currentMovement > 0
+                && !tile.isCityCenter()
+
+        actionList += UnitAction(UnitActionType.Repair,
+            action = getRepairAction(unit).takeIf { couldConstruct }
+        )
+    }
+
+    fun getRepairAction(unit: MapUnit): () -> Unit {
+        return {
+            unit.action = null
+            unit.currentMovement = 0f
+            val tile = unit.currentTile
+            if (tile.improvementIsPillaged)
+                tile.improvementIsPillaged = false
+            else
+                tile.roadIsPillaged = false
+            unit.civInfo.updateDetailedCivResources()  // maybe just restored a resource
+            unit.civInfo.transients().updateCitiesConnectedToCapital()  // check for connections to capital
+        }
     }
 
     private fun addAutomateBuildingImprovementsAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
@@ -829,7 +857,7 @@ object UnitActions {
 
     fun canPillage(unit: MapUnit, tile: TileInfo): Boolean {
         if (unit.isTransported) return false
-        val tileImprovement = tile.getTileImprovement()
+        val tileImprovement = tile.getUnpillagedTileImprovement()
         // City ruins, Ancient Ruins, Barbarian Camp, City Center marked in json
         if (tileImprovement == null || tileImprovement.hasUnique(UniqueType.Unpillagable)) return false
         val tileOwner = tile.getOwner()

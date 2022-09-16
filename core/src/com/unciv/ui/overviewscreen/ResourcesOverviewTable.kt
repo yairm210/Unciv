@@ -235,7 +235,7 @@ class ResourcesOverviewTab(
                 if (!tile.hasViewableResource(viewingPlayer)) continue
                 val tileResource = tile.tileResource
                 if (tileResource.resourceType == ResourceType.Bonus) continue
-                if (tile.improvement != null && tileResource.isImprovedBy(tile.improvement!!)) continue
+                if (tile.getUnpillagedImprovement() != null && tileResource.isImprovedBy(tile.improvement!!)) continue
                 if (tileResource.resourceType == ResourceType.Strategic && tile.getTileImprovement()?.isGreatImprovement() == true) continue
                 newResourceSupplyList.add(tileResource, ExtraInfoOrigin.Unimproved.name)
             }
