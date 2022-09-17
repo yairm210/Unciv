@@ -66,7 +66,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
         check(
                 cityToConnectFrom,
                 transportType = railroad,
-                tileFilter = { tile -> tile.roadStatus == RoadStatus.Railroad }
+                tileFilter = { tile -> tile.getUnpillagedRoad() == RoadStatus.Railroad }
         )
     }
 

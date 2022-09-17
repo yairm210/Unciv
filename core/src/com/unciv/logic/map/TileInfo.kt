@@ -518,7 +518,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
             val adjacent = unique.params[1]
             val numberOfBonuses = neighbors.count {
                 it.matchesFilter(adjacent, observingCiv)
-                    || it.roadStatus.name == adjacent
+                    || it.getUnpillagedRoad().name == adjacent
             }
             stats.add(unique.stats.times(numberOfBonuses.toFloat()))
         }
@@ -1053,7 +1053,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     }
 
     fun hasConnection(civInfo: CivilizationInfo) =
-            roadStatus != RoadStatus.None || forestOrJungleAreRoads(civInfo)
+            getUnpillagedRoad() != RoadStatus.None || forestOrJungleAreRoads(civInfo)
 
 
     private fun forestOrJungleAreRoads(civInfo: CivilizationInfo) =
@@ -1218,16 +1218,20 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     /** Sets tile improvement to pillaged (without prior checks for validity)
      *  and ensures that matching [UniqueType.CreatesOneImprovement] queued buildings are removed. */
     fun setPillaged() {
-        if (improvement == null)
+        if (getUnpillagedImprovement() == null && getUnpillagedRoad() == RoadStatus.None)
             return
         // http://well-of-souls.com/civ/civ5_improvements.html says that naval improvements are destroyed upon pillage
         //    and I can't find any other sources so I'll go with that
-        if (isLand && !getTileImprovement()!!.hasUnique(UniqueType.Unpillagable)) {
-            // Setting turnsToImprovement might interfere with UniqueType.CreatesOneImprovement
-            removeCreatesOneImprovementMarker()
+        if (isLand) {
             improvementInProgress = null  // remove any in progress work as well
             turnsToImprovement = -1
-            improvementIsPillaged = true
+            if (!improvementIsPillaged && !getTileImprovement()!!.hasUnique(UniqueType.Unpillagable)) {
+                // Setting turnsToImprovement might interfere with UniqueType.CreatesOneImprovement
+                removeCreatesOneImprovementMarker()
+                improvementIsPillaged = true
+            } else {
+                roadIsPillaged = true
+            }
         } else {
             improvement = null
         }
@@ -1238,6 +1242,13 @@ open class TileInfo : IsPartOfGameInfoSerialization {
             null
         else
             improvement
+    }
+
+    fun getUnpillagedRoad(): RoadStatus {
+        return if (roadIsPillaged)
+            RoadStatus.None
+        else
+            roadStatus
     }
 
     fun isPillaged(): Boolean {

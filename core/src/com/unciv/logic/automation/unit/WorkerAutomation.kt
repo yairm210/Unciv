@@ -237,7 +237,7 @@ class WorkerAutomation(
                     if (!bfs.hasReachedTile(cityTile)) continue
                     // we have a winner!
                     val pathToCity = bfs.getPathTo(cityTile)
-                    val roadableTiles = pathToCity.filter { it.roadStatus < bestRoadAvailable }
+                    val roadableTiles = pathToCity.filter { it.getUnpillagedRoad() < bestRoadAvailable }
                     val tileToConstructRoadOn: TileInfo
                     if (currentTile in roadableTiles) tileToConstructRoadOn =
                         currentTile
