@@ -775,7 +775,7 @@ object Battle {
             destroyIfDefeated(defender.getCivInfo(), attacker.getCivInfo())
         }
 
-        // Pillage improvements, remove roads, add fallout
+        // Pillage improvements, pillage roads, add fallout
         if (tile.improvement != null && tile.getUnpillagedImprovement() != null && !tile.getTileImprovement()!!.hasUnique(UniqueType.Irremovable)) {
             if (tile.getTileImprovement()!!.hasUnique(UniqueType.Unpillagable)) {
                 tile.improvement = null
