@@ -1005,12 +1005,12 @@ open class TileInfo : IsPartOfGameInfoSerialization {
             lineList += FormattedLine(naturalWonder!!, link="Terrain/$naturalWonder")
         if (roadStatus !== RoadStatus.None && !isCityCenter()) {
             val pillageText = if (roadIsPillaged) " (Pillaged!)" else ""
-            lineList += FormattedLine("${roadStatus.name}$pillageText", link = "Improvement/${roadStatus.name}")
+            lineList += FormattedLine("[${roadStatus.name}]$pillageText", link = "Improvement/${roadStatus.name}")
         }
         val shownImprovement = getShownImprovement(viewingCiv)
         if (shownImprovement != null) {
             val pillageText = if (improvementIsPillaged) " (Pillaged!)" else ""
-            lineList += FormattedLine("$shownImprovement$pillageText", link = "Improvement/$shownImprovement")
+            lineList += FormattedLine("[$shownImprovement]$pillageText", link = "Improvement/$shownImprovement")
         }
 
         if (improvementInProgress != null && isViewableToPlayer) {
