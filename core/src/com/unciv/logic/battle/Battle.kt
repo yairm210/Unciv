@@ -783,7 +783,8 @@ object Battle {
                 tile.setPillaged()
             }
         }
-        tile.roadStatus = RoadStatus.None
+        if (tile.roadStatus != RoadStatus.None && tile.getUnpillagedRoad() != RoadStatus.None)
+            tile.setPillaged()
         if (tile.isLand && !tile.isImpassible() && !tile.isCityCenter()) {
             if (tile.terrainHasUnique(UniqueType.DestroyableByNukesChance)) {
                 for (terrainFeature in tile.terrainFeatureObjects) {
