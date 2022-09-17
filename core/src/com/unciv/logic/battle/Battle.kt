@@ -776,7 +776,7 @@ object Battle {
         }
 
         // Pillage improvements, remove roads, add fallout
-        if (tile.improvement != null && !tile.getTileImprovement()!!.hasUnique(UniqueType.Irremovable)) {
+        if (tile.improvement != null && tile.getUnpillagedImprovement() != null && !tile.getTileImprovement()!!.hasUnique(UniqueType.Irremovable)) {
             if (tile.getTileImprovement()!!.hasUnique(UniqueType.Unpillagable)) {
                 tile.improvement = null
             } else {
