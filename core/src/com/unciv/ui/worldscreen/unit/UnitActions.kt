@@ -308,7 +308,7 @@ object UnitActions {
 
     fun getPillageAction(unit: MapUnit): UnitAction? {
         val tile = unit.currentTile
-        if (unit.isCivilian() || (tile.getUnpillagedImprovement() == null && tile.roadStatus == RoadStatus.None) || tile.getOwner() == unit.civInfo) return null
+        if (unit.isCivilian() || (tile.getUnpillagedImprovement() == null && tile.getUnpillagedRoad() == RoadStatus.None) || tile.getOwner() == unit.civInfo) return null
 
         return UnitAction(UnitActionType.Pillage,
                 action = {
@@ -878,7 +878,7 @@ object UnitActions {
         if (unit.isTransported) return false
         val tileImprovement = tile.getUnpillagedTileImprovement()
         // City ruins, Ancient Ruins, Barbarian Camp, City Center marked in json
-        if ((tileImprovement == null || tileImprovement.hasUnique(UniqueType.Unpillagable)) && tile.roadStatus == RoadStatus.None) return false
+        if ((tileImprovement == null || tileImprovement.hasUnique(UniqueType.Unpillagable)) && tile.getUnpillagedRoad() == RoadStatus.None) return false
         val tileOwner = tile.getOwner()
         // Can't pillage friendly tiles, just like you can't attack them - it's an 'act of war' thing
         return tileOwner == null || unit.civInfo.isAtWarWith(tileOwner)
