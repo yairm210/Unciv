@@ -1216,7 +1216,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         if (isLand) {
             improvementInProgress = null  // remove any in progress work as well
             turnsToImprovement = -1
-            if (!getTileImprovement()!!.hasUnique(UniqueType.Unpillagable)) {
+            if (!improvementIsPillaged && !getTileImprovement()!!.hasUnique(UniqueType.Unpillagable)) {
                 // Setting turnsToImprovement might interfere with UniqueType.CreatesOneImprovement
                 removeCreatesOneImprovementMarker()
                 improvementIsPillaged = true
