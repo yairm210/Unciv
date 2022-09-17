@@ -44,7 +44,7 @@ class Spy() : IsPartOfGameInfoSerialization {
     fun endTurn() {
         --timeTillActionFinish
         if (timeTillActionFinish != 0) return
-        
+
         when (action) {
             SpyAction.Moving -> {
                 action = SpyAction.EstablishNetwork
