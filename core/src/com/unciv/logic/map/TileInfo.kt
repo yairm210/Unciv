@@ -1223,11 +1223,11 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         // http://well-of-souls.com/civ/civ5_improvements.html says that naval improvements are destroyed upon pillage
         //    and I can't find any other sources so I'll go with that
         if (isLand) {
+            // Setting turnsToImprovement might interfere with UniqueType.CreatesOneImprovement
+            removeCreatesOneImprovementMarker()
             improvementInProgress = null  // remove any in progress work as well
             turnsToImprovement = -1
             if (!improvementIsPillaged && !getTileImprovement()!!.hasUnique(UniqueType.Unpillagable)) {
-                // Setting turnsToImprovement might interfere with UniqueType.CreatesOneImprovement
-                removeCreatesOneImprovementMarker()
                 improvementIsPillaged = true
             } else {
                 roadIsPillaged = true

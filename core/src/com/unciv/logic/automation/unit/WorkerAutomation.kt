@@ -162,7 +162,7 @@ class WorkerAutomation(
         }
 
         if (currentTile.isPillaged()) {
-            println("WorkerAutomation: ${unit.label()} -> repairs $currentTile")
+            debug("WorkerAutomation: ${unit.label()} -> repairs $currentTile")
             UnitActions.getRepairAction(unit).invoke()
             return
         }
