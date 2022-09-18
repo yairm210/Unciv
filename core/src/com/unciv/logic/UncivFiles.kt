@@ -6,10 +6,8 @@ import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.JsonReader
 import com.badlogic.gdx.utils.SerializationException
 import com.unciv.UncivGame
-import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.models.metadata.GameSettings
-import com.unciv.models.metadata.WindowState
 import com.unciv.models.metadata.doMigrations
 import com.unciv.models.metadata.isMigrationNecessary
 import com.unciv.ui.saves.Gzip
@@ -18,14 +16,13 @@ import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.debug
 import kotlinx.coroutines.Job
-import java.awt.Toolkit
 import java.io.File
 import java.io.Writer
 
 private const val SAVE_FILES_FOLDER = "SaveFiles"
 private const val MULTIPLAYER_FILES_FOLDER = "MultiplayerGames"
 private const val AUTOSAVE_FILE_NAME = "Autosave"
-private const val SETTINGS_FILE_NAME = "GameSettings.json"
+const val SETTINGS_FILE_NAME = "GameSettings.json"
 
 class UncivFiles(
     /**
@@ -319,36 +316,7 @@ class UncivFiles(
     }
 
     companion object {
-
         var saveZipped = false
-
-        /** Specialized function to access settings before Gdx is initialized.
-         *
-         * @param base Path to the directory where the file should be - if not set, the OS current directory is used (which is "/" on Android)
-         */
-        fun getSettingsForPlatformLaunchers(base: String = "."): GameSettings {
-            // FileHandle is Gdx, but the class and JsonParser are not dependent on app initialization
-            // In fact, at this point Gdx.app or Gdx.files are null but this still works.
-            val file = FileHandle(base + File.separator + SETTINGS_FILE_NAME)
-
-            return if (file.exists())
-                json().fromJsonFile(
-                    GameSettings::class.java,
-                    file
-                )
-            else GameSettings().apply {
-                isFreshlyCreated = true
-                resolution = "1200x800" // By default Desktops should have a higher resolution
-                // LibGDX not yet configured, use regular java class
-                val screensize = Toolkit.getDefaultToolkit().screenSize
-                windowState = WindowState(
-                    width = screensize.width,
-                    height = screensize.height
-                )
-                file.writeString(json().toJson(this),false)
-            }
-
-        }
 
         /** @throws IncompatibleGameInfoVersionException if the [gameData] was created by a version of this game that is incompatible with the current one. */
         fun gameInfoFromString(gameData: String): GameInfo {

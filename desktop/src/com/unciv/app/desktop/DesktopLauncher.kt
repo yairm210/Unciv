@@ -5,14 +5,21 @@ import club.minnced.discord.rpc.DiscordRPC
 import club.minnced.discord.rpc.DiscordRichPresence
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.glutils.HdpiMode
 import com.sun.jna.Native
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
-import com.unciv.logic.UncivFiles
+import com.unciv.json.fromJsonFile
+import com.unciv.json.json
+import com.unciv.logic.SETTINGS_FILE_NAME
+import com.unciv.models.metadata.GameSettings
+import com.unciv.models.metadata.WindowState
 import com.unciv.ui.utils.Fonts
 import com.unciv.utils.Log
 import com.unciv.utils.debug
+import java.awt.Toolkit
+import java.io.File
 import java.util.*
 import kotlin.concurrent.timer
 
@@ -43,7 +50,7 @@ internal object DesktopLauncher {
         // Note that means config.setAudioConfig() would be ignored too, those would need to go into the HardenedGdxAudio constructor.
         config.disableAudio(true)
 
-        val settings = UncivFiles.getSettingsForPlatformLaunchers()
+        val settings = getSettingsBeforeGdxInitialized()
         config.setWindowedMode(settings.windowState.width.coerceAtLeast(120), settings.windowState.height.coerceAtLeast(80))
 
         if (!isRunFromJAR) {
@@ -65,6 +72,35 @@ internal object DesktopLauncher {
         tryActivateDiscord(game)
         Lwjgl3Application(game, config)
     }
+
+
+    /** Specialized function to access settings before Gdx is initialized.
+     *
+     * @param base Path to the directory where the file should be - if not set, the OS current directory is used (which is "/" on Android)
+     */
+    fun getSettingsBeforeGdxInitialized(base: String = "."): GameSettings {
+        // FileHandle is Gdx, but the class and JsonParser are not dependent on app initialization
+        // In fact, at this point Gdx.app or Gdx.files are null but this still works.
+        val file = FileHandle(base + File.separator + SETTINGS_FILE_NAME)
+
+        return if (file.exists())
+            json().fromJsonFile(
+                GameSettings::class.java,
+                file
+            )
+        else GameSettings().apply {
+            isFreshlyCreated = true
+            resolution = "1200x800" // By default Desktops should have a higher resolution
+            // LibGDX not yet configured, use regular java class
+            val screensize = Toolkit.getDefaultToolkit().screenSize
+            windowState = WindowState(
+                width = screensize.width,
+                height = screensize.height
+            )
+            file.writeString(json().toJson(this),false)
+        }
+    }
+
 
     private fun tryActivateDiscord(game: UncivGame) {
         try {

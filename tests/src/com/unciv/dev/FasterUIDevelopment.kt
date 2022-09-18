@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
+import com.unciv.dev.FasterUIDevelopment.DevElement
 import com.unciv.logic.UncivFiles
 import com.unciv.logic.multiplayer.throttle
 import com.unciv.ui.images.ImageGetter
@@ -51,11 +52,6 @@ object FasterUIDevelopment {
         System.setProperty("org.lwjgl.system.stackSize", "384")
 
         val config = Lwjgl3ApplicationConfiguration()
-
-        val settings = UncivFiles.getSettingsForPlatformLaunchers()
-        if (!settings.isFreshlyCreated) {
-            config.setWindowedMode(settings.windowState.width.coerceAtLeast(120), settings.windowState.height.coerceAtLeast(80))
-        }
 
         Lwjgl3Application(UIDevGame(), config)
     }
