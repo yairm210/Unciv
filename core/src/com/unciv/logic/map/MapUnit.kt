@@ -27,6 +27,7 @@ import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.extensions.filterAndLogic
 import com.unciv.ui.utils.extensions.toPercent
+import com.unciv.ui.worldscreen.unit.UnitActions
 import java.text.DecimalFormat
 import kotlin.math.pow
 
@@ -462,7 +463,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         if (currentMovement == 0f) return false
         val tile = getTile()
         if (tile.improvementInProgress != null &&
-                canBuildImprovement(tile.getTileImprovementInProgress()!!) &&
+                (tile.improvementInProgress == UnitActionType.Repair.name || canBuildImprovement(tile.getTileImprovementInProgress()!!)) &&
                 !tile.isMarkedForCreatesOneImprovement()
             ) return false
         return !(isFortified() || isExploring() || isSleeping() || isAutomated() || isMoving())
@@ -753,6 +754,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             }
             tile.improvementInProgress == RoadStatus.Road.name -> tile.roadStatus = RoadStatus.Road
             tile.improvementInProgress == RoadStatus.Railroad.name -> tile.roadStatus = RoadStatus.Railroad
+            tile.improvementInProgress == UnitActionType.Repair.name -> tile.setRepaired()
             else -> {
                 val improvement = civInfo.gameInfo.ruleSet.tileImprovements[tile.improvementInProgress]!!
                 improvement.handleImprovementCompletion(this)
@@ -843,7 +845,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         movement.clearPathfindingCache()
         if (currentMovement > 0
             && getTile().improvementInProgress != null
-            && canBuildImprovement(getTile().getTileImprovementInProgress()!!)
+            && (getTile().improvementInProgress == UnitActionType.Repair.name || canBuildImprovement(getTile().getTileImprovementInProgress()!!))
         ) workOnImprovement()
         if (currentMovement == getMaxMovement().toFloat() && isFortified() && turnsFortified < 2) {
             turnsFortified++
@@ -1246,7 +1248,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             && improvement.name != Constants.cancelImprovementOrder
             && tile.improvementInProgress != improvement.name
         ) return false
-
+        if (tile.improvementInProgress == UnitActionType.Repair.name) return true
         return getMatchingUniques(UniqueType.BuildImprovements)
             .any { improvement.matchesFilter(it.params[0]) || tile.matchesTerrainFilter(it.params[0]) }
     }

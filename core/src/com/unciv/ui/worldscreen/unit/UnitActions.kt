@@ -27,6 +27,7 @@ import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.hasOpenPopups
+import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.extensions.toPercent
 import com.unciv.ui.worldscreen.WorldScreen
 import kotlin.math.min
@@ -503,7 +504,11 @@ object UnitActions {
         val couldConstruct = unit.currentMovement > 0
                 && !tile.isCityCenter()
 
+        val turnsToBuild = if (tile.improvementInProgress == UnitActionType.Repair.name) tile.turnsToImprovement
+        else 2
+
         actionList += UnitAction(UnitActionType.Repair,
+            title = "${UnitActionType.Repair} - [${turnsToBuild}${Fonts.turn}]",
             action = getRepairAction(unit).takeIf { couldConstruct }
         )
     }
@@ -512,10 +517,8 @@ object UnitActions {
         return {
             unit.currentMovement = 0f
             val tile = unit.currentTile
-            if (tile.improvementIsPillaged)
-                tile.improvementIsPillaged = false
-            else
-                tile.roadIsPillaged = false
+            tile.improvementInProgress = UnitActionType.Repair.name
+            tile.turnsToImprovement = 1
             unit.civInfo.updateDetailedCivResources()  // maybe just restored a resource
             unit.civInfo.transients().updateCitiesConnectedToCapital()  // check for connections to capital
         }
@@ -852,7 +855,7 @@ object UnitActions {
         if (unit.isFortified() || unit.canFortify() || unit.currentMovement == 0f) return
         // If this unit is working on an improvement, it cannot sleep
         if (unit.currentTile.hasImprovementInProgress()
-            && unit.canBuildImprovement(unit.currentTile.getTileImprovementInProgress()!!)) return
+            && (unit.currentTile.improvementInProgress == UnitActionType.Repair.name || unit.canBuildImprovement(unit.currentTile.getTileImprovementInProgress()!!))) return
         val isSleeping = unit.isSleeping()
         val isDamaged = unit.health < 100
 
