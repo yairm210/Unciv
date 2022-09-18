@@ -310,12 +310,7 @@ object UnitActions {
 
     fun getPillageAction(unit: MapUnit): UnitAction? {
         val tile = unit.currentTile
-        println("improvement:${tile.improvement}")
-        println("unpillaged improvement:${tile.getUnpillagedImprovement()}")
-        println("road:${tile.roadStatus}")
-        println("unpillaged road:${tile.getUnpillagedRoad()}")
         if (unit.isCivilian() || (tile.getUnpillagedImprovement() == null && tile.getUnpillagedRoad() == RoadStatus.None) || tile.getOwner() == unit.civInfo) return null
-        println("action")
         return UnitAction(UnitActionType.Pillage,
                 action = {
                     val pillagedImprovement = if (unit.currentTile.getUnpillagedImprovement() == null) tile.roadStatus.name else tile.improvement
@@ -503,7 +498,7 @@ object UnitActions {
         if (!unit.hasUniqueToBuildImprovements) return
         if (unit.isEmbarked()) return
         val tile = unit.getTile()
-        if (!(tile.improvementIsPillaged || tile.roadIsPillaged)) return
+        if (!tile.isPillaged()) return
 
         val couldConstruct = unit.currentMovement > 0
                 && !tile.isCityCenter()
@@ -515,7 +510,6 @@ object UnitActions {
 
     fun getRepairAction(unit: MapUnit): () -> Unit {
         return {
-            unit.action = null
             unit.currentMovement = 0f
             val tile = unit.currentTile
             if (tile.improvementIsPillaged)
