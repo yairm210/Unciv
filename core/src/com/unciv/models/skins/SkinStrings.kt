@@ -34,7 +34,9 @@ class SkinStrings(skin: String = UncivGame.Current.settings.skin) {
     fun getUiBackground(path: String, default: String? = null, tintColor: Color? = null): NinePatchDrawable {
         val locationByName = skinLocation + path
         val locationByConfigVariant = skinLocation + skinConfig.skinVariants[path]?.image
-        val tint = skinConfig.skinVariants[path]?.tint ?: tintColor
+        val tint = (skinConfig.skinVariants[path]?.tint ?: tintColor)?.apply {
+            a = skinConfig.skinVariants[path]?.alpha ?: a
+        }
 
         return when {
             ImageGetter.ninePatchImageExists(locationByConfigVariant) -> ImageGetter.getNinePatch(locationByConfigVariant, tint)

@@ -5,11 +5,13 @@ import com.badlogic.gdx.graphics.Color
 class SkinElement {
     var image: String? = null
     var tint: Color? = null
+    var alpha: Float? = null
 
     fun clone(): SkinElement {
         val toReturn = SkinElement()
         toReturn.image = image
         toReturn.tint = tint?.cpy()
+        toReturn.alpha = alpha
         return toReturn
     }
 }
