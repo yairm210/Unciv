@@ -1217,7 +1217,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
             // Setting turnsToImprovement might interfere with UniqueType.CreatesOneImprovement
             removeCreatesOneImprovementMarker()
             improvementInProgress = null  // remove any in progress work as well
-            turnsToImprovement = -1
+            turnsToImprovement = 0
             if (!improvementIsPillaged && !getTileImprovement()!!.hasUnique(UniqueType.Unpillagable)) {
                 improvementIsPillaged = true
             } else {
@@ -1244,6 +1244,13 @@ open class TileInfo : IsPartOfGameInfoSerialization {
 
     fun isPillaged(): Boolean {
         return improvementIsPillaged || roadIsPillaged
+    }
+
+    fun setRepaired() {
+        if (improvementIsPillaged)
+            improvementIsPillaged = false
+        else
+            roadIsPillaged = false
     }
 
     /** Marks tile as target tile for a building with a [UniqueType.CreatesOneImprovement] unique */
