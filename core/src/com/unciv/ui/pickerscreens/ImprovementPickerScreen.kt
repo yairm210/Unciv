@@ -6,6 +6,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
@@ -83,6 +84,7 @@ class ImprovementPickerScreen(
         val cityUniqueCache = LocalUniqueCache()
 
         for (improvement in ruleSet.tileImprovements.values) {
+            if (improvement.name == UnitActionType.Repair.name) continue
             var suggestRemoval = false
             // canBuildImprovement() would allow e.g. great improvements thus we need to exclude them - except cancel
             if (improvement.turnsToBuild == 0 && improvement.name != Constants.cancelImprovementOrder) continue

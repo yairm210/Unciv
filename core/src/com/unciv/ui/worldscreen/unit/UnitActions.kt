@@ -495,6 +495,23 @@ object UnitActions {
         )
     }
 
+    private fun getRepairTurns(unit: MapUnit): Int {
+        val tile = unit.currentTile
+        if (!tile.isPillaged()) return 0
+        var repairTurns = tile.ruleset.tileImprovements["Repair"]!!.getTurnsToBuild(unit.civInfo, unit)
+        println(repairTurns)
+        println(unit.civInfo.gameInfo.speed.improvementBuildLengthModifier)
+        if (tile.improvement != null && tile.improvementIsPillaged) {
+            if (tile.getTileImprovement()!!.getTurnsToBuild(unit.civInfo, unit) < repairTurns)
+                repairTurns = tile.getTileImprovement()!!.getTurnsToBuild(unit.civInfo, unit)
+        } else {
+            if (tile.ruleset.tileImprovements[tile.roadStatus.name]!!.getTurnsToBuild(unit.civInfo, unit) < repairTurns)
+                repairTurns = tile.ruleset.tileImprovements[tile.roadStatus.name]!!.getTurnsToBuild(unit.civInfo, unit)
+        }
+        println(repairTurns)
+        return repairTurns
+    }
+
     private fun addRepairAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
         if (!unit.hasUniqueToBuildImprovements) return
         if (unit.isEmbarked()) return
@@ -505,7 +522,7 @@ object UnitActions {
                 && !tile.isCityCenter()
 
         val turnsToBuild = if (tile.improvementInProgress == UnitActionType.Repair.name) tile.turnsToImprovement
-        else 2
+        else getRepairTurns(unit)
 
         actionList += UnitAction(UnitActionType.Repair,
             title = "${UnitActionType.Repair} - [${turnsToBuild}${Fonts.turn}]",
@@ -517,10 +534,16 @@ object UnitActions {
         return {
             unit.currentMovement = 0f
             val tile = unit.currentTile
-            tile.improvementInProgress = UnitActionType.Repair.name
-            tile.turnsToImprovement = 1
-            unit.civInfo.updateDetailedCivResources()  // maybe just restored a resource
-            unit.civInfo.transients().updateCitiesConnectedToCapital()  // check for connections to capital
+            if (getRepairTurns(unit) - 1 == 0) {  // handle instant fix
+                tile.setRepaired()
+                unit.civInfo.updateDetailedCivResources()  // maybe just restored a resource
+                unit.civInfo.transients()
+                    .updateCitiesConnectedToCapital()  // check for connections to capital
+            } else {
+                tile.improvementInProgress = UnitActionType.Repair.name
+                tile.turnsToImprovement = getRepairTurns(unit) - 1
+
+            }
         }
     }
 
