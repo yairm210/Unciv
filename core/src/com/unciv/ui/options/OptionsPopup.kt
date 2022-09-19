@@ -138,6 +138,11 @@ class OptionsPopup(
     private fun reloadWorldAndOptions() {
         Concurrency.run("Reload from options") {
             settings.save()
+            withGLContext {
+                // We have to run setSkin before the screen is rebuild else changing skins
+                // would only load the new SkinConfig after the next rebuild
+                BaseScreen.setSkin()
+            }
             val screen = UncivGame.Current.screen
             if (screen is WorldScreen) {
                 UncivGame.Current.reloadWorldscreen()
@@ -147,7 +152,6 @@ class OptionsPopup(
                 }
             }
             withGLContext {
-                BaseScreen.setSkin()
                 UncivGame.Current.screen?.openOptionsPopup(tabs.activePage)
             }
         }
