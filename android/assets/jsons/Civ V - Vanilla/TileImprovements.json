@@ -120,7 +120,7 @@
 	{
 		"name": "Railroad",
 		"terrainsCanBeBuiltOn": ["Land"],
-		"turnsToBuild": 2,
+		"turnsToBuild": 4,
 		"techRequired": "Railroads",
 		"uniques": ["Can be built outside your borders", "Costs [2] gold per turn when in your territory"],
 		"shortcutKey": "R",
