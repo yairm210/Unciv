@@ -176,8 +176,17 @@
 		"uniques": ["Can be built outside your borders"],
 		"shortcutKey": "."
 	},
+    {
+        "name": "Repair",
+        "terrainsCanBeBuiltOn": ["Land"],
+        "turnsToBuild": 2,
+        "uniques": ["Can be built outside your borders"],
+        "shortcutKey": "R",
+        "civilopediaText": [{"text":"Repairs a pillaged Improvement or Road/Railroad"}]
+    },
 
-	// Great Person improvements
+
+    // Great Person improvements
 	{
 		"name": "Academy",
 		"terrainsCanBeBuiltOn": ["Land"],
