@@ -499,8 +499,6 @@ object UnitActions {
         val tile = unit.currentTile
         if (!tile.isPillaged()) return 0
         var repairTurns = tile.ruleset.tileImprovements["Repair"]!!.getTurnsToBuild(unit.civInfo, unit)
-        println(repairTurns)
-        println(unit.civInfo.gameInfo.speed.improvementBuildLengthModifier)
         if (tile.improvement != null && tile.improvementIsPillaged) {
             if (tile.getTileImprovement()!!.getTurnsToBuild(unit.civInfo, unit) < repairTurns)
                 repairTurns = tile.getTileImprovement()!!.getTurnsToBuild(unit.civInfo, unit)
@@ -508,7 +506,6 @@ object UnitActions {
             if (tile.ruleset.tileImprovements[tile.roadStatus.name]!!.getTurnsToBuild(unit.civInfo, unit) < repairTurns)
                 repairTurns = tile.ruleset.tileImprovements[tile.roadStatus.name]!!.getTurnsToBuild(unit.civInfo, unit)
         }
-        println(repairTurns)
         return repairTurns
     }
 
