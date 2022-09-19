@@ -993,6 +993,8 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         religionManager.endTurn(nextTurnStats.faith.toInt())
         totalFaithForContests += nextTurnStats.faith.toInt()
 
+        espionageManager.endTurn()
+
         if (isMajorCiv()) greatPeople.addGreatPersonPoints(getGreatPersonPointsForNextTurn()) // City-states don't get great people!
 
         for (city in cities.toList()) { // a city can be removed while iterating (if it's being razed) so we need to iterate over a copy

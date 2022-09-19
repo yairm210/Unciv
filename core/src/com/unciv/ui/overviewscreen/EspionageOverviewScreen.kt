@@ -9,10 +9,12 @@ import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.Spy
+import com.unciv.logic.civilization.SpyAction
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.AutoScrollPane
+import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.extensions.addSeparator
 import com.unciv.ui.utils.extensions.addSeparatorVertical
@@ -31,7 +33,6 @@ class EspionageOverviewScreen(val civInfo: CivilizationInfo) : PickerScreen(true
     private val spyScrollPane = AutoScrollPane(spySelectionTable)
     private val citySelectionTable = Table(skin)
     private val cityScrollPane = AutoScrollPane(citySelectionTable)
-    private val headerTable = Table(skin)
     private val middlePanes = Table(skin)
 
     private var selectedSpyButton: TextButton? = null
@@ -41,9 +42,6 @@ class EspionageOverviewScreen(val civInfo: CivilizationInfo) : PickerScreen(true
     private var moveSpyHereButtons = hashMapOf<Button, CityInfo?>()
 
     init {
-        topTable.add(headerTable)
-        topTable.addSeparator()
-
         middlePanes.add(spyScrollPane)
         middlePanes.addSeparatorVertical()
         middlePanes.add(cityScrollPane)
@@ -67,11 +65,16 @@ class EspionageOverviewScreen(val civInfo: CivilizationInfo) : PickerScreen(true
 
     private fun updateSpyList() {
         spySelectionTable.clear()
-        spySelectionTable.add("Spy".toLabel()).pad(5f)
-        spySelectionTable.add("Location".toLabel()).pad(5f).row()
+        spySelectionTable.add("Spy".toLabel()).pad(10f)
+        spySelectionTable.add("Location".toLabel()).pad(10f)
+        spySelectionTable.add("Action".toLabel()).pad(10f).row()
         for (spy in civInfo.espionageManager.spyList) {
-            spySelectionTable.add(spy.name.toLabel()).pad(5f)
-            spySelectionTable.add(spy.getLocationName(civInfo.gameInfo).toLabel()).pad(5f)
+            spySelectionTable.add(spy.name.toLabel()).pad(10f)
+            spySelectionTable.add(spy.getLocationName().toLabel()).pad(10f)
+            val actionString =
+                if (spy.action == SpyAction.None) SpyAction.None.stringName
+                else "[${spy.action.stringName}] ${spy.timeTillActionFinish}${Fonts.turn}"
+            spySelectionTable.add(actionString.toLabel()).pad(10f)
 
             val moveSpyButton = "Move".toTextButton()
             moveSpyButton.onClick {
@@ -160,7 +163,7 @@ class EspionageOverviewScreen(val civInfo: CivilizationInfo) : PickerScreen(true
         val moveSpyHereButton = Button(skin)
         moveSpyHereButton.add(ImageGetter.getArrowImage(Align.left).apply { color = Color.WHITE })
         moveSpyHereButton.onClick {
-            selectedSpy!!.location = city?.id
+            selectedSpy!!.moveTo(city)
             resetSelection()
             update()
         }
