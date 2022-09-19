@@ -1,3 +1,17 @@
+## 4.2.10
+
+Desktop settings initialize to fullscreen 
+
+Special images for embarked units 
+
+Spies now show their current action and take time to move and set up  - By xlenstra
+
+Moddable UI skins  - By GGGuenni
+
+Add files via upload  - By GeneralWadaling
+
+Global politics overview screen  - By alexban011
+
 ## 4.2.9
 
 Starting in later eras triggers era uniques in all previous eras  - By xlenstra
