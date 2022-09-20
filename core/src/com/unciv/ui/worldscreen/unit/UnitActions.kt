@@ -499,13 +499,11 @@ object UnitActions {
         val tile = unit.currentTile
         if (!tile.isPillaged()) return 0
         var repairTurns = tile.ruleset.tileImprovements["Repair"]!!.getTurnsToBuild(unit.civInfo, unit)
-        if (tile.improvement != null && tile.improvementIsPillaged) {
-            if (tile.getTileImprovement()!!.getTurnsToBuild(unit.civInfo, unit) < repairTurns)
-                repairTurns = tile.getTileImprovement()!!.getTurnsToBuild(unit.civInfo, unit)
-        } else {
-            if (tile.ruleset.tileImprovements[tile.roadStatus.name]!!.getTurnsToBuild(unit.civInfo, unit) < repairTurns)
-                repairTurns = tile.ruleset.tileImprovements[tile.roadStatus.name]!!.getTurnsToBuild(unit.civInfo, unit)
-        }
+
+        val pillagedImprovement = if(tile.improvementIsPillaged) tile.getTileImprovement()!! else tile.ruleset.tileImprovements[tile.roadStatus.name]!!
+        val turnsToBuild = pillagedImprovement.getTurnsToBuild(unit.civInfo, unit)
+
+        if (turnsToBuild < repairTurns) repairTurns = turnsToBuild
         return repairTurns
     }
 
@@ -531,15 +529,15 @@ object UnitActions {
         return {
             unit.currentMovement = 0f
             val tile = unit.currentTile
-            if (getRepairTurns(unit) - 1 == 0) {  // handle instant fix
+            val repairTurns = getRepairTurns(unit) - 1
+            if (repairTurns == 0) {  // handle instant fix
                 tile.setRepaired()
                 unit.civInfo.updateDetailedCivResources()  // maybe just restored a resource
                 unit.civInfo.transients()
                     .updateCitiesConnectedToCapital()  // check for connections to capital
             } else {
                 tile.improvementInProgress = UnitActionType.Repair.name
-                tile.turnsToImprovement = getRepairTurns(unit) - 1
-
+                tile.turnsToImprovement = repairTurns
             }
         }
     }

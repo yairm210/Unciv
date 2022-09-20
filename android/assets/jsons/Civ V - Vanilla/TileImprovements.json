@@ -180,8 +180,8 @@
         "name": "Repair",
         "terrainsCanBeBuiltOn": ["Land"],
         "turnsToBuild": 2,
-        "uniques": ["Can be built outside your borders"],
-        "shortcutKey": "R",
+        "uniques": ["Unbuildable"],
+        "shortcutKey": "E",
         "civilopediaText": [{"text":"Repairs a pillaged Improvement or Road/Railroad"}]
     },
 
