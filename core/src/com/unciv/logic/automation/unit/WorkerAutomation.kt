@@ -327,7 +327,7 @@ class WorkerAutomation(
 
 
         if (tile.improvement == null || junkImprovement == true) {
-            if (tile.improvementInProgress != null && (tile.improvementInProgress == UnitActionType.Repair.name || unit.canBuildImprovement(tile.getTileImprovementInProgress()!!, tile))) return true
+            if (tile.improvementInProgress != null && unit.canBuildImprovement(tile.getTileImprovementInProgress()!!, tile)) return true
             val chosenImprovement = chooseImprovement(unit, tile)
             if (chosenImprovement != null && tile.canBuildImprovement(chosenImprovement, civInfo) && unit.canBuildImprovement(chosenImprovement, tile)) return true
         } else if (!tile.containsGreatImprovement() && tile.hasViewableResource(civInfo)
