@@ -284,7 +284,7 @@ class WorkerAutomation(
                             && (tileCanBeImproved(unit, it) || it.isPillaged())
                             && it.getTilesInDistance(2)  // don't work in range of enemy cities
                         .none { tile -> tile.isCityCenter() && tile.getCity()!!.civInfo.isAtWarWith(civInfo) }
-                            && it.getTilesInDistance(4)  // don't work in range of enemy units
+                            && it.getTilesInDistance(3)  // don't work in range of enemy units
                         .none { tile -> tile.militaryUnit != null && tile.militaryUnit!!.civInfo.isAtWarWith(civInfo)}
                 }
                 .sortedByDescending { getPriority(it) }
