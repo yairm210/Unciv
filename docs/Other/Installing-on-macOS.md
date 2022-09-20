@@ -6,7 +6,7 @@ There is currently two ways to install Unciv on macOS. It is recommended that yo
 
 1. If you don't already have Java 8 installed on your mac make sure you download it from the [official website](https://java.com/en/download/). Once you have downloaded the file open it and follow the instructions on screen.
 2. Now that you have Java 8 installed it's time to download the latest Unciv JAR. This can be done from the [releases](https://github.com/yairm210/Unciv/releases) screen here on Github. Download the file called Unciv.jar.
-3. To run the game, you'll need to create to run `java -XstartOnFirstThread -Djava.awt.headless=true -jar Unciv.jar` from a Terminal.
+3. To run the game, you'll need to create to run `java -jar Unciv.jar` from a Terminal.
 4. Alternatively, you could create a 'Unciv.sh' file containing that line, and then run the new file, to allow you to create shortcuts etc.
 
 _(Sadly Unciv dose not auto update when installing it using this method on macOS so you will need to download the latest Unciv.jar from Github every time you want to update the game.)_
