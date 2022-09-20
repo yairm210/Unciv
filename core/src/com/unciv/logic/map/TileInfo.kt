@@ -1264,6 +1264,8 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     }
 
     fun setRepaired() {
+        improvementInProgress = null
+        turnsToImprovement = 0
         if (improvementIsPillaged)
             improvementIsPillaged = false
         else
