@@ -8,6 +8,7 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
@@ -214,7 +215,23 @@ open class TileInfo : IsPartOfGameInfoSerialization {
 
     fun getTileImprovement(): TileImprovement? = if (improvement == null) null else ruleset.tileImprovements[improvement!!]
     fun getUnpillagedTileImprovement(): TileImprovement? = if (getUnpillagedImprovement() == null) null else ruleset.tileImprovements[improvement!!]
-    fun getTileImprovementInProgress(): TileImprovement? = if (improvementInProgress == null) null else ruleset.tileImprovements[improvementInProgress!!]
+    fun getTileImprovementInProgress(): TileImprovement? {
+        return if (improvementInProgress == null) {
+            null
+        } else {
+            if (improvementInProgress == UnitActionType.Repair.name && ruleset.tileImprovements[UnitActionType.Repair.name] == null) {
+                val repairImprovement = TileImprovement()
+                repairImprovement.name = "Repair"
+                repairImprovement.terrainsCanBeBuiltOn = listOf("Land")
+                repairImprovement.turnsToBuild = 2
+                repairImprovement.uniques = arrayListOf("Unbuildable")
+                repairImprovement.civilopediaText = listOf(FormattedLine("Repairs a pillaged Improvement or Road/Railroad"))
+                repairImprovement
+            } else {
+                ruleset.tileImprovements[improvementInProgress!!]
+            }
+        }
+    }
 
     fun getShownImprovement(viewingCiv: CivilizationInfo?): String? {
         return if (viewingCiv == null || viewingCiv.playerType == PlayerType.AI || viewingCiv.isSpectator())

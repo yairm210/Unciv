@@ -498,6 +498,7 @@ object UnitActions {
     private fun getRepairTurns(unit: MapUnit): Int {
         val tile = unit.currentTile
         if (!tile.isPillaged()) return 0
+        if (tile.improvementInProgress == UnitActionType.Repair.name) return tile.turnsToImprovement
         var repairTurns = tile.ruleset.tileImprovements["Repair"]!!.getTurnsToBuild(unit.civInfo, unit)
 
         val pillagedImprovement = if(tile.improvementIsPillaged) tile.getTileImprovement()!! else tile.ruleset.tileImprovements[tile.roadStatus.name]!!
@@ -516,8 +517,7 @@ object UnitActions {
         val couldConstruct = unit.currentMovement > 0
                 && !tile.isCityCenter()
 
-        val turnsToBuild = if (tile.improvementInProgress == UnitActionType.Repair.name) tile.turnsToImprovement
-        else getRepairTurns(unit)
+        val turnsToBuild = getRepairTurns(unit)
 
         actionList += UnitAction(UnitActionType.Repair,
             title = "${UnitActionType.Repair} - [${turnsToBuild}${Fonts.turn}]",
