@@ -694,7 +694,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
         if (enemyUnitsInWalkingDistance.isNotEmpty()) {
             if (isMoving()) // stop on enemy in sight
                 action = null
-            return  // Don't you dare move.
+            if (!(isExploring() || isAutomated()))  // have fleeing code
+                return  // Don't you dare move.
         }
 
         val currentTile = getTile()
