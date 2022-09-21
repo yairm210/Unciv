@@ -20,8 +20,13 @@ import com.unciv.utils.debug
 import java.awt.Toolkit
 import java.util.*
 import kotlin.concurrent.timer
+import kotlin.math.max
+import kotlin.math.min
 
 internal object DesktopLauncher {
+    private const val minWidth = 120
+    private const val minHeight = 80
+
     private var discordTimer: Timer? = null
 
     @JvmStatic
@@ -42,7 +47,7 @@ internal object DesktopLauncher {
         config.setWindowIcon("ExtraImages/Icon.png")
         config.setTitle("Unciv")
         config.setHdpiMode(HdpiMode.Logical)
-        config.setWindowSizeLimits(120, 80, -1, -1)
+        config.setWindowSizeLimits(minWidth, minHeight, -1, -1)
 
         // We don't need the initial Audio created in Lwjgl3Application, HardenGdxAudio will replace it anyway.
         // Note that means config.setAudioConfig() would be ignored too, those would need to go into the HardenedGdxAudio constructor.
@@ -52,22 +57,57 @@ internal object DesktopLauncher {
         if (settings.isFreshlyCreated) {
             settings.resolution = "1200x800" // By default Desktops should have a higher resolution
             // LibGDX not yet configured, use regular java class
-            val screensize = Toolkit.getDefaultToolkit().screenSize
+            val screenSize = Toolkit.getDefaultToolkit().screenSize
             settings.windowState = WindowState(
-                width = screensize.width,
-                height = screensize.height
+                width = screenSize.width * 4 / 5,
+                height = screenSize.height * 4 / 5,
+                isMaximized = true
             )
             FileHandle(SETTINGS_FILE_NAME).writeString(json().toJson(settings), false) // so when we later open the game we get fullscreen
         }
 
-        config.setWindowedMode(settings.windowState.width.coerceAtLeast(120), settings.windowState.height.coerceAtLeast(80))
+        // Find the destination monitor by name (relevant only when maximized, otherwise the position alone is key)
+        val monitors = Lwjgl3ApplicationConfiguration.getMonitors() // used twice here, so cache it
+        val maximizedMonitor = monitors
+            .firstOrNull { it.name == settings.windowState.monitor }
+            ?: Lwjgl3ApplicationConfiguration.getPrimaryMonitor()
 
+        // Cache saved dimensions for visibility test
+        var windowState = settings.windowState  // will be replaced if window found outside hardware
+        val x = windowState.x
+        val y = windowState.y
+        val width = windowState.width.coerceAtLeast(minWidth)
+        val height = windowState.height.coerceAtLeast(minHeight)
+
+        // Calculate how much of the saved window is visible on the current monitor config
+        // - which might differ from the monitors available when the WindowState was saved
+        // (overlap logic same as in Lwjgl3Graphics.getMonitor)
+        var totalOverlap = 0
+        for (monitor in monitors) {
+            val mode = Lwjgl3ApplicationConfiguration.getDisplayMode(monitor)
+            val overlapX = max(0, min(x + width, monitor.virtualX + mode.width) - max(x, monitor.virtualX))
+            val overlapY = max(0, min(y + height, monitor.virtualY + mode.height) - max(y, monitor.virtualY))
+            totalOverlap += overlapX * overlapY
+        }
+
+        if (totalOverlap * 3 < width * height) {
+            // If less than (this chosen arbitrarily) 33% of the window will still be visible,
+            // fix windowState to omit the position, which will center on the primary monitor or the
+            // maximized-to monitor if maximized and that monitor's name was found
+            windowState = WindowState(width, height, windowState.isMaximized, monitor = windowState.monitor)
+        } else {
+            config.setWindowPosition(x, y)
+        }
+        config.setWindowedMode(width, height)
+        config.setMaximizedMonitor(maximizedMonitor)
+        config.setMaximized(windowState.isMaximized)
 
         if (!isRunFromJAR) {
             UniqueDocsWriter().write()
         }
 
-        val platformSpecificHelper = PlatformSpecificHelpersDesktop(config)
+        val platformSpecificHelper = PlatformSpecificHelpersDesktop(config, windowState)
+
         val desktopParameters = UncivGameParameters(
             cancelDiscordEvent = { discordTimer?.cancel() },
             fontImplementation = NativeFontDesktop((Fonts.ORIGINAL_FONT_SIZE * settings.fontSizeMultiplier).toInt(), settings.fontFamily),
