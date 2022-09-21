@@ -52,22 +52,30 @@ internal object DesktopLauncher {
         if (settings.isFreshlyCreated) {
             settings.resolution = "1200x800" // By default Desktops should have a higher resolution
             // LibGDX not yet configured, use regular java class
-            val screensize = Toolkit.getDefaultToolkit().screenSize
+            val screenSize = Toolkit.getDefaultToolkit().screenSize
             settings.windowState = WindowState(
-                width = screensize.width,
-                height = screensize.height
+                width = screenSize.width * 4 / 5,
+                height = screenSize.height * 4 / 5,
+                isMaximized = true
             )
             FileHandle(SETTINGS_FILE_NAME).writeString(json().toJson(settings), false) // so when we later open the game we get fullscreen
         }
 
-        config.setWindowedMode(settings.windowState.width.coerceAtLeast(120), settings.windowState.height.coerceAtLeast(80))
+        val monitor = Lwjgl3ApplicationConfiguration.getMonitors()
+            .firstOrNull { it.name == settings.windowState.monitor }
+            ?: Lwjgl3ApplicationConfiguration.getPrimaryMonitor()
 
+        config.setWindowedMode(settings.windowState.width.coerceAtLeast(120), settings.windowState.height.coerceAtLeast(80))
+        config.setWindowPosition(settings.windowState.x, settings.windowState.y)
+        config.setMaximizedMonitor(monitor)
+        config.setMaximized(settings.windowState.isMaximized)
 
         if (!isRunFromJAR) {
             UniqueDocsWriter().write()
         }
 
         val platformSpecificHelper = PlatformSpecificHelpersDesktop(config)
+
         val desktopParameters = UncivGameParameters(
             cancelDiscordEvent = { discordTimer?.cancel() },
             fontImplementation = NativeFontDesktop((Fonts.ORIGINAL_FONT_SIZE * settings.fontSizeMultiplier).toInt(), settings.fontFamily),

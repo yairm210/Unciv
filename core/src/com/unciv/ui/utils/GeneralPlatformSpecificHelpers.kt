@@ -1,7 +1,9 @@
 package com.unciv.ui.utils
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.models.metadata.GameSettings
+import com.unciv.models.metadata.WindowState
 
 /** Interface to support various platform-specific tools */
 interface GeneralPlatformSpecificHelpers {
@@ -39,4 +41,8 @@ interface GeneralPlatformSpecificHelpers {
      */
     fun addImprovements(textField: TextField): TextField = textField
 
+    /**
+     * Create a [WindowState] from current [Gdx.graphics] state: desktop can override to include position, monitor and maximized state.
+     */
+    fun getWindowState() = WindowState(Gdx.graphics.width, Gdx.graphics.height)
 }

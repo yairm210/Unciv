@@ -13,7 +13,14 @@ import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty0
 
-data class WindowState (val width: Int = 900, val height: Int = 600)
+data class WindowState(
+    val width: Int = 900,
+    val height: Int = 600,
+    val isMaximized: Boolean = false,
+    val x: Int = -1,
+    val y: Int = -1,
+    val monitor: String = ""
+)
 
 class GameSettings {
     var showWorkedTiles: Boolean = false
@@ -92,7 +99,8 @@ class GameSettings {
 
     fun save() {
         if (!isFreshlyCreated && Gdx.app?.type == Application.ApplicationType.Desktop) {
-            windowState = WindowState(Gdx.graphics.width, Gdx.graphics.height)
+            windowState = UncivGame.Current.platformSpecificHelper?.getWindowState()
+                ?: WindowState(Gdx.graphics.width, Gdx.graphics.height)
         }
         UncivGame.Current.files.setGeneralSettings(this)
     }
@@ -175,15 +183,16 @@ class GameSettingsMultiplayer {
     var friendList: MutableList<FriendList.Friend> = mutableListOf()
     var turnCheckerEnabled = true
     var turnCheckerPersistentNotificationEnabled = true
-    var turnCheckerDelay = Duration.ofMinutes(5)
+    var turnCheckerDelay: Duration = Duration.ofMinutes(5)
     var statusButtonInSinglePlayer = false
-    var currentGameRefreshDelay = Duration.ofSeconds(10)
-    var allGameRefreshDelay = Duration.ofMinutes(5)
+    var currentGameRefreshDelay: Duration = Duration.ofSeconds(10)
+    var allGameRefreshDelay: Duration = Duration.ofMinutes(5)
     var currentGameTurnNotificationSound: UncivSound = UncivSound.Silent
     var otherGameTurnNotificationSound: UncivSound = UncivSound.Silent
     var hideDropboxWarning = false
 }
 
+@Suppress("SuspiciousCallableReferenceInLambda")
 enum class GameSetting(
     val kClass: KClass<*>,
     private val propertyGetter: (GameSettings) -> KMutableProperty0<*>
@@ -203,6 +212,7 @@ enum class GameSetting(
 
     /** **Warning:** It is the obligation of the caller to select the same type [T] that the [kClass] of this property has */
     fun <T> getProperty(settings: GameSettings): KMutableProperty0<T> {
+        @Suppress("UNCHECKED_CAST")  // See above, caller must use compatible types
         return propertyGetter(settings) as KMutableProperty0<T>
     }
 }
