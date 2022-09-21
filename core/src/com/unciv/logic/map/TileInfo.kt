@@ -219,13 +219,13 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         return if (improvementInProgress == null) {
             null
         } else {
-            if (improvementInProgress == UnitActionType.Repair.name && ruleset.tileImprovements[UnitActionType.Repair.name] == null) {
+            // backup version in case modders remove entry from TileImprovements.json
+            if (improvementInProgress == Constants.repair && ruleset.tileImprovements[UnitActionType.Repair.name] == null) {
                 val repairImprovement = TileImprovement()
-                repairImprovement.name = "Repair"
+                repairImprovement.name = Constants.repair
                 repairImprovement.terrainsCanBeBuiltOn = listOf("Land")
                 repairImprovement.turnsToBuild = 2
                 repairImprovement.uniques = arrayListOf("Unbuildable")
-                repairImprovement.civilopediaText = listOf(FormattedLine("Repairs a pillaged Improvement or Road/Railroad"))
                 repairImprovement
             } else {
                 ruleset.tileImprovements[improvementInProgress!!]

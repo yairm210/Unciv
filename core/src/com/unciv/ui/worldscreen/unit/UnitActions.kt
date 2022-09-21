@@ -498,12 +498,12 @@ object UnitActions {
     private fun getRepairTurns(unit: MapUnit): Int {
         val tile = unit.currentTile
         if (!tile.isPillaged()) return 0
-        if (tile.improvementInProgress == UnitActionType.Repair.name) return tile.turnsToImprovement
-        var repairTurns = tile.ruleset.tileImprovements["Repair"]!!.getTurnsToBuild(unit.civInfo, unit)
+        if (tile.improvementInProgress == Constants.repair) return tile.turnsToImprovement
+        var repairTurns = tile.ruleset.tileImprovements[Constants.repair]!!.getTurnsToBuild(unit.civInfo, unit)
 
         val pillagedImprovement = if(tile.improvementIsPillaged) tile.getTileImprovement()!! else tile.ruleset.tileImprovements[tile.roadStatus.name]!!
         val turnsToBuild = pillagedImprovement.getTurnsToBuild(unit.civInfo, unit)
-
+        // cap repair to number of turns to build original improvement
         if (turnsToBuild < repairTurns) repairTurns = turnsToBuild
         return repairTurns
     }
@@ -536,7 +536,7 @@ object UnitActions {
                 unit.civInfo.transients()
                     .updateCitiesConnectedToCapital()  // check for connections to capital
             } else {
-                tile.improvementInProgress = UnitActionType.Repair.name
+                tile.improvementInProgress = Constants.repair
                 tile.turnsToImprovement = repairTurns
             }
         }
@@ -871,7 +871,7 @@ object UnitActions {
         if (unit.isFortified() || unit.canFortify() || unit.currentMovement == 0f) return
         // If this unit is working on an improvement, it cannot sleep
         if (unit.currentTile.hasImprovementInProgress()
-            && (unit.currentTile.improvementInProgress == UnitActionType.Repair.name || unit.canBuildImprovement(unit.currentTile.getTileImprovementInProgress()!!))) return
+            && (unit.currentTile.improvementInProgress == Constants.repair || unit.canBuildImprovement(unit.currentTile.getTileImprovementInProgress()!!))) return
         val isSleeping = unit.isSleeping()
         val isDamaged = unit.health < 100
 
