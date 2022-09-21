@@ -75,6 +75,7 @@ object Constants {
     const val rising = "Rising"
     const val lowering = "Lowering"
     const val remove = "Remove "
+    const val repair = "Repair"
 
     const val uniqueOrDelimiter = "\" OR \""
 

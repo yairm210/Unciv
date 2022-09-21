@@ -176,13 +176,14 @@
 		"uniques": ["Can be built outside your borders"],
 		"shortcutKey": "."
 	},
+    // Purely for turnsToBuild and civilopediaText. Unbuildable so it doesn't show in ImprovementPicker
     {
         "name": "Repair",
         "terrainsCanBeBuiltOn": ["Land"],
         "turnsToBuild": 2,
         "shortcutKey": "E",
         "uniques": ["Unbuildable"],
-        "civilopediaText": [{"text":"Repairs a pillaged Improvement or Road/Railroad"}]
+        "civilopediaText": [{"text":"Repairs a pillaged Improvement or Route"}]
     },
 
 
