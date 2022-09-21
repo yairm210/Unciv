@@ -40,10 +40,10 @@ enum class EmpireOverviewCategories(
         fun (viewingPlayer: CivilizationInfo, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?)
                 = UnitOverviewTab(viewingPlayer, overviewScreen, persistedData),
         fun (viewingPlayer: CivilizationInfo) = viewingPlayer.getCivUnits().none().toState()),
-    Diplomacy("OtherIcons/DiplomacyW", 'D', Align.top,
+    Politics("OtherIcons/Politics", 'P', Align.top,
         fun (viewingPlayer: CivilizationInfo, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?)
-                = DiplomacyOverviewTab(viewingPlayer, overviewScreen, persistedData),
-        fun (viewingPlayer: CivilizationInfo) = viewingPlayer.diplomacy.isEmpty().toState()),
+                = GlobalPoliticsOverviewTable(viewingPlayer, overviewScreen, persistedData),
+        fun (_: CivilizationInfo) = EmpireOverviewTabState.Normal),
     Resources("StatIcons/Happiness", 'R', Align.topLeft,
         fun (viewingPlayer: CivilizationInfo, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?)
                 = ResourcesOverviewTab(viewingPlayer, overviewScreen, persistedData),

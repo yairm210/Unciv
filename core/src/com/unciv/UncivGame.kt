@@ -5,6 +5,7 @@ import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.Screen
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
@@ -15,6 +16,7 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.Translations
 import com.unciv.ui.LanguagePickerScreen
@@ -130,8 +132,6 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             settings.tileSet = Constants.defaultTileset
         }
 
-        BaseScreen.setSkin() // needs to come AFTER the Texture reset, since the buttons depend on it
-
         Gdx.graphics.isContinuousRendering = settings.continuousRendering
 
         Concurrency.run("LoadJSON") {
@@ -139,6 +139,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             translations.tryReadTranslationForCurrentLanguage()
             translations.loadPercentageCompleteOfLanguages()
             TileSetCache.loadTileSetConfigs()
+            SkinCache.loadSkinConfigs()
 
             if (settings.multiplayer.userId.isEmpty()) { // assign permanent user id
                 settings.multiplayer.userId = UUID.randomUUID().toString()
@@ -151,6 +152,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
             // This stuff needs to run on the main thread because it needs the GL context
             launchOnGLThread {
+                BaseScreen.setSkin() // needs to come AFTER the Texture reset, since the buttons depend on it and after loadSkinConfigs to be able to use the SkinConfig
+
                 musicController.chooseTrack(suffixes = listOf(MusicMood.Menu, MusicMood.Ambient),
                     flags = EnumSet.of(MusicTrackChooserFlags.SuffixMustMatch))
 
@@ -461,7 +464,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.2.7", 751)
+        val VERSION = Version("4.2.10", 754)
         //endregion
 
         lateinit var Current: UncivGame
@@ -481,12 +484,11 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
 private class GameStartScreen : BaseScreen() {
     init {
-        val happinessImage = ImageGetter.getExternalImage("LoadScreen.png")
-        happinessImage.center(stage)
-        happinessImage.setOrigin(Align.center)
-        happinessImage.addAction(Actions.sequence(
-                Actions.delay(1f),
-                Actions.rotateBy(360f, 0.5f)))
-        stage.addActor(happinessImage)
+        val logoImage = ImageGetter.getExternalImage("banner.png")
+        logoImage.center(stage)
+        logoImage.setOrigin(Align.center)
+        logoImage.color = Color.WHITE.cpy().apply { a = 0f }
+        logoImage.addAction(Actions.alpha(1f, 0.3f))
+        stage.addActor(logoImage)
     }
 }

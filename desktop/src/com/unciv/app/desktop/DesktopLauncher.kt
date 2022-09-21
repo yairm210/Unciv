@@ -5,14 +5,19 @@ import club.minnced.discord.rpc.DiscordRPC
 import club.minnced.discord.rpc.DiscordRichPresence
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.glutils.HdpiMode
 import com.sun.jna.Native
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
+import com.unciv.json.json
+import com.unciv.logic.SETTINGS_FILE_NAME
 import com.unciv.logic.UncivFiles
+import com.unciv.models.metadata.WindowState
 import com.unciv.ui.utils.Fonts
 import com.unciv.utils.Log
 import com.unciv.utils.debug
+import java.awt.Toolkit
 import java.util.*
 import kotlin.concurrent.timer
 
@@ -44,9 +49,19 @@ internal object DesktopLauncher {
         config.disableAudio(true)
 
         val settings = UncivFiles.getSettingsForPlatformLaunchers()
-        if (!settings.isFreshlyCreated) {
-            config.setWindowedMode(settings.windowState.width.coerceAtLeast(120), settings.windowState.height.coerceAtLeast(80))
+        if (settings.isFreshlyCreated) {
+            settings.resolution = "1200x800" // By default Desktops should have a higher resolution
+            // LibGDX not yet configured, use regular java class
+            val screensize = Toolkit.getDefaultToolkit().screenSize
+            settings.windowState = WindowState(
+                width = screensize.width,
+                height = screensize.height
+            )
+            FileHandle(SETTINGS_FILE_NAME).writeString(json().toJson(settings), false) // so when we later open the game we get fullscreen
         }
+
+        config.setWindowedMode(settings.windowState.width.coerceAtLeast(120), settings.windowState.height.coerceAtLeast(80))
+
 
         if (!isRunFromJAR) {
             UniqueDocsWriter().write()

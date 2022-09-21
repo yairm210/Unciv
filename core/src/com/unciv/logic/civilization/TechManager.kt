@@ -238,7 +238,7 @@ class TechManager : IsPartOfGameInfoSerialization {
     }
 
     fun addTechnology(techName: String) {
-        techsResearched.add(techName)
+        val isNewTech = techsResearched.add(techName)
 
         // this is to avoid concurrent modification problems
         val newTech = getRuleset().technologies[techName]!!
@@ -257,7 +257,8 @@ class TechManager : IsPartOfGameInfoSerialization {
         }
 
         civInfo.addNotification("Research of [$techName] has completed!", TechAction(techName), NotificationIcon.Science, techName)
-        civInfo.popupAlerts.add(PopupAlert(AlertType.TechResearched, techName))
+        if (isNewTech)
+            civInfo.popupAlerts.add(PopupAlert(AlertType.TechResearched, techName))
 
         if (civInfo.playerType == PlayerType.Human) {
             for (revealedResource in getRuleset().tileResources.values.filter { techName == it.revealedBy }) {
@@ -332,9 +333,12 @@ class TechManager : IsPartOfGameInfoSerialization {
                 civInfo.addNotification("[" + policyBranch.name + "] policy branch unlocked!", NotificationIcon.Culture)
             }
             // Note that if you somehow skip over an era, its uniques aren't triggered
-            for (unique in currentEra.uniqueObjects) {
-                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
-            }
+            val erasPassed = getRuleset().eras.values
+                .filter { it.eraNumber > previousEra.eraNumber && it.eraNumber <= currentEra.eraNumber }
+                .sortedBy { it.eraNumber }
+            for (era in erasPassed)
+                for (unique in era.uniqueObjects)
+                    UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
         }
     }
 

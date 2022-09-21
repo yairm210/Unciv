@@ -60,7 +60,7 @@ class ModConstants {
     // RiverGenerator: river frequency and length bounds
     var riverCountMultiplier = 0.01f
     var minRiverLength = 5
-    var maxRiverLength = 666  // Do not set < max map radius
+    var maxRiverLength = 666  // Do not set to less than the maximal map radius
 
     fun merge(other: ModConstants) {
         if (other.maxXPfromBarbarians != defaults.maxXPfromBarbarians) maxXPfromBarbarians = other.maxXPfromBarbarians

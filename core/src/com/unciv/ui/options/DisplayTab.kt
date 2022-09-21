@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
 import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
+import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
@@ -162,6 +163,7 @@ private fun addSkinSelectBox(table: Table, settings: GameSettings, selectBoxMinW
     skinSelectBox.onChange {
         settings.skin = skinSelectBox.selected
         // ImageGetter ruleset should be correct no matter what screen we're on
+        SkinCache.assembleSkinConfigs(ImageGetter.ruleset.mods)
         onSkinChange()
     }
 }

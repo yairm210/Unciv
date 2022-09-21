@@ -1,3 +1,46 @@
+## 4.2.10
+
+New Desktop downloads start at fullscreen
+
+Special images for embarked units
+
+Moddable UI skins - By GGGuenni
+
+Global politics overview screen  - By alexban011
+
+## 4.2.9
+
+Starting in later eras triggers era uniques in all previous eras  - By xlenstra
+
+Generalize Great Wall unique  - By OptimizedForDensity
+
+By nacro711072:
+- fix wrong happiness point on resume game if adopted 'Cultural Diplomacy' policy.
+- fix no victoryTypes for the first time gaming with "quick game" opion.
+- Fixed: double unit while loading game from customFile.
+
+By xk730:
+- Increased help button size
+
+Unit art updates  - By GeneralWadaling
+
+## 4.2.8
+
+Show Unciv icon when loading game, instead of happy face
+
+AI: Recognize when no further techs can be researched, even if some techs are blocked
+
+Don't re-raise tech popups for previously researched techs
+
+By xlenstra:
+- Fixed bug disabling pantheon founding
+
+UI fix - By GGGuenni
+
+Add "UI Skin" to make it translatable  - By Ouaz
+
+Fixed bug on 'resume game' - By nacro711072
+
 ## 4.2.7
 
 Better milestones for world religion

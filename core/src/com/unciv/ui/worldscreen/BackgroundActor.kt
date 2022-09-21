@@ -1,8 +1,6 @@
 package com.unciv.ui.worldscreen
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
@@ -11,7 +9,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.ui.images.ImageGetter
 
 /** An Actor that just draws a Drawable [background], preferably a [NinePatchDrawable] created
- *  by [BackgroundActor.getRoundedEdgeRectangle], meant to work in Table Cells and to be overlaid with other Widgets.
+ *  by [ImageGetter.getRoundedEdgeRectangle], meant to work in Table Cells and to be overlaid with other Widgets.
  *  The drawable's center can be moved to any of the corners or vertex centers using `align`, which will also scale the
  *  drawable up by factor 2 and clip to the original rectangle. This can be used to draw rectangles with one or two rounded corners.
  *  @param align An [Align] constant - In which corner of the [BackgroundActor] rectangle the center of the [background] should be.
@@ -48,14 +46,5 @@ class BackgroundActor(val background: Drawable, align: Int) : Actor() {
         val color = color
         batch.setColor(color.r, color.g, color.b, color.a * parentAlpha)
         background.draw(batch, x, y, w, h)
-    }
-
-    companion object {
-        fun getRoundedEdgeRectangle(tintColor: Color): NinePatchDrawable {
-            val region = ImageGetter.getDrawable("Skin/roundedEdgeRectangle").region
-            val drawable = NinePatchDrawable(NinePatch(region, 25, 25, 24, 24))
-            drawable.setPadding(15f, 15f, 15f, 15f)
-            return drawable.tint(tintColor)
-        }
     }
 }

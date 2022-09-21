@@ -666,8 +666,9 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         for (unique in uniqueObjects)
             UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, cityConstructions.cityInfo)
 
-        if ("Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)" in uniques)
-            civInfo.updateHasActiveGreatWall()
+        if (hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovement)
+                || hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovementDepreciated))
+            civInfo.updateHasActiveEnemyMovementPenalty()
 
         // Korean unique - apparently gives the same as the research agreement
         if (science > 0 && civInfo.hasUnique(UniqueType.TechBoostWhenScientificBuildingsBuiltInCapital))

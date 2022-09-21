@@ -86,9 +86,15 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         newViewableTiles.addAll(civInfo.getCivUnits().flatMap { unit -> unit.viewableTiles.asSequence().filter { it.getOwner() != civInfo } })
 
         for (otherCiv in civInfo.getKnownCivs()) {
-            if (otherCiv.getAllyCiv() == civInfo.civName || otherCiv.civName ==civInfo.getAllyCiv()) {
+            if (otherCiv.getAllyCiv() == civInfo.civName || otherCiv.civName == civInfo.getAllyCiv()) {
                 newViewableTiles.addAll(otherCiv.cities.asSequence().flatMap { it.getTiles() })
             }
+        }
+
+        for (spy in civInfo.espionageManager.spyList) {
+            val spyCity = spy.getLocation() ?: continue
+            if (!spy.isSetUp()) continue // Can't see cities when you haven't set up yet
+            newViewableTiles.addAll(spyCity.getCenterTile().getTilesInDistance(1))
         }
 
         civInfo.viewableTiles = newViewableTiles // to avoid concurrent modification problems
@@ -139,9 +145,12 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         }
     }
 
-    fun updateHasActiveGreatWall() {
-        civInfo.hasActiveGreatWall = !civInfo.tech.isResearched("Dynamite") &&
-                civInfo.hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovement)
+    fun updateHasActiveEnemyMovementPenalty() {
+        civInfo.hasActiveEnemyMovementPenalty = (!civInfo.tech.isResearched("Dynamite") && civInfo.hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovementDepreciated))
+                || civInfo.hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovement)
+        civInfo.enemyMovementPenaltyUniques =
+                civInfo.getMatchingUniques(UniqueType.EnemyLandUnitsSpendExtraMovement) +
+                        civInfo.getMatchingUniques(UniqueType.EnemyLandUnitsSpendExtraMovementDepreciated)
     }
 
     fun updateCitiesConnectedToCapital(initialSetup: Boolean = false) {

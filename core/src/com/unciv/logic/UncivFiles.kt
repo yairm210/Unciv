@@ -13,8 +13,8 @@ import com.unciv.models.metadata.doMigrations
 import com.unciv.models.metadata.isMigrationNecessary
 import com.unciv.ui.saves.Gzip
 import com.unciv.ui.utils.extensions.toNiceString
-import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.Log
+import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.debug
 import kotlinx.coroutines.Job
 import java.io.File
@@ -23,7 +23,7 @@ import java.io.Writer
 private const val SAVE_FILES_FOLDER = "SaveFiles"
 private const val MULTIPLAYER_FILES_FOLDER = "MultiplayerGames"
 private const val AUTOSAVE_FILE_NAME = "Autosave"
-private const val SETTINGS_FILE_NAME = "GameSettings.json"
+const val SETTINGS_FILE_NAME = "GameSettings.json"
 
 class UncivFiles(
     /**
@@ -276,7 +276,6 @@ class UncivFiles(
             try {
                 val gameInfo = gameInfoFromString(gameData)
                 gameInfo.customSaveLocation = location
-                gameInfo.setTransients()
                 loadCompletionCallback(CustomLoadResult(location to gameInfo))
             } catch (ex: Exception) {
                 loadCompletionCallback(CustomLoadResult(exception = ex))

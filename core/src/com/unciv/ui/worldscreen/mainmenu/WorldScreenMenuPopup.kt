@@ -64,7 +64,7 @@ class WorldScreenCommunityPopup(val worldScreen: WorldScreen) : Popup(worldScree
         }.row()
 
         addButton("Github") {
-            Gdx.net.openURI("https://github.com/yairm210/UnCiv")
+            Gdx.net.openURI("https://github.com/yairm210/Unciv")
             close()
         }.row()
 

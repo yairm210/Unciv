@@ -32,7 +32,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     private val militaryUnits = civUnits.count { it.baseUnit.isMilitary() }
     private val workers = civUnits.count { it.hasUniqueToBuildImprovements && it.isCivilian() }.toFloat()
     private val cities = civInfo.cities.size
-    private val allTechsAreResearched = civInfo.tech.getNumberOfTechsResearched() >= civInfo.gameInfo.ruleSet.technologies.size
+    private val allTechsAreResearched = civInfo.gameInfo.ruleSet.technologies.values
+        .all { civInfo.tech.isResearched(it.name) || !civInfo.tech.canBeResearched(it.name)}
 
     private val isAtWar = civInfo.isAtWar()
     private val buildingsForVictory = civInfo.gameInfo.getEnabledVictories().values

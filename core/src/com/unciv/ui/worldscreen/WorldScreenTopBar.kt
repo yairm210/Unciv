@@ -81,10 +81,10 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         resourceTable.background = backgroundDrawable
         add(statsTable).colspan(3).growX().row()
         add(resourceTable).colspan(3).growX().row()
-        val leftFillerBG = BackgroundActor.getRoundedEdgeRectangle(backColor)
+        val leftFillerBG = ImageGetter.getRoundedEdgeRectangle(backColor)
         leftFillerCell = add(BackgroundActor(leftFillerBG, Align.topLeft))
         add().growX()
-        val rightFillerBG = BackgroundActor.getRoundedEdgeRectangle(backColor)
+        val rightFillerBG = ImageGetter.getRoundedEdgeRectangle(backColor)
         rightFillerCell = add(BackgroundActor(rightFillerBG, Align.topRight))
         pack()
     }
