@@ -226,6 +226,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
                 repairImprovement.terrainsCanBeBuiltOn = listOf("Land")
                 repairImprovement.turnsToBuild = 2
                 repairImprovement.uniques = arrayListOf("Unbuildable")
+
                 repairImprovement
             } else {
                 ruleset.tileImprovements[improvementInProgress!!]
