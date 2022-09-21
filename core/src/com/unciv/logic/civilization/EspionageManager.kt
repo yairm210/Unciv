@@ -127,7 +127,7 @@ class EspionageManager : IsPartOfGameInfoSerialization {
 
     fun addSpy(): String {
         val spyName = getSpyName()
-        spyList.add(Spy(spyName))
+        spyList.add(Spy(spyName).also { it.setTransients(this.civInfo) })
         ++spyCount
         return spyName
     }
