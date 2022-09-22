@@ -314,13 +314,18 @@ class TemporaryUnique() : IsPartOfGameInfoSerialization {
 
     constructor(uniqueObject: Unique, turns: Int) : this() {
         unique = uniqueObject.text
+        sourceObjectType = uniqueObject.sourceObjectType
+        sourceObjectName = uniqueObject.sourceObjectName
         turnsLeft = turns
     }
 
     var unique: String = ""
 
+    var sourceObjectType: UniqueTarget? = null
+    var sourceObjectName: String? = null
+
     @delegate:Transient
-    val uniqueObject: Unique by lazy { Unique(unique) }
+    val uniqueObject: Unique by lazy { Unique(unique, sourceObjectType, sourceObjectName) }
 
     var turnsLeft: Int = 0
 }
