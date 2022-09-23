@@ -215,24 +215,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
 
     fun getTileImprovement(): TileImprovement? = if (improvement == null) null else ruleset.tileImprovements[improvement!!]
     fun getUnpillagedTileImprovement(): TileImprovement? = if (getUnpillagedImprovement() == null) null else ruleset.tileImprovements[improvement!!]
-    fun getTileImprovementInProgress(): TileImprovement? {
-        return if (improvementInProgress == null) {
-            null
-        } else {
-            // backup version in case modders remove entry from TileImprovements.json
-            if (improvementInProgress == Constants.repair && ruleset.tileImprovements[UnitActionType.Repair.name] == null) {
-                val repairImprovement = TileImprovement()
-                repairImprovement.name = Constants.repair
-                repairImprovement.terrainsCanBeBuiltOn = listOf("Land")
-                repairImprovement.turnsToBuild = 2
-                repairImprovement.uniques = arrayListOf("Unbuildable")
-
-                repairImprovement
-            } else {
-                ruleset.tileImprovements[improvementInProgress!!]
-            }
-        }
-    }
+    fun getTileImprovementInProgress(): TileImprovement? = if (improvementInProgress == null) null else ruleset.tileImprovements[improvementInProgress!!]
 
     fun getShownImprovement(viewingCiv: CivilizationInfo?): String? {
         return if (viewingCiv == null || viewingCiv.playerType == PlayerType.AI || viewingCiv.isSpectator())
@@ -1236,14 +1219,33 @@ open class TileInfo : IsPartOfGameInfoSerialization {
             removeCreatesOneImprovementMarker()
             improvementInProgress = null  // remove any in progress work as well
             turnsToImprovement = 0
-            if (!improvementIsPillaged && !getTileImprovement()!!.hasUnique(UniqueType.Unpillagable)) {
-                improvementIsPillaged = true
+            // if no Repair action, destroy improvements instead
+            if (ruleset.tileImprovements[Constants.repair] == null) {
+                if (getPillagableImprovement() != null)
+                    improvement = null
+                else
+                    roadStatus = RoadStatus.None
             } else {
-                roadIsPillaged = true
+                // otherwise use pillage/repair systems
+                if (getPillagableImprovement() != null) {
+                    improvementIsPillaged = true
+                } else {
+                    roadIsPillaged = true
+                }
             }
         } else {
             improvement = null
         }
+    }
+
+    fun getPillagableImprovement(): String? {
+        if (improvementIsPillaged)
+            return null
+        if (improvement == null)
+            return null
+        if (ruleset.tileImprovements[improvement]!!.hasUnique(UniqueType.Unpillagable))
+            return null
+        return improvement
     }
 
     fun getUnpillagedImprovement(): String? {
@@ -1321,6 +1323,9 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         if (improvement != null && ::baseTerrainObject.isInitialized) normalizeTileImprovement(ruleset)
         if (isWater || isImpassible())
             roadStatus = RoadStatus.None
+
+        if (improvementInProgress == Constants.repair && ruleset.tileImprovements[Constants.repair] == null)
+            stopWorkingOnImprovement()
     }
 
     private fun normalizeTileImprovement(ruleset: Ruleset) {
