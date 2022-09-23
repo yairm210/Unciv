@@ -53,7 +53,9 @@ import kotlin.math.min
 
 
 class MainMenuScreen: BaseScreen(), RecreateOnResize {
-    private val backgroundTable = Table().apply { background= ImageGetter.getBackground(Color.WHITE) }
+    private val backgroundTable = Table().apply {
+        background = skinStrings.getUiBackground("MainMenuScreen/Background", tintColor = Color.WHITE)
+    }
     private val singleColumn = isCrampedPortrait()
     private var easterEggRuleset: Ruleset? = null  // Cache it so the next 'egg' can be found in Civilopedia
 
@@ -71,7 +73,11 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         function: () -> Unit
     ): Table {
         val table = Table().pad(15f, 30f, 15f, 30f)
-        table.background = ImageGetter.getRoundedEdgeRectangle(ImageGetter.getBlue())
+        table.background = skinStrings.getUiBackground(
+            "MainMenuScreen/MenuButton",
+            skinStrings.roundedEdgeRectangle,
+            skinStrings.skinConfig.baseColor
+        )
         table.add(ImageGetter.getImage(icon)).size(50f).padRight(30f)
         table.add(text.toLabel().setFontSize(30)).minWidth(200f)
 
@@ -197,7 +203,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
 
         val helpButton = "?".toLabel(fontSize = 48)
             .apply { setAlignment(Align.center) }
-            .surroundWithCircle(60f, color = ImageGetter.getBlue())
+            .surroundWithCircle(60f, color = skinStrings.skinConfig.baseColor)
             .apply { actor.y -= 2.5f } // compensate font baseline (empirical)
             .surroundWithCircle(64f, resizeActor = false)
         helpButton.touchable = Touchable.enabled

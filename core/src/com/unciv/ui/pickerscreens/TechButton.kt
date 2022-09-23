@@ -24,7 +24,7 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
 
     init {
         touchable = Touchable.enabled
-        background = ImageGetter.getRoundedEdgeRectangle()
+        background = BaseScreen.skinStrings.getUiBackground("TechPickerScreen/TechButton", BaseScreen.skinStrings.roundedEdgeRectangle)
         pad(10f)
 
         if (ImageGetter.techIconExists(techName))
@@ -112,7 +112,7 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
     fun addOrderIndicator(number:Int){
         orderIndicator = number.toString().toLabel(fontSize = 18)
             .apply { setAlignment(Align.center) }
-            .surroundWithCircle(28f, color = ImageGetter.getBlue())
+            .surroundWithCircle(28f, color = BaseScreen.skinStrings.skinConfig.baseColor)
             .surroundWithCircle(30f,false)
         orderIndicator!!.setPosition(0f, height, Align.topLeft)
         addActor(orderIndicator)

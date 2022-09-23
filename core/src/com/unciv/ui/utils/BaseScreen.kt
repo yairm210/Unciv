@@ -117,15 +117,15 @@ abstract class BaseScreen : Screen {
             skinStrings = SkinStrings()
             skin = Skin().apply {
                 add("Nativefont", Fonts.font, BitmapFont::class.java)
-                add("RoundedEdgeRectangle", ImageGetter.getRoundedEdgeRectangle(), Drawable::class.java)
+                add("RoundedEdgeRectangle", skinStrings.getUiBackground("", skinStrings.roundedEdgeRectangle), Drawable::class.java)
                 add("Rectangle", ImageGetter.getDrawable(""), Drawable::class.java)
                 add("Circle", ImageGetter.getDrawable("OtherIcons/Circle").apply { setMinSize(20f, 20f) }, Drawable::class.java)
                 add("Scrollbar", ImageGetter.getDrawable("").apply { setMinSize(10f, 10f) }, Drawable::class.java)
-                add("RectangleWithOutline", ImageGetter.getRectangleWithOutline(), Drawable::class.java)
-                add("Select-box", ImageGetter.getSelectBox(), Drawable::class.java)
-                add("Select-box-pressed", ImageGetter.getSelectBoxPressed(), Drawable::class.java)
-                add("Checkbox", ImageGetter.getCheckBox(), Drawable::class.java)
-                add("Checkbox-pressed", ImageGetter.getCheckBoxPressed(), Drawable::class.java)
+                add("RectangleWithOutline",skinStrings.getUiBackground("", skinStrings.rectangleWithOutline), Drawable::class.java)
+                add("Select-box", skinStrings.getUiBackground("", skinStrings.selectBox), Drawable::class.java)
+                add("Select-box-pressed", skinStrings.getUiBackground("", skinStrings.selectBoxPressed), Drawable::class.java)
+                add("Checkbox", skinStrings.getUiBackground("", skinStrings.checkbox), Drawable::class.java)
+                add("Checkbox-pressed", skinStrings.getUiBackground("", skinStrings.checkboxPressed), Drawable::class.java)
                 load(Gdx.files.internal("Skin.json"))
             }
             skin.get(TextButton.TextButtonStyle::class.java).font = Fonts.font

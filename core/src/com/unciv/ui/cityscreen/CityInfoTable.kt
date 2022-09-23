@@ -52,7 +52,10 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
         }
 
         innerTable.width = cityScreen.stage.width / 4
-        innerTable.background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.5f))
+        innerTable.background = BaseScreen.skinStrings.getUiBackground(
+            "CityScreen/CityInfoTable",
+            tintColor = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.5f)
+        )
         scrollPane = ScrollPane(innerTable.addBorder(2f, Color.WHITE))
         scrollPane.setOverscroll(false, false)
 
@@ -322,7 +325,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
         val label = (if (showDetails) "-" else "+").toLabel()
         label.setAlignment(Align.center)
         return label
-            .surroundWithCircle(25f, color = ImageGetter.getBlue())
+            .surroundWithCircle(25f, color = BaseScreen.skinStrings.skinConfig.baseColor)
             .surroundWithCircle(27f, false)
     }
 

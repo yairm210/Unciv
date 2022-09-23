@@ -138,7 +138,10 @@ class PlayerPickerTable(
     private fun getPlayerTable(player: Player): Table {
         val playerTable = Table()
         playerTable.pad(5f)
-        playerTable.background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.8f))
+        playerTable.background = BaseScreen.skinStrings.getUiBackground(
+            "NewGameScreen/PlayerPickerTable/PlayerTable",
+            tintColor = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.8f)
+        )
 
         val nationTable = getNationTable(player)
         playerTable.add(nationTable).left()

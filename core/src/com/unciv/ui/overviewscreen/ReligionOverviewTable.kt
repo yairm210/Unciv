@@ -179,6 +179,9 @@ class ReligionOverviewTab(
         ) {
             UncivGame.Current.pushScreen(CivilopediaScreen(gameInfo.ruleSet, link = it))
         }.apply {
-            background = ImageGetter.getBackground(ImageGetter.getBlue())
+            background = BaseScreen.skinStrings.getUiBackground(
+                "OverviewScreen/ReligionOverviewTab/BeliefDescription",
+                tintColor = BaseScreen.skinStrings.skinConfig.baseColor
+            )
         }
 }

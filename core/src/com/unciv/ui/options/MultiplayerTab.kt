@@ -280,5 +280,5 @@ private fun addSelectAsSeparateTable(tab: Table, settingsSelect: SettingsSelect<
 }
 
 private fun addSeparator(tab: Table) {
-    tab.addSeparator(ImageGetter.getBlue().brighten(0.1f))
+    tab.addSeparator(BaseScreen.skinStrings.skinConfig.baseColor.brighten(0.1f))
 }

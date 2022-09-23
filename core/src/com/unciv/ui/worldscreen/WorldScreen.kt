@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.MainMenuScreen
@@ -30,7 +31,6 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.civilopedia.CivilopediaScreen
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.pickerscreens.DiplomaticVotePickerScreen
 import com.unciv.ui.pickerscreens.DiplomaticVoteResultScreen
@@ -75,7 +75,6 @@ import com.unciv.utils.concurrency.withGLContext
 import com.unciv.utils.debug
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
-import com.badlogic.gdx.scenes.scene2d.ui.TextField
 
 /**
  * Do not create this screen without seriously thinking about the implications: this is the single most memory-intensive class in the application.
@@ -126,8 +125,9 @@ class WorldScreen(
     private val notificationsScroll = NotificationsScroll(this)
     private val nextTurnButton = NextTurnButton()
     private val statusButtons = StatusButtons(nextTurnButton)
-    private val tutorialTaskTable = Table().apply { background = ImageGetter.getBackground(
-        ImageGetter.getBlue().darken(0.5f)) }
+    private val tutorialTaskTable = Table().apply {
+        background = skinStrings.getUiBackground("WorldScreen/TutorialTaskTable", tintColor = skinStrings.skinConfig.baseColor.darken(0.5f))
+    }
 
     private var nextTurnUpdateJob: Job? = null
 

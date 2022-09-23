@@ -13,6 +13,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaCategories
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.extensions.addSeparator
 import com.unciv.ui.utils.extensions.addSeparatorVertical
@@ -43,7 +44,7 @@ class ResourcesOverviewTab(
     private fun getTurnImage(vertical: Boolean) =
         ImageGetter.getImage("OtherIcons/Turn right")
             .apply {
-                color = ImageGetter.getBlue()
+                color = BaseScreen.skinStrings.skinConfig.baseColor
                 if (vertical)
                     rotateBy(90f)
             }

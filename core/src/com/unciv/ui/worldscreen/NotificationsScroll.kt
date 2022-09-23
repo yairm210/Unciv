@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Notification
-import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.WrappableLabel
 import com.unciv.ui.utils.extensions.onClick
 import kotlin.math.min
@@ -71,7 +71,7 @@ class NotificationsScroll(
 
         for (notification in notifications.asReversed().toList()) { // toList to avoid concurrency problems
             val listItem = Table()
-            listItem.background = ImageGetter.getRoundedEdgeRectangle()
+            listItem.background = BaseScreen.skinStrings.getUiBackground("WorldScreen/Notification", BaseScreen.skinStrings.roundedEdgeRectangle)
 
             val labelWidth = maxEntryWidth - iconSize * notification.icons.size - 10f
             val label = WrappableLabel(notification.text, labelWidth, Color.BLACK, 30)

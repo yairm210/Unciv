@@ -447,7 +447,7 @@ object ImageGetter {
 
         healthBar.pad(1f)
         healthBar.pack()
-        healthBar.background = getBackground(Color.BLACK)
+        healthBar.background = BaseScreen.skinStrings.getUiBackground("General/HealthBar", tintColor = Color.BLACK)
         return healthBar
     }
 
