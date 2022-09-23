@@ -157,6 +157,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 state.civInfo != null && state.civInfo.happinessForNextTurn < condition.params[0].toInt()
             UniqueType.ConditionalGoldenAge ->
                 state.civInfo != null && state.civInfo.goldenAges.isGoldenAge()
+            UniqueType.ConditionalWLTKD ->
+                state.cityInfo != null && state.cityInfo.isWeLoveTheKingDayActive()
             UniqueType.ConditionalBeforeEra ->
                 state.civInfo != null && state.civInfo.getEraNumber() < ruleset().eras[condition.params[0]]!!.eraNumber
             UniqueType.ConditionalStartingFromEra ->
