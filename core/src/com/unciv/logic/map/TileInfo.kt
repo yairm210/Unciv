@@ -1210,7 +1210,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     /** Sets tile improvement to pillaged (without prior checks for validity)
      *  and ensures that matching [UniqueType.CreatesOneImprovement] queued buildings are removed. */
     fun setPillaged() {
-        if (getUnpillagedImprovement() == null && getUnpillagedRoad() == RoadStatus.None)
+        if (getPillagableImprovement() == null && getUnpillagedRoad() == RoadStatus.None)
             return
         // http://well-of-souls.com/civ/civ5_improvements.html says that naval improvements are destroyed upon pillage
         //    and I can't find any other sources so I'll go with that
