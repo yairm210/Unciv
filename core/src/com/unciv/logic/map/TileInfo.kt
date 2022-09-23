@@ -1323,9 +1323,6 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         if (improvement != null && ::baseTerrainObject.isInitialized) normalizeTileImprovement(ruleset)
         if (isWater || isImpassible())
             roadStatus = RoadStatus.None
-
-        if (improvementInProgress == Constants.repair && ruleset.tileImprovements[Constants.repair] == null)
-            stopWorkingOnImprovement()
     }
 
     private fun normalizeTileImprovement(ruleset: Ruleset) {
