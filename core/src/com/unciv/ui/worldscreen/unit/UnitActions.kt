@@ -311,10 +311,10 @@ object UnitActions {
 
     fun getPillageAction(unit: MapUnit): UnitAction? {
         val tile = unit.currentTile
-        if (unit.isCivilian() || (tile.getUnpillagedImprovement() == null && tile.getUnpillagedRoad() == RoadStatus.None) || tile.getOwner() == unit.civInfo) return null
+        if (unit.isCivilian() || (tile.getPillagableImprovement() == null && tile.getUnpillagedRoad() == RoadStatus.None) || tile.getOwner() == unit.civInfo) return null
         return UnitAction(UnitActionType.Pillage,
                 action = {
-                    val pillagedImprovement = if (unit.currentTile.getUnpillagedImprovement() == null) tile.roadStatus.name else tile.improvement
+                    val pillagedImprovement = if (unit.currentTile.getPillagableImprovement() == null) tile.roadStatus.name else tile.improvement
                     val pillageText = "An enemy [${unit.baseUnit.name}] has pillaged our [$pillagedImprovement]"
                     val icon = "ImprovementIcons/$pillagedImprovement"
                     tile.getOwner()?.addNotification(
@@ -509,6 +509,7 @@ object UnitActions {
     }
 
     private fun addRepairAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
+        if (unit.currentTile.ruleset.tileImprovements[Constants.repair] == null) return
         if (!unit.hasUniqueToBuildImprovements) return
         if (unit.isEmbarked()) return
         val tile = unit.getTile()
