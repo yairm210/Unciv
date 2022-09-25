@@ -128,15 +128,15 @@ object MapShape : IsPartOfGameInfoSerialization {
 }
 
 object MapType : IsPartOfGameInfoSerialization {
+    const val default = "Default"
     const val pangaea = "Pangaea"
     const val continents = "Continents"
     const val fourCorners = "Four Corners"
-    const val perlin = "Perlin"
     const val archipelago = "Archipelago"
     const val innerSea = "Inner Sea"
 
     // Cellular automata
-    const val default = "Default"
+    const val cellularAutomata = "Cellular Automata"
 
     // Non-generated maps
     const val custom = "Custom"
