@@ -1,3 +1,15 @@
+## 4.2.11
+
+By xlenstra:
+- Fixed crash when getting a spy and expanding a city simultaneously 
+- Added a conditional for WLTKD 
+
+By nacro711072:
+- fix: display "null" text on battleTable if the policy branch autocracy completely 
+- update doc for mac user launch game. 
+
+Fix multiplayer turn checker option not showing up on Android  - By Azzurite
+
 ## 4.2.10
 
 New Desktop downloads start at fullscreen
