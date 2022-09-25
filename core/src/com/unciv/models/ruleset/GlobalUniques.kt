@@ -17,6 +17,7 @@ class GlobalUniques: RulesetObject() {
                 UniqueType.ConditionalGoldenAge -> "Golden Age"
                 UniqueType.ConditionalHappy -> "Happiness"
                 UniqueType.ConditionalBetweenHappiness, UniqueType.ConditionalBelowHappiness -> "Unhappiness"
+                UniqueType.ConditionalWLTKD -> "We Love The King Day"
                 else -> "Global Effect"
             }
         }
