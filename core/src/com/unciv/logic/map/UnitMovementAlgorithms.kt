@@ -608,6 +608,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
      * DOES NOT designate whether we can reach that tile in the current turn
      */
     fun canMoveTo(tile: TileInfo, assumeCanPassThrough: Boolean = false): Boolean {
+        if (unit.cannotMove) return false
         if (unit.baseUnit.movesLikeAirUnits())
             return canAirUnitMoveTo(tile, unit)
 
@@ -626,6 +627,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
     }
 
     private fun canAirUnitMoveTo(tile: TileInfo, unit: MapUnit): Boolean {
+        if (unit.cannotMove) return false
         // landing in the city
         if (tile.isCityCenter()) {
             if (tile.airUnits.filter { !it.isTransported }.size < 6 && tile.getCity()?.civInfo == unit.civInfo)
@@ -641,6 +643,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
 
     // Can a paratrooper land at this tile?
     fun canParadropOn(destination: TileInfo): Boolean {
+        if (unit.cannotMove) return false
         // Can only move to land tiles within range that are visible and not impassible
         // Based on some testing done in the base game
         if (!destination.isLand || destination.isImpassible() || !unit.civInfo.viewableTiles.contains(destination)) return false
