@@ -657,6 +657,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
      * because optimization on this function results in massive benefits!
      */
     fun canPassThrough(tile: TileInfo): Boolean {
+        if (unit.cannotMove) return false
         if (tile.isImpassible()) {
             // special exception - ice tiles are technically impassible, but some units can move through them anyway
             // helicopters can pass through impassable tiles like mountains
