@@ -1,14 +1,15 @@
 ## 4.2.11
 
 By xlenstra:
-- Fixed crash when getting a spy and expanding a city simultaneously 
-- Added a conditional for WLTKD 
+- Fixed crash when getting a spy and expanding a city simultaneously
+- Modding: Added conditional for 'We Love The King day'
 
 By nacro711072:
-- fix: display "null" text on battleTable if the policy branch autocracy completely 
-- update doc for mac user launch game. 
+- fix: display "null" text on battleTable when policy branch Autocracy complete
 
 Fix multiplayer turn checker option not showing up on Android  - By Azzurite
+
+Translation updates
 
 ## 4.2.10
 
