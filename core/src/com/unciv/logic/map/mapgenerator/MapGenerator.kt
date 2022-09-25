@@ -606,8 +606,9 @@ class MapGenerator(val ruleset: Ruleset) {
 
             val randomTemperature = randomness.getPerlinNoise(tile, temperatureSeed, scale = tileMap.mapParameters.tilesPerBiomeArea.toDouble(), nOctaves = 1)
             val latitudeTemperature = 1.0 - 2.0 * abs(tile.latitude) / tileMap.maxLatitude
-            var temperature = ((latitudeTemperature + randomTemperature) / 2.0)
+            var temperature = ((5.0 * latitudeTemperature + randomTemperature) / 6.0)
             temperature = abs(temperature).pow(1.0 - tileMap.mapParameters.temperatureExtremeness) * temperature.sign
+            temperature = (temperature + tileMap.mapParameters.temperatureShift).coerceIn(-1.0..1.0)
 
             val candidates = iceEquivalents
                 .filter {

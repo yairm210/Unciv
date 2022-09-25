@@ -282,6 +282,9 @@ class MapParametersTable(
         addSlider("Temperature extremeness", {mapParameters.temperatureExtremeness}, 0.4f, 0.8f)
         { mapParameters.temperatureExtremeness = it }
 
+        addSlider("Temperature shift", {mapParameters.temperatureShift}, -1f, 1f)
+        { mapParameters.temperatureShift = it }
+
         addSlider("Resource richness", {mapParameters.resourceRichness},0f, 0.5f)
         { mapParameters.resourceRichness = it }
 

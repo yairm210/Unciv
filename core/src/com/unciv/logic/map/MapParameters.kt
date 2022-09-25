@@ -180,9 +180,7 @@ class MapParameters : IsPartOfGameInfoSerialization {
     var resourceRichness = 0.1f
     var waterThreshold = 0f
 
-    /** Shifts temperature (after random, latitude and temperatureExtremeness).
-     *  For seasonal main menu background only, not user-accessible, thus transient and not cloned. */
-    @Transient
+    /** Shifts temperature (after random, latitude and temperatureExtremeness).*/
     var temperatureShift = 0f
 
     fun clone() = MapParameters().also {
@@ -201,6 +199,7 @@ class MapParameters : IsPartOfGameInfoSerialization {
         it.maxCoastExtension = maxCoastExtension
         it.elevationExponent = elevationExponent
         it.temperatureExtremeness = temperatureExtremeness
+        it.temperatureShift = temperatureShift
         it.vegetationRichness = vegetationRichness
         it.rareFeaturesRichness = rareFeaturesRichness
         it.resourceRichness = resourceRichness
