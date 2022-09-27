@@ -3,6 +3,7 @@ package com.unciv.app.desktop
 import club.minnced.discord.rpc.DiscordEventHandlers
 import club.minnced.discord.rpc.DiscordRPC
 import club.minnced.discord.rpc.DiscordRichPresence
+import com.badlogic.gdx.Graphics.Monitor
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import com.badlogic.gdx.files.FileHandle
@@ -66,11 +67,8 @@ internal object DesktopLauncher {
             FileHandle(SETTINGS_FILE_NAME).writeString(json().toJson(settings), false) // so when we later open the game we get fullscreen
         }
 
-        // Find the destination monitor by name (relevant only when maximized, otherwise the position alone is key)
+        // Find the destination monitor by position (relevant only when maximized)
         val monitors = Lwjgl3ApplicationConfiguration.getMonitors() // used twice here, so cache it
-        val maximizedMonitor = monitors
-            .firstOrNull { it.name == settings.windowState.monitor }
-            ?: Lwjgl3ApplicationConfiguration.getPrimaryMonitor()
 
         // Cache saved dimensions for visibility test
         var windowState = settings.windowState  // will be replaced if window found outside hardware
@@ -83,23 +81,31 @@ internal object DesktopLauncher {
         // - which might differ from the monitors available when the WindowState was saved
         // (overlap logic same as in Lwjgl3Graphics.getMonitor)
         var totalOverlap = 0
+        var bestOverlap = width * height / 10  // ignore monitors with less than 10% of our window
+        var maximizedMonitor: Monitor? = null
         for (monitor in monitors) {
             val mode = Lwjgl3ApplicationConfiguration.getDisplayMode(monitor)
             val overlapX = max(0, min(x + width, monitor.virtualX + mode.width) - max(x, monitor.virtualX))
             val overlapY = max(0, min(y + height, monitor.virtualY + mode.height) - max(y, monitor.virtualY))
-            totalOverlap += overlapX * overlapY
+            val overlap = overlapX * overlapY
+            totalOverlap += overlap
+            if (overlap > bestOverlap) {
+                bestOverlap = overlap
+                maximizedMonitor = monitor
+            }
         }
 
         if (totalOverlap * 3 < width * height) {
             // If less than (this chosen arbitrarily) 33% of the window will still be visible,
             // fix windowState to omit the position, which will center on the primary monitor or the
             // maximized-to monitor if maximized and that monitor's name was found
-            windowState = WindowState(width, height, windowState.isMaximized, monitor = windowState.monitor)
+            windowState = WindowState(width, height, windowState.isMaximized)
         } else {
             config.setWindowPosition(x, y)
         }
         config.setWindowedMode(width, height)
-        config.setMaximizedMonitor(maximizedMonitor)
+        if (maximizedMonitor != null)
+            config.setMaximizedMonitor(maximizedMonitor)
         config.setMaximized(windowState.isMaximized)
 
         if (!isRunFromJAR) {

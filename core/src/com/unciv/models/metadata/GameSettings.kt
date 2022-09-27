@@ -18,8 +18,7 @@ data class WindowState(
     val height: Int = 600,
     val isMaximized: Boolean = false,
     val x: Int = -1,
-    val y: Int = -1,
-    val monitor: String = ""
+    val y: Int = -1
 )
 
 class GameSettings {
