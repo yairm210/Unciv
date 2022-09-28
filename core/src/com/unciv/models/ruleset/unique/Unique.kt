@@ -157,6 +157,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 state.civInfo != null && state.civInfo.happinessForNextTurn < condition.params[0].toInt()
             UniqueType.ConditionalGoldenAge ->
                 state.civInfo != null && state.civInfo.goldenAges.isGoldenAge()
+            UniqueType.ConditionalWLTKD ->
+                state.cityInfo != null && state.cityInfo.isWeLoveTheKingDayActive()
             UniqueType.ConditionalBeforeEra ->
                 state.civInfo != null && state.civInfo.getEraNumber() < ruleset().eras[condition.params[0]]!!.eraNumber
             UniqueType.ConditionalStartingFromEra ->
@@ -314,13 +316,18 @@ class TemporaryUnique() : IsPartOfGameInfoSerialization {
 
     constructor(uniqueObject: Unique, turns: Int) : this() {
         unique = uniqueObject.text
+        sourceObjectType = uniqueObject.sourceObjectType
+        sourceObjectName = uniqueObject.sourceObjectName
         turnsLeft = turns
     }
 
     var unique: String = ""
 
+    var sourceObjectType: UniqueTarget? = null
+    var sourceObjectName: String? = null
+
     @delegate:Transient
-    val uniqueObject: Unique by lazy { Unique(unique) }
+    val uniqueObject: Unique by lazy { Unique(unique, sourceObjectType, sourceObjectName) }
 
     var turnsLeft: Int = 0
 }
