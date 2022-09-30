@@ -184,7 +184,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         gameInfo = newGameInfo
 
 
-        if (gameInfo?.gameParameters?.isOnlineMultiplayer == true && gameInfo?.gameParameters?.anyoneCantSpectate == false) {
+        if (gameInfo?.gameParameters?.isOnlineMultiplayer == true && gameInfo?.gameParameters?.notanyoneCanSpectate == false) {
             if (gameInfo!!.civilizations.none { it.playerId == settings.multiplayer.userId }) {
                 throw UncivShowableException("You are not allowed to spectate!")
             }
