@@ -508,8 +508,11 @@ class MapGenerator(val ruleset: Ruleset) {
             val randomTemperature = randomness.getPerlinNoise(tile, temperatureSeed, scale = scale, nOctaves = 1)
             val latitudeTemperature = 1.0 - 2.0 * abs(tile.latitude) / tileMap.maxLatitude
             var temperature = (5.0 * latitudeTemperature + randomTemperature) / 6.0
+            tile.temp = temperature
             temperature = abs(temperature).pow(1.0 - temperatureExtremeness) * temperature.sign
             temperature = (temperature + temperatureShift).coerceIn(-1.0..1.0)
+            tile.tempFinal = temperature
+            tile.humidity = humidity
 
             // Old, static map generation rules - necessary for existing base ruleset mods to continue to function
             if (noTerrainUniques) {
@@ -606,7 +609,7 @@ class MapGenerator(val ruleset: Ruleset) {
 
             val randomTemperature = randomness.getPerlinNoise(tile, temperatureSeed, scale = tileMap.mapParameters.tilesPerBiomeArea.toDouble(), nOctaves = 1)
             val latitudeTemperature = 1.0 - 2.0 * abs(tile.latitude) / tileMap.maxLatitude
-            var temperature = ((5.0 * latitudeTemperature + randomTemperature) / 6.0)
+            var temperature = ((latitudeTemperature + randomTemperature) / 2.0)
             temperature = abs(temperature).pow(1.0 - tileMap.mapParameters.temperatureExtremeness) * temperature.sign
             temperature = (temperature + tileMap.mapParameters.temperatureShift).coerceIn(-1.0..1.0)
 
@@ -632,6 +635,8 @@ class MapGenerationRandomness {
 
     /**
      * Generates a perlin noise channel combining multiple octaves
+     * Default settings generate mostly within [-0.55, 0.55], but clustered around 0.0
+     * About 28% are < -0.1 and 28% are > 0.1
      *
      * @param tile Source for x / x coordinates.
      * @param seed Misnomer: actually the z value the Perlin cloud is 'cut' on.

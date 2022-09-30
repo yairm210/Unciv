@@ -164,6 +164,9 @@ class MapEditorViewTab(
         val lines = ArrayList<FormattedLine>()
 
         lines += FormattedLine("Position: [${tile.position.toString().replace(".0","")}]")
+        lines += FormattedLine("temp: [${tile.temp}]")
+        lines += FormattedLine("tempFinal: [${tile.tempFinal}]")
+        lines += FormattedLine("humidity: [${tile.humidity}]")
         lines += FormattedLine()
 
         lines.addAll(tile.toMarkup(null))

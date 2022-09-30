@@ -217,10 +217,14 @@ class MapParameters : IsPartOfGameInfoSerialization {
         maxCoastExtension = 2
         elevationExponent = 0.7f
         temperatureExtremeness = 0.6f
+        temperatureShift = 0.0f
         vegetationRichness = 0.4f
         rareFeaturesRichness = 0.05f
         resourceRichness = 0.1f
-        waterThreshold = 0f
+        waterThreshold = if (type == MapType.default)
+            -0.05f
+        else
+            0f
     }
 
     fun getArea() = when {
