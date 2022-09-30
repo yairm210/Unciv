@@ -178,7 +178,7 @@ class MapParameters : IsPartOfGameInfoSerialization {
     var vegetationRichness = 0.4f
     var rareFeaturesRichness = 0.05f
     var resourceRichness = 0.1f
-    var waterThreshold = -0.05f
+    var waterThreshold = 0.0f
 
     /** Shifts temperature (after random, latitude and temperatureExtremeness).
      *  For seasonal main menu background only, not user-accessible, thus transient and not cloned. */
