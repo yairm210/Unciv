@@ -116,7 +116,7 @@ class NewGameScreen(
                     }
                 }
 
-                if (gameSetupInfo.gameParameters.anyoneCantSpectate) {
+                if (gameSetupInfo.gameParameters.notanyoneCanSpectate) {
                     if (gameSetupInfo.gameParameters.players.none { it.playerId == UncivGame.Current.settings.multiplayer.userId }) {
                         val notAllowedToSpectate = Popup(this)
                         notAllowedToSpectate.addGoodSizedLabel("You are not allowed to spectate!".tr()).row()
