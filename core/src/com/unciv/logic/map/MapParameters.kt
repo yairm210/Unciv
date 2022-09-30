@@ -221,7 +221,7 @@ class MapParameters : IsPartOfGameInfoSerialization {
         vegetationRichness = 0.4f
         rareFeaturesRichness = 0.05f
         resourceRichness = 0.1f
-        waterThreshold = if (type == MapType.default)
+        waterThreshold = if (type == MapType.cellularAutomata)
             -0.05f // make world about 55% land
         else
             0f
