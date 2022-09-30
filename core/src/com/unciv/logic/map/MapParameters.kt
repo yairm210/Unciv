@@ -178,7 +178,7 @@ class MapParameters : IsPartOfGameInfoSerialization {
     var vegetationRichness = 0.4f
     var rareFeaturesRichness = 0.05f
     var resourceRichness = 0.1f
-    var waterThreshold = 0f
+    var waterThreshold = -0.05f
 
     /** Shifts temperature (after random, latitude and temperatureExtremeness).
      *  For seasonal main menu background only, not user-accessible, thus transient and not cloned. */
@@ -221,7 +221,10 @@ class MapParameters : IsPartOfGameInfoSerialization {
         vegetationRichness = 0.4f
         rareFeaturesRichness = 0.05f
         resourceRichness = 0.1f
-        waterThreshold = 0f
+        waterThreshold = if (type == MapType.default)
+            -0.05f // make world about 55% land
+        else
+            0f
     }
 
     fun getArea() = when {
