@@ -71,7 +71,7 @@ class GameOptionsTable(
         checkboxTable.addNuclearWeaponsCheckbox()
         checkboxTable.addIsOnlineMultiplayerCheckbox()
         if (gameParameters.isOnlineMultiplayer)
-            checkboxTable.addAnyoneCanSpectateCheckbox()
+            checkboxTable.addAnyoneCantSpectateCheckbox()
         if (UncivGame.Current.settings.enableEspionageOption)
             checkboxTable.addEnableEspionageCheckbox()
         checkboxTable.addNoStartBiasCheckbox()
@@ -116,10 +116,10 @@ class GameOptionsTable(
                 update()
             }
 
-    private fun Table.addAnyoneCanSpectateCheckbox() =
-            addCheckbox("Allow anyone to spectate", gameParameters.anyoneCanSpectate)
+    private fun Table.addAnyoneCantSpectateCheckbox() =
+            addCheckbox("Only designated players can watch", gameParameters.anyoneCantSpectate)
             {
-                gameParameters.anyoneCanSpectate = it
+                gameParameters.anyoneCantSpectate = it
             }
 
     private fun Table.addEnableEspionageCheckbox() =
