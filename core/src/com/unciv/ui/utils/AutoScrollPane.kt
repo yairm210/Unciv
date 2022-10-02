@@ -37,20 +37,22 @@ open class AutoScrollPane(widget: Actor?, style: ScrollPaneStyle = ScrollPaneSty
 
     private var savedFocus: Actor? = null
 
+    class AutoScrollPaneClickListener(val autoScrollPane: AutoScrollPane):ClickListener(){
+        override fun enter(event: InputEvent?, x: Float, y: Float, pointer: Int, fromActor: Actor?) {
+            if (autoScrollPane.stage == null) return
+            if (fromActor?.isDescendantOf(autoScrollPane) == true) return
+            if (autoScrollPane.savedFocus == null) autoScrollPane.savedFocus = autoScrollPane.stage.scrollFocus
+            autoScrollPane.stage.scrollFocus = autoScrollPane
+        }
+        override fun exit(event: InputEvent?, x: Float, y: Float, pointer: Int, toActor: Actor?) {
+            if (autoScrollPane.stage == null) return
+            if (toActor?.isDescendantOf(autoScrollPane) == true) return
+            if (autoScrollPane.stage.scrollFocus == autoScrollPane) autoScrollPane.stage.scrollFocus = autoScrollPane.savedFocus
+            autoScrollPane.savedFocus = null
+        }
+    }
+
     init {
-        this.addListener (object : ClickListener() {
-            override fun enter(event: InputEvent?, x: Float, y: Float, pointer: Int, fromActor: Actor?) {
-                if (stage == null) return
-                if (fromActor?.isDescendantOf(this@AutoScrollPane) == true) return
-                if (savedFocus == null) savedFocus = stage.scrollFocus
-                stage.scrollFocus = this@AutoScrollPane
-            }
-            override fun exit(event: InputEvent?, x: Float, y: Float, pointer: Int, toActor: Actor?) {
-                if (stage == null) return
-                if (toActor?.isDescendantOf(this@AutoScrollPane) == true) return
-                if (stage.scrollFocus == this@AutoScrollPane) stage.scrollFocus = savedFocus
-                savedFocus = null
-            }
-        })
+        this.addListener (AutoScrollPaneClickListener(this))
     }
 }
