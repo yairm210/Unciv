@@ -30,6 +30,7 @@ import com.unciv.models.AttackableTile
 import com.unciv.models.UncivSound
 import com.unciv.models.helpers.MapArrowType
 import com.unciv.models.helpers.MiscArrowTypes
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.UncivStage
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.images.ImageGetter
@@ -652,6 +653,7 @@ class WorldMapHolder(
                         // The tile is within attack range
                         tileToColor.showHighlight(Color.RED, 0.3f)
                     } else {
+                        if (unit.hasUnique(UniqueType.CannotMove)) continue
                         // The tile is within move range
                         tileToColor.showHighlight(Color.BLUE, 0.3f)
                     }

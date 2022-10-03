@@ -103,9 +103,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
     val doubleMovementInTerrain = HashMap<String, DoubleMovementTerrainTarget>()
 
     @Transient
-    var cannotMove = false
-
-    @Transient
     var canEnterIceTiles = false
 
     @Transient
@@ -344,7 +341,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
             .minOfOrNull { it.params[0].toFloat() }
 
         //todo: consider parameterizing [terrainFilter] in some of the following:
-        cannotMove = hasUnique(UniqueType.CannotMove)
         canEnterIceTiles = hasUnique(UniqueType.CanEnterIceTiles)
         cannotEnterOceanTiles = hasUnique(UniqueType.CannotEnterOcean, StateForConditionals(civInfo=civInfo, unit=this))
 
