@@ -163,7 +163,7 @@ class GlobalPoliticsOverviewTable (
 
         // wars
         for (otherCiv in civ.getKnownCivs()) {
-            if(civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.DeclaredWar) == true) {
+            if(civ.diplomacy[otherCiv.civName]?.diplomaticStatus == DiplomaticStatus.War) {
                 val warText = "At war with ${otherCiv.civName}".toLabel()
                 warText.color = Color.RED
                 politicsTable.add(warText).row()
