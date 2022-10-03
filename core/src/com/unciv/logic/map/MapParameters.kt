@@ -135,8 +135,8 @@ object MapType : IsPartOfGameInfoSerialization {
     const val archipelago = "Archipelago"
     const val innerSea = "Inner Sea"
 
-    // Cellular automata
-    const val cellularAutomata = "Cellular Automata"
+    // Cellular automata style
+    const val smoothedRandom = "Smoothed Random"
 
     // Non-generated maps
     const val custom = "Custom"
@@ -221,7 +221,7 @@ class MapParameters : IsPartOfGameInfoSerialization {
         vegetationRichness = 0.4f
         rareFeaturesRichness = 0.05f
         resourceRichness = 0.1f
-        waterThreshold = if (type == MapType.cellularAutomata)
+        waterThreshold = if (type == MapType.smoothedRandom)
             -0.05f // make world about 55% land
         else
             0f
