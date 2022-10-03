@@ -76,6 +76,7 @@ import com.unciv.utils.debug
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
+import com.unciv.utils.Log
 
 /**
  * Do not create this screen without seriously thinking about the implications: this is the single most memory-intensive class in the application.
@@ -135,19 +136,39 @@ class WorldScreen(
 
 
     init {
+        Log.debug("${
+            Throwable().stackTrace[0].fileName
+        }:${
+            Throwable().stackTrace[0].lineNumber
+        }")
         // notifications are right-aligned, they take up only as much space as necessary.
         notificationsScroll.width = stage.width / 2
 
         minimapWrapper.x = stage.width - minimapWrapper.width
 
+        Log.debug("${
+            Throwable().stackTrace[0].fileName
+        }:${
+            Throwable().stackTrace[0].lineNumber
+        }")
         // This is the most memory-intensive operation we have currently, most OutOfMemory errors will occur here
         mapHolder.addTiles()
 
+        Log.debug("${
+            Throwable().stackTrace[0].fileName
+        }:${
+            Throwable().stackTrace[0].lineNumber
+        }")
         // resume music (in case choices from the menu lead to instantiation of a new WorldScreen)
         UncivGame.Current.musicController.resume()
 
         fogOfWarButton.isVisible = viewingCiv.isSpectator()
 
+        Log.debug("${
+            Throwable().stackTrace[0].fileName
+        }:${
+            Throwable().stackTrace[0].lineNumber
+        }")
         stage.addActor(mapHolder)
         stage.scrollFocus = mapHolder
         stage.addActor(notificationsScroll)  // very low in z-order, so we're free to let it extend _below_ tile info and minimap if we want
@@ -169,6 +190,11 @@ class WorldScreen(
 
         stage.addActor(unitActionsTable)
 
+        Log.debug("${
+            Throwable().stackTrace[0].fileName
+        }:${
+            Throwable().stackTrace[0].lineNumber
+        }")
         val tileToCenterOn: Vector2 =
                 when {
                     viewingCiv.cities.isNotEmpty() && viewingCiv.getCapital() != null -> viewingCiv.getCapital()!!.location
@@ -182,14 +208,28 @@ class WorldScreen(
         else
             mapHolder.setCenterPosition(tileToCenterOn, immediately = true, selectUnit = true)
 
+        Log.debug("${
+            Throwable().stackTrace[0].fileName
+        }:${
+            Throwable().stackTrace[0].lineNumber
+        }")
         tutorialController.allTutorialsShowedCallback = { shouldUpdate = true }
 
+        Log.debug("${
+            Throwable().stackTrace[0].fileName
+        }:${
+            Throwable().stackTrace[0].lineNumber
+        }")
         globalShortcuts.add(KeyCharAndCode.BACK) { backButtonAndESCHandler() }
 
         addKeyboardListener() // for map panning by W,S,A,D
         addKeyboardPresses()  // shortcut keys like F1
 
-
+        Log.debug("${
+            Throwable().stackTrace[0].fileName
+        }:${
+            Throwable().stackTrace[0].lineNumber
+        }")
         if (gameInfo.gameParameters.isOnlineMultiplayer && !gameInfo.isUpToDate)
             isPlayersTurn = false // until we're up to date, don't let the player do anything
 
@@ -205,11 +245,21 @@ class WorldScreen(
             }
         }
 
+        Log.debug("${
+            Throwable().stackTrace[0].fileName
+        }:${
+            Throwable().stackTrace[0].lineNumber
+        }")
         if (restoreState != null) restore(restoreState)
 
         // don't run update() directly, because the UncivGame.worldScreen should be set so that the city buttons and tile groups
         //  know what the viewing civ is.
         shouldUpdate = true
+        Log.debug("${
+            Throwable().stackTrace[0].fileName
+        }:${
+            Throwable().stackTrace[0].lineNumber
+        }")
     }
 
     override fun dispose() {
@@ -361,7 +411,11 @@ class WorldScreen(
     // That way, not only do we save a lot of unnecessary updates, we also ensure that all updates are called from the main GL thread
     // and we don't get any silly concurrency problems!
     private fun update() {
-
+        Log.debug("${
+            Throwable().stackTrace[0].fileName
+        }:${
+            Throwable().stackTrace[0].lineNumber
+        }")
         displayTutorialsOnUpdate()
 
         bottomUnitTable.update()
@@ -410,9 +464,19 @@ class WorldScreen(
         // it doesn't update the explored tiles of the civ... need to think about that harder
         // it causes a bug when we move a unit to an unexplored tile (for instance a cavalry unit which can move far)
 
+        Log.debug("${
+            Throwable().stackTrace[0].fileName
+        }:${
+            Throwable().stackTrace[0].lineNumber
+        }")
         if (fogOfWar) mapHolder.updateTiles(selectedCiv)
         else mapHolder.updateTiles(viewingCiv)
 
+        Log.debug("${
+            Throwable().stackTrace[0].fileName
+        }:${
+            Throwable().stackTrace[0].lineNumber
+        }")
         topBar.update(selectedCiv)
 
         if (techPolicyAndDiplomacy.update())
@@ -452,6 +516,11 @@ class WorldScreen(
         val posZoomFromRight = if (game.settings.showMinimap) minimapWrapper.width
         else bottomTileInfoTable.width
         zoomController.setPosition(stage.width - posZoomFromRight - 10f, 10f, Align.bottomRight)
+        Log.debug("${
+            Throwable().stackTrace[0].fileName
+        }:${
+            Throwable().stackTrace[0].lineNumber
+        }")
     }
 
     private fun getCurrentTutorialTask(): String {
@@ -785,8 +854,18 @@ class WorldScreen(
         if (shouldUpdate) {
             shouldUpdate = false
 
+            Log.debug("${
+                Throwable().stackTrace[0].fileName
+            }:${
+                Throwable().stackTrace[0].lineNumber
+            }")
             update()
             showTutorialsOnNextTurn()
+            Log.debug("${
+                Throwable().stackTrace[0].fileName
+            }:${
+                Throwable().stackTrace[0].lineNumber
+            }")
         }
 //        topBar.selectedCivLabel.setText(Gdx.graphics.framesPerSecond) // for framerate testing
 

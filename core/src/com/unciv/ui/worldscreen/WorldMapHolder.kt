@@ -558,6 +558,11 @@ class WorldMapHolder(
 
     internal fun updateTiles(viewingCiv: CivilizationInfo) {
 
+        Log.debug("${
+            Throwable().stackTrace[0].fileName
+        }:${
+            Throwable().stackTrace[0].lineNumber
+        }")
         if (isMapRevealEnabled(viewingCiv)) {
             // Only needs to be done once - this is so the minimap will also be revealed
             if (viewingCiv.exploredTiles.size != tileMap.values.size)
@@ -567,6 +572,11 @@ class WorldMapHolder(
 
         val playerViewableTilePositions = viewingCiv.viewableTiles.map { it.position }.toHashSet()
 
+        Log.debug("${
+            Throwable().stackTrace[0].fileName
+        }:${
+            Throwable().stackTrace[0].lineNumber
+        }")
         for (tileGroup in allWorldTileGroups) {
             tileGroup.update(viewingCiv)
 
@@ -582,6 +592,11 @@ class WorldMapHolder(
                 tileGroup.showHighlight(Color.RED) // Display ALL viewable enemies with a red circle so that users don't need to go "hunting" for enemy units
         }
 
+        Log.debug("${
+            Throwable().stackTrace[0].fileName
+        }:${
+            Throwable().stackTrace[0].lineNumber
+        }")
         val unitTable = worldScreen.bottomUnitTable
         when {
             unitTable.selectedCity != null -> {
@@ -605,6 +620,11 @@ class WorldMapHolder(
                 group.showHighlight(Color.WHITE)
 
         zoom(scaleX) // zoom to current scale, to set the size of the city buttons after "next turn"
+        Log.debug("${
+            Throwable().stackTrace[0].fileName
+        }:${
+            Throwable().stackTrace[0].lineNumber
+        }")
     }
 
     private fun updateTilegroupsForSelectedUnit(unit: MapUnit, playerViewableTilePositions: HashSet<Vector2>) {
