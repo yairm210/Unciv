@@ -128,7 +128,7 @@ Thumbs.db
 /ios-moe/xcode/native/
 SaveFiles/
 android/android-release.apk
-android/assets/GameSettings.json
+#android/assets/GameSettings.json
 android/release/output.json
 android/release/android-release.apk
 android/release/release/android.aab
@@ -146,7 +146,7 @@ deploy/
 android/release/
 
 android/assets/mods/
-android/assets/SaveFiles/
+#android/assets/SaveFiles/
 android/assets/scenarios/
 android/assets/MultiplayerGames/
 android/assets/music/
