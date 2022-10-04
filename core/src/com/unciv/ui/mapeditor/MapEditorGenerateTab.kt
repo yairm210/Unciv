@@ -62,11 +62,11 @@ class MapEditorGenerateTab(
     }
 
     private fun generate(step: MapGeneratorSteps) {
-//         if (step <= MapGeneratorSteps.Landmass && step in seedUsedForStep) {
-//             // reseed visibly when starting from scratch (new seed shows in advanced settings widget)
-//             newTab.mapParametersTable.reseed()
-//             seedUsedForStep -= step
-//         }
+        if (step <= MapGeneratorSteps.Landmass && step in seedUsedForStep) {
+            // reseed visibly when starting from scratch (new seed shows in advanced settings widget)
+            newTab.mapParametersTable.reseed()
+            seedUsedForStep -= step
+        }
         val mapParameters = editorScreen.newMapParameters.clone()  // this clone is very important here
         val message = mapParameters.mapSize.fixUndesiredSizes(mapParameters.worldWrap)
         if (message != null) {
@@ -86,11 +86,11 @@ class MapEditorGenerateTab(
             return
         }
 
-//         if (step in seedUsedForStep) {
-//             mapParameters.reseed()
-//         } else {
-//             seedUsedForStep += step
-//         }
+        if (step in seedUsedForStep) {
+            mapParameters.reseed()
+        } else {
+            seedUsedForStep += step
+        }
 
         Gdx.input.inputProcessor = null // remove input processing - nothing will be clicked!
         setButtonsEnabled(false)

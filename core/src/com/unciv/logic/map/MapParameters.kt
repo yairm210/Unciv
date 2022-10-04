@@ -221,10 +221,7 @@ class MapParameters : IsPartOfGameInfoSerialization {
         vegetationRichness = 0.4f
         rareFeaturesRichness = 0.05f
         resourceRichness = 0.1f
-        waterThreshold = if (type == MapType.default)
-            -0.05f
-        else
-            0f
+        waterThreshold = 0f
     }
 
     fun getArea() = when {
