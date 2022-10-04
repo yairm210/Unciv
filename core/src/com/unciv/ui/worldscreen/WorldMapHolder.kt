@@ -653,7 +653,6 @@ class WorldMapHolder(
                         // The tile is within attack range
                         tileToColor.showHighlight(Color.RED, 0.3f)
                     } else {
-                        if (unit.hasUnique(UniqueType.CannotMove)) continue
                         // The tile is within move range
                         tileToColor.showHighlight(Color.BLUE, 0.3f)
                     }
