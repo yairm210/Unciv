@@ -484,7 +484,7 @@ class MapGenerator(val ruleset: Ruleset) {
         val scale = tileMap.mapParameters.tilesPerBiomeArea.toDouble()
         val temperatureExtremeness = tileMap.mapParameters.temperatureExtremeness
         val temperatureShift = tileMap.mapParameters.temperatureShift
-        val humidityShift = if (temperatureShift > 0) -temperatureShift else 0f
+        val humidityShift = if (temperatureShift > 0) -temperatureShift / 2 else 0f
 
         // List is OK here as it's only sequentially scanned
         val limitsMap: List<TerrainOccursRange> =
@@ -512,7 +512,8 @@ class MapGenerator(val ruleset: Ruleset) {
             temperature = abs(temperature).pow(1.0 - temperatureExtremeness) * temperature.sign
             temperature = (temperature + temperatureShift).coerceIn(-1.0..1.0)
             tile.tempFinal = temperature
-            tile.humidity = humidity
+            tile.humidity = humidityRandom
+            tile.humidityFinal = humidity
 
             // Old, static map generation rules - necessary for existing base ruleset mods to continue to function
             if (noTerrainUniques) {
