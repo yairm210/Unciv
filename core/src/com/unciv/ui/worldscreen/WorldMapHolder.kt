@@ -781,4 +781,8 @@ class WorldMapHolder(
     override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
 
     override fun act(delta: Float) = super.act(delta)
+
+    override fun clear() {
+        super.clear()
+    }
 }

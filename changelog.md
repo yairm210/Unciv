@@ -1,10 +1,10 @@
 ## 4.2.12
 
-Converted dynamic listener classes into real classes
+Slight performance improvements
 
-Create Cannot Move Unique  - By itanasi
+Create Cannot Move Unique - By itanasi
 
-Fixed softlock forcing you to found a pantheon without available beliefs  - By xlenstra
+Fixed softlock forcing you to found a pantheon without available beliefs - By xlenstra
 
 ## 4.2.11
 
