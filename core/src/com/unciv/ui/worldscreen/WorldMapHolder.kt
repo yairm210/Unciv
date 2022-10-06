@@ -30,6 +30,7 @@ import com.unciv.models.AttackableTile
 import com.unciv.models.UncivSound
 import com.unciv.models.helpers.MapArrowType
 import com.unciv.models.helpers.MiscArrowTypes
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.UncivStage
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.images.ImageGetter
@@ -780,4 +781,8 @@ class WorldMapHolder(
     override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
 
     override fun act(delta: Float) = super.act(delta)
+
+    override fun clear() {
+        super.clear()
+    }
 }
