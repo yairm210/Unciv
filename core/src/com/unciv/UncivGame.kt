@@ -42,7 +42,6 @@ import com.unciv.utils.concurrency.launchOnGLThread
 import com.unciv.utils.concurrency.withGLContext
 import com.unciv.utils.concurrency.withThreadPoolContext
 import com.unciv.utils.debug
-import dev.timeAndLog
 import kotlinx.coroutines.CancellationException
 import java.io.PrintWriter
 import java.util.*
@@ -184,7 +183,6 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         val prevGameInfo = gameInfo
         gameInfo = newGameInfo
 
-
         if (gameInfo?.gameParameters?.isOnlineMultiplayer == true && gameInfo?.gameParameters?.anyoneCanSpectate == false) {
             if (gameInfo!!.civilizations.none { it.playerId == settings.multiplayer.userId }) {
                 throw UncivShowableException("You are not allowed to spectate!")
@@ -209,6 +207,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             worldScreen = null // This allows the GC to collect our old WorldScreen, otherwise we keep two WorldScreens in memory.
             val newWorldScreen = WorldScreen(newGameInfo, newGameInfo.getPlayerToViewAs(), worldScreenRestoreState)
             worldScreen = newWorldScreen
+            // TODO Prevent full screee rerender with events such as
 
             val moreThanOnePlayer = newGameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1
             val isSingleplayer = !newGameInfo.gameParameters.isOnlineMultiplayer

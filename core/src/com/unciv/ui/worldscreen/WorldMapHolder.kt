@@ -51,6 +51,7 @@ import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
+import dev.timeAndLog
 
 
 class WorldMapHolder(
@@ -288,18 +289,23 @@ class WorldMapHolder(
                     // but until it reaches the headTowards the board has changed and so the headTowards fails.
                     // I can't think of any way to avoid this,
                     // but it's so rare and edge-case-y that ignoring its failure is actually acceptable, hence the empty catch
+                    selectedUnits.forEach {
+                        it.viewableTiles.forEach {
+                            worldTileGroupsToRerender.addAll(tileGroups[it]!!.toList())
+                        }
+                    }
                     selectedUnit.movement.moveToTile(tileToMoveTo)
+                    selectedUnits.forEach {
+                        it.viewableTiles.forEach {
+                            worldTileGroupsToRerender.addAll(tileGroups[it]!!.toList())
+                        }
+                    }
                     if (selectedUnit.isExploring() || selectedUnit.isMoving())
                         selectedUnit.action = null // remove explore on manual move
                     SoundPlayer.play(UncivSound.Whoosh)
                     if (selectedUnit.currentTile != targetTile)
                         selectedUnit.action = "moveTo " + targetTile.position.x.toInt() + "," + targetTile.position.y.toInt()
                     if (selectedUnit.currentMovement > 0) worldScreen.bottomUnitTable.selectUnit(selectedUnit)
-                    selectedUnits.forEach {
-                        it.viewableTiles.forEach {
-                            worldTileGroupsToRerender.addAll(tileGroups[it]!!.toList())
-                        }
-                    }
 
                     worldScreen.shouldUpdate = true
                     if (selectedUnits.size > 1) { // We have more tiles to move
@@ -562,11 +568,7 @@ class WorldMapHolder(
     }
 
     internal fun updateTiles(viewingCiv: CivilizationInfo) {
-        Log.debug("${
-            Throwable().stackTrace[0].fileName
-        }:${
-            Throwable().stackTrace[0].lineNumber
-        }")
+        timeAndLog()
         if (isMapRevealEnabled(viewingCiv)) {
             // Only needs to be done once - this is so the minimap will also be revealed
             if (viewingCiv.exploredTiles.size != tileMap.values.size)
@@ -574,11 +576,7 @@ class WorldMapHolder(
             allWorldTileGroups.forEach { it.showEntireMap = true } // So we can see all resources, regardless of tech
         }
 
-        Log.debug("${
-            Throwable().stackTrace[0].fileName
-        }:${
-            Throwable().stackTrace[0].lineNumber
-        }")
+        timeAndLog()
         for (tileGroup in worldTileGroupsToRerender) {
             tileGroup.update(viewingCiv)
 
@@ -594,11 +592,7 @@ class WorldMapHolder(
         }
         worldTileGroupsToRerender.clear()
 
-        Log.debug("${
-            Throwable().stackTrace[0].fileName
-        }:${
-            Throwable().stackTrace[0].lineNumber
-        }")
+        timeAndLog()
         val unitTable = worldScreen.bottomUnitTable
         val playerViewableTilePositions = viewingCiv.viewableTiles.map { it.position }.toHashSet()
         when {
@@ -626,11 +620,7 @@ class WorldMapHolder(
         }
 
         zoom(scaleX) // zoom to current scale, to set the size of the city buttons after "next turn"
-        Log.debug("${
-            Throwable().stackTrace[0].fileName
-        }:${
-            Throwable().stackTrace[0].lineNumber
-        }")
+        timeAndLog()
     }
 
     private fun updateTilegroupsForSelectedUnit(unit: MapUnit, playerViewableTilePositions: HashSet<Vector2>) {
