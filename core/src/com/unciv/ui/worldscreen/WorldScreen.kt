@@ -77,6 +77,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.utils.Log
+import dev.timeAndLog
 
 /**
  * Do not create this screen without seriously thinking about the implications: this is the single most memory-intensive class in the application.
@@ -136,39 +137,22 @@ class WorldScreen(
 
 
     init {
-        Log.debug("${
-            Throwable().stackTrace[0].fileName
-        }:${
-            Throwable().stackTrace[0].lineNumber
-        }")
+        timeAndLog()
         // notifications are right-aligned, they take up only as much space as necessary.
         notificationsScroll.width = stage.width / 2
 
         minimapWrapper.x = stage.width - minimapWrapper.width
 
-        Log.debug("${
-            Throwable().stackTrace[0].fileName
-        }:${
-            Throwable().stackTrace[0].lineNumber
-        }")
+        timeAndLog()
         // This is the most memory-intensive operation we have currently, most OutOfMemory errors will occur here
         mapHolder.addTiles()
 
-        Log.debug("${
-            Throwable().stackTrace[0].fileName
-        }:${
-            Throwable().stackTrace[0].lineNumber
-        }")
+        timeAndLog()
         // resume music (in case choices from the menu lead to instantiation of a new WorldScreen)
         UncivGame.Current.musicController.resume()
 
         fogOfWarButton.isVisible = viewingCiv.isSpectator()
 
-        Log.debug("${
-            Throwable().stackTrace[0].fileName
-        }:${
-            Throwable().stackTrace[0].lineNumber
-        }")
         stage.addActor(mapHolder)
         stage.scrollFocus = mapHolder
         stage.addActor(notificationsScroll)  // very low in z-order, so we're free to let it extend _below_ tile info and minimap if we want
@@ -190,11 +174,6 @@ class WorldScreen(
 
         stage.addActor(unitActionsTable)
 
-        Log.debug("${
-            Throwable().stackTrace[0].fileName
-        }:${
-            Throwable().stackTrace[0].lineNumber
-        }")
         val tileToCenterOn: Vector2 =
                 when {
                     viewingCiv.cities.isNotEmpty() && viewingCiv.getCapital() != null -> viewingCiv.getCapital()!!.location
@@ -208,18 +187,8 @@ class WorldScreen(
         else
             mapHolder.setCenterPosition(tileToCenterOn, immediately = true, selectUnit = true)
 
-        Log.debug("${
-            Throwable().stackTrace[0].fileName
-        }:${
-            Throwable().stackTrace[0].lineNumber
-        }")
         tutorialController.allTutorialsShowedCallback = { shouldUpdate = true }
 
-        Log.debug("${
-            Throwable().stackTrace[0].fileName
-        }:${
-            Throwable().stackTrace[0].lineNumber
-        }")
         globalShortcuts.add(KeyCharAndCode.BACK) { backButtonAndESCHandler() }
 
         addKeyboardListener() // for map panning by W,S,A,D
