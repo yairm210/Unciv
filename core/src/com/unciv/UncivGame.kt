@@ -298,7 +298,6 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
      */
     fun popScreen(): BaseScreen? {
         // TODO Make main menu appear either on ESC or "menu" key clicked
-        timeAndLog()
         if (screenStack.size == 1) {
             musicController.pause()
             ConfirmPopup(
@@ -317,7 +316,6 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         val newScreen = screenStack.last()
         setScreen(newScreen)
         oldScreen.dispose()
-        timeAndLog()
         return newScreen
     }
 

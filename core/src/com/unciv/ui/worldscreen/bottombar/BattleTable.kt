@@ -263,6 +263,20 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         damageToDefender: Int
     ) {
         val canStillAttack = Battle.movePreparingAttack(attacker, attackableTile)
+        attacker.getTile().getUnits().forEach {
+            it.viewableTiles.forEach {
+                worldScreen.mapHolder.worldTileGroupsToRerender.addAll(
+                    worldScreen.mapHolder.tileGroups[it]!!
+                )
+            }
+        }
+        defender.getTile().getUnits().forEach {
+            it.viewableTiles.forEach {
+                worldScreen.mapHolder.worldTileGroupsToRerender.addAll(
+                    worldScreen.mapHolder.tileGroups[it]!!
+                )
+            }
+        }
         worldScreen.mapHolder.removeUnitActionOverlay() // the overlay was one of attacking
         // There was a direct worldScreen.update() call here, removing its 'private' but not the comment justifying the modifier.
         // My tests (desktop only) show the red-flash animations look just fine without.
