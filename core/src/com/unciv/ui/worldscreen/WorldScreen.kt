@@ -194,11 +194,7 @@ class WorldScreen(
         addKeyboardListener() // for map panning by W,S,A,D
         addKeyboardPresses()  // shortcut keys like F1
 
-        Log.debug("${
-            Throwable().stackTrace[0].fileName
-        }:${
-            Throwable().stackTrace[0].lineNumber
-        }")
+        timeAndLog()
         if (gameInfo.gameParameters.isOnlineMultiplayer && !gameInfo.isUpToDate)
             isPlayersTurn = false // until we're up to date, don't let the player do anything
 
@@ -214,21 +210,13 @@ class WorldScreen(
             }
         }
 
-        Log.debug("${
-            Throwable().stackTrace[0].fileName
-        }:${
-            Throwable().stackTrace[0].lineNumber
-        }")
+        timeAndLog()
         if (restoreState != null) restore(restoreState)
 
         // don't run update() directly, because the UncivGame.worldScreen should be set so that the city buttons and tile groups
         //  know what the viewing civ is.
         shouldUpdate = true
-        Log.debug("${
-            Throwable().stackTrace[0].fileName
-        }:${
-            Throwable().stackTrace[0].lineNumber
-        }")
+        timeAndLog()
     }
 
     override fun dispose() {
@@ -380,11 +368,7 @@ class WorldScreen(
     // That way, not only do we save a lot of unnecessary updates, we also ensure that all updates are called from the main GL thread
     // and we don't get any silly concurrency problems!
     private fun update() {
-        Log.debug("${
-            Throwable().stackTrace[0].fileName
-        }:${
-            Throwable().stackTrace[0].lineNumber
-        }")
+        timeAndLog()
         displayTutorialsOnUpdate()
 
         bottomUnitTable.update()
@@ -433,19 +417,11 @@ class WorldScreen(
         // it doesn't update the explored tiles of the civ... need to think about that harder
         // it causes a bug when we move a unit to an unexplored tile (for instance a cavalry unit which can move far)
 
-        Log.debug("${
-            Throwable().stackTrace[0].fileName
-        }:${
-            Throwable().stackTrace[0].lineNumber
-        }")
+        timeAndLog()
         if (fogOfWar) mapHolder.updateTiles(selectedCiv)
         else mapHolder.updateTiles(viewingCiv)
 
-        Log.debug("${
-            Throwable().stackTrace[0].fileName
-        }:${
-            Throwable().stackTrace[0].lineNumber
-        }")
+        timeAndLog()
         topBar.update(selectedCiv)
 
         if (techPolicyAndDiplomacy.update())
@@ -485,11 +461,7 @@ class WorldScreen(
         val posZoomFromRight = if (game.settings.showMinimap) minimapWrapper.width
         else bottomTileInfoTable.width
         zoomController.setPosition(stage.width - posZoomFromRight - 10f, 10f, Align.bottomRight)
-        Log.debug("${
-            Throwable().stackTrace[0].fileName
-        }:${
-            Throwable().stackTrace[0].lineNumber
-        }")
+        timeAndLog()
     }
 
     private fun getCurrentTutorialTask(): String {
