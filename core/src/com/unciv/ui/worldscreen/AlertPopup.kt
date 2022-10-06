@@ -68,6 +68,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
     init {
         val music = UncivGame.Current.musicController
 
+        // TODO Add tiles to be updated if necessary
         when (popupAlert.type) {
             AlertType.WarDeclaration -> {
                 val civInfo = worldScreen.gameInfo.getCivilization(popupAlert.value)

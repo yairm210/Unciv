@@ -64,6 +64,7 @@ class WorldMapHolder(
     //since tileGroup is a HashMap of Lists and getting all WordTileGroups
     //would need a double for loop
     private val allWorldTileGroups = ArrayList<WorldTileGroup>()
+    val worldTileGroupsToRerender = HashSet<WorldTileGroup>()
 
     private val unitActionOverlays: ArrayList<Actor> = ArrayList()
 
@@ -135,6 +136,8 @@ class WorldMapHolder(
                 allWorldTileGroups.add(tileGroup)
             }
         }
+        // Add every single tile in order to render all the world on game loading.
+        worldTileGroupsToRerender.addAll(allWorldTileGroups)
 
         for (tileGroup in allWorldTileGroups) {
             tileGroup.cityButtonLayerGroup.onClick(UncivSound.Silent) {
@@ -201,7 +204,6 @@ class WorldMapHolder(
             }
         } else addTileOverlays(tileInfo) // no unit movement but display the units in the tile etc.
 
-
         if (newSelectedUnit == null || newSelectedUnit.isCivilian()) {
             val unitsInTile = selectedTile!!.getUnits()
             if (previousSelectedCity != null && previousSelectedCity.canBombard()
@@ -236,11 +238,16 @@ class WorldMapHolder(
         val attackableTile = BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
             .firstOrNull { it.tileToAttack == tile }
         if (unit.canAttack() && attackableTile != null) {
-            worldScreen.shouldUpdate = true
             val attacker = MapUnitCombatant(unit)
-            if (!Battle.movePreparingAttack(attacker, attackableTile)) return
+            if (!Battle.movePreparingAttack(attacker, attackableTile)) {
+                return
+            }
             SoundPlayer.play(attacker.getAttackSound())
             Battle.attackOrNuke(attacker, attackableTile)
+            attacker.unit.viewableTiles.forEach {
+                worldTileGroupsToRerender.addAll(tileGroups[it]!!)
+            }
+            worldScreen.shouldUpdate = true
             return
         }
 
@@ -288,6 +295,11 @@ class WorldMapHolder(
                     if (selectedUnit.currentTile != targetTile)
                         selectedUnit.action = "moveTo " + targetTile.position.x.toInt() + "," + targetTile.position.y.toInt()
                     if (selectedUnit.currentMovement > 0) worldScreen.bottomUnitTable.selectUnit(selectedUnit)
+                    selectedUnits.forEach {
+                        it.viewableTiles.forEach {
+                            worldTileGroupsToRerender.addAll(tileGroups[it]!!.toList())
+                        }
+                    }
 
                     worldScreen.shouldUpdate = true
                     if (selectedUnits.size > 1) { // We have more tiles to move
@@ -311,18 +323,13 @@ class WorldMapHolder(
 
         if (selectedUnit.currentMovement > 0) worldScreen.bottomUnitTable.selectUnit(selectedUnit)
 
+        worldTileGroupsToRerender.addAll(tileGroups[targetTile]!!)
         worldScreen.shouldUpdate = true
         removeUnitActionOverlay()
     }
 
     private fun addTileOverlaysWithUnitMovement(selectedUnits: List<MapUnit>, tileInfo: TileInfo) {
         Concurrency.run("TurnsToGetThere") {
-            /** LibGdx sometimes has these weird errors when you try to edit the UI layout from 2 separate threads.
-             * And so, all UI editing will be done on the main thread.
-             * The only "heavy lifting" that needs to be done is getting the turns to get there,
-             * so that and that alone will be relegated to the concurrent thread.
-             */
-
             /** LibGdx sometimes has these weird errors when you try to edit the UI layout from 2 separate threads.
              * And so, all UI editing will be done on the main thread.
              * The only "heavy lifting" that needs to be done is getting the turns to get there,
@@ -439,12 +446,10 @@ class WorldMapHolder(
             .surroundWithCircle(buttonSize-2, false)
             .surroundWithCircle(buttonSize, false, Color.BLACK)
 
-
         val numberCircle = dto.unitToTurnsToDestination.values.maxOrNull()!!.toString().toLabel(fontSize = 14)
             .apply { setAlignment(Align.center) }
             .surroundWithCircle(smallerCircleSizes-2, color = ImageGetter.getBlue().darken(0.3f))
             .surroundWithCircle(smallerCircleSizes,false)
-
         moveHereButton.addActor(numberCircle)
 
         val firstUnit = dto.unitToTurnsToDestination.keys.first()
@@ -557,7 +562,6 @@ class WorldMapHolder(
     }
 
     internal fun updateTiles(viewingCiv: CivilizationInfo) {
-
         Log.debug("${
             Throwable().stackTrace[0].fileName
         }:${
@@ -570,16 +574,13 @@ class WorldMapHolder(
             allWorldTileGroups.forEach { it.showEntireMap = true } // So we can see all resources, regardless of tech
         }
 
-        val playerViewableTilePositions = viewingCiv.viewableTiles.map { it.position }.toHashSet()
-
         Log.debug("${
             Throwable().stackTrace[0].fileName
         }:${
             Throwable().stackTrace[0].lineNumber
         }")
-        for (tileGroup in allWorldTileGroups) {
+        for (tileGroup in worldTileGroupsToRerender) {
             tileGroup.update(viewingCiv)
-
 
             if (tileGroup.tileInfo.getShownImprovement(viewingCiv) == Constants.barbarianEncampment
                     && tileGroup.tileInfo.position in viewingCiv.exploredTiles)
@@ -591,6 +592,7 @@ class WorldMapHolder(
             if (tileGroup.isViewable(viewingCiv) && canSeeEnemy)
                 tileGroup.showHighlight(Color.RED) // Display ALL viewable enemies with a red circle so that users don't need to go "hunting" for enemy units
         }
+        worldTileGroupsToRerender.clear()
 
         Log.debug("${
             Throwable().stackTrace[0].fileName
@@ -598,6 +600,7 @@ class WorldMapHolder(
             Throwable().stackTrace[0].lineNumber
         }")
         val unitTable = worldScreen.bottomUnitTable
+        val playerViewableTilePositions = viewingCiv.viewableTiles.map { it.position }.toHashSet()
         when {
             unitTable.selectedCity != null -> {
                 val city = unitTable.selectedCity!!
@@ -615,9 +618,12 @@ class WorldMapHolder(
 
         // Same as below - randomly, tileGroups doesn't seem to contain the selected tile, and this doesn't seem reproducible
         val worldTileGroupsForSelectedTile = tileGroups[selectedTile]
-        if (worldTileGroupsForSelectedTile != null)
-            for (group in worldTileGroupsForSelectedTile)
+        if (worldTileGroupsForSelectedTile != null) {
+            for (group in worldTileGroupsForSelectedTile) {
                 group.showHighlight(Color.WHITE)
+            }
+            worldTileGroupsToRerender.addAll(worldTileGroupsForSelectedTile.toList())
+        }
 
         zoom(scaleX) // zoom to current scale, to set the size of the city buttons after "next turn"
         Log.debug("${
@@ -634,10 +640,11 @@ class WorldMapHolder(
         for (group in tileGroup) {
             group.selectUnit(unit)
         }
+        worldTileGroupsToRerender.addAll(tileGroup)
 
         // Fade out less relevant images if a military unit is selected
-        val fadeout = if (unit.isCivilian()) 1f
-        else 0.5f
+        val fadeout = if (unit.isCivilian()) 1f else 0.5f
+        // TODO Might also benefit from using worldTileGroupsToUpdate
         for (tile in allWorldTileGroups) {
             if (tile.icons.populationIcon != null) tile.icons.populationIcon!!.color.a = fadeout
 
@@ -657,6 +664,7 @@ class WorldMapHolder(
                     tileToColor.showHighlight(swapUnitsTileOverlayColor,
                         if (UncivGame.Current.settings.singleTapMove) 0.7f else 0.3f)
                 }
+                worldTileGroupsToRerender.addAll(tileGroups[tile]!!.toList())
             }
             return // We don't want to show normal movement or attack overlays in unit-swapping mode
         }
@@ -681,6 +689,7 @@ class WorldMapHolder(
                     tileToColor.showHighlight(moveTileOverlayColor,
                             if (UncivGame.Current.settings.singleTapMove || isAirUnit) 0.7f else 0.3f)
             }
+            worldTileGroupsToRerender.addAll(tileGroups[tile]!!.toList())
         }
 
         // Movement paths
@@ -688,6 +697,7 @@ class WorldMapHolder(
             for (tile in unitMovementPaths[unit]!!) {
                 for (tileToColor in tileGroups[tile]!!)
                     tileToColor.showHighlight(Color.SKY, 0.8f)
+                worldTileGroupsToRerender.addAll(tileGroups[tile]!!.toList())
             }
         }
 
@@ -695,17 +705,18 @@ class WorldMapHolder(
             val destinationTileGroups = tileGroups[unit.getMovementDestination()]!!
             for (destinationTileGroup in destinationTileGroups)
                 destinationTileGroup.showHighlight(Color.WHITE, 0.7f)
+            worldTileGroupsToRerender.addAll(destinationTileGroups)
         }
 
         val attackableTiles: List<AttackableTile> = if (unit.isCivilian()) listOf()
-        else {
-            BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
-                    .filter {
-                        (UncivGame.Current.viewEntireMapForDebug ||
-                                playerViewableTilePositions.contains(it.tileToAttack.position))
-                    }
-                    .distinctBy { it.tileToAttack }
-        }
+            else {
+                BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
+                        .filter {
+                            (UncivGame.Current.viewEntireMapForDebug ||
+                                    playerViewableTilePositions.contains(it.tileToAttack.position))
+                        }
+                        .distinctBy { it.tileToAttack }
+            }
 
         for (attackableTile in attackableTiles) {
             for (tileGroupToAttack in tileGroups[attackableTile.tileToAttack]!!) {
@@ -717,7 +728,9 @@ class WorldMapHolder(
                         else 1f
                 )
             }
+            worldTileGroupsToRerender.addAll(tileGroups[attackableTile.tileToAttack]!!.toList())
         }
+        unit.viewableTiles.forEach { worldTileGroupsToRerender.addAll(tileGroups[it]!!) }
     }
 
     private fun updateTilegroupsForSelectedCity(city: CityInfo, playerViewableTilePositions: HashSet<Vector2>) {
@@ -730,6 +743,7 @@ class WorldMapHolder(
                 group.showHighlight(colorFromRGB(237, 41, 57))
                 group.showCrosshair()
             }
+            worldTileGroupsToRerender.addAll(tileGroups[attackableTile]!!)
         }
     }
 

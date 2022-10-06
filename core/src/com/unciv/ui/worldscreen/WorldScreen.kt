@@ -610,11 +610,11 @@ class WorldScreen(
         fogOfWarButton.labelCell.pad(10f)
         fogOfWarButton.pack()
         fogOfWarButton.onClick {
+            // TODO What tiles are to be uodated?
             fogOfWar = !fogOfWar
             shouldUpdate = true
         }
         return fogOfWarButton
-
     }
 
     class RestoreState(
@@ -810,14 +810,29 @@ class WorldScreen(
                 }
 
             !viewingCiv.hasMovedAutomatedUnits && viewingCiv.getCivUnits()
-                .any { it.currentMovement > Constants.minimumMovementEpsilon && (it.isMoving() || it.isAutomated() || it.isExploring()) } ->
+                .any { it.hasPendingActionsThisTurn() } ->
                 NextTurnAction("Move automated units", Color.LIGHT_GRAY) {
                     viewingCiv.hasMovedAutomatedUnits = true
                     isPlayersTurn = false // Disable state changes
                     nextTurnButton.disable()
                     Concurrency.run("Move automated units") {
-                        for (unit in viewingCiv.getCivUnits())
-                            unit.doAction()
+                        val unitsPendingActionsThisTurn = viewingCiv.getCivUnits()
+                            .filter { it.hasPendingActionsThisTurn() }.toSet()
+                        val previousUiltsVisiblePosition =
+                                unitsPendingActionsThisTurn.map { it.viewableTiles }
+                        if (unitsPendingActionsThisTurn.isNotEmpty()) {
+                            for (unit in unitsPendingActionsThisTurn)
+                                unit.doAction()
+                            val newUnitsVisiblePositions =
+                                    unitsPendingActionsThisTurn.map { it.viewableTiles }
+                            val tilesToBeRerendered = previousUiltsVisiblePosition.flatten() union
+                                    newUnitsVisiblePositions.flatten()
+                            tilesToBeRerendered.forEach {
+                                mapHolder.worldTileGroupsToRerender.addAll(
+                                    mapHolder.tileGroups[it]!!
+                                )
+                            }
+                        }
                         launchOnGLThread {
                             shouldUpdate = true
                             isPlayersTurn = true //Re-enable state changes
@@ -899,7 +914,6 @@ class WorldScreen(
     }
 
     private fun backButtonAndESCHandler() {
-
         // Deselect Unit
         if (bottomUnitTable.selectedUnit != null) {
             bottomUnitTable.selectUnit()

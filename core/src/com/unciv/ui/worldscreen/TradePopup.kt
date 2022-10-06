@@ -91,12 +91,14 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
             tradeRequest.decline(viewingCiv)
             close()
             requestingCiv.addNotification("[${viewingCiv.civName}] has denied your trade request", viewingCiv.civName, NotificationIcon.Trade)
+            // Why update screen if trade rejected?
             worldScreen.shouldUpdate = true
         }.row()
 
         addButton("How about something else...", 'e') {
             close()
             worldScreen.game.pushScreen(DiplomacyScreen(viewingCiv, requestingCiv, trade))
+            // Shouldn't nnly successful trades affect this?
             worldScreen.shouldUpdate = true
         }.row()
     }
@@ -115,6 +117,7 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
                 worldScreen.shouldUpdate = true
                 // in all cases, worldScreen.shouldUpdate should be set to true when we remove the last of the popups
                 // in order for the next trade to appear immediately
+                // TODO Make it happen any other way
             }
             open()
         }

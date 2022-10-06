@@ -413,6 +413,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
      * Update this unit's cache of viewable tiles and its civ's as well.
      */
     fun updateVisibleTiles(updateCivViewableTiles:Boolean = true) {
+        // TODO Update tiles to be rerendered of WorldMapHolder
         val oldViewableTiles = viewableTiles
 
         viewableTiles = when {
@@ -442,6 +443,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun isPreparingParadrop() = action == UnitActionType.Paradrop.value
     fun isPreparingAirSweep() = action == UnitActionType.AirSweep.value
     fun isSetUpForSiege() = action == UnitActionType.SetUp.value
+    fun hasPendingActionsThisTurn() =
+            currentMovement > Constants.minimumMovementEpsilon
+                    && (isMoving() || isAutomated() || isExploring())
 
     /** For display in Unit Overview */
     fun getActionLabel() = if (action == null) "" else if (isFortified()) UnitActionType.Fortify.value else if (isMoving()) "Moving" else action!!

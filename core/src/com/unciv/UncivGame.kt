@@ -42,6 +42,7 @@ import com.unciv.utils.concurrency.launchOnGLThread
 import com.unciv.utils.concurrency.withGLContext
 import com.unciv.utils.concurrency.withThreadPoolContext
 import com.unciv.utils.debug
+import dev.timeAndLog
 import kotlinx.coroutines.CancellationException
 import java.io.PrintWriter
 import java.util.*
@@ -296,6 +297,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
      * @return the new screen
      */
     fun popScreen(): BaseScreen? {
+        // TODO Make main menu appear either on ESC or "menu" key clicked
+        timeAndLog()
         if (screenStack.size == 1) {
             musicController.pause()
             ConfirmPopup(
@@ -314,6 +317,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         val newScreen = screenStack.last()
         setScreen(newScreen)
         oldScreen.dispose()
+        timeAndLog()
         return newScreen
     }
 
