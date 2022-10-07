@@ -188,7 +188,7 @@ class GlobalPoliticsOverviewTable (
             if(civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.Denunciation) == true) {
                 val denouncedText = "Denounced [${otherCiv.civName}]".toLabel()
                 denouncedText.color = Color.RED
-                val turnsLeftText = "({${civ.diplomacy[otherCiv.civName]?.getFlag(DiplomacyFlags.Denunciation)} Turns Left})".toLabel()
+                val turnsLeftText = "(${civ.diplomacy[otherCiv.civName]?.getFlag(DiplomacyFlags.Denunciation)} ${Fonts.turn})".toLabel()
                 politicsTable.add(denouncedText)
                 politicsTable.add(turnsLeftText).row()
             }
