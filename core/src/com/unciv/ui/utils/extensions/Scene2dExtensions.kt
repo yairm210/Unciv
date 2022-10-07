@@ -430,10 +430,14 @@ fun Image.setSize(size: Float) {
     setSize(size, size)
 }
 
-/** Translate a [String] and make a [TextButton] widget from it */
-fun String.toTextButton(style: TextButtonStyle? = null): TextButton {
+/** Translate a [String] and make a [TextButton] widget from it with click handler [onClickAction] */
+fun String.toTextButton(style: TextButtonStyle? = null, onClickAction: (() -> Unit)? = null): TextButton {
     val text = this.tr()
-    return if (style == null) TextButton(text, BaseScreen.skin) else TextButton(text, style)
+    val textButton = if (style == null) TextButton(text, BaseScreen.skin) else TextButton(text, style)
+    if (onClickAction != null) {
+        textButton.onClick { onClickAction() }
+    }
+    return textButton
 }
 
 /** Translate a [String] and make a [Label] widget from it */

@@ -15,7 +15,6 @@ import com.unciv.logic.civilization.WonderInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
-import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.AutoScrollPane
@@ -68,8 +67,7 @@ class GlobalPoliticsOverviewTable (
         clear()
         getFixedContent().clear()
 
-        val diagramButton = TextButton("Show diagram".tr(), skin)
-        diagramButton.onClick { updateDiagram() }
+        val diagramButton = "Show diagram".toTextButton(onClickAction = ::updateDiagram)
 
         add()
         addSeparatorVertical(Color.GRAY)
@@ -213,7 +211,7 @@ class GlobalPoliticsOverviewTable (
 
     // Refresh content and determine landscape/portrait layout
     private fun updateDiagram() {
-        val politicsButton = TextButton("Show global politics".tr(), skin).apply { onClick { updatePoliticsTable() } }
+        val politicsButton = "Show global politics".toTextButton(onClickAction = ::updatePoliticsTable)
 
         val toggleCityStatesButton: TextButton = Constants.cityStates.toTextButton().apply {
             onClick {
