@@ -67,7 +67,7 @@ class GlobalPoliticsOverviewTable (
         clear()
         getFixedContent().clear()
 
-        val diagramButton = "Show diagram".toTextButton(onClickAction = ::updateDiagram)
+        val diagramButton = "Show diagram".toTextButton().onClick(::updateDiagram)
 
         add()
         addSeparatorVertical(Color.GRAY)
@@ -211,7 +211,7 @@ class GlobalPoliticsOverviewTable (
 
     // Refresh content and determine landscape/portrait layout
     private fun updateDiagram() {
-        val politicsButton = "Show global politics".toTextButton(onClickAction = ::updatePoliticsTable)
+        val politicsButton = "Show global politics".toTextButton().onClick(::updatePoliticsTable)
 
         val toggleCityStatesButton: TextButton = Constants.cityStates.toTextButton().apply {
             onClick {
