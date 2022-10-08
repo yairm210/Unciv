@@ -3,6 +3,7 @@ package com.unciv.ui.worldscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.map.MapUnit
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
@@ -80,9 +81,29 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
 
         addButton("Sounds good!", 'y') {
             val tradeLogic = TradeLogic(viewingCiv, requestingCiv)
+            val unitsToUpdateTiles = HashSet<MapUnit>()
+            if (tradeLogic.currentTrade.isPeaceTreaty()) {
+                for (ourUnit in viewingCiv.getCivUnits()) {
+                    for (theirCity in requestingCiv.cities) {
+                        for (tile in theirCity.getTiles()) {
+                            for (unit in tile.getUnits()) {
+                                if (unit.civInfo == viewingCiv) {
+                                    worldScreen.mapHolder.addTilesToUpdate(unit.viewableTiles.asSequence())
+                                    unitsToUpdateTiles.add(unit)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             tradeLogic.currentTrade.set(trade)
             tradeLogic.acceptTrade()
             close()
+            if (tradeLogic.currentTrade.isPeaceTreaty()) {
+                for (ourUnit in unitsToUpdateTiles) {
+                    worldScreen.mapHolder.addTilesToUpdate(ourUnit.viewableTiles.asSequence())
+                }
+            }
             TradeThanksPopup(leaderIntroTable, worldScreen)
             requestingCiv.addNotification("[${viewingCiv.civName}] has accepted your trade request", viewingCiv.civName, NotificationIcon.Trade)
         }.row()
@@ -91,14 +112,12 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
             tradeRequest.decline(viewingCiv)
             close()
             requestingCiv.addNotification("[${viewingCiv.civName}] has denied your trade request", viewingCiv.civName, NotificationIcon.Trade)
-            // Why update screen if trade rejected?
             worldScreen.shouldUpdate = true
         }.row()
 
         addButton("How about something else...", 'e') {
             close()
             worldScreen.game.pushScreen(DiplomacyScreen(viewingCiv, requestingCiv, trade))
-            // Shouldn't nnly successful trades affect this?
             worldScreen.shouldUpdate = true
         }.row()
     }
