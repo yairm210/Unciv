@@ -111,6 +111,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                         && conqueringCiv.civName != city.foundingCiv) { // or belongs originally to us
                     addLiberateOption(city.foundingCiv) {
                         city.liberateCity(conqueringCiv)
+                        worldScreen.mapHolder.addTilesToUpdate(city.getTiles())
                         worldScreen.shouldUpdate = true
                         close()
                     }
@@ -121,6 +122,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                     addDestroyOption {
                         city.puppetCity(conqueringCiv)
                         city.destroyCity()
+                        worldScreen.mapHolder.addTilesToUpdate(city.getTiles())
                         worldScreen.shouldUpdate = true
                         close()
                     }
@@ -128,6 +130,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                     addAnnexOption {
                         city.puppetCity(conqueringCiv)
                         city.annexCity()
+                        worldScreen.mapHolder.addTilesToUpdate(city.getTiles())
                         worldScreen.shouldUpdate = true
                         close()
                     }
@@ -135,6 +138,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
 
                     addPuppetOption {
                         city.puppetCity(conqueringCiv)
+                        worldScreen.mapHolder.addTilesToUpdate(city.getTiles())
                         worldScreen.shouldUpdate = true
                         close()
                     }
@@ -144,6 +148,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                         city.puppetCity(conqueringCiv)
                         city.annexCity()
                         city.isBeingRazed = true
+                        worldScreen.mapHolder.addTilesToUpdate(city.getTiles())
                         worldScreen.shouldUpdate = true
                         close()
                     }
@@ -156,6 +161,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
 
                 addLiberateOption(city.foundingCiv) {
                     city.liberateCity(conqueringCiv)
+                    worldScreen.mapHolder.addTilesToUpdate(city.getTiles())
                     worldScreen.shouldUpdate = true
                     close()
                 }
@@ -266,6 +272,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 if (marryingCiv.isOneCityChallenger()) {
                     addDestroyOption {
                         city.destroyCity(overrideSafeties = true)
+                        worldScreen.mapHolder.addTilesToUpdate(city.getTiles())
                         worldScreen.shouldUpdate = true
                         close()
                     }
@@ -279,6 +286,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                     addPuppetOption {
                         city.isPuppet = true
                         city.cityStats.update()
+                        worldScreen.mapHolder.addTilesToUpdate(city.getTiles())
                         worldScreen.shouldUpdate = true
                         close()
                     }
@@ -337,12 +345,15 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
         responseTable.add(getCloseButton(Constants.yes, 'y') {
             // Return it to original owner
             val unitName = capturedUnit.baseUnit.name
+            val capturedUnitTile = capturedUnit.getTile()
             capturedUnit.destroy()
+            worldScreen.mapHolder.addTilesToUpdate(listOf(capturedUnitTile).asSequence())
             val closestCity =
                 originalOwner.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
             if (closestCity != null) {
                 // Attempt to place the unit near their nearest city
-                originalOwner.placeUnitNearTile(closestCity.location, unitName)
+                val newUnit = originalOwner.placeUnitNearTile(closestCity.location, unitName)
+                worldScreen.mapHolder.addTilesToUpdate(listOf(newUnit?.getTile()!!).asSequence())
             }
 
             if (originalOwner.isCityState()) {
@@ -357,13 +368,17 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
             // Take it for ourselves
             // Settlers become workers at this point
             if (capturedUnit.hasUnique(UniqueType.FoundCity)) {
+                worldScreen.mapHolder.addTilesToUpdate(listOf(capturedUnit.getTile()).asSequence())
                 capturedUnit.destroy()
                 // This is so that future checks which check if a unit has been captured are caught give the right answer
                 //  For example, in postBattleMoveToAttackedTile
                 capturedUnit.civInfo = captor
                 captor.placeUnitNearTile(tile.position, Constants.worker)
+                worldScreen.mapHolder.addTilesToUpdate(listOf(capturedUnit.getTile()).asSequence())
             } else
+                worldScreen.mapHolder.addTilesToUpdate(listOf(capturedUnit.getTile()).asSequence())
                 capturedUnit.capturedBy(captor)
+                worldScreen.mapHolder.addTilesToUpdate(listOf(capturedUnit.getTile()).asSequence())
         }).row()
         add(responseTable)
     }
