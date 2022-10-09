@@ -51,6 +51,7 @@ import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
+import com.unciv.utils.debug
 import dev.timeAndLog
 
 
@@ -567,6 +568,12 @@ class WorldMapHolder(
         }
     }
 
+    fun addTilesToUpdate(tiles: Sequence<TileInfo>) {
+        tiles.forEach {
+            worldTileGroupsToRerender.addAll(tileGroups[it]!!)
+        }
+    }
+
     internal fun updateTiles(viewingCiv: CivilizationInfo) {
         timeAndLog()
         if (isMapRevealEnabled(viewingCiv)) {
@@ -590,9 +597,10 @@ class WorldMapHolder(
             if (tileGroup.isViewable(viewingCiv) && canSeeEnemy)
                 tileGroup.showHighlight(Color.RED) // Display ALL viewable enemies with a red circle so that users don't need to go "hunting" for enemy units
         }
+        val updatedTilesCount = worldTileGroupsToRerender.size
         worldTileGroupsToRerender.clear()
+        debug("$updatedTilesCount tiles updated")
 
-        timeAndLog()
         val unitTable = worldScreen.bottomUnitTable
         val playerViewableTilePositions = viewingCiv.viewableTiles.map { it.position }.toHashSet()
         when {
