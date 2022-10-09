@@ -329,9 +329,15 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     fun resetToWorldScreen(): WorldScreen {
         for (screen in screenStack.filter { it !is WorldScreen}) screen.dispose()
         screenStack.removeAll { it !is WorldScreen }
-        val worldScreen = screenStack.last()
+        val worldScreen= screenStack.last() as WorldScreen
+
+        // Re-initialize translations, images etc. that may have been 'lost' when we were playing around in NewGameScreen
+        val ruleset = worldScreen.gameInfo.ruleSet
+        translations.translationActiveMods = ruleset.mods
+        ImageGetter.setNewRuleset(ruleset)
+
         setScreen(worldScreen)
-        return worldScreen as WorldScreen
+        return worldScreen
     }
 
     private fun tryLoadDeepLinkedGame() = Concurrency.run("LoadDeepLinkedGame") {
@@ -464,7 +470,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.2.11", 755)
+        val VERSION = Version("4.2.12", 756)
         //endregion
 
         lateinit var Current: UncivGame

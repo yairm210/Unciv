@@ -1187,6 +1187,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Destroys tile improvements when attacking"
 	Applicable to: Unit
 
+??? example  "Cannot move"
+	Applicable to: Unit
+
 ??? example  "Double movement in [terrainFilter]"
 	Example: "Double movement in [Fresh Water]"
 
