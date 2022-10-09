@@ -52,7 +52,7 @@ import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import com.unciv.utils.debug
-import dev.timeAndLog
+import dev.logSourceHint
 
 
 class WorldMapHolder(
@@ -582,7 +582,7 @@ class WorldMapHolder(
     }
 
     internal fun updateTiles(viewingCiv: CivilizationInfo) {
-        timeAndLog()
+        logSourceHint()
         if (isMapRevealEnabled(viewingCiv)) {
             // Only needs to be done once - this is so the minimap will also be revealed
             if (viewingCiv.exploredTiles.size != tileMap.values.size)
@@ -590,7 +590,7 @@ class WorldMapHolder(
             allWorldTileGroups.forEach { it.showEntireMap = true } // So we can see all resources, regardless of tech
         }
 
-        timeAndLog()
+        logSourceHint()
         for (tileGroup in worldTileGroupsToRerender) {
             tileGroup.update(viewingCiv)
 
@@ -635,7 +635,7 @@ class WorldMapHolder(
         }
 
         zoom(scaleX) // zoom to current scale, to set the size of the city buttons after "next turn"
-        timeAndLog()
+        logSourceHint()
     }
 
     private fun updateTilegroupsForSelectedUnit(unit: MapUnit, playerViewableTilePositions: HashSet<Vector2>) {

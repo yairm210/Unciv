@@ -9,6 +9,6 @@ inline fun time(function: () -> Any) : Long {
     return duration
 }
 
-fun timeAndLog() {
+fun logSourceHint() {
     Log.debug("${Throwable().stackTrace[1].fileName}:${Throwable().stackTrace[1].lineNumber}")
 }

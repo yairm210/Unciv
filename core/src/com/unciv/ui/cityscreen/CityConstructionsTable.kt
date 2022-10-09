@@ -45,6 +45,7 @@ import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
+import dev.logSourceHint
 import kotlin.math.max
 import kotlin.math.min
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
@@ -228,16 +229,21 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         }
 
         Concurrency.run("Construction info gathering - ${cityScreen.city.name}") {
+            logSourceHint()
             // Since this can be a heavy operation and leads to many ANRs on older phones we put the metadata-gathering in another thread.
             val constructionButtonDTOList = getConstructionButtonDTOs()
+            logSourceHint()
             launchOnGLThread {
+                logSourceHint()
                 val units = ArrayList<Table>()
                 val buildableWonders = ArrayList<Table>()
                 val buildableNationalWonders = ArrayList<Table>()
                 val buildableBuildings = ArrayList<Table>()
                 val specialConstructions = ArrayList<Table>()
 
+                logSourceHint()
                 var maxButtonWidth = constructionsQueueTable.width
+                logSourceHint()
                 for (dto in constructionButtonDTOList) {
                     val constructionButton = getConstructionButton(dto)
                     when (dto.construction) {
@@ -254,6 +260,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                     maxButtonWidth = max(maxButtonWidth, constructionButton.packIfNeeded().width)
                 }
 
+                logSourceHint()
                 availableConstructionsTable.apply {
                     clear()
                     defaults().left().bottom()
@@ -265,13 +272,16 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                     pack()
                 }
 
+                logSourceHint()
                 availableConstructionsScrollPane.apply {
                     setSize(maxButtonWidth, min(availableConstructionsTable.prefHeight, lowerTableScrollCell.maxHeight))
                     layout()
                     scrollY = constructionsScrollY
                     updateVisualScroll()
                 }
+                logSourceHint()
                 lowerTable.pack()
+                logSourceHint()
             }
         }
     }

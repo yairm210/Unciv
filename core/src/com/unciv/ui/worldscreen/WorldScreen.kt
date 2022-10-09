@@ -77,7 +77,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.utils.Log
-import dev.timeAndLog
+import dev.logSourceHint
 
 /**
  * Do not create this screen without seriously thinking about the implications: this is the single most memory-intensive class in the application.
@@ -137,17 +137,17 @@ class WorldScreen(
 
 
     init {
-        timeAndLog()
+        logSourceHint()
         // notifications are right-aligned, they take up only as much space as necessary.
         notificationsScroll.width = stage.width / 2
 
         minimapWrapper.x = stage.width - minimapWrapper.width
 
-        timeAndLog()
+        logSourceHint()
         // This is the most memory-intensive operation we have currently, most OutOfMemory errors will occur here
         mapHolder.addTiles()
 
-        timeAndLog()
+        logSourceHint()
         // resume music (in case choices from the menu lead to instantiation of a new WorldScreen)
         UncivGame.Current.musicController.resume()
 
@@ -194,7 +194,7 @@ class WorldScreen(
         addKeyboardListener() // for map panning by W,S,A,D
         addKeyboardPresses()  // shortcut keys like F1
 
-        timeAndLog()
+        logSourceHint()
         if (gameInfo.gameParameters.isOnlineMultiplayer && !gameInfo.isUpToDate)
             isPlayersTurn = false // until we're up to date, don't let the player do anything
 
@@ -210,13 +210,13 @@ class WorldScreen(
             }
         }
 
-        timeAndLog()
+        logSourceHint()
         if (restoreState != null) restore(restoreState)
 
         // don't run update() directly, because the UncivGame.worldScreen should be set so that the city buttons and tile groups
         //  know what the viewing civ is.
         shouldUpdate = true
-        timeAndLog()
+        logSourceHint()
     }
 
     override fun dispose() {
@@ -368,7 +368,7 @@ class WorldScreen(
     // That way, not only do we save a lot of unnecessary updates, we also ensure that all updates are called from the main GL thread
     // and we don't get any silly concurrency problems!
     private fun update() {
-        timeAndLog()
+        logSourceHint()
         displayTutorialsOnUpdate()
 
         bottomUnitTable.update()
@@ -417,11 +417,11 @@ class WorldScreen(
         // it doesn't update the explored tiles of the civ... need to think about that harder
         // it causes a bug when we move a unit to an unexplored tile (for instance a cavalry unit which can move far)
 
-        timeAndLog()
+        logSourceHint()
         if (fogOfWar) mapHolder.updateTiles(selectedCiv)
         else mapHolder.updateTiles(viewingCiv)
 
-        timeAndLog()
+        logSourceHint()
         topBar.update(selectedCiv)
 
         if (techPolicyAndDiplomacy.update())
@@ -461,7 +461,7 @@ class WorldScreen(
         val posZoomFromRight = if (game.settings.showMinimap) minimapWrapper.width
         else bottomTileInfoTable.width
         zoomController.setPosition(stage.width - posZoomFromRight - 10f, 10f, Align.bottomRight)
-        timeAndLog()
+        logSourceHint()
     }
 
     private fun getCurrentTutorialTask(): String {
