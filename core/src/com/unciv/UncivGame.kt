@@ -329,9 +329,15 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     fun resetToWorldScreen(): WorldScreen {
         for (screen in screenStack.filter { it !is WorldScreen}) screen.dispose()
         screenStack.removeAll { it !is WorldScreen }
-        val worldScreen = screenStack.last()
+        val worldScreen= screenStack.last() as WorldScreen
+
+        // Re-initialize translations, images etc. that may have been 'lost' when we were playing around in NewGameScreen
+        val ruleset = worldScreen.gameInfo.ruleSet
+        translations.translationActiveMods = ruleset.mods
+        ImageGetter.setNewRuleset(ruleset)
+
         setScreen(worldScreen)
-        return worldScreen as WorldScreen
+        return worldScreen
     }
 
     private fun tryLoadDeepLinkedGame() = Concurrency.run("LoadDeepLinkedGame") {
