@@ -109,9 +109,14 @@ private fun addUnitIconAlphaSlider(table: Table, settings: GameSettings, selectB
         settings.save()
 
         val worldScreen = UncivGame.Current.getWorldScreenIfActive()
-        if (worldScreen != null)
+        if (worldScreen != null) {
+            worldScreen.mapHolder.addTilesToUpdate(
+                worldScreen.gameInfo.currentPlayerCiv.viewableTiles.filter {
+                    it.getUnits().toList().isNotEmpty()
+                }
+            )
             worldScreen.shouldUpdate = true
-
+        }
     }
     table.add(unitIconAlphaSlider).minWidth(selectBoxMinWidth).pad(10f).row()
 }

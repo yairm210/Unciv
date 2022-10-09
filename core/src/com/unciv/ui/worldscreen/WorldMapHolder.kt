@@ -568,10 +568,17 @@ class WorldMapHolder(
         }
     }
 
+    // TODO Call these functions directly instead of manipulating [worldTileGroupsToUpdate] directly.
+    fun addTilesToUpdate(tiles: List<TileInfo>) {
+        addTilesToUpdate(tiles.asSequence())
+    }
     fun addTilesToUpdate(tiles: Sequence<TileInfo>) {
         tiles.forEach {
             worldTileGroupsToRerender.addAll(tileGroups[it]!!)
         }
+    }
+    fun addTileToUpdate(tile: TileInfo) {
+        worldTileGroupsToRerender.addAll(tileGroups[tile]!!)
     }
 
     internal fun updateTiles(viewingCiv: CivilizationInfo) {

@@ -157,6 +157,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
         city.cityStats.update()
         val worldScreen = UncivGame.Current.worldScreen
         if (!UncivGame.Current.consoleMode && worldScreen != null) {
+            worldScreen.mapHolder.addTilesToUpdate(city.getTiles())
             worldScreen.shouldUpdate = true
         }
     }
