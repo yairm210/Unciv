@@ -573,12 +573,14 @@ class WorldMapHolder(
         addTilesToUpdate(tiles.asSequence())
     }
     fun addTilesToUpdate(tiles: Sequence<TileInfo>) {
-        tiles.forEach {
-            worldTileGroupsToRerender.addAll(tileGroups[it]!!)
-        }
+        tiles.filter { tileGroups[it] != null }
+            .forEach {
+                worldTileGroupsToRerender.addAll(tileGroups[it]!!)
+            }
     }
     fun addTileToUpdate(tile: TileInfo) {
-        worldTileGroupsToRerender.addAll(tileGroups[tile]!!)
+        if (tileGroups[tile] != null)
+            worldTileGroupsToRerender.addAll(tileGroups[tile]!!)
     }
 
     internal fun updateTiles(viewingCiv: CivilizationInfo) {
