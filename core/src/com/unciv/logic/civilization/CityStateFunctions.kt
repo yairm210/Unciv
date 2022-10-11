@@ -246,7 +246,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                     newAllyCiv.getDiplomacyManager(civInfo.civName).setFlag(DiplomacyFlags.MarriageCooldown, unique.params[0].toInt())
 
                 // Join the wars of our new ally - loop through all civs they are at war with
-                for (newEnemy in civInfo.gameInfo.civilizations.filter { it.isAtWarWith(newAllyCiv) && it.isAlive() } ) {
+                for (newEnemy in civInfo.gameInfo.civilizations.filter { it != civInfo && it.isAtWarWith(newAllyCiv) && it.isAlive() } ) {
                     if (civInfo.knows(newEnemy) && !civInfo.isAtWarWith(newEnemy))
                         civInfo.getDiplomacyManager(newEnemy).declareWar()
                     else if (!civInfo.knows(newEnemy)) {
