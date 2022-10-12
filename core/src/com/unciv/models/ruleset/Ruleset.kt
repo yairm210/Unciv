@@ -402,14 +402,14 @@ class Ruleset {
         uniqueContainer: IHasUniques,
         lines: RulesetErrorList,
         severityToReport: UniqueType.UniqueComplianceErrorSeverity,
-        forOptionsPopup: Boolean
+        tryFixUnknownUniques: Boolean
     ) {
         val name = if (uniqueContainer is INamed) uniqueContainer.name else ""
 
         for (unique in uniqueContainer.uniqueObjects) {
             val errors = checkUnique(
                 unique,
-                forOptionsPopup,
+                tryFixUnknownUniques,
                 name,
                 severityToReport,
                 uniqueContainer.getUniqueTarget()
@@ -420,13 +420,13 @@ class Ruleset {
 
     fun checkUnique(
         unique: Unique,
-        forOptionsPopup: Boolean,
+        tryFixUnknownUniques: Boolean,
         name: String,
         severityToReport: UniqueType.UniqueComplianceErrorSeverity,
         uniqueTarget: UniqueTarget
     ): List<RulesetError> {
         if (unique.type == null) {
-            if (!forOptionsPopup) return emptyList()
+            if (!tryFixUnknownUniques) return emptyList()
             val similarUniques = UniqueType.values().filter {
                 getRelativeTextDistance(
                     it.placeholderText,
@@ -564,7 +564,7 @@ class Ruleset {
                 .joinToString("\n") { it.errorSeverityToReport.name + ": " + it.text }
     }
 
-    fun checkModLinks(forOptionsPopup: Boolean = false): RulesetErrorList {
+    fun checkModLinks(tryFixUnknownUniques: Boolean = false): RulesetErrorList {
         val lines = RulesetErrorList()
 
         // Checks for all mods - only those that can succeed without loading a base ruleset
@@ -581,7 +581,7 @@ class Ruleset {
             if (unit.isRanged() && unit.rangedStrength == 0 && !unit.hasUnique(UniqueType.CannotAttack))
                 lines += "${unit.name} is a ranged unit but has no assigned rangedStrength!"
 
-            checkUniques(unit, lines, rulesetInvariant, forOptionsPopup)
+            checkUniques(unit, lines, rulesetInvariant, tryFixUnknownUniques)
         }
 
         for (tech in technologies.values) {
@@ -590,14 +590,14 @@ class Ruleset {
                     lines += "${tech.name} is in the same row as ${otherTech.name}!"
             }
 
-            checkUniques(tech, lines, rulesetInvariant, forOptionsPopup)
+            checkUniques(tech, lines, rulesetInvariant, tryFixUnknownUniques)
         }
 
         for (building in buildings.values) {
             if (building.requiredTech == null && building.cost == 0 && !building.hasUnique(UniqueType.Unbuildable))
                 lines += "${building.name} is buildable and therefore must either have an explicit cost or reference an existing tech!"
 
-            checkUniques(building, lines, rulesetInvariant, forOptionsPopup)
+            checkUniques(building, lines, rulesetInvariant, tryFixUnknownUniques)
 
         }
 
@@ -606,15 +606,15 @@ class Ruleset {
                 lines += "${nation.name} can settle cities, but has no city names!"
             }
 
-            checkUniques(nation, lines, rulesetInvariant, forOptionsPopup)
+            checkUniques(nation, lines, rulesetInvariant, tryFixUnknownUniques)
         }
 
         for (promotion in unitPromotions.values) {
-            checkUniques(promotion, lines, rulesetInvariant, forOptionsPopup)
+            checkUniques(promotion, lines, rulesetInvariant, tryFixUnknownUniques)
         }
 
         for (resource in tileResources.values) {
-            checkUniques(resource, lines, rulesetInvariant, forOptionsPopup)
+            checkUniques(resource, lines, rulesetInvariant, tryFixUnknownUniques)
         }
 
         // Quit here when no base ruleset is loaded - references cannot be checked
@@ -654,7 +654,7 @@ class Ruleset {
                 }
             }
 
-            checkUniques(unit, lines, rulesetSpecific, forOptionsPopup)
+            checkUniques(unit, lines, rulesetSpecific, tryFixUnknownUniques)
         }
 
         for (building in buildings.values) {
@@ -674,7 +674,7 @@ class Ruleset {
             if (building.requiredBuildingInAllCities != null)
                 lines.add("${building.name} contains 'requiredBuildingInAllCities' - please convert to a \"" +
                         UniqueType.RequiresBuildingInAllCities.text.fillPlaceholders(building.requiredBuildingInAllCities!!)+"\" unique", RulesetErrorSeverity.Warning)
-            checkUniques(building, lines, rulesetSpecific, forOptionsPopup)
+            checkUniques(building, lines, rulesetSpecific, tryFixUnknownUniques)
         }
 
         for (resource in tileResources.values) {
@@ -688,7 +688,7 @@ class Ruleset {
             for (terrain in resource.terrainsCanBeFoundOn)
                 if (!terrains.containsKey(terrain))
                     lines += "${resource.name} can be found on terrain $terrain which does not exist!"
-            checkUniques(resource, lines, rulesetSpecific, forOptionsPopup)
+            checkUniques(resource, lines, rulesetSpecific, tryFixUnknownUniques)
         }
 
         for (improvement in tileImprovements.values) {
@@ -727,7 +727,7 @@ class Ruleset {
                     RulesetErrorSeverity.Warning
                 )
             }
-            checkUniques(improvement, lines, rulesetSpecific, forOptionsPopup)
+            checkUniques(improvement, lines, rulesetSpecific, tryFixUnknownUniques)
         }
 
         if (terrains.values.none { it.type == TerrainType.Land && !it.impassable })
@@ -736,7 +736,7 @@ class Ruleset {
             for (baseTerrain in terrain.occursOn)
                 if (!terrains.containsKey(baseTerrain))
                     lines += "${terrain.name} occurs on terrain $baseTerrain which does not exist!"
-            checkUniques(terrain, lines, rulesetSpecific, forOptionsPopup)
+            checkUniques(terrain, lines, rulesetSpecific, tryFixUnknownUniques)
         }
 
         val prereqsHashMap = HashMap<String,HashSet<String>>()
@@ -765,7 +765,7 @@ class Ruleset {
             }
             if (tech.era() !in eras)
                 lines += "Unknown era ${tech.era()} referenced in column of tech ${tech.name}"
-            checkUniques(tech, lines, rulesetSpecific, forOptionsPopup)
+            checkUniques(tech, lines, rulesetSpecific, tryFixUnknownUniques)
         }
 
         if (eras.isEmpty()) {
@@ -806,7 +806,7 @@ class Ruleset {
                 lines.add("No friend bonus defined for era ${era.name}", RulesetErrorSeverity.Warning)
 
 
-            checkUniques(era, lines, rulesetSpecific, forOptionsPopup)
+            checkUniques(era, lines, rulesetSpecific, tryFixUnknownUniques)
         }
 
         for (speed in speeds.values) {
@@ -817,11 +817,11 @@ class Ruleset {
         }
 
         for (belief in beliefs.values) {
-            checkUniques(belief, lines, rulesetSpecific, forOptionsPopup)
+            checkUniques(belief, lines, rulesetSpecific, tryFixUnknownUniques)
         }
 
         for (nation in nations.values) {
-            checkUniques(nation, lines, rulesetSpecific, forOptionsPopup)
+            checkUniques(nation, lines, rulesetSpecific, tryFixUnknownUniques)
             if (nation.favoredReligion != null && nation.favoredReligion !in religions)
                 lines += "${nation.name} has ${nation.favoredReligion} as their favored religion, which does not exist!"
         }
@@ -831,7 +831,7 @@ class Ruleset {
                 for (prereq in policy.requires!!)
                     if (!policies.containsKey(prereq))
                         lines += "${policy.name} requires policy $prereq which does not exist!"
-            checkUniques(policy, lines, rulesetSpecific, forOptionsPopup)
+            checkUniques(policy, lines, rulesetSpecific, tryFixUnknownUniques)
         }
 
         for (branch in policyBranches.values)
@@ -847,7 +847,7 @@ class Ruleset {
             for (difficulty in reward.excludedDifficulties)
                 if (!difficulties.containsKey(difficulty))
                     lines += "${reward.name} references difficulty ${difficulty}, which does not exist!"
-            checkUniques(reward, lines, rulesetSpecific, forOptionsPopup)
+            checkUniques(reward, lines, rulesetSpecific, tryFixUnknownUniques)
         }
 
         for (promotion in unitPromotions.values) {
@@ -858,11 +858,11 @@ class Ruleset {
             for (unitType in promotion.unitTypes)
                 if (!unitTypes.containsKey(unitType) && (unitTypes.isNotEmpty() || !vanillaRuleset.unitTypes.containsKey(unitType)))
                     lines.add("${promotion.name} references unit type $unitType, which does not exist!", RulesetErrorSeverity.Warning)
-            checkUniques(promotion, lines, rulesetSpecific, forOptionsPopup)
+            checkUniques(promotion, lines, rulesetSpecific, tryFixUnknownUniques)
         }
 
         for (unitType in unitTypes.values) {
-            checkUniques(unitType, lines, rulesetSpecific, forOptionsPopup)
+            checkUniques(unitType, lines, rulesetSpecific, tryFixUnknownUniques)
         }
 
         for (victoryType in victories.values) {
@@ -1029,12 +1029,12 @@ object RulesetCache : HashMap<String,Ruleset>() {
     fun checkCombinedModLinks(
         mods: LinkedHashSet<String>,
         baseRuleset: String? = null,
-        forOptionsPopup: Boolean = false
+        tryFixUnknownUniques: Boolean = false
     ): Ruleset.RulesetErrorList {
         return try {
             val newRuleset = getComplexRuleset(mods, baseRuleset)
             newRuleset.modOptions.isBaseRuleset = true // This is so the checkModLinks finds all connections
-            newRuleset.checkModLinks(forOptionsPopup)
+            newRuleset.checkModLinks(tryFixUnknownUniques)
         } catch (ex: UncivShowableException) {
             // This happens if a building is dependent on a tech not in the base ruleset
             //  because newRuleset.updateBuildingCosts() in getComplexRuleset() throws an error
