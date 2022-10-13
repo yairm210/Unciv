@@ -1,28 +1,14 @@
 ## 4.2.13
 
-Removed use of Anuken packr, removing windows32 builds.
+Don't show hidden improvements in nation info
 
-Rename forOptionsPopup -> tryFixUnknownUniques
+Fixed translations missing when cancelling a new game then resuming the old one
 
-Resolved  - Always reload translations and images when resuming game
+Handle errors when renaming multiplayer games to impossible names
 
-Resolved  - added aztec icon credits
+Military units take most efficient route to capture civilians
 
-Resolved  - Don't show hidden improvements in nation info
-
-Removed old 'wiki update' workflow
-
-Rename Conflict marking to conflicts.yml
-
-Create Conflict marking
-
-Resolved  - Handle errors when renaming multiplayer games
-
-Resolved  - Military units take most efficient route to capture civilians
-
-Resolved  - Thron->Throne
-
-fix untranslated string about politics  - By nacro711072
+Translation fixes
 
 ## 4.2.12
 

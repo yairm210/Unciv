@@ -1,25 +1,9 @@
+Don't show hidden improvements in nation info
 
+Fixed translations missing when cancelling a new game then resuming the old one
 
-Removed use of Anuken packr, removing windows32 builds.
+Handle errors when renaming multiplayer games to impossible names
 
-Rename forOptionsPopup -> tryFixUnknownUniques
+Military units take most efficient route to capture civilians
 
-Resolved  - Always reload translations and images when resuming game
-
-Resolved  - added aztec icon credits
-
-Resolved  - Don't show hidden improvements in nation info
-
-Removed old 'wiki update' workflow
-
-Rename Conflict marking to conflicts.yml
-
-Create Conflict marking
-
-Resolved  - Handle errors when renaming multiplayer games
-
-Resolved  - Military units take most efficient route to capture civilians
-
-Resolved  - Thron->Throne
-
-fix untranslated string about politics  - By nacro711072
+Translation fixes
