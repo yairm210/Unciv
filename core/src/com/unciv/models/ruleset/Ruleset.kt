@@ -751,9 +751,9 @@ class Ruleset {
                         ?: return emptySet()
                     val techHashSet = HashSet<String>()
                     techHashSet += technology.prerequisites
+                    prereqsHashMap[technologyName] = techHashSet
                     for (prerequisite in technology.prerequisites)
                         techHashSet += getPrereqTree(prerequisite)
-                    prereqsHashMap[technologyName] = techHashSet
                     return techHashSet
                 }
 
@@ -762,6 +762,9 @@ class Ruleset {
                     lines.add("No need to add $prereq as a prerequisite of ${tech.name} - it is already implicit from the other prerequisites!",
                         RulesetErrorSeverity.Warning)
                 }
+
+                if (getPrereqTree(prereq).contains(tech.name))
+                    lines += "Techs ${tech.name} and $prereq require each other!"
             }
             if (tech.era() !in eras)
                 lines += "Unknown era ${tech.era()} referenced in column of tech ${tech.name}"

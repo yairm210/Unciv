@@ -1724,6 +1724,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;upon discovering [tech]&gt;"
+	Example: "&lt;upon discovering [Agriculture]&gt;"
+
+	Applicable to: Conditional
+
 ??? example  "&lt;after adopting [policy]&gt;"
 	Example: "&lt;after adopting [Oligarchy]&gt;"
 
