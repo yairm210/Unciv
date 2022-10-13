@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.MainMenuScreen
@@ -75,7 +76,6 @@ import com.unciv.utils.concurrency.withGLContext
 import com.unciv.utils.debug
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
-import com.badlogic.gdx.scenes.scene2d.ui.TextField
 
 /**
  * Do not create this screen without seriously thinking about the implications: this is the single most memory-intensive class in the application.
@@ -785,8 +785,11 @@ class WorldScreen(
         if (shouldUpdate) {
             shouldUpdate = false
 
+            // Since updating the worldscreen can take a long time, *especially* the first time, we disable input processing to avoid ANRs
+            Gdx.input.inputProcessor = null
             update()
             showTutorialsOnNextTurn()
+            Gdx.input.inputProcessor = stage
         }
 //        topBar.selectedCivLabel.setText(Gdx.graphics.framesPerSecond) // for framerate testing
 
