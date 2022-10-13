@@ -702,9 +702,7 @@ object UnitActions {
 
     fun getImprovementConstructionActions(unit: MapUnit, tile: TileInfo): ArrayList<UnitAction> {
         val finalActions = ArrayList<UnitAction>()
-        var uniquesToCheck = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
-        if (unit.religiousActionsUnitCanDo().all { unit.abilityUsesLeft[it] == unit.maxAbilityUses[it] })
-            uniquesToCheck += unit.getMatchingUniques(UniqueType.CanConstructIfNoOtherActions)
+        val uniquesToCheck = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
         val civResources = unit.civInfo.getCivResourcesByName()
 
         for (unique in uniquesToCheck) {

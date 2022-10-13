@@ -116,9 +116,6 @@ class CityStats(val cityInfo: CityInfo) {
         val conversionUnique = cityInfo.civInfo.getMatchingUniques(UniqueType.ProductionToCivWideStatConversionBonus).firstOrNull { it.params[0] == stat.name }
         if (conversionUnique != null) {
             conversionRate *= conversionUnique.params[1].toPercent()
-        } else if (stat == Stat.Science && cityInfo.civInfo.hasUnique(UniqueType.ProductionToScienceConversionBonus)) {
-            // backwards compatibility
-            conversionRate *= 1.33f
         }
         return conversionRate
     }

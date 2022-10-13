@@ -242,8 +242,6 @@ object SpecificUnitAutomation {
 
     fun automateImprovementPlacer(unit: MapUnit) {
         var improvementBuildingUniques = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
-        if (unit.religiousActionsUnitCanDo().all { unit.abilityUsesLeft[it] == unit.maxAbilityUses[it] })
-            improvementBuildingUniques += unit.getMatchingUniques(UniqueType.CanConstructIfNoOtherActions)
 
         val improvementName = improvementBuildingUniques.first().params[0]
         val improvement = unit.civInfo.gameInfo.ruleSet.tileImprovements[improvementName]

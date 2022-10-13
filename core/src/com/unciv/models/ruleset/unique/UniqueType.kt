@@ -106,9 +106,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     PercentProductionUnits("[relativeAmount]% Production when constructing [baseUnitFilter] units [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     PercentProductionWonders("[relativeAmount]% Production when constructing [buildingFilter] wonders [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     PercentProductionBuildingsInCapital("[relativeAmount]% Production towards any buildings that already exist in the Capital", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    // todo: maybe should be converted to "[+100]% Yield from every [Natural Wonder]"?
-    @Deprecated("As of 4.1.19", ReplaceWith("[+100]% Yield from every [Natural Wonder]"))
-    DoubleStatsFromNaturalWonders("Tile yields from Natural Wonders doubled", UniqueTarget.Global),
 
     //endregion Stat providing uniques
 
@@ -180,11 +177,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     BuyUnitsByProductionCost("May buy [baseUnitFilter] units with [stat] for [amount] times their normal Production cost", UniqueTarget.FollowerBelief, UniqueTarget.Global),
     BuyBuildingsByProductionCost("May buy [buildingFilter] buildings with [stat] for [amount] times their normal Production cost", UniqueTarget.FollowerBelief, UniqueTarget.Global),
 
-
-    @Deprecated("As of 4.1.14", ReplaceWith("Enables conversion of city production to [Gold]"))
-    EnablesGoldProduction("Enables conversion of city production to gold", UniqueTarget.Global),
-    @Deprecated("s of 4.1.14", ReplaceWith("Enables conversion of city production to [Science]"))
-    EnablesScienceProduction("Enables conversion of city production to science", UniqueTarget.Global),
     EnablesCivWideStatProduction("Enables conversion of city production to [civWideStat]", UniqueTarget.Global),
 
     BuyItemsDiscount("[stat] cost of purchasing items in cities [relativeAmount]%", UniqueTarget.Global, UniqueTarget.FollowerBelief),
@@ -219,8 +211,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     @Deprecated("As of 4.2.4", ReplaceWith("Enemy [Land] units must spend [1] extra movement points when inside your territory <before discovering [Dynamite]>"))
     EnemyLandUnitsSpendExtraMovementDepreciated("Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)", UniqueTarget.Global),
 
-    @Deprecated("s of 4.1.14", ReplaceWith("Production to [Science] conversion in cities changed by [33]%"))
-    ProductionToScienceConversionBonus("Production to science conversion in cities increased by 33%", UniqueTarget.Global),
     ProductionToCivWideStatConversionBonus("Production to [civWideStat] conversion in cities changed by [relativeAmount]%", UniqueTarget.Global),
 
     // Misc national uniques
@@ -356,8 +346,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     FoundCity("Founds a new city", UniqueTarget.Unit),
     ConstructImprovementConsumingUnit("Can construct [improvementName]", UniqueTarget.Unit),
-    @Deprecated("as of 4.1.7", ReplaceWith("Can construct [improvementName] <if it hasn't used other actions yet>"))
-    CanConstructIfNoOtherActions("Can construct [improvementName] if it hasn't used other actions yet", UniqueTarget.Unit),
     BuildImprovements("Can build [improvementFilter/terrainFilter] improvements on tiles", UniqueTarget.Unit),
     CreateWaterImprovements("May create improvements on water resources", UniqueTarget.Unit),
 
@@ -716,6 +704,17 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     // endregion
 
     // region DEPRECATED AND REMOVED
+
+    @Deprecated("as of 4.1.7", ReplaceWith("Can construct [improvementName] <if it hasn't used other actions yet>"))
+    CanConstructIfNoOtherActions("Can construct [improvementName] if it hasn't used other actions yet", UniqueTarget.Unit),
+    @Deprecated("s of 4.1.14", ReplaceWith("Production to [Science] conversion in cities changed by [33]%"))
+    ProductionToScienceConversionBonus("Production to science conversion in cities increased by 33%", UniqueTarget.Global),
+    @Deprecated("As of 4.1.19", ReplaceWith("[+100]% Yield from every [Natural Wonder]"))
+    DoubleStatsFromNaturalWonders("Tile yields from Natural Wonders doubled", UniqueTarget.Global),
+    @Deprecated("As of 4.1.14", ReplaceWith("Enables conversion of city production to [Gold]"))
+    EnablesGoldProduction("Enables conversion of city production to gold", UniqueTarget.Global),
+    @Deprecated("s of 4.1.14", ReplaceWith("Enables conversion of city production to [Science]"))
+    EnablesScienceProduction("Enables conversion of city production to science", UniqueTarget.Global),
     @Deprecated("as of 4.0.3", ReplaceWith("Damage is ignored when determining unit Strength <for [All] units>"), DeprecationLevel.ERROR)
     UnitsFightFullStrengthWhenDamaged("Units fight as though they were at full strength even when damaged", UniqueTarget.Global),
     @Deprecated("as of 4.0.3", ReplaceWith("[+amount]% Strength <within [amount2] tiles of a [tileFilter]>"), DeprecationLevel.ERROR)

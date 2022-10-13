@@ -321,11 +321,6 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         if (naturalWonder != null) {
             val wonderStats = getNaturalWonder().cloneStats()
 
-            // Spain doubles tile yield
-            if (city != null && city.civInfo.hasUnique(UniqueType.DoubleStatsFromNaturalWonders, stateForConditionals)) {
-                wonderStats.timesInPlace(2f)
-            }
-
             if (getNaturalWonder().overrideStats)
                 stats = wonderStats
             else
@@ -340,12 +335,6 @@ open class TileInfo : IsPartOfGameInfoSerialization {
                 val tileType = unique.params[1]
                 if (!matchesTerrainFilter(tileType, observingCiv)) continue
                 stats.add(unique.stats)
-                if (naturalWonder != null
-                    && tileType == "Natural Wonder"
-                    && city.civInfo.hasUnique(UniqueType.DoubleStatsFromNaturalWonders)
-                ) {
-                    stats.add(unique.stats)
-                }
             }
 
             for (unique in localUniqueCache.get("StatsFromTilesWithout",
