@@ -328,19 +328,21 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         }
 
         if (city != null) {
-            var tileUniques = city.getMatchingUniques(UniqueType.StatsFromTiles, stateForConditionals)
+            var tileUniques = city.getMatchingUniques(UniqueType.StatsFromTiles, StateForConditionals.IgnoreConditionals)
                 .filter { city.matchesFilter(it.params[2]) }
-            tileUniques += city.getMatchingUniques(UniqueType.StatsFromObject, stateForConditionals)
+            tileUniques += city.getMatchingUniques(UniqueType.StatsFromObject, StateForConditionals.IgnoreConditionals)
             for (unique in localUniqueCache.get("StatsFromTilesAndObjects", tileUniques)) {
+                if (!unique.conditionalsApply(stateForConditionals)) continue
                 val tileType = unique.params[1]
                 if (!matchesTerrainFilter(tileType, observingCiv)) continue
                 stats.add(unique.stats)
             }
 
             for (unique in localUniqueCache.get("StatsFromTilesWithout",
-                city.getMatchingUniques(UniqueType.StatsFromTilesWithout, stateForConditionals))
+                city.getMatchingUniques(UniqueType.StatsFromTilesWithout, StateForConditionals.IgnoreConditionals))
             ) {
                 if (
+                    unique.conditionalsApply(stateForConditionals) &&
                     matchesTerrainFilter(unique.params[1]) &&
                     !matchesTerrainFilter(unique.params[2]) &&
                     city.matchesFilter(unique.params[3])

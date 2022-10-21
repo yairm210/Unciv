@@ -373,15 +373,18 @@ class CityStats(val cityInfo: CityInfo) {
     fun updateTileStats() {
         val stats = Stats()
         val localUniqueCache = LocalUniqueCache()
-        for (cell in cityInfo.tilesInRange
+        val workedTiles = cityInfo.tilesInRange
             .filter {
                 cityInfo.location == it.position
                         || cityInfo.isWorked(it)
                         || it.owningCity == cityInfo && (it.getTileImprovement()
                     ?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation) == true
                         || it.terrainHasUnique(UniqueType.TileProvidesYieldWithoutPopulation))
-            })
-            stats.add(cell.getTileStats(cityInfo, cityInfo.civInfo, localUniqueCache))
+            }
+        for (cell in workedTiles) {
+            val cellStats = cell.getTileStats(cityInfo, cityInfo.civInfo, localUniqueCache)
+            stats.add(cellStats)
+        }
         statsFromTiles = stats
     }
 
