@@ -184,10 +184,10 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         gameInfo = newGameInfo
 
 
-        if (gameInfo?.gameParameters?.isOnlineMultiplayer == true && gameInfo?.gameParameters?.anyoneCanSpectate == false) {
-            if (gameInfo!!.civilizations.none { it.playerId == settings.multiplayer.userId }) {
-                throw UncivShowableException("You are not allowed to spectate!")
-            }
+        if (gameInfo?.gameParameters?.isOnlineMultiplayer == true
+                && gameInfo?.gameParameters?.anyoneCanSpectate == false
+                && gameInfo!!.civilizations.none { it.playerId == settings.multiplayer.userId }) {
+            throw UncivShowableException("You are not allowed to spectate!")
         }
 
         initializeResources(prevGameInfo, newGameInfo)
@@ -195,10 +195,13 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         val isLoadingSameGame = worldScreen != null && prevGameInfo != null && prevGameInfo.gameId == newGameInfo.gameId
         val worldScreenRestoreState = if (isLoadingSameGame) worldScreen!!.getRestoreState() else null
 
+        lateinit var loadingScreen:LoadingScreen
+
         withGLContext {
             // this is not merged with the below GL context block so that our loading screen gets a chance to show - otherwise
             // we do it all in one swoop on the same thread and the application just "freezes" without loading screen for the duration.
-            setScreen(LoadingScreen(getScreen()))
+            loadingScreen = LoadingScreen(getScreen())
+            setScreen(loadingScreen)
         }
 
         return@toplevel withGLContext {
@@ -219,6 +222,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
             screenStack.addLast(screenToShow)
             setScreen(screenToShow)
+            loadingScreen.dispose()
 
             return@withGLContext newWorldScreen
         }
