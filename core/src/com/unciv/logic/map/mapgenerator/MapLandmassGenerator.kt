@@ -42,9 +42,9 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
             MapType.innerSea -> createInnerSea(tileMap)
             MapType.continents -> createTwoContinents(tileMap)
             MapType.fourCorners -> createFourCorners(tileMap)
-            MapType.perlin -> createPerlin(tileMap)
+            MapType.smoothedRandom -> generateLandCellularAutomata(tileMap)
             MapType.archipelago -> createArchipelago(tileMap)
-            MapType.default -> generateLandCellularAutomata(tileMap)
+            MapType.default -> createPerlin(tileMap)
         }
     }
 

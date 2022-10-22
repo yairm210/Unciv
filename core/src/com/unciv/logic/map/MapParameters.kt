@@ -128,15 +128,15 @@ object MapShape : IsPartOfGameInfoSerialization {
 }
 
 object MapType : IsPartOfGameInfoSerialization {
+    const val default = "Default"
     const val pangaea = "Pangaea"
     const val continents = "Continents"
     const val fourCorners = "Four Corners"
-    const val perlin = "Perlin"
     const val archipelago = "Archipelago"
     const val innerSea = "Inner Sea"
 
-    // Cellular automata
-    const val default = "Default"
+    // Cellular automata style
+    const val smoothedRandom = "Smoothed Random"
 
     // Non-generated maps
     const val custom = "Custom"
@@ -178,7 +178,7 @@ class MapParameters : IsPartOfGameInfoSerialization {
     var vegetationRichness = 0.4f
     var rareFeaturesRichness = 0.05f
     var resourceRichness = 0.1f
-    var waterThreshold = 0f
+    var waterThreshold = 0.0f
 
     /** Shifts temperature (after random, latitude and temperatureExtremeness).
      *  For seasonal main menu background only, not user-accessible, thus transient and not cloned. */
@@ -221,7 +221,10 @@ class MapParameters : IsPartOfGameInfoSerialization {
         vegetationRichness = 0.4f
         rareFeaturesRichness = 0.05f
         resourceRichness = 0.1f
-        waterThreshold = 0f
+        waterThreshold = if (type == MapType.smoothedRandom)
+            -0.05f // make world about 55% land
+        else
+            0f
     }
 
     fun getArea() = when {

@@ -96,7 +96,7 @@ class MapParametersTable(
             MapType.pangaea,
             MapType.continents,
             MapType.fourCorners,
-            MapType.perlin,
+            MapType.smoothedRandom,
             MapType.archipelago,
             MapType.innerSea,
             if (forMapEditor) MapType.empty else null
