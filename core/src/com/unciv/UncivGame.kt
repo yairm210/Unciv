@@ -226,16 +226,12 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     /** The new game info may have different mods or rulesets, which may use different resources that need to be loaded. */
     private suspend fun initializeResources(prevGameInfo: GameInfo?, newGameInfo: GameInfo) {
-        if (prevGameInfo == null || prevGameInfo.ruleSet != newGameInfo.ruleSet) {
+        if (prevGameInfo == null
+                || prevGameInfo.gameParameters.baseRuleset != newGameInfo.gameParameters.baseRuleset
+                || prevGameInfo.gameParameters.mods != newGameInfo.gameParameters.mods) {
             withGLContext {
                 ImageGetter.setNewRuleset(newGameInfo.ruleSet)
             }
-        }
-
-        if (prevGameInfo == null ||
-                prevGameInfo.gameParameters.baseRuleset != newGameInfo.gameParameters.baseRuleset ||
-                prevGameInfo.gameParameters.mods != newGameInfo.gameParameters.mods
-        ) {
             val fullModList = newGameInfo.gameParameters.getModsAndBaseRuleset()
             musicController.setModList(fullModList)
         }

@@ -36,11 +36,7 @@ import kotlin.math.sqrt
 object ImageGetter {
     private const val whiteDotLocation = "OtherIcons/whiteDot"
 
-    // When we used to load images directly from different files, without using a texture atlas,
-    // The draw() phase of the main screen would take a really long time because the BatchRenderer would
-    // always have to switch between like 170 different textures.
-    // So, we now use TexturePacker in the DesktopLauncher class to pack all the different images into single images,
-    // and the atlas is what tells us what was packed where.
+    // We use texture atlases to minimize texture swapping - see https://yairm210.medium.com/the-libgdx-performance-guide-1d068a84e181
     lateinit var atlas: TextureAtlas
     private val atlases = HashMap<String, TextureAtlas>()
     var ruleset = Ruleset()
