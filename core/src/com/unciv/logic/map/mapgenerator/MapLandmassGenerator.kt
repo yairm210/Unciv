@@ -203,7 +203,7 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
         waterThreshold = 0.545 + 1.75 * waterThreshold
 
         for (tile in tileMap.values) {
-            spawnLandOrWater(tile, randomness.RNG.nextDouble())
+            spawnLandOrWater(tile, randomness.RNG.nextDouble())  // RNG is [0.0, 1.0]
             tile.setTransients()
         }
 
