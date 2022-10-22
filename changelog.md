@@ -1,3 +1,25 @@
+## 4.2.14
+
+Resolved  - Fixed Temple of Artemis production bonuses
+
+Resolved  - incorrect tile yields due to caching conditional uniques
+
+Error deprecated uniques
+
+Resolved crash when mods make 2 techs require each other
+
+Hopefully resolved ANRs from WorldScreen updates
+
+Deprecated old uniques
+
+By itanasi:
+- Add Temperature Offset Slider 
+- Change Default Map Generation to Perlin 
+
+BlockedHolyCity other way around  - By qwerty2586
+
+show wars in global politics  - By MindaugasRumsa51
+
 ## 4.2.13
 
 Don't show hidden improvements in nation info
