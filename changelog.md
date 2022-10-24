@@ -1,3 +1,15 @@
+## 4.2.15
+
+Fixed Great Person Picker screen not responding
+
+Fixed stat conversion constructions (Science, Gold) not appearing
+
+Resolved  - fixed memory leak from screenshots
+
+Simplified init resources on new game
+
+Unit era variants added to FantasyHex tileset  - By GeneralWadaling
+
 ## 4.2.14
 
 Fixed Temple of Artemis production bonuses

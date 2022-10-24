@@ -470,7 +470,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.2.14", 758)
+        val VERSION = Version("4.2.15", 759)
         //endregion
 
         lateinit var Current: UncivGame
