@@ -1,12 +1,12 @@
 ## 4.2.15
 
+Fixed memory leak
+
 Fixed Great Person Picker screen not responding
 
 Fixed stat conversion constructions (Science, Gold) not appearing
 
-Resolved  - fixed memory leak from screenshots
-
-Simplified init resources on new game
+Fixed units obsoleting before their replacements could be constructed
 
 Unit era variants added to FantasyHex tileset  - By GeneralWadaling
 
