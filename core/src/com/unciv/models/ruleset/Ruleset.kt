@@ -565,6 +565,19 @@ class Ruleset {
     }
 
     fun checkModLinks(tryFixUnknownUniques: Boolean = false): RulesetErrorList {
+        val prereqsHashMap = HashMap<String,HashSet<String>>()
+        fun getPrereqTree(technologyName: String): Set<String> {
+            if (prereqsHashMap.containsKey(technologyName)) return prereqsHashMap[technologyName]!!
+            val technology = technologies[technologyName]
+                ?: return emptySet()
+            val techHashSet = HashSet<String>()
+            techHashSet += technology.prerequisites
+            prereqsHashMap[technologyName] = techHashSet
+            for (prerequisite in technology.prerequisites)
+                techHashSet += getPrereqTree(prerequisite)
+            return techHashSet
+        }
+
         val lines = RulesetErrorList()
 
         // Checks for all mods - only those that can succeed without loading a base ruleset
@@ -631,11 +644,26 @@ class Ruleset {
                 lines += "${unit.name} requires tech ${unit.requiredTech} which does not exist!"
             if (unit.obsoleteTech != null && !technologies.containsKey(unit.obsoleteTech!!))
                 lines += "${unit.name} obsoletes at tech ${unit.obsoleteTech} which does not exist!"
+            if (unit.upgradesTo != null && !units.containsKey(unit.upgradesTo!!))
+                lines += "${unit.name} upgrades to unit ${unit.upgradesTo} which does not exist!"
+
+            // Check that we don't obsolete ourselves before we can upgrade
+            if (unit.upgradesTo!=null && units.containsKey(unit.upgradesTo!!)
+                    && unit.obsoleteTech!=null && technologies.containsKey(unit.obsoleteTech!!)) {
+                val upgradedUnit = units[unit.upgradesTo!!]!!
+                if (upgradedUnit.requiredTech != null && upgradedUnit.requiredTech != unit.obsoleteTech
+                        && !getPrereqTree(unit.obsoleteTech!!).contains(upgradedUnit.requiredTech)
+                )
+                    lines.add(
+                        "${unit.name} obsoletes at tech ${unit.obsoleteTech}," +
+                                " and therefore ${upgradedUnit.requiredTech} for its upgrade ${upgradedUnit.name} may not yet be researched!",
+                        RulesetErrorSeverity.Warning
+                    )
+            }
+
             for (resource in unit.getResourceRequirements().keys)
                 if (!tileResources.containsKey(resource))
                     lines += "${unit.name} requires resource $resource which does not exist!"
-            if (unit.upgradesTo != null && !units.containsKey(unit.upgradesTo!!))
-                lines += "${unit.name} upgrades to unit ${unit.upgradesTo} which does not exist!"
             if (unit.replaces != null && !units.containsKey(unit.replaces!!))
                 lines += "${unit.name} replaces ${unit.replaces} which does not exist!"
             for (promotion in unit.promotions)
@@ -739,23 +767,11 @@ class Ruleset {
             checkUniques(terrain, lines, rulesetSpecific, tryFixUnknownUniques)
         }
 
-        val prereqsHashMap = HashMap<String,HashSet<String>>()
         for (tech in technologies.values) {
             for (prereq in tech.prerequisites) {
                 if (!technologies.containsKey(prereq))
                     lines += "${tech.name} requires tech $prereq which does not exist!"
 
-                fun getPrereqTree(technologyName: String): Set<String> {
-                    if (prereqsHashMap.containsKey(technologyName)) return prereqsHashMap[technologyName]!!
-                    val technology = technologies[technologyName]
-                        ?: return emptySet()
-                    val techHashSet = HashSet<String>()
-                    techHashSet += technology.prerequisites
-                    prereqsHashMap[technologyName] = techHashSet
-                    for (prerequisite in technology.prerequisites)
-                        techHashSet += getPrereqTree(prerequisite)
-                    return techHashSet
-                }
 
                 if (tech.prerequisites.asSequence().filterNot { it == prereq }
                         .any { getPrereqTree(it).contains(prereq) }){
