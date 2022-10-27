@@ -36,7 +36,10 @@ class LoadingScreen(
             for (popup in previousScreen.popups) popup.isVisible = false
             previousScreen.render(Gdx.graphics.getDeltaTime())
         }
-        val screenshot = ScreenshotTexture(Pixmap.createFromFrameBuffer(0, 0, Gdx.graphics.backBufferWidth, Gdx.graphics.backBufferHeight))
+        val pixmap = Pixmap.createFromFrameBuffer(0, 0, Gdx.graphics.backBufferWidth, Gdx.graphics.backBufferHeight)
+        val screenshot = Texture(pixmap)
+        pixmap.dispose()
+
         if (previousScreen != null) {
             for (popup in previousScreen.popups) popup.isVisible = true
         }
@@ -46,16 +49,6 @@ class LoadingScreen(
 
     override fun dispose() {
         screenshot.dispose()
-        super.dispose()
-    }
-}
-
-private class ScreenshotTexture(
-    private val pixmap: Pixmap,
-): Texture(pixmap) {
-
-    override fun dispose() {
-        pixmap.dispose()
         super.dispose()
     }
 }
