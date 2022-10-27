@@ -672,10 +672,16 @@ class WorldScreen(
             viewingCiv.shouldGoToDueUnit() ->
                 NextTurnAction("Next unit", Color.LIGHT_GRAY) { switchToNextUnit() }
 
-            viewingCiv.cities.any { it.cityConstructions.currentConstructionFromQueue == "" } ->
+            viewingCiv.cities.any {
+                !it.isPuppet &&
+                it.cityConstructions.currentConstructionFromQueue == ""
+            } ->
                 NextTurnAction("Pick construction", Color.CORAL) {
                     val cityWithNoProductionSet = viewingCiv.cities
-                        .firstOrNull { it.cityConstructions.currentConstructionFromQueue == "" }
+                        .firstOrNull {
+                            !it.isPuppet &&
+                            it.cityConstructions.currentConstructionFromQueue == ""
+                        }
                     if (cityWithNoProductionSet != null) game.pushScreen(
                         CityScreen(cityWithNoProductionSet)
                     )
