@@ -1,3 +1,14 @@
+## 4.2.16
+
+Resolve  - Automated workers no longer improve unworkable tiles
+
+Resolve  - improved construction AI choices
+
+By nacro711072:
+- fix wrong glyph when switch between different mod. 
+- fix memory leak due to Pixmap don't be released. 
+- check whether the city has been a puppet in "Pick construction" action. 
+
 ## 4.2.15
 
 Fixed memory leak
