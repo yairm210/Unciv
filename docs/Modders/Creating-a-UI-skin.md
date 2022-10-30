@@ -18,7 +18,7 @@ There are 6 basic shapes which can be placed inside the `Images/Skins/MyCoolSkin
  - select-box
  - select-box-pressed
 
-These shapes are used all over Unciv and can be replaced to make a lot of UI elements change appearance at once. To change just one specific element use the [table](Creating-a-UI-skin.md#Available-UI-elements) below to create an image at the specified directory using the specified name inside `Images/Skins/MyCoolSkinExample`. See the image below for an example file structure. [skinExample](TODO)
+These shapes are used all over Unciv and can be replaced to make a lot of UI elements change appearance at once. To change just one specific element use the [table](Creating-a-UI-skin.md#Available-UI-elements) below to create an image at the specified directory using the specified name inside `Images/Skins/MyCoolSkinExample`. See the image below for an example file structure. ![skinExample](https://user-images.githubusercontent.com/24532072/198879776-43e8d7ce-e203-44f1-a129-84ea16cb2435.PNG)
 
 ## Available UI elements
 
