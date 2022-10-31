@@ -34,8 +34,10 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-          cache: 'gradle'
 
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2.3.3
+        
       - name: Compile kotlin and build classes
         run: ./gradlew classes
 
