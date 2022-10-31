@@ -13,11 +13,12 @@ import com.unciv.ui.images.ImageGetter
  * @param tileSet Name of the tileset. Defaults to active at time of instantiation.
  * @param fallbackDepth Maximum number of fallback tilesets to try. Used to prevent infinite recursion.
  * */
-class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, fallbackDepth: Int = 1) {
+class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, unitSet: String = UncivGame.Current.settings.unitSet, fallbackDepth: Int = 1) {
 
     // this is so that when we have 100s of TileGroups, they won't all individually come up with all these strings themselves,
     // it gets pretty memory-intensive (10s of MBs which is a lot for lower-end phones)
     val tileSetLocation = "TileSets/$tileSet/"
+    val unitSetLocation = "TileSets/$unitSet/"
     val tileSetConfig = TileSetCache[tileSet] ?: TileSetConfig()
 
     // These need to be by lazy since the orFallback expects a tileset, which it may not get.
@@ -36,7 +37,7 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, fallb
     val bottomRiver by lazy { orFallback { tilesLocation + "River-Bottom"} }
     val bottomLeftRiver  by lazy { orFallback { tilesLocation + "River-BottomLeft"} }
 
-    val unitsLocation = tileSetLocation + "Units/"
+    val unitsLocation = unitSetLocation + "Units/"
 
     val bordersLocation = tileSetLocation + "Borders/"
 
@@ -74,7 +75,7 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, fallb
         if (fallbackDepth <= 0 || tileSetConfig.fallbackTileSet == null)
             null
         else
-            TileSetStrings(tileSetConfig.fallbackTileSet!!, fallbackDepth-1)
+            TileSetStrings(tileSetConfig.fallbackTileSet!!, tileSetConfig.fallbackTileSet!!, fallbackDepth-1)
     }
 
     @Suppress("MemberVisibilityCanBePrivate")

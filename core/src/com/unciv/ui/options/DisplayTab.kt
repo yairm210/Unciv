@@ -47,6 +47,8 @@ fun displayTab(
 
     addTileSetSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
 
+    addUnitSetSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
+
     addSkinSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
 
     optionsPopup.addCheckbox(this, "Continuous rendering", settings.continuousRendering) {
@@ -146,6 +148,25 @@ private fun addTileSetSelectBox(table: Table, settings: GameSettings, selectBoxM
         // ImageGetter ruleset should be correct no matter what screen we're on
         TileSetCache.assembleTileSetConfigs(ImageGetter.ruleset.mods)
         onTilesetChange()
+    }
+}
+
+private fun addUnitSetSelectBox(table: Table, settings: GameSettings, selectBoxMinWidth: Float, onUnitsetChange: () -> Unit) {
+    table.add("Unitset".toLabel()).left().fillX()
+
+    val unitSetSelectBox = SelectBox<String>(table.skin)
+    val unitSetArray = Array<String>()
+    val unitSets = ImageGetter.getAvailableUnitsets()
+    for (unitset in unitSets) unitSetArray.add(unitset)
+    unitSetSelectBox.items = unitSetArray
+    unitSetSelectBox.selected = settings.unitSet
+    table.add(unitSetSelectBox).minWidth(selectBoxMinWidth).pad(10f).row()
+
+    unitSetSelectBox.onChange {
+        settings.unitSet = unitSetSelectBox.selected
+        // ImageGetter ruleset should be correct no matter what screen we're on
+        TileSetCache.assembleTileSetConfigs(ImageGetter.ruleset.mods)
+        onUnitsetChange()
     }
 }
 
