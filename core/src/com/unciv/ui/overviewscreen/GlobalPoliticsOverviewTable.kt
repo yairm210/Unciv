@@ -15,6 +15,7 @@ import com.unciv.logic.civilization.WonderInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.models.ruleset.Policy.PolicyBranchType
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.AutoScrollPane
@@ -133,10 +134,14 @@ class GlobalPoliticsOverviewTable (
 
     private fun getPoliciesTable(civ: CivilizationInfo): Table {
         val policiesTable = Table(skin)
-        for (policy in civ.policies.branchCompletionMap) {
-            if (policy.value != 0)
-                policiesTable.add("[${policy.key.name}]: ${policy.value}".toLabel()).row()
-        }
+        for (branch in civ.policies.branches)
+            if (civ.policies.isAdopted(branch.name)) {
+                val count = 1 + branch.policies.count {
+                    it.policyBranchType != PolicyBranchType.BranchComplete &&
+                    civ.policies.isAdopted(it.name)
+                }
+                policiesTable.add("[${branch.name}]: ${count}".toLabel()).row()
+            }
         return policiesTable
     }
 
