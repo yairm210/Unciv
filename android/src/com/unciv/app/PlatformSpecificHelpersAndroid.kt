@@ -59,10 +59,10 @@ Sources for Info about current orientation in case need:
     /**
      * Verifies if the game was installed from Google Play
      */
-    override fun isInstalledFromGP(): Boolean {
+    override fun isInstalledFromPackageManager(): Boolean {
         // A list with valid installers package name
         val validInstallers: List<String> =
-                ArrayList(listOf("com.android.vending", "com.google.android.feedback"))
+                ArrayList(listOf("com.android.vending", "com.google.android.feedback", "org.fdroid.fdroid"))
 
         // The package name of the app that has installed Unciv
         @Suppress("DEPRECATION") // because `getInstallSourceInfo` doesn't work below version R

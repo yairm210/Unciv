@@ -23,7 +23,7 @@ interface GeneralPlatformSpecificHelpers {
     /**
      * Verifies if the game was installed from Google Play
      */
-    fun isInstalledFromGP(): Boolean { return false }
+    fun isInstalledFromPackageManager(): Boolean { return false }
 
     /**
      * Notifies the user that it's their turn while the game is running

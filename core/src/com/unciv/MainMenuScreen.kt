@@ -209,11 +209,11 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         helpButton.setPosition(20f, 20f)
         stage.addActor(helpButton)
 
-        if (UncivGame.Current.platformSpecificHelper?.isInstalledFromGP() == false) {
-            Concurrency.run {
+        if (UncivGame.Current.platformSpecificHelper?.isInstalledFromPackageManager() == false) {
+            Concurrency.run("AddUpdateButton") {
                 val latestVersion = Github.getLatestVersion()
                 if (latestVersion?.tag_name!! != UncivGame.VERSION.text) {
-                    addUpdateButton()
+                    launchOnGLThread { addUpdateButton() }
                 }
             }
         }

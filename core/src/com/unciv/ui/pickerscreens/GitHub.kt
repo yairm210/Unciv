@@ -324,7 +324,7 @@ object Github {
             val response = download(url)
             return json().fromJson(LatestRelease::class.java, response?.bufferedReader()?.readText())
         } catch (ex: Exception) {
-            ex.printStackTrace()
+            Log.debug("Error getting the game version: ", ex)
         }
         return null
     }
