@@ -503,7 +503,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             // update city-state resource first since the happiness of major civ depends on it.
             // See issue: https://github.com/yairm210/Unciv/issues/7781
             yieldAll(civilizations.filter { it.isCityState() })
-            yieldAll(civilizations.filter { it.isMajorCiv() })
+            yieldAll(civilizations.filter { !it.isCityState() })
         }) {
             for (unit in civInfo.getCivUnits())
                 unit.updateVisibleTiles(false) // this needs to be done after all the units are assigned to their civs and all other transients are set
