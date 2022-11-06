@@ -264,6 +264,14 @@ class Ruleset {
         val promotionsFile = folderHandle.child("UnitPromotions.json")
         if (promotionsFile.exists()) unitPromotions += createHashmap(json().fromJsonFile(Array<Promotion>::class.java, promotionsFile))
 
+        var topRow = unitPromotions.values.filter { it.column == 0 }.maxOfOrNull { it.row } ?: -1
+        for (promotion in unitPromotions.values)
+            if (promotion.row == -1){
+                promotion.column = 0
+                topRow += 1
+                promotion.row = topRow
+            }
+
         val questsFile = folderHandle.child("Quests.json")
         if (questsFile.exists()) quests += createHashmap(json().fromJsonFile(Array<Quest>::class.java, questsFile))
 
