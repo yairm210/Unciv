@@ -6,7 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.Notification
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.WrappableLabel
 import com.unciv.ui.utils.TabbedPager
@@ -80,7 +79,7 @@ class NotificationsOverviewTable(
             val label = WrappableLabel(notification.text, labelWidth, Color.BLACK, 20)
 
             notificationTable.add(label)
-            notificationTable.background = ImageGetter.getRoundedEdgeRectangle()
+            notificationTable.background = BaseScreen.skinStrings.getUiBackground("OverviewScreen/NotificationOverviewTable/Notification", BaseScreen.skinStrings.roundedEdgeRectangle)
             notificationTable.touchable = Touchable.enabled
             notificationTable.onClick {
                 UncivGame.Current.resetToWorldScreen()

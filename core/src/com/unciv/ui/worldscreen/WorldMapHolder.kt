@@ -38,6 +38,7 @@ import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.tilegroups.WorldTileGroup
+import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.UnitGroup
 import com.unciv.ui.utils.ZoomableScrollPane
@@ -443,7 +444,7 @@ class WorldMapHolder(
 
         val numberCircle = dto.unitToTurnsToDestination.values.maxOrNull()!!.toString().toLabel(fontSize = 14)
             .apply { setAlignment(Align.center) }
-            .surroundWithCircle(smallerCircleSizes-2, color = ImageGetter.getBlue().darken(0.3f))
+            .surroundWithCircle(smallerCircleSizes-2, color = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.3f))
             .surroundWithCircle(smallerCircleSizes,false)
 
         moveHereButton.addActor(numberCircle)

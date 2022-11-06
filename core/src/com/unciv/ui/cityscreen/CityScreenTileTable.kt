@@ -15,6 +15,7 @@ import com.unciv.ui.civilopedia.MarkupRenderer
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.closeAllPopups
+import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.disable
@@ -31,9 +32,12 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
     val city = cityScreen.city
 
     init {
-        innerTable.background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.5f))
+        innerTable.background = BaseScreen.skinStrings.getUiBackground(
+            "CityScreen/CityScreenTileTable/InnerTable",
+            tintColor = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.5f)
+        )
         add(innerTable).pad(2f).fill()
-        background = ImageGetter.getBackground(Color.WHITE)
+        background = BaseScreen.skinStrings.getUiBackground("CityScreen/CityScreenTileTable/Background", tintColor = Color.WHITE)
     }
 
     fun update(selectedTile: TileInfo?) {

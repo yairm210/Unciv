@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.worldscreen.WorldMapHolder
 
 class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
@@ -62,12 +63,18 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         val internalMinimapWrapper = Table()
         internalMinimapWrapper.add(minimap)
 
-        internalMinimapWrapper.background = ImageGetter.getBackground(Color.GRAY)
+        internalMinimapWrapper.background = BaseScreen.skinStrings.getUiBackground(
+            "WorldScreen/Minimap/Background",
+            tintColor = Color.GRAY
+        )
         internalMinimapWrapper.pack()
 
         val externalMinimapWrapper = Table()
         externalMinimapWrapper.add(internalMinimapWrapper).pad(5f)
-        externalMinimapWrapper.background = ImageGetter.getBackground(Color.WHITE)
+        externalMinimapWrapper.background = BaseScreen.skinStrings.getUiBackground(
+            "WorldScreen/Minimap/Border",
+            tintColor = Color.WHITE
+        )
         externalMinimapWrapper.pack()
 
         return externalMinimapWrapper

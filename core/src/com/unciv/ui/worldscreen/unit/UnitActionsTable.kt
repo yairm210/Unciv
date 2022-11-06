@@ -6,16 +6,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.UnitAction
-import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.keyShortcuts
 import com.unciv.ui.utils.extensions.onActivation
-import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.worldscreen.WorldScreen
-import com.unciv.utils.concurrency.Concurrency
 
 class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
 

@@ -23,9 +23,15 @@ class ConstructionInfoTable(val cityScreen: CityScreen): Table() {
     private val selectedConstructionTable = Table()
 
     init {
-        selectedConstructionTable.background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.5f))
+        selectedConstructionTable.background = BaseScreen.skinStrings.getUiBackground(
+            "CityScreen/ConstructionInfoTable/SelectedConstructionTable",
+            tintColor = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.5f)
+        )
         add(selectedConstructionTable).pad(2f).fill()
-        background = ImageGetter.getBackground(Color.WHITE)
+        background = BaseScreen.skinStrings.getUiBackground(
+            "CityScreen/ConstructionInfoTable/Background",
+            tintColor = Color.WHITE
+        )
     }
 
     fun update(selectedConstruction: IConstruction?) {

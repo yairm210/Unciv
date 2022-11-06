@@ -31,7 +31,6 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.civilopedia.CivilopediaScreen
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.pickerscreens.DiplomaticVotePickerScreen
 import com.unciv.ui.pickerscreens.DiplomaticVoteResultScreen
@@ -126,8 +125,9 @@ class WorldScreen(
     private val notificationsScroll = NotificationsScroll(this)
     private val nextTurnButton = NextTurnButton()
     private val statusButtons = StatusButtons(nextTurnButton)
-    private val tutorialTaskTable = Table().apply { background = ImageGetter.getBackground(
-        ImageGetter.getBlue().darken(0.5f)) }
+    private val tutorialTaskTable = Table().apply {
+        background = skinStrings.getUiBackground("WorldScreen/TutorialTaskTable", tintColor = skinStrings.skinConfig.baseColor.darken(0.5f))
+    }
 
     private var nextTurnUpdateJob: Job? = null
 
