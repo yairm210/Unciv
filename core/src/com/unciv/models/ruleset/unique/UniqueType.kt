@@ -607,6 +607,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ConditionalPolicy("after adopting [policy]", UniqueTarget.Conditional),
     ConditionalNoPolicy("before adopting [policy]", UniqueTarget.Conditional),
 
+    ConditionalBeforePantheon("before founding a Pantheon", UniqueTarget.Conditional),
+    ConditionalAfterPantheon("after founding a Pantheon", UniqueTarget.Conditional),
+
     ConditionalBuildingBuilt("if [buildingName] is constructed", UniqueTarget.Conditional),
     ConditionalWithResource("with [resource]", UniqueTarget.Conditional),
     ConditionalWithoutResource("without [resource]", UniqueTarget.Conditional),
@@ -694,7 +697,10 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     AvailableAfterCertainTurns("Only available after [amount] turns", UniqueTarget.Ruins),
     HiddenWithoutReligion("Hidden when religion is disabled", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Ruins, flags = UniqueFlag.setOfHiddenToUsers),
+
+    @Deprecated("as of 4.2.18", ReplaceWith("Only available <before founding a Pantheon>"))
     HiddenBeforePantheon("Hidden before founding a Pantheon", UniqueTarget.Ruins),
+    @Deprecated("as of 4.2.18", ReplaceWith("Only available <before founding a Pantheon>"))
     HiddenAfterPantheon("Hidden after founding a Pantheon", UniqueTarget.Ruins),
     HiddenAfterGreatProphet("Hidden after generating a Great Prophet", UniqueTarget.Ruins),
     HiddenWithoutVictoryType("Hidden when [victoryType] Victory is disabled", UniqueTarget.Building, UniqueTarget.Unit, flags = UniqueFlag.setOfHiddenToUsers),

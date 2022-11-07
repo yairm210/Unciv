@@ -49,6 +49,7 @@ class RuinsManager : IsPartOfGameInfoSerialization {
             if (possibleReward.hasUnique(UniqueType.HiddenAfterGreatProphet)
                 && (civInfo.civConstructions.boughtItemsWithIncreasingPrice[civInfo.religionManager.getGreatProphetEquivalent()] ?: 0) > 0
             ) continue
+
             if (possibleReward.hasUnique(UniqueType.HiddenAfterPantheon) && civInfo.religionManager.religionState >= ReligionState.Pantheon)
                 continue
             if (possibleReward.hasUnique(UniqueType.HiddenBeforePantheon) && civInfo.religionManager.religionState == ReligionState.None)

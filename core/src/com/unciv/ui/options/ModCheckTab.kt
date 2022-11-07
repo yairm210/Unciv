@@ -170,6 +170,7 @@ class ModCheckTab(
             mod.unitPromotions,
             mod.unitTypes,
             mod.units,
+            mod.ruinRewards
         )
         val allDeprecatedUniques = HashSet<String>()
         val deprecatedUniquesToReplacementText = HashMap<String, String>()
@@ -238,6 +239,7 @@ class ModCheckTab(
             "UnitPromotions.json",
             "UnitTypes.json",
             "Units.json",
+            "Ruins.json"
         )
 
         val jsonFolder = mod.folderLocation!!.child("jsons")
