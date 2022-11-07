@@ -3,7 +3,6 @@ package com.unciv.ui.pickerscreens
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
-import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.UncivSound
@@ -11,13 +10,10 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popup.AskTextPopup
 import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.RecreateOnResize
 import com.unciv.ui.utils.extensions.isEnabled
 import com.unciv.ui.utils.extensions.onClick
-import com.unciv.ui.utils.extensions.surroundWithCircle
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
 
@@ -76,6 +72,20 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
         availablePromotionsGroup.add(renameButton)
         availablePromotionsGroup.row()
 
+
+        val promotionsTable = Table()
+        val width = promotionsForUnitType.maxOf { it.column } +1
+        val height = promotionsForUnitType.maxOf { it.row } +1
+        val cellMatrix = ArrayList<ArrayList<Table>>()
+        for (y in 0..height) {
+            cellMatrix.add(ArrayList())
+            for (x in 0..width*2) {
+                val cell = promotionsTable.add(Table())
+                cellMatrix[y].add(cell.actor)
+            }
+            promotionsTable.row()
+        }
+
         for (promotion in promotionsForUnitType) {
             if (promotion.hasUnique(UniqueType.OneTimeUnitHeal) && unit.health == 100) continue
             val isPromotionAvailable = promotion in unitAvailablePromotions
@@ -92,7 +102,9 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
                 descriptionLabel.setText(updateDescriptionLabel(promotion.getDescription(promotionsForUnitType)))
             }
 
-            availablePromotionsGroup.add(selectPromotionButton)
+            val group = cellMatrix[promotion.row][promotion.column*2]
+            group.pad(5f)
+            group.add(selectPromotionButton)
 
             if (canPromoteNow && isPromotionAvailable) {
                 val pickNow = "Pick now!".toLabel()
@@ -100,14 +112,12 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
                 pickNow.onClick {
                     acceptPromotion(promotion)
                 }
-                availablePromotionsGroup.add(pickNow).padLeft(10f).fillY()
+                cellMatrix[promotion.row][promotion.column*2+1].add(pickNow).padLeft(10f).fillY()
             }
             else if (unitHasPromotion) selectPromotionButton.color = Color.GREEN
             else selectPromotionButton.color= Color.GRAY
-
-            availablePromotionsGroup.row()
-
         }
+        availablePromotionsGroup.add(promotionsTable)
         topTable.add(availablePromotionsGroup)
 
         displayTutorial(TutorialTrigger.Experience)
