@@ -585,6 +585,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ConditionalConsumeUnit("by consuming this unit", UniqueTarget.Conditional),
     ConditionalChance("with [amount]% chance", UniqueTarget.Conditional),
 
+    ConditionalBeforeTurns("before [amount] turns", UniqueTarget.Conditional),
+    ConditionalAfterTurns("after [amount] turns", UniqueTarget.Conditional),
+
     /////// civ conditionals
     ConditionalWar("when at war", UniqueTarget.Conditional),
     ConditionalNotWar("when not at war", UniqueTarget.Conditional),
@@ -694,7 +697,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     //endregion
 
     ///////////////////////////////////////////// region META /////////////////////////////////////////////
-
+    @Deprecated("as of 4.2.18", ReplaceWith("Only available <after [amount] turns>"))
     AvailableAfterCertainTurns("Only available after [amount] turns", UniqueTarget.Ruins),
     HiddenWithoutReligion("Hidden when religion is disabled", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Ruins, flags = UniqueFlag.setOfHiddenToUsers),
 

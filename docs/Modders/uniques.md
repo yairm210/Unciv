@@ -1619,11 +1619,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "This Unit upgrades for free including special upgrades"
 	Applicable to: Ruins
 
-??? example  "Only available after [amount] turns"
-	Example: "Only available after [3] turns"
-
-	Applicable to: Ruins
-
 ??? example  "Hidden after generating a Great Prophet"
 	Applicable to: Ruins
 
@@ -1662,6 +1657,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;with [amount]% chance&gt;"
 	Example: "&lt;with [3]% chance&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;before [amount] turns&gt;"
+	Example: "&lt;before [3] turns&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;after [amount] turns&gt;"
+	Example: "&lt;after [3] turns&gt;"
 
 	Applicable to: Conditional
 

@@ -142,6 +142,9 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalTimedUnique -> true
             UniqueType.ConditionalConsumeUnit -> true
 
+            UniqueType.ConditionalBeforeTurns -> state.civInfo != null && state.civInfo.gameInfo.turns < condition.params[0].toInt()
+            UniqueType.ConditionalAfterTurns -> state.civInfo != null && state.civInfo.gameInfo.turns >= condition.params[0].toInt()
+
             UniqueType.ConditionalChance -> stateBasedRandom.nextFloat() < condition.params[0].toFloat() / 100f
 
             UniqueType.ConditionalWar -> state.civInfo?.isAtWar() == true
