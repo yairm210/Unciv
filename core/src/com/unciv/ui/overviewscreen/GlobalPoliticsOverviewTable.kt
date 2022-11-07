@@ -47,7 +47,10 @@ class GlobalPoliticsOverviewTable (
     private val fixedContent = Table()
     private val civTable = Table().apply {
         defaults().pad(5f)
-        background = ImageGetter.getBackground(Color.BLACK)
+        background = BaseScreen.skinStrings.getUiBackground(
+            "OverviewScreen/DiplomacyOverviewTab/CivTable",
+            tintColor = Color.BLACK
+        )
     }
 
     // Reusable sequences for the Civilizations to display

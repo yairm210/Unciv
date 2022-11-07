@@ -9,6 +9,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.UnitGroup
 import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.centerX
@@ -86,7 +87,10 @@ class TileGroupIcons(val tileGroup: TileGroup) {
                 val holder = Table()
                 val secondaryColor = unit.civInfo.nation.getInnerColor()
                 val airUnitTable = Table().apply { defaults().pad(3f) }
-                airUnitTable.background = ImageGetter.getBackground(unit.civInfo.nation.getOuterColor())
+                airUnitTable.background = BaseScreen.skinStrings.getUiBackground(
+                    "WorldScreen/AirUnitTable",
+                    tintColor = unit.civInfo.nation.getOuterColor()
+                )
                 val aircraftImage = ImageGetter.getImage("OtherIcons/Aircraft")
                 aircraftImage.color = secondaryColor
                 airUnitTable.add(aircraftImage).size(10f)

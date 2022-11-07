@@ -17,7 +17,10 @@ import com.unciv.ui.utils.extensions.toLabel
 
 class TileInfoTable(private val viewingCiv :CivilizationInfo) : Table(BaseScreen.skin) {
     init {
-        background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.5f))
+        background = BaseScreen.skinStrings.getUiBackground(
+            "WorldScreen/TileInfoTable",
+            tintColor = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.5f)
+        )
     }
 
     internal fun updateTileTable(tile: TileInfo?) {

@@ -4,7 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeOffersList
-import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.extensions.addSeparator
 import com.unciv.ui.utils.extensions.toLabel
 
@@ -43,7 +43,10 @@ class TradesOverviewTab(
     private fun createOffersTable(civ: CivilizationInfo, offersList: TradeOffersList, numberOfOtherSidesOffers: Int): Table {
         val table = Table()
         table.defaults().pad(10f)
-        table.background = ImageGetter.getBackground(civ.nation.getOuterColor())
+        table.background = BaseScreen.skinStrings.getUiBackground(
+            "OverviewScreen/TradesOverviewTab/OffersTable",
+            tintColor = civ.nation.getOuterColor()
+        )
         table.add(civ.civName.toLabel(civ.nation.getInnerColor())).row()
         table.addSeparator()
         for (offer in offersList) {

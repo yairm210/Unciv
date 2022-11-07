@@ -126,7 +126,10 @@ class CivilopediaScreen(
 
         for (entry in entries) {
             val entryButton = Table().apply {
-                background = ImageGetter.getBackground(colorFromRGB(50, 75, 125))
+                background = skinStrings.getUiBackground(
+                    "CivilopediaScreen/EntryButton",
+                    tintColor = colorFromRGB(50, 75, 125)
+                )
                 touchable = Touchable.enabled
             }
             if (entry.image != null)

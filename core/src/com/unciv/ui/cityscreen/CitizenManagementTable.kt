@@ -31,7 +31,10 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
                 cityScreen.update()
             }
         }
-        resetCell.background = ImageGetter.getBackground(colorButton)
+        resetCell.background = BaseScreen.skinStrings.getUiBackground(
+            "CityScreen/CitizenManagementTable/ResetCell",
+            tintColor = colorButton
+        )
         add(resetCell).colspan(2).growX().pad(3f)
         row()
 
@@ -46,7 +49,10 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
                 cityScreen.update()
             }
         }
-        avoidCell.background = ImageGetter.getBackground(if (city.avoidGrowth) colorSelected else colorButton)
+        avoidCell.background = BaseScreen.skinStrings.getUiBackground(
+            "CityScreen/CitizenManagementTable/AvoidCell",
+            tintColor = if (city.avoidGrowth) colorSelected else colorButton
+        )
         add(avoidCell).colspan(2).growX().pad(3f)
         row()
 
@@ -65,7 +71,10 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
                     cityScreen.update()
                 }
             }
-            cell.background = ImageGetter.getBackground(if (city.cityAIFocus == focus) colorSelected else colorButton)
+            cell.background = BaseScreen.skinStrings.getUiBackground(
+                "CityScreen/CitizenManagementTable/FocusCell",
+                tintColor = if (city.cityAIFocus == focus) colorSelected else colorButton
+            )
             add(cell).growX().pad(3f)
             if (newRow)  // every 2 make new row
                 row()

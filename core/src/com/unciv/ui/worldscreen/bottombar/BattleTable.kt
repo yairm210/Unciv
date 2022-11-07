@@ -38,7 +38,10 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
     init {
         isVisible = false
         skin = BaseScreen.skin
-        background = ImageGetter.getBackground(ImageGetter.getBlue().apply { a = 0.8f })
+        background = BaseScreen.skinStrings.getUiBackground(
+            "WorldScreen/BattleTable",
+            tintColor = BaseScreen.skinStrings.skinConfig.baseColor.apply { a = 0.8f }
+        )
 
         defaults().pad(5f)
         pad(5f)
