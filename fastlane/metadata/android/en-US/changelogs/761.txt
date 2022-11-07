@@ -1,0 +1,9 @@
+
+
+Resolves  - Added layout for promotions 
+
+Added AbsoluteUnits as default units for Hexarealm tileset :D
+
+Gradle action to speed up actions
+
+Added "How to create a UI skin for Unciv" to wiki  - By GGGuenni

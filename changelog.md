@@ -1,3 +1,13 @@
+## 4.2.17
+
+Resolves  - Added layout for promotions 
+
+Added AbsoluteUnits as default units for Hexarealm tileset :D
+
+Gradle action to speed up actions
+
+Added "How to create a UI skin for Unciv" to wiki  - By GGGuenni
+
 ## 4.2.16
 
 Automated workers no longer improve unworkable tiles
