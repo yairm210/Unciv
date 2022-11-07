@@ -458,13 +458,12 @@ class Ruleset {
                     val text =
                         "$name's unique \"${unique.text}\" looks like it may be a misspelling of:\n" +
                                 similarUniques.joinToString("\n") { uniqueType ->
-                                    val deprecationAnnotation =
-                                        UniqueType::class.java.getField(uniqueType.name)
-                                            .getAnnotation(Deprecated::class.java)
-                                    if (deprecationAnnotation == null)
-                                        "\"${uniqueType.text}\""
-                                    else
-                                        "\"${uniqueType.text}\" (Deprecated)"
+                                    var text = "\"${uniqueType.text}"
+                                    if (unique.conditionals.isNotEmpty())
+                                        text += " " + unique.conditionals.joinToString(" ") { "<${it.text}>" }
+                                    text += "\""
+                                    if (uniqueType.getDeprecationAnnotation() != null) text += " (Deprecated)"
+                                    return@joinToString text
                                 }.prependIndent("\t")
                     listOf(RulesetError(text, RulesetErrorSeverity.OK))
                 }
