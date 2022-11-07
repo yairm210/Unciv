@@ -44,7 +44,6 @@ import com.unciv.ui.utils.extensions.toPercent
 import com.unciv.ui.utils.extensions.withItem
 import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
-import kotlin.collections.HashMap
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -679,22 +678,13 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         return diplomacyManager.hasOpenBorders
     }
 
-    fun getEnemyMovementPenalty(enemyUnit: MapUnit, toMoveTo: TileInfo): Float {
+    fun getEnemyMovementPenalty(enemyUnit: MapUnit): Float {
         if (enemyMovementPenaltyUniques != null && enemyMovementPenaltyUniques!!.any()) {
             return enemyMovementPenaltyUniques!!.sumOf {
-                when (it.type!!) {
-                    UniqueType.EnemyLandUnitsSpendExtraMovement -> {
-                        if (enemyUnit.matchesFilter(it.params[0]))
-                            it.params[1].toInt()
-                        else 0 // doesn't match
-                    }
-                    UniqueType.EnemyLandUnitsSpendExtraMovementDepreciated -> {
-                        if (toMoveTo.isLand) {
-                            1 // depreciated unique only works on land tiles
-                        } else 0
-                    }
-                    else -> 0
-                }
+                if (it.type!! == UniqueType.EnemyLandUnitsSpendExtraMovement
+                        && enemyUnit.matchesFilter(it.params[0]))
+                    it.params[1].toInt()
+                else 0
             }.toFloat()
         }
         return 0f // should not reach this point

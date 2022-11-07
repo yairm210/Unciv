@@ -208,8 +208,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     EnablesConstructionOfSpaceshipParts("Enables construction of Spaceship parts", UniqueTarget.Global),
     EnemyLandUnitsSpendExtraMovement("Enemy [mapUnitFilter] units must spend [amount] extra movement points when inside your territory", UniqueTarget.Global),
-    @Deprecated("As of 4.2.4", ReplaceWith("Enemy [Land] units must spend [1] extra movement points when inside your territory <before discovering [Dynamite]>"))
-    EnemyLandUnitsSpendExtraMovementDepreciated("Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)", UniqueTarget.Global),
 
     ProductionToCivWideStatConversionBonus("Production to [civWideStat] conversion in cities changed by [relativeAmount]%", UniqueTarget.Global),
 
@@ -704,7 +702,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     // endregion
 
     // region DEPRECATED AND REMOVED
-
+    @Deprecated("As of 4.2.4", ReplaceWith("Enemy [Land] units must spend [1] extra movement points when inside your territory <before discovering [Dynamite]>"), DeprecationLevel.ERROR)
+    EnemyLandUnitsSpendExtraMovementDepreciated("Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)", UniqueTarget.Global),
     @Deprecated("as of 4.1.7", ReplaceWith("Can construct [improvementName] <if it hasn't used other actions yet>"), DeprecationLevel.ERROR)
     CanConstructIfNoOtherActions("Can construct [improvementName] if it hasn't used other actions yet", UniqueTarget.Unit),
     @Deprecated("s of 4.1.14", ReplaceWith("Production to [Science] conversion in cities changed by [33]%"), DeprecationLevel.ERROR)
