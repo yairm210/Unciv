@@ -632,6 +632,12 @@ class Ruleset {
 
         for (promotion in unitPromotions.values) {
             checkUniques(promotion, lines, rulesetInvariant, tryFixUnknownUniques)
+            if (promotion.row < -1) lines += "Promotion ${promotion.name} has invalid row value: ${promotion.row}"
+            if (promotion.column < 0) lines += "Promotion ${promotion.name} has invalid column value: ${promotion.column}"
+            if (promotion.row == -1) continue
+            for (otherPromotion in unitPromotions.values)
+                if (promotion != otherPromotion && promotion.column == otherPromotion.column && promotion.row == otherPromotion.row)
+                    lines += "Promotions ${promotion.name} and ${otherPromotion.name} have the same position: ${promotion.row}/${promotion.column}"
         }
 
         for (resource in tileResources.values) {
