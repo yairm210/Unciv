@@ -38,7 +38,7 @@ class GameSettings {
 
     var turnsBetweenAutosaves = 1
     var tileSet: String = Constants.defaultTileset
-    var unitSet: String = Constants.defaultUnitset
+    var unitSet: String? = Constants.defaultUnitset
     var skin: String = Constants.defaultSkin
     var showTutorials: Boolean = true
     var autoAssignCityProduction: Boolean = true
@@ -48,7 +48,7 @@ class GameSettings {
     var showMinimap: Boolean = true
     var minimapSize: Int = 6    // default corresponds to 15% screen space
     var unitIconOpacity = 1f // default corresponds to fully opaque
-    var showPixelUnits: Boolean = true
+    val showPixelUnits: Boolean get() = unitSet != null
     var showPixelImprovements: Boolean = true
     var continuousRendering = false
     var orderTradeOffersByAmount = true

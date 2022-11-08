@@ -13,7 +13,7 @@ import com.unciv.ui.images.ImageGetter
  * @param tileSet Name of the tileset. Defaults to active at time of instantiation.
  * @param fallbackDepth Maximum number of fallback tilesets to try. Used to prevent infinite recursion.
  * */
-class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, unitSet: String = UncivGame.Current.settings.unitSet, fallbackDepth: Int = 1) {
+class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, unitSet: String? = UncivGame.Current.settings.unitSet, fallbackDepth: Int = 1) {
 
     // this is so that when we have 100s of TileGroups, they won't all individually come up with all these strings themselves,
     // it gets pretty memory-intensive (10s of MBs which is a lot for lower-end phones)
