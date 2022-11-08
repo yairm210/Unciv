@@ -47,7 +47,10 @@ class MapEditorToolsDrawer(
         arrowWrapper.setSize(arrowSize, arrowSize)
         arrowWrapper.setOrigin(Align.center)
         add(arrowWrapper).align(Align.center).width(handleWidth).fillY().apply {  // the "handle"
-            background = ImageGetter.getBackground(BaseScreen.skin.get("color", Color::class.java))
+            background = BaseScreen.skinStrings.getUiBackground(
+                "MapEditor/MapEditorToolsDrawer/Handle",
+                tintColor = BaseScreen.skin.get("color", Color::class.java)
+            )
         }
 
         add(tabs)
@@ -104,7 +107,7 @@ class MapEditorToolsDrawer(
         }
     }
 
-    // single-use helpers placed together for readability. One should be the exact inverse of the other except for the clamping. 
+    // single-use helpers placed together for readability. One should be the exact inverse of the other except for the clamping.
     private fun splitAmountToX() =
         stage.width - width + (1f - splitAmount) * (width - handleWidth)
     private fun xToSplitAmount(x: Float) =

@@ -1,3 +1,9 @@
+## 4.2.17
+
+Added layout option for promotions, added promotion layout for G&K
+
+Added AbsoluteUnits as default units for Hexarealm tileset :D
+
 ## 4.2.16
 
 Automated workers no longer improve unworkable tiles

@@ -6,6 +6,7 @@ import com.unciv.logic.battle.CombatAction
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.ReligionState
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.getConditionals
@@ -141,6 +142,9 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalTimedUnique -> true
             UniqueType.ConditionalConsumeUnit -> true
 
+            UniqueType.ConditionalBeforeTurns -> state.civInfo != null && state.civInfo.gameInfo.turns < condition.params[0].toInt()
+            UniqueType.ConditionalAfterTurns -> state.civInfo != null && state.civInfo.gameInfo.turns >= condition.params[0].toInt()
+
             UniqueType.ConditionalChance -> stateBasedRandom.nextFloat() < condition.params[0].toFloat() / 100f
 
             UniqueType.ConditionalWar -> state.civInfo?.isAtWar() == true
@@ -173,6 +177,10 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 state.civInfo != null && state.civInfo.policies.isAdopted(condition.params[0])
             UniqueType.ConditionalNoPolicy ->
                 state.civInfo != null && !state.civInfo.policies.isAdopted(condition.params[0])
+            UniqueType.ConditionalBeforePantheon ->
+                state.civInfo != null && state.civInfo.religionManager.religionState == ReligionState.None
+            UniqueType.ConditionalAfterPantheon ->
+                state.civInfo != null && state.civInfo.religionManager.religionState != ReligionState.None
             UniqueType.ConditionalBuildingBuilt ->
                 state.civInfo != null && state.civInfo.cities.any { it.cityConstructions.containsBuildingOrEquivalent(condition.params[0]) }
 

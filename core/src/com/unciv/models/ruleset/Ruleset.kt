@@ -264,6 +264,14 @@ class Ruleset {
         val promotionsFile = folderHandle.child("UnitPromotions.json")
         if (promotionsFile.exists()) unitPromotions += createHashmap(json().fromJsonFile(Array<Promotion>::class.java, promotionsFile))
 
+        var topRow = unitPromotions.values.filter { it.column == 0 }.maxOfOrNull { it.row } ?: -1
+        for (promotion in unitPromotions.values)
+            if (promotion.row == -1){
+                promotion.column = 0
+                topRow += 1
+                promotion.row = topRow
+            }
+
         val questsFile = folderHandle.child("Quests.json")
         if (questsFile.exists()) quests += createHashmap(json().fromJsonFile(Array<Quest>::class.java, questsFile))
 
@@ -450,13 +458,12 @@ class Ruleset {
                     val text =
                         "$name's unique \"${unique.text}\" looks like it may be a misspelling of:\n" +
                                 similarUniques.joinToString("\n") { uniqueType ->
-                                    val deprecationAnnotation =
-                                        UniqueType::class.java.getField(uniqueType.name)
-                                            .getAnnotation(Deprecated::class.java)
-                                    if (deprecationAnnotation == null)
-                                        "\"${uniqueType.text}\""
-                                    else
-                                        "\"${uniqueType.text}\" (Deprecated)"
+                                    var text = "\"${uniqueType.text}"
+                                    if (unique.conditionals.isNotEmpty())
+                                        text += " " + unique.conditionals.joinToString(" ") { "<${it.text}>" }
+                                    text += "\""
+                                    if (uniqueType.getDeprecationAnnotation() != null) text += " (Deprecated)"
+                                    return@joinToString text
                                 }.prependIndent("\t")
                     listOf(RulesetError(text, RulesetErrorSeverity.OK))
                 }
@@ -624,6 +631,12 @@ class Ruleset {
 
         for (promotion in unitPromotions.values) {
             checkUniques(promotion, lines, rulesetInvariant, tryFixUnknownUniques)
+            if (promotion.row < -1) lines += "Promotion ${promotion.name} has invalid row value: ${promotion.row}"
+            if (promotion.column < 0) lines += "Promotion ${promotion.name} has invalid column value: ${promotion.column}"
+            if (promotion.row == -1) continue
+            for (otherPromotion in unitPromotions.values)
+                if (promotion != otherPromotion && promotion.column == otherPromotion.column && promotion.row == otherPromotion.row)
+                    lines += "Promotions ${promotion.name} and ${otherPromotion.name} have the same position: ${promotion.row}/${promotion.column}"
         }
 
         for (resource in tileResources.values) {

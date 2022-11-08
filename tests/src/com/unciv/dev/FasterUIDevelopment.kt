@@ -105,7 +105,7 @@ object FasterUIDevelopment {
         }
         private var curBorderZ = 0
         fun addBorder(actor: Actor, color: Color) {
-            val border = ImageWithCustomSize(ImageGetter.getBackground(color))
+            val border = ImageWithCustomSize(skinStrings.getUiBackground("", tintColor = color))
             border.zIndex = curBorderZ++
             val stageCoords = actor.localToStageCoordinates(Vector2(0f, 0f))
             border.x = stageCoords.x - 1
@@ -114,7 +114,7 @@ object FasterUIDevelopment {
             border.height = actor.height + 2
             stage.addActor(border)
 
-            val background = ImageWithCustomSize(ImageGetter.getBackground(clearColor))
+            val background = ImageWithCustomSize(skinStrings.getUiBackground("", tintColor = clearColor))
             background.zIndex = curBorderZ++
             background.x = stageCoords.x
             background.y = stageCoords.y

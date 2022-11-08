@@ -21,9 +21,7 @@ class ImageWithCustomSize(drawable: Drawable) : Image(drawable) {
             width
         } else if (drawable != null) {
             drawable.minWidth
-        } else {
-            0f
-        }
+        } else 0f
     }
 
     override fun getPrefHeight(): Float {
@@ -31,8 +29,6 @@ class ImageWithCustomSize(drawable: Drawable) : Image(drawable) {
             height
         } else if (drawable != null) {
             drawable.minHeight
-        } else {
-            0f
-        }
+        } else 0f
     }
 }
