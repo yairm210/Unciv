@@ -1,3 +1,21 @@
+## 4.2.18
+
+Fixed mod promotions conflicting with existing promotion locations
+
+Fixed rare thread crashes
+
+Added before/after X turns conditionals - see 
+
+Added before/after Pantheon conditionals - see 
+
+Added "only available when" limitations to Ruins - see 
+
+Deprecated old unique
+
+Resolved  - Misspelling replacement text contains conditionals
+
+Resolved  - Get entire repo data for manually downloaded mods
+
 ## 4.2.17
 
 Added layout option for promotions, added promotion layout for G&K
