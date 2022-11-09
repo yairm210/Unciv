@@ -151,6 +151,7 @@ class Ruleset {
         modOptions.uniques.addAll(ruleset.modOptions.uniques)
         modOptions.constants.merge(ruleset.modOptions.constants)
 
+        // Allow each mod to define their own columns, and if there's a conflict, later mods will be shifted right
         // We should never be editing the original ruleset objects, only copies
         val addRulesetUnitPromotionClones = ruleset.unitPromotions.values.map { it.clone() }
         val existingPromotionLocations =

@@ -1,17 +1,11 @@
-
-
 Fixed mod promotions conflicting with existing promotion locations
 
 Fixed rare thread crashes
 
-Added before/after X turns conditionals - see 
+Added many new before/after X turns and before/after Pantheon conditionals
 
-Added before/after Pantheon conditionals - see 
+Generalized ruins reward limitations with "only available when"
 
-Added "only available when" limitations to Ruins - see 
+Unique Misspelling replacement text contains conditionals
 
-Deprecated old unique
-
-Resolved  - Misspelling replacement text contains conditionals
-
-Resolved  - Get entire repo data for manually downloaded mods
+Current naming for manually downloaded mods
