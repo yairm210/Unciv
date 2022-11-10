@@ -481,6 +481,9 @@ object ImageGetter {
 
     fun getAvailableSkins() = ninePatchDrawables.keys.asSequence().map { it.split("/")[1] }.distinct()
 
-    fun getAvailableTilesets() = textureRegionDrawables.keys.asSequence().filter { it.startsWith("TileSets") }
+    fun getAvailableTilesets() = textureRegionDrawables.keys.asSequence().filter { it.startsWith("TileSets") && !it.contains("/Units/") }
             .map { it.split("/")[1] }.distinct()
+
+    fun getAvailableUnitsets() = textureRegionDrawables.keys.asSequence().filter { it.contains("/Units/") }
+        .map { it.split("/")[1] }.distinct()
 }
