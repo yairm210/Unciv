@@ -17,20 +17,16 @@ import kotlin.math.PI
 import kotlin.math.atan
 
 internal class MinimapTile(val tileInfo: TileInfo, tileSize: Float, val onClick: () -> Unit) {
-    companion object {
-        val UNREVEALED_COLOR = Color.DARK_GRAY!!
-    }
-
     val image: Image = ImageGetter.getImage("OtherIcons/Hexagon")
     private var cityCircleImage: IconCircleGroup? = null
     var owningCiv: CivilizationInfo? = null
     private var neighborToBorderImage = HashMap<TileInfo, Image>()
-    val isUnrevealed get() = image.color == UNREVEALED_COLOR
+    val isUnrevealed get() = !image.isVisible
 
     init {
         val positionalVector = HexMath.hex2WorldCoords(tileInfo.position)
 
-        image.color = UNREVEALED_COLOR
+        image.isVisible = false
         image.setSize(tileSize, tileSize)
         image.setPosition(
             positionalVector.x * 0.5f * tileSize,
@@ -40,8 +36,9 @@ internal class MinimapTile(val tileInfo: TileInfo, tileSize: Float, val onClick:
     }
 
     fun updateColor(isTileUnrevealed: Boolean) {
+        image.isVisible = UncivGame.Current.viewEntireMapForDebug || !isTileUnrevealed
+        if (!image.isVisible) return
         image.color = when {
-            !UncivGame.Current.viewEntireMapForDebug && isTileUnrevealed -> UNREVEALED_COLOR
             tileInfo.isCityCenter() && !tileInfo.isWater -> tileInfo.getOwner()!!.nation.getInnerColor()
             tileInfo.getCity() != null && !tileInfo.isWater -> tileInfo.getOwner()!!.nation.getOuterColor()
             else -> tileInfo.getBaseTerrain().getColor().lerp(Color.GRAY, 0.5f)
@@ -58,8 +55,8 @@ internal class MinimapTile(val tileInfo: TileInfo, tileSize: Float, val onClick:
     fun updateBorders(): ActorChange {
         val imagesBefore = neighborToBorderImage.values.toSet()
         for (neighbor in tileInfo.neighbors) {
-            val shouldHaveBorderDisplayed = tileInfo.getOwner() != null &&
-                neighbor.getOwner() != tileInfo.getOwner()
+            val shouldHaveBorderDisplayed = tileInfo.getOwner() != null
+                    && neighbor.getOwner() != tileInfo.getOwner()
             if (!shouldHaveBorderDisplayed) {
                 neighborToBorderImage.remove(neighbor)
                 continue
