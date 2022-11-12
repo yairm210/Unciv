@@ -51,6 +51,10 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         val newMinimapSize = worldScreen.game.settings.minimapSize
         if (newMinimapSize == minimapSize) return
         minimapSize = newMinimapSize
+        rebuild()
+    }
+
+    private fun rebuild(){
         this.clear()
         minimap = Minimap(mapHolder, minimapSize)
         add(getToggleIcons()).align(Align.bottom)

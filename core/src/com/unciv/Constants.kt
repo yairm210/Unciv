@@ -81,7 +81,7 @@ object Constants {
     const val dropboxMultiplayerServer = "Dropbox"
 
     const val defaultTileset = "HexaRealm"
-    const val defaultUnitset = "HexaRealm"
+    const val defaultUnitset = "AbsoluteUnits"
     const val defaultSkin = "Minimal"
 
     /**
