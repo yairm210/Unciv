@@ -1,3 +1,13 @@
+## 4.2.19
+
+Added diplomatic repercussions for attacking your own ally city-state, and discouraged AIs from doing so
+
+Fixed promotions for mods conflicting with base ruleset promotions
+
+Added unitset selection to options menu  - By GGGuenni
+
+AbsoluteUnits - Unique Archers  - By letstalkaboutdune
+
 ## 4.2.18
 
 Fixed mod promotions conflicting with existing promotion locations
