@@ -164,13 +164,17 @@ class Ruleset {
 
         if (columnsWithConflictingLocations.isNotEmpty()) {
             var highestExistingColumn = unitPromotions.values.maxOf { it.column }
-            for (column in columnsWithConflictingLocations) {
+            for (conflictingColumn in columnsWithConflictingLocations) {
                 highestExistingColumn += 1
                 val newColumn = highestExistingColumn
-                for (promotion in addRulesetUnitPromotionClones) promotion.column = newColumn
+                for (promotion in addRulesetUnitPromotionClones)
+                    if (promotion.column == conflictingColumn)
+                        promotion.column = newColumn
             }
         }
-        unitPromotions.putAll(ruleset.unitPromotions)
+        val finalModUnitPromotionsMap = addRulesetUnitPromotionClones.associateBy { it.name }
+
+        unitPromotions.putAll(finalModUnitPromotionsMap)
 
         mods += ruleset.mods
     }

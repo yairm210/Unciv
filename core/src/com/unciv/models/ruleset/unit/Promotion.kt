@@ -20,6 +20,12 @@ class Promotion : RulesetObject() {
 
     fun clone():Promotion {
         val newPromotion = Promotion()
+
+        // RulesetObject fields
+        newPromotion.name = name
+        newPromotion.uniques = uniques
+
+        // Promotion fields
         newPromotion.prerequisites = prerequisites
         newPromotion.unitTypes = unitTypes
         newPromotion.row = row
