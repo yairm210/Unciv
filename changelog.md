@@ -1,16 +1,16 @@
 ## 4.2.20
 
-Resolved  - automated workers no longer try to improve enemy tiles
+Main map and mini-map no longer show unexplored tiles!
 
-Resolved  - white lines in menus no longer change width when changing display settings
+New "Unitset" option translatable - By Ouaz
 
-Resolved  - set 'text/plain' content type for multiplayer server requests
+Renamed AbsoluteUnits unitset @letstalkaboutdune
 
-Renamed AbsoluteUnits unitset @letstalkaboutdune - see 
+Automated workers no longer try to improve enemy tiles
 
-Resolve  - don't show unexplored tiles at all
+White lines in menus no longer change width when changing display settings
 
-New "Unitset" option translatable  - By Ouaz
+Set 'text/plain' content type for multiplayer server requests
 
 ## 4.2.19
 
