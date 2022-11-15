@@ -256,6 +256,7 @@ class WorkerAutomation(
         val workableTiles = currentTile.getTilesInDistance(4)
                 .filter {
                     (it.civilianUnit == null || it == currentTile)
+                            && (it.owningCity == null || it.getOwner()==civInfo)
                             && tileCanBeImproved(unit, it)
                             && it.getTilesInDistance(2)
                             .none { tile -> tile.isCityCenter() && tile.getCity()!!.civInfo.isAtWarWith(civInfo) }
