@@ -159,7 +159,7 @@ object ImageGetter {
         return layerList
     }
 
-    fun getWhiteDot() = getImage(whiteDotLocation)
+    fun getWhiteDot() = getImage(whiteDotLocation).apply { setSize(1f) }
     fun getDot(dotColor: Color) = getWhiteDot().apply { color = dotColor }
 
     fun getExternalImage(fileName: String): Image {

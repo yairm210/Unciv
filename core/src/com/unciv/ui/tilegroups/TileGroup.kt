@@ -351,7 +351,7 @@ open class TileGroup(
 
         @Suppress("BooleanLiteralArgument")  // readable enough as is
         fun clearUnexploredTiles() {
-            updateTileImage(null)
+            baseLayerGroup.isVisible = false
             updateRivers(false,false, false)
 
             updatePixelMilitaryUnit(false)
@@ -365,9 +365,17 @@ open class TileGroup(
         }
 
         hideHighlight()
+
+        val allGroups = listOf(baseLayerGroup,
+            terrainFeatureLayerGroup, borderLayerGroup, miscLayerGroup,
+            pixelMilitaryUnitGroup, pixelCivilianUnitGroup, unitLayerGroup,
+            cityButtonLayerGroup, highlightFogCrosshairLayerGroup)
+        for (group in allGroups) group.isVisible = true
+
         if (viewingCiv != null && !isExplored(viewingCiv)) {
-            clearUnexploredTiles()
-            for(image in tileBaseImages) image.color = tileSetStrings.tileSetConfig.unexploredTileColor
+            if (tileInfo.neighbors.any { it.position in viewingCiv.exploredTiles })
+                clearUnexploredTiles()
+            else for (group in allGroups) group.isVisible = false
             return
         }
 
