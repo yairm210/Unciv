@@ -705,6 +705,21 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         val otherCiv = otherCiv()
         val otherCivDiplomacy = otherCivDiplomacy()
 
+        if (otherCiv.isCityState() && !indirectCityStateAttack) {
+            otherCivDiplomacy.setInfluence(-60f)
+            civInfo.changeMinorCivsAttacked(1)
+            otherCiv.cityStateFunctions.cityStateAttacked(civInfo)
+
+            // You attacked your own ally, you're a right bastard
+            if (otherCiv.getAllyCiv() == civInfo.civName) {
+                otherCiv.updateAllyCivForCityState()
+                otherCivDiplomacy.setInfluence(-120f)
+                for (knownCiv in civInfo.getKnownCivs()) {
+                    knownCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.BetrayedDeclarationOfFriendship, -10f)
+                }
+            }
+        }
+
         onWarDeclared()
         otherCivDiplomacy.onWarDeclared()
 
@@ -717,11 +732,6 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
         otherCivDiplomacy.setModifier(DiplomaticModifiers.DeclaredWarOnUs, -20f)
         otherCivDiplomacy.removeModifier(DiplomaticModifiers.ReturnedCapturedUnits)
-        if (otherCiv.isCityState() && !indirectCityStateAttack) {
-            otherCivDiplomacy.setInfluence(-60f)
-            civInfo.changeMinorCivsAttacked(1)
-            otherCiv.cityStateFunctions.cityStateAttacked(civInfo)
-        }
 
         for (thirdCiv in civInfo.getKnownCivs()) {
             if (thirdCiv.isAtWarWith(otherCiv)) {

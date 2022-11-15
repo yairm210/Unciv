@@ -1,12 +1,12 @@
 package com.unciv.ui.audio
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Files.FileType
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.audio.Music
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
-import com.unciv.models.metadata.GameSettings
 import com.unciv.logic.multiplayer.storage.DropBox
+import com.unciv.models.metadata.GameSettings
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import java.util.*
@@ -418,9 +418,10 @@ class MusicController {
      */
     fun pause(speedFactor: Float = 1f) {
         debug("MusicTrackController.pause called")
-        if ((state != ControllerState.Playing && state != ControllerState.PlaySingle) || current == null) return
+        val controller = current
+        if ((state != ControllerState.Playing && state != ControllerState.PlaySingle) || controller == null) return
         val fadingStep = defaultFadingStep * speedFactor.coerceIn(0.001f..1000f)
-        current!!.startFade(MusicTrackController.State.FadeOut, fadingStep)
+        controller.startFade(MusicTrackController.State.FadeOut, fadingStep)
         if (next?.state == MusicTrackController.State.FadeIn)
             next!!.startFade(MusicTrackController.State.FadeOut)
         state = ControllerState.Pause

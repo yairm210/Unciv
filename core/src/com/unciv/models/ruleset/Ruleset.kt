@@ -122,11 +122,15 @@ class Ruleset {
     fun add(ruleset: Ruleset) {
         beliefs.putAll(ruleset.beliefs)
         buildings.putAll(ruleset.buildings)
-        for (buildingToRemove in ruleset.modOptions.buildingsToRemove) buildings.remove(buildingToRemove)
+        for (buildingToRemove in ruleset.modOptions.buildingsToRemove) buildings.remove(
+            buildingToRemove
+        )
         difficulties.putAll(ruleset.difficulties)
         eras.putAll(ruleset.eras)
         speeds.putAll(ruleset.speeds)
-        globalUniques = GlobalUniques().apply { uniques.addAll(globalUniques.uniques); uniques.addAll(ruleset.globalUniques.uniques) }
+        globalUniques = GlobalUniques().apply {
+            uniques.addAll(globalUniques.uniques); uniques.addAll(ruleset.globalUniques.uniques)
+        }
         nations.putAll(ruleset.nations)
         for (nationToRemove in ruleset.modOptions.nationsToRemove) nations.remove(nationToRemove)
         policyBranches.putAll(ruleset.policyBranches)
@@ -140,13 +144,38 @@ class Ruleset {
         terrains.putAll(ruleset.terrains)
         tileImprovements.putAll(ruleset.tileImprovements)
         tileResources.putAll(ruleset.tileResources)
-        unitPromotions.putAll(ruleset.unitPromotions)
         units.putAll(ruleset.units)
         unitTypes.putAll(ruleset.unitTypes)
         victories.putAll(ruleset.victories)
         for (unitToRemove in ruleset.modOptions.unitsToRemove) units.remove(unitToRemove)
         modOptions.uniques.addAll(ruleset.modOptions.uniques)
         modOptions.constants.merge(ruleset.modOptions.constants)
+
+        // Allow each mod to define their own columns, and if there's a conflict, later mods will be shifted right
+        // We should never be editing the original ruleset objects, only copies
+        val addRulesetUnitPromotionClones = ruleset.unitPromotions.values.map { it.clone() }
+        val existingPromotionLocations =
+                unitPromotions.values.map { "${it.row}/${it.column}" }.toHashSet()
+        val promotionsWithConflictingLocations = addRulesetUnitPromotionClones.filter {
+            existingPromotionLocations.contains("${it.row}/${it.column}")
+        }
+        val columnsWithConflictingLocations =
+                promotionsWithConflictingLocations.map { it.column }.distinct()
+
+        if (columnsWithConflictingLocations.isNotEmpty()) {
+            var highestExistingColumn = unitPromotions.values.maxOf { it.column }
+            for (conflictingColumn in columnsWithConflictingLocations) {
+                highestExistingColumn += 1
+                val newColumn = highestExistingColumn
+                for (promotion in addRulesetUnitPromotionClones)
+                    if (promotion.column == conflictingColumn)
+                        promotion.column = newColumn
+            }
+        }
+        val finalModUnitPromotionsMap = addRulesetUnitPromotionClones.associateBy { it.name }
+
+        unitPromotions.putAll(finalModUnitPromotionsMap)
+
         mods += ruleset.mods
     }
 

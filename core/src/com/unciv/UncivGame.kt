@@ -141,6 +141,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             TileSetCache.loadTileSetConfigs()
             SkinCache.loadSkinConfigs()
 
+            val vanillaRuleset = RulesetCache.getVanillaRuleset()
+
             if (settings.multiplayer.userId.isEmpty()) { // assign permanent user id
                 settings.multiplayer.userId = UUID.randomUUID().toString()
                 settings.save()
@@ -157,7 +159,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
                 musicController.chooseTrack(suffixes = listOf(MusicMood.Menu, MusicMood.Ambient),
                     flags = EnumSet.of(MusicTrackChooserFlags.SuffixMustMatch))
 
-                ImageGetter.ruleset = RulesetCache.getVanillaRuleset() // so that we can enter the map editor without having to load a game first
+                ImageGetter.ruleset = vanillaRuleset // so that we can enter the map editor without having to load a game first
 
                 when {
                     settings.isFreshlyCreated -> setAsRootScreen(LanguagePickerScreen())
@@ -381,7 +383,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     override fun pause() {
         val curGameInfo = gameInfo
         if (curGameInfo != null) files.requestAutoSave(curGameInfo)
-        musicController.pause()
+        if (::musicController.isInitialized) musicController.pause()
         super.pause()
     }
 
@@ -470,7 +472,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.2.17", 761)
+        val VERSION = Version("4.2.19", 763)
         //endregion
 
         lateinit var Current: UncivGame

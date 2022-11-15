@@ -18,6 +18,21 @@ class Promotion : RulesetObject() {
     var row = -1
     var column = 0
 
+    fun clone():Promotion {
+        val newPromotion = Promotion()
+
+        // RulesetObject fields
+        newPromotion.name = name
+        newPromotion.uniques = uniques
+
+        // Promotion fields
+        newPromotion.prerequisites = prerequisites
+        newPromotion.unitTypes = unitTypes
+        newPromotion.row = row
+        newPromotion.column = column
+        return newPromotion
+    }
+
     override fun getUniqueTarget() = UniqueTarget.Promotion
 
 

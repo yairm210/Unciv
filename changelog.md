@@ -1,3 +1,27 @@
+## 4.2.19
+
+Fixed promotions for mods conflicting with base ruleset promotions
+
+Added unitset selection to options menu  - By GGGuenni
+
+Added diplomatic repercussions for attacking your own ally city-state, and discouraged AIs from doing so
+
+Absolute Units - Unique Archers - By letstalkaboutdune
+
+## 4.2.18
+
+Fixed mod promotions conflicting with existing promotion locations
+
+Fixed rare thread crashes
+
+Added many new before/after X turns and before/after Pantheon conditionals
+
+Generalized ruins reward limitations with "only available when"
+
+Unique Misspelling replacement text contains conditionals
+
+Current naming for manually downloaded mods
+
 ## 4.2.17
 
 Added layout option for promotions, added promotion layout for G&K
