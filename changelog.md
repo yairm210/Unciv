@@ -1,3 +1,17 @@
+## 4.2.20
+
+Resolved  - automated workers no longer try to improve enemy tiles
+
+Resolved  - white lines in menus no longer change width when changing display settings
+
+Resolved  - set 'text/plain' content type for multiplayer server requests
+
+Renamed AbsoluteUnits unitset @letstalkaboutdune - see 
+
+Resolve  - don't show unexplored tiles at all
+
+New "Unitset" option translatable  - By Ouaz
+
 ## 4.2.19
 
 Fixed promotions for mods conflicting with base ruleset promotions
