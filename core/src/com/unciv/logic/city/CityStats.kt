@@ -377,7 +377,7 @@ class CityStats(val cityInfo: CityInfo) {
             .filter {
                 cityInfo.location == it.position
                         || cityInfo.isWorked(it)
-                        || it.owningCity == cityInfo && (it.getTileImprovement()
+                        || it.owningCity == cityInfo && (it.getUnpillagedTileImprovement()
                     ?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation) == true
                         || it.terrainHasUnique(UniqueType.TileProvidesYieldWithoutPopulation))
             }

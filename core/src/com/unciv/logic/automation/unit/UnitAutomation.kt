@@ -27,6 +27,8 @@ object UnitAutomation {
                 && tile.neighbors.any { it.position !in unit.civInfo.exploredTiles }
                 && (!unit.civInfo.isCityState() || tile.neighbors.any { it.getOwner() == unit.civInfo }) // Don't want city-states exploring far outside their borders
                 && unit.getDamageFromTerrain(tile) <= 0    // Don't take unnecessary damage
+                && tile.getTilesInDistance(3)  // don't walk in range of enemy units
+            .none { tile_it -> containsEnemyMilitaryUnit(unit, tile_it)}
                 && unit.movement.canReach(tile) // expensive, evaluate last
     }
 

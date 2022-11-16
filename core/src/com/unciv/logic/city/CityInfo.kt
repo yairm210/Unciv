@@ -412,8 +412,8 @@ class CityInfo : IsPartOfGameInfoSerialization {
 
         for (tileInfo in getTiles()) {
             val stateForConditionals = StateForConditionals(civInfo, this, tile = tileInfo)
-            if (tileInfo.improvement == null) continue
-            val tileImprovement = tileInfo.getTileImprovement()
+            if (tileInfo.getUnpillagedImprovement() == null) continue
+            val tileImprovement = tileInfo.getUnpillagedTileImprovement()
             for (unique in tileImprovement!!.getMatchingUniques(UniqueType.ProvidesResources, stateForConditionals)) {
                 val resource = getRuleset().tileResources[unique.params[1]] ?: continue
                 cityResources.add(
@@ -469,9 +469,9 @@ class CityInfo : IsPartOfGameInfoSerialization {
             }) return 0
         }
 
-        if ((tileInfo.improvement != null && resource.isImprovedBy(tileInfo.improvement!!)) || tileInfo.isCityCenter()
+        if ((tileInfo.getUnpillagedImprovement() != null && resource.isImprovedBy(tileInfo.improvement!!)) || tileInfo.isCityCenter()
             // Per https://gaming.stackexchange.com/questions/53155/do-manufactories-and-customs-houses-sacrifice-the-strategic-or-luxury-resources
-            || resource.resourceType == ResourceType.Strategic && tileInfo.containsGreatImprovement()
+            || resource.resourceType == ResourceType.Strategic && tileInfo.containsUnpillagedGreatImprovement()
         ) {
             var amountToAdd = if (resource.resourceType == ResourceType.Strategic) tileInfo.resourceAmount
                 else 1

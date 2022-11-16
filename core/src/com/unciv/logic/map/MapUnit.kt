@@ -462,7 +462,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         if (currentMovement == 0f) return false
         val tile = getTile()
         if (tile.improvementInProgress != null &&
-                canBuildImprovement(tile.getTileImprovementInProgress()!!) &&
+                (tile.improvementInProgress == Constants.repair || canBuildImprovement(tile.getTileImprovementInProgress()!!)) &&
                 !tile.isMarkedForCreatesOneImprovement()
             ) return false
         return !(isFortified() || isExploring() || isSleeping() || isAutomated() || isMoving())
@@ -694,7 +694,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
         if (enemyUnitsInWalkingDistance.isNotEmpty()) {
             if (isMoving()) // stop on enemy in sight
                 action = null
-            return  // Don't you dare move.
+            if (!(isExploring() || isAutomated()))  // have fleeing code
+                return  // Don't you dare move.
         }
 
         val currentTile = getTile()
@@ -754,6 +755,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             }
             tile.improvementInProgress == RoadStatus.Road.name -> tile.roadStatus = RoadStatus.Road
             tile.improvementInProgress == RoadStatus.Railroad.name -> tile.roadStatus = RoadStatus.Railroad
+            tile.improvementInProgress == Constants.repair -> tile.setRepaired()
             else -> {
                 val improvement = civInfo.gameInfo.ruleSet.tileImprovements[tile.improvementInProgress]!!
                 improvement.handleImprovementCompletion(this)
@@ -844,7 +846,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         movement.clearPathfindingCache()
         if (currentMovement > 0
             && getTile().improvementInProgress != null
-            && canBuildImprovement(getTile().getTileImprovementInProgress()!!)
+            && (getTile().improvementInProgress == Constants.repair || canBuildImprovement(getTile().getTileImprovementInProgress()!!))
         ) workOnImprovement()
         if (currentMovement == getMaxMovement().toFloat() && isFortified() && turnsFortified < 2) {
             turnsFortified++
@@ -1191,7 +1193,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         val (citadelTile, damage) = currentTile.neighbors
             .filter {
                 it.getOwner() != null
-                && it.improvement != null
+                && it.getUnpillagedImprovement() != null
                 && civInfo.isAtWarWith(it.getOwner()!!)
             }.map { tile ->
                 tile to tile.getTileImprovement()!!.getMatchingUniques(UniqueType.DamagesAdjacentEnemyUnits)
@@ -1247,7 +1249,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             && improvement.name != Constants.cancelImprovementOrder
             && tile.improvementInProgress != improvement.name
         ) return false
-
+        if (tile.improvementInProgress == Constants.repair) return true
         return getMatchingUniques(UniqueType.BuildImprovements)
             .any { improvement.matchesFilter(it.params[0]) || tile.matchesTerrainFilter(it.params[0]) }
     }

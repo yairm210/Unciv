@@ -775,15 +775,16 @@ object Battle {
             destroyIfDefeated(defender.getCivInfo(), attacker.getCivInfo())
         }
 
-        // Pillage improvements, remove roads, add fallout
-        if (tile.improvement != null && !tile.getTileImprovement()!!.hasUnique(UniqueType.Irremovable)) {
+        // Pillage improvements, pillage roads, add fallout
+        if (tile.improvement != null && tile.getUnpillagedImprovement() != null && !tile.getTileImprovement()!!.hasUnique(UniqueType.Irremovable)) {
             if (tile.getTileImprovement()!!.hasUnique(UniqueType.Unpillagable)) {
                 tile.improvement = null
             } else {
                 tile.setPillaged()
             }
         }
-        tile.roadStatus = RoadStatus.None
+        if (tile.roadStatus != RoadStatus.None && tile.getUnpillagedRoad() != RoadStatus.None)
+            tile.setPillaged()
         if (tile.isLand && !tile.isImpassible() && !tile.isCityCenter()) {
             if (tile.terrainHasUnique(UniqueType.DestroyableByNukesChance)) {
                 for (terrainFeature in tile.terrainFeatureObjects) {
