@@ -305,16 +305,14 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
                 question = "Do you want to exit the game?",
                 confirmText = "Exit",
                 restoreDefault = { musicController.resume() },
-                action = {
-                    Gdx.app.exit()
-
-                }
+                action = { Gdx.app.exit() }
             ).open(force = true)
             return null
         }
         val oldScreen = screenStack.removeLast()
         val newScreen = screenStack.last()
         setScreen(newScreen)
+        newScreen.resume()
         oldScreen.dispose()
         return newScreen
     }
