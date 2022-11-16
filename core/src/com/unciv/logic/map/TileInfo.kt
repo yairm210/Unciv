@@ -1000,7 +1000,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         if (civilianUnit != null && isViewableToPlayer)
             lineList += FormattedLine(civilianUnit!!.name.tr() + " - " + civilianUnit!!.civInfo.civName.tr(),
                 link="Unit/${civilianUnit!!.name}")
-        if (militaryUnit != null && isViewableToPlayer) {
+        if (militaryUnit != null && isViewableToPlayer && (viewingCiv == null || !militaryUnit!!.isInvisible(viewingCiv))) {
             val milUnitString = militaryUnit!!.name.tr() +
                 (if (militaryUnit!!.health < 100) "(" + militaryUnit!!.health + ")" else "") +
                 " - " + militaryUnit!!.civInfo.civName.tr()
