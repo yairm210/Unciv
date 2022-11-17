@@ -1,14 +1,14 @@
-## 4.2.21
+## 4.3.0
 
-Resolved  - units now recieve correct healing in friendly territory
+Units now recieve correct healing in friendly territory
 
-Tile info table no longer reveals hidden units - see 
+Tile info table no longer reveals hidden units
 
-Resolved  - AI no longer nukes if as consequence it will mean declaring war on someone
+AI no longer nukes if as consequence it will mean declaring war on someone
 
-Resolved  - empire overview screen updates after changing info in city screen
+Empire overview screen updates after changing info in city screen
 
-Resolved  - fixed civilopedia text that says city-states don't conquer other cities
+Fixed civilopedia text that says city-states don't conquer other cities
 
 ## 4.2.20
 
