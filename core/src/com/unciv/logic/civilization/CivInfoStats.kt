@@ -147,21 +147,8 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                 val eraInfo = civInfo.getEra()
 
                 if (!eraInfo.undefinedCityStateBonuses()) {
-                    for (bonus in eraInfo.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel)) {
-                        if (bonus.isOfType(UniqueType.CityStateStatsPerTurn) && bonus.conditionalsApply(otherCiv))
-                            cityStateBonus.add(bonus.stats)
-                    }
-                } else {
-                    // Deprecated, assume Civ V values for compatibility
-                    if (otherCiv.cityStateType == CityStateType.Cultured) {
-                        cityStateBonus.culture =
-                            when {
-                                civInfo.getEraNumber() in 0..1 -> 3f
-                                civInfo.getEraNumber() in 2..3 -> 6f
-                                else -> 13f
-                            }
-                        if (relationshipLevel == RelationshipLevel.Ally)
-                            cityStateBonus.culture *= 2f
+                    for (bonus in eraInfo.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel, UniqueType.CityStateStatsPerTurn)) {
+                        cityStateBonus.add(bonus.stats)
                     }
                 }
 

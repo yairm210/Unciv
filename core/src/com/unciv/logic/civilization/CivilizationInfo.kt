@@ -463,6 +463,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
                 .filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) }
             )
         yieldAll(getEra().getMatchingUniques(uniqueType, stateForConditionals))
+        yieldAll(cityStateFunctions.getUniquesProvidedByCityStates(uniqueType))
         if (religionManager.religion != null)
             yieldAll(religionManager.religion!!.getFounderUniques()
                 .filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) })

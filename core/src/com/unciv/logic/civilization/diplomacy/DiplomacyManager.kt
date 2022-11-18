@@ -646,11 +646,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
         if (eraInfo.undefinedCityStateBonuses()) return
 
-        for (bonus in eraInfo.getCityStateBonuses(otherCiv().cityStateType, relationshipLevel())) {
+        for (bonus in eraInfo.getCityStateBonuses(otherCiv().cityStateType, relationshipLevel(), UniqueType.CityStateMilitaryUnits)) {
             // Reset the countdown if it has ended, or if we have longer to go than the current maximum (can happen when going from friend to ally)
-            if (bonus.isOfType(UniqueType.CityStateMilitaryUnits) &&
-               (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) || getFlag(DiplomacyFlags.ProvideMilitaryUnit) > bonus.params[0].toInt())
-            ) {
+            if (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) || getFlag(DiplomacyFlags.ProvideMilitaryUnit) > bonus.params[0].toInt()) {
                 setFlag(DiplomacyFlags.ProvideMilitaryUnit, bonus.params[0].toInt() + variance)
             }
         }

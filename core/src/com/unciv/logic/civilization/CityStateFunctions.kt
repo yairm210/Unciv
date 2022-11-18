@@ -2,7 +2,10 @@ package com.unciv.logic.civilization
 
 import com.unciv.Constants
 import com.unciv.logic.automation.civilization.NextTurnAutomation
-import com.unciv.logic.civilization.diplomacy.*
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
+import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.unique.Unique
@@ -11,9 +14,6 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
-import kotlin.collections.HashMap
-import kotlin.collections.HashSet
-import kotlin.collections.LinkedHashMap
 import kotlin.math.min
 import kotlin.math.pow
 
@@ -22,40 +22,29 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
 
     /** Attempts to initialize the city state, returning true if successful. */
     fun initCityState(ruleset: Ruleset, startingEra: String, unusedMajorCivs: Collection<String>): Boolean {
-        val cityStateType = ruleset.nations[civInfo.civName]?.cityStateType
-            ?: return false
-
         val startingTechs = ruleset.technologies.values.filter { it.hasUnique(UniqueType.StartingTech) }
         for (tech in startingTechs)
             civInfo.tech.techsResearched.add(tech.name) // can't be .addTechnology because the civInfo isn't assigned yet
 
         val allMercantileResources = ruleset.tileResources.values.filter { it.hasUnique(UniqueType.CityStateOnlyResource) }.map { it.name }
-        val allPossibleBonuses = HashSet<Unique>()    // We look through these to determine what kind of city state we are
-        var fallback = false
+        val uniqueTypes = HashSet<UniqueType>()    // We look through these to determine what kind of city state we are
         for (era in ruleset.eras.values) {
-            if (era.undefinedCityStateBonuses()) {
-                fallback = true
-                break
-            }
-            val allyBonuses = era.getCityStateBonuses(cityStateType, RelationshipLevel.Ally)
-            val friendBonuses = era.getCityStateBonuses(cityStateType, RelationshipLevel.Friend)
-            allPossibleBonuses.addAll(allyBonuses)
-            allPossibleBonuses.addAll(friendBonuses)
+            if (era.undefinedCityStateBonuses()) continue
+            for (unique in era.friendBonusObjects.values.map { it.getAllUniques() } + era.allyBonusObjects.values.map { it.getAllUniques() })
+                uniqueTypes.addAll(unique.mapNotNull { it.type })
         }
 
         // CS Personality
         civInfo.cityStatePersonality = CityStatePersonality.values().random()
 
         // Mercantile bonus resources
-        if (allPossibleBonuses.any { it.isOfType(UniqueType.CityStateUniqueLuxury) }
-            || fallback && cityStateType == CityStateType.Mercantile) { // Fallback for badly defined Eras.json
+
+        if (uniqueTypes.contains(UniqueType.CityStateUniqueLuxury)) { // Fallback for badly defined Eras.json
             civInfo.cityStateResource = allMercantileResources.randomOrNull()
         }
 
         // Unique unit for militaristic city-states
-        if (allPossibleBonuses.any { it.isOfType(UniqueType.CityStateMilitaryUnits) }
-            || fallback && cityStateType == CityStateType.Militaristic // Fallback for badly defined Eras.json
-        ) {
+        if (uniqueTypes.contains(UniqueType.CityStateMilitaryUnits)) {
 
             val possibleUnits = ruleset.units.values.filter { it.requiredTech != null
                 && ruleset.eras[ruleset.technologies[it.requiredTech!!]!!.era()]!!.eraNumber > ruleset.eras[startingEra]!!.eraNumber // Not from the start era or before
@@ -438,15 +427,6 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                 if (bonus.stats[statType] > 0 || (bonus.isOfType(UniqueType.CityStateHappiness) && statType == Stat.Happiness))
                     return true
             }
-        } else {
-            // compatibility mode
-            return when {
-                civInfo.cityStateType == CityStateType.Mercantile && statType == Stat.Happiness -> true
-                civInfo.cityStateType == CityStateType.Cultured && statType == Stat.Culture -> true
-                civInfo.cityStateType == CityStateType.Maritime && statType == Stat.Food -> true
-                civInfo.cityStateType == CityStateType.Religious && statType == Stat.Faith ->true
-                else -> false
-            }
         }
 
         return false
@@ -667,5 +647,16 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             // IGNORE the fact that they consume their own resources - #4769
             addPositiveByResource(city.getCityResources(), Constants.cityStates)
         }
+    }
+
+    // TODO: Optimize, update whenever status changes, otherwise retain the same list
+    fun getUniquesProvidedByCityStates(uniqueType: UniqueType):Sequence<Unique>{
+        if (civInfo.isCityState()) return emptySequence()
+        val era = civInfo.getEra()
+
+        if (era.undefinedCityStateBonuses()) return emptySequence()
+
+        return civInfo.getKnownCivs().asSequence().filter { it.isCityState() }
+            .flatMap { era.getCityStateBonuses(it.cityStateType, civInfo.getDiplomacyManager(it).relationshipLevel(), uniqueType).asSequence() }
     }
 }
