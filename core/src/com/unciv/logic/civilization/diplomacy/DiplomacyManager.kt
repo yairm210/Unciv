@@ -105,6 +105,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
     // since this needs to be checked a lot during travel, putting it in a transient is a good performance booster
     @Transient
+    /** Can civInfo enter otherCivInfo's tiles? */
     var hasOpenBorders = false
 
     lateinit var otherCivName: String
@@ -363,7 +364,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         if (civInfo.isCityState() &&
             (relationshipLevel() >= RelationshipLevel.Friend || otherCiv().hasUnique(UniqueType.CityStateTerritoryAlwaysFriendly)))
             return true
-        return hasOpenBorders
+
+        return otherCivDiplomacy().hasOpenBorders // if THEY can enter US then WE are considered friendly territory for THEM
     }
     //endregion
 
