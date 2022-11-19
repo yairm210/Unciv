@@ -288,7 +288,7 @@ class DiplomacyScreen(
 
     /** Given a list of [bonuses], returns a list of pretty strings with updated values for Siam-like uniques
      *  Assumes that each bonus contains only one stat type */
-    private fun getAdjustedBonuses(bonuses: List<Unique>): List<String> {
+    private fun getAdjustedBonuses(bonuses: Sequence<Unique>): List<String> {
         val bonusStrings = ArrayList<String>()
         for (bonus in bonuses) {
             var improved = false

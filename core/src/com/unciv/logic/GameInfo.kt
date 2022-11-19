@@ -491,6 +491,13 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         for (religion in religions.values) religion.setTransients(this)
 
+        // must be done before updating tech manager bools, since that depends on allied city-states
+        for (civInfo in civilizations)
+            for (diplomacyManager in civInfo.diplomacy.values) {
+                diplomacyManager.civInfo = civInfo
+                diplomacyManager.updateHasOpenBorders()
+            }
+
         for (civInfo in civilizations) civInfo.setTransients()
         for (civInfo in civilizations) {
             civInfo.thingsToFocusOnForVictory =

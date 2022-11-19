@@ -3,9 +3,9 @@ package com.unciv.models.ruleset
 import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.civilization.CityStateType
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
-import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.civilopedia.FormattedLine
@@ -34,9 +34,9 @@ class Era : RulesetObject() {
     var friendBonus = HashMap<String, List<String>>()
     var allyBonus = HashMap<String, List<String>>()
     @Suppress("MemberVisibilityCanBePrivate")
-    val friendBonusObjects: Map<CityStateType, List<Unique>> by lazy { initBonuses(friendBonus) }
+    val friendBonusObjects: Map<CityStateType, UniqueMap> by lazy { initBonuses(friendBonus) }
     @Suppress("MemberVisibilityCanBePrivate")
-    val allyBonusObjects: Map<CityStateType, List<Unique>> by lazy { initBonuses(allyBonus) }
+    val allyBonusObjects: Map<CityStateType, UniqueMap> by lazy { initBonuses(allyBonus) }
 
     private var iconRGB: List<Int>? = null
 
@@ -87,20 +87,24 @@ class Era : RulesetObject() {
             }.map { it.first }.distinct()
     }
 
-    private fun initBonuses(bonusMap: Map<String, List<String>>): Map<CityStateType, List<Unique>> {
-        val objectMap = HashMap<CityStateType, List<Unique>>()
+    private fun initBonuses(bonusMap: Map<String, List<String>>): Map<CityStateType, UniqueMap> {
+        val objectMap = HashMap<CityStateType, UniqueMap>()
         for ((cityStateType, bonusList) in bonusMap) {
-            objectMap[CityStateType.valueOf(cityStateType)] = bonusList.map { Unique(it, UniqueTarget.CityState) }
+            val cityStateTypeUniqueMap = UniqueMap()
+            cityStateTypeUniqueMap.addUniques(bonusList.map { Unique(it, UniqueTarget.CityState)})
+            objectMap[CityStateType.valueOf(cityStateType)] = cityStateTypeUniqueMap
         }
         return objectMap
     }
 
-    fun getCityStateBonuses(cityStateType: CityStateType, relationshipLevel: RelationshipLevel): List<Unique> {
-        return when (relationshipLevel) {
-            RelationshipLevel.Ally   -> allyBonusObjects[cityStateType]   ?: emptyList()
-            RelationshipLevel.Friend -> friendBonusObjects[cityStateType] ?: emptyList()
-            else -> emptyList()
-        }
+    fun getCityStateBonuses(cityStateType: CityStateType, relationshipLevel: RelationshipLevel, uniqueType:UniqueType?=null): Sequence<Unique> {
+        val cityStateUniqueMap = when (relationshipLevel) {
+            RelationshipLevel.Ally -> allyBonusObjects[cityStateType]
+            RelationshipLevel.Friend -> friendBonusObjects[cityStateType]
+            else -> null
+        } ?: return emptySequence()
+        return if (uniqueType == null) cityStateUniqueMap.getAllUniques()
+        else cityStateUniqueMap.getUniques(uniqueType)
     }
 
     /** Since 3.19.5 we have a warning for mods without bonuses, eventually we should treat such mods as providing no bonus */

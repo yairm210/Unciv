@@ -156,9 +156,8 @@ class CityStats(val cityInfo: CityInfo) {
                     if (otherCiv.cityStateType == CityStateType.Maritime && cityInfo.isCapital())
                         stats.food += 2
                 } else {
-                    for (bonus in eraInfo.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel)) {
-                        if (bonus.isOfType(UniqueType.CityStateStatsPerCity)
-                            && cityInfo.matchesFilter(bonus.params[1])
+                    for (bonus in eraInfo.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel, UniqueType.CityStateStatsPerCity)) {
+                        if (cityInfo.matchesFilter(bonus.params[1])
                             && bonus.conditionalsApply(otherCiv, cityInfo)
                         ) stats.add(bonus.stats)
                     }
