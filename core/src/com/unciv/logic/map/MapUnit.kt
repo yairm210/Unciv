@@ -462,7 +462,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         if (currentMovement == 0f) return false
         val tile = getTile()
         if (tile.improvementInProgress != null &&
-                (tile.improvementInProgress == Constants.repair || canBuildImprovement(tile.getTileImprovementInProgress()!!)) &&
+                canBuildImprovement(tile.getTileImprovementInProgress()!!) &&
                 !tile.isMarkedForCreatesOneImprovement()
             ) return false
         return !(isFortified() || isExploring() || isSleeping() || isAutomated() || isMoving())
@@ -846,7 +846,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         movement.clearPathfindingCache()
         if (currentMovement > 0
             && getTile().improvementInProgress != null
-            && (getTile().improvementInProgress == Constants.repair || canBuildImprovement(getTile().getTileImprovementInProgress()!!))
+            && canBuildImprovement(getTile().getTileImprovementInProgress()!!)
         ) workOnImprovement()
         if (currentMovement == getMaxMovement().toFloat() && isFortified() && turnsFortified < 2) {
             turnsFortified++
