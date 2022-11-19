@@ -8,6 +8,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceSupplyList
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -650,13 +651,17 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
     }
 
     // TODO: Optimize, update whenever status changes, otherwise retain the same list
-    fun getUniquesProvidedByCityStates(uniqueType: UniqueType):Sequence<Unique>{
+    fun getUniquesProvidedByCityStates(
+        uniqueType: UniqueType,
+        stateForConditionals: StateForConditionals
+    ):Sequence<Unique> {
         if (civInfo.isCityState()) return emptySequence()
         val era = civInfo.getEra()
 
         if (era.undefinedCityStateBonuses()) return emptySequence()
 
         return civInfo.getKnownCivs().asSequence().filter { it.isCityState() }
-            .flatMap { era.getCityStateBonuses(it.cityStateType, civInfo.getDiplomacyManager(it).relationshipLevel(), uniqueType).asSequence() }
+            .flatMap { era.getCityStateBonuses(it.cityStateType, civInfo.getDiplomacyManager(it).relationshipLevel(), uniqueType) }
+            .filter { it.conditionalsApply(stateForConditionals) }
     }
 }
