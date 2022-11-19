@@ -216,6 +216,20 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     fun getTileImprovement(): TileImprovement? = if (improvement == null) null else ruleset.tileImprovements[improvement!!]
     fun getUnpillagedTileImprovement(): TileImprovement? = if (getUnpillagedImprovement() == null) null else ruleset.tileImprovements[improvement!!]
     fun getTileImprovementInProgress(): TileImprovement? = if (improvementInProgress == null) null else ruleset.tileImprovements[improvementInProgress!!]
+    fun getImprovementToPillage(): TileImprovement? {
+        if (improvement != null && !improvementIsPillaged)
+            return ruleset.tileImprovements[improvement]!!
+        if (roadStatus != RoadStatus.None && !roadIsPillaged)
+            return ruleset.tileImprovements[roadStatus.name]!!
+        return null
+    }
+    fun getRepairableImprovement(): TileImprovement? {
+        if (improvement != null && improvementIsPillaged)
+            return ruleset.tileImprovements[improvement]!!
+        if (roadStatus != RoadStatus.None && roadIsPillaged)
+            return ruleset.tileImprovements[roadStatus.name]!!
+        return null
+    }
 
     fun getShownImprovement(viewingCiv: CivilizationInfo?): String? {
         return if (viewingCiv == null || viewingCiv.playerType == PlayerType.AI || viewingCiv.isSpectator())
