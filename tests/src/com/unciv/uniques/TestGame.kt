@@ -15,7 +15,16 @@ import com.unciv.logic.map.TileMap
 import com.unciv.models.Religion
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
-import com.unciv.models.ruleset.*
+import com.unciv.models.ruleset.Belief
+import com.unciv.models.ruleset.BeliefType
+import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.IRulesetObject
+import com.unciv.models.ruleset.Nation
+import com.unciv.models.ruleset.Policy
+import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.Specialist
+import com.unciv.models.ruleset.Speed
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -109,6 +118,9 @@ class TestGame {
         civInfo.civName = nation.name
         if (isPlayer) civInfo.playerType = PlayerType.Human
         civInfo.setTransients()
+
+        // Add 1 tech to the player so the era is computed correctly
+        civInfo.tech.addTechnology(ruleset.technologies.values.minBy { it.era() }.name)
         if (cityState != null) {
             civInfo.cityStateFunctions.initCityState(ruleset, "Ancient era", emptyList())
         }

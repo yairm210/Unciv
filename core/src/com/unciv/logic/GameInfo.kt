@@ -479,6 +479,12 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         // the nation of their civilization when setting transients
         for (civInfo in civilizations) civInfo.gameInfo = this
         for (civInfo in civilizations) civInfo.setNationTransient()
+        // must be done before updating tileMap, since unit uniques depend on civ uniques depend on allied city-state uniques depend on diplomacy
+        for (civInfo in civilizations)
+            for (diplomacyManager in civInfo.diplomacy.values) {
+                diplomacyManager.civInfo = civInfo
+                diplomacyManager.updateHasOpenBorders()
+            }
 
         tileMap.setTransients(ruleSet)
 
@@ -491,12 +497,6 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         for (religion in religions.values) religion.setTransients(this)
 
-        // must be done before updating tech manager bools, since that depends on allied city-states
-        for (civInfo in civilizations)
-            for (diplomacyManager in civInfo.diplomacy.values) {
-                diplomacyManager.civInfo = civInfo
-                diplomacyManager.updateHasOpenBorders()
-            }
 
         for (civInfo in civilizations) civInfo.setTransients()
         for (civInfo in civilizations) {
