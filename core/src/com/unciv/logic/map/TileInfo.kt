@@ -1214,27 +1214,25 @@ open class TileInfo : IsPartOfGameInfoSerialization {
             return
         // http://well-of-souls.com/civ/civ5_improvements.html says that naval improvements are destroyed upon pillage
         //    and I can't find any other sources so I'll go with that
-        if (isLand) {
-            // Setting turnsToImprovement might interfere with UniqueType.CreatesOneImprovement
-            removeCreatesOneImprovementMarker()
-            improvementInProgress = null  // remove any in progress work as well
-            turnsToImprovement = 0
-            // if no Repair action, destroy improvements instead
-            if (ruleset.tileImprovements[Constants.repair] == null) {
-                if (getPillagableImprovement() != null)
-                    improvement = null
-                else
-                    roadStatus = RoadStatus.None
-            } else {
-                // otherwise use pillage/repair systems
-                if (getPillagableImprovement() != null) {
-                    improvementIsPillaged = true
-                } else {
-                    roadIsPillaged = true
-                }
-            }
+        if (!isLand) { improvement = null; return }
+
+        // Setting turnsToImprovement might interfere with UniqueType.CreatesOneImprovement
+        removeCreatesOneImprovementMarker()
+        improvementInProgress = null  // remove any in progress work as well
+        turnsToImprovement = 0
+        // if no Repair action, destroy improvements instead
+        if (ruleset.tileImprovements[Constants.repair] == null) {
+            if (getPillagableImprovement() != null)
+                improvement = null
+            else
+                roadStatus = RoadStatus.None
         } else {
-            improvement = null
+            // otherwise use pillage/repair systems
+            if (getPillagableImprovement() != null) {
+                improvementIsPillaged = true
+            } else {
+                roadIsPillaged = true
+            }
         }
     }
 
