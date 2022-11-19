@@ -217,9 +217,9 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     fun getUnpillagedTileImprovement(): TileImprovement? = if (getUnpillagedImprovement() == null) null else ruleset.tileImprovements[improvement!!]
     fun getTileImprovementInProgress(): TileImprovement? = if (improvementInProgress == null) null else ruleset.tileImprovements[improvementInProgress!!]
     fun getImprovementToPillage(): TileImprovement? {
-        if (improvement != null && !improvementIsPillaged)
+        if (improvement != null && !improvementIsPillaged && !ruleset.tileImprovements[improvement]!!.hasUnique(UniqueType.Unpillagable))
             return ruleset.tileImprovements[improvement]!!
-        if (roadStatus != RoadStatus.None && !roadIsPillaged)
+        if (roadStatus != RoadStatus.None && !roadIsPillaged && !ruleset.tileImprovements[roadStatus.name]!!.hasUnique(UniqueType.Unpillagable))
             return ruleset.tileImprovements[roadStatus.name]!!
         return null
     }
