@@ -343,7 +343,7 @@ object UnitActions {
         val globalPillageYield = Stats()
         val toCityPillageYield = Stats()
         val closestCity = unit.civInfo.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
-        val improvement = if (tile.improvement == null) tile.ruleset.tileImprovements[tile.roadStatus.name]!! else tile.ruleset.tileImprovements[tile.improvement]!!
+        val improvement = tile.getImprovementToPillage()!!
 
         for (unique in improvement.getMatchingUniques(UniqueType.PillageYieldRandom)) {
             for (stat in unique.stats) {
@@ -872,7 +872,7 @@ object UnitActions {
         if (unit.isFortified() || unit.canFortify() || unit.currentMovement == 0f) return
         // If this unit is working on an improvement, it cannot sleep
         if (unit.currentTile.hasImprovementInProgress()
-            && (unit.currentTile.improvementInProgress == Constants.repair || unit.canBuildImprovement(unit.currentTile.getTileImprovementInProgress()!!))) return
+            && unit.canBuildImprovement(unit.currentTile.getTileImprovementInProgress()!!)) return
         val isSleeping = unit.isSleeping()
         val isDamaged = unit.health < 100
 
