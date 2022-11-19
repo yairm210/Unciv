@@ -2,7 +2,6 @@ package com.unciv.logic.city
 
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.CityStateType
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.Counter
@@ -149,18 +148,10 @@ class CityStats(val cityInfo: CityInfo) {
             if (otherCiv.isCityState() && relationshipLevel >= RelationshipLevel.Friend) {
                 val eraInfo = cityInfo.civInfo.getEra()
 
-                if (eraInfo.undefinedCityStateBonuses()) {
-                    // Deprecated, assume Civ V values for compatibility
-                    if (otherCiv.cityStateType == CityStateType.Maritime && relationshipLevel == RelationshipLevel.Ally)
-                        stats.food += 1
-                    if (otherCiv.cityStateType == CityStateType.Maritime && cityInfo.isCapital())
-                        stats.food += 2
-                } else {
-                    for (bonus in eraInfo.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel, UniqueType.CityStateStatsPerCity)) {
-                        if (cityInfo.matchesFilter(bonus.params[1])
+                for (bonus in eraInfo.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel, UniqueType.CityStateStatsPerCity)) {
+                    if (cityInfo.matchesFilter(bonus.params[1])
                             && bonus.conditionalsApply(otherCiv, cityInfo)
-                        ) stats.add(bonus.stats)
-                    }
+                    ) stats.add(bonus.stats)
                 }
             }
         }

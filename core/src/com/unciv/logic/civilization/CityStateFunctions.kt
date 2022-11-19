@@ -30,7 +30,6 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         val allMercantileResources = ruleset.tileResources.values.filter { it.hasUnique(UniqueType.CityStateOnlyResource) }.map { it.name }
         val uniqueTypes = HashSet<UniqueType>()    // We look through these to determine what kind of city state we are
         for (era in ruleset.eras.values) {
-            if (era.undefinedCityStateBonuses()) continue
             for (unique in era.friendBonusObjects.values.map { it.getAllUniques() } + era.allyBonusObjects.values.map { it.getAllUniques() })
                 uniqueTypes.addAll(unique.mapNotNull { it.type })
         }
@@ -422,14 +421,10 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         if (!civInfo.isCityState())
             return false
         val eraInfo = civInfo.getEra()
-        if (!eraInfo.undefinedCityStateBonuses()) {
-            // Defined city states in json
-            for (bonus in eraInfo.getCityStateBonuses(civInfo.cityStateType, RelationshipLevel.Ally)) {
-                if (bonus.stats[statType] > 0 || (bonus.isOfType(UniqueType.CityStateHappiness) && statType == Stat.Happiness))
-                    return true
-            }
+        for (bonus in eraInfo.getCityStateBonuses(civInfo.cityStateType, RelationshipLevel.Ally)) {
+            if (bonus.stats[statType] > 0 || (bonus.isOfType(UniqueType.CityStateHappiness) && statType == Stat.Happiness))
+                return true
         }
-
         return false
     }
 
@@ -657,8 +652,6 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
     ):Sequence<Unique> {
         if (civInfo.isCityState()) return emptySequence()
         val era = civInfo.getEra()
-
-        if (era.undefinedCityStateBonuses()) return emptySequence()
 
         return civInfo.getKnownCivs().asSequence().filter { it.isCityState() }
             .flatMap { era.getCityStateBonuses(it.cityStateType, civInfo.getDiplomacyManager(it).relationshipLevel(), uniqueType) }

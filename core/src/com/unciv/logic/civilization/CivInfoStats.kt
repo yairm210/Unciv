@@ -146,10 +146,8 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                 val cityStateBonus = Stats()
                 val eraInfo = civInfo.getEra()
 
-                if (!eraInfo.undefinedCityStateBonuses()) {
-                    for (bonus in eraInfo.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel, UniqueType.CityStateStatsPerTurn)) {
-                        cityStateBonus.add(bonus.stats)
-                    }
+                for (bonus in eraInfo.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel, UniqueType.CityStateStatsPerTurn)) {
+                    cityStateBonus.add(bonus.stats)
                 }
 
                 for (unique in civInfo.getMatchingUniques(UniqueType.StatBonusPercentFromCityStates)) {
@@ -312,20 +310,13 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             if (!otherCiv.isCityState() || relationshipLevel < RelationshipLevel.Friend) continue
 
             val eraInfo = civInfo.getEra()
-            // Deprecated, assume Civ V values for compatibility
-            if (!eraInfo.undefinedCityStateBonuses()) {
-                for (bonus in eraInfo.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel)) {
-                    if (!bonus.conditionalsApply(otherCiv)) continue
-                    if (bonus.isOfType(UniqueType.CityStateHappiness))
-                        cityStatesHappiness += bonus.params[0].toFloat()
-                }
-            } else if (otherCiv.cityStateType == CityStateType.Mercantile) {
-                // compatibility mode for
-                cityStatesHappiness += if (civInfo.getEraNumber() in 0..1) 2f else 3f
+            for (bonus in eraInfo.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel)) {
+                if (!bonus.conditionalsApply(otherCiv)) continue
+                if (bonus.isOfType(UniqueType.CityStateHappiness))
+                    cityStatesHappiness += bonus.params[0].toFloat()
             }
         }
 
-        // Just in case
         if (cityStatesHappiness > 0) {
             for (unique in civInfo.getMatchingUniques(UniqueType.StatBonusPercentFromCityStates)) {
                 if (unique.params[1] == Stat.Happiness.name)

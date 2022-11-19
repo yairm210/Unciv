@@ -107,11 +107,6 @@ class Era : RulesetObject() {
         else cityStateUniqueMap.getUniques(uniqueType)
     }
 
-    /** Since 3.19.5 we have a warning for mods without bonuses, eventually we should treat such mods as providing no bonus */
-    fun undefinedCityStateBonuses(): Boolean {
-        return friendBonus.isEmpty() || allyBonus.isEmpty()
-    }
-
     fun getStartingUnits(): List<String> {
         val startingUnits = mutableListOf<String>()
         repeat(startingSettlerCount) { startingUnits.add(startingSettlerUnit) }

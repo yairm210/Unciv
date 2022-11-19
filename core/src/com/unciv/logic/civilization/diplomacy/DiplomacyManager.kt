@@ -5,7 +5,6 @@ import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CityStatePersonality
-import com.unciv.logic.civilization.CityStateType
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
@@ -633,18 +632,6 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         }
 
         val variance = listOf(-1, 0, 1).random()
-
-        if (eraInfo.undefinedCityStateBonuses() && otherCiv().cityStateType == CityStateType.Militaristic) {
-            // Deprecated, assume Civ V values for compatibility
-            if (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) && relationshipLevel() == RelationshipLevel.Friend)
-                setFlag(DiplomacyFlags.ProvideMilitaryUnit, 20 + variance)
-
-            if ((!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) || getFlag(DiplomacyFlags.ProvideMilitaryUnit) > 17)
-                && relationshipLevel() == RelationshipLevel.Ally)
-                setFlag(DiplomacyFlags.ProvideMilitaryUnit, 17 + variance)
-        }
-
-        if (eraInfo.undefinedCityStateBonuses()) return
 
         for (bonus in eraInfo.getCityStateBonuses(otherCiv().cityStateType, relationshipLevel(), UniqueType.CityStateMilitaryUnits)) {
             // Reset the countdown if it has ended, or if we have longer to go than the current maximum (can happen when going from friend to ally)
