@@ -117,7 +117,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     CityStateStatsPerTurn("Provides [stats] per turn", UniqueTarget.CityState), // Should not be Happiness!
     CityStateStatsPerCity("Provides [stats] [cityFilter] per turn", UniqueTarget.CityState),
     CityStateHappiness("Provides [amount] Happiness", UniqueTarget.CityState),
-    CityStateMilitaryUnits("Provides military units every ≈[amount] turns", UniqueTarget.CityState), // No conditional support as of yet
+    CityStateMilitaryUnits("Provides military units every ≈[amount] turns", UniqueTarget.CityState),
     CityStateUniqueLuxury("Provides a unique luxury", UniqueTarget.CityState), // No conditional support as of yet
     CityStateGiftedUnitsStartWithXp("Military Units gifted from City-States start with [amount] XP", UniqueTarget.Global),
     CityStateMoreGiftedUnits("Militaristic City-States grant units [amount] times as fast when you are at war with a common nation", UniqueTarget.Global),

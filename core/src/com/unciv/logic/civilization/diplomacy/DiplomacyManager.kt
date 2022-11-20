@@ -633,10 +633,14 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
         val variance = listOf(-1, 0, 1).random()
 
-        for (bonus in eraInfo.getCityStateBonuses(otherCiv().cityStateType, relationshipLevel(), UniqueType.CityStateMilitaryUnits)) {
+        val provideMilitaryUnitUniques = eraInfo.getCityStateBonuses(otherCiv().cityStateType, relationshipLevel(), UniqueType.CityStateMilitaryUnits)
+            .filter { it.conditionalsApply(civInfo) }.toList()
+        if (provideMilitaryUnitUniques.isEmpty()) removeFlag(DiplomacyFlags.ProvideMilitaryUnit)
+
+        for (unique in provideMilitaryUnitUniques) {
             // Reset the countdown if it has ended, or if we have longer to go than the current maximum (can happen when going from friend to ally)
-            if (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) || getFlag(DiplomacyFlags.ProvideMilitaryUnit) > bonus.params[0].toInt()) {
-                setFlag(DiplomacyFlags.ProvideMilitaryUnit, bonus.params[0].toInt() + variance)
+            if (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) || getFlag(DiplomacyFlags.ProvideMilitaryUnit) > unique.params[0].toInt()) {
+                setFlag(DiplomacyFlags.ProvideMilitaryUnit, unique.params[0].toInt() + variance)
             }
         }
     }
