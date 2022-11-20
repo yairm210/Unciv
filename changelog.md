@@ -1,26 +1,20 @@
 ## 4.3.1
 
+City-state overhaul, part 1!
+
+- Allowed adding arbitrary global uniques to city state bonuses
+- Moddable quest weighting for city-states
+- Moved city state icons to separate folder
+- Removed backwards compatibility (pre-3.19.4) for missing city-state uniques
+- Added conditional support to 'CS gift military units' unique
+
 Removed single-pixel gap in top bar
 
-Added conditional support to 'CS gift military units' unique
-
-Moved city state icons to separate folder
-
-Fixed tests failing due to removing "crutches"
-
-Removed backwards compatibility for missing city-state uniques
-
-Moddable quest weighting for city-states
-
-Allowed adding arbitrary global uniques to city state bonuses 
-
-Fixed 'friendly territory' using correct open borders - see 4dca183
-
-AbsoluteUnits - Unique Spearmen  - By letstalkaboutdune
+AbsoluteUnits - Unique Spearmen - By letstalkaboutdune
 
 ## 4.3.0
 
-Units now recieve correct healing in friendly territory
+Units now receive correct healing in friendly territory
 
 Tile info table no longer reveals hidden units
 
