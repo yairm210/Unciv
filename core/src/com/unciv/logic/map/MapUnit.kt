@@ -741,11 +741,13 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 ) {
                     // We removed a terrain (e.g. Forest) and the improvement (e.g. Lumber mill) requires it!
                     tile.improvement = null
+                    tile.improvementIsPillaged = false
                     if (tile.resource != null) civInfo.updateDetailedCivResources() // unlikely, but maybe a mod makes a resource improvement dependent on a terrain feature
                 }
-                if (RoadStatus.values().any { tile.improvementInProgress == it.removeAction })
+                if (RoadStatus.values().any { tile.improvementInProgress == it.removeAction }) {
                     tile.roadStatus = RoadStatus.None
-                else {
+                    tile.roadIsPillaged = false
+                } else {
                     val removedFeatureObject = tile.ruleset.terrains[removedFeatureName]
                     if (removedFeatureObject != null && removedFeatureObject.hasUnique(UniqueType.ProductionBonusWhenRemoved)) {
                         tryProvideProductionToClosestCity(removedFeatureName)
@@ -753,13 +755,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
                     tile.removeTerrainFeature(removedFeatureName)
                 }
             }
-            tile.improvementInProgress == RoadStatus.Road.name -> tile.roadStatus = RoadStatus.Road
-            tile.improvementInProgress == RoadStatus.Railroad.name -> tile.roadStatus = RoadStatus.Railroad
+            tile.improvementInProgress == RoadStatus.Road.name -> { tile.roadStatus = RoadStatus.Road; tile.roadIsPillaged = false }
+            tile.improvementInProgress == RoadStatus.Railroad.name -> { tile.roadStatus = RoadStatus.Railroad; tile.roadIsPillaged = false }
             tile.improvementInProgress == Constants.repair -> tile.setRepaired()
             else -> {
                 val improvement = civInfo.gameInfo.ruleSet.tileImprovements[tile.improvementInProgress]!!
                 improvement.handleImprovementCompletion(this)
                 tile.improvement = tile.improvementInProgress
+                tile.improvementIsPillaged = false
             }
         }
 
