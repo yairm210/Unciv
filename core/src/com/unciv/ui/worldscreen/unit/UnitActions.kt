@@ -11,7 +11,6 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.MapUnit
-import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.Counter
 import com.unciv.models.UncivSound
@@ -298,9 +297,7 @@ object UnitActions {
         else actionList += UnitAction(type = UnitActionType.Pillage,
             title = "${UnitActionType.Pillage} [${unit.currentTile.getImprovementToPillage()!!.name}]") {
             if (!worldScreen.hasOpenPopups()) {
-                val tile = unit.currentTile
-                val pillagedImprovement = tile.getImprovementToPillage()!!.name
-                val pillageText = "Are you sure you want to pillage this [$pillagedImprovement]?"
+                val pillageText = "Are you sure you want to pillage this [${unit.currentTile.getImprovementToPillage()!!.name}]?"
                 ConfirmPopup(
                     UncivGame.Current.worldScreen!!,
                     pillageText,
@@ -506,7 +503,7 @@ object UnitActions {
         if (tile.improvementInProgress == Constants.repair) return tile.turnsToImprovement
         var repairTurns = tile.ruleset.tileImprovements[Constants.repair]!!.getTurnsToBuild(unit.civInfo, unit)
 
-        val pillagedImprovement = if(tile.improvementIsPillaged) tile.getTileImprovement()!! else tile.ruleset.tileImprovements[tile.roadStatus.name]!!
+        val pillagedImprovement = tile.getImprovementToPillage()!!
         val turnsToBuild = pillagedImprovement.getTurnsToBuild(unit.civInfo, unit)
         // cap repair to number of turns to build original improvement
         if (turnsToBuild < repairTurns) repairTurns = turnsToBuild

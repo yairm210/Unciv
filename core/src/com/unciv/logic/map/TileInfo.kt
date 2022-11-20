@@ -216,9 +216,13 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     fun getUnpillagedTileImprovement(): TileImprovement? = if (getUnpillagedImprovement() == null) null else ruleset.tileImprovements[improvement!!]
     fun getTileImprovementInProgress(): TileImprovement? = if (improvementInProgress == null) null else ruleset.tileImprovements[improvementInProgress!!]
     fun getImprovementToPillage(): TileImprovement? {
-        if (improvement != null && !improvementIsPillaged && !ruleset.tileImprovements[improvement]!!.hasUnique(UniqueType.Unpillagable))
+        if (improvement != null && !improvementIsPillaged
+                && !ruleset.tileImprovements[improvement]!!.hasUnique(UniqueType.Unpillagable)
+                && !ruleset.tileImprovements[improvement]!!.hasUnique(UniqueType.Irremovable))
             return ruleset.tileImprovements[improvement]!!
-        if (roadStatus != RoadStatus.None && !roadIsPillaged && !ruleset.tileImprovements[roadStatus.name]!!.hasUnique(UniqueType.Unpillagable))
+        if (roadStatus != RoadStatus.None && !roadIsPillaged
+                && !ruleset.tileImprovements[roadStatus.name]!!.hasUnique(UniqueType.Unpillagable)
+                && !ruleset.tileImprovements[roadStatus.name]!!.hasUnique(UniqueType.Irremovable))
             return ruleset.tileImprovements[roadStatus.name]!!
         return null
     }
@@ -236,6 +240,8 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         if (improvement == null)
             return null
         if (ruleset.tileImprovements[improvement]!!.hasUnique(UniqueType.Unpillagable))
+            return null
+        if (ruleset.tileImprovements[improvement]!!.hasUnique(UniqueType.Irremovable))
             return null
         return improvement
     }
@@ -822,7 +828,6 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     fun matchesFilter(filter: String, civInfo: CivilizationInfo? = null): Boolean {
         if (matchesTerrainFilter(filter, civInfo)) return true
         if (improvement != null && !improvementIsPillaged && ruleset.tileImprovements[improvement]!!.matchesFilter(filter)) return true
-        if (isPillaged() && filter == "pillaged") return true
         return improvement == null && filter == "unimproved"
     }
 
