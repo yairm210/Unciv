@@ -216,14 +216,18 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     fun getUnpillagedTileImprovement(): TileImprovement? = if (getUnpillagedImprovement() == null) null else ruleset.tileImprovements[improvement!!]
     fun getTileImprovementInProgress(): TileImprovement? = if (improvementInProgress == null) null else ruleset.tileImprovements[improvementInProgress!!]
     fun getImprovementToPillage(): TileImprovement? {
-        if (improvement != null && !improvementIsPillaged
-                && !ruleset.tileImprovements[improvement]!!.hasUnique(UniqueType.Unpillagable)
-                && !ruleset.tileImprovements[improvement]!!.hasUnique(UniqueType.Irremovable))
+        if (canPillageTileImprovement())
             return ruleset.tileImprovements[improvement]!!
-        if (roadStatus != RoadStatus.None && !roadIsPillaged
-                && !ruleset.tileImprovements[roadStatus.name]!!.hasUnique(UniqueType.Unpillagable)
-                && !ruleset.tileImprovements[roadStatus.name]!!.hasUnique(UniqueType.Irremovable))
+        if (canPillageRoad())
             return ruleset.tileImprovements[roadStatus.name]!!
+        return null
+    }
+    // same as above, but slightly quicker
+    fun getImprovementToPillageName(): String? {
+        if (canPillageTileImprovement())
+            return improvement
+        if (canPillageRoad())
+            return roadStatus.name
         return null
     }
     fun getImprovementToRepair(): TileImprovement? {
@@ -233,17 +237,18 @@ open class TileInfo : IsPartOfGameInfoSerialization {
             return ruleset.tileImprovements[roadStatus.name]!!
         return null
     }
-    // specifically for Tile Improvement, to help differentiate from pillageable Road
-    fun getPillagableTileImprovement(): String? {
-        if (improvementIsPillaged)
-            return null
-        if (improvement == null)
-            return null
-        if (ruleset.tileImprovements[improvement]!!.hasUnique(UniqueType.Unpillagable))
-            return null
-        if (ruleset.tileImprovements[improvement]!!.hasUnique(UniqueType.Irremovable))
-            return null
-        return improvement
+    fun canPillageTile(): Boolean {
+        return canPillageRoad() || canPillageRoad()
+    }
+    fun canPillageTileImprovement(): Boolean {
+        return improvement != null && !improvementIsPillaged
+                && !ruleset.tileImprovements[improvement]!!.hasUnique(UniqueType.Unpillagable)
+                && !ruleset.tileImprovements[improvement]!!.hasUnique(UniqueType.Irremovable)
+    }
+    fun canPillageRoad(): Boolean {
+        return roadStatus != RoadStatus.None && !roadIsPillaged
+                && !ruleset.tileImprovements[roadStatus.name]!!.hasUnique(UniqueType.Unpillagable)
+                && !ruleset.tileImprovements[roadStatus.name]!!.hasUnique(UniqueType.Irremovable)
     }
     fun getUnpillagedImprovement(): String? {
         return if (improvementIsPillaged)
@@ -1250,7 +1255,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     /** Sets tile improvement to pillaged (without prior checks for validity)
      *  and ensures that matching [UniqueType.CreatesOneImprovement] queued buildings are removed. */
     fun setPillaged() {
-        if (getImprovementToPillage() == null)
+        if (!canPillageTile())
             return
         // http://well-of-souls.com/civ/civ5_improvements.html says that naval improvements are destroyed upon pillage
         //    and I can't find any other sources so I'll go with that
@@ -1262,13 +1267,13 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         turnsToImprovement = 0
         // if no Repair action, destroy improvements instead
         if (ruleset.tileImprovements[Constants.repair] == null) {
-            if (getPillagableTileImprovement() != null)
+            if (canPillageTileImprovement())
                 improvement = null
             else
                 roadStatus = RoadStatus.None
         } else {
             // otherwise use pillage/repair systems
-            if (getPillagableTileImprovement() != null) {
+            if (canPillageTileImprovement()) {
                 improvementIsPillaged = true
             } else {
                 roadIsPillaged = true
