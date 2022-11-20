@@ -8,7 +8,6 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PlayerType
-import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
@@ -223,12 +222,34 @@ open class TileInfo : IsPartOfGameInfoSerialization {
             return ruleset.tileImprovements[roadStatus.name]!!
         return null
     }
-    fun getRepairableImprovement(): TileImprovement? {
+    fun getImprovementToRepair(): TileImprovement? {
         if (improvement != null && improvementIsPillaged)
             return ruleset.tileImprovements[improvement]!!
         if (roadStatus != RoadStatus.None && roadIsPillaged)
             return ruleset.tileImprovements[roadStatus.name]!!
         return null
+    }
+    // specifically for Tile Improvement, to help differentiate from pillageable Road
+    fun getPillagableTileImprovement(): String? {
+        if (improvementIsPillaged)
+            return null
+        if (improvement == null)
+            return null
+        if (ruleset.tileImprovements[improvement]!!.hasUnique(UniqueType.Unpillagable))
+            return null
+        return improvement
+    }
+    fun getUnpillagedImprovement(): String? {
+        return if (improvementIsPillaged)
+            null
+        else
+            improvement
+    }
+    fun getUnpillagedRoad(): RoadStatus {
+        return if (roadIsPillaged)
+            RoadStatus.None
+        else
+            roadStatus
     }
 
     fun getShownImprovement(viewingCiv: CivilizationInfo?): String? {
@@ -1224,7 +1245,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     /** Sets tile improvement to pillaged (without prior checks for validity)
      *  and ensures that matching [UniqueType.CreatesOneImprovement] queued buildings are removed. */
     fun setPillaged() {
-        if (getPillagableImprovement() == null && getUnpillagedRoad() == RoadStatus.None)
+        if (getImprovementToPillage() == null)
             return
         // http://well-of-souls.com/civ/civ5_improvements.html says that naval improvements are destroyed upon pillage
         //    and I can't find any other sources so I'll go with that
@@ -1236,42 +1257,18 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         turnsToImprovement = 0
         // if no Repair action, destroy improvements instead
         if (ruleset.tileImprovements[Constants.repair] == null) {
-            if (getPillagableImprovement() != null)
+            if (getPillagableTileImprovement() != null)
                 improvement = null
             else
                 roadStatus = RoadStatus.None
         } else {
             // otherwise use pillage/repair systems
-            if (getPillagableImprovement() != null) {
+            if (getPillagableTileImprovement() != null) {
                 improvementIsPillaged = true
             } else {
                 roadIsPillaged = true
             }
         }
-    }
-
-    fun getPillagableImprovement(): String? {
-        if (improvementIsPillaged)
-            return null
-        if (improvement == null)
-            return null
-        if (ruleset.tileImprovements[improvement]!!.hasUnique(UniqueType.Unpillagable))
-            return null
-        return improvement
-    }
-
-    fun getUnpillagedImprovement(): String? {
-        return if (improvementIsPillaged)
-            null
-        else
-            improvement
-    }
-
-    fun getUnpillagedRoad(): RoadStatus {
-        return if (roadIsPillaged)
-            RoadStatus.None
-        else
-            roadStatus
     }
 
     fun isPillaged(): Boolean {
