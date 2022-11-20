@@ -329,8 +329,6 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
 
         if (civInfo.cityStatePersonality == CityStatePersonality.Hostile)
             modifiers["Hostile"] = -10
-        if (civInfo.cityStateType == CityStateType.Militaristic)
-            modifiers["Militaristic"] = -10
         if (civInfo.getAllyCiv() != null && civInfo.getAllyCiv() != demandingCiv.civName)
             modifiers["Has Ally"] = -10
         if (getProtectorCivs().any { it != demandingCiv })
