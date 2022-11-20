@@ -267,12 +267,12 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         when {
             leftRightNeeded * 2f > stage.width - resourceWidth -> {
                 // Need to shift buttons down to below both stats and resources
-                fillerHeight = baseHeight
+                fillerHeight = baseHeight +1
                 buttonY = overviewButton.minHeight / 2f
             }
             leftRightNeeded * 2f > stage.width - statsWidth -> {
                 // Shifting buttons down to below stats row is enough
-                fillerHeight = statsRowHeight
+                fillerHeight = statsRowHeight +1
                 buttonY = overviewButton.minHeight / 2f
             }
             else -> {
