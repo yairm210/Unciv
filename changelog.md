@@ -1,3 +1,23 @@
+## 4.3.1
+
+Removed single-pixel gap in top bar
+
+Added conditional support to 'CS gift military units' unique
+
+Moved city state icons to separate folder
+
+Fixed tests failing due to removing "crutches"
+
+Removed backwards compatibility for missing city-state uniques
+
+Moddable quest weighting for city-states
+
+Allowed adding arbitrary global uniques to city state bonuses 
+
+Fixed 'friendly territory' using correct open borders - see 4dca183
+
+AbsoluteUnits - Unique Spearmen  - By letstalkaboutdune
+
 ## 4.3.0
 
 Units now recieve correct healing in friendly territory
