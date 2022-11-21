@@ -38,14 +38,11 @@ enum class DiplomacyFlags {
     DeclaredWar,
     DeclarationOfFriendship,
     ResearchAgreement,
-    @Deprecated("Deprecated after 3.16.13", ReplaceWith("Denunciation"))
-    Denunceation,
     BorderConflict,
     SettledCitiesNearUs,
     AgreedToNotSettleNearUs,
     IgnoreThemSettlingNearUs,
     ProvideMilitaryUnit,
-    EverBeenFriends,
     MarriageCooldown,
     NotifiedAfraid,
     RecentlyPledgedProtection,
@@ -369,7 +366,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     //endregion
 
     //region state-changing functions
-    fun removeUntenableTrades() {
+    private fun removeUntenableTrades() {
         for (trade in trades.toList()) {
 
             // Every cancelled trade can change this - if 1 resource is missing,
@@ -436,16 +433,6 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         nextTurnFlags()
         if (civInfo.isCityState() && otherCiv().isMajorCiv())
             nextTurnCityStateInfluence()
-        updateEverBeenFriends()
-    }
-
-    /** True when the two civs have been friends in the past */
-    fun everBeenFriends(): Boolean = hasFlag(DiplomacyFlags.EverBeenFriends)
-
-    /** Set [DiplomacyFlags.EverBeenFriends] if the two civilization are currently at least friends */
-    private fun updateEverBeenFriends() {
-        if (relationshipLevel() >= RelationshipLevel.Friend && !everBeenFriends())
-            setFlag(DiplomacyFlags.EverBeenFriends, -1)
     }
 
     private fun nextTurnCityStateInfluence() {
