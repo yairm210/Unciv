@@ -47,7 +47,7 @@ enum class UniqueTarget(val inheritsFrom: UniqueTarget? = null) {
     // Other
     Speed,
     Tutorial,
-    CityState,
+    CityState(Global),
     ModOptions,
     Conditional,
     ;

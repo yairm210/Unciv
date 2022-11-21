@@ -39,7 +39,7 @@
         "color": [255, 0, 0]
     },
     {
-        "name":"Religious",
+        "name": "Religious",
         "friendBonusUniques":  [
             "[+3 Faith] <before the [Medieval era]>",
             "[+6 Faith] <starting from the [Medieval era]> <before the [Industrial era]>",

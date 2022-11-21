@@ -11,7 +11,6 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stats
-import com.unciv.models.translations.fillPlaceholders
 import com.unciv.ui.utils.getRelativeTextDistance
 
 class RulesetValidator(val ruleset: Ruleset) {
@@ -277,10 +276,10 @@ class RulesetValidator(val ruleset: Ruleset) {
             if (era.settlerPopulation <= 0)
                 lines += "Population in cities from settlers must be strictly positive! Found value ${era.settlerPopulation} for era ${era.name}"
 
-            if (era.allyBonus.isEmpty() && rulesetHasCityStates)
-                lines.add("No ally bonus defined for era ${era.name}", RulesetErrorSeverity.Warning)
-            if (era.friendBonus.isEmpty() && rulesetHasCityStates)
-                lines.add("No friend bonus defined for era ${era.name}", RulesetErrorSeverity.Warning)
+            if (era.allyBonus.isNotEmpty())
+                lines.add("Era ${era.name} contains city-state bonuses. City-state bonuses are now defined in CityStateType.json", RulesetErrorSeverity.WarningOptionsOnly)
+            if (era.friendBonus.isNotEmpty())
+                lines.add("Era ${era.name} contains city-state bonuses. City-state bonuses are now defined in CityStateType.json", RulesetErrorSeverity.WarningOptionsOnly)
 
 
             checkUniques(era, lines, rulesetSpecific, tryFixUnknownUniques)
@@ -358,6 +357,19 @@ class RulesetValidator(val ruleset: Ruleset) {
             for (unitName in difficulty.aiCityStateBonusStartingUnits + difficulty.aiMajorCivBonusStartingUnits + difficulty.playerBonusStartingUnits)
                 if (unitName != Constants.eraSpecificUnit && !ruleset.units.containsKey(unitName))
                     lines += "Difficulty ${difficulty.name} contains starting unit $unitName which does not exist!"
+        }
+
+        for (cityStateType in ruleset.cityStateTypes.values) {
+            for (unique in cityStateType.allyBonusUniqueMap.getAllUniques() + cityStateType.friendBonusUniqueMap.getAllUniques()){
+                val errors = checkUnique(
+                    unique,
+                    tryFixUnknownUniques,
+                    cityStateType.name,
+                    rulesetSpecific,
+                    UniqueTarget.CityState
+                )
+                lines.addAll(errors)
+            }
         }
 
         @Suppress("DEPRECATION")
