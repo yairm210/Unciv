@@ -7,6 +7,7 @@ import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
@@ -138,6 +139,10 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             for (entry in city.cityStats.finalStatList)
                 statMap.add(entry.key, entry.value)
         }
+
+        for (unique in civInfo.getMatchingUniques(UniqueType.Stats))
+            if (unique.sourceObjectType != UniqueTarget.Building && unique.sourceObjectType != UniqueTarget.Wonder)
+                statMap.add(unique.sourceObjectName!!, unique.stats)
 
         //City-States bonuses
         for (otherCiv in civInfo.getKnownCivs()) {

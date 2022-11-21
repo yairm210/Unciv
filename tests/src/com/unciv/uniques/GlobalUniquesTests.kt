@@ -27,7 +27,7 @@ class GlobalUniquesTests {
     // region base stat bonus providing uniques
 
     @Test
-    fun stats() {
+    fun statsOnBuilding() {
         val civInfo = game.addCiv()
         val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
         val cityInfo = game.addCity(civInfo, tile, true)
@@ -37,6 +37,15 @@ class GlobalUniquesTests {
         cityInfo.cityStats.update()
         Assert.assertTrue(cityInfo.cityStats.finalStatList["Buildings"]!!.equals(Stats(food=1f)))
     }
+
+
+    @Test
+    fun statsNotOnBuilding() {
+        val civInfo = game.addCiv("[+2 Gold]")
+        civInfo.updateStatsForNextTurn()
+        Assert.assertTrue(civInfo.statsForNextTurn.equals(Stats(gold=2f)))
+    }
+
 
     @Test
     fun statsPerCity() {

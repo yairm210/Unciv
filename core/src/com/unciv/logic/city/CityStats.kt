@@ -220,9 +220,6 @@ class CityStats(val cityInfo: CityInfo) {
             sourceToStats.addStats(unique.stats, getSourceNameForUnique(unique), unique.sourceObjectName ?: "")
         }
 
-        for (unique in cityInfo.getMatchingUniques(UniqueType.Stats))
-            addUniqueStats(unique)
-
         for (unique in cityInfo.getMatchingUniques(UniqueType.StatsPerCity))
             if (cityInfo.matchesFilter(unique.params[1]))
                 addUniqueStats(unique)

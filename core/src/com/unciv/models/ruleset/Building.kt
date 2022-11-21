@@ -188,6 +188,9 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             stats.add(unique.stats)
         }
 
+        for (unique in getMatchingUniques(UniqueType.Stats, StateForConditionals(city.civInfo, city)))
+            stats.add(unique.stats)
+
         if (!isWonder)
             for (unique in localUniqueCache.get("StatsFromBuildings", city.getMatchingUniques(UniqueType.StatsFromBuildings))) {
                 if (matchesFilter(unique.params[1]))

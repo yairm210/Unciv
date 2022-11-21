@@ -73,7 +73,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     // region Stat providing uniques
 
+    // Used for *global* bonuses and improvement/terrain bonuses
     Stats("[stats]", UniqueTarget.Global, UniqueTarget.FollowerBelief, UniqueTarget.Improvement, UniqueTarget.Terrain),
+    // Used for city-wide bonuses
     StatsPerCity("[stats] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
     StatsFromSpecialist("[stats] from every specialist [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
