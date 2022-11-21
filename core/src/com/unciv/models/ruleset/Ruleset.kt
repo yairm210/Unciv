@@ -96,6 +96,7 @@ class Ruleset {
     val unitPromotions = LinkedHashMap<String, Promotion>()
     val unitTypes = LinkedHashMap<String, UnitType>()
     var victories = LinkedHashMap<String, Victory>()
+    var cityStateTypes = LinkedHashMap<String, CityStateType>()
 
     val mods = LinkedHashSet<String>()
     var modOptions = ModOptions()
@@ -141,6 +142,7 @@ class Ruleset {
         units.putAll(ruleset.units)
         unitTypes.putAll(ruleset.unitTypes)
         victories.putAll(ruleset.victories)
+        cityStateTypes.putAll(ruleset.cityStateTypes)
         for (unitToRemove in ruleset.modOptions.unitsToRemove) units.remove(unitToRemove)
         modOptions.uniques.addAll(ruleset.modOptions.uniques)
         modOptions.constants.merge(ruleset.modOptions.constants)
@@ -196,6 +198,7 @@ class Ruleset {
         units.clear()
         unitTypes.clear()
         victories.clear()
+        cityStateTypes.clear()
     }
 
     fun allRulesetObjects(): Sequence<IRulesetObject> =
@@ -359,9 +362,14 @@ class Ruleset {
             globalUniques = json().fromJsonFile(GlobalUniques::class.java, globalUniquesFile)
         }
 
-        val victoryTypesFiles = folderHandle.child("VictoryTypes.json")
-        if (victoryTypesFiles.exists()) {
-            victories += createHashmap(json().fromJsonFile(Array<Victory>::class.java, victoryTypesFiles))
+        val victoryTypesFile = folderHandle.child("VictoryTypes.json")
+        if (victoryTypesFile.exists()) {
+            victories += createHashmap(json().fromJsonFile(Array<Victory>::class.java, victoryTypesFile))
+        }
+
+        val cityStateTypesFile = folderHandle.child("VictoryTypes.json")
+        if (cityStateTypesFile.exists()) {
+            cityStateTypes += createHashmap(json().fromJsonFile(Array<CityStateType>::class.java, cityStateTypesFile))
         }
 
 
@@ -374,20 +382,18 @@ class Ruleset {
             }
 
             // These should be permanent
-            if (ruinRewards.isEmpty()) {
+            if (ruinRewards.isEmpty())
                 ruinRewards.putAll(RulesetCache.getVanillaRuleset().ruinRewards)
-            }
+
             if (globalUniques.uniques.isEmpty()) {
                 globalUniques = RulesetCache.getVanillaRuleset().globalUniques
             }
             // If we have no victories, add all the default victories
-            if (victories.isEmpty()) {
-                victories.putAll(RulesetCache.getVanillaRuleset().victories)
-            }
+            if (victories.isEmpty()) victories.putAll(RulesetCache.getVanillaRuleset().victories)
 
-            if (speeds.isEmpty()) {
-                speeds.putAll(RulesetCache.getVanillaRuleset().speeds)
-            }
+            if (speeds.isEmpty()) speeds.putAll(RulesetCache.getVanillaRuleset().speeds)
+
+            if (cityStateTypes.isEmpty()) cityStateTypes.putAll(RulesetCache.getVanillaRuleset().cityStateTypes)
         }
 
         debug("Loading ruleset - %sms", System.currentTimeMillis() - gameBasicsStartTime)
