@@ -149,9 +149,8 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             val relationshipLevel = otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel()
             if (otherCiv.isCityState() && relationshipLevel >= RelationshipLevel.Friend) {
                 val cityStateBonus = Stats()
-                val eraInfo = civInfo.getEra()
 
-                for (bonus in eraInfo.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel, UniqueType.CityStateStatsPerTurn)) {
+                for (bonus in civInfo.cityStateFunctions.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel, UniqueType.CityStateStatsPerTurn)) {
                     cityStateBonus.add(bonus.stats)
                 }
 
@@ -314,8 +313,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             val relationshipLevel = otherCiv.getDiplomacyManager(civInfo).relationshipLevel()
             if (!otherCiv.isCityState() || relationshipLevel < RelationshipLevel.Friend) continue
 
-            val eraInfo = civInfo.getEra()
-            for (bonus in eraInfo.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel)) {
+            for (bonus in civInfo.cityStateFunctions.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel)) {
                 if (!bonus.conditionalsApply(otherCiv)) continue
                 if (bonus.isOfType(UniqueType.CityStateHappiness))
                     cityStatesHappiness += bonus.params[0].toFloat()

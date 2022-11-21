@@ -6,6 +6,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.models.ruleset.CityStateType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.unique.StateForConditionals
@@ -419,8 +420,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
     fun canGiveStat(statType: Stat): Boolean {
         if (!civInfo.isCityState())
             return false
-        val eraInfo = civInfo.getEra()
-        for (bonus in eraInfo.getCityStateBonuses(civInfo.cityStateType, RelationshipLevel.Ally)) {
+        for (bonus in getCityStateBonuses(civInfo.cityStateType, RelationshipLevel.Ally)) {
             if (bonus.stats[statType] > 0 || (bonus.isOfType(UniqueType.CityStateHappiness) && statType == Stat.Happiness))
                 return true
         }
@@ -650,10 +650,20 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         stateForConditionals: StateForConditionals
     ):Sequence<Unique> {
         if (civInfo.isCityState()) return emptySequence()
-        val era = civInfo.getEra()
 
         return civInfo.getKnownCivs().asSequence().filter { it.isCityState() }
-            .flatMap { era.getCityStateBonuses(it.cityStateType, civInfo.getDiplomacyManager(it).relationshipLevel(), uniqueType) }
+            .flatMap { getCityStateBonuses(it.cityStateType, it.getDiplomacyManager(civInfo).relationshipLevel(), uniqueType) }
             .filter { it.conditionalsApply(stateForConditionals) }
+    }
+
+
+    fun getCityStateBonuses(cityStateType: CityStateType, relationshipLevel: RelationshipLevel, uniqueType:UniqueType?=null): Sequence<Unique> {
+        val cityStateUniqueMap = when (relationshipLevel) {
+            RelationshipLevel.Ally -> cityStateType.allyBonusUniqueMap
+            RelationshipLevel.Friend -> cityStateType.friendBonusUniqueMap
+            else -> null
+        } ?: return emptySequence()
+        return if (uniqueType == null) cityStateUniqueMap.getAllUniques()
+        else cityStateUniqueMap.getUniques(uniqueType)
     }
 }

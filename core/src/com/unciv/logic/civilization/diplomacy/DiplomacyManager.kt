@@ -610,8 +610,6 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
         if (!otherCiv().isCityState()) return
 
-        val eraInfo = civInfo.getEra()
-
         if (relationshipLevel() < RelationshipLevel.Friend) {
             if (hasFlag(DiplomacyFlags.ProvideMilitaryUnit))
                 removeFlag(DiplomacyFlags.ProvideMilitaryUnit)
@@ -620,7 +618,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
         val variance = listOf(-1, 0, 1).random()
 
-        val provideMilitaryUnitUniques = eraInfo.getCityStateBonuses(otherCiv().cityStateType, relationshipLevel(), UniqueType.CityStateMilitaryUnits)
+        val provideMilitaryUnitUniques = civInfo.cityStateFunctions.getCityStateBonuses(otherCiv().cityStateType, relationshipLevel(), UniqueType.CityStateMilitaryUnits)
             .filter { it.conditionalsApply(civInfo) }.toList()
         if (provideMilitaryUnitUniques.isEmpty()) removeFlag(DiplomacyFlags.ProvideMilitaryUnit)
 

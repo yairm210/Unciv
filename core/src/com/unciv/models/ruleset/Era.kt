@@ -1,9 +1,7 @@
 package com.unciv.models.ruleset
 
 import com.badlogic.gdx.graphics.Color
-import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.ruleset.unique.StateForConditionals
-import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.civilopedia.FormattedLine
@@ -79,16 +77,6 @@ class Era : RulesetObject() {
                     it.type in eraConditionals
                 }
             }.map { it.first }.distinct()
-    }
-
-    fun getCityStateBonuses(cityStateType: CityStateType, relationshipLevel: RelationshipLevel, uniqueType:UniqueType?=null): Sequence<Unique> {
-        val cityStateUniqueMap = when (relationshipLevel) {
-            RelationshipLevel.Ally -> cityStateType.allyBonusUniqueMap
-            RelationshipLevel.Friend -> cityStateType.friendBonusUniqueMap
-            else -> null
-        } ?: return emptySequence()
-        return if (uniqueType == null) cityStateUniqueMap.getAllUniques()
-        else cityStateUniqueMap.getUniques(uniqueType)
     }
 
     fun getStartingUnits(): List<String> {

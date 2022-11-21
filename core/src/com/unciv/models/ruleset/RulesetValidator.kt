@@ -253,7 +253,6 @@ class RulesetValidator(val ruleset: Ruleset) {
             allDifficultiesStartingUnits.addAll(difficulty.playerBonusStartingUnits)
         }
 
-        val rulesetHasCityStates = ruleset.nations.values.any { it.isCityState() }
         for (era in ruleset.eras.values) {
             for (wonder in era.startingObsoleteWonders)
                 if (wonder !in ruleset.buildings)
@@ -298,6 +297,9 @@ class RulesetValidator(val ruleset: Ruleset) {
 
         for (nation in ruleset.nations.values) {
             checkUniques(nation, lines, rulesetSpecific, tryFixUnknownUniques)
+
+            if (nation.cityStateType!=null && nation.cityStateType !in ruleset.cityStateTypes)
+                lines += "${nation.name} is of city-state type ${nation.cityStateType} which does not exist!"
             if (nation.favoredReligion != null && nation.favoredReligion !in ruleset.religions)
                 lines += "${nation.name} has ${nation.favoredReligion} as their favored religion, which does not exist!"
         }
