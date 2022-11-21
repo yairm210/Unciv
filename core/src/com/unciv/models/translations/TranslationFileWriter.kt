@@ -473,6 +473,7 @@ object TranslationFileWriter {
                     "Units" -> emptyArray<BaseUnit>().javaClass
                     "UnitTypes" -> emptyArray<UnitType>().javaClass
                     "VictoryTypes" -> emptyArray<Victory>().javaClass
+                    "CityStateTypes" -> emptyArray<CityStateType>().javaClass
                     else -> this.javaClass // dummy value
                 }
             }
