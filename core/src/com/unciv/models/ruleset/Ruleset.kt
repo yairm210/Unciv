@@ -253,9 +253,6 @@ class Ruleset {
 
         val buildingsFile = folderHandle.child("Buildings.json")
         if (buildingsFile.exists()) buildings += createHashmap(json().fromJsonFile(Array<Building>::class.java, buildingsFile))
-        for(building in buildings.values)
-            if(building.requiredBuildingInAllCities != null)
-                building.uniques.add(UniqueType.RequiresBuildingInAllCities.text.fillPlaceholders(building.requiredBuildingInAllCities!!))
 
         val terrainsFile = folderHandle.child("Terrains.json")
         if (terrainsFile.exists()) {

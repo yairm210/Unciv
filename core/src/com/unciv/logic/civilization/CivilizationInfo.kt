@@ -196,10 +196,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     var citiesCreated = 0
     var exploredTiles = HashSet<Vector2>()
 
-    @Deprecated("Only for backward compatibility, will have no values after GameInfo.setTransients",
-        ReplaceWith("lastSeenImprovement"))
-    var lastSeenImprovementSaved = HashMap<String, String>()
-
     var lastSeenImprovement = HashMapVector2<String>()
 
     // To correctly determine "game over" condition as clarified in #4707

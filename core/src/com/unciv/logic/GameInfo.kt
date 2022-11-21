@@ -7,9 +7,7 @@ import com.unciv.logic.BackwardCompatibility.convertFortify
 import com.unciv.logic.BackwardCompatibility.convertOldGameSpeed
 import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
 import com.unciv.logic.BackwardCompatibility.migrateBarbarianCamps
-import com.unciv.logic.BackwardCompatibility.migrateSeenImprovements
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
-import com.unciv.logic.BackwardCompatibility.updateGreatGeneralUniques
 import com.unciv.logic.GameInfo.Companion.CURRENT_COMPATIBILITY_NUMBER
 import com.unciv.logic.GameInfo.Companion.FIRST_WITHOUT
 import com.unciv.logic.automation.civilization.NextTurnAutomation
@@ -450,8 +448,6 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             gameParameters.baseRuleset = baseRulesetInMods
             gameParameters.mods = LinkedHashSet(gameParameters.mods.filter { it != baseRulesetInMods })
         }
-        // [TEMPORARY] Convert old saves to remove json workaround
-        for (civInfo in civilizations) civInfo.migrateSeenImprovements()
         barbarians.migrateBarbarianCamps()
 
         ruleSet = RulesetCache.getComplexRuleset(gameParameters)
@@ -467,8 +463,6 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         }
 
         removeMissingModReferences()
-
-        updateGreatGeneralUniques()
 
         convertOldGameSpeed()
 

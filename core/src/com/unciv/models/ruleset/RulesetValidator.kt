@@ -158,9 +158,6 @@ class RulesetValidator(val ruleset: Ruleset) {
                 lines += "${building.name} replaces ${building.replaces} which does not exist!"
             if (building.requiredBuilding != null && !ruleset.buildings.containsKey(building.requiredBuilding!!))
                 lines += "${building.name} requires ${building.requiredBuilding} which does not exist!"
-            if (building.requiredBuildingInAllCities != null)
-                lines.add("${building.name} contains 'requiredBuildingInAllCities' - please convert to a \"" +
-                        UniqueType.RequiresBuildingInAllCities.text.fillPlaceholders(building.requiredBuildingInAllCities!!)+"\" unique", RulesetErrorSeverity.Warning)
             checkUniques(building, lines, rulesetSpecific, tryFixUnknownUniques)
         }
 
