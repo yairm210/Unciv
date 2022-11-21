@@ -46,6 +46,13 @@ class GlobalUniquesTests {
         Assert.assertTrue(civInfo.statsForNextTurn.equals(Stats(gold=2f)))
     }
 
+    @Test
+    fun statsHappinessNotOnBuilding() {
+        val civInfo = game.addCiv("[+7 Happiness]")
+        civInfo.updateStatsForNextTurn()
+        Assert.assertTrue(civInfo.happinessForNextTurn == civInfo.getDifficulty().baseHappiness + 7)
+    }
+
 
     @Test
     fun statsPerCity() {

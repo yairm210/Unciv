@@ -331,6 +331,12 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
         if (cityStatesHappiness > 0) statMap[Constants.cityStates] = cityStatesHappiness
 
+        for (unique in civInfo.getMatchingUniques(UniqueType.Stats))
+            if (unique.sourceObjectType != UniqueTarget.Building && unique.sourceObjectType != UniqueTarget.Wonder && unique.stats.happiness != 0f){
+                if (!statMap.containsKey(unique.sourceObjectName)) statMap[unique.sourceObjectName!!] = unique.stats.happiness
+                else statMap[unique.sourceObjectName!!] = statMap[unique.sourceObjectName]!! + unique.stats.happiness
+            }
+
         return statMap
     }
 
