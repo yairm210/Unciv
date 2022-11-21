@@ -3,7 +3,7 @@ package com.unciv.uniques
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
-import com.unciv.logic.civilization.CityStateType
+import com.unciv.logic.civilization.CityStateTypeOld
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.stats.Stats
@@ -364,7 +364,7 @@ class GlobalUniquesTests {
     fun bonusStatsFromCityStates() {
         game.makeHexagonalMap(1)
         val civInfo = game.addCiv()
-        val cityState = game.addCiv(cityState = CityStateType.Maritime)
+        val cityState = game.addCiv(cityState = CityStateTypeOld.Maritime)
 
         val tile = game.getTile(Vector2(0f,0f))
         val city = game.addCity(civInfo, tile, true)

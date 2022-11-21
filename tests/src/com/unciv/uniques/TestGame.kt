@@ -5,7 +5,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.city.CityInfo
-import com.unciv.logic.civilization.CityStateType
+import com.unciv.logic.civilization.CityStateTypeOld
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapSizeNew
@@ -104,7 +104,7 @@ class TestGame {
         return tile
     }
 
-    fun addCiv(vararg uniques: String, isPlayer: Boolean = false, cityState: CityStateType? = null): CivilizationInfo {
+    fun addCiv(vararg uniques: String, isPlayer: Boolean = false, cityState: CityStateTypeOld? = null): CivilizationInfo {
         fun nationFactory() = Nation().apply {
             cities = arrayListOf("The Capital")
             cityStateType = cityState

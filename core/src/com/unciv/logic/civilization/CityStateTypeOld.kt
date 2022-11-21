@@ -1,6 +1,6 @@
 package com.unciv.logic.civilization
 
-enum class CityStateType(val color: String = "") {
+enum class CityStateTypeOld(val color: String = "") {
     Cultured("#8b60ff"),
     Maritime("#38ff70"),
     Mercantile("#ffd800"),

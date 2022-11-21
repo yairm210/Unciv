@@ -3,7 +3,7 @@
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.CityStateType
+import com.unciv.logic.civilization.CityStateTypeOld
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueTarget
@@ -23,7 +23,7 @@ class Nation : RulesetObject() {
     val style = ""
     fun getStyleOrCivName() = style.ifEmpty { name }
 
-    var cityStateType: CityStateType? = null
+    var cityStateType: CityStateTypeOld? = null
     var preferredVictoryType: String = Constants.neutralVictoryType
     var declaringWar = ""
     var attacked = ""

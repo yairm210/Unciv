@@ -346,7 +346,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     fun isBarbarian() = nation.isBarbarian()
     fun isSpectator() = nation.isSpectator()
     fun isCityState(): Boolean = nation.isCityState()
-    val cityStateType: CityStateType get() = nation.cityStateType!!
+    val cityStateType: CityStateTypeOld get() = nation.cityStateType!!
     var cityStatePersonality: CityStatePersonality = CityStatePersonality.Neutral
     var cityStateResource: String? = null
     var cityStateUniqueUnit: String? = null // Unique unit for militaristic city state. Might still be null if there are no appropriate units

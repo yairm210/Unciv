@@ -1,7 +1,7 @@
 package com.unciv.models.ruleset
 
 import com.badlogic.gdx.graphics.Color
-import com.unciv.logic.civilization.CityStateType
+import com.unciv.logic.civilization.CityStateTypeOld
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
@@ -34,9 +34,9 @@ class Era : RulesetObject() {
     var friendBonus = HashMap<String, List<String>>()
     var allyBonus = HashMap<String, List<String>>()
     @Suppress("MemberVisibilityCanBePrivate")
-    val friendBonusObjects: Map<CityStateType, UniqueMap> by lazy { initBonuses(friendBonus) }
+    val friendBonusObjects: Map<CityStateTypeOld, UniqueMap> by lazy { initBonuses(friendBonus) }
     @Suppress("MemberVisibilityCanBePrivate")
-    val allyBonusObjects: Map<CityStateType, UniqueMap> by lazy { initBonuses(allyBonus) }
+    val allyBonusObjects: Map<CityStateTypeOld, UniqueMap> by lazy { initBonuses(allyBonus) }
 
     private var iconRGB: List<Int>? = null
 
@@ -87,17 +87,17 @@ class Era : RulesetObject() {
             }.map { it.first }.distinct()
     }
 
-    private fun initBonuses(bonusMap: Map<String, List<String>>): Map<CityStateType, UniqueMap> {
-        val objectMap = HashMap<CityStateType, UniqueMap>()
+    private fun initBonuses(bonusMap: Map<String, List<String>>): Map<CityStateTypeOld, UniqueMap> {
+        val objectMap = HashMap<CityStateTypeOld, UniqueMap>()
         for ((cityStateType, bonusList) in bonusMap) {
             val cityStateTypeUniqueMap = UniqueMap()
             cityStateTypeUniqueMap.addUniques(bonusList.map { Unique(it, UniqueTarget.CityState)})
-            objectMap[CityStateType.valueOf(cityStateType)] = cityStateTypeUniqueMap
+            objectMap[CityStateTypeOld.valueOf(cityStateType)] = cityStateTypeUniqueMap
         }
         return objectMap
     }
 
-    fun getCityStateBonuses(cityStateType: CityStateType, relationshipLevel: RelationshipLevel, uniqueType:UniqueType?=null): Sequence<Unique> {
+    fun getCityStateBonuses(cityStateType: CityStateTypeOld, relationshipLevel: RelationshipLevel, uniqueType:UniqueType?=null): Sequence<Unique> {
         val cityStateUniqueMap = when (relationshipLevel) {
             RelationshipLevel.Ally -> allyBonusObjects[cityStateType]
             RelationshipLevel.Friend -> friendBonusObjects[cityStateType]
