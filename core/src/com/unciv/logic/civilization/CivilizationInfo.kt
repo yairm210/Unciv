@@ -347,6 +347,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     fun isBarbarian() = nation.isBarbarian()
     fun isSpectator() = nation.isSpectator()
     fun isCityState(): Boolean = nation.isCityState()
+    @delegate:Transient
     val cityStateType: CityStateType by lazy { gameInfo.ruleSet.cityStateTypes[nation.cityStateType!!]!! }
     var cityStatePersonality: CityStatePersonality = CityStatePersonality.Neutral
     var cityStateResource: String? = null
