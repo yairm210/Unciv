@@ -248,15 +248,15 @@ class DiplomacyScreen(
 
         val eraInfo = viewingCiv.getEra()
 
-        var friendBonusText = "{When Friends:} ".tr()
+        var friendBonusText = "{When Friends:}\n".tr()
         val friendBonusObjects = eraInfo.getCityStateBonuses(otherCiv.cityStateType, RelationshipLevel.Friend)
         val friendBonusStrings = getAdjustedBonuses(friendBonusObjects)
-        friendBonusText += friendBonusStrings.joinToString(separator = ", ") { it.tr() }
+        friendBonusText += friendBonusStrings.joinToString(separator = "\n") { it.tr() }
 
-        var allyBonusText = "{When Allies:} ".tr()
+        var allyBonusText = "{When Allies:}\n".tr()
         val allyBonusObjects = eraInfo.getCityStateBonuses(otherCiv.cityStateType, RelationshipLevel.Ally)
         val allyBonusStrings = getAdjustedBonuses(allyBonusObjects)
-        allyBonusText += allyBonusStrings.joinToString(separator = ", ") { it.tr() }
+        allyBonusText += allyBonusStrings.joinToString(separator = "\n") { it.tr() }
 
         val relationLevel = otherCivDiplomacyManager.relationshipLevel()
         if (relationLevel >= RelationshipLevel.Friend) {
