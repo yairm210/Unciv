@@ -1,7 +1,6 @@
 package com.unciv.uniques
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.logic.civilization.CityStateTypeOld
 import com.unciv.testing.GdxTestRunner
 import com.unciv.ui.worldscreen.unit.UnitActions
 import org.junit.Assert.assertNotNull
@@ -22,7 +21,7 @@ class UnitUniquesTests {
     fun `Sweden can gift Great Persons to City States`() {
         // when
         game.makeHexagonalMap(1)
-        val cityState = game.addCiv(cityState = CityStateTypeOld.Cultured)
+        val cityState = game.addCiv(cityStateType = "Cultured")
         val cityStateCapitalTile = game.getTile(Vector2(0f, 0f))
         val cityStateCapital = game.addCity(cityState, cityStateCapitalTile)
 

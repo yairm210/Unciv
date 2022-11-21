@@ -22,6 +22,7 @@ import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeRequest
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.CityStateType
 import com.unciv.models.ruleset.Difficulty
 import com.unciv.models.ruleset.Era
 import com.unciv.models.ruleset.ModOptionsConstants
@@ -346,7 +347,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     fun isBarbarian() = nation.isBarbarian()
     fun isSpectator() = nation.isSpectator()
     fun isCityState(): Boolean = nation.isCityState()
-    val cityStateType: CityStateTypeOld get() = nation.cityStateType!!
+    val cityStateType: CityStateType by lazy { gameInfo.ruleSet.cityStateTypes[nation.cityStateType!!]!! }
     var cityStatePersonality: CityStatePersonality = CityStatePersonality.Neutral
     var cityStateResource: String? = null
     var cityStateUniqueUnit: String? = null // Unique unit for militaristic city state. Might still be null if there are no appropriate units

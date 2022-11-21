@@ -6,7 +6,7 @@
         "color": [139, 96, 255]
     },
     {
-        "Maritime":"Maritime",
+        "name":"Maritime",
         "friendBonusUniques": ["[+2 Food] [in capital]"],
         "allyBonusUniques": ["[+2 Food] [in capital]", "[+1 Food] [in all cities]"],
         "color": [56, 255, 112]

@@ -5,7 +5,6 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.city.CityInfo
-import com.unciv.logic.civilization.CityStateTypeOld
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapSizeNew
@@ -104,10 +103,10 @@ class TestGame {
         return tile
     }
 
-    fun addCiv(vararg uniques: String, isPlayer: Boolean = false, cityState: CityStateTypeOld? = null): CivilizationInfo {
+    fun addCiv(vararg uniques: String, isPlayer: Boolean = false, cityStateType: String? = null): CivilizationInfo {
         fun nationFactory() = Nation().apply {
             cities = arrayListOf("The Capital")
-            cityStateType = cityState
+            this.cityStateType = cityStateType
         }
         val nation = createRulesetObject(ruleset.nations, *uniques) {
             nationFactory()
@@ -121,7 +120,7 @@ class TestGame {
 
         // Add 1 tech to the player so the era is computed correctly
         civInfo.tech.addTechnology(ruleset.technologies.values.minBy { it.era() }.name)
-        if (cityState != null) {
+        if (cityStateType != null) {
             civInfo.cityStateFunctions.initCityState(ruleset, "Ancient era", emptyList())
         }
         gameInfo.civilizations.add(civInfo)

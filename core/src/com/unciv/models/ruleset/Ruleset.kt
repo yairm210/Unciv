@@ -367,7 +367,7 @@ class Ruleset {
             victories += createHashmap(json().fromJsonFile(Array<Victory>::class.java, victoryTypesFile))
         }
 
-        val cityStateTypesFile = folderHandle.child("VictoryTypes.json")
+        val cityStateTypesFile = folderHandle.child("CityStateTypes.json")
         if (cityStateTypesFile.exists()) {
             cityStateTypes += createHashmap(json().fromJsonFile(Array<CityStateType>::class.java, cityStateTypesFile))
         }

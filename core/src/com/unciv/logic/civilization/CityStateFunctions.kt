@@ -28,10 +28,11 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             civInfo.tech.techsResearched.add(tech.name) // can't be .addTechnology because the civInfo isn't assigned yet
 
         val allMercantileResources = ruleset.tileResources.values.filter { it.hasUnique(UniqueType.CityStateOnlyResource) }.map { it.name }
-        val uniqueTypes = HashSet<UniqueType>()    // We look through these to determine what kind of city state we are
-        for (era in ruleset.eras.values) {
-            for (unique in era.friendBonusObjects.values.map { it.getAllUniques() } + era.allyBonusObjects.values.map { it.getAllUniques() })
-                uniqueTypes.addAll(unique.mapNotNull { it.type })
+        val uniqueTypes = HashSet<UniqueType>()    // We look through these to determine what kinds of city states we have
+
+        for (cityStateType in ruleset.cityStateTypes.values){
+            uniqueTypes.addAll(cityStateType.friendBonusUniqueMap.getAllUniques().mapNotNull { it.type })
+            uniqueTypes.addAll(cityStateType.allyBonusUniqueMap.getAllUniques().mapNotNull { it.type })
         }
 
         // CS Personality

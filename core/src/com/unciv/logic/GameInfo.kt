@@ -480,11 +480,12 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         for (civInfo in civilizations) civInfo.gameInfo = this
         for (civInfo in civilizations) civInfo.setNationTransient()
         // must be done before updating tileMap, since unit uniques depend on civ uniques depend on allied city-state uniques depend on diplomacy
-        for (civInfo in civilizations)
+        for (civInfo in civilizations) {
             for (diplomacyManager in civInfo.diplomacy.values) {
                 diplomacyManager.civInfo = civInfo
                 diplomacyManager.updateHasOpenBorders()
             }
+        }
 
         tileMap.setTransients(ruleSet)
 

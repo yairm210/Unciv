@@ -142,7 +142,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
         for (unique in civInfo.getMatchingUniques(UniqueType.Stats))
             if (unique.sourceObjectType != UniqueTarget.Building && unique.sourceObjectType != UniqueTarget.Wonder)
-                statMap.add(unique.sourceObjectName!!, unique.stats)
+                statMap.add(unique.sourceObjectType!!.name, unique.stats)
 
         //City-States bonuses
         for (otherCiv in civInfo.getKnownCivs()) {
@@ -333,8 +333,9 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
         for (unique in civInfo.getMatchingUniques(UniqueType.Stats))
             if (unique.sourceObjectType != UniqueTarget.Building && unique.sourceObjectType != UniqueTarget.Wonder && unique.stats.happiness != 0f){
-                if (!statMap.containsKey(unique.sourceObjectName)) statMap[unique.sourceObjectName!!] = unique.stats.happiness
-                else statMap[unique.sourceObjectName!!] = statMap[unique.sourceObjectName]!! + unique.stats.happiness
+                val sourceObjectType = unique.sourceObjectType!!.name
+                if (!statMap.containsKey(sourceObjectType)) statMap[sourceObjectType] = unique.stats.happiness
+                else statMap[sourceObjectType] = statMap[sourceObjectType]!! + unique.stats.happiness
             }
 
         return statMap

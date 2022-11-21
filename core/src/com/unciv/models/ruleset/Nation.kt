@@ -2,9 +2,6 @@
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
-import com.unciv.UncivGame
-import com.unciv.logic.civilization.CityStateTypeOld
-import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
@@ -23,7 +20,7 @@ class Nation : RulesetObject() {
     val style = ""
     fun getStyleOrCivName() = style.ifEmpty { name }
 
-    var cityStateType: CityStateTypeOld? = null
+    var cityStateType: String? = null
     var preferredVictoryType: String = Constants.neutralVictoryType
     var declaringWar = ""
     var attacked = ""
@@ -140,32 +137,28 @@ class Nation : RulesetObject() {
     private fun getCityStateInfo(ruleset: Ruleset): List<FormattedLine> {
         val textList = ArrayList<FormattedLine>()
 
-        textList += FormattedLine("{Type}: {$cityStateType}", header = 4, color = cityStateType!!.color)
+        val cityStateType = ruleset.cityStateTypes[cityStateType]!!
+        textList += FormattedLine("{Type}: {$cityStateType}", header = 4, color = cityStateType.getColor().toString())
 
-        val era = if (UncivGame.isCurrentInitialized() && UncivGame.Current.gameInfo != null) {
-            UncivGame.Current.gameInfo!!.getCurrentPlayerCivilization().getEra()
-        } else {
-            ruleset.eras.values.first()
-        }
         var showResources = false
 
-        val friendBonus = era.friendBonus[cityStateType!!.name]
-        if (friendBonus != null && friendBonus.isNotEmpty()) {
+        val friendBonus = cityStateType.friendBonusUniqueMap
+        if (friendBonus.isNotEmpty()) {
             textList += FormattedLine()
             textList += FormattedLine("{When Friends:} ")
-            friendBonus.forEach {
-                textList += FormattedLine(Unique(it), indent = 1)
-                if (it == "Provides a unique luxury") showResources = true
+            friendBonus.getAllUniques().forEach {
+                textList += FormattedLine(it, indent = 1)
+                if (it.text == "Provides a unique luxury") showResources = true
             }
         }
 
-        val allyBonus = era.allyBonus[cityStateType!!.name]
-        if (allyBonus != null && allyBonus.isNotEmpty()) {
+        val allyBonus = cityStateType.allyBonusUniqueMap
+        if (allyBonus.isNotEmpty()) {
             textList += FormattedLine()
             textList += FormattedLine("{When Allies:} ")
-            allyBonus.forEach {
-                textList += FormattedLine(Unique(it), indent = 1)
-                if (it == "Provides a unique luxury") showResources = true
+            allyBonus.getAllUniques().forEach {
+                textList += FormattedLine(it, indent = 1)
+                if (it.text == "Provides a unique luxury") showResources = true
             }
         }
 
