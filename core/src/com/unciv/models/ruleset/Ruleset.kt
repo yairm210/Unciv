@@ -25,7 +25,6 @@ import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.NamedStats
-import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.extensions.colorFromRGB
 import com.unciv.ui.utils.getRelativeTextDistance
@@ -390,7 +389,18 @@ class Ruleset {
 
             if (speeds.isEmpty()) speeds.putAll(RulesetCache.getVanillaRuleset().speeds)
 
-            if (cityStateTypes.isEmpty()) cityStateTypes.putAll(RulesetCache.getVanillaRuleset().cityStateTypes)
+            if (cityStateTypes.isEmpty())
+                for (cityStateType in RulesetCache.getVanillaRuleset().cityStateTypes.values)
+                    cityStateTypes[cityStateType.name] = CityStateType().apply {
+                        name = cityStateType.name
+                        color = cityStateType.color
+                        friendBonusUniques = ArrayList(cityStateType.friendBonusUniques.filter {
+                            RulesetValidator(this@Ruleset).checkUnique(Unique(it),false,"",UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific,UniqueTarget.CityState).isEmpty()
+                        })
+                        allyBonusUniques = ArrayList(cityStateType.allyBonusUniques.filter {
+                            RulesetValidator(this@Ruleset).checkUnique(Unique(it),false,"",UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific,UniqueTarget.CityState).isEmpty()
+                        })
+                    }
         }
 
         debug("Loading ruleset - %sms", System.currentTimeMillis() - gameBasicsStartTime)

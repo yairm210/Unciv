@@ -1,26 +1,6 @@
 ## 4.3.2
 
-Fixed json tests
-
-Fixed city state tests
-
-Added validations for city-state uniques
-
-Converted all era uniques to conditional uniques for city-states
-
-Removed old deprecated bits and pieces
-
-Removed old deprecated parts
-
-cityStateType no longer causes crash
-
-CityStateType overhaul!!!!
-
-CityStateType deprecation p1
-
-Added CityStateTypes into rulesets! Not in use yet
-
-Separated ruleset validation to its own file
+City State Type overhaul!
 
 Can now use `[stats]` unique to add happiness globally
 

@@ -192,7 +192,7 @@ class DiplomacyScreen(
 
         diplomacyTable.add(LeaderIntroTable(otherCiv)).padBottom(15f).row()
 
-        diplomacyTable.add("{Type}:  {${otherCiv.cityStateType}}".toLabel()).row()
+        diplomacyTable.add("{Type}:  {${otherCiv.cityStateType.name}}".toLabel()).row()
         diplomacyTable.add("{Personality}:  {${otherCiv.cityStatePersonality}}".toLabel()).row()
 
         if (otherCiv.detailedCivResources.any { it.resource.resourceType != ResourceType.Bonus }) {
