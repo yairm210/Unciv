@@ -652,7 +652,14 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         if (civInfo.isCityState()) return emptySequence()
 
         return civInfo.getKnownCivs().asSequence().filter { it.isCityState() }
-            .flatMap { getCityStateBonuses(it.cityStateType, it.getDiplomacyManager(civInfo).relationshipLevel(), uniqueType) }
+            .flatMap {
+                // We don't use DiplomacyManager.getRelationshipLevel for performance reasons - it tries to calculate getTributeWillingness which is heavy
+                val relationshipLevel =
+                        if (it.getAllyCiv() == civInfo.civName) RelationshipLevel.Ally
+                        else if (it.getDiplomacyManager(civInfo).getInfluence() >= 30) RelationshipLevel.Friend
+                        else RelationshipLevel.Neutral
+                getCityStateBonuses(it.cityStateType, relationshipLevel, uniqueType)
+            }
             .filter { it.conditionalsApply(stateForConditionals) }
     }
 
