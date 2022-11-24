@@ -1,11 +1,9 @@
+Resolved map latency when city-states exist
 
+Fixed city-state type in civilopedia
 
-Resolved  - 'impossible' worked tiles not under your control are now cleaned up
+'impossible' worked tiles not under your control are now cleaned up
 
-Resolved  - corner case where entire path to destination is full and destination is unenterable
-
-Resolved  - resolved map latency when city-states exist
-
-Resolved  - city-state type in civilopedia
+Resolved corner case where entire path to destination is full and destination is unenterable
 
 Fix policy counting in global politics  - By jmuchemb
