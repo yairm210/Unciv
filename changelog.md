@@ -1,3 +1,15 @@
+## 4.3.3
+
+Resolved  - 'impossible' worked tiles not under your control are now cleaned up
+
+Resolved  - corner case where entire path to destination is full and destination is unenterable
+
+Resolved  - resolved map latency when city-states exist
+
+Resolved  - city-state type in civilopedia
+
+Fix policy counting in global politics  - By jmuchemb
+
 ## 4.3.2
 
 City State Type overhaul!
