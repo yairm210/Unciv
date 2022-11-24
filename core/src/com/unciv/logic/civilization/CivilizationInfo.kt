@@ -856,6 +856,12 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
             cityInfo.setTransients()
         }
 
+        // Now that all tile transients have been updated, clean "worked" tiles that are not under the Civ's control
+        for (cityInfo in cities)
+            for (workedTile in cityInfo.workedTiles.toList())
+                if (gameInfo.tileMap[workedTile].getOwner() != this)
+                    cityInfo.workedTiles.remove(workedTile)
+
         passThroughImpassableUnlocked = passableImpassables.isNotEmpty()
         // Cache whether this civ gets nonstandard terrain damage for performance reasons.
         nonStandardTerrainDamage = getMatchingUniques(UniqueType.DamagesContainingUnits)
