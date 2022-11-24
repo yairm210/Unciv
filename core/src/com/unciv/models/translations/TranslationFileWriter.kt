@@ -424,7 +424,8 @@ object TranslationFileWriter {
                 "revealedBy", "startBias", "techRequired", "terrainsCanBeBuiltOn",
                 "terrainsCanBeFoundOn", "turnsInto", "uniqueTo", "upgradesTo",
                 "link", "icon", "extraImage", "color",  // FormattedLine
-                "RuinReward.uniques", "TerrainType.name"
+                "RuinReward.uniques", "TerrainType.name",
+                "CityStateType.friendBonusUniques", "CityStateType.allyBonusUniques",
             )
 
             /** Specifies Enums where the name property _is_ translatable, by Class name */
