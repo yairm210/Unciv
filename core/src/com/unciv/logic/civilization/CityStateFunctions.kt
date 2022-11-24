@@ -421,7 +421,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         if (!civInfo.isCityState())
             return false
         for (bonus in getCityStateBonuses(civInfo.cityStateType, RelationshipLevel.Ally)) {
-            if (bonus.stats[statType] > 0 || (bonus.isOfType(UniqueType.CityStateHappiness) && statType == Stat.Happiness))
+            if (bonus.stats[statType] > 0)
                 return true
         }
         return false

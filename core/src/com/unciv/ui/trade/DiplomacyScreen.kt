@@ -294,7 +294,7 @@ class DiplomacyScreen(
                 val boostAmount = unique.params[0].toPercent()
                 val boostedStat = Stat.valueOf(unique.params[1])
                 when (bonus.type) {
-                    UniqueType.CityStateStatsPerTurn -> { // "Provides [stats] per turn"
+                    UniqueType.Stats -> { // "[+3 Faith]"
                         if (bonus.stats[boostedStat] > 0) {
                             bonusStrings.add(
                                 bonus.text.fillPlaceholders(
@@ -302,19 +302,11 @@ class DiplomacyScreen(
                             improved = true
                         }
                     }
-                    UniqueType.CityStateStatsPerCity -> { // "Provides [stats] [cityFilter]"
+                    UniqueType.StatsPerCity -> { // "[+1 Food] [in every city]"
                         if (bonus.stats[boostedStat] > 0) {
                             bonusStrings.add(
                                 bonus.text.fillPlaceholders(
                                     (bonus.stats * boostAmount).toStringWithDecimals(), bonus.params[1]))
-                            improved = true
-                        }
-                    }
-                    UniqueType.CityStateHappiness -> { // "Provides [amount] Happiness"
-                        if (boostedStat == Stat.Happiness) {
-                            bonusStrings.add(
-                                bonus.text.fillPlaceholders(
-                                    (bonus.params[0].toFloat() * boostAmount).toString().removeSuffix(".0")))
                             improved = true
                         }
                     }

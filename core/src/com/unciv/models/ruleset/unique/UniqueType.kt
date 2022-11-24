@@ -114,13 +114,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     // region City-State related uniques
 
-    // I don't like the fact that currently "city state bonuses" are separate from the "global bonuses",
-    // todo: merge city state bonuses into global bonuses
-    CityStateStatsPerTurn("Provides [stats] per turn", UniqueTarget.CityState), // Should not be Happiness!
-    CityStateStatsPerCity("Provides [stats] [cityFilter] per turn", UniqueTarget.CityState),
-    CityStateHappiness("Provides [amount] Happiness", UniqueTarget.CityState),
     CityStateMilitaryUnits("Provides military units every ≈[amount] turns", UniqueTarget.CityState),
     CityStateUniqueLuxury("Provides a unique luxury", UniqueTarget.CityState), // No conditional support as of yet
+
     CityStateGiftedUnitsStartWithXp("Military Units gifted from City-States start with [amount] XP", UniqueTarget.Global),
     CityStateMoreGiftedUnits("Militaristic City-States grant units [amount] times as fast when you are at war with a common nation", UniqueTarget.Global),
 
@@ -607,7 +603,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ConditionalFirstCivToResearch("if no other Civilization has researched this", UniqueTarget.Conditional),
     ConditionalTech("after discovering [tech]", UniqueTarget.Conditional),
     ConditionalNoTech("before discovering [tech]", UniqueTarget.Conditional),
-    ConditionalWhenTech("upon discovering [tech]", UniqueTarget.Conditional), //todo no references anywhere
 
     ConditionalPolicy("after adopting [policy]", UniqueTarget.Conditional),
     ConditionalNoPolicy("before adopting [policy]", UniqueTarget.Conditional),
@@ -714,6 +709,13 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     // endregion
 
     // region DEPRECATED AND REMOVED
+
+    @Deprecated("as of 4.3.4", ReplaceWith("[stats]"), DeprecationLevel.ERROR)
+    CityStateStatsPerTurn("Provides [stats] per turn", UniqueTarget.CityState), // Should not be Happiness!
+    @Deprecated("as of 4.3.4", ReplaceWith("[stats] [cityFilter]"), DeprecationLevel.ERROR)
+    CityStateStatsPerCity("Provides [stats] [cityFilter] per turn", UniqueTarget.CityState),
+    @Deprecated("as of 4.3.4", ReplaceWith("[+amount Happiness]"), DeprecationLevel.ERROR)
+    CityStateHappiness("Provides [amount] Happiness", UniqueTarget.CityState),
     @Deprecated("As of 4.2.4", ReplaceWith("Enemy [Land] units must spend [1] extra movement points when inside your territory <before discovering [Dynamite]>"), DeprecationLevel.ERROR)
     EnemyLandUnitsSpendExtraMovementDepreciated("Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)", UniqueTarget.Global),
     @Deprecated("as of 4.1.7", ReplaceWith("Can construct [improvementName] <if it hasn't used other actions yet>"), DeprecationLevel.ERROR)
