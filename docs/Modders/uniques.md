@@ -1623,21 +1623,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Ruins
 
 ## CityState uniques
-??? example  "Provides [stats] per turn"
-	Example: "Provides [+1 Gold, +2 Production] per turn"
-
-	Applicable to: CityState
-
-??? example  "Provides [stats] [cityFilter] per turn"
-	Example: "Provides [+1 Gold, +2 Production] [in all cities] per turn"
-
-	Applicable to: CityState
-
-??? example  "Provides [amount] Happiness"
-	Example: "Provides [3] Happiness"
-
-	Applicable to: CityState
-
 ??? example  "Provides military units every ≈[amount] turns"
 	Example: "Provides military units every ≈[3] turns"
 
@@ -1720,11 +1705,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;before discovering [tech]&gt;"
 	Example: "&lt;before discovering [Agriculture]&gt;"
-
-	Applicable to: Conditional
-
-??? example  "&lt;upon discovering [tech]&gt;"
-	Example: "&lt;upon discovering [Agriculture]&gt;"
 
 	Applicable to: Conditional
 
