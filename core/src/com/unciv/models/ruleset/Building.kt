@@ -47,8 +47,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     var isNationalWonder = false
     fun isAnyWonder() = isWonder || isNationalWonder
     var requiredBuilding: String? = null
-    @Deprecated("As of 3.18.15 - replace with RequiresBuildingInAllCities unique")
-    var requiredBuildingInAllCities: String? = null
 
     /** A strategic resource that will be consumed by this building */
     private var requiredResource: String? = null
@@ -187,6 +185,9 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             if (!matchesFilter(unique.params[1])) continue
             stats.add(unique.stats)
         }
+
+        for (unique in getMatchingUniques(UniqueType.Stats, StateForConditionals(city.civInfo, city)))
+            stats.add(unique.stats)
 
         if (!isWonder)
             for (unique in localUniqueCache.get("StatsFromBuildings", city.getMatchingUniques(UniqueType.StatsFromBuildings))) {

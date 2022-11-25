@@ -7,6 +7,7 @@ import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
@@ -139,52 +140,25 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                 statMap.add(entry.key, entry.value)
         }
 
+        for (unique in civInfo.getMatchingUniques(UniqueType.Stats))
+            if (unique.sourceObjectType != UniqueTarget.Building && unique.sourceObjectType != UniqueTarget.Wonder)
+                statMap.add(unique.sourceObjectType!!.name, unique.stats)
+
         //City-States bonuses
         for (otherCiv in civInfo.getKnownCivs()) {
-            val relationshipLevel = otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel()
-            if (otherCiv.isCityState() && relationshipLevel >= RelationshipLevel.Friend) {
-                val cityStateBonus = Stats()
-                val eraInfo = civInfo.getEra()
-
-                if (!eraInfo.undefinedCityStateBonuses()) {
-                    for (bonus in eraInfo.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel)) {
-                        if (bonus.isOfType(UniqueType.CityStateStatsPerTurn) && bonus.conditionalsApply(otherCiv))
-                            cityStateBonus.add(bonus.stats)
-                    }
-                } else {
-                    // Deprecated, assume Civ V values for compatibility
-                    if (otherCiv.cityStateType == CityStateType.Cultured) {
-                        cityStateBonus.culture =
-                            when {
-                                civInfo.getEraNumber() in 0..1 -> 3f
-                                civInfo.getEraNumber() in 2..3 -> 6f
-                                else -> 13f
-                            }
-                        if (relationshipLevel == RelationshipLevel.Ally)
-                            cityStateBonus.culture *= 2f
-                    }
-                }
-
-                for (unique in civInfo.getMatchingUniques(UniqueType.StatBonusPercentFromCityStates)) {
-                    cityStateBonus[Stat.valueOf(unique.params[1])] *= unique.params[0].toPercent()
-                }
-
-                statMap.add(Constants.cityStates, cityStateBonus)
-            }
-
-            if (otherCiv.isCityState())
-                for (unique in civInfo.getMatchingUniques(UniqueType.CityStateStatPercent)) {
-                    if (otherCiv.getDiplomacyManager(civInfo.civName)
-                            .relationshipLevel() != RelationshipLevel.Ally
-                    ) continue
-                    statMap.add(
-                        Constants.cityStates,
-                        Stats().add(
-                            Stat.valueOf(unique.params[0]),
-                            otherCiv.statsForNextTurn[Stat.valueOf(unique.params[0])] * unique.params[1].toFloat() / 100f
-                        )
+            if (!otherCiv.isCityState()) continue
+            if (otherCiv.getDiplomacyManager(civInfo.civName)
+                        .relationshipLevel() != RelationshipLevel.Ally
+            ) continue
+            for (unique in civInfo.getMatchingUniques(UniqueType.CityStateStatPercent)) {
+                statMap.add(
+                    Constants.cityStates,
+                    Stats().add(
+                        Stat.valueOf(unique.params[0]),
+                        otherCiv.statsForNextTurn[Stat.valueOf(unique.params[0])] * unique.params[1].toFloat() / 100f
                     )
-                }
+                )
+            }
         }
 
         statMap["Transportation upkeep"] = Stats(gold = -getTransportationUpkeep().toFloat())
@@ -318,35 +292,12 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             if (religionHappiness > 0) statMap["Religion"] = religionHappiness
         }
 
-        //From city-states
-        var cityStatesHappiness = 0f
-        for (otherCiv in civInfo.getKnownCivs()) {
-            val relationshipLevel = otherCiv.getDiplomacyManager(civInfo).relationshipLevel()
-            if (!otherCiv.isCityState() || relationshipLevel < RelationshipLevel.Friend) continue
-
-            val eraInfo = civInfo.getEra()
-            // Deprecated, assume Civ V values for compatibility
-            if (!eraInfo.undefinedCityStateBonuses()) {
-                for (bonus in eraInfo.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel)) {
-                    if (!bonus.conditionalsApply(otherCiv)) continue
-                    if (bonus.isOfType(UniqueType.CityStateHappiness))
-                        cityStatesHappiness += bonus.params[0].toFloat()
-                }
-            } else if (otherCiv.cityStateType == CityStateType.Mercantile) {
-                // compatibility mode for
-                cityStatesHappiness += if (civInfo.getEraNumber() in 0..1) 2f else 3f
+        for (unique in civInfo.getMatchingUniques(UniqueType.Stats))
+            if (unique.sourceObjectType != UniqueTarget.Building && unique.sourceObjectType != UniqueTarget.Wonder && unique.stats.happiness != 0f){
+                val sourceObjectType = unique.sourceObjectType!!.name
+                if (!statMap.containsKey(sourceObjectType)) statMap[sourceObjectType] = unique.stats.happiness
+                else statMap[sourceObjectType] = statMap[sourceObjectType]!! + unique.stats.happiness
             }
-        }
-
-        // Just in case
-        if (cityStatesHappiness > 0) {
-            for (unique in civInfo.getMatchingUniques(UniqueType.StatBonusPercentFromCityStates)) {
-                if (unique.params[1] == Stat.Happiness.name)
-                    cityStatesHappiness *= unique.params[0].toPercent()
-            }
-        }
-
-        if (cityStatesHappiness > 0) statMap[Constants.cityStates] = cityStatesHappiness
 
         return statMap
     }

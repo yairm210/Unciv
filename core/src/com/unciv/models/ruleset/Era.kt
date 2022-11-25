@@ -1,11 +1,7 @@
 package com.unciv.models.ruleset
 
 import com.badlogic.gdx.graphics.Color
-import com.unciv.logic.civilization.CityStateType
-import com.unciv.logic.civilization.diplomacy.RelationshipLevel
-import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.StateForConditionals
-import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.civilopedia.FormattedLine
@@ -33,10 +29,6 @@ class Era : RulesetObject() {
 
     var friendBonus = HashMap<String, List<String>>()
     var allyBonus = HashMap<String, List<String>>()
-    @Suppress("MemberVisibilityCanBePrivate")
-    val friendBonusObjects: Map<CityStateType, List<Unique>> by lazy { initBonuses(friendBonus) }
-    @Suppress("MemberVisibilityCanBePrivate")
-    val allyBonusObjects: Map<CityStateType, List<Unique>> by lazy { initBonuses(allyBonus) }
 
     private var iconRGB: List<Int>? = null
 
@@ -85,27 +77,6 @@ class Era : RulesetObject() {
                     it.type in eraConditionals
                 }
             }.map { it.first }.distinct()
-    }
-
-    private fun initBonuses(bonusMap: Map<String, List<String>>): Map<CityStateType, List<Unique>> {
-        val objectMap = HashMap<CityStateType, List<Unique>>()
-        for ((cityStateType, bonusList) in bonusMap) {
-            objectMap[CityStateType.valueOf(cityStateType)] = bonusList.map { Unique(it, UniqueTarget.CityState) }
-        }
-        return objectMap
-    }
-
-    fun getCityStateBonuses(cityStateType: CityStateType, relationshipLevel: RelationshipLevel): List<Unique> {
-        return when (relationshipLevel) {
-            RelationshipLevel.Ally   -> allyBonusObjects[cityStateType]   ?: emptyList()
-            RelationshipLevel.Friend -> friendBonusObjects[cityStateType] ?: emptyList()
-            else -> emptyList()
-        }
-    }
-
-    /** Since 3.19.5 we have a warning for mods without bonuses, eventually we should treat such mods as providing no bonus */
-    fun undefinedCityStateBonuses(): Boolean {
-        return friendBonus.isEmpty() || allyBonus.isEmpty()
     }
 
     fun getStartingUnits(): List<String> {

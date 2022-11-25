@@ -305,16 +305,14 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
                 question = "Do you want to exit the game?",
                 confirmText = "Exit",
                 restoreDefault = { musicController.resume() },
-                action = {
-                    Gdx.app.exit()
-
-                }
+                action = { Gdx.app.exit() }
             ).open(force = true)
             return null
         }
         val oldScreen = screenStack.removeLast()
         val newScreen = screenStack.last()
         setScreen(newScreen)
+        newScreen.resume()
         oldScreen.dispose()
         return newScreen
     }
@@ -472,7 +470,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.2.19", 763)
+        val VERSION = Version("4.3.3", 768)
         //endregion
 
         lateinit var Current: UncivGame

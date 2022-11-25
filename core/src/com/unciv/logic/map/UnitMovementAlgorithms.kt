@@ -552,7 +552,12 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
             && (origin.isCityCenter() || finalTileReached.isCityCenter())
             && unit.civInfo.hasUnique(UniqueType.UnitsInCitiesNoMaintenance)
         ) unit.civInfo.updateStatsForNextTurn()
-        if (needToFindNewRoute) moveToTile(destination, considerZoneOfControl)
+
+        // Under rare cases (see #8044), we can be headed to a tile and *the entire path* is blocked by other units, so we can't "enter" that tile.
+        // If, in such conditions, the *destination tile* is unenterable, needToFindNewRoute will trigger, so we need to catch this situation to avoid infinite loop
+        if (needToFindNewRoute && unit.currentTile != origin) {
+            moveToTile(destination, considerZoneOfControl)
+        }
     }
 
     /**

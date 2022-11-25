@@ -20,7 +20,6 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.mapeditor.GameParametersScreen
 import com.unciv.ui.multiplayer.FriendPickerList
 import com.unciv.ui.pickerscreens.PickerPane
 import com.unciv.ui.pickerscreens.PickerScreen
@@ -32,12 +31,9 @@ import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 /**
  * This [Table] is used to pick or edit players information for new game creation.
- * Could be inserted to [NewGameScreen], [GameParametersScreen] or any other [Screen][BaseScreen]
+ * Could be inserted to [NewGameScreen], or any other [BaseScreen]
  * which provides [GameSetupInfo] and [Ruleset].
  * Upon player changes updates property [gameParameters]. Also updates available nations when mod changes.
- * In case it is used in map editor, as a part of [GameParametersScreen], additionally tries to
- * update units/starting location on the [previousScreen] when player deleted or
- * switched nation.
  * @param previousScreen A [Screen][BaseScreen] where the player table is inserted, should provide [GameSetupInfo] as property, updated when a player is added/deleted/changed
  * @param gameParameters contains info about number of players.
  * @param blockWidth sets a width for the Civ "blocks". If too small a third of the stage is used.
@@ -161,7 +157,6 @@ class PlayerPickerTable(
                     .surroundWithCircle(40f)
                     .onClick {
                         gameParameters.players.remove(player)
-                        if (previousScreen is GameParametersScreen) previousScreen.mapEditorScreen.tileMap.stripPlayer(player)
                         update()
                     }).pad(5f).right().row()
         }
@@ -439,11 +434,6 @@ private class NationPickerPopup(
 
         UncivGame.Current.musicController.chooseTrack(selectedNation!!.name, MusicMood.themeOrPeace, MusicTrackChooserFlags.setSelectNation)
 
-        if (previousScreen is GameParametersScreen)
-            previousScreen.mapEditorScreen.tileMap.switchPlayersNation(
-                player,
-                selectedNation!!
-            )
         player.chosenCiv = selectedNation!!.name
         close()
         playerPicker.update()

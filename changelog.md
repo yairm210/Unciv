@@ -1,3 +1,63 @@
+## 4.3.3
+
+Resolved map latency when city-states exist
+
+Fixed city-state type in civilopedia
+
+'impossible' worked tiles not under your control are now cleaned up
+
+Resolved corner case where entire path to destination is full and destination is unenterable
+
+Fix policy counting in global politics  - By jmuchemb
+
+## 4.3.2
+
+City State Type overhaul!
+
+Can now use `[stats]` unique to add happiness globally
+
+Can now use `[stats]` unique for e.g. techs, policies, etc, to add gold/faith/culture/science to the global pool
+
+## 4.3.1
+
+City-state overhaul, part 1!
+
+- Allowed adding arbitrary global uniques to city state bonuses
+- Moddable quest weighting for city-states
+- Moved city state icons to separate folder
+- Removed backwards compatibility (pre-3.19.4) for missing city-state uniques
+- Added conditional support to 'CS gift military units' unique
+
+Removed single-pixel gap in top bar
+
+AbsoluteUnits - Unique Spearmen - By letstalkaboutdune
+
+## 4.3.0
+
+Units now receive correct healing in friendly territory
+
+Tile info table no longer reveals hidden units
+
+AI no longer nukes if as consequence it will mean declaring war on someone
+
+Empire overview screen updates after changing info in city screen
+
+Fixed civilopedia text that says city-states don't conquer other cities
+
+## 4.2.20
+
+Main map and mini-map no longer show unexplored tiles!
+
+New "Unitset" option translatable - By Ouaz
+
+Renamed AbsoluteUnits unitset @letstalkaboutdune
+
+Automated workers no longer try to improve enemy tiles
+
+White lines in menus no longer change width when changing display settings
+
+Set 'text/plain' content type for multiplayer server requests
+
 ## 4.2.19
 
 Fixed promotions for mods conflicting with base ruleset promotions

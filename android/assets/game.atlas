@@ -4,6 +4,41 @@ size: 2048, 1024
 format: RGBA8888
 filter: MipMapLinearLinear, MipMapLinearLinear
 repeat: none
+CityStateIcons/Cultured
+  rotate: false
+  xy: 112, 54
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+CityStateIcons/Maritime
+  rotate: false
+  xy: 838, 596
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+CityStateIcons/Mercantile
+  rotate: false
+  xy: 1054, 596
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+CityStateIcons/Militaristic
+  rotate: false
+  xy: 1162, 596
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+CityStateIcons/Religious
+  rotate: false
+  xy: 436, 56
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
 EmojiIcons/Culture
   rotate: false
   xy: 1408, 214
@@ -340,13 +375,6 @@ OtherIcons/CrosshairB
   orig: 100, 100
   offset: 0, 0
   index: -1
-OtherIcons/Cultured
-  rotate: false
-  xy: 112, 54
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
 OtherIcons/Diplomacy
   rotate: false
   xy: 691, 812
@@ -431,30 +459,9 @@ OtherIcons/MapEditor
   orig: 100, 100
   offset: 0, 0
   index: -1
-OtherIcons/Maritime
-  rotate: false
-  xy: 838, 596
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
 OtherIcons/MenuIcon
   rotate: false
   xy: 946, 596
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-OtherIcons/Mercantile
-  rotate: false
-  xy: 1054, 596
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-OtherIcons/Militaristic
-  rotate: false
-  xy: 1162, 596
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -560,13 +567,6 @@ OtherIcons/Question
 OtherIcons/Quickstart
   rotate: false
   xy: 652, 380
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-OtherIcons/Religious
-  rotate: false
-  xy: 436, 56
   size: 100, 100
   orig: 100, 100
   offset: 0, 0

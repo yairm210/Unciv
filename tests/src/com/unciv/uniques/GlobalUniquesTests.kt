@@ -3,7 +3,6 @@ package com.unciv.uniques
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
-import com.unciv.logic.civilization.CityStateType
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.stats.Stats
@@ -27,7 +26,7 @@ class GlobalUniquesTests {
     // region base stat bonus providing uniques
 
     @Test
-    fun stats() {
+    fun statsOnBuilding() {
         val civInfo = game.addCiv()
         val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
         val cityInfo = game.addCity(civInfo, tile, true)
@@ -37,6 +36,22 @@ class GlobalUniquesTests {
         cityInfo.cityStats.update()
         Assert.assertTrue(cityInfo.cityStats.finalStatList["Buildings"]!!.equals(Stats(food=1f)))
     }
+
+
+    @Test
+    fun statsNotOnBuilding() {
+        val civInfo = game.addCiv("[+2 Gold]")
+        civInfo.updateStatsForNextTurn()
+        Assert.assertTrue(civInfo.statsForNextTurn.equals(Stats(gold=2f)))
+    }
+
+    @Test
+    fun statsHappinessNotOnBuilding() {
+        val civInfo = game.addCiv("[+7 Happiness]")
+        civInfo.updateStatsForNextTurn()
+        Assert.assertTrue(civInfo.happinessForNextTurn == civInfo.getDifficulty().baseHappiness + 7)
+    }
+
 
     @Test
     fun statsPerCity() {
@@ -348,7 +363,7 @@ class GlobalUniquesTests {
     fun bonusStatsFromCityStates() {
         game.makeHexagonalMap(1)
         val civInfo = game.addCiv()
-        val cityState = game.addCiv(cityState = CityStateType.Maritime)
+        val cityState = game.addCiv(cityStateType = "Maritime")
 
         val tile = game.getTile(Vector2(0f,0f))
         val city = game.addCity(civInfo, tile, true)

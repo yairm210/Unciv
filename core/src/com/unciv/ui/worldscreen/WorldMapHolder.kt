@@ -30,7 +30,6 @@ import com.unciv.models.AttackableTile
 import com.unciv.models.UncivSound
 import com.unciv.models.helpers.MapArrowType
 import com.unciv.models.helpers.MiscArrowTypes
-import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.UncivStage
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.images.ImageGetter
@@ -171,6 +170,11 @@ class WorldMapHolder(
     }
 
     private fun onTileClicked(tileInfo: TileInfo) {
+
+        if (tileInfo.position !in worldScreen.viewingCiv.exploredTiles
+                && tileInfo.neighbors.all { it.position !in worldScreen.viewingCiv.exploredTiles })
+            return // This tile doesn't exist for you
+
         removeUnitActionOverlay()
         selectedTile = tileInfo
         unitMovementPaths.clear()
