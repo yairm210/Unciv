@@ -208,6 +208,19 @@ class GlobalUniquesTests {
     }
 
     @Test
+    fun statsFromPolicies() {
+        game.makeHexagonalMap(3)
+        val civInfo = game.addCiv("[+30 Science] per [2] social policies adopted")
+        val policiesToAdopt = listOf("Tradition", "Aristocracy", "Legalism")
+        civInfo.policies.freePolicies = 3
+        for (policyName in policiesToAdopt){
+            val policy = game.ruleset.policies[policyName]!!
+            civInfo.policies.adopt(policy, )
+        }
+        Assert.assertTrue(civInfo.stats().getStatMapForNextTurn()["Policies"]!!.science == 30f)
+    }
+
+    @Test
     fun statsFromGlobalCitiesFollowingReligion() {
         val civ1 = game.addCiv()
         val religion = game.addReligion(civ1)

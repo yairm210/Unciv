@@ -93,6 +93,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
+??? example  "[stats] per [amount] social policies adopted"
+	Example: "[+1 Gold, +2 Production] per [3] social policies adopted"
+
+	Applicable to: Global
+
 ??? example  "[stats] in cities on [terrainFilter] tiles"
 	Example: "[+1 Gold, +2 Production] in cities on [Fresh Water] tiles"
 
@@ -301,9 +306,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "[+20]% Food consumption by specialists [in all cities]"
 
 	Applicable to: Global, FollowerBelief
-
-??? example  "Provides 1 happiness per 2 additional social policies adopted"
-	Applicable to: Global
 
 ??? example  "[relativeAmount]% of excess happiness converted to [stat]"
 	Example: "[+20]% of excess happiness converted to [Culture]"
@@ -1623,21 +1625,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Ruins
 
 ## CityState uniques
-??? example  "Provides [stats] per turn"
-	Example: "Provides [+1 Gold, +2 Production] per turn"
-
-	Applicable to: CityState
-
-??? example  "Provides [stats] [cityFilter] per turn"
-	Example: "Provides [+1 Gold, +2 Production] [in all cities] per turn"
-
-	Applicable to: CityState
-
-??? example  "Provides [amount] Happiness"
-	Example: "Provides [3] Happiness"
-
-	Applicable to: CityState
-
 ??? example  "Provides military units every ≈[amount] turns"
 	Example: "Provides military units every ≈[3] turns"
 
@@ -1720,11 +1707,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;before discovering [tech]&gt;"
 	Example: "&lt;before discovering [Agriculture]&gt;"
-
-	Applicable to: Conditional
-
-??? example  "&lt;upon discovering [tech]&gt;"
-	Example: "&lt;upon discovering [Agriculture]&gt;"
 
 	Applicable to: Conditional
 
