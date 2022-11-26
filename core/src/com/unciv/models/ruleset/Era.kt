@@ -33,7 +33,7 @@ class Era : RulesetObject() {
     private var iconRGB: List<Int>? = null
 
     companion object {
-        private val eraConditionals = setOf(UniqueType.ConditionalBeforeEra, UniqueType.ConditionalDuringEra, UniqueType.ConditionalStartingFromEra)
+        private val eraConditionals = setOf(UniqueType.ConditionalBeforeEra, UniqueType.ConditionalDuringEra, UniqueType.ConditionalStartingFromEra, UniqueType.ConditionalIfStartingInEra)
     }
 
     override fun getUniqueTarget() = UniqueTarget.Era
