@@ -1,3 +1,21 @@
+## 4.3.4
+
+Added conditional to apply uniques only if the game starts in a specific era
+
+Generalized "Stats per policies" unique
+
+Deprecated old-form city-state uniques
+
+Changes to moddable UI  - By GGGuenni
+
+Add Repair and Pillaging Roads  - By itanasi
+
+AbsoluteUnits - Unique Elephants  - By letstalkaboutdune
+
+Fix typo in AUR workflow  - By Thyrum
+
+HexaRealm units are here, finally!  - By GeneralWadaling
+
 ## 4.3.3
 
 Resolved map latency when city-states exist
