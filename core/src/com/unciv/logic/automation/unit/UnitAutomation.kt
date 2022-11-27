@@ -137,6 +137,12 @@ object UnitAutomation {
         // Might die next turn - move!
         if (unit.health <= unit.getDamageFromTerrain() && tryHealUnit(unit)) return
 
+        if (unit.promotions.canBePromoted()) {
+            val availablePromotions = unit.promotions.getAvailablePromotions()
+            if (availablePromotions.any())
+                unit.promotions.addPromotion(availablePromotions.toList().random().name)
+        }
+
         if (unit.isCivilian()) {
             if (tryRunAwayIfNeccessary(unit)) return
 
@@ -441,8 +447,7 @@ object UnitAutomation {
             .filter { unit.civInfo.isAtWarWith(it) && it.cities.isNotEmpty() }
 
         val closestEnemyCity = enemies
-            .map { NextTurnAutomation.getClosestCities(unit.civInfo, it) }
-            .filterNotNull()
+            .mapNotNull { NextTurnAutomation.getClosestCities(unit.civInfo, it) }
             .minByOrNull { it.aerialDistance }?.city2
           ?: return false // no attackable cities found
 
