@@ -86,10 +86,10 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         for (city in civInfo.cities) {
             for (tile in city.getTiles()) {
                 if (tile.isCityCenter()) continue
-                if (tile.roadStatus == RoadStatus.None) continue // Cheap checks before pricey checks
+                if (tile.getUnpillagedRoad() == RoadStatus.None) continue // Cheap checks before pricey checks
                 if (ignoredTileTypes.any { tile.matchesFilter(it, civInfo) }) continue
 
-                transportationUpkeep += tile.roadStatus.upkeep
+                transportationUpkeep += tile.getUnpillagedRoad().upkeep
             }
         }
         for (unique in civInfo.getMatchingUniques(UniqueType.RoadMaintenance))
