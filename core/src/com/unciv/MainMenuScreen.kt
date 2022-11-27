@@ -75,7 +75,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         val table = Table().pad(15f, 30f, 15f, 30f)
         table.background = skinStrings.getUiBackground(
             "MainMenuScreen/MenuButton",
-            skinStrings.roundedEdgeRectangle,
+            skinStrings.roundedEdgeRectangleShape,
             skinStrings.skinConfig.baseColor
         )
         table.add(ImageGetter.getImage(icon)).size(50f).padRight(30f)

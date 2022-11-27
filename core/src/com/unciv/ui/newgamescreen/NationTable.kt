@@ -53,7 +53,7 @@ class NationTable(val nation: Nation, width: Float, minHeight: Float, ruleset: R
         if (ruleset != null) {
             titleTable.padBottom(borderWidth) // visual centering including upper border
             innerTable.background = BaseScreen.skinStrings.getUiBackground(
-                "NewGameScreen/NationTable/InnerTable",
+                "NewGameScreen/NationTable/RightInnerTable",
                 tintColor = textBackgroundColor
             )
             val lines = nation.getCivilopediaTextLines(ruleset)
@@ -67,10 +67,6 @@ class NationTable(val nation: Nation, width: Float, minHeight: Float, ruleset: R
             borderTable.add(innerTable).pad(borderWidth).grow()
             add(borderTable).pad(borderWidth).width(width).minHeight(minHeight - totalPadding)
         } else {
-            innerTable.background = BaseScreen.skinStrings.getUiBackground(
-                "NewGameScreen/NationTable/InnerTable",
-                tintColor = outerColor
-            )
             add(innerTable).width(width).minHeight(minHeight - totalPadding)
         }
 

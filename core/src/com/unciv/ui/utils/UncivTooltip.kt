@@ -15,7 +15,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.Tooltip
 import com.badlogic.gdx.utils.Align
 import com.unciv.models.translations.tr
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.extensions.toLabel
 
 /**
@@ -186,7 +185,7 @@ class UncivTooltip <T: Actor>(
             val label = text.toLabel(BaseScreen.skinStrings.skinConfig.baseColor, 38)
             label.setAlignment(Align.center)
 
-            val background = BaseScreen.skinStrings.getUiBackground("General/Tooltip", BaseScreen.skinStrings.roundedEdgeRectangle, Color.LIGHT_GRAY)
+            val background = BaseScreen.skinStrings.getUiBackground("General/Tooltip", BaseScreen.skinStrings.roundedEdgeRectangleShape, Color.LIGHT_GRAY)
             // This controls text positioning relative to the background.
             // The minute fiddling makes both single caps and longer text look centered.
             @Suppress("SpellCheckingInspection")

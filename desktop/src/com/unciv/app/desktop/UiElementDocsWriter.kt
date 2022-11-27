@@ -10,22 +10,22 @@ class UiElementDocsWriter {
 
         val table = mutableListOf(
             "<!--- DO NOT REMOVE OR MODIFY THIS LINE UI_ELEMENT_TABLE_REGION -->",
-            "| Directory | Name | Default shape |",
-            "|---|:---:|:---:|"
+            "| Directory | Name | Default shape | Image |",
+            "|---|:---:|:---:|---|"
         )
 
         val elements = mutableListOf<String>()
 
         File("../../core/src/com/unciv/").walk().forEach { file ->
             if (file.path.endsWith(".kt")) {
-                val results = Regex("getUiBackground\\(\\X*?\"(?<path>.*)\"\\X*?\\)").findAll(file.readText())
+                val results = Regex("getUiBackground\\((\\X*?)\"(?<path>.*)\"[ ,\n]*((BaseScreen.)?skinStrings\\.(?<defaultShape>.*)Shape)?\\X*?\\)")
+                    .findAll(file.readText())
                 for (result in results) {
-                    if ((result.groups.size) > 1) {
-                        val path = result.groups[1]!!.value
-                        val name = path.takeLastWhile { it != '/' }
-                        if (name.isNotBlank())
-                            elements.add("| ${path.dropLast(name.length)} | $name |")
-                    }
+                    val path = result.groups["path"]?.value
+                    val name = path?.takeLastWhile { it != '/' } ?: ""
+                    val defaultShape = result.groups["defaultShape"]?.value
+                    if (name.isNotBlank())
+                        elements.add("| ${path!!.dropLast(name.length)} | $name | $defaultShape | |")
                 }
             }
         }

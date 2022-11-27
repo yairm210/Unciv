@@ -9,12 +9,13 @@ class SkinStrings(skin: String = UncivGame.Current.settings.skin) {
     private val skinLocation = "Skins/$skin/"
     val skinConfig = SkinCache[skin] ?: SkinConfig()
 
-    val roundedEdgeRectangle = skinLocation + "roundedEdgeRectangle"
-    val rectangleWithOutline = skinLocation + "rectangleWithOutline"
-    val selectBox = skinLocation + "select-box"
-    val selectBoxPressed = skinLocation + "select-box-pressed"
-    val checkbox = skinLocation + "checkbox"
-    val checkboxPressed = skinLocation + "checkbox-pressed"
+    // Default shapes must always end with "Shape" so the UiElementDocsWriter can identify them
+    val roundedEdgeRectangleShape = skinLocation + "roundedEdgeRectangle"
+    val rectangleWithOutlineShape = skinLocation + "rectangleWithOutline"
+    val selectBoxShape = skinLocation + "select-box"
+    val selectBoxPressedShape = skinLocation + "select-box-pressed"
+    val checkboxShape = skinLocation + "checkbox"
+    val checkboxPressedShape = skinLocation + "checkbox-pressed"
 
     /**
      * Gets either a drawable which was defined inside skinConfig for the given path or the drawable
@@ -26,6 +27,10 @@ class SkinStrings(skin: String = UncivGame.Current.settings.skin) {
      *                  If the UI element is used in multiple Screens start the path with General
      *                  e.g. General/Tooltip
      *
+     *                  If the UI element has multiple states with different tints use a distinct
+     *                  name for every state e.g.
+     *                  - CityScreen/CityConstructionTable/QueueEntry
+     *                  - CityScreen/CityConstructionTable/QueueEntrySelected
      *
      * @param default   The path to the background which should be used if path is not available.
      *                  Should be one of the predefined ones inside SkinStrings or null to get a

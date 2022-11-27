@@ -29,26 +29,30 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 ## Available UI elements
 
 <!--- We should add an image to every identifier so its easier for modders to know which UI elements are which -->
+<!--- The following table is auto generated and should not be modified manually. If you want to change it see UiElementDocsWriter.kt -->
 
+<!--- DO NOT REMOVE OR MODIFY THIS LINE UI_ELEMENT_TABLE_REGION -->
 | Directory | Name | Default shape | Image |
 |---|:---:|:---:|---|
-| CivilopediaScreen/ | EntryButton | null | |
+| CityScreen/ | CityInfoTable | null | |
+| CityScreen/ | CityPickerTable | roundedEdgeRectangle | |
+| CityScreen/CitizenManagementTable/ | AvoidCell | null | |
+| CityScreen/CitizenManagementTable/ | FocusCell | null | |
+| CityScreen/CitizenManagementTable/ | ResetCell | null | |
 | CityScreen/CityConstructionTable/ | AvailableConstructionsTable | null | |
 | CityScreen/CityConstructionTable/ | ConstructionsQueueTable | null | |
 | CityScreen/CityConstructionTable/ | Header | null | |
 | CityScreen/CityConstructionTable/ | PickConstructionButton | null | |
+| CityScreen/CityConstructionTable/ | PickConstructionButtonSelected | null | |
 | CityScreen/CityConstructionTable/ | QueueEntry | null | |
-| CityScreen/ | CityInfoTable | null | |
-| CityScreen/CitizenManagementTable/ | AvoidCell | null | |
-| CityScreen/CitizenManagementTable/ | FocusCell | null | |
-| CityScreen/CitizenManagementTable/ | ResetCell | null | |
-| CityScreen/ | CityPickerTable | roundedEdgeRectangle | |
+| CityScreen/CityConstructionTable/ | QueueEntrySelected | null | |
 | CityScreen/CityScreenTileTable/ | Background | null | |
 | CityScreen/CityScreenTileTable/ | InnerTable | null | |
 | CityScreen/CityStatsTable/ | Background | null | |
 | CityScreen/CityStatsTable/ | InnerTable | null | |
 | CityScreen/ConstructionInfoTable/ | Background | null | |
 | CityScreen/ConstructionInfoTable/ | SelectedConstructionTable | null | |
+| CivilopediaScreen/ | EntryButton | null | |
 | General/ | Border | null | |
 | General/ | ExpanderTab | null | |
 | General/ | HealthBar | null | |
@@ -57,12 +61,24 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | General/Popup/ | Background | null | |
 | General/Popup/ | InnerTable | null | |
 | LanguagePickerScreen/ | LanguageTable | null | |
+| LoadGameScreen/ | BottomTable | null | |
+| LoadGameScreen/ | TopTable | null | |
+| MainMenuScreen/ | Background | null | |
 | MainMenuScreen/ | MenuButton | roundedEdgeRectangle | |
 | MapEditor/MapEditorToolsDrawer/ | Handle | null | |
 | ModManagementOptions/ | ExpanderTab | null | |
+| ModManagementScreen/ | BottomTable | null | |
+| ModManagementScreen/ | TopTable | null | |
+| MultiplayerScreen/ | BottomTable | null | |
+| MultiplayerScreen/ | TopTable | null | |
+| NewGameScreen/ | BottomTable | null | |
+| NewGameScreen/ | GameOptionsTable | null | |
+| NewGameScreen/ | MapOptionsTable | null | |
+| NewGameScreen/ | PlayerPickerTable | null | |
+| NewGameScreen/ | TopTable | null | |
 | NewGameScreen/NationTable/ | Background | null | |
 | NewGameScreen/NationTable/ | BorderTable | null | |
-| NewGameScreen/NationTable/ | InnerTable | null | |
+| NewGameScreen/NationTable/ | RightInnerTable | null | |
 | NewGameScreen/NationTable/ | Title | null | |
 | NewGameScreen/PlayerPickerTable/ | PlayerTable | null | |
 | OverviewScreen/DiplomacyOverviewTab/ | CivTable | null | |
@@ -70,24 +86,28 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | OverviewScreen/ReligionOverviewTab/ | BeliefDescription | null | |
 | OverviewScreen/TradesOverviewTab/ | OffersTable | null | |
 | OverviewScreen/UnitOverviewTab/ | UnitSupplyTable | null | |
+| PlayerReadyScreen/ | Background | null | |
+| TechPickerScreen/ | Background | null | |
+| TechPickerScreen/ | BottomTable | null | |
 | TechPickerScreen/ | TechButton | roundedEdgeRectangle | |
 | VictoryScreen/ | CivGroup | roundedEdgeRectangle | |
 | WorldScreen/ | AirUnitTable | null | |
+| WorldScreen/ | BattleTable | null | |
+| WorldScreen/ | Notification | roundedEdgeRectangle | |
+| WorldScreen/ | PickTechButton | roundedEdgeRectangle | |
+| WorldScreen/ | TileInfoTable | null | |
+| WorldScreen/ | TutorialTaskTable | null | |
+| WorldScreen/ | UnitTable | null | |
 | WorldScreen/CityButton/ | AirUnitTable | roundedEdgeRectangle | |
 | WorldScreen/CityButton/ | IconTable | roundedEdgeRectangle | |
 | WorldScreen/CityButton/ | InfluenceBar | null | |
-| WorldScreen/ | Notification | null | |
-| WorldScreen/ | PickTechButton | roundedEdgeRectangle | |
-| WorldScreen/ | TutorialTaskTable | null | |
-| WorldScreen/TopBar/ | ResourceTable | null | |
-| WorldScreen/TopBar/ | StatsTable | null | |
-| WorldScreen/TopBar/ | LeftAttachment | roundedEdgeRectangle | |
-| WorldScreen/TopBar/ | RightAttachment | roundedEdgeRectangle | |
-| WorldScreen/ | BattleTable | null | |
-| WorldScreen/ | TileInfoTable | null | |
 | WorldScreen/Minimap/ | Background | null | |
 | WorldScreen/Minimap/ | Border | null | |
-| WorldScreen/ | UnitTable | null | |
+| WorldScreen/TopBar/ | LeftAttachment | roundedEdgeRectangle | |
+| WorldScreen/TopBar/ | ResourceTable | null | |
+| WorldScreen/TopBar/ | RightAttachment | roundedEdgeRectangle | |
+| WorldScreen/TopBar/ | StatsTable | null | |
+<!--- DO NOT REMOVE OR MODIFY THIS LINE UI_ELEMENT_TABLE_REGION_END -->
 
 ## SkinConfig
 

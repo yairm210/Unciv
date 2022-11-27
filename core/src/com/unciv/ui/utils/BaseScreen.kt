@@ -121,15 +121,15 @@ abstract class BaseScreen : Screen {
             skinStrings = SkinStrings()
             skin = Skin().apply {
                 add("Nativefont", Fonts.font, BitmapFont::class.java)
-                add("RoundedEdgeRectangle", skinStrings.getUiBackground("", skinStrings.roundedEdgeRectangle), Drawable::class.java)
+                add("RoundedEdgeRectangle", skinStrings.getUiBackground("", skinStrings.roundedEdgeRectangleShape), Drawable::class.java)
                 add("Rectangle", ImageGetter.getDrawable(""), Drawable::class.java)
                 add("Circle", ImageGetter.getDrawable("OtherIcons/Circle").apply { setMinSize(20f, 20f) }, Drawable::class.java)
                 add("Scrollbar", ImageGetter.getDrawable("").apply { setMinSize(10f, 10f) }, Drawable::class.java)
-                add("RectangleWithOutline",skinStrings.getUiBackground("", skinStrings.rectangleWithOutline), Drawable::class.java)
-                add("Select-box", skinStrings.getUiBackground("", skinStrings.selectBox), Drawable::class.java)
-                add("Select-box-pressed", skinStrings.getUiBackground("", skinStrings.selectBoxPressed), Drawable::class.java)
-                add("Checkbox", skinStrings.getUiBackground("", skinStrings.checkbox), Drawable::class.java)
-                add("Checkbox-pressed", skinStrings.getUiBackground("", skinStrings.checkboxPressed), Drawable::class.java)
+                add("RectangleWithOutline",skinStrings.getUiBackground("", skinStrings.rectangleWithOutlineShape), Drawable::class.java)
+                add("Select-box", skinStrings.getUiBackground("", skinStrings.selectBoxShape), Drawable::class.java)
+                add("Select-box-pressed", skinStrings.getUiBackground("", skinStrings.selectBoxPressedShape), Drawable::class.java)
+                add("Checkbox", skinStrings.getUiBackground("", skinStrings.checkboxShape), Drawable::class.java)
+                add("Checkbox-pressed", skinStrings.getUiBackground("", skinStrings.checkboxPressedShape), Drawable::class.java)
                 load(Gdx.files.internal("Skin.json"))
             }
             skin.get(TextButton.TextButtonStyle::class.java).font = Fonts.font

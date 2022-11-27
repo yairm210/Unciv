@@ -140,7 +140,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         if (!showAdditionalInfoTags || tileGroup.tileInfo.airUnits.isEmpty()) return
         val secondaryColor = city.civInfo.nation.getInnerColor()
         val airUnitTable = Table()
-        airUnitTable.background = BaseScreen.skinStrings.getUiBackground("WorldScreen/CityButton/AirUnitTable", BaseScreen.skinStrings.roundedEdgeRectangle, city.civInfo.nation.getOuterColor()).apply { setMinSize(0f,0f) }
+        airUnitTable.background = BaseScreen.skinStrings.getUiBackground("WorldScreen/CityButton/AirUnitTable", BaseScreen.skinStrings.roundedEdgeRectangleShape, city.civInfo.nation.getOuterColor()).apply { setMinSize(0f,0f) }
         val aircraftImage = ImageGetter.getImage("OtherIcons/Aircraft")
         aircraftImage.color = secondaryColor
         airUnitTable.add(aircraftImage).size(15f)
@@ -194,7 +194,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         }
         val iconTable = IconTable().apply { isTransform = false }
         iconTable.touchable = Touchable.enabled
-        iconTable.background = BaseScreen.skinStrings.getUiBackground("WorldScreen/CityButton/IconTable", BaseScreen.skinStrings.roundedEdgeRectangle, city.civInfo.nation.getOuterColor())
+        iconTable.background = BaseScreen.skinStrings.getUiBackground("WorldScreen/CityButton/IconTable", BaseScreen.skinStrings.roundedEdgeRectangleShape, city.civInfo.nation.getOuterColor())
 
         if (city.isInResistance()) {
             val resistanceImage = ImageGetter.getImage("StatIcons/Resistance")
