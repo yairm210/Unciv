@@ -59,6 +59,9 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
         }
 
         game.onlineMultiplayer.requestUpdate()
+
+        pickerPane.bottomTable.background = skinStrings.getUiBackground("MultiplayerScreen/bottomTable", tintColor = skinStrings.skinConfig.clearColor)
+        pickerPane.topTable.background = skinStrings.getUiBackground("MultiplayerScreen/topTable", tintColor = skinStrings.skinConfig.clearColor)
     }
 
     private fun setupRightSideButton() {

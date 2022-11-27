@@ -83,6 +83,8 @@ class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
         rightSideButton.onActivation { onLoadGame() }
         rightSideButton.keyShortcuts.add(KeyCharAndCode.RETURN)
         rightSideButton.isVisible = false
+        pickerPane.bottomTable.background = skinStrings.getUiBackground("LoadGameScreen/bottomTable", tintColor = skinStrings.skinConfig.clearColor)
+        pickerPane.topTable.background = skinStrings.getUiBackground("LoadGameScreen/topTable", tintColor = skinStrings.skinConfig.clearColor)
     }
 
     override fun resetWindowState() {

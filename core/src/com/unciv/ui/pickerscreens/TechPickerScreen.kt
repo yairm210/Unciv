@@ -73,6 +73,8 @@ class TechPickerScreen(
         createTechTable()
         setButtonsInfo()
         topTable.add(techTable)
+        techTable.background = skinStrings.getUiBackground("TechPickerScreen/background", tintColor = skinStrings.skinConfig.clearColor)
+        pickerPane.bottomTable.background = skinStrings.getUiBackground("TechPickerScreen/bottomTable", tintColor = skinStrings.skinConfig.clearColor)
 
         rightSideButton.setText("Pick a tech".tr())
         rightSideButton.onClick(UncivSound.Paper) {

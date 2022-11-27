@@ -110,6 +110,10 @@ abstract class BaseScreen : Screen {
     companion object {
         var enableSceneDebug = false
 
+        /** Colour to use for empty sections of the screen.
+         *  Gets overwritten by SkinConfig.clearColor after starting Unciv */
+        var clearColor = Color(0f, 0f, 0.2f, 1f)
+
         lateinit var skin: Skin
         lateinit var skinStrings: SkinStrings
         fun setSkin() {
@@ -142,9 +146,8 @@ abstract class BaseScreen : Screen {
                 font = Fonts.font
                 listStyle.font = Fonts.font
             }
+            clearColor = skinStrings.skinConfig.clearColor
         }
-        /** Colour to use for empty sections of the screen. */
-        val clearColor = Color(0f, 0f, 0.2f, 1f)
     }
 
     /** @return `true` if the screen is higher than it is wide */

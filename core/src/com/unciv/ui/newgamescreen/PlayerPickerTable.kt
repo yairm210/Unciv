@@ -65,6 +65,7 @@ class PlayerPickerTable(
         top()
         add(ScrollPane(playerListTable).apply { setOverscroll(false, false) }).width(civBlocksWidth)
         update()
+        background = BaseScreen.skinStrings.getUiBackground("NewGameScreen/PlayerPickerTable", tintColor = BaseScreen.skinStrings.skinConfig.clearColor)
     }
 
     /**

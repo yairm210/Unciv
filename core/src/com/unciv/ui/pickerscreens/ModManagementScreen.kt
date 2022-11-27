@@ -134,6 +134,9 @@ class ModManagementScreen(
             reloadOnlineMods()
         else
             refreshOnlineModTable()
+
+        pickerPane.bottomTable.background = skinStrings.getUiBackground("ModManagementScreen/bottomTable", tintColor = skinStrings.skinConfig.clearColor)
+        pickerPane.topTable.background = skinStrings.getUiBackground("ModManagementScreen/topTable", tintColor = skinStrings.skinConfig.clearColor)
     }
 
     private fun initPortrait() {
