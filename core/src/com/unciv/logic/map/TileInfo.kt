@@ -238,14 +238,14 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         return null
     }
     fun canPillageTile(): Boolean {
-        return canPillageRoad() || canPillageRoad()
+        return canPillageTileImprovement() || canPillageRoad()
     }
-    fun canPillageTileImprovement(): Boolean {
+    private fun canPillageTileImprovement(): Boolean {
         return improvement != null && !improvementIsPillaged
                 && !ruleset.tileImprovements[improvement]!!.hasUnique(UniqueType.Unpillagable)
                 && !ruleset.tileImprovements[improvement]!!.hasUnique(UniqueType.Irremovable)
     }
-    fun canPillageRoad(): Boolean {
+    private fun canPillageRoad(): Boolean {
         return roadStatus != RoadStatus.None && !roadIsPillaged
                 && !ruleset.tileImprovements[roadStatus.name]!!.hasUnique(UniqueType.Unpillagable)
                 && !ruleset.tileImprovements[roadStatus.name]!!.hasUnique(UniqueType.Irremovable)
