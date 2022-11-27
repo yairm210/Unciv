@@ -65,6 +65,7 @@ internal object DesktopLauncher {
 
         if (!isRunFromJAR) {
             UniqueDocsWriter().write()
+            UiElementDocsWriter().write()
         }
 
         val platformSpecificHelper = PlatformSpecificHelpersDesktop(config)
