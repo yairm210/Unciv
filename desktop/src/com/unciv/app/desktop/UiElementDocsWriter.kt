@@ -18,7 +18,7 @@ class UiElementDocsWriter {
 
         File("../../core/src/com/unciv/").walk().forEach { file ->
             if (file.path.endsWith(".kt")) {
-                val results = Regex("getUiBackground\\((\\X*?)\"(?<path>.*)\"[ ,\n]*((BaseScreen.)?skinStrings\\.(?<defaultShape>.*)Shape)?\\X*?\\)")
+                val results = Regex("getUiBackground\\((\\X*?)\"(?<path>.*)\"[ ,\n\r]*((BaseScreen\\.)?skinStrings\\.(?<defaultShape>.*)Shape)?\\X*?\\)")
                     .findAll(file.readText())
                 for (result in results) {
                     val path = result.groups["path"]?.value
