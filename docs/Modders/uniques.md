@@ -1420,7 +1420,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Occurs at temperature between [amount] and [amount] and humidity between [amount] and [amount]"
 	Example: "Occurs at temperature between [3] and [3] and humidity between [3] and [3]"
 
-	Applicable to: Terrain
+	Applicable to: Terrain, Resource
 
 ??? example  "Occurs in chains at high elevations"
 	Applicable to: Terrain

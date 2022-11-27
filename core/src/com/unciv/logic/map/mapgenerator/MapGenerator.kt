@@ -12,7 +12,6 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.Counter
 import com.unciv.models.metadata.GameParameters
-import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
@@ -534,6 +533,8 @@ class MapGenerator(val ruleset: Ruleset) {
                 tile.baseTerrain = firstLandTerrain.name
                 debug("applyHumidityAndTemperature: No terrain found for temperature: %s, humidity: %s", temperature, humidity)
             }
+            tile.humidity = humidity
+            tile.temperature = temperature
             tile.setTerrainTransients()
         }
     }

@@ -83,7 +83,13 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     var terrainUniqueMap = UniqueMap()
         private set
 
+    @Transient
+    /** Between 0.0 and 1.0 - For map generation use only */
+    var humidity:Double? = null
 
+    @Transient
+    /** Between -1.0 and 1.0 - For map generation use only */
+    var temperature:Double? = null
 
     var naturalWonder: String? = null
     var resource: String? = null
