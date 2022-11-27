@@ -164,7 +164,7 @@ open class Popup(
         action: (()->Unit)? = null
     ): Cell<TextButton> {
         val cell = addButton(text, additionalKey, style) { close(); if(action!=null) action() }
-        cell.getActor().keyShortcuts.add(KeyCharAndCode.BACK)
+        cell.actor.keyShortcuts.add(KeyCharAndCode.BACK)
         return cell
     }
 

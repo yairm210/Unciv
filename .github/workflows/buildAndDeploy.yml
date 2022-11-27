@@ -34,8 +34,10 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-          cache: 'gradle'
 
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2.3.3
+        
       - name: Compile kotlin and build classes
         run: ./gradlew classes
 
@@ -147,10 +149,6 @@ jobs:
           ./butler push deploy/Unciv-Linux64.zip yairm210/unciv:Linux64     --userversion ${{steps.tag.outputs.tag}}
           ./gradlew desktop:zipLinuxFilesForJar
 
-          wget -q -O jdk-windows-32.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.252-2.b09-x86/java-1.8.0-openjdk-1.8.0.252-2.b09.ojdkbuild.windows.x86.zip
-          ./gradlew desktop:packrWindows32
-          ./butler push deploy/Unciv-Windows32.zip yairm210/unciv:Windows32 --userversion ${{steps.tag.outputs.tag}}
-
           #  MacOS bundles correctly but does not run as intended, see https://github.com/yairm210/Unciv/issues/4970
           #  Disabled until this can be checked by sommeone who actually has a Mac computer
           #  wget -q -O jre-macOS.tar.gz https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.11%2B9/OpenJDK11U-jre_x64_mac_hotspot_11.0.11_9.tar.gz
@@ -217,14 +215,14 @@ jobs:
 
 
       - name: Get AUR PKGBUILD
-        if: github.event_name == 'push' && contains(github.ref, 'ref/tags/')
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         continue-on-error: true
         run: |
           curl --silent --output PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=unciv-bin'
           sed -E -e "s#(_pkgver=).*#\1${{steps.tag.outputs.tag}}#" -e "s#(pkgrel=).*#\10#" -i PKGBUILD
 
       - name: Publish AUR package
-        if: github.event_name == 'push' && contains(github.ref, 'ref/tags/')
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         continue-on-error: true
         uses: Thyrum/github-actions-deploy-aur@master
         with:

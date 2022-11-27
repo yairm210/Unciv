@@ -253,7 +253,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
             tileOwner == null -> false
             tileOwner == civInfo -> true
             !civInfo.knows(tileOwner) -> false
-            else -> civInfo.getDiplomacyManager(tileOwner).isConsideredFriendlyTerritory()
+            else -> tileOwner.getDiplomacyManager(civInfo).isConsideredFriendlyTerritory()
         }
     }
 
@@ -321,11 +321,6 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         if (naturalWonder != null) {
             val wonderStats = getNaturalWonder().cloneStats()
 
-            // Spain doubles tile yield
-            if (city != null && city.civInfo.hasUnique(UniqueType.DoubleStatsFromNaturalWonders, stateForConditionals)) {
-                wonderStats.timesInPlace(2f)
-            }
-
             if (getNaturalWonder().overrideStats)
                 stats = wonderStats
             else
@@ -333,25 +328,21 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         }
 
         if (city != null) {
-            var tileUniques = city.getMatchingUniques(UniqueType.StatsFromTiles, stateForConditionals)
+            var tileUniques = city.getMatchingUniques(UniqueType.StatsFromTiles, StateForConditionals.IgnoreConditionals)
                 .filter { city.matchesFilter(it.params[2]) }
-            tileUniques += city.getMatchingUniques(UniqueType.StatsFromObject, stateForConditionals)
+            tileUniques += city.getMatchingUniques(UniqueType.StatsFromObject, StateForConditionals.IgnoreConditionals)
             for (unique in localUniqueCache.get("StatsFromTilesAndObjects", tileUniques)) {
+                if (!unique.conditionalsApply(stateForConditionals)) continue
                 val tileType = unique.params[1]
                 if (!matchesTerrainFilter(tileType, observingCiv)) continue
                 stats.add(unique.stats)
-                if (naturalWonder != null
-                    && tileType == "Natural Wonder"
-                    && city.civInfo.hasUnique(UniqueType.DoubleStatsFromNaturalWonders)
-                ) {
-                    stats.add(unique.stats)
-                }
             }
 
             for (unique in localUniqueCache.get("StatsFromTilesWithout",
-                city.getMatchingUniques(UniqueType.StatsFromTilesWithout, stateForConditionals))
+                city.getMatchingUniques(UniqueType.StatsFromTilesWithout, StateForConditionals.IgnoreConditionals))
             ) {
                 if (
+                    unique.conditionalsApply(stateForConditionals) &&
                     matchesTerrainFilter(unique.params[1]) &&
                     !matchesTerrainFilter(unique.params[2]) &&
                     city.matchesFilter(unique.params[3])
@@ -1009,7 +1000,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         if (civilianUnit != null && isViewableToPlayer)
             lineList += FormattedLine(civilianUnit!!.name.tr() + " - " + civilianUnit!!.civInfo.civName.tr(),
                 link="Unit/${civilianUnit!!.name}")
-        if (militaryUnit != null && isViewableToPlayer) {
+        if (militaryUnit != null && isViewableToPlayer && (viewingCiv == null || !militaryUnit!!.isInvisible(viewingCiv))) {
             val milUnitString = militaryUnit!!.name.tr() +
                 (if (militaryUnit!!.health < 100) "(" + militaryUnit!!.health + ")" else "") +
                 " - " + militaryUnit!!.civInfo.civName.tr()

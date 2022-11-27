@@ -192,6 +192,7 @@ class NewGameScreen(
             rightSideButton.disable()
             rightSideButton.setText("Working...".tr())
 
+            setSkin()
             // Creating a new game can take a while and we don't want ANRs
             Concurrency.runOnNonDaemonThreadPool("NewGame") {
                 startNewGame()

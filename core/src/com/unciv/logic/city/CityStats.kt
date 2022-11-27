@@ -2,8 +2,6 @@ package com.unciv.logic.city
 
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.CityStateType
-import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
@@ -116,9 +114,6 @@ class CityStats(val cityInfo: CityInfo) {
         val conversionUnique = cityInfo.civInfo.getMatchingUniques(UniqueType.ProductionToCivWideStatConversionBonus).firstOrNull { it.params[0] == stat.name }
         if (conversionUnique != null) {
             conversionRate *= conversionUnique.params[1].toPercent()
-        } else if (stat == Stat.Science && cityInfo.civInfo.hasUnique(UniqueType.ProductionToScienceConversionBonus)) {
-            // backwards compatibility
-            conversionRate *= 1.33f
         }
         return conversionRate
     }
@@ -141,41 +136,6 @@ class CityStats(val cityInfo: CityInfo) {
         for (building in cityInfo.cityConstructions.getBuiltBuildings())
             statPercentBonusTree.addStats(building.getStatPercentageBonuses(cityInfo, localUniqueCache), "Buildings", building.name)
     }
-
-
-
-    private fun getStatsFromCityStates(): Stats {
-        val stats = Stats()
-
-        for (otherCiv in cityInfo.civInfo.getKnownCivs()) {
-            val relationshipLevel = otherCiv.getDiplomacyManager(cityInfo.civInfo).relationshipLevel()
-            if (otherCiv.isCityState() && relationshipLevel >= RelationshipLevel.Friend) {
-                val eraInfo = cityInfo.civInfo.getEra()
-
-                if (eraInfo.undefinedCityStateBonuses()) {
-                    // Deprecated, assume Civ V values for compatibility
-                    if (otherCiv.cityStateType == CityStateType.Maritime && relationshipLevel == RelationshipLevel.Ally)
-                        stats.food += 1
-                    if (otherCiv.cityStateType == CityStateType.Maritime && cityInfo.isCapital())
-                        stats.food += 2
-                } else {
-                    for (bonus in eraInfo.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel)) {
-                        if (bonus.isOfType(UniqueType.CityStateStatsPerCity)
-                            && cityInfo.matchesFilter(bonus.params[1])
-                            && bonus.conditionalsApply(otherCiv, cityInfo)
-                        ) stats.add(bonus.stats)
-                    }
-                }
-            }
-        }
-
-        for (unique in cityInfo.civInfo.getMatchingUniques(UniqueType.BonusStatsFromCityStates)) {
-            stats[Stat.valueOf(unique.params[1])] *= unique.params[0].toPercent()
-        }
-
-        return stats
-    }
-
 
     private fun getStatPercentBonusesFromPuppetCity(): Stats {
         val stats = Stats()
@@ -229,12 +189,16 @@ class CityStats(val cityInfo: CityInfo) {
 
     private fun getStatsFromUniquesBySource(): StatTreeNode {
         val sourceToStats = StatTreeNode()
-        fun addUniqueStats(unique:Unique) {
-            sourceToStats.addStats(unique.stats, getSourceNameForUnique(unique), unique.sourceObjectName ?: "")
-        }
 
-        for (unique in cityInfo.getMatchingUniques(UniqueType.Stats))
-            addUniqueStats(unique)
+        val cityStateStatsMultipliers = cityInfo.civInfo.getMatchingUniques(UniqueType.BonusStatsFromCityStates).toList()
+
+        fun addUniqueStats(unique:Unique) {
+            val stats = unique.stats.clone()
+            if (unique.sourceObjectType==UniqueTarget.CityState)
+                for (multiplierUnique in cityStateStatsMultipliers)
+                    stats[Stat.valueOf(multiplierUnique.params[1])] *= multiplierUnique.params[0].toPercent()
+            sourceToStats.addStats(stats, getSourceNameForUnique(unique), unique.sourceObjectName ?: "")
+        }
 
         for (unique in cityInfo.getMatchingUniques(UniqueType.StatsPerCity))
             if (cityInfo.matchesFilter(unique.params[1]))
@@ -252,6 +216,7 @@ class CityStats(val cityInfo: CityInfo) {
                 addUniqueStats(unique)
 
 
+
         return sourceToStats
     }
 
@@ -262,6 +227,7 @@ class CityStats(val cityInfo: CityInfo) {
             UniqueTarget.Wonder -> "Wonders"
             UniqueTarget.Building -> "Buildings"
             UniqueTarget.Policy -> "Policies"
+            UniqueTarget.CityState -> Constants.cityStates
             else -> unique.sourceObjectType.name
         }
     }
@@ -376,15 +342,18 @@ class CityStats(val cityInfo: CityInfo) {
     fun updateTileStats() {
         val stats = Stats()
         val localUniqueCache = LocalUniqueCache()
-        for (cell in cityInfo.tilesInRange
+        val workedTiles = cityInfo.tilesInRange
             .filter {
                 cityInfo.location == it.position
                         || cityInfo.isWorked(it)
                         || it.owningCity == cityInfo && (it.getTileImprovement()
                     ?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation) == true
                         || it.terrainHasUnique(UniqueType.TileProvidesYieldWithoutPopulation))
-            })
-            stats.add(cell.getTileStats(cityInfo, cityInfo.civInfo, localUniqueCache))
+            }
+        for (cell in workedTiles) {
+            val cellStats = cell.getTileStats(cityInfo, cityInfo.civInfo, localUniqueCache)
+            stats.add(cellStats)
+        }
         statsFromTiles = stats
     }
 
@@ -457,7 +426,6 @@ class CityStats(val cityInfo: CityInfo) {
             getStatsFromSpecialists(cityInfo.population.getNewSpecialists())
         newBaseStatList["Trade routes"] = getStatsFromTradeRoute()
         newBaseStatTree.children["Buildings"] = statsFromBuildings
-        newBaseStatList[Constants.cityStates] = getStatsFromCityStates()
 
         for ((source, stats) in newBaseStatList)
             newBaseStatTree.addStats(stats, source)

@@ -206,7 +206,8 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         val gameInfo = civInfo.gameInfo
         val numberOfBeliefs = if (type == BeliefType.Any) gameInfo.ruleSet.beliefs.values.count()
         else gameInfo.ruleSet.beliefs.values.count { it.type == type }
-        return numberOfBeliefs - gameInfo.religions.flatMap { it.value.getBeliefs(type) }.count()
+        return numberOfBeliefs - gameInfo.religions.flatMap { it.value.getBeliefs(type) }.distinct().count()
+        // We need to do the distinct above, as pantheons and religions founded out of those pantheons might share beliefs
     }
 
     fun getReligionWithBelief(belief: Belief): Religion? {

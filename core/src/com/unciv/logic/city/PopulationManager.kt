@@ -124,10 +124,11 @@ class PopulationManager : IsPartOfGameInfoSerialization {
 
         val currentCiv = cityInfo.civInfo
 
+        val tilesToEvaluate = cityInfo.getCenterTile().getTilesInDistance(3)
+            .filter { it.getOwner() == currentCiv }.toList().asSequence()
         for (i in 1..getFreePopulation()) {
             //evaluate tiles
-            val (bestTile, valueBestTile) = cityInfo.getCenterTile().getTilesInDistance(3)
-                    .filter { it.getOwner() == currentCiv }
+            val (bestTile, valueBestTile) = tilesToEvaluate
                     .filterNot { it.providesYield() }
                     .associateWith { Automation.rankTileForCityWork(it, cityInfo, cityStats) }
                     .maxByOrNull { it.value }

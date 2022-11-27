@@ -688,10 +688,10 @@ object UnitActions {
                     val religion = unit.civInfo.gameInfo.religions[city.religion.religionThisIsTheHolyCityOf]!!
                     if (city.religion.religionThisIsTheHolyCityOf != unit.religion && !city.religion.isBlockedHolyCity) {
                         religion.getFounder().addNotification("An [${unit.baseUnit.name}] has removed your religion [${religion.getReligionDisplayName()}] from its Holy City [${city.name}]!")
-                        city.religion.isBlockedHolyCity = false
+                        city.religion.isBlockedHolyCity = true
                     } else if (city.religion.religionThisIsTheHolyCityOf == unit.religion && city.religion.isBlockedHolyCity) {
                         religion.getFounder().addNotification("An [${unit.baseUnit.name}] has restored [${city.name}] as the Holy City of your religion [${religion.getReligionDisplayName()}]!")
-                        city.religion.isBlockedHolyCity = true
+                        city.religion.isBlockedHolyCity = false
                     }
                 }
                 unit.currentMovement = 0f
@@ -702,9 +702,7 @@ object UnitActions {
 
     fun getImprovementConstructionActions(unit: MapUnit, tile: TileInfo): ArrayList<UnitAction> {
         val finalActions = ArrayList<UnitAction>()
-        var uniquesToCheck = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
-        if (unit.religiousActionsUnitCanDo().all { unit.abilityUsesLeft[it] == unit.maxAbilityUses[it] })
-            uniquesToCheck += unit.getMatchingUniques(UniqueType.CanConstructIfNoOtherActions)
+        val uniquesToCheck = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
         val civResources = unit.civInfo.getCivResourcesByName()
 
         for (unique in uniquesToCheck) {

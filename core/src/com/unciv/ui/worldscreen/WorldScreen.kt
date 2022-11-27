@@ -427,7 +427,8 @@ class WorldScreen(
                     UncivGame.Current.pushScreen(DiplomaticVoteResultScreen(gameInfo.diplomaticVictoryVotesCast, viewingCiv))
                 !gameInfo.oneMoreTurnMode && (viewingCiv.isDefeated() || gameInfo.civilizations.any { it.victoryManager.hasWon() }) ->
                     game.pushScreen(VictoryScreen(this))
-                viewingCiv.greatPeople.freeGreatPeople > 0 -> game.pushScreen(GreatPersonPickerScreen(viewingCiv))
+                viewingCiv.greatPeople.freeGreatPeople > 0 ->
+                    game.pushScreen(GreatPersonPickerScreen(viewingCiv))
                 viewingCiv.popupAlerts.any() -> AlertPopup(this, viewingCiv.popupAlerts.first()).open()
                 viewingCiv.tradeRequests.isNotEmpty() -> {
                     // In the meantime this became invalid, perhaps because we accepted previous trades
@@ -671,10 +672,16 @@ class WorldScreen(
             viewingCiv.shouldGoToDueUnit() ->
                 NextTurnAction("Next unit", Color.LIGHT_GRAY) { switchToNextUnit() }
 
-            viewingCiv.cities.any { it.cityConstructions.currentConstructionFromQueue == "" } ->
+            viewingCiv.cities.any {
+                !it.isPuppet &&
+                it.cityConstructions.currentConstructionFromQueue == ""
+            } ->
                 NextTurnAction("Pick construction", Color.CORAL) {
                     val cityWithNoProductionSet = viewingCiv.cities
-                        .firstOrNull { it.cityConstructions.currentConstructionFromQueue == "" }
+                        .firstOrNull {
+                            !it.isPuppet &&
+                            it.cityConstructions.currentConstructionFromQueue == ""
+                        }
                     if (cityWithNoProductionSet != null) game.pushScreen(
                         CityScreen(cityWithNoProductionSet)
                     )
@@ -785,8 +792,12 @@ class WorldScreen(
         if (shouldUpdate) {
             shouldUpdate = false
 
+            // Since updating the worldscreen can take a long time, *especially* the first time, we disable input processing to avoid ANRs
+            Gdx.input.inputProcessor = null
             update()
             showTutorialsOnNextTurn()
+            if (Gdx.input.inputProcessor == null) // Update may have replaced the worldscreen with a GreatPersonPickerScreen etc, so the input would already be set
+                Gdx.input.inputProcessor = stage
         }
 //        topBar.selectedCivLabel.setText(Gdx.graphics.framesPerSecond) // for framerate testing
 

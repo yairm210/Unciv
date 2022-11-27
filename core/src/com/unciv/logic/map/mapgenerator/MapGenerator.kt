@@ -484,7 +484,7 @@ class MapGenerator(val ruleset: Ruleset) {
         val scale = tileMap.mapParameters.tilesPerBiomeArea.toDouble()
         val temperatureExtremeness = tileMap.mapParameters.temperatureExtremeness
         val temperatureShift = tileMap.mapParameters.temperatureShift
-        val humidityShift = if (temperatureShift > 0) -temperatureShift else 0f
+        val humidityShift = if (temperatureShift > 0) -temperatureShift / 2 else 0f
 
         // List is OK here as it's only sequentially scanned
         val limitsMap: List<TerrainOccursRange> =
@@ -608,6 +608,7 @@ class MapGenerator(val ruleset: Ruleset) {
             val latitudeTemperature = 1.0 - 2.0 * abs(tile.latitude) / tileMap.maxLatitude
             var temperature = ((latitudeTemperature + randomTemperature) / 2.0)
             temperature = abs(temperature).pow(1.0 - tileMap.mapParameters.temperatureExtremeness) * temperature.sign
+            temperature = (temperature + tileMap.mapParameters.temperatureShift).coerceIn(-1.0..1.0)
 
             val candidates = iceEquivalents
                 .filter {
@@ -631,6 +632,8 @@ class MapGenerationRandomness {
 
     /**
      * Generates a perlin noise channel combining multiple octaves
+     * Default settings generate mostly within [-0.55, 0.55], but clustered around 0.0
+     * About 28% are < -0.1 and 28% are > 0.1
      *
      * @param tile Source for x / x coordinates.
      * @param seed Misnomer: actually the z value the Perlin cloud is 'cut' on.

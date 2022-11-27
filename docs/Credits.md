@@ -10,7 +10,9 @@ New Unciv logo made by u-ndefined on Discord
 
 Base tile icons for the "Fantasy Hex" tileset belong to CuddlyClover @ https://cuddlyclover.itch.io/fantasy-hex-tiles with a few additions by various contributors
 
-Tile improvements and units, as well as the entire HexaRealm tileset, are made by The Bucketeer / @GeneralWadaling and are licenced under Creative Commons 3.0
+Tile improvements and units, as well as the terrains and improvements for HexaRealm tileset, are made by The Bucketeer / @GeneralWadaling and are licenced under Creative Commons 3.0
+
+Units for the Hexarealm tileset are made by @letstalkaboutdune
 
 Unless otherwise specified, all the following are from [the Noun Project](https://thenounproject.com) licenced under either Creative Commons or Public Domain
 
@@ -587,6 +589,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
     -   [Spear](https://thenounproject.com/term/spear/3930020/) by Firza Alamsyah
     -   [pennant](https://thenounproject.com/term/pennant/194797/) by Sara Jeffries
 -   [Maya civilization](https://thenounproject.com/term/maya-civilization/1715786/) by Olena Panasovska for The Maya
+-   Aztec icon by Kāne, on Unciv Discord server
 
 ### Promotions
 

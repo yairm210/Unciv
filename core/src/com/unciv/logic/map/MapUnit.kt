@@ -281,12 +281,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
             yieldAll(civInfo.getMatchingUniques(uniqueType, stateForConditionals))
     }
 
-    // TODO typify usages and remove this function
-    @Deprecated("as of 4.0.15", ReplaceWith("hasUnique(uniqueType: UniqueType, ...)"))
-    fun hasUnique(unique: String): Boolean {
-        return tempUniquesMap.getUniques(unique).any()
-    }
-
     fun hasUnique(
         uniqueType: UniqueType,
         stateForConditionals: StateForConditionals = StateForConditionals(civInfo, unit=this),
@@ -487,6 +481,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun getMaxMovementForAirUnits(): Int {
+        if (hasUnique(UniqueType.CannotMove)) return getRange()  // also used for marking attack range
         return getRange() * 2
     }
 
@@ -1233,7 +1228,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             "Non-City" -> true
             else -> {
                 if (baseUnit.matchesFilter(filter)) return true
-                if (hasUnique(filter)) return true
+                if (tempUniquesMap.containsKey(filter)) return true
                 return false
             }
         }

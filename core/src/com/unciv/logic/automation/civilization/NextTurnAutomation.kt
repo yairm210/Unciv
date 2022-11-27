@@ -11,7 +11,6 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.AlertType
-import com.unciv.logic.civilization.CityStateType
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
@@ -289,7 +288,7 @@ object NextTurnAutomation {
 
         if (civInfo.wantsToFocusOn(Victory.Focus.Culture)) {
             for (cityState in civInfo.getKnownCivs()
-                    .filter { it.isCityState() && it.cityStateType == CityStateType.Cultured }) {
+                    .filter { it.isCityState() && it.cityStateFunctions.canGiveStat(Stat.Culture) }) {
                 val diploManager = cityState.getDiplomacyManager(civInfo)
                 if (diploManager.getInfluence() < 40) { // we want to gain influence with them
                     tryGainInfluence(civInfo, cityState)
@@ -737,9 +736,9 @@ object NextTurnAutomation {
         val ourCombatStrength = civInfo.getStatForRanking(RankingType.Force).toFloat() + baseForce
         var theirCombatStrength = otherCiv.getStatForRanking(RankingType.Force).toFloat() + baseForce
 
-        //for city-states, also consider there protectors
+        //for city-states, also consider their protectors
         if (otherCiv.isCityState() and otherCiv.getProtectorCivs().isNotEmpty()) {
-            theirCombatStrength += otherCiv.getProtectorCivs().sumOf{it.getStatForRanking(RankingType.Force)}
+            theirCombatStrength += otherCiv.getProtectorCivs().filterNot { it == civInfo }.sumOf{it.getStatForRanking(RankingType.Force)}
         }
 
         if (theirCombatStrength > ourCombatStrength) return 0
@@ -814,7 +813,11 @@ object NextTurnAutomation {
         if (theirCity.getTiles().none { tile -> tile.neighbors.any { it.getOwner() == theirCity.civInfo && it.getCity() != theirCity } })
             modifierMap["Isolated city"] = 15
 
-        if (otherCiv.isCityState()) modifierMap["City-state"] = -20
+        if (otherCiv.isCityState()) {
+            modifierMap["City-state"] = -20
+            if (otherCiv.getAllyCiv() == civInfo.civName)
+                modifierMap["Allied City-state"] = -20 // There had better be a DAMN good reason
+        }
 
         return modifierMap.values.sum()
     }

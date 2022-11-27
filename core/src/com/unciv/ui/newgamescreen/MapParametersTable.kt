@@ -96,7 +96,7 @@ class MapParametersTable(
             MapType.pangaea,
             MapType.continents,
             MapType.fourCorners,
-            MapType.perlin,
+            MapType.smoothedRandom,
             MapType.archipelago,
             MapType.innerSea,
             if (forMapEditor) MapType.empty else null
@@ -276,11 +276,22 @@ class MapParametersTable(
             return slider
         }
 
+        fun addSlider(text: String, getValue:()->Float, min: Float, max: Float, step: Float, onChange: (value: Float)->Unit): UncivSlider {
+            val slider = UncivSlider(min, max, step, onChange = onChange, initial = getValue())
+            table.add(text.toLabel()).left()
+            table.add(slider).fillX().row()
+            advancedSliders[slider] = getValue
+            return slider
+        }
+
         addSlider("Map Elevation", {mapParameters.elevationExponent}, 0.6f, 0.8f)
         { mapParameters.elevationExponent = it }
 
         addSlider("Temperature extremeness", {mapParameters.temperatureExtremeness}, 0.4f, 0.8f)
         { mapParameters.temperatureExtremeness = it }
+
+        addSlider("Temperature shift", {mapParameters.temperatureShift}, -0.4f, 0.4f, 0.1f)
+        { mapParameters.temperatureShift = it }
 
         addSlider("Resource richness", {mapParameters.resourceRichness},0f, 0.5f)
         { mapParameters.resourceRichness = it }

@@ -1,0 +1,5 @@
+City State Type overhaul!
+
+Can now use `[stats]` unique to add happiness globally
+
+Can now use `[stats]` unique for e.g. techs, policies, etc, to add gold/faith/culture/science to the global pool

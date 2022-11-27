@@ -7,9 +7,7 @@ import com.unciv.logic.BackwardCompatibility.convertFortify
 import com.unciv.logic.BackwardCompatibility.convertOldGameSpeed
 import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
 import com.unciv.logic.BackwardCompatibility.migrateBarbarianCamps
-import com.unciv.logic.BackwardCompatibility.migrateSeenImprovements
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
-import com.unciv.logic.BackwardCompatibility.updateGreatGeneralUniques
 import com.unciv.logic.GameInfo.Companion.CURRENT_COMPATIBILITY_NUMBER
 import com.unciv.logic.GameInfo.Companion.FIRST_WITHOUT
 import com.unciv.logic.automation.civilization.NextTurnAutomation
@@ -450,8 +448,6 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             gameParameters.baseRuleset = baseRulesetInMods
             gameParameters.mods = LinkedHashSet(gameParameters.mods.filter { it != baseRulesetInMods })
         }
-        // [TEMPORARY] Convert old saves to remove json workaround
-        for (civInfo in civilizations) civInfo.migrateSeenImprovements()
         barbarians.migrateBarbarianCamps()
 
         ruleSet = RulesetCache.getComplexRuleset(gameParameters)
@@ -468,8 +464,6 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         removeMissingModReferences()
 
-        updateGreatGeneralUniques()
-
         convertOldGameSpeed()
 
         for (baseUnit in ruleSet.units.values)
@@ -479,6 +473,13 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         // the nation of their civilization when setting transients
         for (civInfo in civilizations) civInfo.gameInfo = this
         for (civInfo in civilizations) civInfo.setNationTransient()
+        // must be done before updating tileMap, since unit uniques depend on civ uniques depend on allied city-state uniques depend on diplomacy
+        for (civInfo in civilizations) {
+            for (diplomacyManager in civInfo.diplomacy.values) {
+                diplomacyManager.civInfo = civInfo
+                diplomacyManager.updateHasOpenBorders()
+            }
+        }
 
         tileMap.setTransients(ruleSet)
 
@@ -490,6 +491,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         speed = ruleSet.speeds[gameParameters.speed]!!
 
         for (religion in religions.values) religion.setTransients(this)
+
 
         for (civInfo in civilizations) civInfo.setTransients()
         for (civInfo in civilizations) {
@@ -503,7 +505,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             // update city-state resource first since the happiness of major civ depends on it.
             // See issue: https://github.com/yairm210/Unciv/issues/7781
             yieldAll(civilizations.filter { it.isCityState() })
-            yieldAll(civilizations.filter { it.isMajorCiv() })
+            yieldAll(civilizations.filter { !it.isCityState() })
         }) {
             for (unit in civInfo.getCivUnits())
                 unit.updateVisibleTiles(false) // this needs to be done after all the units are assigned to their civs and all other transients are set

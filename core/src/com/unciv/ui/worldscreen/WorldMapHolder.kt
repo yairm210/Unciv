@@ -170,6 +170,11 @@ class WorldMapHolder(
     }
 
     private fun onTileClicked(tileInfo: TileInfo) {
+
+        if (tileInfo.position !in worldScreen.viewingCiv.exploredTiles
+                && tileInfo.neighbors.all { it.position !in worldScreen.viewingCiv.exploredTiles })
+            return // This tile doesn't exist for you
+
         removeUnitActionOverlay()
         selectedTile = tileInfo
         unitMovementPaths.clear()
@@ -781,4 +786,8 @@ class WorldMapHolder(
     override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
 
     override fun act(delta: Float) = super.act(delta)
+
+    override fun clear() {
+        super.clear()
+    }
 }

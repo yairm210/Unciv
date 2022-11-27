@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.RulesetErrorList
 import com.unciv.models.translations.tr
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.BaseScreen
@@ -64,7 +65,7 @@ class ModCheckboxTable(
     }
 
 
-    private fun popupToastError(rulesetErrorList:Ruleset.RulesetErrorList) {
+    private fun popupToastError(rulesetErrorList: RulesetErrorList) {
         val initialText =
             if (rulesetErrorList.isError()) "The mod combination you selected is incorrectly defined!".tr()
             else "{The mod combination you selected has problems.}\n{You can play it, but don't expect everything to work!}".tr()

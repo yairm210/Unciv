@@ -34,7 +34,6 @@ fun displayTab(
     optionsPopup.addCheckbox(this, "Show worked tiles", settings.showWorkedTiles, true) { settings.showWorkedTiles = it }
     optionsPopup.addCheckbox(this, "Show resources and improvements", settings.showResourcesAndImprovements, true) { settings.showResourcesAndImprovements = it }
     optionsPopup.addCheckbox(this, "Show tutorials", settings.showTutorials, true) { settings.showTutorials = it }
-    optionsPopup.addCheckbox(this, "Show pixel units", settings.showPixelUnits, true) { settings.showPixelUnits = it }
     optionsPopup.addCheckbox(this, "Show pixel improvements", settings.showPixelImprovements, true) { settings.showPixelImprovements = it }
     optionsPopup.addCheckbox(this, "Experimental Demographics scoreboard", settings.useDemographics, true) { settings.useDemographics = it }
     optionsPopup.addCheckbox(this, "Show zoom buttons in world screen", settings.showZoomButtons, true) { settings.showZoomButtons = it }
@@ -46,6 +45,8 @@ fun displayTab(
     addResolutionSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
 
     addTileSetSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
+
+    addUnitSetSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
 
     addSkinSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
 
@@ -141,11 +142,38 @@ private fun addTileSetSelectBox(table: Table, settings: GameSettings, selectBoxM
     tileSetSelectBox.selected = settings.tileSet
     table.add(tileSetSelectBox).minWidth(selectBoxMinWidth).pad(10f).row()
 
+    val unitSets = ImageGetter.getAvailableUnitsets()
+
     tileSetSelectBox.onChange {
+        // Switch unitSet together with tileSet as long as one with the same name exists and both are selected
+        if (settings.tileSet == settings.unitSet && unitSets.contains(tileSetSelectBox.selected)) {
+            settings.unitSet = tileSetSelectBox.selected
+        }
         settings.tileSet = tileSetSelectBox.selected
         // ImageGetter ruleset should be correct no matter what screen we're on
         TileSetCache.assembleTileSetConfigs(ImageGetter.ruleset.mods)
         onTilesetChange()
+    }
+}
+
+private fun addUnitSetSelectBox(table: Table, settings: GameSettings, selectBoxMinWidth: Float, onUnitsetChange: () -> Unit) {
+    table.add("Unitset".toLabel()).left().fillX()
+
+    val unitSetSelectBox = SelectBox<String>(table.skin)
+    val unitSetArray = Array<String>()
+    val nullValue = "None".tr()
+    unitSetArray.add(nullValue)
+    val unitSets = ImageGetter.getAvailableUnitsets()
+    for (unitset in unitSets) unitSetArray.add(unitset)
+    unitSetSelectBox.items = unitSetArray
+    unitSetSelectBox.selected = settings.unitSet ?: nullValue
+    table.add(unitSetSelectBox).minWidth(selectBoxMinWidth).pad(10f).row()
+
+    unitSetSelectBox.onChange {
+        settings.unitSet = if (unitSetSelectBox.selected != nullValue) unitSetSelectBox.selected else null
+        // ImageGetter ruleset should be correct no matter what screen we're on
+        TileSetCache.assembleTileSetConfigs(ImageGetter.ruleset.mods)
+        onUnitsetChange()
     }
 }
 

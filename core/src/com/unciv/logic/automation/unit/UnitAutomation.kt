@@ -3,7 +3,11 @@ package com.unciv.logic.automation.unit
 import com.unciv.Constants
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.civilization.NextTurnAutomation
-import com.unciv.logic.battle.*
+import com.unciv.logic.battle.Battle
+import com.unciv.logic.battle.BattleDamage
+import com.unciv.logic.battle.CityCombatant
+import com.unciv.logic.battle.ICombatant
+import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -178,12 +182,9 @@ object UnitAutomation {
             if (unit.hasUnique(UniqueType.PreventSpreadingReligion) || unit.canDoReligiousAction(Constants.removeHeresy))
                 return SpecificUnitAutomation.automateInquisitor(unit)
 
-            if (unit.hasUnique(UniqueType.ConstructImprovementConsumingUnit)
-                    || (unit.hasUnique(UniqueType.CanConstructIfNoOtherActions)
-                            && unit.religiousActionsUnitCanDo().all { unit.abilityUsesLeft[it] == unit.maxAbilityUses[it] }))
+            if (unit.hasUnique(UniqueType.ConstructImprovementConsumingUnit))
             // catch great prophet for civs who can't found/enhance/spread religion
                 return SpecificUnitAutomation.automateImprovementPlacer(unit) // includes great people plus moddable units
-
 
             // ToDo: automation of great people skills (may speed up construction, provides a science boost, etc.)
 

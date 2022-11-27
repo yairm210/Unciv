@@ -36,7 +36,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
             toOwner != null &&
             toOwner.hasActiveEnemyMovementPenalty &&
             civInfo.isAtWarWith(toOwner)
-        ) toOwner.getEnemyMovementPenalty(unit, to) else 0f
+        ) toOwner.getEnemyMovementPenalty(unit) else 0f
 
         if (from.roadStatus == RoadStatus.Railroad && to.roadStatus == RoadStatus.Railroad)
             return RoadStatus.Railroad.movement + extraCost
@@ -552,7 +552,12 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
             && (origin.isCityCenter() || finalTileReached.isCityCenter())
             && unit.civInfo.hasUnique(UniqueType.UnitsInCitiesNoMaintenance)
         ) unit.civInfo.updateStatsForNextTurn()
-        if (needToFindNewRoute) moveToTile(destination, considerZoneOfControl)
+
+        // Under rare cases (see #8044), we can be headed to a tile and *the entire path* is blocked by other units, so we can't "enter" that tile.
+        // If, in such conditions, the *destination tile* is unenterable, needToFindNewRoute will trigger, so we need to catch this situation to avoid infinite loop
+        if (needToFindNewRoute && unit.currentTile != origin) {
+            moveToTile(destination, considerZoneOfControl)
+        }
     }
 
     /**
@@ -608,6 +613,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
      * DOES NOT designate whether we can reach that tile in the current turn
      */
     fun canMoveTo(tile: TileInfo, assumeCanPassThrough: Boolean = false): Boolean {
+        if (unit.hasUnique(UniqueType.CannotMove)) return false
         if (unit.baseUnit.movesLikeAirUnits())
             return canAirUnitMoveTo(tile, unit)
 
@@ -626,6 +632,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
     }
 
     private fun canAirUnitMoveTo(tile: TileInfo, unit: MapUnit): Boolean {
+        if (unit.hasUnique(UniqueType.CannotMove)) return false
         // landing in the city
         if (tile.isCityCenter()) {
             if (tile.airUnits.filter { !it.isTransported }.size < 6 && tile.getCity()?.civInfo == unit.civInfo)
@@ -641,6 +648,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
 
     // Can a paratrooper land at this tile?
     fun canParadropOn(destination: TileInfo): Boolean {
+        if (unit.hasUnique(UniqueType.CannotMove)) return false
         // Can only move to land tiles within range that are visible and not impassible
         // Based on some testing done in the base game
         if (!destination.isLand || destination.isImpassible() || !unit.civInfo.viewableTiles.contains(destination)) return false
@@ -657,6 +665,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
      * because optimization on this function results in massive benefits!
      */
     fun canPassThrough(tile: TileInfo): Boolean {
+        if (unit.hasUnique(UniqueType.CannotMove)) return false
         if (tile.isImpassible()) {
             // special exception - ice tiles are technically impassible, but some units can move through them anyway
             // helicopters can pass through impassable tiles like mountains

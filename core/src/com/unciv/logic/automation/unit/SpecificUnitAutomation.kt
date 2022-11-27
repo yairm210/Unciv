@@ -242,8 +242,6 @@ object SpecificUnitAutomation {
 
     fun automateImprovementPlacer(unit: MapUnit) {
         var improvementBuildingUniques = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
-        if (unit.religiousActionsUnitCanDo().all { unit.abilityUsesLeft[it] == unit.maxAbilityUses[it] })
-            improvementBuildingUniques += unit.getMatchingUniques(UniqueType.CanConstructIfNoOtherActions)
 
         val improvementName = improvementBuildingUniques.first().params[0]
         val improvement = unit.civInfo.gameInfo.ruleSet.tileImprovements[improvementName]
@@ -476,8 +474,16 @@ object SpecificUnitAutomation {
         for (tile in tilesInRange) {
             // For now AI will only use nukes against cities because in all honesty that's the best use for them.
             if (tile.isCityCenter() && tile.getOwner()!!.isAtWarWith(unit.civInfo) && Battle.mayUseNuke(MapUnitCombatant(unit), tile)) {
-                Battle.NUKE(MapUnitCombatant(unit), tile)
-                return
+                val blastRadius = unit.getMatchingUniques(UniqueType.BlastRadius)
+                    .firstOrNull()?.params?.get(0)?.toInt() ?: 2
+                val tilesInBlastRadius = tile.getTilesInDistance(blastRadius)
+                val civsInBlastRadius = tilesInBlastRadius.mapNotNull { it.getOwner() } +
+                        tilesInBlastRadius.mapNotNull { it.getFirstUnit()?.civInfo }
+                // Don't nuke if it means we will be declaring war on someone!
+                if (civsInBlastRadius.none { it != unit.civInfo && !it.isAtWarWith(unit.civInfo) }) {
+                    Battle.NUKE(MapUnitCombatant(unit), tile)
+                    return
+                }
             }
         }
         tryRelocateToNearbyAttackableCities(unit)

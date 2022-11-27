@@ -124,7 +124,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
                         shape = MapShape.rectangular
                         mapSize = MapSizeNew(mapWidth.toInt() + 1, mapHeight.toInt() + 1)
                         type = MapType.default
-                        waterThreshold = -0.055f // Gives the same level as when waterThreshold was unused in MapType.default
+                        waterThreshold = -0.1f // mainly land, gets about 30% water
                         modifyForEasterEgg()
                     })
 

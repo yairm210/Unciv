@@ -1,3 +1,165 @@
+## 4.3.3
+
+Resolved map latency when city-states exist
+
+Fixed city-state type in civilopedia
+
+'impossible' worked tiles not under your control are now cleaned up
+
+Resolved corner case where entire path to destination is full and destination is unenterable
+
+Fix policy counting in global politics  - By jmuchemb
+
+## 4.3.2
+
+City State Type overhaul!
+
+Can now use `[stats]` unique to add happiness globally
+
+Can now use `[stats]` unique for e.g. techs, policies, etc, to add gold/faith/culture/science to the global pool
+
+## 4.3.1
+
+City-state overhaul, part 1!
+
+- Allowed adding arbitrary global uniques to city state bonuses
+- Moddable quest weighting for city-states
+- Moved city state icons to separate folder
+- Removed backwards compatibility (pre-3.19.4) for missing city-state uniques
+- Added conditional support to 'CS gift military units' unique
+
+Removed single-pixel gap in top bar
+
+AbsoluteUnits - Unique Spearmen - By letstalkaboutdune
+
+## 4.3.0
+
+Units now receive correct healing in friendly territory
+
+Tile info table no longer reveals hidden units
+
+AI no longer nukes if as consequence it will mean declaring war on someone
+
+Empire overview screen updates after changing info in city screen
+
+Fixed civilopedia text that says city-states don't conquer other cities
+
+## 4.2.20
+
+Main map and mini-map no longer show unexplored tiles!
+
+New "Unitset" option translatable - By Ouaz
+
+Renamed AbsoluteUnits unitset @letstalkaboutdune
+
+Automated workers no longer try to improve enemy tiles
+
+White lines in menus no longer change width when changing display settings
+
+Set 'text/plain' content type for multiplayer server requests
+
+## 4.2.19
+
+Fixed promotions for mods conflicting with base ruleset promotions
+
+Added unitset selection to options menu  - By GGGuenni
+
+Added diplomatic repercussions for attacking your own ally city-state, and discouraged AIs from doing so
+
+Absolute Units - Unique Archers - By letstalkaboutdune
+
+## 4.2.18
+
+Fixed mod promotions conflicting with existing promotion locations
+
+Fixed rare thread crashes
+
+Added many new before/after X turns and before/after Pantheon conditionals
+
+Generalized ruins reward limitations with "only available when"
+
+Unique Misspelling replacement text contains conditionals
+
+Current naming for manually downloaded mods
+
+## 4.2.17
+
+Added layout option for promotions, added promotion layout for G&K
+
+Added AbsoluteUnits as default units for Hexarealm tileset :D
+
+## 4.2.16
+
+Automated workers no longer improve unworkable tiles
+
+Improved construction AI choices
+
+By nacro711072:
+- fix wrong glyph when switch between different mod.
+- Fixed another memory leak
+- check whether the city has been a puppet in "Pick construction" action.
+
+## 4.2.15
+
+Fixed memory leak
+
+Fixed Great Person Picker screen not responding
+
+Fixed stat conversion constructions (Science, Gold) not appearing
+
+Fixed units obsoleting before their replacements could be constructed
+
+Unit era variants added to FantasyHex tileset  - By GeneralWadaling
+
+## 4.2.14
+
+Fixed Temple of Artemis production bonuses
+
+Fixed tile yields due to caching conditional uniques
+
+Resolved crash when mods make 2 techs require each other
+
+By itanasi:
+- Add Temperature Offset Slider
+- Change Default Map Generation to Perlin
+
+Fixed holy city blocking - By qwerty2586
+
+Show wars in global politics  - By MindaugasRumsa51
+
+## 4.2.13
+
+Don't show hidden improvements in nation info
+
+Fixed translations missing when cancelling a new game then resuming the old one
+
+Handle errors when renaming multiplayer games to impossible names
+
+Military units take most efficient route to capture civilians
+
+Translation fixes
+
+## 4.2.12
+
+Slight performance improvements
+
+Create Cannot Move Unique - By itanasi
+
+Fixed softlock forcing you to found a pantheon without available beliefs - By xlenstra
+
+## 4.2.11
+
+By xlenstra:
+- Fixed crash when getting a spy and expanding a city simultaneously
+- Modding: Added conditional for 'We Love The King day'
+
+By nacro711072:
+- fix: display "null" text on battleTable when policy branch Autocracy complete
+
+Fix multiplayer turn checker option not showing up on Android  - By Azzurite
+
+Translation updates
+
 ## 4.2.10
 
 New Desktop downloads start at fullscreen

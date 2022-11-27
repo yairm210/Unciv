@@ -428,7 +428,7 @@ class ModManagementScreen(
     private fun downloadMod(repo: Github.Repo, postAction: () -> Unit = {}) {
         Concurrency.run("DownloadMod") { // to avoid ANRs - we've learnt our lesson from previous download-related actions
             try {
-                val modFolder = Github.downloadAndExtract(repo.html_url, repo.default_branch,
+                val modFolder = Github.downloadAndExtract(repo,
                     Gdx.files.local("mods"))
                     ?: throw Exception()    // downloadAndExtract returns null for 404 errors and the like -> display something!
                 Github.rewriteModOptions(repo, modFolder)

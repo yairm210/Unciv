@@ -5,8 +5,8 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.automation.Automation
-import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.automation.ThreatLevel
+import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.automation.unit.UnitAutomation.wander
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
@@ -256,6 +256,7 @@ class WorkerAutomation(
         val workableTiles = currentTile.getTilesInDistance(4)
                 .filter {
                     (it.civilianUnit == null || it == currentTile)
+                            && (it.owningCity == null || it.getOwner()==civInfo)
                             && tileCanBeImproved(unit, it)
                             && it.getTilesInDistance(2)
                             .none { tile -> tile.isCityCenter() && tile.getCity()!!.civInfo.isAtWarWith(civInfo) }
@@ -285,17 +286,23 @@ class WorkerAutomation(
         val city = tile.getCity()
         if (city == null || city.civInfo != civInfo)
             return false
+        if (!city.tilesInRange.contains(tile)
+                && !tile.hasViewableResource(civInfo)
+                && civInfo.cities.none { it.getCenterTile().aerialDistanceTo(tile) <= 3 })
+            return false // unworkable tile
+
         val junkImprovement = tile.getTileImprovement()?.hasUnique(UniqueType.AutomatedWorkersWillReplace)
-        if (tile.improvement != null && junkImprovement == false && !UncivGame.Current.settings.automatedWorkersReplaceImprovements) {
-            if (unit.civInfo.isPlayerCivilization())
-                return false
-        }
+        if (tile.improvement != null && junkImprovement == false
+                && !UncivGame.Current.settings.automatedWorkersReplaceImprovements
+                && unit.civInfo.isPlayerCivilization())
+            return false
+
+
 
         if (tile.improvement == null || junkImprovement == true) {
             if (tile.improvementInProgress != null && unit.canBuildImprovement(tile.getTileImprovementInProgress()!!, tile)) return true
             val chosenImprovement = chooseImprovement(unit, tile)
             if (chosenImprovement != null && tile.canBuildImprovement(chosenImprovement, civInfo) && unit.canBuildImprovement(chosenImprovement, tile)) return true
-
         } else if (!tile.containsGreatImprovement() && tile.hasViewableResource(civInfo)
             && tile.tileResource.isImprovedBy(tile.improvement!!)
             && (chooseImprovement(unit, tile) // if the chosen improvement is not null and buildable

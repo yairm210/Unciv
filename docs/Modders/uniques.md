@@ -93,6 +93,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
+??? example  "[stats] per [amount] social policies adopted"
+	Example: "[+1 Gold, +2 Production] per [3] social policies adopted"
+
+	Applicable to: Global
+
 ??? example  "[stats] in cities on [terrainFilter] tiles"
 	Example: "[+1 Gold, +2 Production] in cities on [Fresh Water] tiles"
 
@@ -301,9 +306,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "[+20]% Food consumption by specialists [in all cities]"
 
 	Applicable to: Global, FollowerBelief
-
-??? example  "Provides 1 happiness per 2 additional social policies adopted"
-	Applicable to: Global
 
 ??? example  "[relativeAmount]% of excess happiness converted to [stat]"
 	Example: "[+20]% of excess happiness converted to [Culture]"
@@ -815,7 +817,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Tech
 
 ??? example  "Only available"
-	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement
+	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins
 
 ??? example  "Cannot be hurried"
 	Applicable to: Tech, Building
@@ -1185,6 +1187,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "Destroys tile improvements when attacking"
+	Applicable to: Unit
+
+??? example  "Cannot move"
 	Applicable to: Unit
 
 ??? example  "Double movement in [terrainFilter]"
@@ -1616,36 +1621,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "This Unit upgrades for free including special upgrades"
 	Applicable to: Ruins
 
-??? example  "Only available after [amount] turns"
-	Example: "Only available after [3] turns"
-
-	Applicable to: Ruins
-
-??? example  "Hidden before founding a Pantheon"
-	Applicable to: Ruins
-
-??? example  "Hidden after founding a Pantheon"
-	Applicable to: Ruins
-
 ??? example  "Hidden after generating a Great Prophet"
 	Applicable to: Ruins
 
 ## CityState uniques
-??? example  "Provides [stats] per turn"
-	Example: "Provides [+1 Gold, +2 Production] per turn"
-
-	Applicable to: CityState
-
-??? example  "Provides [stats] [cityFilter] per turn"
-	Example: "Provides [+1 Gold, +2 Production] [in all cities] per turn"
-
-	Applicable to: CityState
-
-??? example  "Provides [amount] Happiness"
-	Example: "Provides [3] Happiness"
-
-	Applicable to: CityState
-
 ??? example  "Provides military units every ≈[amount] turns"
 	Example: "Provides military units every ≈[3] turns"
 
@@ -1665,6 +1644,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;with [amount]% chance&gt;"
 	Example: "&lt;with [3]% chance&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;before [amount] turns&gt;"
+	Example: "&lt;before [3] turns&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;after [amount] turns&gt;"
+	Example: "&lt;after [3] turns&gt;"
 
 	Applicable to: Conditional
 
@@ -1721,11 +1710,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;upon discovering [tech]&gt;"
-	Example: "&lt;upon discovering [Agriculture]&gt;"
-
-	Applicable to: Conditional
-
 ??? example  "&lt;after adopting [policy]&gt;"
 	Example: "&lt;after adopting [Oligarchy]&gt;"
 
@@ -1734,6 +1718,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;before adopting [policy]&gt;"
 	Example: "&lt;before adopting [Oligarchy]&gt;"
 
+	Applicable to: Conditional
+
+??? example  "&lt;before founding a Pantheon&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;after founding a Pantheon&gt;"
 	Applicable to: Conditional
 
 ??? example  "&lt;if [buildingName] is constructed&gt;"
