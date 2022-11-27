@@ -283,7 +283,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
             labelText = Constants.unknownNationName
         }
 
-        civGroup.background = skinStrings.getUiBackground("VictoryScreen/CivGroup", skinStrings.roundedEdgeRectangle, backgroundColor)
+        civGroup.background = skinStrings.getUiBackground("VictoryScreen/CivGroup", skinStrings.roundedEdgeRectangleShape, backgroundColor)
         val label = labelText.toLabel(labelColor)
         label.setAlignment(Align.center)
 

@@ -8,7 +8,7 @@ Just like [tilesets](Creating-a-custom-tileset.md), UI skins can be used to alte
 
 We use so called 9.png (or Ninepatch) files for every skin image because UI elements need a way to be resized based on game window size and resolution. Ninepatch files can be created manually by adding black pixels around your custom images in a specific manner or by using [Android Studio's Draw 9-patch tool](https://developer.android.com/studio/write/draw9patch) or [this tool by romannurik](https://romannurik.github.io/AndroidAssetStudio/nine-patches.html) for example. You may also check if your favorite image creation tool supports nine patches itself to generate them more easily.
 
-Every skin image needs to be **gray scale** since colors are applied later in game. The color for the image can be modified using the [skinConfig](Creating-a-UI-skin.md#tint). Please note that tileable ninepatches and ninepatches with multiple stretch areas are not supported because of technical restrictions by libgdx.
+A skin image can either be gray scale and later be colored in game by modifying the `tint` in the [skinConfig](Creating-a-UI-skin.md#tint) or be colored directly in the image. When coloring the image directly it is important to set the tint of the UI element to white. Please note that tileable ninepatches and ninepatches with multiple stretch areas are not supported because of technical restrictions by libgdx.
 
 There are 6 basic shapes which can be placed inside the `Images/Skins/MyCoolSkinExample` folder:
  - checkbox
@@ -20,29 +20,39 @@ There are 6 basic shapes which can be placed inside the `Images/Skins/MyCoolSkin
 
 These shapes are used all over Unciv and can be replaced to make a lot of UI elements change appearance at once. To change just one specific element use the [table](Creating-a-UI-skin.md#Available-UI-elements) below to create an image at the specified directory using the specified name inside `Images/Skins/MyCoolSkinExample`. See the image below for an example file structure. ![skinExample](https://user-images.githubusercontent.com/24532072/198904598-0d298035-5b02-431b-bfb4-7da4b9c821c9.png)
 
+## Limitations
+
+- UI elements which change color because they have multiple states can not be given multiple colors based on their state using tint
+  - When coloring the image directly, setting the tint of the UI element to white overwrites these states
+- Tileable ninepatches and ninepatches with multiple stretch areas are not supported because of technical restrictions by libgdx
+
 ## Available UI elements
 
 <!--- We should add an image to every identifier so its easier for modders to know which UI elements are which -->
+<!--- The following table is auto generated and should not be modified manually. If you want to change it see UiElementDocsWriter.kt -->
 
+<!--- DO NOT REMOVE OR MODIFY THIS LINE UI_ELEMENT_TABLE_REGION -->
 | Directory | Name | Default shape | Image |
 |---|:---:|:---:|---|
-| CivilopediaScreen/ | EntryButton | null | |
+| CityScreen/ | CityInfoTable | null | |
+| CityScreen/ | CityPickerTable | roundedEdgeRectangle | |
+| CityScreen/CitizenManagementTable/ | AvoidCell | null | |
+| CityScreen/CitizenManagementTable/ | FocusCell | null | |
+| CityScreen/CitizenManagementTable/ | ResetCell | null | |
 | CityScreen/CityConstructionTable/ | AvailableConstructionsTable | null | |
 | CityScreen/CityConstructionTable/ | ConstructionsQueueTable | null | |
 | CityScreen/CityConstructionTable/ | Header | null | |
 | CityScreen/CityConstructionTable/ | PickConstructionButton | null | |
+| CityScreen/CityConstructionTable/ | PickConstructionButtonSelected | null | |
 | CityScreen/CityConstructionTable/ | QueueEntry | null | |
-| CityScreen/ | CityInfoTable | null | |
-| CityScreen/CitizenManagementTable/ | AvoidCell | null | |
-| CityScreen/CitizenManagementTable/ | FocusCell | null | |
-| CityScreen/CitizenManagementTable/ | ResetCell | null | |
-| CityScreen/ | CityPickerTable | roundedEdgeRectangle | |
+| CityScreen/CityConstructionTable/ | QueueEntrySelected | null | |
 | CityScreen/CityScreenTileTable/ | Background | null | |
 | CityScreen/CityScreenTileTable/ | InnerTable | null | |
 | CityScreen/CityStatsTable/ | Background | null | |
 | CityScreen/CityStatsTable/ | InnerTable | null | |
 | CityScreen/ConstructionInfoTable/ | Background | null | |
 | CityScreen/ConstructionInfoTable/ | SelectedConstructionTable | null | |
+| CivilopediaScreen/ | EntryButton | null | |
 | General/ | Border | null | |
 | General/ | ExpanderTab | null | |
 | General/ | HealthBar | null | |
@@ -51,12 +61,24 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | General/Popup/ | Background | null | |
 | General/Popup/ | InnerTable | null | |
 | LanguagePickerScreen/ | LanguageTable | null | |
+| LoadGameScreen/ | BottomTable | null | |
+| LoadGameScreen/ | TopTable | null | |
+| MainMenuScreen/ | Background | null | |
 | MainMenuScreen/ | MenuButton | roundedEdgeRectangle | |
 | MapEditor/MapEditorToolsDrawer/ | Handle | null | |
 | ModManagementOptions/ | ExpanderTab | null | |
+| ModManagementScreen/ | BottomTable | null | |
+| ModManagementScreen/ | TopTable | null | |
+| MultiplayerScreen/ | BottomTable | null | |
+| MultiplayerScreen/ | TopTable | null | |
+| NewGameScreen/ | BottomTable | null | |
+| NewGameScreen/ | GameOptionsTable | null | |
+| NewGameScreen/ | MapOptionsTable | null | |
+| NewGameScreen/ | PlayerPickerTable | null | |
+| NewGameScreen/ | TopTable | null | |
 | NewGameScreen/NationTable/ | Background | null | |
 | NewGameScreen/NationTable/ | BorderTable | null | |
-| NewGameScreen/NationTable/ | InnerTable | null | |
+| NewGameScreen/NationTable/ | RightInnerTable | null | |
 | NewGameScreen/NationTable/ | Title | null | |
 | NewGameScreen/PlayerPickerTable/ | PlayerTable | null | |
 | OverviewScreen/DiplomacyOverviewTab/ | CivTable | null | |
@@ -64,24 +86,28 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | OverviewScreen/ReligionOverviewTab/ | BeliefDescription | null | |
 | OverviewScreen/TradesOverviewTab/ | OffersTable | null | |
 | OverviewScreen/UnitOverviewTab/ | UnitSupplyTable | null | |
+| PlayerReadyScreen/ | Background | null | |
+| TechPickerScreen/ | Background | null | |
+| TechPickerScreen/ | BottomTable | null | |
 | TechPickerScreen/ | TechButton | roundedEdgeRectangle | |
 | VictoryScreen/ | CivGroup | roundedEdgeRectangle | |
 | WorldScreen/ | AirUnitTable | null | |
+| WorldScreen/ | BattleTable | null | |
+| WorldScreen/ | Notification | roundedEdgeRectangle | |
+| WorldScreen/ | PickTechButton | roundedEdgeRectangle | |
+| WorldScreen/ | TileInfoTable | null | |
+| WorldScreen/ | TutorialTaskTable | null | |
+| WorldScreen/ | UnitTable | null | |
 | WorldScreen/CityButton/ | AirUnitTable | roundedEdgeRectangle | |
 | WorldScreen/CityButton/ | IconTable | roundedEdgeRectangle | |
 | WorldScreen/CityButton/ | InfluenceBar | null | |
-| WorldScreen/ | Notification | null | |
-| WorldScreen/ | PickTechButton | roundedEdgeRectangle | |
-| WorldScreen/ | TutorialTaskTable | null | |
-| WorldScreen/TopBar/ | ResourceTable | null | |
-| WorldScreen/TopBar/ | StatsTable | null | |
-| WorldScreen/TopBar/ | LeftAttachment | roundedEdgeRectangle | |
-| WorldScreen/TopBar/ | RightAttachment | roundedEdgeRectangle | |
-| WorldScreen/ | BattleTable | null | |
-| WorldScreen/ | TileInfoTable | null | |
 | WorldScreen/Minimap/ | Background | null | |
 | WorldScreen/Minimap/ | Border | null | |
-| WorldScreen/ | UnitTable | null | |
+| WorldScreen/TopBar/ | LeftAttachment | roundedEdgeRectangle | |
+| WorldScreen/TopBar/ | ResourceTable | null | |
+| WorldScreen/TopBar/ | RightAttachment | roundedEdgeRectangle | |
+| WorldScreen/TopBar/ | StatsTable | null | |
+<!--- DO NOT REMOVE OR MODIFY THIS LINE UI_ELEMENT_TABLE_REGION_END -->
 
 ## SkinConfig
 
@@ -92,32 +118,34 @@ To create a config for your skin you just need to create a new .json file under 
 This is an example of such a config file that will be explain below:
 
 ```json
+{
     "baseColor": {"r":1,"g":0,"b":0,"a":1},
     "skinVariants": {
         "MainMenuScreen/MenuButton": {
-          "image": "MyCoolNewDesign",
+            "image": "MyCoolNewDesign"
         },
         "TechPickerScreen/TechButton": {
-          "image": "MyCoolNewDesign",
-          "alpha": 0.7
+            "image": "MyCoolNewDesign",
+            "alpha": 0.7
         },
         "WorldScreen/TopBar/ResourceTable": {
-          "alpha": 0.8
+            "alpha": 0.8
         },
         "WorldScreen/UnitTable": {
-          "tint": {"r": 1, "g": 0, "b": 0},
-          "image": "WorldScreen/TopBar/ResourceTable",
-          "alpha": 0.4
+            "tint": {"r": 1, "g": 0, "b": 0},
+            "image": "WorldScreen/TopBar/ResourceTable",
+            "alpha": 0.4
         },
         "WorldScreen/Minimap/Background": {
-          "tint": {"r": 0.2, "g": 0.4, "b": 0.45, "a": 1}
-        },
+            "tint": {"r": 0.2, "g": 0.4, "b": 0.45, "a": 1}
+        }
     }
+}
 ```
 
 ### baseColor
 
-A color defined with normalized RGBA values. Default value: "{"r": 0, "g": 0.251, "b": 0.522, "a": 0.749}"
+A color defined with normalized RGBA values. Default value: `{"r": 0, "g": 0.251, "b": 0.522, "a": 0.749}`
 
 Defines the color unciv uses in most ui elements as default
 

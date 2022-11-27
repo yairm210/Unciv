@@ -24,7 +24,7 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
 
     init {
         touchable = Touchable.enabled
-        background = BaseScreen.skinStrings.getUiBackground("TechPickerScreen/TechButton", BaseScreen.skinStrings.roundedEdgeRectangle)
+        background = BaseScreen.skinStrings.getUiBackground("TechPickerScreen/TechButton", BaseScreen.skinStrings.roundedEdgeRectangleShape)
         pad(10f)
 
         if (ImageGetter.techIconExists(techName))

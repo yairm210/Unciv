@@ -1697,6 +1697,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;if starting in the [era]&gt;"
+	Example: "&lt;if starting in the [Ancient era]&gt;"
+
+	Applicable to: Conditional
+
 ??? example  "&lt;if no other Civilization has researched this&gt;"
 	Applicable to: Conditional
 
