@@ -311,8 +311,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     CostIncreasesPerCity("Cost increases by [amount] per owned city", UniqueTarget.Building),
 
-    RequiresBuildingInAllCities("Requires a [buildingName] in all cities", UniqueTarget.Building),
-    RequiresBuildingInSomeCities("Requires a [buildingName] in at least [amount] cities", UniqueTarget.Building),
+    RequiresBuildingInAllCities("Requires a [buildingFilter] in all cities", UniqueTarget.Building),
+    RequiresBuildingInSomeCities("Requires a [buildingFilter] in at least [amount] cities", UniqueTarget.Building),
     CanOnlyBeBuiltInCertainCities("Can only be built [cityFilter]", UniqueTarget.Building),
 
     MustHaveOwnedWithinTiles("Must have an owned [tileFilter] within [amount] tiles", UniqueTarget.Building),
@@ -615,7 +615,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ConditionalBeforePantheon("before founding a Pantheon", UniqueTarget.Conditional),
     ConditionalAfterPantheon("after founding a Pantheon", UniqueTarget.Conditional),
 
-    ConditionalBuildingBuilt("if [buildingName] is constructed", UniqueTarget.Conditional),
+    ConditionalBuildingBuilt("if [buildingFilter] is constructed", UniqueTarget.Conditional),
     ConditionalWithResource("with [resource]", UniqueTarget.Conditional),
     ConditionalWithoutResource("without [resource]", UniqueTarget.Conditional),
 

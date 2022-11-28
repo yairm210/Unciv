@@ -219,8 +219,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     internal fun getBuiltBuildings(): Sequence<Building> = builtBuildingObjects.asSequence()
 
-    fun containsBuildingOrEquivalent(building: String): Boolean =
-            isBuilt(building) || getBuiltBuildings().any { it.replaces == building }
+    fun containsBuildingOrEquivalent(buildingNameOrUnique: String): Boolean =
+            isBuilt(buildingNameOrUnique) || getBuiltBuildings().any { it.replaces == buildingNameOrUnique || it.hasUnique(buildingNameOrUnique) }
 
     fun getWorkDone(constructionName: String): Int {
         return if (inProgressConstructions.containsKey(constructionName)) inProgressConstructions[constructionName]!!
