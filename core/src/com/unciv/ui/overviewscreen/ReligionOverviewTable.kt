@@ -8,7 +8,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.ReligionState
 import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.translations.fillPlaceholders
@@ -146,7 +145,7 @@ class ReligionOverviewTab(
             if (holyCity != null) {
                 statsTable.add("Holy City:".toLabel())
                 val cityName =
-                    if (viewingPlayer.exploredTiles.contains(holyCity.getCenterTile().position))
+                    if (viewingPlayer.hasExplored(holyCity.location))
                         holyCity.name
                     else Constants.unknownNationName
                 statsTable.add(cityName.toLabel()).right().row()

@@ -132,7 +132,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
 
     class ParentTileAndTotalDistance(val parentTile: TileInfo, val totalDistance: Float)
 
-    fun isUnknownTileWeShouldAssumeToBePassable(tileInfo: TileInfo) = !unit.civInfo.exploredTiles.contains(tileInfo.position)
+    fun isUnknownTileWeShouldAssumeToBePassable(tileInfo: TileInfo) = !unit.civInfo.hasExplored(tileInfo)
 
     /**
      * Does not consider if tiles can actually be entered, use canMoveTo for that.
@@ -154,7 +154,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
                 for (neighbor in tileToCheck.neighbors) {
                     if (tilesToIgnore?.contains(neighbor) == true) continue // ignore this tile
                     var totalDistanceToTile: Float = when {
-                        !unit.civInfo.exploredTiles.contains(neighbor.position) ->
+                        !unit.civInfo.hasExplored(neighbor) ->
                             distanceToTiles[tileToCheck]!!.totalDistance + 1f  // If we don't know then we just guess it to be 1.
                         !canPassThrough(neighbor) -> unitMovement // Can't go here.
                         // The reason that we don't just "return" is so that when calculating how to reach an enemy,

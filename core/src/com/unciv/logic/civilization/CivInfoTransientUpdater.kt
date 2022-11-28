@@ -23,7 +23,6 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         // and we never actually iterate on the explored tiles (only check contains()),
         // so there's no fear of concurrency problems.
         val newlyExploredTiles = civInfo.viewableTiles.asSequence().map { it.position }
-                .filterNot { civInfo.exploredTiles.contains(it) }
         civInfo.exploredTiles.addAll(newlyExploredTiles)
 
 

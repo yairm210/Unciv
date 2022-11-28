@@ -196,6 +196,9 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     var citiesCreated = 0
     var exploredTiles = HashSet<Vector2>()
 
+    fun hasExplored(position: Vector2) = exploredTiles.contains(position)
+    fun hasExplored(tileInfo: TileInfo) = hasExplored(tileInfo.position)
+
     var lastSeenImprovement = HashMapVector2<String>()
 
     // To correctly determine "game over" condition as clarified in #4707
@@ -351,7 +354,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     fun isMajorCiv() = nation.isMajorCiv()
     fun isAlive(): Boolean = !isDefeated()
 
-    fun hasMetCivTerritory(otherCiv: CivilizationInfo): Boolean = otherCiv.getCivTerritory().any { it in exploredTiles }
+    fun hasMetCivTerritory(otherCiv: CivilizationInfo): Boolean = otherCiv.getCivTerritory().any { hasExplored(it) }
     fun getCompletedPolicyBranchesCount(): Int = policies.adoptedPolicies.count { Policy.isBranchCompleteByName(it) }
     fun originalMajorCapitalsOwned(): Int = cities.count { it.isOriginalCapital && it.foundingCiv != "" && gameInfo.getCivilization(it.foundingCiv).isMajorCiv() }
     private fun getCivTerritory() = cities.asSequence().flatMap { it.tiles.asSequence() }

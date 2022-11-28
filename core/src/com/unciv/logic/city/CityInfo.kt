@@ -13,18 +13,15 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Nation
-import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
-import kotlin.collections.HashSet
 import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.pow
@@ -887,7 +884,7 @@ class CityInfo : IsPartOfGameInfoSerialization {
             citiesWithin6Tiles
                 .map { it.civInfo }
                 .distinct()
-                .filter { it.knows(civInfo) && it.exploredTiles.contains(location) }
+                .filter { it.knows(civInfo) && it.hasExplored(location) }
         for (otherCiv in civsWithCloseCities)
             otherCiv.getDiplomacyManager(civInfo).setFlag(DiplomacyFlags.SettledCitiesNearUs, 30)
     }

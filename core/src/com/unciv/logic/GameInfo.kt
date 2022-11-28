@@ -402,7 +402,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
                 }
 
         val exploredRevealInfo = exploredRevealTiles
-            .filter { it.position in civInfo.exploredTiles }
+            .filter { civInfo.hasExplored(it.position) }
             .flatMap { tile ->
                 civInfo.cities.asSequence()
                     .map {

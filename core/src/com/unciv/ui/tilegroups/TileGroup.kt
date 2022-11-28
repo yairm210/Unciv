@@ -344,7 +344,7 @@ open class TileGroup(
             || viewingCiv.isSpectator()
 
     fun isExplored(viewingCiv: CivilizationInfo) = showEntireMap
-            || viewingCiv.exploredTiles.contains(tileInfo.position)
+            || viewingCiv.hasExplored(tileInfo)
             || viewingCiv.isSpectator()
 
     open fun update(viewingCiv: CivilizationInfo? = null, showResourcesAndImprovements: Boolean = true, showTileYields: Boolean = true) {
@@ -373,7 +373,7 @@ open class TileGroup(
         for (group in allGroups) group.isVisible = true
 
         if (viewingCiv != null && !isExplored(viewingCiv)) {
-            if (tileInfo.neighbors.any { it.position in viewingCiv.exploredTiles })
+            if (tileInfo.neighbors.any { viewingCiv.hasExplored(it) })
                 clearUnexploredTiles()
             else for (group in allGroups) group.isVisible = false
             return

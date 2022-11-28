@@ -24,7 +24,7 @@ object UnitAutomation {
     private fun isGoodTileToExplore(unit: MapUnit, tile: TileInfo): Boolean {
         return unit.movement.canMoveTo(tile)
                 && (tile.getOwner() == null || !tile.getOwner()!!.isCityState())
-                && tile.neighbors.any { it.position !in unit.civInfo.exploredTiles }
+                && tile.neighbors.any { !unit.civInfo.hasExplored(it) }
                 && (!unit.civInfo.isCityState() || tile.neighbors.any { it.getOwner() == unit.civInfo }) // Don't want city-states exploring far outside their borders
                 && unit.getDamageFromTerrain(tile) <= 0    // Don't take unnecessary damage
                 && tile.getTilesInDistance(3)  // don't walk in range of enemy units
@@ -93,7 +93,7 @@ object UnitAutomation {
         return unit.movement.canMoveTo(tile)
                 && tile.getOwner() == null
                 && tile.neighbors.all { it.getOwner() == null }
-                && tile.position in unit.civInfo.exploredTiles
+                && unit.civInfo.hasExplored(tile)
                 && tile.getTilesInDistance(2).any { it.getOwner() == unit.civInfo }
                 && unit.getDamageFromTerrain(tile) <= 0
                 && unit.movement.canReach(tile) // expensive, evaluate last
@@ -267,7 +267,7 @@ object UnitAutomation {
     private fun tryHeadTowardsEncampment(unit: MapUnit): Boolean {
         if (unit.hasUnique(UniqueType.SelfDestructs)) return false // don't use single-use units against barbarians...
         val knownEncampments = unit.civInfo.gameInfo.tileMap.values.asSequence()
-                .filter { it.improvement == Constants.barbarianEncampment && unit.civInfo.exploredTiles.contains(it.position) }
+                .filter { it.improvement == Constants.barbarianEncampment && unit.civInfo.hasExplored(it) }
         val cities = unit.civInfo.cities
         val encampmentsCloseToCities = knownEncampments.filter { cities.any { city -> city.getCenterTile().aerialDistanceTo(it) < 6 } }
                 .sortedBy { it.aerialDistanceTo(unit.currentTile) }

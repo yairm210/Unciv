@@ -121,7 +121,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
 
             for ((key, value) in statsGranted)
                 religionOwningCiv.addStat(key, value.toInt())
-            if (cityInfo.location in religionOwningCiv.exploredTiles)
+            if (religionOwningCiv.hasExplored(cityInfo.location))
                 religionOwningCiv.addNotification(
                     "You gained [$statsGranted] as your religion was spread to [${cityInfo.name}]",
                     cityInfo.location,

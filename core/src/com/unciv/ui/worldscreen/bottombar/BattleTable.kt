@@ -106,7 +106,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             else {
                 when {
                     defender.isInvisible(attackerCiv) -> attackerCiv.viewableInvisibleUnitsTiles.contains(selectedTile)
-                    defender.isCity() -> attackerCiv.exploredTiles.contains(selectedTile.position)
+                    defender.isCity() -> attackerCiv.hasExplored(selectedTile)
                     else -> attackerCiv.viewableTiles.contains(selectedTile)
                 }
             }

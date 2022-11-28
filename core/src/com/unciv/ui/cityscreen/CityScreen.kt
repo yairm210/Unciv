@@ -312,7 +312,7 @@ class CityScreen(
 
         val tileSetStrings = TileSetStrings()
         val cityTileGroups = cityInfo.getCenterTile().getTilesInDistance(5)
-                .filter { cityInfo.civInfo.exploredTiles.contains(it.position) }
+                .filter { cityInfo.civInfo.hasExplored(it) }
                 .map { CityTileGroup(cityInfo, it, tileSetStrings) }
 
         for (tileGroup in cityTileGroups) {

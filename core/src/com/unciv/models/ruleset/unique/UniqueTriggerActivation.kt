@@ -3,12 +3,51 @@ package com.unciv.models.ruleset.unique
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.city.CityInfo
-import com.unciv.logic.civilization.*
+import com.unciv.logic.civilization.CivFlags
+import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.MayaLongCountAction
+import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Victory
-import com.unciv.models.ruleset.unique.UniqueType.*
+import com.unciv.models.ruleset.unique.UniqueType.CityStateCanGiftGreatPeople
+import com.unciv.models.ruleset.unique.UniqueType.ConditionalTimedUnique
+import com.unciv.models.ruleset.unique.UniqueType.FoundCity
+import com.unciv.models.ruleset.unique.UniqueType.FreeSpecificBuildings
+import com.unciv.models.ruleset.unique.UniqueType.FreeStatBuildings
+import com.unciv.models.ruleset.unique.UniqueType.MayanGainGreatPerson
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeAmountFreePolicies
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeAmountFreeTechs
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeAmountFreeUnits
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeEnterGoldenAge
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeFreeBelief
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeFreeGreatPerson
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeFreePolicy
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeFreeTech
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeFreeTechRuins
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeFreeUnit
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeFreeUnitRuins
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeGainPantheon
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeGainPopulation
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeGainPopulationRandomCity
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeGainProphet
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeGainStat
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeGainStatRange
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeGlobalSpiesWhenEnteringEra
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeRevealCrudeMap
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeRevealEntireMap
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeRevealSpecificMapTiles
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeTriggerVoting
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeUnitGainPromotion
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeUnitGainXP
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeUnitHeal
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeUnitSpecialUpgrade
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeUnitUpgrade
+import com.unciv.models.ruleset.unique.UniqueType.StrategicResourcesIncrease
+import com.unciv.models.ruleset.unique.UniqueType.UnitsGainPromotion
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters
@@ -412,7 +451,7 @@ object UniqueTriggerActivation {
                 val nearbyRevealableTiles = tile
                     .getTilesInDistance(unique.params[2].toInt())
                     .filter {
-                        !civInfo.exploredTiles.contains(it.position) &&
+                        !civInfo.hasExplored(it) &&
                         it.matchesFilter(unique.params[1])
                     }
                     .map { it.position }
@@ -446,7 +485,7 @@ object UniqueTriggerActivation {
             OneTimeRevealCrudeMap -> {
                 if (tile == null) return false
                 val revealCenter = tile.getTilesAtDistance(unique.params[0].toInt())
-                    .filter { it.position !in civInfo.exploredTiles }
+                    .filter { !civInfo.hasExplored(it) }
                     .toList()
                     .randomOrNull(tileBasedRandom)
                     ?: return false

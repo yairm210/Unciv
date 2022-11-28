@@ -228,7 +228,7 @@ object UnitActions {
             if (diplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs)) {
                 val citiesWithin6Tiles = otherCiv.cities
                     .filter { it.getCenterTile().aerialDistanceTo(tile) <= 6 }
-                    .filter { otherCiv.exploredTiles.contains(it.location) }
+                    .filter { otherCiv.hasExplored(it.location) }
                 if (citiesWithin6Tiles.isNotEmpty()) brokenPromises += otherCiv.getLeaderDisplayName()
             }
         }

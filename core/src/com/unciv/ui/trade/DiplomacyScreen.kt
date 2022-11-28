@@ -358,7 +358,7 @@ class DiplomacyScreen(
             else diplomacyTable.add(getDeclareWarButton(diplomacyManager, otherCiv)).row()
         }
 
-        if (otherCiv.cities.isNotEmpty() && otherCiv.getCapital() != null && otherCiv.getCapital()!!.location in viewingCiv.exploredTiles)
+        if (otherCiv.cities.isNotEmpty() && otherCiv.getCapital() != null && viewingCiv.hasExplored(otherCiv.getCapital()!!.location))
             diplomacyTable.add(getGoToOnMapButton(otherCiv)).row()
 
         val diplomaticMarriageButton = getDiplomaticMarriageButton(otherCiv)
@@ -717,7 +717,7 @@ class DiplomacyScreen(
         diplomacyTable.add(demandsButton).row()
         if (isNotPlayersTurn()) demandsButton.disable()
 
-        if (otherCiv.cities.isNotEmpty() && otherCiv.getCapital() != null && otherCiv.getCapital()!!.location in viewingCiv.exploredTiles)
+        if (otherCiv.cities.isNotEmpty() && otherCiv.getCapital() != null && viewingCiv.hasExplored(otherCiv.getCapital()!!.location))
             diplomacyTable.add(getGoToOnMapButton(otherCiv)).row()
 
         if (!otherCiv.isPlayerCivilization()) { // human players make their own choices
