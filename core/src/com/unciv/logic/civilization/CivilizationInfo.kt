@@ -14,7 +14,6 @@ import com.unciv.logic.civilization.RuinsManager.RuinsManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.UnitMovementAlgorithms
@@ -1321,78 +1320,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         ).toInt()
     }
 
-    fun updateProximity(otherCiv: CivilizationInfo, preCalculated: Proximity? = null): Proximity {
-        if (otherCiv == this)   return Proximity.None
-        if (preCalculated != null) {
-            // We usually want to update this for a pair of civs at the same time
-            // Since this function *should* be symmetrical for both civs, we can just do it once
-            this.proximity[otherCiv.civName] = preCalculated
-            return preCalculated
-        }
-        if (cities.isEmpty() || otherCiv.cities.isEmpty()) {
-            proximity[otherCiv.civName] = Proximity.None
-            return Proximity.None
-        }
-
-        val mapParams = gameInfo.tileMap.mapParameters
-        var minDistance = 100000 // a long distance
-        var totalDistance = 0
-        var connections = 0
-
-        var proximity = Proximity.None
-
-        for (ourCity in cities) {
-            for (theirCity in otherCiv.cities) {
-                val distance = ourCity.getCenterTile().aerialDistanceTo(theirCity.getCenterTile())
-                totalDistance += distance
-                connections++
-                if (minDistance > distance) minDistance = distance
-            }
-        }
-
-        if (minDistance <= 7) {
-            proximity = Proximity.Neighbors
-        } else if (connections > 0) {
-            val averageDistance = totalDistance / connections
-            val mapFactor = if (mapParams.shape == MapShape.rectangular)
-                (mapParams.mapSize.height + mapParams.mapSize.width) / 2
-                else  (mapParams.mapSize.radius * 3) / 2 // slightly less area than equal size rect
-
-            val closeDistance = ((mapFactor * 25) / 100).coerceIn(10, 20)
-            val farDistance = ((mapFactor * 45) / 100).coerceIn(20, 50)
-
-            proximity = if (minDistance <= 11 && averageDistance <= closeDistance)
-                Proximity.Close
-            else if (averageDistance <= farDistance)
-                Proximity.Far
-            else
-                Proximity.Distant
-        }
-
-        // Check if different continents (unless already max distance, or water map)
-        if (connections > 0 && proximity != Proximity.Distant && !gameInfo.tileMap.isWaterMap()
-            && getCapital()!!.getCenterTile().getContinent() != otherCiv.getCapital()!!.getCenterTile().getContinent()
-        ) {
-            // Different continents - increase separation by one step
-            proximity = when (proximity) {
-                Proximity.Far -> Proximity.Distant
-                Proximity.Close -> Proximity.Far
-                Proximity.Neighbors -> Proximity.Close
-                else -> proximity
-            }
-        }
-
-        // If there aren't many players (left) we can't be that far
-        val numMajors = gameInfo.getAliveMajorCivs().size
-        if (numMajors <= 2 && proximity > Proximity.Close)
-            proximity = Proximity.Close
-        if (numMajors <= 4 && proximity > Proximity.Far)
-            proximity = Proximity.Far
-
-        this.proximity[otherCiv.civName] = proximity
-
-        return proximity
-    }
+    fun updateProximity(otherCiv: CivilizationInfo, preCalculated: Proximity? = null): Proximity = transients().updateProximity(otherCiv, preCalculated)
 
     /**
      * Removes current capital then moves capital to argument city if not null
