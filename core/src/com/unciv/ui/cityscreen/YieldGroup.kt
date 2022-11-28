@@ -50,7 +50,8 @@ class YieldGroup : HorizontalGroup() {
             }
             else -> {
                 val largeImage = ImageGetter.getStatIcon(statName)
-                table.add(largeImage).size(largeImage.width * 1.5f, largeImage.height * 1.5f)
+                table.add(largeImage.surroundWithCircle(25f)
+                    .apply { circle.color = Color.BLACK;circle.color.a = 0.5f })
             }
         }
         table.pack()
