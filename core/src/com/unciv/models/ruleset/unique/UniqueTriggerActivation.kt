@@ -298,8 +298,8 @@ object UniqueTriggerActivation {
                 if (notification != null) {
                     civInfo.addNotification(notification, LocationAction(tile?.position), NotificationIcon.Scout)
                 }
-                return civInfo.exploredTiles.addAll(
-                    civInfo.gameInfo.tileMap.values.asSequence().map { it.position })
+                civInfo.addExploredTiles(civInfo.gameInfo.tileMap.values.asSequence().map { it.position })
+                return true
             }
 
             UnitsGainPromotion -> {
@@ -462,8 +462,8 @@ object UniqueTriggerActivation {
                             // Implements [UniqueParameterType.CombatantFilter] - At the moment the only use
                             if (unique.params[0] != "All") this.take(unique.params[0].toInt())
                         }
+                civInfo.addExploredTiles(revealedTiles)
                 for (position in revealedTiles) {
-                    civInfo.exploredTiles.add(position)
                     val revealedTileInfo = civInfo.gameInfo.tileMap[position]
                     if (revealedTileInfo.improvement == null)
                         civInfo.lastSeenImprovement.remove(position)
@@ -493,7 +493,7 @@ object UniqueTriggerActivation {
                     .getTilesInDistance(unique.params[1].toInt())
                     .map { it.position }
                     .filter { tileBasedRandom.nextFloat() < unique.params[2].toFloat() / 100f }
-                civInfo.exploredTiles.addAll(tilesToReveal)
+                civInfo.addExploredTiles(tilesToReveal)
                 civInfo.updateViewableTiles()
                 if (notification != null)
                     civInfo.addNotification(

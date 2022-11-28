@@ -23,7 +23,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         // and we never actually iterate on the explored tiles (only check contains()),
         // so there's no fear of concurrency problems.
         val newlyExploredTiles = civInfo.viewableTiles.asSequence().map { it.position }
-        civInfo.exploredTiles.addAll(newlyExploredTiles)
+        civInfo.addExploredTiles(newlyExploredTiles)
 
 
         val viewedCivs = HashMap<CivilizationInfo, TileInfo>()
@@ -70,7 +70,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         if (civInfo.isSpectator() || UncivGame.Current.viewEntireMapForDebug) {
             val allTiles = civInfo.gameInfo.tileMap.values.toSet()
             civInfo.viewableTiles = allTiles
-            civInfo.exploredTiles = allTiles.map { it.position }.toHashSet()
+            civInfo.addExploredTiles(allTiles.map { it.position }.toHashSet()
             civInfo.viewableInvisibleUnitsTiles = allTiles
             return
         }

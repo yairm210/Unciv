@@ -113,6 +113,10 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     @Transient
     var enemyMovementPenaltyUniques: Sequence<Unique>? = null
 
+    /** Same as above variable */
+    @Transient
+    var isEntireMapRevealed: Sequence<Unique>? = null
+
     @Transient
     var statsForNextTurn = Stats()
 
@@ -198,6 +202,10 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
     fun hasExplored(position: Vector2) = exploredTiles.contains(position)
     fun hasExplored(tileInfo: TileInfo) = hasExplored(tileInfo.position)
+
+    fun addExploredTiles(tiles:Sequence<Vector2>){
+        exploredTiles.addAll(tiles)
+    }
 
     var lastSeenImprovement = HashMapVector2<String>()
 
@@ -1289,7 +1297,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     fun addCity(location: Vector2) {
         val newCity = CityInfo(this, location)
         newCity.cityConstructions.chooseNextConstruction()
-
     }
 
     fun destroy() {
