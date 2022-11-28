@@ -112,10 +112,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     @Transient
     var enemyMovementPenaltyUniques: Sequence<Unique>? = null
 
-    /** Same as above variable */
-    @Transient
-    var isEntireMapRevealed: Sequence<Unique>? = null
-
     @Transient
     var statsForNextTurn = Stats()
 
