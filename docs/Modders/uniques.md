@@ -906,13 +906,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Building
 
-??? example  "Requires a [buildingName] in all cities"
-	Example: "Requires a [Library] in all cities"
+??? example  "Requires a [buildingFilter] in all cities"
+	Example: "Requires a [Culture] in all cities"
 
 	Applicable to: Building
 
-??? example  "Requires a [buildingName] in at least [amount] cities"
-	Example: "Requires a [Library] in at least [3] cities"
+??? example  "Requires a [buildingFilter] in at least [amount] cities"
+	Example: "Requires a [Culture] in at least [3] cities"
 
 	Applicable to: Building
 
@@ -1731,8 +1731,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;after founding a Pantheon&gt;"
 	Applicable to: Conditional
 
-??? example  "&lt;if [buildingName] is constructed&gt;"
-	Example: "&lt;if [Library] is constructed&gt;"
+??? example  "&lt;if [buildingFilter] is constructed&gt;"
+	Example: "&lt;if [Culture] is constructed&gt;"
 
 	Applicable to: Conditional
 

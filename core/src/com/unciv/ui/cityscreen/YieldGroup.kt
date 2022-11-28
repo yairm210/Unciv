@@ -26,7 +26,7 @@ class YieldGroup : HorizontalGroup() {
     }
 
     fun getIcon(statName: String) =
-            ImageGetter.getStatIcon(statName).surroundWithCircle(20f)
+            ImageGetter.getStatIcon(statName).surroundWithCircle(15f)
                     .apply { circle.color = Color.BLACK;circle.color.a = 0.5f }
 
     private fun getStatIconsTable(statName: String, number: Int): Table {
