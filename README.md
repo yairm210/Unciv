@@ -13,7 +13,7 @@
 
 
 
-## What is this?
+## About - Or, What is this?
 
 An open-source, mod-friendly Android+Desktop remake of Civ V, made with LibGDX
 
