@@ -296,8 +296,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
 
     @delegate:Transient
     val height : Int by lazy {
-        allTerrains.flatMap { it.uniqueObjects }
-            .filter { it.isOfType(UniqueType.VisibilityElevation) }
+        allTerrains.flatMap { it.getMatchingUniques(UniqueType.VisibilityElevation) }
             .map { it.params[0].toInt() }.sum()
     }
 

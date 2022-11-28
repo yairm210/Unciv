@@ -285,7 +285,7 @@ enum class UniqueParameterType(
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
             if (parameterText in knownValues) return null
-            if (ruleset.tileImprovements.containsKey(parameterText)) return null
+            if (ImprovementFilter.getErrorSeverity(parameterText, ruleset) == null) return null
             return TerrainFilter.getErrorSeverity(parameterText, ruleset)
         }
         override fun getTranslationWriterStringsForOutput() = knownValues
