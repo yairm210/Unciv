@@ -503,7 +503,7 @@ object UnitActions {
         if (tile.improvementInProgress == Constants.repair) return tile.turnsToImprovement
         var repairTurns = tile.ruleset.tileImprovements[Constants.repair]!!.getTurnsToBuild(unit.civInfo, unit)
 
-        val pillagedImprovement = tile.getImprovementToPillage()!!
+        val pillagedImprovement = tile.getImprovementToRepair()!!
         val turnsToBuild = pillagedImprovement.getTurnsToBuild(unit.civInfo, unit)
         // cap repair to number of turns to build original improvement
         if (turnsToBuild < repairTurns) repairTurns = turnsToBuild
