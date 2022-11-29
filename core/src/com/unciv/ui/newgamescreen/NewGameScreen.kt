@@ -76,6 +76,9 @@ class NewGameScreen(
         if (isNarrowerThan4to3()) initPortrait()
         else initLandscape()
 
+        pickerPane.bottomTable.background = skinStrings.getUiBackground("NewGameScreen/BottomTable", tintColor = skinStrings.skinConfig.clearColor)
+        pickerPane.topTable.background = skinStrings.getUiBackground("NewGameScreen/TopTable", tintColor = skinStrings.skinConfig.clearColor)
+
         if (UncivGame.Current.settings.lastGameSetup != null) {
             rightSideGroup.addActorAt(0, VerticalGroup().padBottom(5f))
             val resetToDefaultsButton = "Reset to defaults".toTextButton()

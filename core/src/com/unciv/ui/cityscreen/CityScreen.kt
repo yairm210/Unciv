@@ -213,7 +213,7 @@ class CityScreen(
             if (tileInfo.improvement == null) return false
             val civInfo = city.civInfo
             val existingStats = tileInfo.getImprovementStats(
-                tileInfo.getTileImprovement()!!,
+                tileInfo.getUnpillagedTileImprovement()!!,
                 civInfo,
                 city,
                 cityUniqueCache
@@ -312,7 +312,7 @@ class CityScreen(
 
         val tileSetStrings = TileSetStrings()
         val cityTileGroups = cityInfo.getCenterTile().getTilesInDistance(5)
-                .filter { cityInfo.civInfo.exploredTiles.contains(it.position) }
+                .filter { cityInfo.civInfo.hasExplored(it) }
                 .map { CityTileGroup(cityInfo, it, tileSetStrings) }
 
         for (tileGroup in cityTileGroups) {

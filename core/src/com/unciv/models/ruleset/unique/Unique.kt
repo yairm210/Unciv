@@ -170,6 +170,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 state.civInfo != null && state.civInfo.getEraNumber() >= ruleset().eras[condition.params[0]]!!.eraNumber
             UniqueType.ConditionalDuringEra ->
                 state.civInfo != null && state.civInfo.getEraNumber() == ruleset().eras[condition.params[0]]!!.eraNumber
+            UniqueType.ConditionalIfStartingInEra ->
+                state.civInfo != null && state.civInfo.gameInfo.gameParameters.startingEra == condition.params[0]
             UniqueType.ConditionalTech ->
                 state.civInfo != null && state.civInfo.tech.isResearched(condition.params[0])
             UniqueType.ConditionalNoTech ->

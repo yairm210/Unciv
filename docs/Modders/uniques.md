@@ -93,6 +93,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
+??? example  "[stats] per [amount] social policies adopted"
+	Example: "[+1 Gold, +2 Production] per [3] social policies adopted"
+
+	Applicable to: Global
+
 ??? example  "[stats] in cities on [terrainFilter] tiles"
 	Example: "[+1 Gold, +2 Production] in cities on [Fresh Water] tiles"
 
@@ -301,9 +306,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "[+20]% Food consumption by specialists [in all cities]"
 
 	Applicable to: Global, FollowerBelief
-
-??? example  "Provides 1 happiness per 2 additional social policies adopted"
-	Applicable to: Global
 
 ??? example  "[relativeAmount]% of excess happiness converted to [stat]"
 	Example: "[+20]% of excess happiness converted to [Culture]"
@@ -904,13 +906,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Building
 
-??? example  "Requires a [buildingName] in all cities"
-	Example: "Requires a [Library] in all cities"
+??? example  "Requires a [buildingFilter] in all cities"
+	Example: "Requires a [Culture] in all cities"
 
 	Applicable to: Building
 
-??? example  "Requires a [buildingName] in at least [amount] cities"
-	Example: "Requires a [Library] in at least [3] cities"
+??? example  "Requires a [buildingFilter] in at least [amount] cities"
+	Example: "Requires a [Culture] in at least [3] cities"
 
 	Applicable to: Building
 
@@ -1418,7 +1420,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Occurs at temperature between [amount] and [amount] and humidity between [amount] and [amount]"
 	Example: "Occurs at temperature between [3] and [3] and humidity between [3] and [3]"
 
-	Applicable to: Terrain
+	Applicable to: Terrain, Resource
 
 ??? example  "Occurs in chains at high elevations"
 	Applicable to: Terrain
@@ -1623,21 +1625,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Ruins
 
 ## CityState uniques
-??? example  "Provides [stats] per turn"
-	Example: "Provides [+1 Gold, +2 Production] per turn"
-
-	Applicable to: CityState
-
-??? example  "Provides [stats] [cityFilter] per turn"
-	Example: "Provides [+1 Gold, +2 Production] [in all cities] per turn"
-
-	Applicable to: CityState
-
-??? example  "Provides [amount] Happiness"
-	Example: "Provides [3] Happiness"
-
-	Applicable to: CityState
-
 ??? example  "Provides military units every ≈[amount] turns"
 	Example: "Provides military units every ≈[3] turns"
 
@@ -1710,6 +1697,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;if starting in the [era]&gt;"
+	Example: "&lt;if starting in the [Ancient era]&gt;"
+
+	Applicable to: Conditional
+
 ??? example  "&lt;if no other Civilization has researched this&gt;"
 	Applicable to: Conditional
 
@@ -1720,11 +1712,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;before discovering [tech]&gt;"
 	Example: "&lt;before discovering [Agriculture]&gt;"
-
-	Applicable to: Conditional
-
-??? example  "&lt;upon discovering [tech]&gt;"
-	Example: "&lt;upon discovering [Agriculture]&gt;"
 
 	Applicable to: Conditional
 
@@ -1744,8 +1731,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;after founding a Pantheon&gt;"
 	Applicable to: Conditional
 
-??? example  "&lt;if [buildingName] is constructed&gt;"
-	Example: "&lt;if [Library] is constructed&gt;"
+??? example  "&lt;if [buildingFilter] is constructed&gt;"
+	Example: "&lt;if [Culture] is constructed&gt;"
 
 	Applicable to: Conditional
 

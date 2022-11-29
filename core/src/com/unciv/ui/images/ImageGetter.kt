@@ -191,39 +191,6 @@ object ImageGetter {
         return drawable.tint(tintColor)
     }
 
-    @Deprecated("Use SkinStrings.getUiBackground instead to make UI element moddable", ReplaceWith("BaseScreen.skinStrings.getUiBackground(path, BaseScreen.skinStrings.roundedEdgeRectangle, tintColor)", "com.unciv.ui.utils.BaseScreen"))
-    fun getRoundedEdgeRectangle(tintColor: Color? = null): NinePatchDrawable {
-        val drawable = getNinePatch("Skins/${UncivGame.Current.settings.skin}/roundedEdgeRectangle")
-
-        if (tintColor == null) return drawable
-        return drawable.tint(tintColor)
-    }
-
-    @Deprecated("Use SkinStrings.getUiBackground instead to make UI element moddable", ReplaceWith("BaseScreen.skinStrings.getUiBackground(path, BaseScreen.skinStrings.rectangleWithOutline)", "com.unciv.ui.utils.BaseScreen"))
-    fun getRectangleWithOutline(): NinePatchDrawable {
-        return getNinePatch("Skins/${UncivGame.Current.settings.skin}/rectangleWithOutline")
-    }
-
-    @Deprecated("Use SkinStrings.getUiBackground instead to make UI element moddable", ReplaceWith("BaseScreen.skinStrings.getUiBackground(path, BaseScreen.skinStrings.selectBox)", "com.unciv.ui.utils.BaseScreen"))
-    fun getSelectBox(): NinePatchDrawable {
-        return getNinePatch("Skins/${UncivGame.Current.settings.skin}/select-box")
-    }
-
-    @Deprecated("Use SkinStrings.getUiBackground instead to make UI element moddable", ReplaceWith("BaseScreen.skinStrings.getUiBackground(path, BaseScreen.skinStrings.selectBoxPressed)", "com.unciv.ui.utils.BaseScreen"))
-    fun getSelectBoxPressed(): NinePatchDrawable {
-        return getNinePatch("Skins/${UncivGame.Current.settings.skin}/select-box-pressed")
-    }
-
-    @Deprecated("Use SkinStrings.getUiBackground instead to make UI element moddable", ReplaceWith("BaseScreen.skinStrings.getUiBackground(path, BaseScreen.skinStrings.checkbox)", "com.unciv.ui.utils.BaseScreen"))
-    fun getCheckBox(): NinePatchDrawable {
-        return getNinePatch("Skins/${UncivGame.Current.settings.skin}/checkbox")
-    }
-
-    @Deprecated("Use SkinStrings.getUiBackground instead to make UI element moddable", ReplaceWith("BaseScreen.skinStrings.getUiBackground(path, BaseScreen.skinStrings.checkboxPressed)", "com.unciv.ui.utils.BaseScreen"))
-    fun getCheckBoxPressed(): NinePatchDrawable {
-        return getNinePatch("Skins/${UncivGame.Current.settings.skin}/checkbox-pressed")
-    }
-
     fun imageExists(fileName: String) = textureRegionDrawables.containsKey(fileName)
     fun techIconExists(techName: String) = imageExists("TechIcons/$techName")
     fun unitIconExists(unitName: String) = imageExists("UnitIcons/$unitName")
@@ -341,14 +308,6 @@ object ImageGetter {
 
     fun getCircle() = getImage("OtherIcons/Circle")
     fun getTriangle() = getImage("OtherIcons/Triangle")
-
-    @Deprecated("Use SkinStrings.getUiBackground instead to make UI element moddable", ReplaceWith("BaseScreen.skinStrings.getUiBackground(path, tintColor=color)", "com.unciv.ui.utils.BaseScreen"))
-    fun getBackground(color: Color): Drawable {
-        val drawable = getDrawable("")
-        drawable.minHeight = 0f
-        drawable.minWidth = 0f
-        return drawable.tint(color)
-    }
 
     fun getRedCross(size: Float, alpha: Float): Actor {
         val redCross = getImage("OtherIcons/Close")

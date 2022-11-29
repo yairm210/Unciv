@@ -292,7 +292,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         if (constructionQueueIndex == selectedQueueEntry)
             table.background = BaseScreen.skinStrings.getUiBackground(
-                "CityScreen/CityConstructionTable/QueueEntry",
+                "CityScreen/CityConstructionTable/QueueEntrySelected",
                 tintColor = Color.GREEN.darken(0.5f)
             )
 
@@ -356,7 +356,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         if (!isSelectedQueueEntry() && cityScreen.selectedConstruction == construction) {
             pickConstructionButton.background = BaseScreen.skinStrings.getUiBackground(
-                "CityScreen/CityConstructionTable/PickConstructionButton",
+                "CityScreen/CityConstructionTable/PickConstructionButtonSelected",
                 tintColor = Color.GREEN.darken(0.5f)
             )
         }

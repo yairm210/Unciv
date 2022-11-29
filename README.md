@@ -15,7 +15,7 @@
 
 ## What is this?
 
-An open-source, mod-friendly Android+Desktop remake of Civ V, made with LibGDX
+An open source, mod-friendly Android and Desktop remake of Civ V, made with LibGDX
 
 ## Is this any good?
 

@@ -13,18 +13,15 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Nation
-import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
-import kotlin.collections.HashSet
 import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.pow
@@ -412,8 +409,8 @@ class CityInfo : IsPartOfGameInfoSerialization {
 
         for (tileInfo in getTiles()) {
             val stateForConditionals = StateForConditionals(civInfo, this, tile = tileInfo)
-            if (tileInfo.improvement == null) continue
-            val tileImprovement = tileInfo.getTileImprovement()
+            if (tileInfo.getUnpillagedImprovement() == null) continue
+            val tileImprovement = tileInfo.getUnpillagedTileImprovement()
             for (unique in tileImprovement!!.getMatchingUniques(UniqueType.ProvidesResources, stateForConditionals)) {
                 val resource = getRuleset().tileResources[unique.params[1]] ?: continue
                 cityResources.add(
@@ -469,9 +466,9 @@ class CityInfo : IsPartOfGameInfoSerialization {
             }) return 0
         }
 
-        if ((tileInfo.improvement != null && resource.isImprovedBy(tileInfo.improvement!!)) || tileInfo.isCityCenter()
+        if ((tileInfo.getUnpillagedImprovement() != null && resource.isImprovedBy(tileInfo.improvement!!)) || tileInfo.isCityCenter()
             // Per https://gaming.stackexchange.com/questions/53155/do-manufactories-and-customs-houses-sacrifice-the-strategic-or-luxury-resources
-            || resource.resourceType == ResourceType.Strategic && tileInfo.containsGreatImprovement()
+            || resource.resourceType == ResourceType.Strategic && tileInfo.containsUnpillagedGreatImprovement()
         ) {
             var amountToAdd = if (resource.resourceType == ResourceType.Strategic) tileInfo.resourceAmount
                 else 1
@@ -887,7 +884,7 @@ class CityInfo : IsPartOfGameInfoSerialization {
             citiesWithin6Tiles
                 .map { it.civInfo }
                 .distinct()
-                .filter { it.knows(civInfo) && it.exploredTiles.contains(location) }
+                .filter { it.knows(civInfo) && it.hasExplored(location) }
         for (otherCiv in civsWithCloseCities)
             otherCiv.getDiplomacyManager(civInfo).setFlag(DiplomacyFlags.SettledCitiesNearUs, 30)
     }

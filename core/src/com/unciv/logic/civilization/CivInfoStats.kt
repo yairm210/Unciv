@@ -3,7 +3,6 @@ package com.unciv.logic.civilization
 import com.unciv.Constants
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.RoadStatus
-import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.StateForConditionals
@@ -87,10 +86,10 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         for (city in civInfo.cities) {
             for (tile in city.getTiles()) {
                 if (tile.isCityCenter()) continue
-                if (tile.roadStatus == RoadStatus.None) continue // Cheap checks before pricey checks
+                if (tile.getUnpillagedRoad() == RoadStatus.None) continue // Cheap checks before pricey checks
                 if (ignoredTileTypes.any { tile.matchesFilter(it, civInfo) }) continue
 
-                transportationUpkeep += tile.roadStatus.upkeep
+                transportationUpkeep += tile.getUnpillagedRoad().upkeep
             }
         }
         for (unique in civInfo.getMatchingUniques(UniqueType.RoadMaintenance))
@@ -140,10 +139,6 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                 statMap.add(entry.key, entry.value)
         }
 
-        for (unique in civInfo.getMatchingUniques(UniqueType.Stats))
-            if (unique.sourceObjectType != UniqueTarget.Building && unique.sourceObjectType != UniqueTarget.Wonder)
-                statMap.add(unique.sourceObjectType!!.name, unique.stats)
-
         //City-States bonuses
         for (otherCiv in civInfo.getKnownCivs()) {
             if (!otherCiv.isCityState()) continue
@@ -164,21 +159,6 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         statMap["Transportation upkeep"] = Stats(gold = -getTransportationUpkeep().toFloat())
         statMap["Unit upkeep"] = Stats(gold = -getUnitMaintenance().toFloat())
 
-        if (civInfo.religionManager.religion != null) {
-            for (unique in civInfo.religionManager.religion!!.getFounderUniques()) {
-                if (unique.isOfType(UniqueType.StatsFromGlobalCitiesFollowingReligion)) {
-                    statMap.add(
-                        "Religion",
-                        unique.stats * civInfo.religionManager.numberOfCitiesFollowingThisReligion()
-                    )
-                }
-                if (unique.isOfType(UniqueType.StatsFromGlobalFollowers))
-                    statMap.add(
-                        "Religion",
-                        unique.stats * civInfo.religionManager.numberOfFollowersFollowingThisReligion(unique.params[2]).toFloat() / unique.params[1].toFloat()
-                    )
-            }
-        }
 
         if (civInfo.getHappiness() > 0) {
             val excessHappinessConversion = Stats()
@@ -201,12 +181,22 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         if (goldDifferenceFromTrade != 0)
             statMap["Trade"] = Stats(gold = goldDifferenceFromTrade.toFloat())
 
+        for ((key, value) in getGlobalStatsFromUniques())
+            statMap.add(key,value)
+
         return statMap
     }
 
 
     fun getHappinessBreakdown(): HashMap<String, Float> {
         val statMap = HashMap<String, Float>()
+
+        fun HashMap<String, Float>.add(key:String, value: Float){
+            if (!containsKey(key)) put(key, value)
+            else put(key, value+get(key)!!)
+        }
+        fun HashMap<String, Float>.add(key:String, value: Int) = add(key, value.toFloat())
+
         statMap["Base happiness"] = civInfo.getDifficulty().baseHappiness.toFloat()
 
         var happinessPerUniqueLuxury = 4f + civInfo.getDifficulty().extraHappinessPerLuxury
@@ -252,18 +242,12 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             // There appears to be a concurrency problem? In concurrent thread in ConstructionsTable.getConstructionButtonDTOs
             // Literally no idea how, since happinessList is ONLY replaced, NEVER altered.
             // Oh well, toList() should solve the problem, wherever it may come from.
-            for ((key, value) in city.cityStats.happinessList.toList()) {
-                if (statMap.containsKey(key))
-                    statMap[key] = statMap[key]!! + value
-                else statMap[key] = value
-            }
+            for ((key, value) in city.cityStats.happinessList.toList())
+                statMap.add(key, value)
         }
 
         if (civInfo.hasUnique(UniqueType.HappinessPer2Policies)) {
-            if (!statMap.containsKey("Policies")) statMap["Policies"] = 0f
-            statMap["Policies"] = statMap["Policies"]!! +
-                    civInfo.policies.getAdoptedPolicies()
-                        .count { !Policy.isBranchCompleteByName(it) } / 2
+            statMap.add("Policies", civInfo.policies.getAdoptedPolicies().count { !Policy.isBranchCompleteByName(it) } / 2)
         }
 
         var happinessPerNaturalWonder = 1f
@@ -272,32 +256,38 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
         statMap["Natural Wonders"] = happinessPerNaturalWonder * civInfo.naturalWonders.size
 
+        for ((key, value) in getGlobalStatsFromUniques())
+            statMap.add(key,value.happiness)
+
+        return statMap
+    }
+
+    fun getGlobalStatsFromUniques():StatMap{
+        val statMap = StatMap()
         if (civInfo.religionManager.religion != null) {
-            var religionHappiness = 0f
-            for (unique in civInfo.religionManager.religion!!.getBeliefs(BeliefType.Founder)
-                .flatMap { it.uniqueObjects }
-            ) {
-                if (unique.type == UniqueType.StatsFromGlobalCitiesFollowingReligion) {
-                    val followingCities =
-                        civInfo.religionManager.numberOfCitiesFollowingThisReligion()
-                    religionHappiness += unique.stats.happiness * followingCities
+            for (unique in civInfo.religionManager.religion!!.getFounderUniques()) {
+                if (unique.isOfType(UniqueType.StatsFromGlobalCitiesFollowingReligion)) {
+                    statMap.add(
+                        "Religion",
+                        unique.stats * civInfo.religionManager.numberOfCitiesFollowingThisReligion()
+                    )
                 }
-                if (unique.type == UniqueType.StatsFromGlobalFollowers) {
-                    val followers =
-                        civInfo.religionManager.numberOfFollowersFollowingThisReligion(unique.params[2])
-                    religionHappiness +=
-                        unique.stats.happiness * (followers / unique.params[1].toInt())
-                }
+                if (unique.isOfType(UniqueType.StatsFromGlobalFollowers))
+                    statMap.add(
+                        "Religion",
+                        unique.stats * civInfo.religionManager.numberOfFollowersFollowingThisReligion(unique.params[2]).toFloat() / unique.params[1].toFloat()
+                    )
             }
-            if (religionHappiness > 0) statMap["Religion"] = religionHappiness
+        }
+
+        for (unique in civInfo.getMatchingUniques(UniqueType.StatsPerPolicies)) {
+            val amount = civInfo.policies.getAdoptedPolicies().count { !Policy.isBranchCompleteByName(it) } / unique.params[1].toInt()
+            statMap.add("Policies", unique.stats.times(amount))
         }
 
         for (unique in civInfo.getMatchingUniques(UniqueType.Stats))
-            if (unique.sourceObjectType != UniqueTarget.Building && unique.sourceObjectType != UniqueTarget.Wonder && unique.stats.happiness != 0f){
-                val sourceObjectType = unique.sourceObjectType!!.name
-                if (!statMap.containsKey(sourceObjectType)) statMap[sourceObjectType] = unique.stats.happiness
-                else statMap[sourceObjectType] = statMap[sourceObjectType]!! + unique.stats.happiness
-            }
+            if (unique.sourceObjectType != UniqueTarget.Building && unique.sourceObjectType != UniqueTarget.Wonder)
+                statMap.add(unique.sourceObjectType!!.name, unique.stats)
 
         return statMap
     }

@@ -171,8 +171,8 @@ class WorldMapHolder(
 
     private fun onTileClicked(tileInfo: TileInfo) {
 
-        if (tileInfo.position !in worldScreen.viewingCiv.exploredTiles
-                && tileInfo.neighbors.all { it.position !in worldScreen.viewingCiv.exploredTiles })
+        if (!worldScreen.viewingCiv.hasExplored(tileInfo)
+                && tileInfo.neighbors.all { worldScreen.viewingCiv.hasExplored(it) })
             return // This tile doesn't exist for you
 
         removeUnitActionOverlay()
@@ -578,7 +578,7 @@ class WorldMapHolder(
 
 
             if (tileGroup.tileInfo.getShownImprovement(viewingCiv) == Constants.barbarianEncampment
-                    && tileGroup.tileInfo.position in viewingCiv.exploredTiles)
+                    && viewingCiv.hasExplored(tileGroup.tileInfo))
                 tileGroup.showHighlight(Color.RED)
 
             val unitsInTile = tileGroup.tileInfo.getUnits()

@@ -29,6 +29,7 @@ class GameOptionsTable(
 
     init {
         getGameOptionsTable()
+        background = BaseScreen.skinStrings.getUiBackground("NewGameScreen/GameOptionsTable", tintColor = BaseScreen.skinStrings.skinConfig.clearColor)
     }
 
     fun update() {

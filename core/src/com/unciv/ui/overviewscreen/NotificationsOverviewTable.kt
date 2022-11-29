@@ -79,7 +79,7 @@ class NotificationsOverviewTable(
             val label = WrappableLabel(notification.text, labelWidth, Color.BLACK, 20)
 
             notificationTable.add(label)
-            notificationTable.background = BaseScreen.skinStrings.getUiBackground("OverviewScreen/NotificationOverviewTable/Notification", BaseScreen.skinStrings.roundedEdgeRectangle)
+            notificationTable.background = BaseScreen.skinStrings.getUiBackground("OverviewScreen/NotificationOverviewTable/Notification", BaseScreen.skinStrings.roundedEdgeRectangleShape)
             notificationTable.touchable = Touchable.enabled
             notificationTable.onClick {
                 UncivGame.Current.resetToWorldScreen()

@@ -21,7 +21,6 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.BFS
-import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeEvaluation
@@ -714,7 +713,7 @@ object NextTurnAutomation {
         val enemyCivs = civInfo.getKnownCivs()
                 .filterNot {
                     it == civInfo || it.cities.isEmpty() || !civInfo.getDiplomacyManager(it).canDeclareWar()
-                            || it.cities.none { city -> civInfo.exploredTiles.contains(city.location) }
+                            || it.cities.none { city -> civInfo.hasExplored(city.location) }
                 }
         // If the AI declares war on a civ without knowing the location of any cities, it'll just keep amassing an army and not sending it anywhere,
         //   and end up at a massive disadvantage
@@ -861,31 +860,16 @@ object NextTurnAutomation {
 
 
     private fun automateUnits(civInfo: CivilizationInfo) {
-        val rangedUnits = mutableListOf<MapUnit>()
-        val meleeUnits = mutableListOf<MapUnit>()
-        val civilianUnits = mutableListOf<MapUnit>()
-        val generals = mutableListOf<MapUnit>()
-
-        for (unit in civInfo.getCivUnits()) {
-            if (unit.promotions.canBePromoted()) {
-                val availablePromotions = unit.promotions.getAvailablePromotions()
-                if (availablePromotions.any())
-                    unit.promotions.addPromotion(availablePromotions.toList().random().name)
-            }
-
+        val sortedUnits = civInfo.getCivUnits().sortedBy { unit ->
             when {
-                unit.baseUnit.isRanged() -> rangedUnits.add(unit)
-                unit.baseUnit.isMelee() -> meleeUnits.add(unit)
-                unit.isGreatPersonOfType("War")
-                    -> generals.add(unit) // Generals move after military units
-                else -> civilianUnits.add(unit)
+                unit.baseUnit.isAirUnit() -> 2
+                unit.baseUnit.isRanged() -> 3
+                unit.baseUnit.isMelee() -> 4
+                unit.isGreatPersonOfType("War") -> 5 // Generals move after military units
+                else -> 1 // Civilian
             }
         }
-
-        for (unit in civilianUnits) UnitAutomation.automateUnitMoves(unit) // They move first so that combat units can accompany a settler
-        for (unit in rangedUnits) UnitAutomation.automateUnitMoves(unit)
-        for (unit in meleeUnits) UnitAutomation.automateUnitMoves(unit)
-        for (unit in generals) UnitAutomation.automateUnitMoves(unit)
+        for (unit in sortedUnits) UnitAutomation.automateUnitMoves(unit)
     }
 
     private fun automateCityBombardment(civInfo: CivilizationInfo) {
