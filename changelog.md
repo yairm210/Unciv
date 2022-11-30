@@ -1,28 +1,13 @@
 ## 4.3.5
 
-Made yields smaller so heavy yields looks better on tiles
+Made yields smaller so heavy yields look better on tiles
 
-Made yields smaller so heavy yields looks better on tiles
-
-Modding: buildingName -> buildingFilter in all possible unique types
-
-Modding: improvement uniques can be assigned to tilefilter
-
-4.3.4-patch1
-
-Moved updateProximity to civ transient updater
-
-Added hasExplored and explore() functions to civinfo to mask exploredTiles
-
-Added hasExplored function to civinfo to mask exploredTiles
-
-Simplified automated unit order
-
-Resolved  - "Occurs at temperature between [amount] and [amount] and humidity between [amount] and [amount]" now applicable to resources
+Modding improvements:
+- buildingName -> buildingFilter in all possible unique types
+- improvement uniques can be assigned to tilefilter
+- "Occurs at temperature between [amount] and [amount] and humidity between [amount] and [amount]" now applicable to resources
 
 AbsoluteUnits - Unique Chariot Archers  - By letstalkaboutdune
-
-Fix Repair Crash  - By itanasi
 
 ## 4.3.4
 

@@ -69,28 +69,28 @@ EmojiIcons/Gold
   index: -1
 EmojiIcons/Happiness
   rotate: false
-  xy: 1192, 106
+  xy: 1300, 106
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Production
   rotate: false
-  xy: 1848, 538
+  xy: 1906, 538
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Science
   rotate: false
-  xy: 1964, 538
+  xy: 1466, 214
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Turn
   rotate: false
-  xy: 1466, 156
+  xy: 1682, 430
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -263,23 +263,30 @@ ImprovementIcons/Railroad
   orig: 100, 100
   offset: 0, 0
   index: -1
+ImprovementIcons/Repair
+  rotate: false
+  xy: 760, 380
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
 ImprovementIcons/Road
   rotate: false
-  xy: 652, 164
+  xy: 760, 272
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ImprovementIcons/Terrace farm
   rotate: false
-  xy: 1192, 272
+  xy: 1300, 380
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ImprovementIcons/Trading post
   rotate: false
-  xy: 1408, 488
+  xy: 1084, 56
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -293,21 +300,21 @@ OtherIcons/AirSweep
   index: -1
 OtherIcons/Aircraft
   rotate: false
-  xy: 1084, 4
+  xy: 1192, 4
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 OtherIcons/ArrowRight
   rotate: false
-  xy: 1142, 4
+  xy: 1250, 4
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 StatIcons/Movement
   rotate: false
-  xy: 1142, 4
+  xy: 1250, 4
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -426,7 +433,7 @@ OtherIcons/Improvements
   index: -1
 OtherIcons/Link
   rotate: false
-  xy: 1250, 106
+  xy: 1987, 854
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -482,7 +489,7 @@ OtherIcons/Multiplayer
   index: -1
 OtherIcons/Nations
   rotate: false
-  xy: 1987, 854
+  xy: 1848, 538
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -580,105 +587,105 @@ OtherIcons/Remove Heresy
   index: -1
 OtherIcons/Resources
   rotate: false
-  xy: 868, 488
+  xy: 544, 56
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Resume
   rotate: false
-  xy: 544, 56
+  xy: 652, 164
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Search
   rotate: false
-  xy: 976, 488
+  xy: 652, 56
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/SecretOptions
   rotate: false
-  xy: 652, 56
+  xy: 760, 164
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Settings
   rotate: false
-  xy: 760, 164
+  xy: 868, 272
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Shield
   rotate: false
-  xy: 976, 380
+  xy: 1084, 488
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Sleep
   rotate: false
-  xy: 868, 164
+  xy: 976, 272
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Speaker
   rotate: false
-  xy: 976, 272
+  xy: 1084, 380
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Spy
   rotate: false
-  xy: 868, 56
+  xy: 976, 164
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Spy_White
   rotate: false
-  xy: 976, 164
+  xy: 1084, 272
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Star
   rotate: false
-  xy: 1084, 278
+  xy: 1192, 386
   size: 100, 94
   orig: 100, 94
   offset: 0, 0
   index: -1
 OtherIcons/Stop
   rotate: false
-  xy: 1300, 488
+  xy: 976, 56
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Swap
   rotate: false
-  xy: 1084, 170
+  xy: 1192, 278
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Terrains
   rotate: false
-  xy: 1466, 214
+  xy: 1574, 322
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 OtherIcons/Timer
   rotate: false
-  xy: 1300, 380
+  xy: 1408, 488
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -692,21 +699,21 @@ OtherIcons/Triangle
   index: -1
 OtherIcons/Turn right
   rotate: false
-  xy: 1192, 164
+  xy: 1300, 272
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Tyrannosaurus
   rotate: false
-  xy: 1300, 272
+  xy: 1408, 380
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Wait
   rotate: false
-  xy: 1516, 488
+  xy: 1192, 62
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -888,63 +895,63 @@ ResourceIcons/Porcelain
   index: -1
 ResourceIcons/Salt
   rotate: false
-  xy: 760, 272
+  xy: 868, 380
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ResourceIcons/Sheep
   rotate: false
-  xy: 868, 272
+  xy: 976, 380
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ResourceIcons/Silk
   rotate: false
-  xy: 1084, 488
+  xy: 760, 56
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ResourceIcons/Silver
   rotate: false
-  xy: 760, 56
+  xy: 868, 164
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ResourceIcons/Spices
   rotate: false
-  xy: 1192, 488
+  xy: 868, 56
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ResourceIcons/Stone
   rotate: false
-  xy: 1192, 380
+  xy: 1300, 488
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ResourceIcons/Sugar
   rotate: false
-  xy: 976, 56
+  xy: 1084, 164
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ResourceIcons/Truffles
   rotate: false
-  xy: 1084, 62
+  xy: 1192, 170
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ResourceIcons/Uranium
   rotate: false
-  xy: 1408, 380
+  xy: 1516, 488
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -1049,14 +1056,14 @@ StatIcons/Production
   index: -1
 StatIcons/Range
   rotate: false
-  xy: 1308, 106
+  xy: 1964, 538
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 StatIcons/RangedStrength
   rotate: false
-  xy: 1906, 538
+  xy: 1408, 156
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1070,28 +1077,28 @@ StatIcons/ReligiousStrength
   index: -1
 StatIcons/Resistance
   rotate: false
-  xy: 760, 380
+  xy: 868, 488
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 StatIcons/Science
   rotate: false
-  xy: 868, 380
+  xy: 976, 488
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 StatIcons/Specialist
   rotate: false
-  xy: 1084, 380
+  xy: 1192, 488
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 StatIcons/Strength
   rotate: false
-  xy: 1408, 156
+  xy: 1466, 156
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
