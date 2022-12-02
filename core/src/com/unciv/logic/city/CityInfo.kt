@@ -104,6 +104,7 @@ class CityInfo : IsPartOfGameInfoSerialization {
     // This is so that cities in resistance that are recaptured aren't in resistance anymore
     var previousOwner = ""
     var turnAcquired = 0
+    var turnFounded = -1
     var health = 200
 
 
@@ -150,7 +151,8 @@ class CityInfo : IsPartOfGameInfoSerialization {
     constructor(civInfo: CivilizationInfo, cityLocation: Vector2) {  // new city!
         this.civInfo = civInfo
         foundingCiv = civInfo.civName
-        turnAcquired = civInfo.gameInfo.turns
+        turnFounded = civInfo.gameInfo.turns
+        turnAcquired = turnFounded
         location = cityLocation
         setTransients()
 
@@ -351,6 +353,7 @@ class CityInfo : IsPartOfGameInfoSerialization {
         toReturn.attackedThisTurn = attackedThisTurn
         toReturn.foundingCiv = foundingCiv
         toReturn.turnAcquired = turnAcquired
+        toReturn.turnFounded = turnFounded
         toReturn.isPuppet = isPuppet
         toReturn.isOriginalCapital = isOriginalCapital
         toReturn.flagsCountdown.putAll(flagsCountdown)
