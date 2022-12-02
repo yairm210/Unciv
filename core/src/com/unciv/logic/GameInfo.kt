@@ -214,20 +214,20 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         return gameParameters.espionageEnabled
     }
 
-    private fun getEquivalentTurn(): Int {
+    private fun getEquivalentTurn(turn: Int): Int {
         val totalTurns = speed.numTotalTurns()
         val startPercent = ruleSet.eras[gameParameters.startingEra]!!.startPercent
-        return turns + (totalTurns * startPercent / 100)
+        return turn + (totalTurns * startPercent / 100)
     }
 
-    fun getYear(turnOffset: Int = 0): Int {
-        val turn = getEquivalentTurn() + turnOffset
+    fun getYear(turn: Int = turns, turnOffset: Int = 0): Int {
+        val equivalentTurn = getEquivalentTurn(turn) + turnOffset
         val yearsToTurn = speed.yearsPerTurn
         var year = speed.startYear
         var i = 0
         var yearsPerTurn: Float
 
-        while (i < turn) {
+        while (i < equivalentTurn) {
             yearsPerTurn = (yearsToTurn.firstOrNull { i < it.untilTurn }?.yearInterval ?: yearsToTurn.last().yearInterval)
             year += yearsPerTurn
             ++i

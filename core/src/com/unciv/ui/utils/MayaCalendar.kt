@@ -62,7 +62,7 @@ object MayaCalendar {
     fun startTurnForMaya(civInfo: CivilizationInfo) {
         val game = civInfo.gameInfo
         val year = game.getYear()
-        if (!isNewCycle(year, game.getYear(-1))) return
+        if (!isNewCycle(year, game.getYear(turnOffset=-1))) return
         for (unique in civInfo.getMatchingUniques(UniqueType.MayanGainGreatPerson)) {
             UniqueTriggerActivation.triggerCivwideUnique(
                 unique, civInfo,

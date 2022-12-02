@@ -29,8 +29,10 @@ import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.surroundWithCircle
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
+import com.unciv.ui.utils.Fonts
 import java.text.DecimalFormat
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
+import kotlin.math.abs
 
 class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin) {
     private val pad = 10f
@@ -76,6 +78,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
             addBuildingsInfo(cityInfo)
             addStatInfo()
             addGreatPersonPointInfo(cityInfo)
+            addMiscInfo(cityInfo)
         }
 
         updateHideShowAllButton()
@@ -343,6 +346,31 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
                 greatPersonTable.add(gppPointsFromSource.toLabel()).row()
             }
         }
+    }
+
+    private fun Table.addMiscInfo(cityInfo: CityInfo) {
+        val table = Table()
+        addCategory("Miscellaneous", table)
+        fun date(turn: Int): String {
+            val year = cityInfo.civInfo.gameInfo.getYear(turn)
+            val yearText = "[" + abs(year) + "] " + (if (year < 0) "BC" else "AD")
+            return "${yearText.tr()} (${Fonts.turn} ${turn})"
+        }
+        fun info(label: String, value: String) {
+            table.add(label.toLabel()).right().padRight(10f)
+            table.add(value.toLabel()).left().row()
+        }
+        info("Founded in", (
+            if (cityInfo.turnFounded < 0) "???"
+            else date(cityInfo.turnFounded)))
+        if (cityInfo.foundingCiv != "")
+            info("by", cityInfo.foundingCiv)
+        if (cityInfo.turnFounded != cityInfo.turnAcquired)
+            info("Acquired in", date(cityInfo.turnAcquired))
+        var loc = cityInfo.location
+        info("Location", "x=${loc.x.toInt()}, y=${loc.y.toInt()}")
+        if (cityInfo.isWeLoveTheKingDayActive())
+            info("Demanded Resource", cityInfo.demandedResource)
     }
 
     companion object {
