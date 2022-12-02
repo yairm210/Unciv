@@ -205,7 +205,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     // Todo: Sign should not be part of the unique placeholder
     StrategicResourcesIncrease("Quantity of strategic resources produced by the empire +[relativeAmount]%", UniqueTarget.Global),  // used in Policy
     DoubleResourceProduced("Double quantity of [resource] produced", UniqueTarget.Global),
-    // Todo: should probably be changed to "[stats] from every known Natural Wonder", and that'll give us the global unique as well
+
+    StatsFromNaturalWonders("[stats] for every known Natural Wonder", UniqueTarget.Global),
+    @Deprecated("as of 4.3.6", ReplaceWith("[+1 Happiness] for every known Natural Wonder"))
     DoubleHappinessFromNaturalWonders("Double Happiness from Natural Wonders", UniqueTarget.Global),
 
     EnablesConstructionOfSpaceshipParts("Enables construction of Spaceship parts", UniqueTarget.Global),
@@ -778,7 +780,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     GreatPersonPointPercentageDeprecated("[relativeAmount]% great person generation [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     @Deprecated("as of 3.19.19", ReplaceWith("[+25]% [Gold] from Trade Routes"), DeprecationLevel.ERROR)
     GoldBonusFromTradeRoutesDeprecated("Gold from all trade routes +25%", UniqueTarget.Global),
-    // ToDo: Reword to `[stats] <in cities with [amount] or more population>` for consistency with other conditionals
     @Deprecated("as of 3.19.19", ReplaceWith("[stats] <in cities with at least [amount] [Population]>"), DeprecationLevel.ERROR)
     StatsFromXPopulation("[stats] in cities with [amount] or more population", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     @Deprecated("as of 3.19.8", ReplaceWith("Only available <before adopting [policy/tech/promotion]>" +

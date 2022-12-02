@@ -250,12 +250,6 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             statMap.add("Policies", civInfo.policies.getAdoptedPolicies().count { !Policy.isBranchCompleteByName(it) } / 2)
         }
 
-        var happinessPerNaturalWonder = 1f
-        if (civInfo.hasUnique(UniqueType.DoubleHappinessFromNaturalWonders))
-            happinessPerNaturalWonder *= 2
-
-        statMap["Natural Wonders"] = happinessPerNaturalWonder * civInfo.naturalWonders.size
-
         for ((key, value) in getGlobalStatsFromUniques())
             statMap.add(key,value.happiness)
 
@@ -288,6 +282,15 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         for (unique in civInfo.getMatchingUniques(UniqueType.Stats))
             if (unique.sourceObjectType != UniqueTarget.Building && unique.sourceObjectType != UniqueTarget.Wonder)
                 statMap.add(unique.sourceObjectType!!.name, unique.stats)
+
+        val statsPerNaturalWonder = Stats(happiness = 1f)
+
+        if (civInfo.hasUnique(UniqueType.DoubleHappinessFromNaturalWonders))
+            statsPerNaturalWonder.happiness *= 2
+        for (unique in civInfo.getMatchingUniques(UniqueType.StatsFromNaturalWonders))
+            statsPerNaturalWonder.add(unique.stats)
+
+        statMap.add("Natural Wonders", statsPerNaturalWonder.times(civInfo.naturalWonders.size))
 
         return statMap
     }

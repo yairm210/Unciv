@@ -436,7 +436,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
-??? example  "Double Happiness from Natural Wonders"
+??? example  "[stats] for every known Natural Wonder"
+	Example: "[+1 Gold, +2 Production] for every known Natural Wonder"
+
 	Applicable to: Global
 
 ??? example  "Enables construction of Spaceship parts"
