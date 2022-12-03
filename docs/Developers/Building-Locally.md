@@ -20,6 +20,7 @@ So first things first - the initial "No assumptions" setup to have Unciv run fro
         -   Select "Show Package Details" in the bottom right
         -   Choose version 32.0.0 under "Android SDK Build-Tools"
         -   Click "Apply"
+        -   Restart Android Studio
 -   In Android Studio, Run > Edit configurations (be sure the Gradle sync is finished successfully first).
     -   Click "+" to add a new configuration
     -   Choose "Application"
