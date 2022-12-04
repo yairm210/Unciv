@@ -297,13 +297,17 @@ class CivilopediaScreen(
         globalShortcuts.add(Input.Keys.LEFT) {
             val categoryKey = categoryToEntries.keys
             val currentIndex = categoryKey.indexOf(currentCategory)
-            val targetCategory = categoryKey.elementAt((currentIndex - 1) % categoryKey.size)
+            val targetCategory = categoryKey.elementAt(
+                (currentIndex + categoryKey.size - 1) % categoryKey.size
+            )
             selectCategory(targetCategory)
         }
         globalShortcuts.add(Input.Keys.RIGHT) {
             val categoryKey = categoryToEntries.keys
             val currentIndex = categoryKey.indexOf(currentCategory)
-            val targetCategory = categoryKey.elementAt((currentIndex + 1) % categoryKey.size)
+            val targetCategory = categoryKey.elementAt(
+                (currentIndex + categoryKey.size + 1) % categoryKey.size
+            )
             selectCategory(targetCategory)
 
         }
