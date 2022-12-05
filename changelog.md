@@ -1,3 +1,21 @@
+## 4.3.6
+
+Resolved  - Single turn repair, repair turn inconsistencies
+
+Resolved  - Replaces misunderstood 'virtual resolutions' with more intuitive 'screen size'
+
+Max screen size takes Windows taskbar into account - see 
+
+Image asset update + reorg
+
+After-combat notification for promotable units - see 
+
+modding: Double Happiness from Natural Wonders -> [stats] from every known Natural Wonder
+
+Volley only for Siege in G&K  - By itanasi
+
+fix civilopedia category bug.  - By nacro711072
+
 ## 4.3.5
 
 Made yields smaller so heavy yields look better on tiles
