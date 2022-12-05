@@ -17,9 +17,10 @@ import com.unciv.models.metadata.WindowState
 import com.unciv.ui.utils.Fonts
 import com.unciv.utils.Log
 import com.unciv.utils.debug
-import java.awt.Toolkit
+import java.awt.GraphicsEnvironment
 import java.util.*
 import kotlin.concurrent.timer
+
 
 internal object DesktopLauncher {
     private var discordTimer: Timer? = null
@@ -52,10 +53,11 @@ internal object DesktopLauncher {
         if (settings.isFreshlyCreated) {
             settings.resolution = "1200x800" // By default Desktops should have a higher resolution
             // LibGDX not yet configured, use regular java class
-            val screensize = Toolkit.getDefaultToolkit().screenSize
+            val graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment()
+            val maximumWindowBounds = graphicsEnvironment.maximumWindowBounds
             settings.windowState = WindowState(
-                width = screensize.width,
-                height = screensize.height
+                width = maximumWindowBounds.width,
+                height = maximumWindowBounds.height
             )
             FileHandle(SETTINGS_FILE_NAME).writeString(json().toJson(settings), false) // so when we later open the game we get fullscreen
         }
