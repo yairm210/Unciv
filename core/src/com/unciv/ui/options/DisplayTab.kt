@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
 import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
+import com.unciv.models.metadata.ScreenSize
 import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.tr
@@ -42,7 +43,7 @@ fun displayTab(
 
     addUnitIconAlphaSlider(this, settings, optionsPopup.selectBoxMinWidth)
 
-    addResolutionSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
+    addScreenSizeSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
 
     addTileSetSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
 
@@ -117,16 +118,16 @@ private fun addUnitIconAlphaSlider(table: Table, settings: GameSettings, selectB
     table.add(unitIconAlphaSlider).minWidth(selectBoxMinWidth).pad(10f).row()
 }
 
-private fun addResolutionSelectBox(table: Table, settings: GameSettings, selectBoxMinWidth: Float, onResolutionChange: () -> Unit) {
-    table.add("Resolution".toLabel()).left().fillX()
+private fun addScreenSizeSelectBox(table: Table, settings: GameSettings, selectBoxMinWidth: Float, onResolutionChange: () -> Unit) {
+    table.add("Screen Size".toLabel()).left().fillX()
 
-    val resolutionSelectBox = SelectBox<String>(table.skin)
-    resolutionSelectBox.items = resolutionArray
-    resolutionSelectBox.selected = settings.resolution
-    table.add(resolutionSelectBox).minWidth(selectBoxMinWidth).pad(10f).row()
+    val screenSizeSelectBox = SelectBox<ScreenSize>(table.skin)
+    screenSizeSelectBox.items = Array(ScreenSize.values())
+    screenSizeSelectBox.selected = settings.screenSize
+    table.add(screenSizeSelectBox).minWidth(selectBoxMinWidth).pad(10f).row()
 
-    resolutionSelectBox.onChange {
-        settings.resolution = resolutionSelectBox.selected
+    screenSizeSelectBox.onChange {
+        settings.screenSize = screenSizeSelectBox.selected
         onResolutionChange()
     }
 }

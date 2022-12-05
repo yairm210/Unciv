@@ -15,6 +15,14 @@ import kotlin.reflect.KMutableProperty0
 
 data class WindowState (val width: Int = 900, val height: Int = 600)
 
+enum class ScreenSize(val virtualWidth:Float, val virtualHeight:Float){
+    Tiny(750f,500f),
+    Small(900f,600f),
+    Medium(1050f,700f),
+    Large(1200f,800f),
+    Huge(1500f,1000f)
+}
+
 class GameSettings {
     var showWorkedTiles: Boolean = false
     var showResourcesAndImprovements: Boolean = true
@@ -26,10 +34,11 @@ class GameSettings {
     var language: String = "English"
     @Transient
     var locale: Locale? = null
-    var resolution: String = "900x600" // Auto-detecting resolution was a BAD IDEA since it needs to be based on DPI AND resolution.
+    @Deprecated("Since 4.3.6 - replaces with screenSize")
+    var resolution: String = "900x600"
+    var screenSize:ScreenSize = ScreenSize.Small
     var tutorialsShown = HashSet<String>()
     var tutorialTasksCompleted = HashSet<String>()
-    var hasCrashedRecently = false
 
     var soundEffectsVolume = 0.5f
     var citySoundsVolume = 0.5f

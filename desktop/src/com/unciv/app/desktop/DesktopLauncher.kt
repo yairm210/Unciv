@@ -13,6 +13,7 @@ import com.unciv.UncivGameParameters
 import com.unciv.json.json
 import com.unciv.logic.SETTINGS_FILE_NAME
 import com.unciv.logic.UncivFiles
+import com.unciv.models.metadata.ScreenSize
 import com.unciv.models.metadata.WindowState
 import com.unciv.ui.utils.Fonts
 import com.unciv.utils.Log
@@ -51,7 +52,7 @@ internal object DesktopLauncher {
 
         val settings = UncivFiles.getSettingsForPlatformLaunchers()
         if (settings.isFreshlyCreated) {
-            settings.resolution = "1200x800" // By default Desktops should have a higher resolution
+            settings.screenSize = ScreenSize.Large // By default we guess that Desktops have larger screens
             // LibGDX not yet configured, use regular java class
             val graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment()
             val maximumWindowBounds = graphicsEnvironment.maximumWindowBounds
