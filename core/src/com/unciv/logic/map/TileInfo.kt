@@ -246,7 +246,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     fun canPillageTile(): Boolean {
         return canPillageTileImprovement() || canPillageRoad()
     }
-    private fun canPillageTileImprovement(): Boolean {
+    fun canPillageTileImprovement(): Boolean {
         return improvement != null && !improvementIsPillaged
                 && !ruleset.tileImprovements[improvement]!!.hasUnique(UniqueType.Unpillagable)
                 && !ruleset.tileImprovements[improvement]!!.hasUnique(UniqueType.Irremovable)
