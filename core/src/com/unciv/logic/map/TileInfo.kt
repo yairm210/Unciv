@@ -46,6 +46,8 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     fun setOwningCity(city:CityInfo?){
         owningCity = city
         isCityCenterInternal = getCity()?.location == position
+        if (city != null && roadOwner != null)  // only when taking control, otherwise last owner
+            roadOwner = city.civInfo
     }
 
     @Transient
@@ -104,6 +106,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
 
     var roadStatus = RoadStatus.None
     var roadIsPillaged = false
+    var roadOwner: CivilizationInfo? = null // either who last built the road or last owner of tile
     var turnsToImprovement: Int = 0
 
     fun isHill() = baseTerrain == Constants.hill || terrainFeatures.contains(Constants.hill)
@@ -144,6 +147,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         toReturn.improvementIsPillaged = improvementIsPillaged
         toReturn.roadStatus = roadStatus
         toReturn.roadIsPillaged = roadIsPillaged
+        toReturn.roadOwner = roadOwner
         toReturn.turnsToImprovement = turnsToImprovement
         toReturn.hasBottomLeftRiver = hasBottomLeftRiver
         toReturn.hasBottomRightRiver = hasBottomRightRiver
@@ -246,12 +250,12 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     fun canPillageTile(): Boolean {
         return canPillageTileImprovement() || canPillageRoad()
     }
-    private fun canPillageTileImprovement(): Boolean {
+    fun canPillageTileImprovement(): Boolean {
         return improvement != null && !improvementIsPillaged
                 && !ruleset.tileImprovements[improvement]!!.hasUnique(UniqueType.Unpillagable)
                 && !ruleset.tileImprovements[improvement]!!.hasUnique(UniqueType.Irremovable)
     }
-    private fun canPillageRoad(): Boolean {
+    fun canPillageRoad(): Boolean {
         return roadStatus != RoadStatus.None && !roadIsPillaged
                 && !ruleset.tileImprovements[roadStatus.name]!!.hasUnique(UniqueType.Unpillagable)
                 && !ruleset.tileImprovements[roadStatus.name]!!.hasUnique(UniqueType.Irremovable)
