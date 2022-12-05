@@ -519,7 +519,7 @@ object UnitActions {
         if (!tile.isPillaged()) return
 
         val couldConstruct = unit.currentMovement > 0
-                && !tile.isCityCenter()
+                && !tile.isCityCenter() && tile.improvementInProgress != Constants.repair
 
         val turnsToBuild = getRepairTurns(unit)
 
@@ -531,10 +531,9 @@ object UnitActions {
 
     fun getRepairAction(unit: MapUnit): () -> Unit {
         return {
-            unit.currentMovement = 0f
             val tile = unit.currentTile
-            tile.improvementInProgress = Constants.repair
             tile.turnsToImprovement = getRepairTurns(unit)
+            tile.improvementInProgress = Constants.repair
         }
     }
 
