@@ -46,7 +46,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     fun setOwningCity(city:CityInfo?){
         owningCity = city
         isCityCenterInternal = getCity()?.location == position
-        if (city != null && roadOwner != null)  // only when taking control, otherwise last owner
+        if (city != null)  // only when taking control, otherwise last owner
             roadOwner = city.civInfo
     }
 

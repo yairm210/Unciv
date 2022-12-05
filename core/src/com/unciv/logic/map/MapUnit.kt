@@ -741,7 +741,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 if (RoadStatus.values().any { tile.improvementInProgress == it.removeAction }) {
                     tile.roadStatus = RoadStatus.None
                     tile.roadIsPillaged = false
-                    tile.roadOwner = null
                 } else {
                     val removedFeatureObject = tile.ruleset.terrains[removedFeatureName]
                     if (removedFeatureObject != null && removedFeatureObject.hasUnique(UniqueType.ProductionBonusWhenRemoved)) {
