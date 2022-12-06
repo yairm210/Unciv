@@ -899,7 +899,7 @@ object UnitActions {
         if (tileOwner == null) {
             if (tile.canPillageTile())
                 return true
-            if (tile.canPillageRoad() && unit.civInfo.isAtWarWith(tile.roadOwner!!))
+            if (tile.canPillageRoad() && tile.roadOwner != null && unit.civInfo.isAtWarWith(tile.roadOwner!!))
                 return true
             return false
         } else {
