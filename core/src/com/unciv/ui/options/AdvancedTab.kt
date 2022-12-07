@@ -3,7 +3,11 @@ package com.unciv.ui.options
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Pixmap
+import com.badlogic.gdx.graphics.PixmapIO
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
@@ -11,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
 import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
+import com.unciv.models.metadata.ScreenSize
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.tr
 import com.unciv.ui.popup.ConfirmPopup
@@ -27,9 +32,14 @@ import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.setFontColor
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
+import com.unciv.ui.utils.extensions.withoutItem
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.*
+import java.util.zip.Deflater
 
 fun advancedTab(
     optionsPopup: OptionsPopup,
@@ -188,6 +198,73 @@ private fun addTranslationGeneration(table: Table, optionsPopup: OptionsPopup) {
     generateTranslationsButton.keyShortcuts.add(Input.Keys.F12)
     generateTranslationsButton.addTooltip("F12", 18f)
     table.add(generateTranslationsButton).colspan(2).row()
+
+
+    val generateScreenshotsButton = "Generate screenshots".toTextButton()
+
+    generateScreenshotsButton.onActivation {
+        optionsPopup.tabs.selectPage("Advanced")
+        generateScreenshotsButton.setText("Working...".tr())
+        Concurrency.run("GenerateScreenshot") {
+            val extraImagesLocation = "../../extraImages"
+            generateScreenshots(arrayListOf(
+                ScreenshotConfig(630, 500, ScreenSize.Medium, "$extraImagesLocation/itch.io image.png", Vector2(-2f, 2f),false),
+                ScreenshotConfig(1280, 640, ScreenSize.Medium, "$extraImagesLocation/GithubPreviewImage.png", Vector2(-2f, 4f)),
+                ScreenshotConfig(1024, 500, ScreenSize.Medium, "$extraImagesLocation/Feature graphic - Google Play.png",Vector2(-2f, 6f))
+            ))
+        }
+    }
+    table.add(generateScreenshotsButton).colspan(2).row()
+
+}
+
+data class ScreenshotConfig(val width: Int, val height: Int, val screenSize: ScreenSize, var fileLocation:String, var centerTile:Vector2, var attackCity:Boolean=true)
+
+private fun CoroutineScope.generateScreenshots(configs:ArrayList<ScreenshotConfig>) {
+    val currentConfig = configs.first()
+    launchOnGLThread {
+        val screenshotGame =
+                UncivGame.Current.files.loadGameByName("ScreenshotGenerationGame")
+        UncivGame.Current.settings.screenSize = currentConfig.screenSize
+        val newScreen = UncivGame.Current.loadGame(screenshotGame)
+
+
+        newScreen.stage.viewport.update(currentConfig.width, currentConfig.height, true)
+
+        // Reposition mapholder and minimap whose position was based on the previous stage size...
+        newScreen.mapHolder.setSize(newScreen.stage.width, newScreen.stage.height)
+        newScreen.mapHolder.layout()
+        newScreen.minimapWrapper.x = newScreen.stage.width - newScreen.minimapWrapper.width
+
+        newScreen.mapHolder.setCenterPosition( // Center on the city
+            currentConfig.centerTile,
+            immediately = true,
+            selectUnit = true
+        )
+
+        newScreen.mapHolder.onTileClicked(newScreen.mapHolder.tileMap[-2, 3]) // Then click on Keshik
+        if (currentConfig.attackCity)
+            newScreen.mapHolder.onTileClicked(newScreen.mapHolder.tileMap[-2, 2]) // Then click city again for attack table
+        newScreen.mapHolder.zoomIn()
+        withContext(Dispatchers.IO) {
+            Thread.sleep(300)
+            launchOnGLThread {
+                val pixmap = Pixmap.createFromFrameBuffer(
+                    0, 0,
+                    currentConfig.width, currentConfig.height
+                )
+                PixmapIO.writePNG(
+                    FileHandle(currentConfig.fileLocation),
+                    pixmap,
+                    Deflater.DEFAULT_COMPRESSION,
+                    true
+                )
+                pixmap.dispose()
+                val newConfigs = configs.withoutItem(currentConfig)
+                if (newConfigs.isNotEmpty()) generateScreenshots(newConfigs)
+            }
+        }
+    }
 }
 
 private fun addSetUserId(table: Table, settings: GameSettings) {

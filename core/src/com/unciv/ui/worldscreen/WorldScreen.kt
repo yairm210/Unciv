@@ -120,7 +120,7 @@ class WorldScreen(
     val bottomUnitTable = UnitTable(this)
     private val battleTable = BattleTable(this)
     private val zoomController = ZoomButtonPair(mapHolder)
-    private val minimapWrapper = MinimapHolder(mapHolder)
+    internal val minimapWrapper = MinimapHolder(mapHolder)
     private val bottomTileInfoTable = TileInfoTable(viewingCiv)
     private val notificationsScroll = NotificationsScroll(this)
     private val nextTurnButton = NextTurnButton()
