@@ -388,6 +388,11 @@ class ModManagementScreen(
             popup.addGoodSizedLabel("Please enter the mod repository -or- archive zip url:").row()
             val textField = UncivTextField.create("")
             popup.add(textField).width(stage.width / 2).row()
+            val pasteLinkButton = "Paste from clipboard".toTextButton()
+            pasteLinkButton.onClick {
+                textField.text = Gdx.app.clipboard.contents
+            }
+            popup.add(pasteLinkButton).row()
             val actualDownloadButton = "Download".toTextButton()
             actualDownloadButton.onClick {
                 actualDownloadButton.setText("Downloading...".tr())
