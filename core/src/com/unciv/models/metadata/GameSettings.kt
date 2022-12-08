@@ -181,7 +181,7 @@ enum class LocaleCode(var language: String, var country: String) {
 
 class GameSettingsMultiplayer {
     var userId = ""
-    var server = Constants.dropboxMultiplayerServer
+    var server = Constants.uncivXyzServer
     var friendList: MutableList<FriendList.Friend> = mutableListOf()
     var turnCheckerEnabled = true
     var turnCheckerPersistentNotificationEnabled = true
