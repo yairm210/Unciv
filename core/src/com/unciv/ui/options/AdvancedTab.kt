@@ -207,10 +207,12 @@ private fun addTranslationGeneration(table: Table, optionsPopup: OptionsPopup) {
         generateScreenshotsButton.setText("Working...".tr())
         Concurrency.run("GenerateScreenshot") {
             val extraImagesLocation = "../../extraImages"
+            // I'm not sure why we need to advance the y by 2 for every screenshot... but that's the only way it remains centered
             generateScreenshots(arrayListOf(
                 ScreenshotConfig(630, 500, ScreenSize.Medium, "$extraImagesLocation/itch.io image.png", Vector2(-2f, 2f),false),
                 ScreenshotConfig(1280, 640, ScreenSize.Medium, "$extraImagesLocation/GithubPreviewImage.png", Vector2(-2f, 4f)),
-                ScreenshotConfig(1024, 500, ScreenSize.Medium, "$extraImagesLocation/Feature graphic - Google Play.png",Vector2(-2f, 6f))
+                ScreenshotConfig(1024, 500, ScreenSize.Medium, "$extraImagesLocation/Feature graphic - Google Play.png",Vector2(-2f, 6f)),
+                ScreenshotConfig(1024, 500, ScreenSize.Medium, "../../fastlane/metadata/android/en-US/images/featureGraphic.png",Vector2(-2f, 8f))
             ))
         }
     }
@@ -227,8 +229,6 @@ private fun CoroutineScope.generateScreenshots(configs:ArrayList<ScreenshotConfi
                 UncivGame.Current.files.loadGameByName("ScreenshotGenerationGame")
         UncivGame.Current.settings.screenSize = currentConfig.screenSize
         val newScreen = UncivGame.Current.loadGame(screenshotGame)
-
-
         newScreen.stage.viewport.update(currentConfig.width, currentConfig.height, true)
 
         // Reposition mapholder and minimap whose position was based on the previous stage size...
