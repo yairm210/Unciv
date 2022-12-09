@@ -56,7 +56,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen): Table() {
         selectedConstructionTable.run {
             pad(10f)
 
-            add(ImageGetter.getConstructionImage(construction.name).surroundWithCircle(50f))
+            add(ImageGetter.getPortraitImage(construction.name, 50f))
                 .pad(5f)
 
             var buildingText = construction.name.tr()

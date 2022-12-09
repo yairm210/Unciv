@@ -252,12 +252,40 @@ object ImageGetter {
         return iconGroup
     }
 
-    fun getConstructionImage(construction: String): Image {
-        if (ruleset.buildings.containsKey(construction)) return getImage("BuildingIcons/$construction")
-        if (ruleset.units.containsKey(construction)) return getUnitIcon(construction)
-        if (construction == "Nothing") return getImage("OtherIcons/Sleep")
-        return getStatIcon(construction)
+    fun getPortraitImage(construction: String, size: Float): Group {
+        if (ruleset.buildings.containsKey(construction)) {
+            return if (buildingPortraitExists(construction)) {
+                val image = getImage("BuildingPortraits/$construction")
+                val group = Group().apply {
+                    setSize(size, size)
+                    image.setSize(size, size)
+                    image.center(this)
+                    image.setOrigin(Align.center)
+                    addActor(image) }
+                group
+            } else
+                getImage("BuildingIcons/$construction").surroundWithCircle(size)
+        }
+        if (ruleset.units.containsKey(construction)) {
+            return if (unitPortraitExists(construction)) {
+                val image = getImage("UnitPortraits/$construction")
+                val group = Group().apply {
+                    setSize(size, size)
+                    image.setSize(size, size)
+                    image.center(this)
+                    image.setOrigin(Align.center)
+                    addActor(image) }
+                group
+            } else
+                getUnitIcon(construction).surroundWithCircle(size)
+        }
+        if (construction == "Nothing")
+            return getImage("OtherIcons/Sleep").surroundWithCircle(size)
+        return getStatIcon(construction).surroundWithCircle(size)
     }
+
+    private fun unitPortraitExists(unitName: String) = imageExists("UnitPortraits/$unitName")
+    private fun buildingPortraitExists(buildingName: String) = imageExists("BuildingPortraits/$buildingName")
 
     fun getPromotionIcon(promotionName: String, size: Float = 30f): Actor {
         val nameWithoutBrackets = promotionName.replace("[", "").replace("]", "")
