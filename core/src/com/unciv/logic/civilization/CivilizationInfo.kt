@@ -195,6 +195,8 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     var citiesCreated = 0
     var exploredTiles = HashSet<Vector2>()
 
+    var neutralRoads = listOf<TileInfo>()
+
     fun hasExplored(position: Vector2) = exploredTiles.contains(position)
     fun hasExplored(tileInfo: TileInfo) = hasExplored(tileInfo.position)
 
@@ -277,6 +279,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
             toReturn.diplomacy[diplomacyManager.otherCivName] = diplomacyManager
         toReturn.proximity.putAll(proximity)
         toReturn.cities = cities.map { it.clone() }
+        toReturn.neutralRoads = neutralRoads
 
         // This is the only thing that is NOT switched out, which makes it a source of ConcurrentModification errors.
         // Cloning it by-pointer is a horrific move, since the serialization would go over it ANYWAY and still lead to concurrency problems.

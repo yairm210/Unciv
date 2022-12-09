@@ -44,10 +44,19 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         private set
 
     fun setOwningCity(city:CityInfo?){
+        if (city != null) {  // only when taking control, otherwise last owner
+            roadOwner = city.civInfo
+            if (roadStatus != RoadStatus.None) {
+                if (owningCity != null) {
+                    owningCity!!.civInfo.neutralRoads =
+                            owningCity!!.civInfo.neutralRoads.toMutableList()
+                                .apply { remove(this@TileInfo) }
+                }
+                city.civInfo.neutralRoads = city.civInfo.neutralRoads.toMutableList().apply { add(this@TileInfo) }
+            }
+        }
         owningCity = city
         isCityCenterInternal = getCity()?.location == position
-        if (city != null)  // only when taking control, otherwise last owner
-            roadOwner = city.civInfo
     }
 
     @Transient
@@ -271,6 +280,25 @@ open class TileInfo : IsPartOfGameInfoSerialization {
             RoadStatus.None
         else
             roadStatus
+    }
+
+    // function handling when adding a road to the tile
+    fun addRoad(roadType: RoadStatus, unitCivInfo: CivilizationInfo) {
+        roadStatus = roadType
+        roadIsPillaged = false
+        roadOwner = if (getOwner() == null)
+            unitCivInfo // neutral tile, use building unit
+        else
+            getOwner()
+        roadOwner!!.neutralRoads = roadOwner!!.neutralRoads.toMutableList().apply { add(this@TileInfo) }
+    }
+
+    // function handling when removing a road from the tile
+    fun removeRoad() {
+        roadStatus = RoadStatus.None
+        roadIsPillaged = false
+        roadOwner!!.neutralRoads =
+                roadOwner!!.neutralRoads.toMutableList().apply { remove(this@TileInfo) }
     }
 
     fun getShownImprovement(viewingCiv: CivilizationInfo?): String? {

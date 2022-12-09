@@ -739,8 +739,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
                     if (tile.resource != null) civInfo.updateDetailedCivResources() // unlikely, but maybe a mod makes a resource improvement dependent on a terrain feature
                 }
                 if (RoadStatus.values().any { tile.improvementInProgress == it.removeAction }) {
-                    tile.roadStatus = RoadStatus.None
-                    tile.roadIsPillaged = false
+                    tile.removeRoad()
                 } else {
                     val removedFeatureObject = tile.ruleset.terrains[removedFeatureName]
                     if (removedFeatureObject != null && removedFeatureObject.hasUnique(UniqueType.ProductionBonusWhenRemoved)) {
@@ -749,22 +748,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
                     tile.removeTerrainFeature(removedFeatureName)
                 }
             }
-            tile.improvementInProgress == RoadStatus.Road.name -> {
-                tile.roadStatus = RoadStatus.Road
-                tile.roadIsPillaged = false
-                if (tile.getOwner() == null)
-                    tile.roadOwner = this.civInfo // neutral tile, use building unit
-                else
-                    tile.roadOwner = tile.getOwner()
-            }
-            tile.improvementInProgress == RoadStatus.Railroad.name -> {
-                tile.roadStatus = RoadStatus.Railroad
-                tile.roadIsPillaged = false
-                if (tile.getOwner() == null)
-                    tile.roadOwner = this.civInfo // neutral tile, use building unit
-                else
-                    tile.roadOwner = tile.getOwner()
-            }
+            tile.improvementInProgress == RoadStatus.Road.name -> tile.addRoad(RoadStatus.Road, this.civInfo)
+            tile.improvementInProgress == RoadStatus.Railroad.name -> tile.addRoad(RoadStatus.Railroad, this.civInfo)
             tile.improvementInProgress == Constants.repair -> tile.setRepaired()
             else -> {
                 val improvement = civInfo.gameInfo.ruleSet.tileImprovements[tile.improvementInProgress]!!
