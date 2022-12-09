@@ -1,20 +1,16 @@
 ## 4.3.7
 
-Resolved  - 'loading' popup between turns only appears if there's a significant delay
-
-Auto-Screenshot for f-droid as well
+'loading' popup between turns only appears if there's a significant delay
 
 xyz server as default multiplayer server
-
-Automated screenshots! :D
 
 Fixes for Repair
 
 Fixed all CSs getting unique units and unique luxuries
 
-UnitActions seprated into own atlas  - By vegeta1k95
+UnitActions icons separated for modding purposes - By vegeta1k95
 
-added button to paste from clipboard when downloading a mod  - By alexban011
+Added button to paste from clipboard when downloading a mod - By alexban011
 
 ## 4.3.6
 
