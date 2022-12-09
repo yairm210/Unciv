@@ -92,6 +92,10 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                 transportationUpkeep += tile.getUnpillagedRoad().upkeep
             }
         }
+        if (civInfo.hasUnique(UniqueType.NeutralRoadMaintenance)) {
+            for (tile in civInfo.neutralRoads)
+                transportationUpkeep += tile.getUnpillagedRoad().upkeep
+        }
         for (unique in civInfo.getMatchingUniques(UniqueType.RoadMaintenance))
             transportationUpkeep *= unique.params[0].toPercent()
 

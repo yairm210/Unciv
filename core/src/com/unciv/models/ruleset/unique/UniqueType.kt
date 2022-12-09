@@ -283,6 +283,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     SpawnRebels("Rebel units may spawn", UniqueTarget.Global),
 
+    NeutralRoadMaintenance("Neutral roads cost maintenance", UniqueTarget.Global),
+
     //endregion
 
     //endregion Global uniques
