@@ -47,7 +47,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         owningCity = city
         isCityCenterInternal = getCity()?.location == position
         if (city != null)  // only when taking control, otherwise last owner
-            roadOwner = city.civInfo
+            roadOwner = city.civInfo.civName
     }
 
     @Transient
@@ -106,7 +106,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
 
     var roadStatus = RoadStatus.None
     var roadIsPillaged = false
-    var roadOwner: CivilizationInfo? = null // either who last built the road or last owner of tile
+    var roadOwner: String = "" // either who last built the road or last owner of tile
     var turnsToImprovement: Int = 0
 
     fun isHill() = baseTerrain == Constants.hill || terrainFeatures.contains(Constants.hill)
@@ -273,6 +273,22 @@ open class TileInfo : IsPartOfGameInfoSerialization {
             roadStatus
     }
 
+    // function handling when adding a road to the tile
+    fun addRoad(roadType: RoadStatus, unitCivInfo: CivilizationInfo) {
+        roadStatus = roadType
+        roadIsPillaged = false
+        roadOwner = if (getOwner() == null)
+            unitCivInfo.civName // neutral tile, use building unit
+        else
+            getOwner()!!.civName
+    }
+
+    // function handling when removing a road from the tile
+    fun removeRoad() {
+        roadStatus = RoadStatus.None
+        roadIsPillaged = false
+    }
+
     fun getShownImprovement(viewingCiv: CivilizationInfo?): String? {
         return if (viewingCiv == null || viewingCiv.playerType == PlayerType.AI || viewingCiv.isSpectator())
             improvement
@@ -310,6 +326,13 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     fun getOwner(): CivilizationInfo? {
         val containingCity = getCity() ?: return null
         return containingCity.civInfo
+    }
+
+    fun getRoadOwner(): CivilizationInfo? {
+        return if (roadOwner != "")
+            tileMap.gameInfo.getCivilization(roadOwner)
+        else
+            null
     }
 
     fun isFriendlyTerritory(civInfo: CivilizationInfo): Boolean {
