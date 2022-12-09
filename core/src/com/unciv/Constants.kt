@@ -80,7 +80,7 @@ object Constants {
     const val uniqueOrDelimiter = "\" OR \""
 
     const val dropboxMultiplayerServer = "Dropbox"
-    const val uncivXyzServer = "https://uncivserver.xyz/"
+    const val uncivXyzServer = "https://uncivserver.xyz"
 
     const val defaultTileset = "HexaRealm"
     const val defaultUnitset = "AbsoluteUnits"
