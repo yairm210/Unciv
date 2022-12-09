@@ -45,7 +45,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
 
     fun setOwningCity(city:CityInfo?){
         if (city != null) {  // only when taking control, otherwise last owner
-            roadOwner = city.civInfo
+            roadOwner = city.civInfo.civName
             if (roadStatus != RoadStatus.None) {
                 if (owningCity != null) {
                     owningCity!!.civInfo.neutralRoads =
@@ -115,7 +115,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
 
     var roadStatus = RoadStatus.None
     var roadIsPillaged = false
-    var roadOwner: CivilizationInfo? = null // either who last built the road or last owner of tile
+    var roadOwner: String = "" // either who last built the road or last owner of tile
     var turnsToImprovement: Int = 0
 
     fun isHill() = baseTerrain == Constants.hill || terrainFeatures.contains(Constants.hill)
@@ -287,18 +287,18 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         roadStatus = roadType
         roadIsPillaged = false
         roadOwner = if (getOwner() == null)
-            unitCivInfo // neutral tile, use building unit
+            unitCivInfo.civName // neutral tile, use building unit
         else
-            getOwner()
-        roadOwner!!.neutralRoads = roadOwner!!.neutralRoads.toMutableList().apply { add(this@TileInfo) }
+            getOwner()!!.civName
+        getRoadOwner()!!.neutralRoads = getRoadOwner()!!.neutralRoads.toMutableList().apply { add(this@TileInfo) }
     }
 
     // function handling when removing a road from the tile
     fun removeRoad() {
         roadStatus = RoadStatus.None
         roadIsPillaged = false
-        roadOwner!!.neutralRoads =
-                roadOwner!!.neutralRoads.toMutableList().apply { remove(this@TileInfo) }
+        getRoadOwner()!!.neutralRoads =
+                getRoadOwner()!!.neutralRoads.toMutableList().apply { remove(this@TileInfo) }
     }
 
     fun getShownImprovement(viewingCiv: CivilizationInfo?): String? {
@@ -338,6 +338,13 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     fun getOwner(): CivilizationInfo? {
         val containingCity = getCity() ?: return null
         return containingCity.civInfo
+    }
+
+    fun getRoadOwner(): CivilizationInfo? {
+        return if (roadOwner != "")
+            tileMap.gameInfo.getCivilization(roadOwner)
+        else
+            null
     }
 
     fun isFriendlyTerritory(civInfo: CivilizationInfo): Boolean {
