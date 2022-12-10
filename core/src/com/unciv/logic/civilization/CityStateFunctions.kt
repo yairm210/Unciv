@@ -31,23 +31,22 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         val allMercantileResources = ruleset.tileResources.values.filter { it.hasUnique(UniqueType.CityStateOnlyResource) }.map { it.name }
         val uniqueTypes = HashSet<UniqueType>()    // We look through these to determine what kinds of city states we have
 
-        for (cityStateType in ruleset.cityStateTypes.values){
-            uniqueTypes.addAll(cityStateType.friendBonusUniqueMap.getAllUniques().mapNotNull { it.type })
-            uniqueTypes.addAll(cityStateType.allyBonusUniqueMap.getAllUniques().mapNotNull { it.type })
-        }
+        val nation = ruleset.nations[civInfo.civName]!!
+        val cityStateType = ruleset.cityStateTypes[nation.cityStateType]!!
+        uniqueTypes.addAll(cityStateType.friendBonusUniqueMap.getAllUniques().mapNotNull { it.type })
+        uniqueTypes.addAll(cityStateType.allyBonusUniqueMap.getAllUniques().mapNotNull { it.type })
 
         // CS Personality
         civInfo.cityStatePersonality = CityStatePersonality.values().random()
 
         // Mercantile bonus resources
 
-        if (uniqueTypes.contains(UniqueType.CityStateUniqueLuxury)) { // Fallback for badly defined Eras.json
+        if (uniqueTypes.contains(UniqueType.CityStateUniqueLuxury)) {
             civInfo.cityStateResource = allMercantileResources.randomOrNull()
         }
 
         // Unique unit for militaristic city-states
         if (uniqueTypes.contains(UniqueType.CityStateMilitaryUnits)) {
-
             val possibleUnits = ruleset.units.values.filter { it.requiredTech != null
                 && ruleset.eras[ruleset.technologies[it.requiredTech!!]!!.era()]!!.eraNumber > ruleset.eras[startingEra]!!.eraNumber // Not from the start era or before
                 && it.uniqueTo != null && it.uniqueTo in unusedMajorCivs // Must be from a major civ not in the game
