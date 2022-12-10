@@ -332,7 +332,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         return if (roadOwner != "")
             tileMap.gameInfo.getCivilization(roadOwner)
         else
-            null
+            getOwner()
     }
 
     fun isFriendlyTerritory(civInfo: CivilizationInfo): Boolean {
