@@ -887,14 +887,10 @@ object UnitActions {
         if (!tile.canPillageTile()) return false
         val tileOwner = tile.getOwner()
         // Can't pillage friendly tiles, just like you can't attack them - it's an 'act of war' thing
-        if (tileOwner != null) {
-            return unit.civInfo.isAtWarWith(tileOwner)
+        return if (tileOwner != null) {
+            unit.civInfo.isAtWarWith(tileOwner)
         } else {
-            if (tile.canPillageTile())
-                return true
-            if (tile.canPillageRoad() && tile.roadOwner != "" && unit.civInfo.isAtWarWith(tile.getRoadOwner()!!))
-                return true
-            return false
+            (tile.canPillageTile() || (tile.canPillageRoad() && tile.roadOwner != "" && unit.civInfo.isAtWarWith(tile.getRoadOwner()!!)))
         }
     }
 
