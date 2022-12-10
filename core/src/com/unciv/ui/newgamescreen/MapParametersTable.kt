@@ -95,6 +95,8 @@ class MapParametersTable(
             MapType.default,
             MapType.pangaea,
             MapType.continents,
+            MapType.threeContinents,
+            MapType.threeContinentsFair,
             MapType.fourCorners,
             MapType.smoothedRandom,
             MapType.archipelago,

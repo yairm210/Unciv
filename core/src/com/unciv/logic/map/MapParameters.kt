@@ -131,6 +131,8 @@ object MapType : IsPartOfGameInfoSerialization {
     const val default = "Default"
     const val pangaea = "Pangaea"
     const val continents = "Continents"
+    const val threeContinents = "Three Continents"
+    const val threeContinentsFair = "Three Continents Fair"
     const val fourCorners = "Four Corners"
     const val archipelago = "Archipelago"
     const val innerSea = "Inner Sea"
