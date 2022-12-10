@@ -169,7 +169,7 @@ class WorldMapHolder(
         layout() // Fit the scroll pane to the contents - otherwise, setScroll won't work!
     }
 
-    private fun onTileClicked(tileInfo: TileInfo) {
+    fun onTileClicked(tileInfo: TileInfo) {
 
         if (!worldScreen.viewingCiv.hasExplored(tileInfo)
                 && tileInfo.neighbors.all { worldScreen.viewingCiv.hasExplored(it) })

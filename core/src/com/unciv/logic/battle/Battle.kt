@@ -483,10 +483,8 @@ object Battle {
         if (thisCombatant !is MapUnitCombatant) return
         val modConstants = thisCombatant.unit.civInfo.gameInfo.ruleSet.modOptions.constants
         if (thisCombatant.unit.promotions.totalXpProduced() >= modConstants.maxXPfromBarbarians
-            && otherCombatant.getCivInfo().isBarbarian()
-        ) {
+                && otherCombatant.getCivInfo().isBarbarian())
             return
-        }
 
         val stateForConditionals = StateForConditionals(civInfo = thisCombatant.getCivInfo(), ourCombatant = thisCombatant, theirCombatant = otherCombatant)
 
@@ -515,6 +513,9 @@ object Battle {
             val greatGeneralPointsGained = (xpGained * greatGeneralPointsModifier).toInt()
             thisCombatant.getCivInfo().greatPeople.greatGeneralPoints += greatGeneralPointsGained
         }
+
+        if (!thisCombatant.isDefeated() && thisCombatant.unit.promotions.canBePromoted())
+            thisCombatant.getCivInfo().addNotification("[${thisCombatant.unit.name}] can be promoted!",thisCombatant.getTile().position, thisCombatant.unit.name)
     }
 
     private fun conquerCity(city: CityInfo, attacker: MapUnitCombatant) {
