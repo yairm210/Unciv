@@ -106,7 +106,12 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
     }
 
     private fun createTwoContinents(tileMap: TileMap) {
-        val isLatitude = randomness.RNG.nextDouble() > 0.5f
+        val isLatitude =
+                if (tileMap.mapParameters.shape === MapShape.hexagonal) randomness.RNG.nextDouble() > 0.5f
+                else if (tileMap.mapParameters.mapSize.height > tileMap.mapParameters.mapSize.width) true
+                else if (tileMap.mapParameters.mapSize.width > tileMap.mapParameters.mapSize.height) false
+                else randomness.RNG.nextDouble() > 0.5f
+
         val elevationSeed = randomness.RNG.nextInt().toDouble()
         for (tile in tileMap.values) {
             var elevation = randomness.getPerlinNoise(tile, elevationSeed)
