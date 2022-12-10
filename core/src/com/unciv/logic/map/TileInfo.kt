@@ -44,15 +44,16 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         private set
 
     fun setOwningCity(city:CityInfo?){
-        if (city != null) {  // only when taking control, otherwise last owner
-            roadOwner = city.civInfo.civName
-            if (roadStatus != RoadStatus.None) {
-                if (owningCity != null) {
-                    owningCity!!.civInfo.neutralRoads =
-                            owningCity!!.civInfo.neutralRoads.toMutableList()
-                                .apply { remove(this@TileInfo) }
-                }
-                city.civInfo.neutralRoads = city.civInfo.neutralRoads.toMutableList().apply { add(this@TileInfo) }
+        if (city != null) {
+            if (roadStatus != RoadStatus.None && roadOwner != "") {
+                // remove previous neutral tile owner
+                getRoadOwner()!!.neutralRoads.remove(this.position)
+            }
+            roadOwner = city.civInfo.civName // only when taking control, otherwise last owner
+        } else {
+            if (roadStatus != RoadStatus.None && owningCity != null) {
+                // previous tile owner still owns road, add to tracker
+                owningCity!!.civInfo.neutralRoads.add(this.position)
             }
         }
         owningCity = city
@@ -286,19 +287,20 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     fun addRoad(roadType: RoadStatus, unitCivInfo: CivilizationInfo) {
         roadStatus = roadType
         roadIsPillaged = false
-        roadOwner = if (getOwner() == null)
-            unitCivInfo.civName // neutral tile, use building unit
-        else
-            getOwner()!!.civName
-        getRoadOwner()!!.neutralRoads = getRoadOwner()!!.neutralRoads.toMutableList().apply { add(this@TileInfo) }
+        if (getOwner() == null) {
+            roadOwner = unitCivInfo.civName // neutral tile, use building unit
+            unitCivInfo.neutralRoads.add(this.position)
+        } else {
+            roadOwner = getOwner()!!.civName
+        }
     }
 
     // function handling when removing a road from the tile
     fun removeRoad() {
         roadStatus = RoadStatus.None
         roadIsPillaged = false
-        getRoadOwner()!!.neutralRoads =
-                getRoadOwner()!!.neutralRoads.toMutableList().apply { remove(this@TileInfo) }
+        if (owningCity == null)
+            getRoadOwner()!!.neutralRoads.remove(this.position)
     }
 
     fun getShownImprovement(viewingCiv: CivilizationInfo?): String? {

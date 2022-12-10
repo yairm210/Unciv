@@ -568,6 +568,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     DefensiveBonus("Gives a defensive bonus of [relativeAmount]%", UniqueTarget.Improvement),
     ImprovementMaintenance("Costs [amount] gold per turn when in your territory", UniqueTarget.Improvement), // Unused
+    ImprovementAllMaintenance("Costs [amount] gold per turn", UniqueTarget.Improvement), // Unused
     DamagesAdjacentEnemyUnits("Adjacent enemy units ending their turn take [amount] damage", UniqueTarget.Improvement),
     TakeOverTilesAroundWhenBuilt("Constructing it will take over the tiles around it and assign them to your closest city", UniqueTarget.Improvement),
 

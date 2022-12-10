@@ -195,14 +195,14 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     var citiesCreated = 0
     var exploredTiles = HashSet<Vector2>()
 
-    var neutralRoads = listOf<TileInfo>()
-
     fun hasExplored(position: Vector2) = exploredTiles.contains(position)
     fun hasExplored(tileInfo: TileInfo) = hasExplored(tileInfo.position)
 
     fun addExploredTiles(tiles:Sequence<Vector2>){
         exploredTiles.addAll(tiles)
     }
+
+    var neutralRoads = HashSet<Vector2>()
 
     var lastSeenImprovement = HashMapVector2<String>()
 
