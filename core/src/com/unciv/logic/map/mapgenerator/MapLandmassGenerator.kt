@@ -42,8 +42,7 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
             MapType.pangaea -> createPangaea(tileMap)
             MapType.innerSea -> createInnerSea(tileMap)
             MapType.continents -> createTwoContinents(tileMap)
-            MapType.threeContinents -> createThreeContinents(tileMap, false)
-            MapType.threeContinentsFair -> createThreeContinents(tileMap, true)
+            MapType.threeContinents -> createThreeContinents(tileMap)
             MapType.fourCorners -> createFourCorners(tileMap)
             MapType.smoothedRandom -> generateLandCellularAutomata(tileMap)
             MapType.archipelago -> createArchipelago(tileMap)
@@ -117,14 +116,13 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
         }
     }
 
-    private fun createThreeContinents(tileMap: TileMap, isFair: Boolean) {
-        val isLatitude = isFair || randomness.RNG.nextDouble() > 0.5f
-        val isNegative = randomness.RNG.nextDouble() > 0.5f
+    private fun createThreeContinents(tileMap: TileMap) {
+        val isNorth = randomness.RNG.nextDouble() < 0.5f
 
         val elevationSeed = randomness.RNG.nextInt().toDouble()
         for (tile in tileMap.values) {
             var elevation = randomness.getPerlinNoise(tile, elevationSeed)
-            elevation = (elevation + getThreeContinentsTransform(tile, tileMap, isLatitude, isNegative)) / 2.0
+            elevation = (elevation + getThreeContinentsTransform(tile, tileMap, isNorth)) / 2.0
             spawnLandOrWater(tile, elevation)
         }
     }
@@ -173,7 +171,7 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
         return min(0.2, -1.0 + (5.0 * longitudeFactor.pow(0.6f) + randomScale) / 3.0)
     }
 
-    private fun getThreeContinentsTransform(tileInfo: TileInfo, tileMap: TileMap, isLatitude: Boolean, isNegative: Boolean): Double {
+    private fun getThreeContinentsTransform(tileInfo: TileInfo, tileMap: TileMap, isNorth: Boolean): Double {
         // The idea here is to create a water area separating the two four areas.
         // So what we do it create a line of water in the middle - where longitude is close to 0.
         val randomScale = randomness.RNG.nextDouble()
@@ -181,13 +179,8 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
         var latitudeFactor = abs(tileInfo.latitude) / tileMap.maxLatitude
 
         // We then pick one side to be merged into one centered continent instead of two cornered.
-        if (isLatitude) {
-            if (isNegative && tileInfo.latitude < 0 || !isNegative && tileInfo.latitude > 0)
-                longitudeFactor = max(0f, tileMap.maxLongitude - abs(tileInfo.longitude * 3)) / tileMap.maxLongitude
-        } else {
-            if (isNegative && tileInfo.longitude < 0 || !isNegative && tileInfo.longitude > 0)
-                latitudeFactor = max(0f, tileMap.maxLatitude - abs(tileInfo.latitude * 3)) / tileMap.maxLatitude
-        }
+        if (isNorth && tileInfo.latitude < 0 || !isNorth && tileInfo.latitude > 0)
+            longitudeFactor = max(0f, tileMap.maxLongitude - abs(tileInfo.longitude * 2f)) / tileMap.maxLongitude
 
         // If this is a world wrap, we want it to be separated on both sides -
         // so we make the actual strip of water thinner, but we put it both in the middle of the map and on the edges of the map
