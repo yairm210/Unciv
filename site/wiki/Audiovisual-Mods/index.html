@@ -348,6 +348,13 @@
   </a>
   
 </li>
+
+    <li class="md-nav__item">
+  <a href="#adding-unit-portraits" class="md-nav__link">
+    Adding Unit and Building Portraits
+  </a>
+  
+</li>
         
       </ul>
     </nav>
@@ -772,6 +779,13 @@
   </a>
   
 </li>
+
+         <li class="md-nav__item">
+  <a href="#adding-unit-portraits" class="md-nav__link">
+    Adding Unit and Building Portraits
+  </a>
+  
+</li>
         
       </ul>
     </nav>
@@ -851,6 +865,10 @@
 <p>The base game comes without Leader Portraits, but is able to display them in greetings, Civilopedia, diplomacy screens, or the nation picker. A mod can supply these, by adding their images to <code>/Images/LeaderIcons/</code>. The file name must correspond exactly with the leader name of a nation as defined in Nations.json, or they will be ignored.</p>
 <p>These work best if they are square, between 100x100 and 256x256 pixels, and include some transparent border within that area.</p>
 <p>For example, <a href="https://github.com/yairm210/Unciv-leader-portrait-mod-example">here</a> is mod showing how to add leader portraits, which can complement the base game.</p>
+<h3 id="adding-unit-portraits">Adding Unit and Building Portraits</h3>
+<p>The base game comes without Unit and Building portraits (only flags are displayed) but is able to display them in city screen, overview screen, Civilopedia, tech tree, etc. A mod can supply these, by adding their images to <code>/Images/UnitPortraits/</code> and <code>/Images/BuildingPortraits/</code>. The file name must correspond exactly with the Unit/Building name as defined in Units.json and Buildings.json, or they will be ignored.</p>
+<p>These work best if they are full RGB square, between 100x100 and 256x256 pixels, and include some transparent border within that area.</p>
+<p>For example, <a href="https://github.com/vegeta1k95/Civ-5-Icons">here</a> is mod showing how to add units portraits, which can complement the base game.</p>
 <h2 id="override-built-in-sounds">Override built-in sounds</h2>
 <p>This works like graphics, except no atlas is involved. E.g. you include a sounds/Click.mp3, it will play instead of the normal click sound. These files must stay short and small. A sound larger than 1MB when uncompressed may break or not play at all on mobile devices. Unciv tries to standardize on 24kHz sample rate, joint stereo, low-bitrate VBR (-128kbps) mp3. Only mp3 and ogg formats will be recognized (but an existing mp3 can be overridden with an ogg file).</p>
 <h2 id="supply-additional-music">Supply additional music</h2>
