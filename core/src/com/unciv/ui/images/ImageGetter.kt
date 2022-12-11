@@ -252,11 +252,24 @@ object ImageGetter {
         return iconGroup
     }
 
-    fun getConstructionImage(construction: String): Image {
-        if (ruleset.buildings.containsKey(construction)) return getImage("BuildingIcons/$construction")
-        if (ruleset.units.containsKey(construction)) return getUnitIcon(construction)
-        if (construction == "Nothing") return getImage("OtherIcons/Sleep")
-        return getStatIcon(construction)
+    fun getPortraitImage(construction: String, size: Float): Group {
+        if (ruleset.buildings.containsKey(construction)) {
+            val buildingPortraitLocation = "BuildingPortraits/$construction"
+            return if (imageExists(buildingPortraitLocation)) {
+                getImage(buildingPortraitLocation).toGroup(size)
+            } else
+                getImage("BuildingIcons/$construction").surroundWithCircle(size)
+        }
+        if (ruleset.units.containsKey(construction)) {
+            val unitPortraitLocation = "UnitPortraits/$construction"
+            return if (imageExists(unitPortraitLocation)) {
+                getImage(unitPortraitLocation).toGroup(size)
+            } else
+                getUnitIcon(construction).surroundWithCircle(size)
+        }
+        if (construction == "Nothing")
+            return getImage("OtherIcons/Sleep").surroundWithCircle(size)
+        return getStatIcon(construction).surroundWithCircle(size)
     }
 
     fun getPromotionIcon(promotionName: String, size: Float = 30f): Actor {
