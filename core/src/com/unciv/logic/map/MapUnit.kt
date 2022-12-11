@@ -258,16 +258,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun getTile(): TileInfo = currentTile
 
-
-    // This SHOULD NOT be a HashSet, because if it is, then e.g. promotions with the same uniques
-    //  (e.g. barrage I, barrage II) will not get counted twice!
-    @Transient
-    private var tempUniques = ArrayList<Unique>()
-
     @Transient
     private var tempUniquesMap = UniqueMap()
 
-    fun getUniques(): ArrayList<Unique> = tempUniques
+    fun getUniques(): Sequence<Unique> = tempUniquesMap.values.asSequence().flatten()
 
     fun getMatchingUniques(
         uniqueType: UniqueType,
@@ -299,7 +293,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
             uniques.addAll(promotion.uniqueObjects)
         }
 
-        tempUniques = uniques
         tempUniquesMap = UniqueMap().apply {
             addUniques(uniques)
         }

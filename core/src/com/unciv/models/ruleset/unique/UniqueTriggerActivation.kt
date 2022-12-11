@@ -207,7 +207,6 @@ object UniqueTriggerActivation {
             }
 
             OneTimeGainPopulation -> {
-                val citiesWithPopulationChanged: MutableList<Vector2> = mutableListOf()
                 val applicableCities = when (unique.params[1]) {
                     "in this city" -> sequenceOf(cityInfo!!)
                     "in other cities" -> civInfo.cities.asSequence().filter { it != cityInfo }
@@ -222,7 +221,7 @@ object UniqueTriggerActivation {
                         LocationAction(applicableCities.map { it.location }),
                         NotificationIcon.Population
                     )
-                return citiesWithPopulationChanged.isNotEmpty()
+                return applicableCities.any()
             }
             OneTimeGainPopulationRandomCity -> {
                 if (civInfo.cities.isEmpty()) return false
@@ -288,8 +287,8 @@ object UniqueTriggerActivation {
                 if (notification != null) {
                     civInfo.addNotification(
                         notification,
-                        NotificationIcon.War
-                    ) // I'm open for better icons
+                        NotificationIcon.Construction
+                    )
                 }
                 return true
             }
