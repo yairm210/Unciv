@@ -43,7 +43,7 @@ For example, [here](https://github.com/yairm210/Unciv-leader-portrait-mod-exampl
 
 ### Adding Unit and Building Portraits
 
-The base game comes without Unit/Building Portraits (display flags instead by default), but is able to display them in City Screen, Overview Screen, Tech Tree, Civilopedia, etc. A mod can supply these, by adding their images to `/Images/UnitPortraits/` and `/Images/BuildingPortraits`. The file name must correspond exactly with the unit/building name as defined in Units.json and Buildings.json, or they will be ignored.
+The base game comes without Unit/Building Portraits (display flags instead by default), but is able to display them in City Screen, Overview Screen, Tech Tree, Civilopedia, etc. A mod can supply these, by adding their images to `/Images/UnitPortraits/` and `/Images/BuildingPortraits/`. The file name must correspond exactly with the unit/building name as defined in Units.json and Buildings.json, or they will be ignored.
 
 These work best if they are full RGB square, between 100x100 and 256x256 pixels, and include some transparent border within that area.
 
