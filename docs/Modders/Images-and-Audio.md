@@ -43,9 +43,7 @@ For example, [here](https://github.com/yairm210/Unciv-leader-portrait-mod-exampl
 
 ### Adding Unit and Building Portraits
 
-These work best if they are full RGB square, between 100x100 and 256x256 pixels, and include some transparent border within that area.
-The base game uses flat icons, colored to fit the civilization's flag colors, to denote units both on the map and in other UI elements.
-A mod can supply "Portraits" - static images that will remain uncolored - by adding their images to `/Images/UnitPortraits/` and `/Images/BuildingPortraits/`, which will be used in all UI elements except for the world map. The file name must correspond exactly with the unit/building name as defined in Units.json and Buildings.json, or they will be ignored.
+The base game uses flat icons, colored to fit the civilization's flag colors, to denote units both on the map and in other UI elements. A mod can supply "Portraits" - static images that will remain uncolored - by adding their images to `/Images/UnitPortraits/` and `/Images/BuildingPortraits/`, which will be used in all UI elements except for the world map. The file name must correspond exactly with the unit/building name as defined in Units.json and Buildings.json, or they will be ignored.
 
 These work best if they are full RGB square, between 100x100 and 256x256 pixels, and include some transparent border within that area.
 
