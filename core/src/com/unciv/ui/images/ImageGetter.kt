@@ -258,7 +258,7 @@ object ImageGetter {
             return if (imageExists(buildingPortraitLocation)) {
                 getImage(buildingPortraitLocation).toGroup(size)
             } else
-                getImage(buildingPortraitLocation).surroundWithCircle(size)
+                getImage("BuildingIcons/$construction").surroundWithCircle(size)
         }
         if (ruleset.units.containsKey(construction)) {
             val unitPortraitLocation = "UnitPortraits/$construction"
