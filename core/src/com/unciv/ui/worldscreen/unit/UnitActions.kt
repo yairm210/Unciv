@@ -57,6 +57,7 @@ object UnitActions {
 
         addPromoteAction(unit, actionList)
         addUnitUpgradeAction(unit, actionList)
+        addTransformAction(unit, actionList)
         addPillageAction(unit, actionList, worldScreen)
         addParadropAction(unit, actionList)
         addAirSweepAction(unit, actionList)
@@ -471,6 +472,76 @@ object UnitActions {
         getUpgradeAction(unit,  isFree = true, isSpecial = false)
     fun getAncientRuinsUpgradeAction(unit: MapUnit) =
         getUpgradeAction(unit,  isFree = true, isSpecial = true)
+
+    private fun addTransformAction(
+        unit: MapUnit,
+        actionList: ArrayList<UnitAction>,
+        maxSteps: Int = Int.MAX_VALUE
+    ) {
+        val upgradeAction = getTransformAction(unit)
+        if (upgradeAction != null) actionList += upgradeAction
+    }
+
+    /**  */
+    private fun getTransformAction(
+        unit: MapUnit
+    ): ArrayList<UnitAction>? {
+        if (!unit.baseUnit().hasUnique(UniqueType.CanTransform)) return null // can't upgrade to anything
+        val unitTile = unit.getTile()
+        val civInfo = unit.civInfo
+
+        val transformList = ArrayList<UnitAction>()
+        for (unique in unit.baseUnit().getMatchingUniques(UniqueType.CanTransform)) {
+            val upgradedUnit = civInfo.getEquivalentUnit(unique.params[0])
+            val goldCostOfUpgrade = unique.params[1].toInt()
+            val costResource = Stat.valueOf(unique.params[2])
+            if(!unit.canUpgrade(unitToUpgradeTo = upgradedUnit)) continue
+            // Check cost
+            if (civInfo.getStatReserve(costResource) < goldCostOfUpgrade) continue
+
+            // Check _new_ resource requirements (display only - yes even for free or special upgrades)
+            // Using Counter to aggregate is a bit exaggerated, but - respect the mad modder.
+            val resourceRequirementsDelta = Counter<String>()
+            for ((resource, amount) in unit.baseUnit().getResourceRequirements())
+                resourceRequirementsDelta.add(resource, -amount)
+            for ((resource, amount) in upgradedUnit.getResourceRequirements())
+                resourceRequirementsDelta.add(resource, amount)
+            val newResourceRequirementsString = resourceRequirementsDelta.entries
+                .filter { it.value > 0 }
+                .joinToString { "${it.value} {${it.key}}".tr() }
+
+            val title = if (newResourceRequirementsString.isEmpty())
+                "Transform to [${upgradedUnit.name}] ([$goldCostOfUpgrade] [${costResource.name}])"
+            else "Transform to [${upgradedUnit.name}]\n([$goldCostOfUpgrade] [${costResource.name}], [$newResourceRequirementsString])"
+
+            transformList.add(UnitAction(UnitActionType.Transform,
+                title = title,
+                action = {
+                    unit.destroy()
+                    val newUnit = civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name)
+
+                    /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
+                     * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
+                     */
+                    if (newUnit == null) {
+                        val resurrectedUnit = civInfo.placeUnitNearTile(unitTile.position, unit.name)!!
+                        unit.copyStatisticsTo(resurrectedUnit)
+                    } else { // Managed to upgrade
+                        civInfo.addStat(costResource, -goldCostOfUpgrade)
+                        unit.copyStatisticsTo(newUnit)
+                        newUnit.currentMovement = 0f
+                    }
+                }.takeIf {
+                    (unit.civInfo.getStatReserve(costResource) >= goldCostOfUpgrade
+                            && unit.currentMovement > 0
+                            && !unit.isEmbarked()
+                            && unit.canUpgrade(unitToUpgradeTo = upgradedUnit)
+                            )
+                }
+            ) )
+        }
+        return transformList
+    }
 
     private fun addBuildingImprovementsAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo, worldScreen: WorldScreen, unitTable: UnitTable) {
         if (!unit.hasUniqueToBuildImprovements) return
