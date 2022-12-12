@@ -480,7 +480,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     CanHurryResearch("Can hurry technology research", UniqueTarget.Unit),
     CanTradeWithCityStateForGoldAndInfluence("Can undertake a trade mission with City-State, giving a large sum of gold and [amount] Influence", UniqueTarget.Unit),
 
-    CanTransform("Can transform to [unit] for [amount] [stat]", UniqueTarget.Unit),
+    CanTransform("Can transform to [unit]", UniqueTarget.Unit),
 
     //endregion
 
@@ -593,6 +593,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     ConditionalBeforeTurns("before [amount] turns", UniqueTarget.Conditional),
     ConditionalAfterTurns("after [amount] turns", UniqueTarget.Conditional),
+    ConditionalCost("for [amount] [stat]", UniqueTarget.Conditional),
 
     /////// civ conditionals
     ConditionalWar("when at war", UniqueTarget.Conditional),

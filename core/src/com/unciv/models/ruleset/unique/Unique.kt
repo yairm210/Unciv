@@ -144,6 +144,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             // These are 'what to do' and not 'when to do' conditionals
             UniqueType.ConditionalTimedUnique -> true
             UniqueType.ConditionalConsumeUnit -> true
+            UniqueType.ConditionalCost -> true
 
             UniqueType.ConditionalBeforeTurns -> state.civInfo != null && state.civInfo.gameInfo.turns < condition.params[0].toInt()
             UniqueType.ConditionalAfterTurns -> state.civInfo != null && state.civInfo.gameInfo.turns >= condition.params[0].toInt()

@@ -18,6 +18,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
@@ -489,13 +490,16 @@ object UnitActions {
         if (!unit.baseUnit().hasUnique(UniqueType.CanTransform)) return null // can't upgrade to anything
         val unitTile = unit.getTile()
         val civInfo = unit.civInfo
-
+        val stateForConditionals = StateForConditionals(ignoreConditionals = true)
         val transformList = ArrayList<UnitAction>()
-        for (unique in unit.baseUnit().getMatchingUniques(UniqueType.CanTransform)) {
+        for (unique in unit.baseUnit().getMatchingUniques(UniqueType.CanTransform, stateForConditionals)) {
             val upgradedUnit = civInfo.getEquivalentUnit(unique.params[0])
-            val statCostOfUpgrade = unique.params[1].toInt()
-            val costStat = Stat.valueOf(unique.params[2])
-            if(!unit.canUpgrade(unitToUpgradeTo = upgradedUnit)) continue
+            val conditional =
+                    unique.conditionals.firstOrNull { it.type == UniqueType.ConditionalCost }
+            val statCostOfUpgrade = if (conditional == null) 0 else conditional.params[0].toInt()
+            val costStat =
+                    if (conditional == null) Stat.valueOf("Gold") else Stat.valueOf(conditional.params[1])
+            if (!unit.canUpgrade(unitToUpgradeTo = upgradedUnit)) continue
             // Check cost
             if (civInfo.getStatReserve(costStat) < statCostOfUpgrade) continue
 
