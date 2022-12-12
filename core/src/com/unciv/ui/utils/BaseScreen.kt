@@ -20,13 +20,13 @@ import com.unciv.models.TutorialTrigger
 import com.unciv.models.skins.SkinStrings
 import com.unciv.ui.UncivStage
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.options.OptionsPopup
 import com.unciv.ui.popup.activePopup
 import com.unciv.ui.tutorials.TutorialController
-import com.unciv.ui.options.OptionsPopup
-import com.unciv.ui.utils.extensions.installShortcutDispatcher
-import com.unciv.ui.utils.extensions.isNarrowerThan4to3
 import com.unciv.ui.utils.extensions.DispatcherVetoResult
 import com.unciv.ui.utils.extensions.DispatcherVetoer
+import com.unciv.ui.utils.extensions.installShortcutDispatcher
+import com.unciv.ui.utils.extensions.isNarrowerThan4to3
 
 abstract class BaseScreen : Screen {
 
@@ -42,8 +42,8 @@ abstract class BaseScreen : Screen {
     val globalShortcuts = KeyShortcutDispatcher()
 
     init {
-        val resolutions: List<Float> = game.settings.resolution.split("x").map { it.toInt().toFloat() }
-        val height = resolutions[1]
+        val screenSize = game.settings.screenSize
+        val height = screenSize.virtualHeight
 
         /** The ExtendViewport sets the _minimum_(!) world size - the actual world size will be larger, fitted to screen/window aspect ratio. */
         stage = UncivStage(ExtendViewport(height, height))
@@ -154,7 +154,7 @@ abstract class BaseScreen : Screen {
     fun isPortrait() = stage.viewport.screenHeight > stage.viewport.screenWidth
     /** @return `true` if the screen is higher than it is wide _and_ resolution is at most 1050x700 */
     fun isCrampedPortrait() = isPortrait() &&
-            game.settings.resolution.split("x").map { it.toInt() }.last() <= 700
+            game.settings.screenSize.virtualHeight <= 700
     /** @return `true` if the screen is narrower than 4:3 landscape */
     fun isNarrowerThan4to3() = stage.isNarrowerThan4to3()
 

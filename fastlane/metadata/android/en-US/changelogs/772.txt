@@ -1,0 +1,13 @@
+Resolved single turn repair, repair turn inconsistencies
+
+Replaced misunderstood 'virtual resolutions' with more intuitive 'screen size'
+
+Max screen size takes Windows taskbar into account
+
+After-combat notification for promotable units
+
+modding: Double Happiness from Natural Wonders -> [stats] from every known Natural Wonder
+
+Volley only for Siege in G&K - By itanasi
+
+fix civilopedia category bug - By nacro711072

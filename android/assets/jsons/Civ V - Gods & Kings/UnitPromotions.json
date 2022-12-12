@@ -61,7 +61,7 @@
 		"name": "Volley",
 		"prerequisites": ["Accuracy I","Barrage I"],
 		"uniques": ["[+50]% Strength <vs cities>"],
-		"unitTypes": ["Archery","Ranged Gunpowder","Siege"],
+		"unitTypes": ["Siege"],
         "column": 3,
         "row": 1
 	},

@@ -164,7 +164,7 @@ object BattleDamage {
         val modifiers = Counter<String>()
 
         if (attacker is MapUnitCombatant) {
-            for (unique in attacker.unit.getUniques().filter{it.isOfType(UniqueType.StrengthWhenAirsweep)}) {
+            for (unique in attacker.unit.getMatchingUniques(UniqueType.StrengthWhenAirsweep)) {
                 modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
             }
         }

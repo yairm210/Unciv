@@ -19,7 +19,6 @@ import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.mapeditor.MapGeneratorSteps
-import com.unciv.ui.utils.extensions.toNiceString
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import kotlin.math.abs

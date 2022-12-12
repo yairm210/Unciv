@@ -4,10 +4,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.MarkupRenderer
-import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.extensions.toNiceString
 
-fun aboutTab(screen: BaseScreen): Table {
+fun aboutTab(): Table {
     val versionAnchor = UncivGame.VERSION.text.replace(".", "")
     val lines = sequence {
         yield(FormattedLine(extraImage = "banner", imageSize = 240f, centered = true))

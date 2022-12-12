@@ -291,11 +291,26 @@ class CivilopediaScreen(
             else
                 selectEntry(link, noScrollAnimation = true)
 
-        for (categoryKey in CivilopediaCategories.values()) {
+        for (categoryKey in categoryToEntries.keys) {
             globalShortcuts.add(categoryKey.key) { navigateCategories(categoryKey.key) }
         }
-        globalShortcuts.add(Input.Keys.LEFT) { selectCategory(currentCategory.getByOffset(-1)) }
-        globalShortcuts.add(Input.Keys.RIGHT) { selectCategory(currentCategory.getByOffset(1)) }
+        globalShortcuts.add(Input.Keys.LEFT) {
+            val categoryKey = categoryToEntries.keys
+            val currentIndex = categoryKey.indexOf(currentCategory)
+            val targetCategory = categoryKey.elementAt(
+                (currentIndex + categoryKey.size - 1) % categoryKey.size
+            )
+            selectCategory(targetCategory)
+        }
+        globalShortcuts.add(Input.Keys.RIGHT) {
+            val categoryKey = categoryToEntries.keys
+            val currentIndex = categoryKey.indexOf(currentCategory)
+            val targetCategory = categoryKey.elementAt(
+                (currentIndex + categoryKey.size + 1) % categoryKey.size
+            )
+            selectCategory(targetCategory)
+
+        }
         globalShortcuts.add(Input.Keys.UP) { navigateEntries(-1) }
         globalShortcuts.add(Input.Keys.DOWN) { navigateEntries(1) }
         globalShortcuts.add(Input.Keys.PAGE_UP) { navigateEntries(-10) }

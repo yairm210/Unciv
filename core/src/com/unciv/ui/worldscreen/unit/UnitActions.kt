@@ -519,7 +519,7 @@ object UnitActions {
         if (!tile.isPillaged()) return
 
         val couldConstruct = unit.currentMovement > 0
-                && !tile.isCityCenter()
+                && !tile.isCityCenter() && tile.improvementInProgress != Constants.repair
 
         val turnsToBuild = getRepairTurns(unit)
 
@@ -531,18 +531,9 @@ object UnitActions {
 
     fun getRepairAction(unit: MapUnit): () -> Unit {
         return {
-            unit.currentMovement = 0f
             val tile = unit.currentTile
-            val repairTurns = getRepairTurns(unit) - 1
-            if (repairTurns == 0) {  // handle instant fix
-                tile.setRepaired()
-                unit.civInfo.updateDetailedCivResources()  // maybe just restored a resource
-                unit.civInfo.transients()
-                    .updateCitiesConnectedToCapital()  // check for connections to capital
-            } else {
-                tile.improvementInProgress = Constants.repair
-                tile.turnsToImprovement = repairTurns
-            }
+            tile.turnsToImprovement = getRepairTurns(unit)
+            tile.improvementInProgress = Constants.repair
         }
     }
 

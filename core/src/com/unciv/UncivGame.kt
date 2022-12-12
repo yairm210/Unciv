@@ -470,7 +470,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.3.5", 771)
+        val VERSION = Version("4.3.7", 774)
         //endregion
 
         lateinit var Current: UncivGame
@@ -485,6 +485,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     ) : IsPartOfGameInfoSerialization {
         @Suppress("unused") // used by json serialization
         constructor() : this("", -1)
+        fun toNiceString() = "$text (Build $number)"
     }
 }
 

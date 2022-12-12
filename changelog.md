@@ -1,3 +1,33 @@
+## 4.3.7
+
+'loading' popup between turns only appears if there's a significant delay
+
+xyz server as default multiplayer server
+
+Fixes for Repair
+
+Fixed all CSs getting unique units and unique luxuries
+
+UnitActions icons separated for modding purposes - By vegeta1k95
+
+Added button to paste from clipboard when downloading a mod - By alexban011
+
+## 4.3.6
+
+Resolved single turn repair, repair turn inconsistencies
+
+Replaced misunderstood 'virtual resolutions' with more intuitive 'screen size'
+
+Max screen size takes Windows taskbar into account
+
+After-combat notification for promotable units
+
+modding: Double Happiness from Natural Wonders -> [stats] from every known Natural Wonder
+
+Volley only for Siege in G&K - By itanasi
+
+fix civilopedia category bug - By nacro711072
+
 ## 4.3.5
 
 Made yields smaller so heavy yields look better on tiles
