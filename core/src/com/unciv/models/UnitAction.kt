@@ -84,7 +84,7 @@ enum class UnitActionType(
     Upgrade("Upgrade",
         { ImageGetter.getUnitActionPortrait("Upgrade") }, 'u', UncivSound.Upgrade),
     Transform("Transform",
-        { ImageGetter.getUnitActionPortrait("Upgrade") }, 'u', UncivSound.Upgrade),
+        { ImageGetter.getUnitActionPortrait("Transform") }, 'u', UncivSound.Upgrade),
     Pillage("Pillage",
         { ImageGetter.getUnitActionPortrait("Pillage") }, 'p', false),
     Paradrop("Paradrop",

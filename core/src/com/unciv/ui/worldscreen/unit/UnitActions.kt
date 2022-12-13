@@ -490,18 +490,17 @@ object UnitActions {
         if (!unit.baseUnit().hasUnique(UniqueType.CanTransform)) return null // can't upgrade to anything
         val unitTile = unit.getTile()
         val civInfo = unit.civInfo
-        val stateForConditionals = StateForConditionals(ignoreConditionals = true)
         val transformList = ArrayList<UnitAction>()
-        for (unique in unit.baseUnit().getMatchingUniques(UniqueType.CanTransform, stateForConditionals)) {
+        for (unique in unit.baseUnit().getMatchingUniques(UniqueType.CanTransform,
+            StateForConditionals(unit = unit, civInfo = civInfo, tile = unitTile))) {
             val upgradedUnit = civInfo.getEquivalentUnit(unique.params[0])
             val conditional =
                     unique.conditionals.firstOrNull { it.type == UniqueType.ConditionalCost }
             val statCostOfUpgrade = if (conditional == null) 0 else conditional.params[0].toInt()
             val costStat =
                     if (conditional == null) Stat.valueOf("Gold") else Stat.valueOf(conditional.params[1])
+            // don't show if haven't researched/is obsolete
             if (!unit.canUpgrade(unitToUpgradeTo = upgradedUnit)) continue
-            // Check cost
-            if (civInfo.getStatReserve(costStat) < statCostOfUpgrade) continue
 
             // Check _new_ resource requirements (display only - yes even for free or special upgrades)
             // Using Counter to aggregate is a bit exaggerated, but - respect the mad modder.
