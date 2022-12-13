@@ -94,7 +94,7 @@ class MapParametersTable(
         val mapTypes = listOfNotNull(
             MapType.default,
             MapType.pangaea,
-            MapType.continents,
+            MapType.twoContinents,
             MapType.fourCorners,
             MapType.smoothedRandom,
             MapType.archipelago,

@@ -383,19 +383,9 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         val groupHeight = 25f
         val groupWidth = if (cityCurrentConstruction is PerpetualConstruction) 15f else 40f
         group.setSize(groupWidth, groupHeight)
-
-        val circle = ImageGetter.getCircle()
-        circle.setSize(25f, 25f)
-        val constructionImage = ImageGetter.getConstructionImage(cityConstructions.currentConstructionFromQueue)
-        constructionImage.setSize(18f, 18f)
+        val constructionImage = ImageGetter.getPortraitImage(cityConstructions.currentConstructionFromQueue, 25f)
         constructionImage.centerY(group)
         constructionImage.x = group.width - constructionImage.width
-
-        // center the circle on the production image
-        circle.x = constructionImage.x + (constructionImage.width - circle.width) / 2
-        circle.y = constructionImage.y + (constructionImage.height - circle.height) / 2
-
-        group.addActor(circle)
         group.addActor(constructionImage)
 
         val secondaryColor = cityConstructions.cityInfo.civInfo.nation.getInnerColor()

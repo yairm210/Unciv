@@ -52,8 +52,7 @@ object CivilopediaImageGetters {
     }
 
     val construction = { name: String, size: Float ->
-        ImageGetter.getConstructionImage(name)
-            .surroundWithCircle(size)
+        ImageGetter.getPortraitImage(name, size)
     }
     val improvement = { name: String, size: Float ->
         ImageGetter.getImprovementIcon(name, size)

@@ -75,7 +75,7 @@ class OptionsPopup(
 
         tabs.addPage(
             "About",
-            aboutTab(screen),
+            aboutTab(),
             ImageGetter.getExternalImage("Icon.png"), 24f
         )
         tabs.addPage(

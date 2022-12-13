@@ -2,7 +2,6 @@ package com.unciv.logic.multiplayer.storage
 
 import com.badlogic.gdx.Net
 import com.unciv.UncivGame
-import com.unciv.ui.utils.extensions.toNiceString
 import com.unciv.utils.debug
 import java.io.BufferedReader
 import java.io.DataOutputStream

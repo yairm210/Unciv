@@ -176,7 +176,7 @@ class StatsOverviewTab(
     private fun updateScoreTable() = scoreTable.apply {
         clear()
         val scoreHeader = Table()
-        val scoreIcon = ImageGetter.getImage("OtherIcons/Cultured")
+        val scoreIcon = ImageGetter.getImage("CityStateIcons/Cultured")
         scoreIcon.color = Color.FIREBRICK
         scoreHeader.add(scoreIcon).padRight(1f).size(Constants.headingFontSize.toFloat())
         scoreHeader.add("Score".toLabel(fontSize = Constants.headingFontSize))

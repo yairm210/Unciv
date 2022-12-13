@@ -120,7 +120,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
     }
 
     private fun addBuildingInfo(building: Building, destinationTable: Table) {
-        val icon = ImageGetter.getConstructionImage(building.name).surroundWithCircle(30f)
+        val icon = ImageGetter.getPortraitImage(building.name, 30f)
         val isFree = building.name in cityScreen.city.civInfo.civConstructions.getFreeBuildings(cityScreen.city.id)
         val displayName = if (isFree) "{${building.name}} ({Free})" else building.name
         val buildingNameAndIconTable = ExpanderTab(

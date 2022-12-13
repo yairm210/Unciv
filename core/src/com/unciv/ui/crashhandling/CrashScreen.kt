@@ -19,7 +19,6 @@ import com.unciv.ui.utils.extensions.addBorder
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.setFontSize
 import com.unciv.ui.utils.extensions.toLabel
-import com.unciv.ui.utils.extensions.toNiceString
 import java.io.PrintWriter
 import java.io.StringWriter
 
