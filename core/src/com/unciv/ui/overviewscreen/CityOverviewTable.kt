@@ -194,7 +194,7 @@ class CityOverviewTab(
 
             val construction = city.cityConstructions.currentConstructionFromQueue
             if (construction.isNotEmpty()) {
-                cityInfoTableDetails.add(ImageGetter.getConstructionImage(construction).surroundWithCircle(iconSize*0.8f)).padRight(paddingHorz)
+                cityInfoTableDetails.add(ImageGetter.getPortraitImage(construction, iconSize*0.8f)).padRight(paddingHorz)
             } else {
                 cityInfoTableDetails.add()
             }

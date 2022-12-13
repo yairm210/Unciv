@@ -558,6 +558,8 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         if (needToFindNewRoute && unit.currentTile != origin) {
             moveToTile(destination, considerZoneOfControl)
         }
+
+        unit.updateUniques(unit.currentTile.ruleset)
     }
 
     /**

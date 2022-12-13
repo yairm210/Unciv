@@ -485,6 +485,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     ) : IsPartOfGameInfoSerialization {
         @Suppress("unused") // used by json serialization
         constructor() : this("", -1)
+        fun toNiceString() = "$text (Build $number)"
     }
 }
 

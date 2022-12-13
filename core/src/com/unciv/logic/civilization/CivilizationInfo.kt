@@ -32,7 +32,7 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.StateForConditionals
-import com.unciv.models.ruleset.unique.TemporaryUnique
+import com.unciv.models.ruleset.unique.TemporaryUniques
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -66,9 +66,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     fun getWorkerAutomation(): WorkerAutomation {
         val currentTurn = if (UncivGame.Current.isInitialized && UncivGame.Current.gameInfo != null) {
             UncivGame.Current.gameInfo!!.turns
-        } else {
-            0
-        }
+        } else 0
         if (workerAutomationCache == null || workerAutomationCache!!.cachedForTurn != currentTurn)
             workerAutomationCache = WorkerAutomation(this, currentTurn)
         return workerAutomationCache!!
@@ -186,7 +184,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
      * We don't use pairs, as these cannot be serialized due to having no no-arg constructor
      * This can also contain NON-temporary uniques but I can't be bothered to do the deprecation dance with this one
      */
-    val temporaryUniques = ArrayList<TemporaryUnique>()
+    val temporaryUniques = TemporaryUniques()
 
     // if we only use lists, and change the list each time the cities are changed,
     // we won't get concurrent modification exceptions.
@@ -457,11 +455,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         )
         yieldAll(policies.policyUniques.getMatchingUniques(uniqueType, stateForConditionals))
         yieldAll(tech.techUniques.getMatchingUniques(uniqueType, stateForConditionals))
-        if (temporaryUniques.isNotEmpty())
-            yieldAll(temporaryUniques.asSequence()
-                .map { it.uniqueObject }
-                .filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) }
-            )
+        yieldAll(temporaryUniques.getMatchingUniques(uniqueType, stateForConditionals))
         yieldAll(getEra().getMatchingUniques(uniqueType, stateForConditionals))
         yieldAll(cityStateFunctions.getUniquesProvidedByCityStates(uniqueType, stateForConditionals))
         if (religionManager.religion != null)
@@ -998,12 +992,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
             city.endTurn()
         }
 
-        // Update turn counter for temporary uniques
-        for (unique in temporaryUniques) {
-            if (unique.turnsLeft >= 0)
-                unique.turnsLeft -= 1
-        }
-        temporaryUniques.removeAll { it.turnsLeft == 0 }
+        temporaryUniques.endTurn()
 
         goldenAges.endTurn(getHappiness())
         getCivUnits().forEach { it.endTurn() }  // This is the most expensive part of endTurn
