@@ -594,7 +594,11 @@ class CityInfo : IsPartOfGameInfoSerialization {
         val allowRazeCapital = civInfo.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.allowRazeCapital)
         val allowRazeHolyCity = civInfo.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.allowRazeHolyCity)
 
-        return (!isOriginalCapital || allowRazeCapital) && (!isHolyCity() || allowRazeHolyCity) && (!isCapital() || justCaptured || allowRazeCapital)
+        if (isOriginalCapital && !allowRazeCapital) return false;
+        if (isHolyCity() && !allowRazeHolyCity) return false;
+        if (isCapital() && !justCaptured && !allowRazeCapital) return false;
+
+        return true;
     }
 
     fun getForceEvaluation(): Int {
