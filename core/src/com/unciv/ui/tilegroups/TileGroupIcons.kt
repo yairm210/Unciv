@@ -68,10 +68,6 @@ class TileGroupIcons(val tileGroup: TileGroup) {
         if (unit != null && isViewable) { // Tile is visible
             newImage = UnitGroup(unit, 25f)
 
-            if (UncivGame.Current.settings.continuousRendering && oldUnitGroup?.blackSpinningCircle != null) {
-                newImage.blackSpinningCircle = ImageGetter.getCircle()
-                        .apply { rotation = oldUnitGroup.blackSpinningCircle!!.rotation }
-            }
             tileGroup.unitLayerGroup.addActor(newImage)
             newImage.center(tileGroup)
             newImage.y += yFromCenter
@@ -110,8 +106,14 @@ class TileGroupIcons(val tileGroup: TileGroup) {
             // Instead of fading out the entire unit with its background, we just fade out its central icon,
             // that way it remains much more visible on the map
             if (!unit.isIdle() && unit.civInfo == viewingCiv) {
-                newImage.unitBaseImage.color.a *= 0.5f
                 newImage.actionGroup?.color?.a = 0.5f * UncivGame.Current.settings.unitIconOpacity
+            }
+
+            if (unit.currentMovement == 0f && !unit.canAttack()) {
+                newImage.flagSelection?.color?.apply { a *= 0.5f }
+                newImage.flagHalo?.color?.apply { a = 0f }
+                newImage.flagBg?.children?.forEach { it.color?.apply { a *= 0.5f } }
+                newImage.unitBaseImage.color.a *= 0.5f
             }
 
         }
