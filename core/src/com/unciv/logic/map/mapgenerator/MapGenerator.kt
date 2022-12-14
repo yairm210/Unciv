@@ -610,13 +610,19 @@ class MapGenerator(val ruleset: Ruleset) {
         tileMap.setTransients(ruleset)
         val temperatureSeed = randomness.RNG.nextInt().toDouble()
         for (tile in tileMap.values) {
+
+            // Flat Earth needs a 2 tile wide perimeter of ice and a 2 radius cluster of ice in the center.
             if (tileMap.mapParameters.shape === MapShape.flatEarth) {
-                if (tile.neighbors.count() < 6 || (tile.latitude == 0f && tile.longitude == 0f)) {
+                val isCenterTile = tile.latitude == 0f && tile.longitude == 0f
+                val isEdgeTile = tile.neighbors.count() < 6
+                val iceTerrainName = iceEquivalents.first().terrain.name
+
+                if (isCenterTile || isEdgeTile) {
                     tile.removeTerrainFeatures()
-                    tile.addTerrainFeature(iceEquivalents.elementAt(0).terrain.name)
+                    tile.addTerrainFeature(iceTerrainName)
                     for (neighbor in tile.neighbors) {
-                        tile.removeTerrainFeatures()
-                        tile.addTerrainFeature(iceEquivalents.elementAt(0).terrain.name)
+                        neighbor.removeTerrainFeatures()
+                        neighbor.addTerrainFeature(iceTerrainName)
                     }
                 }
             }
