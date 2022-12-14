@@ -23,6 +23,7 @@ import com.unciv.utils.Log
 import com.unciv.utils.debug
 import kotlin.math.abs
 import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.math.sign
@@ -33,6 +34,14 @@ import kotlin.random.Random
 class MapGenerator(val ruleset: Ruleset) {
     companion object {
         private const val consoleTimings = false
+    }
+
+    private val landTerrainName =
+            MapLandmassGenerator.getInitializationTerrain(ruleset, TerrainType.Land)
+    private val waterTerrainName: String = try {
+        MapLandmassGenerator.getInitializationTerrain(ruleset, TerrainType.Water)
+    } catch (_: Exception) {
+        landTerrainName
     }
 
     private var randomness = MapGenerationRandomness()
@@ -601,6 +610,17 @@ class MapGenerator(val ruleset: Ruleset) {
         tileMap.setTransients(ruleset)
         val temperatureSeed = randomness.RNG.nextInt().toDouble()
         for (tile in tileMap.values) {
+            if (tileMap.mapParameters.shape === MapShape.flatEarth) {
+                if (tile.neighbors.count() < 6 || (tile.latitude == 0f && tile.longitude == 0f)) {
+                    tile.removeTerrainFeatures()
+                    tile.addTerrainFeature(iceEquivalents.elementAt(0).terrain.name)
+                    for (neighbor in tile.neighbors) {
+                        tile.removeTerrainFeatures()
+                        tile.addTerrainFeature(iceEquivalents.elementAt(0).terrain.name)
+                    }
+                }
+            }
+
             if (tile.baseTerrain !in waterTerrain || tile.terrainFeatures.isNotEmpty())
                 continue
 

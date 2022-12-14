@@ -46,6 +46,23 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
             MapType.archipelago -> createArchipelago(tileMap)
             MapType.default -> createPerlin(tileMap)
         }
+
+        if (tileMap.mapParameters.shape === MapShape.flatEarth) {
+            for (tile in tileMap.values) {
+                if (tile.neighbors.count() < 6 || (tile.latitude == 0f && tile.longitude == 0f)) {
+                    tile.baseTerrain = waterTerrainName
+                    for (neighbor in tile.neighbors) {
+                        neighbor.baseTerrain = waterTerrainName
+                        for (neighbor2 in neighbor.neighbors) {
+                            neighbor2.baseTerrain = waterTerrainName
+                            for (neighbor3 in neighbor2.neighbors) {
+                                neighbor3.baseTerrain = waterTerrainName
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun spawnLandOrWater(tile: TileInfo, elevation: Double) {
@@ -107,7 +124,7 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
 
     private fun createTwoContinents(tileMap: TileMap) {
         val isLatitude =
-                if (tileMap.mapParameters.shape === MapShape.hexagonal) randomness.RNG.nextDouble() > 0.5f
+                if (tileMap.mapParameters.shape === MapShape.hexagonal || tileMap.mapParameters.shape === MapShape.flatEarth) randomness.RNG.nextDouble() > 0.5f
                 else if (tileMap.mapParameters.mapSize.height > tileMap.mapParameters.mapSize.width) true
                 else if (tileMap.mapParameters.mapSize.width > tileMap.mapParameters.mapSize.height) false
                 else randomness.RNG.nextDouble() > 0.5f
