@@ -1,3 +1,27 @@
+## 4.3.8
+
+fix: Fix build
+
+Simplified temporary uniques
+
+4.3.7-patch1
+
+By nacro711072:
+- Avoid destroying all onboard units after player upgrade Air Carrier unit. 
+- update score icon. 
+
+AI Pillages Neutral Roads only at War  - By itanasi
+
+By FiretronP75:
+- Three Continents 
+- Two Continents Allow both Lat or Long 
+
+version bumped  - By alexban011
+
+Units/Buildings can now be given optional Portraits to be displayed instead of flags.  - By vegeta1k95
+
+fix `UncivServer.xyz` not working  - By touhidurrr
+
 ## 4.3.7
 
 'loading' popup between turns only appears if there's a significant delay
