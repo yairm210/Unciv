@@ -46,6 +46,8 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     fun setOwningCity(city:CityInfo?){
         owningCity = city
         isCityCenterInternal = getCity()?.location == position
+        if (city != null)  // only when taking control, otherwise last owner
+            roadOwner = city.civInfo.civName
     }
 
     @Transient
@@ -104,6 +106,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
 
     var roadStatus = RoadStatus.None
     var roadIsPillaged = false
+    var roadOwner: String = "" // either who last built the road or last owner of tile
     var turnsToImprovement: Int = 0
 
     fun isHill() = baseTerrain == Constants.hill || terrainFeatures.contains(Constants.hill)
@@ -144,6 +147,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         toReturn.improvementIsPillaged = improvementIsPillaged
         toReturn.roadStatus = roadStatus
         toReturn.roadIsPillaged = roadIsPillaged
+        toReturn.roadOwner = roadOwner
         toReturn.turnsToImprovement = turnsToImprovement
         toReturn.hasBottomLeftRiver = hasBottomLeftRiver
         toReturn.hasBottomRightRiver = hasBottomRightRiver
@@ -246,12 +250,12 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     fun canPillageTile(): Boolean {
         return canPillageTileImprovement() || canPillageRoad()
     }
-    private fun canPillageTileImprovement(): Boolean {
+    fun canPillageTileImprovement(): Boolean {
         return improvement != null && !improvementIsPillaged
                 && !ruleset.tileImprovements[improvement]!!.hasUnique(UniqueType.Unpillagable)
                 && !ruleset.tileImprovements[improvement]!!.hasUnique(UniqueType.Irremovable)
     }
-    private fun canPillageRoad(): Boolean {
+    fun canPillageRoad(): Boolean {
         return roadStatus != RoadStatus.None && !roadIsPillaged
                 && !ruleset.tileImprovements[roadStatus.name]!!.hasUnique(UniqueType.Unpillagable)
                 && !ruleset.tileImprovements[roadStatus.name]!!.hasUnique(UniqueType.Irremovable)
@@ -267,6 +271,22 @@ open class TileInfo : IsPartOfGameInfoSerialization {
             RoadStatus.None
         else
             roadStatus
+    }
+
+    // function handling when adding a road to the tile
+    fun addRoad(roadType: RoadStatus, unitCivInfo: CivilizationInfo) {
+        roadStatus = roadType
+        roadIsPillaged = false
+        roadOwner = if (getOwner() == null)
+            unitCivInfo.civName // neutral tile, use building unit
+        else
+            getOwner()!!.civName
+    }
+
+    // function handling when removing a road from the tile
+    fun removeRoad() {
+        roadStatus = RoadStatus.None
+        roadIsPillaged = false
     }
 
     fun getShownImprovement(viewingCiv: CivilizationInfo?): String? {
@@ -306,6 +326,13 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     fun getOwner(): CivilizationInfo? {
         val containingCity = getCity() ?: return null
         return containingCity.civInfo
+    }
+
+    fun getRoadOwner(): CivilizationInfo? {
+        return if (roadOwner != "")
+            tileMap.gameInfo.getCivilization(roadOwner)
+        else
+            getOwner()
     }
 
     fun isFriendlyTerritory(civInfo: CivilizationInfo): Boolean {
