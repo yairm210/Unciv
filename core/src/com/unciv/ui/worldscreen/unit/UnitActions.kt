@@ -446,7 +446,7 @@ object UnitActions {
         return UnitAction(UnitActionType.Upgrade,
             title = title,
             action = {
-                unit.destroy()
+                unit.destroy(destroyTransportedUnit = false)
                 val newUnit = civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name)
 
                 /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!

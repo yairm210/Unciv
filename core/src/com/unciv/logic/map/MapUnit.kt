@@ -917,17 +917,19 @@ class MapUnit : IsPartOfGameInfoSerialization {
         attacksSinceTurnStart.clear()
     }
 
-    fun destroy() {
+    fun destroy(destroyTransportedUnit: Boolean = true) {
         val currentPosition = Vector2(getTile().position)
         civInfo.attacksSinceTurnStart.addAll(attacksSinceTurnStart.asSequence().map { CivilizationInfo.HistoricalAttackMemory(this.name, currentPosition, it) })
         currentMovement = 0f
         removeFromTile()
         civInfo.removeUnit(this)
         civInfo.updateViewableTiles()
-        // all transported units should be destroyed as well
-        currentTile.getUnits().filter { it.isTransported && isTransportTypeOf(it) }
-            .toList() // because we're changing the list
-            .forEach { unit -> unit.destroy() }
+        if (destroyTransportedUnit) {
+            // all transported units should be destroyed as well
+            currentTile.getUnits().filter { it.isTransported && isTransportTypeOf(it) }
+                .toList() // because we're changing the list
+                .forEach { unit -> unit.destroy() }
+        }
         isDestroyed = true
     }
 
