@@ -82,7 +82,7 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
                 setSize(bgW, bgH)
             }
 
-            val mask = getBackgroundMaskForUnit().apply {
+            val mask = getBackgroundMaskForUnit()?.apply {
                 align = Align.center
                 color.a = UncivGame.Current.settings.unitIconOpacity
                 setSize(bgW, bgH)
@@ -90,11 +90,11 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
 
             outer.center(this)
             inner.center(this)
-
-            mask.center(this)
+            mask?.center(this)
             addActor(outer)
             addActor(inner)
-            addActor(mask)
+            if (mask != null)
+                addActor(mask)
             center(this@UnitGroup)
         }
         unitBaseImage.center(this)
@@ -129,13 +129,18 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
         }
     }
 
-    private fun getBackgroundMaskForUnit(): Image {
-        return when {
-            unit.isEmbarked() -> ImageGetter.getImage("UnitFlagIcons/UnitFlagMaskEmbark")
-            unit.isFortified() -> ImageGetter.getImage("UnitFlagIcons/UnitFlagMaskFortify")
-            unit.isCivilian() -> ImageGetter.getImage("UnitFlagIcons/UnitFlagMaskCivilian")
-            else -> ImageGetter.getImage("UnitFlagIcons/UnitFlagMask")
+    private fun getBackgroundMaskForUnit(): Image? {
+
+        val filename = when {
+            unit.isEmbarked() -> "UnitFlagIcons/UnitFlagMaskEmbark"
+            unit.isFortified() -> "UnitFlagIcons/UnitFlagMaskFortify"
+            unit.isCivilian() -> "UnitFlagIcons/UnitFlagMaskCivilian"
+            else -> "UnitFlagIcons/UnitFlagMask"
         }
+
+        if (ImageGetter.imageExists(filename))
+            return ImageGetter.getImage(filename)
+        return null
     }
 
     private fun getBackgroundSelectionForUnit(): Image {
