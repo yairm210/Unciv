@@ -446,7 +446,7 @@ object UnitActions {
         return UnitAction(UnitActionType.Upgrade,
             title = title,
             action = {
-                unit.destroy()
+                unit.destroy(destroyTransportedUnit = false)
                 val newUnit = civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name)
 
                 /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
@@ -887,7 +887,10 @@ object UnitActions {
         if (!tile.canPillageTile()) return false
         val tileOwner = tile.getOwner()
         // Can't pillage friendly tiles, just like you can't attack them - it's an 'act of war' thing
-        return tileOwner == null || unit.civInfo.isAtWarWith(tileOwner)
+        return if (tileOwner != null)
+            unit.civInfo.isAtWarWith(tileOwner)
+        else if (tile.canPillageTile()) true
+        else (tile.canPillageRoad() && tile.roadOwner != "" && unit.civInfo.isAtWarWith(tile.getRoadOwner()!!))
     }
 
     private fun addGiftAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {

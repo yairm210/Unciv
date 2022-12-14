@@ -5,6 +5,7 @@ import com.unciv.logic.map.*
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType
 import kotlin.math.abs
+import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
 
@@ -41,6 +42,7 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
             MapType.pangaea -> createPangaea(tileMap)
             MapType.innerSea -> createInnerSea(tileMap)
             MapType.twoContinents -> createTwoContinents(tileMap)
+            MapType.threeContinents -> createThreeContinents(tileMap)
             MapType.fourCorners -> createFourCorners(tileMap)
             MapType.smoothedRandom -> generateLandCellularAutomata(tileMap)
             MapType.archipelago -> createArchipelago(tileMap)
@@ -137,6 +139,17 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
         }
     }
 
+    private fun createThreeContinents(tileMap: TileMap) {
+        val isNorth = randomness.RNG.nextDouble() < 0.5f
+
+        val elevationSeed = randomness.RNG.nextInt().toDouble()
+        for (tile in tileMap.values) {
+            var elevation = randomness.getPerlinNoise(tile, elevationSeed)
+            elevation = (elevation + getThreeContinentsTransform(tile, tileMap, isNorth)) / 2.0
+            spawnLandOrWater(tile, elevation)
+        }
+    }
+
     private fun createFourCorners(tileMap: TileMap) {
         val elevationSeed = randomness.RNG.nextInt().toDouble()
         for (tile in tileMap.values) {
@@ -182,6 +195,37 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
         // there's nothing magical about this, it's just what we got from playing around with a lot of different options -
         //   the numbers can be changed if you find that something else creates better looking continents
         return min(0.2, -1.0 + (5.0 * factor.pow(0.6f) + randomScale) / 3.0)
+    }
+
+    private fun getThreeContinentsTransform(tileInfo: TileInfo, tileMap: TileMap, isNorth: Boolean): Double {
+        // The idea here is to create a water area separating the two four areas.
+        // So what we do it create a line of water in the middle - where longitude is close to 0.
+        val randomScale = randomness.RNG.nextDouble()
+        var longitudeFactor = abs(tileInfo.longitude) / tileMap.maxLongitude
+        var latitudeFactor = abs(tileInfo.latitude) / tileMap.maxLatitude
+
+        // We then pick one side to be merged into one centered continent instead of two cornered.
+        if (isNorth && tileInfo.latitude < 0 || !isNorth && tileInfo.latitude > 0)
+            longitudeFactor = max(0f, tileMap.maxLongitude - abs(tileInfo.longitude * 2f)) / tileMap.maxLongitude
+
+        // If this is a world wrap, we want it to be separated on both sides -
+        // so we make the actual strip of water thinner, but we put it both in the middle of the map and on the edges of the map
+        if (tileMap.mapParameters.worldWrap) {
+            longitudeFactor = min(
+                longitudeFactor,
+                (tileMap.maxLongitude - abs(tileInfo.longitude)) / tileMap.maxLongitude
+            ) * 1.5f
+            latitudeFactor = min(
+                latitudeFactor,
+                (tileMap.maxLatitude - abs(tileInfo.latitude)) / tileMap.maxLatitude
+            ) * 1.5f
+        }
+        // there's nothing magical about this, it's just what we got from playing around with a lot of different options -
+        //   the numbers can be changed if you find that something else creates better looking continents
+
+        val landFactor = min(longitudeFactor, latitudeFactor)
+
+        return min(0.2, -1.0 + (5.0 * landFactor.pow(0.5f) + randomScale) / 3.0)
     }
 
     private fun getFourCornersTransform(tileInfo: TileInfo, tileMap: TileMap): Double {
