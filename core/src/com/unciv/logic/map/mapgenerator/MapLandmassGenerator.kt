@@ -105,7 +105,7 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
     }
     
     //  This creates a quite flexible random map that can go from a large continent into a nicely looking archipelago
-    private fun createHelpMeIAmLost(tileMap: TileMap) {
+    private fun createCraziness(tileMap: TileMap) {
         val elevationSeed = randomness.RNG.nextInt().toDouble()
             waterThreshold -= 0.05
         for (tile in tileMap.values) {
