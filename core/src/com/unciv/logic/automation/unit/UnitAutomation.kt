@@ -354,7 +354,7 @@ object UnitAutomation {
             .filter { it.value.totalDistance < unit.currentMovement }.keys
             .filter { unit.movement.canMoveTo(it) && UnitActions.canPillage(unit, it)
                     && (it.canPillageTileImprovement()
-                    || (it.canPillageRoad() && it.roadOwner != "" && unit.civInfo.isAtWarWith(it.getRoadOwner()!!)))}
+                    || (it.canPillageRoad() && it.getRoadOwner() != null && unit.civInfo.isAtWarWith(it.getRoadOwner()!!)))}
 
         if (tilesThatCanWalkToAndThenPillage.isEmpty()) return false
         val tileToPillage = tilesThatCanWalkToAndThenPillage.maxByOrNull { it.getDefensiveBonus() }!!
