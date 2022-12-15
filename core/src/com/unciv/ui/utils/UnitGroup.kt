@@ -1,5 +1,6 @@
 package com.unciv.ui.utils
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
@@ -11,6 +12,7 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.utils.Log
 
 class UnitGroup(val unit: MapUnit, val size: Float): Group() {
     var actionGroup :Group? = null
@@ -59,7 +61,7 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
         flagBg.addActor(outerBg)
         flagBg.addActor(innerBg)
         if (maskBg != null)
-            addActor(maskBg)
+            flagBg.addActor(maskBg)
         flagBg.center(this)
 
         unitBaseImage.center(this)
