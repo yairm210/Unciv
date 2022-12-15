@@ -110,7 +110,7 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
             waterThreshold -= 0.05
         for (tile in tileMap.values) {
             var elevation = randomness.getPerlinNoise(tile, elevationSeed)
-            elevation = (elevation + getHelpMeIAmLostTransform(tile, tileMap) - abs(getRidgedPerlinNoise(tile, elevationSeed) * (0.75 + 0.5 * randomness.RNG.nextDouble()) ))
+            elevation = (elevation + getCrazinessTransform(tile, tileMap) - abs(getRidgedPerlinNoise(tile, elevationSeed) * (0.75 + 0.5 * randomness.RNG.nextDouble()) ))
             spawnLandOrWater(tile, elevation)
         }
         // Randomize and then smoothen to make it look better.
@@ -187,6 +187,20 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
         val distanceFactor = x * x / (a * a) + y * y / (b * b)
 
         return min(0.3, 1.0 - (5.0 * distanceFactor * distanceFactor + randomScale) / 3.0)
+    }
+    
+    private fun getCrazinessTransform(tileInfo: TileInfo, tileMap: TileMap, percentOfMap: Double = 0.98): Double {
+        val randomScale = randomness.RNG.nextDouble()
+        val ratio = percentOfMap + 0.01 * randomness.RNG.nextDouble()
+
+        val a = ratio * tileMap.maxLongitude
+        val b = ratio * tileMap.maxLatitude
+        val x = tileInfo.longitude
+        val y = tileInfo.latitude
+
+        val distanceFactor = x * x / (a * a) + y * y / (b * b)
+
+        return min(0.2, 1.0 - (3.5 * distanceFactor * distanceFactor + randomScale) / 4.0)
     }
 
     private fun getTwoContinentsTransform(tileInfo: TileInfo, tileMap: TileMap, isLatitude: Boolean): Double {
