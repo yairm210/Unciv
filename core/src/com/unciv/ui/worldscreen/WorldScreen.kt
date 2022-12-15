@@ -671,10 +671,6 @@ class WorldScreen(
                 NextTurnAction("Waiting for other players...",Color.GRAY,
                     "NotificationIcons/Waiting") {}
 
-            viewingCiv.shouldGoToDueUnit() ->
-                NextTurnAction("Next unit", Color.LIGHT_GRAY,
-                    "NotificationIcons/NextUnit") { switchToNextUnit() }
-
             viewingCiv.cities.any {
                 !it.isPuppet &&
                 it.cityConstructions.currentConstructionFromQueue == ""
@@ -756,6 +752,10 @@ class WorldScreen(
                     game.pushScreen(DiplomaticVotePickerScreen(viewingCiv))
                 }
 
+            viewingCiv.shouldGoToDueUnit() ->
+                NextTurnAction("Next unit", Color.LIGHT_GRAY,
+                    "NotificationIcons/NextUnit") { switchToNextUnit() }
+
             !viewingCiv.hasMovedAutomatedUnits && viewingCiv.getCivUnits()
                 .any { it.currentMovement > Constants.minimumMovementEpsilon && (it.isMoving() || it.isAutomated() || it.isExploring()) } ->
                 NextTurnAction("Move automated units", Color.LIGHT_GRAY,
@@ -775,7 +775,7 @@ class WorldScreen(
                 }
 
             else ->
-                NextTurnAction("${Fonts.turn}{Next turn}", Color.WHITE,
+                NextTurnAction("Next turn", Color.WHITE,
                     "NotificationIcons/NextTurn") {
                     val action = {
                         game.settings.addCompletedTutorialTask("Pass a turn")
