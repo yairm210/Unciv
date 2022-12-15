@@ -651,30 +651,93 @@ class MapGenerator(val ruleset: Ruleset) {
                     -1f, ruleset.modOptions.constants.spawnIceBelowTemperature,
                     0f, 1f))
             }.toList()
+
+        // Flat Earth needs a 1 tile wide perimeter of ice/mountain/snow and a 2 radius cluster of ice in the center.
+        if (tileMap.mapParameters.shape === MapShape.flatEarth) {
+
+            val iceCandidates = iceEquivalents.filter {
+                it.matches(-1.0, 1.0)
+            }.map {
+                it.terrain.name
+            }
+            val iceTerrainName =
+                    when (iceCandidates.size) {
+                        1 -> iceCandidates.first()
+                        !in 0..1 -> iceCandidates.random(randomness.RNG)
+                        else -> null
+                    }
+
+            val snowCandidates = ruleset.terrains.values.asSequence().filter {
+                it.type == TerrainType.Land
+            }.flatMap { terrain ->
+                val conditions = terrain.getGenerationConditions()
+                if (conditions.any()) conditions
+                else sequenceOf(
+                    TerrainOccursRange(
+                        terrain,
+                        -1f, ruleset.modOptions.constants.spawnIceBelowTemperature,
+                        0f, 1f
+                    )
+                )
+            }.toList().filter {
+                it.matches(-1.0, 1.0)
+            }.map {
+                it.terrain.name
+            }
+            val snowTerrainName =
+                    when (snowCandidates.size) {
+                        1 -> snowCandidates.first()
+                        !in 0..1 -> snowCandidates.random(randomness.RNG)
+                        else -> null
+                    }
+
+            val mountainTerrainName =
+                    ruleset.terrains.values.firstOrNull { it.hasUnique(UniqueType.OccursInChains) }?.name
+
+            for (tile in tileMap.values) {
+                val isCenterTile = tile.latitude == 0f && tile.longitude == 0f
+                val isEdgeTile = tile.neighbors.count() < 6
+
+                if (isCenterTile) {
+                    tile.removeTerrainFeatures()
+                    if (iceTerrainName != null) {
+                        tile.addTerrainFeature(iceTerrainName)
+                    } else if (snowTerrainName != null) {
+                        tile.addTerrainFeature(snowTerrainName)
+                    } else if (mountainTerrainName != null) {
+                        tile.baseTerrain = mountainTerrainName
+                    }
+                    for (neighbor in tile.neighbors) {
+                        neighbor.removeTerrainFeatures()
+                        if (iceTerrainName != null) {
+                            neighbor.addTerrainFeature(iceTerrainName)
+                        } else if (snowTerrainName != null) {
+                            neighbor.addTerrainFeature(snowTerrainName)
+                        } else if (mountainTerrainName != null) {
+                            neighbor.baseTerrain = mountainTerrainName
+                        }
+                    }
+                } else if (isEdgeTile) {
+                    tile.removeTerrainFeatures()
+                    val random = randomness.RNG.nextDouble()
+                    if (iceTerrainName != null && random < 0.4f) {
+                        tile.addTerrainFeature(iceTerrainName)
+                    } else if (snowTerrainName != null && random < 0.7f) {
+                        tile.addTerrainFeature(snowTerrainName)
+                    } else if (mountainTerrainName != null) {
+                        tile.baseTerrain = mountainTerrainName
+                    }
+                }
+            }
+        }
+
+
+
         if (iceEquivalents.isEmpty()) return
 
         tileMap.setTransients(ruleset)
         val temperatureSeed = randomness.RNG.nextInt().toDouble()
         for (tile in tileMap.values) {
-
-            // Flat Earth needs a 2 tile wide perimeter of ice and a 2 radius cluster of ice in the center.
-            if (tileMap.mapParameters.shape === MapShape.flatEarth) {
-                val isCenterTile = tile.latitude == 0f && tile.longitude == 0f
-                val isEdgeTile = tile.neighbors.count() < 6
-                val iceTerrainName = iceEquivalents.first().terrain.name
-
-                if (isCenterTile || isEdgeTile) {
-                    tile.removeTerrainFeatures()
-                    tile.addTerrainFeature(iceTerrainName)
-                    if (isCenterTile) {
-                        for (neighbor in tile.neighbors) {
-                            neighbor.removeTerrainFeatures()
-                            neighbor.addTerrainFeature(iceTerrainName)
-                        }
-                    }
-                }
-            }
-
             if (tile.baseTerrain !in waterTerrain || tile.terrainFeatures.isNotEmpty())
                 continue
 
