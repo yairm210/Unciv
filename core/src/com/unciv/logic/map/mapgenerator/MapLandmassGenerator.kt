@@ -45,6 +45,7 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
             MapType.threeContinents -> createThreeContinents(tileMap)
             MapType.fourCorners -> createFourCorners(tileMap)
             MapType.smoothedRandom -> generateLandCellularAutomata(tileMap)
+            MapType.craziness -> createCraziness(tileMap)
             MapType.archipelago -> createArchipelago(tileMap)
             MapType.default -> createPerlin(tileMap)
         }
@@ -71,6 +72,20 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
                 tileInfo.baseTerrain = waterTerrainName
         }
     }
+    /**
+     * Randomizer job is to... well randomize land shapes to make them look more natural.  
+     * There is a small chance of [TileInfo]s with more than 2 land neighbours to be converted to land.
+     * There is a high chance of [TileInfo]s with less than 5 land neighbours to be converted to water thus making it look more natural and breaking huge chunks into smaller pieces.
+    */
+    private fun randomizer(tileMap: TileMap) {
+        for (tileInfo in tileMap.values) {
+            val numberOfLandNeighbors = tileInfo.neighbors.count { it.baseTerrain == landTerrainName }
+            if (randomness.RNG.nextDouble() > 0.75 && numberOfLandNeighbors > 2)
+                tileInfo.baseTerrain = landTerrainName
+        else if (randomness.RNG.nextDouble() < 0.75 && numberOfLandNeighbors < 5)
+                tileInfo.baseTerrain = waterTerrainName
+        }
+    }
 
     private fun createPerlin(tileMap: TileMap) {
         val elevationSeed = randomness.RNG.nextInt().toDouble()
@@ -87,6 +102,20 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
             val elevation = getRidgedPerlinNoise(tile, elevationSeed)
             spawnLandOrWater(tile, elevation)
         }
+    }
+    
+    //  This creates a quite flexible random map that can go from a large continent into a nicely looking archipelago
+    private fun createHelpMeIAmLost(tileMap: TileMap) {
+        val elevationSeed = randomness.RNG.nextInt().toDouble()
+            waterThreshold -= 0.05
+        for (tile in tileMap.values) {
+            var elevation = randomness.getPerlinNoise(tile, elevationSeed)
+            elevation = (elevation + getHelpMeIAmLostTransform(tile, tileMap) - abs(getRidgedPerlinNoise(tile, elevationSeed) * (0.75 + 0.5 * randomness.RNG.nextDouble()) ))
+            spawnLandOrWater(tile, elevation)
+        }
+        // Randomize and then smoothen to make it look better.
+        randomizer(tileMap)
+		smoothen(tileMap)
     }
 
     private fun createPangaea(tileMap: TileMap) {
