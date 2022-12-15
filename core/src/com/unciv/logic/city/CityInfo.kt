@@ -438,7 +438,7 @@ class CityInfo : IsPartOfGameInfoSerialization {
             val resource = getRuleset().tileResources[unique.params[1]]
                 ?: continue
             cityResources.add(
-                resource, "Buildings+",
+                resource, "Buildings",
                 unique.params[0].toInt() * civInfo.getResourceModifier(resource)
             )
         }

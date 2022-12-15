@@ -5,6 +5,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.tile.ResourceSupplyList
+import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 
 /** CivInfo class was getting too crowded */
@@ -188,6 +189,15 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
             }
             // Then we combine these into one
             newDetailedCivResources.addByResource(cityStateProvidedResources, Constants.cityStates)
+        }
+
+        for (unique in civInfo.getMatchingUniques(UniqueType.ProvidesResources)) {
+            if (unique.sourceObjectType == UniqueTarget.Building || unique.sourceObjectType == UniqueTarget.Wonder) continue // already calculated in city
+            newDetailedCivResources.add(
+                civInfo.gameInfo.ruleSet.tileResources[unique.params[1]]!!,
+                unique.sourceObjectType?.name ?: "",
+                unique.params[1].toInt()
+            )
         }
 
         for (diplomacyManager in civInfo.diplomacy.values)
