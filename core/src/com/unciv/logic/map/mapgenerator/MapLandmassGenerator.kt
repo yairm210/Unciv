@@ -49,7 +49,7 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
             MapType.default -> createPerlin(tileMap)
         }
 
-        // Flat Earth needs a 4 tile wide perimeter of water and a 4 radius cluster of water in the center.
+        // Flat Earth needs a 3 tile wide perimeter of water and a 4 tile radius of water in the center.
         if (tileMap.mapParameters.shape === MapShape.flatEarth) {
             for (tile in tileMap.values) {
                 val isCenterTile = tile.latitude == 0f && tile.longitude == 0f
@@ -61,6 +61,11 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
                         neighbor.baseTerrain = waterTerrainName
                         for (neighbor2 in neighbor.neighbors) {
                             neighbor2.baseTerrain = waterTerrainName
+                            if (isCenterTile) {
+                                for (neighbor3 in neighbor2.neighbors) {
+                                    neighbor3.baseTerrain = waterTerrainName
+                                }
+                            }
                         }
                     }
                 }
