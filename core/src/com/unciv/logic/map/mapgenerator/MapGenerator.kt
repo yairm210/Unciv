@@ -512,39 +512,19 @@ class MapGenerator(val ruleset: Ruleset) {
             val humidityRandom = randomness.getPerlinNoise(tile, humiditySeed, scale = scale, nOctaves = 1)
             val humidity = ((humidityRandom + 1.0) / 2.0 + humidityShift).coerceIn(0.0..1.0)
 
-            val randomTemperature = randomness.getPerlinNoise(tile, temperatureSeed, scale = scale, nOctaves = 1)
-            var temperature: Double
-
-            // Flat Earth uses radius from center instead of latitude
-            if (tileMap.mapParameters.shape === MapShape.flatEarth) {
-                val latitudeRatio = abs(tile.latitude) / tileMap.maxLatitude
-                val longitudeRatio = abs(tile.longitude) / tileMap.maxLongitude
-                val radius = sqrt(latitudeRatio.pow(2) + longitudeRatio.pow(2))
-
-                // Radius is in the range of 0.0 to 1.0
-                // Temperature is in the range of -1.0 to 1.0
-                // So scale the radius range to the temperature range
-                // Radius of 0.0 (arctic) is -1.0 (cold)
-                // Radius of 0.25 (mid North) is 0.0 (temperate)
-                // Radius of 0.5 (equator) is 1.0 (hot)
-                // Radius of 0.75 (mid South) is 0.0 (temperate)
-                // Radius of 1.0 (antarctic) is -1.0 (cold)
-                val radiusTemperature = when {
-                    // North zone starts cold at arctic and gets hotter as it goes South to equator
-                    // x1 is set to 0.05 instead of 0.0 to offset the ice in the center of the map
-                    radius < 0.5 -> scaleToRange(0.05, 0.5, -1.0, 1.0, radius)
-                    // South zone starts hot at equator and gets colder as it goes South to antarctic
-                    // x2 is set to 0.95 instead of 1.0 to offset the ice on the edges of the map
-                    radius > 0.5 -> scaleToRange(0.5, 0.95, 1.0, -1.0, radius)
-                    // Equator is simply hot
-                    else -> 1.0
-                }
-                temperature = (5.0 * radiusTemperature + randomTemperature) / 6.0
+            val expectedTemperature = if (tileMap.mapParameters.shape === MapShape.flatEarth) {
+                // Flat Earth uses radius because North is center of map
+                val radius = getTileRadius(tile, tileMap)
+                val radiusTemperature = getTemperatureAtRadius(radius)
+                radiusTemperature
             } else {
+                // Globe Earth uses latitude because North is top of map
                 val latitudeTemperature = 1.0 - 2.0 * abs(tile.latitude) / tileMap.maxLatitude
-                temperature = (5.0 * latitudeTemperature + randomTemperature) / 6.0
+                latitudeTemperature
             }
 
+            val randomTemperature = randomness.getPerlinNoise(tile, temperatureSeed, scale = scale, nOctaves = 1)
+            var temperature = (5.0 * expectedTemperature + randomTemperature) / 6.0
             temperature = abs(temperature).pow(1.0 - temperatureExtremeness) * temperature.sign
             temperature = (temperature + temperatureShift).coerceIn(-1.0..1.0)
 
@@ -577,20 +557,63 @@ class MapGenerator(val ruleset: Ruleset) {
         }
     }
 
+    private fun getTileRadius(tile: TileInfo, tileMap: TileMap): Float {
+        val latitudeRatio = abs(tile.latitude) / tileMap.maxLatitude
+        val longitudeRatio = abs(tile.longitude) / tileMap.maxLongitude
+        return sqrt(latitudeRatio.pow(2) + longitudeRatio.pow(2))
+    }
+
+    private fun getTemperatureAtRadius(radius: Float): Double {
+        /*
+        Radius is in the range of 0.0 to 1.0
+        Temperature is in the range of -1.0 to 1.0
+
+        Radius of 0.0 (arctic) is -1.0 (cold)
+        Radius of 0.25 (mid North) is 0.0 (temperate)
+        Radius of 0.5 (equator) is 1.0 (hot)
+        Radius of 0.75 (mid South) is 0.0 (temperate)
+        Radius of 1.0 (antarctic) is -1.0 (cold)
+
+        Scale the radius range to the temperature range
+        */
+        return when {
+            /*
+            North Zone
+            Starts cold at arctic and gets hotter as it goes South to equator
+            x1 is set to 0.05 instead of 0.0 to offset the ice in the center of the map
+            */
+            radius < 0.5 -> scaleToRange(0.05, 0.5, -1.0, 1.0, radius)
+
+            /*
+            South Zone
+            Starts hot at equator and gets colder as it goes South to antarctic
+            x2 is set to 0.95 instead of 1.0 to offset the ice on the edges of the map
+            */
+            radius > 0.5 -> scaleToRange(0.5, 0.95, 1.0, -1.0, radius)
+
+            /*
+            Equator
+            Always hot
+            radius == 0.5
+            */
+            else -> 1.0
+        }
+    }
+
     /**
-     * @x1 is the start of the original range
-     * @x2 is the end of the original range
-     * @y1 is the start of the new range
-     * @y2 is the end of the new range
-     * @value will be scaled from the original range to the new range
+     * @x1 start of the original range
+     * @x2 end of the original range
+     * @y1 start of the new range
+     * @y2 end of the new range
+     * @value value to be scaled from the original range to the new range
      *
-     * @returns the value in new scale
-     * special thanks to @letstalkaboutdune
+     * @returns value in new scale
+     * special thanks to @letstalkaboutdune for the math
      */
     private fun scaleToRange(x1: Double, x2: Double, y1: Double, y2: Double, value: Float): Double {
         val gain = (y2 - y1) / (x2 - x1)
         val offset = y2 - (gain * x2)
-        return gain * value + offset
+        return (gain * value) + offset
     }
 
     /**
