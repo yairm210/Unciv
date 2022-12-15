@@ -756,7 +756,7 @@ class WorldScreen(
                 NextTurnAction("Next unit", Color.LIGHT_GRAY,
                     "NotificationIcons/NextUnit") { switchToNextUnit() }
 
-            !viewingCiv.hasMovedAutomatedUnits && viewingCiv.getCivUnits()
+            !game.settings.automatedUnitsMoveOnTurnStart && !viewingCiv.hasMovedAutomatedUnits && viewingCiv.getCivUnits()
                 .any { it.currentMovement > Constants.minimumMovementEpsilon && (it.isMoving() || it.isAutomated() || it.isExploring()) } ->
                 NextTurnAction("Move automated units", Color.LIGHT_GRAY,
                     "NotificationIcons/MoveAutomatedUnits") {
