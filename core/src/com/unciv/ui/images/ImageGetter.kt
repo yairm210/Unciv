@@ -12,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
@@ -369,12 +368,12 @@ object ImageGetter {
         return iconGroup
     }
 
-    fun getTechIconGroup(techName: String, circleSize: Float) = getTechIcon(techName).surroundWithCircle(circleSize)
-
-    fun getTechIcon(techName: String): Image {
-        val techIconColor = ruleset.eras[ruleset.technologies[techName]?.era()]?.getColor()
-            ?: return getWhiteDot()
-        return getImage("TechIcons/$techName").apply { color = techIconColor.darken(0.6f) }
+    fun getTechIconGroup(techName: String, circleSize: Float): IconCircleGroup {
+        val techIconColor = ruleset.eras[ruleset.technologies[techName]?.era()]?.getColor()?.darken(0.6f)
+            ?: Color.BLACK
+        return getImage("TechIcons/$techName").apply { color = techIconColor }
+            .surroundWithCircle(circleSize)
+            .surroundWithThinCircle(techIconColor)
     }
 
     fun getProgressBarVertical(width: Float, height: Float, percentComplete: Float, progressColor: Color, backgroundColor: Color): Group {
