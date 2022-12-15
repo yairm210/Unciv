@@ -99,6 +99,7 @@ class MapParametersTable(
             MapType.fourCorners,
             MapType.smoothedRandom,
             MapType.archipelago,
+            MapType.craziness,
             MapType.innerSea,
             if (forMapEditor) MapType.empty else null
         )
