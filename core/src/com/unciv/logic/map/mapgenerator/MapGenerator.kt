@@ -703,7 +703,7 @@ class MapGenerator(val ruleset: Ruleset) {
                     if (iceTerrainName != null) {
                         tile.addTerrainFeature(iceTerrainName)
                     } else if (snowTerrainName != null) {
-                        tile.addTerrainFeature(snowTerrainName)
+                        tile.baseTerrain = snowTerrainName
                     } else if (mountainTerrainName != null) {
                         tile.baseTerrain = mountainTerrainName
                     }
@@ -712,7 +712,7 @@ class MapGenerator(val ruleset: Ruleset) {
                         if (iceTerrainName != null) {
                             neighbor.addTerrainFeature(iceTerrainName)
                         } else if (snowTerrainName != null) {
-                            neighbor.addTerrainFeature(snowTerrainName)
+                            neighbor.baseTerrain = snowTerrainName
                         } else if (mountainTerrainName != null) {
                             neighbor.baseTerrain = mountainTerrainName
                         }
@@ -723,15 +723,13 @@ class MapGenerator(val ruleset: Ruleset) {
                     if (iceTerrainName != null && random < 0.4f) {
                         tile.addTerrainFeature(iceTerrainName)
                     } else if (snowTerrainName != null && random < 0.7f) {
-                        tile.addTerrainFeature(snowTerrainName)
+                        tile.baseTerrain = snowTerrainName
                     } else if (mountainTerrainName != null) {
                         tile.baseTerrain = mountainTerrainName
                     }
                 }
             }
         }
-
-
 
         if (iceEquivalents.isEmpty()) return
 
