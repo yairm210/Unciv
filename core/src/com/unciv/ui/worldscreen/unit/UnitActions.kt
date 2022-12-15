@@ -886,10 +886,7 @@ object UnitActions {
         if (!tile.canPillageTile()) return false
         val tileOwner = tile.getOwner()
         // Can't pillage friendly tiles, just like you can't attack them - it's an 'act of war' thing
-        return if (tileOwner != null)
-            unit.civInfo.isAtWarWith(tileOwner)
-        else if (tile.canPillageTile()) true
-        else (tile.canPillageRoad() && tile.roadOwner != "" && unit.civInfo.isAtWarWith(tile.getRoadOwner()!!))
+        return tileOwner == null || unit.civInfo.isAtWarWith(tileOwner)
     }
 
     private fun addGiftAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
