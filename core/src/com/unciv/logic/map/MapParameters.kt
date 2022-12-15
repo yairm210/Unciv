@@ -134,6 +134,7 @@ object MapType : IsPartOfGameInfoSerialization {
     const val threeContinents = "Three Continents"
     const val fourCorners = "Four Corners"
     const val archipelago = "Archipelago"
+    const val craziness = "Centered Islands"
     const val innerSea = "Inner Sea"
 
     // Cellular automata style
