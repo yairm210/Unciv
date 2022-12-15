@@ -931,10 +931,8 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
         if (playerType == PlayerType.Human && UncivGame.Current.settings.automatedUnitsMoveOnTurnStart) {
             hasMovedAutomatedUnits = true
-            Concurrency.run("Move automated units") {
-                for (unit in getCivUnits())
-                    unit.doAction()
-            }
+            for (unit in getCivUnits())
+                unit.doAction()
         } else hasMovedAutomatedUnits = false
 
         updateDetailedCivResources() // If you offered a trade last turn, this turn it will have been accepted/declined
