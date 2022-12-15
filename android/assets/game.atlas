@@ -1356,22 +1356,22 @@ UnitFlagIcons/UnitFlagCivilian
   index: -1
 UnitFlagIcons/UnitFlagSelectionCivilian
   rotate: false
-  xy: 356, 356
-  size: 178, 217
-  orig: 178, 217
+  xy: 366, 385
+  size: 157, 170
+  orig: 157, 170
   offset: 0, 0
   index: -1
 UnitFlagIcons/UnitFlagEmbark
   rotate: false
   xy: 534, 0
-  size: 178, 188
-  orig: 178, 178
+  size: 178, 210
+  orig: 178, 210
   offset: 0, 0
   index: -1
 UnitFlagIcons/UnitFlagSelectionEmbark
   rotate: false
   xy: 890, 0
-  size: 178, 188
-  orig: 178, 178
+  size: 178, 210
+  orig: 178, 210
   offset: 0, 0
   index: -1

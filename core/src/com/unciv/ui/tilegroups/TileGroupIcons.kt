@@ -109,10 +109,9 @@ class TileGroupIcons(val tileGroup: TileGroup) {
                 newImage.actionGroup?.color?.a = 0.5f * UncivGame.Current.settings.unitIconOpacity
             }
 
-            if (unit.currentMovement == 0f && !unit.canAttack()) {
-                newImage.flagSelection?.color?.apply { a *= 0.5f }
-                newImage.flagHalo?.color?.apply { a = 0f }
-                newImage.flagBg?.children?.forEach { it.color?.apply { a *= 0.5f } }
+            if (unit.currentMovement == 0f) {
+                newImage.flagSelection.color?.apply { a *= 0.5f }
+                newImage.flagBg.children?.forEach { it.color.apply { a *= 0.5f } }
                 newImage.unitBaseImage.color.a *= 0.5f
             }
 
