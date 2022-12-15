@@ -1,5 +1,6 @@
 package com.unciv.ui.cityscreen
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.city.CityInfo
@@ -73,8 +74,6 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
         terrainFeatureLayerGroup.color.a = 0.5f
         icons.improvementIcon?.setColor(1f, 1f, 1f, 0.5f)
         resourceImage?.setColor(1f, 1f, 1f, 0.5f)
-        icons.civilianUnitIcon?.setColor(1f, 1f, 1f, 0.5f)
-        icons.militaryUnitIcon?.setColor(1f, 1f, 1f, 0.5f)
         updatePopulationIcon()
         updateYieldGroup()
     }
