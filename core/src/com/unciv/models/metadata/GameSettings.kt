@@ -30,6 +30,7 @@ class GameSettings {
     var showUnitMovements: Boolean = false
 
     var checkForDueUnits: Boolean = true
+    var autoUnitCycle: Boolean = true
     var singleTapMove: Boolean = false
     var language: String = "English"
     @Transient
@@ -53,6 +54,7 @@ class GameSettings {
     var autoAssignCityProduction: Boolean = true
     var autoBuildingRoads: Boolean = true
     var automatedWorkersReplaceImprovements = true
+    var automatedUnitsMoveOnTurnStart: Boolean = false
 
     var showMinimap: Boolean = true
     var minimapSize: Int = 6    // default corresponds to 15% screen space
