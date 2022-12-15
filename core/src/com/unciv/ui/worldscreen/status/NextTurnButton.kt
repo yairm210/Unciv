@@ -3,17 +3,23 @@ package com.unciv.ui.worldscreen.status
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.utils.Align
 import com.unciv.models.translations.tr
+import com.unciv.ui.images.IconTextButton
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.KeyShortcut
+import com.unciv.ui.utils.extensions.center
+import com.unciv.ui.utils.extensions.centerX
+import com.unciv.ui.utils.extensions.centerY
 import com.unciv.ui.utils.extensions.isEnabled
 import com.unciv.ui.utils.extensions.keyShortcuts
 import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.setFontSize
 
 class NextTurnButton(
-) : TextButton("", BaseScreen.skin) {
+) : IconTextButton("", null) {
     private var nextTurnAction = NextTurnAction("", Color.BLACK) {}
 
     init {
@@ -33,8 +39,12 @@ class NextTurnButton(
                nextTurnAction: NextTurnAction? = null) {
         if (nextTurnAction != null) {
             this.nextTurnAction = nextTurnAction
-            setText(nextTurnAction.text.tr())
+            label.setText(nextTurnAction.text.tr())
             label.color = nextTurnAction.color
+            if (nextTurnAction.icon != null && ImageGetter.imageExists(nextTurnAction.icon))
+                iconCell.setActor(ImageGetter.getImage(nextTurnAction.icon))
+            else
+                iconCell.clearActor()
             pack()
         }
 
@@ -42,4 +52,4 @@ class NextTurnButton(
     }
 }
 
-class NextTurnAction(val text: String, val color: Color, val action: () -> Unit)
+class NextTurnAction(val text: String, val color: Color, val icon: String? = null, val action: () -> Unit)

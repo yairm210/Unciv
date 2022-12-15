@@ -1,3 +1,17 @@
+## 4.3.8
+
+By nacro711072:
+- Avoid destroying all onboard units after player upgrade Air Carrier unit
+- update score icon
+
+AI Pillages Neutral Roads only at War - By itanasi
+
+By FiretronP75:
+- Three Continents map type
+- Two Continents split map according to dimension ratio
+
+Modding: Units/Buildings can now be given optional Portraits to be displayed instead of flags - By vegeta1k95
+
 ## 4.3.7
 
 'loading' popup between turns only appears if there's a significant delay

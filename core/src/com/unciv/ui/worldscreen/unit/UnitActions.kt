@@ -150,7 +150,7 @@ object UnitActions {
 
         return UnitAction(UnitActionType.Create, "Create [$improvementName]",
             action = {
-                tile.improvement = improvementName
+                tile.changeImprovement(improvementName)
                 val city = tile.getCity()
                 if (city != null) {
                     city.cityStats.update()
@@ -188,9 +188,8 @@ object UnitActions {
             UncivGame.Current.settings.addCompletedTutorialTask("Found city")
             unit.civInfo.addCity(tile.position)
             if (tile.ruleset.tileImprovements.containsKey("City center"))
-                tile.improvement = "City center"
-            tile.improvementIsPillaged = false
-            tile.roadIsPillaged = false
+                tile.changeImprovement("City center")
+            tile.removeRoad()
             unit.destroy()
             UncivGame.Current.worldScreen!!.shouldUpdate = true
         }
@@ -446,7 +445,7 @@ object UnitActions {
         return UnitAction(UnitActionType.Upgrade,
             title = title,
             action = {
-                unit.destroy()
+                unit.destroy(destroyTransportedUnit = false)
                 val newUnit = civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name)
 
                 /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
@@ -775,7 +774,7 @@ object UnitActions {
                 action = {
                     val unitTile = unit.getTile()
                     unitTile.removeCreatesOneImprovementMarker()
-                    unitTile.improvement = improvementName
+                    unitTile.changeImprovement(improvementName)
                     unitTile.stopWorkingOnImprovement()
                     improvement.handleImprovementCompletion(unit)
                     unit.consume()

@@ -727,13 +727,11 @@ class MapUnit : IsPartOfGameInfoSerialization {
                     && !tileImprovement.terrainsCanBeBuiltOn.contains(tile.baseTerrain)
                 ) {
                     // We removed a terrain (e.g. Forest) and the improvement (e.g. Lumber mill) requires it!
-                    tile.improvement = null
-                    tile.improvementIsPillaged = false
+                    tile.changeImprovement(null)
                     if (tile.resource != null) civInfo.updateDetailedCivResources() // unlikely, but maybe a mod makes a resource improvement dependent on a terrain feature
                 }
                 if (RoadStatus.values().any { tile.improvementInProgress == it.removeAction }) {
-                    tile.roadStatus = RoadStatus.None
-                    tile.roadIsPillaged = false
+                    tile.removeRoad()
                 } else {
                     val removedFeatureObject = tile.ruleset.terrains[removedFeatureName]
                     if (removedFeatureObject != null && removedFeatureObject.hasUnique(UniqueType.ProductionBonusWhenRemoved)) {
@@ -742,14 +740,13 @@ class MapUnit : IsPartOfGameInfoSerialization {
                     tile.removeTerrainFeature(removedFeatureName)
                 }
             }
-            tile.improvementInProgress == RoadStatus.Road.name -> { tile.roadStatus = RoadStatus.Road; tile.roadIsPillaged = false }
-            tile.improvementInProgress == RoadStatus.Railroad.name -> { tile.roadStatus = RoadStatus.Railroad; tile.roadIsPillaged = false }
+            tile.improvementInProgress == RoadStatus.Road.name -> tile.addRoad(RoadStatus.Road, this.civInfo)
+            tile.improvementInProgress == RoadStatus.Railroad.name -> tile.addRoad(RoadStatus.Railroad, this.civInfo)
             tile.improvementInProgress == Constants.repair -> tile.setRepaired()
             else -> {
                 val improvement = civInfo.gameInfo.ruleSet.tileImprovements[tile.improvementInProgress]!!
                 improvement.handleImprovementCompletion(this)
-                tile.improvement = tile.improvementInProgress
-                tile.improvementIsPillaged = false
+                tile.changeImprovement(tile.improvementInProgress)
             }
         }
 
@@ -917,17 +914,19 @@ class MapUnit : IsPartOfGameInfoSerialization {
         attacksSinceTurnStart.clear()
     }
 
-    fun destroy() {
+    fun destroy(destroyTransportedUnit: Boolean = true) {
         val currentPosition = Vector2(getTile().position)
         civInfo.attacksSinceTurnStart.addAll(attacksSinceTurnStart.asSequence().map { CivilizationInfo.HistoricalAttackMemory(this.name, currentPosition, it) })
         currentMovement = 0f
         removeFromTile()
         civInfo.removeUnit(this)
         civInfo.updateViewableTiles()
-        // all transported units should be destroyed as well
-        currentTile.getUnits().filter { it.isTransported && isTransportTypeOf(it) }
-            .toList() // because we're changing the list
-            .forEach { unit -> unit.destroy() }
+        if (destroyTransportedUnit) {
+            // all transported units should be destroyed as well
+            currentTile.getUnits().filter { it.isTransported && isTransportTypeOf(it) }
+                .toList() // because we're changing the list
+                .forEach { unit -> unit.destroy() }
+        }
         isDestroyed = true
     }
 
@@ -1022,7 +1021,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     private fun clearEncampment(tile: TileInfo) {
-        tile.improvement = null
+        tile.changeImprovement(null)
 
         // Notify City-States that this unit cleared a Barbarian Encampment, required for quests
         civInfo.gameInfo.getAliveCityStates()
@@ -1072,7 +1071,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     private fun getAncientRuinBonus(tile: TileInfo) {
-        tile.improvement = null
+        tile.changeImprovement(null)
         civInfo.ruinsManager.selectNextRuinsReward(this)
     }
 
