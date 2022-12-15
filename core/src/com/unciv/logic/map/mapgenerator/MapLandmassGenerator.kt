@@ -210,9 +210,12 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
         var longitudeFactor = abs(tileInfo.longitude) / tileMap.maxLongitude
         var latitudeFactor = abs(tileInfo.latitude) / tileMap.maxLatitude
 
+        // 3rd continent should use only half the map width, or if flat earth, only a third
+        var sizeReductionFactor = if (tileMap.mapParameters.shape === MapShape.flatEarth) 3f else 2f
+
         // We then pick one side to be merged into one centered continent instead of two cornered.
         if (isNorth && tileInfo.latitude < 0 || !isNorth && tileInfo.latitude > 0)
-            longitudeFactor = max(0f, tileMap.maxLongitude - abs(tileInfo.longitude * 2f)) / tileMap.maxLongitude
+            longitudeFactor = max(0f, tileMap.maxLongitude - abs(tileInfo.longitude * sizeReductionFactor)) / tileMap.maxLongitude
 
         // If this is a world wrap, we want it to be separated on both sides -
         // so we make the actual strip of water thinner, but we put it both in the middle of the map and on the edges of the map
