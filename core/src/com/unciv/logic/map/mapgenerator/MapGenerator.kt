@@ -271,7 +271,7 @@ class MapGenerator(val ruleset: Ruleset) {
                 suitableTiles,
                 map.mapParameters.mapSize.radius)
         for (tile in locations)
-            tile.improvement = ruinsEquivalents.keys.random()
+            tile.changeImprovement(ruinsEquivalents.keys.random())
     }
 
     private fun spreadResources(tileMap: TileMap) {

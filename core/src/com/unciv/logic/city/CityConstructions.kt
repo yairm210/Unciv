@@ -665,7 +665,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         tileForImprovement.stopWorkingOnImprovement()  // clears mark
         if (removeOnly) return
         /**todo unify with [UnitActions.getImprovementConstructionActions] and [MapUnit.workOnImprovement] - this won't allow e.g. a building to place a road */
-        tileForImprovement.improvement = improvement.name
+        tileForImprovement.changeImprovement(improvement.name)
         cityInfo.civInfo.lastSeenImprovement[tileForImprovement.position] = improvement.name
         cityInfo.cityStats.update()
         cityInfo.civInfo.updateDetailedCivResources()
