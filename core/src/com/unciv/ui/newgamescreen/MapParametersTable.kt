@@ -177,7 +177,7 @@ class MapParametersTable(
     private fun updateWorldSizeTable() {
         customWorldSizeTable.clear()
 
-        if (mapParameters.shape == MapShape.hexagonal || mapParameters.shape == MapShape.flatEarth && worldSizeSelectBox.selected.value == MapSize.custom)
+        if ((mapParameters.shape == MapShape.hexagonal || mapParameters.shape == MapShape.flatEarth) && worldSizeSelectBox.selected.value == MapSize.custom)
             customWorldSizeTable.add(hexagonalSizeTable).grow().row()
         else if (mapParameters.shape == MapShape.rectangular && worldSizeSelectBox.selected.value == MapSize.custom)
             customWorldSizeTable.add(rectangularSizeTable).grow().row()
