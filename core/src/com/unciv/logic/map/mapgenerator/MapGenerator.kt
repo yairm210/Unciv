@@ -736,6 +736,7 @@ class MapGenerator(val ruleset: Ruleset) {
                 // Make center tiles ice or snow or mountain depending on availability
                 if (isCenterTile && bestArcticTileName != null) {
                     if (bestArcticTileName == iceTerrainName) {
+                        tile.baseTerrain = waterTerrainName
                         tile.addTerrainFeature(iceTerrainName)
                     } else {
                         tile.baseTerrain = bestArcticTileName
@@ -743,9 +744,21 @@ class MapGenerator(val ruleset: Ruleset) {
 
                     for (neighbor in tile.neighbors) {
                         if (bestArcticTileName == iceTerrainName) {
+                            neighbor.baseTerrain = waterTerrainName
                             neighbor.addTerrainFeature(iceTerrainName)
                         } else {
                             neighbor.baseTerrain = bestArcticTileName
+                        }
+
+                        for (neighbor2 in neighbor.neighbors) {
+                            if (randomness.RNG.nextDouble() < 0.75) {
+                                // Do nothing most of the time at random.
+                            } else if (bestArcticTileName == iceTerrainName) {
+                                neighbor2.baseTerrain = waterTerrainName
+                                neighbor2.addTerrainFeature(iceTerrainName)
+                            } else {
+                                neighbor2.baseTerrain = bestArcticTileName
+                            }
                         }
                     }
                 }
@@ -756,10 +769,23 @@ class MapGenerator(val ruleset: Ruleset) {
                         1 -> arcticTileNameList.first()
                         else -> arcticTileNameList.random(randomness.RNG)
                     }
+
                     if (arcticTileName == iceTerrainName) {
+                        tile.baseTerrain = waterTerrainName
                         tile.addTerrainFeature(iceTerrainName)
                     } else {
                         tile.baseTerrain = arcticTileName
+                    }
+
+                    for (neighbor in tile.neighbors) {
+                        if (randomness.RNG.nextDouble() < 0.75) {
+                            // Do nothing most of the time at random.
+                        } else if (arcticTileName == iceTerrainName) {
+                            neighbor.baseTerrain = waterTerrainName
+                            neighbor.addTerrainFeature(iceTerrainName)
+                        } else {
+                            neighbor.baseTerrain = arcticTileName
+                        }
                     }
                 }
             }
