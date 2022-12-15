@@ -534,8 +534,8 @@ class MapGenerator(val ruleset: Ruleset) {
                     // x1 is set to 0.05 instead of 0.0 to offset the ice in the center of the map
                     radius < 0.5 -> scaleToRange(0.05, 0.5, -1.0, 1.0, radius)
                     // South zone starts hot at equator and gets colder as it goes South to antarctic
-                    // x2 is set to 0.8 instead of 1.0 to offset the ice on the edges of the map
-                    radius > 0.5 -> scaleToRange(0.5, 0.8, 1.0, -1.0, radius)
+                    // x2 is set to 0.95 instead of 1.0 to offset the ice on the edges of the map
+                    radius > 0.5 -> scaleToRange(0.5, 0.95, 1.0, -1.0, radius)
                     // Equator is simply hot
                     else -> 1.0
                 }
@@ -666,9 +666,11 @@ class MapGenerator(val ruleset: Ruleset) {
                 if (isCenterTile || isEdgeTile) {
                     tile.removeTerrainFeatures()
                     tile.addTerrainFeature(iceTerrainName)
-                    for (neighbor in tile.neighbors) {
-                        neighbor.removeTerrainFeatures()
-                        neighbor.addTerrainFeature(iceTerrainName)
+                    if (isCenterTile) {
+                        for (neighbor in tile.neighbors) {
+                            neighbor.removeTerrainFeatures()
+                            neighbor.addTerrainFeature(iceTerrainName)
+                        }
                     }
                 }
             }

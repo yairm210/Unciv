@@ -61,9 +61,6 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
                         neighbor.baseTerrain = waterTerrainName
                         for (neighbor2 in neighbor.neighbors) {
                             neighbor2.baseTerrain = waterTerrainName
-                            for (neighbor3 in neighbor2.neighbors) {
-                                neighbor3.baseTerrain = waterTerrainName
-                            }
                         }
                     }
                 }
