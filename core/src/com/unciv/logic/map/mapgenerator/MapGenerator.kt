@@ -755,6 +755,9 @@ class MapGenerator(val ruleset: Ruleset) {
         val arcticTileNameList =
                 arrayOf(iceTerrainName, snowTerrainName, mountainTerrainName).filterNotNull()
 
+        // Skip the tile loop if nothing can be done in it
+        if (bestArcticTileName == null && arcticTileNameList.isEmpty()) return
+
         // Flat Earth needs a 1 tile wide perimeter of ice/mountain/snow and a 2 radius cluster of ice in the center.
         for (tile in tileMap.values) {
             val isCenterTile = tile.latitude == 0f && tile.longitude == 0f
