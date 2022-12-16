@@ -257,18 +257,18 @@ object ImageGetter {
             return if (imageExists(buildingPortraitLocation)) {
                 getImage(buildingPortraitLocation).toGroup(size)
             } else
-                getImage("BuildingIcons/$construction").surroundWithCircle(size)
+                getImage("BuildingIcons/$construction").surroundWithCircle(size).surroundWithThinCircle(Color.BLACK)
         }
         if (ruleset.units.containsKey(construction)) {
             val unitPortraitLocation = "UnitPortraits/$construction"
             return if (imageExists(unitPortraitLocation)) {
                 getImage(unitPortraitLocation).toGroup(size)
             } else
-                getUnitIcon(construction).surroundWithCircle(size)
+                getUnitIcon(construction).surroundWithCircle(size).surroundWithThinCircle(Color.BLACK)
         }
         if (construction == "Nothing")
-            return getImage("OtherIcons/Sleep").surroundWithCircle(size)
-        return getStatIcon(construction).surroundWithCircle(size)
+            return getImage("OtherIcons/Sleep").surroundWithCircle(size).surroundWithThinCircle(Color.BLACK)
+        return getStatIcon(construction).surroundWithCircle(size).surroundWithThinCircle(Color.BLACK)
     }
 
     fun getPromotionIcon(promotionName: String, size: Float = 30f): Actor {
