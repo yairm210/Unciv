@@ -248,7 +248,7 @@ object ImageGetter {
         if (improvement != null)
             iconGroup.circle.color = getColorFromStats(improvement)
 
-        return iconGroup
+        return iconGroup.surroundWithThinCircle(Color.BLACK)
     }
 
     fun getPortraitImage(construction: String, size: Float): Group {
@@ -291,8 +291,9 @@ object ImageGetter {
         if (imageAttempter.getPathOrNull() != null && imageAttempter.getPath()!!.endsWith(nameWithoutBrackets))
             level = 0
 
+        val promotionColor = colorFromRGB(255, 226, 0)
         val circle = imageAttempter.getImage()
-            .apply { color = colorFromRGB(255, 226, 0) }
+            .apply { color = promotionColor }
             .surroundWithCircle(size)
             .apply { circle.color = colorFromRGB(0, 12, 49) }
 
@@ -304,7 +305,7 @@ object ImageGetter {
             starTable.y = size / 6f
             circle.addActor(starTable)
         }
-        return circle
+        return circle.surroundWithThinCircle(promotionColor)
     }
 
     fun religionIconExists(iconName: String) = imageExists("ReligionIcons/$iconName")
@@ -365,7 +366,7 @@ object ImageGetter {
             production.x = iconGroup.width - production.width
             iconGroup.addActor(production)
         }
-        return iconGroup
+        return iconGroup.surroundWithThinCircle(Color.BLACK)
     }
 
     fun getTechIconGroup(techName: String, circleSize: Float): IconCircleGroup {
