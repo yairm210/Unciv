@@ -57,7 +57,11 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
 
             if (!isCenterTile && !isEdgeTile) continue
 
-            // Flat Earth needs a 3 tile wide perimeter of water and a 4 tile radius of water in the center.
+            /*
+            Flat Earth needs a 3 tile wide water perimeter and a 4 tile radius water center.
+            This helps map generators to not place important things there which would be destroyed
+            when the ice walls are placed there.
+            */
             tile.baseTerrain = waterTerrainName
             for (neighbor in tile.neighbors) {
                 neighbor.baseTerrain = waterTerrainName
