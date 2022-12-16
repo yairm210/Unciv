@@ -751,7 +751,7 @@
 		"leaderName": "Attila the Hun",
 		"adjective": ["Hunnic"],
 		"startBias": ["Avoid [Jungle]", "Avoid [Forest]"],
-		"preferredVictorType": "Domination",
+		"preferredVictoryType": "Domination",
 
         "startIntroPart1": "",
         "startIntroPart2": "",
