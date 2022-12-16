@@ -676,125 +676,7 @@ class MapGenerator(val ruleset: Ruleset) {
             }.toList()
 
         if (tileMap.mapParameters.shape === MapShape.flatEarth) {
-            val iceCandidates = iceEquivalents.filter {
-                it.matches(-1.0, 1.0)
-            }.map {
-                it.terrain.name
-            }
-            val iceTerrainName =
-                    when (iceCandidates.size) {
-                        1 -> iceCandidates.first()
-                        !in 0..1 -> iceCandidates.random(randomness.RNG)
-                        else -> null
-                    }
-
-            val snowCandidates = ruleset.terrains.values.asSequence().filter {
-                it.type == TerrainType.Land
-            }.flatMap { terrain ->
-                val conditions = terrain.getGenerationConditions()
-                if (conditions.any()) conditions
-                else sequenceOf(
-                    TerrainOccursRange(
-                        terrain,
-                        -1f, ruleset.modOptions.constants.spawnIceBelowTemperature,
-                        0f, 1f
-                    )
-                )
-            }.toList().filter {
-                it.matches(-1.0, 1.0)
-            }.map {
-                it.terrain.name
-            }
-            val snowTerrainName =
-                    when (snowCandidates.size) {
-                        1 -> snowCandidates.first()
-                        !in 0..1 -> snowCandidates.random(randomness.RNG)
-                        else -> null
-                    }
-
-            val mountainTerrainName =
-                    ruleset.terrains.values.firstOrNull { it.hasUnique(UniqueType.OccursInChains) }?.name
-
-            val bestArcticTileName = when {
-                iceTerrainName != null -> iceTerrainName
-                snowTerrainName != null -> snowTerrainName
-                mountainTerrainName != null -> mountainTerrainName
-                else -> null
-            }
-
-            val arcticTileNameList =
-                    arrayOf(iceTerrainName, snowTerrainName, mountainTerrainName).filterNotNull()
-
-            // Flat Earth needs a 1 tile wide perimeter of ice/mountain/snow and a 2 radius cluster of ice in the center.
-            for (tile in tileMap.values) {
-                val isCenterTile = tile.latitude == 0f && tile.longitude == 0f
-                val isEdgeTile = tile.neighbors.count() < 6
-
-                // Make center tiles ice or snow or mountain depending on availability
-                if (isCenterTile && bestArcticTileName != null) {
-                    if (bestArcticTileName == iceTerrainName) {
-                        tile.baseTerrain = waterTerrainName
-                        tile.addTerrainFeature(iceTerrainName)
-                    } else {
-                        tile.baseTerrain = bestArcticTileName
-                    }
-
-                    for (neighbor in tile.neighbors) {
-                        if (bestArcticTileName == iceTerrainName) {
-                            neighbor.baseTerrain = waterTerrainName
-                            neighbor.addTerrainFeature(iceTerrainName)
-                        } else {
-                            neighbor.baseTerrain = bestArcticTileName
-                        }
-
-                        for (neighbor2 in neighbor.neighbors) {
-                            if (randomness.RNG.nextDouble() < 0.75) {
-                                // Do nothing most of the time at random.
-                            } else if (bestArcticTileName == iceTerrainName) {
-                                neighbor2.baseTerrain = waterTerrainName
-                                neighbor2.addTerrainFeature(iceTerrainName)
-                            } else {
-                                neighbor2.baseTerrain = bestArcticTileName
-                            }
-                        }
-                    }
-                }
-
-                // Make edge tiles randomly ice or snow or mountain if available
-                if (isEdgeTile && arcticTileNameList.isNotEmpty()) {
-                    val arcticTileName = when (arcticTileNameList.size) {
-                        1 -> arcticTileNameList.first()
-                        else -> arcticTileNameList.random(randomness.RNG)
-                    }
-
-                    if (arcticTileName == iceTerrainName) {
-                        tile.baseTerrain = waterTerrainName
-                        tile.addTerrainFeature(iceTerrainName)
-                    } else if (iceTerrainName != null && arcticTileName != mountainTerrainName) {
-                        tile.baseTerrain = arcticTileName
-                        tile.addTerrainFeature(iceTerrainName)
-                    } else {
-                        tile.baseTerrain = arcticTileName
-                    }
-
-                    for (neighbor in tile.neighbors) {
-                        val neighborIsEdgeTile = neighbor.neighbors.count() < 6
-                        if (neighborIsEdgeTile) {
-                            // Do not redo edge tile. It is already done.
-                        } else if (randomness.RNG.nextDouble() < 0.75) {
-                            // Do nothing most of the time at random.
-                        } else if (arcticTileName == iceTerrainName) {
-                            neighbor.baseTerrain = waterTerrainName
-                            neighbor.addTerrainFeature(iceTerrainName)
-                        } else if (iceTerrainName != null && arcticTileName != mountainTerrainName) {
-                            neighbor.baseTerrain = arcticTileName
-                            neighbor.addTerrainFeature(iceTerrainName)
-                        } else {
-                            neighbor.baseTerrain = arcticTileName
-                        }
-                    }
-                }
-            }
+            spawnFlatEarthIceWall(tileMap, iceEquivalents)
         }
 
         if (iceEquivalents.isEmpty()) return
@@ -819,6 +701,128 @@ class MapGenerator(val ruleset: Ruleset) {
             when (candidates.size) {
                 1 -> tile.addTerrainFeature(candidates.first())
                 !in 0..1 -> tile.addTerrainFeature(candidates.random(randomness.RNG))
+            }
+        }
+    }
+
+    private fun spawnFlatEarthIceWall(tileMap: TileMap, iceEquivalents: List<TerrainOccursRange>) {
+        val iceCandidates = iceEquivalents.filter {
+            it.matches(-1.0, 1.0)
+        }.map {
+            it.terrain.name
+        }
+        val iceTerrainName =
+                when (iceCandidates.size) {
+                    1 -> iceCandidates.first()
+                    !in 0..1 -> iceCandidates.random(randomness.RNG)
+                    else -> null
+                }
+
+        val snowCandidates = ruleset.terrains.values.asSequence().filter {
+            it.type == TerrainType.Land
+        }.flatMap { terrain ->
+            val conditions = terrain.getGenerationConditions()
+            if (conditions.any()) conditions
+            else sequenceOf(
+                TerrainOccursRange(
+                    terrain,
+                    -1f, ruleset.modOptions.constants.spawnIceBelowTemperature,
+                    0f, 1f
+                )
+            )
+        }.toList().filter {
+            it.matches(-1.0, 1.0)
+        }.map {
+            it.terrain.name
+        }
+        val snowTerrainName =
+                when (snowCandidates.size) {
+                    1 -> snowCandidates.first()
+                    !in 0..1 -> snowCandidates.random(randomness.RNG)
+                    else -> null
+                }
+
+        val mountainTerrainName =
+                ruleset.terrains.values.firstOrNull { it.hasUnique(UniqueType.OccursInChains) }?.name
+
+        val bestArcticTileName = when {
+            iceTerrainName != null -> iceTerrainName
+            snowTerrainName != null -> snowTerrainName
+            mountainTerrainName != null -> mountainTerrainName
+            else -> null
+        }
+
+        val arcticTileNameList =
+                arrayOf(iceTerrainName, snowTerrainName, mountainTerrainName).filterNotNull()
+
+        // Flat Earth needs a 1 tile wide perimeter of ice/mountain/snow and a 2 radius cluster of ice in the center.
+        for (tile in tileMap.values) {
+            val isCenterTile = tile.latitude == 0f && tile.longitude == 0f
+            val isEdgeTile = tile.neighbors.count() < 6
+
+            // Make center tiles ice or snow or mountain depending on availability
+            if (isCenterTile && bestArcticTileName != null) {
+                if (bestArcticTileName == iceTerrainName) {
+                    tile.baseTerrain = waterTerrainName
+                    tile.addTerrainFeature(iceTerrainName)
+                } else {
+                    tile.baseTerrain = bestArcticTileName
+                }
+
+                for (neighbor in tile.neighbors) {
+                    if (bestArcticTileName == iceTerrainName) {
+                        neighbor.baseTerrain = waterTerrainName
+                        neighbor.addTerrainFeature(iceTerrainName)
+                    } else {
+                        neighbor.baseTerrain = bestArcticTileName
+                    }
+
+                    for (neighbor2 in neighbor.neighbors) {
+                        if (randomness.RNG.nextDouble() < 0.75) {
+                            // Do nothing most of the time at random.
+                        } else if (bestArcticTileName == iceTerrainName) {
+                            neighbor2.baseTerrain = waterTerrainName
+                            neighbor2.addTerrainFeature(iceTerrainName)
+                        } else {
+                            neighbor2.baseTerrain = bestArcticTileName
+                        }
+                    }
+                }
+            }
+
+            // Make edge tiles randomly ice or snow or mountain if available
+            if (isEdgeTile && arcticTileNameList.isNotEmpty()) {
+                val arcticTileName = when (arcticTileNameList.size) {
+                    1 -> arcticTileNameList.first()
+                    else -> arcticTileNameList.random(randomness.RNG)
+                }
+
+                if (arcticTileName == iceTerrainName) {
+                    tile.baseTerrain = waterTerrainName
+                    tile.addTerrainFeature(iceTerrainName)
+                } else if (iceTerrainName != null && arcticTileName != mountainTerrainName) {
+                    tile.baseTerrain = arcticTileName
+                    tile.addTerrainFeature(iceTerrainName)
+                } else {
+                    tile.baseTerrain = arcticTileName
+                }
+
+                for (neighbor in tile.neighbors) {
+                    val neighborIsEdgeTile = neighbor.neighbors.count() < 6
+                    if (neighborIsEdgeTile) {
+                        // Do not redo edge tile. It is already done.
+                    } else if (randomness.RNG.nextDouble() < 0.75) {
+                        // Do nothing most of the time at random.
+                    } else if (arcticTileName == iceTerrainName) {
+                        neighbor.baseTerrain = waterTerrainName
+                        neighbor.addTerrainFeature(iceTerrainName)
+                    } else if (iceTerrainName != null && arcticTileName != mountainTerrainName) {
+                        neighbor.baseTerrain = arcticTileName
+                        neighbor.addTerrainFeature(iceTerrainName)
+                    } else {
+                        neighbor.baseTerrain = arcticTileName
+                    }
+                }
             }
         }
     }
