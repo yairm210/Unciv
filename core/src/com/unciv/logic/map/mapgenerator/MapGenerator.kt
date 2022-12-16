@@ -677,32 +677,6 @@ class MapGenerator(val ruleset: Ruleset) {
 
         // Flat Earth needs a 1 tile wide perimeter of ice/mountain/snow and a 2 radius cluster of ice in the center.
         if (tileMap.mapParameters.shape === MapShape.flatEarth) {
-
-            // Make sure center tiles and edge tiles are ocean not coast
-            for (tile in tileMap.values) {
-                val isCenterTile = tile.latitude == 0f && tile.longitude == 0f
-                val isEdgeTile = tile.neighbors.count() < 6
-
-                if (isCenterTile || isEdgeTile) {
-                    tile.removeTerrainFeatures()
-                    tile.baseTerrain = waterTerrainName
-                    for (neighbor in tile.neighbors) {
-                        neighbor.removeTerrainFeatures()
-                        neighbor.baseTerrain = waterTerrainName
-                        for (neighbor2 in neighbor.neighbors) {
-                            neighbor2.removeTerrainFeatures()
-                            neighbor2.baseTerrain = waterTerrainName
-                            if (isCenterTile) {
-                                for (neighbor3 in neighbor2.neighbors) {
-                                    neighbor3.removeTerrainFeatures()
-                                    neighbor3.baseTerrain = waterTerrainName
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
             val iceCandidates = iceEquivalents.filter {
                 it.matches(-1.0, 1.0)
             }.map {
