@@ -196,7 +196,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
             newDetailedCivResources.add(
                 civInfo.gameInfo.ruleSet.tileResources[unique.params[1]]!!,
                 unique.sourceObjectType?.name ?: "",
-                unique.params[1].toInt()
+                unique.params[0].toInt()
             )
         }
 
