@@ -370,7 +370,6 @@ open class TileGroup(
             terrainFeatureLayerGroup, borderLayerGroup, miscLayerGroup,
             pixelMilitaryUnitGroup, pixelCivilianUnitGroup, unitLayerGroup,
             cityButtonLayerGroup, highlightFogCrosshairLayerGroup)
-        for (group in allGroups) group.isVisible = true
 
         if (viewingCiv != null && !isExplored(viewingCiv)) {
             if (tileInfo.neighbors.any { viewingCiv.hasExplored(it) })
