@@ -84,6 +84,16 @@ In order to do this, all you need to do is:
 -   Click the gear icon next to the About (top-right part of the page)
 -   In 'Topics', add "unciv-mod"
 
+Optionally add one of the following topics (make sure this topic is added afer "unciv-mod"):
+
+-   unciv-mod-rulesets
+-   unciv-mod-expansions
+-   unciv-mod-graphics
+-   unciv-mod-audio
+-   unciv-mod-maps
+-   unciv-mod-fun
+-   unciv-mod-modsofmods
+
 When you open your app, it will query Github's [list of repos with that topic](https://github.com/topics/unciv-mod), and now YOUR repo will appear there!
 
 ## I have the mod, now what?
