@@ -150,7 +150,7 @@ object UnitActions {
 
         return UnitAction(UnitActionType.Create, "Create [$improvementName]",
             action = {
-                tile.improvement = improvementName
+                tile.changeImprovement(improvementName)
                 val city = tile.getCity()
                 if (city != null) {
                     city.cityStats.update()
@@ -188,9 +188,8 @@ object UnitActions {
             UncivGame.Current.settings.addCompletedTutorialTask("Found city")
             unit.civInfo.addCity(tile.position)
             if (tile.ruleset.tileImprovements.containsKey("City center"))
-                tile.improvement = "City center"
-            tile.improvementIsPillaged = false
-            tile.roadIsPillaged = false
+                tile.changeImprovement("City center")
+            tile.removeRoad()
             unit.destroy()
             UncivGame.Current.worldScreen!!.shouldUpdate = true
         }
@@ -775,7 +774,7 @@ object UnitActions {
                 action = {
                     val unitTile = unit.getTile()
                     unitTile.removeCreatesOneImprovementMarker()
-                    unitTile.improvement = improvementName
+                    unitTile.changeImprovement(improvementName)
                     unitTile.stopWorkingOnImprovement()
                     improvement.handleImprovementCompletion(unit)
                     unit.consume()
@@ -887,10 +886,7 @@ object UnitActions {
         if (!tile.canPillageTile()) return false
         val tileOwner = tile.getOwner()
         // Can't pillage friendly tiles, just like you can't attack them - it's an 'act of war' thing
-        return if (tileOwner != null)
-            unit.civInfo.isAtWarWith(tileOwner)
-        else if (tile.canPillageTile()) true
-        else (tile.canPillageRoad() && tile.roadOwner != "" && unit.civInfo.isAtWarWith(tile.getRoadOwner()!!))
+        return tileOwner == null || unit.civInfo.isAtWarWith(tileOwner)
     }
 
     private fun addGiftAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {

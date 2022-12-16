@@ -1,3 +1,35 @@
+## 4.3.9
+
+Modding: Can provide resources as a global unique
+
+Flat Earth Hexagonal map shape - By FiretronP75
+
+By vegeta1k95:
+- Change styles and behaviour of Unit flags as in Civ 5
+- "Auto Unit Cycle" and "Automated units move on turn start" options implemented (per Civ 5)
+- Next Turn actions (pick tech/policy/etc) now have icons
+
+Added icon for `Conduct Trade Mission` button - By alexban011
+
+By itanasi:
+- Actually fix AI from pillaging neutral roads
+
+New map options translatable - By Ouaz
+
+## 4.3.8
+
+By nacro711072:
+- Modding: Avoid destroying transported units when upgrading carrier units
+- update score icon
+
+AI Pillages Neutral Roads only at War - By itanasi
+
+By FiretronP75:
+- Three Continents map type
+- Two Continents split map according to dimension ratio
+
+Modding: Units/Buildings can now be given optional Portraits to be displayed instead of flags - By vegeta1k95
+
 ## 4.3.7
 
 'loading' popup between turns only appears if there's a significant delay

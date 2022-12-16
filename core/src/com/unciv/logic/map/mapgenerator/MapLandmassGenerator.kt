@@ -48,6 +48,36 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
             MapType.archipelago -> createArchipelago(tileMap)
             MapType.default -> createPerlin(tileMap)
         }
+
+        if (tileMap.mapParameters.shape === MapShape.flatEarth) {
+            generateFlatEarthExtraWater(tileMap)
+        }
+    }
+
+    private fun generateFlatEarthExtraWater(tileMap: TileMap) {
+        for (tile in tileMap.values) {
+            val isCenterTile = tile.latitude == 0f && tile.longitude == 0f
+            val isEdgeTile = tile.neighbors.count() < 6
+
+            if (!isCenterTile && !isEdgeTile) continue
+
+            /*
+            Flat Earth needs a 3 tile wide water perimeter and a 4 tile radius water center.
+            This helps map generators to not place important things there which would be destroyed
+            when the ice walls are placed there.
+            */
+            tile.baseTerrain = waterTerrainName
+            for (neighbor in tile.neighbors) {
+                neighbor.baseTerrain = waterTerrainName
+                for (neighbor2 in neighbor.neighbors) {
+                    neighbor2.baseTerrain = waterTerrainName
+                    if (!isCenterTile) continue
+                    for (neighbor3 in neighbor2.neighbors) {
+                        neighbor3.baseTerrain = waterTerrainName
+                    }
+                }
+            }
+        }
     }
 
     private fun spawnLandOrWater(tile: TileInfo, elevation: Double) {
@@ -109,7 +139,7 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
 
     private fun createTwoContinents(tileMap: TileMap) {
         val isLatitude =
-                if (tileMap.mapParameters.shape === MapShape.hexagonal) randomness.RNG.nextDouble() > 0.5f
+                if (tileMap.mapParameters.shape === MapShape.hexagonal || tileMap.mapParameters.shape === MapShape.flatEarth) randomness.RNG.nextDouble() > 0.5f
                 else if (tileMap.mapParameters.mapSize.height > tileMap.mapParameters.mapSize.width) true
                 else if (tileMap.mapParameters.mapSize.width > tileMap.mapParameters.mapSize.height) false
                 else randomness.RNG.nextDouble() > 0.5f
@@ -123,12 +153,14 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
     }
 
     private fun createThreeContinents(tileMap: TileMap) {
-        val isNorth = randomness.RNG.nextDouble() < 0.5f
+        val isNorth = randomness.RNG.nextDouble() < 0.5
+        // On flat earth maps we can randomly do East or West instead of North or South
+        val isEastWest = tileMap.mapParameters.shape === MapShape.flatEarth && randomness.RNG.nextDouble() > 0.5
 
         val elevationSeed = randomness.RNG.nextInt().toDouble()
         for (tile in tileMap.values) {
             var elevation = randomness.getPerlinNoise(tile, elevationSeed)
-            elevation = (elevation + getThreeContinentsTransform(tile, tileMap, isNorth)) / 2.0
+            elevation = (elevation + getThreeContinentsTransform(tile, tileMap, isNorth, isEastWest)) / 2.0
             spawnLandOrWater(tile, elevation)
         }
     }
@@ -180,16 +212,25 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
         return min(0.2, -1.0 + (5.0 * factor.pow(0.6f) + randomScale) / 3.0)
     }
 
-    private fun getThreeContinentsTransform(tileInfo: TileInfo, tileMap: TileMap, isNorth: Boolean): Double {
+    private fun getThreeContinentsTransform(tileInfo: TileInfo, tileMap: TileMap, isNorth: Boolean, isEastWest: Boolean): Double {
         // The idea here is to create a water area separating the two four areas.
         // So what we do it create a line of water in the middle - where longitude is close to 0.
         val randomScale = randomness.RNG.nextDouble()
         var longitudeFactor = abs(tileInfo.longitude) / tileMap.maxLongitude
         var latitudeFactor = abs(tileInfo.latitude) / tileMap.maxLatitude
 
+        // 3rd continent should use only half the map width, or if flat earth, only a third
+        val sizeReductionFactor = if (tileMap.mapParameters.shape === MapShape.flatEarth) 3f else 2f
+
         // We then pick one side to be merged into one centered continent instead of two cornered.
-        if (isNorth && tileInfo.latitude < 0 || !isNorth && tileInfo.latitude > 0)
-            longitudeFactor = max(0f, tileMap.maxLongitude - abs(tileInfo.longitude * 2f)) / tileMap.maxLongitude
+        if (isEastWest) {
+            // In EastWest mode North represents West
+            if (isNorth && tileInfo.longitude < 0 || !isNorth && tileInfo.longitude > 0)
+                latitudeFactor = max(0f, tileMap.maxLatitude - abs(tileInfo.latitude * sizeReductionFactor)) / tileMap.maxLatitude
+        } else {
+            if (isNorth && tileInfo.latitude < 0 || !isNorth && tileInfo.latitude > 0)
+                longitudeFactor = max(0f, tileMap.maxLongitude - abs(tileInfo.longitude * sizeReductionFactor)) / tileMap.maxLongitude
+        }
 
         // If this is a world wrap, we want it to be separated on both sides -
         // so we make the actual strip of water thinner, but we put it both in the middle of the map and on the edges of the map

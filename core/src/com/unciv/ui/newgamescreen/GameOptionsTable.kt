@@ -291,8 +291,10 @@ class GameOptionsTable(
 
         var desiredCiv = ""
         if (gameParameters.mods.contains(mod)) {
-            val modNations = RulesetCache[mod]?.nations
-            if (modNations != null && modNations.size > 0) desiredCiv = modNations.keys.first()
+            val modNations = RulesetCache[mod]?.nations?.values?.filter { it.isMajorCiv() }
+
+            if (modNations != null && modNations.any())
+                desiredCiv = modNations.random().name
 
             val music = UncivGame.Current.musicController
             if (!music.chooseTrack(mod, MusicMood.Theme, MusicTrackChooserFlags.setSelectNation) && desiredCiv.isNotEmpty())

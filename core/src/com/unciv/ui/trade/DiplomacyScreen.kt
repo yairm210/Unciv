@@ -551,7 +551,7 @@ class DiplomacyScreen(
                     improveTileButton.onClick {
                         viewingCiv.addGold(-200)
                         improvableTile.stopWorkingOnImprovement()
-                        improvableTile.improvement = tileImprovement.name
+                        improvableTile.changeImprovement(tileImprovement.name)
                         otherCiv.updateDetailedCivResources()
                         rightSideTable.clear()
                         rightSideTable.add(ScrollPane(getCityStateDiplomacyTable(otherCiv)))

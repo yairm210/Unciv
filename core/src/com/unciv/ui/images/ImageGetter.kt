@@ -12,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
@@ -249,7 +248,7 @@ object ImageGetter {
         if (improvement != null)
             iconGroup.circle.color = getColorFromStats(improvement)
 
-        return iconGroup
+        return iconGroup.surroundWithThinCircle(Color.BLACK)
     }
 
     fun getPortraitImage(construction: String, size: Float): Group {
@@ -258,18 +257,18 @@ object ImageGetter {
             return if (imageExists(buildingPortraitLocation)) {
                 getImage(buildingPortraitLocation).toGroup(size)
             } else
-                getImage("BuildingIcons/$construction").surroundWithCircle(size)
+                getImage("BuildingIcons/$construction").surroundWithCircle(size).surroundWithThinCircle(Color.BLACK)
         }
         if (ruleset.units.containsKey(construction)) {
             val unitPortraitLocation = "UnitPortraits/$construction"
             return if (imageExists(unitPortraitLocation)) {
                 getImage(unitPortraitLocation).toGroup(size)
             } else
-                getUnitIcon(construction).surroundWithCircle(size)
+                getUnitIcon(construction).surroundWithCircle(size).surroundWithThinCircle(Color.BLACK)
         }
         if (construction == "Nothing")
-            return getImage("OtherIcons/Sleep").surroundWithCircle(size)
-        return getStatIcon(construction).surroundWithCircle(size)
+            return getImage("OtherIcons/Sleep").surroundWithCircle(size).surroundWithThinCircle(Color.BLACK)
+        return getStatIcon(construction).surroundWithCircle(size).surroundWithThinCircle(Color.BLACK)
     }
 
     fun getPromotionIcon(promotionName: String, size: Float = 30f): Actor {
@@ -292,8 +291,9 @@ object ImageGetter {
         if (imageAttempter.getPathOrNull() != null && imageAttempter.getPath()!!.endsWith(nameWithoutBrackets))
             level = 0
 
+        val promotionColor = colorFromRGB(255, 226, 0)
         val circle = imageAttempter.getImage()
-            .apply { color = colorFromRGB(255, 226, 0) }
+            .apply { color = promotionColor }
             .surroundWithCircle(size)
             .apply { circle.color = colorFromRGB(0, 12, 49) }
 
@@ -305,7 +305,7 @@ object ImageGetter {
             starTable.y = size / 6f
             circle.addActor(starTable)
         }
-        return circle
+        return circle.surroundWithThinCircle(promotionColor)
     }
 
     fun religionIconExists(iconName: String) = imageExists("ReligionIcons/$iconName")
@@ -366,15 +366,15 @@ object ImageGetter {
             production.x = iconGroup.width - production.width
             iconGroup.addActor(production)
         }
-        return iconGroup
+        return iconGroup.surroundWithThinCircle(Color.BLACK)
     }
 
-    fun getTechIconGroup(techName: String, circleSize: Float) = getTechIcon(techName).surroundWithCircle(circleSize)
-
-    fun getTechIcon(techName: String): Image {
-        val techIconColor = ruleset.eras[ruleset.technologies[techName]?.era()]?.getColor()
-            ?: return getWhiteDot()
-        return getImage("TechIcons/$techName").apply { color = techIconColor.darken(0.6f) }
+    fun getTechIconGroup(techName: String, circleSize: Float): IconCircleGroup {
+        val techIconColor = ruleset.eras[ruleset.technologies[techName]?.era()]?.getColor()?.darken(0.6f)
+            ?: Color.BLACK
+        return getImage("TechIcons/$techName").apply { color = techIconColor }
+            .surroundWithCircle(circleSize)
+            .surroundWithThinCircle(techIconColor)
     }
 
     fun getProgressBarVertical(width: Float, height: Float, percentComplete: Float, progressColor: Color, backgroundColor: Color): Group {

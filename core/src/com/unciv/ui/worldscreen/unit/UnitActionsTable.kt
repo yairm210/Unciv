@@ -20,13 +20,13 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         clear()
         if (unit == null) return
         if (!worldScreen.canChangeState) return // No actions when it's not your turn or spectator!
-        for (button in UnitActions.getUnitActions(unit, worldScreen).map { getUnitActionButton(it) })
+        for (button in UnitActions.getUnitActions(unit, worldScreen).map { getUnitActionButton(unit, it) })
             add(button).left().padBottom(2f).row()
         pack()
     }
 
 
-    private fun getUnitActionButton(unitAction: UnitAction): Button {
+    private fun getUnitActionButton(unit: MapUnit, unitAction: UnitAction): Button {
         val icon = unitAction.getIcon()
         // If peripheral keyboard not detected, hotkeys will not be displayed
         val key = if (KeyCharAndCode.keyboardAvailable) unitAction.type.key else KeyCharAndCode.UNKNOWN
@@ -45,6 +45,10 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
                 // so you need less clicks/touches to do things, but once we do an action with the new unit, we want to close this
                 // overlay, since the user definitely wants to interact with the new unit.
                 worldScreen.mapHolder.removeUnitActionOverlay()
+                if (UncivGame.Current.settings.autoUnitCycle
+                        && (unitAction.type.isSkippingToNextUnit || unit.currentMovement == 0f)) {
+                    worldScreen.switchToNextUnit()
+                }
             }
             actionButton.keyShortcuts.add(key)
         }

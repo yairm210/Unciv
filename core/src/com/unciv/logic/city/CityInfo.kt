@@ -187,7 +187,7 @@ class CityInfo : IsPartOfGameInfoSerialization {
         })
             tile.removeTerrainFeature(terrainFeature)
 
-        tile.improvement = null
+        tile.changeImprovement(null)
         tile.improvementInProgress = null
 
         val ruleset = civInfo.gameInfo.ruleSet
@@ -439,7 +439,7 @@ class CityInfo : IsPartOfGameInfoSerialization {
             val resource = getRuleset().tileResources[unique.params[1]]
                 ?: continue
             cityResources.add(
-                resource, "Buildings+",
+                resource, "Buildings",
                 unique.params[0].toInt() * civInfo.getResourceModifier(resource)
             )
         }
@@ -778,7 +778,7 @@ class CityInfo : IsPartOfGameInfoSerialization {
             expansion.relinquishOwnership(tile)
         }
         civInfo.cities = civInfo.cities.toMutableList().apply { remove(this@CityInfo) }
-        getCenterTile().improvement = "City ruins"
+        getCenterTile().changeImprovement("City ruins")
 
         // Edge case! What if a water unit is in a city, and you raze the city?
         // Well, the water unit has to return to the water!

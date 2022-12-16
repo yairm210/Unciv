@@ -16,6 +16,7 @@ import com.unciv.ui.utils.extensions.brighten
 import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.ui.utils.extensions.surroundWithThinCircle
 import com.unciv.ui.utils.extensions.toLabel
 
 class TechButton(techName:String, private val techManager: TechManager, isWorldScreen: Boolean = true) : Table(BaseScreen.skin) {
@@ -101,7 +102,9 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
         for (unique in tech.uniques)
             techEnabledIcons.add(
                 ImageGetter.getImage("OtherIcons/Star")
-                .apply { color = Color.BLACK }.surroundWithCircle(techIconSize))
+                    .apply { color = Color.BLACK }
+                    .surroundWithCircle(techIconSize)
+                    .surroundWithThinCircle(Color.BLACK))
 
         if (isWorldScreen) rightSide.add(techEnabledIcons)
         else rightSide.add(techEnabledIcons)

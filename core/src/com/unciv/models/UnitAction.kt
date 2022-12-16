@@ -3,12 +3,10 @@ package com.unciv.models
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.KeyCharAndCode
-import com.unciv.ui.utils.extensions.darken
 
 
 /** Unit Actions - class - carries dynamic data and actual execution.
@@ -55,16 +53,17 @@ enum class UnitActionType(
     val value: String,
     val imageGetter: (()-> Actor)?,
     val key: KeyCharAndCode,
+    val isSkippingToNextUnit: Boolean = true,
     val uncivSound: UncivSound = UncivSound.Click
 ) {
     SwapUnits("Swap units",
-        { ImageGetter.getImage("UnitActionIcons/Swap") }, 'y'),
+        { ImageGetter.getImage("UnitActionIcons/Swap") }, 'y', false),
     Automate("Automate",
         { ImageGetter.getImage("UnitActionIcons/Automate") }, 'm'),
     StopAutomation("Stop automation",
-        { ImageGetter.getImage("UnitActionIcons/Stop") }, 'm'),
+        { ImageGetter.getImage("UnitActionIcons/Stop") }, 'm', false),
     StopMovement("Stop movement",
-        { ImageGetter.getImage("UnitActionIcons/StopMove") }, '.'),
+        { ImageGetter.getImage("UnitActionIcons/StopMove") }, '.', false),
     Sleep("Sleep",
         { ImageGetter.getImage("UnitActionIcons/Sleep") }, 'f'),
     SleepUntilHealed("Sleep until healed",
@@ -76,19 +75,19 @@ enum class UnitActionType(
     Explore("Explore",
         { ImageGetter.getImage("UnitActionIcons/Explore") }, 'x'),
     StopExploration("Stop exploration",
-        { ImageGetter.getImage("UnitActionIcons/Stop") }, 'x'),
+        { ImageGetter.getImage("UnitActionIcons/Stop") }, 'x', false),
     Promote("Promote",
-        { ImageGetter.getImage("UnitActionIcons/Promote") }, 'o', UncivSound.Promote),
+        { ImageGetter.getImage("UnitActionIcons/Promote") }, 'o', false, UncivSound.Promote),
     Upgrade("Upgrade",
         { ImageGetter.getImage("UnitActionIcons/Upgrade") }, 'u', UncivSound.Upgrade),
     Pillage("Pillage",
-        { ImageGetter.getImage("UnitActionIcons/Pillage") }, 'p'),
+        { ImageGetter.getImage("UnitActionIcons/Pillage") }, 'p', false),
     Paradrop("Paradrop",
-        { ImageGetter.getImage("UnitActionIcons/Paradrop") }, 'p'),
+        { ImageGetter.getImage("UnitActionIcons/Paradrop") }, 'p', false),
     AirSweep("Air Sweep",
         { ImageGetter.getImage("UnitActionIcons/AirSweep") }, 'a'),
     SetUp("Set up",
-        { ImageGetter.getImage("UnitActionIcons/SetUp") }, 't', UncivSound.Setup),
+        { ImageGetter.getImage("UnitActionIcons/SetUp") }, 't', false, UncivSound.Setup),
     FoundCity("Found city",
         { ImageGetter.getImage("UnitActionIcons/FoundCity") }, 'c', UncivSound.Silent),
     ConstructImprovement("Construct improvement",
@@ -110,7 +109,7 @@ enum class UnitActionType(
     FoundReligion("Found a Religion",
         { ImageGetter.getImage("UnitActionIcons/FoundReligion") }, 'g', UncivSound.Choir),
     TriggerUnique("Trigger unique",
-        { ImageGetter.getImage("UnitActionIcons/Star") }, 'g', UncivSound.Chimes),
+        { ImageGetter.getImage("UnitActionIcons/Star") }, 'g', false, UncivSound.Chimes),
     SpreadReligion("Spread Religion",
         null, 'g', UncivSound.Choir),
     RemoveHeresy("Remove Heresy",
@@ -124,17 +123,22 @@ enum class UnitActionType(
     Wait("Wait",
         { ImageGetter.getImage("UnitActionIcons/Wait") }, 'z', UncivSound.Silent),
     ShowAdditionalActions("Show more",
-        { ImageGetter.getImage("UnitActionIcons/ShowMore") }, KeyCharAndCode(Input.Keys.PAGE_DOWN)),
+        { ImageGetter.getImage("UnitActionIcons/ShowMore") }, KeyCharAndCode(Input.Keys.PAGE_DOWN), false),
     HideAdditionalActions("Back",
-        { ImageGetter.getImage("UnitActionIcons/HideMore") }, KeyCharAndCode(Input.Keys.PAGE_UP)),
+        { ImageGetter.getImage("UnitActionIcons/HideMore") }, KeyCharAndCode(Input.Keys.PAGE_UP), false),
     AddInCapital( "Add in capital",
         { ImageGetter.getImage("UnitActionIcons/AddInCapital")}, 'g', UncivSound.Chimes),
     ;
 
     // Allow shorter initializations
     constructor(value: String, imageGetter: (() -> Actor)?, key: Char, uncivSound: UncivSound = UncivSound.Click)
-            : this(value, imageGetter, KeyCharAndCode(key), uncivSound)
+            : this(value, imageGetter, KeyCharAndCode(key), true, uncivSound)
     constructor(value: String, imageGetter: (() -> Actor)?, uncivSound: UncivSound = UncivSound.Click)
-            : this(value, imageGetter, KeyCharAndCode.UNKNOWN, uncivSound)
+            : this(value, imageGetter, KeyCharAndCode.UNKNOWN, true,uncivSound)
+    constructor(value: String, imageGetter: (() -> Actor)?, key: Char, isSkippingToNextUnit: Boolean = true, uncivSound: UncivSound = UncivSound.Click)
+            : this(value, imageGetter, KeyCharAndCode(key), isSkippingToNextUnit, uncivSound)
+    constructor(value: String, imageGetter: (() -> Actor)?, isSkippingToNextUnit: Boolean = true, uncivSound: UncivSound = UncivSound.Click)
+            : this(value, imageGetter, KeyCharAndCode.UNKNOWN, isSkippingToNextUnit, uncivSound)
+
 
 }

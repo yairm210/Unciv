@@ -132,7 +132,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
             } else
                 tile = viableTiles.random()
 
-            tile.improvement = Constants.barbarianEncampment
+            tile.changeImprovement(Constants.barbarianEncampment)
             val newCamp = Encampment(tile.position)
             newCamp.gameInfo = gameInfo
             camps[newCamp.position] = newCamp

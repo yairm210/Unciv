@@ -81,8 +81,10 @@ class GlobalPoliticsOverviewTable (
         addSeparatorVertical(Color.GRAY)
         add("Wonders".toLabel())
         addSeparatorVertical(Color.GRAY)
-        add("Relations".toLabel())
-        add(diagramButton).pad(10f)
+        add(Table().apply {
+            add("Relations".toLabel()).row()
+            add(diagramButton).pad(10f)
+        })
         row()
         addSeparator(Color.GRAY)
 

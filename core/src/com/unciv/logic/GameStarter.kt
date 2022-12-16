@@ -2,8 +2,10 @@ package com.unciv.logic
 
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.utils.debug
-import com.unciv.logic.civilization.*
+import com.unciv.logic.civilization.AlertType
+import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapgenerator.MapGenerator
@@ -15,9 +17,8 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
+import com.unciv.utils.debug
 import java.util.*
-import kotlin.collections.HashMap
-import kotlin.collections.HashSet
 
 object GameStarter {
     // temporary instrumentation while tuning/debugging
@@ -220,7 +221,6 @@ object GameStarter {
         // CityState or Spectator civs are not available for Random pick
         availableCivNames.addAll(ruleset.nations.filter { it.value.isMajorCiv() }.keys.shuffled())
         availableCivNames.removeAll(newGameParameters.players.map { it.chosenCiv }.toSet())
-        availableCivNames.remove(Constants.barbarians)
 
         val startingTechs = ruleset.technologies.values.filter { it.hasUnique(UniqueType.StartingTech) }
 
@@ -316,7 +316,7 @@ object GameStarter {
                 if (tile.improvement != null
                     && tile.getTileImprovement()!!.isAncientRuinsEquivalent()
                 ) {
-                    tile.improvement = null // Remove ancient ruins in immediate vicinity
+                    tile.changeImprovement(null) // Remove ancient ruins in immediate vicinity
                 }
             }
 

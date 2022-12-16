@@ -1,38 +1,77 @@
 package com.unciv.ui.utils
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.utils.Log
 
 class UnitGroup(val unit: MapUnit, val size: Float): Group() {
-    var blackSpinningCircle: Image? = null
     var actionGroup :Group? = null
     val unitBaseImage = ImageGetter.getUnitIcon(unit.name, unit.civInfo.nation.getInnerColor())
-        .apply { setSize(size * 0.75f, size * 0.75f) }
-    var background: Image? = null
+        .apply {
+            if (unit.isCivilian())
+                setSize(size * 0.60f, size * 0.60f)
+            else
+                setSize(size * 0.75f, size * 0.75f) }
+    var flagSelection: Image = getBackgroundSelectionForUnit()
+    var flagBg: Group = Group()
 
     init {
-        background = getBackgroundImageForUnit()
-        background?.apply {
-            this.color = unit.civInfo.nation.getOuterColor()
-            this.color.a = UncivGame.Current.settings.unitIconOpacity
-            setSize(size, size)
-        }
-        setSize(size, size)
-        addActor(background)
+
+        val outerBg = getBackgroundImageForUnit()
+        val innerBg = getBackgroundImageForUnit()
+        val maskBg = getBackgroundMaskForUnit()
+
+        val sizeSelectionX = size*1.9f; val sizeSelectionY = sizeSelectionX*flagSelection.height/flagSelection.width
+        val sizeOuterBgX = size*1.15f; val sizeOuterBgY = sizeOuterBgX*outerBg.height/outerBg.width
+        val sizeInnerBgX = size; val sizeInnerBgY = sizeInnerBgX*innerBg.height/innerBg.width
+
+        setSize(sizeOuterBgX, sizeOuterBgY)
+
+        flagSelection.color.a = 0f
+        flagSelection.align = Align.center
+        flagSelection.setSize(sizeSelectionX, sizeSelectionY)
+        flagSelection.center(this)
+
+        flagBg.setSize(sizeOuterBgX, sizeOuterBgY)
+
+        outerBg.color = unit.civInfo.nation.getInnerColor()
+        outerBg.color.a = UncivGame.Current.settings.unitIconOpacity
+        outerBg.setSize(sizeOuterBgX, sizeOuterBgY)
+        outerBg.center(flagBg)
+
+        innerBg.color = unit.civInfo.nation.getOuterColor()
+        innerBg.color.a = UncivGame.Current.settings.unitIconOpacity
+        innerBg.setSize(sizeInnerBgX, sizeInnerBgY)
+        innerBg.center(flagBg)
+
+        maskBg?.color?.a = UncivGame.Current.settings.unitIconOpacity
+        maskBg?.setSize(size, size*maskBg.height / maskBg.width)
+        maskBg?.center(flagBg)
+
+        flagBg.addActor(outerBg)
+        flagBg.addActor(innerBg)
+        if (maskBg != null)
+            flagBg.addActor(maskBg)
+        flagBg.center(this)
+
         unitBaseImage.center(this)
+
+        addActor(flagSelection)
+        addActor(flagBg)
         addActor(unitBaseImage)
 
         val actionImage = getActionImage()
         if (actionImage != null) {
-            actionImage.color = Color.BLACK
             val actionCircle = actionImage.surroundWithCircle(size / 2 * 0.9f)
                 .surroundWithCircle(size / 2, false, Color.BLACK)
             actionCircle.setPosition(size / 2, 0f)
@@ -49,21 +88,44 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
 
     private fun getBackgroundImageForUnit(): Image {
         return when {
-            unit.isEmbarked() -> ImageGetter.getImage("OtherIcons/Banner")
-            unit.isFortified() -> ImageGetter.getImage("OtherIcons/Shield")
-            else -> ImageGetter.getCircle()
+            unit.isEmbarked() -> ImageGetter.getImage("UnitFlagIcons/UnitFlagEmbark")
+            unit.isFortified() -> ImageGetter.getImage("UnitFlagIcons/UnitFlagFortify")
+            unit.isCivilian() -> ImageGetter.getImage("UnitFlagIcons/UnitFlagCivilian")
+            else -> ImageGetter.getImage("UnitFlagIcons/UnitFlag")
+        }
+    }
+
+    private fun getBackgroundMaskForUnit(): Image? {
+
+        val filename = when {
+            unit.isEmbarked() -> "UnitFlagIcons/UnitFlagMaskEmbark"
+            unit.isFortified() -> "UnitFlagIcons/UnitFlagMaskFortify"
+            unit.isCivilian() -> "UnitFlagIcons/UnitFlagMaskCivilian"
+            else -> "UnitFlagIcons/UnitFlagMask"
+        }
+
+        if (ImageGetter.imageExists(filename))
+            return ImageGetter.getImage(filename)
+        return null
+    }
+
+    private fun getBackgroundSelectionForUnit(): Image {
+        return when {
+            unit.isEmbarked() -> ImageGetter.getImage("UnitFlagIcons/UnitFlagSelectionEmbark")
+            unit.isFortified() -> ImageGetter.getImage("UnitFlagIcons/UnitFlagSelectionFortify")
+            unit.isCivilian() -> ImageGetter.getImage("UnitFlagIcons/UnitFlagSelectionCivilian")
+            else -> ImageGetter.getImage("UnitFlagIcons/UnitFlagSelection")
         }
     }
 
     fun getActionImage(): Image? {
         return when {
-            unit.isFortified() -> ImageGetter.getImage("OtherIcons/Shield")
-            unit.isSleeping() -> ImageGetter.getImage("OtherIcons/Sleep")
+            unit.isFortified() -> ImageGetter.getImage("UnitActionIcons/Fortify")
+            unit.isSleeping() -> ImageGetter.getImage("UnitActionIcons/Sleep")
             unit.isMoving() -> ImageGetter.getStatIcon("Movement")
-            //todo: Less hardcoding, or move to Constants with explanation (should icon change with mods?)
-            unit.isExploring() -> ImageGetter.getUnitIcon("Scout")
-            unit.isAutomated() -> ImageGetter.getUnitIcon("Great Engineer")
-            unit.isSetUpForSiege() -> ImageGetter.getUnitIcon("Catapult")
+            unit.isExploring() -> ImageGetter.getImage("UnitActionIcons/Explore")
+            unit.isAutomated() -> ImageGetter.getImage("UnitActionIcons/Automate")
+            unit.isSetUpForSiege() -> ImageGetter.getImage("UnitActionIcons/SetUp")
             else -> null
         }
     }
@@ -72,44 +134,33 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
     fun selectUnit() {
 
         //Make unit icon background colors fully opaque when units are selected
-        background?.color?.a = 1f
+        flagBg.children.forEach { it.color?.a = 1f }
 
-        //If unit is idle, leave unitBaseImage and actionGroup at 50% opacity when selected
-        if (!unit.isIdle()) {
-            unitBaseImage.color.a = 0.5f
+        //If unit is idle, leave actionGroup at 50% opacity when selected
+        if (unit.isIdle()) {
             actionGroup?.color?.a = 0.5f
         } else { //Else set to 100% opacity when selected
-            unitBaseImage.color.a = 1f
             actionGroup?.color?.a = 1f
         }
 
-        val whiteHalo = getBackgroundImageForUnit()
-        val whiteHaloSize = 30f
-        whiteHalo.setSize(whiteHaloSize, whiteHaloSize)
-        whiteHalo.center(this)
-        addActor(whiteHalo)
-        whiteHalo.toBack()
-
+        // Unit base icon is faded out only if out of moves
+        val alpha = if (unit.currentMovement == 0f) 0.5f else 1f
+        unitBaseImage.color.a = alpha
+        flagBg.children.forEach { it.color.a = alpha }
 
         if (UncivGame.Current.settings.continuousRendering) {
-            val spinningCircle = if (blackSpinningCircle != null) blackSpinningCircle!!
-            else ImageGetter.getCircle()
-            spinningCircle.setSize(5f, 5f)
-            spinningCircle.color = Color.BLACK
-            spinningCircle.center(this)
-            spinningCircle.x += whiteHaloSize / 2 // to edge of white halo
-            spinningCircle.setOrigin(
-                spinningCircle.width / 2 - whiteHaloSize / 2,
-                spinningCircle.height / 2
-            )
-            addActor(spinningCircle)
-            spinningCircle.addAction(
+            flagSelection.color.a = 1f
+            flagSelection.addAction(
                 Actions.repeat(
                     RepeatAction.FOREVER,
-                    Actions.rotateBy(90f, 1f)
+                    Actions.sequence(
+                        Actions.alpha(0.6f, 1f),
+                        Actions.alpha(1f, 1f)
+                    )
                 )
             )
-            blackSpinningCircle = spinningCircle
+        } else {
+            flagSelection.color.a = 0.8f
         }
     }
 }
