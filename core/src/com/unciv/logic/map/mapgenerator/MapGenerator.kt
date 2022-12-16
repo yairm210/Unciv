@@ -775,7 +775,10 @@ class MapGenerator(val ruleset: Ruleset) {
                     }
 
                     for (neighbor in tile.neighbors) {
-                        if (randomness.RNG.nextDouble() < 0.75) {
+                        val neighborIsEdgeTile = neighbor.neighbors.count() < 6
+                        if (neighborIsEdgeTile) {
+                            // Do not redo edge tile. It is already done.
+                        } else if (randomness.RNG.nextDouble() < 0.75) {
                             // Do nothing most of the time at random.
                         } else if (arcticTileName == iceTerrainName) {
                             neighbor.baseTerrain = waterTerrainName
