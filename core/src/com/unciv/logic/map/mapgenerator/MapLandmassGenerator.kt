@@ -49,24 +49,23 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
             MapType.default -> createPerlin(tileMap)
         }
 
-        // Flat Earth needs a 3 tile wide perimeter of water and a 4 tile radius of water in the center.
-        if (tileMap.mapParameters.shape === MapShape.flatEarth) {
-            for (tile in tileMap.values) {
-                val isCenterTile = tile.latitude == 0f && tile.longitude == 0f
-                val isEdgeTile = tile.neighbors.count() < 6
+        if (tileMap.mapParameters.shape !== MapShape.flatEarth) return
 
-                if (isCenterTile || isEdgeTile) {
-                    tile.baseTerrain = waterTerrainName
-                    for (neighbor in tile.neighbors) {
-                        neighbor.baseTerrain = waterTerrainName
-                        for (neighbor2 in neighbor.neighbors) {
-                            neighbor2.baseTerrain = waterTerrainName
-                            if (isCenterTile) {
-                                for (neighbor3 in neighbor2.neighbors) {
-                                    neighbor3.baseTerrain = waterTerrainName
-                                }
-                            }
-                        }
+        for (tile in tileMap.values) {
+            val isCenterTile = tile.latitude == 0f && tile.longitude == 0f
+            val isEdgeTile = tile.neighbors.count() < 6
+
+            if (!isCenterTile && !isEdgeTile) continue
+
+            // Flat Earth needs a 3 tile wide perimeter of water and a 4 tile radius of water in the center.
+            tile.baseTerrain = waterTerrainName
+            for (neighbor in tile.neighbors) {
+                neighbor.baseTerrain = waterTerrainName
+                for (neighbor2 in neighbor.neighbors) {
+                    neighbor2.baseTerrain = waterTerrainName
+                    if (!isCenterTile) continue
+                    for (neighbor3 in neighbor2.neighbors) {
+                        neighbor3.baseTerrain = waterTerrainName
                     }
                 }
             }
