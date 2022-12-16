@@ -15,6 +15,14 @@ import kotlin.reflect.KMutableProperty0
 
 data class WindowState (val width: Int = 900, val height: Int = 600)
 
+enum class ScreenSize(val virtualWidth:Float, val virtualHeight:Float){
+    Tiny(750f,500f),
+    Small(900f,600f),
+    Medium(1050f,700f),
+    Large(1200f,800f),
+    Huge(1500f,1000f)
+}
+
 class GameSettings {
     var showWorkedTiles: Boolean = false
     var showResourcesAndImprovements: Boolean = true
@@ -22,14 +30,16 @@ class GameSettings {
     var showUnitMovements: Boolean = false
 
     var checkForDueUnits: Boolean = true
+    var autoUnitCycle: Boolean = true
     var singleTapMove: Boolean = false
     var language: String = "English"
     @Transient
     var locale: Locale? = null
-    var resolution: String = "900x600" // Auto-detecting resolution was a BAD IDEA since it needs to be based on DPI AND resolution.
+    @Deprecated("Since 4.3.6 - replaces with screenSize")
+    var resolution: String = "900x600"
+    var screenSize:ScreenSize = ScreenSize.Small
     var tutorialsShown = HashSet<String>()
     var tutorialTasksCompleted = HashSet<String>()
-    var hasCrashedRecently = false
 
     var soundEffectsVolume = 0.5f
     var citySoundsVolume = 0.5f
@@ -38,16 +48,18 @@ class GameSettings {
 
     var turnsBetweenAutosaves = 1
     var tileSet: String = Constants.defaultTileset
+    var unitSet: String? = Constants.defaultUnitset
     var skin: String = Constants.defaultSkin
     var showTutorials: Boolean = true
     var autoAssignCityProduction: Boolean = true
     var autoBuildingRoads: Boolean = true
     var automatedWorkersReplaceImprovements = true
+    var automatedUnitsMoveOnTurnStart: Boolean = false
 
     var showMinimap: Boolean = true
     var minimapSize: Int = 6    // default corresponds to 15% screen space
     var unitIconOpacity = 1f // default corresponds to fully opaque
-    var showPixelUnits: Boolean = true
+    val showPixelUnits: Boolean get() = unitSet != null
     var showPixelImprovements: Boolean = true
     var continuousRendering = false
     var orderTradeOffersByAmount = true
@@ -171,7 +183,7 @@ enum class LocaleCode(var language: String, var country: String) {
 
 class GameSettingsMultiplayer {
     var userId = ""
-    var server = Constants.dropboxMultiplayerServer
+    var server = Constants.uncivXyzServer
     var friendList: MutableList<FriendList.Friend> = mutableListOf()
     var turnCheckerEnabled = true
     var turnCheckerPersistentNotificationEnabled = true

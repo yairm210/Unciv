@@ -317,7 +317,7 @@ fun Actor.surroundWithCircle(size: Float, resizeActor: Boolean = true, color: Co
 fun Actor.addBorder(size:Float, color: Color, expandCell:Boolean = false): Table {
     val table = Table()
     table.pad(size)
-    table.background = ImageGetter.getBackground(color)
+    table.background = BaseScreen.skinStrings.getUiBackground("General/Border", tintColor = color)
     val cell = table.add(this)
     if (expandCell) cell.expand()
     cell.fill()
@@ -494,3 +494,13 @@ fun WidgetGroup.packIfNeeded(): WidgetGroup {
 
 /** @return `true` if the screen is narrower than 4:3 landscape */
 fun Stage.isNarrowerThan4to3() = viewport.screenHeight * 4 > viewport.screenWidth * 3
+
+/** Wraps and returns an image in a [Group] of a given size*/
+fun Image.toGroup(size: Float): Group {
+    return Group().apply {
+        setSize(size, size)
+        this@toGroup.setSize(size, size)
+        this@toGroup.center(this)
+        this@toGroup.setOrigin(Align.center)
+        addActor(this@toGroup) }
+}

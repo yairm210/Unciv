@@ -12,7 +12,6 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.Counter
 import com.unciv.models.metadata.GameParameters
-import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
@@ -20,7 +19,6 @@ import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.mapeditor.MapGeneratorSteps
-import com.unciv.ui.utils.extensions.toNiceString
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import kotlin.math.abs
@@ -273,7 +271,7 @@ class MapGenerator(val ruleset: Ruleset) {
                 suitableTiles,
                 map.mapParameters.mapSize.radius)
         for (tile in locations)
-            tile.improvement = ruinsEquivalents.keys.random()
+            tile.changeImprovement(ruinsEquivalents.keys.random())
     }
 
     private fun spreadResources(tileMap: TileMap) {
@@ -484,7 +482,7 @@ class MapGenerator(val ruleset: Ruleset) {
         val scale = tileMap.mapParameters.tilesPerBiomeArea.toDouble()
         val temperatureExtremeness = tileMap.mapParameters.temperatureExtremeness
         val temperatureShift = tileMap.mapParameters.temperatureShift
-        val humidityShift = if (temperatureShift > 0) -temperatureShift else 0f
+        val humidityShift = if (temperatureShift > 0) -temperatureShift / 2 else 0f
 
         // List is OK here as it's only sequentially scanned
         val limitsMap: List<TerrainOccursRange> =
@@ -534,6 +532,8 @@ class MapGenerator(val ruleset: Ruleset) {
                 tile.baseTerrain = firstLandTerrain.name
                 debug("applyHumidityAndTemperature: No terrain found for temperature: %s, humidity: %s", temperature, humidity)
             }
+            tile.humidity = humidity
+            tile.temperature = temperature
             tile.setTerrainTransients()
         }
     }
@@ -608,6 +608,7 @@ class MapGenerator(val ruleset: Ruleset) {
             val latitudeTemperature = 1.0 - 2.0 * abs(tile.latitude) / tileMap.maxLatitude
             var temperature = ((latitudeTemperature + randomTemperature) / 2.0)
             temperature = abs(temperature).pow(1.0 - tileMap.mapParameters.temperatureExtremeness) * temperature.sign
+            temperature = (temperature + tileMap.mapParameters.temperatureShift).coerceIn(-1.0..1.0)
 
             val candidates = iceEquivalents
                 .filter {
@@ -631,6 +632,8 @@ class MapGenerationRandomness {
 
     /**
      * Generates a perlin noise channel combining multiple octaves
+     * Default settings generate mostly within [-0.55, 0.55], but clustered around 0.0
+     * About 28% are < -0.1 and 28% are > 0.1
      *
      * @param tile Source for x / x coordinates.
      * @param seed Misnomer: actually the z value the Perlin cloud is 'cut' on.

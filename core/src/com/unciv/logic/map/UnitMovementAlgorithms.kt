@@ -36,9 +36,9 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
             toOwner != null &&
             toOwner.hasActiveEnemyMovementPenalty &&
             civInfo.isAtWarWith(toOwner)
-        ) toOwner.getEnemyMovementPenalty(unit, to) else 0f
+        ) toOwner.getEnemyMovementPenalty(unit) else 0f
 
-        if (from.roadStatus == RoadStatus.Railroad && to.roadStatus == RoadStatus.Railroad)
+        if (from.getUnpillagedRoad() == RoadStatus.Railroad && to.getUnpillagedRoad() == RoadStatus.Railroad)
             return RoadStatus.Railroad.movement + extraCost
 
         // Each of these two function calls `hasUnique(UniqueType.CityStateTerritoryAlwaysFriendly)`
@@ -132,7 +132,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
 
     class ParentTileAndTotalDistance(val parentTile: TileInfo, val totalDistance: Float)
 
-    fun isUnknownTileWeShouldAssumeToBePassable(tileInfo: TileInfo) = !unit.civInfo.exploredTiles.contains(tileInfo.position)
+    fun isUnknownTileWeShouldAssumeToBePassable(tileInfo: TileInfo) = !unit.civInfo.hasExplored(tileInfo)
 
     /**
      * Does not consider if tiles can actually be entered, use canMoveTo for that.
@@ -154,7 +154,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
                 for (neighbor in tileToCheck.neighbors) {
                     if (tilesToIgnore?.contains(neighbor) == true) continue // ignore this tile
                     var totalDistanceToTile: Float = when {
-                        !unit.civInfo.exploredTiles.contains(neighbor.position) ->
+                        !unit.civInfo.hasExplored(neighbor) ->
                             distanceToTiles[tileToCheck]!!.totalDistance + 1f  // If we don't know then we just guess it to be 1.
                         !canPassThrough(neighbor) -> unitMovement // Can't go here.
                         // The reason that we don't just "return" is so that when calculating how to reach an enemy,
@@ -552,7 +552,14 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
             && (origin.isCityCenter() || finalTileReached.isCityCenter())
             && unit.civInfo.hasUnique(UniqueType.UnitsInCitiesNoMaintenance)
         ) unit.civInfo.updateStatsForNextTurn()
-        if (needToFindNewRoute) moveToTile(destination, considerZoneOfControl)
+
+        // Under rare cases (see #8044), we can be headed to a tile and *the entire path* is blocked by other units, so we can't "enter" that tile.
+        // If, in such conditions, the *destination tile* is unenterable, needToFindNewRoute will trigger, so we need to catch this situation to avoid infinite loop
+        if (needToFindNewRoute && unit.currentTile != origin) {
+            moveToTile(destination, considerZoneOfControl)
+        }
+
+        unit.updateUniques(unit.currentTile.ruleset)
     }
 
     /**

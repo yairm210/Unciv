@@ -70,7 +70,12 @@ class ExpanderTab(
         headerIcon.setOrigin(Align.center)
         headerIcon.rotation = 180f
         headerIcon.color = arrowColor
-        header.background(ImageGetter.getBackground(ImageGetter.getBlue()))
+        header.background(
+            BaseScreen.skinStrings.getUiBackground(
+                "General/ExpanderTab",
+                tintColor = BaseScreen.skinStrings.skinConfig.baseColor
+            )
+        )
         if (icon != null) header.add(icon)
         header.add(headerLabel)
         header.add(headerIcon).size(arrowSize).align(Align.center)

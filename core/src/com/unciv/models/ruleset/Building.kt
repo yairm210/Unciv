@@ -47,8 +47,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     var isNationalWonder = false
     fun isAnyWonder() = isWonder || isNationalWonder
     var requiredBuilding: String? = null
-    @Deprecated("As of 3.18.15 - replace with RequiresBuildingInAllCities unique")
-    var requiredBuildingInAllCities: String? = null
 
     /** A strategic resource that will be consumed by this building */
     private var requiredResource: String? = null
@@ -187,6 +185,9 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             if (!matchesFilter(unique.params[1])) continue
             stats.add(unique.stats)
         }
+
+        for (unique in getMatchingUniques(UniqueType.Stats, StateForConditionals(city.civInfo, city)))
+            stats.add(unique.stats)
 
         if (!isWonder)
             for (unique in localUniqueCache.get("StatsFromBuildings", city.getMatchingUniques(UniqueType.StatsFromBuildings))) {
@@ -627,8 +628,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     it.resource != null
                     && requiredNearbyImprovedResources!!.contains(it.resource!!)
                     && it.getOwner() == civInfo
-                    && ((it.improvement != null && it.tileResource.isImprovedBy(it.improvement!!)) || it.isCityCenter()
-                       || (it.getTileImprovement()?.isGreatImprovement() == true && it.tileResource.resourceType == ResourceType.Strategic)
+                    && ((it.getUnpillagedImprovement() != null && it.tileResource.isImprovedBy(it.improvement!!)) || it.isCityCenter()
+                       || (it.getUnpillagedTileImprovement()?.isGreatImprovement() == true && it.tileResource.resourceType == ResourceType.Strategic)
                     )
                 }
             if (!containsResourceWithImprovement)
@@ -666,8 +667,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         for (unique in uniqueObjects)
             UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, cityConstructions.cityInfo)
 
-        if (hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovement)
-                || hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovementDepreciated))
+        if (hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovement))
             civInfo.updateHasActiveEnemyMovementPenalty()
 
         // Korean unique - apparently gives the same as the research agreement

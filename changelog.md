@@ -1,3 +1,201 @@
+## 4.3.8
+
+By nacro711072:
+- Avoid destroying all onboard units after player upgrade Air Carrier unit
+- update score icon
+
+AI Pillages Neutral Roads only at War - By itanasi
+
+By FiretronP75:
+- Three Continents map type
+- Two Continents split map according to dimension ratio
+
+Modding: Units/Buildings can now be given optional Portraits to be displayed instead of flags - By vegeta1k95
+
+## 4.3.7
+
+'loading' popup between turns only appears if there's a significant delay
+
+xyz server as default multiplayer server
+
+Fixes for Repair
+
+Fixed all CSs getting unique units and unique luxuries
+
+UnitActions icons separated for modding purposes - By vegeta1k95
+
+Added button to paste from clipboard when downloading a mod - By alexban011
+
+## 4.3.6
+
+Resolved single turn repair, repair turn inconsistencies
+
+Replaced misunderstood 'virtual resolutions' with more intuitive 'screen size'
+
+Max screen size takes Windows taskbar into account
+
+After-combat notification for promotable units
+
+modding: Double Happiness from Natural Wonders -> [stats] from every known Natural Wonder
+
+Volley only for Siege in G&K - By itanasi
+
+fix civilopedia category bug - By nacro711072
+
+## 4.3.5
+
+Made yields smaller so heavy yields look better on tiles
+
+Modding improvements:
+- buildingName -> buildingFilter in all possible unique types
+- improvement uniques can be assigned to tilefilter
+- "Occurs at temperature between [amount] and [amount] and humidity between [amount] and [amount]" now applicable to resources
+
+AbsoluteUnits - Unique Chariot Archers  - By letstalkaboutdune
+
+## 4.3.4
+
+Changes to moddable UI - By GGGuenni
+
+Add Repair and Pillaging Roads - By itanasi
+
+AbsoluteUnits - Unique Elephants - By letstalkaboutdune
+
+HexaRealm units are here, finally!  - By GeneralWadaling
+
+Added conditional to apply uniques only if the game starts in a specific era
+
+Generalized "Stats per policies" unique
+
+## 4.3.3
+
+Resolved map latency when city-states exist
+
+Fixed city-state type in civilopedia
+
+'impossible' worked tiles not under your control are now cleaned up
+
+Resolved corner case where entire path to destination is full and destination is unenterable
+
+Fix policy counting in global politics  - By jmuchemb
+
+## 4.3.2
+
+City State Type overhaul!
+
+Can now use `[stats]` unique to add happiness globally
+
+Can now use `[stats]` unique for e.g. techs, policies, etc, to add gold/faith/culture/science to the global pool
+
+## 4.3.1
+
+City-state overhaul, part 1!
+
+- Allowed adding arbitrary global uniques to city state bonuses
+- Moddable quest weighting for city-states
+- Moved city state icons to separate folder
+- Removed backwards compatibility (pre-3.19.4) for missing city-state uniques
+- Added conditional support to 'CS gift military units' unique
+
+Removed single-pixel gap in top bar
+
+AbsoluteUnits - Unique Spearmen - By letstalkaboutdune
+
+## 4.3.0
+
+Units now receive correct healing in friendly territory
+
+Tile info table no longer reveals hidden units
+
+AI no longer nukes if as consequence it will mean declaring war on someone
+
+Empire overview screen updates after changing info in city screen
+
+Fixed civilopedia text that says city-states don't conquer other cities
+
+## 4.2.20
+
+Main map and mini-map no longer show unexplored tiles!
+
+New "Unitset" option translatable - By Ouaz
+
+Renamed AbsoluteUnits unitset @letstalkaboutdune
+
+Automated workers no longer try to improve enemy tiles
+
+White lines in menus no longer change width when changing display settings
+
+Set 'text/plain' content type for multiplayer server requests
+
+## 4.2.19
+
+Fixed promotions for mods conflicting with base ruleset promotions
+
+Added unitset selection to options menu  - By GGGuenni
+
+Added diplomatic repercussions for attacking your own ally city-state, and discouraged AIs from doing so
+
+Absolute Units - Unique Archers - By letstalkaboutdune
+
+## 4.2.18
+
+Fixed mod promotions conflicting with existing promotion locations
+
+Fixed rare thread crashes
+
+Added many new before/after X turns and before/after Pantheon conditionals
+
+Generalized ruins reward limitations with "only available when"
+
+Unique Misspelling replacement text contains conditionals
+
+Current naming for manually downloaded mods
+
+## 4.2.17
+
+Added layout option for promotions, added promotion layout for G&K
+
+Added AbsoluteUnits as default units for Hexarealm tileset :D
+
+## 4.2.16
+
+Automated workers no longer improve unworkable tiles
+
+Improved construction AI choices
+
+By nacro711072:
+- fix wrong glyph when switch between different mod.
+- Fixed another memory leak
+- check whether the city has been a puppet in "Pick construction" action.
+
+## 4.2.15
+
+Fixed memory leak
+
+Fixed Great Person Picker screen not responding
+
+Fixed stat conversion constructions (Science, Gold) not appearing
+
+Fixed units obsoleting before their replacements could be constructed
+
+Unit era variants added to FantasyHex tileset  - By GeneralWadaling
+
+## 4.2.14
+
+Fixed Temple of Artemis production bonuses
+
+Fixed tile yields due to caching conditional uniques
+
+Resolved crash when mods make 2 techs require each other
+
+By itanasi:
+- Add Temperature Offset Slider
+- Change Default Map Generation to Perlin
+
+Fixed holy city blocking - By qwerty2586
+
+Show wars in global politics  - By MindaugasRumsa51
+
 ## 4.2.13
 
 Don't show hidden improvements in nation info

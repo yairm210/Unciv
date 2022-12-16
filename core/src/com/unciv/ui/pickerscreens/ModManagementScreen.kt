@@ -134,6 +134,9 @@ class ModManagementScreen(
             reloadOnlineMods()
         else
             refreshOnlineModTable()
+
+        pickerPane.bottomTable.background = skinStrings.getUiBackground("ModManagementScreen/BottomTable", tintColor = skinStrings.skinConfig.clearColor)
+        pickerPane.topTable.background = skinStrings.getUiBackground("ModManagementScreen/TopTable", tintColor = skinStrings.skinConfig.clearColor)
     }
 
     private fun initPortrait() {
@@ -385,6 +388,11 @@ class ModManagementScreen(
             popup.addGoodSizedLabel("Please enter the mod repository -or- archive zip url:").row()
             val textField = UncivTextField.create("")
             popup.add(textField).width(stage.width / 2).row()
+            val pasteLinkButton = "Paste from clipboard".toTextButton()
+            pasteLinkButton.onClick {
+                textField.text = Gdx.app.clipboard.contents
+            }
+            popup.add(pasteLinkButton).row()
             val actualDownloadButton = "Download".toTextButton()
             actualDownloadButton.onClick {
                 actualDownloadButton.setText("Downloading...".tr())
@@ -425,7 +433,7 @@ class ModManagementScreen(
     private fun downloadMod(repo: Github.Repo, postAction: () -> Unit = {}) {
         Concurrency.run("DownloadMod") { // to avoid ANRs - we've learnt our lesson from previous download-related actions
             try {
-                val modFolder = Github.downloadAndExtract(repo.html_url, repo.default_branch,
+                val modFolder = Github.downloadAndExtract(repo,
                     Gdx.files.local("mods"))
                     ?: throw Exception()    // downloadAndExtract returns null for 404 errors and the like -> display something!
                 Github.rewriteModOptions(repo, modFolder)

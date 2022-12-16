@@ -14,6 +14,25 @@ class Promotion : RulesetObject() {
 
     var unitTypes = listOf<String>() // The json parser wouldn't agree to deserialize this as a list of UnitTypes. =(
 
+    /** Row of -1 determines that the modder has not set a position */
+    var row = -1
+    var column = 0
+
+    fun clone():Promotion {
+        val newPromotion = Promotion()
+
+        // RulesetObject fields
+        newPromotion.name = name
+        newPromotion.uniques = uniques
+
+        // Promotion fields
+        newPromotion.prerequisites = prerequisites
+        newPromotion.unitTypes = unitTypes
+        newPromotion.row = row
+        newPromotion.column = column
+        return newPromotion
+    }
+
     override fun getUniqueTarget() = UniqueTarget.Promotion
 
 

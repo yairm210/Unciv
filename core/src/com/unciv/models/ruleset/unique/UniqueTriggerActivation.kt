@@ -3,12 +3,51 @@ package com.unciv.models.ruleset.unique
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.city.CityInfo
-import com.unciv.logic.civilization.*
+import com.unciv.logic.civilization.CivFlags
+import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.MayaLongCountAction
+import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Victory
-import com.unciv.models.ruleset.unique.UniqueType.*
+import com.unciv.models.ruleset.unique.UniqueType.CityStateCanGiftGreatPeople
+import com.unciv.models.ruleset.unique.UniqueType.ConditionalTimedUnique
+import com.unciv.models.ruleset.unique.UniqueType.FoundCity
+import com.unciv.models.ruleset.unique.UniqueType.FreeSpecificBuildings
+import com.unciv.models.ruleset.unique.UniqueType.FreeStatBuildings
+import com.unciv.models.ruleset.unique.UniqueType.MayanGainGreatPerson
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeAmountFreePolicies
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeAmountFreeTechs
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeAmountFreeUnits
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeEnterGoldenAge
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeFreeBelief
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeFreeGreatPerson
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeFreePolicy
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeFreeTech
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeFreeTechRuins
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeFreeUnit
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeFreeUnitRuins
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeGainPantheon
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeGainPopulation
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeGainPopulationRandomCity
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeGainProphet
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeGainStat
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeGainStatRange
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeGlobalSpiesWhenEnteringEra
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeRevealCrudeMap
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeRevealEntireMap
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeRevealSpecificMapTiles
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeTriggerVoting
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeUnitGainPromotion
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeUnitGainXP
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeUnitHeal
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeUnitSpecialUpgrade
+import com.unciv.models.ruleset.unique.UniqueType.OneTimeUnitUpgrade
+import com.unciv.models.ruleset.unique.UniqueType.StrategicResourcesIncrease
+import com.unciv.models.ruleset.unique.UniqueType.UnitsGainPromotion
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters
@@ -168,7 +207,6 @@ object UniqueTriggerActivation {
             }
 
             OneTimeGainPopulation -> {
-                val citiesWithPopulationChanged: MutableList<Vector2> = mutableListOf()
                 val applicableCities = when (unique.params[1]) {
                     "in this city" -> sequenceOf(cityInfo!!)
                     "in other cities" -> civInfo.cities.asSequence().filter { it != cityInfo }
@@ -183,7 +221,7 @@ object UniqueTriggerActivation {
                         LocationAction(applicableCities.map { it.location }),
                         NotificationIcon.Population
                     )
-                return citiesWithPopulationChanged.isNotEmpty()
+                return applicableCities.any()
             }
             OneTimeGainPopulationRandomCity -> {
                 if (civInfo.cities.isEmpty()) return false
@@ -249,8 +287,8 @@ object UniqueTriggerActivation {
                 if (notification != null) {
                     civInfo.addNotification(
                         notification,
-                        NotificationIcon.War
-                    ) // I'm open for better icons
+                        NotificationIcon.Construction
+                    )
                 }
                 return true
             }
@@ -259,8 +297,8 @@ object UniqueTriggerActivation {
                 if (notification != null) {
                     civInfo.addNotification(notification, LocationAction(tile?.position), NotificationIcon.Scout)
                 }
-                return civInfo.exploredTiles.addAll(
-                    civInfo.gameInfo.tileMap.values.asSequence().map { it.position })
+                civInfo.addExploredTiles(civInfo.gameInfo.tileMap.values.asSequence().map { it.position })
+                return true
             }
 
             UnitsGainPromotion -> {
@@ -412,7 +450,7 @@ object UniqueTriggerActivation {
                 val nearbyRevealableTiles = tile
                     .getTilesInDistance(unique.params[2].toInt())
                     .filter {
-                        !civInfo.exploredTiles.contains(it.position) &&
+                        !civInfo.hasExplored(it) &&
                         it.matchesFilter(unique.params[1])
                     }
                     .map { it.position }
@@ -423,8 +461,8 @@ object UniqueTriggerActivation {
                             // Implements [UniqueParameterType.CombatantFilter] - At the moment the only use
                             if (unique.params[0] != "All") this.take(unique.params[0].toInt())
                         }
+                civInfo.addExploredTiles(revealedTiles)
                 for (position in revealedTiles) {
-                    civInfo.exploredTiles.add(position)
                     val revealedTileInfo = civInfo.gameInfo.tileMap[position]
                     if (revealedTileInfo.improvement == null)
                         civInfo.lastSeenImprovement.remove(position)
@@ -446,7 +484,7 @@ object UniqueTriggerActivation {
             OneTimeRevealCrudeMap -> {
                 if (tile == null) return false
                 val revealCenter = tile.getTilesAtDistance(unique.params[0].toInt())
-                    .filter { it.position !in civInfo.exploredTiles }
+                    .filter { !civInfo.hasExplored(it) }
                     .toList()
                     .randomOrNull(tileBasedRandom)
                     ?: return false
@@ -454,7 +492,7 @@ object UniqueTriggerActivation {
                     .getTilesInDistance(unique.params[1].toInt())
                     .map { it.position }
                     .filter { tileBasedRandom.nextFloat() < unique.params[2].toFloat() / 100f }
-                civInfo.exploredTiles.addAll(tilesToReveal)
+                civInfo.addExploredTiles(tilesToReveal)
                 civInfo.updateViewableTiles()
                 if (notification != null)
                     civInfo.addNotification(

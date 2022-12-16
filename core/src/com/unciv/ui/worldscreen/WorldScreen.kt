@@ -31,7 +31,6 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.civilopedia.CivilopediaScreen
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.pickerscreens.DiplomaticVotePickerScreen
 import com.unciv.ui.pickerscreens.DiplomaticVoteResultScreen
@@ -121,13 +120,14 @@ class WorldScreen(
     val bottomUnitTable = UnitTable(this)
     private val battleTable = BattleTable(this)
     private val zoomController = ZoomButtonPair(mapHolder)
-    private val minimapWrapper = MinimapHolder(mapHolder)
+    internal val minimapWrapper = MinimapHolder(mapHolder)
     private val bottomTileInfoTable = TileInfoTable(viewingCiv)
     private val notificationsScroll = NotificationsScroll(this)
     private val nextTurnButton = NextTurnButton()
     private val statusButtons = StatusButtons(nextTurnButton)
-    private val tutorialTaskTable = Table().apply { background = ImageGetter.getBackground(
-        ImageGetter.getBlue().darken(0.5f)) }
+    private val tutorialTaskTable = Table().apply {
+        background = skinStrings.getUiBackground("WorldScreen/TutorialTaskTable", tintColor = skinStrings.skinConfig.baseColor.darken(0.5f))
+    }
 
     private var nextTurnUpdateJob: Job? = null
 
@@ -427,7 +427,8 @@ class WorldScreen(
                     UncivGame.Current.pushScreen(DiplomaticVoteResultScreen(gameInfo.diplomaticVictoryVotesCast, viewingCiv))
                 !gameInfo.oneMoreTurnMode && (viewingCiv.isDefeated() || gameInfo.civilizations.any { it.victoryManager.hasWon() }) ->
                     game.pushScreen(VictoryScreen(this))
-                viewingCiv.greatPeople.freeGreatPeople > 0 -> game.pushScreen(GreatPersonPickerScreen(viewingCiv))
+                viewingCiv.greatPeople.freeGreatPeople > 0 ->
+                    game.pushScreen(GreatPersonPickerScreen(viewingCiv))
                 viewingCiv.popupAlerts.any() -> AlertPopup(this, viewingCiv.popupAlerts.first()).open()
                 viewingCiv.tradeRequests.isNotEmpty() -> {
                     // In the meantime this became invalid, perhaps because we accepted previous trades
@@ -662,33 +663,39 @@ class WorldScreen(
     private fun getNextTurnAction(): NextTurnAction {
         return when {
             isNextTurnUpdateRunning() ->
-                NextTurnAction("Working...", Color.GRAY) {}
+                NextTurnAction("Working...", Color.GRAY, "NotificationIcons/Working") {}
             !isPlayersTurn && gameInfo.gameParameters.isOnlineMultiplayer ->
-                NextTurnAction("Waiting for [${gameInfo.currentPlayerCiv}]...", Color.GRAY) {}
+                NextTurnAction("Waiting for [${gameInfo.currentPlayerCiv}]...", Color.GRAY,
+                    "NotificationIcons/Waiting") {}
             !isPlayersTurn && !gameInfo.gameParameters.isOnlineMultiplayer ->
-                NextTurnAction("Waiting for other players...",Color.GRAY) {}
+                NextTurnAction("Waiting for other players...",Color.GRAY,
+                    "NotificationIcons/Waiting") {}
 
-            viewingCiv.shouldGoToDueUnit() ->
-                NextTurnAction("Next unit", Color.LIGHT_GRAY) { switchToNextUnit() }
-
-            viewingCiv.cities.any { it.cityConstructions.currentConstructionFromQueue == "" } ->
-                NextTurnAction("Pick construction", Color.CORAL) {
+            viewingCiv.cities.any {
+                !it.isPuppet &&
+                it.cityConstructions.currentConstructionFromQueue == ""
+            } ->
+                NextTurnAction("Pick construction", Color.CORAL,
+                "NotificationIcons/PickConstruction") {
                     val cityWithNoProductionSet = viewingCiv.cities
-                        .firstOrNull { it.cityConstructions.currentConstructionFromQueue == "" }
+                        .firstOrNull {
+                            !it.isPuppet &&
+                            it.cityConstructions.currentConstructionFromQueue == ""
+                        }
                     if (cityWithNoProductionSet != null) game.pushScreen(
                         CityScreen(cityWithNoProductionSet)
                     )
                 }
 
             viewingCiv.shouldOpenTechPicker() ->
-                NextTurnAction("Pick a tech", Color.SKY) {
+                NextTurnAction("Pick a tech", Color.SKY, "NotificationIcons/PickTech") {
                     game.pushScreen(
                         TechPickerScreen(viewingCiv, null, viewingCiv.tech.freeTechs != 0)
                     )
                 }
 
             viewingCiv.policies.shouldOpenPolicyPicker || (viewingCiv.policies.freePolicies > 0 && viewingCiv.policies.canAdoptPolicy()) ->
-                NextTurnAction("Pick a policy", Color.VIOLET) {
+                NextTurnAction("Pick a policy", Color.VIOLET, "NotificationIcons/PickPolicy") {
                     game.pushScreen(PolicyPickerScreen(this))
                     viewingCiv.policies.shouldOpenPolicyPicker = false
                 }
@@ -697,13 +704,15 @@ class WorldScreen(
                 val displayString = if (viewingCiv.religionManager.religionState == ReligionState.Pantheon)
                     "Expand Pantheon"
                 else "Found Pantheon"
-                NextTurnAction(displayString, Color.valueOf(BeliefType.Pantheon.color)) {
+                NextTurnAction(displayString, Color.valueOf(BeliefType.Pantheon.color),
+                    "NotificationIcons/FoundPantheon") {
                     game.pushScreen(PantheonPickerScreen(viewingCiv))
                 }
             }
 
             viewingCiv.religionManager.religionState == ReligionState.FoundingReligion ->
-                NextTurnAction("Found Religion", Color.valueOf(BeliefType.Founder.color)) {
+                NextTurnAction("Found Religion", Color.valueOf(BeliefType.Founder.color),
+                    "NotificationIcons/FoundReligion") {
                     game.pushScreen(
                         ReligiousBeliefsPickerScreen(
                             viewingCiv,
@@ -714,7 +723,8 @@ class WorldScreen(
                 }
 
             viewingCiv.religionManager.religionState == ReligionState.EnhancingReligion ->
-                NextTurnAction("Enhance a Religion", Color.valueOf(BeliefType.Enhancer.color)) {
+                NextTurnAction("Enhance a Religion", Color.valueOf(BeliefType.Enhancer.color),
+                    "NotificationIcons/EnhanceReligion") {
                     game.pushScreen(
                         ReligiousBeliefsPickerScreen(
                             viewingCiv,
@@ -725,7 +735,8 @@ class WorldScreen(
                 }
 
             viewingCiv.religionManager.hasFreeBeliefs() ->
-                NextTurnAction("Reform Religion", Color.valueOf(BeliefType.Enhancer.color)) {
+                NextTurnAction("Reform Religion", Color.valueOf(BeliefType.Enhancer.color),
+                    "NotificationIcons/ReformReligion") {
                     game.pushScreen(
                         ReligiousBeliefsPickerScreen(
                             viewingCiv,
@@ -736,13 +747,19 @@ class WorldScreen(
                 }
 
             viewingCiv.mayVoteForDiplomaticVictory() ->
-                NextTurnAction("Vote for World Leader", Color.MAROON) {
+                NextTurnAction("Vote for World Leader", Color.MAROON,
+                    "NotificationIcons/WorldCongressVote") {
                     game.pushScreen(DiplomaticVotePickerScreen(viewingCiv))
                 }
 
-            !viewingCiv.hasMovedAutomatedUnits && viewingCiv.getCivUnits()
+            viewingCiv.shouldGoToDueUnit() ->
+                NextTurnAction("Next unit", Color.LIGHT_GRAY,
+                    "NotificationIcons/NextUnit") { switchToNextUnit() }
+
+            !game.settings.automatedUnitsMoveOnTurnStart && !viewingCiv.hasMovedAutomatedUnits && viewingCiv.getCivUnits()
                 .any { it.currentMovement > Constants.minimumMovementEpsilon && (it.isMoving() || it.isAutomated() || it.isExploring()) } ->
-                NextTurnAction("Move automated units", Color.LIGHT_GRAY) {
+                NextTurnAction("Move automated units", Color.LIGHT_GRAY,
+                    "NotificationIcons/MoveAutomatedUnits") {
                     viewingCiv.hasMovedAutomatedUnits = true
                     isPlayersTurn = false // Disable state changes
                     nextTurnButton.disable()
@@ -758,7 +775,8 @@ class WorldScreen(
                 }
 
             else ->
-                NextTurnAction("${Fonts.turn}{Next turn}", Color.WHITE) {
+                NextTurnAction("Next turn", Color.WHITE,
+                    "NotificationIcons/NextTurn") {
                     val action = {
                         game.settings.addCompletedTutorialTask("Pass a turn")
                         nextTurn()
@@ -789,7 +807,8 @@ class WorldScreen(
             Gdx.input.inputProcessor = null
             update()
             showTutorialsOnNextTurn()
-            Gdx.input.inputProcessor = stage
+            if (Gdx.input.inputProcessor == null) // Update may have replaced the worldscreen with a GreatPersonPickerScreen etc, so the input would already be set
+                Gdx.input.inputProcessor = stage
         }
 //        topBar.selectedCivLabel.setText(Gdx.graphics.framesPerSecond) // for framerate testing
 
@@ -813,7 +832,7 @@ class WorldScreen(
         displayTutorial(TutorialTrigger.StrategicResource) { resources.any { it.resource.resourceType == ResourceType.Strategic } }
         displayTutorial(TutorialTrigger.EnemyCity) {
             viewingCiv.getKnownCivs().asSequence().filter { viewingCiv.isAtWarWith(it) }
-                    .flatMap { it.cities.asSequence() }.any { viewingCiv.exploredTiles.contains(it.location) }
+                    .flatMap { it.cities.asSequence() }.any { viewingCiv.hasExplored(it.location) }
         }
         displayTutorial(TutorialTrigger.ApolloProgram) { viewingCiv.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts) }
         displayTutorial(TutorialTrigger.SiegeUnits) { viewingCiv.getCivUnits().any { it.baseUnit.isProbablySiegeUnit() } }

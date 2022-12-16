@@ -225,7 +225,8 @@ enum class UniqueParameterType(
         ): UniqueType.UniqueComplianceErrorSeverity? {
             if (parameterText in knownValues) return null
             if (BuildingName.getErrorSeverity(parameterText, ruleset) == null) return null
-            return UniqueType.UniqueComplianceErrorSeverity.WarningOnly
+            if (ruleset.buildings.values.any { it.hasUnique(parameterText) }) return null
+            return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
         }
 
         override fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset) =
@@ -285,7 +286,7 @@ enum class UniqueParameterType(
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
             if (parameterText in knownValues) return null
-            if (ruleset.tileImprovements.containsKey(parameterText)) return null
+            if (ImprovementFilter.getErrorSeverity(parameterText, ruleset) == null) return null
             return TerrainFilter.getErrorSeverity(parameterText, ruleset)
         }
         override fun getTranslationWriterStringsForOutput() = knownValues

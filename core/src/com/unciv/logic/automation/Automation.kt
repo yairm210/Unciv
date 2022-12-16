@@ -352,10 +352,12 @@ object Automation {
         val stats = tile.getTileStats(null, civInfo)
         var rank = rankStatsValue(stats, civInfo)
         if (tile.improvement == null) rank += 0.5f // improvement potential!
+        if (tile.isPillaged()) rank += 0.6f
         if (tile.hasViewableResource(civInfo)) {
             val resource = tile.tileResource
             if (resource.resourceType != ResourceType.Bonus) rank += 1f // for usage
             if (tile.improvement == null) rank += 1f // improvement potential - resources give lots when improved!
+            if (tile.isPillaged()) rank += 1.1f // even better, repair is faster
         }
         return rank
     }

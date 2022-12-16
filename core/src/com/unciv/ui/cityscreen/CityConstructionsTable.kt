@@ -91,7 +91,10 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         constructionsQueueScrollPane = ScrollPane(constructionsQueueTable.addBorder(2f, Color.WHITE))
         constructionsQueueScrollPane.setOverscroll(false, false)
-        constructionsQueueTable.background = ImageGetter.getBackground(Color.BLACK)
+        constructionsQueueTable.background = BaseScreen.skinStrings.getUiBackground(
+            "CityScreen/CityConstructionTable/ConstructionsQueueTable",
+            tintColor = Color.BLACK
+        )
 
         upperTable.defaults().left().top()
         upperTable.add(showCityInfoTableButton).padLeft(pad).padBottom(pad).row()
@@ -102,7 +105,10 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         availableConstructionsScrollPane = ScrollPane(availableConstructionsTable.addBorder(2f, Color.WHITE))
         availableConstructionsScrollPane.setOverscroll(false, false)
-        availableConstructionsTable.background = ImageGetter.getBackground(Color.BLACK)
+        availableConstructionsTable.background = BaseScreen.skinStrings.getUiBackground(
+            "CityScreen/CityConstructionTable/AvailableConstructionsTable",
+            tintColor = Color.BLACK
+        )
         lowerTableScrollCell = lowerTable.add(availableConstructionsScrollPane).bottom()
         lowerTable.row()
     }
@@ -282,10 +288,13 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         val table = Table()
         table.align(Align.left).pad(5f)
-        table.background = ImageGetter.getBackground(Color.BLACK)
+        table.background = BaseScreen.skinStrings.getUiBackground("CityScreen/CityConstructionTable/QueueEntry", tintColor = Color.BLACK)
 
         if (constructionQueueIndex == selectedQueueEntry)
-            table.background = ImageGetter.getBackground(Color.GREEN.darken(0.5f))
+            table.background = BaseScreen.skinStrings.getUiBackground(
+                "CityScreen/CityConstructionTable/QueueEntrySelected",
+                tintColor = Color.GREEN.darken(0.5f)
+            )
 
         val isFirstConstructionOfItsKind = cityConstructions.isFirstConstructionOfItsKind(constructionQueueIndex, constructionName)
 
@@ -300,7 +309,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         table.defaults().pad(2f).minWidth(40f)
         if (isFirstConstructionOfItsKind) table.add(getProgressBar(constructionName)).minWidth(5f)
         else table.add().minWidth(5f)
-        table.add(ImageGetter.getConstructionImage(constructionName).surroundWithCircle(40f)).padRight(10f)
+        table.add(ImageGetter.getPortraitImage(constructionName, 40f)).padRight(10f)
         table.add(text.toLabel()).expandX().fillX().left()
 
         if (constructionQueueIndex > 0) table.add(getRaisePriorityButton(constructionQueueIndex, constructionName, city)).right()
@@ -339,15 +348,21 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         val pickConstructionButton = Table()
 
         pickConstructionButton.align(Align.left).pad(5f)
-        pickConstructionButton.background = ImageGetter.getBackground(Color.BLACK)
+        pickConstructionButton.background = BaseScreen.skinStrings.getUiBackground(
+            "CityScreen/CityConstructionTable/PickConstructionButton",
+            tintColor = Color.BLACK
+        )
         pickConstructionButton.touchable = Touchable.enabled
 
         if (!isSelectedQueueEntry() && cityScreen.selectedConstruction == construction) {
-            pickConstructionButton.background = ImageGetter.getBackground(Color.GREEN.darken(0.5f))
+            pickConstructionButton.background = BaseScreen.skinStrings.getUiBackground(
+                "CityScreen/CityConstructionTable/PickConstructionButtonSelected",
+                tintColor = Color.GREEN.darken(0.5f)
+            )
         }
 
         pickConstructionButton.add(getProgressBar(construction.name)).padRight(5f)
-        pickConstructionButton.add(ImageGetter.getConstructionImage(construction.name).surroundWithCircle(40f)).padRight(10f)
+        pickConstructionButton.add(ImageGetter.getPortraitImage(construction.name, 40f)).padRight(10f)
         pickConstructionButton.add(constructionButtonDTO.buttonText.toLabel()).expandX().fillX()
 
         if (!cannotAddConstructionToQueue(construction, cityScreen.city, cityScreen.city.cityConstructions)) {
@@ -631,7 +646,12 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
     private fun getHeader(title: String): Table {
         return Table()
-                .background(ImageGetter.getBackground(ImageGetter.getBlue()))
+                .background(
+                    BaseScreen.skinStrings.getUiBackground(
+                        "CityScreen/CityConstructionTable/Header",
+                        tintColor = BaseScreen.skinStrings.skinConfig.baseColor
+                    )
+                )
                 .addCell(title.toLabel(fontSize = Constants.headingFontSize))
                 .pad(4f)
     }

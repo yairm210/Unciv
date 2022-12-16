@@ -241,7 +241,7 @@ object SpecificUnitAutomation {
     }
 
     fun automateImprovementPlacer(unit: MapUnit) {
-        var improvementBuildingUniques = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
+        val improvementBuildingUniques = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
 
         val improvementName = improvementBuildingUniques.first().params[0]
         val improvement = unit.civInfo.gameInfo.ruleSet.tileImprovements[improvementName]
@@ -282,7 +282,10 @@ object SpecificUnitAutomation {
 
             unit.movement.headTowards(chosenTile)
             if (unit.currentTile == chosenTile)
-                UnitActions.getImprovementConstructionActions(unit, unit.currentTile).firstOrNull()?.action?.invoke()
+                if (unit.currentTile.isPillaged())
+                    UnitActions.getRepairAction(unit).invoke()
+                else
+                    UnitActions.getImprovementConstructionActions(unit, unit.currentTile).firstOrNull()?.action?.invoke()
             return
         }
     }
@@ -412,6 +415,7 @@ object SpecificUnitAutomation {
                 .flatMap { it.airUnits.asSequence() }.filter { it.civInfo.isAtWarWith(unit.civInfo) }
 
         if (enemyAirUnitsInRange.any()) return // we need to be on standby in case they attack
+
         if (BattleHelper.tryAttackNearbyEnemy(unit)) return
 
         if (tryRelocateToCitiesWithEnemyNearBy(unit)) return
@@ -474,8 +478,16 @@ object SpecificUnitAutomation {
         for (tile in tilesInRange) {
             // For now AI will only use nukes against cities because in all honesty that's the best use for them.
             if (tile.isCityCenter() && tile.getOwner()!!.isAtWarWith(unit.civInfo) && Battle.mayUseNuke(MapUnitCombatant(unit), tile)) {
-                Battle.NUKE(MapUnitCombatant(unit), tile)
-                return
+                val blastRadius = unit.getMatchingUniques(UniqueType.BlastRadius)
+                    .firstOrNull()?.params?.get(0)?.toInt() ?: 2
+                val tilesInBlastRadius = tile.getTilesInDistance(blastRadius)
+                val civsInBlastRadius = tilesInBlastRadius.mapNotNull { it.getOwner() } +
+                        tilesInBlastRadius.mapNotNull { it.getFirstUnit()?.civInfo }
+                // Don't nuke if it means we will be declaring war on someone!
+                if (civsInBlastRadius.none { it != unit.civInfo && !it.isAtWarWith(unit.civInfo) }) {
+                    Battle.NUKE(MapUnitCombatant(unit), tile)
+                    return
+                }
             }
         }
         tryRelocateToNearbyAttackableCities(unit)

@@ -75,7 +75,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         }
 
     /** A [Set] of all [PolicyBranch]es. */
-    private val branches: Set<PolicyBranch>
+    val branches: Set<PolicyBranch>
         get() = civInfo.gameInfo.ruleSet.policyBranches.values.toSet()
 
     fun clone(): PolicyManager {

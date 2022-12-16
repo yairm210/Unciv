@@ -199,8 +199,8 @@ class MapEditorEditImprovementsTab(
         val eraser = FormattedLine("Remove improvement", icon = eraserIcon, size = 32, iconCrossed = true)
         add(eraser.render(0f).apply { onClick {
             editTab.setBrush("Remove improvement", eraserIcon, true) { tile ->
-                tile.improvement = null
-                tile.roadStatus = RoadStatus.None
+                tile.changeImprovement(null)
+                tile.removeRoad()
             }
         } }).padBottom(0f).row()
         add(MarkupRenderer.render(
@@ -214,7 +214,7 @@ class MapEditorEditImprovementsTab(
                 }
             else
                 editTab.setBrush(it, "Improvement/$it") { tile ->
-                    tile.improvement = it
+                    tile.changeImprovement(it)
                 }
         }).padTop(0f).row()
     }

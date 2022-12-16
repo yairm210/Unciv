@@ -219,8 +219,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     internal fun getBuiltBuildings(): Sequence<Building> = builtBuildingObjects.asSequence()
 
-    fun containsBuildingOrEquivalent(building: String): Boolean =
-            isBuilt(building) || getBuiltBuildings().any { it.replaces == building }
+    fun containsBuildingOrEquivalent(buildingNameOrUnique: String): Boolean =
+            isBuilt(buildingNameOrUnique) || getBuiltBuildings().any { it.replaces == buildingNameOrUnique || it.hasUnique(buildingNameOrUnique) }
 
     fun getWorkDone(constructionName: String): Int {
         return if (inProgressConstructions.containsKey(constructionName)) inProgressConstructions[constructionName]!!
@@ -389,10 +389,10 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         for (otherCiv in cityInfo.civInfo.gameInfo.civilizations) {
             if (otherCiv == cityInfo.civInfo) continue
             when {
-                (otherCiv.exploredTiles.contains(cityInfo.location) && otherCiv != cityInfo.civInfo) ->
+                otherCiv.hasExplored(cityInfo.location) ->
                     otherCiv.addNotification("The city of [${cityInfo.name}] has started constructing [${construction.name}]!",
                         cityInfo.location, NotificationIcon.Construction, buildingIcon)
-                (otherCiv.knows(cityInfo.civInfo)) ->
+                otherCiv.knows(cityInfo.civInfo) ->
                     otherCiv.addNotification("[${cityInfo.civInfo.civName}] has started constructing [${construction.name}]!",
                         NotificationIcon.Construction, buildingIcon)
                 else -> otherCiv.addNotification("An unknown civilization has started constructing [${construction.name}]!",
@@ -414,7 +414,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         if (construction is Building && construction.isWonder) {
             cityInfo.civInfo.popupAlerts.add(PopupAlert(AlertType.WonderBuilt, construction.name))
             for (civ in cityInfo.civInfo.gameInfo.civilizations) {
-                if (civ.exploredTiles.contains(cityInfo.location))
+                if (civ.hasExplored(cityInfo.location))
                     civ.addNotification("[${construction.name}] has been built in [${cityInfo.name}]",
                             cityInfo.location, NotificationIcon.Construction, buildingIcon)
                 else
@@ -665,7 +665,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         tileForImprovement.stopWorkingOnImprovement()  // clears mark
         if (removeOnly) return
         /**todo unify with [UnitActions.getImprovementConstructionActions] and [MapUnit.workOnImprovement] - this won't allow e.g. a building to place a road */
-        tileForImprovement.improvement = improvement.name
+        tileForImprovement.changeImprovement(improvement.name)
         cityInfo.civInfo.lastSeenImprovement[tileForImprovement.position] = improvement.name
         cityInfo.cityStats.update()
         cityInfo.civInfo.updateDetailedCivResources()

@@ -3,10 +3,10 @@ package com.unciv.logic.civilization
 import com.unciv.Constants
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.RoadStatus
-import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
@@ -86,10 +86,10 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         for (city in civInfo.cities) {
             for (tile in city.getTiles()) {
                 if (tile.isCityCenter()) continue
-                if (tile.roadStatus == RoadStatus.None) continue // Cheap checks before pricey checks
+                if (tile.getUnpillagedRoad() == RoadStatus.None) continue // Cheap checks before pricey checks
                 if (ignoredTileTypes.any { tile.matchesFilter(it, civInfo) }) continue
 
-                transportationUpkeep += tile.roadStatus.upkeep
+                transportationUpkeep += tile.getUnpillagedRoad().upkeep
             }
         }
         for (unique in civInfo.getMatchingUniques(UniqueType.RoadMaintenance))
@@ -141,70 +141,24 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
         //City-States bonuses
         for (otherCiv in civInfo.getKnownCivs()) {
-            val relationshipLevel = otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel()
-            if (otherCiv.isCityState() && relationshipLevel >= RelationshipLevel.Friend) {
-                val cityStateBonus = Stats()
-                val eraInfo = civInfo.getEra()
-
-                if (!eraInfo.undefinedCityStateBonuses()) {
-                    for (bonus in eraInfo.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel)) {
-                        if (bonus.isOfType(UniqueType.CityStateStatsPerTurn) && bonus.conditionalsApply(otherCiv))
-                            cityStateBonus.add(bonus.stats)
-                    }
-                } else {
-                    // Deprecated, assume Civ V values for compatibility
-                    if (otherCiv.cityStateType == CityStateType.Cultured) {
-                        cityStateBonus.culture =
-                            when {
-                                civInfo.getEraNumber() in 0..1 -> 3f
-                                civInfo.getEraNumber() in 2..3 -> 6f
-                                else -> 13f
-                            }
-                        if (relationshipLevel == RelationshipLevel.Ally)
-                            cityStateBonus.culture *= 2f
-                    }
-                }
-
-                for (unique in civInfo.getMatchingUniques(UniqueType.StatBonusPercentFromCityStates)) {
-                    cityStateBonus[Stat.valueOf(unique.params[1])] *= unique.params[0].toPercent()
-                }
-
-                statMap.add(Constants.cityStates, cityStateBonus)
-            }
-
-            if (otherCiv.isCityState())
-                for (unique in civInfo.getMatchingUniques(UniqueType.CityStateStatPercent)) {
-                    if (otherCiv.getDiplomacyManager(civInfo.civName)
-                            .relationshipLevel() != RelationshipLevel.Ally
-                    ) continue
-                    statMap.add(
-                        Constants.cityStates,
-                        Stats().add(
-                            Stat.valueOf(unique.params[0]),
-                            otherCiv.statsForNextTurn[Stat.valueOf(unique.params[0])] * unique.params[1].toFloat() / 100f
-                        )
+            if (!otherCiv.isCityState()) continue
+            if (otherCiv.getDiplomacyManager(civInfo.civName)
+                        .relationshipLevel() != RelationshipLevel.Ally
+            ) continue
+            for (unique in civInfo.getMatchingUniques(UniqueType.CityStateStatPercent)) {
+                statMap.add(
+                    Constants.cityStates,
+                    Stats().add(
+                        Stat.valueOf(unique.params[0]),
+                        otherCiv.statsForNextTurn[Stat.valueOf(unique.params[0])] * unique.params[1].toFloat() / 100f
                     )
-                }
+                )
+            }
         }
 
         statMap["Transportation upkeep"] = Stats(gold = -getTransportationUpkeep().toFloat())
         statMap["Unit upkeep"] = Stats(gold = -getUnitMaintenance().toFloat())
 
-        if (civInfo.religionManager.religion != null) {
-            for (unique in civInfo.religionManager.religion!!.getFounderUniques()) {
-                if (unique.isOfType(UniqueType.StatsFromGlobalCitiesFollowingReligion)) {
-                    statMap.add(
-                        "Religion",
-                        unique.stats * civInfo.religionManager.numberOfCitiesFollowingThisReligion()
-                    )
-                }
-                if (unique.isOfType(UniqueType.StatsFromGlobalFollowers))
-                    statMap.add(
-                        "Religion",
-                        unique.stats * civInfo.religionManager.numberOfFollowersFollowingThisReligion(unique.params[2]).toFloat() / unique.params[1].toFloat()
-                    )
-            }
-        }
 
         if (civInfo.getHappiness() > 0) {
             val excessHappinessConversion = Stats()
@@ -227,12 +181,22 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         if (goldDifferenceFromTrade != 0)
             statMap["Trade"] = Stats(gold = goldDifferenceFromTrade.toFloat())
 
+        for ((key, value) in getGlobalStatsFromUniques())
+            statMap.add(key,value)
+
         return statMap
     }
 
 
     fun getHappinessBreakdown(): HashMap<String, Float> {
         val statMap = HashMap<String, Float>()
+
+        fun HashMap<String, Float>.add(key:String, value: Float){
+            if (!containsKey(key)) put(key, value)
+            else put(key, value+get(key)!!)
+        }
+        fun HashMap<String, Float>.add(key:String, value: Int) = add(key, value.toFloat())
+
         statMap["Base happiness"] = civInfo.getDifficulty().baseHappiness.toFloat()
 
         var happinessPerUniqueLuxury = 4f + civInfo.getDifficulty().extraHappinessPerLuxury
@@ -278,75 +242,55 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             // There appears to be a concurrency problem? In concurrent thread in ConstructionsTable.getConstructionButtonDTOs
             // Literally no idea how, since happinessList is ONLY replaced, NEVER altered.
             // Oh well, toList() should solve the problem, wherever it may come from.
-            for ((key, value) in city.cityStats.happinessList.toList()) {
-                if (statMap.containsKey(key))
-                    statMap[key] = statMap[key]!! + value
-                else statMap[key] = value
-            }
+            for ((key, value) in city.cityStats.happinessList.toList())
+                statMap.add(key, value)
         }
 
         if (civInfo.hasUnique(UniqueType.HappinessPer2Policies)) {
-            if (!statMap.containsKey("Policies")) statMap["Policies"] = 0f
-            statMap["Policies"] = statMap["Policies"]!! +
-                    civInfo.policies.getAdoptedPolicies()
-                        .count { !Policy.isBranchCompleteByName(it) } / 2
+            statMap.add("Policies", civInfo.policies.getAdoptedPolicies().count { !Policy.isBranchCompleteByName(it) } / 2)
         }
 
-        var happinessPerNaturalWonder = 1f
-        if (civInfo.hasUnique(UniqueType.DoubleHappinessFromNaturalWonders))
-            happinessPerNaturalWonder *= 2
+        for ((key, value) in getGlobalStatsFromUniques())
+            statMap.add(key,value.happiness)
 
-        statMap["Natural Wonders"] = happinessPerNaturalWonder * civInfo.naturalWonders.size
+        return statMap
+    }
 
+    fun getGlobalStatsFromUniques():StatMap{
+        val statMap = StatMap()
         if (civInfo.religionManager.religion != null) {
-            var religionHappiness = 0f
-            for (unique in civInfo.religionManager.religion!!.getBeliefs(BeliefType.Founder)
-                .flatMap { it.uniqueObjects }
-            ) {
-                if (unique.type == UniqueType.StatsFromGlobalCitiesFollowingReligion) {
-                    val followingCities =
-                        civInfo.religionManager.numberOfCitiesFollowingThisReligion()
-                    religionHappiness += unique.stats.happiness * followingCities
+            for (unique in civInfo.religionManager.religion!!.getFounderUniques()) {
+                if (unique.isOfType(UniqueType.StatsFromGlobalCitiesFollowingReligion)) {
+                    statMap.add(
+                        "Religion",
+                        unique.stats * civInfo.religionManager.numberOfCitiesFollowingThisReligion()
+                    )
                 }
-                if (unique.type == UniqueType.StatsFromGlobalFollowers) {
-                    val followers =
-                        civInfo.religionManager.numberOfFollowersFollowingThisReligion(unique.params[2])
-                    religionHappiness +=
-                        unique.stats.happiness * (followers / unique.params[1].toInt())
-                }
-            }
-            if (religionHappiness > 0) statMap["Religion"] = religionHappiness
-        }
-
-        //From city-states
-        var cityStatesHappiness = 0f
-        for (otherCiv in civInfo.getKnownCivs()) {
-            val relationshipLevel = otherCiv.getDiplomacyManager(civInfo).relationshipLevel()
-            if (!otherCiv.isCityState() || relationshipLevel < RelationshipLevel.Friend) continue
-
-            val eraInfo = civInfo.getEra()
-            // Deprecated, assume Civ V values for compatibility
-            if (!eraInfo.undefinedCityStateBonuses()) {
-                for (bonus in eraInfo.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel)) {
-                    if (!bonus.conditionalsApply(otherCiv)) continue
-                    if (bonus.isOfType(UniqueType.CityStateHappiness))
-                        cityStatesHappiness += bonus.params[0].toFloat()
-                }
-            } else if (otherCiv.cityStateType == CityStateType.Mercantile) {
-                // compatibility mode for
-                cityStatesHappiness += if (civInfo.getEraNumber() in 0..1) 2f else 3f
+                if (unique.isOfType(UniqueType.StatsFromGlobalFollowers))
+                    statMap.add(
+                        "Religion",
+                        unique.stats * civInfo.religionManager.numberOfFollowersFollowingThisReligion(unique.params[2]).toFloat() / unique.params[1].toFloat()
+                    )
             }
         }
 
-        // Just in case
-        if (cityStatesHappiness > 0) {
-            for (unique in civInfo.getMatchingUniques(UniqueType.StatBonusPercentFromCityStates)) {
-                if (unique.params[1] == Stat.Happiness.name)
-                    cityStatesHappiness *= unique.params[0].toPercent()
-            }
+        for (unique in civInfo.getMatchingUniques(UniqueType.StatsPerPolicies)) {
+            val amount = civInfo.policies.getAdoptedPolicies().count { !Policy.isBranchCompleteByName(it) } / unique.params[1].toInt()
+            statMap.add("Policies", unique.stats.times(amount))
         }
 
-        if (cityStatesHappiness > 0) statMap[Constants.cityStates] = cityStatesHappiness
+        for (unique in civInfo.getMatchingUniques(UniqueType.Stats))
+            if (unique.sourceObjectType != UniqueTarget.Building && unique.sourceObjectType != UniqueTarget.Wonder)
+                statMap.add(unique.sourceObjectType!!.name, unique.stats)
+
+        val statsPerNaturalWonder = Stats(happiness = 1f)
+
+        if (civInfo.hasUnique(UniqueType.DoubleHappinessFromNaturalWonders))
+            statsPerNaturalWonder.happiness *= 2
+        for (unique in civInfo.getMatchingUniques(UniqueType.StatsFromNaturalWonders))
+            statsPerNaturalWonder.add(unique.stats)
+
+        statMap.add("Natural Wonders", statsPerNaturalWonder.times(civInfo.naturalWonders.size))
 
         return statMap
     }

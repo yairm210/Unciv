@@ -34,8 +34,10 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-          cache: 'gradle'
 
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2.3.3
+        
       - name: Compile kotlin and build classes
         run: ./gradlew classes
 
@@ -213,14 +215,14 @@ jobs:
 
 
       - name: Get AUR PKGBUILD
-        if: github.event_name == 'push' && contains(github.ref, 'ref/tags/')
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         continue-on-error: true
         run: |
           curl --silent --output PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=unciv-bin'
           sed -E -e "s#(_pkgver=).*#\1${{steps.tag.outputs.tag}}#" -e "s#(pkgrel=).*#\10#" -i PKGBUILD
 
       - name: Publish AUR package
-        if: github.event_name == 'push' && contains(github.ref, 'ref/tags/')
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         continue-on-error: true
         uses: Thyrum/github-actions-deploy-aur@master
         with:

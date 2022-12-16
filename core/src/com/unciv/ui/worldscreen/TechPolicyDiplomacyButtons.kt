@@ -44,7 +44,7 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
         add(espionageButtonHolder).padTop(10f)
         add().growX()  // Allows Policy and Diplo buttons to keep to the left
 
-        pickTechButton.background = ImageGetter.getRoundedEdgeRectangle(colorFromRGB(7, 46, 43))
+        pickTechButton.background = BaseScreen.skinStrings.getUiBackground("WorldScreen/PickTechButton", BaseScreen.skinStrings.roundedEdgeRectangleShape, colorFromRGB(7, 46, 43))
         pickTechButton.defaults().pad(20f)
         pickTechButton.add(pickTechLabel)
         techButtonHolder.onClick(UncivSound.Paper) {

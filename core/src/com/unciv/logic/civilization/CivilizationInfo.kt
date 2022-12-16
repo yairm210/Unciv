@@ -14,7 +14,6 @@ import com.unciv.logic.civilization.RuinsManager.RuinsManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.UnitMovementAlgorithms
@@ -22,6 +21,7 @@ import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeRequest
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.CityStateType
 import com.unciv.models.ruleset.Difficulty
 import com.unciv.models.ruleset.Era
 import com.unciv.models.ruleset.ModOptionsConstants
@@ -32,7 +32,7 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.StateForConditionals
-import com.unciv.models.ruleset.unique.TemporaryUnique
+import com.unciv.models.ruleset.unique.TemporaryUniques
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -43,8 +43,8 @@ import com.unciv.ui.utils.MayaCalendar
 import com.unciv.ui.utils.extensions.toPercent
 import com.unciv.ui.utils.extensions.withItem
 import com.unciv.ui.victoryscreen.RankingType
+import com.unciv.utils.concurrency.Concurrency
 import java.util.*
-import kotlin.collections.HashMap
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -67,9 +67,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     fun getWorkerAutomation(): WorkerAutomation {
         val currentTurn = if (UncivGame.Current.isInitialized && UncivGame.Current.gameInfo != null) {
             UncivGame.Current.gameInfo!!.turns
-        } else {
-            0
-        }
+        } else 0
         if (workerAutomationCache == null || workerAutomationCache!!.cachedForTurn != currentTurn)
             workerAutomationCache = WorkerAutomation(this, currentTurn)
         return workerAutomationCache!!
@@ -187,7 +185,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
      * We don't use pairs, as these cannot be serialized due to having no no-arg constructor
      * This can also contain NON-temporary uniques but I can't be bothered to do the deprecation dance with this one
      */
-    val temporaryUniques = ArrayList<TemporaryUnique>()
+    val temporaryUniques = TemporaryUniques()
 
     // if we only use lists, and change the list each time the cities are changed,
     // we won't get concurrent modification exceptions.
@@ -196,9 +194,12 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     var citiesCreated = 0
     var exploredTiles = HashSet<Vector2>()
 
-    @Deprecated("Only for backward compatibility, will have no values after GameInfo.setTransients",
-        ReplaceWith("lastSeenImprovement"))
-    var lastSeenImprovementSaved = HashMap<String, String>()
+    fun hasExplored(position: Vector2) = exploredTiles.contains(position)
+    fun hasExplored(tileInfo: TileInfo) = hasExplored(tileInfo.position)
+
+    fun addExploredTiles(tiles:Sequence<Vector2>){
+        exploredTiles.addAll(tiles)
+    }
 
     var lastSeenImprovement = HashMapVector2<String>()
 
@@ -347,18 +348,15 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     fun isBarbarian() = nation.isBarbarian()
     fun isSpectator() = nation.isSpectator()
     fun isCityState(): Boolean = nation.isCityState()
-    val cityStateType: CityStateType get() = nation.cityStateType!!
+    @delegate:Transient
+    val cityStateType: CityStateType by lazy { gameInfo.ruleSet.cityStateTypes[nation.cityStateType!!]!! }
     var cityStatePersonality: CityStatePersonality = CityStatePersonality.Neutral
     var cityStateResource: String? = null
     var cityStateUniqueUnit: String? = null // Unique unit for militaristic city state. Might still be null if there are no appropriate units
     fun isMajorCiv() = nation.isMajorCiv()
     fun isAlive(): Boolean = !isDefeated()
 
-    @Suppress("unused")  //TODO remove if future use unlikely, including DiplomacyFlags.EverBeenFriends and 2 DiplomacyManager methods - see #3183
-    // I'm willing to call this deprecated after so long
-    fun hasEverBeenFriendWith(otherCiv: CivilizationInfo): Boolean = getDiplomacyManager(otherCiv).everBeenFriends()
-
-    fun hasMetCivTerritory(otherCiv: CivilizationInfo): Boolean = otherCiv.getCivTerritory().any { it in exploredTiles }
+    fun hasMetCivTerritory(otherCiv: CivilizationInfo): Boolean = otherCiv.getCivTerritory().any { hasExplored(it) }
     fun getCompletedPolicyBranchesCount(): Int = policies.adoptedPolicies.count { Policy.isBranchCompleteByName(it) }
     fun originalMajorCapitalsOwned(): Int = cities.count { it.isOriginalCapital && it.foundingCiv != "" && gameInfo.getCivilization(it.foundingCiv).isMajorCiv() }
     private fun getCivTerritory() = cities.asSequence().flatMap { it.tiles.asSequence() }
@@ -458,12 +456,9 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         )
         yieldAll(policies.policyUniques.getMatchingUniques(uniqueType, stateForConditionals))
         yieldAll(tech.techUniques.getMatchingUniques(uniqueType, stateForConditionals))
-        if (temporaryUniques.isNotEmpty())
-            yieldAll(temporaryUniques.asSequence()
-                .map { it.uniqueObject }
-                .filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) }
-            )
+        yieldAll(temporaryUniques.getMatchingUniques(uniqueType, stateForConditionals))
         yieldAll(getEra().getMatchingUniques(uniqueType, stateForConditionals))
+        yieldAll(cityStateFunctions.getUniquesProvidedByCityStates(uniqueType, stateForConditionals))
         if (religionManager.religion != null)
             yieldAll(religionManager.religion!!.getFounderUniques()
                 .filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) })
@@ -679,22 +674,13 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         return diplomacyManager.hasOpenBorders
     }
 
-    fun getEnemyMovementPenalty(enemyUnit: MapUnit, toMoveTo: TileInfo): Float {
+    fun getEnemyMovementPenalty(enemyUnit: MapUnit): Float {
         if (enemyMovementPenaltyUniques != null && enemyMovementPenaltyUniques!!.any()) {
             return enemyMovementPenaltyUniques!!.sumOf {
-                when (it.type!!) {
-                    UniqueType.EnemyLandUnitsSpendExtraMovement -> {
-                        if (enemyUnit.matchesFilter(it.params[0]))
-                            it.params[1].toInt()
-                        else 0 // doesn't match
-                    }
-                    UniqueType.EnemyLandUnitsSpendExtraMovementDepreciated -> {
-                        if (toMoveTo.isLand) {
-                            1 // depreciated unique only works on land tiles
-                        } else 0
-                    }
-                    else -> 0
-                }
+                if (it.type!! == UniqueType.EnemyLandUnitsSpendExtraMovement
+                        && enemyUnit.matchesFilter(it.params[0]))
+                    it.params[1].toInt()
+                else 0
             }.toFloat()
         }
         return 0f // should not reach this point
@@ -871,6 +857,12 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
             cityInfo.setTransients()
         }
 
+        // Now that all tile transients have been updated, clean "worked" tiles that are not under the Civ's control
+        for (cityInfo in cities)
+            for (workedTile in cityInfo.workedTiles.toList())
+                if (gameInfo.tileMap[workedTile].getOwner() != this)
+                    cityInfo.workedTiles.remove(workedTile)
+
         passThroughImpassableUnlocked = passableImpassables.isNotEmpty()
         // Cache whether this civ gets nonstandard terrain damage for performance reasons.
         nonStandardTerrainDamage = getMatchingUniques(UniqueType.DamagesContainingUnits)
@@ -936,7 +928,12 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         for (city in cities) city.startTurn()  // Most expensive part of startTurn
 
         for (unit in getCivUnits()) unit.startTurn()
-        hasMovedAutomatedUnits = false
+
+        if (playerType == PlayerType.Human && UncivGame.Current.settings.automatedUnitsMoveOnTurnStart) {
+            hasMovedAutomatedUnits = true
+            for (unit in getCivUnits())
+                unit.doAction()
+        } else hasMovedAutomatedUnits = false
 
         updateDetailedCivResources() // If you offered a trade last turn, this turn it will have been accepted/declined
 
@@ -1001,12 +998,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
             city.endTurn()
         }
 
-        // Update turn counter for temporary uniques
-        for (unique in temporaryUniques) {
-            if (unique.turnsLeft >= 0)
-                unique.turnsLeft -= 1
-        }
-        temporaryUniques.removeAll { it.turnsLeft == 0 }
+        temporaryUniques.endTurn()
 
         goldenAges.endTurn(getHappiness())
         getCivUnits().forEach { it.endTurn() }  // This is the most expensive part of endTurn
@@ -1295,7 +1287,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     fun addCity(location: Vector2) {
         val newCity = CityInfo(this, location)
         newCity.cityConstructions.chooseNextConstruction()
-
     }
 
     fun destroy() {
@@ -1320,78 +1311,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         ).toInt()
     }
 
-    fun updateProximity(otherCiv: CivilizationInfo, preCalculated: Proximity? = null): Proximity {
-        if (otherCiv == this)   return Proximity.None
-        if (preCalculated != null) {
-            // We usually want to update this for a pair of civs at the same time
-            // Since this function *should* be symmetrical for both civs, we can just do it once
-            this.proximity[otherCiv.civName] = preCalculated
-            return preCalculated
-        }
-        if (cities.isEmpty() || otherCiv.cities.isEmpty()) {
-            proximity[otherCiv.civName] = Proximity.None
-            return Proximity.None
-        }
-
-        val mapParams = gameInfo.tileMap.mapParameters
-        var minDistance = 100000 // a long distance
-        var totalDistance = 0
-        var connections = 0
-
-        var proximity = Proximity.None
-
-        for (ourCity in cities) {
-            for (theirCity in otherCiv.cities) {
-                val distance = ourCity.getCenterTile().aerialDistanceTo(theirCity.getCenterTile())
-                totalDistance += distance
-                connections++
-                if (minDistance > distance) minDistance = distance
-            }
-        }
-
-        if (minDistance <= 7) {
-            proximity = Proximity.Neighbors
-        } else if (connections > 0) {
-            val averageDistance = totalDistance / connections
-            val mapFactor = if (mapParams.shape == MapShape.rectangular)
-                (mapParams.mapSize.height + mapParams.mapSize.width) / 2
-                else  (mapParams.mapSize.radius * 3) / 2 // slightly less area than equal size rect
-
-            val closeDistance = ((mapFactor * 25) / 100).coerceIn(10, 20)
-            val farDistance = ((mapFactor * 45) / 100).coerceIn(20, 50)
-
-            proximity = if (minDistance <= 11 && averageDistance <= closeDistance)
-                Proximity.Close
-            else if (averageDistance <= farDistance)
-                Proximity.Far
-            else
-                Proximity.Distant
-        }
-
-        // Check if different continents (unless already max distance, or water map)
-        if (connections > 0 && proximity != Proximity.Distant && !gameInfo.tileMap.isWaterMap()
-            && getCapital()!!.getCenterTile().getContinent() != otherCiv.getCapital()!!.getCenterTile().getContinent()
-        ) {
-            // Different continents - increase separation by one step
-            proximity = when (proximity) {
-                Proximity.Far -> Proximity.Distant
-                Proximity.Close -> Proximity.Far
-                Proximity.Neighbors -> Proximity.Close
-                else -> proximity
-            }
-        }
-
-        // If there aren't many players (left) we can't be that far
-        val numMajors = gameInfo.getAliveMajorCivs().size
-        if (numMajors <= 2 && proximity > Proximity.Close)
-            proximity = Proximity.Close
-        if (numMajors <= 4 && proximity > Proximity.Far)
-            proximity = Proximity.Far
-
-        this.proximity[otherCiv.civName] = proximity
-
-        return proximity
-    }
+    fun updateProximity(otherCiv: CivilizationInfo, preCalculated: Proximity? = null): Proximity = transients().updateProximity(otherCiv, preCalculated)
 
     /**
      * Removes current capital then moves capital to argument city if not null

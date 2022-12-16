@@ -344,14 +344,14 @@ open class TileGroup(
             || viewingCiv.isSpectator()
 
     fun isExplored(viewingCiv: CivilizationInfo) = showEntireMap
-            || viewingCiv.exploredTiles.contains(tileInfo.position)
+            || viewingCiv.hasExplored(tileInfo)
             || viewingCiv.isSpectator()
 
     open fun update(viewingCiv: CivilizationInfo? = null, showResourcesAndImprovements: Boolean = true, showTileYields: Boolean = true) {
 
         @Suppress("BooleanLiteralArgument")  // readable enough as is
         fun clearUnexploredTiles() {
-            updateTileImage(null)
+            baseLayerGroup.isVisible = false
             updateRivers(false,false, false)
 
             updatePixelMilitaryUnit(false)
@@ -365,9 +365,17 @@ open class TileGroup(
         }
 
         hideHighlight()
+
+        val allGroups = listOf(baseLayerGroup,
+            terrainFeatureLayerGroup, borderLayerGroup, miscLayerGroup,
+            pixelMilitaryUnitGroup, pixelCivilianUnitGroup, unitLayerGroup,
+            cityButtonLayerGroup, highlightFogCrosshairLayerGroup)
+        for (group in allGroups) group.isVisible = true
+
         if (viewingCiv != null && !isExplored(viewingCiv)) {
-            clearUnexploredTiles()
-            for(image in tileBaseImages) image.color = tileSetStrings.tileSetConfig.unexploredTileColor
+            if (tileInfo.neighbors.any { viewingCiv.hasExplored(it) })
+                clearUnexploredTiles()
+            else for (group in allGroups) group.isVisible = false
             return
         }
 
@@ -579,14 +587,20 @@ open class TileGroup(
 
     private fun updateTileColor(isViewable: Boolean) {
         val baseTerrainColor = when {
+            isViewable && tileInfo.isPillaged() && tileSetStrings.tileSetConfig.useColorAsBaseTerrain -> tileInfo.getBaseTerrain().getColor().lerp(Color.BROWN, 0.6f)
+            isViewable && tileInfo.isPillaged() -> Color.WHITE.cpy().lerp(Color.BROWN, 0.6f)
             tileSetStrings.tileSetConfig.useColorAsBaseTerrain && !isViewable -> tileInfo.getBaseTerrain().getColor().lerp(tileSetStrings.tileSetConfig.fogOfWarColor, 0.6f)
             tileSetStrings.tileSetConfig.useColorAsBaseTerrain -> tileInfo.getBaseTerrain().getColor()
             !isViewable -> Color.WHITE.cpy().lerp(tileSetStrings.tileSetConfig.fogOfWarColor, 0.6f)
             else -> Color.WHITE.cpy()
         }
 
-        val color = if (!isViewable) Color.WHITE.cpy().lerp(tileSetStrings.tileSetConfig.fogOfWarColor, 0.6f)
-        else Color.WHITE.cpy()
+        val color = when {
+            isViewable && tileInfo.isPillaged() -> Color.WHITE.cpy().lerp(Color.RED.cpy(),0.5f)
+            (!isViewable) -> Color.WHITE.cpy()
+                .lerp(tileSetStrings.tileSetConfig.fogOfWarColor, 0.6f)
+            else -> Color.WHITE.cpy()
+        }
 
         for((index, image) in tileBaseImages.withIndex())
             image.color = if (index == 0) baseTerrainColor else color

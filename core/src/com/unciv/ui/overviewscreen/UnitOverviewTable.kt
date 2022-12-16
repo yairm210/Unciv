@@ -14,6 +14,7 @@ import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.pickerscreens.UnitRenamePopup
+import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ExpanderTab
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.TabbedPager
@@ -110,7 +111,10 @@ class UnitOverviewTab(
             }
         ) {
             it.defaults().pad(5f).fill(false)
-            it.background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.6f))
+            it.background = BaseScreen.skinStrings.getUiBackground(
+                "OverviewScreen/UnitOverviewTab/UnitSupplyTable",
+                tintColor = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.6f)
+            )
             it.addLabeledValue("Base Supply", stats.getBaseUnitSupply())
             it.addLabeledValue("Cities", stats.getUnitSupplyFromCities())
             it.addLabeledValue("Population", stats.getUnitSupplyFromPop())

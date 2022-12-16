@@ -140,7 +140,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         if (!showAdditionalInfoTags || tileGroup.tileInfo.airUnits.isEmpty()) return
         val secondaryColor = city.civInfo.nation.getInnerColor()
         val airUnitTable = Table()
-        airUnitTable.background = ImageGetter.getRoundedEdgeRectangle(city.civInfo.nation.getOuterColor()).apply { setMinSize(0f,0f) }
+        airUnitTable.background = BaseScreen.skinStrings.getUiBackground("WorldScreen/CityButton/AirUnitTable", BaseScreen.skinStrings.roundedEdgeRectangleShape, city.civInfo.nation.getOuterColor()).apply { setMinSize(0f,0f) }
         val aircraftImage = ImageGetter.getImage("OtherIcons/Aircraft")
         aircraftImage.color = secondaryColor
         airUnitTable.add(aircraftImage).size(15f)
@@ -194,7 +194,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         }
         val iconTable = IconTable().apply { isTransform = false }
         iconTable.touchable = Touchable.enabled
-        iconTable.background = ImageGetter.getRoundedEdgeRectangle(city.civInfo.nation.getOuterColor())
+        iconTable.background = BaseScreen.skinStrings.getUiBackground("WorldScreen/CityButton/IconTable", BaseScreen.skinStrings.roundedEdgeRectangleShape, city.civInfo.nation.getOuterColor())
 
         if (city.isInResistance()) {
             val resistanceImage = ImageGetter.getImage("StatIcons/Resistance")
@@ -251,7 +251,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         }
 
         if (city.civInfo.isCityState()) {
-            val cityStateImage = ImageGetter.getImage(city.civInfo.cityStateType.icon).apply { color = secondaryColor }
+            val cityStateImage = ImageGetter.getImage("CityStateIcons/" +city.civInfo.cityStateType.name).apply { color = secondaryColor }
             iconTable.add(cityStateImage).size(20f).fillY()
         }
 
@@ -383,19 +383,9 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         val groupHeight = 25f
         val groupWidth = if (cityCurrentConstruction is PerpetualConstruction) 15f else 40f
         group.setSize(groupWidth, groupHeight)
-
-        val circle = ImageGetter.getCircle()
-        circle.setSize(25f, 25f)
-        val constructionImage = ImageGetter.getConstructionImage(cityConstructions.currentConstructionFromQueue)
-        constructionImage.setSize(18f, 18f)
+        val constructionImage = ImageGetter.getPortraitImage(cityConstructions.currentConstructionFromQueue, 25f)
         constructionImage.centerY(group)
         constructionImage.x = group.width - constructionImage.width
-
-        // center the circle on the production image
-        circle.x = constructionImage.x + (constructionImage.width - circle.width) / 2
-        circle.y = constructionImage.y + (constructionImage.height - circle.height) / 2
-
-        group.addActor(circle)
         group.addActor(constructionImage)
 
         val secondaryColor = cityConstructions.cityInfo.civInfo.nation.getInnerColor()
@@ -495,7 +485,10 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
             val influenceBar = InfluenceTable().apply {
                 defaults().pad(1f)
                 setSize(width, height)
-                background = ImageGetter.getBackground(Color.BLACK)
+                background = BaseScreen.skinStrings.getUiBackground(
+                    "WorldScreen/CityButton/InfluenceBar",
+                    tintColor = Color.BLACK
+                )
             }
 
             for (i in 0..3)

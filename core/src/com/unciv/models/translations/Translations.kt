@@ -211,7 +211,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         // Whenever this string is changed, it should also be changed in the translation files!
         // It is mostly used as the template for translating the order of conditionals
         const val englishConditionalOrderingString =
-            "<with a garrison> <for [mapUnitFilter] units> <above [amount] HP> <below [amount] HP> <vs cities> <vs [mapUnitFilter] units> <when fighting in [tileFilter] tiles> <when attacking> <when defending> <if this city has at least [amount] specialists> <when at war> <when not at war> <while the empire is happy> <during a Golden Age> <during the [era]> <before the [era]> <starting from the [era]> <with [techOrPolicy]> <without [techOrPolicy]>"
+            "<with a garrison> <for [mapUnitFilter] units> <above [amount] HP> <below [amount] HP> <vs cities> <vs [mapUnitFilter] units> <when fighting in [tileFilter] tiles> <when attacking> <when defending> <if this city has at least [amount] specialists> <when at war> <when not at war> <while the empire is happy> <during a Golden Age> <during the [era]> <starting from the [era]> <before the [era]> <with [techOrPolicy]> <without [techOrPolicy]>"
         const val conditionalUniqueOrderString = "ConditionalsPlacement"
         const val shouldCapitalizeString = "StartWithCapitalLetter"
     }
@@ -305,7 +305,7 @@ fun String.tr(): String {
         var translatedBaseUnique = this.removeConditionals().tr()
 
         val conditionals = this.getConditionals().map { it.placeholderText }
-        val conditionsWithTranslation: HashMap<String, String> = hashMapOf()
+        val conditionsWithTranslation: LinkedHashMap<String, String> = linkedMapOf()
 
         for (conditional in this.getConditionals())
             conditionsWithTranslation[conditional.placeholderText] = conditional.text.tr()

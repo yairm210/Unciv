@@ -173,9 +173,7 @@ object SoundPlayer {
         if (initialDelay > 0 || resource.play(volume) == -1L) {
             Concurrency.run("DelayedSound") {
                 delay(initialDelay.toLong())
-                while (resource.play(volume) == -1L) {
-                    delay(20L)
-                }
+                while (resource.play(volume) == -1L) delay(20L)
             }
         }
     }

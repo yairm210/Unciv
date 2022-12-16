@@ -38,7 +38,10 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
     init {
         isVisible = false
         skin = BaseScreen.skin
-        background = ImageGetter.getBackground(ImageGetter.getBlue().apply { a = 0.8f })
+        background = BaseScreen.skinStrings.getUiBackground(
+            "WorldScreen/BattleTable",
+            tintColor = BaseScreen.skinStrings.skinConfig.baseColor.apply { a = 0.8f }
+        )
 
         defaults().pad(5f)
         pad(5f)
@@ -103,7 +106,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             else {
                 when {
                     defender.isInvisible(attackerCiv) -> attackerCiv.viewableInvisibleUnitsTiles.contains(selectedTile)
-                    defender.isCity() -> attackerCiv.exploredTiles.contains(selectedTile.position)
+                    defender.isCity() -> attackerCiv.hasExplored(selectedTile)
                     else -> attackerCiv.viewableTiles.contains(selectedTile)
                 }
             }

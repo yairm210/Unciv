@@ -7,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.Constants
-import com.unciv.UncivGame
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapUnit
@@ -65,7 +64,10 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
     init {
         pad(5f)
         touchable = Touchable.enabled
-        background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.5f))
+        background = BaseScreen.skinStrings.getUiBackground(
+            "WorldScreen/UnitTable",
+            tintColor = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.5f)
+        )
 
         promotionsTable.touchable = Touchable.enabled
 

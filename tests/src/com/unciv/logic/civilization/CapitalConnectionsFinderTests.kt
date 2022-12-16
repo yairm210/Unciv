@@ -243,13 +243,13 @@ class CapitalConnectionsFinderTests {
             createCity(ourCiv, Vector2(0f, 4f), "Connected"))
 
         val openCiv = civilizations["Germany"]!!
-        openCiv.nation.cityStateType = CityStateType.Cultured
+        openCiv.nation.cityStateType = "Cultured"
         openCiv.cities = listOf( createCity(openCiv, Vector2(0f, 2f), "Berlin", true))
         ourCiv.diplomacy["Germany"] = DiplomacyManager(ourCiv, "Germany")
             .apply { diplomaticStatus = DiplomaticStatus.Peace }
 
         val closedCiv = civilizations["Greece"]!!
-        closedCiv.nation.cityStateType = CityStateType.Cultured
+        closedCiv.nation.cityStateType = "Cultured"
         closedCiv.cities = listOf( createCity(closedCiv, Vector2(0f, -2f), "Athens", true))
         ourCiv.diplomacy["Greece"] = DiplomacyManager(ourCiv, "Greece")
             .apply { diplomaticStatus = DiplomaticStatus.War }

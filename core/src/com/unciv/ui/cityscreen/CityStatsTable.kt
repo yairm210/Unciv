@@ -35,10 +35,16 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
 
     init {
         pad(2f)
-        background = ImageGetter.getBackground(colorFromRGB(194, 180, 131))
+        background = BaseScreen.skinStrings.getUiBackground(
+            "CityScreen/CityStatsTable/Background",
+            tintColor = colorFromRGB(194, 180, 131)
+        )
 
         innerTable.pad(5f)
-        innerTable.background = ImageGetter.getBackground(Color.BLACK.cpy().apply { a = 0.8f })
+        innerTable.background = BaseScreen.skinStrings.getUiBackground(
+            "CityScreen/CityStatsTable/InnerTable",
+            tintColor = Color.BLACK.cpy().apply { a = 0.8f }
+        )
         innerTable.add(upperTable).row()
 
         upperTable.defaults().pad(2f)

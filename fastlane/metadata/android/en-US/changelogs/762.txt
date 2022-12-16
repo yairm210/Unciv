@@ -1,0 +1,11 @@
+Fixed mod promotions conflicting with existing promotion locations
+
+Fixed rare thread crashes
+
+Added many new before/after X turns and before/after Pantheon conditionals
+
+Generalized ruins reward limitations with "only available when"
+
+Unique Misspelling replacement text contains conditionals
+
+Current naming for manually downloaded mods

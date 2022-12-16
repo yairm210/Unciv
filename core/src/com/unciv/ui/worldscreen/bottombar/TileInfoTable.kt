@@ -17,13 +17,16 @@ import com.unciv.ui.utils.extensions.toLabel
 
 class TileInfoTable(private val viewingCiv :CivilizationInfo) : Table(BaseScreen.skin) {
     init {
-        background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.5f))
+        background = BaseScreen.skinStrings.getUiBackground(
+            "WorldScreen/TileInfoTable",
+            tintColor = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.5f)
+        )
     }
 
     internal fun updateTileTable(tile: TileInfo?) {
         clearChildren()
 
-        if (tile != null && (UncivGame.Current.viewEntireMapForDebug || viewingCiv.exploredTiles.contains(tile.position)) ) {
+        if (tile != null && (UncivGame.Current.viewEntireMapForDebug || viewingCiv.hasExplored(tile)) ) {
             add(getStatsTable(tile))
             add( MarkupRenderer.render(tile.toMarkup(viewingCiv), padding = 0f, iconDisplay = IconDisplay.None) {
                 UncivGame.Current.pushScreen(CivilopediaScreen(viewingCiv.gameInfo.ruleSet, link = it))

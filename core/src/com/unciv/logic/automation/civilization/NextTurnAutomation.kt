@@ -11,7 +11,6 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.AlertType
-import com.unciv.logic.civilization.CityStateType
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
@@ -22,7 +21,6 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.BFS
-import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeEvaluation
@@ -289,7 +287,7 @@ object NextTurnAutomation {
 
         if (civInfo.wantsToFocusOn(Victory.Focus.Culture)) {
             for (cityState in civInfo.getKnownCivs()
-                    .filter { it.isCityState() && it.cityStateType == CityStateType.Cultured }) {
+                    .filter { it.isCityState() && it.cityStateFunctions.canGiveStat(Stat.Culture) }) {
                 val diploManager = cityState.getDiplomacyManager(civInfo)
                 if (diploManager.getInfluence() < 40) { // we want to gain influence with them
                     tryGainInfluence(civInfo, cityState)
@@ -715,7 +713,7 @@ object NextTurnAutomation {
         val enemyCivs = civInfo.getKnownCivs()
                 .filterNot {
                     it == civInfo || it.cities.isEmpty() || !civInfo.getDiplomacyManager(it).canDeclareWar()
-                            || it.cities.none { city -> civInfo.exploredTiles.contains(city.location) }
+                            || it.cities.none { city -> civInfo.hasExplored(city.location) }
                 }
         // If the AI declares war on a civ without knowing the location of any cities, it'll just keep amassing an army and not sending it anywhere,
         //   and end up at a massive disadvantage
@@ -737,9 +735,9 @@ object NextTurnAutomation {
         val ourCombatStrength = civInfo.getStatForRanking(RankingType.Force).toFloat() + baseForce
         var theirCombatStrength = otherCiv.getStatForRanking(RankingType.Force).toFloat() + baseForce
 
-        //for city-states, also consider there protectors
+        //for city-states, also consider their protectors
         if (otherCiv.isCityState() and otherCiv.getProtectorCivs().isNotEmpty()) {
-            theirCombatStrength += otherCiv.getProtectorCivs().sumOf{it.getStatForRanking(RankingType.Force)}
+            theirCombatStrength += otherCiv.getProtectorCivs().filterNot { it == civInfo }.sumOf{it.getStatForRanking(RankingType.Force)}
         }
 
         if (theirCombatStrength > ourCombatStrength) return 0
@@ -814,7 +812,11 @@ object NextTurnAutomation {
         if (theirCity.getTiles().none { tile -> tile.neighbors.any { it.getOwner() == theirCity.civInfo && it.getCity() != theirCity } })
             modifierMap["Isolated city"] = 15
 
-        if (otherCiv.isCityState()) modifierMap["City-state"] = -20
+        if (otherCiv.isCityState()) {
+            modifierMap["City-state"] = -20
+            if (otherCiv.getAllyCiv() == civInfo.civName)
+                modifierMap["Allied City-state"] = -20 // There had better be a DAMN good reason
+        }
 
         return modifierMap.values.sum()
     }
@@ -858,31 +860,16 @@ object NextTurnAutomation {
 
 
     private fun automateUnits(civInfo: CivilizationInfo) {
-        val rangedUnits = mutableListOf<MapUnit>()
-        val meleeUnits = mutableListOf<MapUnit>()
-        val civilianUnits = mutableListOf<MapUnit>()
-        val generals = mutableListOf<MapUnit>()
-
-        for (unit in civInfo.getCivUnits()) {
-            if (unit.promotions.canBePromoted()) {
-                val availablePromotions = unit.promotions.getAvailablePromotions()
-                if (availablePromotions.any())
-                    unit.promotions.addPromotion(availablePromotions.toList().random().name)
-            }
-
+        val sortedUnits = civInfo.getCivUnits().sortedBy { unit ->
             when {
-                unit.baseUnit.isRanged() -> rangedUnits.add(unit)
-                unit.baseUnit.isMelee() -> meleeUnits.add(unit)
-                unit.isGreatPersonOfType("War")
-                    -> generals.add(unit) // Generals move after military units
-                else -> civilianUnits.add(unit)
+                unit.baseUnit.isAirUnit() -> 2
+                unit.baseUnit.isRanged() -> 3
+                unit.baseUnit.isMelee() -> 4
+                unit.isGreatPersonOfType("War") -> 5 // Generals move after military units
+                else -> 1 // Civilian
             }
         }
-
-        for (unit in civilianUnits) UnitAutomation.automateUnitMoves(unit) // They move first so that combat units can accompany a settler
-        for (unit in rangedUnits) UnitAutomation.automateUnitMoves(unit)
-        for (unit in meleeUnits) UnitAutomation.automateUnitMoves(unit)
-        for (unit in generals) UnitAutomation.automateUnitMoves(unit)
+        for (unit in sortedUnits) UnitAutomation.automateUnitMoves(unit)
     }
 
     private fun automateCityBombardment(civInfo: CivilizationInfo) {

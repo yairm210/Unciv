@@ -5,8 +5,8 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.automation.Automation
-import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.automation.ThreatLevel
+import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.automation.unit.UnitAutomation.wander
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
@@ -17,6 +17,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.worldscreen.unit.UnitActions
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 
@@ -140,6 +141,29 @@ class WorkerAutomation(
             debug("WorkerAutomation: %s -> head towards %s", unit.label(), tileToWork)
             val reachedTile = unit.movement.headTowards(tileToWork)
             if (reachedTile != currentTile) unit.doAction() // otherwise, we get a situation where the worker is automated, so it tries to move but doesn't, then tries to automate, then move, etc, forever. Stack overflow exception!
+            // If there's move still left, perform action
+            // Unit may stop due to Enemy Unit within walking range during doAction() call
+            if (unit.currentMovement > 0 && reachedTile == tileToWork) {
+                if (reachedTile.isPillaged()) {
+                    debug("WorkerAutomation: ${unit.label()} -> repairs $currentTile")
+                    UnitActions.getRepairAction(unit).invoke()
+                    return
+                }
+                if (currentTile.improvementInProgress == null && currentTile.isLand
+                        && tileCanBeImproved(unit, currentTile)
+                ) {
+                    debug("WorkerAutomation: ${unit.label()} -> start improving $currentTile")
+                    return currentTile.startWorkingOnImprovement(
+                        chooseImprovement(unit, currentTile)!!, civInfo, unit
+                    )
+                }
+            }
+            return
+        }
+
+        if (currentTile.isPillaged()) {
+            debug("WorkerAutomation: ${unit.label()} -> repairs $currentTile")
+            UnitActions.getRepairAction(unit).invoke()
             return
         }
 
@@ -155,7 +179,7 @@ class WorkerAutomation(
         val citiesToNumberOfUnimprovedTiles = HashMap<String, Int>()
         for (city in unit.civInfo.cities) {
             citiesToNumberOfUnimprovedTiles[city.id] = city.getTiles()
-                .count { it.isLand && it.civilianUnit == null && tileCanBeImproved(unit, it) }
+                .count { it.isLand && it.civilianUnit == null && (tileCanBeImproved(unit, it) || it.isPillaged()) }
         }
 
         val mostUndevelopedCity = unit.civInfo.cities.asSequence()
@@ -213,7 +237,7 @@ class WorkerAutomation(
                     if (!bfs.hasReachedTile(cityTile)) continue
                     // we have a winner!
                     val pathToCity = bfs.getPathTo(cityTile)
-                    val roadableTiles = pathToCity.filter { it.roadStatus < bestRoadAvailable }
+                    val roadableTiles = pathToCity.filter { it.getUnpillagedRoad() < bestRoadAvailable }
                     val tileToConstructRoadOn: TileInfo
                     if (currentTile in roadableTiles) tileToConstructRoadOn =
                         currentTile
@@ -256,9 +280,12 @@ class WorkerAutomation(
         val workableTiles = currentTile.getTilesInDistance(4)
                 .filter {
                     (it.civilianUnit == null || it == currentTile)
-                            && tileCanBeImproved(unit, it)
-                            && it.getTilesInDistance(2)
-                            .none { tile -> tile.isCityCenter() && tile.getCity()!!.civInfo.isAtWarWith(civInfo) }
+                            && (it.owningCity == null || it.getOwner()==civInfo)
+                            && (tileCanBeImproved(unit, it) || it.isPillaged())
+                            && it.getTilesInDistance(2)  // don't work in range of enemy cities
+                        .none { tile -> tile.isCityCenter() && tile.getCity()!!.civInfo.isAtWarWith(civInfo) }
+                            && it.getTilesInDistance(3)  // don't work in range of enemy units
+                        .none { tile -> tile.militaryUnit != null && tile.militaryUnit!!.civInfo.isAtWarWith(civInfo)}
                 }
                 .sortedByDescending { getPriority(it) }
 
@@ -285,17 +312,23 @@ class WorkerAutomation(
         val city = tile.getCity()
         if (city == null || city.civInfo != civInfo)
             return false
+        if (!city.tilesInRange.contains(tile)
+                && !tile.hasViewableResource(civInfo)
+                && civInfo.cities.none { it.getCenterTile().aerialDistanceTo(tile) <= 3 })
+            return false // unworkable tile
+
         val junkImprovement = tile.getTileImprovement()?.hasUnique(UniqueType.AutomatedWorkersWillReplace)
-        if (tile.improvement != null && junkImprovement == false && !UncivGame.Current.settings.automatedWorkersReplaceImprovements) {
-            if (unit.civInfo.isPlayerCivilization())
-                return false
-        }
+        if (tile.improvement != null && junkImprovement == false
+                && !UncivGame.Current.settings.automatedWorkersReplaceImprovements
+                && unit.civInfo.isPlayerCivilization())
+            return false
+
+
 
         if (tile.improvement == null || junkImprovement == true) {
             if (tile.improvementInProgress != null && unit.canBuildImprovement(tile.getTileImprovementInProgress()!!, tile)) return true
             val chosenImprovement = chooseImprovement(unit, tile)
             if (chosenImprovement != null && tile.canBuildImprovement(chosenImprovement, civInfo) && unit.canBuildImprovement(chosenImprovement, tile)) return true
-
         } else if (!tile.containsGreatImprovement() && tile.hasViewableResource(civInfo)
             && tile.tileResource.isImprovedBy(tile.improvement!!)
             && (chooseImprovement(unit, tile) // if the chosen improvement is not null and buildable
@@ -312,6 +345,7 @@ class WorkerAutomation(
         if (tileInfo.getOwner() == civInfo) {
             priority += 2
             if (tileInfo.providesYield()) priority += 3
+            if (tileInfo.isPillaged()) priority += 1
         }
         // give a minor priority to tiles that we could expand onto
         else if (tileInfo.getOwner() == null && tileInfo.neighbors.any { it.getOwner() == civInfo })

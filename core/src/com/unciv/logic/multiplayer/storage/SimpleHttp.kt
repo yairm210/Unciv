@@ -2,12 +2,15 @@ package com.unciv.logic.multiplayer.storage
 
 import com.badlogic.gdx.Net
 import com.unciv.UncivGame
-import com.unciv.ui.utils.extensions.toNiceString
 import com.unciv.utils.debug
 import java.io.BufferedReader
 import java.io.DataOutputStream
 import java.io.InputStreamReader
-import java.net.*
+import java.net.DatagramSocket
+import java.net.HttpURLConnection
+import java.net.InetAddress
+import java.net.URI
+import java.net.URL
 import java.nio.charset.Charset
 
 private typealias SendRequestCallback = (success: Boolean, result: String, code: Int?)->Unit
@@ -37,6 +40,7 @@ object SimpleHttp {
                 setRequestProperty("User-Agent", "Unciv/${UncivGame.VERSION.toNiceString()}-GNU-Terry-Pratchett")
             else
                 setRequestProperty("User-Agent", "Unciv/Turn-Checker-GNU-Terry-Pratchett")
+            setRequestProperty("Content-Type", "text/plain")
 
             try {
                 if (content.isNotEmpty()) {

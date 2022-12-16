@@ -75,16 +75,15 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     init {
         // Not the Table, the Cells (all except one) have the background. To avoid gaps, _no_
         // padding except inside the cell actors, and all actors need to _fill_ their cell.
-        val backColor = ImageGetter.getBlue().darken(0.5f)
-        val backgroundDrawable = ImageGetter.getBackground(backColor)
-        statsTable.background = backgroundDrawable
-        resourceTable.background = backgroundDrawable
+        val backColor = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.5f)
+        statsTable.background = BaseScreen.skinStrings.getUiBackground("WorldScreen/TopBar/StatsTable", tintColor = backColor)
+        resourceTable.background = BaseScreen.skinStrings.getUiBackground("WorldScreen/TopBar/ResourceTable", tintColor = backColor)
         add(statsTable).colspan(3).growX().row()
         add(resourceTable).colspan(3).growX().row()
-        val leftFillerBG = ImageGetter.getRoundedEdgeRectangle(backColor)
+        val leftFillerBG = BaseScreen.skinStrings.getUiBackground("WorldScreen/TopBar/LeftAttachment", BaseScreen.skinStrings.roundedEdgeRectangleShape, backColor)
         leftFillerCell = add(BackgroundActor(leftFillerBG, Align.topLeft))
         add().growX()
-        val rightFillerBG = ImageGetter.getRoundedEdgeRectangle(backColor)
+        val rightFillerBG = BaseScreen.skinStrings.getUiBackground("WorldScreen/TopBar/RightAttachment", BaseScreen.skinStrings.roundedEdgeRectangleShape, backColor)
         rightFillerCell = add(BackgroundActor(rightFillerBG, Align.topRight))
         pack()
     }
@@ -268,12 +267,12 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         when {
             leftRightNeeded * 2f > stage.width - resourceWidth -> {
                 // Need to shift buttons down to below both stats and resources
-                fillerHeight = baseHeight
+                fillerHeight = baseHeight +1
                 buttonY = overviewButton.minHeight / 2f
             }
             leftRightNeeded * 2f > stage.width - statsWidth -> {
                 // Shifting buttons down to below stats row is enough
-                fillerHeight = statsRowHeight
+                fillerHeight = statsRowHeight +1
                 buttonY = overviewButton.minHeight / 2f
             }
             else -> {

@@ -6,9 +6,18 @@ import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.updateDeprecations
 import com.unciv.models.ruleset.ModOptions
+import com.unciv.ui.pickerscreens.Github.RateLimit
+import com.unciv.ui.pickerscreens.Github.download
+import com.unciv.ui.pickerscreens.Github.downloadAndExtract
+import com.unciv.ui.pickerscreens.Github.tryGetGithubReposWithTopic
 import com.unciv.utils.Log
 import com.unciv.utils.debug
-import java.io.*
+import java.io.BufferedInputStream
+import java.io.BufferedOutputStream
+import java.io.BufferedReader
+import java.io.FileOutputStream
+import java.io.InputStream
+import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.zip.ZipEntry
@@ -52,17 +61,16 @@ object Github {
 
     /**
      * Download a mod and extract, deleting any pre-existing version.
-     * @param gitRepoUrl Url of the repository as delivered by the Github search query
-     * @param defaultBranch Branch name as delivered by the Github search query
      * @param folderFileHandle Destination handle of mods folder - also controls Android internal/external
      * @author **Warning**: This took a long time to get just right, so if you're changing this, ***TEST IT THOROUGHLY*** on _both_ Desktop _and_ Phone
      * @return FileHandle for the downloaded Mod's folder or null if download failed
      */
     fun downloadAndExtract(
-        gitRepoUrl: String,
-        defaultBranch: String,
+        repo: Repo,
         folderFileHandle: FileHandle
     ): FileHandle? {
+        val defaultBranch = repo.default_branch
+        val gitRepoUrl = repo.html_url
         // Initiate download - the helper returns null when it fails
         val zipUrl = "$gitRepoUrl/archive/$defaultBranch.zip"
         val inputStream = download(zipUrl) ?: return null
@@ -299,8 +307,9 @@ object Github {
             } else {
                 val matchRepo = Regex("""^.*/(.*)/(.*)/?$""").matchEntire(url)
                 if (matchRepo != null && matchRepo.groups.size > 2) {
-                    owner.login = matchRepo.groups[1]!!.value
-                    name = matchRepo.groups[2]!!.value
+                    val repoString = download("https://api.github.com/repos/${matchRepo.groups[1]!!.value}/${matchRepo.groups[2]!!.value}")!!
+                        .bufferedReader().readText()
+                    return json().fromJson(Repo::class.java, repoString)
                 }
             }
             return this

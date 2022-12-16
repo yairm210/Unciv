@@ -258,16 +258,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun getTile(): TileInfo = currentTile
 
-
-    // This SHOULD NOT be a HashSet, because if it is, then e.g. promotions with the same uniques
-    //  (e.g. barrage I, barrage II) will not get counted twice!
-    @Transient
-    private var tempUniques = ArrayList<Unique>()
-
     @Transient
     private var tempUniquesMap = UniqueMap()
 
-    fun getUniques(): ArrayList<Unique> = tempUniques
+    fun getUniques(): Sequence<Unique> = tempUniquesMap.values.asSequence().flatten()
 
     fun getMatchingUniques(
         uniqueType: UniqueType,
@@ -279,12 +273,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
             )
         if (checkCivInfoUniques)
             yieldAll(civInfo.getMatchingUniques(uniqueType, stateForConditionals))
-    }
-
-    // TODO typify usages and remove this function
-    @Deprecated("as of 4.0.15", ReplaceWith("hasUnique(uniqueType: UniqueType, ...)"))
-    fun hasUnique(unique: String): Boolean {
-        return tempUniquesMap.getUniques(unique).any()
     }
 
     fun hasUnique(
@@ -305,7 +293,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
             uniques.addAll(promotion.uniqueObjects)
         }
 
-        tempUniques = uniques
         tempUniquesMap = UniqueMap().apply {
             addUniques(uniques)
         }
@@ -694,7 +681,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
         if (enemyUnitsInWalkingDistance.isNotEmpty()) {
             if (isMoving()) // stop on enemy in sight
                 action = null
-            return  // Don't you dare move.
+            if (!(isExploring() || isAutomated()))  // have fleeing code
+                return  // Don't you dare move.
         }
 
         val currentTile = getTile()
@@ -739,12 +727,12 @@ class MapUnit : IsPartOfGameInfoSerialization {
                     && !tileImprovement.terrainsCanBeBuiltOn.contains(tile.baseTerrain)
                 ) {
                     // We removed a terrain (e.g. Forest) and the improvement (e.g. Lumber mill) requires it!
-                    tile.improvement = null
+                    tile.changeImprovement(null)
                     if (tile.resource != null) civInfo.updateDetailedCivResources() // unlikely, but maybe a mod makes a resource improvement dependent on a terrain feature
                 }
-                if (RoadStatus.values().any { tile.improvementInProgress == it.removeAction })
-                    tile.roadStatus = RoadStatus.None
-                else {
+                if (RoadStatus.values().any { tile.improvementInProgress == it.removeAction }) {
+                    tile.removeRoad()
+                } else {
                     val removedFeatureObject = tile.ruleset.terrains[removedFeatureName]
                     if (removedFeatureObject != null && removedFeatureObject.hasUnique(UniqueType.ProductionBonusWhenRemoved)) {
                         tryProvideProductionToClosestCity(removedFeatureName)
@@ -752,12 +740,13 @@ class MapUnit : IsPartOfGameInfoSerialization {
                     tile.removeTerrainFeature(removedFeatureName)
                 }
             }
-            tile.improvementInProgress == RoadStatus.Road.name -> tile.roadStatus = RoadStatus.Road
-            tile.improvementInProgress == RoadStatus.Railroad.name -> tile.roadStatus = RoadStatus.Railroad
+            tile.improvementInProgress == RoadStatus.Road.name -> tile.addRoad(RoadStatus.Road, this.civInfo)
+            tile.improvementInProgress == RoadStatus.Railroad.name -> tile.addRoad(RoadStatus.Railroad, this.civInfo)
+            tile.improvementInProgress == Constants.repair -> tile.setRepaired()
             else -> {
                 val improvement = civInfo.gameInfo.ruleSet.tileImprovements[tile.improvementInProgress]!!
                 improvement.handleImprovementCompletion(this)
-                tile.improvement = tile.improvementInProgress
+                tile.changeImprovement(tile.improvementInProgress)
             }
         }
 
@@ -925,17 +914,19 @@ class MapUnit : IsPartOfGameInfoSerialization {
         attacksSinceTurnStart.clear()
     }
 
-    fun destroy() {
+    fun destroy(destroyTransportedUnit: Boolean = true) {
         val currentPosition = Vector2(getTile().position)
         civInfo.attacksSinceTurnStart.addAll(attacksSinceTurnStart.asSequence().map { CivilizationInfo.HistoricalAttackMemory(this.name, currentPosition, it) })
         currentMovement = 0f
         removeFromTile()
         civInfo.removeUnit(this)
         civInfo.updateViewableTiles()
-        // all transported units should be destroyed as well
-        currentTile.getUnits().filter { it.isTransported && isTransportTypeOf(it) }
-            .toList() // because we're changing the list
-            .forEach { unit -> unit.destroy() }
+        if (destroyTransportedUnit) {
+            // all transported units should be destroyed as well
+            currentTile.getUnits().filter { it.isTransported && isTransportTypeOf(it) }
+                .toList() // because we're changing the list
+                .forEach { unit -> unit.destroy() }
+        }
         isDestroyed = true
     }
 
@@ -1030,7 +1021,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     private fun clearEncampment(tile: TileInfo) {
-        tile.improvement = null
+        tile.changeImprovement(null)
 
         // Notify City-States that this unit cleared a Barbarian Encampment, required for quests
         civInfo.gameInfo.getAliveCityStates()
@@ -1080,7 +1071,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     private fun getAncientRuinBonus(tile: TileInfo) {
-        tile.improvement = null
+        tile.changeImprovement(null)
         civInfo.ruinsManager.selectNextRuinsReward(this)
     }
 
@@ -1191,7 +1182,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         val (citadelTile, damage) = currentTile.neighbors
             .filter {
                 it.getOwner() != null
-                && it.improvement != null
+                && it.getUnpillagedImprovement() != null
                 && civInfo.isAtWarWith(it.getOwner()!!)
             }.map { tile ->
                 tile to tile.getTileImprovement()!!.getMatchingUniques(UniqueType.DamagesAdjacentEnemyUnits)
@@ -1234,7 +1225,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             "Non-City" -> true
             else -> {
                 if (baseUnit.matchesFilter(filter)) return true
-                if (hasUnique(filter)) return true
+                if (tempUniquesMap.containsKey(filter)) return true
                 return false
             }
         }
@@ -1247,7 +1238,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             && improvement.name != Constants.cancelImprovementOrder
             && tile.improvementInProgress != improvement.name
         ) return false
-
+        if (tile.improvementInProgress == Constants.repair) return true
         return getMatchingUniques(UniqueType.BuildImprovements)
             .any { improvement.matchesFilter(it.params[0]) || tile.matchesTerrainFilter(it.params[0]) }
     }

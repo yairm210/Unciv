@@ -1,0 +1,8 @@
+Made yields smaller so heavy yields look better on tiles
+
+Modding improvements:
+- buildingName -> buildingFilter in all possible unique types
+- improvement uniques can be assigned to tilefilter
+- "Occurs at temperature between [amount] and [amount] and humidity between [amount] and [amount]" now applicable to resources
+
+AbsoluteUnits - Unique Chariot Archers  - By letstalkaboutdune
