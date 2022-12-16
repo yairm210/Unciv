@@ -676,7 +676,7 @@ class MapGenerator(val ruleset: Ruleset) {
             }.toList()
 
         if (tileMap.mapParameters.shape === MapShape.flatEarth) {
-            spawnFlatEarthIceWall(tileMap, iceEquivalents)
+            spawnFlatEarthIceWalls(tileMap, iceEquivalents)
         }
 
         if (iceEquivalents.isEmpty()) return
@@ -705,7 +705,7 @@ class MapGenerator(val ruleset: Ruleset) {
         }
     }
 
-    private fun spawnFlatEarthIceWall(tileMap: TileMap, iceEquivalents: List<TerrainOccursRange>) {
+    private fun spawnFlatEarthIceWalls(tileMap: TileMap, iceEquivalents: List<TerrainOccursRange>) {
         val iceCandidates = iceEquivalents.filter {
             it.matches(-1.0, 1.0)
         }.map {
@@ -762,32 +762,7 @@ class MapGenerator(val ruleset: Ruleset) {
 
             // Make center tiles ice or snow or mountain depending on availability
             if (isCenterTile && bestArcticTileName != null) {
-                if (bestArcticTileName == iceTerrainName) {
-                    tile.baseTerrain = waterTerrainName
-                    tile.addTerrainFeature(iceTerrainName)
-                } else {
-                    tile.baseTerrain = bestArcticTileName
-                }
-
-                for (neighbor in tile.neighbors) {
-                    if (bestArcticTileName == iceTerrainName) {
-                        neighbor.baseTerrain = waterTerrainName
-                        neighbor.addTerrainFeature(iceTerrainName)
-                    } else {
-                        neighbor.baseTerrain = bestArcticTileName
-                    }
-
-                    for (neighbor2 in neighbor.neighbors) {
-                        if (randomness.RNG.nextDouble() < 0.75) {
-                            // Do nothing most of the time at random.
-                        } else if (bestArcticTileName == iceTerrainName) {
-                            neighbor2.baseTerrain = waterTerrainName
-                            neighbor2.addTerrainFeature(iceTerrainName)
-                        } else {
-                            neighbor2.baseTerrain = bestArcticTileName
-                        }
-                    }
-                }
+                spawnFlatEarthCenterIceWall(tile, bestArcticTileName, iceTerrainName)
             }
 
             // Make edge tiles randomly ice or snow or mountain if available
@@ -822,6 +797,38 @@ class MapGenerator(val ruleset: Ruleset) {
                     } else {
                         neighbor.baseTerrain = arcticTileName
                     }
+                }
+            }
+        }
+    }
+
+    private fun spawnFlatEarthCenterIceWall(tile: TileInfo, bestArcticTileName: String, iceTerrainName: String?) {
+        // Spawn ice on center tile
+        if (bestArcticTileName == iceTerrainName) {
+            tile.baseTerrain = waterTerrainName
+            tile.addTerrainFeature(iceTerrainName)
+        } else {
+            tile.baseTerrain = bestArcticTileName
+        }
+
+        // Spawn circle of ice around center tile
+        for (neighbor in tile.neighbors) {
+            if (bestArcticTileName == iceTerrainName) {
+                neighbor.baseTerrain = waterTerrainName
+                neighbor.addTerrainFeature(iceTerrainName)
+            } else {
+                neighbor.baseTerrain = bestArcticTileName
+            }
+
+            // Spawn partial circle of ice around circle of ice
+            for (neighbor2 in neighbor.neighbors) {
+                if (randomness.RNG.nextDouble() < 0.75) {
+                    // Do nothing most of the time at random.
+                } else if (bestArcticTileName == iceTerrainName) {
+                    neighbor2.baseTerrain = waterTerrainName
+                    neighbor2.addTerrainFeature(iceTerrainName)
+                } else {
+                    neighbor2.baseTerrain = bestArcticTileName
                 }
             }
         }
