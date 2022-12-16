@@ -1,0 +1,20 @@
+
+
+Modding: Can provide resources as a global unique
+
+Flat Earth Hexagonal  - By FiretronP75
+
+By vegeta1k95:
+- Fix bug, where Unit flags backgrounds appear on CityScreen tiles 
+- Fix minor bug, preventing flag shadows (if added) to appear 
+- Change styles and behaviour of Unit flags as in Civ 5 
+- "Auto Unit Cycle" and "Automated units move on turn start" options implemented (Civ 5) 
+- NextTurnActions (pick tech/policy/etc) now can have icons 
+
+added icon for `Conduct Trade Mission` button  - By alexban011
+
+By itanasi:
+- safer logic 
+- Actually fix AI from pillaging neutral roads 
+
+New map options translatable  - By Ouaz
