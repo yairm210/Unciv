@@ -189,9 +189,9 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
         return min(0.3, 1.0 - (5.0 * distanceFactor * distanceFactor + randomScale) / 3.0)
     }
     
-    private fun getCrazinessTransform(tileInfo: TileInfo, tileMap: TileMap, percentOfMap: Double = 0.98): Double {
+    private fun getCrazinessTransform(tileInfo: TileInfo, tileMap: TileMap, percentOfMap: Double = 0.93): Double {
         val randomScale = randomness.RNG.nextDouble()
-        val ratio = percentOfMap + 0.01 * randomness.RNG.nextDouble()
+        val ratio = percentOfMap + 0.03 * randomness.RNG.nextDouble()
 
         val a = ratio * tileMap.maxLongitude
         val b = ratio * tileMap.maxLatitude
