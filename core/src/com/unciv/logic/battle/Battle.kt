@@ -779,7 +779,7 @@ object Battle {
         // Pillage improvements, pillage roads, add fallout
         if (tile.getUnpillagedImprovement() != null && !tile.getTileImprovement()!!.hasUnique(UniqueType.Irremovable)) {
             if (tile.getTileImprovement()!!.hasUnique(UniqueType.Unpillagable)) {
-                tile.improvement = null
+                tile.changeImprovement(null)
             } else {
                 tile.setPillaged()
             }
@@ -1106,7 +1106,7 @@ object Battle {
             && attackedTile.getTileImprovement()?.isAncientRuinsEquivalent() != true
             && attacker.hasUnique(UniqueType.DestroysImprovementUponAttack, conditionalState)
         ) {
-            attackedTile.improvement = null
+            attackedTile.changeImprovement(null)
         }
     }
 }

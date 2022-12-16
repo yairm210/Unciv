@@ -1313,3 +1313,168 @@ UnitActionIcons/Upgrade
   orig: 100, 94
   offset: 0, 0
   index: -1
+
+UnitFlags.png
+size: 2048, 1024
+format: RGBA8888
+filter: MipMapLinearLinear, MipMapLinearLinear
+repeat: none
+UnitFlagIcons/UnitFlag
+  rotate: false
+  xy: 0, 0
+  size: 178, 178
+  orig: 178, 178
+  offset: 0, 0
+  index: -1
+UnitFlagIcons/UnitFlagSelection
+  rotate: false
+  xy: 356, 0
+  size: 178, 178
+  orig: 178, 178
+  offset: 0, 0
+  index: -1
+UnitFlagIcons/UnitFlagFortify
+  rotate: false
+  xy: 0, 178
+  size: 178, 178
+  orig: 178, 178
+  offset: 0, 0
+  index: -1
+UnitFlagIcons/UnitFlagSelectionFortify
+  rotate: false
+  xy: 356, 178
+  size: 178, 178
+  orig: 178, 178
+  offset: 0, 0
+  index: -1
+UnitFlagIcons/UnitFlagCivilian
+  rotate: false
+  xy: 0, 356
+  size: 178, 217
+  orig: 178, 217
+  offset: 0, 0
+  index: -1
+UnitFlagIcons/UnitFlagSelectionCivilian
+  rotate: false
+  xy: 366, 385
+  size: 157, 170
+  orig: 157, 170
+  offset: 0, 0
+  index: -1
+UnitFlagIcons/UnitFlagEmbark
+  rotate: false
+  xy: 534, 0
+  size: 178, 210
+  orig: 178, 210
+  offset: 0, 0
+  index: -1
+UnitFlagIcons/UnitFlagSelectionEmbark
+  rotate: false
+  xy: 890, 0
+  size: 178, 210
+  orig: 178, 210
+  offset: 0, 0
+  index: -1
+
+NotificationIcons.png
+size: 512, 64
+format: RGBA8888
+filter: MipMapLinearLinear, MipMapLinearLinear
+repeat: none
+NotificationIcons/PickConstruction
+  rotate: false
+  xy: 0, 0
+  size: 33, 33
+  orig: 33, 33
+  offset: 0, 0
+  index: -1
+NotificationIcons/PickTech
+  rotate: false
+  xy: 33, 0
+  size: 33, 33
+  orig: 33, 33
+  offset: 0, 0
+  index: -1
+NotificationIcons/PickPolicy
+  rotate: false
+  xy: 66, 0
+  size: 33, 33
+  orig: 33, 33
+  offset: 0, 0
+  index: -1
+NotificationIcons/FoundPantheon
+  rotate: false
+  xy: 99, 0
+  size: 33, 33
+  orig: 33, 33
+  offset: 0, 0
+  index: -1
+NotificationIcons/FoundReligion
+  rotate: false
+  xy: 99, 0
+  size: 33, 33
+  orig: 33, 33
+  offset: 0, 0
+  index: -1
+NotificationIcons/EnhanceReligion
+  rotate: false
+  xy: 99, 0
+  size: 33, 33
+  orig: 33, 33
+  offset: 0, 0
+  index: -1
+NotificationIcons/ReformReligion
+  rotate: false
+  xy: 5, 6
+  size: 88, 88
+  orig: 88, 88
+  offset: 0, 0
+  index: -1
+NotificationIcons/FoundPantheon
+  rotate: false
+  xy: 99, 0
+  size: 33, 33
+  orig: 33, 33
+  offset: 0, 0
+  index: -1
+NotificationIcons/WorldCongressVote
+  rotate: false
+  xy: 132, 0
+  size: 33, 33
+  orig: 33, 33
+  offset: 0, 0
+  index: -1
+NotificationIcons/MoveAutomatedUnits
+  rotate: false
+  xy: 165, 0
+  size: 33, 33
+  orig: 33, 33
+  offset: 0, 0
+  index: -1
+NotificationIcons/Working
+  rotate: false
+  xy: 198, 0
+  size: 33, 33
+  orig: 33, 33
+  offset: 0, 0
+  index: -1
+NotificationIcons/Loading
+  rotate: false
+  xy: 231, 0
+  size: 33, 33
+  orig: 33, 33
+  offset: 0, 0
+  index: -1
+NotificationIcons/NextUnit
+  rotate: false
+  xy: 165, 0
+  size: 33, 33
+  orig: 33, 33
+  offset: 0, 0
+  index: -1
+NotificationIcons/NextTurn
+  rotate: false
+  xy: 198, 0
+  size: 33, 33
+  orig: 33, 33
+

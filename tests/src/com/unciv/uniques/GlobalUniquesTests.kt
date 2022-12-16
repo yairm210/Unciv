@@ -316,7 +316,7 @@ class GlobalUniquesTests {
         city.cityConstructions.addBuilding(faithBuilding.name)
 
         val tile2 = game.setTileFeatures(Vector2(0f,1f), Constants.grassland)
-        tile2.improvement = "Farm"
+        tile2.changeImprovement("Farm")
         Assert.assertTrue(tile2.getTileStats(city, civInfo).faith == 9f)
 
         city.cityConstructions.addBuilding(emptyBuilding.name)
@@ -341,7 +341,7 @@ class GlobalUniquesTests {
         city.cityConstructions.addBuilding(faithBuilding.name)
 
         val tile2 = game.setTileFeatures(Vector2(0f,1f), Constants.grassland)
-        tile2.improvement = "Farm"
+        tile2.changeImprovement("Farm")
         Assert.assertTrue(tile2.getTileStats(city, civInfo).faith == 9f)
 
         city.cityConstructions.addBuilding(emptyBuilding.name)
@@ -551,7 +551,7 @@ class GlobalUniquesTests {
         civInfo.addGold(-civInfo.gold) // reset gold just to be sure
 
         val testImprovement = game.createTileImprovement("Pillaging this improvement yields [+20 Gold, +11 Food]")
-        tile.improvement = testImprovement.name
+        tile.changeImprovement(testImprovement.name)
         val unit = game.addUnit("Warrior", civInfo, tile)
         unit.currentMovement = 2f
 

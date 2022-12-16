@@ -43,6 +43,7 @@ import com.unciv.ui.utils.MayaCalendar
 import com.unciv.ui.utils.extensions.toPercent
 import com.unciv.ui.utils.extensions.withItem
 import com.unciv.ui.victoryscreen.RankingType
+import com.unciv.utils.concurrency.Concurrency
 import java.util.*
 import kotlin.math.max
 import kotlin.math.min
@@ -927,7 +928,12 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         for (city in cities) city.startTurn()  // Most expensive part of startTurn
 
         for (unit in getCivUnits()) unit.startTurn()
-        hasMovedAutomatedUnits = false
+
+        if (playerType == PlayerType.Human && UncivGame.Current.settings.automatedUnitsMoveOnTurnStart) {
+            hasMovedAutomatedUnits = true
+            for (unit in getCivUnits())
+                unit.doAction()
+        } else hasMovedAutomatedUnits = false
 
         updateDetailedCivResources() // If you offered a trade last turn, this turn it will have been accepted/declined
 

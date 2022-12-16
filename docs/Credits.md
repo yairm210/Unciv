@@ -751,6 +751,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [Timer](https://www.flaticon.com/free-icons/timer) created by Gregor Cresnar Premium - Flaticon
 - [Political Science](https://www.flaticon.com/premium-icon/political-science_5403775) created by Hilmy Abiyyu A. - Flaticon
 - [Question](https://thenounproject.com/icon/question-1157126/) created by Aneeque Ahmed for Question Icon
+- [Trade](https://www.flaticon.com/free-icon/trade_4257019) created by Smashicons for Conduct Trade Mission
 
 ### Main menu
 

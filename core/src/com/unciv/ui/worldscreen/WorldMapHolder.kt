@@ -299,6 +299,11 @@ class WorldMapHolder(
                     if (selectedUnits.size > 1) { // We have more tiles to move
                         moveUnitToTargetTile(selectedUnits.subList(1, selectedUnits.size), targetTile)
                     } else removeUnitActionOverlay() //we're done here
+
+                    if (UncivGame.Current.settings.autoUnitCycle &&
+                            selectedUnit.currentMovement == 0f)
+                        worldScreen.switchToNextUnit()
+
                 } catch (ex: Exception) {
                     Log.error("Exception in moveUnitToTargetTile", ex)
                 }

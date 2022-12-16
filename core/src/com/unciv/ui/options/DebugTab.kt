@@ -104,7 +104,7 @@ fun debugTab() = Table(BaseScreen.skin).apply {
             tile.resourceAmount = 999
             // Debug option, so if it crashes on this that's relatively fine
             // If this becomes a problem, check if such an improvement exists and otherwise plop down a great improvement or so
-            tile.improvement = resource.getImprovements().first()
+            tile.changeImprovement(resource.getImprovements().first())
         }
         curGameInfo.getCurrentPlayerCivilization().updateSightAndResources()
         if (worldScreen != null) worldScreen.shouldUpdate = true
