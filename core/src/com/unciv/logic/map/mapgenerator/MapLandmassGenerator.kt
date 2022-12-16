@@ -49,8 +49,12 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
             MapType.default -> createPerlin(tileMap)
         }
 
-        if (tileMap.mapParameters.shape !== MapShape.flatEarth) return
+        if (tileMap.mapParameters.shape === MapShape.flatEarth) {
+            generateFlatEarthExtraWater(tileMap)
+        }
+    }
 
+    private fun generateFlatEarthExtraWater(tileMap: TileMap) {
         for (tile in tileMap.values) {
             val isCenterTile = tile.latitude == 0f && tile.longitude == 0f
             val isEdgeTile = tile.neighbors.count() < 6
