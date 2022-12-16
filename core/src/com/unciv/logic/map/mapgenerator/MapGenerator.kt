@@ -675,7 +675,6 @@ class MapGenerator(val ruleset: Ruleset) {
                     0f, 1f))
             }.toList()
 
-        // Flat Earth needs a 1 tile wide perimeter of ice/mountain/snow and a 2 radius cluster of ice in the center.
         if (tileMap.mapParameters.shape === MapShape.flatEarth) {
             val iceCandidates = iceEquivalents.filter {
                 it.matches(-1.0, 1.0)
@@ -726,6 +725,7 @@ class MapGenerator(val ruleset: Ruleset) {
             val arcticTileNameList =
                     arrayOf(iceTerrainName, snowTerrainName, mountainTerrainName).filterNotNull()
 
+            // Flat Earth needs a 1 tile wide perimeter of ice/mountain/snow and a 2 radius cluster of ice in the center.
             for (tile in tileMap.values) {
                 val isCenterTile = tile.latitude == 0f && tile.longitude == 0f
                 val isEdgeTile = tile.neighbors.count() < 6
@@ -770,6 +770,9 @@ class MapGenerator(val ruleset: Ruleset) {
                     if (arcticTileName == iceTerrainName) {
                         tile.baseTerrain = waterTerrainName
                         tile.addTerrainFeature(iceTerrainName)
+                    } else if (iceTerrainName != null && arcticTileName != mountainTerrainName) {
+                        tile.baseTerrain = arcticTileName
+                        tile.addTerrainFeature(iceTerrainName)
                     } else {
                         tile.baseTerrain = arcticTileName
                     }
@@ -782,6 +785,9 @@ class MapGenerator(val ruleset: Ruleset) {
                             // Do nothing most of the time at random.
                         } else if (arcticTileName == iceTerrainName) {
                             neighbor.baseTerrain = waterTerrainName
+                            neighbor.addTerrainFeature(iceTerrainName)
+                        } else if (iceTerrainName != null && arcticTileName != mountainTerrainName) {
+                            neighbor.baseTerrain = arcticTileName
                             neighbor.addTerrainFeature(iceTerrainName)
                         } else {
                             neighbor.baseTerrain = arcticTileName
