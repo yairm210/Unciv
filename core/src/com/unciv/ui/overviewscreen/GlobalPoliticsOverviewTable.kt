@@ -127,7 +127,7 @@ class GlobalPoliticsOverviewTable (
 
     private fun getCivInfoTable(civ: CivilizationInfo): Table {
         val civInfoTable = Table(skin)
-        val leaderName = civ.getLeaderDisplayName().removeSuffix(" of " + civ.civName)
+        val leaderName = civ.nation.leaderName
         civInfoTable.add(leaderName.toLabel(fontSize = 30)).row()
         civInfoTable.add(civ.civName.toLabel()).row()
         civInfoTable.add(civ.tech.era.name.toLabel()).row()
@@ -142,7 +142,7 @@ class GlobalPoliticsOverviewTable (
                     it.policyBranchType != PolicyBranchType.BranchComplete &&
                     civ.policies.isAdopted(it.name)
                 }
-                policiesTable.add("[${branch.name}]: ${count}".toLabel()).row()
+                policiesTable.add("[${branch.name}]: $count".toLabel()).row()
             }
         return policiesTable
     }
