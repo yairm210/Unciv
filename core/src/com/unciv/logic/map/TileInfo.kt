@@ -282,6 +282,10 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         else
             roadStatus
     }
+    fun getUnpillagedRoadImprovement(): TileImprovement? {
+        return if (getUnpillagedRoad() == RoadStatus.None) null
+        else ruleset.tileImprovements[getUnpillagedRoad().name]
+    }
 
     // function handling when adding a road to the tile
     fun addRoad(roadType: RoadStatus, unitCivInfo: CivilizationInfo) {
