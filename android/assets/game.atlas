@@ -90,7 +90,7 @@ EmojiIcons/Science
   index: -1
 EmojiIcons/Turn
   rotate: false
-  xy: 1486, 1286
+  xy: 762, 720
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -412,7 +412,7 @@ StatIcons/Movement
   index: -1
 OtherIcons/BackArrow
   rotate: false
-  xy: 1162, 1014
+  xy: 946, 906
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -426,7 +426,7 @@ OtherIcons/Banner
   index: -1
 OtherIcons/Camera
   rotate: false
-  xy: 1162, 981
+  xy: 896, 829
   size: 25, 25
   orig: 25, 25
   offset: 0, 0
@@ -468,7 +468,7 @@ OtherIcons/Cities
   index: -1
 OtherIcons/CityState
   rotate: false
-  xy: 1054, 906
+  xy: 1162, 1014
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -545,7 +545,7 @@ OtherIcons/Improvements
   index: -1
 OtherIcons/Link
   rotate: false
-  xy: 896, 804
+  xy: 1004, 906
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -830,6 +830,13 @@ UnitActionIcons/Stop
   orig: 100, 100
   offset: 0, 0
   index: -1
+UnitActionIcons/StopMove
+  rotate: false
+  xy: 1054, 1072
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
 OtherIcons/Swap
   rotate: false
   xy: 1270, 1288
@@ -846,7 +853,7 @@ UnitActionIcons/Swap
   index: -1
 OtherIcons/Terrains
   rotate: false
-  xy: 762, 720
+  xy: 704, 720
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1217,7 +1224,7 @@ StatIcons/Population
   index: -1
 StatIcons/Range
   rotate: false
-  xy: 954, 804
+  xy: 1062, 906
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1252,7 +1259,7 @@ StatIcons/Specialist
   index: -1
 StatIcons/Strength
   rotate: false
-  xy: 704, 720
+  xy: 646, 720
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1369,6 +1376,13 @@ UnitActionIcons/Promote
   orig: 100, 94
   offset: 0, 0
   index: -1
+UnitActionIcons/Upgrade
+  rotate: false
+  xy: 838, 1510
+  size: 100, 94
+  orig: 100, 94
+  offset: 0, 0
+  index: -1
 UnitActionIcons/RemoveHeresy
   rotate: false
   xy: 1162, 1612
@@ -1402,20 +1416,6 @@ UnitActionIcons/StartGoldenAge
   xy: 838, 862
   size: 100, 100
   orig: 100, 100
-  offset: 0, 0
-  index: -1
-UnitActionIcons/StopMove
-  rotate: false
-  xy: 646, 720
-  size: 50, 50
-  orig: 50, 50
-  offset: 0, 0
-  index: -1
-UnitActionIcons/Upgrade
-  rotate: false
-  xy: 946, 862
-  size: 100, 94
-  orig: 100, 94
   offset: 0, 0
   index: -1
 UnitFlagIcons/UnitFlagCivilian
