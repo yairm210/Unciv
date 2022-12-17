@@ -264,9 +264,9 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                     clear()
                     defaults().left().bottom()
                     addCategory("Units", units, maxButtonWidth)
+                    addCategory("Buildings", buildableBuildings, maxButtonWidth)
                     addCategory("Wonders", buildableWonders, maxButtonWidth)
                     addCategory("National Wonders", buildableNationalWonders, maxButtonWidth)
-                    addCategory("Buildings", buildableBuildings, maxButtonWidth)
                     addCategory("Other", specialConstructions, maxButtonWidth)
                     pack()
                 }
@@ -322,8 +322,14 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         table.touchable = Touchable.enabled
         table.onClick {
-            cityScreen.selectConstruction(constructionName)
-            selectedQueueEntry = constructionQueueIndex
+            if (selectedQueueEntry == constructionQueueIndex) {
+                city.cityConstructions.removeFromQueue(constructionQueueIndex, false)
+                selectedQueueEntry = -1
+                cityScreen.clearSelection()
+            } else {
+                cityScreen.selectConstruction(constructionName)
+                selectedQueueEntry = constructionQueueIndex
+            }
             cityScreen.update()
         }
         return table
@@ -381,7 +387,11 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                     .colspan(pickConstructionButton.columns).fillX().left().padTop(2f)
         }
         pickConstructionButton.onClick {
-            cityScreen.selectConstruction(construction)
+            if (cityScreen.selectedConstruction == construction) {
+                addConstructionToQueue(construction, cityScreen.city.cityConstructions)
+            } else {
+                cityScreen.selectConstruction(construction)
+            }
             selectedQueueEntry = -1
             cityScreen.update()
         }
