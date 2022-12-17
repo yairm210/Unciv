@@ -71,6 +71,7 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
             }
         }
 
+        unitLayerGroup.isVisible = false
         terrainFeatureLayerGroup.color.a = 0.5f
         icons.improvementIcon?.setColor(1f, 1f, 1f, 0.5f)
         resourceImage?.setColor(1f, 1f, 1f, 0.5f)
