@@ -435,6 +435,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 
 ### Technologies
 
+- [Lightbulb](https://thenounproject.com/icon/lightbulb-589680/) by Davo Sime for fallback image
+
 #### Ancient
 
 -   [Agriculture](https://thenounproject.com/term/agriculture/4221/) By OCHA Visual Information Unit
