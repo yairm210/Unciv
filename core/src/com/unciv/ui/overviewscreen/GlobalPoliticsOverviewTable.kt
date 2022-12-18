@@ -173,6 +173,9 @@ class GlobalPoliticsOverviewTable (
 
         // wars
         for (otherCiv in civ.getKnownCivs()) {
+            if (!viewingPlayer.knows(otherCiv))
+                continue
+
             if(civ.isAtWarWith(otherCiv)) {
                 val warText = "At war with [${otherCiv.civName}]".toLabel()
                 warText.color = Color.RED
@@ -183,6 +186,9 @@ class GlobalPoliticsOverviewTable (
 
         // declaration of friendships
         for (otherCiv in civ.getKnownCivs()) {
+            if (!viewingPlayer.knows(otherCiv))
+                continue
+
             if(civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.DeclarationOfFriendship) == true) {
                 val friendtext = "Friends with [${otherCiv.civName}]".toLabel()
                 friendtext.color = Color.GREEN
@@ -195,6 +201,9 @@ class GlobalPoliticsOverviewTable (
 
         // denounced civs
         for (otherCiv in civ.getKnownCivs()) {
+            if (!viewingPlayer.knows(otherCiv))
+                continue
+
             if(civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.Denunciation) == true) {
                 val denouncedText = "Denounced [${otherCiv.civName}]".toLabel()
                 denouncedText.color = Color.RED
@@ -207,6 +216,9 @@ class GlobalPoliticsOverviewTable (
 
         //allied CS
         for (cityState in gameInfo.getAliveCityStates()) {
+            if (!viewingPlayer.knows(cityState))
+                continue
+
             if (cityState.diplomacy[civ.civName]?.relationshipLevel() == RelationshipLevel.Ally) {
                 val alliedText = "Allied with [${cityState.civName}]".toLabel()
                 alliedText.color = Color.GREEN
