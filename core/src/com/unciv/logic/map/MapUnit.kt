@@ -1001,9 +1001,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
         updateVisibleTiles()
     }
 
-    fun putInTile(tile: TileInfo) {
+    fun putInTile(tile: TileInfo, buildCheck: Boolean = false) {
         when {
-            !movement.canMoveTo(tile) ->
+            !movement.canMoveTo(tile, buildCheck = buildCheck) ->
                 throw Exception("Unit $name at $currentTile can't be put in tile ${tile.position}!")
             baseUnit.movesLikeAirUnits() -> tile.airUnits.add(this)
             isCivilian() -> tile.civilianUnit = this

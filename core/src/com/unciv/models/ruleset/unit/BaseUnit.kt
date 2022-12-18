@@ -368,7 +368,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             rejectionReasons.add(RejectionReason.WaterUnitsInCoastalCities)
         if (isAirUnit()) {
             val fakeUnit = getMapUnit(cityConstructions.cityInfo.civInfo)
-            val canUnitEnterTile = fakeUnit.movement.canMoveTo(cityConstructions.cityInfo.getCenterTile())
+            val canUnitEnterTile = fakeUnit.movement.canMoveTo(cityConstructions.cityInfo.getCenterTile(), buildCheck = true)
             if (!canUnitEnterTile)
                 rejectionReasons.add(RejectionReason.NoPlaceToPutUnit)
         }
