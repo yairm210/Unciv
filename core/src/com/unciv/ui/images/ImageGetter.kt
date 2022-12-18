@@ -248,7 +248,7 @@ object ImageGetter {
         if (improvement != null)
             iconGroup.circle.color = getColorFromStats(improvement)
 
-        return iconGroup.surroundWithThinCircle(Color.BLACK)
+        return iconGroup.surroundWithThinCircle()
     }
 
     fun getPortraitImage(construction: String, size: Float): Group {
@@ -257,18 +257,18 @@ object ImageGetter {
             return if (imageExists(buildingPortraitLocation)) {
                 getImage(buildingPortraitLocation).toGroup(size)
             } else
-                getImage("BuildingIcons/$construction").surroundWithCircle(size).surroundWithThinCircle(Color.BLACK)
+                getImage("BuildingIcons/$construction").surroundWithCircle(size).surroundWithThinCircle()
         }
         if (ruleset.units.containsKey(construction)) {
             val unitPortraitLocation = "UnitPortraits/$construction"
             return if (imageExists(unitPortraitLocation)) {
                 getImage(unitPortraitLocation).toGroup(size)
             } else
-                getUnitIcon(construction).surroundWithCircle(size).surroundWithThinCircle(Color.BLACK)
+                getUnitIcon(construction).surroundWithCircle(size).surroundWithThinCircle()
         }
         if (construction == "Nothing")
-            return getImage("OtherIcons/Sleep").surroundWithCircle(size).surroundWithThinCircle(Color.BLACK)
-        return getStatIcon(construction).surroundWithCircle(size).surroundWithThinCircle(Color.BLACK)
+            return getImage("OtherIcons/Sleep").surroundWithCircle(size).surroundWithThinCircle()
+        return getStatIcon(construction).surroundWithCircle(size).surroundWithThinCircle()
     }
 
     fun getPromotionIcon(promotionName: String, size: Float = 30f): Actor {
@@ -366,7 +366,7 @@ object ImageGetter {
             production.x = iconGroup.width - production.width
             iconGroup.addActor(production)
         }
-        return iconGroup.surroundWithThinCircle(Color.BLACK)
+        return iconGroup.surroundWithThinCircle()
     }
 
     fun getTechIconGroup(techName: String, circleSize: Float): IconCircleGroup {

@@ -104,7 +104,7 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
                 ImageGetter.getImage("OtherIcons/Star")
                     .apply { color = Color.BLACK }
                     .surroundWithCircle(techIconSize)
-                    .surroundWithThinCircle(Color.BLACK))
+                    .surroundWithThinCircle())
 
         if (isWorldScreen) rightSide.add(techEnabledIcons)
         else rightSide.add(techEnabledIcons)

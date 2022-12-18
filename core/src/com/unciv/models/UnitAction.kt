@@ -25,7 +25,7 @@ data class UnitAction(
     fun getIcon(): Actor {
         if (type.imageGetter != null) return type.imageGetter.invoke()
             .surroundWithCircle(20f)
-            .surroundWithThinCircle(Color.BLACK)
+            .surroundWithThinCircle()
         return when (type) {
             UnitActionType.Create -> {
                 ImageGetter.getImprovementIcon(title.getPlaceholderParameters()[0])
@@ -36,7 +36,7 @@ data class UnitAction(
                     if (ImageGetter.religionIconExists(religionName)) religionName
                     else "Pantheon"
                 ).apply { color = Color.BLACK }
-                    .surroundWithCircle(20f).surroundWithThinCircle(Color.BLACK)
+                    .surroundWithCircle(20f).surroundWithThinCircle()
             }
             else -> ImageGetter.getImage("UnitActionIcons/Star").apply { color = Color.BLACK }
         }
