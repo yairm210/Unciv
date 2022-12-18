@@ -173,7 +173,7 @@ class GlobalPoliticsOverviewTable (
 
         // wars
         for (otherCiv in civ.getKnownCivs()) {
-            if (!viewingPlayer.getKnownCivs().contains(otherCiv))
+            if (!viewingPlayer.knows(otherCiv))
                 continue
 
             if(civ.isAtWarWith(otherCiv)) {
@@ -186,7 +186,7 @@ class GlobalPoliticsOverviewTable (
 
         // declaration of friendships
         for (otherCiv in civ.getKnownCivs()) {
-            if (!viewingPlayer.getKnownCivs().contains(otherCiv))
+            if (!viewingPlayer.knows(otherCiv))
                 continue
 
             if(civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.DeclarationOfFriendship) == true) {
@@ -201,7 +201,7 @@ class GlobalPoliticsOverviewTable (
 
         // denounced civs
         for (otherCiv in civ.getKnownCivs()) {
-            if (!viewingPlayer.getKnownCivs().contains(otherCiv))
+            if (!viewingPlayer.knows(otherCiv))
                 continue
 
             if(civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.Denunciation) == true) {
@@ -216,7 +216,7 @@ class GlobalPoliticsOverviewTable (
 
         //allied CS
         for (cityState in gameInfo.getAliveCityStates()) {
-            if (!viewingPlayer.getKnownCivs().contains(cityState))
+            if (!viewingPlayer.knows(cityState))
                 continue
 
             if (cityState.diplomacy[civ.civName]?.relationshipLevel() == RelationshipLevel.Ally) {
