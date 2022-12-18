@@ -92,9 +92,9 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
                     }
                 }
             }
-            miniStatsTable.add(icon).size(27f).padRight(5f)
+            miniStatsTable.add(icon).size(27f).padRight(3f)
             val valueToDisplay = if (stat == Stat.Happiness) cityInfo.cityStats.happinessList.values.sum() else amount
-            miniStatsTable.add(round(valueToDisplay).toInt().toLabel()).padRight(10f)
+            miniStatsTable.add(round(valueToDisplay).toInt().toLabel()).padRight(5f)
         }
         upperTable.add(miniStatsTable)
 
