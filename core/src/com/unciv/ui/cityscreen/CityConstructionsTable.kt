@@ -61,7 +61,6 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     private var preferredBuyStat = Stat.Gold  // Used for keyboard buy
 
     private val upperTable = Table(BaseScreen.skin)
-    private val showCityInfoTableButton = "Show stats drilldown".toTextButton()
     private val constructionsQueueScrollPane: ScrollPane
     private val constructionsQueueTable = Table()
     private val buyButtonsTable = Table()
@@ -84,11 +83,6 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         }
 
     init {
-        showCityInfoTableButton.onClick {
-            cityScreen.showConstructionsTable = false
-            cityScreen.update()
-        }
-
         constructionsQueueScrollPane = ScrollPane(constructionsQueueTable.addBorder(2f, Color.WHITE))
         constructionsQueueScrollPane.setOverscroll(false, false)
         constructionsQueueTable.background = BaseScreen.skinStrings.getUiBackground(
@@ -97,7 +91,6 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         )
 
         upperTable.defaults().left().top()
-        upperTable.add(showCityInfoTableButton).padLeft(pad).padBottom(pad).row()
         upperTable.add(constructionsQueueScrollPane)
             .maxHeight(stageHeight / 3 - 10f)
             .padBottom(pad).row()
