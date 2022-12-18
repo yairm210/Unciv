@@ -1,3 +1,31 @@
+## 4.3.10
+
+Better unit action icons
+
+Solved temporary unique parsing error
+
+4.3.9-patch1
+
+Handle mods with nations but no major civs
+
+Fixed global resource unique
+
+bugfix: players can no longer get citystate nations when selecting mod
+
+Thin lines around construction images
+
+UI improvements - added thin lines around circle icons, cleaner politics table
+
+By vegeta1k95:
+- Rework of City Screen: new current buildings list + misc changes 
+- Construction table: ordering change (Civ 5) + add/remove on double-click 
+- Fix bug, where units do not reveal tiles  ()
+
+By alexban011:
+- fixed global politics screen from revealing unknown civs and CityStates 
+- added mod topics to wiki 
+- fixed issue 
+
 ## 4.3.9
 
 Modding: Can provide resources as a global unique
