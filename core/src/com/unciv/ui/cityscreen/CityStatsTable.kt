@@ -6,15 +6,18 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityFlags
 import com.unciv.logic.city.CityFocus
+import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.ExpanderTab
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.extensions.addSeparator
 import com.unciv.ui.utils.extensions.colorFromRGB
@@ -100,6 +103,8 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         if (cityInfo.religion.getNumberOfFollowers().isNotEmpty() && cityInfo.civInfo.gameInfo.isReligionEnabled())
             addReligionInfo()
 
+        addBuildingsInfo()
+
         upperTable.pack()
         lowerTable.pack()
         lowerPane.layout()
@@ -108,6 +113,15 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
 
         innerTable.pack()  // update innerTable
         pack()  // update self last
+    }
+
+    private fun onContentResize() {
+        pack()
+        setPosition(
+            stage.width - CityScreen.posFromEdge,
+            stage.height - CityScreen.posFromEdge,
+            Align.topRight
+        )
     }
 
     private fun addText() {
@@ -171,36 +185,111 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
     }
 
     private fun addCitizenManagement() {
-        val expanderTab = CitizenManagementTable(cityScreen).asExpander {
-            pack()
-            setPosition(
-                stage.width - CityScreen.posFromEdge,
-                stage.height - CityScreen.posFromEdge,
-                Align.topRight
-            )
-        }
+        val expanderTab = CitizenManagementTable(cityScreen).asExpander { onContentResize() }
         lowerTable.add(expanderTab).growX().row()
     }
 
     private fun addSpecialistInfo() {
-        val expanderTab = SpecialistAllocationTable(cityScreen).asExpander {
-            pack()
-            setPosition(
-                stage.width - CityScreen.posFromEdge,
-                stage.height - CityScreen.posFromEdge,
-                Align.topRight
-            )
-        }
+        val expanderTab = SpecialistAllocationTable(cityScreen).asExpander { onContentResize() }
         lowerTable.add(expanderTab).growX().row()
     }
 
     private fun addReligionInfo() {
-        val expanderTab = CityReligionInfoTable(cityInfo.religion).asExpander {
-            pack()
-            // We have to re-anchor as our position in the city screen, otherwise it expands upwards.
-            // ToDo: This probably should be refactored so its placed somewhere else in due time
-            setPosition(stage.width - CityScreen.posFromEdge, stage.height - CityScreen.posFromEdge, Align.topRight)
+        val expanderTab = CityReligionInfoTable(cityInfo.religion).asExpander { onContentResize() }
+        lowerTable.add(expanderTab).growX().row()
+    }
+
+    private fun addBuildingsInfo() {
+        val wonders = mutableListOf<Building>()
+        val specialistBuildings = mutableListOf<Building>()
+        val otherBuildings = mutableListOf<Building>()
+
+        for (building in cityInfo.cityConstructions.getBuiltBuildings()) {
+            when {
+                building.isAnyWonder() -> wonders.add(building)
+                !building.newSpecialists().isEmpty() -> specialistBuildings.add(building)
+                else -> otherBuildings.add(building)
+            }
+        }
+
+        if (specialistBuildings.isNotEmpty()) {
+            val specialistBuildingsTable = Table()
+            addCategory("Specialist Buildings", specialistBuildingsTable)
+            for (building in specialistBuildings) addBuildingButton(building, specialistBuildingsTable)
+        }
+
+        if (wonders.isNotEmpty()) {
+            val wondersTable = Table()
+            addCategory("Wonders", wondersTable)
+            for (building in wonders) addBuildingButton(building, wondersTable)
+        }
+
+        if (otherBuildings.isNotEmpty()) {
+            val regularBuildingsTable = Table()
+            addCategory("Buildings", regularBuildingsTable)
+            for (building in otherBuildings) addBuildingButton(building, regularBuildingsTable)
+        }
+    }
+
+    private fun addBuildingButton(building: Building, destinationTable: Table) {
+
+        val button = Table()
+
+        val info = Table()
+        val statsAndSpecialists = Table()
+
+        val icon = ImageGetter.getPortraitImage(building.name, 50f)
+        val isFree = building.name in cityScreen.city.civInfo.civConstructions.getFreeBuildings(cityScreen.city.id)
+        val displayName = if (isFree) "{${building.name}} ({Free})" else building.name
+
+        info.add(displayName.toLabel(fontSize = Constants.defaultFontSize)).padBottom(5f).right().row()
+
+        val stats = building.getStats(cityInfo).joinToString(separator = " ") {
+            "" + it.value.toInt() + it.key.character
+        }
+        statsAndSpecialists.add(stats.toLabel(fontSize = Constants.defaultFontSize)).right()
+
+        val assignedSpec = cityInfo.population.getNewSpecialists().clone()
+
+        val specialistIcons = Table()
+        for ((specialistName, amount) in building.newSpecialists()) {
+            val specialist = cityInfo.getRuleset().specialists[specialistName]
+                ?: continue // probably a mod that doesn't have the specialist defined yet
+            for (i in 0 until amount) {
+                if (assignedSpec[specialistName]!! > 0) {
+                    specialistIcons.add(ImageGetter.getSpecialistIcon(specialist.colorObject))
+                        .size(20f)
+                    assignedSpec.add(specialistName, -1)
+                } else {
+                    specialistIcons.add(ImageGetter.getSpecialistIcon(Color.GRAY)).size(20f)
+                }
+            }
+        }
+        statsAndSpecialists.add(specialistIcons).right()
+
+        info.add(statsAndSpecialists).right()
+
+        button.add(info).right().top().padRight(10f).padTop(5f)
+        button.add(icon).right()
+
+        button.onClick {
+            cityScreen.selectConstruction(building)
+            cityScreen.update()
+        }
+
+        destinationTable.add(button).pad(1f).expandX().right().row()
+    }
+
+    private fun addCategory(category: String, showHideTable: Table) {
+        val expanderTab = ExpanderTab(
+            title = category,
+            fontSize = Constants.defaultFontSize,
+            persistenceID = "CityInfo.$category",
+            onChange = { onContentResize() }
+        ) {
+            it.add(showHideTable).fillX().right()
         }
         lowerTable.add(expanderTab).growX().row()
     }
+
 }
