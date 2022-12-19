@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -25,12 +26,15 @@ import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ExpanderTab
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.colorFromRGB
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.surroundWithCircle
 import com.unciv.ui.utils.extensions.toLabel
 import java.text.DecimalFormat
 import kotlin.math.ceil
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.round
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
@@ -103,15 +107,14 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
 
         // begin lowerTable
         addCitizenManagement()
+        addStatInfo()
+        addGreatPersonPointInfo(cityInfo)
         if (!cityInfo.population.getMaxSpecialists().isEmpty()) {
             addSpecialistInfo()
         }
         if (cityInfo.religion.getNumberOfFollowers().isNotEmpty() && cityInfo.civInfo.gameInfo.isReligionEnabled())
             addReligionInfo()
 
-
-        addStatInfo()
-        addGreatPersonPointInfo(cityInfo)
         addBuildingsInfo()
 
         upperTable.pack()
@@ -221,21 +224,26 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
             }
         }
 
+        // Buildings sorted alphabetically
+        wonders.sortBy { it.name }
+        specialistBuildings.sortBy { it.name }
+        otherBuildings.sortBy { it.name }
+
         if (specialistBuildings.isNotEmpty()) {
             val specialistBuildingsTable = Table()
-            addCategory("Specialist Buildings", specialistBuildingsTable)
+            lowerTable.addCategory("Specialist Buildings", specialistBuildingsTable)
             for (building in specialistBuildings) addBuildingButton(building, specialistBuildingsTable)
         }
 
         if (wonders.isNotEmpty()) {
             val wondersTable = Table()
-            addCategory("Wonders", wondersTable)
+            lowerTable.addCategory("Wonders", wondersTable)
             for (building in wonders) addBuildingButton(building, wondersTable)
         }
 
         if (otherBuildings.isNotEmpty()) {
             val regularBuildingsTable = Table()
-            addCategory("Buildings", regularBuildingsTable)
+            lowerTable.addCategory("Buildings", regularBuildingsTable)
             for (building in otherBuildings) addBuildingButton(building, regularBuildingsTable)
         }
     }
@@ -289,16 +297,17 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         destinationTable.add(button).pad(1f).expandX().right().row()
     }
 
-    private fun addCategory(category: String, showHideTable: Table) {
+    private fun Table.addCategory(category: String, showHideTable: Table, startsOpened: Boolean = true) {
         val expanderTab = ExpanderTab(
             title = category,
             fontSize = Constants.defaultFontSize,
             persistenceID = "CityInfo.$category",
+            startsOutOpened = startsOpened,
             onChange = { onContentResize() }
         ) {
             it.add(showHideTable).fillX().right()
         }
-        lowerTable.add(expanderTab).growX().row()
+        add(expanderTab).growX().row()
     }
 
 
@@ -317,17 +326,19 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         }
     }
 
-    private fun Table.addStatInfo() {
+    private fun addStatInfo() {
         val cityStats = cityScreen.city.cityStats
-
         val showFaith = cityScreen.city.civInfo.gameInfo.isReligionEnabled()
+
+        val totalTable = Table()
+        lowerTable.addCategory("Detailed stats", totalTable, false)
+
         for (stat in Stat.values()) {
             if (stat == Stat.Faith && !showFaith) continue
             val statValuesTable = Table()
             statValuesTable.touchable = Touchable.enabled
-            addCategory(stat.name, statValuesTable)
-
-            updateStatValuesTable(stat, cityStats, statValuesTable)
+            if (updateStatValuesTable(stat, cityStats, statValuesTable))
+                totalTable.addCategory(stat.name, statValuesTable, false)
         }
     }
 
@@ -336,7 +347,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         cityStats: CityStats,
         statValuesTable: Table,
         showDetails:Boolean = false
-    ) {
+    ) : Boolean {
         statValuesTable.clear()
         statValuesTable.defaults().pad(2f)
         statValuesTable.onClick {
@@ -357,7 +368,8 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         for (key in relevantBaseStats.keys.toList())
             if (relevantBaseStats[key] == 0f) relevantBaseStats.remove(key)
 
-        if (relevantBaseStats.isEmpty()) return
+        if (relevantBaseStats.isEmpty())
+            return false
 
         statValuesTable.add("Base values".toLabel(fontSize = FONT_SIZE_STAT_INFO_HEADER)).pad(4f)
             .colspan(2).row()
@@ -413,6 +425,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         }
 
         statValuesTable.padBottom(4f)
+        return true
     }
 
     private fun getToggleButton(showDetails: Boolean): IconCircleGroup {
@@ -423,19 +436,66 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
             .surroundWithCircle(27f, false)
     }
 
-    private fun Table.addGreatPersonPointInfo(cityInfo: CityInfo) {
+    private fun addGreatPersonPointInfo(cityInfo: CityInfo) {
+
+        val greatPeopleTable = Table()
+
         val greatPersonPoints = cityInfo.getGreatPersonPointsForNextTurn()
         val allGreatPersonNames = greatPersonPoints.asSequence().flatMap { it.value.keys }.distinct()
+
+        if (allGreatPersonNames.none())
+            return
+
         for (greatPersonName in allGreatPersonNames) {
-            val expanderName = "[$greatPersonName] points"
-            val greatPersonTable = Table()
-            addCategory(expanderName, greatPersonTable)
-            for ((source, gppCounter) in greatPersonPoints) {
+
+            val greatPersonIcon = greatPersonEmoji(greatPersonName)
+
+            var gppPerTurn = 0
+
+            for ((_, gppCounter) in greatPersonPoints) {
                 val gppPointsFromSource = gppCounter[greatPersonName]!!
                 if (gppPointsFromSource == 0) continue
-                greatPersonTable.add(source.toLabel()).padRight(10f)
-                greatPersonTable.add(gppPointsFromSource.toLabel()).row()
+                gppPerTurn += gppPointsFromSource
             }
+
+            val info = Table()
+            info.add("$greatPersonIcon $greatPersonName (+$gppPerTurn)".toLabel()).left().padBottom(4f).expandX().row()
+
+            val gppCurrent = cityInfo.civInfo.greatPeople.greatPersonPointsCounter[greatPersonName]
+            val gppNeeded = cityInfo.civInfo.greatPeople.pointsForNextGreatPerson
+
+            val percent = gppCurrent!! / gppNeeded.toFloat()
+
+            val progressBar = ImageGetter.ProgressBar(300f, 25f, false)
+            progressBar.setBackground(Color.BLACK.cpy().apply { a = 0.8f })
+            progressBar.setProgress(Color.ORANGE, percent)
+            progressBar.apply {
+                val bar = ImageGetter.getWhiteDot()
+                bar.color = Color.GRAY
+                bar.setSize(width+5f, height+5f)
+                bar.center(this)
+                addActor(bar)
+                bar.toBack()
+            }
+            progressBar.setLabel(Color.WHITE, "$gppCurrent/$gppNeeded", fontSize = 14)
+
+            info.add(progressBar).left().expandX().row()
+
+            greatPeopleTable.add(info).growX().top()
+            greatPeopleTable.add(ImageGetter.getPortraitImage(greatPersonName, 50f)).row()
+        }
+
+        lowerTable.addCategory("Great People", greatPeopleTable)
+    }
+
+    private fun greatPersonEmoji(name: String) : String {
+        return when(name) {
+            "Great Artist" -> Fonts.greatArtist.toString()
+            "Great Engineer" -> Fonts.greatEngineer.toString()
+            "Great General" -> Fonts.greatGeneral.toString()
+            "Great Merchant" -> Fonts.greatMerchant.toString()
+            "Great Scientist" -> Fonts.greatScientist.toString()
+            else -> ""
         }
     }
 

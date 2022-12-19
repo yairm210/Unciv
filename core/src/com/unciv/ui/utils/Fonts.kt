@@ -124,6 +124,11 @@ class NativeBitmapFontData(
             Fonts.culture -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Culture").region)
             Fonts.faith -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Faith").region)
             Fonts.happiness -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Happiness").region)
+            Fonts.greatArtist -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Great Artist").region)
+            Fonts.greatEngineer -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Great Engineer").region)
+            Fonts.greatGeneral -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Great General").region)
+            Fonts.greatMerchant -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Great Merchant").region)
+            Fonts.greatScientist -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Great Scientist").region)
             MayaCalendar.tun -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable(MayaCalendar.tunIcon).region)
             MayaCalendar.katun -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable(MayaCalendar.katunIcon).region)
             MayaCalendar.baktun -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable(MayaCalendar.baktunIcon).region)
@@ -231,4 +236,9 @@ object Fonts {
     const val culture = '♪'             // U+266A 'eighth note' (🎵 U+1F3B5 'musical note')
     const val happiness = '⌣'           // U+2323 'smile' (😀 U+1F600 'grinning face')
     const val faith = '☮'               // U+262E 'peace symbol' (🕊 U+1F54A 'dove of peace')
+    const val greatArtist = '♬'          // U+266C 'sixteenth note'
+    const val greatEngineer = '⚒'       // U+2692 'hammer'
+    const val greatGeneral = '⛤'       // U+26E4 'pentagram'
+    const val greatMerchant = '⚖'      // U+2696 'scale'
+    const val greatScientist = '⚛'      // U+269B 'atom'
 }

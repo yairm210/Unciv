@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
@@ -382,23 +383,79 @@ object ImageGetter {
             .surroundWithThinCircle(techIconColor)
     }
 
-    fun getProgressBarVertical(width: Float, height: Float, percentComplete: Float, progressColor: Color, backgroundColor: Color): Group {
-        return VerticalProgressBar(width, height)
-                .addColor(backgroundColor, 1f)
-                .addColor(progressColor, percentComplete)
+    fun getProgressBarHorizontal(width: Float, height: Float, percentComplete: Float, progressColor: Color, backgroundColor: Color): Group {
+        return ProgressBar(width, height, false)
+            .setBackground(backgroundColor)
+            .setProgress(progressColor, percentComplete)
     }
 
-    class VerticalProgressBar(width: Float, height: Float):Group() {
+    fun getProgressBarVertical(width: Float, height: Float, percentComplete: Float, progressColor: Color, backgroundColor: Color): Group {
+        return ProgressBar(width, height, true)
+                .setBackground(backgroundColor)
+                .setProgress(progressColor, percentComplete)
+    }
+
+    class ProgressBar(width: Float, height: Float, val vertical: Boolean = true):Group() {
+
+        var primaryPercentage: Float = 0f
+        var secondaryPercentage: Float = 0f
+
+        var label: Label? = null
+        var background: Image? = null
+        var secondaryProgress: Image? = null
+        var primaryProgress: Image? = null
+
         init {
             setSize(width, height)
             isTransform = false
         }
 
-        fun addColor(color: Color, percentage: Float): VerticalProgressBar {
-            val bar = getWhiteDot()
-            bar.color = color
-            bar.setSize(width, height *  max(min(percentage, 1f),0f)) //clamp between 0 and 1
-            addActor(bar)
+        fun setLabel(color: Color, text: String, fontSize: Int = Constants.defaultFontSize) : ProgressBar {
+            label = text.toLabel()
+            label?.setAlignment(Align.center)
+            label?.setFontColor(color)
+            label?.setFontSize(fontSize)
+            label?.toFront()
+            label?.center(this)
+            if (label != null)
+                addActor(label)
+            return this
+        }
+
+        fun setBackground(color: Color): ProgressBar {
+            background = getWhiteDot()
+            background?.color = color
+            background?.setSize(width, height) //clamp between 0 and 1
+            background?.toBack()
+            background?.center(this)
+            if (background != null)
+                addActor(background)
+            return this
+        }
+
+        fun setSemiProgress(color: Color, percentage: Float): ProgressBar {
+            secondaryPercentage = percentage
+            secondaryProgress = getWhiteDot()
+            secondaryProgress?.color = color
+            if (vertical)
+                secondaryProgress?.setSize(width, height *  max(min(percentage, 1f),0f))
+            else
+                secondaryProgress?.setSize(width *  max(min(percentage, 1f),0f), height)
+            if (secondaryProgress != null)
+                addActor(secondaryProgress)
+            return this
+        }
+
+        fun setProgress(color: Color, percentage: Float): ProgressBar {
+            primaryPercentage = percentage
+            primaryProgress = getWhiteDot()
+            primaryProgress?.color = color
+            if (vertical)
+                primaryProgress?.setSize(width, height *  max(min(percentage, 1f),0f))
+            else
+                primaryProgress?.setSize(width *  max(min(percentage, 1f),0f), height)
+            if (primaryProgress != null)
+                addActor(primaryProgress)
             return this
         }
     }

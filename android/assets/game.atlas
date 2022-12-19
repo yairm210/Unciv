@@ -95,6 +95,41 @@ EmojiIcons/Turn
   orig: 50, 50
   offset: 0, 0
   index: -1
+EmojiIcons/Great Artist
+  rotate: false
+  xy: 296, 657
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+EmojiIcons/Great Engineer
+  rotate: false
+  xy: 356, 657
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+EmojiIcons/Great General
+  rotate: false
+  xy: 419, 657
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+EmojiIcons/Great Merchant
+  rotate: false
+  xy: 478, 657
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+EmojiIcons/Great Scientist
+  rotate: false
+  xy: 536, 657
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
 ImprovementIcons/Academy
   rotate: false
   xy: 847, 1936

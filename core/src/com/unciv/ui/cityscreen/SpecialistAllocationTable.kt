@@ -1,5 +1,6 @@
 package com.unciv.ui.cityscreen
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -104,13 +105,15 @@ class SpecialistAllocationTable(val cityScreen: CityScreen) : Table(BaseScreen.s
 
 
     private fun getSpecialistStatsTable(specialistName: String): Table {
-        val specialistStatTable = Table().apply { defaults().pad(5f) }
+        val specialistStatTable = Table().apply { defaults().padBottom(5f).padTop(5f) }
         val specialistStats = cityInfo.cityStats.getStatsOfSpecialist(specialistName)
         for ((key, value) in specialistStats) {
             if (value == 0f) continue
-            specialistStatTable.add(ImageGetter.getStatIcon(key.name)).size(20f)
-            specialistStatTable.add(value.toInt().toLabel()).padRight(10f)
+            specialistStatTable.add(value.toInt().toLabel())
+            specialistStatTable.add(ImageGetter.getStatIcon(key.name)).size(20f).padRight(10f)
         }
+        specialistStatTable.add("3".toLabel())
+        specialistStatTable.add(ImageGetter.getImage("EmojiIcons/Great " + specialistName)).size(20f).padRight(10f)
         return specialistStatTable
     }
 
