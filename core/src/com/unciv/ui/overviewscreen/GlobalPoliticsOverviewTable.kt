@@ -173,9 +173,6 @@ class GlobalPoliticsOverviewTable (
 
         // wars
         for (otherCiv in civ.getKnownCivs()) {
-            if (!viewingPlayer.knows(otherCiv))
-                continue
-
             if(civ.isAtWarWith(otherCiv)) {
                 val warText = if (viewingPlayer.knows(otherCiv))
                     "At war with [${otherCiv.civName}]".toLabel()
@@ -189,9 +186,6 @@ class GlobalPoliticsOverviewTable (
 
         // declaration of friendships
         for (otherCiv in civ.getKnownCivs()) {
-            if (!viewingPlayer.knows(otherCiv))
-                continue
-
             if(civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.DeclarationOfFriendship) == true) {
                 val friendText = if (viewingPlayer.knows(otherCiv))
                     "Friends with [${otherCiv.civName}]".toLabel()
