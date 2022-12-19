@@ -233,9 +233,9 @@ class DiplomacyScreen(
             val newProtectors = listOf<String>()
             for (protector in protectors) {
                 if (!viewingCiv.knows(protector))
-                    newProtectors.plus("Unknown civilization")
+                    newProtectors.plus("Unknown civilization".tr())
                 else
-                    newProtectors.plus(protector.civName)
+                    newProtectors.plus(protector.civName.tr())
             }
             val protectorString = "{Protected by}: " + newProtectors.joinToString(", ")
             diplomacyTable.add(protectorString.toLabel()).row()
