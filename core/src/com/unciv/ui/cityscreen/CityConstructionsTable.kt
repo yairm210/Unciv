@@ -61,7 +61,6 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     private var preferredBuyStat = Stat.Gold  // Used for keyboard buy
 
     private val upperTable = Table(BaseScreen.skin)
-    private val showCityInfoTableButton = "Show stats drilldown".toTextButton()
     private val constructionsQueueScrollPane: ScrollPane
     private val constructionsQueueTable = Table()
     private val buyButtonsTable = Table()
@@ -84,11 +83,6 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         }
 
     init {
-        showCityInfoTableButton.onClick {
-            cityScreen.showConstructionsTable = false
-            cityScreen.update()
-        }
-
         constructionsQueueScrollPane = ScrollPane(constructionsQueueTable.addBorder(2f, Color.WHITE))
         constructionsQueueScrollPane.setOverscroll(false, false)
         constructionsQueueTable.background = BaseScreen.skinStrings.getUiBackground(
@@ -97,7 +91,6 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         )
 
         upperTable.defaults().left().top()
-        upperTable.add(showCityInfoTableButton).padLeft(pad).padBottom(pad).row()
         upperTable.add(constructionsQueueScrollPane)
             .maxHeight(stageHeight / 3 - 10f)
             .padBottom(pad).row()
@@ -264,9 +257,9 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                     clear()
                     defaults().left().bottom()
                     addCategory("Units", units, maxButtonWidth)
+                    addCategory("Buildings", buildableBuildings, maxButtonWidth)
                     addCategory("Wonders", buildableWonders, maxButtonWidth)
                     addCategory("National Wonders", buildableNationalWonders, maxButtonWidth)
-                    addCategory("Buildings", buildableBuildings, maxButtonWidth)
                     addCategory("Other", specialConstructions, maxButtonWidth)
                     pack()
                 }
@@ -322,8 +315,14 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         table.touchable = Touchable.enabled
         table.onClick {
-            cityScreen.selectConstruction(constructionName)
-            selectedQueueEntry = constructionQueueIndex
+            if (selectedQueueEntry == constructionQueueIndex) {
+                city.cityConstructions.removeFromQueue(constructionQueueIndex, false)
+                selectedQueueEntry = -1
+                cityScreen.clearSelection()
+            } else {
+                cityScreen.selectConstruction(constructionName)
+                selectedQueueEntry = constructionQueueIndex
+            }
             cityScreen.update()
         }
         return table
@@ -381,7 +380,11 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                     .colspan(pickConstructionButton.columns).fillX().left().padTop(2f)
         }
         pickConstructionButton.onClick {
-            cityScreen.selectConstruction(construction)
+            if (cityScreen.selectedConstruction == construction) {
+                addConstructionToQueue(construction, cityScreen.city.cityConstructions)
+            } else {
+                cityScreen.selectConstruction(construction)
+            }
             selectedQueueEntry = -1
             cityScreen.update()
         }

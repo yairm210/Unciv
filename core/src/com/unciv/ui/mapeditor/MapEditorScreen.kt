@@ -230,7 +230,7 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen(), RecreateOnResize {
             ToastPopup(message, this@MapEditorScreen, 4000L )
         }
 
-        if (params.shape == MapShape.hexagonal) {
+        if (params.shape == MapShape.hexagonal || params.shape == MapShape.flatEarth) {
             params.mapSize = MapSizeNew(HexMath.getHexagonalRadiusForArea(areaFromTiles).toInt())
             return
         }

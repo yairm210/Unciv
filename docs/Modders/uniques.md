@@ -252,6 +252,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
+??? example  "Provides [amount] [resource]"
+	Example: "Provides [3] [Iron]"
+
+	Applicable to: Global, Improvement
+
 ??? example  "[relativeAmount]% growth [cityFilter]"
 	Example: "[+20]% growth [in all cities]"
 
@@ -857,11 +862,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "Consumes [3] [Iron]"
 
 	Applicable to: Building, Unit, Improvement
-
-??? example  "Provides [amount] [resource]"
-	Example: "Provides [3] [Iron]"
-
-	Applicable to: Building, Improvement
 
 ??? example  "Unbuildable"
 	Applicable to: Building, Unit, Improvement

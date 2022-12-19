@@ -23,5 +23,5 @@ class IconCircleGroup(size: Float, val actor: Actor, resizeActor: Boolean = true
         addActor(actor)
     }
 
-    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
+    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha*color.a)
 }

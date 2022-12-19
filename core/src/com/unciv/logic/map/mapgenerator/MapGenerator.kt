@@ -26,6 +26,7 @@ import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.math.sign
+import kotlin.math.sqrt
 import kotlin.math.ulp
 import kotlin.random.Random
 
@@ -33,6 +34,14 @@ import kotlin.random.Random
 class MapGenerator(val ruleset: Ruleset) {
     companion object {
         private const val consoleTimings = false
+    }
+
+    private val landTerrainName =
+            MapLandmassGenerator.getInitializationTerrain(ruleset, TerrainType.Land)
+    private val waterTerrainName: String = try {
+        MapLandmassGenerator.getInitializationTerrain(ruleset, TerrainType.Water)
+    } catch (_: Exception) {
+        landTerrainName
     }
 
     private var randomness = MapGenerationRandomness()
@@ -503,9 +512,19 @@ class MapGenerator(val ruleset: Ruleset) {
             val humidityRandom = randomness.getPerlinNoise(tile, humiditySeed, scale = scale, nOctaves = 1)
             val humidity = ((humidityRandom + 1.0) / 2.0 + humidityShift).coerceIn(0.0..1.0)
 
+            val expectedTemperature = if (tileMap.mapParameters.shape === MapShape.flatEarth) {
+                // Flat Earth uses radius because North is center of map
+                val radius = getTileRadius(tile, tileMap)
+                val radiusTemperature = getTemperatureAtRadius(radius)
+                radiusTemperature
+            } else {
+                // Globe Earth uses latitude because North is top of map
+                val latitudeTemperature = 1.0 - 2.0 * abs(tile.latitude) / tileMap.maxLatitude
+                latitudeTemperature
+            }
+
             val randomTemperature = randomness.getPerlinNoise(tile, temperatureSeed, scale = scale, nOctaves = 1)
-            val latitudeTemperature = 1.0 - 2.0 * abs(tile.latitude) / tileMap.maxLatitude
-            var temperature = (5.0 * latitudeTemperature + randomTemperature) / 6.0
+            var temperature = (5.0 * expectedTemperature + randomTemperature) / 6.0
             temperature = abs(temperature).pow(1.0 - temperatureExtremeness) * temperature.sign
             temperature = (temperature + temperatureShift).coerceIn(-1.0..1.0)
 
@@ -536,6 +555,65 @@ class MapGenerator(val ruleset: Ruleset) {
             tile.temperature = temperature
             tile.setTerrainTransients()
         }
+    }
+
+    private fun getTileRadius(tile: TileInfo, tileMap: TileMap): Float {
+        val latitudeRatio = abs(tile.latitude) / tileMap.maxLatitude
+        val longitudeRatio = abs(tile.longitude) / tileMap.maxLongitude
+        return sqrt(latitudeRatio.pow(2) + longitudeRatio.pow(2))
+    }
+
+    private fun getTemperatureAtRadius(radius: Float): Double {
+        /*
+        Radius is in the range of 0.0 to 1.0
+        Temperature is in the range of -1.0 to 1.0
+
+        Radius of 0.0 (arctic) is -1.0 (cold)
+        Radius of 0.25 (mid North) is 0.0 (temperate)
+        Radius of 0.5 (equator) is 1.0 (hot)
+        Radius of 0.75 (mid South) is 0.0 (temperate)
+        Radius of 1.0 (antarctic) is -1.0 (cold)
+
+        Scale the radius range to the temperature range
+        */
+        return when {
+            /*
+            North Zone
+            Starts cold at arctic and gets hotter as it goes South to equator
+            x1 is set to 0.05 instead of 0.0 to offset the ice in the center of the map
+            */
+            radius < 0.5 -> scaleToRange(0.05, 0.5, -1.0, 1.0, radius)
+
+            /*
+            South Zone
+            Starts hot at equator and gets colder as it goes South to antarctic
+            x2 is set to 0.95 instead of 1.0 to offset the ice on the edges of the map
+            */
+            radius > 0.5 -> scaleToRange(0.5, 0.95, 1.0, -1.0, radius)
+
+            /*
+            Equator
+            Always hot
+            radius == 0.5
+            */
+            else -> 1.0
+        }
+    }
+
+    /**
+     * @x1 start of the original range
+     * @x2 end of the original range
+     * @y1 start of the new range
+     * @y2 end of the new range
+     * @value value to be scaled from the original range to the new range
+     *
+     * @returns value in new scale
+     * special thanks to @letstalkaboutdune for the math
+     */
+    private fun scaleToRange(x1: Double, x2: Double, y1: Double, y2: Double, value: Float): Double {
+        val gain = (y2 - y1) / (x2 - x1)
+        val offset = y2 - (gain * x2)
+        return (gain * value) + offset
     }
 
     /**
@@ -596,6 +674,11 @@ class MapGenerator(val ruleset: Ruleset) {
                     -1f, ruleset.modOptions.constants.spawnIceBelowTemperature,
                     0f, 1f))
             }.toList()
+
+        if (tileMap.mapParameters.shape === MapShape.flatEarth) {
+            spawnFlatEarthIceWalls(tileMap, iceEquivalents)
+        }
+
         if (iceEquivalents.isEmpty()) return
 
         tileMap.setTransients(ruleset)
@@ -618,6 +701,145 @@ class MapGenerator(val ruleset: Ruleset) {
             when (candidates.size) {
                 1 -> tile.addTerrainFeature(candidates.first())
                 !in 0..1 -> tile.addTerrainFeature(candidates.random(randomness.RNG))
+            }
+        }
+    }
+
+    private fun spawnFlatEarthIceWalls(tileMap: TileMap, iceEquivalents: List<TerrainOccursRange>) {
+        val iceCandidates = iceEquivalents.filter {
+            it.matches(-1.0, 1.0)
+        }.map {
+            it.terrain.name
+        }
+        val iceTerrainName =
+                when (iceCandidates.size) {
+                    1 -> iceCandidates.first()
+                    !in 0..1 -> iceCandidates.random(randomness.RNG)
+                    else -> null
+                }
+
+        val snowCandidates = ruleset.terrains.values.asSequence().filter {
+            it.type == TerrainType.Land
+        }.flatMap { terrain ->
+            val conditions = terrain.getGenerationConditions()
+            if (conditions.any()) conditions
+            else sequenceOf(
+                TerrainOccursRange(
+                    terrain,
+                    -1f, ruleset.modOptions.constants.spawnIceBelowTemperature,
+                    0f, 1f
+                )
+            )
+        }.toList().filter {
+            it.matches(-1.0, 1.0)
+        }.map {
+            it.terrain.name
+        }
+        val snowTerrainName =
+                when (snowCandidates.size) {
+                    1 -> snowCandidates.first()
+                    !in 0..1 -> snowCandidates.random(randomness.RNG)
+                    else -> null
+                }
+
+        val mountainTerrainName =
+                ruleset.terrains.values.firstOrNull { it.hasUnique(UniqueType.OccursInChains) }?.name
+
+        val bestArcticTileName = when {
+            iceTerrainName != null -> iceTerrainName
+            snowTerrainName != null -> snowTerrainName
+            mountainTerrainName != null -> mountainTerrainName
+            else -> null
+        }
+
+        val arcticTileNameList =
+                arrayOf(iceTerrainName, snowTerrainName, mountainTerrainName).filterNotNull()
+
+        // Skip the tile loop if nothing can be done in it
+        if (bestArcticTileName == null && arcticTileNameList.isEmpty()) return
+
+        // Flat Earth needs a 1 tile wide perimeter of ice/mountain/snow and a 2 radius cluster of ice in the center.
+        for (tile in tileMap.values) {
+            val isCenterTile = tile.latitude == 0f && tile.longitude == 0f
+            val isEdgeTile = tile.neighbors.count() < 6
+
+            // Make center tiles ice or snow or mountain depending on availability
+            if (isCenterTile && bestArcticTileName != null) {
+                spawnFlatEarthCenterIceWall(tile, bestArcticTileName, iceTerrainName)
+            }
+
+            // Make edge tiles randomly ice or snow or mountain if available
+            if (isEdgeTile && arcticTileNameList.isNotEmpty()) {
+                spawnFlatEarthEdgeIceWall(tile, arcticTileNameList, iceTerrainName, mountainTerrainName)
+            }
+        }
+    }
+
+    private fun spawnFlatEarthCenterIceWall(tile: TileInfo, bestArcticTileName: String, iceTerrainName: String?) {
+        // Spawn ice on center tile
+        if (bestArcticTileName == iceTerrainName) {
+            tile.baseTerrain = waterTerrainName
+            tile.addTerrainFeature(iceTerrainName)
+        } else {
+            tile.baseTerrain = bestArcticTileName
+        }
+
+        // Spawn circle of ice around center tile
+        for (neighbor in tile.neighbors) {
+            if (bestArcticTileName == iceTerrainName) {
+                neighbor.baseTerrain = waterTerrainName
+                neighbor.addTerrainFeature(iceTerrainName)
+            } else {
+                neighbor.baseTerrain = bestArcticTileName
+            }
+
+            // Spawn partial circle of ice around circle of ice
+            for (neighbor2 in neighbor.neighbors) {
+                if (randomness.RNG.nextDouble() < 0.75) {
+                    // Do nothing most of the time at random.
+                } else if (bestArcticTileName == iceTerrainName) {
+                    neighbor2.baseTerrain = waterTerrainName
+                    neighbor2.addTerrainFeature(iceTerrainName)
+                } else {
+                    neighbor2.baseTerrain = bestArcticTileName
+                }
+            }
+        }
+    }
+
+    private fun spawnFlatEarthEdgeIceWall(tile: TileInfo, arcticTileNameList: List<String>, iceTerrainName: String?, mountainTerrainName: String?) {
+        // Select one of the arctic tiles at random
+        val arcticTileName = when (arcticTileNameList.size) {
+            1 -> arcticTileNameList.first()
+            else -> arcticTileNameList.random(randomness.RNG)
+        }
+
+        // Spawn arctic tiles on edge tile
+        if (arcticTileName == iceTerrainName) {
+            tile.baseTerrain = waterTerrainName
+            tile.addTerrainFeature(iceTerrainName)
+        } else if (iceTerrainName != null && arcticTileName != mountainTerrainName) {
+            tile.baseTerrain = arcticTileName
+            tile.addTerrainFeature(iceTerrainName)
+        } else {
+            tile.baseTerrain = arcticTileName
+        }
+
+        // Spawn partial circle of arctic tiles next to the edge
+        for (neighbor in tile.neighbors) {
+            val neighborIsEdgeTile = neighbor.neighbors.count() < 6
+            if (neighborIsEdgeTile) {
+                // Do not redo edge tile. It is already done.
+            } else if (randomness.RNG.nextDouble() < 0.75) {
+                // Do nothing most of the time at random.
+            } else if (arcticTileName == iceTerrainName) {
+                neighbor.baseTerrain = waterTerrainName
+                neighbor.addTerrainFeature(iceTerrainName)
+            } else if (iceTerrainName != null && arcticTileName != mountainTerrainName) {
+                neighbor.baseTerrain = arcticTileName
+                neighbor.addTerrainFeature(iceTerrainName)
+            } else {
+                neighbor.baseTerrain = arcticTileName
             }
         }
     }

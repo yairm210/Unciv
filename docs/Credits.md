@@ -216,6 +216,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 
 ### Buildings
 
+- [Building](https://thenounproject.com/icon/building-5386455/) by Aurel for fallback image
+
 #### Ancient Era
 
 -   [Storehouse](https://thenounproject.com/term/storehouse/966786/) By Pedro Santos for Granary
@@ -434,6 +436,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [United](https://thenounproject.com/term/united/3433531) by Izwar Muis for United Front
 
 ### Technologies
+
+- [Lightbulb](https://thenounproject.com/icon/lightbulb-589680/) by Davo Sime for fallback image
 
 #### Ancient
 
