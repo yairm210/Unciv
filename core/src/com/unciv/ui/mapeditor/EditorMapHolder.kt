@@ -46,6 +46,13 @@ class EditorMapHolder(
         continuousScrollingX = tileMap.mapParameters.worldWrap
         addTiles(parentScreen.stage)
         if (editorScreen != null) addCaptureListener(getDragPaintListener())
+        reloadMaxZoom()
+    }
+
+    internal fun reloadMaxZoom() {
+        maxZoom = UncivGame.Current.settings.maxWorldZoomOut
+        minZoom = 1f / maxZoom
+        if (scaleX < minZoom) zoom(1f)   // since normally min isn't reached exactly, only powers of 0.8
     }
 
     internal fun addTiles(stage: Stage) {
