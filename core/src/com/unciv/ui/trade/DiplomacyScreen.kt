@@ -218,8 +218,10 @@ class DiplomacyScreen(
         diplomacyTable.row().padTop(15f)
 
         otherCiv.updateAllyCivForCityState()
-        val ally = otherCiv.getAllyCiv()
+        var ally = otherCiv.getAllyCiv()
         if (ally != null) {
+            if (!viewingCiv.knows(ally))
+                ally = "Unknown civilization"
             val allyInfluence = otherCiv.getDiplomacyManager(ally).getInfluence().toInt()
             diplomacyTable
                 .add("Ally: [$ally] with [$allyInfluence] Influence".toLabel())
@@ -228,7 +230,14 @@ class DiplomacyScreen(
 
         val protectors = otherCiv.getProtectorCivs()
         if (protectors.isNotEmpty()) {
-            val protectorString = "{Protected by}: " + protectors.joinToString(", ") { it.civName.tr() }
+            val newProtectors = listOf<String>()
+            for (protector in protectors) {
+                if (!viewingCiv.knows(protector))
+                    newProtectors.plus("Unknown civilization")
+                else
+                    newProtectors.plus(protector.civName)
+            }
+            val protectorString = "{Protected by}: " + newProtectors.joinToString(", ")
             diplomacyTable.add(protectorString.toLabel()).row()
         }
 
