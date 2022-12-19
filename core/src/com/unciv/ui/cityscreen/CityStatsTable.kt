@@ -481,7 +481,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
 
             info.add(progressBar).left().expandX().row()
 
-            greatPeopleTable.add(info).growX().top()
+            greatPeopleTable.add(info).growX().top().padBottom(10f)
             greatPeopleTable.add(ImageGetter.getPortraitImage(greatPersonName, 50f)).row()
         }
 
