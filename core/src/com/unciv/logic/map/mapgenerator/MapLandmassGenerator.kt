@@ -213,8 +213,8 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
     }
 
     private fun getThreeContinentsTransform(tileInfo: TileInfo, tileMap: TileMap, isNorth: Boolean, isEastWest: Boolean): Double {
-        // The idea here is to create a water area separating the two four areas.
-        // So what we do it create a line of water in the middle - where longitude is close to 0.
+        // The idea here is to create a water area separating the three land areas.
+        // So what we do it create a line of water in the middle - where latitude or longitude is close to 0.
         val randomScale = randomness.RNG.nextDouble()
         var longitudeFactor = abs(tileInfo.longitude) / tileMap.maxLongitude
         var latitudeFactor = abs(tileInfo.latitude) / tileMap.maxLatitude
@@ -253,8 +253,8 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
     }
 
     private fun getFourCornersTransform(tileInfo: TileInfo, tileMap: TileMap): Double {
-        // The idea here is to create a water area separating the two four areas.
-        // So what we do it create a line of water in the middle - where longitude is close to 0.
+        // The idea here is to create a water area separating the four land areas.
+        // So what we do it create a line of water in the middle - where latitude or longitude is close to 0.
         val randomScale = randomness.RNG.nextDouble()
         var longitudeFactor = abs(tileInfo.longitude) / tileMap.maxLongitude
         var latitudeFactor = abs(tileInfo.latitude) / tileMap.maxLatitude
