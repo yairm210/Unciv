@@ -15,6 +15,7 @@ import com.unciv.ui.utils.extensions.addSeparatorVertical
 import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.ui.utils.extensions.toGroup
 import com.unciv.ui.utils.extensions.toLabel
 
 class SpecialistAllocationTable(val cityScreen: CityScreen) : Table(BaseScreen.skin) {
@@ -112,8 +113,14 @@ class SpecialistAllocationTable(val cityScreen: CityScreen) : Table(BaseScreen.s
             specialistStatTable.add(value.toInt().toLabel())
             specialistStatTable.add(ImageGetter.getStatIcon(key.name)).size(20f).padRight(10f)
         }
-        specialistStatTable.add("3".toLabel())
-        specialistStatTable.add(ImageGetter.getImage("EmojiIcons/Great " + specialistName)).size(20f).padRight(10f)
+
+        val specialist = cityInfo.getRuleset().specialists[specialistName]!!
+
+        for (s in specialist.greatPersonPoints) {
+            specialistStatTable.add(s.value.toLabel())
+            specialistStatTable.add(ImageGetter.getUnitIcon(s.key, Color.GOLD).toGroup(20f)).padRight(10f)
+        }
+
         return specialistStatTable
     }
 

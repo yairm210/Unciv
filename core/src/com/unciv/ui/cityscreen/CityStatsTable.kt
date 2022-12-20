@@ -29,7 +29,9 @@ import com.unciv.ui.utils.extensions.addSeparator
 import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.colorFromRGB
 import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.setSize
 import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.ui.utils.extensions.toGroup
 import com.unciv.ui.utils.extensions.toLabel
 import java.text.DecimalFormat
 import kotlin.math.ceil
@@ -229,22 +231,38 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         specialistBuildings.sortBy { it.name }
         otherBuildings.sortBy { it.name }
 
+        val totalTable = Table()
+        lowerTable.addCategory("Buildings", totalTable, false)
+
         if (specialistBuildings.isNotEmpty()) {
             val specialistBuildingsTable = Table()
-            lowerTable.addCategory("Specialist Buildings", specialistBuildingsTable)
+            totalTable.add().row()
+            totalTable.addSeparator(color = Color.LIGHT_GRAY)
+            totalTable.add("Specialist Buildings".toLabel().apply { setAlignment(Align.center) }).growX()
+            //totalTable.addCategory("Specialist Buildings", specialistBuildingsTable)
+            totalTable.addSeparator(color = Color.LIGHT_GRAY)
             for (building in specialistBuildings) addBuildingButton(building, specialistBuildingsTable)
+            totalTable.add(specialistBuildingsTable).growX().right().row()
         }
 
         if (wonders.isNotEmpty()) {
             val wondersTable = Table()
-            lowerTable.addCategory("Wonders", wondersTable)
+            totalTable.addSeparator()
+            totalTable.add("Wonders".toLabel().apply { setAlignment(Align.center) }).growX()
+            //totalTable.addCategory("Wonders", wondersTable)
+            totalTable.addSeparator()
             for (building in wonders) addBuildingButton(building, wondersTable)
+            totalTable.add(wondersTable).growX().right().row()
         }
 
         if (otherBuildings.isNotEmpty()) {
             val regularBuildingsTable = Table()
-            lowerTable.addCategory("Buildings", regularBuildingsTable)
+            totalTable.addSeparator()
+            totalTable.add("Other".toLabel().apply { setAlignment(Align.center) }).growX()
+            //totalTable.addCategory("Other", regularBuildingsTable)
+            totalTable.addSeparator()
             for (building in otherBuildings) addBuildingButton(building, regularBuildingsTable)
+            totalTable.add(regularBuildingsTable).growX().right().row()
         }
     }
 
@@ -294,20 +312,22 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
             cityScreen.update()
         }
 
-        destinationTable.add(button).pad(1f).expandX().right().row()
+        destinationTable.add(button).pad(1f).padBottom(2f).padTop(2f).expandX().right().row()
     }
 
-    private fun Table.addCategory(category: String, showHideTable: Table, startsOpened: Boolean = true) {
+    private fun Table.addCategory(category: String, showHideTable: Table, startsOpened: Boolean = true, innerPadding: Float = 10f) : ExpanderTab {
         val expanderTab = ExpanderTab(
             title = category,
             fontSize = Constants.defaultFontSize,
             persistenceID = "CityInfo.$category",
             startsOutOpened = startsOpened,
+            defaultPad = innerPadding,
             onChange = { onContentResize() }
         ) {
             it.add(showHideTable).fillX().right()
         }
         add(expanderTab).growX().row()
+        return expanderTab
     }
 
 
@@ -448,8 +468,6 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
 
         for (greatPersonName in allGreatPersonNames) {
 
-            val greatPersonIcon = greatPersonEmoji(greatPersonName)
-
             var gppPerTurn = 0
 
             for ((_, gppCounter) in greatPersonPoints) {
@@ -459,7 +477,10 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
             }
 
             val info = Table()
-            info.add("$greatPersonIcon $greatPersonName (+$gppPerTurn)".toLabel()).left().padBottom(4f).expandX().row()
+
+            info.add(ImageGetter.getUnitIcon(greatPersonName, Color.GOLD).toGroup(20f))
+                .left().padBottom(4f).padRight(5f)
+            info.add("$greatPersonName (+$gppPerTurn)".toLabel()).left().padBottom(4f).expandX().row()
 
             val gppCurrent = cityInfo.civInfo.greatPeople.greatPersonPointsCounter[greatPersonName]
             val gppNeeded = cityInfo.civInfo.greatPeople.pointsForNextGreatPerson
@@ -479,24 +500,13 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
             }
             progressBar.setLabel(Color.WHITE, "$gppCurrent/$gppNeeded", fontSize = 14)
 
-            info.add(progressBar).left().expandX().row()
+            info.add(progressBar).colspan(2).left().expandX().row()
 
             greatPeopleTable.add(info).growX().top().padBottom(10f)
             greatPeopleTable.add(ImageGetter.getPortraitImage(greatPersonName, 50f)).row()
         }
 
         lowerTable.addCategory("Great People", greatPeopleTable)
-    }
-
-    private fun greatPersonEmoji(name: String) : String {
-        return when(name) {
-            "Great Artist" -> Fonts.greatArtist.toString()
-            "Great Engineer" -> Fonts.greatEngineer.toString()
-            "Great General" -> Fonts.greatGeneral.toString()
-            "Great Merchant" -> Fonts.greatMerchant.toString()
-            "Great Scientist" -> Fonts.greatScientist.toString()
-            else -> ""
-        }
     }
 
     companion object {
