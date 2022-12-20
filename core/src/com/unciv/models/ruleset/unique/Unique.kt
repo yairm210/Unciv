@@ -343,8 +343,7 @@ class TemporaryUnique() : IsPartOfGameInfoSerialization {
     var turnsLeft: Int = 0
 }
 
-class TemporaryUniques:ArrayList<TemporaryUnique>(){
-    fun endTurn() {
+fun ArrayList<TemporaryUnique>.endTurn() {
         for (unique in this) {
             if (unique.turnsLeft >= 0)
                 unique.turnsLeft -= 1
@@ -352,9 +351,9 @@ class TemporaryUniques:ArrayList<TemporaryUnique>(){
         removeAll { it.turnsLeft == 0 }
     }
 
-    fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals): Sequence<Unique> {
+fun ArrayList<TemporaryUnique>.getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals): Sequence<Unique> {
         return this.asSequence()
             .map { it.uniqueObject }
             .filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) }
     }
-}
+

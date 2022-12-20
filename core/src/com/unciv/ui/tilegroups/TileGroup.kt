@@ -371,6 +371,8 @@ open class TileGroup(
             pixelMilitaryUnitGroup, pixelCivilianUnitGroup, unitLayerGroup,
             cityButtonLayerGroup, highlightFogCrosshairLayerGroup)
 
+        for (group in allGroups) group.isVisible = true // This allows units exploring previously-unexplored tiles to reveal the tile entirely
+
         if (viewingCiv != null && !isExplored(viewingCiv)) {
             if (tileInfo.neighbors.any { viewingCiv.hasExplored(it) })
                 clearUnexploredTiles()

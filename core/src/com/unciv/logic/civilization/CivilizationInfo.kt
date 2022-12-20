@@ -32,9 +32,11 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.StateForConditionals
-import com.unciv.models.ruleset.unique.TemporaryUniques
+import com.unciv.models.ruleset.unique.TemporaryUnique
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unique.endTurn
+import com.unciv.models.ruleset.unique.getMatchingUniques
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -43,7 +45,6 @@ import com.unciv.ui.utils.MayaCalendar
 import com.unciv.ui.utils.extensions.toPercent
 import com.unciv.ui.utils.extensions.withItem
 import com.unciv.ui.victoryscreen.RankingType
-import com.unciv.utils.concurrency.Concurrency
 import java.util.*
 import kotlin.math.max
 import kotlin.math.min
@@ -183,9 +184,12 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
     /** Arraylist instead of HashMap as the same unique might appear multiple times
      * We don't use pairs, as these cannot be serialized due to having no no-arg constructor
+     * We ALSO can't use a class inheriting from ArrayList<TemporaryUnique>() because ANNOYINGLY that doesn't pass deserialization
+     * So we fake it with extension functions in Unique.kt
+     *
      * This can also contain NON-temporary uniques but I can't be bothered to do the deprecation dance with this one
      */
-    val temporaryUniques = TemporaryUniques()
+    val temporaryUniques = ArrayList<TemporaryUnique>()
 
     // if we only use lists, and change the list each time the cities are changed,
     // we won't get concurrent modification exceptions.
