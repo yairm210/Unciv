@@ -279,51 +279,43 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
                 longitudeFactor = max(0f, tileMap.maxLongitude - abs(tileInfo.longitude * sizeReductionFactor)) / tileMap.maxLongitude
         }
 
+        var factor = min(longitudeFactor, latitudeFactor)
+
         // If this is a world wrap, we want it to be separated on both sides -
         // so we make the actual strip of water thinner, but we put it both in the middle of the map and on the edges of the map
         if (tileMap.mapParameters.worldWrap) {
-            longitudeFactor = min(
-                longitudeFactor,
+            factor = min(
+                factor,
                 (tileMap.maxLongitude - abs(tileInfo.longitude)) / tileMap.maxLongitude
             ) * 1.5f
-            latitudeFactor = min(
-                latitudeFactor,
-                (tileMap.maxLatitude - abs(tileInfo.latitude)) / tileMap.maxLatitude
-            ) * 1.5f
         }
+
         // there's nothing magical about this, it's just what we got from playing around with a lot of different options -
         //   the numbers can be changed if you find that something else creates better looking continents
-
-        val landFactor = min(longitudeFactor, latitudeFactor)
-
-        return min(0.2, -1.0 + (5.0 * landFactor.pow(0.5f) + randomScale) / 3.0)
+        return min(0.2, -1.0 + (5.0 * factor.pow(0.5f) + randomScale) / 3.0)
     }
 
     private fun getFourCornersTransform(tileInfo: TileInfo, tileMap: TileMap): Double {
         // The idea here is to create a water area separating the four land areas.
         // So what we do it create a line of water in the middle - where latitude or longitude is close to 0.
         val randomScale = randomness.RNG.nextDouble()
-        var longitudeFactor = abs(tileInfo.longitude) / tileMap.maxLongitude
-        var latitudeFactor = abs(tileInfo.latitude) / tileMap.maxLatitude
+        val longitudeFactor = abs(tileInfo.longitude) / tileMap.maxLongitude
+        val latitudeFactor = abs(tileInfo.latitude) / tileMap.maxLatitude
+
+        var factor = min(longitudeFactor, latitudeFactor)
 
         // If this is a world wrap, we want it to be separated on both sides -
         // so we make the actual strip of water thinner, but we put it both in the middle of the map and on the edges of the map
         if (tileMap.mapParameters.worldWrap) {
-            longitudeFactor = min(
-                longitudeFactor,
+            factor = min(
+                factor,
                 (tileMap.maxLongitude - abs(tileInfo.longitude)) / tileMap.maxLongitude
             ) * 1.5f
-            latitudeFactor = min(
-                latitudeFactor,
-                (tileMap.maxLatitude - abs(tileInfo.latitude)) / tileMap.maxLatitude
-            ) * 1.5f
         }
+
         // there's nothing magical about this, it's just what we got from playing around with a lot of different options -
         //   the numbers can be changed if you find that something else creates better looking continents
-
-        val landFactor = min(longitudeFactor, latitudeFactor)
-
-        return min(0.2, -1.0 + (5.0 * landFactor.pow(0.5f) + randomScale) / 3.0)
+        return min(0.2, -1.0 + (5.0 * factor.pow(0.5f) + randomScale) / 3.0)
     }
 
     /**
