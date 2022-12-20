@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.json.json
+import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
@@ -238,17 +239,21 @@ object ImageGetter {
     }
 
 
-    fun getImprovementIcon(improvementName: String, size: Float = 20f): Group {
-        if (improvementName.startsWith(Constants.remove) || improvementName == Constants.cancelImprovementOrder)
+    fun getImprovementIcon(improvementName: String, size: Float = 20f, withCircle: Boolean = true): Group {
+        if (improvementName == Constants.cancelImprovementOrder)
             return getImage("OtherIcons/Stop").surroundWithCircle(size)
 
-        val iconGroup = getImage("ImprovementIcons/$improvementName").surroundWithCircle(size)
+        val icon = getImage("ImprovementIcons/$improvementName")
 
-        val improvement = ruleset.tileImprovements[improvementName]
-        if (improvement != null)
-            iconGroup.circle.color = getColorFromStats(improvement)
-
-        return iconGroup.surroundWithThinCircle()
+        return if (withCircle) {
+            val group = icon.surroundWithCircle(size)
+            val improvement = ruleset.tileImprovements[improvementName]
+            if (improvement != null)
+                group.circle.color = getColorFromStats(improvement)
+            group.surroundWithThinCircle()
+        } else {
+            icon.toGroup(size)
+        }
     }
 
     fun getPortraitImage(construction: String, size: Float): Group {
@@ -269,8 +274,8 @@ object ImageGetter {
             } else
                 getUnitIcon(construction).surroundWithCircle(size).surroundWithThinCircle()
         }
-        if (construction == "Nothing")
-            return getImage("OtherIcons/Sleep").surroundWithCircle(size).surroundWithThinCircle()
+        if (construction in PerpetualConstruction.perpetualConstructionsMap)
+            return getImage("OtherIcons/Convert$construction").toGroup(size)
         return getStatIcon(construction).surroundWithCircle(size).surroundWithThinCircle()
     }
 

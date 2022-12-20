@@ -263,6 +263,48 @@ ImprovementIcons/Railroad
   orig: 100, 100
   offset: 0, 0
   index: -1
+ImprovementIcons/Remove Fallout
+  rotate: false
+  xy: 250, 0
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+ImprovementIcons/Remove Forest
+  rotate: false
+  xy: 350, 0
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+ImprovementIcons/Remove Jungle
+  rotate: false
+  xy: 350, 0
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+ImprovementIcons/Remove Marsh
+  rotate: false
+  xy: 450, 0
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+ImprovementIcons/Remove Railroad
+  rotate: false
+  xy: 550, 0
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+ImprovementIcons/Remove Road
+  rotate: false
+  xy: 650, 0
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
 ImprovementIcons/Repair
   rotate: false
   xy: 1270, 1720
@@ -355,6 +397,13 @@ NotificationIcons/PickTech
   offset: 0, 0
   index: -1
 StatIcons/Science
+  rotate: false
+  xy: 622, 886
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+OtherIcons/ConvertScience
   rotate: false
   xy: 622, 886
   size: 100, 100
@@ -541,6 +590,13 @@ OtherIcons/Improvements
   xy: 1918, 1770
   size: 50, 50
   orig: 50, 50
+  offset: 0, 0
+  index: -1
+OtherIcons/Unique
+  rotate: false
+  xy: 1921, 1655
+  size: 100, 100
+  orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Link
@@ -1190,6 +1246,20 @@ StatIcons/Food
 StatIcons/Gold
   rotate: false
   xy: 298, 1426
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+OtherIcons/ConvertGold
+  rotate: false
+  xy: 298, 1426
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+OtherIcons/ConvertNothing
+  rotate: false
+  xy: 1923, 1545
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
