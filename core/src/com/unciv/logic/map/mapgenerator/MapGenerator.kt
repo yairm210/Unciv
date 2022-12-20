@@ -765,7 +765,7 @@ class MapGenerator(val ruleset: Ruleset) {
 
             // Make center tiles ice or snow or mountain depending on availability
             if (isCenterTile && bestArcticTileName != null) {
-                spawnFlatEarthCenterIceWall(tile, bestArcticTileName, iceTerrainName)
+                spawnFlatEarthCenterIceWall(tile, bestArcticTileName, iceTerrainName, mountainTerrainName)
             }
 
             // Make edge tiles randomly ice or snow or mountain if available
@@ -775,22 +775,30 @@ class MapGenerator(val ruleset: Ruleset) {
         }
     }
 
-    private fun spawnFlatEarthCenterIceWall(tile: TileInfo, bestArcticTileName: String, iceTerrainName: String?) {
+    private fun spawnFlatEarthCenterIceWall(tile: TileInfo, bestArcticTileName: String, iceTerrainName: String?, mountainTerrainName: String?) {
         // Spawn ice on center tile
         if (bestArcticTileName == iceTerrainName) {
             tile.baseTerrain = waterTerrainName
-            tile.addTerrainFeature(iceTerrainName)
+            tile.setTerrainFeatures(listOf(iceTerrainName))
+        } else if (iceTerrainName != null && bestArcticTileName != mountainTerrainName) {
+            tile.baseTerrain = bestArcticTileName // snow (or a mod's equivalent)
+            tile.setTerrainFeatures(listOf(iceTerrainName))
         } else {
-            tile.baseTerrain = bestArcticTileName
+            tile.baseTerrain = bestArcticTileName // mountain (or a mod's equivalent)
+            tile.removeTerrainFeatures()
         }
 
         // Spawn circle of ice around center tile
         for (neighbor in tile.neighbors) {
             if (bestArcticTileName == iceTerrainName) {
                 neighbor.baseTerrain = waterTerrainName
-                neighbor.addTerrainFeature(iceTerrainName)
+                neighbor.setTerrainFeatures(listOf(iceTerrainName))
+            } else if (iceTerrainName != null && bestArcticTileName != mountainTerrainName) {
+                neighbor.baseTerrain = bestArcticTileName // snow (or a mod's equivalent)
+                neighbor.setTerrainFeatures(listOf(iceTerrainName))
             } else {
-                neighbor.baseTerrain = bestArcticTileName
+                neighbor.baseTerrain = bestArcticTileName // mountain (or a mod's equivalent)
+                neighbor.removeTerrainFeatures()
             }
 
             // Spawn partial circle of ice around circle of ice
@@ -799,9 +807,13 @@ class MapGenerator(val ruleset: Ruleset) {
                     // Do nothing most of the time at random.
                 } else if (bestArcticTileName == iceTerrainName) {
                     neighbor2.baseTerrain = waterTerrainName
-                    neighbor2.addTerrainFeature(iceTerrainName)
+                    neighbor2.setTerrainFeatures(listOf(iceTerrainName))
+                } else if (iceTerrainName != null && bestArcticTileName != mountainTerrainName) {
+                    neighbor2.baseTerrain = bestArcticTileName // snow (or a mod's equivalent)
+                    neighbor2.setTerrainFeatures(listOf(iceTerrainName))
                 } else {
-                    neighbor2.baseTerrain = bestArcticTileName
+                    neighbor2.baseTerrain = bestArcticTileName // mountain (or a mod's equivalent)
+                    neighbor2.removeTerrainFeatures()
                 }
             }
         }
@@ -817,12 +829,13 @@ class MapGenerator(val ruleset: Ruleset) {
         // Spawn arctic tiles on edge tile
         if (arcticTileName == iceTerrainName) {
             tile.baseTerrain = waterTerrainName
-            tile.addTerrainFeature(iceTerrainName)
+            tile.setTerrainFeatures(listOf(iceTerrainName))
         } else if (iceTerrainName != null && arcticTileName != mountainTerrainName) {
-            tile.baseTerrain = arcticTileName
-            tile.addTerrainFeature(iceTerrainName)
+            tile.baseTerrain = arcticTileName // snow (or a mod's equivalent)
+            tile.setTerrainFeatures(listOf(iceTerrainName))
         } else {
-            tile.baseTerrain = arcticTileName
+            tile.baseTerrain = arcticTileName // mountain (or a mod's equivalent)
+            tile.removeTerrainFeatures()
         }
 
         // Spawn partial circle of arctic tiles next to the edge
@@ -834,12 +847,13 @@ class MapGenerator(val ruleset: Ruleset) {
                 // Do nothing most of the time at random.
             } else if (arcticTileName == iceTerrainName) {
                 neighbor.baseTerrain = waterTerrainName
-                neighbor.addTerrainFeature(iceTerrainName)
+                neighbor.setTerrainFeatures(listOf(iceTerrainName))
             } else if (iceTerrainName != null && arcticTileName != mountainTerrainName) {
-                neighbor.baseTerrain = arcticTileName
-                neighbor.addTerrainFeature(iceTerrainName)
+                neighbor.baseTerrain = arcticTileName // snow (or a mod's equivalent)
+                neighbor.setTerrainFeatures(listOf(iceTerrainName))
             } else {
-                neighbor.baseTerrain = arcticTileName
+                neighbor.baseTerrain = arcticTileName // mountain (or a mod's equivalent)
+                neighbor.removeTerrainFeatures()
             }
         }
     }
