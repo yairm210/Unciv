@@ -213,6 +213,11 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Village](https://thenounproject.com/search/?q=city+center&i=476338) by Andrey Vasiliev
 -   [pumping station](https://thenounproject.com/search/?q=dike&i=555172) by Peter van Driel for Polder
 -   [Oil Platform](https://thenounproject.com/icon/oil-platform-1364795/) by Georgiana Ionescu for Offshore Platform
+-   [Broom](https://thenounproject.com/icon/broom-1642644/) by Rakhmat Setiawan for Remove Fallout
+-   [Axe](https://www.flaticon.com/ru/free-icon/axe_803805) by Those Icons for Remove Forest and Remove Jungle
+-   [Machete](https://thenounproject.com/icon/machete-36067/) by Robert A. Di Ieso for Remove Marsh
+-   Icon for Remove Railroad by [vegeta1k95](https://github.com/vegeta1k95)
+-   Icon for Remove Road by [vegeta1k95](https://github.com/vegeta1k95)
 
 ### Buildings
 
@@ -756,6 +761,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [Political Science](https://www.flaticon.com/premium-icon/political-science_5403775) created by Hilmy Abiyyu A. - Flaticon
 - [Question](https://thenounproject.com/icon/question-1157126/) created by Aneeque Ahmed for Question Icon
 - [Trade](https://www.flaticon.com/free-icon/trade_4257019) created by Smashicons for Conduct Trade Mission
+- [Nothing](https://www.flaticon.com/free-icon/nothing_5084125) created by Freepik for Nothing construction process
+- Icon for Unique created by [vegeta1k95](https://github.com/vegeta1k95)
 
 ### Main menu
 
