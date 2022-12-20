@@ -245,15 +245,13 @@ object ImageGetter {
 
         val icon = getImage("ImprovementIcons/$improvementName")
 
-        return if (withCircle) {
-            val group = icon.surroundWithCircle(size)
-            val improvement = ruleset.tileImprovements[improvementName]
-            if (improvement != null)
-                group.circle.color = getColorFromStats(improvement)
-            group.surroundWithThinCircle()
-        } else {
-            icon.toGroup(size)
-        }
+        if (!withCircle) return icon.toGroup(size)
+
+        val group = icon.surroundWithCircle(size)
+        val improvement = ruleset.tileImprovements[improvementName]
+        if (improvement != null)
+            group.circle.color = getColorFromStats(improvement)
+        return group.surroundWithThinCircle()
     }
 
     fun getPortraitImage(construction: String, size: Float): Group {

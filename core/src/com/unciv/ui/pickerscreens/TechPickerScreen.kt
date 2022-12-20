@@ -21,6 +21,7 @@ import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.extensions.addBorder
+import com.unciv.ui.utils.extensions.brighten
 import com.unciv.ui.utils.extensions.colorFromRGB
 import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.disable
@@ -170,7 +171,7 @@ class TechPickerScreen(
             for (columnIndex in techMatrix.indices) {
                 val tech = techMatrix[columnIndex][rowIndex]
 
-                val table = Table().pad(2f).padRight(20f).padLeft(20f)
+                val table = Table().pad(2f).padRight(60f).padLeft(20f)
                 if (rowIndex == 0)
                     table.padTop(7f)
                 table.toBack()
@@ -239,7 +240,7 @@ class TechPickerScreen(
             eraLabel.localToStageCoordinates(coords)
             techTable.stageToLocalCoordinates(coords)
             val line = ImageGetter.getLine(coords.x-1f, coords.y, coords.x-1f, coords.y - 1000f, 1f)
-            line.color = Color.GRAY.apply { a = 0.7f }
+            line.color = Color.GRAY.apply { a = 0.6f }
             line.toBack()
             techTable.addActor(line)
             lines.add(line)
@@ -268,8 +269,13 @@ class TechPickerScreen(
                 val lineColor = when {
                     civTech.isResearched(tech.name) && !tech.isContinuallyResearchable() -> Color.WHITE
                     civTech.isResearched(prerequisite) -> researchableTechColor
-                    tempTechsToResearch.contains(tech.name) -> queuedTechColor
+                    tempTechsToResearch.contains(tech.name) -> currentTechColor
                     else -> Color.WHITE
+                }
+
+                val lineSize = when {
+                    tempTechsToResearch.contains(tech.name) && !civTech.isResearched(prerequisite) -> 4f
+                    else -> 2f
                 }
 
                 if (techButtonCoords.y != prerequisiteCoords.y) {
@@ -282,21 +288,21 @@ class TechPickerScreen(
 
                     val line = ImageGetter.getWhiteDot().apply {
                         width = halfLength - r
-                        height = 2f
+                        height = lineSize
                         x = prerequisiteCoords.x
                         y = prerequisiteCoords.y - height / 2
                     }
                     val line1 = ImageGetter.getWhiteDot().apply {
                         width = halfLength - r
-                        height = 2f
+                        height = lineSize
                         x = techButtonCoords.x - halfLength + r
                         y = techButtonCoords.y - height / 2
                     }
                     val line2 = ImageGetter.getWhiteDot().apply {
-                        width = 2f
+                        width = lineSize
                         height = abs(deltaY) - 2*r
                         x = techButtonCoords.x - halfLength - width / 2
-                        y = techButtonCoords.y + (if (deltaY > 0f) -height - r else r + 1f)
+                        y = techButtonCoords.y + (if (deltaY > 0f) -height - r else r + width / 2)
                     }
 
                     var line3: Image?
@@ -304,13 +310,13 @@ class TechPickerScreen(
 
                     if (deltaY < 0) {
                         line3 = ImageGetter.getLine(line2.x, line2.y + line2.height,
-                            line.x + line.width, line.y+1f, 2f)
-                        line4 = ImageGetter.getLine(line2.x, line2.y, line1.x, line1.y+1f, 2f)
+                            line.x + line.width, line.y+lineSize/2, lineSize)
+                        line4 = ImageGetter.getLine(line2.x, line2.y, line1.x, line1.y+lineSize/2, lineSize)
                     } else {
-                        line3 = ImageGetter.getLine(line2.x+1f, line2.y,
-                            line.x + line.width, line.y, 2f)
-                        line4 = ImageGetter.getLine(line2.x, line2.y + line2.height-1f,
-                            line1.x, line1.y+1f, 2f)
+                        line3 = ImageGetter.getLine(line2.x+lineSize/2, line2.y,
+                            line.x + line.width, line.y, lineSize)
+                        line4 = ImageGetter.getLine(line2.x, line2.y + line2.height-lineSize/2,
+                            line1.x, line1.y+lineSize/2, lineSize)
                     }
 
                     line.color = lineColor
@@ -319,19 +325,25 @@ class TechPickerScreen(
                     line3.color = lineColor
                     line4.color = lineColor
 
-                    if (tempTechsToResearch.contains(tech.name)) {
-                        line1.toFront()
-                        line2.toFront()
-                        line3.toFront()
-                        line4.toFront()
-                        line.toFront()
-                    }
-
                     techTable.addActor(line)
                     techTable.addActor(line1)
                     techTable.addActor(line2)
                     techTable.addActor(line3)
                     techTable.addActor(line4)
+
+                    if (tempTechsToResearch.contains(tech.name)) {
+                        line1.zIndex = 200000
+                        line2.zIndex = 200000
+                        line3.zIndex = 200000
+                        line4.zIndex = 200000
+                        line.zIndex = 200000
+                    } else {
+                        line.zIndex = 500
+                        line1.zIndex = 500
+                        line2.zIndex = 500
+                        line3.zIndex = 500
+                        line4.zIndex = 500
+                    }
 
                     lines.add(line)
                     lines.add(line1)
@@ -343,15 +355,19 @@ class TechPickerScreen(
 
                     val line = ImageGetter.getWhiteDot().apply {
                         width = techButtonCoords.x - prerequisiteCoords.x
-                        height = 2f
+                        height = lineSize
                         x = prerequisiteCoords.x
                         y = prerequisiteCoords.y - height / 2
                     }
                     line.color = lineColor
 
-                    if (tempTechsToResearch.contains(tech.name)) line.toFront()
-
                     techTable.addActor(line)
+
+                    if (tempTechsToResearch.contains(tech.name))
+                        line.zIndex = 200000
+                    else
+                        line.zIndex = 500
+
                     lines.add(line)
 
                 }

@@ -103,13 +103,22 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
 
         val tech = ruleset.technologies[techName]!!
 
-        for (unit in tech.getEnabledUnits(ruleset, techManager.civInfo))
-            techEnabledIcons.add(ImageGetter.getPortraitImage(unit.name, techIconSize))
+        var numOfIcons = 0
 
-        for (building in tech.getEnabledBuildings(ruleset, techManager.civInfo))
+        for (unit in tech.getEnabledUnits(ruleset, techManager.civInfo)) {
+            if (numOfIcons >= 5) break
+            techEnabledIcons.add(ImageGetter.getPortraitImage(unit.name, techIconSize))
+            numOfIcons += 1
+        }
+
+        for (building in tech.getEnabledBuildings(ruleset, techManager.civInfo)) {
+            if (numOfIcons >= 5) break
             techEnabledIcons.add(ImageGetter.getPortraitImage(building.name, techIconSize))
+            numOfIcons += 1
+        }
 
         for (obj in tech.getObsoletedObjects(ruleset, techManager.civInfo)) {
+            if (numOfIcons >= 5) break
             val obsoletedIcon = when (obj) {
                 is Building -> ImageGetter.getPortraitImage(obj.name, techIconSize)
                 is TileResource -> ImageGetter.getResourceImage(obj.name, techIconSize)
@@ -121,29 +130,38 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
                 it.addActor(closeImage)
             }
             techEnabledIcons.add(obsoletedIcon)
+            numOfIcons += 1
         }
 
-        for (resource in ruleset.tileResources.values.filter { it.revealedBy == techName })
+        for (resource in ruleset.tileResources.values.filter { it.revealedBy == techName }) {
+            if (numOfIcons >= 5) break
             techEnabledIcons.add(ImageGetter.getResourceImage(resource.name, techIconSize))
+            numOfIcons += 1
+        }
 
         for (improvement in ruleset.tileImprovements.values.asSequence()
             .filter { it.techRequired == techName }
             .filter { it.uniqueTo == null || it.uniqueTo == civName }
         ) {
+            if (numOfIcons >= 5) break
             techEnabledIcons.add(ImageGetter.getImprovementIcon(improvement.name, techIconSize, true))
+            numOfIcons += 1
         }
 
         for (improvement in ruleset.tileImprovements.values.asSequence()
             .filter { it.uniqueObjects.any { u -> u.allParams.contains(techName) } }
             .filter { it.uniqueTo == null || it.uniqueTo == civName }
         ) {
+            if (numOfIcons >= 5) break
             techEnabledIcons.add(
                 ImageGetter.getImage("OtherIcons/Unique")
                     .surroundWithCircle(techIconSize)
                     .surroundWithThinCircle())
+            numOfIcons += 1
         }
 
         for (unique in tech.uniques) {
+            if (numOfIcons >= 5) break
             techEnabledIcons.add(
                 when (unique) {
                     UniqueType.EnablesCivWideStatProduction.text.replace("civWideStat", "Gold" )
@@ -155,6 +173,7 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
                         .surroundWithThinCircle()
                 }
             )
+            numOfIcons += 1
         }
 
         rightSide.add(techEnabledIcons)
