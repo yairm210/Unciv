@@ -174,7 +174,6 @@ class TechPickerScreen(
                 val table = Table().pad(2f).padRight(60f).padLeft(20f)
                 if (rowIndex == 0)
                     table.padTop(7f)
-                table.toBack()
 
                 if (erasNamesToColumns[civTech.era.name]!!.contains(columnIndex))
                     table.background = skinStrings.getUiBackground("TechPickerScreen/Background", tintColor = queuedTechColor.darken(0.5f))
@@ -331,19 +330,11 @@ class TechPickerScreen(
                     techTable.addActor(line3)
                     techTable.addActor(line4)
 
-                    if (tempTechsToResearch.contains(tech.name)) {
-                        line1.zIndex = 200000
-                        line2.zIndex = 200000
-                        line3.zIndex = 200000
-                        line4.zIndex = 200000
-                        line.zIndex = 200000
-                    } else {
-                        line.zIndex = 500
-                        line1.zIndex = 500
-                        line2.zIndex = 500
-                        line3.zIndex = 500
-                        line4.zIndex = 500
-                    }
+                    line.toFront()
+                    line1.toFront()
+                    line2.toFront()
+                    line3.toFront()
+                    line4.toFront()
 
                     lines.add(line)
                     lines.add(line1)
@@ -372,6 +363,11 @@ class TechPickerScreen(
 
                 }
             }
+        }
+
+        for (line in lines) {
+            if (line.color == currentTechColor)
+                line.toFront()
         }
     }
 
