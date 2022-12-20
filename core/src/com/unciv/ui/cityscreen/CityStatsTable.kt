@@ -239,7 +239,6 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
             totalTable.add().row()
             totalTable.addSeparator(color = Color.LIGHT_GRAY)
             totalTable.add("Specialist Buildings".toLabel().apply { setAlignment(Align.center) }).growX()
-            //totalTable.addCategory("Specialist Buildings", specialistBuildingsTable)
             totalTable.addSeparator(color = Color.LIGHT_GRAY)
             for (building in specialistBuildings) addBuildingButton(building, specialistBuildingsTable)
             totalTable.add(specialistBuildingsTable).growX().right().row()
@@ -247,20 +246,18 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
 
         if (wonders.isNotEmpty()) {
             val wondersTable = Table()
-            totalTable.addSeparator()
+            totalTable.addSeparator(color = Color.LIGHT_GRAY)
             totalTable.add("Wonders".toLabel().apply { setAlignment(Align.center) }).growX()
-            //totalTable.addCategory("Wonders", wondersTable)
-            totalTable.addSeparator()
+            totalTable.addSeparator(color = Color.LIGHT_GRAY)
             for (building in wonders) addBuildingButton(building, wondersTable)
             totalTable.add(wondersTable).growX().right().row()
         }
 
         if (otherBuildings.isNotEmpty()) {
             val regularBuildingsTable = Table()
-            totalTable.addSeparator()
+            totalTable.addSeparator(color = Color.LIGHT_GRAY)
             totalTable.add("Other".toLabel().apply { setAlignment(Align.center) }).growX()
-            //totalTable.addCategory("Other", regularBuildingsTable)
-            totalTable.addSeparator()
+            totalTable.addSeparator(color = Color.LIGHT_GRAY)
             for (building in otherBuildings) addBuildingButton(building, regularBuildingsTable)
             totalTable.add(regularBuildingsTable).growX().right().row()
         }
