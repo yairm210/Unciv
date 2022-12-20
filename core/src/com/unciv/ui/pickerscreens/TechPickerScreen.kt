@@ -115,6 +115,10 @@ class TechPickerScreen(
     }
 
     private fun createTechTable() {
+
+        for (label in eraLabels) label.remove()
+        eraLabels.clear()
+
         val allTechs = civInfo.gameInfo.ruleSet.technologies.values
         if (allTechs.isEmpty()) return
         val columns = allTechs.maxOf { it.column!!.columnNumber } + 1
