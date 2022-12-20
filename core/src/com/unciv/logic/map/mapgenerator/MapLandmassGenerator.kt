@@ -246,13 +246,13 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
         val latitudeFactor = abs(tileInfo.latitude) / tileMap.maxLatitude
         var longitudeFactor = abs(tileInfo.longitude) / tileMap.maxLongitude
 
+        var factor = if (isLatitude) latitudeFactor else longitudeFactor
+
         // If this is a world wrap, we want it to be separated on both sides -
         // so we make the actual strip of water thinner, but we put it both in the middle of the map and on the edges of the map
         if (tileMap.mapParameters.worldWrap)
-            longitudeFactor = min(longitudeFactor,
+            factor = min(longitudeFactor,
                 (tileMap.maxLongitude - abs(tileInfo.longitude)) / tileMap.maxLongitude) * 1.5f
-
-        val factor = if (isLatitude) latitudeFactor else longitudeFactor
 
         // there's nothing magical about this, it's just what we got from playing around with a lot of different options -
         //   the numbers can be changed if you find that something else creates better looking continents
