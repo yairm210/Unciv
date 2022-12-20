@@ -1,6 +1,7 @@
 package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -22,6 +23,7 @@ import com.unciv.ui.utils.extensions.setFontSize
 import com.unciv.ui.utils.extensions.setSize
 import com.unciv.ui.utils.extensions.surroundWithCircle
 import com.unciv.ui.utils.extensions.surroundWithThinCircle
+import com.unciv.ui.utils.extensions.toGroup
 import com.unciv.ui.utils.extensions.toLabel
 
 class TechButton(techName:String, private val techManager: TechManager, isWorldScreen: Boolean = true) : Table(BaseScreen.skin) {
@@ -103,22 +105,17 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
 
         val tech = ruleset.technologies[techName]!!
 
-        var numOfIcons = 0
+        val icons = ArrayList<Group>()
 
         for (unit in tech.getEnabledUnits(ruleset, techManager.civInfo)) {
-            if (numOfIcons >= 5) break
-            techEnabledIcons.add(ImageGetter.getPortraitImage(unit.name, techIconSize))
-            numOfIcons += 1
+            icons.add(ImageGetter.getPortraitImage(unit.name, techIconSize))
         }
 
         for (building in tech.getEnabledBuildings(ruleset, techManager.civInfo)) {
-            if (numOfIcons >= 5) break
-            techEnabledIcons.add(ImageGetter.getPortraitImage(building.name, techIconSize))
-            numOfIcons += 1
+            icons.add(ImageGetter.getPortraitImage(building.name, techIconSize))
         }
 
         for (obj in tech.getObsoletedObjects(ruleset, techManager.civInfo)) {
-            if (numOfIcons >= 5) break
             val obsoletedIcon = when (obj) {
                 is Building -> ImageGetter.getPortraitImage(obj.name, techIconSize)
                 is TileResource -> ImageGetter.getResourceImage(obj.name, techIconSize)
@@ -129,51 +126,48 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
                 closeImage.center(it)
                 it.addActor(closeImage)
             }
-            techEnabledIcons.add(obsoletedIcon)
-            numOfIcons += 1
+            icons.add(obsoletedIcon)
         }
 
         for (resource in ruleset.tileResources.values.filter { it.revealedBy == techName }) {
-            if (numOfIcons >= 5) break
-            techEnabledIcons.add(ImageGetter.getResourceImage(resource.name, techIconSize))
-            numOfIcons += 1
+            icons.add(ImageGetter.getResourceImage(resource.name, techIconSize))
         }
 
         for (improvement in ruleset.tileImprovements.values.asSequence()
             .filter { it.techRequired == techName }
             .filter { it.uniqueTo == null || it.uniqueTo == civName }
         ) {
-            if (numOfIcons >= 5) break
-            techEnabledIcons.add(ImageGetter.getImprovementIcon(improvement.name, techIconSize, true))
-            numOfIcons += 1
+            icons.add(ImageGetter.getImprovementIcon(improvement.name, techIconSize, true))
         }
 
         for (improvement in ruleset.tileImprovements.values.asSequence()
             .filter { it.uniqueObjects.any { u -> u.allParams.contains(techName) } }
             .filter { it.uniqueTo == null || it.uniqueTo == civName }
         ) {
-            if (numOfIcons >= 5) break
-            techEnabledIcons.add(
+            icons.add(
                 ImageGetter.getImage("OtherIcons/Unique")
                     .surroundWithCircle(techIconSize)
                     .surroundWithThinCircle())
-            numOfIcons += 1
         }
 
         for (unique in tech.uniques) {
-            if (numOfIcons >= 5) break
-            techEnabledIcons.add(
+            icons.add(
                 when (unique) {
                     UniqueType.EnablesCivWideStatProduction.text.replace("civWideStat", "Gold" )
-                    -> ImageGetter.getImage("OtherIcons/ConvertGold").apply { setSize(techIconSize, techIconSize) }
+                    -> ImageGetter.getImage("OtherIcons/ConvertGold").toGroup(techIconSize)
                     UniqueType.EnablesCivWideStatProduction.text.replace("civWideStat", "Science" )
-                    -> ImageGetter.getImage("OtherIcons/ConvertScience").apply { setSize(techIconSize, techIconSize) }
+                    -> ImageGetter.getImage("OtherIcons/ConvertScience").toGroup(techIconSize)
                     else -> ImageGetter.getImage("OtherIcons/Unique")
                         .surroundWithCircle(techIconSize)
                         .surroundWithThinCircle()
                 }
             )
-            numOfIcons += 1
+        }
+
+        for (i in 0..4) {
+            val icon = icons.getOrNull(i)
+            if (icon != null)
+                techEnabledIcons.add(icon)
         }
 
         rightSide.add(techEnabledIcons)
