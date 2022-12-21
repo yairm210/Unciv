@@ -1,0 +1,26 @@
+
+
+Modding: Unbuildable units can still be upgraded to
+
+Fallback image for modded buildings - see 
+
+Fallback image for modded buildings - see 
+
+Fallback image for modded techs - see 
+
+Thinner stats table so we can see more of the tiles
+
+Readded stats drilldown
+
+By vegeta1k95:
+- Rework of City Screen: new Great People list + misc changes 
+- Huge update of Technology Picker screen UI (Civ 5), new original icons + misc changes 
+
+By FiretronP75:
+- Continent and Islands 
+- Prevent ice on mountains, and atolls under ice, resources on snow, in flat earth ice walls. 
+- Make map editor respond to max zoom setting. 
+
+AbsoluteUnits - Mongolian Uniques  - By letstalkaboutdune
+
+Fix new "temperature" map setting not translatable  - By Ouaz
