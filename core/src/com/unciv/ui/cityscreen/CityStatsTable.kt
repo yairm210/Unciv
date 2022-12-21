@@ -109,7 +109,6 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
 
         // begin lowerTable
         addCitizenManagement()
-        addStatInfo()
         addGreatPersonPointInfo(cityInfo)
         if (!cityInfo.population.getMaxSpecialists().isEmpty()) {
             addSpecialistInfo()
@@ -327,132 +326,6 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         return expanderTab
     }
 
-
-    private fun addStatsToHashmap(
-        statTreeNode: StatTreeNode,
-        hashMap: HashMap<String, Float>,
-        stat: Stat,
-        showDetails: Boolean,
-        indentation: Int = 0
-    ) {
-        for ((name, child) in statTreeNode.children) {
-            val statAmount = child.totalStats[stat]
-            if (statAmount == 0f) continue
-            hashMap["- ".repeat(indentation) + name.tr()] = statAmount
-            if (showDetails) addStatsToHashmap(child, hashMap, stat, showDetails, indentation + 1)
-        }
-    }
-
-    private fun addStatInfo() {
-        val cityStats = cityScreen.city.cityStats
-        val showFaith = cityScreen.city.civInfo.gameInfo.isReligionEnabled()
-
-        val totalTable = Table()
-        lowerTable.addCategory("Detailed stats", totalTable, false)
-
-        for (stat in Stat.values()) {
-            if (stat == Stat.Faith && !showFaith) continue
-            val statValuesTable = Table()
-            statValuesTable.touchable = Touchable.enabled
-            if (updateStatValuesTable(stat, cityStats, statValuesTable))
-                totalTable.addCategory(stat.name, statValuesTable, false)
-        }
-    }
-
-    private fun updateStatValuesTable(
-        stat: Stat,
-        cityStats: CityStats,
-        statValuesTable: Table,
-        showDetails:Boolean = false
-    ) : Boolean {
-        statValuesTable.clear()
-        statValuesTable.defaults().pad(2f)
-        statValuesTable.onClick {
-            updateStatValuesTable(
-                stat,
-                cityStats,
-                statValuesTable,
-                !showDetails
-            )
-            onContentResize()
-        }
-
-        val relevantBaseStats = LinkedHashMap<String, Float>()
-
-        if (stat != Stat.Happiness)
-            addStatsToHashmap(cityStats.baseStatTree, relevantBaseStats, stat, showDetails)
-        else relevantBaseStats.putAll(cityStats.happinessList)
-        for (key in relevantBaseStats.keys.toList())
-            if (relevantBaseStats[key] == 0f) relevantBaseStats.remove(key)
-
-        if (relevantBaseStats.isEmpty())
-            return false
-
-        statValuesTable.add("Base values".toLabel(fontSize = FONT_SIZE_STAT_INFO_HEADER)).pad(4f)
-            .colspan(2).row()
-        var sumOfAllBaseValues = 0f
-        for (entry in relevantBaseStats) {
-            val specificStatValue = entry.value
-            if (!entry.key.startsWith('-'))
-                sumOfAllBaseValues += specificStatValue
-            statValuesTable.add(entry.key.toLabel()).left()
-            statValuesTable.add(specificStatValue.toOneDecimalLabel()).row()
-        }
-        statValuesTable.addSeparator()
-        statValuesTable.add("Total".toLabel())
-        statValuesTable.add(sumOfAllBaseValues.toOneDecimalLabel()).row()
-
-        val relevantBonuses = LinkedHashMap<String, Float>()
-        addStatsToHashmap(cityStats.statPercentBonusTree, relevantBonuses, stat, showDetails)
-
-        val totalBonusStats = cityStats.statPercentBonusTree.totalStats
-        if (totalBonusStats[stat] != 0f) {
-            statValuesTable.add("Bonuses".toLabel(fontSize = FONT_SIZE_STAT_INFO_HEADER)).colspan(2)
-                .padTop(20f).row()
-            for ((source, bonusAmount) in relevantBonuses) {
-                statValuesTable.add(source.toLabel()).left()
-                statValuesTable.add(bonusAmount.toPercentLabel()).row() // negative bonus
-            }
-            statValuesTable.addSeparator()
-            statValuesTable.add("Total".toLabel())
-            statValuesTable.add(totalBonusStats[stat].toPercentLabel()).row() // negative bonus
-
-
-            statValuesTable.add("Final".toLabel(fontSize = FONT_SIZE_STAT_INFO_HEADER)).colspan(2)
-                .padTop(20f).row()
-            var finalTotal = 0f
-            for (entry in cityStats.finalStatList) {
-                val specificStatValue = entry.value[stat]
-                finalTotal += specificStatValue
-                if (specificStatValue == 0f) continue
-                statValuesTable.add(entry.key.toLabel())
-                statValuesTable.add(specificStatValue.toOneDecimalLabel()).row()
-            }
-            statValuesTable.addSeparator()
-            statValuesTable.add("Total".toLabel())
-            statValuesTable.add(finalTotal.toOneDecimalLabel()).row()
-        }
-
-        statValuesTable.pack()
-
-        if (stat != Stat.Happiness) {
-            val toggleButton = getToggleButton(showDetails)
-            statValuesTable.addActor(toggleButton)
-            toggleButton.setPosition(0f, statValuesTable.height, Align.topLeft)
-        }
-
-        statValuesTable.padBottom(4f)
-        return true
-    }
-
-    private fun getToggleButton(showDetails: Boolean): IconCircleGroup {
-        val label = (if (showDetails) "-" else "+").toLabel()
-        label.setAlignment(Align.center)
-        return label
-            .surroundWithCircle(25f, color = BaseScreen.skinStrings.skinConfig.baseColor)
-            .surroundWithCircle(27f, false)
-    }
-
     private fun addGreatPersonPointInfo(cityInfo: CityInfo) {
 
         val greatPeopleTable = Table()
@@ -504,15 +377,6 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         }
 
         lowerTable.addCategory("Great People", greatPeopleTable)
-    }
-
-    companion object {
-        private const val FONT_SIZE_STAT_INFO_HEADER = 22
-
-        private fun Float.toPercentLabel() =
-                "${if (this>0f) "+" else ""}${DecimalFormat("0.#").format(this)}%".toLabel()
-        private fun Float.toOneDecimalLabel() =
-                DecimalFormat("0.#").format(this).toLabel()
     }
 
 }

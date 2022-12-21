@@ -82,6 +82,13 @@ class CityScreen(
         }
     }
 
+    private val detailedStatsButton = "Stats".toTextButton().apply {
+        labelCell.pad(10f)
+        onActivation {
+            DetailedStatsPopup(this@CityScreen).open()
+        }
+    }
+
     /** Holds City tiles group*/
     private var tileGroups = ArrayList<CityTileGroup>()
 
@@ -127,6 +134,7 @@ class CityScreen(
         stage.addActor(tileTable)
         stage.addActor(cityPickerTable)  // add late so it's top in Z-order and doesn't get covered in cramped portrait
         stage.addActor(exitCityButton)
+        stage.addActor(detailedStatsButton)
         update()
 
         globalShortcuts.add(Input.Keys.LEFT) { page(-1) }
@@ -172,6 +180,8 @@ class CityScreen(
             statsHeight -= selectedConstructionTable.height + 10f
         cityStatsTable.update(statsHeight)
         cityStatsTable.setPosition(stage.width - posFromEdge, stage.height - posFromEdge, Align.topRight)
+
+        detailedStatsButton.setPosition(cityStatsTable.x - detailedStatsButton.width, stage.height - 20f, Align.top)
 
         // Top center: Annex/Raze button
         updateAnnexAndRazeCityButton()
