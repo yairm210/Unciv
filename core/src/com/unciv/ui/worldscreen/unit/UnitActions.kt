@@ -89,9 +89,6 @@ object UnitActions {
         addSleepActions(actionList, unit, true)
         addFortifyActions(actionList, unit, true)
 
-        if (unit.canUpgradeMultipleSteps())
-            addUnitUpgradeAction(unit, actionList, 1)
-
         addSwapAction(unit, actionList, worldScreen)
         addDisbandAction(actionList, unit, worldScreen)
         addGiftAction(unit, actionList, tile)
@@ -394,17 +391,15 @@ object UnitActions {
 
     private fun addUnitUpgradeAction(
         unit: MapUnit,
-        actionList: ArrayList<UnitAction>,
-        maxSteps: Int = Int.MAX_VALUE
+        actionList: ArrayList<UnitAction>
     ) {
-        val upgradeAction = getUpgradeAction(unit, maxSteps)
+        val upgradeAction = getUpgradeAction(unit)
         if (upgradeAction != null) actionList += upgradeAction
     }
 
     /**  Common implementation for [getUpgradeAction], [getFreeUpgradeAction] and [getAncientRuinsUpgradeAction] */
     private fun getUpgradeAction(
         unit: MapUnit,
-        maxSteps: Int,
         isFree: Boolean,
         isSpecial: Boolean
     ): UnitAction? {
@@ -416,10 +411,11 @@ object UnitActions {
         val upgradesTo = unit.baseUnit().upgradesTo
         val specialUpgradesTo = unit.baseUnit().specialUpgradesTo
         val upgradedUnit = when {
-            isSpecial && specialUpgradesTo != null -> civInfo.getEquivalentUnit (specialUpgradesTo)
-            isFree && upgradesTo != null -> civInfo.getEquivalentUnit(upgradesTo)  // getUnitToUpgradeTo can't ignore tech
-            else -> unit.getUnitToUpgradeTo(maxSteps)
+            isSpecial && specialUpgradesTo != null -> civInfo.getEquivalentUnit(specialUpgradesTo)
+            (isFree || isSpecial) && upgradesTo != null -> civInfo.getEquivalentUnit(upgradesTo) // Only get DIRECT upgrade
+            else -> unit.getUnitToUpgradeTo() // Get EVENTUAL upgrade, all the way up the chain
         }
+
         if (!unit.canUpgrade(unitToUpgradeTo = upgradedUnit, ignoreRequirements = isFree, ignoreResources = true))
             return null
 
@@ -470,12 +466,12 @@ object UnitActions {
         )
     }
 
-    fun getUpgradeAction(unit: MapUnit, maxSteps: Int = Int.MAX_VALUE) =
-        getUpgradeAction(unit, maxSteps, isFree = false, isSpecial = false)
+    fun getUpgradeAction(unit: MapUnit) =
+        getUpgradeAction(unit, isFree = false, isSpecial = false)
     fun getFreeUpgradeAction(unit: MapUnit) =
-        getUpgradeAction(unit, 1, isFree = true, isSpecial = false)
+        getUpgradeAction(unit,  isFree = true, isSpecial = false)
     fun getAncientRuinsUpgradeAction(unit: MapUnit) =
-        getUpgradeAction(unit, 1, isFree = true, isSpecial = true)
+        getUpgradeAction(unit,  isFree = true, isSpecial = true)
 
     private fun addBuildingImprovementsAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo, worldScreen: WorldScreen, unitTable: UnitTable) {
         if (!unit.hasUniqueToBuildImprovements) return

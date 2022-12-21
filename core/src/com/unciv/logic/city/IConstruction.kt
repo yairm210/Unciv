@@ -91,18 +91,6 @@ class RejectionReasons: HashSet<RejectionReasonInstance>() {
 
     fun contains(rejectionReason: RejectionReason) = any { it.rejectionReason == rejectionReason }
 
-    fun isOkForUnitUpgradeIgnoringRequirements(
-        ignoreTechPolicyEraWonderRequirements: Boolean = false,
-        ignoreResources: Boolean = false
-    ): Boolean {
-        var relevantRejectionReasons = this.asSequence().filterNot { it.rejectionReason == RejectionReason.Unbuildable }
-        if (ignoreTechPolicyEraWonderRequirements)
-            relevantRejectionReasons = relevantRejectionReasons.filterNot { it.rejectionReason in techPolicyEraWonderRequirements }
-        if (ignoreResources)
-            relevantRejectionReasons = relevantRejectionReasons.filterNot { it.rejectionReason == RejectionReason.ConsumesResources }
-        return relevantRejectionReasons.none()
-    }
-
     fun hasAReasonToBeRemovedFromQueue(): Boolean {
         return any { it.rejectionReason in reasonsToDefinitivelyRemoveFromQueue }
     }
@@ -117,7 +105,7 @@ class RejectionReasons: HashSet<RejectionReasonInstance>() {
 
     // Used for constant variables in the functions above
     companion object {
-        private val techPolicyEraWonderRequirements = hashSetOf(
+        val techPolicyEraWonderRequirements = hashSetOf(
             RejectionReason.Obsoleted,
             RejectionReason.RequiresTech,
             RejectionReason.RequiresPolicy,

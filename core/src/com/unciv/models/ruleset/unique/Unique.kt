@@ -126,14 +126,16 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     ): Boolean {
 
         fun ruleset() = state.civInfo!!.gameInfo.ruleSet
+
+        val relevantUnit by lazy {
+            if (state.ourCombatant != null && state.ourCombatant is MapUnitCombatant) state.ourCombatant.unit
+            else state.unit
+        }
+
         val relevantTile by lazy { state.attackedTile
             ?: state.tile
             ?: state.unit?.getTile()
             ?: state.cityInfo?.getCenterTile()
-        }
-        val relevantUnit by lazy {
-            if (state.ourCombatant != null && state.ourCombatant is MapUnitCombatant) state.ourCombatant.unit
-            else state.unit
         }
 
         val stateBasedRandom by lazy { Random(state.hashCode()) }
