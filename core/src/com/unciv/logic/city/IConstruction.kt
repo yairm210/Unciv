@@ -100,7 +100,7 @@ class RejectionReasons: HashSet<RejectionReasonInstance>() {
             relevantRejectionReasons = relevantRejectionReasons.filterNot { it.rejectionReason in techPolicyEraWonderRequirements }
         if (ignoreResources)
             relevantRejectionReasons = relevantRejectionReasons.filterNot { it.rejectionReason == RejectionReason.ConsumesResources }
-        return relevantRejectionReasons.any()
+        return relevantRejectionReasons.none()
     }
 
     fun hasAReasonToBeRemovedFromQueue(): Boolean {
