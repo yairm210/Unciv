@@ -38,6 +38,8 @@ object ModOptionsConstants {
     const val allowCityStatesSpawnUnits = "Allow City States to spawn with additional units"
     const val tradeCivIntroductions = "Can trade civilization introductions for [] Gold"
     const val disableReligion = "Disable religion"
+    const val allowRazeCapital = "Allow raze capital"
+    const val allowRazeHolyCity = "Allow raze holy city"
 }
 
 class ModOptions : IHasUniques {
