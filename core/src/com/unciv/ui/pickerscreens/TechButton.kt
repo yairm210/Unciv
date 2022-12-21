@@ -1,35 +1,57 @@
 package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.TechManager
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.extensions.addBorder
 import com.unciv.ui.utils.extensions.brighten
 import com.unciv.ui.utils.extensions.center
+import com.unciv.ui.utils.extensions.centerY
 import com.unciv.ui.utils.extensions.darken
+import com.unciv.ui.utils.extensions.setFontSize
+import com.unciv.ui.utils.extensions.setSize
 import com.unciv.ui.utils.extensions.surroundWithCircle
 import com.unciv.ui.utils.extensions.surroundWithThinCircle
+import com.unciv.ui.utils.extensions.toGroup
 import com.unciv.ui.utils.extensions.toLabel
 
 class TechButton(techName:String, private val techManager: TechManager, isWorldScreen: Boolean = true) : Table(BaseScreen.skin) {
-    val text = "".toLabel().apply { setAlignment(Align.center) }
+    val text = "".toLabel().apply {
+        wrap = false
+        setFontSize(14)
+        setAlignment(Align.left)
+        setEllipsis(true)
+    }
+    val turns = "".toLabel().apply {
+        setFontSize(14)
+        setAlignment(Align.right)
+    }
     var orderIndicator: IconCircleGroup? = null
+    var bg = Image(BaseScreen.skinStrings.getUiBackground("TechPickerScreen/TechButton", BaseScreen.skinStrings.roundedEdgeRectangleShape))
 
     init {
         touchable = Touchable.enabled
-        background = BaseScreen.skinStrings.getUiBackground("TechPickerScreen/TechButton", BaseScreen.skinStrings.roundedEdgeRectangleShape)
-        pad(10f)
+        background = BaseScreen.skinStrings.getUiBackground("TechPickerScreen/TechButton", BaseScreen.skinStrings.roundedEdgeRectangleShape,
+            tintColor = Color.WHITE.darken(0.3f))
+
+        bg.toBack()
+        addActor(bg)
+
+        pad(0f).padBottom(5f).padTop(5f).padLeft(5f).padRight(5f)
 
         if (ImageGetter.techIconExists(techName))
-            add(ImageGetter.getTechIconGroup(techName, 60f)).left()
+            add(ImageGetter.getTechIconGroup(techName, 45f)).padRight(5f).left()
 
         val rightSide = Table()
 
@@ -45,18 +67,37 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
                     .addColor(Color.BLUE.brighten(0.3f), percentWillBeComplete)
                     .addColor(Color.BLUE.darken(0.5f), percentComplete)
             add(progressBar.addBorder(1f, Color.GRAY)).pad(10f)
-            rightSide.add(text).padBottom(5f).row()
-        } else rightSide.add(text).height(25f).padBottom(5f).row()
+        }
+        rightSide.add(text).width(145f).top().left().padRight(15f)
+        rightSide.add(turns).width(40f).top().right().padRight(10f).row()
 
         addTechEnabledIcons(techName, isWorldScreen, rightSide)
 
-        add(rightSide)
+        rightSide.centerY(this)
+        add(rightSide).expandX().left()
+        pack()
+
+        bg.setSize(width-3f, height-3f)
+        bg.align = Align.center
+        bg.center(this)
+
+        pack()
+    }
+
+    fun setButtonColor(color: Color) {
+        bg.color = color
         pack()
     }
 
     private fun addTechEnabledIcons(techName: String, isWorldScreen: Boolean, rightSide: Table) {
-        val techEnabledIcons = Table()
-        techEnabledIcons.defaults().pad(5f)
+        val techEnabledIcons = Table().align(Align.left)
+        techEnabledIcons.background = BaseScreen.skinStrings.getUiBackground(
+            "TechPickerScreen/TechButtonIconsOutline",
+            BaseScreen.skinStrings.rectangleWithOutlineShape,
+            tintColor = Color.BLACK.cpy().apply { a = 0.7f }
+        )
+        techEnabledIcons.pad(0f).padLeft(10f).padTop(2f).padBottom(2f)
+        techEnabledIcons.defaults().padRight(5f)
         val techIconSize = 30f
 
         val civName = techManager.civInfo.civName
@@ -64,11 +105,15 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
 
         val tech = ruleset.technologies[techName]!!
 
-        for (unit in tech.getEnabledUnits(ruleset, techManager.civInfo))
-            techEnabledIcons.add(ImageGetter.getPortraitImage(unit.name, techIconSize))
+        val icons = ArrayList<Group>()
 
-        for (building in tech.getEnabledBuildings(ruleset, techManager.civInfo))
-            techEnabledIcons.add(ImageGetter.getPortraitImage(building.name, techIconSize))
+        for (unit in tech.getEnabledUnits(ruleset, techManager.civInfo)) {
+            icons.add(ImageGetter.getPortraitImage(unit.name, techIconSize))
+        }
+
+        for (building in tech.getEnabledBuildings(ruleset, techManager.civInfo)) {
+            icons.add(ImageGetter.getPortraitImage(building.name, techIconSize))
+        }
 
         for (obj in tech.getObsoletedObjects(ruleset, techManager.civInfo)) {
             val obsoletedIcon = when (obj) {
@@ -81,34 +126,56 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
                 closeImage.center(it)
                 it.addActor(closeImage)
             }
-            techEnabledIcons.add(obsoletedIcon)
+            icons.add(obsoletedIcon)
         }
 
+        for (resource in ruleset.tileResources.values.filter { it.revealedBy == techName }) {
+            icons.add(ImageGetter.getResourceImage(resource.name, techIconSize))
+        }
 
         for (improvement in ruleset.tileImprovements.values.asSequence()
-            .filter {
-                it.techRequired == techName
-                || it.uniqueObjects.any { u -> u.allParams.contains(techName) }
-            }
+            .filter { it.techRequired == techName }
             .filter { it.uniqueTo == null || it.uniqueTo == civName }
         ) {
-            techEnabledIcons.add(ImageGetter.getImprovementIcon(improvement.name, techIconSize))
+            icons.add(ImageGetter.getImprovementIcon(improvement.name, techIconSize, true))
         }
 
-
-        for (resource in ruleset.tileResources.values.filter { it.revealedBy == techName })
-            techEnabledIcons.add(ImageGetter.getResourceImage(resource.name, techIconSize))
-
-        for (unique in tech.uniques)
-            techEnabledIcons.add(
-                ImageGetter.getImage("OtherIcons/Star")
-                    .apply { color = Color.BLACK }
+        for (improvement in ruleset.tileImprovements.values.asSequence()
+            .filter { it.uniqueObjects.any { u -> u.allParams.contains(techName) } }
+            .filter { it.uniqueTo == null || it.uniqueTo == civName }
+        ) {
+            icons.add(
+                ImageGetter.getImage("OtherIcons/Unique")
                     .surroundWithCircle(techIconSize)
                     .surroundWithThinCircle())
+        }
 
-        if (isWorldScreen) rightSide.add(techEnabledIcons)
-        else rightSide.add(techEnabledIcons)
-                .minWidth(225f)
+        for (unique in tech.uniques) {
+            icons.add(
+                when (unique) {
+                    UniqueType.EnablesCivWideStatProduction.text.replace("civWideStat", "Gold" )
+                    -> ImageGetter.getImage("OtherIcons/ConvertGold").toGroup(techIconSize)
+                    UniqueType.EnablesCivWideStatProduction.text.replace("civWideStat", "Science" )
+                    -> ImageGetter.getImage("OtherIcons/ConvertScience").toGroup(techIconSize)
+                    else -> ImageGetter.getImage("OtherIcons/Unique")
+                        .surroundWithCircle(techIconSize)
+                        .surroundWithThinCircle()
+                }
+            )
+        }
+
+        for (i in 0..4) {
+            val icon = icons.getOrNull(i)
+            if (icon != null)
+                techEnabledIcons.add(icon)
+        }
+
+        rightSide.add(techEnabledIcons)
+            .colspan(2)
+            .minWidth(195f)
+            .prefWidth(195f)
+            .maxWidth(195f)
+            .expandX().left().row()
     }
 
     fun addOrderIndicator(number:Int){
@@ -119,4 +186,5 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
         orderIndicator!!.setPosition(0f, height, Align.topLeft)
         addActor(orderIndicator)
     }
+
 }
