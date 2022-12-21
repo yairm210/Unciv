@@ -3,6 +3,7 @@ package com.unciv.ui.cityscreen
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.Align
+import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.images.ImageGetter
@@ -46,11 +47,11 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
         when {
             tileInfo.getOwner() != city.civInfo -> { // outside of civ boundary
                 dim(0.3f)
-                yieldGroup.isVisible = true
+                yieldGroup.isVisible = UncivGame.Current.settings.showTileYields
             }
 
             tileInfo !in city.tilesInRange -> { // within city but not close enough to be workable
-                yieldGroup.isVisible = true
+                yieldGroup.isVisible = UncivGame.Current.settings.showTileYields
                 dim(0.5f)
             }
 

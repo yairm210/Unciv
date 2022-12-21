@@ -1,3 +1,22 @@
+## 4.3.11
+
+Modding: Unbuildable units can still be upgraded to
+
+Modding: Fallback image for modded buildings and techs
+
+By vegeta1k95:
+- Rework of City Screen
+- Huge update of Technology Picker screen UI to match Civ 5
+
+By FiretronP75:
+- Continent and Islands  map
+- Map editor responds to max zoom setting
+- Map generation improvements (conflicting terrains, water generation)
+
+AbsoluteUnits - Mongolian Uniques - By letstalkaboutdune
+
+Added missing translation terms - By Ouaz
+
 ## 4.3.10
 
 Better unit action icons

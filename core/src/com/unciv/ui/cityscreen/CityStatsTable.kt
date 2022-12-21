@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -25,12 +26,17 @@ import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ExpanderTab
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.colorFromRGB
 import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.setSize
 import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.ui.utils.extensions.toGroup
 import com.unciv.ui.utils.extensions.toLabel
 import java.text.DecimalFormat
 import kotlin.math.ceil
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.round
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
@@ -103,15 +109,13 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
 
         // begin lowerTable
         addCitizenManagement()
+        addGreatPersonPointInfo(cityInfo)
         if (!cityInfo.population.getMaxSpecialists().isEmpty()) {
             addSpecialistInfo()
         }
         if (cityInfo.religion.getNumberOfFollowers().isNotEmpty() && cityInfo.civInfo.gameInfo.isReligionEnabled())
             addReligionInfo()
 
-
-        addStatInfo()
-        addGreatPersonPointInfo(cityInfo)
         addBuildingsInfo()
 
         upperTable.pack()
@@ -221,22 +225,40 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
             }
         }
 
+        // Buildings sorted alphabetically
+        wonders.sortBy { it.name }
+        specialistBuildings.sortBy { it.name }
+        otherBuildings.sortBy { it.name }
+
+        val totalTable = Table()
+        lowerTable.addCategory("Buildings", totalTable, false)
+
         if (specialistBuildings.isNotEmpty()) {
             val specialistBuildingsTable = Table()
-            addCategory("Specialist Buildings", specialistBuildingsTable)
+            totalTable.add().row()
+            totalTable.addSeparator(color = Color.LIGHT_GRAY)
+            totalTable.add("Specialist Buildings".toLabel().apply { setAlignment(Align.center) }).growX()
+            totalTable.addSeparator(color = Color.LIGHT_GRAY)
             for (building in specialistBuildings) addBuildingButton(building, specialistBuildingsTable)
+            totalTable.add(specialistBuildingsTable).growX().right().row()
         }
 
         if (wonders.isNotEmpty()) {
             val wondersTable = Table()
-            addCategory("Wonders", wondersTable)
+            totalTable.addSeparator(color = Color.LIGHT_GRAY)
+            totalTable.add("Wonders".toLabel().apply { setAlignment(Align.center) }).growX()
+            totalTable.addSeparator(color = Color.LIGHT_GRAY)
             for (building in wonders) addBuildingButton(building, wondersTable)
+            totalTable.add(wondersTable).growX().right().row()
         }
 
         if (otherBuildings.isNotEmpty()) {
             val regularBuildingsTable = Table()
-            addCategory("Buildings", regularBuildingsTable)
+            totalTable.addSeparator(color = Color.LIGHT_GRAY)
+            totalTable.add("Other".toLabel().apply { setAlignment(Align.center) }).growX()
+            totalTable.addSeparator(color = Color.LIGHT_GRAY)
             for (building in otherBuildings) addBuildingButton(building, regularBuildingsTable)
+            totalTable.add(regularBuildingsTable).growX().right().row()
         }
     }
 
@@ -286,166 +308,75 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
             cityScreen.update()
         }
 
-        destinationTable.add(button).pad(1f).expandX().right().row()
+        destinationTable.add(button).pad(1f).padBottom(2f).padTop(2f).expandX().right().row()
     }
 
-    private fun addCategory(category: String, showHideTable: Table) {
+    private fun Table.addCategory(category: String, showHideTable: Table, startsOpened: Boolean = true, innerPadding: Float = 10f) : ExpanderTab {
         val expanderTab = ExpanderTab(
             title = category,
             fontSize = Constants.defaultFontSize,
             persistenceID = "CityInfo.$category",
+            startsOutOpened = startsOpened,
+            defaultPad = innerPadding,
             onChange = { onContentResize() }
         ) {
             it.add(showHideTable).fillX().right()
         }
-        lowerTable.add(expanderTab).growX().row()
+        add(expanderTab).growX().row()
+        return expanderTab
     }
 
+    private fun addGreatPersonPointInfo(cityInfo: CityInfo) {
 
-    private fun addStatsToHashmap(
-        statTreeNode: StatTreeNode,
-        hashMap: HashMap<String, Float>,
-        stat: Stat,
-        showDetails: Boolean,
-        indentation: Int = 0
-    ) {
-        for ((name, child) in statTreeNode.children) {
-            val statAmount = child.totalStats[stat]
-            if (statAmount == 0f) continue
-            hashMap["- ".repeat(indentation) + name.tr()] = statAmount
-            if (showDetails) addStatsToHashmap(child, hashMap, stat, showDetails, indentation + 1)
-        }
-    }
+        val greatPeopleTable = Table()
 
-    private fun Table.addStatInfo() {
-        val cityStats = cityScreen.city.cityStats
-
-        val showFaith = cityScreen.city.civInfo.gameInfo.isReligionEnabled()
-        for (stat in Stat.values()) {
-            if (stat == Stat.Faith && !showFaith) continue
-            val statValuesTable = Table()
-            statValuesTable.touchable = Touchable.enabled
-            addCategory(stat.name, statValuesTable)
-
-            updateStatValuesTable(stat, cityStats, statValuesTable)
-        }
-    }
-
-    private fun updateStatValuesTable(
-        stat: Stat,
-        cityStats: CityStats,
-        statValuesTable: Table,
-        showDetails:Boolean = false
-    ) {
-        statValuesTable.clear()
-        statValuesTable.defaults().pad(2f)
-        statValuesTable.onClick {
-            updateStatValuesTable(
-                stat,
-                cityStats,
-                statValuesTable,
-                !showDetails
-            )
-            onContentResize()
-        }
-
-        val relevantBaseStats = LinkedHashMap<String, Float>()
-
-        if (stat != Stat.Happiness)
-            addStatsToHashmap(cityStats.baseStatTree, relevantBaseStats, stat, showDetails)
-        else relevantBaseStats.putAll(cityStats.happinessList)
-        for (key in relevantBaseStats.keys.toList())
-            if (relevantBaseStats[key] == 0f) relevantBaseStats.remove(key)
-
-        if (relevantBaseStats.isEmpty()) return
-
-        statValuesTable.add("Base values".toLabel(fontSize = FONT_SIZE_STAT_INFO_HEADER)).pad(4f)
-            .colspan(2).row()
-        var sumOfAllBaseValues = 0f
-        for (entry in relevantBaseStats) {
-            val specificStatValue = entry.value
-            if (!entry.key.startsWith('-'))
-                sumOfAllBaseValues += specificStatValue
-            statValuesTable.add(entry.key.toLabel()).left()
-            statValuesTable.add(specificStatValue.toOneDecimalLabel()).row()
-        }
-        statValuesTable.addSeparator()
-        statValuesTable.add("Total".toLabel())
-        statValuesTable.add(sumOfAllBaseValues.toOneDecimalLabel()).row()
-
-        val relevantBonuses = LinkedHashMap<String, Float>()
-        addStatsToHashmap(cityStats.statPercentBonusTree, relevantBonuses, stat, showDetails)
-
-        val totalBonusStats = cityStats.statPercentBonusTree.totalStats
-        if (totalBonusStats[stat] != 0f) {
-            statValuesTable.add("Bonuses".toLabel(fontSize = FONT_SIZE_STAT_INFO_HEADER)).colspan(2)
-                .padTop(20f).row()
-            for ((source, bonusAmount) in relevantBonuses) {
-                statValuesTable.add(source.toLabel()).left()
-                statValuesTable.add(bonusAmount.toPercentLabel()).row() // negative bonus
-            }
-            statValuesTable.addSeparator()
-            statValuesTable.add("Total".toLabel())
-            statValuesTable.add(totalBonusStats[stat].toPercentLabel()).row() // negative bonus
-
-
-            statValuesTable.add("Final".toLabel(fontSize = FONT_SIZE_STAT_INFO_HEADER)).colspan(2)
-                .padTop(20f).row()
-            var finalTotal = 0f
-            for (entry in cityStats.finalStatList) {
-                val specificStatValue = entry.value[stat]
-                finalTotal += specificStatValue
-                if (specificStatValue == 0f) continue
-                statValuesTable.add(entry.key.toLabel())
-                statValuesTable.add(specificStatValue.toOneDecimalLabel()).row()
-            }
-            statValuesTable.addSeparator()
-            statValuesTable.add("Total".toLabel())
-            statValuesTable.add(finalTotal.toOneDecimalLabel()).row()
-        }
-
-        statValuesTable.pack()
-
-        if (stat != Stat.Happiness) {
-            val toggleButton = getToggleButton(showDetails)
-            statValuesTable.addActor(toggleButton)
-            toggleButton.setPosition(0f, statValuesTable.height, Align.topLeft)
-        }
-
-        statValuesTable.padBottom(4f)
-    }
-
-    private fun getToggleButton(showDetails: Boolean): IconCircleGroup {
-        val label = (if (showDetails) "-" else "+").toLabel()
-        label.setAlignment(Align.center)
-        return label
-            .surroundWithCircle(25f, color = BaseScreen.skinStrings.skinConfig.baseColor)
-            .surroundWithCircle(27f, false)
-    }
-
-    private fun Table.addGreatPersonPointInfo(cityInfo: CityInfo) {
         val greatPersonPoints = cityInfo.getGreatPersonPointsForNextTurn()
         val allGreatPersonNames = greatPersonPoints.asSequence().flatMap { it.value.keys }.distinct()
+
+        if (allGreatPersonNames.none())
+            return
+
         for (greatPersonName in allGreatPersonNames) {
-            val expanderName = "[$greatPersonName] points"
-            val greatPersonTable = Table()
-            addCategory(expanderName, greatPersonTable)
-            for ((source, gppCounter) in greatPersonPoints) {
+
+            var gppPerTurn = 0
+
+            for ((_, gppCounter) in greatPersonPoints) {
                 val gppPointsFromSource = gppCounter[greatPersonName]!!
                 if (gppPointsFromSource == 0) continue
-                greatPersonTable.add(source.toLabel()).padRight(10f)
-                greatPersonTable.add(gppPointsFromSource.toLabel()).row()
+                gppPerTurn += gppPointsFromSource
             }
+
+            val info = Table()
+
+            info.add(ImageGetter.getUnitIcon(greatPersonName, Color.GOLD).toGroup(20f))
+                .left().padBottom(4f).padRight(5f)
+            info.add("$greatPersonName (+$gppPerTurn)".toLabel()).left().padBottom(4f).expandX().row()
+
+            val gppCurrent = cityInfo.civInfo.greatPeople.greatPersonPointsCounter[greatPersonName]
+            val gppNeeded = cityInfo.civInfo.greatPeople.pointsForNextGreatPerson
+
+            val percent = gppCurrent!! / gppNeeded.toFloat()
+
+            val progressBar = ImageGetter.ProgressBar(300f, 25f, false)
+            progressBar.setBackground(Color.BLACK.cpy().apply { a = 0.8f })
+            progressBar.setProgress(Color.ORANGE, percent)
+            progressBar.apply {
+                val bar = ImageGetter.getWhiteDot()
+                bar.color = Color.GRAY
+                bar.setSize(width+5f, height+5f)
+                bar.center(this)
+                addActor(bar)
+                bar.toBack()
+            }
+            progressBar.setLabel(Color.WHITE, "$gppCurrent/$gppNeeded", fontSize = 14)
+
+            info.add(progressBar).colspan(2).left().expandX().row()
+
+            greatPeopleTable.add(info).growX().top().padBottom(10f)
+            greatPeopleTable.add(ImageGetter.getPortraitImage(greatPersonName, 50f)).row()
         }
-    }
 
-    companion object {
-        private const val FONT_SIZE_STAT_INFO_HEADER = 22
-
-        private fun Float.toPercentLabel() =
-                "${if (this>0f) "+" else ""}${DecimalFormat("0.#").format(this)}%".toLabel()
-        private fun Float.toOneDecimalLabel() =
-                DecimalFormat("0.#").format(this).toLabel()
+        lowerTable.addCategory("Great People", greatPeopleTable)
     }
 
 }

@@ -263,28 +263,34 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (cityInfo == null) return super.canBePurchasedWithStat(cityInfo, stat)
         val conditionalState = StateForConditionals(civInfo = cityInfo.civInfo, cityInfo = cityInfo)
 
-        return (cityInfo.getMatchingUniques(UniqueType.BuyUnitsIncreasingCost, conditionalState)
-                .any {
-                    it.params[2] == stat.name
-                    && matchesFilter(it.params[0])
-                    && cityInfo.matchesFilter(it.params[3])
-                }
-            || cityInfo.getMatchingUniques(UniqueType.BuyUnitsByProductionCost, conditionalState)
-                .any { it.params[1] == stat.name && matchesFilter(it.params[0]) }
-            || cityInfo.getMatchingUniques(UniqueType.BuyUnitsWithStat, conditionalState)
-                .any {
-                    it.params[1] == stat.name
-                    && matchesFilter(it.params[0])
-                    && cityInfo.matchesFilter(it.params[2])
-                }
-            || cityInfo.getMatchingUniques(UniqueType.BuyUnitsForAmountStat, conditionalState)
-                .any {
-                    it.params[2] == stat.name
-                    && matchesFilter(it.params[0])
-                    && cityInfo.matchesFilter(it.params[3])
-                }
-            || return super.canBePurchasedWithStat(cityInfo, stat)
-        )
+        if (cityInfo.getMatchingUniques(UniqueType.BuyUnitsIncreasingCost, conditionalState)
+                    .any {
+                        it.params[2] == stat.name
+                                && matchesFilter(it.params[0])
+                                && cityInfo.matchesFilter(it.params[3])
+                    }) return true
+
+        if (cityInfo.getMatchingUniques(UniqueType.BuyUnitsByProductionCost, conditionalState)
+                    .any { it.params[1] == stat.name && matchesFilter(it.params[0]) })
+            return true
+
+        if (cityInfo.getMatchingUniques(UniqueType.BuyUnitsWithStat, conditionalState)
+                    .any {
+                        it.params[1] == stat.name
+                                && matchesFilter(it.params[0])
+                                && cityInfo.matchesFilter(it.params[2])
+                    })
+            return true
+
+        if (cityInfo.getMatchingUniques(UniqueType.BuyUnitsForAmountStat, conditionalState)
+                    .any {
+                        it.params[2] == stat.name
+                                && matchesFilter(it.params[0])
+                                && cityInfo.matchesFilter(it.params[3])
+                    })
+            return true
+
+        return super.canBePurchasedWithStat(cityInfo, stat)
     }
 
     override fun getBaseBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
@@ -442,11 +448,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     override fun isBuildable(cityConstructions: CityConstructions): Boolean {
         return getRejectionReasons(cityConstructions).isEmpty()
-    }
-
-    fun isBuildableIgnoringTechs(civInfo: CivilizationInfo): Boolean {
-        val rejectionReasons = getRejectionReasons(civInfo)
-        return rejectionReasons.isOKIgnoringRequirements(ignoreTechPolicyEraWonderRequirements = true)
     }
 
     override fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat?): Boolean {

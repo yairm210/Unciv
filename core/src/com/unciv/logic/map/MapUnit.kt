@@ -556,7 +556,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     ): Boolean {
         if (name == unitToUpgradeTo.name) return false
         val rejectionReasons = unitToUpgradeTo.getRejectionReasons(civInfo)
-        if (rejectionReasons.isOKIgnoringRequirements(ignoreRequirements, ignoreResources)) return true
+        if (rejectionReasons.isOkForUnitUpgradeIgnoringRequirements(ignoreRequirements, ignoreResources)) return true
 
         // The resource requirements check above did not consider that the resources
         // this unit currently "consumes" are available for an upgrade too - if that's one of the
@@ -572,7 +572,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         // WHEN THE CURRENT UNIT IS NOT HERE
         civInfo.removeUnit(this)
         val canUpgrade = unitToUpgradeTo.getRejectionReasons(civInfo)
-            .isOKIgnoringRequirements(ignoreTechPolicyEraWonderRequirements = ignoreRequirements)
+            .isOkForUnitUpgradeIgnoringRequirements(ignoreTechPolicyEraWonderRequirements = ignoreRequirements)
         civInfo.addUnit(this)
         return canUpgrade
     }

@@ -91,19 +91,16 @@ class RejectionReasons: HashSet<RejectionReasonInstance>() {
 
     fun contains(rejectionReason: RejectionReason) = any { it.rejectionReason == rejectionReason }
 
-    fun isOKIgnoringRequirements(
+    fun isOkForUnitUpgradeIgnoringRequirements(
         ignoreTechPolicyEraWonderRequirements: Boolean = false,
         ignoreResources: Boolean = false
     ): Boolean {
-        if (!ignoreTechPolicyEraWonderRequirements && !ignoreResources) return isEmpty()
-        if (!ignoreTechPolicyEraWonderRequirements)
-            return all { it.rejectionReason == RejectionReason.ConsumesResources }
-        if (!ignoreResources)
-            return all { it.rejectionReason in techPolicyEraWonderRequirements }
-        return all {
-            it.rejectionReason == RejectionReason.ConsumesResources ||
-            it.rejectionReason in techPolicyEraWonderRequirements
-        }
+        var relevantRejectionReasons = this.asSequence().filterNot { it.rejectionReason == RejectionReason.Unbuildable }
+        if (ignoreTechPolicyEraWonderRequirements)
+            relevantRejectionReasons = relevantRejectionReasons.filterNot { it.rejectionReason in techPolicyEraWonderRequirements }
+        if (ignoreResources)
+            relevantRejectionReasons = relevantRejectionReasons.filterNot { it.rejectionReason == RejectionReason.ConsumesResources }
+        return relevantRejectionReasons.none()
     }
 
     fun hasAReasonToBeRemovedFromQueue(): Boolean {
