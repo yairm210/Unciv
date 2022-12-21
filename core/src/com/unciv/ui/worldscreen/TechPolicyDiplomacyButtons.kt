@@ -88,10 +88,11 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
         if (viewingCiv.tech.currentTechnology() != null) {
             val currentTech = viewingCiv.tech.currentTechnologyName()!!
             val innerButton = TechButton(currentTech, viewingCiv.tech)
-            innerButton.color = colorFromRGB(7, 46, 43)
+            innerButton.setButtonColor(colorFromRGB(7, 46, 43))
             techButtonHolder.actor = innerButton
             val turnsToTech = viewingCiv.tech.turnsToTech(currentTech)
-            innerButton.text.setText(currentTech.tr() + "\r\n" + turnsToTech + Fonts.turn)
+            innerButton.text.setText(currentTech.tr())
+            innerButton.turns.setText(turnsToTech + Fonts.turn)
         } else {
             val canResearch = viewingCiv.tech.canResearchTech()
             if (canResearch || viewingCiv.tech.researchedTechnologies.size != 0) {
