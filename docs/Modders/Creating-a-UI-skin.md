@@ -53,6 +53,9 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | CityScreen/ConstructionInfoTable/ | SelectedConstructionTable | null | |
 | CivilopediaScreen/ | EntryButton | null | |
 | General/ | Border | null | |
+| General/ | Border | null | |
+| General/ | Border | null | |
+| General/ | Border | null | |
 | General/ | ExpanderTab | null | |
 | General/ | HealthBar | null | |
 | General/ | TabbedPager | null | |
@@ -87,8 +90,11 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | OverviewScreen/UnitOverviewTab/ | UnitSupplyTable | null | |
 | PlayerReadyScreen/ | Background | null | |
 | TechPickerScreen/ | Background | null | |
+| TechPickerScreen/ | Background | null | |
 | TechPickerScreen/ | BottomTable | null | |
 | TechPickerScreen/ | TechButton | roundedEdgeRectangle | |
+| TechPickerScreen/ | TechButton | roundedEdgeRectangle | |
+| TechPickerScreen/ | TechButtonIconsOutline | rectangleWithOutline | |
 | VictoryScreen/ | CivGroup | roundedEdgeRectangle | |
 | WorldScreen/ | AirUnitTable | null | |
 | WorldScreen/ | BattleTable | null | |
