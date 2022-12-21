@@ -326,6 +326,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
     }
 
     private fun canReachInCurrentTurn(destination: TileInfo): Boolean {
+        if (unit.hasUnique(UniqueType.CannotMove)) return false
         if (unit.baseUnit.movesLikeAirUnits())
             return unit.currentTile.aerialDistanceTo(destination) <= unit.getMaxMovementForAirUnits()
         if (unit.isPreparingParadrop())
@@ -335,6 +336,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
 
     fun getReachableTilesInCurrentTurn(): Sequence<TileInfo> {
         return when {
+            unit.hasUnique(UniqueType.CannotMove) -> emptySequence()
             unit.baseUnit.movesLikeAirUnits() ->
                 unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getMaxMovementForAirUnits()))
             unit.isPreparingParadrop() ->
@@ -364,6 +366,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         if (unit.baseUnit.movesLikeAirUnits()) return false
         // We can't swap with ourself
         if (reachableTile == unit.getTile()) return false
+        if (unit.hasUnique(UniqueType.CannotMove)) return false
         // Check whether the tile contains a unit of the same type as us that we own and that can
         // also reach our tile in its current turn.
         val otherUnit = (
@@ -373,7 +376,9 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
                 reachableTile.militaryUnit
         ) ?: return false
         val ourPosition = unit.getTile()
-        if (otherUnit.owner != unit.owner || !otherUnit.movement.canReachInCurrentTurn(ourPosition)) return false
+        if (otherUnit.owner != unit.owner
+                || otherUnit.hasUnique(UniqueType.CannotMove)
+                || !otherUnit.movement.canReachInCurrentTurn(ourPosition)) return false
         // Check if we could enter their tile if they wouldn't be there
         otherUnit.removeFromTile()
         val weCanEnterTheirTile = canMoveTo(reachableTile)
