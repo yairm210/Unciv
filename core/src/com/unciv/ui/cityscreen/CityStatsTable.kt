@@ -351,7 +351,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
 
             info.add(ImageGetter.getUnitIcon(greatPersonName, Color.GOLD).toGroup(20f))
                 .left().padBottom(4f).padRight(5f)
-            info.add("$greatPersonName (+$gppPerTurn)".toLabel()).left().padBottom(4f).expandX().row()
+            info.add("{$greatPersonName} (+$gppPerTurn)".toLabel()).left().padBottom(4f).expandX().row()
 
             val gppCurrent = cityInfo.civInfo.greatPeople.greatPersonPointsCounter[greatPersonName]
             val gppNeeded = cityInfo.civInfo.greatPeople.pointsForNextGreatPerson
