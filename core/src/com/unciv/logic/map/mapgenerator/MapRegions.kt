@@ -76,7 +76,7 @@ class MapRegions (val ruleset: Ruleset){
         val totalLand = tileMap.continentSizes.values.sum().toFloat()
         val largestContinent = tileMap.continentSizes.values.maxOf { it }.toFloat()
 
-        val radius = if (tileMap.mapParameters.shape == MapShape.hexagonal)
+        val radius = if (tileMap.mapParameters.shape == MapShape.hexagonal || tileMap.mapParameters.shape == MapShape.flatEarth)
             tileMap.mapParameters.mapSize.radius.toFloat()
         else
             (max(tileMap.mapParameters.mapSize.width / 2, tileMap.mapParameters.mapSize.height / 2)).toFloat()

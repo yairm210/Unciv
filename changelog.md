@@ -1,7 +1,62 @@
+## 4.3.11
+
+Modding: Unbuildable units can still be upgraded to
+
+Modding: Fallback image for modded buildings and techs
+
+By vegeta1k95:
+- Rework of City Screen
+- Huge update of Technology Picker screen UI to match Civ 5
+
+By FiretronP75:
+- Continent and Islands  map
+- Map editor responds to max zoom setting
+- Map generation improvements (conflicting terrains, water generation)
+
+AbsoluteUnits - Mongolian Uniques - By letstalkaboutdune
+
+Added missing translation terms - By Ouaz
+
+## 4.3.10
+
+Better unit action icons
+
+Solved temporary unique parsing error
+
+bugfix: players can no longer get citystate nations when selecting mod
+
+Thin lines around many round icons
+
+By vegeta1k95:
+- Rework of City Screen: new current buildings list + misc changes
+- Construction table: ordering change (Civ 5) + add/remove on double-click
+- Fix bug, where units do not reveal tiles  ()
+
+By alexban011:
+- fixed global politics screen from revealing unknown civs and CityStates
+
+## 4.3.9
+
+Modding: Can provide resources as a global unique
+
+Flat Earth Hexagonal map shape - By FiretronP75
+
+By vegeta1k95:
+- Change styles and behaviour of Unit flags as in Civ 5
+- "Auto Unit Cycle" and "Automated units move on turn start" options implemented (per Civ 5)
+- Next Turn actions (pick tech/policy/etc) now have icons
+
+Added icon for `Conduct Trade Mission` button - By alexban011
+
+By itanasi:
+- Actually fix AI from pillaging neutral roads
+
+New map options translatable - By Ouaz
+
 ## 4.3.8
 
 By nacro711072:
-- Avoid destroying all onboard units after player upgrade Air Carrier unit
+- Modding: Avoid destroying transported units when upgrading carrier units
 - update score icon
 
 AI Pillages Neutral Roads only at War - By itanasi

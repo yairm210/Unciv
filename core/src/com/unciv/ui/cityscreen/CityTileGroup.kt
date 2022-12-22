@@ -1,7 +1,9 @@
 package com.unciv.ui.cityscreen
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.Align
+import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.images.ImageGetter
@@ -45,11 +47,11 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
         when {
             tileInfo.getOwner() != city.civInfo -> { // outside of civ boundary
                 dim(0.3f)
-                yieldGroup.isVisible = false
+                yieldGroup.isVisible = UncivGame.Current.settings.showTileYields
             }
 
             tileInfo !in city.tilesInRange -> { // within city but not close enough to be workable
-                yieldGroup.isVisible = false
+                yieldGroup.isVisible = UncivGame.Current.settings.showTileYields
                 dim(0.5f)
             }
 
@@ -70,11 +72,9 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
             }
         }
 
+        unitLayerGroup.isVisible = false
         terrainFeatureLayerGroup.color.a = 0.5f
         icons.improvementIcon?.setColor(1f, 1f, 1f, 0.5f)
-        resourceImage?.setColor(1f, 1f, 1f, 0.5f)
-        icons.civilianUnitIcon?.setColor(1f, 1f, 1f, 0.5f)
-        icons.militaryUnitIcon?.setColor(1f, 1f, 1f, 0.5f)
         updatePopulationIcon()
         updateYieldGroup()
     }
@@ -94,7 +94,7 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
     private fun updatePopulationIcon() {
         val populationIcon = icons.populationIcon
         if (populationIcon != null) {
-            populationIcon.setSize(30f, 30f)
+            populationIcon.setSize(25f, 25f)
             populationIcon.setPosition(width / 2 - populationIcon.width / 2,
                     height * 0.85f - populationIcon.height / 2)
 

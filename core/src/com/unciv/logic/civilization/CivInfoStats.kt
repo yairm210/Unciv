@@ -256,7 +256,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         return statMap
     }
 
-    fun getGlobalStatsFromUniques():StatMap{
+    fun getGlobalStatsFromUniques():StatMap {
         val statMap = StatMap()
         if (civInfo.religionManager.religion != null) {
             for (unique in civInfo.religionManager.religion!!.getFounderUniques()) {
@@ -269,13 +269,16 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                 if (unique.isOfType(UniqueType.StatsFromGlobalFollowers))
                     statMap.add(
                         "Religion",
-                        unique.stats * civInfo.religionManager.numberOfFollowersFollowingThisReligion(unique.params[2]).toFloat() / unique.params[1].toFloat()
+                        unique.stats * civInfo.religionManager.numberOfFollowersFollowingThisReligion(
+                            unique.params[2]
+                        ).toFloat() / unique.params[1].toFloat()
                     )
             }
         }
 
         for (unique in civInfo.getMatchingUniques(UniqueType.StatsPerPolicies)) {
-            val amount = civInfo.policies.getAdoptedPolicies().count { !Policy.isBranchCompleteByName(it) } / unique.params[1].toInt()
+            val amount = civInfo.policies.getAdoptedPolicies()
+                .count { !Policy.isBranchCompleteByName(it) } / unique.params[1].toInt()
             statMap.add("Policies", unique.stats.times(amount))
         }
 
@@ -291,6 +294,14 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             statsPerNaturalWonder.add(unique.stats)
 
         statMap.add("Natural Wonders", statsPerNaturalWonder.times(civInfo.naturalWonders.size))
+
+        if (statMap.contains(UniqueTarget.CityState.name)) {
+            for (unique in civInfo.getMatchingUniques(UniqueType.BonusStatsFromCityStates)) {
+                val bonusPercent = unique.params[0].toPercent()
+                val bonusStat = Stat.valueOf(unique.params[1])
+                statMap[UniqueTarget.CityState.name]!![bonusStat] *= bonusPercent
+            }
+        }
 
         return statMap
     }

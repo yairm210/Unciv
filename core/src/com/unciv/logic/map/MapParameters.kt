@@ -124,12 +124,14 @@ class MapSizeNew : IsPartOfGameInfoSerialization {
 
 object MapShape : IsPartOfGameInfoSerialization {
     const val hexagonal = "Hexagonal"
+    const val flatEarth = "Flat Earth Hexagonal"
     const val rectangular = "Rectangular"
 }
 
 object MapType : IsPartOfGameInfoSerialization {
     const val default = "Default"
     const val pangaea = "Pangaea"
+    const val continentAndIslands = "Continent and Islands"
     const val twoContinents = "Two Continents"
     const val threeContinents = "Three Continents"
     const val fourCorners = "Four Corners"
@@ -230,12 +232,12 @@ class MapParameters : IsPartOfGameInfoSerialization {
     }
 
     fun getArea() = when {
-        shape == MapShape.hexagonal -> getNumberOfTilesInHexagon(mapSize.radius)
+        shape == MapShape.hexagonal || shape == MapShape.flatEarth -> getNumberOfTilesInHexagon(mapSize.radius)
         worldWrap && mapSize.width % 2 != 0 -> (mapSize.width - 1) * mapSize.height
         else -> mapSize.width * mapSize.height
     }
     fun displayMapDimensions() = mapSize.run {
-        (if (shape == MapShape.hexagonal) "R$radius" else "${width}x$height") +
+        (if (shape == MapShape.hexagonal || shape == MapShape.flatEarth) "R$radius" else "${width}x$height") +
         (if (worldWrap) "w" else "")
     }
 
@@ -267,7 +269,7 @@ class MapParameters : IsPartOfGameInfoSerialization {
     }.joinToString("")
 
     fun numberOfTiles() =
-        if (shape == MapShape.hexagonal) {
+        if (shape == MapShape.hexagonal || shape == MapShape.flatEarth) {
             1 + 3 * mapSize.radius * (mapSize.radius - 1)
         } else {
             mapSize.width * mapSize.height

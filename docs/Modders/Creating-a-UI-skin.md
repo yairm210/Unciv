@@ -34,7 +34,6 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 <!--- DO NOT REMOVE OR MODIFY THIS LINE UI_ELEMENT_TABLE_REGION -->
 | Directory | Name | Default shape | Image |
 |---|:---:|:---:|---|
-| CityScreen/ | CityInfoTable | null | |
 | CityScreen/ | CityPickerTable | roundedEdgeRectangle | |
 | CityScreen/CitizenManagementTable/ | AvoidCell | null | |
 | CityScreen/CitizenManagementTable/ | FocusCell | null | |
@@ -53,6 +52,9 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | CityScreen/ConstructionInfoTable/ | Background | null | |
 | CityScreen/ConstructionInfoTable/ | SelectedConstructionTable | null | |
 | CivilopediaScreen/ | EntryButton | null | |
+| General/ | Border | null | |
+| General/ | Border | null | |
+| General/ | Border | null | |
 | General/ | Border | null | |
 | General/ | ExpanderTab | null | |
 | General/ | HealthBar | null | |
@@ -88,8 +90,11 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | OverviewScreen/UnitOverviewTab/ | UnitSupplyTable | null | |
 | PlayerReadyScreen/ | Background | null | |
 | TechPickerScreen/ | Background | null | |
+| TechPickerScreen/ | Background | null | |
 | TechPickerScreen/ | BottomTable | null | |
 | TechPickerScreen/ | TechButton | roundedEdgeRectangle | |
+| TechPickerScreen/ | TechButton | roundedEdgeRectangle | |
+| TechPickerScreen/ | TechButtonIconsOutline | rectangleWithOutline | |
 | VictoryScreen/ | CivGroup | roundedEdgeRectangle | |
 | WorldScreen/ | AirUnitTable | null | |
 | WorldScreen/ | BattleTable | null | |

@@ -61,7 +61,7 @@ open class Notification() : IsPartOfGameInfoSerialization {
         if (icons.isEmpty()) return
         for (icon in icons.reversed()) {
             val image: Actor = when {
-                ruleset.technologies.containsKey(icon) -> ImageGetter.getTechIcon(icon)
+                ruleset.technologies.containsKey(icon) -> ImageGetter.getTechIconGroup(icon, iconSize)
                 ruleset.nations.containsKey(icon) -> ImageGetter.getNationIndicator(
                     ruleset.nations[icon]!!,
                     iconSize

@@ -12,6 +12,7 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.Counter
+import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
@@ -590,7 +591,16 @@ class CityInfo : IsPartOfGameInfoSerialization {
     fun isHolyCityOf(religionName: String?) = isHolyCity() && religion.religionThisIsTheHolyCityOf == religionName
 
     fun canBeDestroyed(justCaptured: Boolean = false): Boolean {
-        return !isOriginalCapital && !isHolyCity() && (!isCapital() || justCaptured)
+        if (civInfo.gameInfo.gameParameters.noCityRazing) return false;
+
+        val allowRazeCapital = civInfo.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.allowRazeCapital)
+        val allowRazeHolyCity = civInfo.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.allowRazeHolyCity)
+
+        if (isOriginalCapital && !allowRazeCapital) return false;
+        if (isHolyCity() && !allowRazeHolyCity) return false;
+        if (isCapital() && !justCaptured && !allowRazeCapital) return false;
+
+        return true;
     }
 
     fun getForceEvaluation(): Int {

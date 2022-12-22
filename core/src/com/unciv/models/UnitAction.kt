@@ -7,6 +7,8 @@ import com.unciv.Constants
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.ui.utils.extensions.surroundWithThinCircle
 
 
 /** Unit Actions - class - carries dynamic data and actual execution.
@@ -22,6 +24,8 @@ data class UnitAction(
 ) {
     fun getIcon(): Actor {
         if (type.imageGetter != null) return type.imageGetter.invoke()
+            .surroundWithCircle(20f)
+            .surroundWithThinCircle()
         return when (type) {
             UnitActionType.Create -> {
                 ImageGetter.getImprovementIcon(title.getPlaceholderParameters()[0])
@@ -32,6 +36,7 @@ data class UnitAction(
                     if (ImageGetter.religionIconExists(religionName)) religionName
                     else "Pantheon"
                 ).apply { color = Color.BLACK }
+                    .surroundWithCircle(20f).surroundWithThinCircle()
             }
             else -> ImageGetter.getImage("UnitActionIcons/Star").apply { color = Color.BLACK }
         }
