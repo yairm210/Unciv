@@ -591,6 +591,8 @@ class CityInfo : IsPartOfGameInfoSerialization {
     fun isHolyCityOf(religionName: String?) = isHolyCity() && religion.religionThisIsTheHolyCityOf == religionName
 
     fun canBeDestroyed(justCaptured: Boolean = false): Boolean {
+        if (civInfo.gameInfo.gameParameters.noCityRazing) return false;
+
         val allowRazeCapital = civInfo.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.allowRazeCapital)
         val allowRazeHolyCity = civInfo.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.allowRazeHolyCity)
 
