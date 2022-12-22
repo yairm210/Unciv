@@ -2,9 +2,7 @@ package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
-import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -13,14 +11,11 @@ import com.unciv.UncivGame
 import com.unciv.logic.city.CityFlags
 import com.unciv.logic.city.CityFocus
 import com.unciv.logic.city.CityInfo
-import com.unciv.logic.city.CityStats
-import com.unciv.logic.city.StatTreeNode
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaScreen
-import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ExpanderTab
@@ -28,15 +23,13 @@ import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.extensions.addSeparator
 import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.colorFromRGB
+import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.onClick
-import com.unciv.ui.utils.extensions.setSize
 import com.unciv.ui.utils.extensions.surroundWithCircle
 import com.unciv.ui.utils.extensions.toGroup
 import com.unciv.ui.utils.extensions.toLabel
-import java.text.DecimalFormat
+import com.unciv.ui.utils.extensions.toTextButton
 import kotlin.math.ceil
-import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.round
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
@@ -47,6 +40,13 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
     private val lowerPane: ScrollPane
     private val cityInfo = cityScreen.city
     private val lowerCell: Cell<ScrollPane>
+
+    private val detailedStatsButton = "Stats".toTextButton().apply {
+        labelCell.pad(10f)
+        onActivation {
+            DetailedStatsPopup(cityScreen).open()
+        }
+    }
 
     init {
         pad(2f)
@@ -105,6 +105,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         upperTable.add(miniStatsTable)
 
         upperTable.addSeparator()
+        upperTable.add(detailedStatsButton).row()
         addText()
 
         // begin lowerTable

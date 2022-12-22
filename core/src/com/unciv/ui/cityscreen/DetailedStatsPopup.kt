@@ -69,7 +69,7 @@ class DetailedStatsPopup(val cityScreen: CityScreen, stageToShowOn: Stage) : Pop
             update() }).minWidth(150f).grow()
 
         for (stat in stats) {
-            val label = (stat.character + " " + stat.name).toLabel()
+            val label = stat.name.toLabel()
             label.onClick {
                 onlyWithStat = if (onlyWithStat == null) stat else null
                 update()
@@ -80,7 +80,7 @@ class DetailedStatsPopup(val cityScreen: CityScreen, stageToShowOn: Stage) : Pop
         totalTable.row()
 
         totalTable.addSeparator().padBottom(2f)
-        totalTable.add("Base stats".toLabel().apply { setAlignment(Align.center) })
+        totalTable.add("Base value".toLabel().apply { setAlignment(Align.center) })
             .colspan(totalTable.columns).padLeft(0f).padRight(0f).growX().row()
         totalTable.addSeparator().padTop(2f)
         traverseTree(totalTable, stats, cityStats.baseStatTree, mergeHappiness = true, percentage = false)
