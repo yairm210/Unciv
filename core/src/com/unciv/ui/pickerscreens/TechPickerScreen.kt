@@ -18,10 +18,7 @@ import com.unciv.ui.civilopedia.CivilopediaCategories
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.Fonts
-import com.unciv.ui.utils.extensions.addBorder
-import com.unciv.ui.utils.extensions.brighten
 import com.unciv.ui.utils.extensions.colorFromRGB
 import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.disable
@@ -437,7 +434,7 @@ class TechPickerScreen(
 
     private fun centerOnTechnology(tech: Technology) {
         Concurrency.runOnGLThread {
-            techNameToButton[tech.name]?.let {
+            techNameToButton[tech.name]?.parent?.let {
                 scrollPane.scrollTo(it.x, it.y, it.width, it.height, true, true)
                 scrollPane.updateVisualScroll()
             }
