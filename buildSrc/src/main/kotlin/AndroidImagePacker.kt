@@ -1,11 +1,8 @@
-package com.unciv.app.desktop
+package com.unciv.build
 
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.tools.texturepacker.TexturePacker
 import com.badlogic.gdx.utils.Json
-import com.unciv.app.desktop.ImagePacker.packImages
-import com.unciv.utils.Log
-import com.unciv.utils.debug
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.attribute.BasicFileAttributes
@@ -19,7 +16,7 @@ import java.nio.file.attribute.BasicFileAttributes
  *
  * [TexturePacker] documentation is [here](https://github.com/libgdx/libgdx/wiki/Texture-packer)
  */
-internal object ImagePacker {
+object AndroidImagePacker {
     private fun getDefaultSettings() = TexturePacker.Settings().apply {
         // Apparently some chipsets, like NVIDIA Tegra 3 graphics chipset (used in Asus TF700T tablet),
         // don't support non-power-of-two texture sizes - kudos @yuroller!
@@ -57,14 +54,11 @@ internal object ImagePacker {
         filterMag = Texture.TextureFilter.MipMapLinearLinear // I'm pretty sure this doesn't make sense for magnification, but setting it to Linear gives strange results
     }
 
-    fun packImages(isRunFromJAR:Boolean) {
-        val startTime = System.currentTimeMillis()
-
+    fun packImages(workingPath: String, isRunFromJAR:Boolean) {
         val defaultSettings = getDefaultSettings()
 
         // Scan for Image folders and build one atlas each
-        if (!isRunFromJAR)
-            packImagesPerMod("..", ".", defaultSettings)
+        packImagesPerMod(workingPath, "$workingPath/assets/", defaultSettings)
 
         // pack for mods
         val modDirectory = File("mods")
@@ -74,14 +68,10 @@ internal object ImagePacker {
                     try {
                         packImagesPerMod(mod.path, mod.path, defaultSettings)
                     } catch (ex: Throwable) {
-                        Log.error("Exception in ImagePacker: %s", ex.message)
                     }
                 }
             }
         }
-
-        val texturePackingTime = System.currentTimeMillis() - startTime
-        debug("Packing textures - %sms", texturePackingTime)
     }
 
     // Scan multiple image folders and generate an atlas for each - if outdated
@@ -139,3 +129,4 @@ internal object ImagePacker {
         }
     }
 }
+

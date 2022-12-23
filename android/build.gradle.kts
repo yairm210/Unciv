@@ -1,5 +1,6 @@
 import com.unciv.build.BuildConfig
 import java.util.*
+import com.unciv.build.AndroidImagePacker
 
 plugins {
     id("com.android.application")
@@ -75,6 +76,12 @@ android {
     buildToolsVersion = "32.0.0"
 }
 
+task("texturePacker") {
+    doFirst {
+        logger.info("Calling TexturePacker")
+        AndroidImagePacker.packImages(projectDir.path,false)
+    }
+}
 
 // called every time gradle gets executed, takes the native dependencies of
 // the natives configuration, and extracts them to the proper libs/ folders
@@ -96,6 +103,7 @@ task("copyAndroidNatives") {
             }
         }
     }
+    dependsOn("texturePacker")
 }
 
 tasks.whenTaskAdded {
