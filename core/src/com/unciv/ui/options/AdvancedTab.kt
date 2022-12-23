@@ -53,11 +53,11 @@ fun advancedTab(
     addAutosaveTurnsSelectBox(this, settings)
 
     optionsPopup.addCheckbox(
-        this, "{Show experimental world wrap for maps}\n{HIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!}",
+        this, "{Show world wrap for maps}",
         settings.showExperimentalWorldWrap
     ) {
         settings.showExperimentalWorldWrap = it
-    }
+      }
 
     if (UncivGame.Current.platformSpecificHelper?.hasDisplayCutout() == true)
         optionsPopup.addCheckbox(this, "Enable display cutout (requires restart)", settings.androidCutout, false) { settings.androidCutout = it }
