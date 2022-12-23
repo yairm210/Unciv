@@ -254,6 +254,26 @@ class WorldScreen(
         globalShortcuts.add(KeyCharAndCode.ctrl('Q')) { game.popScreen() }    //   WorldScreen is the last screen, so this quits
         globalShortcuts.add(Input.Keys.NUMPAD_ADD) { this.mapHolder.zoomIn() }    //   '+' Zoom
         globalShortcuts.add(Input.Keys.NUMPAD_SUBTRACT) { this.mapHolder.zoomOut() }    //   '-' Zoom
+
+        globalShortcuts.add(KeyCharAndCode.ctrl('U')){
+            topBar.isVisible = !topBar.isVisible
+            statusButtons.isVisible = topBar.isVisible
+            techPolicyAndDiplomacy.isVisible = topBar.isVisible
+            tutorialTaskTable.isVisible = topBar.isVisible
+            bottomTileInfoTable.isVisible = topBar.isVisible
+            battleTable.isVisible = topBar.isVisible
+            unitActionsTable.isVisible = topBar.isVisible
+            notificationsScroll.isVisible = topBar.isVisible
+            minimapWrapper.isVisible = topBar.isVisible
+
+            if(viewingCiv.isSpectator()){fogOfWarButton.isVisible = topBar.isVisible}
+
+            //need to adjust to only show bottomUnitTable when appropriate
+            if(topBar.isVisible && bottomUnitTable.selectedUnit != null) {
+                bottomUnitTable.isVisible = topBar.isVisible
+            }
+            else{bottomUnitTable.isVisible = false}
+        }
     }
 
     private fun addKeyboardListener() {
