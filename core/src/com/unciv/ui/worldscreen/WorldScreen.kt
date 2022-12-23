@@ -133,6 +133,8 @@ class WorldScreen(
 
     private val events = EventBus.EventReceiver()
 
+    var uiEnabled = true
+
 
     init {
         // notifications are right-aligned, they take up only as much space as necessary.
@@ -256,23 +258,18 @@ class WorldScreen(
         globalShortcuts.add(Input.Keys.NUMPAD_SUBTRACT) { this.mapHolder.zoomOut() }    //   '-' Zoom
 
         globalShortcuts.add(KeyCharAndCode.ctrl('U')){
-            topBar.isVisible = !topBar.isVisible
-            statusButtons.isVisible = topBar.isVisible
-            techPolicyAndDiplomacy.isVisible = topBar.isVisible
-            tutorialTaskTable.isVisible = topBar.isVisible
-            bottomTileInfoTable.isVisible = topBar.isVisible
-            battleTable.isVisible = topBar.isVisible
-            unitActionsTable.isVisible = topBar.isVisible
-            notificationsScroll.isVisible = topBar.isVisible
-            minimapWrapper.isVisible = topBar.isVisible
-
-            if(viewingCiv.isSpectator()){fogOfWarButton.isVisible = topBar.isVisible}
-
-            //need to adjust to only show bottomUnitTable when appropriate
-            if(topBar.isVisible && bottomUnitTable.selectedUnit != null) {
-                bottomUnitTable.isVisible = topBar.isVisible
-            }
-            else{bottomUnitTable.isVisible = false}
+            uiEnabled = !uiEnabled
+            topBar.isVisible = uiEnabled
+            statusButtons.isVisible = uiEnabled
+            techPolicyAndDiplomacy.isVisible = uiEnabled
+            tutorialTaskTable.isVisible = uiEnabled
+            bottomTileInfoTable.isVisible = uiEnabled
+            unitActionsTable.isVisible = uiEnabled
+            notificationsScroll.isVisible = uiEnabled
+            minimapWrapper.isVisible = uiEnabled
+            bottomUnitTable.isVisible = uiEnabled
+            battleTable.isVisible = uiEnabled && battleTable.update() != hide()
+            fogOfWarButton.isVisible = uiEnabled && viewingCiv.isSpectator()
         }
     }
 
@@ -382,34 +379,36 @@ class WorldScreen(
     // and we don't get any silly concurrency problems!
     private fun update() {
 
-        displayTutorialsOnUpdate()
+        if(uiEnabled){
+            displayTutorialsOnUpdate()
 
-        bottomUnitTable.update()
-        bottomTileInfoTable.updateTileTable(mapHolder.selectedTile)
-        bottomTileInfoTable.x = stage.width - bottomTileInfoTable.width
-        bottomTileInfoTable.y = if (game.settings.showMinimap) minimapWrapper.height else 0f
-        battleTable.update()
+            bottomUnitTable.update()
+            bottomTileInfoTable.updateTileTable(mapHolder.selectedTile)
+            bottomTileInfoTable.x = stage.width - bottomTileInfoTable.width
+            bottomTileInfoTable.y = if (game.settings.showMinimap) minimapWrapper.height else 0f
+            battleTable.update()
 
-        updateSelectedCiv()
+            updateSelectedCiv()
 
-        tutorialTaskTable.clear()
-        val tutorialTask = getCurrentTutorialTask()
-        if (tutorialTask == "" || !game.settings.showTutorials || viewingCiv.isDefeated()) {
-            tutorialTaskTable.isVisible = false
-        } else {
-            tutorialTaskTable.isVisible = true
-            tutorialTaskTable.add(tutorialTask.toLabel()
+            tutorialTaskTable.clear()
+            val tutorialTask = getCurrentTutorialTask()
+            if (tutorialTask == "" || !game.settings.showTutorials || viewingCiv.isDefeated()) {
+                tutorialTaskTable.isVisible = false
+            } else {
+                tutorialTaskTable.isVisible = true
+                tutorialTaskTable.add(tutorialTask.toLabel()
                     .apply { setAlignment(Align.center) }).pad(10f)
-            tutorialTaskTable.pack()
-            tutorialTaskTable.centerX(stage)
-            tutorialTaskTable.y = topBar.y - tutorialTaskTable.height
+                tutorialTaskTable.pack()
+                tutorialTaskTable.centerX(stage)
+                tutorialTaskTable.y = topBar.y - tutorialTaskTable.height
+            }
+
+            if (fogOfWar) minimapWrapper.update(selectedCiv)
+            else minimapWrapper.update(viewingCiv)
+
+            unitActionsTable.update(bottomUnitTable.selectedUnit)
+            unitActionsTable.y = bottomUnitTable.height
         }
-
-        if (fogOfWar) minimapWrapper.update(selectedCiv)
-        else minimapWrapper.update(viewingCiv)
-
-        unitActionsTable.update(bottomUnitTable.selectedUnit)
-        unitActionsTable.y = bottomUnitTable.height
 
         mapHolder.resetArrows()
         if (UncivGame.Current.settings.showUnitMovements) {
