@@ -565,7 +565,10 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     RemovesFeaturesIfBuilt("Removes removable features when built", UniqueTarget.Improvement),
 
     DefensiveBonus("Gives a defensive bonus of [relativeAmount]%", UniqueTarget.Improvement),
-    ImprovementMaintenance("Costs [amount] gold per turn when in your territory", UniqueTarget.Improvement), // Unused
+    ImprovementMaintenance("Costs [amount] [stat] per turn when in your territory", UniqueTarget.Improvement), // Roads
+    ImprovementAllMaintenance("Costs [amount] [stat] per turn", UniqueTarget.Improvement), // Roads
+    //@Deprecated("as of 4.3.9", ReplaceWith("Costs [amount] [stats] per turn when in your territory"), DeprecationLevel.ERROR)
+    OldImprovementMaintenance("Costs [amount] gold per turn when in your territory", UniqueTarget.Improvement), // unused
     DamagesAdjacentEnemyUnits("Adjacent enemy units ending their turn take [amount] damage", UniqueTarget.Improvement),
     TakeOverTilesAroundWhenBuilt("Constructing it will take over the tiles around it and assign them to your closest city", UniqueTarget.Improvement),
 

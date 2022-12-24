@@ -73,8 +73,8 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         return cost.toInt()
     }
 
-    private fun getTransportationUpkeep(): Int {
-        var transportationUpkeep = 0f
+    private fun getTransportationUpkeep(): Stats {
+        val transportationUpkeep = Stats()
         // we no longer use .flatMap, because there are a lot of tiles and keeping them all in a list
         // just to go over them once is a waste of memory - there are low-end phones who don't have much ram
 
@@ -88,14 +88,38 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                 if (tile.isCityCenter()) continue
                 if (tile.getUnpillagedRoad() == RoadStatus.None) continue // Cheap checks before pricey checks
                 if (ignoredTileTypes.any { tile.matchesFilter(it, civInfo) }) continue
-
-                transportationUpkeep += tile.getUnpillagedRoad().upkeep
+                val road = tile.getUnpillagedRoadImprovement()
+                if (road!!.hasUnique(UniqueType.ImprovementMaintenance, StateForConditionals(civInfo, tile = tile))) {
+                    for(unique in road.getMatchingUniques(UniqueType.ImprovementMaintenance)) {
+                        transportationUpkeep.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
+                    }
+                }
+                if (road.hasUnique(UniqueType.ImprovementAllMaintenance, StateForConditionals(civInfo, tile = tile))) {
+                    for(unique in road.getMatchingUniques(UniqueType.ImprovementAllMaintenance)) {
+                        transportationUpkeep.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
+                    }
+                }
+                // backwards compatible
+                if (road.hasUnique(UniqueType.OldImprovementMaintenance, StateForConditionals(civInfo, tile = tile))) {
+                    transportationUpkeep.add(Stat.Gold, tile.getUnpillagedRoad().upkeep.toFloat())
+                }
+            }
+        }
+        // tabulate neutral roads
+        for (position in civInfo.neutralRoads) {
+            val tile = civInfo.gameInfo.tileMap[position]
+            if (tile.getUnpillagedRoad() == RoadStatus.None) continue // Cheap checks before pricey checks
+            val road = tile.getUnpillagedRoadImprovement()
+            if (road!!.hasUnique(UniqueType.ImprovementAllMaintenance, StateForConditionals(civInfo, tile = tile))) {
+                for(unique in road.getMatchingUniques(UniqueType.ImprovementAllMaintenance)) {
+                    transportationUpkeep.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
+                }
             }
         }
         for (unique in civInfo.getMatchingUniques(UniqueType.RoadMaintenance))
-            transportationUpkeep *= unique.params[0].toPercent()
+            transportationUpkeep.times(unique.params[0].toPercent())
 
-        return transportationUpkeep.toInt()
+        return transportationUpkeep
     }
 
     fun getUnitSupply(): Int {
@@ -156,7 +180,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             }
         }
 
-        statMap["Transportation upkeep"] = Stats(gold = -getTransportationUpkeep().toFloat())
+        statMap["Transportation upkeep"] = getTransportationUpkeep() * -1
         statMap["Unit upkeep"] = Stats(gold = -getUnitMaintenance().toFloat())
 
 

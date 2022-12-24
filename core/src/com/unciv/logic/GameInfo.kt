@@ -66,7 +66,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     companion object {
         /** The current compatibility version of [GameInfo]. This number is incremented whenever changes are made to the save file structure that guarantee that
          * previous versions of the game will not be able to load or play a game normally. */
-        const val CURRENT_COMPATIBILITY_NUMBER = 2
+        const val CURRENT_COMPATIBILITY_NUMBER = 3
 
         val CURRENT_COMPATIBILITY_VERSION = CompatibilityVersion(CURRENT_COMPATIBILITY_NUMBER, UncivGame.VERSION)
 
@@ -498,6 +498,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             civInfo.thingsToFocusOnForVictory =
                     civInfo.getPreferredVictoryTypeObject()?.getThingsToFocus(civInfo) ?: setOf()
         }
+        tileMap.setNeutralTransients() // has to happen after civInfo.setTransients() sets owningCity
 
         convertFortify()
 
