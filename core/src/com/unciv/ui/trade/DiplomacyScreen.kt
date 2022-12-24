@@ -218,9 +218,9 @@ class DiplomacyScreen(
         otherCiv.updateAllyCivForCityState()
         var ally = otherCiv.getAllyCiv()
         if (ally != null) {
+            val allyInfluence = otherCiv.getDiplomacyManager(ally).getInfluence().toInt()
             if (!viewingCiv.knows(ally))
                 ally = "Unknown civilization"
-            val allyInfluence = otherCiv.getDiplomacyManager(ally).getInfluence().toInt()
             diplomacyTable
                 .add("Ally: [$ally] with [$allyInfluence] Influence".toLabel())
                 .row()
