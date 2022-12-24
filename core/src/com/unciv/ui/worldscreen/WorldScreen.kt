@@ -630,10 +630,12 @@ class WorldScreen(
                 selectUnit = false
             )
             bottomUnitTable.selectUnit(nextDueUnit)
-            shouldUpdate = true
-            // Unless 'wait' action is chosen, the unit will not be considered due anymore.
-            nextDueUnit.due = false
+        } else {
+            mapHolder.removeAction(mapHolder.blinkAction)
+            mapHolder.selectedTile = null
+            bottomUnitTable.selectUnit()
         }
+        shouldUpdate = true
     }
 
     private fun isNextTurnUpdateRunning(): Boolean {

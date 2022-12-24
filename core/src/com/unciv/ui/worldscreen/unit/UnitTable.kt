@@ -11,6 +11,7 @@ import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaCategories
 import com.unciv.ui.civilopedia.CivilopediaScreen
@@ -285,20 +286,42 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
         // Do no select a different unit while in Air Sweep mode
         if (selectedUnit != null && selectedUnit!!.isPreparingAirSweep()) return
 
+        fun isViewingCiv(unit:MapUnit): Boolean = unit.civInfo == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator()
+
+        // Civ 5 Order of selection:
+        // 1. City
+        // 2. GP + Settlers
+        // 3. Military
+        // 4. Other civilian (Workers)
+        // 5. None (Deselect)
+
         when {
             forceSelectUnit != null ->
                 selectUnit(forceSelectUnit)
             selectedTile.isCityCenter() &&
                     (selectedTile.getOwner() == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator()) ->
                 citySelected(selectedTile.getCity()!!)
-            selectedTile.militaryUnit != null &&
-                    (selectedTile.militaryUnit!!.civInfo == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator()) &&
-                    selectedTile.militaryUnit!! !in selectedUnits &&
-                    (selectedTile.civilianUnit == null || selectedUnit != selectedTile.civilianUnit) -> // Only select the military unit there if we do not currently have the civilian unit selected
-                selectUnit(selectedTile.militaryUnit!!, Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
+
+            // Settlers and GP come first
+
             selectedTile.civilianUnit != null
-                    && (selectedTile.civilianUnit!!.civInfo == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())
-                    && selectedUnit != selectedTile.civilianUnit ->
+                    && isViewingCiv(selectedTile.civilianUnit!!)
+                    && (selectedTile.civilianUnit!!.isGreatPerson() || selectedTile.civilianUnit!!.hasUnique(UniqueType.FoundCity))
+                    && selectedTile.civilianUnit!! !in selectedUnits
+                    && (selectedTile.militaryUnit == null || selectedUnit != selectedTile.militaryUnit) ->
+                selectUnit(selectedTile.civilianUnit!!, Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
+
+            // Then military
+            selectedTile.militaryUnit != null
+                    && isViewingCiv(selectedTile.militaryUnit!!)
+                    && selectedTile.militaryUnit!! !in selectedUnits
+                    && (selectedTile.civilianUnit == null || selectedUnit != selectedTile.civilianUnit) -> // Only select the military unit there if we do not currently have the civilian unit selected
+                selectUnit(selectedTile.militaryUnit!!, Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
+
+            // Then the rest
+            selectedTile.civilianUnit != null
+                    && isViewingCiv(selectedTile.civilianUnit!!)
+                    && selectedTile.civilianUnit!! !in selectedUnits ->
                 selectUnit(selectedTile.civilianUnit!!, Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
             selectedTile == previouslySelectedUnit?.currentTile -> {
                 // tapping the same tile again will deselect a unit.
@@ -313,4 +336,3 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
     }
 
 }
-
