@@ -502,8 +502,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
         val upgradeList = arrayListOf<BaseUnit>()
         while (currentUnit.upgradesTo != null){
             val nextUpgrade = civInfo.getEquivalentUnit(currentUnit.upgradesTo!!)
-            upgradeList.add(currentUnit)
             currentUnit = nextUpgrade
+            upgradeList.add(currentUnit)
         }
         return upgradeList
     }
