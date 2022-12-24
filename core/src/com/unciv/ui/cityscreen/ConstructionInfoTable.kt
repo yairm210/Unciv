@@ -23,6 +23,7 @@ import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toTextButton
+import com.unciv.utils.Log
 
 class ConstructionInfoTable(val cityScreen: CityScreen): Table() {
     private val selectedConstructionTable = Table()
@@ -62,8 +63,8 @@ class ConstructionInfoTable(val cityScreen: CityScreen): Table() {
             pad(10f)
 
             add(ImageGetter.getPortraitImage(construction.name, 50f).apply {
-                val link = (construction as? IRulesetObject)?.makeLink() ?: return
-                if (link.isEmpty()) return
+                val link = (construction as? IRulesetObject)?.makeLink() ?: return@apply
+                if (link.isEmpty()) return@apply
                 touchable = Touchable.enabled
                 this.onClick {
                     UncivGame.Current.pushScreen(CivilopediaScreen(city.getRuleset(), link = link))
@@ -82,6 +83,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen): Table() {
                 is BaseUnit -> construction.getDescription(city)
                 is Building -> construction.getDescription(city, true)
                 is PerpetualStatConversion -> construction.description.replace("[rate]", "[${construction.getConversionRate(city)}]").tr()
+                is PerpetualConstruction -> construction.description
                 else -> ""  // Should never happen
             }
 

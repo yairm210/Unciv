@@ -273,7 +273,7 @@ object ImageGetter {
             } else
                 getUnitIcon(construction).surroundWithCircle(size).surroundWithThinCircle()
         }
-        if (construction in PerpetualConstruction.perpetualConstructionsMap)
+        if (PerpetualConstruction.perpetualConstructionsMap.containsKey(construction))
             return getImage("OtherIcons/Convert$construction").toGroup(size)
         return getStatIcon(construction).surroundWithCircle(size).surroundWithThinCircle()
     }
