@@ -437,7 +437,7 @@
                     "[+1 Happiness] from every [Public School]"
                 ],
                 "row": 1,
-                "column": 5
+                "column": 4
             },
             {
                 "name": "Free Thought",
@@ -447,21 +447,21 @@
                 ],
                 "requires": ["Secularism"],
                 "row": 2,
-                "column": 1
+                "column": 2
             },
             {
                 "name": "Sovereignty",
                 "uniques": ["[+1 Gold] from all [Science] buildings"],
                 "requires": ["Humanism"],
                 "row": 2,
-                "column": 5
+                "column": 4
             },
             {
                 "name": "Scientific Revolution",
                 "uniques": ["Science gained from research agreements [+50]%"],
                 "requires": ["Free Thought"],
                 "row": 3,
-                "column": 1
+                "column": 2
             },
             {
                 "name": "Rationalism Complete",
@@ -555,13 +555,13 @@
                 "name": "Populism",
                 "uniques": ["[+25]% Strength <for [Wounded] units>"],
                 "row": 1,
-                "column": 1
+                "column": 2
             },
             {
                 "name": "Militarism",
                 "uniques": ["[Gold] cost of purchasing [All] units [-33]%"],
                 "row": 1,
-                "column": 5
+                "column": 4
             },
             {
                 "name": "Fascism",
@@ -571,7 +571,7 @@
                 ],
                 "requires": ["Populism", "Militarism"],
                 "row": 2,
-                "column": 3
+                "column": 2
             },
             {
                 "name": "Police State",
@@ -582,7 +582,7 @@
                 // There are also some uniques regarding espoinage, which as of this writing is not yet implemented
                 "requires": ["Militarism"],
                 "row": 2,
-                "column": 5
+                "column": 4
             },
             {
                 "name": "Total War",
@@ -592,7 +592,7 @@
                 ],
                 "requires": ["Police State", "Fascism"],
                 "row": 3,
-                "column": 4
+                "column": 3
             },
             {
                 "name": "Autocracy Complete",
