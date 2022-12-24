@@ -1178,6 +1178,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     fun setTransients() {
         setTerrainTransients()
         setUnitTransients(true)
+        setOwnerTransients()
     }
 
     fun setTerrainTransients() {
@@ -1205,6 +1206,11 @@ open class TileInfo : IsPartOfGameInfoSerialization {
                 unit.assignOwner(tileMap.gameInfo.getCivilization(unit.owner), false)
             unit.setTransients(ruleset)
         }
+    }
+
+    fun setOwnerTransients() {
+        if (owningCity == null && roadOwner != "")
+            getRoadOwner()!!.neutralRoads.add(this.position)
     }
 
     fun stripUnits() {

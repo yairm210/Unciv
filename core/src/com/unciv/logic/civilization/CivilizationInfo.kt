@@ -143,6 +143,9 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     @Transient
     var thingsToFocusOnForVictory = setOf<Victory.Focus>()
 
+    @Transient
+    var neutralRoads = HashSet<Vector2>()
+
     var playerType = PlayerType.AI
 
     /** Used in online multiplayer for human players */
@@ -199,8 +202,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     fun addExploredTiles(tiles:Sequence<Vector2>){
         exploredTiles.addAll(tiles)
     }
-
-    var neutralRoads = HashSet<Vector2>()
 
     var lastSeenImprovement = HashMapVector2<String>()
 
