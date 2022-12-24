@@ -111,21 +111,21 @@ EmojiIcons/Happiness
   index: -1
 EmojiIcons/Production
   rotate: false
-  xy: 588, 720
+  xy: 646, 720
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Science
   rotate: false
-  xy: 762, 720
+  xy: 896, 805
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Turn
   rotate: false
-  xy: 1868, 1546
+  xy: 1270, 962
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -370,35 +370,56 @@ ImprovementIcons/Trading post
   index: -1
 NotificationIcons/EnhanceReligion
   rotate: false
-  xy: 190, 716
+  xy: 1927, 1828
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NotificationIcons/FoundPantheon
   rotate: false
-  xy: 190, 716
+  xy: 1927, 1828
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NotificationIcons/FoundReligion
   rotate: false
-  xy: 190, 716
+  xy: 1927, 1828
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NotificationIcons/ReformReligion
   rotate: false
-  xy: 190, 716
+  xy: 1927, 1828
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 StatIcons/Faith
   rotate: false
-  xy: 190, 716
+  xy: 1927, 1828
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+NotificationIcons/Loading
+  rotate: false
+  xy: 622, 1534
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+NotificationIcons/Working
+  rotate: false
+  xy: 622, 1534
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+OtherIcons/Loading
+  rotate: false
+  xy: 622, 1534
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -503,7 +524,7 @@ OtherIcons/Banner
   index: -1
 OtherIcons/Camera
   rotate: false
-  xy: 1270, 987
+  xy: 1328, 1045
   size: 25, 25
   orig: 25, 25
   offset: 0, 0
@@ -634,32 +655,18 @@ OtherIcons/Load
   orig: 100, 100
   offset: 0, 0
   index: -1
-OtherIcons/Loading
-  rotate: false
-  xy: 622, 1534
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-NotificationIcons/Loading
-  rotate: false
-  xy: 622, 1534
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-NotificationIcons/Working
-  rotate: false
-  xy: 622, 1534
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
 OtherIcons/Lock
   rotate: false
   xy: 730, 1642
   size: 100, 100
   orig: 100, 100
+  offset: 0, 0
+  index: -1
+OtherIcons/LockSmall
+  rotate: false
+  xy: 530, 720
+  size: 50, 50
+  orig: 50, 50
   offset: 0, 0
   index: -1
 OtherIcons/MapEditor
@@ -692,7 +699,7 @@ OtherIcons/Multiplayer
   index: -1
 OtherIcons/Nations
   rotate: false
-  xy: 530, 720
+  xy: 588, 720
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -930,7 +937,7 @@ UnitActionIcons/Swap
   index: -1
 OtherIcons/Terrains
   rotate: false
-  xy: 1868, 1604
+  xy: 1868, 1546
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1308,14 +1315,14 @@ StatIcons/Population
   index: -1
 StatIcons/Range
   rotate: false
-  xy: 646, 720
+  xy: 704, 720
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 StatIcons/RangedStrength
   rotate: false
-  xy: 704, 720
+  xy: 762, 720
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1343,7 +1350,7 @@ StatIcons/Specialist
   index: -1
 StatIcons/Strength
   rotate: false
-  xy: 1868, 1662
+  xy: 1868, 1604
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1392,14 +1399,14 @@ UnitActionIcons/Repair
   index: -1
 UnitActionIcons/EnhanceReligion
   rotate: false
-  xy: 1927, 1828
+  xy: 190, 716
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 UnitActionIcons/FoundReligion
   rotate: false
-  xy: 1927, 1828
+  xy: 190, 716
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -1483,7 +1490,7 @@ UnitActionIcons/SetUp
   index: -1
 UnitActionIcons/ShowMore
   rotate: false
-  xy: 896, 805
+  xy: 1868, 1662
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
