@@ -1495,6 +1495,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Improvement
 
+??? example  "Costs [amount] [stat] per turn when in your territory"
+	Example: "Costs [3] [Culture] per turn when in your territory"
+
+	Applicable to: Improvement
+
+??? example  "Costs [amount] [stat] per turn"
+	Example: "Costs [3] [Culture] per turn"
+
+	Applicable to: Improvement
+
 ??? example  "Costs [amount] gold per turn when in your territory"
 	Example: "Costs [3] gold per turn when in your territory"
 

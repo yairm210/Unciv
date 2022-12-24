@@ -216,7 +216,7 @@ private fun addTranslationGeneration(table: Table, optionsPopup: OptionsPopup) {
             ))
         }
     }
-    table.add(generateScreenshotsButton).colspan(2).row()
+//     table.add(generateScreenshotsButton).colspan(2).row()
 
 }
 

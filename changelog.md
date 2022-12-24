@@ -1,32 +1,20 @@
 ## 4.3.12
 
-Fixed "cannot upgrade to last unit"
+Big rework of Policy Picker UI - By vegeta1k95
 
-- Translation fix for great people - 
+G&K Neutral Tile Road Maintenance - By itanasi
 
-City stats fixes
+Unknown civs displayed as `Unknown civilization` in GP and Diplomacy screens - By alexban011
 
-Resolved  - tech screen zooms to current tech when opened
+Fix: tech screen zooms to current tech when opened
 
-Resolved  - get correct civ-wide stats from City-States with the correct unique
-
-Upgrade path redone
-
-4.3.11-patch1
-
-G&K Neutral Tile Road Maintenance  - By itanasi
+Get correct civ-wide stats from City-States for Siam bonuses
 
 By letstalkaboutdune:
-- Added keyboard shortcut to toggle World Screen UI elements 
-- Trim Nuke SFX 
+- ctrl+U toggles World Screen UI elements
+- Trim Nuke SFX
 
-showed unknown civs as `Unknown civilization` in GP and Diplomacy screens  - By alexban011
-
-By vegeta1k95:
-- Big rework of Policy Picker UI, added new ninepatch RoundedEdgeRectangleSmall 
-- Added gradle task of Atlas texture packing for Android build 
-
-Add new game option: No City Razing.  - By FiretronP75
+Add new game option: No City Razing - By FiretronP75
 
 ## 4.3.11
 
