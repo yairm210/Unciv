@@ -3,7 +3,6 @@ package com.unciv.ui.pickerscreens
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -15,7 +14,6 @@ import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Policy.PolicyBranchType
 import com.unciv.models.ruleset.PolicyBranch
-import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
@@ -24,7 +22,6 @@ import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.BorderedTable
 import com.unciv.ui.utils.RecreateOnResize
 import com.unciv.ui.utils.extensions.addSeparator
-import com.unciv.ui.utils.extensions.brighten
 import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.colorFromRGB
 import com.unciv.ui.utils.extensions.darken
@@ -216,20 +213,13 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
 
         // estimate how many branch boxes fit using average size (including pad)
         // TODO If we'd want to use scene2d correctly, this is supposed to happen inside an overridden layout() method
-        val numBranchesX = scrollPane.width / 242f
         val numBranchesY = scrollPane.height / 305f
-        // plan a nice geometry
-        if (scrollPane.width < scrollPane.height) {
-            // Portrait - arrange more in the vertical direction
-            if (numBranchesX < 2.5f) rowChangeCount = 2
-            else rowChangeWidth = scrollPane.width + 10f  // 10f to ignore 1 horizontal padding
-        } else {
             // Landscape - arrange in as few rows as looks nice
-            if (numBranchesY > 1.5f) {
-                val numRows = if (numBranchesY < 2.9f) 2 else (numBranchesY + 0.1f).toInt()
-                    rowChangeCount = (branches.size + numRows - 1) / numRows
-            }
+        if (numBranchesY > 1.5f) {
+            val numRows = if (numBranchesY < 2.9f) 2 else (numBranchesY + 0.1f).toInt()
+                rowChangeCount = (branches.size + numRows - 1) / numRows
         }
+
 
         // Actually create and distribute the policy branches
         var wrapper = Table()
