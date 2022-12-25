@@ -35,10 +35,10 @@ open class Policy : RulesetObject() {
     fun getDescription(): String {
         var text = uniques
             .filter { !it.contains(UniqueType.OnlyAvailableWhen.text) }
-            .joinToString("\n", transform = { "• $it".tr() })
+            .joinToString("\n", transform = { "• ${it.tr()}" })
         if (policyBranchType != PolicyBranchType.BranchStart
                 && policyBranchType != PolicyBranchType.BranchComplete)
-            text = name + "\n" + text
+            text = name.tr() + "\n" + text
         return text
     }
 
