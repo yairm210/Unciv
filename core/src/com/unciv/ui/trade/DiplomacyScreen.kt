@@ -230,7 +230,7 @@ class DiplomacyScreen(
         if (protectors.isNotEmpty()) {
             val newProtectors = listOf<String>()
             for (protector in protectors) {
-                if (!viewingCiv.knows(protector) && ally != viewingCiv.civName)
+                if (!viewingCiv.knows(protector) && protector.civName != viewingCiv.civName)
                     newProtectors.plus("Unknown civilization".tr())
                 else
                     newProtectors.plus(protector.civName.tr())
