@@ -25,6 +25,8 @@ import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.worldscreen.WorldScreen
+import com.unciv.utils.Log
+import kotlin.system.measureTimeMillis
 
 class UnitTable(val worldScreen: WorldScreen) : Table() {
     private val prevIdleUnitButton = IdleUnitButton(this,worldScreen.mapHolder,true)
@@ -286,7 +288,9 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
         // Do no select a different unit while in Air Sweep mode
         if (selectedUnit != null && selectedUnit!!.isPreparingAirSweep()) return
 
-        fun isViewingCiv(unit:MapUnit): Boolean = unit.civInfo == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator()
+        fun MapUnit.isEligible(): Boolean = (this.civInfo == worldScreen.viewingCiv
+                || worldScreen.viewingCiv.isSpectator()) && this !in selectedUnits
+        fun MapUnit.isPrioritized(): Boolean = this.isGreatPerson() || this.hasUnique(UniqueType.FoundCity)
 
         // Civ 5 Order of selection:
         // 1. City
@@ -295,37 +299,37 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
         // 4. Other civilian (Workers)
         // 5. None (Deselect)
 
+        val civUnit = selectedTile.civilianUnit
+        val milUnit = selectedTile.militaryUnit
+        val curUnit = selectedUnit
+
+        val nextUnit: MapUnit?
+        val priorityUnit = when {
+            civUnit != null && civUnit.isEligible() && civUnit.isPrioritized() -> civUnit
+            milUnit != null && milUnit.isEligible() -> milUnit
+            civUnit != null && civUnit.isEligible() -> civUnit
+            else -> null
+        }
+
+        if (curUnit == null) {
+            nextUnit = priorityUnit
+        } else {
+
+            nextUnit = when {
+                curUnit == civUnit && milUnit != null && milUnit.isEligible() -> {if (civUnit.isPrioritized()) milUnit else null}
+                curUnit == milUnit && civUnit != null && civUnit.isEligible() -> {if (civUnit.isPrioritized()) null else civUnit}
+                else -> priorityUnit
+            }
+        }
+
         when {
             forceSelectUnit != null ->
                 selectUnit(forceSelectUnit)
             selectedTile.isCityCenter() &&
                     (selectedTile.getOwner() == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator()) ->
                 citySelected(selectedTile.getCity()!!)
-
-            // Settlers and GP come first
-
-            selectedTile.civilianUnit != null
-                    && isViewingCiv(selectedTile.civilianUnit!!)
-                    && (selectedTile.civilianUnit!!.isGreatPerson() || selectedTile.civilianUnit!!.hasUnique(UniqueType.FoundCity))
-                    && selectedTile.civilianUnit!! !in selectedUnits
-                    && (selectedTile.militaryUnit == null || selectedUnit != selectedTile.militaryUnit) ->
-                selectUnit(selectedTile.civilianUnit!!, Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
-
-            // Then military
-            selectedTile.militaryUnit != null
-                    && isViewingCiv(selectedTile.militaryUnit!!)
-                    && selectedTile.militaryUnit!! !in selectedUnits
-                    && (selectedTile.civilianUnit == null || selectedUnit != selectedTile.civilianUnit) -> // Only select the military unit there if we do not currently have the civilian unit selected
-                selectUnit(selectedTile.militaryUnit!!, Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
-
-            // Then the rest
-            selectedTile.civilianUnit != null
-                    && isViewingCiv(selectedTile.civilianUnit!!)
-                    && selectedTile.civilianUnit!! !in selectedUnits ->
-                selectUnit(selectedTile.civilianUnit!!, Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
+            nextUnit != null -> selectUnit(nextUnit, Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
             selectedTile == previouslySelectedUnit?.currentTile -> {
-                // tapping the same tile again will deselect a unit.
-                // important for single-tap-move to abort moving easily
                 selectUnit()
                 isVisible = false
             }
