@@ -23,7 +23,6 @@ import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toTextButton
-import com.unciv.utils.Log
 
 class ConstructionInfoTable(val cityScreen: CityScreen): Table() {
     private val selectedConstructionTable = Table()
@@ -119,7 +118,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen): Table() {
                 }
                 if (cityScreen.city.hasSoldBuildingThisTurn && !cityScreen.city.civInfo.gameInfo.gameParameters.godMode
                         || cityScreen.city.isPuppet
-                        || !UncivGame.Current.worldScreen!!.isPlayersTurn || !cityScreen.canChangeState)
+                        || !UncivGame.Current.worldScreen!!.isTurnActive || !cityScreen.canChangeState)
                     sellBuildingButton.disable()
             }
         }

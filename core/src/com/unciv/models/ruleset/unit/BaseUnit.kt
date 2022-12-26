@@ -251,7 +251,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         var productionCost = cost.toFloat()
         if (civInfo.isCityState())
             productionCost *= 1.5f
-        productionCost *= if (civInfo.isPlayerCivilization())
+        productionCost *= if (civInfo.isHuman())
                 civInfo.getDifficulty().unitCostModifier
             else
                 civInfo.gameInfo.getDifficulty().aiUnitCostModifier

@@ -313,7 +313,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
     //region pure functions
     fun getDifficulty(): Difficulty {
-        if (isPlayerCivilization()) return gameInfo.getDifficulty()
+        if (isHuman()) return gameInfo.getDifficulty()
         // TODO We should be able to mark a difficulty as 'default AI difficulty' somehow
         val chieftainDifficulty = gameInfo.ruleSet.difficulties["Chieftain"]
         if (chieftainDifficulty != null) return chieftainDifficulty
@@ -347,7 +347,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
                 .thenBy (UncivGame.Current.settings.getCollatorFromLocale()) { it.civName.tr() }
         )
     fun getCapital() = cities.firstOrNull { it.isCapital() }
-    fun isPlayerCivilization() = playerType == PlayerType.Human
+    fun isHuman() = playerType == PlayerType.Human
     fun isOneCityChallenger() = (
             playerType == PlayerType.Human &&
                     gameInfo.gameParameters.oneCityChallenge)
@@ -715,6 +715,18 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
             }
     }
 
+    fun doMoveAutomatedUnits() {
+        for (unit in units)
+            unit.doAction()
+        hasMovedAutomatedUnits = true
+    }
+
+    fun canMoveAutomatedUnits(): Boolean {
+        return !hasMovedAutomatedUnits && units.any {
+            it.currentMovement > Constants.minimumMovementEpsilon
+                    && (it.isMoving() || it.isAutomated() || it.isExploring()) }
+    }
+
     fun canSignResearchAgreement(): Boolean {
         if (!isMajorCiv()) return false
         if (!hasUnique(UniqueType.EnablesResearchAgreements)) return false
@@ -910,6 +922,30 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     fun updateViewableTiles() = transients().updateViewableTiles()
     fun updateDetailedCivResources() = transients().updateCivResources()
 
+    fun isAutomatedPlayer(): Boolean {
+        return playerType == PlayerType.AI
+                // For multiplayer, if there are 3+ players and one is defeated or spectator,
+                // we'll want to skip over their turn
+                || gameInfo.gameParameters.isOnlineMultiplayer
+                && (isDefeated() || isSpectator() && playerId != UncivGame.Current.settings.multiplayer.userId)
+    }
+
+    fun doTurn(): Boolean {
+        if (!isDefeated() || isBarbarian()) {
+            // Do stuff
+            NextTurnAutomation.automateCivMoves(this)
+
+            // Update barbarian camps
+            if (isBarbarian() && !gameInfo.gameParameters.noBarbarians)
+                gameInfo.barbarians.updateEncampments()
+
+            // Player won!
+            if (victoryManager.hasWon())
+                return true
+        }
+        return false
+    }
+
     fun startTurn() {
         civConstructions.startTurn()
         attacksSinceTurnStart.clear()
@@ -937,11 +973,10 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
         for (unit in getCivUnits()) unit.startTurn()
 
-        if (playerType == PlayerType.Human && UncivGame.Current.settings.automatedUnitsMoveOnTurnStart) {
-            hasMovedAutomatedUnits = true
-            for (unit in getCivUnits())
-                unit.doAction()
-        } else hasMovedAutomatedUnits = false
+        if (playerType == PlayerType.Human && UncivGame.Current.settings.automatedUnitsMoveOnTurnStart)
+            doMoveAutomatedUnits()
+        else
+            hasMovedAutomatedUnits = false
 
         updateDetailedCivResources() // If you offered a trade last turn, this turn it will have been accepted/declined
 
@@ -1230,7 +1265,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         if (diplomacyManager != null && (diplomacyManager.hasOpenBorders || diplomacyManager.diplomaticStatus == DiplomaticStatus.War))
             return true
         // Players can always pass through city-state tiles
-        if (isPlayerCivilization() && otherCiv.isCityState()) return true
+        if (isHuman() && otherCiv.isCityState()) return true
         return false
     }
 

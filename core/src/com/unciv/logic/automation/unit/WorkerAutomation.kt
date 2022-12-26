@@ -48,7 +48,7 @@ class WorkerAutomation(
     private val bestRoadAvailable: RoadStatus =
         cloningSource?.bestRoadAvailable ?:
         //Player can choose not to auto-build roads & railroads.
-        if (civInfo.isPlayerCivilization() && !UncivGame.Current.settings.autoBuildingRoads)
+        if (civInfo.isHuman() && !UncivGame.Current.settings.autoBuildingRoads)
             RoadStatus.None
         else civInfo.tech.getBestRoadAvailable()
 
@@ -320,7 +320,7 @@ class WorkerAutomation(
         val junkImprovement = tile.getTileImprovement()?.hasUnique(UniqueType.AutomatedWorkersWillReplace)
         if (tile.improvement != null && junkImprovement == false
                 && !UncivGame.Current.settings.automatedWorkersReplaceImprovements
-                && unit.civInfo.isPlayerCivilization())
+                && unit.civInfo.isHuman())
             return false
 
 
@@ -399,7 +399,7 @@ class WorkerAutomation(
 
             // Defence is more important that civilian improvements
             // While AI sucks in strategical placement of forts, allow a human does it manually
-            !civInfo.isPlayerCivilization() && evaluateFortPlacement(tile, civInfo,false) -> Constants.fort
+            !civInfo.isHuman() && evaluateFortPlacement(tile, civInfo,false) -> Constants.fort
             // I think we can assume that the unique improvement is better
             uniqueImprovement != null && tile.canBuildImprovement(uniqueImprovement, civInfo)
                 -> uniqueImprovement.name

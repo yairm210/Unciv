@@ -337,7 +337,7 @@ class CityStats(val cityInfo: CityInfo) {
     private fun getBuildingMaintenanceCosts(): Float {
         // Same here - will have a different UI display.
         var buildingsMaintenance = cityInfo.cityConstructions.getMaintenanceCosts().toFloat() // this is AFTER the bonus calculation!
-        if (!cityInfo.civInfo.isPlayerCivilization()) {
+        if (!cityInfo.civInfo.isHuman()) {
             buildingsMaintenance *= cityInfo.civInfo.gameInfo.getDifficulty().aiBuildingMaintenanceModifier
         }
 
@@ -376,7 +376,7 @@ class CityStats(val cityInfo: CityInfo) {
         val civInfo = cityInfo.civInfo
         val newHappinessList = LinkedHashMap<String, Float>()
         var unhappinessModifier = civInfo.getDifficulty().unhappinessModifier
-        if (!civInfo.isPlayerCivilization())
+        if (!civInfo.isHuman())
             unhappinessModifier *= civInfo.gameInfo.getDifficulty().aiUnhappinessModifier
 
         var unhappinessFromCity = -3f // -3 happiness per city

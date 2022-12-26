@@ -64,7 +64,7 @@ fun Policy.isAdopted() : Boolean {
 fun Policy.isPickable() : Boolean {
     val worldScreen = UncivGame.Current.worldScreen ?: return false
     val viewingCiv = worldScreen.viewingCiv
-    if (!worldScreen.isPlayersTurn
+    if (!worldScreen.isTurnActive
             || worldScreen.viewingCiv.isSpectator() // viewingCiv var points to selectedCiv in case of spectator
             || viewingCiv.isDefeated()
             || viewingCiv.policies.isAdopted(this.name)

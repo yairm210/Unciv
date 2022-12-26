@@ -242,7 +242,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             }
         }
 
-        if (!worldScreen.isPlayersTurn || attackableTile == null) {
+        if (!worldScreen.isTurnActive || attackableTile == null) {
             attackButton.disable()
             attackButton.label.color = Color.GRAY
         } else {
@@ -312,7 +312,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         val canReach = attacker.unit.currentTile.getTilesInDistance(attacker.unit.getRange()).contains(targetTile)
 
-        if (!worldScreen.isPlayersTurn || !attacker.canAttack() || !canReach || !canNuke) {
+        if (!worldScreen.isTurnActive || !attacker.canAttack() || !canReach || !canNuke) {
             attackButton.disable()
             attackButton.label.color = Color.GRAY
         }
@@ -371,7 +371,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         val canReach = attacker.unit.currentTile.getTilesInDistance(attacker.unit.getRange()).contains(targetTile)
 
-        if (!worldScreen.isPlayersTurn || !attacker.canAttack() || !canReach || !canAttack) {
+        if (!worldScreen.isTurnActive || !attacker.canAttack() || !canReach || !canAttack) {
             attackButton.disable()
             attackButton.label.color = Color.GRAY
         }

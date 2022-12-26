@@ -32,7 +32,7 @@ fun debugTab() = Table(BaseScreen.skin).apply {
             }
             game.simulateUntilTurnForDebug = simulateUntilTurns
             invalidInputLabel.isVisible = false
-            worldScreen.nextTurn()
+            game.nextTurn()
         }
         add(simulateButton)
         add(simulateTextField).row()

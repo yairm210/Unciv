@@ -136,25 +136,7 @@ class OptionsPopup(
 
     /** Reload this Popup after major changes (resolution, tileset, language, font) */
     private fun reloadWorldAndOptions() {
-        Concurrency.run("Reload from options") {
-            settings.save()
-            withGLContext {
-                // We have to run setSkin before the screen is rebuild else changing skins
-                // would only load the new SkinConfig after the next rebuild
-                BaseScreen.setSkin()
-            }
-            val screen = UncivGame.Current.screen
-            if (screen is WorldScreen) {
-                UncivGame.Current.reloadWorldscreen()
-            } else if (screen is MainMenuScreen) {
-                withGLContext {
-                    UncivGame.Current.replaceCurrentScreen(MainMenuScreen())
-                }
-            }
-            withGLContext {
-                UncivGame.Current.screen?.openOptionsPopup(tabs.activePage)
-            }
-        }
+        UncivGame.Current.reloadWorldAndOptions(tabs.activePage)
     }
 
     fun addCheckbox(table: Table, text: String, initialState: Boolean, updateWorld: Boolean = false, action: ((Boolean) -> Unit)) {

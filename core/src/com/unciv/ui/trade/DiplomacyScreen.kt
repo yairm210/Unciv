@@ -694,7 +694,7 @@ class DiplomacyScreen(
         if (otherCiv.cities.isNotEmpty() && otherCiv.getCapital() != null && viewingCiv.hasExplored(otherCiv.getCapital()!!.location))
             diplomacyTable.add(getGoToOnMapButton(otherCiv)).row()
 
-        if (!otherCiv.isPlayerCivilization()) { // human players make their own choices
+        if (!otherCiv.isHuman()) { // human players make their own choices
             diplomacyTable.add(getRelationshipTable(otherCivDiplomacyManager)).row()
             diplomacyTable.add(getDiplomacyModifiersTable(otherCivDiplomacyManager)).row()
             val promisesTable = getPromisesTable(diplomacyManager, otherCivDiplomacyManager)

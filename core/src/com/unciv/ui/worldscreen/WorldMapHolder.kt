@@ -187,7 +187,7 @@ class WorldMapHolder(
         val newSelectedUnit = unitTable.selectedUnit
 
         if (previousSelectedUnits.isNotEmpty() && previousSelectedUnits.any { it.getTile() != tileInfo }
-                && worldScreen.isPlayersTurn
+                && worldScreen.isTurnActive
                 && (
                     if (previousSelectedUnitIsSwapping)
                         previousSelectedUnits.first().movement.canUnitSwapTo(tileInfo)

@@ -165,10 +165,10 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     }
 
     fun relationshipLevel(): RelationshipLevel {
-        if (civInfo.isPlayerCivilization() && otherCiv().isPlayerCivilization())
+        if (civInfo.isHuman() && otherCiv().isHuman())
             return RelationshipLevel.Neutral // People make their own choices.
 
-        if (civInfo.isPlayerCivilization())
+        if (civInfo.isHuman())
             return otherCiv().getDiplomacyManager(civInfo).relationshipLevel()
 
         if (civInfo.isCityState()) return when {

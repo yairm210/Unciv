@@ -14,6 +14,7 @@ import com.unciv.logic.UncivFiles
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.multiplayer.OnlineMultiplayer
+import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.skins.SkinCache
@@ -31,6 +32,7 @@ import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.Popup
+import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.extensions.center
@@ -84,6 +86,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         private set
 
     var isInitialized = false
+    var isTurnProcessing = false
 
     /** A wrapped render() method that crashes to [CrashScreen] on a unhandled exception or error. */
     private val wrappedCrashHandlingRender = { super.render() }.wrapCrashHandlingUnit()
@@ -172,6 +175,106 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         }
     }
 
+    fun nextTurn() {
+
+        Concurrency.runOnNonDaemonThreadPool("NextTurn") {
+
+            isTurnProcessing = true
+
+            debug("Next turn starting")
+            val startTime = System.currentTimeMillis()
+            val originalGameInfo = gameInfo!!
+            val gameInfoClone = originalGameInfo.clone()
+            gameInfoClone.setTransients()  // this can get expensive on large games, not the clone itself
+            gameInfoClone.nextTurn()
+
+            if (originalGameInfo.gameParameters.isOnlineMultiplayer) {
+                try {
+                    onlineMultiplayer.updateGame(gameInfoClone)
+                } catch (ex: Exception) {
+                    val message = when (ex) {
+                        is FileStorageRateLimitReached -> "Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds"
+                        else -> "Could not upload game!"
+                    }
+                    launchOnGLThread { // Since we're changing the UI, that should be done on the main thread
+                        val cantUploadNewGamePopup = Popup(worldScreen!!)
+                        cantUploadNewGamePopup.addGoodSizedLabel(message).row()
+                        cantUploadNewGamePopup.addCloseButton()
+                        cantUploadNewGamePopup.open()
+                    }
+                    isTurnProcessing = false
+                    worldScreen?.shouldUpdate = true
+                    return@runOnNonDaemonThreadPool
+                }
+            }
+
+            isTurnProcessing = false
+
+            if (gameInfo != originalGameInfo)
+                return@runOnNonDaemonThreadPool  // while this was turning we loaded another game
+
+            debug("Next turn took %sms", System.currentTimeMillis() - startTime)
+            reloadWorldScreen(gameInfoClone)
+        }
+    }
+
+    /** This exists so that no reference to the current world screen remains, so the old world screen can get garbage collected during [loadGame]. */
+    fun reloadWorldScreen(
+        newGameInfo: GameInfo? = null,
+        autoSaveDisabled: Boolean = false,
+        replaceOnly: Boolean = false) {
+
+        val gameInfoToLoad = when {
+            replaceOnly && gameInfo != null && worldScreen != null -> gameInfo
+            !replaceOnly && newGameInfo != null -> newGameInfo
+            else -> null
+        } ?: return
+
+        Concurrency.run {
+            try {
+
+                val newWorldScreen = loadGame(gameInfoToLoad)
+                val shouldAutoSave = !autoSaveDisabled
+                        && gameInfoToLoad.turns % settings.turnsBetweenAutosaves == 0
+                if (shouldAutoSave)
+                    newWorldScreen.autoSave()
+
+            } catch (notAPlayer: UncivShowableException) {
+
+                withGLContext {
+                    val (message) = LoadGameScreen.getLoadExceptionMessage(notAPlayer)
+                    val mainMenu = goToMainMenu()
+                    ToastPopup(message, mainMenu)
+                }
+                return@run
+
+            } catch (oom: OutOfMemoryError) {
+
+                withGLContext {
+                    val mainMenu = goToMainMenu()
+                    ToastPopup("Not enough memory on phone to load game!", mainMenu)
+                }
+                return@run
+
+            }
+        }
+    }
+
+    /** Reload this Popup after major changes (resolution, tileset, language, font) */
+    fun reloadWorldAndOptions(page: Int = 0) {
+        settings.save()
+        BaseScreen.setSkin()
+
+        val screen = getScreen()
+
+        if (screen is WorldScreen)
+            reloadWorldScreen(replaceOnly = true)
+        else if (screen is MainMenuScreen)
+            replaceCurrentScreen(MainMenuScreen())
+
+        screen?.openOptionsPopup(page)
+    }
+
     /**
      * Loads a game, [disposing][BaseScreen.dispose] all screens.
      *
@@ -241,15 +344,6 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             val fullModList = newGameInfo.gameParameters.getModsAndBaseRuleset()
             musicController.setModList(fullModList)
         }
-    }
-
-    /** Re-creates the current [worldScreen], if there is any. */
-    suspend fun reloadWorldscreen() {
-        val curWorldScreen = worldScreen
-        val curGameInfo = gameInfo
-        if (curWorldScreen == null || curGameInfo == null) return
-
-        loadGame(curGameInfo)
     }
 
     /**
