@@ -1,12 +1,12 @@
 
 Skin.png
-size: 128, 128
+size: 512, 64
 format: RGBA8888
 filter: Linear, Linear
 repeat: none
 Skins/Minimal/checkbox
   rotate: false
-  xy: 52, 16
+  xy: 283, 23
   size: 31, 31
   split: 0, 0, 0, 0
   orig: 31, 31
@@ -14,7 +14,7 @@ Skins/Minimal/checkbox
   index: -1
 Skins/Minimal/checkbox-pressed
   rotate: false
-  xy: 64, 55
+  xy: 244, 23
   size: 31, 31
   split: 0, 0, 0, 0
   orig: 31, 31
@@ -22,7 +22,7 @@ Skins/Minimal/checkbox-pressed
   index: -1
 Skins/Minimal/rectangleWithOutline
   rotate: false
-  xy: 112, 121
+  xy: 64, 13
   size: 3, 3
   split: 0, 0, 0, 0
   orig: 3, 3
@@ -30,16 +30,34 @@ Skins/Minimal/rectangleWithOutline
   index: -1
 Skins/Minimal/roundedEdgeRectangle
   rotate: false
-  xy: 4, 74
+  xy: 4, 4
   size: 52, 50
   split: 19, 20, 19, 21
   pad: 12, 13, 7, 7
   orig: 52, 50
   offset: 0, 0
   index: -1
+Skins/Minimal/roundedEdgeRectangle-mid
+  rotate: false
+  xy: 202, 21
+  size: 34, 33
+  split: 12, 12, 12, 12
+  pad: 7, 8, 10, 9
+  orig: 34, 33
+  offset: 0, 0
+  index: -1
+Skins/Minimal/roundedEdgeRectangle-mid-border
+  rotate: false
+  xy: 160, 21
+  size: 34, 33
+  split: 12, 12, 12, 12
+  pad: 7, 8, 10, 9
+  orig: 34, 33
+  offset: 0, 0
+  index: -1
 Skins/Minimal/roundedEdgeRectangle-small
   rotate: false
-  xy: 4, 4
+  xy: 322, 30
   size: 24, 24
   split: 10, 10, 10, 10
   pad: 10, 10, 2, 2
@@ -48,7 +66,7 @@ Skins/Minimal/roundedEdgeRectangle-small
   index: -1
 Skins/Minimal/select-box
   rotate: false
-  xy: 64, 94
+  xy: 112, 24
   size: 40, 30
   split: 7, 9, 7, 7
   orig: 40, 30
@@ -56,7 +74,7 @@ Skins/Minimal/select-box
   index: -1
 Skins/Minimal/select-box-pressed
   rotate: false
-  xy: 4, 36
+  xy: 64, 24
   size: 40, 30
   split: 7, 9, 7, 7
   orig: 40, 30
