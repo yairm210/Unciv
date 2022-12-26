@@ -4,6 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.centerX
@@ -17,7 +18,6 @@ class TurnProcessingWidget(val worldScreen: WorldScreen) : Table() {
     init {
 
         iconGroup.setSize(50f, 50f)
-        textLabel.setText("Processing turn")
 
         add(iconGroup).padBottom(5f).row()
         add(textLabel)
@@ -35,10 +35,9 @@ class TurnProcessingWidget(val worldScreen: WorldScreen) : Table() {
                 else -> ImageGetter.getRandomNationIndicator(50f)
             }
             val text = when {
-                activeCiv.isBarbarian() -> "Process Turn for Barbarians"
-                activeCiv.isCityState() ->"Process Turn for City-States"
-                doWeKnowEachOther -> "Process Turn for [${activeCiv}]"
-                else -> "Process Turn for Unknown civilization"
+                activeCiv.isCityState() ->"Process Turn for [{City-States}]".tr()
+                doWeKnowEachOther || activeCiv.isBarbarian() -> "Process Turn for [$activeCiv]".tr()
+                else -> "Process Turn for [{Unknown civilization}]".tr()
             }
 
             setIcon(icon)
