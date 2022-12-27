@@ -1,0 +1,27 @@
+
+
+Demographics removed - resolves 
+
+World wrap available by default for all players
+
+Units are no longer double-added to construction when clicking the 'add unit' button
+
+Units passed with 'next unit' are not returned to
+
+4.3.12-patch3
+
+4.3.12-patch2
+
+4.3.12-patch1
+
+PolicyScreen screenshot
+
+fixed screens displaying yourself as an unknown civilization  - By alexban011
+
+fix a translation problem in policy screen  - By CrispyXYZ
+
+By vegeta1k95:
+- Corrected Civilizations colors 
+- Fix unit selection cycling 
+- Fix perpetual constructions info  ()
+- Civ 5: unit selection and cycling behaviour, "Wait" action 
