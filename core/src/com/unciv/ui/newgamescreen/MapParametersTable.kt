@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldFilter.DigitsOnlyFilter
-import com.unciv.UncivGame
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapResources
 import com.unciv.logic.map.MapShape
@@ -233,17 +232,14 @@ class MapParametersTable(
     }
 
     private fun addWrappedCheckBoxes() {
-        val showWorldWrap = UncivGame.Current.settings.showExperimentalWorldWrap
         add(Table(skin).apply {
             defaults().left().pad(2.5f)
             addNoRuinsCheckbox()
             addNoNaturalWondersCheckbox()
-            if (showWorldWrap) addWorldWrapCheckbox()
-            else mapParameters.worldWrap = false
+            addWorldWrapCheckbox()
         }).colspan(2).center().row()
-        if (showWorldWrap)
-            add("World wrap maps are very memory intensive - creating large world wrap maps on Android can lead to crashes!"
-                .toLabel(fontSize = 14).apply { wrap=true }).colspan(2).fillX().row()
+        add("World wrap maps are very memory intensive - creating large world wrap maps on Android can lead to crashes!"
+            .toLabel(fontSize = 14).apply { wrap=true }).colspan(2).fillX().row()
     }
 
     private fun addAdvancedSettings() {
