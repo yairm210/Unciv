@@ -362,7 +362,8 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         if (nextTurnStats.culture == 0f) return cultureString // when you start the game, you're not producing any culture
 
         val turnsToNextPolicy = (civInfo.policies.getCultureNeededForNextPolicy() - civInfo.policies.storedCulture) / nextTurnStats.culture
-        cultureString += if (turnsToNextPolicy <= 0f) " (!)"
+        cultureString += if (nextTurnStats.culture < 0) " ()"
+            else if  (turnsToNextPolicy <= 0f) " (!)"
             else " (" + ceil(turnsToNextPolicy).toInt() + ")"
         return cultureString
     }
