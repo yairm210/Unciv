@@ -22,8 +22,8 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ConfirmPopup
+import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.closeAllPopups
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ExpanderTab
@@ -367,7 +367,9 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         if (!cannotAddConstructionToQueue(construction, cityScreen.city, cityScreen.city.cityConstructions)) {
             val addToQueueButton = ImageGetter.getImage("OtherIcons/New").apply { color = Color.BLACK }.surroundWithCircle(40f)
             addToQueueButton.onClick(UncivSound.Silent) {
-                addConstructionToQueue(construction, cityScreen.city.cityConstructions)
+                // Since the pickConstructionButton.onClick adds the construction if it's selected,
+                // this effectively adds the construction even if it's unselected
+                cityScreen.selectConstruction(construction)
             }
             pickConstructionButton.add(addToQueueButton)
         }
