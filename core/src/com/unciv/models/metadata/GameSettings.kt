@@ -177,6 +177,7 @@ enum class LocaleCode(var language: String, var country: String) {
     Turkish("tr", "TR"),
     Ukrainian("uk", "UA"),
     Vietnamese("vi", "VN"),
+    Afrikaans("af", "ZA")
 }
 
 class GameSettingsMultiplayer {
