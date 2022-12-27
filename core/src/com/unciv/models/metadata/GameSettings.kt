@@ -67,7 +67,6 @@ class GameSettings {
     var windowState = WindowState()
     var isFreshlyCreated = false
     var visualMods = HashSet<String>()
-    var useDemographics: Boolean = false
     var showZoomButtons: Boolean = false
 
     var notificationsLogMaxTurns = 5
