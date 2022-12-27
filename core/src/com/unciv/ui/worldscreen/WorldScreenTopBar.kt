@@ -316,7 +316,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         val goldPerTurn = "(" + (if (nextTurnStats.gold > 0) "+" else "") + nextTurnStats.gold.roundToInt() + ")"
         goldLabel.setText(civInfo.gold.toString() + goldPerTurn)
 
-        scienceLabel.setText("+" + nextTurnStats.science.roundToInt())
+        scienceLabel.setText((if (nextTurnStats.science > 0) "+" else "" ) + nextTurnStats.science.roundToInt())
 
         happinessLabel.setText(getHappinessText(civInfo))
 
@@ -331,7 +331,8 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         }
 
         cultureLabel.setText(getCultureText(civInfo, nextTurnStats))
-        faithLabel.setText(civInfo.religionManager.storedFaith.toString() + "(+" + nextTurnStats.faith.roundToInt() + ")")
+        faithLabel.setText(civInfo.religionManager.storedFaith.toString() +
+                "(" + (if (nextTurnStats.faith > 0) "+" else "") + nextTurnStats.faith.roundToInt() + ")")
     }
 
     private fun updateResourcesTable(civInfo: CivilizationInfo) {
@@ -357,7 +358,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     }
 
     private fun getCultureText(civInfo: CivilizationInfo, nextTurnStats: Stats): String {
-        var cultureString = "+" + nextTurnStats.culture.roundToInt()
+        var cultureString = (if (nextTurnStats.culture > 0) "+" else "") + nextTurnStats.culture.roundToInt()
         if (nextTurnStats.culture == 0f) return cultureString // when you start the game, you're not producing any culture
 
         val turnsToNextPolicy = (civInfo.policies.getCultureNeededForNextPolicy() - civInfo.policies.storedCulture) / nextTurnStats.culture
