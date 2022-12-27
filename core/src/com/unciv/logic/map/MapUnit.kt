@@ -174,6 +174,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     var attacksThisTurn = 0
     var promotions = UnitPromotions()
+    /** Indicates if unit should be located with 'next unit' action */
     var due: Boolean = true
     var isTransported: Boolean = false
     var turnsFortified = 0

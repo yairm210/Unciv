@@ -47,7 +47,6 @@ import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.saves.QuickSave
 import com.unciv.ui.saves.SaveGameScreen
 import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.extensions.centerX
 import com.unciv.ui.utils.extensions.darken
@@ -641,6 +640,8 @@ class WorldScreen(
 
     fun switchToNextUnit() {
         // Try to select something new if we already have the next pending unit selected.
+        if (bottomUnitTable.selectedUnit != null)
+            bottomUnitTable.selectedUnit!!.due = false
         val nextDueUnit = viewingCiv.cycleThroughDueUnits(bottomUnitTable.selectedUnit)
         if (nextDueUnit != null) {
             mapHolder.setCenterPosition(
