@@ -37,11 +37,6 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
             cityNameTable.add(fireImage).size(20f).padRight(5f)
         }
 
-        if (city.isCapital()) {
-            val starImage = ImageGetter.getImage("OtherIcons/Star").apply { color = Color.LIGHT_GRAY }
-            cityNameTable.add(starImage).size(20f).padRight(5f)
-        }
-
         if (city.isPuppet) {
             val starImage = ImageGetter.getImage("OtherIcons/Puppet").apply { color = Color.LIGHT_GRAY }
             cityNameTable.add(starImage).size(20f).padRight(5f)
@@ -50,6 +45,11 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
         if (city.isInResistance()) {
             val resistanceImage = ImageGetter.getImage("StatIcons/Resistance")
             cityNameTable.add(resistanceImage).size(20f).padRight(5f)
+        }
+
+        if (city.isCapital()) {
+            val starImage = ImageGetter.getImage("OtherIcons/Star").apply { color = Color.LIGHT_GRAY }
+            cityNameTable.add(starImage).size(20f).padRight(5f)
         }
 
         val currentCityLabel = city.name.toLabel(fontSize = 30, fontColor = civInfo.nation.getInnerColor())

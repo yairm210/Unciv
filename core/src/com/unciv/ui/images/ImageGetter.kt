@@ -386,16 +386,26 @@ object ImageGetter {
             .surroundWithThinCircle(techIconColor)
     }
 
-    fun getProgressBarHorizontal(width: Float, height: Float, percentComplete: Float, progressColor: Color, backgroundColor: Color): Group {
+    fun getProgressBarHorizontal(
+        width: Float, height: Float,
+        percentComplete: Float,
+        progressColor: Color,
+        backgroundColor: Color): Group {
         return ProgressBar(width, height, false)
             .setBackground(backgroundColor)
             .setProgress(progressColor, percentComplete)
     }
 
-    fun getProgressBarVertical(width: Float, height: Float, percentComplete: Float, progressColor: Color, backgroundColor: Color): Group {
+    fun getProgressBarVertical(
+        width: Float,
+        height: Float,
+        percentComplete: Float,
+        progressColor: Color,
+        backgroundColor: Color,
+        progressPadding: Float = 0f): Group {
         return ProgressBar(width, height, true)
                 .setBackground(backgroundColor)
-                .setProgress(progressColor, percentComplete)
+                .setProgress(progressColor, percentComplete, padding = progressPadding)
     }
 
     class ProgressBar(width: Float, height: Float, val vertical: Boolean = true):Group() {
@@ -427,7 +437,7 @@ object ImageGetter {
 
         fun setBackground(color: Color): ProgressBar {
             background = getWhiteDot()
-            background?.color = color
+            background?.color = color.cpy()
             background?.setSize(width, height) //clamp between 0 and 1
             background?.toBack()
             background?.center(this)
@@ -436,34 +446,44 @@ object ImageGetter {
             return this
         }
 
-        fun setSemiProgress(color: Color, percentage: Float): ProgressBar {
+        fun setSemiProgress(color: Color, percentage: Float, padding: Float = 0f): ProgressBar {
             secondaryPercentage = percentage
             secondaryProgress = getWhiteDot()
-            secondaryProgress?.color = color
+            secondaryProgress?.color = color.cpy()
             if (vertical)
-                secondaryProgress?.setSize(width, height *  max(min(percentage, 1f),0f))
+                secondaryProgress?.setSize(width-padding*2, height *  max(min(percentage, 1f),0f))
             else
-                secondaryProgress?.setSize(width *  max(min(percentage, 1f),0f), height)
-            if (secondaryProgress != null)
+                secondaryProgress?.setSize(width *  max(min(percentage, 1f),0f), height-padding*2)
+            if (secondaryProgress != null) {
                 addActor(secondaryProgress)
+                if (vertical)
+                    secondaryProgress?.centerX(this)
+                else
+                    secondaryProgress?.centerY(this)
+            }
             return this
         }
 
-        fun setProgress(color: Color, percentage: Float): ProgressBar {
+        fun setProgress(color: Color, percentage: Float, padding: Float = 0f): ProgressBar {
             primaryPercentage = percentage
             primaryProgress = getWhiteDot()
-            primaryProgress?.color = color
+            primaryProgress?.color = color.cpy()
             if (vertical)
-                primaryProgress?.setSize(width, height *  max(min(percentage, 1f),0f))
+                primaryProgress?.setSize(width-padding*2, height *  max(min(percentage, 1f),0f))
             else
-                primaryProgress?.setSize(width *  max(min(percentage, 1f),0f), height)
-            if (primaryProgress != null)
+                primaryProgress?.setSize(width *  max(min(percentage, 1f),0f), height-padding*2)
+            if (primaryProgress != null) {
                 addActor(primaryProgress)
+                if (vertical)
+                    primaryProgress?.centerX(this)
+                else
+                    primaryProgress?.centerY(this)
+            }
             return this
         }
     }
 
-    fun getHealthBar(currentHealth: Float, maxHealth: Float, healthBarSize: Float): Table {
+    fun getHealthBar(currentHealth: Float, maxHealth: Float, healthBarSize: Float, height: Float=5f): Table {
         val healthPercent = currentHealth / maxHealth
         val healthBar = Table()
 
@@ -473,10 +493,10 @@ object ImageGetter {
             healthPercent > 1 / 3f -> Color.ORANGE
             else -> Color.RED
         }
-        healthBar.add(healthPartOfBar).size(healthBarSize * healthPercent, 5f)
+        healthBar.add(healthPartOfBar).size(healthBarSize * healthPercent, height)
 
         val emptyPartOfBar = getDot(Color.BLACK)
-        healthBar.add(emptyPartOfBar).size(healthBarSize * (1 - healthPercent), 5f)
+        healthBar.add(emptyPartOfBar).size(healthBarSize * (1 - healthPercent), height)
 
         healthBar.pad(1f)
         healthBar.pack()

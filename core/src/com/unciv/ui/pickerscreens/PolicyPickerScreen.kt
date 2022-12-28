@@ -77,7 +77,9 @@ fun Policy.isPickable() : Boolean {
 }
 
 class PolicyButton(val policy: Policy, size: Float = 30f) : BorderedTable(
-    style = BaseScreen.skinStrings.roundedEdgeRectangleSmallShape,
+    path = "PolicyScreen/PolicyButton",
+    defaultBorder = BaseScreen.skinStrings.roundedEdgeRectangleSmallShape,
+    defaultInner = BaseScreen.skinStrings.roundedEdgeRectangleSmallShape,
     borderSize = 2f
 ) {
 
@@ -93,10 +95,10 @@ class PolicyButton(val policy: Policy, size: Float = 30f) : BorderedTable(
     init {
 
         icon.setSize(size*0.7f, size*0.7f)
-        highlight.setSize(size*1.35f, size*1.35f)
+        highlight.setSize(size*1.38f, size*1.38f)
 
         addActor(icon)
-        add(highlight).center()
+        addActor(highlight)
 
         updateState()
         pack()
@@ -595,7 +597,10 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
                 Colors.policyNotPickable}
         }
 
-        val table = BorderedTable(style = skinStrings.roundedEdgeRectangleSmallShape, innerColor = color, borderSize = 2f)
+        val table = BorderedTable(
+            defaultInner = skinStrings.roundedEdgeRectangleSmallShape,
+            defaultBorder = skinStrings.roundedEdgeRectangleSmallShape,
+            innerColor = color, borderSize = 2f)
 
         table.add(label).minHeight(30f).minWidth(150f).growX()
         table.addActor(lockIcon)

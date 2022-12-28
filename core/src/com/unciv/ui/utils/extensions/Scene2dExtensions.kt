@@ -313,7 +313,7 @@ fun Actor.surroundWithCircle(size: Float, resizeActor: Boolean = true, color: Co
     return IconCircleGroup(size, this, resizeActor, color)
 }
 
-fun Actor.surroundWithThinCircle(color: Color=Color.BLACK): IconCircleGroup = surroundWithCircle(width*1.05f, false, color)
+fun Actor.surroundWithThinCircle(color: Color=Color.BLACK): IconCircleGroup = surroundWithCircle(width+2f, false, color)
 
 
 fun Actor.addBorder(size:Float, color: Color, expandCell:Boolean = false): Table {

@@ -104,7 +104,6 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | WorldScreen/ | TutorialTaskTable | null | |
 | WorldScreen/ | UnitTable | null | |
 | WorldScreen/CityButton/ | AirUnitTable | roundedEdgeRectangle | |
-| WorldScreen/CityButton/ | IconTable | roundedEdgeRectangle | |
 | WorldScreen/CityButton/ | InfluenceBar | null | |
 | WorldScreen/Minimap/ | Background | null | |
 | WorldScreen/Minimap/ | Border | null | |

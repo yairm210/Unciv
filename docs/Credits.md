@@ -676,7 +676,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [Aircraft](https://thenounproject.com/search/?q=aircraft&i=1629000) By Tom Fricker for aircraft icon in city button
 - [radar scan](https://thenounproject.com/search/?q=range&i=1500234) By icon 54 for Range
 - [short range radar](https://thenounproject.com/search/?q=air%20range&i=2612731) by Vectors Point for Intercept range
-- [Puppet](https://thenounproject.com/search/?q=puppet&i=285735) By Ben Davis for puppeted cities
+- Puppet by [vegeta1k95](https://github.com/veget1k95) based on [Puppet](https://thenounproject.com/search/?q=puppet&i=285735) by Ben Davis, for puppeted cities
 - [City](https://thenounproject.com/search/?q=city&i=1765370) By Muhajir ila Robbi in the Icon center
 - [Lock](https://thenounproject.com/search/?q=lock&i=3217613) by Vadim Solomakhin for locked tiles
 - [Hourglass](https://thenounproject.com/search/?q=hourglass&i=142268) by I Create Stuff for the 'Turn' icon
