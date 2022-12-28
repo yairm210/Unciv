@@ -41,91 +41,91 @@ CityStateIcons/Religious
   index: -1
 EmojiIcons/Culture
   rotate: false
-  xy: 946, 1581
+  xy: 946, 1755
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Faith
   rotate: false
-  xy: 946, 1523
+  xy: 946, 1697
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Food
   rotate: false
-  xy: 946, 1465
+  xy: 946, 1639
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Gold
   rotate: false
-  xy: 946, 1407
+  xy: 946, 1581
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Great Artist
   rotate: false
-  xy: 946, 1349
+  xy: 946, 1523
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Great Engineer
   rotate: false
-  xy: 946, 1291
+  xy: 946, 1465
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Great General
   rotate: false
-  xy: 946, 1233
+  xy: 946, 1407
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Great Merchant
   rotate: false
-  xy: 946, 1175
+  xy: 946, 1349
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Great Scientist
   rotate: false
-  xy: 946, 1117
+  xy: 946, 1291
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Happiness
   rotate: false
-  xy: 946, 1059
+  xy: 946, 1233
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Production
   rotate: false
-  xy: 946, 653
+  xy: 946, 827
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Science
   rotate: false
-  xy: 1004, 1713
+  xy: 946, 653
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Turn
   rotate: false
-  xy: 1178, 1771
+  xy: 1120, 1771
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -475,42 +475,42 @@ UnitActionIcons/AirSweep
   index: -1
 OtherIcons/Aircraft
   rotate: false
-  xy: 760, 39
+  xy: 851, 27
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 OtherIcons/ArrowRight
   rotate: false
-  xy: 946, 1755
+  xy: 909, 27
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 NotificationIcons/MoveAutomatedUnits
   rotate: false
-  xy: 946, 1755
+  xy: 909, 27
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 NotificationIcons/NextUnit
   rotate: false
-  xy: 946, 1755
+  xy: 909, 27
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 StatIcons/Movement
   rotate: false
-  xy: 946, 1755
+  xy: 909, 27
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 OtherIcons/BackArrow
   rotate: false
-  xy: 946, 1697
+  xy: 967, 27
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -573,7 +573,7 @@ OtherIcons/Cities
   index: -1
 OtherIcons/CityState
   rotate: false
-  xy: 946, 1639
+  xy: 1025, 27
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -643,14 +643,14 @@ OtherIcons/Hexagon
   index: -1
 OtherIcons/Improvements
   rotate: false
-  xy: 946, 943
+  xy: 946, 1117
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 OtherIcons/Link
   rotate: false
-  xy: 946, 827
+  xy: 946, 1001
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -671,7 +671,7 @@ OtherIcons/Lock
   index: -1
 OtherIcons/LockSmall
   rotate: false
-  xy: 946, 769
+  xy: 946, 943
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -706,7 +706,7 @@ OtherIcons/Multiplayer
   index: -1
 OtherIcons/Nations
   rotate: false
-  xy: 946, 711
+  xy: 946, 885
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -944,7 +944,7 @@ UnitActionIcons/Swap
   index: -1
 OtherIcons/Terrains
   rotate: false
-  xy: 1004, 1655
+  xy: 1004, 1713
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -982,6 +982,13 @@ OtherIcons/Unique
   xy: 1187, 1829
   size: 100, 100
   orig: 100, 100
+  offset: 0, 0
+  index: -1
+OtherIcons/WLTKD
+  rotate: false
+  xy: 760, 24
+  size: 83, 65
+  orig: 83, 65
   offset: 0, 0
   index: -1
 OtherIcons/Wait
@@ -1301,7 +1308,7 @@ StatIcons/Happiness
   index: -1
 StatIcons/InterceptRange
   rotate: false
-  xy: 946, 885
+  xy: 946, 1059
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1322,14 +1329,14 @@ StatIcons/Population
   index: -1
 StatIcons/Range
   rotate: false
-  xy: 1004, 1771
+  xy: 946, 769
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 StatIcons/RangedStrength
   rotate: false
-  xy: 1062, 1771
+  xy: 946, 711
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1357,7 +1364,7 @@ StatIcons/Specialist
   index: -1
 StatIcons/Strength
   rotate: false
-  xy: 1062, 1713
+  xy: 1062, 1771
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1448,7 +1455,7 @@ UnitActionIcons/FoundCity
   index: -1
 UnitActionIcons/HideMore
   rotate: false
-  xy: 946, 1001
+  xy: 946, 1175
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1497,7 +1504,7 @@ UnitActionIcons/SetUp
   index: -1
 UnitActionIcons/ShowMore
   rotate: false
-  xy: 1120, 1771
+  xy: 1004, 1771
   size: 50, 50
   orig: 50, 50
   offset: 0, 0

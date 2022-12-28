@@ -265,6 +265,12 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
             val fireImage = ImageGetter.getImage("OtherIcons/Fire")
             table.add(fireImage).size(16f).padLeft(2f)
         }
+
+        if (belongsToViewingCiv() && city.isWeLoveTheKingDayActive()) {
+            val wtlkdImage = ImageGetter.getImage("OtherIcons/WLTKD")
+            table.add(wtlkdImage).size(16f).padLeft(2f)
+        }
+
         return table
 
     }
