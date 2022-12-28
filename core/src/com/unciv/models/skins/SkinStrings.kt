@@ -11,6 +11,7 @@ class SkinStrings(skin: String = UncivGame.Current.settings.skin) {
 
     // Default shapes must always end with "Shape" so the UiElementDocsWriter can identify them
     val roundedEdgeRectangleSmallShape = skinLocation + "roundedEdgeRectangle-small"
+    val roundedTopEdgeRectangleSmallShape = skinLocation + "roundedTopEdgeRectangle-small"
     val roundedEdgeRectangleMidShape = skinLocation + "roundedEdgeRectangle-mid"
     val roundedEdgeRectangleMidBorderShape = skinLocation + "roundedEdgeRectangle-mid-border"
     val roundedEdgeRectangleShape = skinLocation + "roundedEdgeRectangle"
