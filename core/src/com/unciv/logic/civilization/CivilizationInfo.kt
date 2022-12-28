@@ -1006,7 +1006,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         for (city in sequence {
             yieldAll(cities.filter { it.isBeingRazed })
             yieldAll(cities.filterNot { it.isBeingRazed })
-        }) {
+        }.toList()) { // a city can be removed while iterating (if it's being razed) so we need to iterate over a copy
             city.endTurn()
         }
 
