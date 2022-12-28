@@ -227,9 +227,9 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         val size = ((branches.size / rowChangeCount) + if (branches.size % rowChangeCount == 0) 0 else 1)*rowChangeCount
         for (i in 0 until size) {
 
-            val change = (i % 5 == 0)
-            val rightToLeft = ((i / 5) % 2)
-            val r = (i % 5) + (i / 5)*(rowChangeCount-rightToLeft) + rightToLeft*(rowChangeCount-2*(i % 5))
+            val change = (i % rowChangeCount == 0)
+            val rightToLeft = ((i / rowChangeCount) % 2)
+            val r = (i % rowChangeCount) + (i / rowChangeCount)*(rowChangeCount-rightToLeft) + rightToLeft*(rowChangeCount-2*(i % rowChangeCount))
 
             if (i > 0 && change) {
                 topTable.add(wrapper).pad(5f,10f)
