@@ -50,8 +50,7 @@ Skins/Minimal/roundedEdgeRectangle-mid-border
   rotate: false
   xy: 64, 16
   size: 38, 38
-  split: 17, 17, 18, 18
-  pad: 17, 17, -1, -1
+  split: 18, 18, 18, 18
   orig: 38, 38
   offset: 0, 0
   index: -1
@@ -66,10 +65,18 @@ Skins/Minimal/roundedEdgeRectangle-small
   index: -1
 Skins/Minimal/roundedTopEdgeRectangle-small
   rotate: false
-  xy: 362, 42
+  xy: 394, 42
   size: 24, 12
   split: 10, 10, 10, 0
   pad: 10, 10, -1, -1
+  orig: 24, 12
+  offset: 0, 0
+  index: -1
+Skins/Minimal/roundedTopEdgeRectangle-small-border
+  rotate: false
+  xy: 362, 42
+  size: 24, 12
+  split: 10, 10, 10, 0
   orig: 24, 12
   offset: 0, 0
   index: -1

@@ -229,9 +229,9 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
             innerColor = Color.BLACK,
             borderColor = borderColor,
             defaultInner = BaseScreen.skinStrings.roundedTopEdgeRectangleSmallShape,
-            defaultBorder = BaseScreen.skinStrings.roundedTopEdgeRectangleSmallShape,
+            defaultBorder = BaseScreen.skinStrings.roundedTopEdgeRectangleSmallBorderShape,
             borderSize = 4f)
-        table.pad(3f, 3f, 0f, 3f)
+        table.pad(2f, 3f, 0f, 3f)
 
         val cityStrength = CityCombatant(city).getDefendingStrength()
         val cityStrengthLabel = "${Fonts.strength}$cityStrength".toLabel(fontSize = 12)
