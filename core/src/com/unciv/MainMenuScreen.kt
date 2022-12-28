@@ -117,7 +117,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             easterEggRuleset = EasterEggRulesets.getTodayEasterEggRuleset()?.let {
                 RulesetCache.getComplexRuleset(baseRuleset, listOf(it))
             }
-            val mapRuleset = easterEggRuleset ?: baseRuleset
+            val mapRuleset = if (game.settings.enableEasterEggs) easterEggRuleset ?: baseRuleset else baseRuleset
 
             val newMap = MapGenerator(mapRuleset)
                     .generateMap(MapParameters().apply {

@@ -87,6 +87,8 @@ class GameSettings {
     var fontFamily: String = Fonts.DEFAULT_FONT_FAMILY
     var fontSizeMultiplier: Float = 1f
 
+    var enableEasterEggs: Boolean = true
+
     /** Maximum zoom-out of the map - performance heavy */
     var maxWorldZoomOut = 2f
 
