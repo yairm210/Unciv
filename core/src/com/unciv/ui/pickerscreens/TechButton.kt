@@ -48,13 +48,10 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
         bg.toBack()
         addActor(bg)
 
-        pad(0f).padBottom(5f).padTop(5f).padLeft(5f).padRight(5f)
+        pad(0f).padBottom(5f).padTop(5f).padLeft(5f).padRight(0f)
 
         if (ImageGetter.techIconExists(techName))
             add(ImageGetter.getTechIconGroup(techName, 46f)).padRight(5f).padLeft(2f).left()
-
-        val rightSide = Table()
-
 
         if (isWorldScreen) {
             val techCost = techManager.costOfTech(techName)
@@ -70,8 +67,10 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
             add(progressBar.addBorder(1f, Color.GRAY)).padLeft(0f).padRight(5f)
         }
 
-        rightSide.add(text).width(145f).top().left().padRight(15f)
-        rightSide.add(turns).width(40f).top().right().padRight(10f).row()
+        val rightSide = Table()
+
+        rightSide.add(text).width(140f).top().left().padRight(15f)
+        rightSide.add(turns).width(40f).top().left().padRight(10f).row()
 
         addTechEnabledIcons(techName, isWorldScreen, rightSide)
 
