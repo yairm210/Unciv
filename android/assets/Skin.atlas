@@ -50,7 +50,7 @@ Skins/Minimal/roundedEdgeRectangle-mid-border
   rotate: false
   xy: 64, 16
   size: 38, 38
-  split: 17, 17, 14, 13
+  split: 17, 17, 18, 18
   pad: 17, 17, -1, -1
   orig: 38, 38
   offset: 0, 0

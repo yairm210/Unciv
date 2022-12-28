@@ -288,7 +288,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         val popGroup = getPopulationGroup(uncivGame.viewEntireMapForDebug
                 || belongsToViewingCiv()
                 || worldScreen.viewingCiv.isSpectator())
-        val popGroupCell = iconTable.add(popGroup)
+        val popGroupCell = iconTable.add(popGroup).minHeight(34f)
 
         val labelTable = Table()
 
@@ -440,9 +440,9 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
                 table.add(productionBar).padTop(1f).padBottom(1f)
             }
 
-            val constructionImage = ImageGetter.getPortraitImage(cityCurrentConstruction.name, 26f)
+            val constructionImage = ImageGetter.getPortraitImage(cityCurrentConstruction.name, 24f)
             table.add(constructionImage).minHeight(32f).minWidth(26f)
-                .expand().center().right().pad(0f).padRight(2f).padLeft(3f)
+                .expand().center().right().pad(0f).padRight(4f).padLeft(3f)
             table.pack()
         }
 
