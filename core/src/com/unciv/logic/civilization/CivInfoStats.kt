@@ -274,11 +274,6 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             statMap.add("Policies", civInfo.policies.getAdoptedPolicies().count { !Policy.isBranchCompleteByName(it) } / 2)
         }
 
-        // if negative, extra penalty to Happiness
-        if (civInfo.policies.storedCulture < 0) {
-            statMap["Culture deficit"] = civInfo.policies.storedCulture.toFloat()
-        }
-
         val transportUpkeep = getTransportationUpkeep() * -1
         if (transportUpkeep.happiness != 0f)
             statMap["Transportation Upkeep"] = transportUpkeep.happiness
