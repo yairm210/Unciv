@@ -274,6 +274,10 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             statMap.add("Policies", civInfo.policies.getAdoptedPolicies().count { !Policy.isBranchCompleteByName(it) } / 2)
         }
 
+        val transportUpkeep = getTransportationUpkeep() * -1
+        if (transportUpkeep.happiness != 0f)
+            statMap["Transportation Upkeep"] = transportUpkeep.happiness
+
         for ((key, value) in getGlobalStatsFromUniques())
             statMap.add(key,value.happiness)
 

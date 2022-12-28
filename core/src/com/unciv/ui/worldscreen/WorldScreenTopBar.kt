@@ -311,12 +311,16 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         layoutButtons()
     }
 
+    private fun rateLabel(value: Float): String {
+        return (if (value > 0) "+" else "") + value.roundToInt()
+    }
+
     private fun updateStatsTable(civInfo: CivilizationInfo) {
         val nextTurnStats = civInfo.statsForNextTurn
-        val goldPerTurn = "(" + (if (nextTurnStats.gold > 0) "+" else "") + nextTurnStats.gold.roundToInt() + ")"
+        val goldPerTurn = " (" + rateLabel(nextTurnStats.gold) + ")"
         goldLabel.setText(civInfo.gold.toString() + goldPerTurn)
 
-        scienceLabel.setText("+" + nextTurnStats.science.roundToInt())
+        scienceLabel.setText(rateLabel(nextTurnStats.science))
 
         happinessLabel.setText(getHappinessText(civInfo))
 
@@ -331,7 +335,8 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         }
 
         cultureLabel.setText(getCultureText(civInfo, nextTurnStats))
-        faithLabel.setText(civInfo.religionManager.storedFaith.toString() + "(+" + nextTurnStats.faith.roundToInt() + ")")
+        faithLabel.setText(civInfo.religionManager.storedFaith.toString() +
+                " (" + rateLabel(nextTurnStats.faith) + ")")
     }
 
     private fun updateResourcesTable(civInfo: CivilizationInfo) {
@@ -357,11 +362,12 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     }
 
     private fun getCultureText(civInfo: CivilizationInfo, nextTurnStats: Stats): String {
-        var cultureString = "+" + nextTurnStats.culture.roundToInt()
+        var cultureString = rateLabel(nextTurnStats.culture)
         if (nextTurnStats.culture == 0f) return cultureString // when you start the game, you're not producing any culture
 
         val turnsToNextPolicy = (civInfo.policies.getCultureNeededForNextPolicy() - civInfo.policies.storedCulture) / nextTurnStats.culture
-        cultureString += if (turnsToNextPolicy <= 0f) " (!)"
+        cultureString += if (nextTurnStats.culture < 0) " (∞)"
+            else if  (turnsToNextPolicy <= 0f) " (!)"
             else " (" + ceil(turnsToNextPolicy).toInt() + ")"
         return cultureString
     }
