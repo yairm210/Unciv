@@ -531,7 +531,7 @@
 		"requiredTech": "Machinery",
 		"upgradesTo": "Rifleman",
 		"obsoleteTech": "Rifling",
-		"attackSound": "arrow"
+		"attackSound": "crossbow"
 	},
 	{
 		"name": "Chu-Ko-Nu",
@@ -546,7 +546,7 @@
 		"upgradesTo": "Rifleman",
 		"obsoleteTech": "Rifling",
 		"promotions": ["Logistics"],
-		"attackSound": "arrow"
+		"attackSound": "crossbow"
 	},
 	{
 		"name": "Longbowman",

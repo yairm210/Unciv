@@ -677,7 +677,7 @@
 		"requiredTech": "Machinery",
 		"upgradesTo": "Gatling Gun",
 		"obsoleteTech": "Industrialization",
-		"attackSound": "arrow"
+		"attackSound": "crossbow"
 	},
 	{
 		"name": "Chu-Ko-Nu",
@@ -692,7 +692,7 @@
 		"upgradesTo": "Gatling Gun",
 		"obsoleteTech": "Industrialization",
 		"promotions": ["[Chu-Ko-Nu] ability"],
-		"attackSound": "arrow"
+		"attackSound": "crossbow"
 	},
 	{
 		"name": "Longbowman",
