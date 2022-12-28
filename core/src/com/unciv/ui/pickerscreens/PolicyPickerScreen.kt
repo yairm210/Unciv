@@ -211,7 +211,6 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
 
         val branches = viewingCiv.gameInfo.ruleSet.policyBranches
         var rowChangeCount = Int.MAX_VALUE
-        var rowChangeWidth = Float.MAX_VALUE
 
         // estimate how many branch boxes fit using average size (including pad)
         // TODO If we'd want to use scene2d correctly, this is supposed to happen inside an overridden layout() method
@@ -219,36 +218,32 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
             // Landscape - arrange in as few rows as looks nice
         if (numBranchesY > 1.5f) {
             val numRows = if (numBranchesY < 2.9f) 2 else (numBranchesY + 0.1f).toInt()
-                rowChangeCount = (branches.size + numRows - 1) / numRows
+            rowChangeCount = (branches.size + numRows - 1) / numRows
         }
 
 
         // Actually create and distribute the policy branches
         var wrapper = Table()
-        var wrapperWidth = 0f   // Either pack() each round or cumulate separately
+        val size = ((branches.size / rowChangeCount) + if (branches.size % rowChangeCount == 0) 0 else 1)*rowChangeCount
+        for (i in 0 until size) {
 
-        var leftToRight = true
-        var index = 0
-        var switchOnIndex = rowChangeCount
-        while (index < branches.size) {
-            val branch = branches.values.elementAt(index)
-            val branchGroup = getBranchGroup(branch)
-            wrapperWidth += branchGroup.width + 20f  // 20 is the horizontal padding in wrapper.add
+            val change = (i % 5 == 0)
+            val rightToLeft = ((i / 5) % 2)
+            val r = (i % 5) + (i / 5)*(rowChangeCount-rightToLeft) + rightToLeft*(rowChangeCount-2*(i % 5))
 
-            if (index > 0 && index == switchOnIndex || wrapperWidth > rowChangeWidth) {
-                index += rowChangeCount - if (leftToRight) 1 else - 2
-                switchOnIndex  -=  if (leftToRight) 1 else rowChangeCount - 2
-                leftToRight = !leftToRight
+            if (i > 0 && change) {
                 topTable.add(wrapper).pad(5f,10f)
                 topTable.addSeparator().pad(0f, 10f)
                 wrapper = Table()
-                wrapperWidth = 0f
-                continue
             }
 
-            wrapper.add(branchGroup).growY().growX()
-            index += if (leftToRight) 1 else -1
-
+            if (r >= branches.size) {
+                wrapper.add().expand()
+            } else {
+                val branch = branches.values.elementAt(r)
+                val branchGroup = getBranchGroup(branch)
+                wrapper.add(branchGroup).growY().growX()
+            }
         }
         topTable.add(wrapper).pad(5f,10f)
 
