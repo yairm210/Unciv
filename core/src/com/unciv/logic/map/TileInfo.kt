@@ -306,10 +306,11 @@ open class TileInfo : IsPartOfGameInfoSerialization {
 
     // function handling when removing a road from the tile
     fun removeRoad() {
-        roadStatus = RoadStatus.None
         roadIsPillaged = false
+        if (roadStatus == RoadStatus.None) return
+        roadStatus = RoadStatus.None
         if (owningCity == null)
-            getRoadOwner()!!.neutralRoads.remove(this.position)
+            getRoadOwner()?.neutralRoads?.remove(this.position)
     }
 
     fun getShownImprovement(viewingCiv: CivilizationInfo?): String? {
