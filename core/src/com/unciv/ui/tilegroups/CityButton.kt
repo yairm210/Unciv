@@ -373,7 +373,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
             .toLabel(fontColor = secondaryColor, fontSize = 18).apply {
             setAlignment(Align.center)
         }
-        table.add(popLabel).minHeight(32f).apply {
+        table.add(popLabel).minHeight(30f).apply {
             if (showGrowth)
                 minWidth(26f)
             else
