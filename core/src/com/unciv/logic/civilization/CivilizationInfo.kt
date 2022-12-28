@@ -1002,7 +1002,11 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
         if (isMajorCiv()) greatPeople.addGreatPersonPoints(getGreatPersonPointsForNextTurn()) // City-states don't get great people!
 
-        for (city in cities.toList()) { // a city can be removed while iterating (if it's being razed) so we need to iterate over a copy
+        // To handle tile's owner issue (#8246), we need to run being razed city first.
+        for (city in sequence {
+            yieldAll(cities.filter { it.isBeingRazed })
+            yieldAll(cities.filterNot { it.isBeingRazed })
+        }) {
             city.endTurn()
         }
 
