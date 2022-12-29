@@ -146,6 +146,16 @@ object UnitAutomation {
         if (unit.isCivilian()) {
             if (tryRunAwayIfNeccessary(unit)) return
 
+            if (unit.currentTile.isCityCenter() && unit.currentTile.getCity()!!.isCapital()
+                    && !unit.hasUnique(UniqueType.AddInCapital) && unit.civInfo.getCivUnits().any { unit.hasUnique(UniqueType.AddInCapital) }){
+                // First off get out of the way, then decide if you actually want to do something else
+                val tilesCanMoveTo = unit.movement.getDistanceToTiles()
+                    .filter { unit.movement.canMoveTo(it.key) }
+                if (tilesCanMoveTo.isNotEmpty())
+                    unit.movement.moveToTile(tilesCanMoveTo.minBy { it.value.totalDistance }.key)
+            }
+
+
             if (unit.hasUnique(UniqueType.FoundCity))
                 return SpecificUnitAutomation.automateSettlerActions(unit)
 
