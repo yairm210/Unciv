@@ -1,0 +1,24 @@
+
+
+AI considers capital city strength when deciding whether to attack - to avoid civs declaring war on a single city they can't possibly take
+
+AI moves other civilians off the capital to make way for spaceship parts
+
+Revert "Demographics removed - resolves "
+
+By vegeta1k95:
+- Fix PolicyScreen branches positioning  ()
+- Fixed TechButton progress-bar padding, less rounded corners for buttons. 
+- Added WLTKD status icon 
+- Big rework of City plates 
+
+By CrispyXYZ:
+- Show CrashScreen instead of quit when crash on Android 
+- Check non-null when removing road (fix ) 
+- Fix translation of policy branch name 
+
+Some tile still has owner after city has been razed.  - By nacro711072
+
+Negative stats UI Updates  - By itanasi
+
+Add checkbox to Settings AdvancedTab to enable or disable easter eggs.  - By FiretronP75
