@@ -732,12 +732,13 @@ object NextTurnAutomation {
         val closestCities = getClosestCities(civInfo, otherCiv) ?: return 0
         val baseForce = 30f
 
-        val ourCombatStrength = civInfo.getStatForRanking(RankingType.Force).toFloat() + baseForce
-        var theirCombatStrength = otherCiv.getStatForRanking(RankingType.Force).toFloat() + baseForce
+        val ourCombatStrength = civInfo.getStatForRanking(RankingType.Force).toFloat() + baseForce + CityCombatant(civInfo.getCapital()!!).getCityStrength()
+        var theirCombatStrength = otherCiv.getStatForRanking(RankingType.Force).toFloat() + baseForce + CityCombatant(otherCiv.getCapital()!!).getCityStrength()
 
         //for city-states, also consider their protectors
         if (otherCiv.isCityState() and otherCiv.getProtectorCivs().isNotEmpty()) {
-            theirCombatStrength += otherCiv.getProtectorCivs().filterNot { it == civInfo }.sumOf{it.getStatForRanking(RankingType.Force)}
+            theirCombatStrength += otherCiv.getProtectorCivs().filterNot { it == civInfo }
+                .sumOf { it.getStatForRanking(RankingType.Force) }
         }
 
         if (theirCombatStrength > ourCombatStrength) return 0
