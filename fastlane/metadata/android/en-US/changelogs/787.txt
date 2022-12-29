@@ -1,24 +1,17 @@
+AI moves civilians off capital to make way for spaceship parts
 
-
-AI considers capital city strength when deciding whether to attack - to avoid civs declaring war on a single city they can't possibly take
-
-AI moves other civilians off the capital to make way for spaceship parts
-
-Revert "Demographics removed - resolves "
+AI considers capital city strength when deciding to declare war
 
 By vegeta1k95:
-- Fix PolicyScreen branches positioning  ()
-- Fixed TechButton progress-bar padding, less rounded corners for buttons. 
-- Added WLTKD status icon 
-- Big rework of City plates 
+- Big rework of City buttons
+- Fix PolicyScreen for odd-numbered branches
+- Better tech buttons
 
 By CrispyXYZ:
-- Show CrashScreen instead of quit when crash on Android 
-- Check non-null when removing road (fix ) 
-- Fix translation of policy branch name 
+- Fixed removing improvements in map editor
 
-Some tile still has owner after city has been razed.  - By nacro711072
+Solved 'tiles still belonging to razed cities' - By nacro711072
 
-Negative stats UI Updates  - By itanasi
+Negative stats UI Updates - By itanasi
 
-Add checkbox to Settings AdvancedTab to enable or disable easter eggs.  - By FiretronP75
+Add setting to disable easter eggs. - By FiretronP75
