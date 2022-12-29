@@ -12,7 +12,7 @@ Base tile icons for the "Fantasy Hex" tileset belong to CuddlyClover @ https://c
 
 Tile improvements and units, as well as the terrains and improvements for HexaRealm tileset, are made by The Bucketeer / @GeneralWadaling and are licenced under Creative Commons 3.0
 
-Units for the Hexarealm tileset are made by @letstalkaboutdune
+Units for the AbsoluteUnits unitset are made by [letstalkaboutdune](https://github.com/letstalkaboutdune)
 
 Unless otherwise specified, all the following are from [the Noun Project](https://thenounproject.com) licenced under either Creative Commons or Public Domain
 
@@ -791,9 +791,10 @@ Sounds are from FreeSound.org unless otherwise noted and are either Creative Com
 - [Tank reload](https://freesound.org/people/KieranKeegan/sounds/418882/) By KieranKeegan as 'setup' for siege unit setup
 - [Scribble_short](https://freesound.org/people/waldram/sounds/257518/) By waldram as 'policy' for adopting policies
 - [Hit Impact](https://freesound.org/people/Mrguff/sounds/369711/) by Mrguff as 'throw' for catapult & trebuchet attacks
-- [Slingshot fly by 2](https://freesound.org/people/saturdaysoundguy/sounds/394186/) by saturdaysoundguy as 'arrow' for arrow attacks
+- [Arrow Impact](https://pixabay.com/sound-effects/arrow-impact-87260/) by Twisted Euphoria on Pixabay as 'arrow' for arrow attacks (Pixabay License)
+- [Crossbow Firing](https://pixabay.com/sound-effects/crossbow-firing-95020/) by GameWithBepis on Pixabay as 'crossbow' for crossbow attacks (Pixabay License)
 - [Metal hit slide](https://freesound.org/people/orginaljun/sounds/149102/) by orginaljun as 'nonmetalhit' for pre-metal melee sounds
-- [klick_anlauf](https://freesound.org/people/jascha/sounds/16576/) By jascha as 'metalhit' for metal melee sounds
+- [wpn 1 generic](https://pixabay.com/sound-effects/wpn-1-generic-100027/) By SlavicMagic on Pixabay as 'metalhit' for metal melee sounds (Pixabay License)
 - [Horse's whinny](https://freesound.org/people/Kubuzz/sounds/347036/) By Kubuzz as 'horse' for cavalry attack sounds
 - [machine gun 001 - loop](https://freesound.org/people/pgi/sounds/212602/) By pgi as 'machinegun' for machine gun attack sound
 - [uzzi_full_single](https://freesound.org/people/Deganoth/sounds/348685/) By Deganoth as 'shot' for bullet attacks
