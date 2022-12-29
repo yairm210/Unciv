@@ -45,8 +45,8 @@
 		"startBias": ["Coast"],
 		"preferredVictoryType":"Diplomatic",
 
-		"startIntroPart1": "Great King Alexander, leader of the mighty Greek nation, you are truly blessed by the gods. By your astonishing conquests, you showed to quarrelsome city-states such as Athens, Sparta, Thebes, that union leads to greatness. Democracy, philosophy, tragedy, art and architecture spread to the world, and as one, following your example, Greece was able to defeat the mighty Persia in the 5th century BC, both on land and sea, given therefore birth to the Western Civilisation.",
-		"startIntroPart2": "Megalexandros, will you ride Bucephalas again, to gift the world with the greatness of the Greek culture? Can you forge an empire that lasts through the ages of history?",
+		"startIntroPart1": "Great King Alexander, leader of the mighty Greek nation, you are truly blessed by the gods. By your astonishing conquests, you showed once again that union leads to greatness. In the past, quarrelsome city-states such as Athens, Sparta, Thebes, found a way to join their forces, allowing Greece to defeat the mighty Persia in the 5th century BC, both on land and sea. Democracy, philosophy, tragedy, art and architecture then spread to the world, given therefore birth to the Western Civilisation.",
+		"startIntroPart2": "Megalexandros, son of Zeus, will you ride Bucephalas again, to gift the world with the greatness of the Greek culture? Can you forge an empire that lasts through the ages of history?",
 
 		"declaringWar": "You are in my way, you must be destroyed.",
 		"attacked": "As a matter of fact I too grow weary of peace.",
@@ -595,7 +595,7 @@
 		"startBias": ["Avoid [Tundra]"],
 		"preferredVictoryType": "Domination",
 
-        "startIntroPart1": "Askia, leader of the Songhai people and greatest of all, may God watch your path towards glory! Songhai was under the rule of the mighty West African state of Mali until the middle of the 14th century. Great King Sunni Ali Ber fought for independence, and showed to all Songhai's power, by conquering territories and repelling many foes who sought to destroy the rising kingdom. Ultimately, conquest of Timbuktu and Jenne wealthy cities made from Songhai an empire with enough economic power to survive for a century, until the empire bow down before foes with advanced technology - muskets against spearmen.",
+        "startIntroPart1": "Askia, leader of the Songhai people and greatest of all, may God watch your path towards glory! Songhai was under the rule of the mighty West African state of Mali until the middle of the 14th century. Great King Sunni Ali Ber fought for independance, and showed to all Songhai's power, by conquering territories and repelling many foes who sought to destroy the rising kingdom. Ultimately, conquest of Timbuktu and Jenne wealthy cities made from Songhai an empire with enough economic power to survive for a century, until the empire bow down before foes with advanced technology - muskets against spearmen.",
         "startIntroPart2": "King Askia, your people know there's still hope, that the hour of revenge is coming. Give them wealth and power, give them mighty weapons, to destroy any foe, for Songhai to revive! Can you forge an empire that lasts through the ages of history?",
 
         "declaringWar": "You are an abomination to heaven and earth, the chief of ignorant savages! You must be destroyed!",
