@@ -696,6 +696,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [Footprints](https://thenounproject.com/icon/footprints-1393611/) by Abdul Wahhab for movement overlay toggle, slightly modified. Currently unused.
 - Arrows.svg by Intralexical (@will-ca), CC0.
 - [favor](https://thenounproject.com/icon/favor-1029350/) by MICHAEL G BROWN for WLTK marker on City Overview
+- WLTKD by [vegeta1k95](https://github.com/vegeta1k95) based on [favor](https://thenounproject.com/icon/favor-1029350/) by MICHAEL G BROWN for WLTKD status icon
 - [Party](https://thenounproject.com/icon/party-1784941/) by Adrien Coquet for WLTK header on City Overview
 - [Party](https://thenounproject.com/icon/party-2955155/) by Lars Meiertoberens as additional WLKT decoration
 - [spy](https://thenounproject.com/icon/spy-2905374/) by Vectorstall for Spy
