@@ -38,22 +38,20 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
         setAlignment(Align.right)
     }
     var orderIndicator: IconCircleGroup? = null
-    var bg = Image(BaseScreen.skinStrings.getUiBackground("TechPickerScreen/TechButton", BaseScreen.skinStrings.roundedEdgeRectangleShape))
+    var bg = Image(BaseScreen.skinStrings.getUiBackground("TechPickerScreen/TechButton", BaseScreen.skinStrings.roundedEdgeRectangleMidShape))
 
     init {
         touchable = Touchable.enabled
-        background = BaseScreen.skinStrings.getUiBackground("TechPickerScreen/TechButton", BaseScreen.skinStrings.roundedEdgeRectangleShape,
+        background = BaseScreen.skinStrings.getUiBackground("TechPickerScreen/TechButton", BaseScreen.skinStrings.roundedEdgeRectangleMidShape,
             tintColor = Color.WHITE.darken(0.3f))
 
         bg.toBack()
         addActor(bg)
 
-        pad(0f).padBottom(5f).padTop(5f).padLeft(5f).padRight(5f)
+        pad(0f).padBottom(5f).padTop(5f).padLeft(5f).padRight(0f)
 
         if (ImageGetter.techIconExists(techName))
-            add(ImageGetter.getTechIconGroup(techName, 45f)).padRight(5f).left()
-
-        val rightSide = Table()
+            add(ImageGetter.getTechIconGroup(techName, 46f)).padRight(5f).padLeft(2f).left()
 
         if (isWorldScreen) {
             val techCost = techManager.costOfTech(techName)
@@ -62,14 +60,17 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
 
             val percentComplete = (techCost - remainingTech) / techCost.toFloat()
             val percentWillBeComplete = (techCost - (remainingTech-techThisTurn)) / techCost.toFloat()
-            val progressBar = ImageGetter.ProgressBar(2f, 50f, true)
+            val progressBar = ImageGetter.ProgressBar(2f, 48f, true)
                     .setBackground(Color.WHITE)
                     .setSemiProgress(Color.BLUE.brighten(0.3f), percentWillBeComplete)
                     .setProgress(Color.BLUE.darken(0.5f), percentComplete)
-            add(progressBar.addBorder(1f, Color.GRAY)).pad(10f)
+            add(progressBar.addBorder(1f, Color.GRAY)).padLeft(0f).padRight(5f)
         }
-        rightSide.add(text).width(145f).top().left().padRight(15f)
-        rightSide.add(turns).width(40f).top().right().padRight(10f).row()
+
+        val rightSide = Table()
+
+        rightSide.add(text).width(140f).top().left().padRight(15f)
+        rightSide.add(turns).width(40f).top().left().padRight(10f).row()
 
         addTechEnabledIcons(techName, isWorldScreen, rightSide)
 
@@ -93,7 +94,7 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
         val techEnabledIcons = Table().align(Align.left)
         techEnabledIcons.background = BaseScreen.skinStrings.getUiBackground(
             "TechPickerScreen/TechButtonIconsOutline",
-            BaseScreen.skinStrings.rectangleWithOutlineShape,
+            BaseScreen.skinStrings.roundedEdgeRectangleSmallShape,
             tintColor = Color.BLACK.cpy().apply { a = 0.7f }
         )
         techEnabledIcons.pad(0f).padLeft(10f).padTop(2f).padBottom(2f)
