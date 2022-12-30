@@ -18,7 +18,7 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
 
     private val mapParameters = newGameScreen.gameSetupInfo.mapParameters
     private var mapTypeSpecificTable = Table()
-    val generatedMapOptionsTable = MapParametersTable(mapParameters)
+    var generatedMapOptionsTable = MapParametersTable(mapParameters)
     private val savedMapOptionsTable = Table()
     lateinit var mapTypeSelectBox: TranslatedSelectBox
     private val mapFileSelectBox = createMapFileSelectBox()
@@ -40,7 +40,7 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
     }
 
     private fun addMapTypeSelection() {
-        val mapTypes = arrayListOf("Generated")
+        val mapTypes = arrayListOf(MapType.generated, MapType.randomGenerated)
         if (mapFilesSequence.any()) mapTypes.add(MapType.custom)
         mapTypeSelectBox = TranslatedSelectBox(mapTypes, "Generated", BaseScreen.skin)
 
@@ -63,7 +63,8 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
                 newGameScreen.unlockTables()
             } else { // generated map
                 mapParameters.name = ""
-                mapParameters.type = generatedMapOptionsTable.mapTypeSelectBox.selected.value
+                mapParameters.type = mapTypeSelectBox.selected.value
+                generatedMapOptionsTable = MapParametersTable(mapParameters)
                 mapTypeSpecificTable.add(generatedMapOptionsTable)
                 newGameScreen.unlockTables()
             }

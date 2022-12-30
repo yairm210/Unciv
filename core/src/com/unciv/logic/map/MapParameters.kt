@@ -141,6 +141,11 @@ object MapType : IsPartOfGameInfoSerialization {
     // Cellular automata style
     const val smoothedRandom = "Smoothed Random"
 
+    const val generated = "Generated"
+
+    // Randomly choose a generated map type
+    const val randomGenerated = "Random Generated"
+
     // Non-generated maps
     const val custom = "Custom"
 
