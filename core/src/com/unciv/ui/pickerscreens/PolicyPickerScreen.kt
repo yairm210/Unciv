@@ -325,7 +325,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
 
         val exclusive = ArrayList<String>()
         branch.uniqueMap[UniqueType.OnlyAvailableWhen.text]?.forEach {
-            it.conditionals.forEach { exclusive += it.params }
+            it.conditionals.forEach { exclusive += it.params.toString().tr() }
         }
 
         if (exclusive.isNotEmpty()) {
