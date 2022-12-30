@@ -446,13 +446,17 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
                     continue
 
                 val prereqButton = policyNameToButton[prereqName]
-                drawLine(group,
-                    // Top center
-                    policyButton.x+policyButton.width/2,
-                    policyButton.y+policyButton.height,
-                    // Bottom center
-                    prereqButton!!.x + prereqButton.width/2,
-                    prereqButton.y)
+                if (prereqButton != null) {
+                    drawLine(
+                        group,
+                        // Top center
+                        policyButton.x + policyButton.width / 2,
+                        policyButton.y + policyButton.height,
+                        // Bottom center
+                        prereqButton.x + prereqButton.width / 2,
+                        prereqButton.y
+                    )
+                }
             }
 
         }
