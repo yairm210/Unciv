@@ -14,6 +14,8 @@ Tile improvements and units, as well as the terrains and improvements for HexaRe
 
 Units for the AbsoluteUnits unitset are made by [letstalkaboutdune](https://github.com/letstalkaboutdune)
 
+Promotional trailer for Steam and other storefronts made by [letstalkaboutdune](https://github.com/letstalkaboutdune)
+
 Unless otherwise specified, all the following are from [the Noun Project](https://thenounproject.com) licenced under either Creative Commons or Public Domain
 
 ### Stat icons
@@ -834,3 +836,12 @@ Sounds are from FreeSound.org unless otherwise noted and are either Creative Com
 
 The following music is from https://filmmusic.io
 "[Thatched Villagers](https://incompetech.filmmusic.io/song/4481-thatched-villagers)" by Kevin MacLeod (https://incompetech.com)
+
+## Trailer audio
+
+The following audio is from https://pixabay.com/ [Pixabay License](https://pixabay.com/service/terms/#license)
+-   [Beyond New Horizons - Free Epic Viking Medieval Soundtrack](https://pixabay.com/music/main-title-beyond-new-horizons-free-epic-viking-medieval-soundtrack-22081/) by GioeleFazzeri for background music
+-   [Beep 6](https://pixabay.com/sound-effects/beep-6-96243/) by Eponn for beep in Cross-Platform Play section
+-   [Cinematic Boom](https://pixabay.com/sound-effects/cinematic-boom-6872/ by Rizzard for final boom
+-   [Cymbal Swell 2](https://pixabay.com/sound-effects/cymbal-swell-2-74766/) by rubberduckie for cymbal swells
+-   [hit of orchestral cymbals and bass drum](https://pixabay.com/sound-effects/hit-of-orchestral-cymbals-and-bass-drum-14471/) by Selector for intro crash
