@@ -842,6 +842,6 @@ The following music is from https://filmmusic.io
 The following audio is from https://pixabay.com/ [Pixabay License](https://pixabay.com/service/terms/#license)
 -   [Beyond New Horizons - Free Epic Viking Medieval Soundtrack](https://pixabay.com/music/main-title-beyond-new-horizons-free-epic-viking-medieval-soundtrack-22081/) by GioeleFazzeri for background music
 -   [Beep 6](https://pixabay.com/sound-effects/beep-6-96243/) by Eponn for beep in Cross-Platform Play section
--   [Cinematic Boom](https://pixabay.com/sound-effects/cinematic-boom-6872/ by Rizzard for final boom
+-   [Cinematic Boom](https://pixabay.com/sound-effects/cinematic-boom-6872/) by Rizzard for final boom
 -   [Cymbal Swell 2](https://pixabay.com/sound-effects/cymbal-swell-2-74766/) by rubberduckie for cymbal swells
 -   [hit of orchestral cymbals and bass drum](https://pixabay.com/sound-effects/hit-of-orchestral-cymbals-and-bass-drum-14471/) by Selector for intro crash
