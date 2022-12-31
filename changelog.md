@@ -28,7 +28,7 @@ Units passed with 'next unit' are not returned to
 
 By vegeta1k95:
 - Corrected some Civilization colors
-- Fix perpetual constructions info  ()
+- Fix perpetual constructions info
 - Civ 5-style unit selection and cycling behaviour, "Wait" action
 
 fix translation problem in policy screen  - By CrispyXYZ
