@@ -323,17 +323,36 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         label.wrap = true
         labelTable.add(label).pad(7f,20f, 10f, 20f).grow().row()
 
-        val exclusive = ArrayList<String>()
+        val beforePolicy = ArrayList<String>()
+        val afterPolicy = ArrayList<String>()
+
         branch.uniqueMap[UniqueType.OnlyAvailableWhen.text]?.forEach {
-            it.conditionals.forEach { exclusive += it.params.toString().tr() }
+            it.conditionals.forEach {
+                if (it.type == UniqueType.ConditionalNoPolicy)
+                    beforePolicy += it.params.toString().tr()
+                else if (it.type == UniqueType.ConditionalPolicy)
+                    afterPolicy += it.params.toString().tr()
+                else if (it.type == UniqueType.ConditionalBuildingBuilt)
+                    afterPolicy += it.params.toString().tr()
+            }
         }
 
-        if (exclusive.isNotEmpty()) {
-            val forbidden = ("{Cannot be adopted together with} " + exclusive.joinToString()).toLabel(Color.RED, 13)
-            forbidden.setFillParent(false)
-            forbidden.setAlignment(Align.topLeft)
-            forbidden.wrap = true
-            labelTable.add(forbidden).pad(0f, 20f, 17f, 20f).grow()
+        var warning = ""
+
+        if (beforePolicy.isNotEmpty())
+            warning += ("{Cannot be adopted together with} " + beforePolicy.joinToString())
+        if (afterPolicy.isNotEmpty()) {
+            if (warning.isNotEmpty())
+                warning += "\n"
+            warning += ("{Cannot be adopted before} " + afterPolicy.joinToString())
+        }
+
+        if (warning.isNotEmpty()) {
+            val warningLabel = warning.toLabel(Color.RED, 13)
+            warningLabel.setFillParent(false)
+            warningLabel.setAlignment(Align.topLeft)
+            warningLabel.wrap = true
+            labelTable.add(warningLabel).pad(0f, 20f, 17f, 20f).grow()
         }
 
         // Top button
