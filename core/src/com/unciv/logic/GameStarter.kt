@@ -157,7 +157,7 @@ object GameStarter {
     private fun addCivTechs(gameInfo: GameInfo, ruleset: Ruleset, gameSetupInfo: GameSetupInfo) {
         for (civInfo in gameInfo.civilizations.filter { !it.isBarbarian() }) {
 
-            if (!civInfo.isPlayerCivilization())
+            if (!civInfo.isHuman())
                 for (tech in gameInfo.getDifficulty().aiFreeTechs)
                     civInfo.tech.addTechnology(tech)
 
@@ -330,7 +330,7 @@ object GameStarter {
 
             // Add extra units granted by difficulty
             startingUnits.addAll(when {
-                civ.isPlayerCivilization() -> gameInfo.getDifficulty().playerBonusStartingUnits
+                civ.isHuman() -> gameInfo.getDifficulty().playerBonusStartingUnits
                 civ.isMajorCiv() -> gameInfo.getDifficulty().aiMajorCivBonusStartingUnits
                 else -> gameInfo.getDifficulty().aiCityStateBonusStartingUnits
             })

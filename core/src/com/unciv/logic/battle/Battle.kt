@@ -548,7 +548,7 @@ object Battle {
             // retaking old capital
             city.puppetCity(attackerCiv)
             city.annexCity()
-        } else if (attackerCiv.isPlayerCivilization()) {
+        } else if (attackerCiv.isHuman()) {
             // we're not taking our former capital
             attackerCiv.popupAlerts.add(PopupAlert(AlertType.CityConquered, city.id))
         } else {

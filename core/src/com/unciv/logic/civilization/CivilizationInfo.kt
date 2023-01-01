@@ -313,7 +313,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
     //region pure functions
     fun getDifficulty(): Difficulty {
-        if (isPlayerCivilization()) return gameInfo.getDifficulty()
+        if (isHuman()) return gameInfo.getDifficulty()
         // TODO We should be able to mark a difficulty as 'default AI difficulty' somehow
         val chieftainDifficulty = gameInfo.ruleSet.difficulties["Chieftain"]
         if (chieftainDifficulty != null) return chieftainDifficulty
@@ -347,7 +347,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
                 .thenBy (UncivGame.Current.settings.getCollatorFromLocale()) { it.civName.tr() }
         )
     fun getCapital() = cities.firstOrNull { it.isCapital() }
-    fun isPlayerCivilization() = playerType == PlayerType.Human
+    fun isHuman() = playerType == PlayerType.Human
     fun isOneCityChallenger() = (
             playerType == PlayerType.Human &&
                     gameInfo.gameParameters.oneCityChallenge)
@@ -1234,7 +1234,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         if (diplomacyManager != null && (diplomacyManager.hasOpenBorders || diplomacyManager.diplomaticStatus == DiplomaticStatus.War))
             return true
         // Players can always pass through city-state tiles
-        if (isPlayerCivilization() && otherCiv.isCityState()) return true
+        if (isHuman() && otherCiv.isCityState()) return true
         return false
     }
 

@@ -67,7 +67,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         var cost = baseUnitCost * numberOfUnitsToPayFor * (1 + gameProgress)
         cost = cost.pow(1 + gameProgress / 3) // Why 3? To spread 1 to 1.33
 
-        if (!civInfo.isPlayerCivilization())
+        if (!civInfo.isHuman())
             cost *= civInfo.gameInfo.getDifficulty().aiUnitMaintenanceModifier
 
         return cost.toInt()

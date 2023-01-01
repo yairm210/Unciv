@@ -809,7 +809,7 @@ class PathfindingCache(private val unit: MapUnit) {
     private fun isValid(): Boolean = (movement == unit.currentMovement) && (unit.getTile() == currentTile)
 
     fun getShortestPathCache(destination: TileInfo): List<TileInfo> {
-        if (unit.civInfo.isPlayerCivilization()) return listOf()
+        if (unit.civInfo.isHuman()) return listOf()
         if (isValid() && this.destination == destination) {
             return shortestPathCache
         }
@@ -817,7 +817,7 @@ class PathfindingCache(private val unit: MapUnit) {
     }
 
     fun setShortestPathCache(destination: TileInfo, newShortestPath: List<TileInfo>) {
-        if (unit.civInfo.isPlayerCivilization()) return
+        if (unit.civInfo.isHuman()) return
         if (isValid()) {
             shortestPathCache = newShortestPath
             this.destination = destination
@@ -825,14 +825,14 @@ class PathfindingCache(private val unit: MapUnit) {
     }
 
     fun getDistanceToTiles(zoneOfControl: Boolean): PathsToTilesWithinTurn? {
-        if (unit.civInfo.isPlayerCivilization()) return null
+        if (unit.civInfo.isHuman()) return null
         if (isValid())
             return distanceToTilesCache[zoneOfControl]
         return null
     }
 
     fun setDistanceToTiles(zoneOfControl: Boolean, paths: PathsToTilesWithinTurn) {
-        if (unit.civInfo.isPlayerCivilization()) return
+        if (unit.civInfo.isHuman()) return
         if (!isValid()) {
             clear() // we want to reset the entire cache at this point
         }

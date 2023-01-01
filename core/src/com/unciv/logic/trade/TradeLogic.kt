@@ -98,7 +98,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                     city.getCenterTile().getUnits().toList().forEach { it.movement.teleportToClosestMoveableTile() }
                     for (tile in city.getTiles()) {
                         for (unit in tile.getUnits().toList()) {
-                            if (!unit.civInfo.canPassThroughTiles(to) && !unit.canEnterForeignTerrain) 
+                            if (!unit.civInfo.canPassThroughTiles(to) && !unit.canEnterForeignTerrain)
                                 unit.movement.teleportToClosestMoveableTile()
                         }
                     }
@@ -106,7 +106,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                     from.updateViewableTiles()
 
                     // suggest an option to liberate the city
-                    if (to.isPlayerCivilization()
+                    if (to.isHuman()
                         && city.foundingCiv != ""
                         && from.civName != city.foundingCiv // can't liberate if the city actually belongs to those guys
                         && to.civName != city.foundingCiv)  // can't liberate if it's our city

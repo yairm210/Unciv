@@ -259,7 +259,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         //check is important or else switchTurn
         //would skip a turn if an AI civ calls nextTurn
         //this happens when resigning a multiplayer game
-        if (thisPlayer.isPlayerCivilization()) {
+        if (thisPlayer.isHuman()) {
             endTurn()
         }
 
@@ -483,7 +483,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         tileMap.setTransients(ruleSet)
 
-        if (currentPlayer == "") currentPlayer = civilizations.first { it.isPlayerCivilization() }.civName
+        if (currentPlayer == "") currentPlayer = civilizations.first { it.isHuman() }.civName
         currentPlayerCiv = getCivilization(currentPlayer)
 
         difficultyObject = ruleSet.difficulties[difficulty]!!

@@ -48,7 +48,7 @@ class PopulationManager : IsPartOfGameInfoSerialization {
         var foodRequired = 15 + 6 * (population - 1) + floor((population - 1).toDouble().pow(1.8))
         if (cityInfo.civInfo.isCityState())
             foodRequired *= 1.5f
-        if (!cityInfo.civInfo.isPlayerCivilization())
+        if (!cityInfo.civInfo.isHuman())
             foodRequired *= cityInfo.civInfo.gameInfo.getDifficulty().aiCityGrowthModifier
         return foodRequired.toInt()
     }
