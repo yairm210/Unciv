@@ -706,7 +706,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         if (firstUnit != null && unit.civInfo != firstUnit.civInfo) {
             // Allow movement through unguarded, at-war Civilian Unit. Capture on the way
             // But not for Embarked Units capturing on Water
-            if (!(unit.isEmbarked() && tile.isWater)
+            if (!(unit.baseUnit.isLandUnit() && tile.isWater)
                     && firstUnit.isCivilian() && unit.civInfo.isAtWarWith(firstUnit.civInfo))
                 return true
             // Cannot enter hostile tile with any unit in there
