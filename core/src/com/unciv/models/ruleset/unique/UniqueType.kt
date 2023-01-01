@@ -389,7 +389,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     NoMovementToPillage("No movement cost to pillage", UniqueTarget.Unit, UniqueTarget.Global),
     CanMoveAfterAttacking("Can move after attacking", UniqueTarget.Unit),
-    TransferMovement("Transfer Movement to [unit]", UniqueTarget.Unit),
+    TransferMovement("Transfer Movement to [mapUnitFilter]", UniqueTarget.Unit),
     MoveImmediatelyOnceBought("Can move immediately once bought", UniqueTarget.Unit),
     MayParadrop("May Paradrop up to [amount] tiles from inside friendly territory", UniqueTarget.Unit),
 

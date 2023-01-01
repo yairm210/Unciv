@@ -455,10 +455,14 @@ class RulesetValidator(val ruleset: Ruleset) {
 
         val typeComplianceErrors = unique.type.getComplianceErrors(unique, ruleset)
         for (complianceError in typeComplianceErrors) {
-            if (complianceError.errorSeverity == severityToReport)
-                rulesetErrors += "$name's unique \"${unique.text}\" contains parameter ${complianceError.parameterName}," +
+            // TODO: Make this Error eventually, this is Not Good
+            if (complianceError.errorSeverity <= severityToReport)
+                rulesetErrors.add(RulesetError("$name's unique \"${unique.text}\" contains parameter ${complianceError.parameterName}," +
                         " which does not fit parameter type" +
-                        " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !"
+                        " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
+                    RulesetErrorSeverity.Warning
+                )
+                )
         }
 
         for (conditional in unique.conditionals) {

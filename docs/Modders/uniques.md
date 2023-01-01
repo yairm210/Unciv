@@ -1080,8 +1080,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Can move after attacking"
 	Applicable to: Unit
 
-??? example  "Transfer Movement to [unit]"
-	Example: "Transfer Movement to [Musketman]"
+??? example  "Transfer Movement to [mapUnitFilter]"
+	Example: "Transfer Movement to [Wounded]"
 
 	Applicable to: Unit
 
