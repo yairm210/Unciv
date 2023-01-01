@@ -461,8 +461,7 @@ class RulesetValidator(val ruleset: Ruleset) {
                         " which does not fit parameter type" +
                         " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
                     RulesetErrorSeverity.Warning
-                )
-                )
+                ))
         }
 
         for (conditional in unique.conditionals) {

@@ -1,0 +1,21 @@
+
+
+Validate unique parameters for mods
+
+Display protecting civs for city-states
+
+Resolved  - units check if they can capture enemy units by whether they *will* be embarked, not by whether they *are* embarked
+
+Rename isPlayerCivilization -> isHuman
+
+4.3.14-patch1
+
+By letstalkaboutdune:
+- Added credits for trailer 
+- SFX Update - Arrow, Crossbow (New), Metal Hit 
+
+Fixed crash when policy prerequisite is a branch  - By vegeta1k95
+
+Fix another untranslated String in Policy Screen  - By CrispyXYZ
+
+added buttons for controlling music  - By alexban011
