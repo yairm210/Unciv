@@ -228,12 +228,12 @@ class DiplomacyScreen(
 
         val protectors = otherCiv.getProtectorCivs()
         if (protectors.isNotEmpty()) {
-            val newProtectors = listOf<String>()
+            val newProtectors = arrayListOf<String>()
             for (protector in protectors) {
                 if (!viewingCiv.knows(protector) && protector.civName != viewingCiv.civName)
-                    newProtectors.plus("Unknown civilization".tr())
+                    newProtectors.add("Unknown civilization".tr())
                 else
-                    newProtectors.plus(protector.civName.tr())
+                    newProtectors.add(protector.civName.tr())
             }
             val protectorString = "{Protected by}: " + newProtectors.joinToString(", ")
             diplomacyTable.add(protectorString.toLabel()).row()
