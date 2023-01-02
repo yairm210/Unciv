@@ -293,14 +293,25 @@ class MapParametersTable(
     }
 
     private fun addWrappedCheckBoxes() {
-        add(Table(skin).apply {
-            defaults().left().pad(2.5f)
-            addNoRuinsCheckbox()
-            addNoNaturalWondersCheckbox()
-            addWorldWrapCheckbox()
-        }).colspan(2).center().row()
-        add("World wrap maps are very memory intensive - creating large world wrap maps on Android can lead to crashes!"
-            .toLabel(fontSize = 14).apply { wrap=true }).colspan(2).fillX().row()
+        if (mapParameters.type === MapType.randomGenerated) {
+            add(ExpanderTab("{Other Settings}:", persistenceID = "NewGameOtherSettings") {
+                it.defaults().pad(5f,0f)
+                it.addNoRuinsCheckbox()
+                it.addNoNaturalWondersCheckbox()
+                it.addWorldWrapCheckbox()
+                it.add("World wrap maps are very memory intensive - creating large world wrap maps on Android can lead to crashes!"
+                    .toLabel(fontSize = 14).apply { wrap=true }).colspan(2).fillX().row()
+            }).padTop(16f).growX().row()
+        } else {
+            add(Table(skin).apply {
+                defaults().left().pad(2.5f)
+                addNoRuinsCheckbox()
+                addNoNaturalWondersCheckbox()
+                addWorldWrapCheckbox()
+            }).colspan(2).center().row()
+            add("World wrap maps are very memory intensive - creating large world wrap maps on Android can lead to crashes!"
+                .toLabel(fontSize = 14).apply { wrap=true }).colspan(2).fillX().row()
+        }
     }
 
     private fun addAdvancedSettings() {
