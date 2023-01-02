@@ -339,7 +339,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         if (conditionals.isNotEmpty()) {
             var warning = UniqueType.OnlyAvailableWhen.text + ":\n"
             for ((k, v) in conditionals) {
-                warning += "• " + k.text.tr().fillPlaceholders(v.joinToString()) + "\n"
+                warning += "• " + k.text.fillPlaceholders(v.joinToString()) + "\n"
             }
             val warningLabel = warning.toLabel(Color.RED, 13)
             warningLabel.setFillParent(false)

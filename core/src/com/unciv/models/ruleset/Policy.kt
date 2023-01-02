@@ -4,8 +4,10 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
+import com.unciv.utils.Log
 
 open class Policy : RulesetObject() {
     lateinit var branch: PolicyBranch // not in json - added in gameBasics
@@ -34,7 +36,10 @@ open class Policy : RulesetObject() {
     /** Used in PolicyPickerScreen to display Policy properties */
     fun getDescription(): String {
         var text = uniques
-            .filter { !it.contains(UniqueType.OnlyAvailableWhen.text) }
+            .filter {
+                !it.getPlaceholderText().contains(UniqueType.OnlyAvailableWhen.placeholderText) &&
+                !it.getPlaceholderText().contains(UniqueType.OneTimeGlobalAlert.placeholderText)
+            }
             .joinToString("\n", transform = { "• ${it.tr()}" })
         if (policyBranchType != PolicyBranchType.BranchStart
                 && policyBranchType != PolicyBranchType.BranchComplete)
