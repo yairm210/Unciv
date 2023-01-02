@@ -15,6 +15,7 @@ import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Policy.PolicyBranchType
 import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.ConfirmPopup
@@ -219,6 +220,8 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         if (numBranchesY > 1.5f) {
             val numRows = if (numBranchesY < 2.9f) 2 else (numBranchesY + 0.1f).toInt()
             rowChangeCount = (branches.size + numRows - 1) / numRows
+        } else {
+            rowChangeCount = branches.size
         }
 
 
@@ -323,17 +326,28 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         label.wrap = true
         labelTable.add(label).pad(7f,20f, 10f, 20f).grow().row()
 
-        val exclusive = ArrayList<String>()
+        val conditionals = LinkedHashMap<UniqueType, ArrayList<String>>()
+
         branch.uniqueMap[UniqueType.OnlyAvailableWhen.text]?.forEach {
-            it.conditionals.forEach { exclusive += it.params.toString().tr() }
+            it.conditionals.forEach {
+                if (it.type != null) {
+                    if (conditionals[it.type] == null)
+                        conditionals[it.type] = ArrayList()
+                    conditionals[it.type]!!.add(it.params.toString().tr())
+                }
+            }
         }
 
-        if (exclusive.isNotEmpty()) {
-            val forbidden = ("{Cannot be adopted together with} " + exclusive.joinToString()).toLabel(Color.RED, 13)
-            forbidden.setFillParent(false)
-            forbidden.setAlignment(Align.topLeft)
-            forbidden.wrap = true
-            labelTable.add(forbidden).pad(0f, 20f, 17f, 20f).grow()
+        if (conditionals.isNotEmpty()) {
+            var warning = UniqueType.OnlyAvailableWhen.text.tr() + ":\n"
+            for ((k, v) in conditionals) {
+                warning += "• " + k.text.fillPlaceholders(v.joinToString()).tr() + "\n"
+            }
+            val warningLabel = warning.toLabel(Color.RED, 13)
+            warningLabel.setFillParent(false)
+            warningLabel.setAlignment(Align.topLeft)
+            warningLabel.wrap = true
+            labelTable.add(warningLabel).pad(0f, 20f, 17f, 20f).grow()
         }
 
         // Top button
