@@ -220,6 +220,8 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         if (numBranchesY > 1.5f) {
             val numRows = if (numBranchesY < 2.9f) 2 else (numBranchesY + 0.1f).toInt()
             rowChangeCount = (branches.size + numRows - 1) / numRows
+        } else {
+            rowChangeCount = branches.size
         }
 
 
