@@ -15,6 +15,7 @@ import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Policy.PolicyBranchType
 import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.ConfirmPopup
@@ -323,31 +324,23 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         label.wrap = true
         labelTable.add(label).pad(7f,20f, 10f, 20f).grow().row()
 
-        val beforePolicy = ArrayList<String>()
-        val afterPolicy = ArrayList<String>()
+        val conditionals = LinkedHashMap<UniqueType, ArrayList<String>>()
 
         branch.uniqueMap[UniqueType.OnlyAvailableWhen.text]?.forEach {
             it.conditionals.forEach {
-                if (it.type == UniqueType.ConditionalNoPolicy)
-                    beforePolicy += it.params.toString().tr()
-                else if (it.type == UniqueType.ConditionalPolicy)
-                    afterPolicy += it.params.toString().tr()
-                else if (it.type == UniqueType.ConditionalBuildingBuilt)
-                    afterPolicy += it.params.toString().tr()
+                if (it.type != null) {
+                    if (conditionals[it.type] == null)
+                        conditionals[it.type] = ArrayList()
+                    conditionals[it.type]!!.add(it.params.toString().tr())
+                }
             }
         }
 
-        var warning = ""
-
-        if (beforePolicy.isNotEmpty())
-            warning += ("{Cannot be adopted together with} " + beforePolicy.joinToString())
-        if (afterPolicy.isNotEmpty()) {
-            if (warning.isNotEmpty())
-                warning += "\n"
-            warning += ("{Cannot be adopted before} " + afterPolicy.joinToString())
-        }
-
-        if (warning.isNotEmpty()) {
+        if (conditionals.isNotEmpty()) {
+            var warning = UniqueType.OnlyAvailableWhen.text + ":\n"
+            for ((k, v) in conditionals) {
+                warning += "• " + k.text.tr().fillPlaceholders(v.joinToString()) + "\n"
+            }
             val warningLabel = warning.toLabel(Color.RED, 13)
             warningLabel.setFillParent(false)
             warningLabel.setAlignment(Align.topLeft)
