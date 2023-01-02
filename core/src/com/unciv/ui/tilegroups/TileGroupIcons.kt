@@ -170,7 +170,7 @@ class TileGroupIcons(val tileGroup: TileGroup) {
             tileGroup.resourceImage?.remove()
             if (tileGroup.resource == null) tileGroup.resourceImage = null
             else {
-                val newResourceIcon = ImageGetter.getResourceImage(tileGroup.tileInfo.resource!!, 20f)
+                val newResourceIcon = ImageGetter.getResourceImage(tileGroup.tileInfo.resource!!, 20f,  tileGroup.tileInfo.resourceAmount)
                 newResourceIcon.center(tileGroup)
                 newResourceIcon.x = newResourceIcon.x - 22 // left
                 newResourceIcon.y = newResourceIcon.y + 10 // top
