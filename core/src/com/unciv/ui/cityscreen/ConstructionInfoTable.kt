@@ -95,7 +95,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen): Table() {
             if (construction is Building && cityConstructions.isBuilt(construction.name)
                     && construction.isSellable()) {
                 val sellAmount = cityScreen.city.getGoldForSellingBuilding(construction.name)
-                val sellText = "Sell [$sellAmount] " + Fonts.gold
+                val sellText = "{Sell} [$sellAmount] " + Fonts.gold
                 val sellBuildingButton = sellText.toTextButton()
                 row()
                 add(sellBuildingButton).padTop(5f).colspan(2).center()
