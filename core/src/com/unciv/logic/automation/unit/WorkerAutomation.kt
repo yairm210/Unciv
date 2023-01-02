@@ -386,12 +386,13 @@ class WorkerAutomation(
             tile.terrainFeatures.isNotEmpty()
                     && isUnbuildableAndRemovable(lastTerrain)
                     && !isResourceImprovementAllowedOnFeature(tile) -> Constants.remove + lastTerrain.name
-            else -> tile.tileResource.getImprovements().firstOrNull { it in potentialTileImprovements }
+            else -> tile.tileResource.getImprovements().filter { it in potentialTileImprovements || it==tile.improvement }
+                .maxByOrNull { Automation.rankStatsValue(ruleSet.tileImprovements[it]!!, unit.civInfo) }
         }
 
         val improvementString = when {
             tile.improvementInProgress != null -> tile.improvementInProgress!!
-            improvementStringForResource != null -> improvementStringForResource
+            improvementStringForResource != null -> if (improvementStringForResource==tile.improvement) null else improvementStringForResource
             // if this is a resource that HAS an improvement, but this unit can't build it, don't waste your time
             tile.resource != null && tile.tileResource.getImprovements().any() -> return null
             tile.containsGreatImprovement() -> return null
