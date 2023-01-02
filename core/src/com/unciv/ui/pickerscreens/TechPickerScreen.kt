@@ -283,36 +283,33 @@ class TechPickerScreen(
                     val halfLength = deltaX / 2f
 
                     val line = ImageGetter.getWhiteDot().apply {
-                        width = halfLength - r
+                        width = halfLength - r - lineSize/2
                         height = lineSize
                         x = prerequisiteCoords.x
-                        y = prerequisiteCoords.y - height / 2
+                        y = prerequisiteCoords.y - lineSize / 2
                     }
                     val line1 = ImageGetter.getWhiteDot().apply {
-                        width = halfLength - r
+                        width = halfLength - r - lineSize/2
                         height = lineSize
-                        x = techButtonCoords.x - halfLength + r
-                        y = techButtonCoords.y - height / 2
+                        x = techButtonCoords.x - width
+                        y = techButtonCoords.y - lineSize / 2
                     }
                     val line2 = ImageGetter.getWhiteDot().apply {
                         width = lineSize
-                        height = abs(deltaY) - 2*r
-                        x = techButtonCoords.x - halfLength - width / 2
-                        y = techButtonCoords.y + (if (deltaY > 0f) -height - r else r + width / 2)
+                        height = abs(deltaY) - 2*r - lineSize
+                        x = techButtonCoords.x - halfLength - lineSize / 2
+                        y = techButtonCoords.y + (if (deltaY > 0f) -height-r-lineSize/2 else r+lineSize/2)
                     }
 
                     var line3: Image?
                     var line4: Image?
 
                     if (deltaY < 0) {
-                        line3 = ImageGetter.getLine(line2.x, line2.y + line2.height,
-                            line.x + line.width, line.y+lineSize/2, lineSize)
-                        line4 = ImageGetter.getLine(line2.x, line2.y, line1.x, line1.y+lineSize/2, lineSize)
+                        /* -\ */ line3 = ImageGetter.getLine(line2.x+lineSize/2+0.3f, line2.y + line2.height-lineSize/2,line.x + line.width-lineSize/2, line.y+lineSize/2+0.3f, lineSize)
+                        /* \- */ line4 = ImageGetter.getLine(line2.x+lineSize/2-0.3f, line2.y+lineSize/2, line1.x+lineSize/2, line1.y+lineSize/2-0.3f, lineSize)
                     } else {
-                        line3 = ImageGetter.getLine(line2.x+lineSize/2, line2.y,
-                            line.x + line.width, line.y, lineSize)
-                        line4 = ImageGetter.getLine(line2.x, line2.y + line2.height-lineSize/2,
-                            line1.x, line1.y+lineSize/2, lineSize)
+                        /* -/ */ line3 = ImageGetter.getLine(line2.x+lineSize/2+0.3f, line2.y+lineSize/2, line.x + line.width-lineSize/2, line.y+lineSize/2-0.3f, lineSize)
+                        /* /- */ line4 = ImageGetter.getLine(line2.x+lineSize/2-0.3f, line2.y + line2.height-lineSize/2, line1.x+lineSize/2, line1.y+lineSize/2+0.3f, lineSize)
                     }
 
                     line.color = lineColor
@@ -345,7 +342,7 @@ class TechPickerScreen(
                         width = techButtonCoords.x - prerequisiteCoords.x
                         height = lineSize
                         x = prerequisiteCoords.x
-                        y = prerequisiteCoords.y - height / 2
+                        y = prerequisiteCoords.y - lineSize / 2
                     }
                     line.color = lineColor
 
