@@ -294,14 +294,14 @@ class MapParametersTable(
 
     private fun addWrappedCheckBoxes() {
         if (mapParameters.type === MapType.randomGenerated) {
-            add(ExpanderTab("{Other Settings}:", persistenceID = "NewGameOtherSettings") {
+            add(ExpanderTab("{Other Settings}:", persistenceID = "NewGameOtherSettings", startsOutOpened = false) {
                 it.defaults().pad(5f,0f)
                 it.addNoRuinsCheckbox()
                 it.addNoNaturalWondersCheckbox()
                 it.addWorldWrapCheckbox()
                 it.add("World wrap maps are very memory intensive - creating large world wrap maps on Android can lead to crashes!"
                     .toLabel(fontSize = 14).apply { wrap=true }).colspan(2).fillX().row()
-            }).padTop(16f).growX().row()
+            }).pad(10f).padTop(10f).colspan(2).growX().row()
         } else {
             add(Table(skin).apply {
                 defaults().left().pad(2.5f)
@@ -318,7 +318,7 @@ class MapParametersTable(
         val expander = ExpanderTab("Advanced Settings", startsOutOpened = false) {
             addAdvancedControls(it)
         }
-        add(expander).pad(0f).padTop(10f).colspan(2).growX().row()
+        add(expander).pad(10f).padTop(10f).colspan(2).growX().row()
     }
 
     private fun addAdvancedControls(table: Table) {

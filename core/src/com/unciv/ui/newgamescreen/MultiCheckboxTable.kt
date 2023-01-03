@@ -36,10 +36,10 @@ class MultiCheckboxTable(
         }
 
         if (checkBoxes.any()) {
-            add(ExpanderTab(title, persistenceID = persistenceID) {
+            add(ExpanderTab(title, persistenceID = persistenceID, startsOutOpened = false) {
                 it.defaults().pad(5f,0f)
                 for (checkbox in checkBoxes) it.add(checkbox).row()
-            }).padTop(16f).growX().row()
+            }).pad(0f).padTop(10f).colspan(2).growX().row()
         }
     }
 
