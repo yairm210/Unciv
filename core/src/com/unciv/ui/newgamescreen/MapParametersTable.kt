@@ -293,14 +293,14 @@ class MapParametersTable(
     }
 
     private fun addWrappedCheckBoxes() {
+        val worldWrapWarning = "World wrap maps are very memory intensive - creating large world wrap maps on Android can lead to crashes!"
         if (mapParameters.type === MapType.randomGenerated) {
             add(ExpanderTab("{Other Settings}", persistenceID = "NewGameOtherSettings", startsOutOpened = false) {
                 it.defaults().pad(5f,0f)
                 it.addNoRuinsCheckbox()
                 it.addNoNaturalWondersCheckbox()
                 it.addWorldWrapCheckbox()
-                it.add("World wrap maps are very memory intensive - creating large world wrap maps on Android can lead to crashes!"
-                    .toLabel(fontSize = 14).apply { wrap=true }).colspan(2).fillX().row()
+                it.add(worldWrapWarning.toLabel(fontSize = 14).apply { wrap=true }).colspan(2).fillX().row()
             }).pad(10f).padTop(10f).colspan(2).growX().row()
         } else {
             add(Table(skin).apply {
@@ -309,8 +309,7 @@ class MapParametersTable(
                 addNoNaturalWondersCheckbox()
                 addWorldWrapCheckbox()
             }).colspan(2).center().row()
-            add("World wrap maps are very memory intensive - creating large world wrap maps on Android can lead to crashes!"
-                .toLabel(fontSize = 14).apply { wrap=true }).colspan(2).fillX().row()
+            add(worldWrapWarning.toLabel(fontSize = 14).apply { wrap=true }).colspan(2).fillX().row()
         }
     }
 
