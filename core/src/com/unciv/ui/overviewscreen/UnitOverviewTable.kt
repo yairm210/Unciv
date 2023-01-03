@@ -151,6 +151,7 @@ class UnitOverviewTab(
     }
 
     private fun Table.updateUnitListTable(): Table {
+        clear()
         val game = overviewScreen.game
         defaults().pad(5f)
 
@@ -225,9 +226,9 @@ class UnitOverviewTab(
                 val upgradeIcon = ImageGetter.getUnitIcon(unit.getUnitToUpgradeTo().name,
                     if (enable) Color.GREEN else Color.GREEN.darken(0.5f))
                 if (enable) upgradeIcon.onClick {
-                    showWorldScreenAt(unit)
                     SoundPlayer.play(unitAction!!.uncivSound)
                     unitAction.action!!()
+                    unitListTable.updateUnitListTable()
                 }
                 add(upgradeIcon).size(28f)
             } else add()
