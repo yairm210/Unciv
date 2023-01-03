@@ -1445,8 +1445,8 @@ class MapRegions (val ruleset: Ruleset){
                     !tile.getBaseTerrain().hasUnique(UniqueType.BlocksResources, conditionalTerrain) &&
                     !resource.hasUnique(UniqueType.NoNaturalGeneration, conditionalTerrain) &&
                     resource.getMatchingUniques(UniqueType.TileGenerationConditions).none {
-                        tile.temperature!! < it.params[0].toDouble() || tile.temperature!! > it.params[1].toDouble()
-                                || tile.humidity!! < it.params[2].toDouble() || tile.humidity!! > it.params[3].toDouble()
+                        tile.temperature!! !in it.params[0].toDouble() .. it.params[1].toDouble()
+                                || tile.humidity!! !in it.params[2].toDouble() .. it.params[3].toDouble()
                     }
             ) {
                 if (ratioProgress >= 1f &&

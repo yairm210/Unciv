@@ -627,10 +627,19 @@ class MapGenerator(val ruleset: Ruleset) {
         // Checking it.baseTerrain in candidateTerrains to make sure forest does not spawn on desert hill
         for (tile in tileMap.values.asSequence().filter { it.baseTerrain in candidateTerrains
                 && it.getLastTerrain().name in candidateTerrains }) {
+
             val vegetation = (randomness.getPerlinNoise(tile, vegetationSeed, scale = 3.0, nOctaves = 1) + 1.0) / 2.0
 
             if (vegetation <= tileMap.mapParameters.vegetationRichness) {
-                val randomVegetation = vegetationTerrains.filter { it.occursOn.contains(tile.getLastTerrain().name) }.random(randomness.RNG)
+                val possibleVegetation = vegetationTerrains.filter { vegetationTerrain ->
+                    vegetationTerrain.occursOn.contains(tile.getLastTerrain().name)
+                            && vegetationTerrain.getMatchingUniques(UniqueType.TileGenerationConditions).none {
+                            tile.temperature!! < it.params[0].toDouble() || tile.temperature!! > it.params[1].toDouble()
+                                    || tile.humidity!! < it.params[2].toDouble() || tile.humidity!! > it.params[3].toDouble()
+                        }
+                }
+                if (possibleVegetation.isEmpty()) continue
+                val randomVegetation = possibleVegetation.random(randomness.RNG)
                 tile.addTerrainFeature(randomVegetation.name)
             }
         }
