@@ -6,7 +6,6 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.models.UncivSound
-import com.unciv.ui.options.ResourceIconsOption
 import com.unciv.ui.utils.Fonts
 import java.text.Collator
 import java.time.Duration
@@ -70,8 +69,6 @@ class GameSettings {
     var visualMods = HashSet<String>()
     var useDemographics: Boolean = false
     var showZoomButtons: Boolean = false
-
-    var resourcesIcons: ResourceIconsOption = ResourceIconsOption.RES_YIELD
 
     var notificationsLogMaxTurns = 5
 

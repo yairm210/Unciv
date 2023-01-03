@@ -39,8 +39,6 @@ fun displayTab(
     optionsPopup.addCheckbox(this, "Experimental Demographics scoreboard", settings.useDemographics, true) { settings.useDemographics = it }
     optionsPopup.addCheckbox(this, "Show zoom buttons in world screen", settings.showZoomButtons, true) { settings.showZoomButtons = it }
 
-    addResourcesIconsBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
-
     addMinimapSizeSlider(this, settings, optionsPopup.selectBoxMinWidth)
 
     addUnitIconAlphaSlider(this, settings, optionsPopup.selectBoxMinWidth)
@@ -196,34 +194,5 @@ private fun addSkinSelectBox(table: Table, settings: GameSettings, selectBoxMinW
         // ImageGetter ruleset should be correct no matter what screen we're on
         SkinCache.assembleSkinConfigs(ImageGetter.ruleset.mods)
         onSkinChange()
-    }
-}
-
-enum class ResourceIconsOption(val text: String) {
-    RES_YIELD("Background (Yield) + type"),                // yield color coded + type indicator
-    RES_TYPE("Background (Type)"),                         // type color coded
-    RES_TYPE_AMOUNT("Background (Type) + amount");         // type color coded + amount indicator
-
-    override fun toString(): String {
-        return text.tr()
-    }
-}
-
-private fun addResourcesIconsBox(table: Table, settings: GameSettings, selectBoxMinWidth: Float, onResIconsChange: () -> Unit) {
-    table.add("Resource Icons".toLabel()).left().fillX()
-
-    val selectBox = SelectBox<ResourceIconsOption>(table.skin)
-    val array = Array<ResourceIconsOption>()
-
-    for (option in ResourceIconsOption.values())
-        array.add(option)
-
-    selectBox.items = array
-    selectBox.selected = settings.resourcesIcons
-    table.add(selectBox).minWidth(selectBoxMinWidth).pad(10f).row()
-
-    selectBox.onChange {
-        settings.resourcesIcons = selectBox.selected
-        onResIconsChange()
     }
 }

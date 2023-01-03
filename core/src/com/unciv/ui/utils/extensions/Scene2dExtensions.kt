@@ -444,7 +444,9 @@ fun String.toLabel() = Label(this.tr(), BaseScreen.skin)
 fun Int.toLabel() = this.toString().toLabel()
 
 /** Translate a [String] and make a [Label] widget from it with a specified font color and size */
-fun String.toLabel(fontColor: Color = Color.WHITE, fontSize: Int = Constants.defaultFontSize): Label {
+fun String.toLabel(fontColor: Color = Color.WHITE,
+                   fontSize: Int = Constants.defaultFontSize,
+                   alignment: Int = Align.left ): Label {
     // We don't want to use setFontSize and setFontColor because they set the font,
     //  which means we need to rebuild the font cache which means more memory allocation.
     var labelStyle = BaseScreen.skin.get(Label.LabelStyle::class.java)
@@ -453,7 +455,10 @@ fun String.toLabel(fontColor: Color = Color.WHITE, fontSize: Int = Constants.def
         labelStyle.fontColor = fontColor
         if (fontSize != Constants.defaultFontSize) labelStyle.font = Fonts.font
     }
-    return Label(this.tr(), labelStyle).apply { setFontScale(fontSize / Fonts.ORIGINAL_FONT_SIZE) }
+    return Label(this.tr(), labelStyle).apply {
+        setFontScale(fontSize / Fonts.ORIGINAL_FONT_SIZE)
+        setAlignment(alignment)
+    }
 }
 
 /**

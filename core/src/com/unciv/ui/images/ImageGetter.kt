@@ -22,11 +22,9 @@ import com.unciv.json.json
 import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.skins.SkinCache
 import com.unciv.models.stats.Stats
 import com.unciv.models.tilesets.TileSetCache
-import com.unciv.ui.options.ResourceIconsOption
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.extensions.*
 import com.unciv.utils.debug
@@ -361,42 +359,16 @@ object ImageGetter {
         val resource = ruleset.tileResources[resourceName]
                 ?: return iconGroup // This is the result of a bad modding setup, just give em an empty circle. Their problem.
 
-        val iconsSetting = UncivGame.Current.settings.resourcesIcons
+        val color = resource.resourceType.getColor()
+        iconGroup.circle.color = color
 
-        iconGroup.circle.color = when (iconsSetting) {
-            ResourceIconsOption.RES_YIELD -> getColorFromStats(resource)
-            ResourceIconsOption.RES_TYPE -> resource.resourceType.getColor()
-            ResourceIconsOption.RES_TYPE_AMOUNT -> resource.resourceType.getColor()
-        }
-
-        if (iconsSetting == ResourceIconsOption.RES_YIELD) {
-            if (resource.resourceType == ResourceType.Luxury) {
-                val happiness = getStatIcon("Happiness").apply {
-                    setSize(size / 2, size / 2)
-                }.surroundWithThinCircle()
-                happiness.setSize(size / 2, size / 2)
-                happiness.x = iconGroup.width - happiness.width * 2 / 3
-                happiness.y = -happiness.width / 3
-                iconGroup.addActor(happiness)
-            }
-
-            if (resource.resourceType == ResourceType.Strategic) {
-                val production = getStatIcon("Production").apply {
-                    setSize(size / 2, size / 2)
-                }.surroundWithThinCircle()
-                production.setSize(size / 2, size / 2)
-                production.x = iconGroup.width - production.width * 2 / 3
-                production.y = -production.width / 3
-                iconGroup.addActor(production)
-            }
-        }
-
-        if (iconsSetting == ResourceIconsOption.RES_TYPE_AMOUNT && amount > 0) {
-            val label = amount.toString().toLabel(fontSize = 8, fontColor = Color.BLACK).apply {
-                setAlignment(Align.center)
-            }
-            val group = label.surroundWithCircle(size/2, true, resource.resourceType.getColor())
-                .surroundWithThinCircle()
+        // Show amount indicator for strategic resources (bottom-right)
+        if (amount > 0) {
+            val label = amount.toString().toLabel(
+                fontSize = 8,
+                fontColor = Color.WHITE,
+                alignment = Align.center)
+            val group = label.surroundWithCircle(size/2, true, Color.BLACK)
 
             label.y -= 0.5f
             group.x = iconGroup.width - group.width * 2 / 3
