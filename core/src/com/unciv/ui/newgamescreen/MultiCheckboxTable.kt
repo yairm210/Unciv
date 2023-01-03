@@ -13,7 +13,7 @@ import com.unciv.ui.utils.extensions.toCheckBox
  * @param title title of the ExpanderTab
  * @param persistenceID persistenceID for the ExpanderTab
  * @param values In/out set of checked boxes, modified in place
- * @param onUpdate Callback, parameter is the mod name, called after any checks that may prevent mod selection succeed.
+ * @param onUpdate Callback, parameter is the String value of the check box that changed.
  */
 class MultiCheckboxTable(
     title: String,
