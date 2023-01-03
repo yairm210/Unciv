@@ -92,7 +92,7 @@ class MapParametersTable(
 
         if (mapParameters.type === MapType.randomGenerated) {
             mapShapesOptionsValues = mapShapes.toHashSet()
-            val optionsTable = MultiCheckboxTable("{Map Shapes}:", "NewGameMapShapes", mapShapesOptionsValues) {
+            val optionsTable = MultiCheckboxTable("{Map Shapes}", "NewGameMapShapes", mapShapesOptionsValues) {
                 if (mapShapesOptionsValues.isEmpty()) {
                     mapParameters.shape = mapShapes.random(randomness.RNG)
                 } else {
@@ -130,7 +130,7 @@ class MapParametersTable(
 
         if (mapParameters.type === MapType.randomGenerated) {
             mapTypesOptionsValues = mapTypes.toHashSet()
-            val optionsTable = MultiCheckboxTable("{Map Generation Types}:", "NewGameMapGenerationTypes", mapTypesOptionsValues) {
+            val optionsTable = MultiCheckboxTable("{Map Generation Types}", "NewGameMapGenerationTypes", mapTypesOptionsValues) {
                 if (mapTypesOptionsValues.isEmpty()) {
                     mapParameters.type = mapTypes.random(randomness.RNG)
                 } else {
@@ -158,7 +158,7 @@ class MapParametersTable(
         if (mapParameters.type === MapType.randomGenerated) {
             val mapSizes = MapSize.values().map { it.name }
             mapSizesOptionsValues = mapSizes.toHashSet()
-            val optionsTable = MultiCheckboxTable("{World Sizes}:", "NewGameWorldSizes", mapSizesOptionsValues) {
+            val optionsTable = MultiCheckboxTable("{World Sizes}", "NewGameWorldSizes", mapSizesOptionsValues) {
                 if (mapSizesOptionsValues.isEmpty()) {
                     mapParameters.mapSize = MapSizeNew(mapSizes.random(randomness.RNG))
                 } else {
@@ -251,7 +251,7 @@ class MapParametersTable(
 
         if (mapParameters.type === MapType.randomGenerated) {
             mapResourcesOptionsValues = mapResources.toHashSet()
-            val optionsTable = MultiCheckboxTable("{Resource Settings}:", "NewGameResourceSettings", mapResourcesOptionsValues) {
+            val optionsTable = MultiCheckboxTable("{Resource Settings}", "NewGameResourceSettings", mapResourcesOptionsValues) {
                 if (mapResourcesOptionsValues.isEmpty()) {
                     mapParameters.mapResources = mapResources.random(randomness.RNG)
                 } else {
@@ -294,7 +294,7 @@ class MapParametersTable(
 
     private fun addWrappedCheckBoxes() {
         if (mapParameters.type === MapType.randomGenerated) {
-            add(ExpanderTab("{Other Settings}:", persistenceID = "NewGameOtherSettings", startsOutOpened = false) {
+            add(ExpanderTab("{Other Settings}", persistenceID = "NewGameOtherSettings", startsOutOpened = false) {
                 it.defaults().pad(5f,0f)
                 it.addNoRuinsCheckbox()
                 it.addNoNaturalWondersCheckbox()
