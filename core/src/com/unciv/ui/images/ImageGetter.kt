@@ -376,14 +376,46 @@ object ImageGetter {
         return iconGroup.surroundWithThinCircle()
     }
 
-    fun getTechIconGroup(techName: String, circleSize: Float): IconCircleGroup {
-        val techIconColor = ruleset.eras[ruleset.technologies[techName]?.era()]?.getColor()?.darken(0.6f) ?: Color.BLACK
-        val image =
-                if (imageExists("TechIcons/$techName")) getImage("TechIcons/$techName")
-                else getImage("TechIcons/Fallback")
-        return image.apply { color = techIconColor }
-            .surroundWithCircle(circleSize)
-            .surroundWithThinCircle(techIconColor)
+    fun getTechIconGroup(techName: String, circleSize: Float, isResearched: Boolean = false): Group {
+
+        val portrait: Image
+        val eraColor = ruleset.eras[ruleset.technologies[techName]?.era()]?.getColor()?.darken(0.6f) ?: Color.BLACK
+
+        // Inner part
+        if (imageExists("TechPortraits/$techName"))
+            portrait = getImage("TechPortraits/$techName")
+        else {
+            portrait = if (imageExists("TechIcons/$techName"))
+                getImage("TechIcons/$techName")
+            else
+                getImage("TechIcons/Fallback")
+            portrait.color = eraColor
+        }
+
+        // Border / background
+        if (imageExists("TechPortraits/Background")) {
+            val background = getImage("TechPortraits/Background")
+            val ratioW = portrait.width / background.width
+            val ratioH = portrait.height / background.height
+
+            if (isResearched)
+                background.color = Color.GOLD.cpy().brighten(0.5f)
+
+            background.setSize(circleSize, circleSize)
+            portrait.setSize(circleSize*ratioW, circleSize*ratioH)
+
+            val group = Group()
+            group.setSize(circleSize, circleSize)
+            group.addActor(background)
+            group.addActor(portrait)
+
+            background.center(group)
+            portrait.center(group)
+
+            return group
+        } else {
+            return portrait.surroundWithCircle(circleSize).surroundWithThinCircle(eraColor)
+        }
     }
 
     fun getProgressBarHorizontal(

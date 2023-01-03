@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.logic.civilization.TechManager
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.TileImprovement
@@ -18,6 +19,7 @@ import com.unciv.ui.utils.extensions.addBorder
 import com.unciv.ui.utils.extensions.brighten
 import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.centerY
+import com.unciv.ui.utils.extensions.colorFromRGB
 import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.setFontSize
 import com.unciv.ui.utils.extensions.setSize
@@ -50,8 +52,9 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
 
         pad(0f).padBottom(5f).padTop(5f).padLeft(5f).padRight(0f)
 
-        if (ImageGetter.techIconExists(techName))
-            add(ImageGetter.getTechIconGroup(techName, 46f)).padRight(5f).padLeft(2f).left()
+        val isResearched = (techManager.isResearched(techName) && techName != Constants.futureTech)
+        add(ImageGetter.getTechIconGroup(techName, 46f, isResearched))
+            .padRight(5f).padLeft(2f).left()
 
         if (isWorldScreen) {
             val techCost = techManager.costOfTech(techName)
