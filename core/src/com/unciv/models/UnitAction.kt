@@ -122,7 +122,7 @@ enum class UnitActionType(
     EnhanceReligion("Enhance a Religion",
         { ImageGetter.getImage("UnitActionIcons/EnhanceReligion") }, 'g', UncivSound.Choir),
     DisbandUnit("Disband unit",
-        { ImageGetter.getImage("UnitActionIcons/DisbandUnit") }, KeyCharAndCode.DEL),
+        { ImageGetter.getImage("UnitActionIcons/DisbandUnit") }, KeyCharAndCode.DEL, false),
     GiftUnit("Gift unit",
         { ImageGetter.getImage("UnitActionIcons/Present") }, UncivSound.Silent),
     Wait("Wait",

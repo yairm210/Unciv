@@ -127,7 +127,10 @@ object UnitActions {
                 val disbandText = if (unit.currentTile.getOwner() == unit.civInfo)
                     "Disband this unit for [${unit.baseUnit.getDisbandGold(unit.civInfo)}] gold?".tr()
                 else "Do you really want to disband this unit?".tr()
-                ConfirmPopup(UncivGame.Current.worldScreen!!, disbandText, "Disband unit") { unit.disband(); worldScreen.shouldUpdate = true }.open()
+                ConfirmPopup(UncivGame.Current.worldScreen!!, disbandText, "Disband unit") {
+                    unit.disband()
+                    if (UncivGame.Current.settings.autoUnitCycle) worldScreen.switchToNextUnit()
+                }.open()
             }
         }.takeIf { unit.currentMovement > 0 })
     }
