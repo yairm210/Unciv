@@ -22,7 +22,6 @@ import com.unciv.json.json
 import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.skins.SkinCache
 import com.unciv.models.stats.Stats
 import com.unciv.models.tilesets.TileSetCache
@@ -355,24 +354,29 @@ object ImageGetter {
         return image
     }
 
-    fun getResourceImage(resourceName: String, size: Float): IconCircleGroup {
+    fun getResourceImage(resourceName: String, size: Float, amount: Int = 0): IconCircleGroup {
         val iconGroup = getImage("ResourceIcons/$resourceName").surroundWithCircle(size)
         val resource = ruleset.tileResources[resourceName]
                 ?: return iconGroup // This is the result of a bad modding setup, just give em an empty circle. Their problem.
-        iconGroup.circle.color = getColorFromStats(resource)
 
-        if (resource.resourceType == ResourceType.Luxury) {
-            val happiness = getStatIcon("Happiness")
-            happiness.setSize(size / 2, size / 2)
-            happiness.x = iconGroup.width - happiness.width
-            iconGroup.addActor(happiness)
+        val color = resource.resourceType.getColor()
+        iconGroup.circle.color = color
+
+        // Show amount indicator for strategic resources (bottom-right)
+        if (amount > 0) {
+            val label = amount.toString().toLabel(
+                fontSize = 8,
+                fontColor = Color.WHITE,
+                alignment = Align.center)
+            val group = label.surroundWithCircle(size/2, true, Color.BLACK)
+
+            label.y -= 0.5f
+            group.x = iconGroup.width - group.width * 2 / 3
+            group.y = -group.height / 3
+
+            iconGroup.addActor(group)
         }
-        if (resource.resourceType == ResourceType.Strategic) {
-            val production = getStatIcon("Production")
-            production.setSize(size / 2, size / 2)
-            production.x = iconGroup.width - production.width
-            iconGroup.addActor(production)
-        }
+
         return iconGroup.surroundWithThinCircle()
     }
 
