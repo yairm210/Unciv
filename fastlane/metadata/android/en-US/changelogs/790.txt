@@ -1,0 +1,22 @@
+
+
+Resolve  - Humidity/Temperature restrictions work on terrain features
+
+Resolve  - Allow mass unit upgrades from the unit overview screen
+
+Resolve  - Calculate 'tiles can reach this turn' correctly with combinations of roads + railroads
+
+Resolve  - If several improvements can provide a resource, workers pick the one that gives the most yields
+
+By FiretronP75:
+- Use removeTerrainFeatures and addTerrainFeature instead of setTerrainFeatures so serialization will work. 
+- Add new game option to randomly select from map options. 
+
+By vegeta1k95:
+- Added various styles for displaying resource icons 
+- Modding: allow for custom TechPortraits 
+- Barbarian Civ icon 
+- Fixed PolicyScreen branches requirements text 
+- Fix connecting lines edges 
+
+Translate "Sell" in city screen  - By Ouaz
