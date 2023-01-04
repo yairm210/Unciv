@@ -90,7 +90,7 @@ enum class UnitActionType(
     Paradrop("Paradrop",
         { ImageGetter.getImage("UnitActionIcons/Paradrop") }, 'p', false),
     AirSweep("Air Sweep",
-        { ImageGetter.getImage("UnitActionIcons/AirSweep") }, 'a'),
+        { ImageGetter.getImage("UnitActionIcons/AirSweep") }, 'a', false),
     SetUp("Set up",
         { ImageGetter.getImage("UnitActionIcons/SetUp") }, 't', false, UncivSound.Setup),
     FoundCity("Found city",
