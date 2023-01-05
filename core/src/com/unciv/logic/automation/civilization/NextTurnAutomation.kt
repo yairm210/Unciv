@@ -145,10 +145,11 @@ object NextTurnAutomation {
         if (otherCiv.playerType == PlayerType.AI)
             return null
         val evaluation = TradeEvaluation()
-        var delta = evaluation.getTradeAcceptability(tradeRequest.trade, civInfo, otherCiv)
-        if (delta < 0) delta = (delta * 1.1f).toInt() // They seem very interested in this deal, let's push it a bit.
+        var deltaInOurFavor = evaluation.getTradeAcceptability(tradeRequest.trade, civInfo, otherCiv)
+        if (deltaInOurFavor > 0) deltaInOurFavor = (deltaInOurFavor / 1.1f).toInt() // They seem very interested in this deal, let's push it a bit.
         val tradeLogic = TradeLogic(civInfo, otherCiv)
-        tradeLogic.currentTrade.set(tradeRequest.trade.reverse())
+
+        tradeLogic.currentTrade.set(tradeRequest.trade)
 
         // What do they have that we would want?
         val potentialAsks = HashMap<TradeOffer, Int>()
@@ -172,22 +173,22 @@ object NextTurnAutomation {
                 potentialAsks[offer] = value
         }
 
-        while (potentialAsks.isNotEmpty() && delta < 0) {
+        while (potentialAsks.isNotEmpty() && deltaInOurFavor < 0) {
             // Keep adding their worst offer until we get above the threshold
             val offerToAdd = potentialAsks.minByOrNull { it.value }!!
-            delta += offerToAdd.value
+            deltaInOurFavor += offerToAdd.value
             counterofferAsks[offerToAdd.key] = offerToAdd.value
             potentialAsks.remove(offerToAdd.key)
         }
-        if (delta < 0)
+        if (deltaInOurFavor < 0)
             return null // We couldn't get a good enough deal
 
         // At this point we are sure to find a good counteroffer
-        while (delta > 0) {
+        while (deltaInOurFavor > 0) {
             // Now remove the best offer valued below delta until the deal is barely acceptable
-            val offerToRemove = counterofferAsks.filter { it.value <= delta }.maxByOrNull { it.value }
+            val offerToRemove = counterofferAsks.filter { it.value <= deltaInOurFavor }.maxByOrNull { it.value }
                 ?: break  // Nothing more can be removed, at least en bloc
-            delta -= offerToRemove.value
+            deltaInOurFavor -= offerToRemove.value
             counterofferAsks.remove(offerToRemove.key)
         }
 
@@ -209,19 +210,19 @@ object NextTurnAutomation {
                 .filter { it.type == TradeType.Gold_Per_Turn || it.type == TradeType.Gold }
                 .sortedByDescending { it.type.ordinal }) { // Do GPT first
             val valueOfOne = evaluation.evaluateBuyCost(TradeOffer(goldAsk.name, goldAsk.type, 1, goldAsk.duration), civInfo, otherCiv)
-            val amountCanBeRemoved = delta / valueOfOne
+            val amountCanBeRemoved = deltaInOurFavor / valueOfOne
             if (amountCanBeRemoved >= goldAsk.amount) {
-                delta -= counterofferAsks[goldAsk]!!
+                deltaInOurFavor -= counterofferAsks[goldAsk]!!
                 toRemove.add(goldAsk)
             } else {
-                delta -= valueOfOne * amountCanBeRemoved
+                deltaInOurFavor -= valueOfOne * amountCanBeRemoved
                 goldAsk.amount -= amountCanBeRemoved
             }
         }
 
         // If the delta is still very in our favor consider sweetening the pot with some gold
-        if (delta >= 100) {
-            delta = (delta * 2) / 3 // Only compensate some of it though, they're the ones asking us
+        if (deltaInOurFavor >= 100) {
+            deltaInOurFavor = (deltaInOurFavor * 2) / 3 // Only compensate some of it though, they're the ones asking us
             // First give some GPT, then lump sum - but only if they're not already offering the same
             for (ourGold in tradeLogic.ourAvailableOffers
                     .filter { it.isTradable() && (it.type == TradeType.Gold || it.type == TradeType.Gold_Per_Turn) }
@@ -229,16 +230,18 @@ object NextTurnAutomation {
                 if (tradeLogic.currentTrade.theirOffers.none { it.type == ourGold.type } &&
                         counterofferAsks.keys.none { it.type == ourGold.type } ) {
                     val valueOfOne = evaluation.evaluateSellCost(TradeOffer(ourGold.name, ourGold.type, 1, ourGold.duration), civInfo, otherCiv)
-                    val amountToGive = min(delta / valueOfOne, ourGold.amount)
-                    delta -= amountToGive * valueOfOne
+                    val amountToGive = min(deltaInOurFavor / valueOfOne, ourGold.amount)
+                    deltaInOurFavor -= amountToGive * valueOfOne
                     counterofferGifts.add(TradeOffer(ourGold.name, ourGold.type, amountToGive, ourGold.duration))
                 }
             }
         }
 
-        tradeLogic.currentTrade.ourOffers.addAll(counterofferAsks.keys)
-        tradeLogic.currentTrade.theirOffers.addAll(counterofferGifts)
-        return TradeRequest(civInfo.civName, tradeLogic.currentTrade)
+        tradeLogic.currentTrade.theirOffers.addAll(counterofferAsks.keys)
+        tradeLogic.currentTrade.ourOffers.addAll(counterofferGifts)
+
+        // Trades reversed, because when *they* get it then the 'ouroffers' become 'theiroffers'
+        return TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse())
     }
 
     private fun respondToPopupAlerts(civInfo: CivilizationInfo) {
