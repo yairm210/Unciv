@@ -31,6 +31,7 @@ import com.unciv.logic.trade.TradeType
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
+import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Policy
@@ -820,6 +821,14 @@ object NextTurnAutomation {
             modifierMap["City-state"] = -20
             if (otherCiv.getAllyCiv() == civInfo.civName)
                 modifierMap["Allied City-state"] = -20 // There had better be a DAMN good reason
+        }
+
+        for (city in otherCiv.cities) {
+            val construction = city.cityConstructions.getCurrentConstruction()
+            if (construction is Building && construction.hasUnique(UniqueType.TriggersCulturalVictory))
+                modifierMap["About to win"] = 15
+            if (construction is BaseUnit && construction.hasUnique(UniqueType.AddInCapital))
+                modifierMap["About to win"] = 15
         }
 
         return modifierMap.values.sum()
