@@ -1,22 +1,20 @@
 ## 4.3.17
 
-Promote button sticks out more
+Fixed Air Sweep mechanic
 
 AI tries to stop civs who are about to win Scientific/Cultural victory
 
-Worker automation no longer considers foreign unique improvements when deciding if to remove features
+No double copies of offers on AI trade counterproposals
 
-Resolve  - no double copies of offers on AI trade counterproposals
+Disbanding unit moves to next unit only after disbanding
 
-Non-replacing buildings display uniques nicely in nation picker
+Promote button sticks out more
 
-Fixed Air Sweep mechanic
+Translated display sizes
 
-Translated display sizes - 
+Modding: Worker automation no longer considers foreign unique improvements when deciding if to remove features
 
-Disbanding units move to next unit only after disbanding
-
-Fixing duplocation  - By saud2410
+Modding: Non-replacing buildings display nicely in nation picker
 
 ## 4.3.16
 
