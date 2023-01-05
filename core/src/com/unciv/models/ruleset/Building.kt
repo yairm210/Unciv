@@ -62,7 +62,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     private var replacementTextForUniques = ""
 
     /** Used for AlertType.WonderBuilt, and as sub-text in Nation and Tech descriptions */
-    fun getShortDescription(): String { // should fit in one line
+    fun getShortDescription(multiline:Boolean = false): String {
         val infoList = mutableListOf<String>()
         this.clone().toString().also { if (it.isNotEmpty()) infoList += it }
         for ((key, value) in getStatPercentageBonuses(null))
@@ -76,7 +76,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         }
         if (cityStrength != 0) infoList += "{City strength} +$cityStrength"
         if (cityHealth != 0) infoList += "{City health} +$cityHealth"
-        return infoList.joinToString("; ") { it.tr() }
+        val separator = if (multiline) "\n" else "; "
+        return infoList.joinToString(separator) { it.tr() }
     }
 
     /**
