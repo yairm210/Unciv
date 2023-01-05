@@ -385,7 +385,7 @@ class WorkerAutomation(
             tile.resource == null || !tile.hasViewableResource(civInfo) -> null
             tile.terrainFeatures.isNotEmpty()
                     && isUnbuildableAndRemovable(lastTerrain)
-                    && !isResourceImprovementAllowedOnFeature(tile) -> Constants.remove + lastTerrain.name
+                    && !isResourceImprovementAllowedOnFeature(tile, potentialTileImprovements) -> Constants.remove + lastTerrain.name
             else -> tile.tileResource.getImprovements().filter { it in potentialTileImprovements || it==tile.improvement }
                 .maxByOrNull { Automation.rankStatsValue(ruleSet.tileImprovements[it]!!, unit.civInfo) }
         }
@@ -421,9 +421,13 @@ class WorkerAutomation(
      *
      * Assumes the caller ensured that terrainFeature and resource are both present!
      */
-    private fun isResourceImprovementAllowedOnFeature(tile: TileInfo): Boolean {
+    private fun isResourceImprovementAllowedOnFeature(
+        tile: TileInfo,
+        potentialTileImprovements: Map<String, TileImprovement>
+    ): Boolean {
         return tile.tileResource.getImprovements().any { resourceImprovementName ->
-            val resourceImprovement = ruleSet.tileImprovements[resourceImprovementName] ?: return false
+            if (resourceImprovementName !in potentialTileImprovements) return@any false
+            val resourceImprovement = potentialTileImprovements[resourceImprovementName]!!
             tile.terrainFeatures.any { resourceImprovement.isAllowedOnFeature(it) }
         }
     }
