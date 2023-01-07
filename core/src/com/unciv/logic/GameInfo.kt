@@ -10,7 +10,6 @@ import com.unciv.logic.BackwardCompatibility.migrateBarbarianCamps
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
 import com.unciv.logic.GameInfo.Companion.CURRENT_COMPATIBILITY_NUMBER
 import com.unciv.logic.GameInfo.Companion.FIRST_WITHOUT
-import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.CivilizationInfoPreview
@@ -30,7 +29,6 @@ import com.unciv.models.ruleset.Speed
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
-import com.unciv.utils.concurrency.withGLContext
 import com.unciv.utils.debug
 import java.util.*
 
@@ -246,7 +244,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         var playerIndex = civilizations.indexOf(player)
 
         // We rotate Players in cycle: 1,2...N,1,2...
-        fun getNextPlayer() {
+        fun setNextPlayer() {
             playerIndex = (playerIndex + 1) % civilizations.size
             if (playerIndex == 0) {
                 turns++
@@ -263,7 +261,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         //  this happens when resigning a multiplayer game)
         if (player.isHuman()) {
             player.endTurn()
-            getNextPlayer()
+            setNextPlayer()
         }
 
         // Do we automatically simulate until N turn?
@@ -282,10 +280,10 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             player.startTurn()
 
             // Automation done here
-            val hasWon = player.doTurn()
+            player.doTurn()
 
-            // Have we won?
-            if (hasWon && simulateUntilWin) {
+            // Do we need to break if player won?
+            if (simulateUntilWin && player.victoryManager.hasWon()) {
                 simulateUntilWin = false
                 break
             }
@@ -294,7 +292,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             player.endTurn()
 
             // To the next player
-            getNextPlayer()
+            setNextPlayer()
         }
 
         if (turns == UncivGame.Current.simulateUntilTurnForDebug)

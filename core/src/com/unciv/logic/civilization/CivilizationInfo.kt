@@ -911,11 +911,11 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     fun updateViewableTiles() = transients().updateViewableTiles()
     fun updateDetailedCivResources() = transients().updateCivResources()
 
-    fun doTurn(): Boolean {
+    fun doTurn() {
 
         // Defeated civs do nothing
         if (isDefeated())
-            return false
+            return
 
         // Do stuff
         NextTurnAutomation.automateCivMoves(this)
@@ -923,9 +923,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         // Update barbarian camps
         if (isBarbarian() && !gameInfo.gameParameters.noBarbarians)
             gameInfo.barbarians.updateEncampments()
-
-        // Have we won?
-        return victoryManager.hasWon()
     }
 
     fun startTurn() {
