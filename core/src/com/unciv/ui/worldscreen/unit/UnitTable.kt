@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.Constants
@@ -21,12 +22,11 @@ import com.unciv.ui.pickerscreens.UnitRenamePopup
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.UnitGroup
 import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.worldscreen.WorldScreen
-import com.unciv.utils.Log
-import kotlin.system.measureTimeMillis
 
 class UnitTable(val worldScreen: WorldScreen) : Table() {
     private val prevIdleUnitButton = IdleUnitButton(this,worldScreen.mapHolder,true)
@@ -64,13 +64,18 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
     var selectedUnitHasChanged = false
     val separator: Actor
 
+    var bg = Image(BaseScreen.skinStrings.getUiBackground("WorldScreen/UnitTable",
+        BaseScreen.skinStrings.roundedEdgeRectangleMidShape,
+        BaseScreen.skinStrings.skinConfig.baseColor.darken(0.5f)))
+
+
     init {
         pad(5f)
         touchable = Touchable.enabled
         background = BaseScreen.skinStrings.getUiBackground(
-            "WorldScreen/UnitTable",
-            tintColor = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.5f)
+            "WorldScreen/UnitTable", BaseScreen.skinStrings.roundedEdgeRectangleMidShape
         )
+        addActor(bg)
 
         promotionsTable.touchable = Touchable.enabled
 
@@ -259,6 +264,8 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
         }
 
         pack()
+        bg.setSize(width-3f, height-3f)
+        bg.center(this)
         selectedUnitHasChanged = false
     }
 

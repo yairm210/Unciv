@@ -102,7 +102,8 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | WorldScreen/ | PickTechButton | roundedEdgeRectangle | |
 | WorldScreen/ | TileInfoTable | null | |
 | WorldScreen/ | TutorialTaskTable | null | |
-| WorldScreen/ | UnitTable | null | |
+| WorldScreen/ | UnitTable | roundedEdgeRectangleMid | |
+| WorldScreen/ | UnitTable | roundedEdgeRectangleMid | |
 | WorldScreen/CityButton/ | AirUnitTable | roundedEdgeRectangle | |
 | WorldScreen/CityButton/ | InfluenceBar | null | |
 | WorldScreen/Minimap/ | Background | null | |
