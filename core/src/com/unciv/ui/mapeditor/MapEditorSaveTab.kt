@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.logic.MapSaver
+import com.unciv.logic.map.MapGeneratedMainType
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.TileMap
 import com.unciv.models.translations.tr

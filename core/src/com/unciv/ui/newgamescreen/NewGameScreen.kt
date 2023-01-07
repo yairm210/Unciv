@@ -13,6 +13,7 @@ import com.unciv.logic.GameStarter
 import com.unciv.logic.IdChecker
 import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.map.MapGeneratedMainType
 import com.unciv.logic.map.MapType
 import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
