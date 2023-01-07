@@ -281,7 +281,7 @@
     "steps": [
         "After building a shrine, your civilization will start generating ☮Faith.",
         "When enough ☮Faith has been generated, you will be able to found a pantheon.",
-        "A pantheon will provide a small bonus for your civilization that will apply to all your cities.",
+        "A pantheon will provide a small bonus for your civilization that will apply to all cities that have it as a majority religion.",
         "Each civilization can only choose a single pantheon belief, and each pantheon can only be chosen once.",
         "Generating more ☮Faith will allow you to found a religion."
       ]
