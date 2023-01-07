@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.logic.map.MapGeneratedMainType
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.TileMap
@@ -165,7 +166,7 @@ class MapEditorGenerateTab(
         private val parent: MapEditorGenerateTab
     ): Table(BaseScreen.skin) {
         val generateButton = "".toTextButton()
-        val mapParametersTable = MapParametersTable(parent.editorScreen.newMapParameters, forMapEditor = true) {
+        val mapParametersTable = MapParametersTable(parent.editorScreen.newMapParameters, MapGeneratedMainType.generated, forMapEditor = true) {
             parent.replacePage(0, this)  // A kludge to get the ScrollPanes to recognize changes in vertical layout??
         }
 
