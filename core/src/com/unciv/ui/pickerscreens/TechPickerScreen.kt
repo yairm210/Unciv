@@ -139,7 +139,7 @@ class TechPickerScreen(
             val color = when {
                 civTech.era.name == era -> queuedTechColor
                 civInfo.gameInfo.ruleSet.eras[era]!!.eraNumber < civTech.era.eraNumber -> colorFromRGB(255, 175, 0)
-                else -> Color.BLACK
+                else -> Color.BLACK.cpy()
             }
 
             val table1 = Table().pad(1f)
@@ -197,7 +197,7 @@ class TechPickerScreen(
                 tempTechsToResearch.firstOrNull() == techName && !freeTechPick -> currentTechColor
                 researchableTechs.contains(techName) -> researchableTechColor
                 tempTechsToResearch.contains(techName) -> queuedTechColor
-                else -> Color.BLACK
+                else -> Color.BLACK.cpy()
             })
 
             if (civTech.isResearched(techName) && techName != Constants.futureTech) {
@@ -236,7 +236,7 @@ class TechPickerScreen(
             eraLabel.localToStageCoordinates(coords)
             techTable.stageToLocalCoordinates(coords)
             val line = ImageGetter.getLine(coords.x-1f, coords.y, coords.x-1f, coords.y - 1000f, 1f)
-            line.color = Color.GRAY.apply { a = 0.6f }
+            line.color = Color.GRAY.cpy().apply { a = 0.6f }
             line.toBack()
             techTable.addActor(line)
             lines.add(line)
@@ -263,10 +263,10 @@ class TechPickerScreen(
                 techTable.stageToLocalCoordinates(prerequisiteCoords)
 
                 val lineColor = when {
-                    civTech.isResearched(tech.name) && !tech.isContinuallyResearchable() -> Color.WHITE
+                    civTech.isResearched(tech.name) && !tech.isContinuallyResearchable() -> Color.WHITE.cpy()
                     civTech.isResearched(prerequisite) -> researchableTechColor
                     tempTechsToResearch.contains(tech.name) -> currentTechColor
-                    else -> Color.WHITE
+                    else -> Color.WHITE.cpy()
                 }
 
                 val lineSize = when {

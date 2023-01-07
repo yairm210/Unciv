@@ -34,6 +34,7 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 <!--- DO NOT REMOVE OR MODIFY THIS LINE UI_ELEMENT_TABLE_REGION -->
 | Directory | Name | Default shape | Image |
 |---|:---:|:---:|---|
+|  | Border | null | |
 | CityScreen/ | CityPickerTable | roundedEdgeRectangle | |
 | CityScreen/CitizenManagementTable/ | AvoidCell | null | |
 | CityScreen/CitizenManagementTable/ | FocusCell | null | |
