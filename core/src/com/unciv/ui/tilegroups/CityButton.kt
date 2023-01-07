@@ -248,27 +248,27 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
 
         if (belongsToViewingCiv() && city.isConnectedToCapital() && !city.isCapital()) {
             val connectionImage = ImageGetter.getStatIcon("CityConnection")
-            table.add(connectionImage).size(16f)
+            table.add(connectionImage).size(18f)
         }
 
         if (city.isInResistance()) {
             val resistanceImage = ImageGetter.getImage("StatIcons/Resistance")
-            table.add(resistanceImage).size(16f).padLeft(2f)
+            table.add(resistanceImage).size(18f).padLeft(2f)
         }
 
         if (city.isPuppet) {
             val puppetImage = ImageGetter.getImage("OtherIcons/Puppet")
-            table.add(puppetImage).size(16f).padLeft(2f)
+            table.add(puppetImage).size(18f).padLeft(2f)
         }
 
         if (city.isBeingRazed) {
             val fireImage = ImageGetter.getImage("OtherIcons/Fire")
-            table.add(fireImage).size(16f).padLeft(2f)
+            table.add(fireImage).size(18f).padLeft(2f)
         }
 
         if (belongsToViewingCiv() && city.isWeLoveTheKingDayActive()) {
             val wtlkdImage = ImageGetter.getImage("OtherIcons/WLTKD")
-            table.add(wtlkdImage).size(16f).padLeft(2f)
+            table.add(wtlkdImage).size(18f).padLeft(2f)
         }
 
         return table
