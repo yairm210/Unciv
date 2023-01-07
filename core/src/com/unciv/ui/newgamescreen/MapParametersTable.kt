@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldFilter.DigitsOnlyFilter
+import com.unciv.logic.map.MapGeneratedMainType
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapResources
 import com.unciv.logic.map.MapShape
@@ -31,6 +32,7 @@ import com.unciv.ui.utils.extensions.toTextButton
  * */
 class MapParametersTable(
     private val mapParameters: MapParameters,
+    private val mapGeneratedMainType: String,
     private val forMapEditor: Boolean = false,
     private val sizeChangedCallback: (()->Unit)? = null
 ) : Table() {
@@ -67,7 +69,7 @@ class MapParametersTable(
     init {
         skin = BaseScreen.skin
         defaults().pad(5f, 10f)
-        if (mapParameters.type === MapType.randomGenerated) {
+        if (mapGeneratedMainType == MapGeneratedMainType.randomGenerated) {
             add("{Which options should be available to the random selection?}".toLabel()).colspan(2).grow().row()
         }
         addMapShapeSelectBox()
@@ -90,7 +92,7 @@ class MapParametersTable(
             MapShape.rectangular
         )
 
-        if (mapParameters.type === MapType.randomGenerated) {
+        if (mapGeneratedMainType == MapGeneratedMainType.randomGenerated) {
             mapShapesOptionsValues = mapShapes.toHashSet()
             val optionsTable = MultiCheckboxTable("{Enabled Map Shapes}", "NewGameMapShapes", mapShapesOptionsValues) {
                 if (mapShapesOptionsValues.isEmpty()) {
@@ -125,10 +127,10 @@ class MapParametersTable(
             MapType.smoothedRandom,
             MapType.archipelago,
             MapType.innerSea,
-            if (forMapEditor && mapParameters.type !== MapType.randomGenerated) MapType.empty else null
+            if (forMapEditor && mapGeneratedMainType != MapGeneratedMainType.randomGenerated) MapType.empty else null
         )
 
-        if (mapParameters.type === MapType.randomGenerated) {
+        if (mapGeneratedMainType == MapGeneratedMainType.randomGenerated) {
             mapTypesOptionsValues = mapTypes.toHashSet()
             val optionsTable = MultiCheckboxTable("{Enabled Map Generation Types}", "NewGameMapGenerationTypes", mapTypesOptionsValues) {
                 if (mapTypesOptionsValues.isEmpty()) {
@@ -155,7 +157,7 @@ class MapParametersTable(
     }
 
     private fun addWorldSizeTable() {
-        if (mapParameters.type === MapType.randomGenerated) {
+        if (mapGeneratedMainType == MapGeneratedMainType.randomGenerated) {
             val mapSizes = MapSize.values().map { it.name }
             mapSizesOptionsValues = mapSizes.toHashSet()
             val optionsTable = MultiCheckboxTable("{Enabled World Sizes}", "NewGameWorldSizes", mapSizesOptionsValues) {
@@ -249,7 +251,7 @@ class MapParametersTable(
             MapResources.legendaryStart
         )
 
-        if (mapParameters.type === MapType.randomGenerated) {
+        if (mapGeneratedMainType == MapGeneratedMainType.randomGenerated) {
             mapResourcesOptionsValues = mapResources.toHashSet()
             val optionsTable = MultiCheckboxTable("{Enabled Resource Settings}", "NewGameResourceSettings", mapResourcesOptionsValues) {
                 if (mapResourcesOptionsValues.isEmpty()) {
@@ -294,7 +296,7 @@ class MapParametersTable(
 
     private fun addWrappedCheckBoxes() {
         val worldWrapWarning = "World wrap maps are very memory intensive - creating large world wrap maps on Android can lead to crashes!"
-        if (mapParameters.type === MapType.randomGenerated) {
+        if (mapGeneratedMainType == MapGeneratedMainType.randomGenerated) {
             add(ExpanderTab("{Other Settings}", persistenceID = "NewGameOtherSettings", startsOutOpened = false) {
                 it.defaults().pad(5f,0f)
                 it.addNoRuinsCheckbox()

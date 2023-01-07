@@ -153,7 +153,7 @@ class NewGameScreen(
 
             Gdx.input.inputProcessor = null // remove input processing - nothing will be clicked!
 
-            if (mapOptionsTable.mapTypeSelectBox.selected.value == MapType.custom) {
+            if (mapOptionsTable.mapTypeSelectBox.selected.value == MapGeneratedMainType.custom) {
                 val map = try {
                     MapSaver.loadMap(gameSetupInfo.mapFile!!)
                 } catch (ex: Throwable) {

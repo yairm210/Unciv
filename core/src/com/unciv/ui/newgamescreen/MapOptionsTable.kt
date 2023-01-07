@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.Array
 import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.UncivShowableException
+import com.unciv.logic.map.MapGeneratedMainType
 import com.unciv.logic.map.MapType
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.popup.Popup
@@ -18,7 +19,8 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
 
     private val mapParameters = newGameScreen.gameSetupInfo.mapParameters
     private var mapTypeSpecificTable = Table()
-    var generatedMapOptionsTable = MapParametersTable(mapParameters)
+    val generatedMapOptionsTable = MapParametersTable(mapParameters, MapGeneratedMainType.generated)
+    private val randomMapOptionsTable = MapParametersTable(mapParameters, MapGeneratedMainType.randomGenerated)
     private val savedMapOptionsTable = Table()
     lateinit var mapTypeSelectBox: TranslatedSelectBox
     private val mapFileSelectBox = createMapFileSelectBox()
@@ -40,8 +42,8 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
     }
 
     private fun addMapTypeSelection() {
-        val mapTypes = arrayListOf(MapType.generated, MapType.randomGenerated)
-        if (mapFilesSequence.any()) mapTypes.add(MapType.custom)
+        val mapTypes = arrayListOf(MapGeneratedMainType.generated, MapGeneratedMainType.randomGenerated)
+        if (mapFilesSequence.any()) mapTypes.add(MapGeneratedMainType.custom)
         mapTypeSelectBox = TranslatedSelectBox(mapTypes, "Generated", BaseScreen.skin)
 
         savedMapOptionsTable.defaults().pad(5f)
@@ -55,18 +57,26 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
 
         fun updateOnMapTypeChange() {
             mapTypeSpecificTable.clear()
-            if (mapTypeSelectBox.selected.value == MapType.custom) {
-                fillMapFileSelectBox()
-                mapParameters.type = MapType.custom
-                mapParameters.name = mapFileSelectBox.selected.toString()
-                mapTypeSpecificTable.add(savedMapOptionsTable)
-                newGameScreen.unlockTables()
-            } else { // generated map
-                mapParameters.name = ""
-                mapParameters.type = mapTypeSelectBox.selected.value
-                generatedMapOptionsTable = MapParametersTable(mapParameters)
-                mapTypeSpecificTable.add(generatedMapOptionsTable)
-                newGameScreen.unlockTables()
+            when (mapTypeSelectBox.selected.value) {
+                MapGeneratedMainType.custom -> {
+                    fillMapFileSelectBox()
+                    mapParameters.type = MapGeneratedMainType.custom
+                    mapParameters.name = mapFileSelectBox.selected.toString()
+                    mapTypeSpecificTable.add(savedMapOptionsTable)
+                    newGameScreen.unlockTables()
+                }
+                MapGeneratedMainType.generated -> {
+                    mapParameters.name = ""
+                    mapParameters.type = generatedMapOptionsTable.mapTypeSelectBox.selected.value
+                    mapTypeSpecificTable.add(generatedMapOptionsTable)
+                    newGameScreen.unlockTables()
+
+                }
+                MapGeneratedMainType.randomGenerated -> {
+                    mapParameters.name = ""
+                    mapTypeSpecificTable.add(randomMapOptionsTable)
+                    newGameScreen.unlockTables()
+                }
             }
             newGameScreen.gameSetupInfo.gameParameters.godMode = false
             newGameScreen.updateTables()
@@ -74,7 +84,7 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
 
         // Pre-select custom if any map saved within last 15 minutes
         if (mapFilesSequence.any { it.fileHandle.lastModified() > System.currentTimeMillis() - 900000 })
-            mapTypeSelectBox.selected = TranslatedSelectBox.TranslatedString(MapType.custom)
+            mapTypeSelectBox.selected = TranslatedSelectBox.TranslatedString(MapGeneratedMainType.custom)
 
         // activate once, so when we had a file map before we'll have the right things set for another one
         updateOnMapTypeChange()

@@ -25,7 +25,7 @@ enum class MapSize(val radius: Int, val width: Int, val height: Int) {
     companion object {
         /** Not a predefined [MapSize] enum value, but a String
          * used in [MapParameters.mapSize] to indicate user-defined dimensions.
-         * Do not mistake for [MapType.custom]. */
+         * Do not mistake for [MapGeneratedMainType.custom]. */
         const val custom = "Custom"
     }
 }
@@ -128,6 +128,15 @@ object MapShape : IsPartOfGameInfoSerialization {
     const val rectangular = "Rectangular"
 }
 
+object MapGeneratedMainType : IsPartOfGameInfoSerialization {
+    const val generated = "Generated"
+    // Randomly choose a generated map type
+    const val randomGenerated = "Random Generated"
+    // Non-generated maps
+    const val custom = "Custom"
+
+}
+
 object MapType : IsPartOfGameInfoSerialization {
     const val default = "Default"
     const val pangaea = "Pangaea"
@@ -140,14 +149,6 @@ object MapType : IsPartOfGameInfoSerialization {
 
     // Cellular automata style
     const val smoothedRandom = "Smoothed Random"
-
-    const val generated = "Generated"
-
-    // Randomly choose a generated map type
-    const val randomGenerated = "Random Generated"
-
-    // Non-generated maps
-    const val custom = "Custom"
 
     // All ocean tiles
     const val empty = "Empty"
@@ -260,7 +261,7 @@ class MapParameters : IsPartOfGameInfoSerialization {
         if(mapResources != MapResources.default) yield(" {Resource Setting}: {$mapResources}")
         if (name.isEmpty()) return@sequence
         yield("\n")
-        if (type != MapType.custom && type != MapType.empty) yield("{Map Generation Type}: {$type}, ")
+        if (type != MapGeneratedMainType.custom && type != MapType.empty) yield("{Map Generation Type}: {$type}, ")
         yield("{RNG Seed} $seed")
         yield(", {Map Elevation}=" + elevationExponent.niceToString(2))
         yield(", {Temperature extremeness}=" + temperatureExtremeness.niceToString(2))

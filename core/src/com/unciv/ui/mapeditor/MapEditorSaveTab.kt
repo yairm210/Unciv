@@ -76,7 +76,7 @@ class MapEditorSaveTab(
     private fun saveHandler() {
         if (mapNameTextField.text.isBlank()) return
         editorScreen.tileMap.mapParameters.name = mapNameTextField.text
-        editorScreen.tileMap.mapParameters.type = MapType.custom
+        editorScreen.tileMap.mapParameters.type = MapGeneratedMainType.custom
         thread(name = "MapSaver", block = this::saverThread)
     }
 
