@@ -348,6 +348,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         )
     fun getCapital() = cities.firstOrNull { it.isCapital() }
     fun isHuman() = playerType == PlayerType.Human
+    fun isAI() = playerType == PlayerType.AI
     fun isOneCityChallenger() = (
             playerType == PlayerType.Human &&
                     gameInfo.gameParameters.oneCityChallenge)
@@ -909,6 +910,20 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     fun updateHasActiveEnemyMovementPenalty() = transients().updateHasActiveEnemyMovementPenalty()
     fun updateViewableTiles() = transients().updateViewableTiles()
     fun updateDetailedCivResources() = transients().updateCivResources()
+
+    fun doTurn() {
+
+        // Defeated civs do nothing
+        if (isDefeated())
+            return
+
+        // Do stuff
+        NextTurnAutomation.automateCivMoves(this)
+
+        // Update barbarian camps
+        if (isBarbarian() && !gameInfo.gameParameters.noBarbarians)
+            gameInfo.barbarians.updateEncampments()
+    }
 
     fun startTurn() {
         civConstructions.startTurn()
