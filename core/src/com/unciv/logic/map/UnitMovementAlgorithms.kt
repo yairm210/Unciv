@@ -404,8 +404,8 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         while (allowedTile == null && distance < 5) {
             distance++
             allowedTile = unit.getTile().getTilesAtDistance(distance)
-                // can the unit be placed safely there?
-                .filter { canMoveTo(it) }
+                // can the unit be placed safely there? Is tile either unowned or friendly?
+                .filter { canMoveTo(it) && it.getOwner()?.isAtWarWith(unit.civInfo) != true }
                 // out of those where it can be placed, can it reach them in any meaningful way?
                 .firstOrNull { getPathBetweenTiles(unit.currentTile, it).contains(it) }
         }
