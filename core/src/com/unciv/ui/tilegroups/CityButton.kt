@@ -172,13 +172,18 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
     private fun addAirUnitTable() {
         if (!showAdditionalInfoTags || tileGroup.tileInfo.airUnits.isEmpty()) return
         val secondaryColor = city.civInfo.nation.getInnerColor()
-        val airUnitTable = Table()
-        airUnitTable.background = BaseScreen.skinStrings.getUiBackground("WorldScreen/CityButton/AirUnitTable", BaseScreen.skinStrings.roundedEdgeRectangleShape, city.civInfo.nation.getOuterColor()).apply { setMinSize(0f,0f) }
+        val airUnitTable = BorderedTable(
+            path="WorldScreen/CityButton/AirUnitTable",
+            defaultInner = BaseScreen.skinStrings.roundedEdgeRectangleSmallShape,
+            defaultBorder = BaseScreen.skinStrings.roundedEdgeRectangleSmallShape,
+            innerColor = city.civInfo.nation.getOuterColor(),
+            borderColor = city.civInfo.nation.getOuterColor()
+        )
         val aircraftImage = ImageGetter.getImage("OtherIcons/Aircraft")
         aircraftImage.color = secondaryColor
         airUnitTable.add(aircraftImage).size(15f)
         airUnitTable.add(tileGroup.tileInfo.airUnits.size.toString().toLabel(secondaryColor,14))
-        add(airUnitTable).row()
+        add(airUnitTable).padBottom(5f).minWidth(50f).row()
     }
 
     private fun belongsToViewingCiv() = city.civInfo == worldScreen.viewingCiv
