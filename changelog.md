@@ -1,3 +1,21 @@
+## 4.3.18
+
+Units are not displaced to enemy land when kicked out of borders
+
+UI: Better unit table
+
+Resolve  - fix Faith tutorial text
+
+By vegeta1k95:
+- Fix City plates aircraft table shape 
+- Rework of PromotionPicker UI 
+- Refactored and commented GameInfo.nextTurn() 
+- Better visibility for city status icons 
+
+By nacro711072:
+- Refactor maptype & resolve map setting issue 
+- update screen after disband unit. 
+
 ## 4.3.17
 
 Fixed Air Sweep mechanic
