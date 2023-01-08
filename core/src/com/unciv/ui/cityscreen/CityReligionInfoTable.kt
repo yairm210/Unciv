@@ -8,8 +8,8 @@ import com.unciv.logic.city.CityReligionManager
 import com.unciv.models.Religion
 import com.unciv.ui.civilopedia.CivilopediaCategories
 import com.unciv.ui.civilopedia.CivilopediaScreen
-import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.images.Portrait
 import com.unciv.ui.overviewscreen.EmpireOverviewCategories
 import com.unciv.ui.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.utils.BaseScreen
@@ -79,8 +79,8 @@ class CityReligionInfoTable(
         return if (religion == null) "Religion" to "None"
             else religion.getIconName() to religion.getReligionDisplayName()
     }
-    private fun linkedReligionIcon(iconName: String, religion: String?): IconCircleGroup {
-        val icon = ImageGetter.getCircledReligionIcon(iconName, 30f)
+    private fun linkedReligionIcon(iconName: String, religion: String?): Portrait {
+        val icon = ImageGetter.getReligionPortrait(iconName, 30f)
         if (religion == null) return icon
         icon.onClick {
             val newScreen = if (religion == iconName) {
@@ -98,7 +98,7 @@ class CityReligionInfoTable(
         return ExpanderTab(
                 title = "Majority Religion: [$label]",
                 fontSize = Constants.defaultFontSize,
-                icon = ImageGetter.getCircledReligionIcon(icon, 30f),
+                icon = ImageGetter.getReligionPortrait(icon, 30f),
                 defaultPad = 0f,
                 persistenceID = "CityStatsTable.Religion",
                 startsOutOpened = false,

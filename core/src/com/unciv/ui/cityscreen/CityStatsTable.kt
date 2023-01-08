@@ -183,7 +183,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
                 ImageGetter.getStatIcon("Food") to
                 "We Love The King Day for another [${cityInfo.getFlag(CityFlags.WeLoveTheKing)}] turns".toLabel(Color.LIME)
             cityInfo.demandedResource.isNotEmpty() ->
-                ImageGetter.getResourceImage(cityInfo.demandedResource, 20f) to
+                ImageGetter.getResourcePortrait(cityInfo.demandedResource, 20f) to
                 "Demanding [${cityInfo.demandedResource}]".toLabel(Color.CORAL)
             else -> null to null
         }
@@ -270,7 +270,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         val info = Table()
         val statsAndSpecialists = Table()
 
-        val icon = ImageGetter.getPortraitImage(building.name, 50f)
+        val icon = ImageGetter.getConstructionPortrait(building.name, 50f)
         val isFree = building.name in cityScreen.city.civInfo.civConstructions.getFreeBuildings(cityScreen.city.id)
         val displayName = if (isFree) "{${building.name}} ({Free})" else building.name
 
@@ -374,7 +374,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
             info.add(progressBar).colspan(2).left().expandX().row()
 
             greatPeopleTable.add(info).growX().top().padBottom(10f)
-            greatPeopleTable.add(ImageGetter.getPortraitImage(greatPersonName, 50f)).row()
+            greatPeopleTable.add(ImageGetter.getConstructionPortrait(greatPersonName, 50f)).row()
         }
 
         lowerTable.addCategory("Great People", greatPeopleTable)

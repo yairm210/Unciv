@@ -16,7 +16,6 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.ruleset.Policy.PolicyBranchType
-import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.AutoScrollPane
@@ -99,7 +98,7 @@ class GlobalPoliticsOverviewTable (
         civilizations.removeAll(civilizations.filter { it.isBarbarian() || it.isCityState() || it.isSpectator() })
         for (civ in civilizations) {
             // civ image
-            add(ImageGetter.getNationIndicator(civ.nation, 100f)).pad(20f)
+            add(ImageGetter.getNationPortrait(civ.nation, 100f)).pad(20f)
 
             addSeparatorVertical(Color.GRAY)
 
@@ -314,7 +313,7 @@ class GlobalPoliticsOverviewTable (
 
     private fun getCivMiniTable(civInfo: CivilizationInfo): Table {
         val table = Table()
-        table.add(ImageGetter.getNationIndicator(civInfo.nation, 25f)).pad(5f)
+        table.add(ImageGetter.getNationPortrait(civInfo.nation, 25f)).pad(5f)
         table.add(civInfo.civName.toLabel()).left().padRight(10f)
         table.touchable = Touchable.enabled
         table.onClick {
@@ -409,7 +408,7 @@ class GlobalPoliticsOverviewTable (
             val civCount = undefeatedCivs.count()
 
             for ((i, civ) in undefeatedCivs.withIndex()) {
-                val civGroup = ImageGetter.getNationIndicator(civ.nation, 30f)
+                val civGroup = ImageGetter.getNationPortrait(civ.nation, 30f)
 
                 val vector = HexMath.getVectorForAngle(2 * Math.PI.toFloat() * i / civCount)
                 civGroup.center(this)

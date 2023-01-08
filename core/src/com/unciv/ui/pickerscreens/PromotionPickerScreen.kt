@@ -91,7 +91,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
             val isPromotionAvailable = promotion in unitAvailablePromotions
             val unitHasPromotion = unit.promotions.promotions.contains(promotion.name)
 
-            val selectPromotionButton = PickerPane.getPickerOptionButton(ImageGetter.getPromotionIcon(promotion.name), promotion.name)
+            val selectPromotionButton = PickerPane.getPickerOptionButton(ImageGetter.getPromotionPortrait(promotion.name), promotion.name)
             selectPromotionButton.isEnabled = true
             selectPromotionButton.onClick {
                 val enable = canBePromoted && isPromotionAvailable && !unitHasPromotion && canChangeState

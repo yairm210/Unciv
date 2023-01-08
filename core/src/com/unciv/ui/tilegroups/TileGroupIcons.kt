@@ -127,14 +127,12 @@ class TileGroupIcons(val tileGroup: TileGroup) {
         val shownImprovement = tileGroup.tileInfo.getShownImprovement(viewingCiv)
         if (shownImprovement == null || !showResourcesAndImprovements) return
 
-        val newImprovementImage = ImageGetter.getImprovementIcon(shownImprovement)
+        val newImprovementImage = ImageGetter.getImprovementPortrait(shownImprovement, dim = true)
         tileGroup.miscLayerGroup.addActor(newImprovementImage)
         newImprovementImage.run {
-            setSize(20f, 20f)
             center(tileGroup)
             this.x -= 22 // left
-            this.y -= 10 // bottom
-            color = Color.WHITE.cpy().apply { a = 0.7f }
+            this.y -= 12 // bottom
         }
         improvementIcon = newImprovementImage
     }
@@ -170,7 +168,7 @@ class TileGroupIcons(val tileGroup: TileGroup) {
             tileGroup.resourceImage?.remove()
             if (tileGroup.resource == null) tileGroup.resourceImage = null
             else {
-                val newResourceIcon = ImageGetter.getResourceImage(tileGroup.tileInfo.resource!!, 20f,  tileGroup.tileInfo.resourceAmount)
+                val newResourceIcon = ImageGetter.getResourcePortrait(tileGroup.tileInfo.resource!!, 20f,  tileGroup.tileInfo.resourceAmount)
                 newResourceIcon.center(tileGroup)
                 newResourceIcon.x = newResourceIcon.x - 22 // left
                 newResourceIcon.y = newResourceIcon.y + 10 // top
@@ -215,7 +213,7 @@ class TileGroupIcons(val tileGroup: TileGroup) {
         var offsetY = (displayCount - 1) * 2f
         for (nation in nations.take(3).asReversed()) {
             val newNationIcon =
-                ImageGetter.getNationIndicator(nation.second, 20f)
+                ImageGetter.getNationPortrait(nation.second, 20f)
             tileGroup.miscLayerGroup.addActor(newNationIcon)
             newNationIcon.run {
                 setSize(20f, 20f)

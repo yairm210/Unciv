@@ -118,7 +118,7 @@ class DiplomacyScreen(
                 selectCivY = leftSideTable.prefHeight
             }
 
-            val civIndicator = ImageGetter.getNationIndicator(civ.nation, nationIconSize)
+            val civIndicator = ImageGetter.getNationPortrait(civ.nation, nationIconSize)
 
             val relationLevel = civ.getDiplomacyManager(viewingCiv).relationshipLevel()
             val relationshipIcon = if (civ.isCityState() && relationLevel == RelationshipLevel.Ally)
@@ -202,7 +202,7 @@ class DiplomacyScreen(
                     continue
                 val name = supplyList.resource.name
                 val wrapper = Table()
-                val image = ImageGetter.getResourceImage(name, 30f)
+                val image = ImageGetter.getResourcePortrait(name, 30f)
                 wrapper.add(image).padRight(5f)
                 wrapper.add(supplyList.amount.toLabel())
                 resourcesTable.add(wrapper).padRight(20f)

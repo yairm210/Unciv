@@ -302,7 +302,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         table.defaults().pad(2f).minWidth(40f)
         if (isFirstConstructionOfItsKind) table.add(getProgressBar(constructionName)).minWidth(5f)
         else table.add().minWidth(5f)
-        table.add(ImageGetter.getPortraitImage(constructionName, 40f)).padRight(10f)
+        table.add(ImageGetter.getConstructionPortrait(constructionName, 40f)).padRight(10f)
         table.add(text.toLabel()).expandX().fillX().left()
 
         if (constructionQueueIndex > 0) table.add(getRaisePriorityButton(constructionQueueIndex, constructionName, city)).right()
@@ -361,7 +361,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         }
 
         pickConstructionButton.add(getProgressBar(construction.name)).padRight(5f)
-        pickConstructionButton.add(ImageGetter.getPortraitImage(construction.name, 40f)).padRight(10f)
+        pickConstructionButton.add(ImageGetter.getConstructionPortrait(construction.name, 40f)).padRight(10f)
         pickConstructionButton.add(constructionButtonDTO.buttonText.toLabel()).expandX().fillX()
 
         if (!cannotAddConstructionToQueue(construction, cityScreen.city, cityScreen.city.cityConstructions)) {

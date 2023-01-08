@@ -151,7 +151,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         val strategicResources = worldScreen.gameInfo.ruleSet.tileResources.values
             .filter { it.resourceType == ResourceType.Strategic }
         for (resource in strategicResources) {
-            val resourceImage = ImageGetter.getResourceImage(resource.name, 20f)
+            val resourceImage = ImageGetter.getResourcePortrait(resource.name, 20f)
             val resourceLabel = "0".toLabel()
             resourceActors += ResourceActors(resource, resourceLabel, resourceImage)
         }
@@ -241,7 +241,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
 
             selectedCivLabel.setText(newCiv.tr())
             val nation = worldScreen.gameInfo.ruleSet.nations[worldScreen.selectedCiv.civName]!!
-            val selectedCivIcon = ImageGetter.getNationIndicator(nation, 35f)
+            val selectedCivIcon = ImageGetter.getNationPortrait(nation, 35f)
             selectedCivIconHolder.actor = selectedCivIcon
             invalidate()
             pack()

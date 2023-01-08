@@ -6,7 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
-import com.unciv.Constants
 import com.unciv.logic.civilization.TechManager
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.TileImprovement
@@ -19,13 +18,9 @@ import com.unciv.ui.utils.extensions.addBorder
 import com.unciv.ui.utils.extensions.brighten
 import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.centerY
-import com.unciv.ui.utils.extensions.colorFromRGB
 import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.setFontSize
-import com.unciv.ui.utils.extensions.setSize
 import com.unciv.ui.utils.extensions.surroundWithCircle
-import com.unciv.ui.utils.extensions.surroundWithThinCircle
-import com.unciv.ui.utils.extensions.toGroup
 import com.unciv.ui.utils.extensions.toLabel
 
 class TechButton(techName:String, private val techManager: TechManager, isWorldScreen: Boolean = true) : Table(BaseScreen.skin) {
@@ -52,8 +47,7 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
 
         pad(0f).padBottom(5f).padTop(5f).padLeft(5f).padRight(0f)
 
-        val isResearched = (techManager.isResearched(techName) && techName != Constants.futureTech)
-        add(ImageGetter.getTechIconGroup(techName, 46f, isResearched))
+        add(ImageGetter.getTechIconPortrait(techName, 46f))
             .padRight(5f).padLeft(2f).left()
 
         if (isWorldScreen) {
@@ -112,18 +106,18 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
         val icons = ArrayList<Group>()
 
         for (unit in tech.getEnabledUnits(ruleset, techManager.civInfo)) {
-            icons.add(ImageGetter.getPortraitImage(unit.name, techIconSize))
+            icons.add(ImageGetter.getConstructionPortrait(unit.name, techIconSize))
         }
 
         for (building in tech.getEnabledBuildings(ruleset, techManager.civInfo)) {
-            icons.add(ImageGetter.getPortraitImage(building.name, techIconSize))
+            icons.add(ImageGetter.getConstructionPortrait(building.name, techIconSize))
         }
 
         for (obj in tech.getObsoletedObjects(ruleset, techManager.civInfo)) {
             val obsoletedIcon = when (obj) {
-                is Building -> ImageGetter.getPortraitImage(obj.name, techIconSize)
-                is TileResource -> ImageGetter.getResourceImage(obj.name, techIconSize)
-                is TileImprovement -> ImageGetter.getImprovementIcon(obj.name, techIconSize)
+                is Building -> ImageGetter.getConstructionPortrait(obj.name, techIconSize)
+                is TileResource -> ImageGetter.getResourcePortrait(obj.name, techIconSize)
+                is TileImprovement -> ImageGetter.getImprovementPortrait(obj.name, techIconSize)
                 else -> continue
             }.also {
                 val closeImage = ImageGetter.getRedCross(techIconSize / 2, 1f)
@@ -134,36 +128,31 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
         }
 
         for (resource in ruleset.tileResources.values.filter { it.revealedBy == techName }) {
-            icons.add(ImageGetter.getResourceImage(resource.name, techIconSize))
+            icons.add(ImageGetter.getResourcePortrait(resource.name, techIconSize))
         }
 
         for (improvement in ruleset.tileImprovements.values.asSequence()
             .filter { it.techRequired == techName }
             .filter { it.uniqueTo == null || it.uniqueTo == civName }
         ) {
-            icons.add(ImageGetter.getImprovementIcon(improvement.name, techIconSize, true))
+            icons.add(ImageGetter.getImprovementPortrait(improvement.name, techIconSize))
         }
 
         for (improvement in ruleset.tileImprovements.values.asSequence()
             .filter { it.uniqueObjects.any { u -> u.allParams.contains(techName) } }
             .filter { it.uniqueTo == null || it.uniqueTo == civName }
         ) {
-            icons.add(
-                ImageGetter.getImage("OtherIcons/Unique")
-                    .surroundWithCircle(techIconSize)
-                    .surroundWithThinCircle())
+            icons.add(ImageGetter.getUniquePortrait(improvement.name, techIconSize))
         }
 
         for (unique in tech.uniques) {
             icons.add(
                 when (unique) {
                     UniqueType.EnablesCivWideStatProduction.text.replace("civWideStat", "Gold" )
-                    -> ImageGetter.getImage("OtherIcons/ConvertGold").toGroup(techIconSize)
+                    -> ImageGetter.getConstructionPortrait("Gold", techIconSize)
                     UniqueType.EnablesCivWideStatProduction.text.replace("civWideStat", "Science" )
-                    -> ImageGetter.getImage("OtherIcons/ConvertScience").toGroup(techIconSize)
-                    else -> ImageGetter.getImage("OtherIcons/Unique")
-                        .surroundWithCircle(techIconSize)
-                        .surroundWithThinCircle()
+                    -> ImageGetter.getConstructionPortrait("Science", techIconSize)
+                    else -> ImageGetter.getUniquePortrait(unique, techIconSize)
                 }
             )
         }

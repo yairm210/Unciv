@@ -41,11 +41,11 @@ These work best if they are square, between 100x100 and 256x256 pixels, and incl
 
 For example, [here](https://github.com/yairm210/Unciv-leader-portrait-mod-example) is mod showing how to add leader portraits, which can complement the base game.
 
-### Adding Unit, Building, Resources and Tech Portraits
+### Adding Portraits
 
-The base game uses flat icons, surrounded with colored circles as backgrounds (e.g. for units to fit the civilization's flag colors), to denote entities such as units, buildings, resources, techs and in UI. A mod can supply "Portraits" - static images that will remain uncolored - by adding their images to `/Images/UnitPortraits/`, `/Images/BuildingPortraits/`, /Images/ResourcesPortraits/, '/Images/TechPortraits/', which will be used in all UI elements (except for unit icons in the world map). The file name must correspond exactly with the unit/building/tech/resource name as defined in Units.json, Buildings.json, TileResources.json or Techs.json or they will be ignored.
+The base game uses flat icons, surrounded with colored circles as backgrounds (e.g. for units to fit the civilization's flag colors), to denote entities such as: units, buildings, techs, resources, improvements, religions, promotions, uniques, unit actions and nations in the UI. A mod can supply "Portraits" - static images that will remain uncolored - by adding images to `/Images/<entityType>Portraits/` (e.g. `/Images/BuildingPortraits/`, /Images/ResourcesPortraits/, etc), which will be used in all UI elements (except for unit icons in the world map). The file name must correspond exactly with the unit/building/tech/resource/etc name  defined in corresponding JSONs (e.g. Units.json, Buildings.json, TileResources.json, etc) or have the same name as the file they suppose to replace, or they will be ignored.
 
-If mod supplies '/Images/TechPortraits/Background.png' or '/Images/ResourcesPortraits/Background.png' image, it will be used as a background for corresponding portraits instead of default circle. 
+If mod supplies '/Images/<entityType>Portraits/Background.png' images, they will be used as a background for corresponding portraits instead of default circle. 
 
 Portraits and backgrounds work best if they are full RGB square, between 100x100 and 256x256 pixels, and include some transparent border within that area.
 

@@ -23,7 +23,6 @@ import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toTextButton
-import com.unciv.utils.Log
 
 class ConstructionInfoTable(val cityScreen: CityScreen): Table() {
     private val selectedConstructionTable = Table()
@@ -62,7 +61,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen): Table() {
         selectedConstructionTable.run {
             pad(10f)
 
-            add(ImageGetter.getPortraitImage(construction.name, 50f).apply {
+            add(ImageGetter.getConstructionPortrait(construction.name, 50f).apply {
                 val link = (construction as? IRulesetObject)?.makeLink() ?: return@apply
                 if (link.isEmpty()) return@apply
                 touchable = Touchable.enabled

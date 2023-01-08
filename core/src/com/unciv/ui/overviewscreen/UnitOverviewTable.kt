@@ -203,7 +203,7 @@ class UnitOverviewTab(
             val promotionsTable = Table()
             // getPromotions goes by json order on demand, so this is same sorting as on picker
             for (promotion in unit.promotions.getPromotions(true))
-                promotionsTable.add(ImageGetter.getPromotionIcon(promotion.name))
+                promotionsTable.add(ImageGetter.getPromotionPortrait(promotion.name))
             if (unit.promotions.canBePromoted())
                 promotionsTable.add(
                     ImageGetter.getImage("OtherIcons/Star").apply {

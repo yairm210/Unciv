@@ -33,8 +33,8 @@ class NationTable(val nation: Nation, width: Float, minHeight: Float, ruleset: R
             "NewGameScreen/NationTable/Title", tintColor = outerColor
         )
         val nationIndicator: Actor =
-            if (nation.name == Constants.random) ImageGetter.getRandomNationIndicator(50f)
-            else ImageGetter.getNationIndicator(nation, 50f)
+            if (nation.name == Constants.random) ImageGetter.getRandomNationPortrait(50f)
+            else ImageGetter.getNationPortrait(nation, 50f)
         titleTable.add(nationIndicator).pad(10f).padLeft(0f)  // left 0 for centering _with_ label
 
         val titleText = if (ruleset == null || nation.name == Constants.random || nation.name == Constants.spectator)

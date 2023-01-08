@@ -25,7 +25,6 @@ import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.keyShortcuts
 import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.pad
-import com.unciv.ui.utils.extensions.surroundWithCircle
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
 import java.util.*
@@ -207,7 +206,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                             .row()
                     }
                 } else {    // Fallback
-                    add(ImageGetter.getPortraitImage(wonder.name, 100f)).pad(20f).row()
+                    add(ImageGetter.getConstructionPortrait(wonder.name, 100f)).pad(20f).row()
                 }
 
                 val centerTable = Table()
@@ -225,7 +224,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 addSeparator()
                 val centerTable = Table()
                 centerTable.add(tech.quote.toLabel().apply { wrap = true }).width(worldScreen.stage.width / 3)
-                centerTable.add(ImageGetter.getTechIconGroup(tech.name, 100f)).pad(20f)
+                centerTable.add(ImageGetter.getTechIconPortrait(tech.name, 100f)).pad(20f)
                 val descriptionScroll = ScrollPane(tech.getDescription(gameBasics).toLabel().apply { wrap = true })
                 centerTable.add(descriptionScroll).width(worldScreen.stage.width / 3).maxHeight(worldScreen.stage.height / 2)
                 add(centerTable).row()

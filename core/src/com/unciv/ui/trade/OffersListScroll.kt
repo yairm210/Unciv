@@ -90,9 +90,9 @@ class OffersListScroll(
                 val tradeLabel = offer.getOfferText(untradableOffers.sumBy(offer.name))
                 val tradeIcon = when (offer.type) {
                     Luxury_Resource, Strategic_Resource ->
-                        ImageGetter.getResourceImage(offer.name, 30f)
+                        ImageGetter.getResourcePortrait(offer.name, 30f)
                     WarDeclaration ->
-                        ImageGetter.getNationIndicator(UncivGame.Current.gameInfo!!.ruleSet.nations[offer.name]!!, 30f)
+                        ImageGetter.getNationPortrait(UncivGame.Current.gameInfo!!.ruleSet.nations[offer.name]!!, 30f)
                     else -> null
                 }
                 val tradeButton = IconTextButton(tradeLabel, tradeIcon).apply {

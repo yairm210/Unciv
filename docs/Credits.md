@@ -601,6 +601,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
     -   [pennant](https://thenounproject.com/term/pennant/194797/) by Sara Jeffries
 -   [Maya civilization](https://thenounproject.com/term/maya-civilization/1715786/) by Olena Panasovska for The Maya
 -   Aztec icon by Kāne, on Unciv Discord server
+-   [Questionmark](https://thenounproject.com/icon/questionmark-4248169/) by YURR.studio for Random nation indicator
+-   [View](https://thenounproject.com/icon/view-4211245/) by Adrien Coquet for Spectator
 
 ### Promotions
 
