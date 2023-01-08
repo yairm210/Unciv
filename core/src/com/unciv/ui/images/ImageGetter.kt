@@ -354,13 +354,44 @@ object ImageGetter {
         return image
     }
 
-    fun getResourceImage(resourceName: String, size: Float, amount: Int = 0): IconCircleGroup {
-        val iconGroup = getImage("ResourceIcons/$resourceName").surroundWithCircle(size)
-        val resource = ruleset.tileResources[resourceName]
-                ?: return iconGroup // This is the result of a bad modding setup, just give em an empty circle. Their problem.
+    fun getResourceImage(resourceName: String, size: Float, amount: Int = 0): Group {
 
-        val color = resource.resourceType.getColor()
-        iconGroup.circle.color = color
+        val portrait: Image
+        val resource = ruleset.tileResources[resourceName]
+
+        // Inner part
+        if (imageExists("ResourcePortraits/$resourceName"))
+            portrait = getImage("ResourcePortraits/$resourceName")
+        else {
+            portrait = if (imageExists("ResourceIcons/$resourceName"))
+                getImage("ResourceIcons/$resourceName")
+            else
+                getImage("ResourceIcons/Fallback")
+        }
+
+        val group: Group
+
+        // Border / background
+        if (imageExists("ResourcePortraits/Background")) {
+            val background = getImage("ResourcePortraits/Background")
+            val ratioW = portrait.width / background.width
+            val ratioH = portrait.height / background.height
+
+            background.setSize(size, size)
+            portrait.setSize(size*ratioW, size*ratioH)
+
+            group = Group()
+            group.setSize(size, size)
+            group.addActor(background)
+            group.addActor(portrait)
+
+            background.center(group)
+            portrait.center(group)
+        } else {
+            group = portrait.surroundWithCircle(size).apply {
+                circle.color = resource?.resourceType?.getColor()
+            }.surroundWithThinCircle()
+        }
 
         // Show amount indicator for strategic resources (bottom-right)
         if (amount > 0) {
@@ -368,16 +399,16 @@ object ImageGetter {
                 fontSize = 8,
                 fontColor = Color.WHITE,
                 alignment = Align.center)
-            val group = label.surroundWithCircle(size/2, true, Color.BLACK)
+            val amountGroup = label.surroundWithCircle(size/2, true, Color.BLACK)
 
             label.y -= 0.5f
-            group.x = iconGroup.width - group.width * 2 / 3
-            group.y = -group.height / 3
+            amountGroup.x = group.width - amountGroup.width * 2 / 3
+            amountGroup.y = -amountGroup.height / 3
 
-            iconGroup.addActor(group)
+            group.addActor(amountGroup)
         }
 
-        return iconGroup.surroundWithThinCircle()
+        return group
     }
 
     fun getTechIconGroup(techName: String, circleSize: Float, isResearched: Boolean = false): Group {
