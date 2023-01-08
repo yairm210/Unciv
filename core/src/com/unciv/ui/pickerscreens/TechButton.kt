@@ -45,7 +45,7 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
     init {
         touchable = Touchable.enabled
         background = BaseScreen.skinStrings.getUiBackground("TechPickerScreen/TechButton", BaseScreen.skinStrings.roundedEdgeRectangleMidShape,
-            tintColor = Color.WHITE.darken(0.3f))
+            tintColor = Color.WHITE.cpy().darken(0.3f))
 
         bg.toBack()
         addActor(bg)
@@ -65,9 +65,9 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
             val percentWillBeComplete = (techCost - (remainingTech-techThisTurn)) / techCost.toFloat()
             val progressBar = ImageGetter.ProgressBar(2f, 48f, true)
                     .setBackground(Color.WHITE)
-                    .setSemiProgress(Color.BLUE.brighten(0.3f), percentWillBeComplete)
-                    .setProgress(Color.BLUE.darken(0.5f), percentComplete)
-            add(progressBar.addBorder(1f, Color.GRAY)).padLeft(0f).padRight(5f)
+                    .setSemiProgress(Color.BLUE.cpy().brighten(0.3f), percentWillBeComplete)
+                    .setProgress(Color.BLUE.cpy().darken(0.5f), percentComplete)
+            add(progressBar.addBorder(1f, Color.GRAY.cpy())).padLeft(0f).padRight(5f)
         }
 
         val rightSide = Table()

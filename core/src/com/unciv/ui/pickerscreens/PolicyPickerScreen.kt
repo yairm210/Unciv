@@ -37,7 +37,7 @@ import java.lang.Integer.max
 import kotlin.math.abs
 import kotlin.math.min
 
-object Colors {
+object PolicyColors {
 
     val policyPickable = colorFromRGB(47,67,92).darken(0.3f)
     val policyNotPickable =  colorFromRGB(20, 20, 20)
@@ -46,14 +46,6 @@ object Colors {
     val branchCompleted = colorFromRGB(255, 205, 0)
     val branchNotAdopted = colorFromRGB(10,90,130).darken(0.5f)
     val branchAdopted = colorFromRGB(100, 90, 10).darken(0.5f)
-}
-
-object Sizes {
-    val paddingVertical = 10f
-    val paddingHorizontal = 20f
-    val paddingBetweenHor = 10f
-    val paddingBetweenVer = 20f
-    val iconSize = 50f
 }
 
 fun Policy.isAdopted() : Boolean {
@@ -135,21 +127,21 @@ class PolicyButton(val policy: Policy, size: Float = 30f) : BorderedTable(
         when {
 
             isSelected && isPickable -> {
-                setBackgroundColor(Colors.policySelected)
+                setBackgroundColor(PolicyColors.policySelected)
             }
 
             isPickable -> {
-                setBackgroundColor(Colors.policyPickable)
+                setBackgroundColor(PolicyColors.policyPickable)
             }
 
             isAdopted -> {
-                icon.color = Color.GOLD
+                icon.color = Color.GOLD.cpy()
                 setBackgroundColor(colorFromRGB(10,90,100).darken(0.8f))
             }
 
             else -> {
                 icon.color.a = 0.2f
-                setBackgroundColor(Colors.policyNotPickable)
+                setBackgroundColor(PolicyColors.policyNotPickable)
             }
 
         }
@@ -161,6 +153,14 @@ class PolicyButton(val policy: Policy, size: Float = 30f) : BorderedTable(
 
 class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo = worldScreen.viewingCiv)
     : PickerScreen(), RecreateOnResize {
+
+    object Sizes {
+        val paddingVertical = 10f
+        val paddingHorizontal = 20f
+        val paddingBetweenHor = 10f
+        val paddingBetweenVer = 20f
+        val iconSize = 50f
+    }
 
     internal val viewingCiv: CivilizationInfo = civInfo
 
@@ -302,8 +302,10 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         val prefHeight = Sizes.paddingVertical*2 + Sizes.iconSize*maxRow + Sizes.paddingBetweenVer*(maxRow - 1)
 
         // Main table
-        val colorBg = if (branch.isAdopted()) Colors.branchAdopted else Colors.branchNotAdopted
-        val branchGroup = BorderedTable(innerColor = colorBg)
+        val colorBg = if (branch.isAdopted()) PolicyColors.branchAdopted else PolicyColors.branchNotAdopted
+        val branchGroup = BorderedTable(
+            path="PolicyScree/PolicyBranchBackground",
+            innerColor = colorBg)
 
         // Header
         val header = getBranchHeader(branch)
@@ -343,7 +345,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
             for ((k, v) in conditionals) {
                 warning += "• " + k.text.fillPlaceholders(v.joinToString()).tr() + "\n"
             }
-            val warningLabel = warning.toLabel(Color.RED, 13)
+            val warningLabel = warning.toLabel(Color.RED.cpy(), 13)
             warningLabel.setFillParent(false)
             warningLabel.setAlignment(Align.topLeft)
             warningLabel.wrap = true
@@ -479,7 +481,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
 
     private fun drawLine(group: Group, policyX: Float, policyY: Float, prereqX: Float, prereqY:Float) {
 
-        val lineColor = Color.WHITE
+        val lineColor = Color.WHITE.cpy()
         val lineSize = 2f
 
         if (policyX != prereqX) {
@@ -554,7 +556,9 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
     }
 
     private fun getBranchHeader(branch: PolicyBranch): Table {
-        val header = BorderedTable(innerColor = colorFromRGB(47,90,92), borderSize = 5f)
+        val header = BorderedTable(
+            path="PolicyScreen/PolicyBranchHeader",
+            innerColor = colorFromRGB(47,90,92), borderSize = 5f)
         header.pad(5f)
 
         val table = Table()
@@ -582,7 +586,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         val text: String
 
         val lockIcon = ImageGetter.getImage("OtherIcons/LockSmall")
-            .apply { color = Color.WHITE }.toGroup(15f)
+            .apply { color = Color.WHITE.cpy() }.toGroup(15f)
         lockIcon.isVisible = false
         if (viewingCiv.policies.isAdopted(branch.name)) {
             policy = branch.policies.last()
@@ -599,18 +603,19 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         label.setAlignment(Align.center)
 
         val color = when {
-            policy.isPickable() -> Colors.policyPickable
+            policy.isPickable() -> PolicyColors.policyPickable
             viewingCiv.policies.isAdopted(policy.name) -> {
                 label.color = colorFromRGB(150, 70, 40)
-                Colors.branchCompleted
+                PolicyColors.branchCompleted
             }
             else -> {
                 lockIcon.isVisible = true
                 label.color.a = 0.5f
-                Colors.policyNotPickable}
+                PolicyColors.policyNotPickable}
         }
 
         val table = BorderedTable(
+            path="PolicyScreen/PolicyBranchAdoptButton",
             defaultInner = skinStrings.roundedEdgeRectangleSmallShape,
             defaultBorder = skinStrings.roundedEdgeRectangleSmallShape,
             innerColor = color, borderSize = 2f)
