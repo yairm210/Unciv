@@ -422,7 +422,7 @@ object GameStarter {
                 civ.nation.startBias.isNotEmpty() && !gameSetupInfo.gameParameters.noStartBias -> 4 // less harsh
                 else -> 5  // no requirements
             }
-        }
+        }.sortedByDescending { it.isHuman() } // More important for humans to get their start biases!
 
         for (minimumDistanceBetweenStartingLocations in tileMap.tileMatrix.size / 6 downTo 0) {
             val freeTiles = landTilesInBigEnoughGroup.asSequence()
@@ -444,7 +444,8 @@ object GameStarter {
                     getOneStartingLocation(civ, tileMap, freeTiles, startScores)
                 }
                 startingLocations[civ] = startingLocation
-                freeTiles.removeAll(tileMap.getTilesInDistance(startingLocation.position, distanceToNext))
+                freeTiles.removeAll(tileMap.getTilesInDistance(startingLocation.position, distanceToNext)
+                    .toSet())
             }
             if (startingLocations.size < civs.size) continue // let's try again with less minimum distance!
 
