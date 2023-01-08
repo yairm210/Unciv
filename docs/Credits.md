@@ -10,7 +10,11 @@ New Unciv logo made by u-ndefined on Discord
 
 Base tile icons for the "Fantasy Hex" tileset belong to CuddlyClover @ https://cuddlyclover.itch.io/fantasy-hex-tiles with a few additions by various contributors
 
-Tile improvements and units, as well as the entire HexaRealm tileset, are made by The Bucketeer / @GeneralWadaling and are licenced under Creative Commons 3.0
+Tile improvements and units, as well as the terrains and improvements for HexaRealm tileset, are made by The Bucketeer / @GeneralWadaling and are licenced under Creative Commons 3.0
+
+Units for the AbsoluteUnits unitset are made by [letstalkaboutdune](https://github.com/letstalkaboutdune)
+
+Promotional trailer for Steam and other storefronts made by [letstalkaboutdune](https://github.com/letstalkaboutdune)
 
 Unless otherwise specified, all the following are from [the Noun Project](https://thenounproject.com) licenced under either Creative Commons or Public Domain
 
@@ -211,8 +215,15 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Village](https://thenounproject.com/search/?q=city+center&i=476338) by Andrey Vasiliev
 -   [pumping station](https://thenounproject.com/search/?q=dike&i=555172) by Peter van Driel for Polder
 -   [Oil Platform](https://thenounproject.com/icon/oil-platform-1364795/) by Georgiana Ionescu for Offshore Platform
+-   [Broom](https://thenounproject.com/icon/broom-1642644/) by Rakhmat Setiawan for Remove Fallout
+-   [Axe](https://www.flaticon.com/ru/free-icon/axe_803805) by Those Icons for Remove Forest and Remove Jungle
+-   [Machete](https://thenounproject.com/icon/machete-36067/) by Robert A. Di Ieso for Remove Marsh
+-   Icon for Remove Railroad by [vegeta1k95](https://github.com/vegeta1k95)
+-   Icon for Remove Road by [vegeta1k95](https://github.com/vegeta1k95)
 
 ### Buildings
+
+- [Building](https://thenounproject.com/icon/building-5386455/) by Aurel for fallback image
 
 #### Ancient Era
 
@@ -433,6 +444,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 
 ### Technologies
 
+- [Lightbulb](https://thenounproject.com/icon/lightbulb-589680/) by Davo Sime for fallback image
+
 #### Ancient
 
 -   [Agriculture](https://thenounproject.com/term/agriculture/4221/) By OCHA Visual Information Unit
@@ -587,6 +600,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
     -   [Spear](https://thenounproject.com/term/spear/3930020/) by Firza Alamsyah
     -   [pennant](https://thenounproject.com/term/pennant/194797/) by Sara Jeffries
 -   [Maya civilization](https://thenounproject.com/term/maya-civilization/1715786/) by Olena Panasovska for The Maya
+-   Aztec icon by Kāne, on Unciv Discord server
 
 ### Promotions
 
@@ -664,7 +678,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [Aircraft](https://thenounproject.com/search/?q=aircraft&i=1629000) By Tom Fricker for aircraft icon in city button
 - [radar scan](https://thenounproject.com/search/?q=range&i=1500234) By icon 54 for Range
 - [short range radar](https://thenounproject.com/search/?q=air%20range&i=2612731) by Vectors Point for Intercept range
-- [Puppet](https://thenounproject.com/search/?q=puppet&i=285735) By Ben Davis for puppeted cities
+- Puppet by [vegeta1k95](https://github.com/veget1k95) based on [Puppet](https://thenounproject.com/search/?q=puppet&i=285735) by Ben Davis, for puppeted cities
 - [City](https://thenounproject.com/search/?q=city&i=1765370) By Muhajir ila Robbi in the Icon center
 - [Lock](https://thenounproject.com/search/?q=lock&i=3217613) by Vadim Solomakhin for locked tiles
 - [Hourglass](https://thenounproject.com/search/?q=hourglass&i=142268) by I Create Stuff for the 'Turn' icon
@@ -684,6 +698,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [Footprints](https://thenounproject.com/icon/footprints-1393611/) by Abdul Wahhab for movement overlay toggle, slightly modified. Currently unused.
 - Arrows.svg by Intralexical (@will-ca), CC0.
 - [favor](https://thenounproject.com/icon/favor-1029350/) by MICHAEL G BROWN for WLTK marker on City Overview
+- WLTKD by [vegeta1k95](https://github.com/vegeta1k95) based on [favor](https://thenounproject.com/icon/favor-1029350/) by MICHAEL G BROWN for WLTKD status icon
 - [Party](https://thenounproject.com/icon/party-1784941/) by Adrien Coquet for WLTK header on City Overview
 - [Party](https://thenounproject.com/icon/party-2955155/) by Lars Meiertoberens as additional WLKT decoration
 - [spy](https://thenounproject.com/icon/spy-2905374/) by Vectorstall for Spy
@@ -748,6 +763,9 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [Timer](https://www.flaticon.com/free-icons/timer) created by Gregor Cresnar Premium - Flaticon
 - [Political Science](https://www.flaticon.com/premium-icon/political-science_5403775) created by Hilmy Abiyyu A. - Flaticon
 - [Question](https://thenounproject.com/icon/question-1157126/) created by Aneeque Ahmed for Question Icon
+- [Trade](https://www.flaticon.com/free-icon/trade_4257019) created by Smashicons for Conduct Trade Mission
+- [Nothing](https://www.flaticon.com/free-icon/nothing_5084125) created by Freepik for Nothing construction process
+- Icon for Unique created by [vegeta1k95](https://github.com/vegeta1k95)
 
 ### Main menu
 
@@ -775,9 +793,10 @@ Sounds are from FreeSound.org unless otherwise noted and are either Creative Com
 - [Tank reload](https://freesound.org/people/KieranKeegan/sounds/418882/) By KieranKeegan as 'setup' for siege unit setup
 - [Scribble_short](https://freesound.org/people/waldram/sounds/257518/) By waldram as 'policy' for adopting policies
 - [Hit Impact](https://freesound.org/people/Mrguff/sounds/369711/) by Mrguff as 'throw' for catapult & trebuchet attacks
-- [Slingshot fly by 2](https://freesound.org/people/saturdaysoundguy/sounds/394186/) by saturdaysoundguy as 'arrow' for arrow attacks
+- [Arrow Impact](https://pixabay.com/sound-effects/arrow-impact-87260/) by Twisted Euphoria on Pixabay as 'arrow' for arrow attacks (Pixabay License)
+- [Crossbow Firing](https://pixabay.com/sound-effects/crossbow-firing-95020/) by GameWithBepis on Pixabay as 'crossbow' for crossbow attacks (Pixabay License)
 - [Metal hit slide](https://freesound.org/people/orginaljun/sounds/149102/) by orginaljun as 'nonmetalhit' for pre-metal melee sounds
-- [klick_anlauf](https://freesound.org/people/jascha/sounds/16576/) By jascha as 'metalhit' for metal melee sounds
+- [wpn 1 generic](https://pixabay.com/sound-effects/wpn-1-generic-100027/) By SlavicMagic on Pixabay as 'metalhit' for metal melee sounds (Pixabay License)
 - [Horse's whinny](https://freesound.org/people/Kubuzz/sounds/347036/) By Kubuzz as 'horse' for cavalry attack sounds
 - [machine gun 001 - loop](https://freesound.org/people/pgi/sounds/212602/) By pgi as 'machinegun' for machine gun attack sound
 - [uzzi_full_single](https://freesound.org/people/Deganoth/sounds/348685/) By Deganoth as 'shot' for bullet attacks
@@ -817,3 +836,12 @@ Sounds are from FreeSound.org unless otherwise noted and are either Creative Com
 
 The following music is from https://filmmusic.io
 "[Thatched Villagers](https://incompetech.filmmusic.io/song/4481-thatched-villagers)" by Kevin MacLeod (https://incompetech.com)
+
+## Trailer audio
+
+The following audio is from https://pixabay.com/ [Pixabay License](https://pixabay.com/service/terms/#license)
+-   [Beyond New Horizons - Free Epic Viking Medieval Soundtrack](https://pixabay.com/music/main-title-beyond-new-horizons-free-epic-viking-medieval-soundtrack-22081/) by GioeleFazzeri for background music
+-   [Beep 6](https://pixabay.com/sound-effects/beep-6-96243/) by Eponn for beep in Cross-Platform Play section
+-   [Cinematic Boom](https://pixabay.com/sound-effects/cinematic-boom-6872/) by Rizzard for final boom
+-   [Cymbal Swell 2](https://pixabay.com/sound-effects/cymbal-swell-2-74766/) by rubberduckie for cymbal swells
+-   [hit of orchestral cymbals and bass drum](https://pixabay.com/sound-effects/hit-of-orchestral-cymbals-and-bass-drum-14471/) by Selector for intro crash

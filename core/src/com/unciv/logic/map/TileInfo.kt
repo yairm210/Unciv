@@ -44,6 +44,18 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         private set
 
     fun setOwningCity(city:CityInfo?){
+        if (city != null) {
+            if (roadStatus != RoadStatus.None && roadOwner != "") {
+                // remove previous neutral tile owner
+                getRoadOwner()!!.neutralRoads.remove(this.position)
+            }
+            roadOwner = city.civInfo.civName // only when taking control, otherwise last owner
+        } else {
+            if (roadStatus != RoadStatus.None && owningCity != null) {
+                // previous tile owner still owns road, add to tracker
+                owningCity!!.civInfo.neutralRoads.add(this.position)
+            }
+        }
         owningCity = city
         isCityCenterInternal = getCity()?.location == position
     }
@@ -83,7 +95,13 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     var terrainUniqueMap = UniqueMap()
         private set
 
+    @Transient
+    /** Between 0.0 and 1.0 - For map generation use only */
+    var humidity:Double? = null
 
+    @Transient
+    /** Between -1.0 and 1.0 - For map generation use only */
+    var temperature:Double? = null
 
     var naturalWonder: String? = null
     var resource: String? = null
@@ -94,8 +112,11 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     var resourceAmount: Int = 0
     var improvement: String? = null
     var improvementInProgress: String? = null
+    var improvementIsPillaged = false
 
     var roadStatus = RoadStatus.None
+    var roadIsPillaged = false
+    var roadOwner: String = "" // either who last built the road or last owner of tile
     var turnsToImprovement: Int = 0
 
     fun isHill() = baseTerrain == Constants.hill || terrainFeatures.contains(Constants.hill)
@@ -133,7 +154,10 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         toReturn.resourceAmount = resourceAmount
         toReturn.improvement = improvement
         toReturn.improvementInProgress = improvementInProgress
+        toReturn.improvementIsPillaged = improvementIsPillaged
         toReturn.roadStatus = roadStatus
+        toReturn.roadIsPillaged = roadIsPillaged
+        toReturn.roadOwner = roadOwner
         toReturn.turnsToImprovement = turnsToImprovement
         toReturn.hasBottomLeftRiver = hasBottomLeftRiver
         toReturn.hasBottomRightRiver = hasBottomRightRiver
@@ -146,6 +170,10 @@ open class TileInfo : IsPartOfGameInfoSerialization {
 
     fun containsGreatImprovement(): Boolean {
         return getTileImprovement()?.isGreatImprovement() == true
+    }
+
+    fun containsUnpillagedGreatImprovement(): Boolean {
+        return getUnpillagedTileImprovement()?.isGreatImprovement() == true
     }
 
     fun containsUnfinishedGreatImprovement(): Boolean {
@@ -205,7 +233,85 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     fun isImpassible() = getLastTerrain().impassable
 
     fun getTileImprovement(): TileImprovement? = if (improvement == null) null else ruleset.tileImprovements[improvement!!]
+    fun getUnpillagedTileImprovement(): TileImprovement? = if (getUnpillagedImprovement() == null) null else ruleset.tileImprovements[improvement!!]
     fun getTileImprovementInProgress(): TileImprovement? = if (improvementInProgress == null) null else ruleset.tileImprovements[improvementInProgress!!]
+    fun getImprovementToPillage(): TileImprovement? {
+        if (canPillageTileImprovement())
+            return ruleset.tileImprovements[improvement]!!
+        if (canPillageRoad())
+            return ruleset.tileImprovements[roadStatus.name]!!
+        return null
+    }
+    // same as above, but slightly quicker
+    fun getImprovementToPillageName(): String? {
+        if (canPillageTileImprovement())
+            return improvement
+        if (canPillageRoad())
+            return roadStatus.name
+        return null
+    }
+    fun getImprovementToRepair(): TileImprovement? {
+        if (improvement != null && improvementIsPillaged)
+            return ruleset.tileImprovements[improvement]!!
+        if (roadStatus != RoadStatus.None && roadIsPillaged)
+            return ruleset.tileImprovements[roadStatus.name]!!
+        return null
+    }
+    fun canPillageTile(): Boolean {
+        return canPillageTileImprovement() || canPillageRoad()
+    }
+    fun canPillageTileImprovement(): Boolean {
+        return improvement != null && !improvementIsPillaged
+                && !ruleset.tileImprovements[improvement]!!.hasUnique(UniqueType.Unpillagable)
+                && !ruleset.tileImprovements[improvement]!!.hasUnique(UniqueType.Irremovable)
+    }
+    fun canPillageRoad(): Boolean {
+        return roadStatus != RoadStatus.None && !roadIsPillaged
+                && !ruleset.tileImprovements[roadStatus.name]!!.hasUnique(UniqueType.Unpillagable)
+                && !ruleset.tileImprovements[roadStatus.name]!!.hasUnique(UniqueType.Irremovable)
+    }
+    fun getUnpillagedImprovement(): String? {
+        return if (improvementIsPillaged)
+            null
+        else
+            improvement
+    }
+    fun getUnpillagedRoad(): RoadStatus {
+        return if (roadIsPillaged)
+            RoadStatus.None
+        else
+            roadStatus
+    }
+    fun getUnpillagedRoadImprovement(): TileImprovement? {
+        return if (getUnpillagedRoad() == RoadStatus.None) null
+        else ruleset.tileImprovements[getUnpillagedRoad().name]
+    }
+
+    fun changeImprovement(improvementStr: String?) {
+        improvementIsPillaged = false
+        improvement = improvementStr
+    }
+
+    // function handling when adding a road to the tile
+    fun addRoad(roadType: RoadStatus, unitCivInfo: CivilizationInfo) {
+        roadStatus = roadType
+        roadIsPillaged = false
+        if (getOwner() == null) {
+            roadOwner = unitCivInfo.civName // neutral tile, use building unit
+            unitCivInfo.neutralRoads.add(this.position)
+        } else {
+            roadOwner = getOwner()!!.civName
+        }
+    }
+
+    // function handling when removing a road from the tile
+    fun removeRoad() {
+        roadIsPillaged = false
+        if (roadStatus == RoadStatus.None) return
+        roadStatus = RoadStatus.None
+        if (owningCity == null)
+            getRoadOwner()?.neutralRoads?.remove(this.position)
+    }
 
     fun getShownImprovement(viewingCiv: CivilizationInfo?): String? {
         return if (viewingCiv == null || viewingCiv.playerType == PlayerType.AI || viewingCiv.isSpectator())
@@ -234,8 +340,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
 
     @delegate:Transient
     val height : Int by lazy {
-        allTerrains.flatMap { it.uniqueObjects }
-            .filter { it.isOfType(UniqueType.VisibilityElevation) }
+        allTerrains.flatMap { it.getMatchingUniques(UniqueType.VisibilityElevation) }
             .map { it.params[0].toInt() }.sum()
     }
 
@@ -247,13 +352,20 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         return containingCity.civInfo
     }
 
+    fun getRoadOwner(): CivilizationInfo? {
+        return if (roadOwner != "")
+            tileMap.gameInfo.getCivilization(roadOwner)
+        else
+            getOwner()
+    }
+
     fun isFriendlyTerritory(civInfo: CivilizationInfo): Boolean {
         val tileOwner = getOwner()
         return when {
             tileOwner == null -> false
             tileOwner == civInfo -> true
             !civInfo.knows(tileOwner) -> false
-            else -> civInfo.getDiplomacyManager(tileOwner).isConsideredFriendlyTerritory()
+            else -> tileOwner.getDiplomacyManager(civInfo).isConsideredFriendlyTerritory()
         }
     }
 
@@ -274,7 +386,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     /** Get all uniques of this type that any part of this tile has: terrains, improvement, resource */
     fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(tile=this)): Sequence<Unique> {
         var uniques = getTerrainMatchingUniques(uniqueType, stateForConditionals)
-        if (improvement != null){
+        if (getUnpillagedImprovement() != null){
             val tileImprovement = getTileImprovement()
             if (tileImprovement != null) {
                 uniques += tileImprovement.getMatchingUniques(uniqueType, stateForConditionals)
@@ -292,7 +404,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
 
     fun isWorked(): Boolean = getWorkingCity() != null
     fun providesYield() = getCity() != null && (isCityCenter() || isWorked()
-            || getTileImprovement()?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation) == true
+            || getUnpillagedTileImprovement()?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation) == true
             || terrainHasUnique(UniqueType.TileProvidesYieldWithoutPopulation))
 
     fun isLocked(): Boolean {
@@ -321,11 +433,6 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         if (naturalWonder != null) {
             val wonderStats = getNaturalWonder().cloneStats()
 
-            // Spain doubles tile yield
-            if (city != null && city.civInfo.hasUnique(UniqueType.DoubleStatsFromNaturalWonders, stateForConditionals)) {
-                wonderStats.timesInPlace(2f)
-            }
-
             if (getNaturalWonder().overrideStats)
                 stats = wonderStats
             else
@@ -333,25 +440,21 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         }
 
         if (city != null) {
-            var tileUniques = city.getMatchingUniques(UniqueType.StatsFromTiles, stateForConditionals)
+            var tileUniques = city.getMatchingUniques(UniqueType.StatsFromTiles, StateForConditionals.IgnoreConditionals)
                 .filter { city.matchesFilter(it.params[2]) }
-            tileUniques += city.getMatchingUniques(UniqueType.StatsFromObject, stateForConditionals)
+            tileUniques += city.getMatchingUniques(UniqueType.StatsFromObject, StateForConditionals.IgnoreConditionals)
             for (unique in localUniqueCache.get("StatsFromTilesAndObjects", tileUniques)) {
+                if (!unique.conditionalsApply(stateForConditionals)) continue
                 val tileType = unique.params[1]
                 if (!matchesTerrainFilter(tileType, observingCiv)) continue
                 stats.add(unique.stats)
-                if (naturalWonder != null
-                    && tileType == "Natural Wonder"
-                    && city.civInfo.hasUnique(UniqueType.DoubleStatsFromNaturalWonders)
-                ) {
-                    stats.add(unique.stats)
-                }
             }
 
             for (unique in localUniqueCache.get("StatsFromTilesWithout",
-                city.getMatchingUniques(UniqueType.StatsFromTilesWithout, stateForConditionals))
+                city.getMatchingUniques(UniqueType.StatsFromTilesWithout, StateForConditionals.IgnoreConditionals))
             ) {
                 if (
+                    unique.conditionalsApply(stateForConditionals) &&
                     matchesTerrainFilter(unique.params[1]) &&
                     !matchesTerrainFilter(unique.params[2]) &&
                     city.matchesFilter(unique.params[3])
@@ -366,7 +469,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
             // resource base
             if (hasViewableResource(observingCiv)) stats.add(tileResource)
 
-            val improvement = getTileImprovement()
+            val improvement = getUnpillagedTileImprovement()
             if (improvement != null)
                 stats.add(getImprovementStats(improvement, observingCiv, city, localUniqueCache))
 
@@ -509,7 +612,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
             val adjacent = unique.params[1]
             val numberOfBonuses = neighbors.count {
                 it.matchesFilter(adjacent, observingCiv)
-                    || it.roadStatus.name == adjacent
+                    || it.getUnpillagedRoad().name == adjacent
             }
             stats.add(unique.stats.times(numberOfBonuses.toFloat()))
         }
@@ -785,7 +888,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     /** Implements [UniqueParameterType.TileFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TileFilter] */
     fun matchesFilter(filter: String, civInfo: CivilizationInfo? = null): Boolean {
         if (matchesTerrainFilter(filter, civInfo)) return true
-        if (improvement != null && ruleset.tileImprovements[improvement]!!.matchesFilter(filter)) return true
+        if (improvement != null && !improvementIsPillaged && ruleset.tileImprovements[improvement]!!.matchesFilter(filter)) return true
         return improvement == null && filter == "unimproved"
     }
 
@@ -993,11 +1096,15 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         }
         if (naturalWonder != null)
             lineList += FormattedLine(naturalWonder!!, link="Terrain/$naturalWonder")
-        if (roadStatus !== RoadStatus.None && !isCityCenter())
-            lineList += FormattedLine(roadStatus.name, link="Improvement/${roadStatus.name}")
+        if (roadStatus !== RoadStatus.None && !isCityCenter()) {
+            val pillageText = if (roadIsPillaged) " (Pillaged!)" else ""
+            lineList += FormattedLine("[${roadStatus.name}]$pillageText", link = "Improvement/${roadStatus.name}")
+        }
         val shownImprovement = getShownImprovement(viewingCiv)
-        if (shownImprovement != null)
-            lineList += FormattedLine(shownImprovement, link="Improvement/$shownImprovement")
+        if (shownImprovement != null) {
+            val pillageText = if (improvementIsPillaged) " (Pillaged!)" else ""
+            lineList += FormattedLine("[$shownImprovement]$pillageText", link = "Improvement/$shownImprovement")
+        }
 
         if (improvementInProgress != null && isViewableToPlayer) {
             // Negative turnsToImprovement is used for UniqueType.CreatesOneImprovement
@@ -1009,7 +1116,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         if (civilianUnit != null && isViewableToPlayer)
             lineList += FormattedLine(civilianUnit!!.name.tr() + " - " + civilianUnit!!.civInfo.civName.tr(),
                 link="Unit/${civilianUnit!!.name}")
-        if (militaryUnit != null && isViewableToPlayer) {
+        if (militaryUnit != null && isViewableToPlayer && (viewingCiv == null || !militaryUnit!!.isInvisible(viewingCiv))) {
             val milUnitString = militaryUnit!!.name.tr() +
                 (if (militaryUnit!!.health < 100) "(" + militaryUnit!!.health + ")" else "") +
                 " - " + militaryUnit!!.civInfo.civName.tr()
@@ -1039,7 +1146,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     }
 
     fun hasConnection(civInfo: CivilizationInfo) =
-            roadStatus != RoadStatus.None || forestOrJungleAreRoads(civInfo)
+            getUnpillagedRoad() != RoadStatus.None || forestOrJungleAreRoads(civInfo)
 
 
     private fun forestOrJungleAreRoads(civInfo: CivilizationInfo) =
@@ -1077,6 +1184,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     fun setTransients() {
         setTerrainTransients()
         setUnitTransients(true)
+        setOwnerTransients()
     }
 
     fun setTerrainTransients() {
@@ -1104,6 +1212,11 @@ open class TileInfo : IsPartOfGameInfoSerialization {
                 unit.assignOwner(tileMap.gameInfo.getCivilization(unit.owner), false)
             unit.setTransients(ruleset)
         }
+    }
+
+    fun setOwnerTransients() {
+        if (owningCity == null && roadOwner != "")
+            getRoadOwner()!!.neutralRoads.add(this.position)
     }
 
     fun stripUnits() {
@@ -1204,15 +1317,43 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     /** Sets tile improvement to pillaged (without prior checks for validity)
      *  and ensures that matching [UniqueType.CreatesOneImprovement] queued buildings are removed. */
     fun setPillaged() {
+        if (!canPillageTile())
+            return
         // http://well-of-souls.com/civ/civ5_improvements.html says that naval improvements are destroyed upon pillage
         //    and I can't find any other sources so I'll go with that
-        if (isLand) {
-            // Setting turnsToImprovement might interfere with UniqueType.CreatesOneImprovement
-            removeCreatesOneImprovementMarker()
-            improvementInProgress = improvement
-            turnsToImprovement = 2
+        if (!isLand) { changeImprovement(null); return }
+
+        // Setting turnsToImprovement might interfere with UniqueType.CreatesOneImprovement
+        removeCreatesOneImprovementMarker()
+        improvementInProgress = null  // remove any in progress work as well
+        turnsToImprovement = 0
+        // if no Repair action, destroy improvements instead
+        if (ruleset.tileImprovements[Constants.repair] == null) {
+            if (canPillageTileImprovement())
+                changeImprovement(null)
+            else
+                removeRoad()
+        } else {
+            // otherwise use pillage/repair systems
+            if (canPillageTileImprovement()) {
+                improvementIsPillaged = true
+            } else {
+                roadIsPillaged = true
+            }
         }
-        improvement = null
+    }
+
+    fun isPillaged(): Boolean {
+        return improvementIsPillaged || roadIsPillaged
+    }
+
+    fun setRepaired() {
+        improvementInProgress = null
+        turnsToImprovement = 0
+        if (improvementIsPillaged)
+            improvementIsPillaged = false
+        else
+            roadIsPillaged = false
     }
 
     /** Marks tile as target tile for a building with a [UniqueType.CreatesOneImprovement] unique */
@@ -1235,7 +1376,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
             baseTerrain = this.getNaturalWonder().turnsInto!!
             setTerrainFeatures(listOf())
             resource = null
-            improvement = null
+            changeImprovement(null)
         }
 
         if (!ruleset.terrains.containsKey(baseTerrain))
@@ -1262,18 +1403,18 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         // If we're checking this at gameInfo.setTransients, we can't check the top terrain
         if (improvement != null && ::baseTerrainObject.isInitialized) normalizeTileImprovement(ruleset)
         if (isWater || isImpassible())
-            roadStatus = RoadStatus.None
+            removeRoad()
     }
 
     private fun normalizeTileImprovement(ruleset: Ruleset) {
         val improvementObject = ruleset.tileImprovements[improvement]
         if (improvementObject == null) {
-            improvement = null
+            changeImprovement(null)
             return
         }
-        improvement = null // Unset, and check if it can be reset. If so, do it, if not, invalid.
+        changeImprovement(null) // Unset, and check if it can be reset. If so, do it, if not, invalid.
         if (canImprovementBeBuiltHere(improvementObject, stateForConditionals = StateForConditionals.IgnoreConditionals))
-            improvement = improvementObject.name
+            changeImprovement(improvementObject.name)
     }
 
     private fun convertHillToTerrainFeature() {

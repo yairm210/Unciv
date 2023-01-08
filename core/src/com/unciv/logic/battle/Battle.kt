@@ -483,10 +483,8 @@ object Battle {
         if (thisCombatant !is MapUnitCombatant) return
         val modConstants = thisCombatant.unit.civInfo.gameInfo.ruleSet.modOptions.constants
         if (thisCombatant.unit.promotions.totalXpProduced() >= modConstants.maxXPfromBarbarians
-            && otherCombatant.getCivInfo().isBarbarian()
-        ) {
+                && otherCombatant.getCivInfo().isBarbarian())
             return
-        }
 
         val stateForConditionals = StateForConditionals(civInfo = thisCombatant.getCivInfo(), ourCombatant = thisCombatant, theirCombatant = otherCombatant)
 
@@ -515,6 +513,9 @@ object Battle {
             val greatGeneralPointsGained = (xpGained * greatGeneralPointsModifier).toInt()
             thisCombatant.getCivInfo().greatPeople.greatGeneralPoints += greatGeneralPointsGained
         }
+
+        if (!thisCombatant.isDefeated() && thisCombatant.unit.promotions.canBePromoted())
+            thisCombatant.getCivInfo().addNotification("[${thisCombatant.unit.name}] can be promoted!",thisCombatant.getTile().position, thisCombatant.unit.name)
     }
 
     private fun conquerCity(city: CityInfo, attacker: MapUnitCombatant) {
@@ -547,7 +548,7 @@ object Battle {
             // retaking old capital
             city.puppetCity(attackerCiv)
             city.annexCity()
-        } else if (attackerCiv.isPlayerCivilization()) {
+        } else if (attackerCiv.isHuman()) {
             // we're not taking our former capital
             attackerCiv.popupAlerts.add(PopupAlert(AlertType.CityConquered, city.id))
         } else {
@@ -775,15 +776,16 @@ object Battle {
             destroyIfDefeated(defender.getCivInfo(), attacker.getCivInfo())
         }
 
-        // Pillage improvements, remove roads, add fallout
-        if (tile.improvement != null && !tile.getTileImprovement()!!.hasUnique(UniqueType.Irremovable)) {
+        // Pillage improvements, pillage roads, add fallout
+        if (tile.getUnpillagedImprovement() != null && !tile.getTileImprovement()!!.hasUnique(UniqueType.Irremovable)) {
             if (tile.getTileImprovement()!!.hasUnique(UniqueType.Unpillagable)) {
-                tile.improvement = null
+                tile.changeImprovement(null)
             } else {
                 tile.setPillaged()
             }
         }
-        tile.roadStatus = RoadStatus.None
+        if (tile.getUnpillagedRoad() != RoadStatus.None)
+            tile.setPillaged()
         if (tile.isLand && !tile.isImpassible() && !tile.isCityCenter()) {
             if (tile.terrainHasUnique(UniqueType.DestroyableByNukesChance)) {
                 for (terrainFeature in tile.terrainFeatureObjects) {
@@ -1104,7 +1106,7 @@ object Battle {
             && attackedTile.getTileImprovement()?.isAncientRuinsEquivalent() != true
             && attacker.hasUnique(UniqueType.DestroysImprovementUponAttack, conditionalState)
         ) {
-            attackedTile.improvement = null
+            attackedTile.changeImprovement(null)
         }
     }
 }

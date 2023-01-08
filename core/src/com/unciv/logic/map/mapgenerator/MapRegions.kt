@@ -76,7 +76,7 @@ class MapRegions (val ruleset: Ruleset){
         val totalLand = tileMap.continentSizes.values.sum().toFloat()
         val largestContinent = tileMap.continentSizes.values.maxOf { it }.toFloat()
 
-        val radius = if (tileMap.mapParameters.shape == MapShape.hexagonal)
+        val radius = if (tileMap.mapParameters.shape == MapShape.hexagonal || tileMap.mapParameters.shape == MapShape.flatEarth)
             tileMap.mapParameters.mapSize.radius.toFloat()
         else
             (max(tileMap.mapParameters.mapSize.width / 2, tileMap.mapParameters.mapSize.height / 2)).toFloat()
@@ -1443,7 +1443,12 @@ class MapRegions (val ruleset: Ruleset){
             if (tile.resource == null &&
                     tile.getLastTerrain().name in resource.terrainsCanBeFoundOn &&
                     !tile.getBaseTerrain().hasUnique(UniqueType.BlocksResources, conditionalTerrain) &&
-                    !resource.hasUnique(UniqueType.NoNaturalGeneration, conditionalTerrain)) {
+                    !resource.hasUnique(UniqueType.NoNaturalGeneration, conditionalTerrain) &&
+                    resource.getMatchingUniques(UniqueType.TileGenerationConditions).none {
+                        tile.temperature!! !in it.params[0].toDouble() .. it.params[1].toDouble()
+                                || tile.humidity!! !in it.params[2].toDouble() .. it.params[3].toDouble()
+                    }
+            ) {
                 if (ratioProgress >= 1f &&
                         !(respectImpacts && tileData[tile.position]!!.impacts.containsKey(impactType))) {
                     tile.setTileResource(resource, majorDeposit)

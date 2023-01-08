@@ -91,21 +91,6 @@ class RejectionReasons: HashSet<RejectionReasonInstance>() {
 
     fun contains(rejectionReason: RejectionReason) = any { it.rejectionReason == rejectionReason }
 
-    fun isOKIgnoringRequirements(
-        ignoreTechPolicyEraWonderRequirements: Boolean = false,
-        ignoreResources: Boolean = false
-    ): Boolean {
-        if (!ignoreTechPolicyEraWonderRequirements && !ignoreResources) return isEmpty()
-        if (!ignoreTechPolicyEraWonderRequirements)
-            return all { it.rejectionReason == RejectionReason.ConsumesResources }
-        if (!ignoreResources)
-            return all { it.rejectionReason in techPolicyEraWonderRequirements }
-        return all {
-            it.rejectionReason == RejectionReason.ConsumesResources ||
-            it.rejectionReason in techPolicyEraWonderRequirements
-        }
-    }
-
     fun hasAReasonToBeRemovedFromQueue(): Boolean {
         return any { it.rejectionReason in reasonsToDefinitivelyRemoveFromQueue }
     }
@@ -120,7 +105,7 @@ class RejectionReasons: HashSet<RejectionReasonInstance>() {
 
     // Used for constant variables in the functions above
     companion object {
-        private val techPolicyEraWonderRequirements = hashSetOf(
+        val techPolicyEraWonderRequirements = hashSetOf(
             RejectionReason.Obsoleted,
             RejectionReason.RequiresTech,
             RejectionReason.RequiresPolicy,
@@ -246,15 +231,10 @@ open class PerpetualStatConversion(val stat: Stat) :
     fun getConversionRate(cityInfo: CityInfo) : Int = (1/cityInfo.cityStats.getStatConversionRate(stat)).roundToInt()
 
     override fun isBuildable(cityConstructions: CityConstructions): Boolean {
-        val hasProductionUnique = cityConstructions.cityInfo.civInfo.getMatchingUniques(UniqueType.EnablesCivWideStatProduction).any { it.params[0] == stat.name }
-        return when (stat) {
-            Stat.Science -> hasProductionUnique
-                    || cityConstructions.cityInfo.civInfo.hasUnique(UniqueType.EnablesScienceProduction) // backwards compatibility
-            Stat.Gold -> hasProductionUnique
-                    || cityConstructions.cityInfo.civInfo.hasUnique(UniqueType.EnablesGoldProduction) // backwards compatibility
-            Stat.Culture -> hasProductionUnique
-            Stat.Faith -> cityConstructions.cityInfo.civInfo.gameInfo.isReligionEnabled() && hasProductionUnique
-            else -> false
-        }
+        if (stat == Stat.Faith && !cityConstructions.cityInfo.civInfo.gameInfo.isReligionEnabled())
+            return false
+
+        return cityConstructions.cityInfo.civInfo.getMatchingUniques(UniqueType.EnablesCivWideStatProduction)
+            .any { it.params[0] == stat.name }
     }
 }

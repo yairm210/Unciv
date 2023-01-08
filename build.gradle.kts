@@ -19,16 +19,12 @@ buildscript {
         google()  // needed for com.android.tools.build:gradle
         maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots/") }
         gradlePluginPortal()
-        maven { url = uri("https://jitpack.io") } // for the anuken packr
     }
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${com.unciv.build.BuildConfig.kotlinVersion}")
         classpath("de.richsource.gradle.plugins:gwt-gradle-plugin:0.6")
         classpath("com.android.tools.build:gradle:7.1.3")
         classpath("com.mobidevelop.robovm:robovm-gradle-plugin:2.3.1")
-
-        // This is for wrapping the .jar file into a standalone executable
-        classpath("com.github.anuken:packr:-SNAPSHOT")
     }
 }
 

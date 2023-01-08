@@ -16,7 +16,6 @@ import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.AutoScrollPane
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.KeyCharAndCode
-import com.unciv.ui.utils.extensions.addSeparator
 import com.unciv.ui.utils.extensions.addSeparatorVertical
 import com.unciv.ui.utils.extensions.keyShortcuts
 import com.unciv.ui.utils.extensions.onActivation
@@ -122,7 +121,7 @@ class EspionageOverviewScreen(val civInfo: CivilizationInfo) : PickerScreen(true
         // Then add all cities
 
         val sortedCities = civInfo.gameInfo.getCities()
-            .filter { it.getCenterTile().position in civInfo.exploredTiles }
+            .filter { civInfo.hasExplored(it.location) }
             .sortedWith(
                 compareBy<CityInfo> {
                     it.civInfo != civInfo

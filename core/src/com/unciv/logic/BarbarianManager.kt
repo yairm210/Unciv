@@ -132,7 +132,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
             } else
                 tile = viableTiles.random()
 
-            tile.improvement = Constants.barbarianEncampment
+            tile.changeImprovement(Constants.barbarianEncampment)
             val newCamp = Encampment(tile.position)
             newCamp.gameInfo = gameInfo
             camps[newCamp.position] = newCamp
@@ -156,7 +156,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
     private fun notifyCivsOfBarbarianEncampment(tile: TileInfo) {
         gameInfo.civilizations.filter {
             it.hasUnique(UniqueType.NotifiedOfBarbarianEncampments)
-                    && it.exploredTiles.contains(tile.position)
+                    && it.hasExplored(tile)
         }
             .forEach {
                 it.addNotification("A new barbarian encampment has spawned!", tile.position, NotificationIcon.War)

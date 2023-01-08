@@ -153,7 +153,7 @@ class WonderInfo {
                 val index = wonderIndexMap[wonderName]!!
                 val status = when {
                     viewingPlayer == city.civInfo -> WonderStatus.Owned
-                    viewingPlayer.exploredTiles.contains(city.location) -> WonderStatus.Known
+                    viewingPlayer.hasExplored(city.location) -> WonderStatus.Known
                     else -> WonderStatus.NotFound
                 }
                 wonders[index] = WonderInfo(
@@ -177,7 +177,7 @@ class WonderInfo {
             else tile.getTilesInDistance(5)
                 .filter { it.isCityCenter() }
                 .filter { viewingPlayer.knows(it.getOwner()!!) }
-                .filter { it.position in viewingPlayer.exploredTiles }
+                .filter { viewingPlayer.hasExplored(it) }
                 .sortedBy { it.aerialDistanceTo(tile) }
                 .firstOrNull()?.getCity()
             wonders[index + wonderCount] = WonderInfo(

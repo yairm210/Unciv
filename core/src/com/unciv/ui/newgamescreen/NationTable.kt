@@ -29,7 +29,9 @@ class NationTable(val nation: Nation, width: Float, minHeight: Float, ruleset: R
         val internalWidth = width - totalPadding
 
         val titleTable = Table()
-        titleTable.background = ImageGetter.getBackground(outerColor)
+        titleTable.background = BaseScreen.skinStrings.getUiBackground(
+            "NewGameScreen/NationTable/Title", tintColor = outerColor
+        )
         val nationIndicator: Actor =
             if (nation.name == Constants.random) ImageGetter.getRandomNationIndicator(50f)
             else ImageGetter.getNationIndicator(nation, 50f)
@@ -50,21 +52,29 @@ class NationTable(val nation: Nation, width: Float, minHeight: Float, ruleset: R
 
         if (ruleset != null) {
             titleTable.padBottom(borderWidth) // visual centering including upper border
-            innerTable.background = ImageGetter.getBackground(textBackgroundColor)
+            innerTable.background = BaseScreen.skinStrings.getUiBackground(
+                "NewGameScreen/NationTable/RightInnerTable",
+                tintColor = textBackgroundColor
+            )
             val lines = nation.getCivilopediaTextLines(ruleset)
                 .filter { it.header != 3 }
             innerTable.add(MarkupRenderer.render(lines, internalWidth, iconDisplay = IconDisplay.NoLink)).pad(10f)
             val borderTable = Table()
-            borderTable.background = ImageGetter.getBackground(outerColor)
+            borderTable.background = BaseScreen.skinStrings.getUiBackground(
+                "NewGameScreen/NationTable/BorderTable",
+                tintColor = outerColor
+            )
             borderTable.add(innerTable).pad(borderWidth).grow()
             add(borderTable).pad(borderWidth).width(width).minHeight(minHeight - totalPadding)
         } else {
-            innerTable.background = ImageGetter.getBackground(outerColor)
             add(innerTable).width(width).minHeight(minHeight - totalPadding)
         }
 
         touchable = Touchable.enabled
-        background = ImageGetter.getBackground(innerColor)
+        background = BaseScreen.skinStrings.getUiBackground(
+            "NewGameScreen/NationTable/Background",
+            tintColor = innerColor
+        )
     }
 }
 

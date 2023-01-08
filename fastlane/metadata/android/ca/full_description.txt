@@ -1,4 +1,4 @@
-Una reimplementació del joc de construcció de civilitzacions més famós - ràpid, petit, sense anuncis i gratuït!
+Una reimplementació del joc de construcció de civilitzacions més famós ‒ ràpid, petit, sense anuncis i gratuït!
 
 Construïu la vostra civilització, investigueu tecnologies, expandiu les ciutats i derroteu els enemics!
 
@@ -14,8 +14,8 @@ El món espera! Podreu conduir la vostra civilització i convertir-la en un impe
 
 L’opció de «permetre accés complet a la xarxa» es necessita per:
 
-- participar en partides multijugador,
-- descarregar i mostrar llistes de contingut addicional (música i mods) i
-- enviar l’edat dels jugadors en mode multijugador.
+‒participar en partides multijugador,
+‒descarregar i mostrar llistes de contingut addicional (música i mods) i
+‒enviar l’edat dels jugadors en mode multijugador.
 
 Tots els altres permisos els inclou automàticament l’API per permetre notificacions de torn en partides multijugador. L’Unciv no utilitza la xarxa per cap altre tipus de comunicació.

@@ -47,8 +47,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     var isNationalWonder = false
     fun isAnyWonder() = isWonder || isNationalWonder
     var requiredBuilding: String? = null
-    @Deprecated("As of 3.18.15 - replace with RequiresBuildingInAllCities unique")
-    var requiredBuildingInAllCities: String? = null
 
     /** A strategic resource that will be consumed by this building */
     private var requiredResource: String? = null
@@ -64,7 +62,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     private var replacementTextForUniques = ""
 
     /** Used for AlertType.WonderBuilt, and as sub-text in Nation and Tech descriptions */
-    fun getShortDescription(): String { // should fit in one line
+    fun getShortDescription(multiline:Boolean = false): String {
         val infoList = mutableListOf<String>()
         this.clone().toString().also { if (it.isNotEmpty()) infoList += it }
         for ((key, value) in getStatPercentageBonuses(null))
@@ -78,7 +76,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         }
         if (cityStrength != 0) infoList += "{City strength} +$cityStrength"
         if (cityHealth != 0) infoList += "{City health} +$cityHealth"
-        return infoList.joinToString("; ") { it.tr() }
+        val separator = if (multiline) "\n" else "; "
+        return infoList.joinToString(separator) { it.tr() }
     }
 
     /**
@@ -187,6 +186,9 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             if (!matchesFilter(unique.params[1])) continue
             stats.add(unique.stats)
         }
+
+        for (unique in getMatchingUniques(UniqueType.Stats, StateForConditionals(city.civInfo, city)))
+            stats.add(unique.stats)
 
         if (!isWonder)
             for (unique in localUniqueCache.get("StatsFromBuildings", city.getMatchingUniques(UniqueType.StatsFromBuildings))) {
@@ -339,7 +341,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
         if (civInfo.isCityState())
             productionCost *= 1.5f
-        if (civInfo.isPlayerCivilization()) {
+        if (civInfo.isHuman()) {
             if (!isWonder)
                 productionCost *= civInfo.getDifficulty().buildingCostModifier
         } else {
@@ -627,8 +629,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     it.resource != null
                     && requiredNearbyImprovedResources!!.contains(it.resource!!)
                     && it.getOwner() == civInfo
-                    && ((it.improvement != null && it.tileResource.isImprovedBy(it.improvement!!)) || it.isCityCenter()
-                       || (it.getTileImprovement()?.isGreatImprovement() == true && it.tileResource.resourceType == ResourceType.Strategic)
+                    && ((it.getUnpillagedImprovement() != null && it.tileResource.isImprovedBy(it.improvement!!)) || it.isCityCenter()
+                       || (it.getUnpillagedTileImprovement()?.isGreatImprovement() == true && it.tileResource.resourceType == ResourceType.Strategic)
                     )
                 }
             if (!containsResourceWithImprovement)
@@ -666,8 +668,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         for (unique in uniqueObjects)
             UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, cityConstructions.cityInfo)
 
-        if (hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovement)
-                || hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovementDepreciated))
+        if (hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovement))
             civInfo.updateHasActiveEnemyMovementPenalty()
 
         // Korean unique - apparently gives the same as the research agreement

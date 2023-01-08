@@ -6,7 +6,7 @@ import com.unciv.ui.images.ImageGetter
 
 enum class RankingType(val getImage: ()->Image?) {
     // production, gold, happiness, and culture already have icons added when the line is `tr()`anslated
-        Score({ ImageGetter.getImage("OtherIcons/Cultured").apply { color = Color.FIREBRICK } }),
+        Score({ ImageGetter.getImage("CityStateIcons/Cultured").apply { color = Color.FIREBRICK } }),
         Population({ ImageGetter.getStatIcon("Population") }),
         Crop_Yield({ ImageGetter.getStatIcon("Food") }),
         Production({ null }),

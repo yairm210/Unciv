@@ -1,4 +1,4 @@
-# Unciv - FOSS Civ V for Android + Desktop
+# Unciv - Civ V remake for Android & Desktop
 
 ![](/extraImages/GithubPreviewImage.png)
 
@@ -15,7 +15,7 @@
 
 ## What is this?
 
-An open-source, mod-friendly Android+Desktop remake of Civ V, made with LibGDX
+An open source, mod-friendly Android and Desktop remake of Civ V, made with LibGDX
 
 ## Is this any good?
 
@@ -114,12 +114,6 @@ From what I gather, it is illegal:
 From what I understand, intellectual property rights apply to names, characters and settings. They do not apply to mechanics - as I'm sure you know, there are a billion Flappy Bird knockoffs
 
 If anyone has any real legal sources, or can shed some light on the limits of what is and is not allowed, I'd be happy to hear!
-
-## Disclosure
-
-[Multiplayer](https://yairm210.github.io/Unciv/Other/Multiplayer/) takes advantage of Dropbox, which is *non-free software*, for syncing purposes.
-
-Single player does not use this feature.
 
 ## Downloads
 

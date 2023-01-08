@@ -1,0 +1,9 @@
+Units now recieve correct healing in friendly territory
+
+Tile info table no longer reveals hidden units
+
+AI no longer nukes if as consequence it will mean declaring war on someone
+
+Empire overview screen updates after changing info in city screen
+
+Fixed civilopedia text that says city-states don't conquer other cities

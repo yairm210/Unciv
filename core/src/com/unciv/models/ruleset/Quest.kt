@@ -50,6 +50,11 @@ class Quest : INamed {
      *  quests [type]. */
     var minimumCivs: Int = 1
 
+    /** Certain city states are more likely to give certain quests
+     * This is based on both personality and city-state type
+     * Both are mapped here as 'how much to multiply the weight of this quest for this kind of city-state' */
+    var weightForCityStateType = HashMap<String, Float>()
+
     /** Checks if [this] is a Global quest */
     fun isGlobal(): Boolean = type == QuestType.Global
     fun isIndividual(): Boolean = !isGlobal()

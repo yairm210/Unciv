@@ -147,7 +147,7 @@
 		"rangedStrength": 7,
 		"cost": 40,
 		"requiredTech": "Archery",
-		"obsoleteTech": "Construction",
+		"obsoleteTech": "Machinery",
 		"upgradesTo": "Crossbowman",
 		"attackSound": "arrow"
 	},
@@ -540,7 +540,7 @@
 		"requiredTech": "Civil Service",
 		"uniques": ["[+50]% Strength <vs [Mounted] units>"],
 		"upgradesTo": "Lancer",
-		"obsoleteTech": "Gunpowder",
+		"obsoleteTech": "Metallurgy",
 		"attackSound": "metalhit"
 	},
 	{
@@ -554,7 +554,7 @@
 		"requiredTech": "Civil Service",
 		"uniques": ["[+50]% Strength <vs [Mounted] units>", "Can move immediately once bought" ],
 		"upgradesTo": "Lancer",
-		"obsoleteTech": "Gunpowder",
+		"obsoleteTech": "Metallurgy",
 		"attackSound": "metalhit"
 		//"Requires [Mercenary Army]" in BNW
 	},
@@ -677,7 +677,7 @@
 		"requiredTech": "Machinery",
 		"upgradesTo": "Gatling Gun",
 		"obsoleteTech": "Industrialization",
-		"attackSound": "arrow"
+		"attackSound": "crossbow"
 	},
 	{
 		"name": "Chu-Ko-Nu",
@@ -692,7 +692,7 @@
 		"upgradesTo": "Gatling Gun",
 		"obsoleteTech": "Industrialization",
 		"promotions": ["[Chu-Ko-Nu] ability"],
-		"attackSound": "arrow"
+		"attackSound": "crossbow"
 	},
 	{
 		"name": "Longbowman",

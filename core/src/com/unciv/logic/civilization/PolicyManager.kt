@@ -75,7 +75,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         }
 
     /** A [Set] of all [PolicyBranch]es. */
-    private val branches: Set<PolicyBranch>
+    val branches: Set<PolicyBranch>
         get() = civInfo.gameInfo.ruleSet.policyBranches.values.toSet()
 
     fun clone(): PolicyManager {
@@ -133,7 +133,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
 
         for (unique in civInfo.getMatchingUniques(UniqueType.LessPolicyCostFromCities)) cityModifier *= 1 - unique.params[0].toFloat() / 100
         for (unique in civInfo.getMatchingUniques(UniqueType.LessPolicyCost)) policyCultureCost *= unique.params[0].toPercent()
-        if (civInfo.isPlayerCivilization()) policyCultureCost *= civInfo.getDifficulty().policyCostModifier
+        if (civInfo.isHuman()) policyCultureCost *= civInfo.getDifficulty().policyCostModifier
         policyCultureCost *= civInfo.gameInfo.speed.cultureCostModifier
         val cost: Int = (policyCultureCost * (1 + cityModifier)).roundToInt()
         return cost - (cost % 5)

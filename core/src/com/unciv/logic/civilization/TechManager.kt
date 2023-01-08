@@ -85,7 +85,7 @@ class TechManager : IsPartOfGameInfoSerialization {
 
     fun costOfTech(techName: String): Int {
         var techCost = getRuleset().technologies[techName]!!.cost.toFloat()
-        if (civInfo.isPlayerCivilization())
+        if (civInfo.isHuman())
             techCost *= civInfo.getDifficulty().researchCostModifier
         techCost *= civInfo.gameInfo.speed.scienceCostModifier
         val techsResearchedKnownCivs = civInfo.getKnownCivs()
@@ -332,7 +332,7 @@ class TechManager : IsPartOfGameInfoSerialization {
             for (policyBranch in getRuleset().policyBranches.values.filter { it.era == currentEra.name && civInfo.policies.isAdoptable(it) }) {
                 civInfo.addNotification("[" + policyBranch.name + "] policy branch unlocked!", NotificationIcon.Culture)
             }
-            // Note that if you somehow skip over an era, its uniques aren't triggered
+
             val erasPassed = getRuleset().eras.values
                 .filter { it.eraNumber > previousEra.eraNumber && it.eraNumber <= currentEra.eraNumber }
                 .sortedBy { it.eraNumber }

@@ -17,7 +17,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.ui.images.IconTextButton
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.extensions.addSeparator
@@ -61,7 +60,7 @@ open class TabbedPager(
     private val headerFontSize: Int = Constants.defaultFontSize,
     private val headerFontColor: Color = Color.WHITE,
     private val highlightColor: Color = Color.BLUE,
-    backgroundColor: Color = ImageGetter.getBlue().darken(0.5f),
+    backgroundColor: Color = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.5f),
     private val headerPadding: Float = 10f,
     separatorColor: Color = Color.CLEAR,
     private val shorcutScreen: BaseScreen? = null,
@@ -296,7 +295,7 @@ open class TabbedPager(
         dimW = DimensionMeasurement.from(minimumWidth, maximumWidth, screenWidth)
         dimH = DimensionMeasurement.from(minimumHeight, maximumHeight, screenHeight)
 
-        background = ImageGetter.getBackground(backgroundColor)
+        background = BaseScreen.skinStrings.getUiBackground("General/TabbedPager", tintColor = backgroundColor)
 
         header.defaults().pad(headerPadding, headerPadding * 0.5f)
         // Measure header height, most likely its final value

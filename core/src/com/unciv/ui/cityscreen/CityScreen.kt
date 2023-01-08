@@ -50,9 +50,6 @@ class CityScreen(
     /** Toggles or adds/removes all state changing buttons */
     val canChangeState = UncivGame.Current.worldScreen!!.canChangeState
 
-    /** Toggle between Constructions and cityInfo (buildings, specialists etc. */
-    var showConstructionsTable = true
-
     // Clockwise from the top-left
 
     /** Displays current production, production queue and available productions list
@@ -60,9 +57,6 @@ class CityScreen(
      *  in a Table holder on upper LEFT, and available constructions in a ScrollPane lower LEFT.
      */
     private var constructionsTable = CityConstructionsTable(this)
-
-    /** Displays stats, buildings, specialists and stats drilldown - sits on TOP LEFT, can be toggled to */
-    private var cityInfoTable = CityInfoTable(this)
 
     /** Displays raze city button - sits on TOP CENTER */
     private var razeCityButtonHolder = Table()
@@ -87,6 +81,7 @@ class CityScreen(
             exit()
         }
     }
+
 
     /** Holds City tiles group*/
     private var tileGroups = ArrayList<CityTileGroup>()
@@ -129,7 +124,6 @@ class CityScreen(
         //stage.setDebugTableUnderMouse(true)
         stage.addActor(cityStatsTable)
         constructionsTable.addActorsToStage()
-        stage.addActor(cityInfoTable)
         stage.addActor(selectedConstructionTable)
         stage.addActor(tileTable)
         stage.addActor(cityPickerTable)  // add late so it's top in Z-order and doesn't get covered in cramped portrait
@@ -144,17 +138,8 @@ class CityScreen(
         // Recalculate Stats
         city.cityStats.update()
 
-        // Left side, top and bottom: Construction queue / details
-        if (showConstructionsTable) {
-            constructionsTable.isVisible = true
-            cityInfoTable.isVisible = false
-            constructionsTable.update(selectedConstruction)
-        } else {
-            constructionsTable.isVisible = false
-            cityInfoTable.isVisible = true
-            cityInfoTable.update()
-            // CityInfoTable sets its relative position itself
-        }
+        constructionsTable.isVisible = true
+        constructionsTable.update(selectedConstruction)
 
         // Bottom right: Tile or selected construction info
         tileTable.update(selectedTile)
@@ -171,8 +156,7 @@ class CityScreen(
         }
         val leftMargin = when {
             !isPortrait() -> 0f
-            showConstructionsTable -> constructionsTable.getLowerWidth()
-            else -> cityInfoTable.packIfNeeded().width
+            else -> constructionsTable.getLowerWidth()
         }
 
         // Bottom center: Name, paging, exit city button
@@ -213,7 +197,7 @@ class CityScreen(
             if (tileInfo.improvement == null) return false
             val civInfo = city.civInfo
             val existingStats = tileInfo.getImprovementStats(
-                tileInfo.getTileImprovement()!!,
+                tileInfo.getUnpillagedTileImprovement()!!,
                 civInfo,
                 city,
                 cityUniqueCache
@@ -312,7 +296,7 @@ class CityScreen(
 
         val tileSetStrings = TileSetStrings()
         val cityTileGroups = cityInfo.getCenterTile().getTilesInDistance(5)
-                .filter { cityInfo.civInfo.exploredTiles.contains(it.position) }
+                .filter { cityInfo.civInfo.hasExplored(it) }
                 .map { CityTileGroup(cityInfo, it, tileSetStrings) }
 
         for (tileGroup in cityTileGroups) {
@@ -434,7 +418,6 @@ class CityScreen(
         val indexOfCity = civInfo.cities.indexOf(city)
         val indexOfNextCity = (indexOfCity + delta + numCities) % numCities
         val newCityScreen = CityScreen(civInfo.cities[indexOfNextCity])
-        newCityScreen.showConstructionsTable = showConstructionsTable // stay on stats drilldown between cities
         newCityScreen.update()
         game.replaceCurrentScreen(newCityScreen)
     }

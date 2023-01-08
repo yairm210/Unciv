@@ -13,10 +13,8 @@ import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.Disposable
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
-import java.lang.Exception
 
 interface NativeFontImplementation {
     fun getFontSize(): Int
@@ -126,6 +124,11 @@ class NativeBitmapFontData(
             Fonts.culture -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Culture").region)
             Fonts.faith -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Faith").region)
             Fonts.happiness -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Happiness").region)
+            Fonts.greatArtist -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Great Artist").region)
+            Fonts.greatEngineer -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Great Engineer").region)
+            Fonts.greatGeneral -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Great General").region)
+            Fonts.greatMerchant -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Great Merchant").region)
+            Fonts.greatScientist -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Great Scientist").region)
             MayaCalendar.tun -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable(MayaCalendar.tunIcon).region)
             MayaCalendar.katun -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable(MayaCalendar.katunIcon).region)
             MayaCalendar.baktun -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable(MayaCalendar.baktunIcon).region)
@@ -233,18 +236,9 @@ object Fonts {
     const val culture = '♪'             // U+266A 'eighth note' (🎵 U+1F3B5 'musical note')
     const val happiness = '⌣'           // U+2323 'smile' (😀 U+1F600 'grinning face')
     const val faith = '☮'               // U+262E 'peace symbol' (🕊 U+1F54A 'dove of peace')
-
-    @Deprecated("Since quite a while", ReplaceWith("stat.character"), DeprecationLevel.ERROR)
-    fun statToChar(stat: Stat): Char {
-        return when (stat) {
-            Stat.Food -> food
-            Stat.Production -> production
-            Stat.Gold -> gold
-            Stat.Happiness -> happiness
-            Stat.Culture -> culture
-            Stat.Science -> science
-            Stat.Faith -> faith
-        }
-    }
-
+    const val greatArtist = '♬'          // U+266C 'sixteenth note'
+    const val greatEngineer = '⚒'       // U+2692 'hammer'
+    const val greatGeneral = '⛤'       // U+26E4 'pentagram'
+    const val greatMerchant = '⚖'      // U+2696 'scale'
+    const val greatScientist = '⚛'      // U+269B 'atom'
 }

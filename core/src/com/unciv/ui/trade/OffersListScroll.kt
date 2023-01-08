@@ -96,7 +96,8 @@ class OffersListScroll(
                     else -> null
                 }
                 val tradeButton = IconTextButton(tradeLabel, tradeIcon).apply {
-                    iconCell?.size(30f)
+                    if (tradeIcon != null)
+                        iconCell.size(30f)
                     label.setAlignment(Align.center)
                     labelCell.pad(5f).grow()
                 }

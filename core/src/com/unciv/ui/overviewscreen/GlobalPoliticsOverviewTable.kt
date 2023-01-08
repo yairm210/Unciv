@@ -15,10 +15,13 @@ import com.unciv.logic.civilization.WonderInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.models.ruleset.Policy.PolicyBranchType
+import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.AutoScrollPane
 import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.extensions.addBorder
 import com.unciv.ui.utils.extensions.addSeparator
@@ -46,7 +49,10 @@ class GlobalPoliticsOverviewTable (
     private val fixedContent = Table()
     private val civTable = Table().apply {
         defaults().pad(5f)
-        background = ImageGetter.getBackground(Color.BLACK)
+        background = BaseScreen.skinStrings.getUiBackground(
+            "OverviewScreen/DiplomacyOverviewTab/CivTable",
+            tintColor = Color.BLACK
+        )
     }
 
     // Reusable sequences for the Civilizations to display
@@ -66,8 +72,7 @@ class GlobalPoliticsOverviewTable (
         clear()
         getFixedContent().clear()
 
-        val diagramButton = TextButton("Show diagram", skin)
-        diagramButton.onClick { updateDiagram() }
+        val diagramButton = "Show diagram".toTextButton().onClick(::updateDiagram)
 
         add()
         addSeparatorVertical(Color.GRAY)
@@ -77,8 +82,10 @@ class GlobalPoliticsOverviewTable (
         addSeparatorVertical(Color.GRAY)
         add("Wonders".toLabel())
         addSeparatorVertical(Color.GRAY)
-        add("Relations".toLabel())
-        add(diagramButton).pad(10f)
+        add(Table().apply {
+            add("Relations".toLabel()).row()
+            add(diagramButton).pad(10f)
+        })
         row()
         addSeparator(Color.GRAY)
 
@@ -121,7 +128,7 @@ class GlobalPoliticsOverviewTable (
 
     private fun getCivInfoTable(civ: CivilizationInfo): Table {
         val civInfoTable = Table(skin)
-        val leaderName = civ.getLeaderDisplayName().removeSuffix(" of " + civ.civName)
+        val leaderName = civ.nation.leaderName
         civInfoTable.add(leaderName.toLabel(fontSize = 30)).row()
         civInfoTable.add(civ.civName.toLabel()).row()
         civInfoTable.add(civ.tech.era.name.toLabel()).row()
@@ -130,10 +137,14 @@ class GlobalPoliticsOverviewTable (
 
     private fun getPoliciesTable(civ: CivilizationInfo): Table {
         val policiesTable = Table(skin)
-        for (policy in civ.policies.branchCompletionMap) {
-            if (policy.value != 0)
-                policiesTable.add("${policy.key.name}: ${policy.value}".toLabel()).row()
-        }
+        for (branch in civ.policies.branches)
+            if (civ.policies.isAdopted(branch.name)) {
+                val count = 1 + branch.policies.count {
+                    it.policyBranchType != PolicyBranchType.BranchComplete &&
+                    civ.policies.isAdopted(it.name)
+                }
+                policiesTable.add("[${branch.name}]: $count".toLabel()).row()
+            }
         return policiesTable
     }
 
@@ -158,13 +169,24 @@ class GlobalPoliticsOverviewTable (
         return wonderTable
     }
 
+    private fun getCivName(otherciv: CivilizationInfo): String {
+        if (viewingPlayer.knows(otherciv) || otherciv.civName != viewingPlayer.civName) {
+            return otherciv.civName
+        }
+        return "an unknown civilization"
+    }
+
     private fun getPoliticsOfCivTable(civ: CivilizationInfo): Table {
         val politicsTable = Table(skin)
 
         // wars
         for (otherCiv in civ.getKnownCivs()) {
-            if(civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.DeclaredWar) == true) {
-                val warText = "At war with ${otherCiv.civName}".toLabel()
+            if (!viewingPlayer.knows(otherCiv))
+                continue
+
+            if(civ.isAtWarWith(otherCiv)) {
+                println(getCivName(otherCiv))
+                val warText = "At war with [${getCivName(otherCiv)}]".toLabel()
                 warText.color = Color.RED
                 politicsTable.add(warText).row()
             }
@@ -173,11 +195,14 @@ class GlobalPoliticsOverviewTable (
 
         // declaration of friendships
         for (otherCiv in civ.getKnownCivs()) {
+            if (!viewingPlayer.knows(otherCiv))
+                continue
+
             if(civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.DeclarationOfFriendship) == true) {
-                val friendtext = "Friends with ${otherCiv.civName} ".toLabel()
-                friendtext.color = Color.GREEN
-                val turnsLeftText = "({${civ.diplomacy[otherCiv.civName]?.getFlag(DiplomacyFlags.DeclarationOfFriendship)} Turns Left})".toLabel()
-                politicsTable.add(friendtext)
+                val friendText = "Friends with [${getCivName(otherCiv)}]".toLabel()
+                friendText.color = Color.GREEN
+                val turnsLeftText = " (${civ.diplomacy[otherCiv.civName]?.getFlag(DiplomacyFlags.DeclarationOfFriendship)} ${Fonts.turn})".toLabel()
+                politicsTable.add(friendText)
                 politicsTable.add(turnsLeftText).row()
             }
         }
@@ -185,10 +210,13 @@ class GlobalPoliticsOverviewTable (
 
         // denounced civs
         for (otherCiv in civ.getKnownCivs()) {
+            if (!viewingPlayer.knows(otherCiv))
+                continue
+
             if(civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.Denunciation) == true) {
-                val denouncedText = "Denounced ${otherCiv.civName} ".toLabel()
+                val denouncedText = "Denounced [${getCivName(otherCiv)}]".toLabel()
                 denouncedText.color = Color.RED
-                val turnsLeftText = "({${civ.diplomacy[otherCiv.civName]?.getFlag(DiplomacyFlags.Denunciation)} Turns Left})".toLabel()
+                val turnsLeftText = "(${civ.diplomacy[otherCiv.civName]?.getFlag(DiplomacyFlags.Denunciation)} ${Fonts.turn})".toLabel()
                 politicsTable.add(denouncedText)
                 politicsTable.add(turnsLeftText).row()
             }
@@ -197,8 +225,11 @@ class GlobalPoliticsOverviewTable (
 
         //allied CS
         for (cityState in gameInfo.getAliveCityStates()) {
+            if (!viewingPlayer.knows(cityState))
+                continue
+
             if (cityState.diplomacy[civ.civName]?.relationshipLevel() == RelationshipLevel.Ally) {
-                val alliedText = "Allied with ${cityState.civName}".toLabel()
+                val alliedText = "Allied with [${getCivName(cityState)}]".toLabel()
                 alliedText.color = Color.GREEN
                 politicsTable.add(alliedText).row()
             }
@@ -211,7 +242,7 @@ class GlobalPoliticsOverviewTable (
 
     // Refresh content and determine landscape/portrait layout
     private fun updateDiagram() {
-        val politicsButton = TextButton("Show global politics", skin).apply { onClick { updatePoliticsTable() } }
+        val politicsButton = "Show global politics".toTextButton().onClick(::updatePoliticsTable)
 
         val toggleCityStatesButton: TextButton = Constants.cityStates.toTextButton().apply {
             onClick {

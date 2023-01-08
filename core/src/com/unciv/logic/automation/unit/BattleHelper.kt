@@ -165,20 +165,20 @@ object BattleHelper {
 
         // todo For air units, prefer to attack tiles with lower intercept chance
 
-        var enemyTileToAttack: AttackableTile? = null
         val capturableCity = cityTilesToAttack.firstOrNull { it.tileToAttack.getCity()!!.health == 1 }
         val cityWithHealthLeft =
             cityTilesToAttack.filter { it.tileToAttack.getCity()!!.health != 1 } // don't want ranged units to attack defeated cities
                 .minByOrNull { it.tileToAttack.getCity()!!.health }
 
         if (unit.baseUnit.isMelee() && capturableCity != null)
-            enemyTileToAttack = capturableCity // enter it quickly, top priority!
+            return capturableCity // enter it quickly, top priority!
 
         else if (nonCityTilesToAttack.isNotEmpty()) // second priority, units
-            enemyTileToAttack = chooseUnitToAttack(unit, nonCityTilesToAttack)
-        else if (cityWithHealthLeft != null) enemyTileToAttack = cityWithHealthLeft // third priority, city
+            return chooseUnitToAttack(unit, nonCityTilesToAttack)
 
-        return enemyTileToAttack
+        else if (cityWithHealthLeft != null) return cityWithHealthLeft // third priority, city
+
+        return null
     }
 
     private fun chooseUnitToAttack(unit: MapUnit, attackableUnits: List<AttackableTile>): AttackableTile {
@@ -194,15 +194,27 @@ object BattleHelper {
                     ).toFloat().coerceAtLeast(1f) }
 
             // kill a unit if possible, prioritizing by attack strength
-            val canKill = attacksToKill.filter { it.value <= 1 }.maxByOrNull { MapUnitCombatant(it.key.tileToAttack.militaryUnit!!).getAttackingStrength() }?.key
+            val canKill = attacksToKill.filter { it.value <= 1 }
+                .maxByOrNull { MapUnitCombatant(it.key.tileToAttack.militaryUnit!!).getAttackingStrength() }?.key
             if (canKill != null) return canKill
 
             // otherwise pick the unit we can kill the fastest
             return attacksToKill.minByOrNull { it.value }!!.key
         }
 
-        // only civilians in attacking range
-        return attackableUnits.minByOrNull {
+        // only civilians in attacking range - GP most important, second settlers, then anything else
+
+        val unitsToConsider = attackableUnits.filter { it.tileToAttack.civilianUnit!!.isGreatPerson() }
+            .ifEmpty { attackableUnits.filter { it.tileToAttack.civilianUnit!!.hasUnique(UniqueType.FoundCity) } }
+            .ifEmpty { attackableUnits }
+
+        // Melee - prioritize by distance, so we have most movement left
+        if (unit.baseUnit.isMelee()){
+            return unitsToConsider.maxByOrNull { it.movementLeftAfterMovingToAttackTile }!!
+        }
+
+        // We're ranged, prioritize what we can kill
+        return unitsToConsider.minByOrNull {
             Battle.getMapCombatantOfTile(it.tileToAttack)!!.getHealth()
         }!!
     }

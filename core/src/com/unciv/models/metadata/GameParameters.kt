@@ -21,6 +21,7 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     }
     var numberOfCityStates = 6
 
+    var noCityRazing = false
     var noBarbarians = false
     var ragingBarbarians = false
     var oneCityChallenge = false

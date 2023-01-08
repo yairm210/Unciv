@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.MainMenuScreen
@@ -30,7 +31,6 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.civilopedia.CivilopediaScreen
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.pickerscreens.DiplomaticVotePickerScreen
 import com.unciv.ui.pickerscreens.DiplomaticVoteResultScreen
@@ -47,7 +47,6 @@ import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.saves.QuickSave
 import com.unciv.ui.saves.SaveGameScreen
 import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.extensions.centerX
 import com.unciv.ui.utils.extensions.darken
@@ -75,7 +74,6 @@ import com.unciv.utils.concurrency.withGLContext
 import com.unciv.utils.debug
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
-import com.badlogic.gdx.scenes.scene2d.ui.TextField
 
 /**
  * Do not create this screen without seriously thinking about the implications: this is the single most memory-intensive class in the application.
@@ -121,17 +119,20 @@ class WorldScreen(
     val bottomUnitTable = UnitTable(this)
     private val battleTable = BattleTable(this)
     private val zoomController = ZoomButtonPair(mapHolder)
-    private val minimapWrapper = MinimapHolder(mapHolder)
+    internal val minimapWrapper = MinimapHolder(mapHolder)
     private val bottomTileInfoTable = TileInfoTable(viewingCiv)
     private val notificationsScroll = NotificationsScroll(this)
     private val nextTurnButton = NextTurnButton()
     private val statusButtons = StatusButtons(nextTurnButton)
-    private val tutorialTaskTable = Table().apply { background = ImageGetter.getBackground(
-        ImageGetter.getBlue().darken(0.5f)) }
+    private val tutorialTaskTable = Table().apply {
+        background = skinStrings.getUiBackground("WorldScreen/TutorialTaskTable", tintColor = skinStrings.skinConfig.baseColor.darken(0.5f))
+    }
 
     private var nextTurnUpdateJob: Job? = null
 
     private val events = EventBus.EventReceiver()
+
+    var uiEnabled = true
 
 
     init {
@@ -254,6 +255,21 @@ class WorldScreen(
         globalShortcuts.add(KeyCharAndCode.ctrl('Q')) { game.popScreen() }    //   WorldScreen is the last screen, so this quits
         globalShortcuts.add(Input.Keys.NUMPAD_ADD) { this.mapHolder.zoomIn() }    //   '+' Zoom
         globalShortcuts.add(Input.Keys.NUMPAD_SUBTRACT) { this.mapHolder.zoomOut() }    //   '-' Zoom
+
+        globalShortcuts.add(KeyCharAndCode.ctrl('U')){
+            uiEnabled = !uiEnabled
+            topBar.isVisible = uiEnabled
+            statusButtons.isVisible = uiEnabled
+            techPolicyAndDiplomacy.isVisible = uiEnabled
+            tutorialTaskTable.isVisible = uiEnabled
+            bottomTileInfoTable.isVisible = uiEnabled
+            unitActionsTable.isVisible = uiEnabled
+            notificationsScroll.isVisible = uiEnabled
+            minimapWrapper.isVisible = uiEnabled
+            bottomUnitTable.isVisible = uiEnabled
+            battleTable.isVisible = uiEnabled && battleTable.update() != hide()
+            fogOfWarButton.isVisible = uiEnabled && viewingCiv.isSpectator()
+        }
     }
 
     private fun addKeyboardListener() {
@@ -362,34 +378,36 @@ class WorldScreen(
     // and we don't get any silly concurrency problems!
     private fun update() {
 
-        displayTutorialsOnUpdate()
+        if(uiEnabled){
+            displayTutorialsOnUpdate()
 
-        bottomUnitTable.update()
-        bottomTileInfoTable.updateTileTable(mapHolder.selectedTile)
-        bottomTileInfoTable.x = stage.width - bottomTileInfoTable.width
-        bottomTileInfoTable.y = if (game.settings.showMinimap) minimapWrapper.height else 0f
-        battleTable.update()
+            bottomUnitTable.update()
+            bottomTileInfoTable.updateTileTable(mapHolder.selectedTile)
+            bottomTileInfoTable.x = stage.width - bottomTileInfoTable.width
+            bottomTileInfoTable.y = if (game.settings.showMinimap) minimapWrapper.height else 0f
+            battleTable.update()
 
-        updateSelectedCiv()
+            updateSelectedCiv()
 
-        tutorialTaskTable.clear()
-        val tutorialTask = getCurrentTutorialTask()
-        if (tutorialTask == "" || !game.settings.showTutorials || viewingCiv.isDefeated()) {
-            tutorialTaskTable.isVisible = false
-        } else {
-            tutorialTaskTable.isVisible = true
-            tutorialTaskTable.add(tutorialTask.toLabel()
+            tutorialTaskTable.clear()
+            val tutorialTask = getCurrentTutorialTask()
+            if (tutorialTask == "" || !game.settings.showTutorials || viewingCiv.isDefeated()) {
+                tutorialTaskTable.isVisible = false
+            } else {
+                tutorialTaskTable.isVisible = true
+                tutorialTaskTable.add(tutorialTask.toLabel()
                     .apply { setAlignment(Align.center) }).pad(10f)
-            tutorialTaskTable.pack()
-            tutorialTaskTable.centerX(stage)
-            tutorialTaskTable.y = topBar.y - tutorialTaskTable.height
+                tutorialTaskTable.pack()
+                tutorialTaskTable.centerX(stage)
+                tutorialTaskTable.y = topBar.y - tutorialTaskTable.height
+            }
+
+            if (fogOfWar) minimapWrapper.update(selectedCiv)
+            else minimapWrapper.update(viewingCiv)
+
+            unitActionsTable.update(bottomUnitTable.selectedUnit)
+            unitActionsTable.y = bottomUnitTable.height
         }
-
-        if (fogOfWar) minimapWrapper.update(selectedCiv)
-        else minimapWrapper.update(viewingCiv)
-
-        unitActionsTable.update(bottomUnitTable.selectedUnit)
-        unitActionsTable.y = bottomUnitTable.height
 
         mapHolder.resetArrows()
         if (UncivGame.Current.settings.showUnitMovements) {
@@ -427,7 +445,8 @@ class WorldScreen(
                     UncivGame.Current.pushScreen(DiplomaticVoteResultScreen(gameInfo.diplomaticVictoryVotesCast, viewingCiv))
                 !gameInfo.oneMoreTurnMode && (viewingCiv.isDefeated() || gameInfo.civilizations.any { it.victoryManager.hasWon() }) ->
                     game.pushScreen(VictoryScreen(this))
-                viewingCiv.greatPeople.freeGreatPeople > 0 -> game.pushScreen(GreatPersonPickerScreen(viewingCiv))
+                viewingCiv.greatPeople.freeGreatPeople > 0 ->
+                    game.pushScreen(GreatPersonPickerScreen(viewingCiv))
                 viewingCiv.popupAlerts.any() -> AlertPopup(this, viewingCiv.popupAlerts.first()).open()
                 viewingCiv.tradeRequests.isNotEmpty() -> {
                     // In the meantime this became invalid, perhaps because we accepted previous trades
@@ -621,6 +640,8 @@ class WorldScreen(
 
     fun switchToNextUnit() {
         // Try to select something new if we already have the next pending unit selected.
+        if (bottomUnitTable.selectedUnit != null)
+            bottomUnitTable.selectedUnit!!.due = false
         val nextDueUnit = viewingCiv.cycleThroughDueUnits(bottomUnitTable.selectedUnit)
         if (nextDueUnit != null) {
             mapHolder.setCenterPosition(
@@ -629,10 +650,12 @@ class WorldScreen(
                 selectUnit = false
             )
             bottomUnitTable.selectUnit(nextDueUnit)
-            shouldUpdate = true
-            // Unless 'wait' action is chosen, the unit will not be considered due anymore.
-            nextDueUnit.due = false
+        } else {
+            mapHolder.removeAction(mapHolder.blinkAction)
+            mapHolder.selectedTile = null
+            bottomUnitTable.selectUnit()
         }
+        shouldUpdate = true
     }
 
     private fun isNextTurnUpdateRunning(): Boolean {
@@ -662,33 +685,39 @@ class WorldScreen(
     private fun getNextTurnAction(): NextTurnAction {
         return when {
             isNextTurnUpdateRunning() ->
-                NextTurnAction("Working...", Color.GRAY) {}
+                NextTurnAction("Working...", Color.GRAY, "NotificationIcons/Working") {}
             !isPlayersTurn && gameInfo.gameParameters.isOnlineMultiplayer ->
-                NextTurnAction("Waiting for [${gameInfo.currentPlayerCiv}]...", Color.GRAY) {}
+                NextTurnAction("Waiting for [${gameInfo.currentPlayerCiv}]...", Color.GRAY,
+                    "NotificationIcons/Waiting") {}
             !isPlayersTurn && !gameInfo.gameParameters.isOnlineMultiplayer ->
-                NextTurnAction("Waiting for other players...",Color.GRAY) {}
+                NextTurnAction("Waiting for other players...",Color.GRAY,
+                    "NotificationIcons/Waiting") {}
 
-            viewingCiv.shouldGoToDueUnit() ->
-                NextTurnAction("Next unit", Color.LIGHT_GRAY) { switchToNextUnit() }
-
-            viewingCiv.cities.any { it.cityConstructions.currentConstructionFromQueue == "" } ->
-                NextTurnAction("Pick construction", Color.CORAL) {
+            viewingCiv.cities.any {
+                !it.isPuppet &&
+                it.cityConstructions.currentConstructionFromQueue == ""
+            } ->
+                NextTurnAction("Pick construction", Color.CORAL,
+                "NotificationIcons/PickConstruction") {
                     val cityWithNoProductionSet = viewingCiv.cities
-                        .firstOrNull { it.cityConstructions.currentConstructionFromQueue == "" }
+                        .firstOrNull {
+                            !it.isPuppet &&
+                            it.cityConstructions.currentConstructionFromQueue == ""
+                        }
                     if (cityWithNoProductionSet != null) game.pushScreen(
                         CityScreen(cityWithNoProductionSet)
                     )
                 }
 
             viewingCiv.shouldOpenTechPicker() ->
-                NextTurnAction("Pick a tech", Color.SKY) {
+                NextTurnAction("Pick a tech", Color.SKY, "NotificationIcons/PickTech") {
                     game.pushScreen(
                         TechPickerScreen(viewingCiv, null, viewingCiv.tech.freeTechs != 0)
                     )
                 }
 
             viewingCiv.policies.shouldOpenPolicyPicker || (viewingCiv.policies.freePolicies > 0 && viewingCiv.policies.canAdoptPolicy()) ->
-                NextTurnAction("Pick a policy", Color.VIOLET) {
+                NextTurnAction("Pick a policy", Color.VIOLET, "NotificationIcons/PickPolicy") {
                     game.pushScreen(PolicyPickerScreen(this))
                     viewingCiv.policies.shouldOpenPolicyPicker = false
                 }
@@ -697,13 +726,15 @@ class WorldScreen(
                 val displayString = if (viewingCiv.religionManager.religionState == ReligionState.Pantheon)
                     "Expand Pantheon"
                 else "Found Pantheon"
-                NextTurnAction(displayString, Color.valueOf(BeliefType.Pantheon.color)) {
+                NextTurnAction(displayString, Color.valueOf(BeliefType.Pantheon.color),
+                    "NotificationIcons/FoundPantheon") {
                     game.pushScreen(PantheonPickerScreen(viewingCiv))
                 }
             }
 
             viewingCiv.religionManager.religionState == ReligionState.FoundingReligion ->
-                NextTurnAction("Found Religion", Color.valueOf(BeliefType.Founder.color)) {
+                NextTurnAction("Found Religion", Color.valueOf(BeliefType.Founder.color),
+                    "NotificationIcons/FoundReligion") {
                     game.pushScreen(
                         ReligiousBeliefsPickerScreen(
                             viewingCiv,
@@ -714,7 +745,8 @@ class WorldScreen(
                 }
 
             viewingCiv.religionManager.religionState == ReligionState.EnhancingReligion ->
-                NextTurnAction("Enhance a Religion", Color.valueOf(BeliefType.Enhancer.color)) {
+                NextTurnAction("Enhance a Religion", Color.valueOf(BeliefType.Enhancer.color),
+                    "NotificationIcons/EnhanceReligion") {
                     game.pushScreen(
                         ReligiousBeliefsPickerScreen(
                             viewingCiv,
@@ -725,7 +757,8 @@ class WorldScreen(
                 }
 
             viewingCiv.religionManager.hasFreeBeliefs() ->
-                NextTurnAction("Reform Religion", Color.valueOf(BeliefType.Enhancer.color)) {
+                NextTurnAction("Reform Religion", Color.valueOf(BeliefType.Enhancer.color),
+                    "NotificationIcons/ReformReligion") {
                     game.pushScreen(
                         ReligiousBeliefsPickerScreen(
                             viewingCiv,
@@ -736,13 +769,19 @@ class WorldScreen(
                 }
 
             viewingCiv.mayVoteForDiplomaticVictory() ->
-                NextTurnAction("Vote for World Leader", Color.MAROON) {
+                NextTurnAction("Vote for World Leader", Color.MAROON,
+                    "NotificationIcons/WorldCongressVote") {
                     game.pushScreen(DiplomaticVotePickerScreen(viewingCiv))
                 }
 
-            !viewingCiv.hasMovedAutomatedUnits && viewingCiv.getCivUnits()
+            viewingCiv.shouldGoToDueUnit() ->
+                NextTurnAction("Next unit", Color.LIGHT_GRAY,
+                    "NotificationIcons/NextUnit") { switchToNextUnit() }
+
+            !game.settings.automatedUnitsMoveOnTurnStart && !viewingCiv.hasMovedAutomatedUnits && viewingCiv.getCivUnits()
                 .any { it.currentMovement > Constants.minimumMovementEpsilon && (it.isMoving() || it.isAutomated() || it.isExploring()) } ->
-                NextTurnAction("Move automated units", Color.LIGHT_GRAY) {
+                NextTurnAction("Move automated units", Color.LIGHT_GRAY,
+                    "NotificationIcons/MoveAutomatedUnits") {
                     viewingCiv.hasMovedAutomatedUnits = true
                     isPlayersTurn = false // Disable state changes
                     nextTurnButton.disable()
@@ -758,7 +797,8 @@ class WorldScreen(
                 }
 
             else ->
-                NextTurnAction("${Fonts.turn}{Next turn}", Color.WHITE) {
+                NextTurnAction("Next turn", Color.WHITE,
+                    "NotificationIcons/NextTurn") {
                     val action = {
                         game.settings.addCompletedTutorialTask("Pass a turn")
                         nextTurn()
@@ -785,8 +825,12 @@ class WorldScreen(
         if (shouldUpdate) {
             shouldUpdate = false
 
+            // Since updating the worldscreen can take a long time, *especially* the first time, we disable input processing to avoid ANRs
+            Gdx.input.inputProcessor = null
             update()
             showTutorialsOnNextTurn()
+            if (Gdx.input.inputProcessor == null) // Update may have replaced the worldscreen with a GreatPersonPickerScreen etc, so the input would already be set
+                Gdx.input.inputProcessor = stage
         }
 //        topBar.selectedCivLabel.setText(Gdx.graphics.framesPerSecond) // for framerate testing
 
@@ -810,7 +854,7 @@ class WorldScreen(
         displayTutorial(TutorialTrigger.StrategicResource) { resources.any { it.resource.resourceType == ResourceType.Strategic } }
         displayTutorial(TutorialTrigger.EnemyCity) {
             viewingCiv.getKnownCivs().asSequence().filter { viewingCiv.isAtWarWith(it) }
-                    .flatMap { it.cities.asSequence() }.any { viewingCiv.exploredTiles.contains(it.location) }
+                    .flatMap { it.cities.asSequence() }.any { viewingCiv.hasExplored(it.location) }
         }
         displayTutorial(TutorialTrigger.ApolloProgram) { viewingCiv.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts) }
         displayTutorial(TutorialTrigger.SiegeUnits) { viewingCiv.getCivUnits().any { it.baseUnit.isProbablySiegeUnit() } }

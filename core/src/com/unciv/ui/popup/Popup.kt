@@ -52,8 +52,13 @@ open class Popup(
         // Set actor name for debugging
         name = javaClass.simpleName
 
-        background = ImageGetter.getBackground(Color.GRAY.cpy().apply { a=.5f })
-        innerTable.background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.5f))
+        background = BaseScreen.skinStrings.getUiBackground(
+            "General/Popup/Background",
+            tintColor = Color.GRAY.cpy().apply { a=.5f })
+        innerTable.background = BaseScreen.skinStrings.getUiBackground(
+            "General/Popup/InnerTable",
+            tintColor = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.5f)
+        )
 
         innerTable.pad(20f)
         innerTable.defaults().pad(5f)
@@ -159,7 +164,7 @@ open class Popup(
         action: (()->Unit)? = null
     ): Cell<TextButton> {
         val cell = addButton(text, additionalKey, style) { close(); if(action!=null) action() }
-        cell.getActor().keyShortcuts.add(KeyCharAndCode.BACK)
+        cell.actor.keyShortcuts.add(KeyCharAndCode.BACK)
         return cell
     }
 

@@ -2,8 +2,10 @@ package com.unciv.logic.civilization
 
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.tile.ResourceSupplyList
+import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 
 /** CivInfo class was getting too crowded */
@@ -23,8 +25,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         // and we never actually iterate on the explored tiles (only check contains()),
         // so there's no fear of concurrency problems.
         val newlyExploredTiles = civInfo.viewableTiles.asSequence().map { it.position }
-                .filterNot { civInfo.exploredTiles.contains(it) }
-        civInfo.exploredTiles.addAll(newlyExploredTiles)
+        civInfo.addExploredTiles(newlyExploredTiles)
 
 
         val viewedCivs = HashMap<CivilizationInfo, TileInfo>()
@@ -71,7 +72,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         if (civInfo.isSpectator() || UncivGame.Current.viewEntireMapForDebug) {
             val allTiles = civInfo.gameInfo.tileMap.values.toSet()
             civInfo.viewableTiles = allTiles
-            civInfo.exploredTiles = allTiles.map { it.position }.toHashSet()
+            civInfo.addExploredTiles(allTiles.asSequence().map { it.position })
             civInfo.viewableInvisibleUnitsTiles = allTiles
             return
         }
@@ -146,11 +147,9 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
     }
 
     fun updateHasActiveEnemyMovementPenalty() {
-        civInfo.hasActiveEnemyMovementPenalty = (!civInfo.tech.isResearched("Dynamite") && civInfo.hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovementDepreciated))
-                || civInfo.hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovement)
+        civInfo.hasActiveEnemyMovementPenalty = civInfo.hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovement)
         civInfo.enemyMovementPenaltyUniques =
-                civInfo.getMatchingUniques(UniqueType.EnemyLandUnitsSpendExtraMovement) +
-                        civInfo.getMatchingUniques(UniqueType.EnemyLandUnitsSpendExtraMovementDepreciated)
+                civInfo.getMatchingUniques(UniqueType.EnemyLandUnitsSpendExtraMovement)
     }
 
     fun updateCitiesConnectedToCapital(initialSetup: Boolean = false) {
@@ -192,6 +191,15 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
             newDetailedCivResources.addByResource(cityStateProvidedResources, Constants.cityStates)
         }
 
+        for (unique in civInfo.getMatchingUniques(UniqueType.ProvidesResources)) {
+            if (unique.sourceObjectType == UniqueTarget.Building || unique.sourceObjectType == UniqueTarget.Wonder) continue // already calculated in city
+            newDetailedCivResources.add(
+                civInfo.gameInfo.ruleSet.tileResources[unique.params[1]]!!,
+                unique.sourceObjectType?.name ?: "",
+                unique.params[0].toInt()
+            )
+        }
+
         for (diplomacyManager in civInfo.diplomacy.values)
             newDetailedCivResources.add(diplomacyManager.resourcesFromTrade())
 
@@ -207,4 +215,79 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
 
         civInfo.updateStatsForNextTurn() // More or less resources = more or less happiness, with potential domino effects
     }
+
+
+    fun updateProximity(otherCiv: CivilizationInfo, preCalculated: Proximity? = null): Proximity {
+        if (otherCiv == civInfo)   return Proximity.None
+        if (preCalculated != null) {
+            // We usually want to update this for a pair of civs at the same time
+            // Since this function *should* be symmetrical for both civs, we can just do it once
+            civInfo.proximity[otherCiv.civName] = preCalculated
+            return preCalculated
+        }
+        if (civInfo.cities.isEmpty() || otherCiv.cities.isEmpty()) {
+            civInfo.proximity[otherCiv.civName] = Proximity.None
+            return Proximity.None
+        }
+
+        val mapParams = civInfo.gameInfo.tileMap.mapParameters
+        var minDistance = 100000 // a long distance
+        var totalDistance = 0
+        var connections = 0
+
+        var proximity = Proximity.None
+
+        for (ourCity in civInfo.cities) {
+            for (theirCity in otherCiv.cities) {
+                val distance = ourCity.getCenterTile().aerialDistanceTo(theirCity.getCenterTile())
+                totalDistance += distance
+                connections++
+                if (minDistance > distance) minDistance = distance
+            }
+        }
+
+        if (minDistance <= 7) {
+            proximity = Proximity.Neighbors
+        } else if (connections > 0) {
+            val averageDistance = totalDistance / connections
+            val mapFactor = if (mapParams.shape == MapShape.rectangular)
+                (mapParams.mapSize.height + mapParams.mapSize.width) / 2
+            else  (mapParams.mapSize.radius * 3) / 2 // slightly less area than equal size rect
+
+            val closeDistance = ((mapFactor * 25) / 100).coerceIn(10, 20)
+            val farDistance = ((mapFactor * 45) / 100).coerceIn(20, 50)
+
+            proximity = if (minDistance <= 11 && averageDistance <= closeDistance)
+                Proximity.Close
+            else if (averageDistance <= farDistance)
+                Proximity.Far
+            else
+                Proximity.Distant
+        }
+
+        // Check if different continents (unless already max distance, or water map)
+        if (connections > 0 && proximity != Proximity.Distant && !civInfo.gameInfo.tileMap.isWaterMap()
+                && civInfo.getCapital()!!.getCenterTile().getContinent() != otherCiv.getCapital()!!.getCenterTile().getContinent()
+        ) {
+            // Different continents - increase separation by one step
+            proximity = when (proximity) {
+                Proximity.Far -> Proximity.Distant
+                Proximity.Close -> Proximity.Far
+                Proximity.Neighbors -> Proximity.Close
+                else -> proximity
+            }
+        }
+
+        // If there aren't many players (left) we can't be that far
+        val numMajors = civInfo.gameInfo.getAliveMajorCivs().size
+        if (numMajors <= 2 && proximity > Proximity.Close)
+            proximity = Proximity.Close
+        if (numMajors <= 4 && proximity > Proximity.Far)
+            proximity = Proximity.Far
+
+        civInfo.proximity[otherCiv.civName] = proximity
+
+        return proximity
+    }
+
 }

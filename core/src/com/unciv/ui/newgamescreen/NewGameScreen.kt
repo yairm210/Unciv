@@ -13,6 +13,7 @@ import com.unciv.logic.GameStarter
 import com.unciv.logic.IdChecker
 import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.map.MapGeneratedMainType
 import com.unciv.logic.map.MapType
 import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
@@ -75,6 +76,9 @@ class NewGameScreen(
 
         if (isNarrowerThan4to3()) initPortrait()
         else initLandscape()
+
+        pickerPane.bottomTable.background = skinStrings.getUiBackground("NewGameScreen/BottomTable", tintColor = skinStrings.skinConfig.clearColor)
+        pickerPane.topTable.background = skinStrings.getUiBackground("NewGameScreen/TopTable", tintColor = skinStrings.skinConfig.clearColor)
 
         if (UncivGame.Current.settings.lastGameSetup != null) {
             rightSideGroup.addActorAt(0, VerticalGroup().padBottom(5f))
@@ -150,7 +154,7 @@ class NewGameScreen(
 
             Gdx.input.inputProcessor = null // remove input processing - nothing will be clicked!
 
-            if (mapOptionsTable.mapTypeSelectBox.selected.value == MapType.custom) {
+            if (mapOptionsTable.mapTypeSelectBox.selected.value == MapGeneratedMainType.custom) {
                 val map = try {
                     MapSaver.loadMap(gameSetupInfo.mapFile!!)
                 } catch (ex: Throwable) {
@@ -189,6 +193,7 @@ class NewGameScreen(
             rightSideButton.disable()
             rightSideButton.setText("Working...".tr())
 
+            setSkin()
             // Creating a new game can take a while and we don't want ANRs
             Concurrency.runOnNonDaemonThreadPool("NewGame") {
                 startNewGame()
