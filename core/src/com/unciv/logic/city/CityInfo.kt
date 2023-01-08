@@ -12,19 +12,17 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.Counter
+import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Nation
-import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
-import kotlin.collections.HashSet
 import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.pow
@@ -110,10 +108,11 @@ class CityInfo : IsPartOfGameInfoSerialization {
     var health = 200
 
 
-    var religion = CityInfoReligionManager()
     var population = PopulationManager()
     var cityConstructions = CityConstructions()
     var expansion = CityExpansionManager()
+    var religion = CityReligionManager()
+    var espionage = CityEspionageManager()
 
     @Transient  // CityStats has no serializable fields
     var cityStats = CityStats(this)
@@ -188,7 +187,7 @@ class CityInfo : IsPartOfGameInfoSerialization {
         })
             tile.removeTerrainFeature(terrainFeature)
 
-        tile.improvement = null
+        tile.changeImprovement(null)
         tile.improvementInProgress = null
 
         val ruleset = civInfo.gameInfo.ruleSet
@@ -411,8 +410,8 @@ class CityInfo : IsPartOfGameInfoSerialization {
 
         for (tileInfo in getTiles()) {
             val stateForConditionals = StateForConditionals(civInfo, this, tile = tileInfo)
-            if (tileInfo.improvement == null) continue
-            val tileImprovement = tileInfo.getTileImprovement()
+            if (tileInfo.getUnpillagedImprovement() == null) continue
+            val tileImprovement = tileInfo.getUnpillagedTileImprovement()
             for (unique in tileImprovement!!.getMatchingUniques(UniqueType.ProvidesResources, stateForConditionals)) {
                 val resource = getRuleset().tileResources[unique.params[1]] ?: continue
                 cityResources.add(
@@ -440,7 +439,7 @@ class CityInfo : IsPartOfGameInfoSerialization {
             val resource = getRuleset().tileResources[unique.params[1]]
                 ?: continue
             cityResources.add(
-                resource, "Buildings+",
+                resource, "Buildings",
                 unique.params[0].toInt() * civInfo.getResourceModifier(resource)
             )
         }
@@ -468,9 +467,9 @@ class CityInfo : IsPartOfGameInfoSerialization {
             }) return 0
         }
 
-        if ((tileInfo.improvement != null && resource.isImprovedBy(tileInfo.improvement!!)) || tileInfo.isCityCenter()
+        if ((tileInfo.getUnpillagedImprovement() != null && resource.isImprovedBy(tileInfo.improvement!!)) || tileInfo.isCityCenter()
             // Per https://gaming.stackexchange.com/questions/53155/do-manufactories-and-customs-houses-sacrifice-the-strategic-or-luxury-resources
-            || resource.resourceType == ResourceType.Strategic && tileInfo.containsGreatImprovement()
+            || resource.resourceType == ResourceType.Strategic && tileInfo.containsUnpillagedGreatImprovement()
         ) {
             var amountToAdd = if (resource.resourceType == ResourceType.Strategic) tileInfo.resourceAmount
                 else 1
@@ -592,7 +591,16 @@ class CityInfo : IsPartOfGameInfoSerialization {
     fun isHolyCityOf(religionName: String?) = isHolyCity() && religion.religionThisIsTheHolyCityOf == religionName
 
     fun canBeDestroyed(justCaptured: Boolean = false): Boolean {
-        return !isOriginalCapital && !isHolyCity() && (!isCapital() || justCaptured)
+        if (civInfo.gameInfo.gameParameters.noCityRazing) return false;
+
+        val allowRazeCapital = civInfo.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.allowRazeCapital)
+        val allowRazeHolyCity = civInfo.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.allowRazeHolyCity)
+
+        if (isOriginalCapital && !allowRazeCapital) return false;
+        if (isHolyCity() && !allowRazeHolyCity) return false;
+        if (isCapital() && !justCaptured && !allowRazeCapital) return false;
+
+        return true;
     }
 
     fun getForceEvaluation(): Int {
@@ -628,6 +636,7 @@ class CityInfo : IsPartOfGameInfoSerialization {
         cityConstructions.cityInfo = this
         cityConstructions.setTransients()
         religion.setTransients(this)
+        espionage.setTransients(this)
     }
 
     fun startTurn() {
@@ -771,7 +780,7 @@ class CityInfo : IsPartOfGameInfoSerialization {
             expansion.relinquishOwnership(tile)
         }
         civInfo.cities = civInfo.cities.toMutableList().apply { remove(this@CityInfo) }
-        getCenterTile().improvement = "City ruins"
+        getCenterTile().changeImprovement("City ruins")
 
         // Edge case! What if a water unit is in a city, and you raze the city?
         // Well, the water unit has to return to the water!
@@ -885,7 +894,7 @@ class CityInfo : IsPartOfGameInfoSerialization {
             citiesWithin6Tiles
                 .map { it.civInfo }
                 .distinct()
-                .filter { it.knows(civInfo) && it.exploredTiles.contains(location) }
+                .filter { it.knows(civInfo) && it.hasExplored(location) }
         for (otherCiv in civsWithCloseCities)
             otherCiv.getDiplomacyManager(civInfo).setFlag(DiplomacyFlags.SettledCitiesNearUs, 30)
     }

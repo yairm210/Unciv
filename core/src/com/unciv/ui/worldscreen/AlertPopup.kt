@@ -207,7 +207,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                             .row()
                     }
                 } else {    // Fallback
-                    add(ImageGetter.getConstructionImage(wonder.name).surroundWithCircle(100f)).pad(20f).row()
+                    add(ImageGetter.getPortraitImage(wonder.name, 100f)).pad(20f).row()
                 }
 
                 val centerTable = Table()

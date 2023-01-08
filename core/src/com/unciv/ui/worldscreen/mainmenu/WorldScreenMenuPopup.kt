@@ -1,9 +1,14 @@
 package com.unciv.ui.worldscreen.mainmenu
 
 import com.badlogic.gdx.Gdx
+import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSetupInfo
+import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.newgamescreen.NewGameScreen
+import com.unciv.ui.options.addMusicCurrentlyPlaying
+import com.unciv.ui.options.addMusicPauseSlider
+import com.unciv.ui.options.addMusicVolumeSlider
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.saves.SaveGameScreen
@@ -50,6 +55,10 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
             close()
             WorldScreenCommunityPopup(worldScreen).open(force = true)
         }.row()
+        addButton("Music") {
+            close()
+            WorldScreenMusicButton(worldScreen).open(force = true)
+        }.row()
         addCloseButton()
         pack()
     }
@@ -64,7 +73,7 @@ class WorldScreenCommunityPopup(val worldScreen: WorldScreen) : Popup(worldScree
         }.row()
 
         addButton("Github") {
-            Gdx.net.openURI("https://github.com/yairm210/UnCiv")
+            Gdx.net.openURI("https://github.com/yairm210/Unciv")
             close()
         }.row()
 
@@ -72,6 +81,26 @@ class WorldScreenCommunityPopup(val worldScreen: WorldScreen) : Popup(worldScree
             Gdx.net.openURI("https://www.reddit.com/r/Unciv/")
             close()
         }.row()
+
+        addCloseButton()
+    }
+}
+
+class WorldScreenMusicButton(val worldScreen: WorldScreen) : Popup(worldScreen) {
+    init {
+        val musicController = UncivGame.Current.musicController
+        val settings = UncivGame.Current.settings
+
+        defaults().fillX()
+        addMusicVolumeSlider(this, settings, musicController)
+        row()
+        addMusicPauseSlider(this , settings, musicController)
+        row()
+        addMusicCurrentlyPlaying(this, musicController)
+        row()
+        addButton("Pause", action = { musicController.pause(0.5f) })
+        addButton("Resume", action = { musicController.resume(0.5f) })
+        addButton("Skip", action = { musicController.chooseTrack(flags = MusicTrackChooserFlags.none) }).row()
 
         addCloseButton()
     }

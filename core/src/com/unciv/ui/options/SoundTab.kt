@@ -35,10 +35,20 @@ fun soundTab(
         addMusicVolumeSlider(this, settings, music)
         addMusicPauseSlider(this, settings, music)
         addMusicCurrentlyPlaying(this, music)
+        addButton(this, "Pause", action = { music.pause(0.5f) })
+        addButton(this, "Resume", action = { music.resume(0.5f) })
+        addButton(this, "Skip", action = { music.chooseTrack(flags = MusicTrackChooserFlags.none) })
+        row()
     }
 
     if (!UncivGame.Current.musicController.isDefaultFileAvailable())
         addDownloadMusic(this, optionsPopup)
+}
+
+private fun addButton(table: Table, text: String, action: () -> Unit) {
+    val button = text.toTextButton()
+    table.add(button)
+    button.onClick { action.invoke() }
 }
 
 private fun addDownloadMusic(table: Table, optionsPopup: OptionsPopup) {
@@ -99,7 +109,7 @@ private fun addCitySoundsVolumeSlider(table: Table, settings: GameSettings) {
     table.add(citySoundVolumeSlider).pad(5f).row()
 }
 
-private fun addMusicVolumeSlider(table: Table, settings: GameSettings, music: MusicController) {
+fun addMusicVolumeSlider(table: Table, settings: GameSettings, music: MusicController) {
     table.add("Music volume".tr()).left().fillX()
 
     val musicVolumeSlider = UncivSlider(
@@ -118,7 +128,7 @@ private fun addMusicVolumeSlider(table: Table, settings: GameSettings, music: Mu
     table.add(musicVolumeSlider).pad(5f).row()
 }
 
-private fun addMusicPauseSlider(table: Table, settings: GameSettings, music: MusicController) {
+fun addMusicPauseSlider(table: Table, settings: GameSettings, music: MusicController) {
     // map to/from 0-1-2..10-12-14..30-35-40..60-75-90-105-120
     fun posToLength(pos: Float): Float = when (pos) {
         in 0f..10f -> pos
@@ -154,7 +164,7 @@ private fun addMusicPauseSlider(table: Table, settings: GameSettings, music: Mus
     table.add(pauseLengthSlider).pad(5f).row()
 }
 
-private fun addMusicCurrentlyPlaying(table: Table, music: MusicController) {
+fun addMusicCurrentlyPlaying(table: Table, music: MusicController) {
     val label = WrappableLabel("", table.width - 10f, Color(-0x2f5001), 16)
     label.wrap = true
     table.add(label).padTop(20f).colspan(2).fillX().row()

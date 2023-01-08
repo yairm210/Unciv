@@ -113,8 +113,11 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         if (!civInfo.isMajorCiv()) return false
         if (numberOfBeliefsAvailable(BeliefType.Pantheon) == 0)
             return false // no more available pantheons
-        if (civInfo.gameInfo.civilizations.any { it.religionManager.religionState == ReligionState.EnhancedReligion })
+        if (civInfo.gameInfo.civilizations.any { it.religionManager.religionState == ReligionState.EnhancedReligion }
+            && civInfo.gameInfo.civilizations.count { it.religionManager.religionState >= ReligionState.Pantheon } < maxNumberOfReligions()
+        ) {
             return false
+        }
         return (religionState == ReligionState.None && storedFaith >= faithForPantheon()) // earned pantheon
                 || (freeBeliefs[BeliefType.Pantheon.name] != null && freeBeliefs[BeliefType.Pantheon.name]!! > 0) // free pantheon belief
     }
@@ -176,6 +179,11 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         }
     }
 
+    private fun maxNumberOfReligions() = min(
+        civInfo.gameInfo.ruleSet.religions.size,
+        civInfo.gameInfo.civilizations.count { it.isMajorCiv() } / 2 + 1
+    )
+
     /** Calculates the amount of religions that can still be founded */
     fun remainingFoundableReligions(): Int {
         val gameInfo = civInfo.gameInfo
@@ -184,8 +192,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         }
 
         // count the number of foundable religions left given defined ruleset religions and number of civs in game
-        val maxNumberOfAdditionalReligions = min(gameInfo.ruleSet.religions.size,
-            gameInfo.civilizations.count { it.isMajorCiv() } / 2 + 1) - foundedReligionsCount
+        val maxNumberOfAdditionalReligions = maxNumberOfReligions() - foundedReligionsCount
 
         val availableBeliefsToFound = min(
             numberOfBeliefsAvailable(BeliefType.Follower),
@@ -199,7 +206,8 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         val gameInfo = civInfo.gameInfo
         val numberOfBeliefs = if (type == BeliefType.Any) gameInfo.ruleSet.beliefs.values.count()
         else gameInfo.ruleSet.beliefs.values.count { it.type == type }
-        return numberOfBeliefs - gameInfo.religions.flatMap { it.value.getBeliefs(type) }.count()
+        return numberOfBeliefs - gameInfo.religions.flatMap { it.value.getBeliefs(type) }.distinct().count()
+        // We need to do the distinct above, as pantheons and religions founded out of those pantheons might share beliefs
     }
 
     fun getReligionWithBelief(belief: Belief): Religion? {

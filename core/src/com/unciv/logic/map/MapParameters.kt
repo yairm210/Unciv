@@ -25,7 +25,7 @@ enum class MapSize(val radius: Int, val width: Int, val height: Int) {
     companion object {
         /** Not a predefined [MapSize] enum value, but a String
          * used in [MapParameters.mapSize] to indicate user-defined dimensions.
-         * Do not mistake for [MapType.custom]. */
+         * Do not mistake for [MapGeneratedMainType.custom]. */
         const val custom = "Custom"
     }
 }
@@ -124,22 +124,31 @@ class MapSizeNew : IsPartOfGameInfoSerialization {
 
 object MapShape : IsPartOfGameInfoSerialization {
     const val hexagonal = "Hexagonal"
+    const val flatEarth = "Flat Earth Hexagonal"
     const val rectangular = "Rectangular"
 }
 
+object MapGeneratedMainType : IsPartOfGameInfoSerialization {
+    const val generated = "Generated"
+    // Randomly choose a generated map type
+    const val randomGenerated = "Random Generated"
+    // Non-generated maps
+    const val custom = "Custom"
+
+}
+
 object MapType : IsPartOfGameInfoSerialization {
+    const val default = "Default"
     const val pangaea = "Pangaea"
-    const val continents = "Continents"
+    const val continentAndIslands = "Continent and Islands"
+    const val twoContinents = "Two Continents"
+    const val threeContinents = "Three Continents"
     const val fourCorners = "Four Corners"
-    const val perlin = "Perlin"
     const val archipelago = "Archipelago"
     const val innerSea = "Inner Sea"
 
-    // Cellular automata
-    const val default = "Default"
-
-    // Non-generated maps
-    const val custom = "Custom"
+    // Cellular automata style
+    const val smoothedRandom = "Smoothed Random"
 
     // All ocean tiles
     const val empty = "Empty"
@@ -178,11 +187,9 @@ class MapParameters : IsPartOfGameInfoSerialization {
     var vegetationRichness = 0.4f
     var rareFeaturesRichness = 0.05f
     var resourceRichness = 0.1f
-    var waterThreshold = 0f
+    var waterThreshold = 0.0f
 
-    /** Shifts temperature (after random, latitude and temperatureExtremeness).
-     *  For seasonal main menu background only, not user-accessible, thus transient and not cloned. */
-    @Transient
+    /** Shifts temperature (after random, latitude and temperatureExtremeness).*/
     var temperatureShift = 0f
 
     fun clone() = MapParameters().also {
@@ -201,6 +208,7 @@ class MapParameters : IsPartOfGameInfoSerialization {
         it.maxCoastExtension = maxCoastExtension
         it.elevationExponent = elevationExponent
         it.temperatureExtremeness = temperatureExtremeness
+        it.temperatureShift = temperatureShift
         it.vegetationRichness = vegetationRichness
         it.rareFeaturesRichness = rareFeaturesRichness
         it.resourceRichness = resourceRichness
@@ -218,19 +226,23 @@ class MapParameters : IsPartOfGameInfoSerialization {
         maxCoastExtension = 2
         elevationExponent = 0.7f
         temperatureExtremeness = 0.6f
+        temperatureShift = 0.0f
         vegetationRichness = 0.4f
         rareFeaturesRichness = 0.05f
         resourceRichness = 0.1f
-        waterThreshold = 0f
+        waterThreshold = if (type == MapType.smoothedRandom)
+            -0.05f // make world about 55% land
+        else
+            0f
     }
 
     fun getArea() = when {
-        shape == MapShape.hexagonal -> getNumberOfTilesInHexagon(mapSize.radius)
+        shape == MapShape.hexagonal || shape == MapShape.flatEarth -> getNumberOfTilesInHexagon(mapSize.radius)
         worldWrap && mapSize.width % 2 != 0 -> (mapSize.width - 1) * mapSize.height
         else -> mapSize.width * mapSize.height
     }
     fun displayMapDimensions() = mapSize.run {
-        (if (shape == MapShape.hexagonal) "R$radius" else "${width}x$height") +
+        (if (shape == MapShape.hexagonal || shape == MapShape.flatEarth) "R$radius" else "${width}x$height") +
         (if (worldWrap) "w" else "")
     }
 
@@ -249,7 +261,7 @@ class MapParameters : IsPartOfGameInfoSerialization {
         if(mapResources != MapResources.default) yield(" {Resource Setting}: {$mapResources}")
         if (name.isEmpty()) return@sequence
         yield("\n")
-        if (type != MapType.custom && type != MapType.empty) yield("{Map Generation Type}: {$type}, ")
+        if (type != MapGeneratedMainType.custom && type != MapType.empty) yield("{Map Generation Type}: {$type}, ")
         yield("{RNG Seed} $seed")
         yield(", {Map Elevation}=" + elevationExponent.niceToString(2))
         yield(", {Temperature extremeness}=" + temperatureExtremeness.niceToString(2))
@@ -262,7 +274,7 @@ class MapParameters : IsPartOfGameInfoSerialization {
     }.joinToString("")
 
     fun numberOfTiles() =
-        if (shape == MapShape.hexagonal) {
+        if (shape == MapShape.hexagonal || shape == MapShape.flatEarth) {
             1 + 3 * mapSize.radius * (mapSize.radius - 1)
         } else {
             mapSize.width * mapSize.height

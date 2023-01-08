@@ -75,12 +75,12 @@ class OptionsPopup(
 
         tabs.addPage(
             "About",
-            aboutTab(screen),
+            aboutTab(),
             ImageGetter.getExternalImage("Icon.png"), 24f
         )
         tabs.addPage(
             "Display",
-            displayTab(this, ::reloadWorldAndOptions, ::reloadWorldAndOptions),
+            displayTab(this, ::reloadWorldAndOptions),
             ImageGetter.getImage("UnitPromotionIcons/Scouting"), 24f
         )
         tabs.addPage(
@@ -138,6 +138,11 @@ class OptionsPopup(
     private fun reloadWorldAndOptions() {
         Concurrency.run("Reload from options") {
             settings.save()
+            withGLContext {
+                // We have to run setSkin before the screen is rebuild else changing skins
+                // would only load the new SkinConfig after the next rebuild
+                BaseScreen.setSkin()
+            }
             val screen = UncivGame.Current.screen
             if (screen is WorldScreen) {
                 UncivGame.Current.reloadWorldscreen()

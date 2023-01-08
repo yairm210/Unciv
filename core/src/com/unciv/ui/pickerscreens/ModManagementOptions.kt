@@ -160,7 +160,10 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
             expanderWidth = 360f,
             onChange = { expanderChangeEvent?.invoke() }
         ) {
-            it.background = ImageGetter.getBackground(Color(0x203050ff))
+            it.background = BaseScreen.skinStrings.getUiBackground(
+                "ModManagementOptions/ExpanderTab",
+                tintColor = Color(0x203050ff)
+            )
             it.pad(7.5f)
             it.add(Table().apply {
                 add("Filter:".toLabel()).left()

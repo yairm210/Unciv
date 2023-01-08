@@ -7,6 +7,7 @@ import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.CityAction
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.BFS
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.MilestoneType
@@ -32,7 +33,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     private val militaryUnits = civUnits.count { it.baseUnit.isMilitary() }
     private val workers = civUnits.count { it.hasUniqueToBuildImprovements && it.isCivilian() }.toFloat()
     private val cities = civInfo.cities.size
-    private val allTechsAreResearched = civInfo.tech.getNumberOfTechsResearched() >= civInfo.gameInfo.ruleSet.technologies.size
+    private val allTechsAreResearched = civInfo.gameInfo.ruleSet.technologies.values
+        .all { civInfo.tech.isResearched(it.name) || !civInfo.tech.canBeResearched(it.name)}
 
     private val isAtWar = civInfo.isAtWar()
     private val buildingsForVictory = civInfo.gameInfo.getEnabledVictories().values
@@ -108,26 +110,25 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private fun addMilitaryUnitChoice() {
         if (!isAtWar && !cityIsOverAverageProduction) return // don't make any military units here. Infrastructure first!
-        if (!isAtWar && civInfo.statsForNextTurn.gold > 0 && militaryUnits < max(5, cities * 2)
-                || isAtWar && civInfo.gold > -50
-        ) {
-            val militaryUnit = Automation.chooseMilitaryUnit(cityInfo) ?: return
-            val unitsToCitiesRatio = cities.toFloat() / (militaryUnits + 1)
-            // most buildings and civ units contribute the the civ's growth, military units are anti-growth
-            var modifier = sqrt(unitsToCitiesRatio) / 2
-            if (civInfo.wantsToFocusOn(Victory.Focus.Military)) modifier *= 3
-            else if (isAtWar) modifier *= unitsToCitiesRatio * 2
+        if (!isAtWar && (civInfo.statsForNextTurn.gold < 0 || militaryUnits > max(5, cities * 2))) return
+        if (civInfo.gold < -50) return
 
-            if (Automation.afraidOfBarbarians(civInfo)) modifier = 2f // military units are pro-growth if pressured by barbs
-            if (!cityIsOverAverageProduction) modifier /= 5 // higher production cities will deal with this
+        val militaryUnit = Automation.chooseMilitaryUnit(cityInfo) ?: return
+        val unitsToCitiesRatio = cities.toFloat() / (militaryUnits + 1)
+        // most buildings and civ units contribute the the civ's growth, military units are anti-growth
+        var modifier = sqrt(unitsToCitiesRatio) / 2
+        if (civInfo.wantsToFocusOn(Victory.Focus.Military) || isAtWar) modifier *= 2
 
-            val civilianUnit = cityInfo.getCenterTile().civilianUnit
-            if (civilianUnit != null && civilianUnit.hasUnique(UniqueType.FoundCity)
-                    && cityInfo.getCenterTile().getTilesInDistance(5).none { it.militaryUnit?.civInfo == civInfo })
-                modifier = 5f // there's a settler just sitting here, doing nothing - BAD
+        if (Automation.afraidOfBarbarians(civInfo)) modifier = 2f // military units are pro-growth if pressured by barbs
+        if (!cityIsOverAverageProduction) modifier /= 5 // higher production cities will deal with this
 
-            addChoice(relativeCostEffectiveness, militaryUnit, modifier)
-        }
+        val civilianUnit = cityInfo.getCenterTile().civilianUnit
+        if (civilianUnit != null && civilianUnit.hasUnique(UniqueType.FoundCity)
+                && cityInfo.getCenterTile().getTilesInDistance(5).none { it.militaryUnit?.civInfo == civInfo })
+            modifier = 5f // there's a settler just sitting here, doing nothing - BAD
+
+        if (civInfo.playerType == PlayerType.Human) modifier /= 2 // Players prefer to make their own unit choices usually
+        addChoice(relativeCostEffectiveness, militaryUnit, modifier)
     }
 
     private fun addWorkBoatChoice() {
@@ -293,7 +294,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     private fun addHappinessBuildingChoice() {
         val happinessBuilding = nonWonders
             .filter { (it.isStatRelated(Stat.Happiness)
-                    || it.uniques.contains("Remove extra unhappiness from annexed cities"))
+                    || it.hasUnique(UniqueType.RemoveAnnexUnhappiness))
                     && Automation.allowAutomatedConstruction(civInfo, cityInfo, it) }
             .isBuildable()
             .minByOrNull { it.cost }
@@ -302,6 +303,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
             val civHappiness = civInfo.getHappiness()
             if (civHappiness > 5) modifier = 1 / 2f // less desperate
             if (civHappiness < 0) modifier = 3f // more desperate
+            else if (happinessBuilding.hasUnique(UniqueType.RemoveAnnexUnhappiness)) modifier = 2f // building courthouse is always important
             addChoice(relativeCostEffectiveness, happinessBuilding.name, modifier)
         }
     }

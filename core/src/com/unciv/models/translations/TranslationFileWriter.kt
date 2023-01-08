@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
+import com.unciv.logic.civilization.SpyAction
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.LocaleCode
 import com.unciv.models.ruleset.*
@@ -124,6 +125,10 @@ object TranslationFileWriter {
 
             for (uniqueTarget in UniqueTarget.values())
                 linesToTranslate.add("$uniqueTarget = ")
+
+            for (spyAction in SpyAction.values()) {
+                linesToTranslate.add("$spyAction = ")
+            }
         }
 
         var countOfTranslatableLines = 0
@@ -419,7 +424,8 @@ object TranslationFileWriter {
                 "revealedBy", "startBias", "techRequired", "terrainsCanBeBuiltOn",
                 "terrainsCanBeFoundOn", "turnsInto", "uniqueTo", "upgradesTo",
                 "link", "icon", "extraImage", "color",  // FormattedLine
-                "RuinReward.uniques", "TerrainType.name"
+                "RuinReward.uniques", "TerrainType.name",
+                "CityStateType.friendBonusUniques", "CityStateType.allyBonusUniques",
             )
 
             /** Specifies Enums where the name property _is_ translatable, by Class name */
@@ -468,6 +474,7 @@ object TranslationFileWriter {
                     "Units" -> emptyArray<BaseUnit>().javaClass
                     "UnitTypes" -> emptyArray<UnitType>().javaClass
                     "VictoryTypes" -> emptyArray<Victory>().javaClass
+                    "CityStateTypes" -> emptyArray<CityStateType>().javaClass
                     else -> this.javaClass // dummy value
                 }
             }

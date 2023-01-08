@@ -48,7 +48,7 @@ class PopulationManager : IsPartOfGameInfoSerialization {
         var foodRequired = 15 + 6 * (population - 1) + floor((population - 1).toDouble().pow(1.8))
         if (cityInfo.civInfo.isCityState())
             foodRequired *= 1.5f
-        if (!cityInfo.civInfo.isPlayerCivilization())
+        if (!cityInfo.civInfo.isHuman())
             foodRequired *= cityInfo.civInfo.gameInfo.getDifficulty().aiCityGrowthModifier
         return foodRequired.toInt()
     }
@@ -124,10 +124,11 @@ class PopulationManager : IsPartOfGameInfoSerialization {
 
         val currentCiv = cityInfo.civInfo
 
+        val tilesToEvaluate = cityInfo.getCenterTile().getTilesInDistance(3)
+            .filter { it.getOwner() == currentCiv }.toList().asSequence()
         for (i in 1..getFreePopulation()) {
             //evaluate tiles
-            val (bestTile, valueBestTile) = cityInfo.getCenterTile().getTilesInDistance(3)
-                    .filter { it.getOwner() == currentCiv }
+            val (bestTile, valueBestTile) = tilesToEvaluate
                     .filterNot { it.providesYield() }
                     .associateWith { Automation.rankTileForCityWork(it, cityInfo, cityStats) }
                     .maxByOrNull { it.value }

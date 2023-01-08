@@ -276,14 +276,16 @@ fun Actor.centerX(parent: Stage) { x = parent.width / 2 - width / 2 }
 fun Actor.centerY(parent: Stage) { y = parent.height / 2 - height / 2 }
 fun Actor.center(parent: Stage) { centerX(parent); centerY(parent) }
 
+class OnClickListener(val sound: UncivSound = UncivSound.Click, val function: (event: InputEvent?, x: Float, y: Float) -> Unit):ClickListener(){
+    override fun clicked(event: InputEvent?, x: Float, y: Float) {
+        Concurrency.run("Sound") { SoundPlayer.play(sound) }
+        function(event, x, y)
+    }
+}
+
 /** same as [onClick], but sends the [InputEvent] and coordinates along */
 fun Actor.onClickEvent(sound: UncivSound = UncivSound.Click, function: (event: InputEvent?, x: Float, y: Float) -> Unit) {
-    this.addListener(object : ClickListener() {
-        override fun clicked(event: InputEvent?, x: Float, y: Float) {
-            Concurrency.run("Sound") { SoundPlayer.play(sound) }
-            function(event, x, y)
-        }
-    })
+    this.addListener(OnClickListener(sound, function))
 }
 
 // If there are other buttons that require special clicks then we'll have an onclick that will accept a string parameter, no worries
@@ -296,12 +298,14 @@ fun Actor.onClick(function: () -> Unit): Actor {
     return this
 }
 
+class OnChangeListener(val function: (event: ChangeEvent?) -> Unit):ChangeListener(){
+    override fun changed(event: ChangeEvent?, actor: Actor?) {
+        function(event)
+    }
+}
+
 fun Actor.onChange(function: (event: ChangeListener.ChangeEvent?) -> Unit): Actor {
-    this.addListener(object : ChangeListener() {
-        override fun changed(event: ChangeEvent?, actor: Actor?) {
-            function(event)
-        }
-    })
+    this.addListener(OnChangeListener(function))
     return this
 }
 
@@ -309,11 +313,13 @@ fun Actor.surroundWithCircle(size: Float, resizeActor: Boolean = true, color: Co
     return IconCircleGroup(size, this, resizeActor, color)
 }
 
+fun Actor.surroundWithThinCircle(color: Color=Color.BLACK): IconCircleGroup = surroundWithCircle(width+2f, false, color)
+
 
 fun Actor.addBorder(size:Float, color: Color, expandCell:Boolean = false): Table {
     val table = Table()
     table.pad(size)
-    table.background = ImageGetter.getBackground(color)
+    table.background = BaseScreen.skinStrings.getUiBackground("General/Border", tintColor = color)
     val cell = table.add(this)
     if (expandCell) cell.expand()
     cell.fill()
@@ -438,7 +444,9 @@ fun String.toLabel() = Label(this.tr(), BaseScreen.skin)
 fun Int.toLabel() = this.toString().toLabel()
 
 /** Translate a [String] and make a [Label] widget from it with a specified font color and size */
-fun String.toLabel(fontColor: Color = Color.WHITE, fontSize: Int = Constants.defaultFontSize): Label {
+fun String.toLabel(fontColor: Color = Color.WHITE,
+                   fontSize: Int = Constants.defaultFontSize,
+                   alignment: Int = Align.left ): Label {
     // We don't want to use setFontSize and setFontColor because they set the font,
     //  which means we need to rebuild the font cache which means more memory allocation.
     var labelStyle = BaseScreen.skin.get(Label.LabelStyle::class.java)
@@ -447,7 +455,10 @@ fun String.toLabel(fontColor: Color = Color.WHITE, fontSize: Int = Constants.def
         labelStyle.fontColor = fontColor
         if (fontSize != Constants.defaultFontSize) labelStyle.font = Fonts.font
     }
-    return Label(this.tr(), labelStyle).apply { setFontScale(fontSize / Fonts.ORIGINAL_FONT_SIZE) }
+    return Label(this.tr(), labelStyle).apply {
+        setFontScale(fontSize / Fonts.ORIGINAL_FONT_SIZE)
+        setAlignment(alignment)
+    }
 }
 
 /**
@@ -490,3 +501,13 @@ fun WidgetGroup.packIfNeeded(): WidgetGroup {
 
 /** @return `true` if the screen is narrower than 4:3 landscape */
 fun Stage.isNarrowerThan4to3() = viewport.screenHeight * 4 > viewport.screenWidth * 3
+
+/** Wraps and returns an image in a [Group] of a given size*/
+fun Image.toGroup(size: Float): Group {
+    return Group().apply {
+        setSize(size, size)
+        this@toGroup.setSize(size, size)
+        this@toGroup.center(this)
+        this@toGroup.setOrigin(Align.center)
+        addActor(this@toGroup) }
+}

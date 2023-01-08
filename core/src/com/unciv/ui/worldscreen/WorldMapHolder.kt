@@ -37,6 +37,7 @@ import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.tilegroups.WorldTileGroup
+import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.UnitGroup
 import com.unciv.ui.utils.ZoomableScrollPane
@@ -168,7 +169,12 @@ class WorldMapHolder(
         layout() // Fit the scroll pane to the contents - otherwise, setScroll won't work!
     }
 
-    private fun onTileClicked(tileInfo: TileInfo) {
+    fun onTileClicked(tileInfo: TileInfo) {
+
+        if (!worldScreen.viewingCiv.hasExplored(tileInfo)
+                && tileInfo.neighbors.all { worldScreen.viewingCiv.hasExplored(it) })
+            return // This tile doesn't exist for you
+
         removeUnitActionOverlay()
         selectedTile = tileInfo
         unitMovementPaths.clear()
@@ -293,6 +299,11 @@ class WorldMapHolder(
                     if (selectedUnits.size > 1) { // We have more tiles to move
                         moveUnitToTargetTile(selectedUnits.subList(1, selectedUnits.size), targetTile)
                     } else removeUnitActionOverlay() //we're done here
+
+                    if (UncivGame.Current.settings.autoUnitCycle &&
+                            selectedUnit.currentMovement == 0f)
+                        worldScreen.switchToNextUnit()
+
                 } catch (ex: Exception) {
                     Log.error("Exception in moveUnitToTargetTile", ex)
                 }
@@ -442,7 +453,7 @@ class WorldMapHolder(
 
         val numberCircle = dto.unitToTurnsToDestination.values.maxOrNull()!!.toString().toLabel(fontSize = 14)
             .apply { setAlignment(Align.center) }
-            .surroundWithCircle(smallerCircleSizes-2, color = ImageGetter.getBlue().darken(0.3f))
+            .surroundWithCircle(smallerCircleSizes-2, color = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.3f))
             .surroundWithCircle(smallerCircleSizes,false)
 
         moveHereButton.addActor(numberCircle)
@@ -572,7 +583,7 @@ class WorldMapHolder(
 
 
             if (tileGroup.tileInfo.getShownImprovement(viewingCiv) == Constants.barbarianEncampment
-                    && tileGroup.tileInfo.position in viewingCiv.exploredTiles)
+                    && viewingCiv.hasExplored(tileGroup.tileInfo))
                 tileGroup.showHighlight(Color.RED)
 
             val unitsInTile = tileGroup.tileInfo.getUnits()
@@ -780,4 +791,8 @@ class WorldMapHolder(
     override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
 
     override fun act(delta: Float) = super.act(delta)
+
+    override fun clear() {
+        super.clear()
+    }
 }

@@ -1,0 +1,2176 @@
+
+AbsoluteUnits.png
+size: 2048, 1024
+format: RGBA8888
+filter: MipMapLinearLinear, MipMapLinearLinear
+repeat: none
+TileSets/AbsoluteUnits/Units/African Forest Elephant
+  rotate: false
+  xy: 1155, 496
+  size: 77, 79
+  orig: 77, 79
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/African Forest Elephant-Carthage
+  rotate: false
+  xy: 1155, 496
+  size: 77, 79
+  orig: 77, 79
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/African Forest Elephant-1
+  rotate: false
+  xy: 1240, 496
+  size: 77, 79
+  orig: 77, 79
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/African Forest Elephant-Carthage-2
+  rotate: false
+  xy: 1240, 496
+  size: 77, 79
+  orig: 77, 79
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/African Forest Elephant-2
+  rotate: false
+  xy: 1325, 496
+  size: 77, 79
+  orig: 77, 79
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/African Forest Elephant-Carthage-1
+  rotate: false
+  xy: 1325, 496
+  size: 77, 79
+  orig: 77, 79
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Anti-Aircraft Gun
+  rotate: false
+  xy: 854, 260
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Anti-Aircraft Gun-1
+  rotate: false
+  xy: 1745, 260
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Anti-Aircraft Gun-2
+  rotate: false
+  xy: 1920, 234
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Anti-Tank Gun
+  rotate: false
+  xy: 926, 227
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Anti-Tank Gun-1
+  rotate: false
+  xy: 998, 222
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Anti-Tank Gun-2
+  rotate: false
+  xy: 1405, 222
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Archer
+  rotate: false
+  xy: 4, 939
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Archer-1
+  rotate: false
+  xy: 107, 939
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Archer-2
+  rotate: false
+  xy: 210, 939
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Artillery
+  rotate: false
+  xy: 1817, 222
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Artillery-1
+  rotate: false
+  xy: 684, 217
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Artillery-2
+  rotate: false
+  xy: 89, 211
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Atlatlist
+  rotate: false
+  xy: 313, 939
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Atlatlist-The Maya
+  rotate: false
+  xy: 313, 939
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Atlatlist-1
+  rotate: false
+  xy: 416, 939
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Atlatlist-2
+  rotate: false
+  xy: 519, 939
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Battering Ram
+  rotate: false
+  xy: 1410, 510
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Battering Ram-1
+  rotate: false
+  xy: 1495, 510
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Battering Ram-2
+  rotate: false
+  xy: 1580, 510
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Battering Ram-The Huns
+  rotate: false
+  xy: 1665, 510
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Battleship
+  rotate: false
+  xy: 161, 211
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Battleship-1
+  rotate: false
+  xy: 233, 211
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Battleship-2
+  rotate: false
+  xy: 599, 211
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Bowman
+  rotate: false
+  xy: 622, 939
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Bowman-1
+  rotate: false
+  xy: 725, 939
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Bowman-2
+  rotate: false
+  xy: 828, 939
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Brute
+  rotate: false
+  xy: 931, 939
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Cannon
+  rotate: false
+  xy: 1070, 208
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Cannon-1
+  rotate: false
+  xy: 1142, 208
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Cannon-2
+  rotate: false
+  xy: 305, 206
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Caravel
+  rotate: false
+  xy: 1214, 203
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Caravel-1
+  rotate: false
+  xy: 1286, 203
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Caravel-2
+  rotate: false
+  xy: 4, 201
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Carrier
+  rotate: false
+  xy: 377, 201
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Carrier-1
+  rotate: false
+  xy: 449, 201
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Carrier-2
+  rotate: false
+  xy: 521, 201
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Catapult
+  rotate: false
+  xy: 854, 196
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Catapult-1
+  rotate: false
+  xy: 1745, 196
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Catapult-2
+  rotate: false
+  xy: 1477, 187
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Cavalry
+  rotate: false
+  xy: 1750, 510
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Cavalry-1
+  rotate: false
+  xy: 1835, 510
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Cavalry-2
+  rotate: false
+  xy: 1920, 444
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Chariot Archer
+  rotate: false
+  xy: 725, 432
+  size: 77, 70
+  orig: 77, 70
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Chariot Archer-1
+  rotate: false
+  xy: 810, 432
+  size: 77, 70
+  orig: 77, 70
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Chariot Archer-2
+  rotate: false
+  xy: 895, 432
+  size: 77, 70
+  orig: 77, 70
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Composite Bowman
+  rotate: false
+  xy: 1034, 939
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Composite Bowman-1
+  rotate: false
+  xy: 1137, 939
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Composite Bowman-2
+  rotate: false
+  xy: 1240, 939
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Crossbowman
+  rotate: false
+  xy: 1343, 939
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Crossbowman-1
+  rotate: false
+  xy: 1446, 939
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Crossbowman-2
+  rotate: false
+  xy: 1549, 939
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Destroyer
+  rotate: false
+  xy: 1549, 182
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Destroyer-1
+  rotate: false
+  xy: 1621, 182
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Destroyer-2
+  rotate: false
+  xy: 756, 177
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/EmbarkedUnit-Civilian
+  rotate: false
+  xy: 1889, 170
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/EmbarkedUnit-Civilian-1
+  rotate: false
+  xy: 1961, 170
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/EmbarkedUnit-Civilian-2
+  rotate: false
+  xy: 926, 163
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/EmbarkedUnit-Civilian-Denmark
+  rotate: false
+  xy: 998, 158
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/EmbarkedUnit-Civilian-Modern era
+  rotate: false
+  xy: 1358, 158
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/EmbarkedUnit-Civilian-Spain-Modern era
+  rotate: false
+  xy: 1358, 158
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/EmbarkedUnit-Civilian-Modern era-1
+  rotate: false
+  xy: 1817, 158
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/EmbarkedUnit-Civilian-Spain-Modern era-1
+  rotate: false
+  xy: 1817, 158
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/EmbarkedUnit-Civilian-Modern era-2
+  rotate: false
+  xy: 671, 153
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/EmbarkedUnit-Civilian-Spain-Modern era-2
+  rotate: false
+  xy: 671, 153
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/EmbarkedUnit-Civilian-Polynesia
+  rotate: false
+  xy: 76, 147
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/EmbarkedUnit-Civilian-Renaissance era
+  rotate: false
+  xy: 148, 147
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/EmbarkedUnit-Civilian-Renaissance era-1
+  rotate: false
+  xy: 220, 147
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/EmbarkedUnit-Civilian-Renaissance era-2
+  rotate: false
+  xy: 593, 147
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/EmbarkedUnit-Civilian-Spain-Renaissance era
+  rotate: false
+  xy: 1070, 144
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/EmbarkedUnit-Military
+  rotate: false
+  xy: 1142, 144
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/EmbarkedUnit-Military-1
+  rotate: false
+  xy: 292, 142
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/EmbarkedUnit-Military-2
+  rotate: false
+  xy: 1214, 139
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/EmbarkedUnit-Military-Denmark
+  rotate: false
+  xy: 1286, 139
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/EmbarkedUnit-Military-Modern era
+  rotate: false
+  xy: 4, 137
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/EmbarkedUnit-Military-Spain-Modern era
+  rotate: false
+  xy: 4, 137
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/EmbarkedUnit-Military-Modern era-1
+  rotate: false
+  xy: 364, 137
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/EmbarkedUnit-Military-Spain-Modern era-1
+  rotate: false
+  xy: 364, 137
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/EmbarkedUnit-Military-Modern era-2
+  rotate: false
+  xy: 436, 137
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/EmbarkedUnit-Military-Spain-Modern era-2
+  rotate: false
+  xy: 436, 137
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/EmbarkedUnit-Military-Polynesia
+  rotate: false
+  xy: 508, 137
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/EmbarkedUnit-Military-Renaissance era
+  rotate: false
+  xy: 828, 132
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/EmbarkedUnit-Military-Renaissance era-1
+  rotate: false
+  xy: 1693, 132
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/EmbarkedUnit-Military-Renaissance era-2
+  rotate: false
+  xy: 1430, 123
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/EmbarkedUnit-Military-Spain-Renaissance era
+  rotate: false
+  xy: 1502, 118
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Frigate
+  rotate: false
+  xy: 1574, 118
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Frigate-1
+  rotate: false
+  xy: 743, 113
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Frigate-2
+  rotate: false
+  xy: 1889, 106
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Galleass
+  rotate: false
+  xy: 1961, 106
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Galleass-1
+  rotate: false
+  xy: 900, 99
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Galleass-2
+  rotate: false
+  xy: 972, 94
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Galley
+  rotate: false
+  xy: 1358, 94
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Gatling Gun
+  rotate: false
+  xy: 1765, 94
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Gatling Gun-1
+  rotate: false
+  xy: 665, 89
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Gatling Gun-2
+  rotate: false
+  xy: 76, 83
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Giant Death Robot
+  rotate: false
+  xy: 148, 55
+  size: 64, 84
+  orig: 64, 84
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Giant Death Robot-1
+  rotate: false
+  xy: 220, 55
+  size: 64, 84
+  orig: 64, 84
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Giant Death Robot-2
+  rotate: false
+  xy: 580, 55
+  size: 64, 84
+  orig: 64, 84
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great Artist
+  rotate: false
+  xy: 1652, 939
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great Artist-1
+  rotate: false
+  xy: 1755, 939
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great Artist-2
+  rotate: false
+  xy: 1858, 939
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great Artist-Industrial era
+  rotate: false
+  xy: 4, 850
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great Artist-Industrial era-1
+  rotate: false
+  xy: 107, 850
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great Artist-Industrial era-2
+  rotate: false
+  xy: 210, 850
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great Engineer
+  rotate: false
+  xy: 313, 850
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great Engineer-1
+  rotate: false
+  xy: 416, 850
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great Engineer-2
+  rotate: false
+  xy: 519, 850
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great Engineer-Industrial era
+  rotate: false
+  xy: 980, 437
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great Engineer-Industrial era-1
+  rotate: false
+  xy: 1065, 437
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great Engineer-Industrial era-2
+  rotate: false
+  xy: 1410, 437
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great General
+  rotate: false
+  xy: 1495, 402
+  size: 77, 100
+  orig: 77, 100
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great General-1
+  rotate: false
+  xy: 1580, 402
+  size: 77, 100
+  orig: 77, 100
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great General-2
+  rotate: false
+  xy: 1665, 402
+  size: 77, 100
+  orig: 77, 100
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great General-Industrial era
+  rotate: false
+  xy: 622, 850
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great General-Industrial era-1
+  rotate: false
+  xy: 725, 850
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great General-Industrial era-2
+  rotate: false
+  xy: 828, 850
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great Merchant
+  rotate: false
+  xy: 1750, 432
+  size: 77, 70
+  orig: 77, 70
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great Merchant-1
+  rotate: false
+  xy: 1835, 432
+  size: 77, 70
+  orig: 77, 70
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great Merchant-2
+  rotate: false
+  xy: 1150, 418
+  size: 77, 70
+  orig: 77, 70
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great Merchant-Industrial era
+  rotate: false
+  xy: 1235, 423
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great Merchant-Industrial era-1
+  rotate: false
+  xy: 1320, 423
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great Merchant-Industrial era-2
+  rotate: false
+  xy: 4, 421
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great Prophet
+  rotate: false
+  xy: 931, 850
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great Prophet-1
+  rotate: false
+  xy: 1034, 850
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great Prophet-2
+  rotate: false
+  xy: 1137, 850
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great Scientist
+  rotate: false
+  xy: 1240, 850
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great Scientist-1
+  rotate: false
+  xy: 1343, 850
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great Scientist-2
+  rotate: false
+  xy: 1446, 850
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great Scientist-Industrial era
+  rotate: false
+  xy: 89, 421
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great Scientist-Industrial era-1
+  rotate: false
+  xy: 174, 421
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great Scientist-Industrial era-2
+  rotate: false
+  xy: 259, 421
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great War Infantry
+  rotate: false
+  xy: 1549, 850
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great War Infantry-1
+  rotate: false
+  xy: 1652, 850
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Great War Infantry-2
+  rotate: false
+  xy: 1755, 850
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Helicopter Gunship
+  rotate: false
+  xy: 1044, 80
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Helicopter Gunship-1
+  rotate: false
+  xy: 1116, 80
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Helicopter Gunship-2
+  rotate: false
+  xy: 292, 78
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Hoplite
+  rotate: false
+  xy: 1858, 850
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Hoplite-Greece
+  rotate: false
+  xy: 1858, 850
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Hoplite-1
+  rotate: false
+  xy: 4, 761
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Hoplite-Greece-2
+  rotate: false
+  xy: 4, 761
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Hoplite-2
+  rotate: false
+  xy: 107, 761
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Hoplite-Greece-1
+  rotate: false
+  xy: 107, 761
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Horse Archer
+  rotate: false
+  xy: 344, 416
+  size: 77, 70
+  orig: 77, 70
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Horse Archer-The Huns
+  rotate: false
+  xy: 344, 416
+  size: 77, 70
+  orig: 77, 70
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Horse Archer-1
+  rotate: false
+  xy: 429, 416
+  size: 77, 70
+  orig: 77, 70
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Horse Archer-The Huns-2
+  rotate: false
+  xy: 429, 416
+  size: 77, 70
+  orig: 77, 70
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Horse Archer-2
+  rotate: false
+  xy: 514, 416
+  size: 77, 70
+  orig: 77, 70
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Horse Archer-The Huns-1
+  rotate: false
+  xy: 514, 416
+  size: 77, 70
+  orig: 77, 70
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Horseman
+  rotate: false
+  xy: 599, 421
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Horseman-1
+  rotate: false
+  xy: 1920, 371
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Horseman-2
+  rotate: false
+  xy: 980, 364
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Infantry
+  rotate: false
+  xy: 210, 761
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Infantry-1
+  rotate: false
+  xy: 313, 761
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Infantry-2
+  rotate: false
+  xy: 416, 761
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Inquisitor
+  rotate: false
+  xy: 519, 761
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Inquisitor-1
+  rotate: false
+  xy: 622, 761
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Inquisitor-2
+  rotate: false
+  xy: 725, 761
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Ironclad
+  rotate: false
+  xy: 1188, 75
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Ironclad-1
+  rotate: false
+  xy: 1260, 75
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Ironclad-2
+  rotate: false
+  xy: 4, 73
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Jaguar
+  rotate: false
+  xy: 828, 761
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Jaguar-Aztecs
+  rotate: false
+  xy: 828, 761
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Jaguar-1
+  rotate: false
+  xy: 931, 761
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Jaguar-2
+  rotate: false
+  xy: 1034, 761
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Keshik
+  rotate: false
+  xy: 1065, 359
+  size: 77, 70
+  orig: 77, 70
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Keshik-1
+  rotate: false
+  xy: 1405, 359
+  size: 77, 70
+  orig: 77, 70
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Keshik-2
+  rotate: false
+  xy: 684, 354
+  size: 77, 70
+  orig: 77, 70
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Khan
+  rotate: false
+  xy: 769, 324
+  size: 77, 100
+  orig: 77, 100
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Khan-1
+  rotate: false
+  xy: 854, 324
+  size: 77, 100
+  orig: 77, 100
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Khan-2
+  rotate: false
+  xy: 1750, 324
+  size: 77, 100
+  orig: 77, 100
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Knight
+  rotate: false
+  xy: 1835, 359
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Knight-1
+  rotate: false
+  xy: 1235, 350
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Knight-2
+  rotate: false
+  xy: 1320, 350
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Lancer
+  rotate: false
+  xy: 4, 348
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Lancer-1
+  rotate: false
+  xy: 89, 348
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Lancer-2
+  rotate: false
+  xy: 174, 348
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Landship
+  rotate: false
+  xy: 259, 348
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Landship-1
+  rotate: false
+  xy: 599, 348
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Landship-2
+  rotate: false
+  xy: 1150, 345
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Longswordsman
+  rotate: false
+  xy: 344, 343
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Longswordsman-1
+  rotate: false
+  xy: 429, 343
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Longswordsman-2
+  rotate: false
+  xy: 514, 343
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Machine Gun
+  rotate: false
+  xy: 364, 73
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Machine Gun-1
+  rotate: false
+  xy: 436, 73
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Machine Gun-2
+  rotate: false
+  xy: 508, 73
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Maori Warrior
+  rotate: false
+  xy: 1137, 761
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Maori Warrior-Polynesia
+  rotate: false
+  xy: 1137, 761
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Maori Warrior-1
+  rotate: false
+  xy: 1240, 761
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Maori Warrior-2
+  rotate: false
+  xy: 1343, 761
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Marauder
+  rotate: false
+  xy: 1446, 761
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Marine
+  rotate: false
+  xy: 1549, 761
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Marine-1
+  rotate: false
+  xy: 1652, 761
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Marine-2
+  rotate: false
+  xy: 1755, 761
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Mechanized Infantry
+  rotate: false
+  xy: 1490, 329
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Mechanized Infantry-1
+  rotate: false
+  xy: 1575, 329
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Mechanized Infantry-2
+  rotate: false
+  xy: 1660, 329
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Missile Cruiser
+  rotate: false
+  xy: 815, 68
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Missile Cruiser-1
+  rotate: false
+  xy: 1646, 68
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Missile Cruiser-2
+  rotate: false
+  xy: 1430, 59
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Missionary
+  rotate: false
+  xy: 1858, 761
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Missionary-1
+  rotate: false
+  xy: 4, 672
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Missionary-2
+  rotate: false
+  xy: 107, 672
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Mobile SAM
+  rotate: false
+  xy: 1920, 298
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Mobile SAM-1
+  rotate: false
+  xy: 939, 291
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Mobile SAM-2
+  rotate: false
+  xy: 1024, 286
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Modern Armor
+  rotate: false
+  xy: 1405, 286
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Modern Armor-1
+  rotate: false
+  xy: 1835, 286
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Modern Armor-2
+  rotate: false
+  xy: 684, 281
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Musketman
+  rotate: false
+  xy: 210, 672
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Musketman-1
+  rotate: false
+  xy: 313, 672
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Musketman-2
+  rotate: false
+  xy: 416, 672
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Naresuan's Elephant
+  rotate: false
+  xy: 1235, 267
+  size: 77, 75
+  orig: 77, 75
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Naresuan's Elephant-Siam
+  rotate: false
+  xy: 1235, 267
+  size: 77, 75
+  orig: 77, 75
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Naresuan's Elephant-1
+  rotate: false
+  xy: 1320, 267
+  size: 77, 75
+  orig: 77, 75
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Naresuan's Elephant-2
+  rotate: false
+  xy: 4, 265
+  size: 77, 75
+  orig: 77, 75
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Nuclear Submarine
+  rotate: false
+  xy: 1502, 54
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Nuclear Submarine-1
+  rotate: false
+  xy: 1574, 54
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Nuclear Submarine-2
+  rotate: false
+  xy: 737, 49
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Paratrooper
+  rotate: false
+  xy: 519, 672
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Paratrooper-1
+  rotate: false
+  xy: 622, 672
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Paratrooper-2
+  rotate: false
+  xy: 725, 672
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Persian Immortal
+  rotate: false
+  xy: 828, 672
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Persian Immortal-1
+  rotate: false
+  xy: 931, 672
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Persian Immortal-2
+  rotate: false
+  xy: 1034, 672
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Pictish Warrior
+  rotate: false
+  xy: 1137, 672
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Pictish Warrior-Celts
+  rotate: false
+  xy: 1137, 672
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Pictish Warrior-1
+  rotate: false
+  xy: 1240, 672
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Pictish Warrior-2
+  rotate: false
+  xy: 1343, 672
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Pikeman
+  rotate: false
+  xy: 1446, 672
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Pikeman-1
+  rotate: false
+  xy: 1549, 672
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Pikeman-2
+  rotate: false
+  xy: 1652, 672
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Privateer
+  rotate: false
+  xy: 1837, 42
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Privateer-1
+  rotate: false
+  xy: 1909, 42
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Privateer-2
+  rotate: false
+  xy: 887, 35
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Rifleman
+  rotate: false
+  xy: 1755, 672
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Rifleman-1
+  rotate: false
+  xy: 1858, 672
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Rifleman-2
+  rotate: false
+  xy: 4, 583
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Rocket Artillery
+  rotate: false
+  xy: 89, 275
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Rocket Artillery-1
+  rotate: false
+  xy: 174, 275
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Rocket Artillery-2
+  rotate: false
+  xy: 259, 275
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/SS Booster
+  rotate: false
+  xy: 1961, 955
+  size: 78, 65
+  orig: 78, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/SS Booster-1
+  rotate: false
+  xy: 1961, 882
+  size: 78, 65
+  orig: 78, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/SS Booster-2
+  rotate: false
+  xy: 1961, 809
+  size: 78, 65
+  orig: 78, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/SS Cockpit
+  rotate: false
+  xy: 1961, 736
+  size: 78, 65
+  orig: 78, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/SS Cockpit-1
+  rotate: false
+  xy: 1961, 663
+  size: 78, 65
+  orig: 78, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/SS Cockpit-2
+  rotate: false
+  xy: 1961, 590
+  size: 78, 65
+  orig: 78, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/SS Engine
+  rotate: false
+  xy: 1961, 517
+  size: 78, 65
+  orig: 78, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/SS Engine-1
+  rotate: false
+  xy: 725, 510
+  size: 78, 65
+  orig: 78, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/SS Engine-2
+  rotate: false
+  xy: 811, 510
+  size: 78, 65
+  orig: 78, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/SS Stasis Chamber
+  rotate: false
+  xy: 897, 510
+  size: 78, 65
+  orig: 78, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/SS Stasis Chamber-1
+  rotate: false
+  xy: 983, 510
+  size: 78, 65
+  orig: 78, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/SS Stasis Chamber-2
+  rotate: false
+  xy: 1069, 510
+  size: 78, 65
+  orig: 78, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Scout
+  rotate: false
+  xy: 107, 583
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Scout-1
+  rotate: false
+  xy: 210, 583
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Scout-2
+  rotate: false
+  xy: 313, 583
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Settler
+  rotate: false
+  xy: 416, 583
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Settler-1
+  rotate: false
+  xy: 519, 583
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Settler-2
+  rotate: false
+  xy: 622, 583
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Skirmisher
+  rotate: false
+  xy: 725, 583
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Slinger
+  rotate: false
+  xy: 828, 583
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Slinger-1
+  rotate: false
+  xy: 931, 583
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Slinger-2
+  rotate: false
+  xy: 1034, 583
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Spearman
+  rotate: false
+  xy: 1137, 583
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Spearman-1
+  rotate: false
+  xy: 1240, 583
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Spearman-2
+  rotate: false
+  xy: 1343, 583
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Submarine
+  rotate: false
+  xy: 959, 30
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Submarine-1
+  rotate: false
+  xy: 1332, 30
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Submarine-2
+  rotate: false
+  xy: 1718, 30
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Swordsman
+  rotate: false
+  xy: 1446, 583
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Swordsman-1
+  rotate: false
+  xy: 1549, 583
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Swordsman-2
+  rotate: false
+  xy: 1652, 583
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Tank
+  rotate: false
+  xy: 599, 275
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Tank-1
+  rotate: false
+  xy: 1109, 272
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Tank-2
+  rotate: false
+  xy: 344, 270
+  size: 77, 65
+  orig: 77, 65
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Trebuchet
+  rotate: false
+  xy: 652, 25
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Trebuchet-1
+  rotate: false
+  xy: 76, 19
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Trebuchet-2
+  rotate: false
+  xy: 1031, 16
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Trireme
+  rotate: false
+  xy: 1103, 16
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Trireme-1
+  rotate: false
+  xy: 292, 14
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Trireme-2
+  rotate: false
+  xy: 1175, 11
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/War Chariot
+  rotate: false
+  xy: 429, 265
+  size: 77, 70
+  orig: 77, 70
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/War Chariot-Egypt
+  rotate: false
+  xy: 429, 265
+  size: 77, 70
+  orig: 77, 70
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/War Chariot-1
+  rotate: false
+  xy: 514, 265
+  size: 77, 70
+  orig: 77, 70
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/War Chariot-Egypt-2
+  rotate: false
+  xy: 514, 265
+  size: 77, 70
+  orig: 77, 70
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/War Chariot-2
+  rotate: false
+  xy: 1490, 251
+  size: 77, 70
+  orig: 77, 70
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/War Chariot-Egypt-1
+  rotate: false
+  xy: 1490, 251
+  size: 77, 70
+  orig: 77, 70
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/War Elephant
+  rotate: false
+  xy: 1575, 246
+  size: 77, 75
+  orig: 77, 75
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/War Elephant-1
+  rotate: false
+  xy: 1660, 246
+  size: 77, 75
+  orig: 77, 75
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/War Elephant-2
+  rotate: false
+  xy: 769, 241
+  size: 77, 75
+  orig: 77, 75
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Warrior
+  rotate: false
+  xy: 1755, 583
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Warrior-1
+  rotate: false
+  xy: 1858, 583
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Warrior-2
+  rotate: false
+  xy: 4, 494
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Work Boats
+  rotate: false
+  xy: 1247, 11
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Work Boats-1
+  rotate: false
+  xy: 4, 9
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Work Boats-2
+  rotate: false
+  xy: 364, 9
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Work Boats-Industrial era
+  rotate: false
+  xy: 436, 9
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Work Boats-Industrial era-1
+  rotate: false
+  xy: 508, 9
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Work Boats-Industrial era-2
+  rotate: false
+  xy: 809, 4
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Worker
+  rotate: false
+  xy: 107, 494
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Worker-1
+  rotate: false
+  xy: 210, 494
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Worker-2
+  rotate: false
+  xy: 313, 494
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Worker-Industrial era
+  rotate: false
+  xy: 416, 494
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Worker-Industrial era-1
+  rotate: false
+  xy: 519, 494
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Worker-Industrial era-2
+  rotate: false
+  xy: 622, 494
+  size: 95, 81
+  orig: 95, 81
+  offset: 0, 0
+  index: -1

@@ -157,11 +157,9 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
 
         languages.remove("template")
         languages.remove("completionPercentages")
-        languages.remove("Thai") // Until we figure out what to do with it
-        languages.remove("Vietnamese") // Until we figure out what to do with it
+        languages.remove("Thai") // Spacing looks horrible, so disable until we figure out what to do with it
 
-        return languages
-                .filter { Gdx.files.internal("jsons/translations/$it.properties").exists() }
+        return languages.filter { Gdx.files.internal("jsons/translations/$it.properties").exists() }
     }
 
     /** Ensure _all_ languages are loaded, used by [TranslationFileWriter] and `TranslationTests` */
@@ -213,7 +211,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         // Whenever this string is changed, it should also be changed in the translation files!
         // It is mostly used as the template for translating the order of conditionals
         const val englishConditionalOrderingString =
-            "<with a garrison> <for [mapUnitFilter] units> <above [amount] HP> <below [amount] HP> <vs cities> <vs [mapUnitFilter] units> <when fighting in [tileFilter] tiles> <when attacking> <when defending> <if this city has at least [amount] specialists> <when at war> <when not at war> <while the empire is happy> <during a Golden Age> <during the [era]> <before the [era]> <starting from the [era]> <with [techOrPolicy]> <without [techOrPolicy]>"
+            "<with a garrison> <for [mapUnitFilter] units> <above [amount] HP> <below [amount] HP> <vs cities> <vs [mapUnitFilter] units> <when fighting in [tileFilter] tiles> <when attacking> <when defending> <if this city has at least [amount] specialists> <when at war> <when not at war> <while the empire is happy> <during a Golden Age> <during the [era]> <starting from the [era]> <before the [era]> <with [techOrPolicy]> <without [techOrPolicy]>"
         const val conditionalUniqueOrderString = "ConditionalsPlacement"
         const val shouldCapitalizeString = "StartWithCapitalLetter"
     }
@@ -307,7 +305,7 @@ fun String.tr(): String {
         var translatedBaseUnique = this.removeConditionals().tr()
 
         val conditionals = this.getConditionals().map { it.placeholderText }
-        val conditionsWithTranslation: HashMap<String, String> = hashMapOf()
+        val conditionsWithTranslation: LinkedHashMap<String, String> = linkedMapOf()
 
         for (conditional in this.getConditionals())
             conditionsWithTranslation[conditional.placeholderText] = conditional.text.tr()
@@ -487,7 +485,7 @@ fun String.removeConditionals(): String {
     return this
         .replace(pointyBraceRegex, "")
         // So, this is a quick hack, but it works as long as nobody uses word separators different from " " (space) and "" (none),
-        // And no translations start or end with a space.
+        // and no translations start or end with a space.
         // According to https://linguistics.stackexchange.com/questions/6131/is-there-a-long-list-of-languages-whose-writing-systems-dont-use-spaces
         // This is a reasonable but not fully correct assumption to make.
         // By doing it like this, we exclude languages such as Tibetan, Dzongkha (Bhutan), and Ethiopian.

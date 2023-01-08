@@ -1,9 +1,13 @@
 package com.unciv.models.ruleset
 
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueTarget
+import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
+import com.unciv.utils.Log
 
 open class Policy : RulesetObject() {
     lateinit var branch: PolicyBranch // not in json - added in gameBasics
@@ -31,17 +35,16 @@ open class Policy : RulesetObject() {
 
     /** Used in PolicyPickerScreen to display Policy properties */
     fun getDescription(): String {
-        val policyText = ArrayList<String>()
-        policyText += name
-        policyText += uniques
-
-        if (policyBranchType != PolicyBranchType.BranchComplete) {
-            policyText += if (requires!!.isNotEmpty())
-                "Requires [" + requires!!.joinToString { it.tr() } + "]"
-            else
-                "{Unlocked at} {${branch.era}}"
-        }
-        return policyText.joinToString("\n") { it.tr() }
+        var text = uniques
+            .filter {
+                !it.getPlaceholderText().contains(UniqueType.OnlyAvailableWhen.placeholderText) &&
+                !it.getPlaceholderText().contains(UniqueType.OneTimeGlobalAlert.placeholderText)
+            }
+            .joinToString("\n", transform = { "• ${it.tr()}" })
+        if (policyBranchType != PolicyBranchType.BranchStart
+                && policyBranchType != PolicyBranchType.BranchComplete)
+            text = name.tr() + "\n" + text
+        return text
     }
 
     override fun makeLink() = "Policy/$name"

@@ -17,15 +17,16 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.unciv.UncivGame
 import com.unciv.models.TutorialTrigger
+import com.unciv.models.skins.SkinStrings
 import com.unciv.ui.UncivStage
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.options.OptionsPopup
 import com.unciv.ui.popup.activePopup
 import com.unciv.ui.tutorials.TutorialController
-import com.unciv.ui.options.OptionsPopup
-import com.unciv.ui.utils.extensions.installShortcutDispatcher
-import com.unciv.ui.utils.extensions.isNarrowerThan4to3
 import com.unciv.ui.utils.extensions.DispatcherVetoResult
 import com.unciv.ui.utils.extensions.DispatcherVetoer
+import com.unciv.ui.utils.extensions.installShortcutDispatcher
+import com.unciv.ui.utils.extensions.isNarrowerThan4to3
 
 abstract class BaseScreen : Screen {
 
@@ -41,8 +42,8 @@ abstract class BaseScreen : Screen {
     val globalShortcuts = KeyShortcutDispatcher()
 
     init {
-        val resolutions: List<Float> = game.settings.resolution.split("x").map { it.toInt().toFloat() }
-        val height = resolutions[1]
+        val screenSize = game.settings.screenSize
+        val height = screenSize.virtualHeight
 
         /** The ExtendViewport sets the _minimum_(!) world size - the actual world size will be larger, fitted to screen/window aspect ratio. */
         stage = UncivStage(ExtendViewport(height, height))
@@ -109,20 +110,26 @@ abstract class BaseScreen : Screen {
     companion object {
         var enableSceneDebug = false
 
+        /** Colour to use for empty sections of the screen.
+         *  Gets overwritten by SkinConfig.clearColor after starting Unciv */
+        var clearColor = Color(0f, 0f, 0.2f, 1f)
+
         lateinit var skin: Skin
+        lateinit var skinStrings: SkinStrings
         fun setSkin() {
             Fonts.resetFont()
+            skinStrings = SkinStrings()
             skin = Skin().apply {
                 add("Nativefont", Fonts.font, BitmapFont::class.java)
-                add("RoundedEdgeRectangle", ImageGetter.getRoundedEdgeRectangle(), Drawable::class.java)
+                add("RoundedEdgeRectangle", skinStrings.getUiBackground("", skinStrings.roundedEdgeRectangleShape), Drawable::class.java)
                 add("Rectangle", ImageGetter.getDrawable(""), Drawable::class.java)
                 add("Circle", ImageGetter.getDrawable("OtherIcons/Circle").apply { setMinSize(20f, 20f) }, Drawable::class.java)
                 add("Scrollbar", ImageGetter.getDrawable("").apply { setMinSize(10f, 10f) }, Drawable::class.java)
-                add("RectangleWithOutline", ImageGetter.getRectangleWithOutline(), Drawable::class.java)
-                add("Select-box", ImageGetter.getSelectBox(), Drawable::class.java)
-                add("Select-box-pressed", ImageGetter.getSelectBoxPressed(), Drawable::class.java)
-                add("Checkbox", ImageGetter.getCheckBox(), Drawable::class.java)
-                add("Checkbox-pressed", ImageGetter.getCheckBoxPressed(), Drawable::class.java)
+                add("RectangleWithOutline",skinStrings.getUiBackground("", skinStrings.rectangleWithOutlineShape), Drawable::class.java)
+                add("Select-box", skinStrings.getUiBackground("", skinStrings.selectBoxShape), Drawable::class.java)
+                add("Select-box-pressed", skinStrings.getUiBackground("", skinStrings.selectBoxPressedShape), Drawable::class.java)
+                add("Checkbox", skinStrings.getUiBackground("", skinStrings.checkboxShape), Drawable::class.java)
+                add("Checkbox-pressed", skinStrings.getUiBackground("", skinStrings.checkboxPressedShape), Drawable::class.java)
                 load(Gdx.files.internal("Skin.json"))
             }
             skin.get(TextButton.TextButtonStyle::class.java).font = Fonts.font
@@ -139,16 +146,15 @@ abstract class BaseScreen : Screen {
                 font = Fonts.font
                 listStyle.font = Fonts.font
             }
+            clearColor = skinStrings.skinConfig.clearColor
         }
-        /** Colour to use for empty sections of the screen. */
-        val clearColor = Color(0f, 0f, 0.2f, 1f)
     }
 
     /** @return `true` if the screen is higher than it is wide */
     fun isPortrait() = stage.viewport.screenHeight > stage.viewport.screenWidth
     /** @return `true` if the screen is higher than it is wide _and_ resolution is at most 1050x700 */
     fun isCrampedPortrait() = isPortrait() &&
-            game.settings.resolution.split("x").map { it.toInt() }.last() <= 700
+            game.settings.screenSize.virtualHeight <= 700
     /** @return `true` if the screen is narrower than 4:3 landscape */
     fun isNarrowerThan4to3() = stage.isNarrowerThan4to3()
 

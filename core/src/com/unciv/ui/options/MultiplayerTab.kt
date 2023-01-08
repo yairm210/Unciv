@@ -68,7 +68,7 @@ fun multiplayerTab(
 
     // at the moment the notification service only exists on Android
     val turnCheckerSelect: RefreshSelect?
-    if (Gdx.app.type != Application.ApplicationType.Android) {
+    if (Gdx.app.type == Application.ApplicationType.Android) {
         turnCheckerSelect = addTurnCheckerOptions(tab, optionsPopup)
         addSeparator(tab)
     } else {
@@ -280,5 +280,5 @@ private fun addSelectAsSeparateTable(tab: Table, settingsSelect: SettingsSelect<
 }
 
 private fun addSeparator(tab: Table) {
-    tab.addSeparator(ImageGetter.getBlue().brighten(0.1f))
+    tab.addSeparator(BaseScreen.skinStrings.skinConfig.baseColor.brighten(0.1f))
 }

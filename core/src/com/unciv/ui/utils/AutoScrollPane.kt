@@ -15,11 +15,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 
         ** Approach **
         Listen to enter and exit events and set focus as needed.
-        The old focus is saved on eneter and restored on exit to make this as side-effect free as possible.
+        The old focus is saved on enter and restored on exit to make this as side-effect free as possible.
 
         ** Implementation **
         The listener is attached per widget (and not, say, to an upper container or the screen, where
-        one listener would suffice but we'd have to do coordinate to target resolution outselves).
+        one listener would suffice but we'd have to do coordinate to target resolution ourselves).
         This is accomplished by subclassing the ScrollPane and replacing usages,
         which in turn can be done either by using this class as drop-in replacement per widget
         or by importing this using an import alias per file.
@@ -37,20 +37,22 @@ open class AutoScrollPane(widget: Actor?, style: ScrollPaneStyle = ScrollPaneSty
 
     private var savedFocus: Actor? = null
 
+    class AutoScrollPaneClickListener(val autoScrollPane: AutoScrollPane):ClickListener(){
+        override fun enter(event: InputEvent?, x: Float, y: Float, pointer: Int, fromActor: Actor?) {
+            if (autoScrollPane.stage == null) return
+            if (fromActor?.isDescendantOf(autoScrollPane) == true) return
+            if (autoScrollPane.savedFocus == null) autoScrollPane.savedFocus = autoScrollPane.stage.scrollFocus
+            autoScrollPane.stage.scrollFocus = autoScrollPane
+        }
+        override fun exit(event: InputEvent?, x: Float, y: Float, pointer: Int, toActor: Actor?) {
+            if (autoScrollPane.stage == null) return
+            if (toActor?.isDescendantOf(autoScrollPane) == true) return
+            if (autoScrollPane.stage.scrollFocus == autoScrollPane) autoScrollPane.stage.scrollFocus = autoScrollPane.savedFocus
+            autoScrollPane.savedFocus = null
+        }
+    }
+
     init {
-        this.addListener (object : ClickListener() {
-            override fun enter(event: InputEvent?, x: Float, y: Float, pointer: Int, fromActor: Actor?) {
-                if (stage == null) return
-                if (fromActor?.isDescendantOf(this@AutoScrollPane) == true) return
-                if (savedFocus == null) savedFocus = stage.scrollFocus
-                stage.scrollFocus = this@AutoScrollPane
-            }
-            override fun exit(event: InputEvent?, x: Float, y: Float, pointer: Int, toActor: Actor?) {
-                if (stage == null) return
-                if (toActor?.isDescendantOf(this@AutoScrollPane) == true) return
-                if (stage.scrollFocus == this@AutoScrollPane) stage.scrollFocus = savedFocus
-                savedFocus = null
-            }
-        })
+        this.addListener (AutoScrollPaneClickListener(this))
     }
 }

@@ -3,10 +3,10 @@ package com.unciv.ui.overviewscreen
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.overviewscreen.EmpireOverviewTab.EmpireOverviewTabPersistableData
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyCharAndCode
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.RecreateOnResize
 import com.unciv.ui.utils.TabbedPager
 
@@ -80,6 +80,10 @@ class EmpireOverviewScreen(
         tabbedPager.setFillParent(true)
         stage.addActor(tabbedPager)
    }
+
+    override fun resume() {
+        game.replaceCurrentScreen(recreate())
+    }
 
     override fun recreate(): BaseScreen {
         updatePersistState(pageObjects)

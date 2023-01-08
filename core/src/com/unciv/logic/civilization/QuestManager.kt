@@ -641,115 +641,13 @@ class QuestManager : IsPartOfGameInfoSerialization {
      */
     private fun getQuestWeight(questName: String): Float {
         var weight = 1f
-        val trait = civInfo.cityStateType
-        val personality = civInfo.cityStatePersonality
-        when (questName) {
-            QuestName.Route.value -> {
-                when (personality) {
-                    CityStatePersonality.Friendly -> weight *= 2f
-                    CityStatePersonality.Hostile -> weight *= .2f
-                    else -> {}
-                }
-                when (trait) {
-                    CityStateType.Maritime -> weight *= 1.2f
-                    CityStateType.Mercantile -> weight *= 1.5f
-                    else -> {}
-                }
-            }
-            QuestName.ConnectResource.value -> {
-                when (trait) {
-                    CityStateType.Maritime -> weight *= 2f
-                    CityStateType.Mercantile -> weight *= 3f
-                    else -> {}
-                }
-            }
-            QuestName.ConstructWonder.value -> {
-                if (trait == CityStateType.Cultured)
-                    weight *= 3f
-            }
-            QuestName.GreatPerson.value -> {
-                if (trait == CityStateType.Cultured)
-                    weight *= 3f
-            }
-            QuestName.ConquerCityState.value -> {
-                if (trait == CityStateType.Militaristic)
-                    weight *= 2f
-                when (personality) {
-                    CityStatePersonality.Hostile -> weight *= 2f
-                    CityStatePersonality.Neutral -> weight *= .4f
-                    else -> {}
-                }
-            }
-            QuestName.FindPlayer.value -> {
-                when (trait) {
-                    CityStateType.Maritime -> weight *= 3f
-                    CityStateType.Mercantile -> weight *= 2f
-                    else -> {}
-                }
-            }
-            QuestName.FindNaturalWonder.value -> {
-                if (trait == CityStateType.Militaristic)
-                    weight *= .5f
-                if (personality == CityStatePersonality.Hostile)
-                    weight *= .3f
-            }
-            QuestName.ClearBarbarianCamp.value -> {
-                weight *= 3f
-                if (trait == CityStateType.Militaristic)
-                    weight *= 3f
-            }
-            QuestName.GiveGold.value -> {
-                weight *= when (trait) {
-                    CityStateType.Militaristic -> 2f
-                    CityStateType.Mercantile -> 3.5f
-                    else -> 3f
-                }
-            }
-            QuestName.PledgeToProtect.value -> {
-                weight *= when (trait) {
-                    CityStateType.Militaristic -> 2f
-                    CityStateType.Cultured -> 3.5f
-                    else -> 3f
-                }
-            }
-            QuestName.BullyCityState.value -> {
-                when (personality) {
-                    CityStatePersonality.Hostile -> weight *= 2f
-                    CityStatePersonality.Irrational -> weight *= 1.5f
-                    CityStatePersonality.Friendly -> weight *= .3f
-                    CityStatePersonality.Neutral -> {}
-                }
-            }
-            QuestName.DenounceCiv.value -> {
-                weight *= when (trait) {
-                    CityStateType.Religious -> 2.5f
-                    CityStateType.Maritime -> 2f
-                    else -> 1.5f
-                }
-            }
-            QuestName.SpreadReligion.value -> {
-                if (trait == CityStateType.Religious)
-                    weight *= 3f
-            }
-            QuestName.ContestCulture.value -> {
-                if (trait == CityStateType.Cultured)
-                    weight *= 2f
-            }
-            QuestName.ContestFaith.value -> {
-                weight *= when (trait) {
-                    CityStateType.Religious -> 2f
-                    else -> .5f
-                }
-            }
-            QuestName.ContestTech.value -> {
-                if (trait == CityStateType.Religious)
-                    weight *= .5f
-            }
-            QuestName.Invest.value -> {
-                if (trait == CityStateType.Mercantile)
-                    weight *= 1.5f
-            }
-        }
+        val quest = civInfo.gameInfo.ruleSet.quests[questName] ?: return 0f
+
+        val personalityWeight = quest.weightForCityStateType[civInfo.cityStatePersonality.name]
+        if (personalityWeight != null) weight *= personalityWeight
+
+        val traitWeight = quest.weightForCityStateType[civInfo.cityStateType.name]
+        if (traitWeight != null) weight *= traitWeight
         return weight
     }
 

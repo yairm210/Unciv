@@ -59,8 +59,8 @@ class OfferColumnsTable(private val tradeLogic: TradeLogic, val screen: Diplomac
         add("Our items".tr())
         add("[${tradeLogic.otherCivilization.civName}]'s items".tr()).row()
 
-        add(ourAvailableOffersTable).size(columnWidth, screen.stage.height / 2)
-        add(theirAvailableOffersTable).size(columnWidth, screen.stage.height / 2).row()
+        add(ourAvailableOffersTable).prefSize(columnWidth, screen.stage.height / 2)
+        add(theirAvailableOffersTable).prefSize(columnWidth, screen.stage.height / 2).row()
 
         addSeparator().height(2f)
 

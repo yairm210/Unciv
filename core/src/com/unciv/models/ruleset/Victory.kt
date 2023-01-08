@@ -102,10 +102,12 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
             }
             MilestoneType.WorldReligion -> {
                 civInfo.gameInfo.isReligionEnabled()
-                && civInfo.religionManager.religion != null
-                && civInfo.gameInfo.civilizations.all {
-                    it.religionManager.isMajorityReligionForCiv(civInfo.religionManager.religion!!)
-                }
+                        && civInfo.religionManager.religion != null
+                        && civInfo.gameInfo.civilizations
+                    .filter { it.isMajorCiv() && it.isAlive() }
+                    .all {
+                        it.religionManager.isMajorityReligionForCiv(civInfo.religionManager.religion!!)
+                    }
             }
         }
     }
@@ -154,13 +156,14 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                 "{$uniqueDescription} ($amountDone/$amountToDo)"
             }
             MilestoneType.WorldReligion -> {
-                val amountToDo = civInfo.gameInfo.civilizations.count { it.isMajorCiv() } - 1  // Don't count yourself
+                val amountToDo = civInfo.gameInfo.civilizations.count { it.isMajorCiv() && it.isAlive() } - 1  // Don't count yourself
                 val amountDone =
                     when {
                         completed -> amountToDo
                         civInfo.religionManager.religion == null -> 0
                         civInfo.religionManager.religion!!.isPantheon() -> 1
                         else -> civInfo.gameInfo.civilizations.count {
+                            it.isMajorCiv() && it.isAlive() &&
                             it.religionManager.isMajorityReligionForCiv(civInfo.religionManager.religion!!)
                         }
                     }
@@ -214,7 +217,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                 val originalCapitals = civInfo.gameInfo.getCities().filter { it.isOriginalCapital }
                 for (city in originalCapitals) {
                     val milestoneText =
-                        if (civInfo.exploredTiles.contains(city.location)) "Capture [${city.name}]"
+                        if (civInfo.hasExplored(city.location)) "Capture [${city.name}]"
                         else "Capture [${Constants.unknownCityName}]"
                     buttons.add(getMilestoneButton(milestoneText, city.civInfo == civInfo))
                 }
@@ -227,13 +230,15 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                 }
             }
             MilestoneType.WorldReligion -> {
-                val majorCivs = civInfo.gameInfo.civilizations.filter { it.isMajorCiv() }
+                val majorCivs = civInfo.gameInfo.civilizations.filter { it.isMajorCiv() && it.isAlive() }
                 val civReligion = civInfo.religionManager.religion
                 for (civ in majorCivs) {
                     val milestoneText =
-                        if (civInfo.knows(civ) || !civ.isAlive()) "Majority religion of [${civ.civName}]"
+                        if (civInfo.knows(civ)) "Majority religion of [${civ.civName}]"
                         else "Majority religion of [${Constants.unknownNationName}]"
-                    val milestoneMet = (civReligion != null && (!civReligion.isPantheon() || civInfo == civ) && civ.religionManager.isMajorityReligionForCiv(civReligion))
+                    val milestoneMet = civReligion != null
+                            && (!civReligion.isPantheon() || civInfo == civ)
+                            && civ.religionManager.isMajorityReligionForCiv(civReligion)
                     buttons.add(getMilestoneButton(milestoneText, milestoneMet))
                 }
             }

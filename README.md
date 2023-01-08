@@ -1,4 +1,4 @@
-# Unciv - FOSS Civ V for Android+Desktop
+# Unciv - Civ V remake for Android & Desktop
 
 ![](/extraImages/GithubPreviewImage.png)
 
@@ -15,7 +15,7 @@
 
 ## What is this?
 
-An open-source, mod-friendly Android+Desktop remake of Civ V, made with LibGDX
+An open source, mod-friendly Android and Desktop remake of Civ V, made with LibGDX
 
 ## Is this any good?
 
@@ -79,8 +79,7 @@ Yes! Windows and Linux versions are available at [itch.io](https://yairm210.itch
 
 Unciv can also be installed on macOS, a guide on how to do that can be found [here](https://yairm210.github.io/Unciv/Other/Installing-on-macOS/).
 
-If you have Java 8, and are familiar with the command line, there are (considerably smaller) JARs in [Releases](https://github.com/yairm210/UnCiv/releases) which you can run with `java -jar Unciv.jar`.
-For Mac users, you'll need to add extra parameters, `java -XstartOnFirstThread -Djava.awt.headless=true -jar Unciv.jar`.
+If you have Java 8, and are familiar with the command line, there are (considerably smaller) JARs in [Releases](https://github.com/yairm210/Unciv/releases) which you can run with `java -jar Unciv.jar`.
 
 If you use Flatpaks, there's a Flatpak by [MayeulC](https://github.com/MayeulC) and you can know more about it [here](https://github.com/flathub/io.github.yairm210.unciv). Flathub link is available in the [Downloads](#downloads) section.
 
@@ -115,12 +114,6 @@ From what I gather, it is illegal:
 From what I understand, intellectual property rights apply to names, characters and settings. They do not apply to mechanics - as I'm sure you know, there are a billion Flappy Bird knockoffs
 
 If anyone has any real legal sources, or can shed some light on the limits of what is and is not allowed, I'd be happy to hear!
-
-## Disclosure
-
-[Multiplayer](https://yairm210.github.io/Unciv/Other/Multiplayer/) takes advantage of Dropbox, which is *non-free software*, for syncing purposes.
-
-Single player does not use this feature.
 
 ## Downloads
 

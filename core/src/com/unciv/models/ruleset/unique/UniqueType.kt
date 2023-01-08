@@ -47,7 +47,7 @@ enum class UniqueTarget(val inheritsFrom: UniqueTarget? = null) {
     // Other
     Speed,
     Tutorial,
-    CityState,
+    CityState(Global),
     ModOptions,
     Conditional,
     ;
@@ -73,11 +73,15 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     // region Stat providing uniques
 
+    // Used for *global* bonuses and improvement/terrain bonuses
     Stats("[stats]", UniqueTarget.Global, UniqueTarget.FollowerBelief, UniqueTarget.Improvement, UniqueTarget.Terrain),
+    // Used for city-wide bonuses
     StatsPerCity("[stats] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
     StatsFromSpecialist("[stats] from every specialist [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatsPerPopulation("[stats] per [amount] population [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    StatsPerPolicies("[stats] per [amount] social policies adopted", UniqueTarget.Global),
+
 
     StatsFromCitiesOnSpecificTiles("[stats] in cities on [terrainFilter] tiles", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatsFromBuildings("[stats] from all [buildingFilter] buildings", UniqueTarget.Global, UniqueTarget.FollowerBelief),
@@ -92,7 +96,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     // Stat percentage boosts
     StatPercentBonus("[relativeAmount]% [stat]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatPercentBonusCities("[relativeAmount]% [stat] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    // Todo: Add support for specialist next to buildingName
     StatPercentFromObject("[relativeAmount]% [stat] from every [tileFilter/buildingFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     AllStatsPercentFromObject("[relativeAmount]% Yield from every [tileFilter/buildingFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatPercentFromReligionFollowers("[relativeAmount]% [stat] from every follower, up to [relativeAmount]%", UniqueTarget.FollowerBelief),
@@ -106,22 +109,15 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     PercentProductionUnits("[relativeAmount]% Production when constructing [baseUnitFilter] units [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     PercentProductionWonders("[relativeAmount]% Production when constructing [buildingFilter] wonders [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     PercentProductionBuildingsInCapital("[relativeAmount]% Production towards any buildings that already exist in the Capital", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    // todo: maybe should be converted to "[+100]% Yield from every [Natural Wonder]"?
-    @Deprecated("As of 4.1.19", ReplaceWith("[+100]% Yield from every [Natural Wonder]"))
-    DoubleStatsFromNaturalWonders("Tile yields from Natural Wonders doubled", UniqueTarget.Global),
 
     //endregion Stat providing uniques
 
 
     // region City-State related uniques
 
-    // I don't like the fact that currently "city state bonuses" are separate from the "global bonuses",
-    // todo: merge city state bonuses into global bonuses
-    CityStateStatsPerTurn("Provides [stats] per turn", UniqueTarget.CityState), // Should not be Happiness!
-    CityStateStatsPerCity("Provides [stats] [cityFilter] per turn", UniqueTarget.CityState),
-    CityStateHappiness("Provides [amount] Happiness", UniqueTarget.CityState),
-    CityStateMilitaryUnits("Provides military units every ≈[amount] turns", UniqueTarget.CityState), // No conditional support as of yet
+    CityStateMilitaryUnits("Provides military units every ≈[amount] turns", UniqueTarget.CityState),
     CityStateUniqueLuxury("Provides a unique luxury", UniqueTarget.CityState), // No conditional support as of yet
+
     CityStateGiftedUnitsStartWithXp("Military Units gifted from City-States start with [amount] XP", UniqueTarget.Global),
     CityStateMoreGiftedUnits("Militaristic City-States grant units [amount] times as fast when you are at war with a common nation", UniqueTarget.Global),
 
@@ -147,7 +143,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     CannotBuildUnits("Cannot build [baseUnitFilter] units", UniqueTarget.Global),
 
     ConsumesResources("Consumes [amount] [resource]", UniqueTarget.Improvement, UniqueTarget.Building, UniqueTarget.Unit),
-    ProvidesResources("Provides [amount] [resource]", UniqueTarget.Improvement, UniqueTarget.Building),
+    ProvidesResources("Provides [amount] [resource]", UniqueTarget.Improvement, UniqueTarget.Global),
 
     GrowthPercentBonus("[relativeAmount]% growth [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     CarryOverFood("[relativeAmount]% Food is carried over after population increases [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
@@ -162,8 +158,10 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     StatsWhenAdoptingReligion("[stats] when a city adopts this religion for the first time", UniqueTarget.Global),
     StatsSpendingGreatPeople("[stats] whenever a Great Person is expended", UniqueTarget.Global),
 
+
     UnhappinessFromPopulationTypePercentageChange("[relativeAmount]% Unhappiness from [populationFilter] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     FoodConsumptionBySpecialists("[relativeAmount]% Food consumption by specialists [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    @Deprecated("as of 4.3.4", ReplaceWith("[+1 Happiness] per [2] social policies adopted"))
     HappinessPer2Policies("Provides 1 happiness per 2 additional social policies adopted", UniqueTarget.Global),
     ExcessHappinessToGlobalStat("[relativeAmount]% of excess happiness converted to [stat]", UniqueTarget.Global),
 
@@ -180,11 +178,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     BuyUnitsByProductionCost("May buy [baseUnitFilter] units with [stat] for [amount] times their normal Production cost", UniqueTarget.FollowerBelief, UniqueTarget.Global),
     BuyBuildingsByProductionCost("May buy [buildingFilter] buildings with [stat] for [amount] times their normal Production cost", UniqueTarget.FollowerBelief, UniqueTarget.Global),
 
-
-    @Deprecated("As of 4.1.14", ReplaceWith("Enables conversion of city production to [Gold]"))
-    EnablesGoldProduction("Enables conversion of city production to gold", UniqueTarget.Global),
-    @Deprecated("s of 4.1.14", ReplaceWith("Enables conversion of city production to [Science]"))
-    EnablesScienceProduction("Enables conversion of city production to science", UniqueTarget.Global),
     EnablesCivWideStatProduction("Enables conversion of city production to [civWideStat]", UniqueTarget.Global),
 
     BuyItemsDiscount("[stat] cost of purchasing items in cities [relativeAmount]%", UniqueTarget.Global, UniqueTarget.FollowerBelief),
@@ -211,14 +204,14 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     // Todo: Sign should not be part of the unique placeholder
     StrategicResourcesIncrease("Quantity of strategic resources produced by the empire +[relativeAmount]%", UniqueTarget.Global),  // used in Policy
     DoubleResourceProduced("Double quantity of [resource] produced", UniqueTarget.Global),
-    // Todo: should probably be changed to "[stats] from every known Natural Wonder", and that'll give us the global unique as well
+
+    StatsFromNaturalWonders("[stats] for every known Natural Wonder", UniqueTarget.Global),
+    @Deprecated("as of 4.3.6", ReplaceWith("[+1 Happiness] for every known Natural Wonder"))
     DoubleHappinessFromNaturalWonders("Double Happiness from Natural Wonders", UniqueTarget.Global),
 
     EnablesConstructionOfSpaceshipParts("Enables construction of Spaceship parts", UniqueTarget.Global),
-    EnemyLandUnitsSpendExtraMovement("Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)", UniqueTarget.Global),
+    EnemyLandUnitsSpendExtraMovement("Enemy [mapUnitFilter] units must spend [amount] extra movement points when inside your territory", UniqueTarget.Global),
 
-    @Deprecated("s of 4.1.14", ReplaceWith("Production to [Science] conversion in cities changed by [33]%"))
-    ProductionToScienceConversionBonus("Production to science conversion in cities increased by 33%", UniqueTarget.Global),
     ProductionToCivWideStatConversionBonus("Production to [civWideStat] conversion in cities changed by [relativeAmount]%", UniqueTarget.Global),
 
     // Misc national uniques
@@ -305,7 +298,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     HiddenBeforeAmountPolicies("Hidden until [amount] social policy branches have been completed", UniqueTarget.Building, UniqueTarget.Unit),
     // Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>"
     OnlyAvailableWhen("Only available", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Improvement,
-        UniqueTarget.Policy, UniqueTarget.Tech, UniqueTarget.Promotion),
+        UniqueTarget.Policy, UniqueTarget.Tech, UniqueTarget.Promotion, UniqueTarget.Ruins),
 
     ConvertFoodToProductionWhenConstructed("Excess Food converted to Production when under construction", UniqueTarget.Building, UniqueTarget.Unit),
     RequiresPopulation("Requires at least [amount] population", UniqueTarget.Building, UniqueTarget.Unit),
@@ -319,8 +312,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     CostIncreasesPerCity("Cost increases by [amount] per owned city", UniqueTarget.Building),
 
-    RequiresBuildingInAllCities("Requires a [buildingName] in all cities", UniqueTarget.Building),
-    RequiresBuildingInSomeCities("Requires a [buildingName] in at least [amount] cities", UniqueTarget.Building),
+    RequiresBuildingInAllCities("Requires a [buildingFilter] in all cities", UniqueTarget.Building),
+    RequiresBuildingInSomeCities("Requires a [buildingFilter] in at least [amount] cities", UniqueTarget.Building),
     CanOnlyBeBuiltInCertainCities("Can only be built [cityFilter]", UniqueTarget.Building),
 
     MustHaveOwnedWithinTiles("Must have an owned [tileFilter] within [amount] tiles", UniqueTarget.Building),
@@ -354,8 +347,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     FoundCity("Founds a new city", UniqueTarget.Unit),
     ConstructImprovementConsumingUnit("Can construct [improvementName]", UniqueTarget.Unit),
-    @Deprecated("as of 4.1.7", ReplaceWith("Can construct [improvementName] <if it hasn't used other actions yet>"))
-    CanConstructIfNoOtherActions("Can construct [improvementName] if it hasn't used other actions yet", UniqueTarget.Unit),
     BuildImprovements("Can build [improvementFilter/terrainFilter] improvements on tiles", UniqueTarget.Unit),
     CreateWaterImprovements("May create improvements on water resources", UniqueTarget.Unit),
 
@@ -398,7 +389,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     NoMovementToPillage("No movement cost to pillage", UniqueTarget.Unit, UniqueTarget.Global),
     CanMoveAfterAttacking("Can move after attacking", UniqueTarget.Unit),
-    TransferMovement("Transfer Movement to [unit]", UniqueTarget.Unit),
+    TransferMovement("Transfer Movement to [mapUnitFilter]", UniqueTarget.Unit),
     MoveImmediatelyOnceBought("Can move immediately once bought", UniqueTarget.Unit),
     MayParadrop("May Paradrop up to [amount] tiles from inside friendly territory", UniqueTarget.Unit),
 
@@ -453,6 +444,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     DestroysImprovementUponAttack("Destroys tile improvements when attacking", UniqueTarget.Unit),
 
     // The following block gets cached in MapUnit for faster getMovementCostBetweenAdjacentTiles
+    CannotMove("Cannot move", UniqueTarget.Unit),
     DoubleMovementOnTerrain("Double movement in [terrainFilter]", UniqueTarget.Unit),
     AllTilesCost1Move("All tiles cost 1 movement", UniqueTarget.Unit),
     CanPassImpassable("Can pass through impassable tiles", UniqueTarget.Unit),
@@ -536,7 +528,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     HasQuality("Considered [terrainQuality] when determining start locations", UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
 
     NoNaturalGeneration("Doesn't generate naturally", UniqueTarget.Terrain, UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
-    TileGenerationConditions("Occurs at temperature between [amount] and [amount] and humidity between [amount] and [amount]", UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
+    TileGenerationConditions("Occurs at temperature between [amount] and [amount] and humidity between [amount] and [amount]", UniqueTarget.Terrain, UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
     OccursInChains("Occurs in chains at high elevations", UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
     OccursInGroups("Occurs in groups around high elevations", UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
     MajorStrategicFrequency("Every [amount] tiles with this terrain will receive a major deposit of a strategic resource.", UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
@@ -573,7 +565,10 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     RemovesFeaturesIfBuilt("Removes removable features when built", UniqueTarget.Improvement),
 
     DefensiveBonus("Gives a defensive bonus of [relativeAmount]%", UniqueTarget.Improvement),
-    ImprovementMaintenance("Costs [amount] gold per turn when in your territory", UniqueTarget.Improvement), // Unused
+    ImprovementMaintenance("Costs [amount] [stat] per turn when in your territory", UniqueTarget.Improvement), // Roads
+    ImprovementAllMaintenance("Costs [amount] [stat] per turn", UniqueTarget.Improvement), // Roads
+    //@Deprecated("as of 4.3.9", ReplaceWith("Costs [amount] [stats] per turn when in your territory"), DeprecationLevel.ERROR)
+    OldImprovementMaintenance("Costs [amount] gold per turn when in your territory", UniqueTarget.Improvement), // unused
     DamagesAdjacentEnemyUnits("Adjacent enemy units ending their turn take [amount] damage", UniqueTarget.Improvement),
     TakeOverTilesAroundWhenBuilt("Constructing it will take over the tiles around it and assign them to your closest city", UniqueTarget.Improvement),
 
@@ -596,10 +591,14 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ConditionalConsumeUnit("by consuming this unit", UniqueTarget.Conditional),
     ConditionalChance("with [amount]% chance", UniqueTarget.Conditional),
 
+    ConditionalBeforeTurns("before [amount] turns", UniqueTarget.Conditional),
+    ConditionalAfterTurns("after [amount] turns", UniqueTarget.Conditional),
+
     /////// civ conditionals
     ConditionalWar("when at war", UniqueTarget.Conditional),
     ConditionalNotWar("when not at war", UniqueTarget.Conditional),
     ConditionalGoldenAge("during a Golden Age", UniqueTarget.Conditional),
+    ConditionalWLTKD("during We Love The King Day", UniqueTarget.Conditional),
 
     ConditionalHappy("while the empire is happy", UniqueTarget.Conditional),
     ConditionalBetweenHappiness("when between [amount] and [amount] Happiness", UniqueTarget.Conditional),
@@ -608,15 +607,19 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ConditionalDuringEra("during the [era]", UniqueTarget.Conditional),
     ConditionalBeforeEra("before the [era]", UniqueTarget.Conditional),
     ConditionalStartingFromEra("starting from the [era]", UniqueTarget.Conditional),
+    ConditionalIfStartingInEra("if starting in the [era]", UniqueTarget.Conditional),
 
     ConditionalFirstCivToResearch("if no other Civilization has researched this", UniqueTarget.Conditional),
     ConditionalTech("after discovering [tech]", UniqueTarget.Conditional),
     ConditionalNoTech("before discovering [tech]", UniqueTarget.Conditional),
-    ConditionalWhenTech("upon discovering [tech]", UniqueTarget.Conditional), //todo no references anywhere
+
     ConditionalPolicy("after adopting [policy]", UniqueTarget.Conditional),
     ConditionalNoPolicy("before adopting [policy]", UniqueTarget.Conditional),
 
-    ConditionalBuildingBuilt("if [buildingName] is constructed", UniqueTarget.Conditional),
+    ConditionalBeforePantheon("before founding a Pantheon", UniqueTarget.Conditional),
+    ConditionalAfterPantheon("after founding a Pantheon", UniqueTarget.Conditional),
+
+    ConditionalBuildingBuilt("if [buildingFilter] is constructed", UniqueTarget.Conditional),
     ConditionalWithResource("with [resource]", UniqueTarget.Conditional),
     ConditionalWithoutResource("without [resource]", UniqueTarget.Conditional),
 
@@ -673,16 +676,17 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     OneTimeAmountFreeTechs("[amount] Free Technologies", UniqueTarget.Triggerable),  // used in Policy
     OneTimeFreeTechRuins("[amount] free random researchable Tech(s) from the [era]", UniqueTarget.Ruins),
     OneTimeRevealEntireMap("Reveals the entire map", UniqueTarget.Triggerable),  // used in tech
+    OneTimeFreeBelief("Gain a free [beliefType] belief", UniqueTarget.Triggerable),
+    OneTimeTriggerVoting("Triggers voting for the Diplomatic Victory", UniqueTarget.Triggerable),  // used in Building
+
     OneTimeGainStat("Gain [amount] [stat]", UniqueTarget.Ruins),
     OneTimeGainStatRange("Gain [amount]-[amount] [stat]", UniqueTarget.Ruins),
     OneTimeGainPantheon("Gain enough Faith for a Pantheon", UniqueTarget.Ruins),
-    OneTimeFreeBelief("Gain a free [beliefType] belief", UniqueTarget.Triggerable),
     OneTimeGainProphet("Gain enough Faith for [amount]% of a Great Prophet", UniqueTarget.Ruins),
     // todo: The "up to [All]" used in vanilla json is not nice to read. Split?
     // Or just reword it without the 'up to', so it reads "Reveal [amount/'all'] [tileFilter] tiles within [amount] tiles"
     OneTimeRevealSpecificMapTiles("Reveal up to [amount/'all'] [tileFilter] within a [amount] tile radius", UniqueTarget.Ruins),
     OneTimeRevealCrudeMap("From a randomly chosen tile [amount] tiles away from the ruins, reveal tiles up to [amount] tiles away with [amount]% chance", UniqueTarget.Ruins),
-    OneTimeTriggerVoting("Triggers voting for the Diplomatic Victory", UniqueTarget.Triggerable),  // used in Building
     OneTimeGlobalAlert("Triggers the following global alert: [comment]", UniqueTarget.Policy), // used in Policy
     OneTimeGlobalSpiesWhenEnteringEra("Every major Civilization gains a spy once a civilization enters this era", UniqueTarget.Era),
 
@@ -700,10 +704,13 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     //endregion
 
     ///////////////////////////////////////////// region META /////////////////////////////////////////////
-
+    @Deprecated("as of 4.2.18", ReplaceWith("Only available <after [amount] turns>"))
     AvailableAfterCertainTurns("Only available after [amount] turns", UniqueTarget.Ruins),
     HiddenWithoutReligion("Hidden when religion is disabled", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Ruins, flags = UniqueFlag.setOfHiddenToUsers),
+
+    @Deprecated("as of 4.2.18", ReplaceWith("Only available <before founding a Pantheon>"))
     HiddenBeforePantheon("Hidden before founding a Pantheon", UniqueTarget.Ruins),
+    @Deprecated("as of 4.2.18", ReplaceWith("Only available <before founding a Pantheon>"))
     HiddenAfterPantheon("Hidden after founding a Pantheon", UniqueTarget.Ruins),
     HiddenAfterGreatProphet("Hidden after generating a Great Prophet", UniqueTarget.Ruins),
     HiddenWithoutVictoryType("Hidden when [victoryType] Victory is disabled", UniqueTarget.Building, UniqueTarget.Unit, flags = UniqueFlag.setOfHiddenToUsers),
@@ -712,6 +719,25 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     // endregion
 
     // region DEPRECATED AND REMOVED
+
+    @Deprecated("as of 4.3.4", ReplaceWith("[stats]"), DeprecationLevel.ERROR)
+    CityStateStatsPerTurn("Provides [stats] per turn", UniqueTarget.CityState), // Should not be Happiness!
+    @Deprecated("as of 4.3.4", ReplaceWith("[stats] [cityFilter]"), DeprecationLevel.ERROR)
+    CityStateStatsPerCity("Provides [stats] [cityFilter] per turn", UniqueTarget.CityState),
+    @Deprecated("as of 4.3.4", ReplaceWith("[+amount Happiness]"), DeprecationLevel.ERROR)
+    CityStateHappiness("Provides [amount] Happiness", UniqueTarget.CityState),
+    @Deprecated("As of 4.2.4", ReplaceWith("Enemy [Land] units must spend [1] extra movement points when inside your territory <before discovering [Dynamite]>"), DeprecationLevel.ERROR)
+    EnemyLandUnitsSpendExtraMovementDepreciated("Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)", UniqueTarget.Global),
+    @Deprecated("as of 4.1.7", ReplaceWith("Can construct [improvementName] <if it hasn't used other actions yet>"), DeprecationLevel.ERROR)
+    CanConstructIfNoOtherActions("Can construct [improvementName] if it hasn't used other actions yet", UniqueTarget.Unit),
+    @Deprecated("s of 4.1.14", ReplaceWith("Production to [Science] conversion in cities changed by [33]%"), DeprecationLevel.ERROR)
+    ProductionToScienceConversionBonus("Production to science conversion in cities increased by 33%", UniqueTarget.Global),
+    @Deprecated("As of 4.1.19", ReplaceWith("[+100]% Yield from every [Natural Wonder]"), DeprecationLevel.ERROR)
+    DoubleStatsFromNaturalWonders("Tile yields from Natural Wonders doubled", UniqueTarget.Global),
+    @Deprecated("As of 4.1.14", ReplaceWith("Enables conversion of city production to [Gold]"), DeprecationLevel.ERROR)
+    EnablesGoldProduction("Enables conversion of city production to gold", UniqueTarget.Global),
+    @Deprecated("s of 4.1.14", ReplaceWith("Enables conversion of city production to [Science]"), DeprecationLevel.ERROR)
+    EnablesScienceProduction("Enables conversion of city production to science", UniqueTarget.Global),
     @Deprecated("as of 4.0.3", ReplaceWith("Damage is ignored when determining unit Strength <for [All] units>"), DeprecationLevel.ERROR)
     UnitsFightFullStrengthWhenDamaged("Units fight as though they were at full strength even when damaged", UniqueTarget.Global),
     @Deprecated("as of 4.0.3", ReplaceWith("[+amount]% Strength <within [amount2] tiles of a [tileFilter]>"), DeprecationLevel.ERROR)
@@ -756,7 +782,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     GreatPersonPointPercentageDeprecated("[relativeAmount]% great person generation [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     @Deprecated("as of 3.19.19", ReplaceWith("[+25]% [Gold] from Trade Routes"), DeprecationLevel.ERROR)
     GoldBonusFromTradeRoutesDeprecated("Gold from all trade routes +25%", UniqueTarget.Global),
-    // ToDo: Reword to `[stats] <in cities with [amount] or more population>` for consistency with other conditionals
     @Deprecated("as of 3.19.19", ReplaceWith("[stats] <in cities with at least [amount] [Population]>"), DeprecationLevel.ERROR)
     StatsFromXPopulation("[stats] in cities with [amount] or more population", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     @Deprecated("as of 3.19.8", ReplaceWith("Only available <before adopting [policy/tech/promotion]>" +

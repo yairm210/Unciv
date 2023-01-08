@@ -6,7 +6,6 @@ import com.unciv.json.HashMapVector2
 import com.unciv.json.json
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.PerpetualConstruction
-import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.TechManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
@@ -144,14 +143,6 @@ object BackwardCompatibility {
                     unit.promotions.addPromotion(startingPromo, true)
     }
 
-    /** Upgrade the uniques from deprecated format to the new more general one **/
-    fun GameInfo.updateGreatGeneralUniques() {
-        ruleSet.units.values.filter { it.uniques.contains("Bonus for units in 2 tile radius 15%") }.forEach {
-            it.uniques.remove("Bonus for units in 2 tile radius 15%")
-            it.uniques.add("[+15]% Strength bonus for [Military] units within [2] tiles")
-        }
-    }
-
     /** Move max XP from barbarians to new home */
     @Suppress("DEPRECATION")
     fun ModOptions.updateDeprecations() {
@@ -159,16 +150,6 @@ object BackwardCompatibility {
             constants.maxXPfromBarbarians = maxXPfromBarbarians
             maxXPfromBarbarians = 30
         }
-    }
-
-    /** Removes the workaround previously used for storing a map that does not have a [String] key
-     * @see com.unciv.json.NonStringKeyMapSerializer
-     */
-    @Suppress("DEPRECATION")
-    fun CivilizationInfo.migrateSeenImprovements() {
-        if (lastSeenImprovementSaved.isEmpty()) return
-        lastSeenImprovement.putAll(lastSeenImprovementSaved.mapKeys { Vector2().fromString(it.key) })
-        lastSeenImprovementSaved.clear()
     }
 
     /**

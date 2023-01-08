@@ -2,7 +2,6 @@ package com.unciv.ui.newgamescreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.CityStateType
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
@@ -30,6 +29,7 @@ class GameOptionsTable(
 
     init {
         getGameOptionsTable()
+        background = BaseScreen.skinStrings.getUiBackground("NewGameScreen/GameOptionsTable", tintColor = BaseScreen.skinStrings.skinConfig.clearColor)
     }
 
     fun update() {
@@ -65,6 +65,7 @@ class GameOptionsTable(
 
 
         val checkboxTable = Table().apply { defaults().left().pad(2.5f) }
+        checkboxTable.addNoCityRazingCheckbox()
         checkboxTable.addNoBarbariansCheckbox()
         checkboxTable.addRagingBarbariansCheckbox()
         checkboxTable.addOneCityChallengeCheckbox()
@@ -88,6 +89,10 @@ class GameOptionsTable(
         checkbox.isDisabled = lockable && locked
         add(checkbox).colspan(2).row()
     }
+
+    private fun Table.addNoCityRazingCheckbox() =
+            addCheckbox("No City Razing", gameParameters.noCityRazing)
+            { gameParameters.noCityRazing = it }
 
     private fun Table.addNoBarbariansCheckbox() =
             addCheckbox("No Barbarians", gameParameters.noBarbarians)
@@ -291,8 +296,10 @@ class GameOptionsTable(
 
         var desiredCiv = ""
         if (gameParameters.mods.contains(mod)) {
-            val modNations = RulesetCache[mod]?.nations
-            if (modNations != null && modNations.size > 0) desiredCiv = modNations.keys.first()
+            val modNations = RulesetCache[mod]?.nations?.values?.filter { it.isMajorCiv() }
+
+            if (modNations != null && modNations.any())
+                desiredCiv = modNations.random().name
 
             val music = UncivGame.Current.musicController
             if (!music.chooseTrack(mod, MusicMood.Theme, MusicTrackChooserFlags.setSelectNation) && desiredCiv.isNotEmpty())

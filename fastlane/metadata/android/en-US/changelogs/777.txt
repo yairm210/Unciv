@@ -1,0 +1,15 @@
+Modding: Can provide resources as a global unique
+
+Flat Earth Hexagonal map shape - By FiretronP75
+
+By vegeta1k95:
+- Change styles and behaviour of Unit flags as in Civ 5
+- "Auto Unit Cycle" and "Automated units move on turn start" options implemented (per Civ 5)
+- Next Turn actions (pick tech/policy/etc) now have icons
+
+Added icon for `Conduct Trade Mission` button - By alexban011
+
+By itanasi:
+- Actually fix AI from pillaging neutral roads
+
+New map options translatable - By Ouaz

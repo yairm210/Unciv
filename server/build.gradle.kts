@@ -1,5 +1,3 @@
-import com.badlogicgames.packr.Packr
-import com.badlogicgames.packr.PackrConfig
 import com.unciv.build.BuildConfig
 
 plugins {
@@ -66,7 +64,28 @@ tasks.register<Jar>("dist") { // Compiles the jar file
     }
 }
 
-for (platform in PackrConfig.Platform.values()) {
+enum class Platform(val desc: String) {
+    Windows32("windows32"), Windows64("windows64"), Linux32("linux32"), Linux64("linux64"), MacOS("mac");
+}
+
+class PackrConfig(
+    var platform: Platform? = null,
+    var jdk: String? = null,
+    var executable: String? = null,
+    var classpath: List<String>? = null,
+    var removePlatformLibs: List<String>? = null,
+    var mainClass: String? = null,
+    var vmArgs: List<String>? = null,
+    var minimizeJre: String? = null,
+    var cacheJre: File? = null,
+    var resources: List<File>? = null,
+    var outDir: File? = null,
+    var platformLibsOutDir: File? = null,
+    var iconResource: File? = null,
+    var bundleIdentifier: String? = null
+)
+
+for (platform in Platform.values()) {
     val platformName = platform.toString()
 
     tasks.create("packr${platformName}") {
@@ -108,40 +127,35 @@ for (platform in PackrConfig.Platform.values()) {
             }
 
 
-            if (config.outDir.exists()) delete(config.outDir)
+            if (config.outDir!!.exists()) delete(config.outDir)
 
             // Requires that both packr and the jre are downloaded, as per buildAndDeploy.yml, "Upload to itch.io"
 
-            // Use old version of packr - newer versions aren't Windows32-compliant
-            if (platform == PackrConfig.Platform.Windows32) {
-                config.jdk = "jdk-windows-32.zip"
-                Packr().pack(config)
-            } else {
-                val jdkFile =
+            val jdkFile =
                     when (platform) {
-                        PackrConfig.Platform.Linux64 -> "jre-linux-64.tar.gz"
-                        PackrConfig.Platform.Windows64 -> "jdk-windows-64.zip"
+                        Platform.Linux64 -> "jre-linux-64.tar.gz"
+                        Platform.Windows64 -> "jdk-windows-64.zip"
                         else -> "jre-macOS.tar.gz"
                     }
 
-                val platformNameForPackrCmd =
-                    if (platform == PackrConfig.Platform.MacOS) "mac"
+            val platformNameForPackrCmd =
+                    if (platform == Platform.MacOS) "mac"
                     else platform.name.toLowerCase()
 
-                val command = "java -jar $rootDir/packr-all-4.0.0.jar" +
-                        " --platform $platformNameForPackrCmd" +
-                        " --jdk $jdkFile" +
-                        " --executable UncivServer" +
-                        " --classpath $jarFile" +
-                        " --mainclass $mainClassName" +
-                        " --vmargs Xmx1G " +
-                        (if (platform == PackrConfig.Platform.MacOS) jvmArgsForMac.joinToString(" ") {
-                            it.removePrefix("-")
-                        }
-                        else "") +
-                        " --output ${config.outDir}"
-                command.runCommand(rootDir)
-            }
+            val command = "java -jar $rootDir/packr-all-4.0.0.jar" +
+                    " --platform $platformNameForPackrCmd" +
+                    " --jdk $jdkFile" +
+                    " --executable UncivServer" +
+                    " --classpath $jarFile" +
+                    " --mainclass $mainClassName" +
+                    " --vmargs Xmx1G " +
+                    (if (platform == Platform.MacOS) jvmArgsForMac.joinToString(" ") {
+                        it.removePrefix("-")
+                    }
+                    else "") +
+                    " --output ${config.outDir}"
+            command.runCommand(rootDir)
+
         }
 
         tasks.register<Zip>("zip${platformName}") {

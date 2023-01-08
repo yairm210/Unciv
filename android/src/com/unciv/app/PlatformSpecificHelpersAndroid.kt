@@ -62,11 +62,6 @@ Sources for Info about current orientation in case need:
      */
     override fun shouldPreferExternalStorage(): Boolean = true
 
-    override fun handleUncaughtThrowable(ex: Throwable): Boolean {
-        thread { throw ex } // this will kill the app but report the exception to the Google Play Console if the user allows it
-        return true
-    }
-
     override fun addImprovements(textField: TextField): TextField {
         return TextfieldImprovements.add(textField)
     }

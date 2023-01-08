@@ -75,16 +75,15 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     init {
         // Not the Table, the Cells (all except one) have the background. To avoid gaps, _no_
         // padding except inside the cell actors, and all actors need to _fill_ their cell.
-        val backColor = ImageGetter.getBlue().darken(0.5f)
-        val backgroundDrawable = ImageGetter.getBackground(backColor)
-        statsTable.background = backgroundDrawable
-        resourceTable.background = backgroundDrawable
+        val backColor = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.5f)
+        statsTable.background = BaseScreen.skinStrings.getUiBackground("WorldScreen/TopBar/StatsTable", tintColor = backColor)
+        resourceTable.background = BaseScreen.skinStrings.getUiBackground("WorldScreen/TopBar/ResourceTable", tintColor = backColor)
         add(statsTable).colspan(3).growX().row()
         add(resourceTable).colspan(3).growX().row()
-        val leftFillerBG = BackgroundActor.getRoundedEdgeRectangle(backColor)
+        val leftFillerBG = BaseScreen.skinStrings.getUiBackground("WorldScreen/TopBar/LeftAttachment", BaseScreen.skinStrings.roundedEdgeRectangleShape, backColor)
         leftFillerCell = add(BackgroundActor(leftFillerBG, Align.topLeft))
         add().growX()
-        val rightFillerBG = BackgroundActor.getRoundedEdgeRectangle(backColor)
+        val rightFillerBG = BaseScreen.skinStrings.getUiBackground("WorldScreen/TopBar/RightAttachment", BaseScreen.skinStrings.roundedEdgeRectangleShape, backColor)
         rightFillerCell = add(BackgroundActor(rightFillerBG, Align.topRight))
         pack()
     }
@@ -268,12 +267,12 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         when {
             leftRightNeeded * 2f > stage.width - resourceWidth -> {
                 // Need to shift buttons down to below both stats and resources
-                fillerHeight = baseHeight
+                fillerHeight = baseHeight +1
                 buttonY = overviewButton.minHeight / 2f
             }
             leftRightNeeded * 2f > stage.width - statsWidth -> {
                 // Shifting buttons down to below stats row is enough
-                fillerHeight = statsRowHeight
+                fillerHeight = statsRowHeight +1
                 buttonY = overviewButton.minHeight / 2f
             }
             else -> {
@@ -312,12 +311,16 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         layoutButtons()
     }
 
+    private fun rateLabel(value: Float): String {
+        return (if (value > 0) "+" else "") + value.roundToInt()
+    }
+
     private fun updateStatsTable(civInfo: CivilizationInfo) {
         val nextTurnStats = civInfo.statsForNextTurn
-        val goldPerTurn = "(" + (if (nextTurnStats.gold > 0) "+" else "") + nextTurnStats.gold.roundToInt() + ")"
+        val goldPerTurn = " (" + rateLabel(nextTurnStats.gold) + ")"
         goldLabel.setText(civInfo.gold.toString() + goldPerTurn)
 
-        scienceLabel.setText("+" + nextTurnStats.science.roundToInt())
+        scienceLabel.setText(rateLabel(nextTurnStats.science))
 
         happinessLabel.setText(getHappinessText(civInfo))
 
@@ -332,7 +335,8 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         }
 
         cultureLabel.setText(getCultureText(civInfo, nextTurnStats))
-        faithLabel.setText(civInfo.religionManager.storedFaith.toString() + "(+" + nextTurnStats.faith.roundToInt() + ")")
+        faithLabel.setText(civInfo.religionManager.storedFaith.toString() +
+                " (" + rateLabel(nextTurnStats.faith) + ")")
     }
 
     private fun updateResourcesTable(civInfo: CivilizationInfo) {
@@ -358,11 +362,12 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     }
 
     private fun getCultureText(civInfo: CivilizationInfo, nextTurnStats: Stats): String {
-        var cultureString = "+" + nextTurnStats.culture.roundToInt()
+        var cultureString = rateLabel(nextTurnStats.culture)
         if (nextTurnStats.culture == 0f) return cultureString // when you start the game, you're not producing any culture
 
         val turnsToNextPolicy = (civInfo.policies.getCultureNeededForNextPolicy() - civInfo.policies.storedCulture) / nextTurnStats.culture
-        cultureString += if (turnsToNextPolicy <= 0f) " (!)"
+        cultureString += if (nextTurnStats.culture < 0) " (∞)"
+            else if  (turnsToNextPolicy <= 0f) " (!)"
             else " (" + ceil(turnsToNextPolicy).toInt() + ")"
         return cultureString
     }

@@ -6,6 +6,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.ruleset.RuinReward
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.random.Random
@@ -48,11 +49,15 @@ class RuinsManager : IsPartOfGameInfoSerialization {
             if (possibleReward.hasUnique(UniqueType.HiddenAfterGreatProphet)
                 && (civInfo.civConstructions.boughtItemsWithIncreasingPrice[civInfo.religionManager.getGreatProphetEquivalent()] ?: 0) > 0
             ) continue
+
             if (possibleReward.hasUnique(UniqueType.HiddenAfterPantheon) && civInfo.religionManager.religionState >= ReligionState.Pantheon)
                 continue
             if (possibleReward.hasUnique(UniqueType.HiddenBeforePantheon) && civInfo.religionManager.religionState == ReligionState.None)
                 continue
             if (possibleReward.getMatchingUniques(UniqueType.AvailableAfterCertainTurns).any { it.params[0].toInt() < civInfo.gameInfo.turns })
+                continue
+            if (possibleReward.getMatchingUniques(UniqueType.OnlyAvailableWhen)
+                        .any { !it.conditionalsApply(StateForConditionals(civInfo, unit=triggeringUnit, tile = triggeringUnit.getTile()) ) })
                 continue
 
             var atLeastOneUniqueHadEffect = false

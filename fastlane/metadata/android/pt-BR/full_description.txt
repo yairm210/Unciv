@@ -2,13 +2,13 @@ Uma reimplementação do jogo de construção civil mais famoso de sempre - ráp
 
 Construa a sua civilização, pesquise tecnologias, expanda as suas cidades e derrote os seus inimigos!
 
-Pedidos? Bugs? A lista de TODO para a aplicação está em https://github.com/yairm210/UnCiv/issues, toda ajuda é bem-vinda!
+Pedidos? Bugs? A lista de TODO para a aplicação está em https://github.com/yairm210/Unciv/issues, toda ajuda é bem-vinda!
 
 Perguntas? Comentários? Apenas querendo conversar? Junte-se a nós em https://discord.gg/bjrB4Xw.
 
 Quer ajudar a traduzir o jogo para a sua língua? Envie-me um e-mail para yairm210@hotmail.com.
 
-Grok Java ou Kotlin? Junte-se a nós em https://github.com/yairm210/UnCiv.
+Grok Java ou Kotlin? Junte-se a nós em https://github.com/yairm210/Unciv.
 
 O mundo está à espera! Vai transformar a sua civilização num império que resistirá ao tempo?
 

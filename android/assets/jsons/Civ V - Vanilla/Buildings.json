@@ -37,7 +37,8 @@
 		"culture": 1,
 		"isWonder": true,
 		"greatPersonPoints": {"Great Engineer": 1},
-		"uniques": ["[+10]% [Food] [in all cities]", "[+15]% Production when constructing [Ranged] units [in all cities]"],
+        "uniques": ["[+10]% [Food] [in all cities]", "[+15]% Production when constructing [Archery] units [in this city]",
+            "[+15]% Production when constructing [Ranged Gunpowder] units [in this city]"],
 		"requiredTech": "Archery",
 		"quote": "'It is not so much for its beauty that the forest makes a claim upon men's hearts, as for that subtle something, that quality of air, that emanation from old trees, that so wonderfully changes and renews a weary spirit.' - Robert Louis Stevenson"
 	},
@@ -253,7 +254,7 @@
 		"culture": 3,
 		"greatPersonPoints": {"Great Engineer": 1},
 		"isWonder": true,
-		"uniques": ["Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)",
+		"uniques": ["Enemy [Land] units must spend [1] extra movement points when inside your territory <before discovering [Dynamite]>",
 			"Gain a free [Walls] [in this city]"],
 		"requiredTech": "Construction",
 		"quote": "'The art of war teaches us to rely not on the likelihood of the enemy's not attacking, but rather on the fact that we have made our position unassailable.' - Sun Tzu"
@@ -815,7 +816,7 @@
 		"happiness": 5,
 		"greatPersonPoints": {"Great Merchant": 2},
 		"isWonder": true,
-		"uniques": ["Provides 1 happiness per 2 additional social policies adopted"],
+        "uniques": ["[+1 Happiness] per [2] social policies adopted"],
 		"requiredTech": "Radio",
 		"quote": "'We live only to discover beauty, all else is a form of waiting' - Kahlil Gibran"
 	},

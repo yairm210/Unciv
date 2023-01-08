@@ -14,7 +14,10 @@ class PlayerReadyScreen(worldScreen: WorldScreen) : BaseScreen() {
         val table = Table()
         table.touchable = Touchable.enabled
         val curCiv = worldScreen.viewingCiv
-        table.background = ImageGetter.getBackground(curCiv.nation.getOuterColor())
+        table.background = skinStrings.getUiBackground(
+            "PlayerReadyScreen/Background",
+            tintColor = curCiv.nation.getOuterColor()
+        )
 
         table.add("[$curCiv] ready?".toLabel(curCiv.nation.getInnerColor(), Constants.headingFontSize))
 

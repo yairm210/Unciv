@@ -407,7 +407,7 @@
 		"requiredTech": "Civil Service",
 		"uniques": ["[+50]% Strength <vs [Mounted] units>"],
 		"upgradesTo": "Lancer",
-		"obsoleteTech": "Gunpowder",
+		"obsoleteTech": "Metallurgy",
 		"attackSound": "metalhit"
 	},
 	{
@@ -421,7 +421,7 @@
 		"requiredTech": "Civil Service",
 		"uniques": ["[+50]% Strength <vs [Mounted] units>", "Can move immediately once bought" ],
 		"upgradesTo": "Lancer",
-		"obsoleteTech": "Gunpowder",
+		"obsoleteTech": "Metallurgy",
 		"attackSound": "metalhit"
 		//"Requires [Mercenary Army]" in BNW
 	},
@@ -531,7 +531,7 @@
 		"requiredTech": "Machinery",
 		"upgradesTo": "Rifleman",
 		"obsoleteTech": "Rifling",
-		"attackSound": "arrow"
+		"attackSound": "crossbow"
 	},
 	{
 		"name": "Chu-Ko-Nu",
@@ -546,7 +546,7 @@
 		"upgradesTo": "Rifleman",
 		"obsoleteTech": "Rifling",
 		"promotions": ["Logistics"],
-		"attackSound": "arrow"
+		"attackSound": "crossbow"
 	},
 	{
 		"name": "Longbowman",
@@ -921,7 +921,7 @@
 		"cost": 320,
 		"requiredTech": "Rifling",
 		"upgradesTo": "Infantry",
-		"obsoleteTech": "Plastics",
+		"obsoleteTech": "Replaceable Parts",
 		"uniques": ["[+20]% Strength <when fighting in [Foreign Land] tiles>"],
 		"attackSound": "shot"
 	},

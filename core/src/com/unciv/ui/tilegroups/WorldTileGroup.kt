@@ -32,7 +32,7 @@ class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo, 
             icons.addPopulationIcon()
         // update city buttons in explored tiles or entire map
         if (showEntireMap
-                || viewingCiv.exploredTiles.contains(tileInfo.position)
+                || viewingCiv.hasExplored(tileInfo)
                 || viewingCiv.isSpectator()
                 || (worldScreen.viewingCiv.isSpectator() && !worldScreen.fogOfWar)) {
             updateCityButton(city, tileIsViewable || showEntireMap) // needs to be before the update so the units will be above the city button

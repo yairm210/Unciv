@@ -7,6 +7,8 @@ import com.unciv.app.desktop.ImagePacker.packImages
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.attribute.BasicFileAttributes
 
 /**
  * Entry point: _ImagePacker.[packImages] ()_
@@ -21,7 +23,7 @@ internal object ImagePacker {
     private fun getDefaultSettings() = TexturePacker.Settings().apply {
         // Apparently some chipsets, like NVIDIA Tegra 3 graphics chipset (used in Asus TF700T tablet),
         // don't support non-power-of-two texture sizes - kudos @yuroller!
-        // https://github.com/yairm210/UnCiv/issues/1340
+        // https://github.com/yairm210/Unciv/issues/1340
 
         /**
          * These should be as big as possible in order to accommodate ALL the images together in one big file.
@@ -108,7 +110,12 @@ internal object ImagePacker {
         val atlasFile = File("$output${File.separator}$packFileName.atlas")
         if (atlasFile.exists() && File("$output${File.separator}$packFileName.png").exists()) {
             val atlasModTime = atlasFile.lastModified()
-            if (File(input).listTree().none { it.extension in listOf("png", "jpg", "jpeg") && it.lastModified() > atlasModTime }) return
+            if (File(input).listTree().none {
+                val attr: BasicFileAttributes = Files.readAttributes(it.toPath(), BasicFileAttributes::class.java)
+                val createdAt: Long = attr.creationTime().toMillis()
+                it.extension in listOf("png", "jpg", "jpeg")
+                        && (it.lastModified() > atlasModTime || createdAt > atlasModTime)
+            }) return
         }
 
         // An image folder can optionally have a TexturePacker settings file

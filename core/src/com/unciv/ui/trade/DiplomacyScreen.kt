@@ -26,7 +26,6 @@ import com.unciv.models.ruleset.Quest
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.stats.Stat
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
@@ -48,7 +47,6 @@ import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.setFontSize
 import com.unciv.ui.utils.extensions.surroundWithCircle
 import com.unciv.ui.utils.extensions.toLabel
-import com.unciv.ui.utils.extensions.toPercent
 import com.unciv.ui.utils.extensions.toTextButton
 import kotlin.math.floor
 import kotlin.math.roundToInt
@@ -137,7 +135,7 @@ class DiplomacyScreen(
 
             if (civ.isCityState()) {
                 val innerColor = civ.gameInfo.ruleSet.nations[civ.civName]!!.getInnerColor()
-                val typeIcon = ImageGetter.getImage(civ.cityStateType.icon)
+                val typeIcon = ImageGetter.getImage("CityStateIcons/"+civ.cityStateType.name)
                     .surroundWithCircle(size = 35f, color = innerColor).apply {
                         actor.color = Color.BLACK
                     }
@@ -192,7 +190,7 @@ class DiplomacyScreen(
 
         diplomacyTable.add(LeaderIntroTable(otherCiv)).padBottom(15f).row()
 
-        diplomacyTable.add("{Type}:  {${otherCiv.cityStateType}}".toLabel()).row()
+        diplomacyTable.add("{Type}:  {${otherCiv.cityStateType.name}}".toLabel()).row()
         diplomacyTable.add("{Personality}:  {${otherCiv.cityStatePersonality}}".toLabel()).row()
 
         if (otherCiv.detailedCivResources.any { it.resource.resourceType != ResourceType.Bonus }) {
@@ -218,9 +216,11 @@ class DiplomacyScreen(
         diplomacyTable.row().padTop(15f)
 
         otherCiv.updateAllyCivForCityState()
-        val ally = otherCiv.getAllyCiv()
+        var ally = otherCiv.getAllyCiv()
         if (ally != null) {
             val allyInfluence = otherCiv.getDiplomacyManager(ally).getInfluence().toInt()
+            if (!viewingCiv.knows(ally) && ally != viewingCiv.civName)
+                ally = "Unknown civilization"
             diplomacyTable
                 .add("Ally: [$ally] with [$allyInfluence] Influence".toLabel())
                 .row()
@@ -228,7 +228,14 @@ class DiplomacyScreen(
 
         val protectors = otherCiv.getProtectorCivs()
         if (protectors.isNotEmpty()) {
-            val protectorString = "{Protected by}: " + protectors.joinToString(", ") { it.civName.tr() }
+            val newProtectors = arrayListOf<String>()
+            for (protector in protectors) {
+                if (!viewingCiv.knows(protector) && protector.civName != viewingCiv.civName)
+                    newProtectors.add("Unknown civilization".tr())
+                else
+                    newProtectors.add(protector.civName.tr())
+            }
+            val protectorString = "{Protected by}: " + newProtectors.joinToString(", ")
             diplomacyTable.add(protectorString.toLabel()).row()
         }
 
@@ -246,17 +253,13 @@ class DiplomacyScreen(
         }
         diplomacyTable.row().padTop(15f)
 
-        val eraInfo = viewingCiv.getEra()
+        var friendBonusText = "When Friends:".tr()+"\n"
+        val friendBonusObjects = viewingCiv.cityStateFunctions.getCityStateBonuses(otherCiv.cityStateType, RelationshipLevel.Friend)
+        friendBonusText += friendBonusObjects.joinToString(separator = "\n") { it.text.tr() }
 
-        var friendBonusText = "{When Friends:} ".tr()
-        val friendBonusObjects = eraInfo.getCityStateBonuses(otherCiv.cityStateType, RelationshipLevel.Friend)
-        val friendBonusStrings = getAdjustedBonuses(friendBonusObjects)
-        friendBonusText += friendBonusStrings.joinToString(separator = ", ") { it.tr() }
-
-        var allyBonusText = "{When Allies:} ".tr()
-        val allyBonusObjects = eraInfo.getCityStateBonuses(otherCiv.cityStateType, RelationshipLevel.Ally)
-        val allyBonusStrings = getAdjustedBonuses(allyBonusObjects)
-        allyBonusText += allyBonusStrings.joinToString(separator = ", ") { it.tr() }
+        var allyBonusText = "When Allies:".tr()+"\n"
+        val allyBonusObjects = viewingCiv.cityStateFunctions.getCityStateBonuses(otherCiv.cityStateType, RelationshipLevel.Ally)
+        allyBonusText += allyBonusObjects.joinToString(separator = "\n") { it.text.tr() }
 
         val relationLevel = otherCivDiplomacyManager.relationshipLevel()
         if (relationLevel >= RelationshipLevel.Friend) {
@@ -286,48 +289,9 @@ class DiplomacyScreen(
         return diplomacyTable
     }
 
-    /** Given a list of [bonuses], returns a list of pretty strings with updated values for Siam-like uniques
-     *  Assumes that each bonus contains only one stat type */
-    private fun getAdjustedBonuses(bonuses: List<Unique>): List<String> {
-        val bonusStrings = ArrayList<String>()
-        for (bonus in bonuses) {
-            var improved = false
-            for (unique in viewingCiv.getMatchingUniques(UniqueType.StatBonusPercentFromCityStates)) {
-                val boostAmount = unique.params[0].toPercent()
-                val boostedStat = Stat.valueOf(unique.params[1])
-                when (bonus.type) {
-                    UniqueType.CityStateStatsPerTurn -> { // "Provides [stats] per turn"
-                        if (bonus.stats[boostedStat] > 0) {
-                            bonusStrings.add(
-                                bonus.text.fillPlaceholders(
-                                    (bonus.stats * boostAmount).toStringWithDecimals()))
-                            improved = true
-                        }
-                    }
-                    UniqueType.CityStateStatsPerCity -> { // "Provides [stats] [cityFilter]"
-                        if (bonus.stats[boostedStat] > 0) {
-                            bonusStrings.add(
-                                bonus.text.fillPlaceholders(
-                                    (bonus.stats * boostAmount).toStringWithDecimals(), bonus.params[1]))
-                            improved = true
-                        }
-                    }
-                    UniqueType.CityStateHappiness -> { // "Provides [amount] Happiness"
-                        if (boostedStat == Stat.Happiness) {
-                            bonusStrings.add(
-                                bonus.text.fillPlaceholders(
-                                    (bonus.params[0].toFloat() * boostAmount).toString().removeSuffix(".0")))
-                            improved = true
-                        }
-                    }
-                    else -> Unit  // To silence "exhaustive when" warning
-                }
-            }
-            // No matching unique, add it unmodified
-            if (!improved)
-                bonusStrings.add(bonus.text)
-        }
-        return bonusStrings
+    fun fillUniquePlaceholders(unique:Unique, vararg strings: String):String {
+        return unique.placeholderText.fillPlaceholders(*strings) + unique.conditionals.map { " <${it.text}>" }
+            .joinToString("")
     }
 
     private fun getCityStateDiplomacyTable(otherCiv: CivilizationInfo): Table {
@@ -368,7 +332,7 @@ class DiplomacyScreen(
             else diplomacyTable.add(getDeclareWarButton(diplomacyManager, otherCiv)).row()
         }
 
-        if (otherCiv.cities.isNotEmpty() && otherCiv.getCapital() != null && otherCiv.getCapital()!!.location in viewingCiv.exploredTiles)
+        if (otherCiv.cities.isNotEmpty() && otherCiv.getCapital() != null && viewingCiv.hasExplored(otherCiv.getCapital()!!.location))
             diplomacyTable.add(getGoToOnMapButton(otherCiv)).row()
 
         val diplomaticMarriageButton = getDiplomaticMarriageButton(otherCiv)
@@ -561,7 +525,7 @@ class DiplomacyScreen(
                     improveTileButton.onClick {
                         viewingCiv.addGold(-200)
                         improvableTile.stopWorkingOnImprovement()
-                        improvableTile.improvement = tileImprovement.name
+                        improvableTile.changeImprovement(tileImprovement.name)
                         otherCiv.updateDetailedCivResources()
                         rightSideTable.clear()
                         rightSideTable.add(ScrollPane(getCityStateDiplomacyTable(otherCiv)))
@@ -727,10 +691,10 @@ class DiplomacyScreen(
         diplomacyTable.add(demandsButton).row()
         if (isNotPlayersTurn()) demandsButton.disable()
 
-        if (otherCiv.cities.isNotEmpty() && otherCiv.getCapital() != null && otherCiv.getCapital()!!.location in viewingCiv.exploredTiles)
+        if (otherCiv.cities.isNotEmpty() && otherCiv.getCapital() != null && viewingCiv.hasExplored(otherCiv.getCapital()!!.location))
             diplomacyTable.add(getGoToOnMapButton(otherCiv)).row()
 
-        if (!otherCiv.isPlayerCivilization()) { // human players make their own choices
+        if (!otherCiv.isHuman()) { // human players make their own choices
             diplomacyTable.add(getRelationshipTable(otherCivDiplomacyManager)).row()
             diplomacyTable.add(getDiplomacyModifiersTable(otherCivDiplomacyManager)).row()
             val promisesTable = getPromisesTable(diplomacyManager, otherCivDiplomacyManager)

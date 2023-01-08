@@ -3,7 +3,11 @@ package com.unciv.logic.automation.unit
 import com.unciv.Constants
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.civilization.NextTurnAutomation
-import com.unciv.logic.battle.*
+import com.unciv.logic.battle.Battle
+import com.unciv.logic.battle.BattleDamage
+import com.unciv.logic.battle.CityCombatant
+import com.unciv.logic.battle.ICombatant
+import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -20,9 +24,11 @@ object UnitAutomation {
     private fun isGoodTileToExplore(unit: MapUnit, tile: TileInfo): Boolean {
         return unit.movement.canMoveTo(tile)
                 && (tile.getOwner() == null || !tile.getOwner()!!.isCityState())
-                && tile.neighbors.any { it.position !in unit.civInfo.exploredTiles }
+                && tile.neighbors.any { !unit.civInfo.hasExplored(it) }
                 && (!unit.civInfo.isCityState() || tile.neighbors.any { it.getOwner() == unit.civInfo }) // Don't want city-states exploring far outside their borders
                 && unit.getDamageFromTerrain(tile) <= 0    // Don't take unnecessary damage
+                && tile.getTilesInDistance(3)  // don't walk in range of enemy units
+            .none { tile_it -> containsEnemyMilitaryUnit(unit, tile_it)}
                 && unit.movement.canReach(tile) // expensive, evaluate last
     }
 
@@ -87,7 +93,7 @@ object UnitAutomation {
         return unit.movement.canMoveTo(tile)
                 && tile.getOwner() == null
                 && tile.neighbors.all { it.getOwner() == null }
-                && tile.position in unit.civInfo.exploredTiles
+                && unit.civInfo.hasExplored(tile)
                 && tile.getTilesInDistance(2).any { it.getOwner() == unit.civInfo }
                 && unit.getDamageFromTerrain(tile) <= 0
                 && unit.movement.canReach(tile) // expensive, evaluate last
@@ -131,8 +137,24 @@ object UnitAutomation {
         // Might die next turn - move!
         if (unit.health <= unit.getDamageFromTerrain() && tryHealUnit(unit)) return
 
+        if (unit.promotions.canBePromoted()) {
+            val availablePromotions = unit.promotions.getAvailablePromotions()
+            if (availablePromotions.any())
+                unit.promotions.addPromotion(availablePromotions.toList().random().name)
+        }
+
         if (unit.isCivilian()) {
             if (tryRunAwayIfNeccessary(unit)) return
+
+            if (unit.currentTile.isCityCenter() && unit.currentTile.getCity()!!.isCapital()
+                    && !unit.hasUnique(UniqueType.AddInCapital) && unit.civInfo.getCivUnits().any { unit.hasUnique(UniqueType.AddInCapital) }){
+                // First off get out of the way, then decide if you actually want to do something else
+                val tilesCanMoveTo = unit.movement.getDistanceToTiles()
+                    .filter { unit.movement.canMoveTo(it.key) }
+                if (tilesCanMoveTo.isNotEmpty())
+                    unit.movement.moveToTile(tilesCanMoveTo.minBy { it.value.totalDistance }.key)
+            }
+
 
             if (unit.hasUnique(UniqueType.FoundCity))
                 return SpecificUnitAutomation.automateSettlerActions(unit)
@@ -178,12 +200,9 @@ object UnitAutomation {
             if (unit.hasUnique(UniqueType.PreventSpreadingReligion) || unit.canDoReligiousAction(Constants.removeHeresy))
                 return SpecificUnitAutomation.automateInquisitor(unit)
 
-            if (unit.hasUnique(UniqueType.ConstructImprovementConsumingUnit)
-                    || (unit.hasUnique(UniqueType.CanConstructIfNoOtherActions)
-                            && unit.religiousActionsUnitCanDo().all { unit.abilityUsesLeft[it] == unit.maxAbilityUses[it] }))
+            if (unit.hasUnique(UniqueType.ConstructImprovementConsumingUnit))
             // catch great prophet for civs who can't found/enhance/spread religion
                 return SpecificUnitAutomation.automateImprovementPlacer(unit) // includes great people plus moddable units
-
 
             // ToDo: automation of great people skills (may speed up construction, provides a science boost, etc.)
 
@@ -258,7 +277,7 @@ object UnitAutomation {
     private fun tryHeadTowardsEncampment(unit: MapUnit): Boolean {
         if (unit.hasUnique(UniqueType.SelfDestructs)) return false // don't use single-use units against barbarians...
         val knownEncampments = unit.civInfo.gameInfo.tileMap.values.asSequence()
-                .filter { it.improvement == Constants.barbarianEncampment && unit.civInfo.exploredTiles.contains(it.position) }
+                .filter { it.improvement == Constants.barbarianEncampment && unit.civInfo.hasExplored(it) }
         val cities = unit.civInfo.cities
         val encampmentsCloseToCities = knownEncampments.filter { cities.any { city -> city.getCenterTile().aerialDistanceTo(it) < 6 } }
                 .sortedBy { it.aerialDistanceTo(unit.currentTile) }
@@ -343,7 +362,9 @@ object UnitAutomation {
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         val tilesThatCanWalkToAndThenPillage = unitDistanceToTiles
             .filter { it.value.totalDistance < unit.currentMovement }.keys
-            .filter { unit.movement.canMoveTo(it) && UnitActions.canPillage(unit, it) }
+            .filter { unit.movement.canMoveTo(it) && UnitActions.canPillage(unit, it)
+                    && (it.canPillageTileImprovement()
+                    || (it.canPillageRoad() && it.getRoadOwner() != null && unit.civInfo.isAtWarWith(it.getRoadOwner()!!)))}
 
         if (tilesThatCanWalkToAndThenPillage.isEmpty()) return false
         val tileToPillage = tilesThatCanWalkToAndThenPillage.maxByOrNull { it.getDefensiveBonus() }!!
@@ -438,8 +459,7 @@ object UnitAutomation {
             .filter { unit.civInfo.isAtWarWith(it) && it.cities.isNotEmpty() }
 
         val closestEnemyCity = enemies
-            .map { NextTurnAutomation.getClosestCities(unit.civInfo, it) }
-            .filterNotNull()
+            .mapNotNull { NextTurnAutomation.getClosestCities(unit.civInfo, it) }
             .minByOrNull { it.aerialDistance }?.city2
           ?: return false // no attackable cities found
 

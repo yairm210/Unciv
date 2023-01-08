@@ -17,7 +17,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.ui.images.IconTextButton
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.extensions.addSeparator
@@ -61,7 +60,7 @@ open class TabbedPager(
     private val headerFontSize: Int = Constants.defaultFontSize,
     private val headerFontColor: Color = Color.WHITE,
     private val highlightColor: Color = Color.BLUE,
-    backgroundColor: Color = ImageGetter.getBlue().darken(0.5f),
+    backgroundColor: Color = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.5f),
     private val headerPadding: Float = 10f,
     separatorColor: Color = Color.CLEAR,
     private val shorcutScreen: BaseScreen? = null,
@@ -218,55 +217,60 @@ open class TabbedPager(
             }
         }
 
+        class SyncedScrollListener(val linkedScrollPane: LinkedScrollPane):InputListener(){
+            val oldScrollListener = linkedScrollPane.listeners.removeIndex(linkedScrollPane.listeners.size-1) as InputListener
+            override fun scrolled(event: InputEvent?, x: Float, y: Float, amountX: Float, amountY: Float): Boolean {
+                val toReturn = oldScrollListener.scrolled(event, x, y, amountX, amountY)
+                linkedScrollPane.sync(false)
+                return toReturn
+            }
+        }
+
         override fun addScrollListener() {
             super.addScrollListener()
-            val oldListener = listeners.removeIndex(listeners.size-1) as InputListener
-            addListener(object : InputListener() {
-                override fun scrolled(event: InputEvent?, x: Float, y: Float, amountX: Float, amountY: Float): Boolean {
-                    val toReturn = oldListener.scrolled(event, x, y, amountX, amountY)
-                    sync(false)
-                    return toReturn
-                }
-            })
+            addListener(SyncedScrollListener(this))
+        }
+
+        class LinkedCaptureListener(val linkedScrollPane: LinkedScrollPane):InputListener(){
+            val oldListener = linkedScrollPane.captureListeners.removeIndex(0) as InputListener
+            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
+                val toReturn = oldListener.touchDown(event, x, y, pointer, button)
+                linkedScrollPane.sync()
+                return toReturn
+            }
+            override fun touchDragged(event: InputEvent?, x: Float, y: Float, pointer: Int) {
+                oldListener.touchDragged(event, x, y, pointer)
+                linkedScrollPane.sync()
+            }
+            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
+                oldListener.touchUp(event, x, y, pointer, button)
+                linkedScrollPane.sync()
+            }
+            override fun mouseMoved(event: InputEvent?, x: Float, y: Float): Boolean {
+                // syncing here leads to stutter
+                return oldListener.mouseMoved(event, x, y)
+            }
         }
 
         override fun addCaptureListener() {
             super.addCaptureListener()
-            val oldListener = captureListeners.removeIndex(0) as InputListener
-            addCaptureListener(object : InputListener() {
-                override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
-                    val toReturn = oldListener.touchDown(event, x, y, pointer, button)
-                    sync()
-                    return toReturn
-                }
-                override fun touchDragged(event: InputEvent?, x: Float, y: Float, pointer: Int) {
-                    oldListener.touchDragged(event, x, y, pointer)
-                    sync()
-                }
-                override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
-                    oldListener.touchUp(event, x, y, pointer, button)
-                    sync()
-                }
-                override fun mouseMoved(event: InputEvent?, x: Float, y: Float): Boolean {
-                    // syncing here leads to stutter
-                    return oldListener.mouseMoved(event, x, y)
-                }
-            })
+            addCaptureListener(LinkedCaptureListener(this))
+        }
+
+        class LinkedFlickScrollListener(val stdFlickListener: ActorGestureListener, val linkedScrollPane: LinkedScrollPane):ActorGestureListener(){
+            override fun pan(event: InputEvent?, x: Float, y: Float, deltaX: Float, deltaY: Float) {
+                stdFlickListener.pan(event, x, y, deltaX, deltaY)
+                linkedScrollPane.sync()
+            }
+            override fun fling(event: InputEvent?, velocityX: Float, velocityY: Float, button: Int) {
+                stdFlickListener.fling(event, velocityX, velocityY, button)
+                linkedScrollPane.sync()
+            }
         }
 
         override fun getFlickScrollListener(): ActorGestureListener {
             val stdFlickListener = super.getFlickScrollListener()
-            val newFlickListener = object: ActorGestureListener() {
-                override fun pan(event: InputEvent?, x: Float, y: Float, deltaX: Float, deltaY: Float) {
-                    stdFlickListener.pan(event, x, y, deltaX, deltaY)
-                    sync()
-                }
-                override fun fling(event: InputEvent?, velocityX: Float, velocityY: Float, button: Int) {
-                    stdFlickListener.fling(event, velocityX, velocityY, button)
-                    sync()
-                }
-            }
-            return newFlickListener
+            return LinkedFlickScrollListener(stdFlickListener, this)
         }
 
         override fun act(delta: Float) {
@@ -291,7 +295,7 @@ open class TabbedPager(
         dimW = DimensionMeasurement.from(minimumWidth, maximumWidth, screenWidth)
         dimH = DimensionMeasurement.from(minimumHeight, maximumHeight, screenHeight)
 
-        background = ImageGetter.getBackground(backgroundColor)
+        background = BaseScreen.skinStrings.getUiBackground("General/TabbedPager", tintColor = backgroundColor)
 
         header.defaults().pad(headerPadding, headerPadding * 0.5f)
         // Measure header height, most likely its final value

@@ -5,16 +5,23 @@ import club.minnced.discord.rpc.DiscordRPC
 import club.minnced.discord.rpc.DiscordRichPresence
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.glutils.HdpiMode
 import com.sun.jna.Native
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
+import com.unciv.json.json
+import com.unciv.logic.SETTINGS_FILE_NAME
 import com.unciv.logic.UncivFiles
+import com.unciv.models.metadata.ScreenSize
+import com.unciv.models.metadata.WindowState
 import com.unciv.ui.utils.Fonts
 import com.unciv.utils.Log
 import com.unciv.utils.debug
+import java.awt.GraphicsEnvironment
 import java.util.*
 import kotlin.concurrent.timer
+
 
 internal object DesktopLauncher {
     private var discordTimer: Timer? = null
@@ -44,12 +51,24 @@ internal object DesktopLauncher {
         config.disableAudio(true)
 
         val settings = UncivFiles.getSettingsForPlatformLaunchers()
-        if (!settings.isFreshlyCreated) {
-            config.setWindowedMode(settings.windowState.width.coerceAtLeast(120), settings.windowState.height.coerceAtLeast(80))
+        if (settings.isFreshlyCreated) {
+            settings.screenSize = ScreenSize.Large // By default we guess that Desktops have larger screens
+            // LibGDX not yet configured, use regular java class
+            val graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment()
+            val maximumWindowBounds = graphicsEnvironment.maximumWindowBounds
+            settings.windowState = WindowState(
+                width = maximumWindowBounds.width,
+                height = maximumWindowBounds.height
+            )
+            FileHandle(SETTINGS_FILE_NAME).writeString(json().toJson(settings), false) // so when we later open the game we get fullscreen
         }
+
+        config.setWindowedMode(settings.windowState.width.coerceAtLeast(120), settings.windowState.height.coerceAtLeast(80))
+
 
         if (!isRunFromJAR) {
             UniqueDocsWriter().write()
+            UiElementDocsWriter().write()
         }
 
         val platformSpecificHelper = PlatformSpecificHelpersDesktop(config)

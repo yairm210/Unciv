@@ -7,6 +7,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.RulesetError
+import com.unciv.models.ruleset.RulesetErrorSeverity
+import com.unciv.models.ruleset.RulesetValidator
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
@@ -95,12 +98,12 @@ class ModCheckTab(
                 if (base != MOD_CHECK_WITHOUT_BASE && mod.modOptions.isBaseRuleset) continue
 
                 val modLinks =
-                    if (base == MOD_CHECK_WITHOUT_BASE) mod.checkModLinks(forOptionsPopup = true)
-                    else RulesetCache.checkCombinedModLinks(linkedSetOf(mod.name), base, forOptionsPopup = true)
+                    if (base == MOD_CHECK_WITHOUT_BASE) mod.checkModLinks(tryFixUnknownUniques = true)
+                    else RulesetCache.checkCombinedModLinks(linkedSetOf(mod.name), base, tryFixUnknownUniques = true)
                 modLinks.sortByDescending { it.errorSeverityToReport }
                 val noProblem = !modLinks.isNotOK()
-                if (modLinks.isNotEmpty()) modLinks += Ruleset.RulesetError("", Ruleset.RulesetErrorSeverity.OK)
-                if (noProblem) modLinks += Ruleset.RulesetError("No problems found.".tr(), Ruleset.RulesetErrorSeverity.OK)
+                if (modLinks.isNotEmpty()) modLinks += RulesetError("", RulesetErrorSeverity.OK)
+                if (noProblem) modLinks += RulesetError("No problems found.".tr(), RulesetErrorSeverity.OK)
 
                 launchOnGLThread {
                     // When the options popup is already closed before this postRunnable is run,
@@ -170,6 +173,7 @@ class ModCheckTab(
             mod.unitPromotions,
             mod.unitTypes,
             mod.units,
+            mod.ruinRewards
         )
         val allDeprecatedUniques = HashSet<String>()
         val deprecatedUniquesToReplacementText = HashMap<String, String>()
@@ -195,7 +199,7 @@ class ModCheckTab(
                 uniqueReplacementText += " <${conditional.text}>"
             val replacementUnique = Unique(uniqueReplacementText)
 
-            val modInvariantErrors = mod.checkUnique(
+            val modInvariantErrors = RulesetValidator(mod).checkUnique(
                 replacementUnique,
                 false,
                 "",
@@ -207,7 +211,7 @@ class ModCheckTab(
             if (modInvariantErrors.isNotEmpty()) continue // errors means no autoreplace
 
             if (mod.modOptions.isBaseRuleset) {
-                val modSpecificErrors = mod.checkUnique(
+                val modSpecificErrors = RulesetValidator(mod).checkUnique(
                     replacementUnique,
                     false,
                     "",
@@ -238,6 +242,7 @@ class ModCheckTab(
             "UnitPromotions.json",
             "UnitTypes.json",
             "Units.json",
+            "Ruins.json"
         )
 
         val jsonFolder = mod.folderLocation!!.child("jsons")

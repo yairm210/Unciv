@@ -11,8 +11,8 @@ import com.unciv.ui.utils.extensions.toLabel
 
 /** Represents a row in the Language picker, used both in OptionsPopup and in LanguagePickerScreen */
 internal class LanguageTable(val language:String, val percentComplete: Int): Table(){
-    private val blue = ImageGetter.getBlue()
-    private val darkBlue = blue.darken(0.5f)
+    private val baseColor = BaseScreen.skinStrings.skinConfig.baseColor
+    private val darkBaseColor = baseColor.darken(0.5f)
 
     init{
         pad(10f)
@@ -30,7 +30,10 @@ internal class LanguageTable(val language:String, val percentComplete: Int): Tab
     }
 
     fun update(chosenLanguage:String){
-        background = ImageGetter.getBackground(if (chosenLanguage == language) blue else darkBlue)
+        background = BaseScreen.skinStrings.getUiBackground(
+            "LanguagePickerScreen/LanguageTable",
+            tintColor = if (chosenLanguage == language) baseColor else darkBaseColor
+        )
     }
 
     companion object {
