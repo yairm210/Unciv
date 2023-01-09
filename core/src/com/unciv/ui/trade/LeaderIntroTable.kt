@@ -30,7 +30,7 @@ class LeaderIntroTable (
         val nation = civInfo.nation
         val leaderPortraitFile = "LeaderIcons/" + nation.leaderName
         val leaderLabel = civInfo.getLeaderDisplayName().toLabel(fontSize = Constants.headingFontSize)
-        val nationIndicator = ImageGetter.getNationIndicator(nation, 24f)
+        val nationIndicator = ImageGetter.getNationPortrait(nation, 24f)
         if (nation.leaderName.isNotEmpty() && ImageGetter.imageExists(leaderPortraitFile)) {
             val nameTable = Table()
             nameTable.add(leaderLabel)

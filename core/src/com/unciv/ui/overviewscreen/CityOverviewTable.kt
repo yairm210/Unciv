@@ -194,7 +194,7 @@ class CityOverviewTab(
 
             val construction = city.cityConstructions.currentConstructionFromQueue
             if (construction.isNotEmpty()) {
-                cityInfoTableDetails.add(ImageGetter.getPortraitImage(construction, iconSize*0.8f)).padRight(paddingHorz)
+                cityInfoTableDetails.add(ImageGetter.getConstructionPortrait(construction, iconSize*0.8f)).padRight(paddingHorz)
             } else {
                 cityInfoTableDetails.add()
             }
@@ -216,7 +216,7 @@ class CityOverviewTab(
                     cityInfoTableDetails.add(image)
                 }
                 city.demandedResource.isNotEmpty() -> {
-                    val image = ImageGetter.getResourceImage(city.demandedResource, iconSize*0.7f)
+                    val image = ImageGetter.getResourcePortrait(city.demandedResource, iconSize*0.7f)
                     image.addTooltip("Demanding [${city.demandedResource}]", 18f, tipAlign = Align.topLeft)
                     cityInfoTableDetails.add(image).padLeft(iconSize*0.3f)
                 }

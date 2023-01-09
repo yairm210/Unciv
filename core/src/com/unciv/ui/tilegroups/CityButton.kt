@@ -7,10 +7,8 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
-import com.unciv.Constants
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
@@ -26,14 +24,10 @@ import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.BorderedTable
 import com.unciv.ui.utils.Fonts
-import com.unciv.ui.utils.extensions.brighten
 import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.centerX
 import com.unciv.ui.utils.extensions.colorFromRGB
 import com.unciv.ui.utils.extensions.onClick
-import com.unciv.ui.utils.extensions.setSize
-import com.unciv.ui.utils.extensions.surroundWithCircle
-import com.unciv.ui.utils.extensions.surroundWithThinCircle
 import com.unciv.ui.utils.extensions.toGroup
 import com.unciv.ui.utils.extensions.toLabel
 import kotlin.math.max
@@ -321,7 +315,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         if (!forPopup) {
             val cityReligion = city.religion.getMajorityReligion()
             if (cityReligion != null) {
-                val religionImage = ImageGetter.getReligionImage(cityReligion.getIconName()).apply {
+                val religionImage = ImageGetter.getReligionIcon(cityReligion.getIconName()).apply {
                     color = secondaryColor }.toGroup(20f)
                 labelTable.add(religionImage).size(20f).padLeft(5f)
             }
@@ -451,7 +445,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
                 table.add(productionBar).padTop(1f).padBottom(1f)
             }
 
-            val constructionImage = ImageGetter.getPortraitImage(cityCurrentConstruction.name, 24f)
+            val constructionImage = ImageGetter.getConstructionPortrait(cityCurrentConstruction.name, 24f)
             table.add(constructionImage).minHeight(32f).minWidth(26f)
                 .expand().center().right().pad(0f).padRight(4f).padLeft(3f)
             table.pack()

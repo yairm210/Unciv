@@ -1,6 +1,7 @@
 package com.unciv.ui.popup
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.ui.images.IconCircleGroup
@@ -24,7 +25,7 @@ import com.unciv.ui.utils.extensions.toLabel
 class AskTextPopup(
     screen: BaseScreen,
     label: String = "Please enter some text",
-    icon: IconCircleGroup = ImageGetter.getImage("OtherIcons/Pencil").apply { this.color = Color.BLACK }.surroundWithCircle(80f),
+    icon: Group = ImageGetter.getImage("OtherIcons/Pencil").apply { this.color = Color.BLACK }.surroundWithCircle(80f),
     defaultText: String = "",
     errorText: String = "Invalid input! Please enter a different string.",
     maxLength: Int = 32,

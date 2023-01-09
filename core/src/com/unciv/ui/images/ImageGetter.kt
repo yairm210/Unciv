@@ -201,126 +201,71 @@ object ImageGetter {
                 .apply { setSize(20f, 20f) }
     }
 
+    fun wonderImageExists(wonderName: String) = imageExists("WonderImages/$wonderName")
+    fun getWonderImage(wonderName: String) = getImage("WonderImages/$wonderName")
+
+    fun getNationIcon(nation: String) = getImage("NationIcons/$nation")
+    fun getNationPortrait(nation: Nation, size: Float): Portrait {
+        return PortraitNation(nation.name, size)
+    }
+
+    fun getRandomNationPortrait(size: Float): Portrait {
+        return PortraitNation("Random", size)
+    }
+
     fun getUnitIcon(unitName: String, color: Color = Color.BLACK): Image {
         return getImage("UnitIcons/$unitName").apply { this.color = color }
     }
 
-
-
-    fun getNationIndicator(nation: Nation, size: Float): IconCircleGroup {
-        val civIconName = if (nation.isCityState()) "CityState" else nation.name
-        return if (nationIconExists(civIconName)) {
-            val cityStateIcon = getNationIcon(civIconName)
-            cityStateIcon.color = nation.getInnerColor()
-            cityStateIcon.surroundWithCircle(size * 0.9f).apply { circle.color = nation.getOuterColor() }
-                    .surroundWithCircle(size, false).apply { circle.color = nation.getInnerColor() }
-        } else getCircle().apply { color = nation.getOuterColor() }
-                .surroundWithCircle(size).apply { circle.color = nation.getInnerColor() }
-    }
-
-    fun getRandomNationIndicator(size: Float): IconCircleGroup {
-        return "?"
-            .toLabel(Color.WHITE, (size * 5f/8f).toInt())
-            .apply { this.setAlignment(Align.center) }
-            .surroundWithCircle(size * 0.9f).apply { circle.color = Color.BLACK }
-            .surroundWithCircle(size, false).apply { circle.color = Color.WHITE }
-    }
-
-    private fun nationIconExists(nation: String) = imageExists("NationIcons/$nation")
-    fun getNationIcon(nation: String) = getImage("NationIcons/$nation")
-
-    fun wonderImageExists(wonderName: String) = imageExists("WonderImages/$wonderName")
-    fun getWonderImage(wonderName: String) = getImage("WonderImages/$wonderName")
-
-    private fun getColorFromStats(stats: Stats): Color? {
-        if (stats.asSequence().none { it.value > 0 }) return Color.WHITE
-        val highestStat = stats.asSequence().maxByOrNull { it.value }!!
-        return highestStat.key.color
-    }
-
-
-    fun getImprovementIcon(improvementName: String, size: Float = 20f, withCircle: Boolean = true): Group {
-        if (improvementName == Constants.cancelImprovementOrder)
-            return getImage("OtherIcons/Stop").surroundWithCircle(size)
-
-        val icon = getImage("ImprovementIcons/$improvementName")
-
-        if (!withCircle) return icon.toGroup(size)
-
-        val group = icon.surroundWithCircle(size)
-        val improvement = ruleset.tileImprovements[improvementName]
-        if (improvement != null)
-            group.circle.color = getColorFromStats(improvement)
-        return group.surroundWithThinCircle()
-    }
-
-    fun getPortraitImage(construction: String, size: Float): Group {
+    fun getConstructionPortrait(construction: String, size: Float): Group {
         if (ruleset.buildings.containsKey(construction)) {
-            val buildingPortraitLocation = "BuildingPortraits/$construction"
-            return if (imageExists(buildingPortraitLocation)) {
-                getImage(buildingPortraitLocation).toGroup(size)
-            } else {
-                val image = if (imageExists("BuildingIcons/$construction")) getImage("BuildingIcons/$construction")
-                    else getImage("BuildingIcons/Fallback")
-                image.surroundWithCircle(size).surroundWithThinCircle()
-            }
+            return PortraitBuilding(construction, size)
         }
         if (ruleset.units.containsKey(construction)) {
-            val unitPortraitLocation = "UnitPortraits/$construction"
-            return if (imageExists(unitPortraitLocation)) {
-                getImage(unitPortraitLocation).toGroup(size)
-            } else
-                getUnitIcon(construction).surroundWithCircle(size).surroundWithThinCircle()
+            return PortraitUnit(construction, size)
         }
         if (PerpetualConstruction.perpetualConstructionsMap.containsKey(construction))
             return getImage("OtherIcons/Convert$construction").toGroup(size)
         return getStatIcon(construction).surroundWithCircle(size).surroundWithThinCircle()
     }
 
-    fun getPromotionIcon(promotionName: String, size: Float = 30f): Actor {
-        val nameWithoutBrackets = promotionName.replace("[", "").replace("]", "")
+    fun getUniquePortrait(uniqueName: String, size: Float): Group {
+        return PortraitUnique(uniqueName, size)
+    }
 
-        var level = when {
-            nameWithoutBrackets.endsWith(" I") -> 1
-            nameWithoutBrackets.endsWith(" II") -> 2
-            nameWithoutBrackets.endsWith(" III") -> 3
-            else -> 0
+    fun getPromotionPortrait(promotionName: String, size: Float = 30f): Group {
+        return PortraitPromotion(promotionName, size)
+    }
+
+    fun getResourcePortrait(resourceName: String, size: Float, amount: Int = 0): Group {
+        return PortraitResource(resourceName, size, amount)
+    }
+
+    fun getTechIconPortrait(techName: String, circleSize: Float): Group {
+        return PortraitTech(techName, circleSize)
+    }
+
+    fun getImprovementPortrait(improvementName: String, size: Float = 20f, dim: Boolean = false): Portrait {
+        return PortraitImprovement(improvementName, size, dim)
+    }
+
+    fun getUnitActionPortrait(actionName: String, size: Float = 20f): Portrait {
+        return PortraitUnitAction(actionName, size)
+    }
+
+    fun getReligionIcon(iconName: String): Image { return getImage("ReligionIcons/$iconName") }
+    fun getReligionPortrait(iconName: String, size: Float): Portrait {
+        if (religionIconExists(iconName)) {
+            return PortraitReligion(iconName, size)
+        } else {
+            val typeName = ruleset.beliefs[iconName]?.type?.name
+            if (typeName != null && religionIconExists(typeName))
+                return PortraitReligion(typeName, size)
         }
-
-        val basePromotionName = nameWithoutBrackets.dropLast(if (level == 0) 0 else level + 1)
-
-        val imageAttempter = ImageAttempter(Unit)
-            .tryImage { "UnitPromotionIcons/$nameWithoutBrackets" }
-            .tryImage { "UnitPromotionIcons/$basePromotionName" }
-            .tryImage { "UnitIcons/${basePromotionName.removeSuffix(" ability")}" }
-
-        if (imageAttempter.getPathOrNull() != null && imageAttempter.getPath()!!.endsWith(nameWithoutBrackets))
-            level = 0
-
-        val promotionColor = colorFromRGB(255, 226, 0)
-        val circle = imageAttempter.getImage()
-            .apply { color = promotionColor }
-            .surroundWithCircle(size)
-            .apply { circle.color = colorFromRGB(0, 12, 49) }
-
-        if (level != 0) {
-            val padding = if (level == 3) 0.5f else 2f
-            val starTable = Table().apply { defaults().pad(padding) }
-            for (i in 1..level) starTable.add(getImage("OtherIcons/Star")).size(size / 4f)
-            starTable.centerX(circle)
-            starTable.y = size / 6f
-            circle.addActor(starTable)
-        }
-        return circle.surroundWithThinCircle(promotionColor)
+        return PortraitReligion(iconName, size)
     }
 
     fun religionIconExists(iconName: String) = imageExists("ReligionIcons/$iconName")
-    fun getReligionImage(iconName: String): Image {
-        return getImage("ReligionIcons/$iconName")
-    }
-    fun getCircledReligionIcon(iconName: String, size: Float): IconCircleGroup {
-        return getReligionImage(iconName).surroundWithCircle(size, color = Color.BLACK )
-    }
 
     @Deprecated("Use skin defined base color instead", ReplaceWith("BaseScreen.skinStrings.skinConfig.baseColor", "com.unciv.ui.utils.BaseScreen"))
     fun getBlue() = Color(0x004085bf)
@@ -352,84 +297,6 @@ object ImageGetter {
         if (align == Align.bottom) image.rotation = -90f
         if (align == Align.top) image.rotation = 90f
         return image
-    }
-
-    fun getResourceImage(resourceName: String, size: Float, amount: Int = 0): IconCircleGroup {
-        val iconGroup = getImage("ResourceIcons/$resourceName").surroundWithCircle(size)
-        val resource = ruleset.tileResources[resourceName]
-                ?: return iconGroup // This is the result of a bad modding setup, just give em an empty circle. Their problem.
-
-        val color = resource.resourceType.getColor()
-        iconGroup.circle.color = color
-
-        // Show amount indicator for strategic resources (bottom-right)
-        if (amount > 0) {
-            val label = amount.toString().toLabel(
-                fontSize = 8,
-                fontColor = Color.WHITE,
-                alignment = Align.center)
-            val group = label.surroundWithCircle(size/2, true, Color.BLACK)
-
-            label.y -= 0.5f
-            group.x = iconGroup.width - group.width * 2 / 3
-            group.y = -group.height / 3
-
-            iconGroup.addActor(group)
-        }
-
-        return iconGroup.surroundWithThinCircle()
-    }
-
-    fun getTechIconGroup(techName: String, circleSize: Float, isResearched: Boolean = false): Group {
-
-        val portrait: Image
-        val eraColor = ruleset.eras[ruleset.technologies[techName]?.era()]?.getColor()?.darken(0.6f) ?: Color.BLACK
-
-        // Inner part
-        if (imageExists("TechPortraits/$techName"))
-            portrait = getImage("TechPortraits/$techName")
-        else {
-            portrait = if (imageExists("TechIcons/$techName"))
-                getImage("TechIcons/$techName")
-            else
-                getImage("TechIcons/Fallback")
-            portrait.color = eraColor
-        }
-
-        // Border / background
-        if (imageExists("TechPortraits/Background")) {
-            val background = getImage("TechPortraits/Background")
-            val ratioW = portrait.width / background.width
-            val ratioH = portrait.height / background.height
-
-            if (isResearched)
-                background.color = Color.GOLD.cpy().brighten(0.5f)
-
-            background.setSize(circleSize, circleSize)
-            portrait.setSize(circleSize*ratioW, circleSize*ratioH)
-
-            val group = Group()
-            group.setSize(circleSize, circleSize)
-            group.addActor(background)
-            group.addActor(portrait)
-
-            background.center(group)
-            portrait.center(group)
-
-            return group
-        } else {
-            return portrait.surroundWithCircle(circleSize).surroundWithThinCircle(eraColor)
-        }
-    }
-
-    fun getProgressBarHorizontal(
-        width: Float, height: Float,
-        percentComplete: Float,
-        progressColor: Color,
-        backgroundColor: Color): Group {
-        return ProgressBar(width, height, false)
-            .setBackground(backgroundColor)
-            .setProgress(progressColor, percentComplete)
     }
 
     fun getProgressBarVertical(

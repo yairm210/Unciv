@@ -101,7 +101,7 @@ class PromotionButton(
 
         pad(5f)
         align(Align.left)
-        add(ImageGetter.getPromotionIcon(node.promotion.name)).padRight(10f)
+        add(ImageGetter.getPromotionPortrait(node.promotion.name)).padRight(10f)
         add(label).left().maxWidth(130f)
 
         updateColor()

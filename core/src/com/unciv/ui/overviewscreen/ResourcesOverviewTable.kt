@@ -77,7 +77,7 @@ class ResourcesOverviewTab(
     private fun ResourceSupplyList.getTotalLabel(resource: TileResource): Label =
         filter { it.resource == resource }.sumOf { it.amount }.toLabel()
     private fun getResourceImage(name: String) =
-        ImageGetter.getResourceImage(name, iconSize).apply {
+        ImageGetter.getResourcePortrait(name, iconSize).apply {
             onClick {
                 if (viewingPlayer.gameInfo.notifyExploredResources(viewingPlayer, name, 0, true))
                     overviewScreen.game.popScreen()

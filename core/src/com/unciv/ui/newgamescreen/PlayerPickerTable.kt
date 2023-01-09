@@ -219,8 +219,8 @@ class PlayerPickerTable(
         val nationTable = Table()
         val nationImage =
             if (player.chosenCiv == Constants.random)
-                ImageGetter.getRandomNationIndicator(40f)
-            else ImageGetter.getNationIndicator(previousScreen.ruleset.nations[player.chosenCiv]!!, 40f)
+                ImageGetter.getRandomNationPortrait(40f)
+            else ImageGetter.getNationPortrait(previousScreen.ruleset.nations[player.chosenCiv]!!, 40f)
         nationTable.add(nationImage).pad(5f)
         nationTable.add(player.chosenCiv.toLabel()).pad(5f)
         nationTable.touchable = Touchable.enabled

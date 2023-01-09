@@ -90,11 +90,11 @@ class ReligionOverviewTab(
         for (religion in existingReligions) {
             val image = if (religion.isPantheon()) {
                 if (viewingPlayer.knows(religion.foundingCivName) || viewingPlayer.civName == religion.foundingCivName)
-                    ImageGetter.getNationIndicator(religion.getFounder().nation, 60f)
+                    ImageGetter.getNationPortrait(religion.getFounder().nation, 60f)
                 else
-                    ImageGetter.getRandomNationIndicator(60f)
+                    ImageGetter.getRandomNationPortrait(60f)
             } else {
-                    ImageGetter.getCircledReligionIcon(religion.getIconName(), 60f)
+                    ImageGetter.getReligionPortrait(religion.getIconName(), 60f)
             }
             val button = Button(image, BaseScreen.skin)
 

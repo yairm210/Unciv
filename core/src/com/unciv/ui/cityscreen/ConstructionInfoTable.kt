@@ -61,7 +61,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen): Table() {
         selectedConstructionTable.run {
             pad(10f)
 
-            add(ImageGetter.getPortraitImage(construction.name, 50f).apply {
+            add(ImageGetter.getConstructionPortrait(construction.name, 50f).apply {
                 val link = (construction as? IRulesetObject)?.makeLink() ?: return@apply
                 if (link.isEmpty()) return@apply
                 touchable = Touchable.enabled

@@ -274,11 +274,11 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
             || currentPlayer.isDefeated()
             || currentPlayer.victoryManager.hasWon()
         ) {
-            civGroup.add(ImageGetter.getNationIndicator(civ.nation, 30f))
+            civGroup.add(ImageGetter.getNationPortrait(civ.nation, 30f))
             backgroundColor = civ.nation.getOuterColor()
             labelColor = civ.nation.getInnerColor()
         } else {
-            civGroup.add(ImageGetter.getRandomNationIndicator(30f))
+            civGroup.add(ImageGetter.getRandomNationPortrait(30f))
             backgroundColor = Color.DARK_GRAY
             labelText = Constants.unknownNationName
         }
