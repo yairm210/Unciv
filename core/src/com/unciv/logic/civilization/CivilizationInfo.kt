@@ -968,6 +968,22 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
                 offeringCiv.addNotification("Our proposed trade is no longer relevant!", NotificationIcon.Trade)
             }
         }
+
+        updateWinningCiv()
+    }
+
+    fun updateWinningCiv(){
+        if (gameInfo.winningCiv == null) {
+            val victoryType = victoryManager.getVictoryTypeAchieved()
+            if (victoryType != null) {
+                gameInfo.winningCiv = civName
+                gameInfo.victoryType = victoryType
+                gameInfo.victoryTurn = gameInfo.turns
+
+                for (civInfo in gameInfo.civilizations)
+                    civInfo.popupAlerts.add(PopupAlert(AlertType.GameHasBeenWon, civName))
+            }
+        }
     }
 
     fun endTurn() {
@@ -1033,6 +1049,8 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         updateHasActiveEnemyMovementPenalty()
 
         cachedMilitaryMight = -1    // Reset so we don't use a value from a previous turn
+
+        updateWinningCiv() // Maybe we did something this turn to win
     }
 
     private fun startTurnFlags() {

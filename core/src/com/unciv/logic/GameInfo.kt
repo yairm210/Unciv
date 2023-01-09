@@ -88,6 +88,10 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     var currentTurnStartTime = 0L
     var gameId = UUID.randomUUID().toString() // random string
 
+    var winningCiv:String? = null
+    var victoryTurn = 0
+    var victoryType:String? = null
+
     // Maps a civ to the civ they voted for
     var diplomaticVictoryVotesCast = HashMap<String, String>()
     // Set to false whenever the results still need te be processed

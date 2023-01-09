@@ -25,9 +25,9 @@ import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.keyShortcuts
 import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.pad
-import com.unciv.ui.utils.extensions.surroundWithCircle
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
+import com.unciv.ui.victoryscreen.VictoryScreen
 import java.util.*
 
 /**
@@ -313,6 +313,13 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 }).row()
             }
             AlertType.RecapturedCivilian -> addRecapturedCivilianTable()
+            AlertType.GameHasBeenWon -> {
+                val civInfo = worldScreen.viewingCiv
+                val winningCiv = civInfo.gameInfo.winningCiv!!
+                addGoodSizedLabel("[$winningCiv] has won a [${civInfo.gameInfo.victoryType}] Victory!").row()
+                addButton("Victory status"){ close(); worldScreen.game.pushScreen(VictoryScreen(worldScreen)) }
+                add(getCloseButton(Constants.close))
+            }
         }
     }
 
