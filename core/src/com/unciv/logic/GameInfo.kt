@@ -61,6 +61,10 @@ data class CompatibilityVersion(
 
 }
 
+data class VictoryData(val winningCiv:String, val victoryType:String, val victoryTurn:Int){
+    constructor(): this("","",0) // for serializer
+}
+
 class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion {
     companion object {
         /** The current compatibility version of [GameInfo]. This number is incremented whenever changes are made to the save file structure that guarantee that
@@ -88,9 +92,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     var currentTurnStartTime = 0L
     var gameId = UUID.randomUUID().toString() // random string
 
-    var winningCiv:String? = null
-    var victoryTurn = 0
-    var victoryType:String? = null
+    var victoryData:VictoryData? = null
 
     // Maps a civ to the civ they voted for
     var diplomaticVictoryVotesCast = HashMap<String, String>()
@@ -154,6 +156,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         toReturn.diplomaticVictoryVotesCast.putAll(diplomaticVictoryVotesCast)
         toReturn.oneMoreTurnMode = oneMoreTurnMode
         toReturn.customSaveLocation = customSaveLocation
+        toReturn.victoryData = victoryData
+
         return toReturn
     }
 

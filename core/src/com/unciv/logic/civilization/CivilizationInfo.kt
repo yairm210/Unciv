@@ -7,6 +7,7 @@ import com.unciv.json.HashMapVector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.UncivShowableException
+import com.unciv.logic.VictoryData
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.city.CityInfo
@@ -973,12 +974,10 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     }
 
     fun updateWinningCiv(){
-        if (gameInfo.winningCiv == null) {
+        if (gameInfo.victoryData == null) {
             val victoryType = victoryManager.getVictoryTypeAchieved()
             if (victoryType != null) {
-                gameInfo.winningCiv = civName
-                gameInfo.victoryType = victoryType
-                gameInfo.victoryTurn = gameInfo.turns
+                gameInfo.victoryData = VictoryData(civName, victoryType, gameInfo.turns)
 
                 for (civInfo in gameInfo.civilizations)
                     civInfo.popupAlerts.add(PopupAlert(AlertType.GameHasBeenWon, civName))

@@ -314,9 +314,8 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
             }
             AlertType.RecapturedCivilian -> addRecapturedCivilianTable()
             AlertType.GameHasBeenWon -> {
-                val civInfo = worldScreen.viewingCiv
-                val winningCiv = civInfo.gameInfo.winningCiv!!
-                addGoodSizedLabel("[$winningCiv] has won a [${civInfo.gameInfo.victoryType}] Victory!").row()
+                val victoryData = worldScreen.viewingCiv.gameInfo.victoryData!!
+                addGoodSizedLabel("[${victoryData.winningCiv}] has won a [${victoryData.victoryType}] Victory!").row()
                 addButton("Victory status"){ close(); worldScreen.game.pushScreen(VictoryScreen(worldScreen)) }.row()
                 add(getCloseButton(Constants.close))
             }
