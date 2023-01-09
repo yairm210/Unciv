@@ -13,12 +13,12 @@ open class BorderedTable(
     val defaultBorder: String = BaseScreen.skinStrings.rectangleWithOutlineShape,
     val borderColor: Color = Color.WHITE,
     val innerColor: Color = Color.BLACK,
-    val borderSize: Float = 5f,
+    var borderSize: Float = 5f,
     val borderOnTop: Boolean = false
 ) : Table() {
 
-    var bgBorder: Image = Image(BaseScreen.skinStrings.getUiBackground(path, defaultBorder,  borderColor))
-    var bgInner: Image = Image(BaseScreen.skinStrings.getUiBackground(path, defaultInner,  innerColor))
+    var bgInner: Image = Image(BaseScreen.skinStrings.getUiBackground(path, defaultInner,  innerColor.cpy()))
+    var bgBorder: Image = Image(BaseScreen.skinStrings.getUiBackground(path + "Border", defaultBorder,  borderColor.cpy()))
 
     init {
         if (borderSize != 0f)
@@ -40,7 +40,7 @@ open class BorderedTable(
 
     fun setBackgroundColor(color: Color) {
         bgInner.remove()
-        bgInner = Image(BaseScreen.skinStrings.getUiBackground(path, defaultInner, color))
+        bgInner = Image(BaseScreen.skinStrings.getUiBackground(path, defaultInner, color.cpy()))
         addActor(bgInner)
         if (borderSize != 0f) {
             if (borderOnTop)

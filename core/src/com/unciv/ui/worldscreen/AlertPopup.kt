@@ -27,6 +27,7 @@ import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.pad
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
+import com.unciv.ui.victoryscreen.VictoryScreen
 import java.util.*
 
 /**
@@ -152,12 +153,14 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 addQuestionAboutTheCity(city.name)
                 val conqueringCiv = worldScreen.gameInfo.getCurrentPlayerCivilization()
 
-                addLiberateOption(city.foundingCiv) {
-                    city.liberateCity(conqueringCiv)
-                    worldScreen.shouldUpdate = true
-                    close()
+                if (!conqueringCiv.isAtWarWith(worldScreen.gameInfo.getCivilization(city.foundingCiv))) {
+                        addLiberateOption(city.foundingCiv) {
+                            city.liberateCity(conqueringCiv)
+                            worldScreen.shouldUpdate = true
+                            close()
+                        }
+                    addSeparator()
                 }
-                addSeparator()
                 add(getCloseButton("Keep it")).row()
             }
             AlertType.BorderConflict -> {
@@ -312,6 +315,12 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 }).row()
             }
             AlertType.RecapturedCivilian -> addRecapturedCivilianTable()
+            AlertType.GameHasBeenWon -> {
+                val victoryData = worldScreen.viewingCiv.gameInfo.victoryData!!
+                addGoodSizedLabel("[${victoryData.winningCiv}] has won a [${victoryData.victoryType}] Victory!").row()
+                addButton("Victory status"){ close(); worldScreen.game.pushScreen(VictoryScreen(worldScreen)) }.row()
+                add(getCloseButton(Constants.close))
+            }
         }
     }
 

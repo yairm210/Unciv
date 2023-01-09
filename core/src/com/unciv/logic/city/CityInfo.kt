@@ -779,6 +779,13 @@ class CityInfo : IsPartOfGameInfoSerialization {
         for (tile in getTiles()) {
             expansion.relinquishOwnership(tile)
         }
+
+        // Move the capital if destroyed (by a nuke or by razing)
+        // Must be before removing existing capital because we may be annexing a puppet which means city stats update - see #8337
+        if (isCapital() && civInfo.cities.size > 1) {
+            civInfo.moveCapitalToNextLargest()
+        }
+
         civInfo.cities = civInfo.cities.toMutableList().apply { remove(this@CityInfo) }
         getCenterTile().changeImprovement("City ruins")
 
@@ -789,9 +796,6 @@ class CityInfo : IsPartOfGameInfoSerialization {
                 unit.movement.teleportToClosestMoveableTile()
         }
 
-        if (isCapital() && civInfo.cities.isNotEmpty()) { // Move the capital if destroyed (by a nuke or by razing)
-            civInfo.moveCapitalToNextLargest()
-        }
 
         // Update proximity rankings for all civs
         for (otherCiv in civInfo.gameInfo.getAliveMajorCivs()) {

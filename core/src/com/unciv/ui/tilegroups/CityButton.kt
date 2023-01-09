@@ -166,13 +166,18 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
     private fun addAirUnitTable() {
         if (!showAdditionalInfoTags || tileGroup.tileInfo.airUnits.isEmpty()) return
         val secondaryColor = city.civInfo.nation.getInnerColor()
-        val airUnitTable = Table()
-        airUnitTable.background = BaseScreen.skinStrings.getUiBackground("WorldScreen/CityButton/AirUnitTable", BaseScreen.skinStrings.roundedEdgeRectangleShape, city.civInfo.nation.getOuterColor()).apply { setMinSize(0f,0f) }
+        val airUnitTable = BorderedTable(
+            path="WorldScreen/CityButton/AirUnitTable",
+            defaultInner = BaseScreen.skinStrings.roundedEdgeRectangleSmallShape,
+            defaultBorder = BaseScreen.skinStrings.roundedEdgeRectangleSmallShape,
+            innerColor = city.civInfo.nation.getOuterColor(),
+            borderColor = city.civInfo.nation.getOuterColor()
+        )
         val aircraftImage = ImageGetter.getImage("OtherIcons/Aircraft")
         aircraftImage.color = secondaryColor
         airUnitTable.add(aircraftImage).size(15f)
         airUnitTable.add(tileGroup.tileInfo.airUnits.size.toString().toLabel(secondaryColor,14))
-        add(airUnitTable).row()
+        add(airUnitTable).padBottom(5f).minWidth(50f).row()
     }
 
     private fun belongsToViewingCiv() = city.civInfo == worldScreen.viewingCiv
@@ -242,27 +247,27 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
 
         if (belongsToViewingCiv() && city.isConnectedToCapital() && !city.isCapital()) {
             val connectionImage = ImageGetter.getStatIcon("CityConnection")
-            table.add(connectionImage).size(16f)
+            table.add(connectionImage).size(18f)
         }
 
         if (city.isInResistance()) {
             val resistanceImage = ImageGetter.getImage("StatIcons/Resistance")
-            table.add(resistanceImage).size(16f).padLeft(2f)
+            table.add(resistanceImage).size(18f).padLeft(2f)
         }
 
         if (city.isPuppet) {
             val puppetImage = ImageGetter.getImage("OtherIcons/Puppet")
-            table.add(puppetImage).size(16f).padLeft(2f)
+            table.add(puppetImage).size(18f).padLeft(2f)
         }
 
         if (city.isBeingRazed) {
             val fireImage = ImageGetter.getImage("OtherIcons/Fire")
-            table.add(fireImage).size(16f).padLeft(2f)
+            table.add(fireImage).size(18f).padLeft(2f)
         }
 
         if (belongsToViewingCiv() && city.isWeLoveTheKingDayActive()) {
             val wtlkdImage = ImageGetter.getImage("OtherIcons/WLTKD")
-            table.add(wtlkdImage).size(16f).padLeft(2f)
+            table.add(wtlkdImage).size(18f).padLeft(2f)
         }
 
         return table

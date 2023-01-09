@@ -3,9 +3,7 @@ package com.unciv.ui.mapeditor
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.unciv.UncivGame
-import com.unciv.logic.HexMath
 import com.unciv.logic.map.MapParameters
-import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.TileInfo
@@ -14,10 +12,8 @@ import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.ConfirmPopup
-import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyCharAndCode
@@ -159,7 +155,6 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen(), RecreateOnResize {
     fun loadMap(map: TileMap, newRuleset: Ruleset? = null, selectPage: Int = 0) {
         mapHolder.remove()
         tileMap = map
-        checkAndFixMapSize()
         ruleset = newRuleset ?: RulesetCache.getComplexRuleset(map.mapParameters)
         mapHolder = newMapHolder()
         isDirty = false
@@ -215,32 +210,6 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen(), RecreateOnResize {
     fun updateAndHighlight(tile: TileInfo, color: Color = Color.WHITE) {
         updateTile(tile)
         highlightTile(tile, color)
-    }
-
-    private fun checkAndFixMapSize() {
-        val areaFromTiles = tileMap.values.size
-        val params = tileMap.mapParameters
-        val areaFromSize = params.getArea()
-        if (areaFromSize == areaFromTiles) return
-
-        Gdx.app.postRunnable {
-            val message = ("Invalid map: Area ([$areaFromTiles]) does not match saved dimensions ([" +
-                    params.displayMapDimensions() + "]).").tr() +
-                    "\n" + "The dimensions have now been fixed for you.".tr()
-            ToastPopup(message, this@MapEditorScreen, 4000L )
-        }
-
-        if (params.shape == MapShape.hexagonal || params.shape == MapShape.flatEarth) {
-            params.mapSize = MapSizeNew(HexMath.getHexagonalRadiusForArea(areaFromTiles).toInt())
-            return
-        }
-
-        // These mimic tileMap.max* without the abs()
-        val minLatitude = (tileMap.values.map { it.latitude }.minOrNull() ?: 0f).toInt()
-        val minLongitude = (tileMap.values.map { it.longitude }.minOrNull() ?: 0f).toInt()
-        val maxLatitude = (tileMap.values.map { it.latitude }.maxOrNull() ?: 0f).toInt()
-        val maxLongitude = (tileMap.values.map { it.longitude }.maxOrNull() ?: 0f).toInt()
-        params.mapSize = MapSizeNew((maxLongitude - minLongitude + 1), (maxLatitude - minLatitude + 1) / 2)
     }
 
     override fun recreate(): BaseScreen = MapEditorScreen(tileMap)

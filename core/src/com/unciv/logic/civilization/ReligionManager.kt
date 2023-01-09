@@ -392,10 +392,8 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     }
 
     fun maySpreadReligionAtAll(missionary: MapUnit): Boolean {
-        if (!civInfo.gameInfo.isReligionEnabled()) return false // No religion, no spreading
-        if (religion == null) return false // Need a religion
-        if (religionState < ReligionState.Religion) return false // First found an actual religion
         if (!civInfo.isMajorCiv()) return false // Only major civs
+        if (!civInfo.gameInfo.isReligionEnabled()) return false // No religion, no spreading
         if (!missionary.canDoReligiousAction(Constants.spreadReligion)) return false
         return true
     }

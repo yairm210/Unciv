@@ -129,6 +129,7 @@ object UnitActions {
                 else "Do you really want to disband this unit?".tr()
                 ConfirmPopup(UncivGame.Current.worldScreen!!, disbandText, "Disband unit") {
                     unit.disband()
+                    worldScreen.shouldUpdate = true
                     if (UncivGame.Current.settings.autoUnitCycle) worldScreen.switchToNextUnit()
                 }.open()
             }

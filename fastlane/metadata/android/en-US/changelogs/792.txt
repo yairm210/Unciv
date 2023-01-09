@@ -1,0 +1,16 @@
+Units are not displaced to enemy land when kicked out of borders
+
+Fixed edge-case crash - one city challenge when conquering capital and enemy has only puppeted cities left
+
+UI: Better unit table
+
+Fix Faith tutorial text
+
+By vegeta1k95:
+- Rework of PromotionPicker UI
+- Fix City plates aircraft table shape
+- Better visibility for city status icons
+
+By nacro711072:
+- Refactor maptype & resolve map setting issue
+- update screen after disband unit

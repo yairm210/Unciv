@@ -857,14 +857,15 @@ object NextTurnAutomation {
             tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
             tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
 
-            if (civInfo.gold > 0) {
-                var moneyWeNeedToPay = -TradeEvaluation().evaluatePeaceCostForThem(civInfo, enemy)
-                if (moneyWeNeedToPay > civInfo.gold) { // we need to make up for this somehow...
-                    moneyWeNeedToPay = civInfo.gold
+            var moneyWeNeedToPay = -TradeEvaluation().evaluatePeaceCostForThem(civInfo, enemy)
+
+            if (civInfo.gold > 0 && moneyWeNeedToPay > 0) {
+                if (moneyWeNeedToPay > civInfo.gold) {
+                    moneyWeNeedToPay = civInfo.gold  // As much as possible
                 }
-                if (moneyWeNeedToPay > 0) {
-                    tradeLogic.currentTrade.ourOffers.add(TradeOffer("Gold".tr(), TradeType.Gold, moneyWeNeedToPay))
-                }
+                tradeLogic.currentTrade.ourOffers.add(
+                    TradeOffer("Gold".tr(), TradeType.Gold, moneyWeNeedToPay)
+                )
             }
 
             enemy.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))

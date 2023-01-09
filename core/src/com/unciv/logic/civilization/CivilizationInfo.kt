@@ -7,6 +7,7 @@ import com.unciv.json.HashMapVector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.UncivShowableException
+import com.unciv.logic.VictoryData
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.city.CityInfo
@@ -348,6 +349,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         )
     fun getCapital() = cities.firstOrNull { it.isCapital() }
     fun isHuman() = playerType == PlayerType.Human
+    fun isAI() = playerType == PlayerType.AI
     fun isOneCityChallenger() = (
             playerType == PlayerType.Human &&
                     gameInfo.gameParameters.oneCityChallenge)
@@ -910,6 +912,20 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     fun updateViewableTiles() = transients().updateViewableTiles()
     fun updateDetailedCivResources() = transients().updateCivResources()
 
+    fun doTurn() {
+
+        // Defeated civs do nothing
+        if (isDefeated())
+            return
+
+        // Do stuff
+        NextTurnAutomation.automateCivMoves(this)
+
+        // Update barbarian camps
+        if (isBarbarian() && !gameInfo.gameParameters.noBarbarians)
+            gameInfo.barbarians.updateEncampments()
+    }
+
     fun startTurn() {
         civConstructions.startTurn()
         attacksSinceTurnStart.clear()
@@ -951,6 +967,20 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
                 tradeRequests.remove(tradeRequest)
                 // Yes, this is the right direction. I checked.
                 offeringCiv.addNotification("Our proposed trade is no longer relevant!", NotificationIcon.Trade)
+            }
+        }
+
+        updateWinningCiv()
+    }
+
+    fun updateWinningCiv(){
+        if (gameInfo.victoryData == null) {
+            val victoryType = victoryManager.getVictoryTypeAchieved()
+            if (victoryType != null) {
+                gameInfo.victoryData = VictoryData(civName, victoryType, gameInfo.turns)
+
+                for (civInfo in gameInfo.civilizations)
+                    civInfo.popupAlerts.add(PopupAlert(AlertType.GameHasBeenWon, civName))
             }
         }
     }
@@ -1018,6 +1048,8 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         updateHasActiveEnemyMovementPenalty()
 
         cachedMilitaryMight = -1    // Reset so we don't use a value from a previous turn
+
+        updateWinningCiv() // Maybe we did something this turn to win
     }
 
     private fun startTurnFlags() {

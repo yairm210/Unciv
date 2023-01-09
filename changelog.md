@@ -1,3 +1,44 @@
+## 4.3.19
+
+Updated Unciv Android icons
+
+Performance improvement for automated units looking for cities to connect
+
+Popup for multiplayer when someone else has won
+
+Politics shortcut fix
+
+Limit the number of workers an AI creates
+
+Sleeping units wake if there's an enemy in 3-tile radius
+
+Do not allow liberating city-states you were at war with
+
+AI peace deals don't pay more gold than they have
+
+Higher chance of starting bias for human players
+
+You can use missionaries of foreign religions
+
+## 4.3.18
+
+Units are not displaced to enemy land when kicked out of borders
+
+Fixed edge-case crash - one city challenge when conquering capital and enemy has only puppeted cities left
+
+UI: Better unit table
+
+Fix Faith tutorial text
+
+By vegeta1k95:
+- Rework of PromotionPicker UI
+- Fix City plates aircraft table shape
+- Better visibility for city status icons
+
+By nacro711072:
+- Refactor maptype & resolve map setting issue
+- update screen after disband unit
+
 ## 4.3.17
 
 Fixed Air Sweep mechanic

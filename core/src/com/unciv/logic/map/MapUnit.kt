@@ -878,8 +878,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             // For every double-stacked tile, check if our cohabitant can boost our speed
             for (unit in getTile().getUnits())
             {
-                if (unit == this)
-                    continue
+                if (unit == this) continue
 
                 if (unit.getMatchingUniques(UniqueType.TransferMovement)
                         .any { matchesFilter(it.params[0]) } )
@@ -890,8 +889,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
         // Wake sleeping units if there's an enemy in vision range:
         // Military units always but civilians only if not protected.
         if (isSleeping() && (isMilitary() || (currentTile.militaryUnit == null && !currentTile.isCityCenter())) &&
-            this.viewableTiles.any {
-                it.militaryUnit != null && it.militaryUnit!!.civInfo.isAtWarWith(civInfo)
+            this.currentTile.getTilesInDistance(3).any {
+                it.militaryUnit != null && it in civInfo.viewableTiles && it.militaryUnit!!.civInfo.isAtWarWith(civInfo)
             }
         )
             action = null
