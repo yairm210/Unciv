@@ -100,11 +100,11 @@ class TileGroupIcons(val tileGroup: TileGroup) {
 
             // Instead of fading out the entire unit with its background, we just fade out its central icon,
             // that way it remains much more visible on the map
-            if (!unit.isIdle() && unit.civInfo == viewingCiv) {
+            if (unit.civInfo == viewingCiv && !unit.isIdle()) {
                 newImage.actionGroup?.color?.a = 0.5f * UncivGame.Current.settings.unitIconOpacity
             }
 
-            if (unit.currentMovement == 0f) {
+            if (unit.civInfo == viewingCiv && unit.currentMovement == 0f) {
                 newImage.flagSelection.color?.apply { a *= 0.5f }
                 newImage.flagBg.children?.forEach { it.color.apply { a *= 0.5f } }
                 newImage.unitBaseImage.color.a *= 0.5f
