@@ -1,6 +1,5 @@
 package com.unciv.ui.utils
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
@@ -12,7 +11,6 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.surroundWithCircle
-import com.unciv.utils.Log
 
 class UnitGroup(val unit: MapUnit, val size: Float): Group() {
     var actionGroup :Group? = null
@@ -77,6 +75,7 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
             actionCircle.setPosition(size / 2, 0f)
             addActor(actionCircle)
             actionGroup = actionCircle
+            actionCircle.toFront()
         }
 
         if (unit.health < 100) { // add health bar
@@ -122,7 +121,7 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
         return when {
             unit.isFortified() -> ImageGetter.getImage("UnitActionIcons/Fortify")
             unit.isSleeping() -> ImageGetter.getImage("UnitActionIcons/Sleep")
-            unit.isMoving() -> ImageGetter.getStatIcon("Movement")
+            unit.isMoving() -> ImageGetter.getImage("UnitActionIcons/MoveTo")
             unit.isExploring() -> ImageGetter.getImage("UnitActionIcons/Explore")
             unit.isAutomated() -> ImageGetter.getImage("UnitActionIcons/Automate")
             unit.isSetUpForSiege() -> ImageGetter.getImage("UnitActionIcons/SetUp")
