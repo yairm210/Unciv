@@ -309,7 +309,8 @@ fun Actor.onChange(function: (event: ChangeListener.ChangeEvent?) -> Unit): Acto
     return this
 }
 
-fun Actor.surroundWithCircle(size: Float, resizeActor: Boolean = true, color: Color = Color.WHITE): IconCircleGroup {
+fun Actor.surroundWithCircle(size: Float, resizeActor: Boolean = true,
+                             color: Color = Color.WHITE, circleImageLocation:String = "OtherIcons/Circle"): IconCircleGroup {
     return IconCircleGroup(size, this, resizeActor, color)
 }
 

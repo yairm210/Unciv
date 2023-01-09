@@ -1,6 +1,5 @@
 package com.unciv.ui.cityscreen
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
@@ -24,7 +23,6 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
             icons.addPopulationIcon(ImageGetter.getImage("OtherIcons/Star"))
         }
         unitLayerGroup.isVisible = false
-        unitImageLayerGroup.isVisible = false
     }
 
     fun update() {

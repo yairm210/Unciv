@@ -113,15 +113,8 @@ open class TileGroup(
         }
     }
 
-    class UnitImageLayerGroupClass(groupSize: Float) : ActionlessGroup(groupSize) {
-        override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
-        init {
-            touchable = Touchable.disabled
-        }
-    }
     // We separate the units from the units' backgrounds, because all the background elements are in the same texture, and the units' aren't
     val unitLayerGroup = UnitLayerGroupClass(groupSize)
-    val unitImageLayerGroup = UnitImageLayerGroupClass(groupSize)
 
     class CityButtonLayerGroupClass(val tileInfo: TileInfo, groupSize: Float) : Group() {
         override fun draw(batch: Batch?, parentAlpha: Float) {

@@ -113,7 +113,6 @@ class TileGroupMap<T: TileGroup>(
         val pixelUnitLayers = ArrayList<ActionlessGroup>()
         val circleFogCrosshairLayers = ArrayList<ActionlessGroup>()
         val unitLayers = ArrayList<Group>()
-        val unitImageLayers = ArrayList<ActionlessGroup>()
         val cityButtonLayers = ArrayList<Group>()
 
         // Apparently the sortedByDescending is kinda memory-intensive because it needs to sort ALL the tiles
@@ -127,7 +126,6 @@ class TileGroupMap<T: TileGroup>(
             pixelUnitLayers.add(group.pixelCivilianUnitGroup.apply { setPosition(group.x,group.y) })
             circleFogCrosshairLayers.add(group.highlightFogCrosshairLayerGroup.apply { setPosition(group.x,group.y) })
             unitLayers.add(group.unitLayerGroup.apply { setPosition(group.x,group.y) })
-            unitImageLayers.add(group.unitImageLayerGroup.apply { setPosition(group.x,group.y) })
             cityButtonLayers.add(group.cityButtonLayerGroup.apply { setPosition(group.x,group.y) })
 
             if (worldWrap) {
@@ -140,7 +138,6 @@ class TileGroupMap<T: TileGroup>(
                     pixelUnitLayers.add(mirrorTile.pixelCivilianUnitGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
                     circleFogCrosshairLayers.add(mirrorTile.highlightFogCrosshairLayerGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
                     unitLayers.add(mirrorTile.unitLayerGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
-                    unitImageLayers.add(mirrorTile.unitImageLayerGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
                     cityButtonLayers.add(mirrorTile.cityButtonLayerGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
                 }
             }
@@ -159,7 +156,6 @@ class TileGroupMap<T: TileGroup>(
             }
         }
         for (group in unitLayers) addActor(group) // Aaand units above everything else.
-        for (group in unitImageLayers) addActor(group) // This is so the individual textures for the units are rendered together
         for (group in cityButtonLayers) addActor(group) // city buttons + clickability
 
         // there are tiles "below the zero",

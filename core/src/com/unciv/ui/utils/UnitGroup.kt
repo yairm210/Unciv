@@ -12,6 +12,8 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.surroundWithCircle
 
+val unitCircleLocation = "UnitIcons/Circle"
+
 class UnitGroup(val unit: MapUnit, val size: Float): Group() {
     var actionGroup :Group? = null
     val unitBaseImage = ImageGetter.getUnitIcon(unit.name, unit.civInfo.nation.getInnerColor())
@@ -70,8 +72,8 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
 
         val actionImage = getActionImage()
         if (actionImage != null) {
-            val actionCircle = actionImage.surroundWithCircle(size / 2 * 0.9f)
-                .surroundWithCircle(size / 2, false, Color.BLACK)
+            val actionCircle = actionImage.surroundWithCircle(size / 2 * 0.9f, circleImageLocation = unitCircleLocation)
+                .surroundWithCircle(size / 2, false, Color.BLACK, circleImageLocation = unitCircleLocation)
             actionCircle.setPosition(size / 2, 0f)
             addActor(actionCircle)
             actionGroup = actionCircle
