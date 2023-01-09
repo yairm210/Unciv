@@ -1,32 +1,24 @@
 ## 4.3.19
 
-Better victory data @touhidurrr
-
-Resolve  - Politics shortcut works
-
-Resolve  - limit the number of workers an AI creates
+Updated Unciv Android icons
 
 Performance improvement for automated units looking for cities to connect
 
-Resolve  - include win/lose info in games, popup for multiplayer when someone else has won
+Popup for multiplayer when someone else has won
 
-Fix "sell" containing square brackets
+Politics shortcut fix
+
+Limit the number of workers an AI creates
 
 Sleeping units wake if there's an enemy in 3-tile radius
 
-Fixed tests
+Do not allow liberating city-states you were at war with
 
-Updated Unciv Android icons
+AI peace deals don't pay more gold than they have
 
-Resolve  - AI peace deals don't pay more gold than they have
+Higher chance of starting bias for human players
 
-Resolve  - Higher chance of starting bias for human players
-
-Resolve  - You can use missionaries of foreign religions religions
-
-Resolve  - Remove 'incorrect area' code for super-old maps
-
-Platform Graphical Asset Update  - By letstalkaboutdune
+You can use missionaries of foreign religions
 
 ## 4.3.18
 
