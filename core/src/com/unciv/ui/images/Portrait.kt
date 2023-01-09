@@ -36,6 +36,8 @@ open class Portrait(val type: Type, val imageName: String, val size: Float, val 
     val background: Group
     val ruleset: Ruleset = ImageGetter.ruleset
 
+    var isPortrait = false
+
     val pathPortrait = "${type.directory}Portraits/$imageName"
     val pathPortraitFallback = "${type.directory}Portraits/Fallback"
     val pathIcon = "${type.directory}Icons/$imageName"
@@ -72,8 +74,14 @@ open class Portrait(val type: Type, val imageName: String, val size: Float, val 
     /** Inner image */
     private fun getMainImage() : Image {
         return when {
-            ImageGetter.imageExists(pathPortrait) -> ImageGetter.getImage(pathPortrait)
-            ImageGetter.imageExists(pathPortraitFallback) -> ImageGetter.getImage(pathPortraitFallback)
+            ImageGetter.imageExists(pathPortrait) -> {
+                isPortrait = true
+                ImageGetter.getImage(pathPortrait)
+            }
+            ImageGetter.imageExists(pathPortraitFallback) -> {
+                isPortrait = true
+                ImageGetter.getImage(pathPortraitFallback)
+            }
             else -> getDefaultImage().apply { color = getDefaultImageTint() }
         }
     }
@@ -81,7 +89,7 @@ open class Portrait(val type: Type, val imageName: String, val size: Float, val 
     /** Border / background */
     private fun getMainBackground() : Group {
 
-        if (ImageGetter.imageExists("${type.directory}Portraits/Background")) {
+        if (isPortrait && ImageGetter.imageExists("${type.directory}Portraits/Background")) {
             val backgroundImage = ImageGetter.getImage("${type.directory}Portraits/Background")
             val ratioW = image.width / backgroundImage.width
             val ratioH = image.height / backgroundImage.height
@@ -146,7 +154,7 @@ class PortraitResource(name: String, size: Float, amount: Int = 0) : Portrait(Ty
 
 class PortraitTech(name: String, size: Float) : Portrait(Type.Tech, name, size) {
     override fun getDefaultOuterBackgroundTint(): Color {
-        return ruleset.eras[ruleset.technologies[imageName]?.era()]?.getColor()?.darken(0.6f) ?: Color.BLACK
+        return getDefaultImageTint()
     }
     override fun getDefaultImageTint(): Color {
         return ruleset.eras[ruleset.technologies[imageName]?.era()]?.getColor()?.darken(0.6f) ?: Color.BLACK
@@ -227,7 +235,7 @@ class PortraitNation(name: String, size: Float) : Portrait(Type.Nation, name, si
     }
 
     override fun getDefaultOuterBackgroundTint(): Color {
-        return ruleset.nations[imageName]?.getInnerColor() ?: Color.WHITE
+        return getDefaultImageTint()
     }
 
     override fun getDefaultImageTint(): Color {
@@ -285,7 +293,7 @@ class PortraitPromotion(name: String, size: Float) : Portrait(Type.Promotion, na
     }
 
     override fun getDefaultOuterBackgroundTint(): Color {
-        return colorFromRGB(255, 226, 0)
+        return getDefaultImageTint()
     }
 
     override fun getDefaultInnerBackgroundTint(): Color {

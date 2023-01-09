@@ -127,7 +127,7 @@ class TileGroupIcons(val tileGroup: TileGroup) {
         val shownImprovement = tileGroup.tileInfo.getShownImprovement(viewingCiv)
         if (shownImprovement == null || !showResourcesAndImprovements) return
 
-        val newImprovementImage = ImageGetter.getImprovementPortrait(shownImprovement, dim = true)
+        val newImprovementImage = ImageGetter.getImprovementPortrait(shownImprovement, dim = false)
         tileGroup.miscLayerGroup.addActor(newImprovementImage)
         newImprovementImage.run {
             center(tileGroup)
