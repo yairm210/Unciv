@@ -153,12 +153,14 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 addQuestionAboutTheCity(city.name)
                 val conqueringCiv = worldScreen.gameInfo.getCurrentPlayerCivilization()
 
-                addLiberateOption(city.foundingCiv) {
-                    city.liberateCity(conqueringCiv)
-                    worldScreen.shouldUpdate = true
-                    close()
+                if (!conqueringCiv.isAtWarWith(worldScreen.gameInfo.getCivilization(city.foundingCiv))) {
+                        addLiberateOption(city.foundingCiv) {
+                            city.liberateCity(conqueringCiv)
+                            worldScreen.shouldUpdate = true
+                            close()
+                        }
+                    addSeparator()
                 }
-                addSeparator()
                 add(getCloseButton("Keep it")).row()
             }
             AlertType.BorderConflict -> {

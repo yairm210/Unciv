@@ -193,7 +193,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
                 return
             }
 
-            val foundingCiv = civInfo.gameInfo.civilizations.first { it.civName == foundingCiv }
+            val foundingCiv = civInfo.gameInfo.getCivilization(foundingCiv)
             if (foundingCiv.isDefeated()) // resurrected civ
                 for (diploManager in foundingCiv.diplomacy.values)
                     if (diploManager.diplomaticStatus == DiplomaticStatus.War)

@@ -343,7 +343,7 @@ class DiplomacyScreen(
             diplomacyTable.add(getQuestTable(assignedQuest)).row()
         }
 
-        for (target in otherCiv.getKnownCivs().filter { otherCiv.questManager.warWithMajorActive(it) }) {
+        for (target in otherCiv.getKnownCivs().filter { otherCiv.questManager.warWithMajorActive(it) && viewingCiv != it }) {
             diplomacyTable.addSeparator()
             diplomacyTable.add(getWarWithMajorTable(target, otherCiv)).row()
         }
