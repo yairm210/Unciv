@@ -317,7 +317,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 val civInfo = worldScreen.viewingCiv
                 val winningCiv = civInfo.gameInfo.winningCiv!!
                 addGoodSizedLabel("[$winningCiv] has won a [${civInfo.gameInfo.victoryType}] Victory!").row()
-                addButton("Victory status"){ close(); worldScreen.game.pushScreen(VictoryScreen(worldScreen)) }
+                addButton("Victory status"){ close(); worldScreen.game.pushScreen(VictoryScreen(worldScreen)) }.row()
                 add(getCloseButton(Constants.close))
             }
         }
