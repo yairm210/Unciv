@@ -228,6 +228,12 @@ open class TileInfo : IsPartOfGameInfoSerialization {
             if (naturalWonder == null) throw Exception("No natural wonder exists for this tile!")
             else ruleset.terrains[naturalWonder!!]!!
 
+    fun isVisible(player: CivilizationInfo): Boolean {
+        if (UncivGame.Current.viewEntireMapForDebug)
+            return true
+        return player.viewableTiles.contains(this)
+    }
+
     fun isCityCenter(): Boolean = isCityCenterInternal
     fun isNaturalWonder(): Boolean = naturalWonder != null
     fun isImpassible() = getLastTerrain().impassable

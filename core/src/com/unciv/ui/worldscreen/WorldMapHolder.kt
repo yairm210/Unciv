@@ -576,8 +576,6 @@ class WorldMapHolder(
             allWorldTileGroups.forEach { it.showEntireMap = true } // So we can see all resources, regardless of tech
         }
 
-        val playerViewableTilePositions = viewingCiv.viewableTiles.map { it.position }.toHashSet()
-
         for (tileGroup in allWorldTileGroups) {
             tileGroup.update(viewingCiv)
 
@@ -597,11 +595,11 @@ class WorldMapHolder(
         when {
             unitTable.selectedCity != null -> {
                 val city = unitTable.selectedCity!!
-                updateTilegroupsForSelectedCity(city, playerViewableTilePositions)
+                updateBombardableTilesForSelectedCity(city)
             }
             unitTable.selectedUnit != null -> {
                 for (unit in unitTable.selectedUnits) {
-                    updateTilegroupsForSelectedUnit(unit, playerViewableTilePositions)
+                    updateTilegroupsForSelectedUnit(unit)
                 }
             }
             unitActionOverlays.isNotEmpty() -> {
@@ -618,7 +616,7 @@ class WorldMapHolder(
         zoom(scaleX) // zoom to current scale, to set the size of the city buttons after "next turn"
     }
 
-    private fun updateTilegroupsForSelectedUnit(unit: MapUnit, playerViewableTilePositions: HashSet<Vector2>) {
+    private fun updateTilegroupsForSelectedUnit(unit: MapUnit) {
         val tileGroup = tileGroups[unit.getTile()] ?: return
         // Entirely unclear when this happens, but this seems to happen since version 520 (3.12.9)
         // so maybe has to do with the construction list being async?
@@ -691,10 +689,7 @@ class WorldMapHolder(
         val attackableTiles: List<AttackableTile> = if (unit.isCivilian()) listOf()
         else {
             BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
-                    .filter {
-                        (UncivGame.Current.viewEntireMapForDebug ||
-                                playerViewableTilePositions.contains(it.tileToAttack.position))
-                    }
+                    .filter { it.tileToAttack.isVisible(unit.civInfo) }
                     .distinctBy { it.tileToAttack }
         }
 
@@ -711,12 +706,9 @@ class WorldMapHolder(
         }
     }
 
-    private fun updateTilegroupsForSelectedCity(city: CityInfo, playerViewableTilePositions: HashSet<Vector2>) {
+    private fun updateBombardableTilesForSelectedCity(city: CityInfo) {
         if (!city.canBombard()) return
-
-        val attackableTiles = UnitAutomation.getBombardTargets(city)
-                .filter { (UncivGame.Current.viewEntireMapForDebug || playerViewableTilePositions.contains(it.position)) }
-        for (attackableTile in attackableTiles) {
+        for (attackableTile in UnitAutomation.getBombardableTiles(city)) {
             for (group in tileGroups[attackableTile]!!) {
                 group.showHighlight(colorFromRGB(237, 41, 57))
                 group.showCrosshair()
