@@ -145,7 +145,10 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
         }
 
         // Unit base icon is faded out only if out of moves
-        val alpha = if (unit.currentMovement == 0f) 0.5f else 1f
+        // Foreign unit icons are never faded!
+        val shouldBeFaded = (unit.owner == UncivGame.Current.worldScreen?.viewingCiv?.civName
+                && unit.currentMovement == 0f)
+        val alpha = if (shouldBeFaded) 0.5f else 1f
         unitBaseImage.color.a = alpha
         flagBg.children.forEach { it.color.a = alpha }
 
