@@ -7,6 +7,8 @@ import com.unciv.Constants
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.ui.utils.extensions.surroundWithThinCircle
 
 
 /** Unit Actions - class - carries dynamic data and actual execution.
@@ -21,19 +23,20 @@ data class UnitAction(
     val action: (() -> Unit)? = null
 ) {
     fun getIcon(): Actor {
-        if (type.imageGetter != null) return type.imageGetter.invoke()
+        if (type.imageGetter != null)
+            return type.imageGetter.invoke()
         return when (type) {
             UnitActionType.Create -> {
-                ImageGetter.getImprovementIcon(title.getPlaceholderParameters()[0])
+                ImageGetter.getImprovementPortrait(title.getPlaceholderParameters()[0])
             }
             UnitActionType.SpreadReligion -> {
                 val religionName = title.getPlaceholderParameters()[0]
-                ImageGetter.getReligionImage(
+                ImageGetter.getReligionPortrait(
                     if (ImageGetter.religionIconExists(religionName)) religionName
-                    else "Pantheon"
-                ).apply { color = Color.BLACK }
+                    else "Pantheon", 20f
+                )
             }
-            else -> ImageGetter.getImage("UnitActionIcons/Star").apply { color = Color.BLACK }
+            else -> ImageGetter.getUnitActionPortrait("Star")
         }
     }
 }
@@ -57,77 +60,77 @@ enum class UnitActionType(
     val uncivSound: UncivSound = UncivSound.Click
 ) {
     SwapUnits("Swap units",
-        { ImageGetter.getImage("UnitActionIcons/Swap") }, 'y', false),
+        { ImageGetter.getUnitActionPortrait("Swap") }, 'y', false),
     Automate("Automate",
-        { ImageGetter.getImage("UnitActionIcons/Automate") }, 'm'),
+        { ImageGetter.getUnitActionPortrait("Automate") }, 'm'),
     StopAutomation("Stop automation",
-        { ImageGetter.getImage("UnitActionIcons/Stop") }, 'm', false),
+        { ImageGetter.getUnitActionPortrait("Stop") }, 'm', false),
     StopMovement("Stop movement",
-        { ImageGetter.getImage("UnitActionIcons/StopMove") }, '.', false),
+        { ImageGetter.getUnitActionPortrait("StopMove") }, '.', false),
     Sleep("Sleep",
-        { ImageGetter.getImage("UnitActionIcons/Sleep") }, 'f'),
+        { ImageGetter.getUnitActionPortrait("Sleep") }, 'f'),
     SleepUntilHealed("Sleep until healed",
-        { ImageGetter.getImage("UnitActionIcons/Sleep") }, 'h'),
+        { ImageGetter.getUnitActionPortrait("Sleep") }, 'h'),
     Fortify("Fortify",
-        { ImageGetter.getImage("UnitActionIcons/Fortify") }, 'f', UncivSound.Fortify),
+        { ImageGetter.getUnitActionPortrait("Fortify") }, 'f', UncivSound.Fortify),
     FortifyUntilHealed("Fortify until healed",
-        { ImageGetter.getImage("UnitActionIcons/FortifyUntilHealed") }, 'h', UncivSound.Fortify),
+        { ImageGetter.getUnitActionPortrait("FortifyUntilHealed") }, 'h', UncivSound.Fortify),
     Explore("Explore",
-        { ImageGetter.getImage("UnitActionIcons/Explore") }, 'x'),
+        { ImageGetter.getUnitActionPortrait("Explore") }, 'x'),
     StopExploration("Stop exploration",
-        { ImageGetter.getImage("UnitActionIcons/Stop") }, 'x', false),
+        { ImageGetter.getUnitActionPortrait("Stop") }, 'x', false),
     Promote("Promote",
-        { ImageGetter.getImage("UnitActionIcons/Promote") }, 'o', false, UncivSound.Promote),
+        { ImageGetter.getUnitActionPortrait("Promote") }, 'o', false, UncivSound.Promote),
     Upgrade("Upgrade",
-        { ImageGetter.getImage("UnitActionIcons/Upgrade") }, 'u', UncivSound.Upgrade),
+        { ImageGetter.getUnitActionPortrait("Upgrade") }, 'u', UncivSound.Upgrade),
     Pillage("Pillage",
-        { ImageGetter.getImage("UnitActionIcons/Pillage") }, 'p', false),
+        { ImageGetter.getUnitActionPortrait("Pillage") }, 'p', false),
     Paradrop("Paradrop",
-        { ImageGetter.getImage("UnitActionIcons/Paradrop") }, 'p', false),
+        { ImageGetter.getUnitActionPortrait("Paradrop") }, 'p', false),
     AirSweep("Air Sweep",
-        { ImageGetter.getImage("UnitActionIcons/AirSweep") }, 'a'),
+        { ImageGetter.getUnitActionPortrait("AirSweep") }, 'a', false),
     SetUp("Set up",
-        { ImageGetter.getImage("UnitActionIcons/SetUp") }, 't', false, UncivSound.Setup),
+        { ImageGetter.getUnitActionPortrait("SetUp") }, 't', false, UncivSound.Setup),
     FoundCity("Found city",
-        { ImageGetter.getImage("UnitActionIcons/FoundCity") }, 'c', UncivSound.Silent),
+        { ImageGetter.getUnitActionPortrait("FoundCity") }, 'c', UncivSound.Silent),
     ConstructImprovement("Construct improvement",
-        { ImageGetter.getImage("UnitActionIcons/ConstructImprovement") }, 'i'),
+        { ImageGetter.getUnitActionPortrait("ConstructImprovement") }, 'i'),
     Repair(Constants.repair,
-        { ImageGetter.getImage("UnitActionIcons/Repair") }, 'r', UncivSound.Construction),
+        { ImageGetter.getUnitActionPortrait("Repair") }, 'r', UncivSound.Construction),
     Create("Create",
         null, 'i', UncivSound.Chimes),
     HurryResearch("Hurry Research",
-        { ImageGetter.getImage("UnitActionIcons/HurryResearch") }, 'g', UncivSound.Chimes),
+        { ImageGetter.getUnitActionPortrait("HurryResearch") }, 'g', UncivSound.Chimes),
     StartGoldenAge("Start Golden Age",
-        { ImageGetter.getImage("UnitActionIcons/StartGoldenAge") }, 'g', UncivSound.Chimes),
+        { ImageGetter.getUnitActionPortrait("StartGoldenAge") }, 'g', UncivSound.Chimes),
     HurryWonder("Hurry Wonder",
-        { ImageGetter.getImage("UnitActionIcons/HurryConstruction") }, 'g', UncivSound.Chimes),
+        { ImageGetter.getUnitActionPortrait("HurryConstruction") }, 'g', UncivSound.Chimes),
     HurryBuilding("Hurry Construction",
-        { ImageGetter.getImage("UnitActionIcons/HurryConstruction") }, 'g', UncivSound.Chimes),
+        { ImageGetter.getUnitActionPortrait("HurryConstruction") }, 'g', UncivSound.Chimes),
     ConductTradeMission("Conduct Trade Mission",
-        { ImageGetter.getImage("UnitActionIcons/ConductTradeMission") }, 'g', UncivSound.Chimes),
+        { ImageGetter.getUnitActionPortrait("ConductTradeMission") }, 'g', UncivSound.Chimes),
     FoundReligion("Found a Religion",
-        { ImageGetter.getImage("UnitActionIcons/FoundReligion") }, 'g', UncivSound.Choir),
+        { ImageGetter.getUnitActionPortrait("FoundReligion") }, 'g', UncivSound.Choir),
     TriggerUnique("Trigger unique",
-        { ImageGetter.getImage("UnitActionIcons/Star") }, 'g', false, UncivSound.Chimes),
+        { ImageGetter.getUnitActionPortrait("Star") }, 'g', false, UncivSound.Chimes),
     SpreadReligion("Spread Religion",
         null, 'g', UncivSound.Choir),
     RemoveHeresy("Remove Heresy",
-        { ImageGetter.getImage("UnitActionIcons/RemoveHeresy") }, 'h', UncivSound.Fire),
+        { ImageGetter.getUnitActionPortrait("RemoveHeresy") }, 'h', UncivSound.Fire),
     EnhanceReligion("Enhance a Religion",
-        { ImageGetter.getImage("UnitActionIcons/EnhanceReligion") }, 'g', UncivSound.Choir),
+        { ImageGetter.getUnitActionPortrait("EnhanceReligion") }, 'g', UncivSound.Choir),
     DisbandUnit("Disband unit",
-        { ImageGetter.getImage("UnitActionIcons/DisbandUnit") }, KeyCharAndCode.DEL),
+        { ImageGetter.getUnitActionPortrait("DisbandUnit") }, KeyCharAndCode.DEL, false),
     GiftUnit("Gift unit",
-        { ImageGetter.getImage("UnitActionIcons/Present") }, UncivSound.Silent),
+        { ImageGetter.getUnitActionPortrait("Present") }, UncivSound.Silent),
     Wait("Wait",
-        { ImageGetter.getImage("UnitActionIcons/Wait") }, 'z', UncivSound.Silent),
+        { ImageGetter.getUnitActionPortrait("Wait") }, 'z', UncivSound.Silent),
     ShowAdditionalActions("Show more",
-        { ImageGetter.getImage("UnitActionIcons/ShowMore") }, KeyCharAndCode(Input.Keys.PAGE_DOWN), false),
+        { ImageGetter.getUnitActionPortrait("ShowMore") }, KeyCharAndCode(Input.Keys.PAGE_DOWN), false),
     HideAdditionalActions("Back",
-        { ImageGetter.getImage("UnitActionIcons/HideMore") }, KeyCharAndCode(Input.Keys.PAGE_UP), false),
+        { ImageGetter.getUnitActionPortrait("HideMore") }, KeyCharAndCode(Input.Keys.PAGE_UP), false),
     AddInCapital( "Add in capital",
-        { ImageGetter.getImage("UnitActionIcons/AddInCapital")}, 'g', UncivSound.Chimes),
+        { ImageGetter.getUnitActionPortrait("AddInCapital")}, 'g', UncivSound.Chimes),
     ;
 
     // Allow shorter initializations

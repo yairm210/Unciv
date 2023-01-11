@@ -151,6 +151,7 @@ class UnitOverviewTab(
     }
 
     private fun Table.updateUnitListTable(): Table {
+        clear()
         val game = overviewScreen.game
         defaults().pad(5f)
 
@@ -202,7 +203,7 @@ class UnitOverviewTab(
             val promotionsTable = Table()
             // getPromotions goes by json order on demand, so this is same sorting as on picker
             for (promotion in unit.promotions.getPromotions(true))
-                promotionsTable.add(ImageGetter.getPromotionIcon(promotion.name))
+                promotionsTable.add(ImageGetter.getPromotionPortrait(promotion.name))
             if (unit.promotions.canBePromoted())
                 promotionsTable.add(
                     ImageGetter.getImage("OtherIcons/Star").apply {
@@ -225,9 +226,9 @@ class UnitOverviewTab(
                 val upgradeIcon = ImageGetter.getUnitIcon(unit.getUnitToUpgradeTo().name,
                     if (enable) Color.GREEN else Color.GREEN.darken(0.5f))
                 if (enable) upgradeIcon.onClick {
-                    showWorldScreenAt(unit)
                     SoundPlayer.play(unitAction!!.uncivSound)
                     unitAction.action!!()
+                    unitListTable.updateUnitListTable()
                 }
                 add(upgradeIcon).size(28f)
             } else add()

@@ -146,6 +146,16 @@ object UnitAutomation {
         if (unit.isCivilian()) {
             if (tryRunAwayIfNeccessary(unit)) return
 
+            if (unit.currentTile.isCityCenter() && unit.currentTile.getCity()!!.isCapital()
+                    && !unit.hasUnique(UniqueType.AddInCapital) && unit.civInfo.getCivUnits().any { unit.hasUnique(UniqueType.AddInCapital) }){
+                // First off get out of the way, then decide if you actually want to do something else
+                val tilesCanMoveTo = unit.movement.getDistanceToTiles()
+                    .filter { unit.movement.canMoveTo(it.key) }
+                if (tilesCanMoveTo.isNotEmpty())
+                    unit.movement.moveToTile(tilesCanMoveTo.minBy { it.value.totalDistance }.key)
+            }
+
+
             if (unit.hasUnique(UniqueType.FoundCity))
                 return SpecificUnitAutomation.automateSettlerActions(unit)
 
@@ -365,9 +375,10 @@ object UnitAutomation {
         return unit.currentMovement == 0f
     }
 
-    fun getBombardTargets(city: CityInfo): Sequence<TileInfo> =
+    /** Get a list of visible tiles which have something attackable */
+    fun getBombardableTiles(city: CityInfo): Sequence<TileInfo> =
             city.getCenterTile().getTilesInDistance(city.range)
-                    .filter { BattleHelper.containsAttackableEnemy(it, CityCombatant(city)) }
+                    .filter { it.isVisible(city.civInfo) && BattleHelper.containsAttackableEnemy(it, CityCombatant(city)) }
 
     /** Move towards the closest attackable enemy of the [unit].
      *
@@ -537,7 +548,7 @@ object UnitAutomation {
     }
 
     private fun chooseBombardTarget(city: CityInfo): ICombatant? {
-        var targets = getBombardTargets(city).map { Battle.getMapCombatantOfTile(it)!! }
+        var targets = getBombardableTiles(city).map { Battle.getMapCombatantOfTile(it)!! }
         if (targets.none()) return null
 
         val siegeUnits = targets

@@ -7,6 +7,7 @@ import com.unciv.json.HashMapVector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.UncivShowableException
+import com.unciv.logic.VictoryData
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.city.CityInfo
@@ -32,9 +33,11 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.StateForConditionals
-import com.unciv.models.ruleset.unique.TemporaryUniques
+import com.unciv.models.ruleset.unique.TemporaryUnique
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unique.endTurn
+import com.unciv.models.ruleset.unique.getMatchingUniques
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -43,7 +46,6 @@ import com.unciv.ui.utils.MayaCalendar
 import com.unciv.ui.utils.extensions.toPercent
 import com.unciv.ui.utils.extensions.withItem
 import com.unciv.ui.victoryscreen.RankingType
-import com.unciv.utils.concurrency.Concurrency
 import java.util.*
 import kotlin.math.max
 import kotlin.math.min
@@ -144,6 +146,9 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     @Transient
     var thingsToFocusOnForVictory = setOf<Victory.Focus>()
 
+    @Transient
+    var neutralRoads = HashSet<Vector2>()
+
     var playerType = PlayerType.AI
 
     /** Used in online multiplayer for human players */
@@ -183,9 +188,12 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
     /** Arraylist instead of HashMap as the same unique might appear multiple times
      * We don't use pairs, as these cannot be serialized due to having no no-arg constructor
+     * We ALSO can't use a class inheriting from ArrayList<TemporaryUnique>() because ANNOYINGLY that doesn't pass deserialization
+     * So we fake it with extension functions in Unique.kt
+     *
      * This can also contain NON-temporary uniques but I can't be bothered to do the deprecation dance with this one
      */
-    val temporaryUniques = TemporaryUniques()
+    val temporaryUniques = ArrayList<TemporaryUnique>()
 
     // if we only use lists, and change the list each time the cities are changed,
     // we won't get concurrent modification exceptions.
@@ -276,6 +284,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
             toReturn.diplomacy[diplomacyManager.otherCivName] = diplomacyManager
         toReturn.proximity.putAll(proximity)
         toReturn.cities = cities.map { it.clone() }
+        toReturn.neutralRoads = neutralRoads
 
         // This is the only thing that is NOT switched out, which makes it a source of ConcurrentModification errors.
         // Cloning it by-pointer is a horrific move, since the serialization would go over it ANYWAY and still lead to concurrency problems.
@@ -305,7 +314,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
     //region pure functions
     fun getDifficulty(): Difficulty {
-        if (isPlayerCivilization()) return gameInfo.getDifficulty()
+        if (isHuman()) return gameInfo.getDifficulty()
         // TODO We should be able to mark a difficulty as 'default AI difficulty' somehow
         val chieftainDifficulty = gameInfo.ruleSet.difficulties["Chieftain"]
         if (chieftainDifficulty != null) return chieftainDifficulty
@@ -339,7 +348,8 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
                 .thenBy (UncivGame.Current.settings.getCollatorFromLocale()) { it.civName.tr() }
         )
     fun getCapital() = cities.firstOrNull { it.isCapital() }
-    fun isPlayerCivilization() = playerType == PlayerType.Human
+    fun isHuman() = playerType == PlayerType.Human
+    fun isAI() = playerType == PlayerType.AI
     fun isOneCityChallenger() = (
             playerType == PlayerType.Human &&
                     gameInfo.gameParameters.oneCityChallenge)
@@ -902,6 +912,20 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     fun updateViewableTiles() = transients().updateViewableTiles()
     fun updateDetailedCivResources() = transients().updateCivResources()
 
+    fun doTurn() {
+
+        // Defeated civs do nothing
+        if (isDefeated())
+            return
+
+        // Do stuff
+        NextTurnAutomation.automateCivMoves(this)
+
+        // Update barbarian camps
+        if (isBarbarian() && !gameInfo.gameParameters.noBarbarians)
+            gameInfo.barbarians.updateEncampments()
+    }
+
     fun startTurn() {
         civConstructions.startTurn()
         attacksSinceTurnStart.clear()
@@ -943,6 +967,20 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
                 tradeRequests.remove(tradeRequest)
                 // Yes, this is the right direction. I checked.
                 offeringCiv.addNotification("Our proposed trade is no longer relevant!", NotificationIcon.Trade)
+            }
+        }
+
+        updateWinningCiv()
+    }
+
+    fun updateWinningCiv(){
+        if (gameInfo.victoryData == null) {
+            val victoryType = victoryManager.getVictoryTypeAchieved()
+            if (victoryType != null) {
+                gameInfo.victoryData = VictoryData(civName, victoryType, gameInfo.turns)
+
+                for (civInfo in gameInfo.civilizations)
+                    civInfo.popupAlerts.add(PopupAlert(AlertType.GameHasBeenWon, civName))
             }
         }
     }
@@ -994,7 +1032,11 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
         if (isMajorCiv()) greatPeople.addGreatPersonPoints(getGreatPersonPointsForNextTurn()) // City-states don't get great people!
 
-        for (city in cities.toList()) { // a city can be removed while iterating (if it's being razed) so we need to iterate over a copy
+        // To handle tile's owner issue (#8246), we need to run being razed city first.
+        for (city in sequence {
+            yieldAll(cities.filter { it.isBeingRazed })
+            yieldAll(cities.filterNot { it.isBeingRazed })
+        }.toList()) { // a city can be removed while iterating (if it's being razed) so we need to iterate over a copy
             city.endTurn()
         }
 
@@ -1006,6 +1048,8 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         updateHasActiveEnemyMovementPenalty()
 
         cachedMilitaryMight = -1    // Reset so we don't use a value from a previous turn
+
+        updateWinningCiv() // Maybe we did something this turn to win
     }
 
     private fun startTurnFlags() {
@@ -1222,7 +1266,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         if (diplomacyManager != null && (diplomacyManager.hasOpenBorders || diplomacyManager.diplomaticStatus == DiplomaticStatus.War))
             return true
         // Players can always pass through city-state tiles
-        if (isPlayerCivilization() && otherCiv.isCityState()) return true
+        if (isHuman() && otherCiv.isCityState()) return true
         return false
     }
 

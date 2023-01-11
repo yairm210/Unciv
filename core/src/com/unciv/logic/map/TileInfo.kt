@@ -44,10 +44,20 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         private set
 
     fun setOwningCity(city:CityInfo?){
+        if (city != null) {
+            if (roadStatus != RoadStatus.None && roadOwner != "") {
+                // remove previous neutral tile owner
+                getRoadOwner()!!.neutralRoads.remove(this.position)
+            }
+            roadOwner = city.civInfo.civName // only when taking control, otherwise last owner
+        } else {
+            if (roadStatus != RoadStatus.None && owningCity != null) {
+                // previous tile owner still owns road, add to tracker
+                owningCity!!.civInfo.neutralRoads.add(this.position)
+            }
+        }
         owningCity = city
         isCityCenterInternal = getCity()?.location == position
-        if (city != null)  // only when taking control, otherwise last owner
-            roadOwner = city.civInfo.civName
     }
 
     @Transient
@@ -218,6 +228,12 @@ open class TileInfo : IsPartOfGameInfoSerialization {
             if (naturalWonder == null) throw Exception("No natural wonder exists for this tile!")
             else ruleset.terrains[naturalWonder!!]!!
 
+    fun isVisible(player: CivilizationInfo): Boolean {
+        if (UncivGame.Current.viewEntireMapForDebug)
+            return true
+        return player.viewableTiles.contains(this)
+    }
+
     fun isCityCenter(): Boolean = isCityCenterInternal
     fun isNaturalWonder(): Boolean = naturalWonder != null
     fun isImpassible() = getLastTerrain().impassable
@@ -272,6 +288,10 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         else
             roadStatus
     }
+    fun getUnpillagedRoadImprovement(): TileImprovement? {
+        return if (getUnpillagedRoad() == RoadStatus.None) null
+        else ruleset.tileImprovements[getUnpillagedRoad().name]
+    }
 
     fun changeImprovement(improvementStr: String?) {
         improvementIsPillaged = false
@@ -282,16 +302,21 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     fun addRoad(roadType: RoadStatus, unitCivInfo: CivilizationInfo) {
         roadStatus = roadType
         roadIsPillaged = false
-        roadOwner = if (getOwner() == null)
-            unitCivInfo.civName // neutral tile, use building unit
-        else
-            getOwner()!!.civName
+        if (getOwner() == null) {
+            roadOwner = unitCivInfo.civName // neutral tile, use building unit
+            unitCivInfo.neutralRoads.add(this.position)
+        } else {
+            roadOwner = getOwner()!!.civName
+        }
     }
 
     // function handling when removing a road from the tile
     fun removeRoad() {
-        roadStatus = RoadStatus.None
         roadIsPillaged = false
+        if (roadStatus == RoadStatus.None) return
+        roadStatus = RoadStatus.None
+        if (owningCity == null)
+            getRoadOwner()?.neutralRoads?.remove(this.position)
     }
 
     fun getShownImprovement(viewingCiv: CivilizationInfo?): String? {
@@ -1165,6 +1190,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     fun setTransients() {
         setTerrainTransients()
         setUnitTransients(true)
+        setOwnerTransients()
     }
 
     fun setTerrainTransients() {
@@ -1192,6 +1218,11 @@ open class TileInfo : IsPartOfGameInfoSerialization {
                 unit.assignOwner(tileMap.gameInfo.getCivilization(unit.owner), false)
             unit.setTransients(ruleset)
         }
+    }
+
+    fun setOwnerTransients() {
+        if (owningCity == null && roadOwner != "")
+            getRoadOwner()!!.neutralRoads.add(this.position)
     }
 
     fun stripUnits() {

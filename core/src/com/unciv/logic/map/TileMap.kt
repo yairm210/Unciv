@@ -459,6 +459,14 @@ class TileMap : IsPartOfGameInfoSerialization {
         }
     }
 
+    /** Initialize based on TileInfo which Civ has neutral tile roads
+     */
+    fun setNeutralTransients() {
+        for (tileInfo in values) {
+            tileInfo.setOwnerTransients()
+        }
+    }
+
     fun removeMissingTerrainModReferences(ruleSet: Ruleset) {
         for (tile in this.values) {
             for (terrainFeature in tile.terrainFeatures.filter { !ruleSet.terrains.containsKey(it) })

@@ -81,7 +81,7 @@ open class Stats(
     }
 
     /** Adds each value of another [Stats] instance to this one in place */
-    fun add(other: Stats) {
+    fun add(other: Stats): Stats {
         production += other.production
         food += other.food
         gold += other.gold
@@ -89,6 +89,7 @@ open class Stats(
         culture += other.culture
         happiness += other.happiness
         faith += other.faith
+        return this
     }
 
     /** @return a new [Stats] instance containing the sum of its operands value by value */
@@ -239,9 +240,8 @@ open class Stats(
 
 class StatMap:LinkedHashMap<String,Stats>() {
     fun add(source: String, stats: Stats) {
-        if (!containsKey(source)) put(source, stats)
-        else put(source, get(source)!! + stats)
-        // This CAN'T be get(source)!!.add() because the initial stats we get are sometimes from other places -
-        // for instance the Cities is from the currentCityStats and if we add to that we change the value in the cities themselves!
+        // We always clone to avoid touching the mutable stats of uniques
+        if (!containsKey(source)) put(source, stats.clone())
+        else get(source)!!.add(stats)
     }
 }

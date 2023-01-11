@@ -53,7 +53,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
             errorText.appendLine()
             when (ex) {
                 is UncivShowableException -> {
-                    errorText.append("${ex.localizedMessage}")
+                    errorText.append(ex.localizedMessage)
                     isUserFixable = true
                 }
                 is SerializationException -> {

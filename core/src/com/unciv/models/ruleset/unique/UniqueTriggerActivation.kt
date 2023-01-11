@@ -174,7 +174,7 @@ object UniqueTriggerActivation {
                 val greatPeople = civInfo.getGreatPeople()
                 if (unique.type == MayanGainGreatPerson && civInfo.greatPeople.longCountGPPool.isEmpty())
                     civInfo.greatPeople.longCountGPPool = greatPeople.map { it.name }.toHashSet()
-                if (civInfo.isPlayerCivilization()) {
+                if (civInfo.isHuman()) {
                     civInfo.greatPeople.freeGreatPeople++
                     // Anyone an idea for a good icon?
                     if (unique.type == MayanGainGreatPerson) {

@@ -30,6 +30,7 @@ import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.onChange
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.setFontColor
+import com.unciv.ui.utils.extensions.toCheckBox
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
 import com.unciv.ui.utils.extensions.withoutItem
@@ -52,13 +53,6 @@ fun advancedTab(
 
     addAutosaveTurnsSelectBox(this, settings)
 
-    optionsPopup.addCheckbox(
-        this, "{Show experimental world wrap for maps}\n{HIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!}",
-        settings.showExperimentalWorldWrap
-    ) {
-        settings.showExperimentalWorldWrap = it
-    }
-
     if (UncivGame.Current.platformSpecificHelper?.hasDisplayCutout() == true)
         optionsPopup.addCheckbox(this, "Enable display cutout (requires restart)", settings.androidCutout, false) { settings.androidCutout = it }
 
@@ -80,6 +74,8 @@ fun advancedTab(
     addTranslationGeneration(this, optionsPopup)
 
     addSetUserId(this, settings)
+
+    addEasterEggsCheckBox(this, settings)
 }
 
 private fun addAutosaveTurnsSelectBox(table: Table, settings: GameSettings) {
@@ -216,7 +212,7 @@ private fun addTranslationGeneration(table: Table, optionsPopup: OptionsPopup) {
             ))
         }
     }
-    table.add(generateScreenshotsButton).colspan(2).row()
+//     table.add(generateScreenshotsButton).colspan(2).row()
 
 }
 
@@ -291,4 +287,9 @@ private fun addSetUserId(table: Table, settings: GameSettings) {
         }
     table.add(takeUserIdFromClipboardButton).pad(5f).colspan(2).row()
     table.add(idSetLabel).colspan(2).row()
+}
+
+private fun addEasterEggsCheckBox(table: Table, settings: GameSettings) {
+    val checkbox = "Enable Easter Eggs".toCheckBox(settings.enableEasterEggs) { settings.enableEasterEggs = it }
+    table.add(checkbox).colspan(2).row()
 }

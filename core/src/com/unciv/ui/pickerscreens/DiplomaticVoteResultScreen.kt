@@ -35,7 +35,7 @@ class DiplomaticVoteResultScreen(val votesCast: HashMap<String, String>, val vie
         val civ = gameInfo.civilizations.firstOrNull { it.civName == civName }
         if (civ == null || civ.isDefeated()) return
 
-        topTable.add(ImageGetter.getNationIndicator(civ.nation, 30f)).pad(10f)
+        topTable.add(ImageGetter.getNationPortrait(civ.nation, 30f)).pad(10f)
         topTable.add(civName.toLabel()).pad(20f)
         if (civName !in votesCast.keys) {
             topTable.add("Abstained".toLabel()).row()
@@ -49,7 +49,7 @@ class DiplomaticVoteResultScreen(val votesCast: HashMap<String, String>, val vie
         }
 
         topTable.add("Voted for".toLabel()).pad(20f)
-        topTable.add(ImageGetter.getNationIndicator(votedCiv.nation, 30f)).pad(10f)
+        topTable.add(ImageGetter.getNationPortrait(votedCiv.nation, 30f)).pad(10f)
         topTable.add(votedCiv.civName.toLabel()).row()
     }
 }

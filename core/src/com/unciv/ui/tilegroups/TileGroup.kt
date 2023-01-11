@@ -113,15 +113,8 @@ open class TileGroup(
         }
     }
 
-    class UnitImageLayerGroupClass(groupSize: Float) : ActionlessGroup(groupSize) {
-        override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
-        init {
-            touchable = Touchable.disabled
-        }
-    }
     // We separate the units from the units' backgrounds, because all the background elements are in the same texture, and the units' aren't
     val unitLayerGroup = UnitLayerGroupClass(groupSize)
-    val unitImageLayerGroup = UnitImageLayerGroupClass(groupSize)
 
     class CityButtonLayerGroupClass(val tileInfo: TileInfo, groupSize: Float) : Group() {
         override fun draw(batch: Batch?, parentAlpha: Float) {
@@ -370,7 +363,8 @@ open class TileGroup(
             terrainFeatureLayerGroup, borderLayerGroup, miscLayerGroup,
             pixelMilitaryUnitGroup, pixelCivilianUnitGroup, unitLayerGroup,
             cityButtonLayerGroup, highlightFogCrosshairLayerGroup)
-        for (group in allGroups) group.isVisible = true
+
+        for (group in allGroups) group.isVisible = true // This allows units exploring previously-unexplored tiles to reveal the tile entirely
 
         if (viewingCiv != null && !isExplored(viewingCiv)) {
             if (tileInfo.neighbors.any { viewingCiv.hasExplored(it) })
@@ -587,22 +581,25 @@ open class TileGroup(
 
     private fun updateTileColor(isViewable: Boolean) {
         val baseTerrainColor = when {
-            isViewable && tileInfo.isPillaged() && tileSetStrings.tileSetConfig.useColorAsBaseTerrain -> tileInfo.getBaseTerrain().getColor().lerp(Color.BROWN, 0.6f)
+            isViewable && tileInfo.isPillaged() && tileSetStrings.tileSetConfig.useColorAsBaseTerrain -> tileInfo.getBaseTerrain()
+                .getColor().lerp(Color.BROWN, 0.6f)
             isViewable && tileInfo.isPillaged() -> Color.WHITE.cpy().lerp(Color.BROWN, 0.6f)
-            tileSetStrings.tileSetConfig.useColorAsBaseTerrain && !isViewable -> tileInfo.getBaseTerrain().getColor().lerp(tileSetStrings.tileSetConfig.fogOfWarColor, 0.6f)
-            tileSetStrings.tileSetConfig.useColorAsBaseTerrain -> tileInfo.getBaseTerrain().getColor()
+            tileSetStrings.tileSetConfig.useColorAsBaseTerrain && !isViewable -> tileInfo.getBaseTerrain()
+                .getColor().lerp(tileSetStrings.tileSetConfig.fogOfWarColor, 0.6f)
+            tileSetStrings.tileSetConfig.useColorAsBaseTerrain -> tileInfo.getBaseTerrain()
+                .getColor()
             !isViewable -> Color.WHITE.cpy().lerp(tileSetStrings.tileSetConfig.fogOfWarColor, 0.6f)
             else -> Color.WHITE.cpy()
         }
 
         val color = when {
-            isViewable && tileInfo.isPillaged() -> Color.WHITE.cpy().lerp(Color.RED.cpy(),0.5f)
+            isViewable && tileInfo.isPillaged() -> Color.WHITE.cpy().lerp(Color.RED.cpy(), 0.5f)
             (!isViewable) -> Color.WHITE.cpy()
                 .lerp(tileSetStrings.tileSetConfig.fogOfWarColor, 0.6f)
             else -> Color.WHITE.cpy()
         }
 
-        for((index, image) in tileBaseImages.withIndex())
+        for ((index, image) in tileBaseImages.withIndex())
             image.color = if (index == 0) baseTerrainColor else color
     }
 

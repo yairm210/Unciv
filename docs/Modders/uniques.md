@@ -252,6 +252,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
+??? example  "Provides [amount] [resource]"
+	Example: "Provides [3] [Iron]"
+
+	Applicable to: Global, Improvement
+
 ??? example  "[relativeAmount]% growth [cityFilter]"
 	Example: "[+20]% growth [in all cities]"
 
@@ -858,11 +863,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Building, Unit, Improvement
 
-??? example  "Provides [amount] [resource]"
-	Example: "Provides [3] [Iron]"
-
-	Applicable to: Building, Improvement
-
 ??? example  "Unbuildable"
 	Applicable to: Building, Unit, Improvement
 
@@ -1080,8 +1080,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Can move after attacking"
 	Applicable to: Unit
 
-??? example  "Transfer Movement to [unit]"
-	Example: "Transfer Movement to [Musketman]"
+??? example  "Transfer Movement to [mapUnitFilter]"
+	Example: "Transfer Movement to [Wounded]"
 
 	Applicable to: Unit
 
@@ -1492,6 +1492,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Gives a defensive bonus of [relativeAmount]%"
 	Example: "Gives a defensive bonus of [+20]%"
+
+	Applicable to: Improvement
+
+??? example  "Costs [amount] [stat] per turn when in your territory"
+	Example: "Costs [3] [Culture] per turn when in your territory"
+
+	Applicable to: Improvement
+
+??? example  "Costs [amount] [stat] per turn"
+	Example: "Costs [3] [Culture] per turn"
 
 	Applicable to: Improvement
 

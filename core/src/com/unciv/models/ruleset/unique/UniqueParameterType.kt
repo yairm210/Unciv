@@ -78,6 +78,8 @@ enum class UniqueParameterType(
             if ('{' in parameterText) // "{filter} {filter}" for and logic
                 return parameterText.filterCompositeLogic({ getErrorSeverity(it, ruleset) }) { a, b -> maxOf(a, b) }
             if (parameterText in knownValues) return null
+            if (ruleset.unitPromotions.values.any { it.hasUnique(parameterText) })
+                return null
             return BaseUnitFilter.getErrorSeverity(parameterText, ruleset)
         }
         override fun getTranslationWriterStringsForOutput() = knownValues

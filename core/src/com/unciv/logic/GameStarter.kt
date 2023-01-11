@@ -2,8 +2,10 @@ package com.unciv.logic
 
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.utils.debug
-import com.unciv.logic.civilization.*
+import com.unciv.logic.civilization.AlertType
+import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapgenerator.MapGenerator
@@ -15,9 +17,8 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
+import com.unciv.utils.debug
 import java.util.*
-import kotlin.collections.HashMap
-import kotlin.collections.HashSet
 
 object GameStarter {
     // temporary instrumentation while tuning/debugging
@@ -156,7 +157,7 @@ object GameStarter {
     private fun addCivTechs(gameInfo: GameInfo, ruleset: Ruleset, gameSetupInfo: GameSetupInfo) {
         for (civInfo in gameInfo.civilizations.filter { !it.isBarbarian() }) {
 
-            if (!civInfo.isPlayerCivilization())
+            if (!civInfo.isHuman())
                 for (tech in gameInfo.getDifficulty().aiFreeTechs)
                     civInfo.tech.addTechnology(tech)
 
@@ -220,7 +221,6 @@ object GameStarter {
         // CityState or Spectator civs are not available for Random pick
         availableCivNames.addAll(ruleset.nations.filter { it.value.isMajorCiv() }.keys.shuffled())
         availableCivNames.removeAll(newGameParameters.players.map { it.chosenCiv }.toSet())
-        availableCivNames.remove(Constants.barbarians)
 
         val startingTechs = ruleset.technologies.values.filter { it.hasUnique(UniqueType.StartingTech) }
 
@@ -330,7 +330,7 @@ object GameStarter {
 
             // Add extra units granted by difficulty
             startingUnits.addAll(when {
-                civ.isPlayerCivilization() -> gameInfo.getDifficulty().playerBonusStartingUnits
+                civ.isHuman() -> gameInfo.getDifficulty().playerBonusStartingUnits
                 civ.isMajorCiv() -> gameInfo.getDifficulty().aiMajorCivBonusStartingUnits
                 else -> gameInfo.getDifficulty().aiCityStateBonusStartingUnits
             })
@@ -422,7 +422,7 @@ object GameStarter {
                 civ.nation.startBias.isNotEmpty() && !gameSetupInfo.gameParameters.noStartBias -> 4 // less harsh
                 else -> 5  // no requirements
             }
-        }
+        }.sortedByDescending { it.isHuman() } // More important for humans to get their start biases!
 
         for (minimumDistanceBetweenStartingLocations in tileMap.tileMatrix.size / 6 downTo 0) {
             val freeTiles = landTilesInBigEnoughGroup.asSequence()
@@ -444,7 +444,8 @@ object GameStarter {
                     getOneStartingLocation(civ, tileMap, freeTiles, startScores)
                 }
                 startingLocations[civ] = startingLocation
-                freeTiles.removeAll(tileMap.getTilesInDistance(startingLocation.position, distanceToNext))
+                freeTiles.removeAll(tileMap.getTilesInDistance(startingLocation.position, distanceToNext)
+                    .toSet())
             }
             if (startingLocations.size < civs.size) continue // let's try again with less minimum distance!
 

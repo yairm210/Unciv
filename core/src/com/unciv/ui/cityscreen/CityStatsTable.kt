@@ -6,21 +6,29 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityFlags
 import com.unciv.logic.city.CityFocus
+import com.unciv.logic.city.CityInfo
+import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.ExpanderTab
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.colorFromRGB
+import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.ui.utils.extensions.toGroup
 import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
 import kotlin.math.ceil
 import kotlin.math.round
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
@@ -32,6 +40,13 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
     private val lowerPane: ScrollPane
     private val cityInfo = cityScreen.city
     private val lowerCell: Cell<ScrollPane>
+
+    private val detailedStatsButton = "Stats".toTextButton().apply {
+        labelCell.pad(10f)
+        onActivation {
+            DetailedStatsPopup(cityScreen).open()
+        }
+    }
 
     init {
         pad(2f)
@@ -83,22 +98,26 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
                     }
                 }
             }
-            miniStatsTable.add(icon).size(27f).padRight(5f)
+            miniStatsTable.add(icon).size(27f).padRight(3f)
             val valueToDisplay = if (stat == Stat.Happiness) cityInfo.cityStats.happinessList.values.sum() else amount
-            miniStatsTable.add(round(valueToDisplay).toInt().toLabel()).padRight(10f)
+            miniStatsTable.add(round(valueToDisplay).toInt().toLabel()).padRight(5f)
         }
         upperTable.add(miniStatsTable)
 
         upperTable.addSeparator()
+        upperTable.add(detailedStatsButton).row()
         addText()
 
         // begin lowerTable
         addCitizenManagement()
+        addGreatPersonPointInfo(cityInfo)
         if (!cityInfo.population.getMaxSpecialists().isEmpty()) {
             addSpecialistInfo()
         }
         if (cityInfo.religion.getNumberOfFollowers().isNotEmpty() && cityInfo.civInfo.gameInfo.isReligionEnabled())
             addReligionInfo()
+
+        addBuildingsInfo()
 
         upperTable.pack()
         lowerTable.pack()
@@ -108,6 +127,15 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
 
         innerTable.pack()  // update innerTable
         pack()  // update self last
+    }
+
+    private fun onContentResize() {
+        pack()
+        setPosition(
+            stage.width - CityScreen.posFromEdge,
+            stage.height - CityScreen.posFromEdge,
+            Align.topRight
+        )
     }
 
     private fun addText() {
@@ -155,7 +183,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
                 ImageGetter.getStatIcon("Food") to
                 "We Love The King Day for another [${cityInfo.getFlag(CityFlags.WeLoveTheKing)}] turns".toLabel(Color.LIME)
             cityInfo.demandedResource.isNotEmpty() ->
-                ImageGetter.getResourceImage(cityInfo.demandedResource, 20f) to
+                ImageGetter.getResourcePortrait(cityInfo.demandedResource, 20f) to
                 "Demanding [${cityInfo.demandedResource}]".toLabel(Color.CORAL)
             else -> null to null
         }
@@ -171,36 +199,185 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
     }
 
     private fun addCitizenManagement() {
-        val expanderTab = CitizenManagementTable(cityScreen).asExpander {
-            pack()
-            setPosition(
-                stage.width - CityScreen.posFromEdge,
-                stage.height - CityScreen.posFromEdge,
-                Align.topRight
-            )
-        }
+        val expanderTab = CitizenManagementTable(cityScreen).asExpander { onContentResize() }
         lowerTable.add(expanderTab).growX().row()
     }
 
     private fun addSpecialistInfo() {
-        val expanderTab = SpecialistAllocationTable(cityScreen).asExpander {
-            pack()
-            setPosition(
-                stage.width - CityScreen.posFromEdge,
-                stage.height - CityScreen.posFromEdge,
-                Align.topRight
-            )
-        }
+        val expanderTab = SpecialistAllocationTable(cityScreen).asExpander { onContentResize() }
         lowerTable.add(expanderTab).growX().row()
     }
 
     private fun addReligionInfo() {
-        val expanderTab = CityReligionInfoTable(cityInfo.religion).asExpander {
-            pack()
-            // We have to re-anchor as our position in the city screen, otherwise it expands upwards.
-            // ToDo: This probably should be refactored so its placed somewhere else in due time
-            setPosition(stage.width - CityScreen.posFromEdge, stage.height - CityScreen.posFromEdge, Align.topRight)
-        }
+        val expanderTab = CityReligionInfoTable(cityInfo.religion).asExpander { onContentResize() }
         lowerTable.add(expanderTab).growX().row()
     }
+
+    private fun addBuildingsInfo() {
+        val wonders = mutableListOf<Building>()
+        val specialistBuildings = mutableListOf<Building>()
+        val otherBuildings = mutableListOf<Building>()
+
+        for (building in cityInfo.cityConstructions.getBuiltBuildings()) {
+            when {
+                building.isAnyWonder() -> wonders.add(building)
+                !building.newSpecialists().isEmpty() -> specialistBuildings.add(building)
+                else -> otherBuildings.add(building)
+            }
+        }
+
+        // Buildings sorted alphabetically
+        wonders.sortBy { it.name }
+        specialistBuildings.sortBy { it.name }
+        otherBuildings.sortBy { it.name }
+
+        val totalTable = Table()
+        lowerTable.addCategory("Buildings", totalTable, false)
+
+        if (specialistBuildings.isNotEmpty()) {
+            val specialistBuildingsTable = Table()
+            totalTable.add().row()
+            totalTable.addSeparator(color = Color.LIGHT_GRAY)
+            totalTable.add("Specialist Buildings".toLabel().apply { setAlignment(Align.center) }).growX()
+            totalTable.addSeparator(color = Color.LIGHT_GRAY)
+            for (building in specialistBuildings) addBuildingButton(building, specialistBuildingsTable)
+            totalTable.add(specialistBuildingsTable).growX().right().row()
+        }
+
+        if (wonders.isNotEmpty()) {
+            val wondersTable = Table()
+            totalTable.addSeparator(color = Color.LIGHT_GRAY)
+            totalTable.add("Wonders".toLabel().apply { setAlignment(Align.center) }).growX()
+            totalTable.addSeparator(color = Color.LIGHT_GRAY)
+            for (building in wonders) addBuildingButton(building, wondersTable)
+            totalTable.add(wondersTable).growX().right().row()
+        }
+
+        if (otherBuildings.isNotEmpty()) {
+            val regularBuildingsTable = Table()
+            totalTable.addSeparator(color = Color.LIGHT_GRAY)
+            totalTable.add("Other".toLabel().apply { setAlignment(Align.center) }).growX()
+            totalTable.addSeparator(color = Color.LIGHT_GRAY)
+            for (building in otherBuildings) addBuildingButton(building, regularBuildingsTable)
+            totalTable.add(regularBuildingsTable).growX().right().row()
+        }
+    }
+
+    private fun addBuildingButton(building: Building, destinationTable: Table) {
+
+        val button = Table()
+
+        val info = Table()
+        val statsAndSpecialists = Table()
+
+        val icon = ImageGetter.getConstructionPortrait(building.name, 50f)
+        val isFree = building.name in cityScreen.city.civInfo.civConstructions.getFreeBuildings(cityScreen.city.id)
+        val displayName = if (isFree) "{${building.name}} ({Free})" else building.name
+
+        info.add(displayName.toLabel(fontSize = Constants.defaultFontSize)).padBottom(5f).right().row()
+
+        val stats = building.getStats(cityInfo).joinToString(separator = " ") {
+            "" + it.value.toInt() + it.key.character
+        }
+        statsAndSpecialists.add(stats.toLabel(fontSize = Constants.defaultFontSize)).right()
+
+        val assignedSpec = cityInfo.population.getNewSpecialists().clone()
+
+        val specialistIcons = Table()
+        for ((specialistName, amount) in building.newSpecialists()) {
+            val specialist = cityInfo.getRuleset().specialists[specialistName]
+                ?: continue // probably a mod that doesn't have the specialist defined yet
+            for (i in 0 until amount) {
+                if (assignedSpec[specialistName]!! > 0) {
+                    specialistIcons.add(ImageGetter.getSpecialistIcon(specialist.colorObject))
+                        .size(20f)
+                    assignedSpec.add(specialistName, -1)
+                } else {
+                    specialistIcons.add(ImageGetter.getSpecialistIcon(Color.GRAY)).size(20f)
+                }
+            }
+        }
+        statsAndSpecialists.add(specialistIcons).right()
+
+        info.add(statsAndSpecialists).right()
+
+        button.add(info).right().top().padRight(10f).padTop(5f)
+        button.add(icon).right()
+
+        button.onClick {
+            cityScreen.selectConstruction(building)
+            cityScreen.update()
+        }
+
+        destinationTable.add(button).pad(1f).padBottom(2f).padTop(2f).expandX().right().row()
+    }
+
+    private fun Table.addCategory(category: String, showHideTable: Table, startsOpened: Boolean = true, innerPadding: Float = 10f) : ExpanderTab {
+        val expanderTab = ExpanderTab(
+            title = category,
+            fontSize = Constants.defaultFontSize,
+            persistenceID = "CityInfo.$category",
+            startsOutOpened = startsOpened,
+            defaultPad = innerPadding,
+            onChange = { onContentResize() }
+        ) {
+            it.add(showHideTable).fillX().right()
+        }
+        add(expanderTab).growX().row()
+        return expanderTab
+    }
+
+    private fun addGreatPersonPointInfo(cityInfo: CityInfo) {
+
+        val greatPeopleTable = Table()
+
+        val greatPersonPoints = cityInfo.getGreatPersonPointsForNextTurn()
+        val allGreatPersonNames = greatPersonPoints.asSequence().flatMap { it.value.keys }.distinct()
+
+        if (allGreatPersonNames.none())
+            return
+
+        for (greatPersonName in allGreatPersonNames) {
+
+            var gppPerTurn = 0
+
+            for ((_, gppCounter) in greatPersonPoints) {
+                val gppPointsFromSource = gppCounter[greatPersonName]!!
+                if (gppPointsFromSource == 0) continue
+                gppPerTurn += gppPointsFromSource
+            }
+
+            val info = Table()
+
+            info.add(ImageGetter.getUnitIcon(greatPersonName, Color.GOLD).toGroup(20f))
+                .left().padBottom(4f).padRight(5f)
+            info.add("{$greatPersonName} (+$gppPerTurn)".toLabel()).left().padBottom(4f).expandX().row()
+
+            val gppCurrent = cityInfo.civInfo.greatPeople.greatPersonPointsCounter[greatPersonName]
+            val gppNeeded = cityInfo.civInfo.greatPeople.pointsForNextGreatPerson
+
+            val percent = gppCurrent!! / gppNeeded.toFloat()
+
+            val progressBar = ImageGetter.ProgressBar(300f, 25f, false)
+            progressBar.setBackground(Color.BLACK.cpy().apply { a = 0.8f })
+            progressBar.setProgress(Color.ORANGE, percent)
+            progressBar.apply {
+                val bar = ImageGetter.getWhiteDot()
+                bar.color = Color.GRAY
+                bar.setSize(width+5f, height+5f)
+                bar.center(this)
+                addActor(bar)
+                bar.toBack()
+            }
+            progressBar.setLabel(Color.WHITE, "$gppCurrent/$gppNeeded", fontSize = 14)
+
+            info.add(progressBar).colspan(2).left().expandX().row()
+
+            greatPeopleTable.add(info).growX().top().padBottom(10f)
+            greatPeopleTable.add(ImageGetter.getConstructionPortrait(greatPersonName, 50f)).row()
+        }
+
+        lowerTable.addCategory("Great People", greatPeopleTable)
+    }
+
 }

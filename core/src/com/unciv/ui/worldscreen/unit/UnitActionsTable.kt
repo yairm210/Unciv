@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.UnitAction
+import com.unciv.models.UnitActionType
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
@@ -33,6 +34,10 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
 
         val fontColor = if (unitAction.isCurrentAction) Color.YELLOW else Color.WHITE
         val actionButton = IconTextButton(unitAction.title, icon, fontColor = fontColor)
+
+        if (unitAction.type == UnitActionType.Promote && unitAction.action != null)
+            actionButton.color = Color.GREEN.cpy().lerp(Color.WHITE, 0.5f)
+
         actionButton.addTooltip(key)
         actionButton.pack()
         if (unitAction.action == null) {

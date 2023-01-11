@@ -41,13 +41,15 @@ These work best if they are square, between 100x100 and 256x256 pixels, and incl
 
 For example, [here](https://github.com/yairm210/Unciv-leader-portrait-mod-example) is mod showing how to add leader portraits, which can complement the base game.
 
-### Adding Unit and Building Portraits
+### Adding Portraits
 
-The base game uses flat icons, colored to fit the civilization's flag colors, to denote units both on the map and in other UI elements. A mod can supply "Portraits" - static images that will remain uncolored - by adding their images to `/Images/UnitPortraits/` and `/Images/BuildingPortraits/`, which will be used in all UI elements except for the world map. The file name must correspond exactly with the unit/building name as defined in Units.json and Buildings.json, or they will be ignored.
+The base game uses flat icons, surrounded with colored circles as backgrounds (e.g. for units to fit the civilization's flag colors), to denote entities such as: units, buildings, techs, resources, improvements, religions, promotions, uniques, unit actions and nations in the UI. A mod can supply "Portraits" - static images that will remain uncolored - by adding images to `/Images/<entityType>Portraits/` (e.g. `/Images/BuildingPortraits/`, /Images/ResourcesPortraits/, etc), which will be used in all UI elements (except for unit icons in the world map). The file name must correspond exactly with the unit/building/tech/resource/etc name  defined in corresponding JSONs (e.g. Units.json, Buildings.json, TileResources.json, etc) or have the same name as the file they suppose to replace, or they will be ignored.
 
-These work best if they are full RGB square, between 100x100 and 256x256 pixels, and include some transparent border within that area.
+If mod supplies '/Images/<entityType>Portraits/Background.png' images, they will be used as a background for corresponding portraits instead of default circle. 
 
-For example, [here](https://github.com/vegeta1k95/Civ-5-Icons) is mod showing how to add unit portraits, which can complement the base game.
+Portraits and backgrounds work best if they are full RGB square, between 100x100 and 256x256 pixels, and include some transparent border within that area.
+
+For example, [here](https://github.com/vegeta1k95/Civ-5-Icons) is mod showing how to add custom portraits, which can complement the base game.
 
 ## Sounds
 

@@ -118,7 +118,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
     private fun getIcon(combatant:ICombatant) =
         if (combatant is MapUnitCombatant) UnitGroup(combatant.unit,25f)
-        else ImageGetter.getNationIndicator(combatant.getCivInfo().nation, 25f)
+        else ImageGetter.getNationPortrait(combatant.getCivInfo().nation, 25f)
 
     private val quarterScreen = worldScreen.stage.width / 4
 
@@ -235,7 +235,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
                         .getAttackableEnemies(attacker.unit, attacker.unit.movement.getDistanceToTiles())
                         .firstOrNull{ it.tileToAttack == defender.getTile()}
             } else if (attacker is CityCombatant) {
-                val canBombard = UnitAutomation.getBombardTargets(attacker.city).contains(defender.getTile())
+                val canBombard = UnitAutomation.getBombardableTiles(attacker.city).contains(defender.getTile())
                 if (canBombard) {
                     attackableTile = AttackableTile(attacker.getTile(), defender.getTile(), 0f)
                 }

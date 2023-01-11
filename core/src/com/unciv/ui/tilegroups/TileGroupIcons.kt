@@ -72,11 +72,6 @@ class TileGroupIcons(val tileGroup: TileGroup) {
             newImage.center(tileGroup)
             newImage.y += yFromCenter
 
-            // We "steal" the unit image so that all backgrounds are rendered next to each other
-            // to save texture swapping and improve framerate
-            tileGroup.unitImageLayerGroup.addActor(newImage.unitBaseImage)
-            newImage.unitBaseImage.center(tileGroup)
-            newImage.unitBaseImage.y += yFromCenter
 
             // Display number of carried air units
             if (unit.getTile().airUnits.any { unit.isTransportTypeOf(it) } && !unit.getTile().isCityCenter()) {
@@ -105,11 +100,11 @@ class TileGroupIcons(val tileGroup: TileGroup) {
 
             // Instead of fading out the entire unit with its background, we just fade out its central icon,
             // that way it remains much more visible on the map
-            if (!unit.isIdle() && unit.civInfo == viewingCiv) {
+            if (unit.civInfo == viewingCiv && !unit.isIdle()) {
                 newImage.actionGroup?.color?.a = 0.5f * UncivGame.Current.settings.unitIconOpacity
             }
 
-            if (unit.currentMovement == 0f) {
+            if (unit.civInfo == viewingCiv && unit.currentMovement == 0f) {
                 newImage.flagSelection.color?.apply { a *= 0.5f }
                 newImage.flagBg.children?.forEach { it.color.apply { a *= 0.5f } }
                 newImage.unitBaseImage.color.a *= 0.5f
@@ -127,14 +122,12 @@ class TileGroupIcons(val tileGroup: TileGroup) {
         val shownImprovement = tileGroup.tileInfo.getShownImprovement(viewingCiv)
         if (shownImprovement == null || !showResourcesAndImprovements) return
 
-        val newImprovementImage = ImageGetter.getImprovementIcon(shownImprovement)
+        val newImprovementImage = ImageGetter.getImprovementPortrait(shownImprovement, dim = false)
         tileGroup.miscLayerGroup.addActor(newImprovementImage)
         newImprovementImage.run {
-            setSize(20f, 20f)
             center(tileGroup)
             this.x -= 22 // left
-            this.y -= 10 // bottom
-            color = Color.WHITE.cpy().apply { a = 0.7f }
+            this.y -= 12 // bottom
         }
         improvementIcon = newImprovementImage
     }
@@ -170,7 +163,7 @@ class TileGroupIcons(val tileGroup: TileGroup) {
             tileGroup.resourceImage?.remove()
             if (tileGroup.resource == null) tileGroup.resourceImage = null
             else {
-                val newResourceIcon = ImageGetter.getResourceImage(tileGroup.tileInfo.resource!!, 20f)
+                val newResourceIcon = ImageGetter.getResourcePortrait(tileGroup.tileInfo.resource!!, 20f,  tileGroup.tileInfo.resourceAmount)
                 newResourceIcon.center(tileGroup)
                 newResourceIcon.x = newResourceIcon.x - 22 // left
                 newResourceIcon.y = newResourceIcon.y + 10 // top
@@ -215,7 +208,7 @@ class TileGroupIcons(val tileGroup: TileGroup) {
         var offsetY = (displayCount - 1) * 2f
         for (nation in nations.take(3).asReversed()) {
             val newNationIcon =
-                ImageGetter.getNationIndicator(nation.second, 20f)
+                ImageGetter.getNationPortrait(nation.second, 20f)
             tileGroup.miscLayerGroup.addActor(newNationIcon)
             newNationIcon.run {
                 setSize(20f, 20f)

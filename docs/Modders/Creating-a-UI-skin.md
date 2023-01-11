@@ -34,7 +34,7 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 <!--- DO NOT REMOVE OR MODIFY THIS LINE UI_ELEMENT_TABLE_REGION -->
 | Directory | Name | Default shape | Image |
 |---|:---:|:---:|---|
-| CityScreen/ | CityInfoTable | null | |
+|  | Border | null | |
 | CityScreen/ | CityPickerTable | roundedEdgeRectangle | |
 | CityScreen/CitizenManagementTable/ | AvoidCell | null | |
 | CityScreen/CitizenManagementTable/ | FocusCell | null | |
@@ -53,6 +53,9 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | CityScreen/ConstructionInfoTable/ | Background | null | |
 | CityScreen/ConstructionInfoTable/ | SelectedConstructionTable | null | |
 | CivilopediaScreen/ | EntryButton | null | |
+| General/ | Border | null | |
+| General/ | Border | null | |
+| General/ | Border | null | |
 | General/ | Border | null | |
 | General/ | ExpanderTab | null | |
 | General/ | HealthBar | null | |
@@ -88,8 +91,11 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | OverviewScreen/UnitOverviewTab/ | UnitSupplyTable | null | |
 | PlayerReadyScreen/ | Background | null | |
 | TechPickerScreen/ | Background | null | |
+| TechPickerScreen/ | Background | null | |
 | TechPickerScreen/ | BottomTable | null | |
-| TechPickerScreen/ | TechButton | roundedEdgeRectangle | |
+| TechPickerScreen/ | TechButton | roundedEdgeRectangleMid | |
+| TechPickerScreen/ | TechButton | roundedEdgeRectangleMid | |
+| TechPickerScreen/ | TechButtonIconsOutline | roundedEdgeRectangleSmall | |
 | VictoryScreen/ | CivGroup | roundedEdgeRectangle | |
 | WorldScreen/ | AirUnitTable | null | |
 | WorldScreen/ | BattleTable | null | |
@@ -97,9 +103,8 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | WorldScreen/ | PickTechButton | roundedEdgeRectangle | |
 | WorldScreen/ | TileInfoTable | null | |
 | WorldScreen/ | TutorialTaskTable | null | |
-| WorldScreen/ | UnitTable | null | |
-| WorldScreen/CityButton/ | AirUnitTable | roundedEdgeRectangle | |
-| WorldScreen/CityButton/ | IconTable | roundedEdgeRectangle | |
+| WorldScreen/ | UnitTable | roundedEdgeRectangleMid | |
+| WorldScreen/ | UnitTable | roundedEdgeRectangleMid | |
 | WorldScreen/CityButton/ | InfluenceBar | null | |
 | WorldScreen/Minimap/ | Background | null | |
 | WorldScreen/Minimap/ | Border | null | |

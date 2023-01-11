@@ -48,7 +48,7 @@ class WorkerAutomation(
     private val bestRoadAvailable: RoadStatus =
         cloningSource?.bestRoadAvailable ?:
         //Player can choose not to auto-build roads & railroads.
-        if (civInfo.isPlayerCivilization() && !UncivGame.Current.settings.autoBuildingRoads)
+        if (civInfo.isHuman() && !UncivGame.Current.settings.autoBuildingRoads)
             RoadStatus.None
         else civInfo.tech.getBestRoadAvailable()
 
@@ -220,7 +220,7 @@ class WorkerAutomation(
 
         val isCandidateTilePredicate = { it: TileInfo -> it.isLand && unit.movement.canPassThrough(it) }
         val currentTile = unit.getTile()
-        val cityTilesToSeek = tilesOfConnectedCities.sortedBy { it.aerialDistanceTo(currentTile) }
+        val cityTilesToSeek = ArrayList(tilesOfConnectedCities.sortedBy { it.aerialDistanceTo(currentTile) })
 
         for (toConnectCity in candidateCities) {
             val toConnectTile = toConnectCity.getCenterTile()
@@ -232,8 +232,9 @@ class WorkerAutomation(
                     )
                     bfsCache[toConnectTile.position] = this@apply
                 }
+
             while (true) {
-                for (cityTile in cityTilesToSeek) {
+                for (cityTile in cityTilesToSeek.toList()) { // copy since we cahnge while running
                     if (!bfs.hasReachedTile(cityTile)) continue
                     // we have a winner!
                     val pathToCity = bfs.getPathTo(cityTile)
@@ -245,11 +246,12 @@ class WorkerAutomation(
                         val reachableTile = roadableTiles
                             .sortedBy { it.aerialDistanceTo(unit.getTile()) }
                             .firstOrNull {
-                                unit.movement.canMoveTo(it) && unit.movement.canReach(
-                                    it
-                                )
+                                unit.movement.canMoveTo(it) && unit.movement.canReach(it)
                             }
-                            ?: continue
+                        if (reachableTile == null) {
+                            cityTilesToSeek.remove(cityTile) // Apparently we can't reach any of these tiles at all
+                            continue
+                        }
                         tileToConstructRoadOn = reachableTile
                         unit.movement.headTowards(tileToConstructRoadOn)
                     }
@@ -262,7 +264,7 @@ class WorkerAutomation(
                         unit.label(), bfs.startingPoint.getCity()?.name, cityTile.getCity()!!.name, tileToConstructRoadOn)
                     return true
                 }
-                if (bfs.hasEnded()) break
+                if (bfs.hasEnded()) break // We've found another city that this one can connect to
                 bfs.nextStep()
             }
             debug("WorkerAutomation: ${unit.label()} -> connect city ${bfs.startingPoint.getCity()?.name} failed at BFS size ${bfs.size()}")
@@ -320,7 +322,7 @@ class WorkerAutomation(
         val junkImprovement = tile.getTileImprovement()?.hasUnique(UniqueType.AutomatedWorkersWillReplace)
         if (tile.improvement != null && junkImprovement == false
                 && !UncivGame.Current.settings.automatedWorkersReplaceImprovements
-                && unit.civInfo.isPlayerCivilization())
+                && unit.civInfo.isHuman())
             return false
 
 
@@ -385,13 +387,14 @@ class WorkerAutomation(
             tile.resource == null || !tile.hasViewableResource(civInfo) -> null
             tile.terrainFeatures.isNotEmpty()
                     && isUnbuildableAndRemovable(lastTerrain)
-                    && !isResourceImprovementAllowedOnFeature(tile) -> Constants.remove + lastTerrain.name
-            else -> tile.tileResource.getImprovements().firstOrNull { it in potentialTileImprovements }
+                    && !isResourceImprovementAllowedOnFeature(tile, potentialTileImprovements) -> Constants.remove + lastTerrain.name
+            else -> tile.tileResource.getImprovements().filter { it in potentialTileImprovements || it==tile.improvement }
+                .maxByOrNull { Automation.rankStatsValue(ruleSet.tileImprovements[it]!!, unit.civInfo) }
         }
 
         val improvementString = when {
             tile.improvementInProgress != null -> tile.improvementInProgress!!
-            improvementStringForResource != null -> improvementStringForResource
+            improvementStringForResource != null -> if (improvementStringForResource==tile.improvement) null else improvementStringForResource
             // if this is a resource that HAS an improvement, but this unit can't build it, don't waste your time
             tile.resource != null && tile.tileResource.getImprovements().any() -> return null
             tile.containsGreatImprovement() -> return null
@@ -399,7 +402,7 @@ class WorkerAutomation(
 
             // Defence is more important that civilian improvements
             // While AI sucks in strategical placement of forts, allow a human does it manually
-            !civInfo.isPlayerCivilization() && evaluateFortPlacement(tile, civInfo,false) -> Constants.fort
+            !civInfo.isHuman() && evaluateFortPlacement(tile, civInfo,false) -> Constants.fort
             // I think we can assume that the unique improvement is better
             uniqueImprovement != null && tile.canBuildImprovement(uniqueImprovement, civInfo)
                 -> uniqueImprovement.name
@@ -420,9 +423,13 @@ class WorkerAutomation(
      *
      * Assumes the caller ensured that terrainFeature and resource are both present!
      */
-    private fun isResourceImprovementAllowedOnFeature(tile: TileInfo): Boolean {
+    private fun isResourceImprovementAllowedOnFeature(
+        tile: TileInfo,
+        potentialTileImprovements: Map<String, TileImprovement>
+    ): Boolean {
         return tile.tileResource.getImprovements().any { resourceImprovementName ->
-            val resourceImprovement = ruleSet.tileImprovements[resourceImprovementName] ?: return false
+            if (resourceImprovementName !in potentialTileImprovements) return@any false
+            val resourceImprovement = potentialTileImprovements[resourceImprovementName]!!
             tile.terrainFeatures.any { resourceImprovement.isAllowedOnFeature(it) }
         }
     }

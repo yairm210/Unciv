@@ -24,6 +24,11 @@ class StatTreeNode {
     val children = LinkedHashMap<String, StatTreeNode>()
     private var innerStats: Stats? = null
 
+    fun setInnerStat(stat: Stat, value: Float) {
+        if (innerStats == null) innerStats = Stats()
+        innerStats!![stat] = value
+    }
+
     private fun addInnerStats(stats: Stats) {
         if (innerStats == null) innerStats = stats.clone() // Copy the stats instead of referencing them
         else innerStats!!.add(stats) // What happens if we add 2 stats to the same leaf?
@@ -46,6 +51,13 @@ class StatTreeNode {
             if (!children.containsKey(key)) children[key] = value
             else children[key]!!.add(value)
         }
+    }
+
+    fun clone() : StatTreeNode {
+        val new = StatTreeNode()
+        new.innerStats = this.innerStats?.clone()
+        new.children.putAll(this.children)
+        return new
     }
 
     val totalStats: Stats
@@ -325,7 +337,7 @@ class CityStats(val cityInfo: CityInfo) {
     private fun getBuildingMaintenanceCosts(): Float {
         // Same here - will have a different UI display.
         var buildingsMaintenance = cityInfo.cityConstructions.getMaintenanceCosts().toFloat() // this is AFTER the bonus calculation!
-        if (!cityInfo.civInfo.isPlayerCivilization()) {
+        if (!cityInfo.civInfo.isHuman()) {
             buildingsMaintenance *= cityInfo.civInfo.gameInfo.getDifficulty().aiBuildingMaintenanceModifier
         }
 
@@ -364,7 +376,7 @@ class CityStats(val cityInfo: CityInfo) {
         val civInfo = cityInfo.civInfo
         val newHappinessList = LinkedHashMap<String, Float>()
         var unhappinessModifier = civInfo.getDifficulty().unhappinessModifier
-        if (!civInfo.isPlayerCivilization())
+        if (!civInfo.isHuman())
             unhappinessModifier *= civInfo.gameInfo.getDifficulty().aiUnhappinessModifier
 
         var unhappinessFromCity = -3f // -3 happiness per city

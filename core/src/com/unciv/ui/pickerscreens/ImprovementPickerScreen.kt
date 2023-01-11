@@ -97,7 +97,7 @@ class ImprovementPickerScreen(
                 else suggestRemoval = true
             }
 
-            val image = ImageGetter.getImprovementIcon(improvement.name, 30f)
+            val image = ImageGetter.getImprovementPortrait(improvement.name, 30f)
 
             // allow multiple key mappings to technologically supersede each other
             var shortcutKey = improvement.shortcutKey
@@ -205,11 +205,11 @@ class ImprovementPickerScreen(
 
         // icon for adding the resource by improvement
         if (provideResource)
-            statIcons.add(ImageGetter.getResourceImage(tileInfo.resource.toString(), 30f)).pad(3f)
+            statIcons.add(ImageGetter.getResourcePortrait(tileInfo.resource.toString(), 30f)).pad(3f)
 
         // icon for removing the resource by replacing improvement
         if (removeImprovement && tileInfo.hasViewableResource(currentPlayerCiv) && tileInfo.improvement != null && tileInfo.tileResource.isImprovedBy(tileInfo.improvement!!)) {
-            val resourceIcon = ImageGetter.getResourceImage(tileInfo.resource!!, 30f)
+            val resourceIcon = ImageGetter.getResourcePortrait(tileInfo.resource!!, 30f)
             statIcons.add(ImageGetter.getCrossedImage(resourceIcon, 30f))
         }
         return statIcons

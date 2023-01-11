@@ -139,7 +139,7 @@ class EspionageOverviewScreen(val civInfo: CivilizationInfo) : PickerScreen(true
     }
 
     private fun addCityToSelectionTable(city: CityInfo) {
-        citySelectionTable.add(ImageGetter.getNationIndicator(city.civInfo.nation, 30f)).pad(5f)
+        citySelectionTable.add(ImageGetter.getNationPortrait(city.civInfo.nation, 30f)).pad(5f)
         citySelectionTable.add(city.name.toLabel()).pad(5f)
         if (city.espionage.hasSpyOf(civInfo)) {
             citySelectionTable.add(

@@ -52,15 +52,15 @@ object CivilopediaImageGetters {
     }
 
     val construction = { name: String, size: Float ->
-        ImageGetter.getPortraitImage(name, size)
+        ImageGetter.getConstructionPortrait(name, size)
     }
     val improvement = { name: String, size: Float ->
-        ImageGetter.getImprovementIcon(name, size)
+        ImageGetter.getImprovementPortrait(name, size)
     }
     val nation = { name: String, size: Float ->
         val nation = ImageGetter.ruleset.nations[name]
         if (nation == null) null
-        else ImageGetter.getNationIndicator(nation, size)
+        else ImageGetter.getNationPortrait(nation, size)
     }
     val policy = { name: String, size: Float ->
         // policy branch start and complete have no icons but are linked -> nonexistence must be passed down
@@ -75,13 +75,13 @@ object CivilopediaImageGetters {
         else null
     }
     val resource = { name: String, size: Float ->
-        ImageGetter.getResourceImage(name, size)
+        ImageGetter.getResourcePortrait(name, size)
     }
     val technology = { name: String, size: Float ->
-        ImageGetter.getTechIconGroup(name, size)
+        ImageGetter.getTechIconPortrait(name, size)
     }
     val promotion = { name: String, size: Float ->
-        ImageGetter.getPromotionIcon(name, size)
+        ImageGetter.getPromotionPortrait(name, size)
     }
     val terrain = { name: String, size: Float ->
         val terrain = ImageGetter.ruleset.terrains[name]
@@ -89,20 +89,7 @@ object CivilopediaImageGetters {
         else terrainImage(terrain, ImageGetter.ruleset, size)
     }
     val belief = { name: String, size: Float ->
-        // Kludge until we decide how exactly to show Religions
-        fun getInvertedCircledReligionIcon(iconName: String, size: Float) =
-            ImageGetter.getCircledReligionIcon(iconName, size).apply {
-                circle.color = Color.WHITE
-                actor.color = Color.BLACK
-            }
-        if (ImageGetter.religionIconExists(name)) {
-            getInvertedCircledReligionIcon(name, size)
-        } else {
-            val typeName = ImageGetter.ruleset.beliefs[name]?.type?.name
-            if (typeName != null && ImageGetter.religionIconExists(typeName))
-                getInvertedCircledReligionIcon(typeName, size)
-            else null
-        }
+        ImageGetter.getReligionPortrait(name, size)
     }
 }
 

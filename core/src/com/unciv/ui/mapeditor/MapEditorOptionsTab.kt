@@ -75,7 +75,7 @@ class MapEditorOptionsTab(
     private fun pasteHandler() {
         try {
             val clipboardContentsString = Gdx.app.clipboard.contents.trim()
-            val loadedMap = MapSaver.mapFromSavedString(clipboardContentsString, checkSizeErrors = false)
+            val loadedMap = MapSaver.mapFromSavedString(clipboardContentsString)
             editorScreen.loadMap(loadedMap)
         } catch (ex: Exception) {
             ToastPopup("Could not load map!", editorScreen)

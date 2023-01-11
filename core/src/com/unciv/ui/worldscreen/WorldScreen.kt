@@ -47,7 +47,6 @@ import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.saves.QuickSave
 import com.unciv.ui.saves.SaveGameScreen
 import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.extensions.centerX
 import com.unciv.ui.utils.extensions.darken
@@ -132,6 +131,8 @@ class WorldScreen(
     private var nextTurnUpdateJob: Job? = null
 
     private val events = EventBus.EventReceiver()
+
+    var uiEnabled = true
 
 
     init {
@@ -229,7 +230,7 @@ class WorldScreen(
          */
         globalShortcuts.add(Input.Keys.F2) { game.pushScreen(EmpireOverviewScreen(selectedCiv, "Trades")) }    // Economic info
         globalShortcuts.add(Input.Keys.F3) { game.pushScreen(EmpireOverviewScreen(selectedCiv, "Units")) }    // Military info
-        globalShortcuts.add(Input.Keys.F4) { game.pushScreen(EmpireOverviewScreen(selectedCiv, "Diplomacy")) }    // Diplomacy info
+        globalShortcuts.add(Input.Keys.F4) { game.pushScreen(EmpireOverviewScreen(selectedCiv, "Politics")) }    // Diplomacy info
         globalShortcuts.add(Input.Keys.F5) { game.pushScreen(PolicyPickerScreen(this, selectedCiv)) }    // Social Policies Screen
         globalShortcuts.add(Input.Keys.F6) { game.pushScreen(TechPickerScreen(viewingCiv)) }    // Tech Screen
         globalShortcuts.add(Input.Keys.F7) { game.pushScreen(EmpireOverviewScreen(selectedCiv, "Cities")) }    // originally Notification Log
@@ -254,6 +255,21 @@ class WorldScreen(
         globalShortcuts.add(KeyCharAndCode.ctrl('Q')) { game.popScreen() }    //   WorldScreen is the last screen, so this quits
         globalShortcuts.add(Input.Keys.NUMPAD_ADD) { this.mapHolder.zoomIn() }    //   '+' Zoom
         globalShortcuts.add(Input.Keys.NUMPAD_SUBTRACT) { this.mapHolder.zoomOut() }    //   '-' Zoom
+
+        globalShortcuts.add(KeyCharAndCode.ctrl('U')){
+            uiEnabled = !uiEnabled
+            topBar.isVisible = uiEnabled
+            statusButtons.isVisible = uiEnabled
+            techPolicyAndDiplomacy.isVisible = uiEnabled
+            tutorialTaskTable.isVisible = uiEnabled
+            bottomTileInfoTable.isVisible = uiEnabled
+            unitActionsTable.isVisible = uiEnabled
+            notificationsScroll.isVisible = uiEnabled
+            minimapWrapper.isVisible = uiEnabled
+            bottomUnitTable.isVisible = uiEnabled
+            battleTable.isVisible = uiEnabled && battleTable.update() != hide()
+            fogOfWarButton.isVisible = uiEnabled && viewingCiv.isSpectator()
+        }
     }
 
     private fun addKeyboardListener() {
@@ -362,34 +378,36 @@ class WorldScreen(
     // and we don't get any silly concurrency problems!
     private fun update() {
 
-        displayTutorialsOnUpdate()
+        if(uiEnabled){
+            displayTutorialsOnUpdate()
 
-        bottomUnitTable.update()
-        bottomTileInfoTable.updateTileTable(mapHolder.selectedTile)
-        bottomTileInfoTable.x = stage.width - bottomTileInfoTable.width
-        bottomTileInfoTable.y = if (game.settings.showMinimap) minimapWrapper.height else 0f
-        battleTable.update()
+            bottomUnitTable.update()
+            bottomTileInfoTable.updateTileTable(mapHolder.selectedTile)
+            bottomTileInfoTable.x = stage.width - bottomTileInfoTable.width
+            bottomTileInfoTable.y = if (game.settings.showMinimap) minimapWrapper.height else 0f
+            battleTable.update()
 
-        updateSelectedCiv()
+            updateSelectedCiv()
 
-        tutorialTaskTable.clear()
-        val tutorialTask = getCurrentTutorialTask()
-        if (tutorialTask == "" || !game.settings.showTutorials || viewingCiv.isDefeated()) {
-            tutorialTaskTable.isVisible = false
-        } else {
-            tutorialTaskTable.isVisible = true
-            tutorialTaskTable.add(tutorialTask.toLabel()
+            tutorialTaskTable.clear()
+            val tutorialTask = getCurrentTutorialTask()
+            if (tutorialTask == "" || !game.settings.showTutorials || viewingCiv.isDefeated()) {
+                tutorialTaskTable.isVisible = false
+            } else {
+                tutorialTaskTable.isVisible = true
+                tutorialTaskTable.add(tutorialTask.toLabel()
                     .apply { setAlignment(Align.center) }).pad(10f)
-            tutorialTaskTable.pack()
-            tutorialTaskTable.centerX(stage)
-            tutorialTaskTable.y = topBar.y - tutorialTaskTable.height
+                tutorialTaskTable.pack()
+                tutorialTaskTable.centerX(stage)
+                tutorialTaskTable.y = topBar.y - tutorialTaskTable.height
+            }
+
+            if (fogOfWar) minimapWrapper.update(selectedCiv)
+            else minimapWrapper.update(viewingCiv)
+
+            unitActionsTable.update(bottomUnitTable.selectedUnit)
+            unitActionsTable.y = bottomUnitTable.height
         }
-
-        if (fogOfWar) minimapWrapper.update(selectedCiv)
-        else minimapWrapper.update(viewingCiv)
-
-        unitActionsTable.update(bottomUnitTable.selectedUnit)
-        unitActionsTable.y = bottomUnitTable.height
 
         mapHolder.resetArrows()
         if (UncivGame.Current.settings.showUnitMovements) {
@@ -622,6 +640,8 @@ class WorldScreen(
 
     fun switchToNextUnit() {
         // Try to select something new if we already have the next pending unit selected.
+        if (bottomUnitTable.selectedUnit != null)
+            bottomUnitTable.selectedUnit!!.due = false
         val nextDueUnit = viewingCiv.cycleThroughDueUnits(bottomUnitTable.selectedUnit)
         if (nextDueUnit != null) {
             mapHolder.setCenterPosition(
@@ -630,10 +650,12 @@ class WorldScreen(
                 selectUnit = false
             )
             bottomUnitTable.selectUnit(nextDueUnit)
-            shouldUpdate = true
-            // Unless 'wait' action is chosen, the unit will not be considered due anymore.
-            nextDueUnit.due = false
+        } else {
+            mapHolder.removeAction(mapHolder.blinkAction)
+            mapHolder.selectedTile = null
+            bottomUnitTable.selectUnit()
         }
+        shouldUpdate = true
     }
 
     private fun isNextTurnUpdateRunning(): Boolean {

@@ -76,7 +76,6 @@ class GameSettings {
 
     var multiplayer = GameSettingsMultiplayer()
 
-    var showExperimentalWorldWrap = false // We're keeping this as a config due to ANR problems on Android phones for people who don't know what they're doing :/
     var enableEspionageOption = false
 
     var lastOverviewPage: String = "Cities"
@@ -88,6 +87,8 @@ class GameSettings {
 
     var fontFamily: String = Fonts.DEFAULT_FONT_FAMILY
     var fontSizeMultiplier: Float = 1f
+
+    var enableEasterEggs: Boolean = true
 
     /** Maximum zoom-out of the map - performance heavy */
     var maxWorldZoomOut = 2f
@@ -179,6 +180,7 @@ enum class LocaleCode(var language: String, var country: String) {
     Turkish("tr", "TR"),
     Ukrainian("uk", "UA"),
     Vietnamese("vi", "VN"),
+    Afrikaans("af", "ZA")
 }
 
 class GameSettingsMultiplayer {

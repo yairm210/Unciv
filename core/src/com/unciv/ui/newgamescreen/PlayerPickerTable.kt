@@ -83,20 +83,21 @@ class PlayerPickerTable(
             playerListTable.add(getPlayerTable(player)).width(civBlocksWidth).padBottom(20f).row()
         }
         if (!locked && gameParameters.players.size < gameBasics.nations.values.count { it.isMajorCiv() }) {
-            val addPlayerButton = "+".toLabel(Color.BLACK, 30).apply { this.setAlignment(Align.center) }
-                    .surroundWithCircle(50f)
-                    .onClick {
-                        var player = Player()
-                        // no random mode - add first not spectator civ if still available
-                        if (noRandom) {
-                            val availableCiv = getAvailablePlayerCivs().firstOrNull()
-                            if (availableCiv != null) player = Player(availableCiv.name)
-                            // Spectators only Humans
-                            else player = Player(Constants.spectator).apply { playerType = PlayerType.Human }
-                        }
-                        gameParameters.players.add(player)
-                        update()
+            val addPlayerButton = "+".toLabel(Color.BLACK, 30)
+                .apply { this.setAlignment(Align.center) }
+                .surroundWithCircle(50f)
+                .onClick {
+                    var player = Player()
+                    // no random mode - add first not spectator civ if still available
+                    if (noRandom) {
+                        val availableCiv = getAvailablePlayerCivs().firstOrNull()
+                        if (availableCiv != null) player = Player(availableCiv.name)
+                        // Spectators only Humans
+                        else player = Player(Constants.spectator).apply { playerType = PlayerType.Human }
                     }
+                    gameParameters.players.add(player)
+                    update()
+                }
             playerListTable.add(addPlayerButton).pad(10f)
         }
         // enable start game when more than 1 active player
@@ -218,8 +219,8 @@ class PlayerPickerTable(
         val nationTable = Table()
         val nationImage =
             if (player.chosenCiv == Constants.random)
-                ImageGetter.getRandomNationIndicator(40f)
-            else ImageGetter.getNationIndicator(previousScreen.ruleset.nations[player.chosenCiv]!!, 40f)
+                ImageGetter.getRandomNationPortrait(40f)
+            else ImageGetter.getNationPortrait(previousScreen.ruleset.nations[player.chosenCiv]!!, 40f)
         nationTable.add(nationImage).pad(5f)
         nationTable.add(player.chosenCiv.toLabel()).pad(5f)
         nationTable.touchable = Touchable.enabled

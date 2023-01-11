@@ -67,14 +67,14 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         var cost = baseUnitCost * numberOfUnitsToPayFor * (1 + gameProgress)
         cost = cost.pow(1 + gameProgress / 3) // Why 3? To spread 1 to 1.33
 
-        if (!civInfo.isPlayerCivilization())
+        if (!civInfo.isHuman())
             cost *= civInfo.gameInfo.getDifficulty().aiUnitMaintenanceModifier
 
         return cost.toInt()
     }
 
-    private fun getTransportationUpkeep(): Int {
-        var transportationUpkeep = 0f
+    private fun getTransportationUpkeep(): Stats {
+        val transportationUpkeep = Stats()
         // we no longer use .flatMap, because there are a lot of tiles and keeping them all in a list
         // just to go over them once is a waste of memory - there are low-end phones who don't have much ram
 
@@ -88,14 +88,38 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                 if (tile.isCityCenter()) continue
                 if (tile.getUnpillagedRoad() == RoadStatus.None) continue // Cheap checks before pricey checks
                 if (ignoredTileTypes.any { tile.matchesFilter(it, civInfo) }) continue
-
-                transportationUpkeep += tile.getUnpillagedRoad().upkeep
+                val road = tile.getUnpillagedRoadImprovement()
+                if (road!!.hasUnique(UniqueType.ImprovementMaintenance, StateForConditionals(civInfo, tile = tile))) {
+                    for(unique in road.getMatchingUniques(UniqueType.ImprovementMaintenance)) {
+                        transportationUpkeep.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
+                    }
+                }
+                if (road.hasUnique(UniqueType.ImprovementAllMaintenance, StateForConditionals(civInfo, tile = tile))) {
+                    for(unique in road.getMatchingUniques(UniqueType.ImprovementAllMaintenance)) {
+                        transportationUpkeep.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
+                    }
+                }
+                // backwards compatible
+                if (road.hasUnique(UniqueType.OldImprovementMaintenance, StateForConditionals(civInfo, tile = tile))) {
+                    transportationUpkeep.add(Stat.Gold, tile.getUnpillagedRoad().upkeep.toFloat())
+                }
+            }
+        }
+        // tabulate neutral roads
+        for (position in civInfo.neutralRoads) {
+            val tile = civInfo.gameInfo.tileMap[position]
+            if (tile.getUnpillagedRoad() == RoadStatus.None) continue // Cheap checks before pricey checks
+            val road = tile.getUnpillagedRoadImprovement()
+            if (road!!.hasUnique(UniqueType.ImprovementAllMaintenance, StateForConditionals(civInfo, tile = tile))) {
+                for(unique in road.getMatchingUniques(UniqueType.ImprovementAllMaintenance)) {
+                    transportationUpkeep.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
+                }
             }
         }
         for (unique in civInfo.getMatchingUniques(UniqueType.RoadMaintenance))
-            transportationUpkeep *= unique.params[0].toPercent()
+            transportationUpkeep.times(unique.params[0].toPercent())
 
-        return transportationUpkeep.toInt()
+        return transportationUpkeep
     }
 
     fun getUnitSupply(): Int {
@@ -156,7 +180,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             }
         }
 
-        statMap["Transportation upkeep"] = Stats(gold = -getTransportationUpkeep().toFloat())
+        statMap["Transportation upkeep"] = getTransportationUpkeep() * -1
         statMap["Unit upkeep"] = Stats(gold = -getUnitMaintenance().toFloat())
 
 
@@ -250,13 +274,17 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             statMap.add("Policies", civInfo.policies.getAdoptedPolicies().count { !Policy.isBranchCompleteByName(it) } / 2)
         }
 
+        val transportUpkeep = getTransportationUpkeep() * -1
+        if (transportUpkeep.happiness != 0f)
+            statMap["Transportation Upkeep"] = transportUpkeep.happiness
+
         for ((key, value) in getGlobalStatsFromUniques())
             statMap.add(key,value.happiness)
 
         return statMap
     }
 
-    fun getGlobalStatsFromUniques():StatMap{
+    fun getGlobalStatsFromUniques():StatMap {
         val statMap = StatMap()
         if (civInfo.religionManager.religion != null) {
             for (unique in civInfo.religionManager.religion!!.getFounderUniques()) {
@@ -269,13 +297,16 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                 if (unique.isOfType(UniqueType.StatsFromGlobalFollowers))
                     statMap.add(
                         "Religion",
-                        unique.stats * civInfo.religionManager.numberOfFollowersFollowingThisReligion(unique.params[2]).toFloat() / unique.params[1].toFloat()
+                        unique.stats * civInfo.religionManager.numberOfFollowersFollowingThisReligion(
+                            unique.params[2]
+                        ).toFloat() / unique.params[1].toFloat()
                     )
             }
         }
 
         for (unique in civInfo.getMatchingUniques(UniqueType.StatsPerPolicies)) {
-            val amount = civInfo.policies.getAdoptedPolicies().count { !Policy.isBranchCompleteByName(it) } / unique.params[1].toInt()
+            val amount = civInfo.policies.getAdoptedPolicies()
+                .count { !Policy.isBranchCompleteByName(it) } / unique.params[1].toInt()
             statMap.add("Policies", unique.stats.times(amount))
         }
 
@@ -291,6 +322,14 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             statsPerNaturalWonder.add(unique.stats)
 
         statMap.add("Natural Wonders", statsPerNaturalWonder.times(civInfo.naturalWonders.size))
+
+        if (statMap.contains(UniqueTarget.CityState.name)) {
+            for (unique in civInfo.getMatchingUniques(UniqueType.BonusStatsFromCityStates)) {
+                val bonusPercent = unique.params[0].toPercent()
+                val bonusStat = Stat.valueOf(unique.params[1])
+                statMap[UniqueTarget.CityState.name]!![bonusStat] *= bonusPercent
+            }
+        }
 
         return statMap
     }

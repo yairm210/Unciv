@@ -9,9 +9,9 @@ import com.unciv.logic.MapSaver
 import com.unciv.logic.UncivShowableException
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.utils.AutoScrollPane
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyCharAndCode
@@ -105,7 +105,7 @@ class MapEditorLoadTab(
             }
         }
         try {
-            val map = MapSaver.loadMap(chosenMap!!, checkSizeErrors = false)
+            val map = MapSaver.loadMap(chosenMap!!)
 
             val missingMods = map.mapParameters.mods.filter { it !in RulesetCache }.toMutableList()
             // [TEMPORARY] conversion of old maps with a base ruleset contained in the mods

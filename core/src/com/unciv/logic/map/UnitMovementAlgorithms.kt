@@ -167,7 +167,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
                     }
 
                     if (!distanceToTiles.containsKey(neighbor) || distanceToTiles[neighbor]!!.totalDistance > totalDistanceToTile) { // this is the new best path
-                        if (totalDistanceToTile < unitMovement)  // We can still keep moving from here!
+                        if (totalDistanceToTile < unitMovement- Constants.minimumMovementEpsilon)  // We can still keep moving from here!
                             updatedTiles += neighbor
                         else
                             totalDistanceToTile = unitMovement
@@ -404,8 +404,8 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         while (allowedTile == null && distance < 5) {
             distance++
             allowedTile = unit.getTile().getTilesAtDistance(distance)
-                // can the unit be placed safely there?
-                .filter { canMoveTo(it) }
+                // can the unit be placed safely there? Is tile either unowned or friendly?
+                .filter { canMoveTo(it) && it.getOwner()?.isAtWarWith(unit.civInfo) != true }
                 // out of those where it can be placed, can it reach them in any meaningful way?
                 .firstOrNull { getPathBetweenTiles(unit.currentTile, it).contains(it) }
         }
@@ -706,7 +706,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         if (firstUnit != null && unit.civInfo != firstUnit.civInfo) {
             // Allow movement through unguarded, at-war Civilian Unit. Capture on the way
             // But not for Embarked Units capturing on Water
-            if (!(unit.isEmbarked() && tile.isWater)
+            if (!(unit.baseUnit.isLandUnit() && tile.isWater)
                     && firstUnit.isCivilian() && unit.civInfo.isAtWarWith(firstUnit.civInfo))
                 return true
             // Cannot enter hostile tile with any unit in there
@@ -809,7 +809,7 @@ class PathfindingCache(private val unit: MapUnit) {
     private fun isValid(): Boolean = (movement == unit.currentMovement) && (unit.getTile() == currentTile)
 
     fun getShortestPathCache(destination: TileInfo): List<TileInfo> {
-        if (unit.civInfo.isPlayerCivilization()) return listOf()
+        if (unit.civInfo.isHuman()) return listOf()
         if (isValid() && this.destination == destination) {
             return shortestPathCache
         }
@@ -817,7 +817,7 @@ class PathfindingCache(private val unit: MapUnit) {
     }
 
     fun setShortestPathCache(destination: TileInfo, newShortestPath: List<TileInfo>) {
-        if (unit.civInfo.isPlayerCivilization()) return
+        if (unit.civInfo.isHuman()) return
         if (isValid()) {
             shortestPathCache = newShortestPath
             this.destination = destination
@@ -825,14 +825,14 @@ class PathfindingCache(private val unit: MapUnit) {
     }
 
     fun getDistanceToTiles(zoneOfControl: Boolean): PathsToTilesWithinTurn? {
-        if (unit.civInfo.isPlayerCivilization()) return null
+        if (unit.civInfo.isHuman()) return null
         if (isValid())
             return distanceToTilesCache[zoneOfControl]
         return null
     }
 
     fun setDistanceToTiles(zoneOfControl: Boolean, paths: PathsToTilesWithinTurn) {
-        if (unit.civInfo.isPlayerCivilization()) return
+        if (unit.civInfo.isHuman()) return
         if (!isValid()) {
             clear() // we want to reset the entire cache at this point
         }

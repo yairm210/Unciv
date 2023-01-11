@@ -117,7 +117,7 @@ class ReligiousBeliefsPickerScreen (
             AskTextPopup(
                 this,
                 label = "Choose a name for your religion",
-                icon = ImageGetter.getCircledReligionIcon(religionName!!, 80f),
+                icon = ImageGetter.getReligionPortrait(religionName!!, 80f),
                 defaultText = religionName!!,
                 validate = { religionName ->
                     religionName != Constants.noReligionName
@@ -150,7 +150,7 @@ class ReligiousBeliefsPickerScreen (
         for (religionName in ruleset.religions) {
             if (religionName == this.religionName)
                 scrollTo = iconsTable.packIfNeeded().prefWidth
-            val button = Button(ImageGetter.getCircledReligionIcon(religionName, 60f), skin)
+            val button = Button(ImageGetter.getReligionPortrait(religionName, 60f), skin)
             buttonSetup(button, religionName)
             if (religionName == this.religionName) button.disable(Color(greenDisableColor))
             else if (gameInfo.religions.keys.any { it == religionName }) button.disable(redDisableColor)

@@ -12,6 +12,7 @@ import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.newgamescreen.TranslatedSelectBox
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.UncivSlider
 import com.unciv.ui.utils.WrappableLabel
@@ -121,13 +122,11 @@ private fun addUnitIconAlphaSlider(table: Table, settings: GameSettings, selectB
 private fun addScreenSizeSelectBox(table: Table, settings: GameSettings, selectBoxMinWidth: Float, onResolutionChange: () -> Unit) {
     table.add("Screen Size".toLabel()).left().fillX()
 
-    val screenSizeSelectBox = SelectBox<ScreenSize>(table.skin)
-    screenSizeSelectBox.items = Array(ScreenSize.values())
-    screenSizeSelectBox.selected = settings.screenSize
+    val screenSizeSelectBox = TranslatedSelectBox(ScreenSize.values().map { it.name }, settings.screenSize.name,table.skin)
     table.add(screenSizeSelectBox).minWidth(selectBoxMinWidth).pad(10f).row()
 
     screenSizeSelectBox.onChange {
-        settings.screenSize = screenSizeSelectBox.selected
+        settings.screenSize = ScreenSize.valueOf(screenSizeSelectBox.selected.value)
         onResolutionChange()
     }
 }

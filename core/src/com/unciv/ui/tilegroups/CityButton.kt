@@ -7,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.battle.CityCombatant
@@ -16,21 +15,42 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.models.translations.tr
 import com.unciv.ui.cityscreen.CityReligionInfoTable
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.BorderedTable
 import com.unciv.ui.utils.Fonts
-import com.unciv.ui.utils.extensions.brighten
+import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.centerX
-import com.unciv.ui.utils.extensions.centerY
+import com.unciv.ui.utils.extensions.colorFromRGB
 import com.unciv.ui.utils.extensions.onClick
-import com.unciv.ui.utils.extensions.setFontSize
+import com.unciv.ui.utils.extensions.toGroup
 import com.unciv.ui.utils.extensions.toLabel
 import kotlin.math.max
 import kotlin.math.min
+
+object Colors {
+
+    val construction = colorFromRGB(196,140,62)
+    val growh =  colorFromRGB(130,225,78)
+
+}
+
+class IconTable(borderColor: Color, innerColor: Color, borderSize: Float, borderOnTop:Boolean=true): BorderedTable(
+    path = "WorldScreen/CityButton/IconTable",
+    defaultInner = BaseScreen.skinStrings.roundedEdgeRectangleMidShape,
+    defaultBorder = BaseScreen.skinStrings.roundedEdgeRectangleMidBorderShape,
+    borderColor = borderColor,
+    innerColor = innerColor,
+    borderSize = borderSize,
+    borderOnTop = borderOnTop
+) {
+    override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
+}
 
 class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Table(BaseScreen.skin){
     val worldScreen = tileGroup.worldScreen
@@ -51,10 +71,8 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         clear()
         setButtonActions()
         addAirUnitTable()
-        if (showAdditionalInfoTags && city.health < city.getMaxHealth().toFloat()) {
-            val healthBar = ImageGetter.getHealthBar(city.health.toFloat(), city.getMaxHealth().toFloat(), 100f)
-            add(healthBar).row()
-        }
+
+        add(getDefenceTable()).row()
 
         iconTable = getIconTable()
         add(iconTable).row()
@@ -62,12 +80,21 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         if (city.civInfo.isCityState() && city.civInfo.knows(worldScreen.viewingCiv)) {
             val diplomacyManager = city.civInfo.getDiplomacyManager(worldScreen.viewingCiv)
             val influenceBar = getInfluenceBar(diplomacyManager.getInfluence(), diplomacyManager.relationshipLevel())
-            add(influenceBar).row()
+            add(influenceBar).padTop(1f).row()
         }
 
-
+        add(getStatuses()).padTop(3f)
 
         pack()
+
+        if (showAdditionalInfoTags && city.health < city.getMaxHealth().toFloat()) {
+            val healthBar = ImageGetter.getHealthBar(city.health.toFloat(),
+                city.getMaxHealth().toFloat(), 100f, 3f)
+            addActor(healthBar)
+            healthBar.center(this)
+            healthBar.y = iconTable.y + iconTable.height-healthBar.height - 1f
+        }
+
         setOrigin(Align.center)
         centerX(tileGroup)
 
@@ -128,9 +155,9 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
             setOrigin(Align.center)
             if (!isButtonMoved) {
                 rotation = 180f
-                setPosition(positionX - width/2, 0f)
+                setPosition(positionX - width/2, -height)
             } else
-                setPosition(positionX - width/2, -height/4) // height compensation because of asymmetrical icon
+                setPosition(positionX - width/2, -height) // height compensation because of asymmetrical icon
         }
         iconTable.addActor(indicator)
         listOfHiddenUnitMarkers.add(indicator)
@@ -139,13 +166,18 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
     private fun addAirUnitTable() {
         if (!showAdditionalInfoTags || tileGroup.tileInfo.airUnits.isEmpty()) return
         val secondaryColor = city.civInfo.nation.getInnerColor()
-        val airUnitTable = Table()
-        airUnitTable.background = BaseScreen.skinStrings.getUiBackground("WorldScreen/CityButton/AirUnitTable", BaseScreen.skinStrings.roundedEdgeRectangleShape, city.civInfo.nation.getOuterColor()).apply { setMinSize(0f,0f) }
+        val airUnitTable = BorderedTable(
+            path="WorldScreen/CityButton/AirUnitTable",
+            defaultInner = BaseScreen.skinStrings.roundedEdgeRectangleSmallShape,
+            defaultBorder = BaseScreen.skinStrings.roundedEdgeRectangleSmallShape,
+            innerColor = city.civInfo.nation.getOuterColor(),
+            borderColor = city.civInfo.nation.getOuterColor()
+        )
         val aircraftImage = ImageGetter.getImage("OtherIcons/Aircraft")
         aircraftImage.color = secondaryColor
         airUnitTable.add(aircraftImage).size(15f)
         airUnitTable.add(tileGroup.tileInfo.airUnits.size.toString().toLabel(secondaryColor,14))
-        add(airUnitTable).row()
+        add(airUnitTable).padBottom(5f).minWidth(50f).row()
     }
 
     private fun belongsToViewingCiv() = city.civInfo == worldScreen.viewingCiv
@@ -187,102 +219,133 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         }
     }
 
-    private fun getIconTable(forPopup: Boolean = false): Table {
-        val secondaryColor = city.civInfo.nation.getInnerColor()
-        class IconTable: Table() {
-            override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
+    private fun getDefenceTable(forPopup: Boolean = false): Group {
+        val borderColor = if (city.civInfo == worldScreen.viewingCiv)
+            colorFromRGB(255, 237, 200) else Color.BLACK
+
+        val table = BorderedTable(
+            path="WorldScreen/CityButton/DefenceTable",
+            innerColor = Color.BLACK,
+            borderColor = borderColor,
+            defaultInner = BaseScreen.skinStrings.roundedTopEdgeRectangleSmallShape,
+            defaultBorder = BaseScreen.skinStrings.roundedTopEdgeRectangleSmallBorderShape,
+            borderSize = 5f)
+        table.pad(2f, 3f, 0f, 3f)
+
+        val cityStrength = CityCombatant(city).getDefendingStrength()
+        val cityStrengthLabel = "${Fonts.strength}$cityStrength".toLabel(fontSize = 12)
+        cityStrengthLabel.setAlignment(Align.center)
+
+        if (!forPopup)
+            table.add(cityStrengthLabel).grow().center()
+        return table
+    }
+
+    private fun getStatuses() : Table {
+
+        val table = Table()
+
+        if (belongsToViewingCiv() && city.isConnectedToCapital() && !city.isCapital()) {
+            val connectionImage = ImageGetter.getStatIcon("CityConnection")
+            table.add(connectionImage).size(18f)
         }
-        val iconTable = IconTable().apply { isTransform = false }
-        iconTable.touchable = Touchable.enabled
-        iconTable.background = BaseScreen.skinStrings.getUiBackground("WorldScreen/CityButton/IconTable", BaseScreen.skinStrings.roundedEdgeRectangleShape, city.civInfo.nation.getOuterColor())
 
         if (city.isInResistance()) {
             val resistanceImage = ImageGetter.getImage("StatIcons/Resistance")
-            iconTable.add(resistanceImage).size(20f).padLeft(5f)
+            table.add(resistanceImage).size(18f).padLeft(2f)
         }
 
         if (city.isPuppet) {
             val puppetImage = ImageGetter.getImage("OtherIcons/Puppet")
-            puppetImage.color = secondaryColor
-            iconTable.add(puppetImage).size(20f).padLeft(5f)
+            table.add(puppetImage).size(18f).padLeft(2f)
         }
 
         if (city.isBeingRazed) {
             val fireImage = ImageGetter.getImage("OtherIcons/Fire")
-            iconTable.add(fireImage).size(20f).padLeft(5f)
+            table.add(fireImage).size(18f).padLeft(2f)
         }
+
+        if (belongsToViewingCiv() && city.isWeLoveTheKingDayActive()) {
+            val wtlkdImage = ImageGetter.getImage("OtherIcons/WLTKD")
+            table.add(wtlkdImage).size(18f).padLeft(2f)
+        }
+
+        return table
+
+    }
+
+    private fun getIconTable(forPopup: Boolean = false): Table {
+        val secondaryColor = city.civInfo.nation.getInnerColor()
+        val borderColor = if (city.civInfo == worldScreen.viewingCiv)
+            colorFromRGB(233, 233, 172) else Color.BLACK
+        val borderSize = if (city.civInfo == worldScreen.viewingCiv) 4f else 2f     /* 7 */
+
+        val iconTable = IconTable(
+            borderColor = borderColor,
+            innerColor = city.civInfo.nation.getOuterColor().cpy().apply { a = 0.9f },
+            borderSize = borderSize
+        ).apply {
+            isTransform = false
+        }
+        iconTable.pad(0f).padLeft(5f)
+        iconTable.touchable = Touchable.enabled
+
+        val popGroup = getPopulationGroup(uncivGame.viewEntireMapForDebug
+                || belongsToViewingCiv()
+                || worldScreen.viewingCiv.isSpectator())
+        val popGroupCell = iconTable.add(popGroup).minHeight(34f)
+
+        val labelTable = Table()
 
         if (city.isCapital()) {
             if (city.civInfo.isCityState()) {
                 val cityStateImage = ImageGetter.getNationIcon("CityState")
-                        .apply { color = secondaryColor }
-                iconTable.add(cityStateImage).size(20f).padLeft(5f)
+                    .apply { color = secondaryColor }
+                labelTable.add(cityStateImage).size(20f).padRight(5f)
             } else {
-                val starImage = ImageGetter.getImage("OtherIcons/Star").apply { color = Color.LIGHT_GRAY }
-                iconTable.add(starImage).size(20f).padLeft(5f)
+                val starImage = ImageGetter.getImage("OtherIcons/Capital")
+                labelTable.add(starImage).size(20f).padRight(5f)
             }
-        } else if (belongsToViewingCiv() && city.isConnectedToCapital()) {
-            val connectionImage = ImageGetter.getStatIcon("CityConnection")
-            connectionImage.color = secondaryColor
-            iconTable.add(connectionImage).size(20f).padLeft(5f)
         }
 
-        val populationGroup = getPopulationGroup(uncivGame.viewEntireMapForDebug
-                || belongsToViewingCiv()
-                || worldScreen.viewingCiv.isSpectator())
-        iconTable.add(populationGroup).padLeft(5f)
-        populationGroup.toBack()
+        val cityButtonText = city.name.tr()
+        val label = cityButtonText.toLabel(secondaryColor).apply { setAlignment(Align.center) }
+        labelTable.add(label).growY().center()
 
-        val cityButtonText = city.name
-        val label = cityButtonText.toLabel(secondaryColor)
-        val rightPadding = if (city.civInfo.isCityState()) 10f else 20f // CS needs less padding here as there will be an icon
-        iconTable.add(label).padRight(rightPadding).padLeft(20f) // sufficient horizontal padding
-                .fillY() // provide full-height clicking area
-        label.toBack() // this is so the label is rendered right before the population group,
-        //  so we save the font texture and avoid another texture switch
-
-        val cityStrength = CityCombatant(city).getDefendingStrength()
-        val cityStrengthLabel =
-            "${Fonts.strength}$cityStrength".toLabel(city.civInfo.nation.getInnerColor(), 10)
         if (!forPopup) {
-            // City strength is added NOT inside the table, but rather - top-center to it
-            iconTable.addActor(cityStrengthLabel)        // We create this here to we can .toBack() it as well.
-            cityStrengthLabel.toBack()
+            val cityReligion = city.religion.getMajorityReligion()
+            if (cityReligion != null) {
+                val religionImage = ImageGetter.getReligionIcon(cityReligion.getIconName()).apply {
+                    color = secondaryColor }.toGroup(20f)
+                labelTable.add(religionImage).size(20f).padLeft(5f)
+            }
         }
+
+        labelTable.pack()
+        iconTable.add(labelTable).padLeft(10f).padRight(10f).expandY().minHeight(32f).center()
+        label.toFront()
 
         if (city.civInfo.isCityState()) {
             val cityStateImage = ImageGetter.getImage("CityStateIcons/" +city.civInfo.cityStateType.name).apply { color = secondaryColor }
-            iconTable.add(cityStateImage).size(20f).fillY()
+            iconTable.padLeft(10f)
+            iconTable.add(cityStateImage).size(20f).fillY().padRight(5f)
         }
 
         if (uncivGame.viewEntireMapForDebug || belongsToViewingCiv() || worldScreen.viewingCiv.isSpectator()) {
             val constructionGroup = getConstructionGroup(city.cityConstructions)
             iconTable.add(constructionGroup)
-            constructionGroup.toBack() // We do this so the construction group is right before the label.
-            // What we end up with is construction group > label > population group.
-            // Since the label in the construction group is rendered *last* (toFront()),
-            // and the two labels in the the population group are rendered *first* (toBack()),
-            // What we get is that ALL 4 LABELS are rendered one after the other,
-            // and so the glyph texture only needs to be swapped in once rather than 4 times! :)
         } else if (city.civInfo.isMajorCiv()) {
             val nationIcon = ImageGetter.getNationIcon(city.civInfo.nation.name)
             nationIcon.color = secondaryColor
-            iconTable.add(nationIcon).size(20f)
+            iconTable.add(nationIcon).size(20f).padRight(7f)
+            popGroupCell.padLeft(5f)
         }
 
-        if (!forPopup) {
-            val cityReligion = city.religion.getMajorityReligion()
-            if (cityReligion != null) {
-                val religionImage = ImageGetter.getReligionImage(cityReligion.getIconName()).apply { color = city.civInfo.nation.getInnerColor() }
-                iconTable.add(religionImage).size(20f).padLeft(5f).fillY()
-            }
-        }
-
+        if (city.civInfo == worldScreen.viewingCiv)
+            iconTable.bgBorder.toFront()
+        else
+            iconTable.bgBorder.toBack()
         iconTable.pack()
-        if (!forPopup) {
-            cityStrengthLabel.x = label.x // so it'll be aligned right above the city name
-            cityStrengthLabel.setY(iconTable.height, Align.top)
-        }
         return iconTable
     }
 
@@ -309,23 +372,20 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
     }
 
     private fun getPopulationGroup(showGrowth: Boolean): Group {
-        val growthGreen = Color(0.0f, 0.5f, 0.0f, 1.0f)
-
-
-        class PopulationGroup:Group() { // for recognition in the profiler
-            override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
+        val secondaryColor = city.civInfo.nation.getInnerColor()
+        val table = Table().apply { isTransform = false }
+        val popLabel = city.population.population.toString()
+            .toLabel(fontColor = secondaryColor, fontSize = 18).apply {
+            setAlignment(Align.center)
         }
-        val group = PopulationGroup().apply { isTransform=false }
+        table.add(popLabel).minHeight(30f).apply {
+            if (showGrowth)
+                minWidth(26f)
+            else
+                minWidth(17f)
+        }.pad(0f)
 
-        val populationLabel = city.population.population.toLabel()
-        populationLabel.color = city.civInfo.nation.getInnerColor()
-
-        group.addActor(populationLabel)
-
-        val groupHeight = 25f
-        var groupWidth = populationLabel.width
-        if (showGrowth) groupWidth += 12f
-        group.setSize(groupWidth, groupHeight)
+        table.pack()
 
         if (showGrowth) {
             var growthPercentage = city.population.foodStored / city.population.getFoodToNextPopulation().toFloat()
@@ -335,81 +395,64 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
             // Without it, it caused the growth bar's height to exceed that of the group's.
             if (growthPercentage > 1) growthPercentage = 1.0f
 
-            val growthBar = ImageGetter.getProgressBarVertical(2f, groupHeight,
-                    if (city.isStarving()) 1.0f else growthPercentage,
-                    if (city.isStarving()) Color.RED else growthGreen, Color.BLACK)
-            growthBar.x = populationLabel.width + 3
-            growthBar.centerY(group)
+            val growthBar = ImageGetter.getProgressBarVertical(4f, 30f,
+                if (city.isStarving()) 1.0f else growthPercentage,
+                if (city.isStarving()) Color.RED else Colors.growh, Color.BLACK, 1f)
+            growthBar.color.a = 0.8f
+            table.add(growthBar).padTop(1f).padBottom(1f)
 
-            group.addActor(growthBar)
-
-            val turnLabel: Label = when {
+            val turnLabelText = when {
                 city.isGrowing() -> {
                     val turnsToGrowth = city.getNumTurnsToNewPopulation()
-                    if (turnsToGrowth != null && turnsToGrowth < 100) turnsToGrowth.toString().toLabel() else "∞".toLabel()
+                    if (turnsToGrowth != null && turnsToGrowth < 100) turnsToGrowth.toString() else "∞"
                 }
                 city.isStarving() -> {
                     val turnsToStarvation = city.getNumTurnsToStarvation()
-                    if (turnsToStarvation != null && turnsToStarvation < 100) turnsToStarvation.toString().toLabel() else "∞".toLabel()
+                    if (turnsToStarvation != null && turnsToStarvation < 100) turnsToStarvation.toString() else "∞"
                 }
-                else -> "∞".toLabel()
+                else -> "∞"
             }
-            turnLabel.color = city.civInfo.nation.getInnerColor()
-            turnLabel.setFontSize(14)
-            turnLabel.pack()
 
-            group.addActor(turnLabel)
-            turnLabel.toBack() // this is so both labels are rendered next to each other -
-            // this is important because when switching to a label, we switch out the texture we're using to use the font texture,
-            //  so this has a direct impact on framerate!
-            turnLabel.x = growthBar.x + growthBar.width + 1
+            val turnLabel = turnLabelText.toLabel(fontColor = secondaryColor, fontSize = 13)
+            table.add(turnLabel).expandY().bottom().padLeft(3f)
+            turnLabel.toBack()
         }
 
-        populationLabel.centerY(group)
-
-        return group
+        return table
     }
 
     private fun getConstructionGroup(cityConstructions: CityConstructions): Group {
+        val secondaryColor = city.civInfo.nation.getInnerColor()
         val cityCurrentConstruction = cityConstructions.getCurrentConstruction()
 
-        class ConstructionGroup : Group() { // for recognition in the profiler
-            override fun draw(batch: Batch?, parentAlpha: Float) {
-                super.draw(batch, parentAlpha)
+        val table = Table().apply { isTransform = false }
+        val tableHeight = 30f
+
+        if (cityConstructions.currentConstructionFromQueue.isNotEmpty()) {
+
+            if (cityCurrentConstruction !is PerpetualConstruction) {
+                val turnsToConstruction = cityConstructions.turnsToConstruction(cityCurrentConstruction.name)
+                val label = (if (turnsToConstruction < 100) turnsToConstruction.toString() else "∞").toLabel(secondaryColor, 13)
+
+                table.add(label).expandY().bottom().padRight(3f)
+
+                val constructionPercentage = cityConstructions.getWorkDone(cityCurrentConstruction.name) /
+                        (cityCurrentConstruction as INonPerpetualConstruction).getProductionCost(cityConstructions.cityInfo.civInfo).toFloat()
+                val productionBar = ImageGetter.getProgressBarVertical(4f, tableHeight, constructionPercentage,
+                    Colors.construction, Color.BLACK, 1f)
+                productionBar.color.a = 0.8f
+
+                table.add(productionBar).padTop(1f).padBottom(1f)
             }
+
+            val constructionImage = ImageGetter.getConstructionPortrait(cityCurrentConstruction.name, 24f)
+            table.add(constructionImage).minHeight(32f).minWidth(26f)
+                .expand().center().right().pad(0f).padRight(4f).padLeft(3f)
+            table.pack()
         }
 
-        val group = ConstructionGroup().apply { isTransform = false }
-        val groupHeight = 25f
-        val groupWidth = if (cityCurrentConstruction is PerpetualConstruction) 15f else 40f
-        group.setSize(groupWidth, groupHeight)
-        val constructionImage = ImageGetter.getPortraitImage(cityConstructions.currentConstructionFromQueue, 25f)
-        constructionImage.centerY(group)
-        constructionImage.x = group.width - constructionImage.width
-        group.addActor(constructionImage)
 
-        val secondaryColor = cityConstructions.cityInfo.civInfo.nation.getInnerColor()
-        if (cityCurrentConstruction !is PerpetualConstruction) {
-            val turnsToConstruction = cityConstructions.turnsToConstruction(cityCurrentConstruction.name)
-            val label = (if (turnsToConstruction < 100) turnsToConstruction.toString() else "∞").toLabel(secondaryColor, 14)
-            label.pack()
-            group.addActor(label)
-
-            val constructionPercentage = cityConstructions.getWorkDone(cityCurrentConstruction.name) /
-                    (cityCurrentConstruction as INonPerpetualConstruction).getProductionCost(cityConstructions.cityInfo.civInfo).toFloat()
-            val productionBar = ImageGetter.getProgressBarVertical(2f, groupHeight, constructionPercentage,
-                    Color.BROWN.brighten(0.5f), Color.BLACK)
-            productionBar.x = 10f
-            label.x = productionBar.x - label.width - 3
-            group.addActor(productionBar)
-            productionBar.toBack() // Since the production bar is based on whiteDot.png in the MAIN texture,
-            // and the constructionImage may be a building or unit which have their own textures,
-            // we move the production bar's rendering to be next to the circle's rendering,
-            // so we have circle - bar - constructionImage - label (2 texture switches and ending with label)
-            // which is the minimal amount of switches we can have here
-            label.toFront()
-        }
-        return group
+        return table
     }
 
     private fun foreignCityInfoPopup() {
