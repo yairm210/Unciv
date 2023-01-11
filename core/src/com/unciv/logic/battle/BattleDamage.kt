@@ -242,31 +242,34 @@ object BattleDamage {
     fun calculateDamageToAttacker(
         attacker: ICombatant,
         defender: ICombatant,
-        ignoreRandomness: Boolean = false,
+        /** Between 0 and 1. */
+        randomnessFactor: Float = Random(attacker.getCivInfo().gameInfo.turns * attacker.getTile().position.hashCode().toLong()).nextFloat()
     ): Int {
         if (attacker.isRanged() && !attacker.isAirUnit()) return 0
         if (defender.isCivilian()) return 0
         val ratio = getAttackingStrength(attacker, defender) / getDefendingStrength(
                 attacker, defender)
-        return (damageModifier(ratio, true, attacker, ignoreRandomness) * getHealthDependantDamageRatio(defender)).roundToInt()
+        return (damageModifier(ratio, true, randomnessFactor) * getHealthDependantDamageRatio(defender)).roundToInt()
     }
 
     fun calculateDamageToDefender(
         attacker: ICombatant,
         defender: ICombatant,
-        ignoreRandomness: Boolean = false,
+        /** Between 0 and 1.  Defaults to turn and location-based random to avoid save scumming */
+        randomnessFactor: Float = Random(attacker.getCivInfo().gameInfo.turns * attacker.getTile().position.hashCode().toLong()).nextFloat()
+        ,
     ): Int {
         if (defender.isCivilian()) return 40
         val ratio = getAttackingStrength(attacker, defender) / getDefendingStrength(
                 attacker, defender)
-        return (damageModifier(ratio, false, attacker, ignoreRandomness) * getHealthDependantDamageRatio(attacker)).roundToInt()
+        return (damageModifier(ratio, false, randomnessFactor) * getHealthDependantDamageRatio(attacker)).roundToInt()
     }
 
     private fun damageModifier(
         attackerToDefenderRatio: Float,
         damageToAttacker: Boolean,
-        attacker: ICombatant, // for the randomness
-        ignoreRandomness: Boolean = false,
+        /** Between 0 and 1. */
+        randomnessFactor: Float,
     ): Float {
         // https://forums.civfanatics.com/threads/getting-the-combat-damage-math.646582/#post-15468029
         val strongerToWeakerRatio =
@@ -274,14 +277,10 @@ object BattleDamage {
         var ratioModifier = (((strongerToWeakerRatio + 3) / 4).pow(4) + 1) / 2
         if (damageToAttacker && attackerToDefenderRatio > 1 || !damageToAttacker && attackerToDefenderRatio < 1) // damage ratio from the weaker party is inverted
             ratioModifier = ratioModifier.pow(-1)
-        val randomSeed = attacker.getCivInfo().gameInfo.turns * attacker.getTile().position.hashCode() // so people don't save-scum to get optimal results
-        val randomCenteredAround30 = 24 +
-                if (ignoreRandomness) 6f
-                else 12 * Random(randomSeed.toLong()).nextFloat()
+        val randomCenteredAround30 = 24 + 12 * randomnessFactor
         return randomCenteredAround30 * ratioModifier
     }
 }
-
 enum class CombatAction {
     Attack,
     Defend,
