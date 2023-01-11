@@ -1,3 +1,24 @@
+## 4.3.20
+
+Show numbers on attack damage, show final strength comparison
+
+Show numbers on attack damage
+
+Damage gets randomness as input
+
+Changed Windows icon for Unciv to new icon
+
+Resolved  - unit icons no longer overlap unit action images, improved render time for unit images
+
+MoveTo image visible - 
+
+AbsoluteUnits - Unique Triremes  - By letstalkaboutdune
+
+By vegeta1k95:
+- Fix foreign units flags fading 
+- Fix AI being able to bombard non-visible tiles + optimizations 
+- Modding: allow custom ResourcePortraits 
+
 ## 4.3.19
 
 Updated Unciv Android icons
