@@ -32,6 +32,7 @@ import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.ui.worldscreen.bottombar.BattleTableHelpers.flashWoundedCombatants
 import com.unciv.ui.worldscreen.bottombar.BattleTableHelpers.getHealthBar
 import kotlin.math.max
+import kotlin.math.roundToInt
 
 class BattleTable(val worldScreen: WorldScreen): Table() {
 
@@ -178,6 +179,14 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             row().pad(2f)
         }
 
+        if (attackerModifiers.any() || defenderModifiers.any()){
+            addSeparator()
+            val attackerStrength = BattleDamage.getAttackingStrength(attacker, defender).roundToInt()
+            val defenderStrength = BattleDamage.getDefendingStrength(attacker, defender).roundToInt()
+            add(attackerStrength.toString() + attackIcon)
+            add(defenderStrength.toString() + attackIcon).row()
+        }
+
         // from Battle.addXp(), check for can't gain more XP from Barbarians
         val maxXPFromBarbarians = attacker.getCivInfo().gameInfo.ruleSet.modOptions.constants.maxXPfromBarbarians
         if (attacker is MapUnitCombatant && attacker.unit.promotions.totalXpProduced() >= maxXPFromBarbarians
@@ -223,9 +232,22 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         } else {
             add(getHealthBar(attacker.getHealth(), attacker.getMaxHealth(), expectedDamageToAttackerForHealthbar))
             add(getHealthBar(defender.getHealth(), defender.getMaxHealth(), expectedDamageToDefenderForHealthbar)).row()
-            if (maxDamageToAttacker == 0) add("${attacker.getHealth()}".toLabel())
-            else add("${attacker.getHealth()} → ${attacker.getHealth()-maxDamageToAttacker}-${attacker.getHealth()-minDamageToAttacker}".toLabel())
-            add("${defender.getHealth()} → ${defender.getHealth()-maxDamageToDefender}-${defender.getHealth()-minDamageToDefender}".toLabel())
+
+            val attackerHealth = attacker.getHealth()
+            val minRemainingLifeAttacker = max(attackerHealth-maxDamageToAttacker, 0)
+            val maxRemainingLifeAttacker = max(attackerHealth-minDamageToAttacker, 0)
+
+            if (minRemainingLifeAttacker == attackerHealth) add(attackerHealth.toLabel())
+            else if (maxRemainingLifeAttacker == minRemainingLifeAttacker) add("$attackerHealth → $maxRemainingLifeAttacker".toLabel())
+            else add("$attackerHealth → $minRemainingLifeAttacker-$maxRemainingLifeAttacker".toLabel())
+
+
+            val defenderHealth = defender.getHealth()
+            val minRemainingLifeDefender = max(defenderHealth-maxDamageToDefender, 0)
+            val maxRemainingLifeDefender = max(defenderHealth-minDamageToDefender, 0)
+
+            if (minRemainingLifeDefender == maxRemainingLifeDefender) add("$defenderHealth → $maxRemainingLifeDefender".toLabel())
+            else add("$defenderHealth → $minRemainingLifeDefender-$maxRemainingLifeDefender".toLabel())
         }
 
         row().pad(5f)
