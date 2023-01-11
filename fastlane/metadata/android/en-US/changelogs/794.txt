@@ -1,20 +1,14 @@
-
-
-Show numbers on attack damage, show final strength comparison
-
-Show numbers on attack damage
-
-Damage gets randomness as input
+Show numbers on attack damage and final strength comparison for battles
 
 Changed Windows icon for Unciv to new icon
 
-Resolved  - unit icons no longer overlap unit action images, improved render time for unit images
+Unit icons no longer overlap unit action images, improved render time for unit images
 
-MoveTo image visible - 
+MoveTo image visible
 
-AbsoluteUnits - Unique Triremes  - By letstalkaboutdune
+AbsoluteUnits - Unique Triremes - By letstalkaboutdune
 
 By vegeta1k95:
-- Fix foreign units flags fading 
-- Fix AI being able to bombard non-visible tiles + optimizations 
-- Modding: allow custom ResourcePortraits 
+- Modding: allow custom ResourcePortraits
+- Fix foreign units flags fading
+- Fix AI being able to bombard non-visible tiles + optimizations
