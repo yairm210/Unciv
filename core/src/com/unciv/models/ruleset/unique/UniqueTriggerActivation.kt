@@ -185,7 +185,7 @@ object UniqueTriggerActivation {
                         civInfo.greatPeople.mayaLimitedFreeGP++
                         civInfo.addNotification(notification!!, MayaLongCountAction(), NotificationCategory.General, MayaCalendar.notificationIcon)
                     } else if (notification != null)
-                        civInfo.addNotification(notification)
+                        civInfo.addNotification(notification, NotificationCategory.General)
                     return true
                 } else {
                     if (unique.type == MayanGainGreatPerson)
@@ -564,14 +564,14 @@ object UniqueTriggerActivation {
             OneTimeUnitHeal -> {
                 unit.healBy(unique.params[0].toInt())
                 if (notification != null)
-                    unit.civInfo.addNotification(notification, unit.getTile().position) // Do we have a heal icon?
+                    unit.civInfo.addNotification(notification, unit.getTile().position, NotificationCategory.Units) // Do we have a heal icon?
                 return true
             }
             OneTimeUnitGainXP -> {
                 if (!unit.baseUnit.isMilitary()) return false
                 unit.promotions.XP += unique.params[0].toInt()
                 if (notification != null)
-                    unit.civInfo.addNotification(notification, unit.getTile().position)
+                    unit.civInfo.addNotification(notification, unit.getTile().position, NotificationCategory.Units)
                 return true
             }
             OneTimeUnitUpgrade -> {
@@ -579,7 +579,7 @@ object UniqueTriggerActivation {
                     ?: return false
                 upgradeAction.action!!()
                 if (notification != null)
-                    unit.civInfo.addNotification(notification, unit.getTile().position)
+                    unit.civInfo.addNotification(notification, unit.getTile().position, NotificationCategory.Units)
                 return true
             }
             OneTimeUnitSpecialUpgrade -> {
@@ -587,7 +587,7 @@ object UniqueTriggerActivation {
                     ?: return false
                 upgradeAction.action!!()
                 if (notification != null)
-                    unit.civInfo.addNotification(notification, unit.getTile().position)
+                    unit.civInfo.addNotification(notification, unit.getTile().position, NotificationCategory.Units)
                 return true
             }
             OneTimeUnitGainPromotion -> {

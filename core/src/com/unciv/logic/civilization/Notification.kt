@@ -61,13 +61,13 @@ open class Notification() : IsPartOfGameInfoSerialization {
 
     var icons: ArrayList<String> = ArrayList() // Must be ArrayList and not List so it can be deserialized
     var action: NotificationAction? = null
-    var category: String? = null
+    var category: String = NotificationCategory.General.name
 
-    constructor(text: String, notificationIcons: ArrayList<String>, action: NotificationAction, category:NotificationCategory?) : this() {
+    constructor(text: String, notificationIcons: ArrayList<String>, action: NotificationAction?, category:NotificationCategory) : this() {
         this.text = text
         this.icons = notificationIcons
         this.action = action
-        this.category = category?.name
+        this.category = category.name
     }
 
     fun addNotificationIcons(ruleset: Ruleset, iconSize: Float, table: Table) {

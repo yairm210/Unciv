@@ -6,9 +6,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Notification
+import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.WrappableLabel
 import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.toLabel
 import kotlin.math.min
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
@@ -69,31 +72,44 @@ class NotificationsScroll(
         notificationsTable.clearChildren()
         endOfTableSpacerCell = null
 
-        for (notification in notifications.asReversed().toList()) { // toList to avoid concurrency problems
-            val listItem = Table()
-            listItem.background = BaseScreen.skinStrings.getUiBackground("WorldScreen/Notification", BaseScreen.skinStrings.roundedEdgeRectangleShape)
+        val reversedNotifications = notifications.asReversed().toList() // toList to avoid concurrency problems
+        for (category in NotificationCategory.values()){
 
-            val labelWidth = maxEntryWidth - iconSize * notification.icons.size - 10f
-            val label = WrappableLabel(notification.text, labelWidth, Color.BLACK, 30)
-            label.setAlignment(Align.center)
-            if (label.prefWidth > labelWidth * scaleFactor) {  // can't explain why the comparison needs scaleFactor
-                label.wrap = true
-                listItem.add(label).maxWidth(label.optimizePrefWidth()).padRight(10f)
-            } else {
-                listItem.add(label).padRight(10f)
+            val categoryNotifications = reversedNotifications.filter { it.category == category.name }
+            if (categoryNotifications.isEmpty()) continue
+
+            notificationsTable.add(Table().apply {
+                add(ImageGetter.getWhiteDot()).minHeight(2f).width(worldScreen.stage.width/8)
+                add(category.name.toLabel(fontSize = 20)).pad(3f)
+                add(ImageGetter.getWhiteDot()).minHeight(2f).width(worldScreen.stage.width/8)
+            }).row()
+
+            for (notification in categoryNotifications) {
+                val listItem = Table()
+                listItem.background = BaseScreen.skinStrings.getUiBackground("WorldScreen/Notification", BaseScreen.skinStrings.roundedEdgeRectangleShape)
+
+                val labelWidth = maxEntryWidth - iconSize * notification.icons.size - 10f
+                val label = WrappableLabel(notification.text, labelWidth, Color.BLACK, 30)
+                label.setAlignment(Align.center)
+                if (label.prefWidth > labelWidth * scaleFactor) {  // can't explain why the comparison needs scaleFactor
+                    label.wrap = true
+                    listItem.add(label).maxWidth(label.optimizePrefWidth()).padRight(10f)
+                } else {
+                    listItem.add(label).padRight(10f)
+                }
+
+                notification.addNotificationIcons(worldScreen.gameInfo.ruleSet, iconSize, listItem)
+
+                // using a large click area with no gap in between each message item.
+                // this avoids accidentally clicking in between the messages, resulting in a map click
+                val clickArea = Table().apply {
+                    add(listItem).pad(3f)
+                    touchable = Touchable.enabled
+                    onClick { notification.action?.execute(worldScreen) }
+                }
+
+                notificationsTable.add(clickArea).right().row()
             }
-
-            notification.addNotificationIcons(worldScreen.gameInfo.ruleSet, iconSize, listItem)
-
-            // using a large click area with no gap in between each message item.
-            // this avoids accidentally clicking in between the messages, resulting in a map click
-            val clickArea = Table().apply {
-                add(listItem).pad(3f)
-                touchable = Touchable.enabled
-                onClick { notification.action?.execute(worldScreen) }
-            }
-
-            notificationsTable.add(clickArea).right().row()
         }
 
         notificationsTable.pack()  // needed to get height - prefHeight is set and close but not quite the same value

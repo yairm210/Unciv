@@ -6,9 +6,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.Notification
+import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.WrappableLabel
 import com.unciv.ui.utils.TabbedPager
+import com.unciv.ui.utils.WrappableLabel
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.worldscreen.WorldScreen
@@ -70,26 +72,37 @@ class NotificationsOverviewTable(
                             "Turn [$index]".toLabel()
                         else
                             "Current turn".toLabel()
-        turnTable.add(turnLabel).row()
+        turnTable.add(Table().apply {
+            add(ImageGetter.getWhiteDot()).minHeight(2f).width(worldScreen.stage.width/4)
+            add(turnLabel).pad(3f)
+            add(ImageGetter.getWhiteDot()).minHeight(2f).width(worldScreen.stage.width/4)
+        }).row()
 
-        for (notification in notifications) {
-            val notificationTable = Table(BaseScreen.skin)
+        for (category in NotificationCategory.values()){
+            val categoryNotifications = notifications.filter { it.category == category.name }
+            if (categoryNotifications.isEmpty()) continue
 
-            val labelWidth = maxEntryWidth * notification.icons.size - 10f
-            val label = WrappableLabel(notification.text, labelWidth, Color.BLACK, 20)
+            turnTable.add(category.name.toLabel()).pad(3f).row()
 
-            notificationTable.add(label)
-            notificationTable.background = BaseScreen.skinStrings.getUiBackground("OverviewScreen/NotificationOverviewTable/Notification", BaseScreen.skinStrings.roundedEdgeRectangleShape)
-            notificationTable.touchable = Touchable.enabled
-            notificationTable.onClick {
-                UncivGame.Current.resetToWorldScreen()
-                notification.action?.execute(worldScreen)
+            for (notification in categoryNotifications) {
+                val notificationTable = Table(BaseScreen.skin)
+
+                val labelWidth = maxEntryWidth * notification.icons.size - 10f
+                val label = WrappableLabel(notification.text, labelWidth, Color.BLACK, 20)
+
+                notificationTable.add(label)
+                notificationTable.background = BaseScreen.skinStrings.getUiBackground("OverviewScreen/NotificationOverviewTable/Notification", BaseScreen.skinStrings.roundedEdgeRectangleShape)
+                notificationTable.touchable = Touchable.enabled
+                notificationTable.onClick {
+                    UncivGame.Current.resetToWorldScreen()
+                    notification.action?.execute(worldScreen)
+                }
+
+                notification.addNotificationIcons(worldScreen.gameInfo.ruleSet, iconSize, notificationTable)
+
+                turnTable.add(notificationTable).padTop(5f)
+                turnTable.padTop(20f).row()
             }
-
-            notification.addNotificationIcons(worldScreen.gameInfo.ruleSet, iconSize, notificationTable)
-
-            turnTable.add(notificationTable).padTop(5f)
-            turnTable.padTop(20f).row()
         }
         turnTable.padTop(20f).row()
         return turnTable
