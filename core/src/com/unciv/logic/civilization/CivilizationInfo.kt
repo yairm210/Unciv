@@ -618,12 +618,12 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
             meetString = "[${civName}] has given us [${giftAmount}] as we are the first major civ to meet them"
         }
         if (cityStateLocation != null)
-            otherCiv.addNotification(meetString, cityStateLocation, NotificationIcon.Gold)
+            otherCiv.addNotification(meetString, cityStateLocation, NotificationCategory.Diplomacy, NotificationIcon.Gold)
         else
-            otherCiv.addNotification(meetString, NotificationIcon.Gold)
+            otherCiv.addNotification(meetString, NotificationCategory.Diplomacy, NotificationIcon.Gold)
 
         if (otherCiv.isCityState() && otherCiv.canGiveStat(Stat.Faith)){
-            otherCiv.addNotification(religionMeetString, NotificationIcon.Faith)
+            otherCiv.addNotification(religionMeetString, NotificationCategory.Diplomacy, NotificationIcon.Faith)
 
             for ((key, value) in faithAmount)
                 otherCiv.addStat(key, value.toInt())
@@ -883,8 +883,8 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
             val applicableBuildings = gameInfo.ruleSet.buildings.values.filter { it.requiresResource(resource) && getEquivalentBuilding(it) == it }
             val applicableUnits = gameInfo.ruleSet.units.values.filter { it.requiresResource(resource) && getEquivalentUnit(it) == it }
 
-            val lastEraForBuilding = applicableBuildings.map { gameInfo.ruleSet.eras[gameInfo.ruleSet.technologies[it.requiredTech]?.era()]?.eraNumber ?: 0 }.maxOrNull()
-            val lastEraForUnit = applicableUnits.map { gameInfo.ruleSet.eras[gameInfo.ruleSet.technologies[it.requiredTech]?.era()]?.eraNumber ?: 0 }.maxOrNull()
+            val lastEraForBuilding = applicableBuildings.maxOfOrNull { gameInfo.ruleSet.eras[gameInfo.ruleSet.technologies[it.requiredTech]?.era()]?.eraNumber ?: 0 }
+            val lastEraForUnit = applicableUnits.maxOfOrNull { gameInfo.ruleSet.eras[gameInfo.ruleSet.technologies[it.requiredTech]?.era()]?.eraNumber ?: 0 }
 
             if (lastEraForBuilding != null)
                 lastEraResourceUsedForBuilding[resource] = lastEraForBuilding
@@ -966,7 +966,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
             if (offeringCiv.isDefeated() || !TradeEvaluation().isTradeValid(tradeRequest.trade, this, offeringCiv)) {
                 tradeRequests.remove(tradeRequest)
                 // Yes, this is the right direction. I checked.
-                offeringCiv.addNotification("Our proposed trade is no longer relevant!", NotificationIcon.Trade)
+                offeringCiv.addNotification("Our proposed trade is no longer relevant!", NotificationCategory.Trade, NotificationIcon.Trade)
             }
         }
 
@@ -1015,7 +1015,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
                     unitToDisband.disband()
                     civMilitaryUnits -= unitToDisband
                     val unitName = unitToDisband.shortDisplayName()
-                    addNotification("Cannot provide unit upkeep for $unitName - unit has been disbanded!", unitName, NotificationIcon.Death)
+                    addNotification("Cannot provide unit upkeep for $unitName - unit has been disbanded!", NotificationCategory.Units, unitName, NotificationIcon.Death)
                 }
             }
         }
@@ -1182,7 +1182,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         // Will be automatically added again as long as unhappiness is still low enough
         removeFlag(CivFlags.RevoltSpawning.name)
 
-        addNotification("Your citizens are revolting due to very high unhappiness!", spawnTile.position, unitToSpawn.name, "StatIcons/Malcontent")
+        addNotification("Your citizens are revolting due to very high unhappiness!", spawnTile.position, NotificationCategory.General, unitToSpawn.name, "StatIcons/Malcontent")
     }
 
     // Higher is better
@@ -1271,17 +1271,17 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     }
 
 
-    fun addNotification(text: String, location: Vector2, vararg notificationIcons: String) {
-        addNotification(text, LocationAction(location), *notificationIcons)
+    fun addNotification(text: String, location: Vector2, category:NotificationCategory, vararg notificationIcons: String) {
+        addNotification(text, LocationAction(location), category, *notificationIcons)
     }
 
-    fun addNotification(text: String, vararg notificationIcons: String) = addNotification(text, null, *notificationIcons)
+    fun addNotification(text: String, category:NotificationCategory, vararg notificationIcons: String) = addNotification(text, null, category, *notificationIcons)
 
-    fun addNotification(text: String, action: NotificationAction?, vararg notificationIcons: String) {
+    fun addNotification(text: String, action: NotificationAction?, category:NotificationCategory, vararg notificationIcons: String) {
         if (playerType == PlayerType.AI) return // no point in lengthening the saved game info if no one will read it
         val arrayList = notificationIcons.toCollection(ArrayList())
         notifications.add(Notification(text, arrayList,
-                if (action is LocationAction && action.locations.isEmpty()) null else action))
+                if (action is LocationAction && action.locations.isEmpty()) null else action, category))
     }
 
     fun addUnit(unitName: String, city: CityInfo? = null): MapUnit? {
@@ -1294,7 +1294,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         // silently bail if no tile to place the unit is found
             ?: return null
         if (unit.isGreatPerson()) {
-            addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", placedUnit.getTile().position, unit.name)
+            addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", placedUnit.getTile().position, NotificationCategory.General, unit.name)
         }
 
         if (placedUnit.hasUnique(UniqueType.ReligiousUnit) && gameInfo.isReligionEnabled()) {
@@ -1337,7 +1337,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         val destructionText = if (isMajorCiv()) "The civilization of [$civName] has been destroyed!"
         else "The City-State of [$civName] has been destroyed!"
         for (civ in gameInfo.civilizations)
-            civ.addNotification(destructionText, civName, NotificationIcon.Death)
+            civ.addNotification(destructionText, NotificationCategory.General, civName, NotificationIcon.Death)
         getCivUnits().forEach { it.destroy() }
         tradeRequests.clear() // if we don't do this then there could be resources taken by "pending" trades forever
         for (diplomacyManager in diplomacy.values) {

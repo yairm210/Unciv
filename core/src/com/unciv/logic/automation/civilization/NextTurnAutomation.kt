@@ -12,6 +12,7 @@ import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PopupAlert
@@ -124,11 +125,11 @@ object NextTurnAutomation {
             civInfo.tradeRequests.remove(tradeRequest)
             if (TradeEvaluation().isTradeAcceptable(tradeLogic.currentTrade, civInfo, otherCiv)) {
                 tradeLogic.acceptTrade()
-                otherCiv.addNotification("[${civInfo.civName}] has accepted your trade request", NotificationIcon.Trade, civInfo.civName)
+                otherCiv.addNotification("[${civInfo.civName}] has accepted your trade request", NotificationCategory.Trade, NotificationIcon.Trade, civInfo.civName)
             } else {
                 val counteroffer = getCounteroffer(civInfo, tradeRequest)
                 if (counteroffer != null) {
-                    otherCiv.addNotification("[${civInfo.civName}] has made a counteroffer to your trade request", NotificationIcon.Trade, civInfo.civName)
+                    otherCiv.addNotification("[${civInfo.civName}] has made a counteroffer to your trade request", NotificationCategory.Trade, NotificationIcon.Trade, civInfo.civName)
                     otherCiv.tradeRequests.add(counteroffer)
                 } else
                     tradeRequest.decline(civInfo)
@@ -260,8 +261,8 @@ object NextTurnAutomation {
                 if (diploManager.relationshipLevel() > RelationshipLevel.Neutral
                         && !diploManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.Denunciation)) {
                     diploManager.signDeclarationOfFriendship()
-                    requestingCiv.addNotification("We have signed a Declaration of Friendship with [${civInfo.civName}]!", NotificationIcon.Diplomacy, civInfo.civName)
-                } else requestingCiv.addNotification("[${civInfo.civName}] has denied our Declaration of Friendship!", NotificationIcon.Diplomacy, civInfo.civName)
+                    requestingCiv.addNotification("We have signed a Declaration of Friendship with [${civInfo.civName}]!", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
+                } else requestingCiv.addNotification("[${civInfo.civName}] has denied our Declaration of Friendship!", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
             }
         }
 

@@ -5,6 +5,7 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.city.ConstructionAutomation
 import com.unciv.logic.civilization.AlertType
+import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.map.MapUnit
@@ -368,6 +369,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                         cityInfo.civInfo.addNotification(
                             "Excess production for [$constructionName] converted to [$workDone] gold",
                             cityInfo.location,
+                            NotificationCategory.Production,
                             NotificationIcon.Gold, "BuildingIcons/${constructionName}")
                     }
                 } else if (construction is BaseUnit) {
@@ -391,12 +393,12 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             when {
                 otherCiv.hasExplored(cityInfo.location) ->
                     otherCiv.addNotification("The city of [${cityInfo.name}] has started constructing [${construction.name}]!",
-                        cityInfo.location, NotificationIcon.Construction, buildingIcon)
+                        cityInfo.location, NotificationCategory.General, NotificationIcon.Construction, buildingIcon)
                 otherCiv.knows(cityInfo.civInfo) ->
                     otherCiv.addNotification("[${cityInfo.civInfo.civName}] has started constructing [${construction.name}]!",
-                        NotificationIcon.Construction, buildingIcon)
+                        NotificationCategory.General, NotificationIcon.Construction, buildingIcon)
                 else -> otherCiv.addNotification("An unknown civilization has started constructing [${construction.name}]!",
-                    NotificationIcon.Construction, buildingIcon)
+                    NotificationCategory.General, NotificationIcon.Construction, buildingIcon)
             }
         }
     }
@@ -415,15 +417,15 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             cityInfo.civInfo.popupAlerts.add(PopupAlert(AlertType.WonderBuilt, construction.name))
             for (civ in cityInfo.civInfo.gameInfo.civilizations) {
                 if (civ.hasExplored(cityInfo.location))
-                    civ.addNotification("[${construction.name}] has been built in [${cityInfo.name}]",
-                            cityInfo.location, NotificationIcon.Construction, buildingIcon)
+                    civ.addNotification("[${construction.name}] has been built in [${cityInfo.name}]", cityInfo.location,
+                        if (civ == cityInfo.civInfo) NotificationCategory.Production else NotificationCategory.General, buildingIcon)
                 else
-                    civ.addNotification("[${construction.name}] has been built in a faraway land", buildingIcon)
+                    civ.addNotification("[${construction.name}] has been built in a faraway land", NotificationCategory.General, buildingIcon)
             }
         } else {
             val icon = if (construction is Building) buildingIcon else construction.name // could be a unit, in which case take the unit name.
             cityInfo.civInfo.addNotification("[${construction.name}] has been built in [" + cityInfo.name + "]",
-                    cityInfo.location, NotificationIcon.Construction, icon)
+                    cityInfo.location, NotificationCategory.Production, NotificationIcon.Construction, icon)
         }
 
         if (construction is Building && construction.hasUnique(UniqueType.TriggersAlertOnCompletion,
@@ -435,7 +437,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                 val completingCivDescription =
                     if (otherCiv.knows(cityInfo.civInfo)) "[${cityInfo.civInfo.civName}]" else "An unknown civilization"
                 otherCiv.addNotification("$completingCivDescription has completed [${construction.name}]!",
-                    NotificationIcon.Construction, buildingIcon)
+                    NotificationCategory.General, NotificationIcon.Construction, buildingIcon)
             }
         }
     }

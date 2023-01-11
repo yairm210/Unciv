@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.unique.LocalUniqueCache
@@ -170,7 +171,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
             val location = addNewTileWithCulture()
             if (location != null) {
                 val locations = LocationAction(location, cityInfo.location)
-                cityInfo.civInfo.addNotification("[" + cityInfo.name + "] has expanded its borders!", locations, NotificationIcon.Culture)
+                cityInfo.civInfo.addNotification("[" + cityInfo.name + "] has expanded its borders!", locations, NotificationCategory.City, NotificationIcon.Culture)
             }
         }
     }

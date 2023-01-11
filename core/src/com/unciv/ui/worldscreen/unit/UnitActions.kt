@@ -6,6 +6,7 @@ import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -322,6 +323,7 @@ object UnitActions {
                     tile.getOwner()?.addNotification(
                         pillageText,
                         tile.position,
+                        NotificationCategory.War,
                         icon,
                         NotificationIcon.War,
                         unit.baseUnit.name
@@ -360,28 +362,21 @@ object UnitActions {
         }
 
         for (stat in pillageYield) {
-            when (stat.key) {
-                in Stat.statsWithCivWideField -> {
-                    unit.civInfo.addStat(stat.key, stat.value.toInt())
-                    globalPillageYield[stat.key] += stat.value
-                }
-                else -> {
-                    if (closestCity != null) {
-                        closestCity.addStat(stat.key, stat.value.toInt())
-                        toCityPillageYield[stat.key] += stat.value
-                    }
-                }
+            if (stat.key in Stat.statsWithCivWideField) {
+                unit.civInfo.addStat(stat.key, stat.value.toInt())
+                globalPillageYield[stat.key] += stat.value
+            }
+            else if (closestCity != null) {
+                closestCity.addStat(stat.key, stat.value.toInt())
+                toCityPillageYield[stat.key] += stat.value
             }
         }
 
-        if (!toCityPillageYield.isEmpty() && closestCity != null) {
-            val pillagerLootLocal = "We have looted [${toCityPillageYield.toStringWithoutIcons()}] from a [${improvement.name}] which has been sent to [${closestCity.name}]"
-            unit.civInfo.addNotification(pillagerLootLocal, tile.position, "ImprovementIcons/${improvement.name}", NotificationIcon.War)
-        }
-        if (!globalPillageYield.isEmpty()) {
-            val pillagerLootGlobal = "We have looted [${globalPillageYield.toStringWithoutIcons()}] from a [${improvement.name}]"
-            unit.civInfo.addNotification(pillagerLootGlobal, tile.position, "ImprovementIcons/${improvement.name}", NotificationIcon.War)
-        }
+        val lootNotificationText = if (!toCityPillageYield.isEmpty() && closestCity != null)
+            "We have looted [${toCityPillageYield.toStringWithoutIcons()}] from a [${improvement.name}] which has been sent to [${closestCity.name}]"
+        else "We have looted [${globalPillageYield.toStringWithoutIcons()}] from a [${improvement.name}]"
+
+        unit.civInfo.addNotification(lootNotificationText, tile.position, NotificationCategory.War, "ImprovementIcons/${improvement.name}", NotificationIcon.War)
     }
 
     private fun addExplorationActions(unit: MapUnit, actionList: ArrayList<UnitAction>) {
@@ -647,7 +642,7 @@ object UnitActions {
                         unit.civInfo.addGold(goldEarned.toInt())
                         tile.owningCity!!.civInfo.getDiplomacyManager(unit.civInfo).addInfluence(influenceEarned)
                         unit.civInfo.addNotification("Your trade mission to [${tile.owningCity!!.civInfo}] has earned you [${goldEarned}] gold and [$influenceEarned] influence!",
-                            tile.owningCity!!.civInfo.civName, NotificationIcon.Gold, NotificationIcon.Culture)
+                            NotificationCategory.General, tile.owningCity!!.civInfo.civName, NotificationIcon.Gold, NotificationIcon.Culture)
                         unit.consume()
                     }.takeIf { canConductTradeMission }
                 )
@@ -832,7 +827,8 @@ object UnitActions {
         }
 
         for (otherCiv in civsToNotify)
-            otherCiv.addNotification("Your territory has been stolen by [${unit.civInfo}]!", unit.currentTile.position, unit.civInfo.civName, NotificationIcon.War)
+            otherCiv.addNotification("Your territory has been stolen by [${unit.civInfo}]!",
+                unit.currentTile.position, NotificationCategory.City, unit.civInfo.civName, NotificationIcon.War)
     }
 
     private fun addFortifyActions(actionList: ArrayList<UnitAction>, unit: MapUnit, showingAdditionalActions: Boolean) {

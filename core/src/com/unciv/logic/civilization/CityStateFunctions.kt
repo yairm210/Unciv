@@ -73,7 +73,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         val placedUnit = receivingCiv.placeUnitNearTile(cities.city1.location, giftedUnit.name)
             ?: return
         val locations = LocationAction(placedUnit.getTile().position, cities.city2.location)
-        receivingCiv.addNotification( "[${civInfo.civName}] gave us a [${giftedUnit.name}] as a gift!", locations, civInfo.civName, giftedUnit.name)
+        receivingCiv.addNotification( "[${civInfo.civName}] gave us a [${giftedUnit.name}] as a gift!", locations, NotificationCategory.Units, civInfo.civName, giftedUnit.name)
     }
 
     fun giveMilitaryUnitToPatron(receivingCiv: CivilizationInfo) {
@@ -115,6 +115,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         receivingCiv.addNotification(
             "[${civInfo.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!",
             locations,
+            NotificationCategory.Units,
             civInfo.civName,
             militaryUnit.name
         )
@@ -228,8 +229,8 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             if (newAllyName != null) {
                 val newAllyCiv = civInfo.gameInfo.getCivilization(newAllyName)
                 val text = "We have allied with [${civInfo.civName}]."
-                if (capitalLocation != null) newAllyCiv.addNotification(text, capitalLocation, civInfo.civName, NotificationIcon.Diplomacy)
-                else newAllyCiv.addNotification(text, civInfo.civName, NotificationIcon.Diplomacy)
+                if (capitalLocation != null) newAllyCiv.addNotification(text, capitalLocation, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
+                else newAllyCiv.addNotification(text, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
                 newAllyCiv.updateViewableTiles()
                 newAllyCiv.updateDetailedCivResources()
                 for (unique in newAllyCiv.getMatchingUniques(UniqueType.CityStateCanBeBoughtForGold))
@@ -249,8 +250,8 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             if (oldAllyName != null) {
                 val oldAllyCiv = civInfo.gameInfo.getCivilization(oldAllyName)
                 val text = "We have lost alliance with [${civInfo.civName}]."
-                if (capitalLocation != null) oldAllyCiv.addNotification(text, capitalLocation, civInfo.civName, NotificationIcon.Diplomacy)
-                else oldAllyCiv.addNotification(text, civInfo.civName, NotificationIcon.Diplomacy)
+                if (capitalLocation != null) oldAllyCiv.addNotification(text, capitalLocation, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
+                else oldAllyCiv.addNotification(text, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
                 oldAllyCiv.updateViewableTiles()
                 oldAllyCiv.updateDetailedCivResources()
             }
@@ -288,10 +289,10 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
 
         otherCiv.addGold(-getDiplomaticMarriageCost())
         otherCiv.addNotification("We have married into the ruling family of [${civInfo.civName}], bringing them under our control.",
-            civInfo.getCapital()!!.location, civInfo.civName, NotificationIcon.Diplomacy, otherCiv.civName)
+            civInfo.getCapital()!!.location, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCiv.civName)
         for (civ in civInfo.gameInfo.civilizations.filter { it != otherCiv })
             civ.addNotification("[${otherCiv.civName}] has married into the ruling family of [${civInfo.civName}], bringing them under their control.",
-                civInfo.getCapital()!!.location, civInfo.civName, NotificationIcon.Diplomacy, otherCiv.civName)
+                civInfo.getCapital()!!.location, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCiv.civName)
         for (unit in civInfo.getCivUnits())
             unit.gift(otherCiv)
 
@@ -478,7 +479,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             diplomacy.setFlag(DiplomacyFlags.AngerFreeIntrusion, 5)
 
         otherCiv.addNotification("[${civInfo.civName}] is grateful that you killed a Barbarian that was threatening them!",
-            DiplomacyAction(civInfo.civName), civInfo.civName)
+            DiplomacyAction(civInfo.civName), NotificationCategory.Diplomacy, civInfo.civName)
     }
 
     /** A city state was bullied. What are its protectors going to do about it??? */
@@ -498,7 +499,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
 
             if (protector.playerType != PlayerType.Human)   // Humans can have their own emotions
                 bully.addNotification("[${protector.civName}] is upset that you demanded tribute from [${civInfo.civName}], whom they have pledged to protect!",
-                    NotificationIcon.Diplomacy, protector.civName)
+                    NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, protector.civName)
             else    // Let humans choose who to side with
                 protector.popupAlerts.add(PopupAlert(AlertType.BulliedProtectedMinor,
                     bully.civName + "@" + civInfo.civName))   // we need to pass both civs as argument, hence the horrible chimera
@@ -580,7 +581,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
 
             if (protector.playerType != PlayerType.Human)   // Humans can have their own emotions
                 attacker.addNotification("[${protector.civName}] is upset that you attacked [${civInfo.civName}], whom they have pledged to protect!",
-                    NotificationIcon.Diplomacy, protector.civName)
+                    NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, protector.civName)
             else    // Let humans choose who to side with
                 protector.popupAlerts.add(PopupAlert(AlertType.AttackedProtectedMinor,
                     attacker.civName + "@" + civInfo.civName))   // we need to pass both civs as argument, hence the horrible chimera
@@ -607,9 +608,9 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
 
             if (protector.playerType != PlayerType.Human)   // Humans can have their own emotions
                 attacker.addNotification("[${protector.civName}] is outraged that you destroyed [${civInfo.civName}], whom they had pledged to protect!",
-                    NotificationIcon.Diplomacy, protector.civName)
-            protector.addNotification("[${attacker.civName}] has destroyed [${civInfo.civName}], whom you had pledged to protect!", attacker.civName,
-                NotificationIcon.Death, civInfo.civName)
+                    NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, protector.civName)
+            protector.addNotification("[${attacker.civName}] has destroyed [${civInfo.civName}], whom you had pledged to protect!",
+                NotificationCategory.Diplomacy,  attacker.civName, NotificationIcon.Death, civInfo.civName)
         }
 
         // Notify all City-States that we were killed (for quest completion)
@@ -630,6 +631,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             thirdCiv.addNotification(
                 "[${civInfo.civName}] is being attacked by [${attacker.civName}] and asks all major civilizations to help them out by gifting them military units.",
                 civInfo.getCapital()!!.location,
+                NotificationCategory.Diplomacy,
                 civInfo.civName,
                 "OtherIcons/Present",
             )

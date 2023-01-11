@@ -14,6 +14,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.CivilizationInfoPreview
 import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.TechManager
@@ -379,21 +380,21 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         if (tiles.size < 3) {
             for (tile in tiles) {
                 val unitName = tile.militaryUnit!!.name
-                thisPlayer.addNotification("An enemy [$unitName] was spotted $inOrNear our territory", tile.position, NotificationIcon.War, unitName)
+                thisPlayer.addNotification("An enemy [$unitName] was spotted $inOrNear our territory", tile.position, NotificationCategory.War, NotificationIcon.War, unitName)
             }
         } else {
             val positions = tiles.asSequence().map { it.position }
-            thisPlayer.addNotification("[${tiles.size}] enemy units were spotted $inOrNear our territory", LocationAction(positions), NotificationIcon.War)
+            thisPlayer.addNotification("[${tiles.size}] enemy units were spotted $inOrNear our territory", LocationAction(positions), NotificationCategory.War, NotificationIcon.War)
         }
     }
 
     private fun addBombardNotification(thisPlayer: CivilizationInfo, cities: List<CityInfo>) {
         if (cities.size < 3) {
             for (city in cities)
-                thisPlayer.addNotification("Your city [${city.name}] can bombard the enemy!", city.location, NotificationIcon.City, NotificationIcon.Crosshair)
+                thisPlayer.addNotification("Your city [${city.name}] can bombard the enemy!", city.location, NotificationCategory.War, NotificationIcon.City, NotificationIcon.Crosshair)
         } else {
             val positions = cities.asSequence().map { it.location }
-            thisPlayer.addNotification("[${cities.size}] of your cities can bombard the enemy!", LocationAction(positions), NotificationIcon.City, NotificationIcon.Crosshair)
+            thisPlayer.addNotification("[${cities.size}] of your cities can bombard the enemy!", LocationAction(positions),  NotificationCategory.War, NotificationIcon.City, NotificationIcon.Crosshair)
         }
     }
 
@@ -455,6 +456,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         civInfo.addNotification(
             text,
             LocationAction(positions),
+            NotificationCategory.General,
             "ResourceIcons/$resourceName"
         )
         return true

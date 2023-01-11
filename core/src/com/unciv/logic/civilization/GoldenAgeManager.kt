@@ -32,7 +32,7 @@ class GoldenAgeManager : IsPartOfGameInfoSerialization {
             turnsToGoldenAge *= unique.params[0].toPercent()
         turnsToGoldenAge *= civInfo.gameInfo.speed.goldenAgeLengthModifier
         turnsLeftForCurrentGoldenAge += turnsToGoldenAge.toInt()
-        civInfo.addNotification("You have entered a Golden Age!", "StatIcons/Happiness")
+        civInfo.addNotification("You have entered a Golden Age!", NotificationCategory.General, "StatIcons/Happiness")
         civInfo.popupAlerts.add(PopupAlert(AlertType.GoldenAge, ""))
     }
 

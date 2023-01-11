@@ -256,7 +256,7 @@ class TechManager : IsPartOfGameInfoSerialization {
             city.updateCitizens = true
         }
 
-        civInfo.addNotification("Research of [$techName] has completed!", TechAction(techName), NotificationIcon.Science, techName)
+        civInfo.addNotification("Research of [$techName] has completed!", TechAction(techName), NotificationCategory.General, NotificationIcon.Science, techName)
         if (isNewTech)
             civInfo.popupAlerts.add(PopupAlert(AlertType.TechResearched, techName))
 
@@ -293,19 +293,19 @@ class TechManager : IsPartOfGameInfoSerialization {
                 val city = cities.first()
                 if (construction is BaseUnit && construction.upgradesTo != null) {
                     val text = "[${city.name}] changed production from [$unit] to [${construction.upgradesTo!!}]"
-                    civInfo.addNotification(text, city.location, unit, NotificationIcon.Construction, construction.upgradesTo!!)
+                    civInfo.addNotification(text, city.location, NotificationCategory.Production, unit, NotificationIcon.Construction, construction.upgradesTo!!)
                 } else {
                     val text = "[$unit] has become obsolete and was removed from the queue in [${city.name}]!"
-                    civInfo.addNotification(text, city.location, NotificationIcon.Construction)
+                    civInfo.addNotification(text, city.location, NotificationCategory.Production, NotificationIcon.Construction)
                 }
             } else {
                 val locationAction = LocationAction(cities.asSequence().map { it.location })
                 if (construction is BaseUnit && construction.upgradesTo != null) {
                     val text = "[${cities.size}] cities changed production from [$unit] to [${construction.upgradesTo!!}]"
-                    civInfo.addNotification(text, locationAction, unit, NotificationIcon.Construction, construction.upgradesTo!!)
+                    civInfo.addNotification(text, locationAction, NotificationCategory.Production, unit, NotificationIcon.Construction, construction.upgradesTo!!)
                 } else {
                     val text = "[$unit] has become obsolete and was removed from the queue in [${cities.size}] cities!"
-                    civInfo.addNotification(text, locationAction, NotificationIcon.Construction)
+                    civInfo.addNotification(text, locationAction, NotificationCategory.Production, NotificationIcon.Construction)
                 }
             }
         }
@@ -316,21 +316,23 @@ class TechManager : IsPartOfGameInfoSerialization {
         }
         for (unique in civInfo.getMatchingUniques(UniqueType.MayanGainGreatPerson)) {
             if (unique.params[1] != techName) continue
-            civInfo.addNotification("You have unlocked [The Long Count]!", MayaLongCountAction(), MayaCalendar.notificationIcon)
+            civInfo.addNotification("You have unlocked [The Long Count]!",
+                MayaLongCountAction(), NotificationCategory.General, MayaCalendar.notificationIcon)
         }
 
         val previousEra = civInfo.getEra()
         updateEra()
         val currentEra = civInfo.getEra()
         if (previousEra != currentEra) {
-            civInfo.addNotification("You have entered the [$currentEra]!", NotificationIcon.Science)
+            civInfo.addNotification("You have entered the [$currentEra]!", NotificationCategory.General, NotificationIcon.Science)
             if (civInfo.isMajorCiv()) {
                 for (knownCiv in civInfo.getKnownCivs()) {
-                    knownCiv.addNotification("[${civInfo.civName}] has entered the [$currentEra]!", civInfo.civName, NotificationIcon.Science)
+                    knownCiv.addNotification("[${civInfo.civName}] has entered the [$currentEra]!",
+                        NotificationCategory.General, civInfo.civName, NotificationIcon.Science)
                 }
             }
             for (policyBranch in getRuleset().policyBranches.values.filter { it.era == currentEra.name && civInfo.policies.isAdoptable(it) }) {
-                civInfo.addNotification("[" + policyBranch.name + "] policy branch unlocked!", NotificationIcon.Culture)
+                civInfo.addNotification("[${policyBranch.name}] policy branch unlocked!", NotificationCategory.General, NotificationIcon.Culture)
             }
 
             val erasPassed = getRuleset().eras.values

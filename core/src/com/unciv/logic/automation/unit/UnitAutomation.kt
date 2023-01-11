@@ -9,6 +9,7 @@ import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
@@ -638,7 +639,7 @@ object UnitAutomation {
         if (tryGoToRuinAndEncampment(unit) && (unit.currentMovement == 0f || unit.isDestroyed)) return
         if (unit.health < 80 && tryHealUnit(unit)) return
         if (tryExplore(unit)) return
-        unit.civInfo.addNotification("${unit.shortDisplayName()} finished exploring.", unit.currentTile.position, unit.name, "OtherIcons/Sleep")
+        unit.civInfo.addNotification("${unit.shortDisplayName()} finished exploring.", unit.currentTile.position, NotificationCategory.Units, unit.name, "OtherIcons/Sleep")
         unit.action = null
     }
 

@@ -3,6 +3,7 @@ package com.unciv.logic
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.json.HashMapVector2
+import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
@@ -142,7 +143,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
             // Still more camps to add?
             if (addedCamps < campsToAdd) {
                 // Remove some newly non-viable tiles
-                viableTiles.removeAll( tile.getTilesInDistance(7) )
+                viableTiles.removeAll(tile.getTilesInDistance(7).toSet())
                 // Reroll bias
                 biasCoast = Random().nextInt(6) == 0
             }
@@ -159,7 +160,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
                     && it.hasExplored(tile)
         }
             .forEach {
-                it.addNotification("A new barbarian encampment has spawned!", tile.position, NotificationIcon.War)
+                it.addNotification("A new barbarian encampment has spawned!", tile.position, NotificationCategory.War, NotificationIcon.War)
                 it.lastSeenImprovement[tile.position] = Constants.barbarianEncampment
             }
     }
