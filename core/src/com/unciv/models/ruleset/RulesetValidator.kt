@@ -96,8 +96,9 @@ class RulesetValidator(val ruleset: Ruleset) {
                     val newOuterColor = nation.getOuterColor().cpy().lerp(outerLerpColor, 0.05f *i)
 
                     if (getContrastRatio(newInnerColor, newOuterColor) > 3){
-                        text += "\n Suggested inner color: (${(newInnerColor.r*255).toInt()}, ${(newInnerColor.g*255).toInt()}, ${(newInnerColor.b*255).toInt()})"
-                        text += "\n Suggested outer color: (${(newOuterColor.r*255).toInt()}, ${(newOuterColor.g*255).toInt()}, ${(newOuterColor.b*255).toInt()})"
+                        text += "\nSuggested colors: "
+                        text += "\n\t\t\"outerColor\": [${(newOuterColor.r*255).toInt()}, ${(newOuterColor.g*255).toInt()}, ${(newOuterColor.b*255).toInt()}],"
+                        text += "\n\t\t\"innerColor\": [${(newInnerColor.r*255).toInt()}, ${(newInnerColor.g*255).toInt()}, ${(newInnerColor.b*255).toInt()}],"
                         break
                     }
                 }
