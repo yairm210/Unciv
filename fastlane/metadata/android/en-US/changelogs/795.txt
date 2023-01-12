@@ -1,0 +1,25 @@
+
+
+Better bonus resource color
+
+Resolved  - Game speed affects additional aspects
+
+Notification scroll categories improved
+
+Bonus resources light gray
+
+Color suggestions now match json format for easy copy-paste
+
+Changed nation's colors according to poll results
+
+Fixed city screen bug for pillaged improvements
+
+Fixed nation contrast issues
+
+Recognize uncontrasting colors for nations according to WCAG guidelines, and suggest tinted versions to conform
+
+Notifications sorted by category
+
+Added Category to all notifications
+
+Fixed some warnings  - By alexban011
