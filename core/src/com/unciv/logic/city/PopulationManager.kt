@@ -47,6 +47,9 @@ class PopulationManager : IsPartOfGameInfoSerialization {
     fun getFoodToNextPopulation(): Int {
         // civ v math, civilization.wikia
         var foodRequired = 15 + 6 * (population - 1) + floor((population - 1).toDouble().pow(1.8))
+
+        foodRequired *= cityInfo.civInfo.gameInfo.speed.modifier
+
         if (cityInfo.civInfo.isCityState())
             foodRequired *= 1.5f
         if (!cityInfo.civInfo.isHuman())

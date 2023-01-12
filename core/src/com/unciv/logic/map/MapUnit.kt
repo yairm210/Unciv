@@ -598,11 +598,13 @@ class MapUnit : IsPartOfGameInfoSerialization {
             if (era != null)
                 stepCost *= (1f + era.eraNumber * constants.eraMultiplier)
             stepCost = (stepCost * civModifier).pow(constants.exponent)
+            stepCost *= civInfo.gameInfo.speed.modifier
             goldCostOfUpgrade += (stepCost / constants.roundTo).toInt() * constants.roundTo
             if (baseUnit == unitToUpgradeTo)
                 break  // stop at requested BaseUnit to upgrade to
             currentUnit = baseUnit
         }
+
 
         return goldCostOfUpgrade
     }

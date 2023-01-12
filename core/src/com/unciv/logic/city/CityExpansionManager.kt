@@ -42,6 +42,8 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
     fun getCultureToNextTile(): Int {
         var cultureToNextTile = 6 * (max(0, tilesClaimed()) + 1.4813).pow(1.3)
 
+        cultureToNextTile *= cityInfo.civInfo.gameInfo.speed.cultureCostModifier
+
         if (cityInfo.civInfo.isCityState())
             cultureToNextTile *= 1.5f   // City states grow slower, perhaps 150% cost?
 
@@ -66,6 +68,8 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         val baseCost = 50
         val distanceFromCenter = tileInfo.aerialDistanceTo(cityInfo.getCenterTile())
         var cost = baseCost * (distanceFromCenter - 1) + tilesClaimed() * 5.0
+
+        cost *= cityInfo.civInfo.gameInfo.speed.goldCostModifier
 
         for (unique in cityInfo.getMatchingUniques(UniqueType.TileCostPercentage)) {
             if (cityInfo.matchesFilter(unique.params[1]))
