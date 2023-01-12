@@ -86,8 +86,10 @@
 		"neutralHello": "How are you today?",
 		"hateHello": "Oh. It's you?",
 		"tradeRequest": "My friend, do you think you can accept this request?",
-		"outerColor": [0, 149, 82],
-		"innerColor": [255, 255, 255],
+
+        "outerColor": [9, 112, 84],
+        "innerColor": [255,255,255],
+
 		"favouredReligion": "Taoism",
 		"uniqueName": "Art of War",
 		"uniques": ["Great General provides double combat bonus", "[Great General] is earned [50]% faster"],
@@ -174,8 +176,10 @@
 		"neutralHello": "Hello.",
 		"hateHello": "It's you.",
 		"tradeRequest": "France offers you this exceptional proposition.",
-        "outerColor": [58, 126, 228],
-        "innerColor": [237, 237, 150],
+
+        "outerColor": [ 38, 98, 255],
+        "innerColor": [239,236,148],
+
 		"favoredReligion": "Christianity",
 		"uniqueName": "Ancien Régime",
 		"uniques": ["[+2 Culture] [in all cities] <before discovering [Steam Power]>"],
@@ -288,9 +292,11 @@
 		"neutralHello": "Good day.",
 		"hateHello": "Well?",
 		"tradeRequest": "Is the following trade of interest to you?",
-		"outerColor": [31, 51, 120],
-		"innerColor": [255, 255, 255],
-		"favoredReligion": "Christianity",
+
+        "outerColor": [ 28,51,119],
+        "innerColor": [255,255,255],
+
+        "favoredReligion": "Christianity",
 		"uniqueName": "Manifest Destiny",
 		"uniques": ["[+1] Sight <for [{Military} {Land}] units>", "[-50]% Gold cost of acquiring tiles [in all cities]"],
 		"cities": ["Washington","New York","Boston","Philadelphia","Atlanta","Chicago","Seattle","San Francisco","Los Angeles","Houston",
@@ -346,8 +352,10 @@
 		"neutralHello": "I wish you peace.",
 		"hateHello": "What do you want?",
 		"tradeRequest": "My friend, are you interested in this arrangement?",
-		"outerColor": [15, 115, 5],
-		"innerColor": [255, 168, 80],
+
+        "outerColor": [14, 113, 4],
+        "innerColor": [255, 163, 71],
+
 		"favoredReligion": "Hinduism",
 		"uniqueName": "Population Growth",
 		"uniques": ["Unhappiness from number of Cities doubled", "[-50]% Unhappiness from [Population] [in all cities]"],
@@ -404,8 +412,10 @@
 		"neutralHello": "Greetings!",
 		"hateHello": "What do you want?",
 		"tradeRequest": "Let us do business! Would you be interested?",
-		"outerColor": [247, 249, 200],
-		"innerColor": [18, 82, 30],
+
+        "outerColor": [245,248,185],
+        "innerColor": [18,84,30],
+
 		"favoredReligion": "Islam",
 		"uniqueName": "Barbary Corsairs",
 		"uniques": ["[-66]% maintenance costs <for [Water] units>",
@@ -462,9 +472,11 @@
 		"neutralHello": "Good day.",
 		"hateHello": "Oh, it's you.",
 		"tradeRequest": "Does this trade work for you, my friend?",
-		"outerColor": [65, 87, 87],
-		"innerColor": [252, 202, 129],
-		"favoredReligion": "Christianity",
+
+        "outerColor": [54,72,72],
+        "innerColor": [246,205,137],
+
+        "favoredReligion": "Christianity",
 		"uniqueName": "The Great Warpath",
 		"uniques": ["All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel."],
 		"cities": ["Onondaga","Osininka","Grand River","Akwesasme","Buffalo Creek","Brantford","Montreal","Genesse River",
@@ -489,8 +501,10 @@
 		"neutralHello": "Good day to you!",
 		"hateHello": "Ahh... you...",
 		"tradeRequest": "In my endless magnanimity, I am making you this offer. You agree, of course?",
-		"outerColor": [177, 8, 3],
-		"innerColor": [245, 230, 55],
+
+        "outerColor": [153,5,3],
+        "innerColor": [244,232,54],
+
 		"favoredReligion": "Zoroastrianism",
 		"uniqueName": "Achaemenid Legacy",
 		"uniques": ["[+50]% Golden Age length", "[+1] Movement <for [All] units> <during a Golden Age>", "[+10]% Strength <for [All] units> <during a Golden Age>"],
@@ -662,8 +676,9 @@
 		"hateHello": "What do you want?",
 		"tradeRequest": "Accept this agreement or suffer the consequences.",
 
-		"outerColor": [161, 57, 35],
-		"innerColor": [137, 239, 213],
+        "outerColor": [139,32,23],
+        "innerColor": [134,238,214],
+
 		"favoredReligion": "Christianity",
 		"uniqueName": "Sacrificial Captives",
 		"uniques": ["Earn [100]% of killed [Military] unit's [Strength] as [Culture]"],
@@ -703,8 +718,9 @@
 		"afterPeace": "Viracocha has frowned upon our war, and has agreed to our peace agreements.",
 		"tradeRequest": "The Incan people offer this fair trade.",
 
-        "outerColor": [255,181,86],
-        "innerColor": [4,120,90],
+        "outerColor": [255,184,33],
+        "innerColor": [3,115,86],
+
 		"favoredReligion": "Christianity",
 		"uniqueName": "Great Andean Road",
 		"uniques": ["Units ignore terrain costs when moving into any tile with Hills",
@@ -733,8 +749,10 @@
 		"neutralHello": "Hail to you.",
 		"hateHello": "Oh, it's you.",
 		"tradeRequest": "This is a fine deal! Even a drunk beggar would agree!",
-		"outerColor": [109,43,21],
-		"innerColor": [240,231,180],
+
+        "outerColor": [51,25,0],
+        "innerColor": [255,255,102],
+
 		"favoredReligion": "Christianity",
 		"uniqueName": "Viking Fury",
 		"uniques": ["[+1] Movement <for [Embarked] units>", "[1] Movement point cost to disembark <for [All] units>",
@@ -763,9 +781,11 @@
 		"neutralHello": "Good day to you.",
 		"hateHello": "What do you want?",
 		"tradeRequest": "This is better than you deserve, but let it not be said that I am an unfair man.",
-		"outerColor": [180, 178, 164],
-		"innerColor": [70, 0, 4],
-		"favoredReligion": "Tengriism",
+
+        "outerColor": [ 53,0,87],
+        "innerColor": [238,201,9],
+
+        "favoredReligion": "Tengriism",
 		"uniqueName": "Scourge of God",
 		"uniques": ["[+1 Production] from every [Pasture]", "Cities are razed [2] times as fast", "Starts with [Animal Husbandry]", "\"Borrows\" city names from other civilizations in the game"],
 		"cities": ["Atilla's Court"],
@@ -846,8 +866,10 @@
 		"neutralHello": "Hello!",
 		"hateHello": "Oh, it's ye!",
 		"tradeRequest": "I see you admire my new damask. Nobody should say that I am an unjust woman. Let's reach an agreement!",
-		"outerColor": [235, 0, 0],
-		"innerColor": [255, 255, 255],
+
+        "outerColor": [234,0,0],
+        "innerColor": [255,255,255],
+
 		"favoredReligion": "Christianity",
 		"uniqueName": "Diplomatic Marriage",
 		"uniques": ["Can spend Gold to annex or puppet a City-State that has been your ally for [5] turns."],
@@ -942,8 +964,9 @@
 		"hateNo": ["That's unacceptable!","A thousand times no!","Never!"],
 		"hateYes": ["Eugh! Fine then…","Disgusting! Okay then…","But if I have to…"],
 
-		"outerColor": [22, 92, 63],
-		"innerColor": [148, 170, 255],
+        "outerColor": [12,75,25],
+        "innerColor": [157,172,255],
+
 		"favoredReligion": "Christianity",
 		"uniqueName": "Druidic Lore",
 		"uniques": ["[+1 Faith] [in all cities] <with [1] to [2] neighboring [unimproved] [Forest] tiles>",
@@ -982,8 +1005,9 @@
 		"hateNo": ["That is unacceptable.","You are not sure about it.","Please repeat for me."],
 		"hateYes": ["Fine, in my understanding.","It is clear.","It is clear."],
 
-		"outerColor": [2, 40, 15],
-		"innerColor": [255, 46, 46],
+        "outerColor": [18, 66, 22],
+        "innerColor": [255, 56, 56],
+
 		"favoredReligion": "Christianity",
 		"uniqueName": "Spirit of Adwa",
 		"uniques": ["[+20]% Strength <when fighting units from a Civilization with more Cities than you>"],
