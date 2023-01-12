@@ -103,7 +103,7 @@ class RulesetValidator(val ruleset: Ruleset) {
                 }
 
                 lines.add(
-                    text, RulesetErrorSeverity.Warning
+                    text, RulesetErrorSeverity.WarningOptionsOnly
                 )
             }
 

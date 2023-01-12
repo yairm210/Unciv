@@ -346,8 +346,8 @@
 		"neutralHello": "I wish you peace.",
 		"hateHello": "What do you want?",
 		"tradeRequest": "My friend, are you interested in this arrangement?",
-		"outerColor": [18, 136, 7],
-		"innerColor": [255, 153, 50],
+		"outerColor": [15, 115, 5],
+		"innerColor": [255, 168, 80],
 		"favoredReligion": "Hinduism",
 		"uniqueName": "Population Growth",
 		"uniques": ["Unhappiness from number of Cities doubled", "[-50]% Unhappiness from [Population] [in all cities]"],
@@ -703,8 +703,8 @@
 		"afterPeace": "Viracocha has frowned upon our war, and has agreed to our peace agreements.",
 		"tradeRequest": "The Incan people offer this fair trade.",
 
-		"outerColor": [255,184,34],
-		"innerColor": [7,159,119],
+        "outerColor": [255,181,86],
+        "innerColor": [4,120,90],
 		"favoredReligion": "Christianity",
 		"uniqueName": "Great Andean Road",
 		"uniques": ["Units ignore terrain costs when moving into any tile with Hills",
@@ -788,7 +788,7 @@
 		"neutralHello": "Once again, greetings.",
 		"hateHello": "What do you want?",
 		"tradeRequest": "I believe I have something that may be of some importance to you.",
-		"outerColor": [255, 144, 0],
+		"outerColor": [216, 120, 0],
 		"innerColor": [255, 255, 255],
 		"favoredReligion": "Christianity",
 		"uniqueName": "Dutch East India Company",
@@ -1071,7 +1071,7 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "So this is how it feels to die...",
 		"outerColor": [0, 0, 0],
-		"innerColor": [0,0,255],
+        "innerColor": [51,51,255],
 		"cities": ["Hanoi"]
 	},
 	{
@@ -1083,7 +1083,7 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "Unacceptable!",
 		"outerColor": [0, 0, 0],
-		"innerColor": [153,0,76],
+		"innerColor": [168,38,102],
 		"cities": ["Kabul"]
 	},
 	{
@@ -1455,7 +1455,7 @@
 	{
 		"name": "Barbarians",
 		"outerColor": [0,0,0],
-		"innerColor": [182,0,0],
+        "innerColor": [185,12,12],
 		"uniques": ["Can only heal by pillaging"]
 	}
 

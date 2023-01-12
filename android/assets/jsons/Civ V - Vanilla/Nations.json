@@ -320,8 +320,8 @@
 		"neutralHello": "I wish you peace.",
 		"hateHello": "What do you want?",
 		"tradeRequest": "My friend, are you interested in this arrangement?",
-		"outerColor": [18, 136, 7],
-		"innerColor": [255, 153, 50],
+        "outerColor": [15, 115, 5],
+        "innerColor": [255, 168, 80],
 		"uniqueName": "Population Growth",
 		"uniques": ["Unhappiness from number of Cities doubled", "[-50]% Unhappiness from [Population] [in all cities]"],
 		"cities": ["Delhi","Mumbai","Vijayanagara","Pataliputra","Varanasi","Agra","Calcutta","Lahore","Bangalore","Hyderabad","Madurai","Ahmedabad",
@@ -652,8 +652,8 @@
 		"afterPeace": "Viracocha has frowned upon our war, and has agreed to our peace agreements.",
 		"tradeRequest": "The Incan people offer this fair trade.",
 
-		"outerColor": [255,184,34],
-		"innerColor": [7,159,119],
+        "outerColor": [255,181,86],
+        "innerColor": [4,120,90],
 		"uniqueName": "Great Andean Road",
 		"uniques": ["Units ignore terrain costs when moving into any tile with Hills",
 			"[-50]% maintenance on road & railroads",
@@ -726,7 +726,7 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "So this is how it feels to die...",
 		"outerColor": [0, 0, 0],
-		"innerColor": [0,0,255],
+		"innerColor": [51,51,255],
 		"cities": ["Hanoi"]
 	},
 	{
@@ -737,8 +737,8 @@
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "Unacceptable!",
-		"outerColor": [0, 0, 0],
-		"innerColor": [153,0,76],
+        "outerColor": [0, 0, 0],
+        "innerColor": [168,38,102],
 		"cities": ["Kabul"]
 	},
 	{
@@ -1072,7 +1072,7 @@
 	{
 		"name": "Barbarians",
 		"outerColor": [0,0,0],
-		"innerColor": [182,0,0],
+		"innerColor": [185,12,12],
 		"uniques": ["Can only heal by pillaging"]
 	}
 
