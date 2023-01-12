@@ -1,25 +1,15 @@
+Notifications sorted by category
 
+Game speed affects additional aspects
 
 Better bonus resource color
 
-Resolved  - Game speed affects additional aspects
+Better nation colors
 
-Notification scroll categories improved
-
-Bonus resources light gray
-
-Color suggestions now match json format for easy copy-paste
-
-Changed nation's colors according to poll results
+Modding: Recognize uncontrasting colors for nations according to WCAG guidelines, and suggest tinted versions to conform
 
 Fixed city screen bug for pillaged improvements
 
-Fixed nation contrast issues
-
-Recognize uncontrasting colors for nations according to WCAG guidelines, and suggest tinted versions to conform
-
-Notifications sorted by category
-
-Added Category to all notifications
+AbsoluteUnits - Roman Uniques - By letstalkaboutdune
 
 Fixed some warnings  - By alexban011
