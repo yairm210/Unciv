@@ -129,8 +129,8 @@ open class TabbedPager(
             name = caption // enable finding pages by untranslated caption without needing our own field
             if (icon != null) {
                 if (iconSize != 0f)
-                    iconCell!!.size(iconSize)
-                iconCell!!.padRight(pager.headerPadding * 0.5f)
+                    iconCell.size(iconSize)
+                iconCell.padRight(pager.headerPadding * 0.5f)
             }
         }
         var buttonX = 0f
