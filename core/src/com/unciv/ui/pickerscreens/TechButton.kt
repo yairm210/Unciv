@@ -69,7 +69,7 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
         rightSide.add(text).width(140f).top().left().padRight(15f)
         rightSide.add(turns).width(40f).top().left().padRight(10f).row()
 
-        addTechEnabledIcons(techName, isWorldScreen, rightSide)
+        addTechEnabledIcons(techName, rightSide)
 
         rightSide.centerY(this)
         add(rightSide).expandX().left()
@@ -87,7 +87,7 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
         pack()
     }
 
-    private fun addTechEnabledIcons(techName: String, isWorldScreen: Boolean, rightSide: Table) {
+    private fun addTechEnabledIcons(techName: String, rightSide: Table) {
         val techEnabledIcons = Table().align(Align.left)
         techEnabledIcons.background = BaseScreen.skinStrings.getUiBackground(
             "TechPickerScreen/TechButtonIconsOutline",
