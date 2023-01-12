@@ -782,8 +782,8 @@
 		"hateHello": "What do you want?",
 		"tradeRequest": "This is better than you deserve, but let it not be said that I am an unfair man.",
 
-        "outerColor": [ 53,0,87],
-        "innerColor": [238,201,9],
+        "outerColor": [180, 178, 164],
+        "innerColor": [70, 0, 4],
 
         "favoredReligion": "Tengriism",
 		"uniqueName": "Scourge of God",
