@@ -48,7 +48,7 @@ enum class NotificationCategory{
     Units,
     War,
     Religion,
-    City
+    Cities
 }
 
 /**

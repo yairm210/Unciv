@@ -828,7 +828,7 @@ object UnitActions {
 
         for (otherCiv in civsToNotify)
             otherCiv.addNotification("Your territory has been stolen by [${unit.civInfo}]!",
-                unit.currentTile.position, NotificationCategory.City, unit.civInfo.civName, NotificationIcon.War)
+                unit.currentTile.position, NotificationCategory.Cities, unit.civInfo.civName, NotificationIcon.War)
     }
 
     private fun addFortifyActions(actionList: ArrayList<UnitAction>, unit: MapUnit, showingAdditionalActions: Boolean) {

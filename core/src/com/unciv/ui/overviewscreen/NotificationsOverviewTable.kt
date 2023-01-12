@@ -82,7 +82,8 @@ class NotificationsOverviewTable(
             val categoryNotifications = notifications.filter { it.category == category.name }
             if (categoryNotifications.isEmpty()) continue
 
-            turnTable.add(category.name.toLabel()).pad(3f).row()
+            if (category != NotificationCategory.General)
+                turnTable.add(category.name.toLabel()).pad(3f).row()
 
             for (notification in categoryNotifications) {
                 val notificationTable = Table(BaseScreen.skin)

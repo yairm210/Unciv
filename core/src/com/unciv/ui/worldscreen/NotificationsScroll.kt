@@ -78,15 +78,21 @@ class NotificationsScroll(
             val categoryNotifications = reversedNotifications.filter { it.category == category.name }
             if (categoryNotifications.isEmpty()) continue
 
-            notificationsTable.add(Table().apply {
-                add(ImageGetter.getWhiteDot()).minHeight(2f).width(worldScreen.stage.width/8)
-                add(category.name.toLabel(fontSize = 20)).pad(3f)
-                add(ImageGetter.getWhiteDot()).minHeight(2f).width(worldScreen.stage.width/8)
-            }).row()
+            val backgroundDrawable = BaseScreen.skinStrings.getUiBackground("WorldScreen/Notification", BaseScreen.skinStrings.roundedEdgeRectangleShape)
+
+            if (category != NotificationCategory.General)
+                notificationsTable.add(Table().apply {
+                    add(ImageGetter.getWhiteDot()).minHeight(2f).width(worldScreen.stage.width/8)
+                    add(Table().apply {
+                        background = backgroundDrawable
+                        add(category.name.toLabel(fontSize = 30, fontColor = Color.BLACK))
+                    }).pad(3f)
+                    add(ImageGetter.getWhiteDot()).minHeight(2f).width(worldScreen.stage.width/8)
+                }).row()
 
             for (notification in categoryNotifications) {
                 val listItem = Table()
-                listItem.background = BaseScreen.skinStrings.getUiBackground("WorldScreen/Notification", BaseScreen.skinStrings.roundedEdgeRectangleShape)
+                listItem.background = backgroundDrawable
 
                 val labelWidth = maxEntryWidth - iconSize * notification.icons.size - 10f
                 val label = WrappableLabel(notification.text, labelWidth, Color.BLACK, 30)

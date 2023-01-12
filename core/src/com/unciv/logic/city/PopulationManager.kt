@@ -72,7 +72,7 @@ class PopulationManager : IsPartOfGameInfoSerialization {
         foodStored += food
         if (food < 0)
             cityInfo.civInfo.addNotification("[${cityInfo.name}] is starving!",
-                cityInfo.location, NotificationCategory.City, NotificationIcon.Growth, NotificationIcon.Death)
+                cityInfo.location, NotificationCategory.Cities, NotificationIcon.Growth, NotificationIcon.Death)
         if (foodStored < 0) {        // starvation!
             if (population > 1) addPopulation(-1)
             foodStored = 0
@@ -89,7 +89,7 @@ class PopulationManager : IsPartOfGameInfoSerialization {
             addPopulation(1)
             cityInfo.updateCitizens = true
             cityInfo.civInfo.addNotification("[${cityInfo.name}] has grown!", cityInfo.location,
-                NotificationCategory.City, NotificationIcon.Growth)
+                NotificationCategory.Cities, NotificationIcon.Growth)
         }
     }
 

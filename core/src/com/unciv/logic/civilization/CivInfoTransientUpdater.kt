@@ -165,13 +165,13 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
             for (city in citiesReachedToMediums.keys)
                 if (city !in civInfo.citiesConnectedToCapitalToMediums && city.civInfo == civInfo && city != civInfo.getCapital()!!)
                     civInfo.addNotification("[${city.name}] has been connected to your capital!",
-                        city.location, NotificationCategory.City, NotificationIcon.Gold)
+                        city.location, NotificationCategory.Cities, NotificationIcon.Gold)
 
             // This may still contain cities that have just been destroyed by razing - thus the population test
             for (city in civInfo.citiesConnectedToCapitalToMediums.keys)
                 if (!citiesReachedToMediums.containsKey(city) && city.civInfo == civInfo && city.population.population > 0)
                     civInfo.addNotification("[${city.name}] has been disconnected from your capital!",
-                        city.location, NotificationCategory.City, NotificationIcon.Gold)
+                        city.location, NotificationCategory.Cities, NotificationIcon.Gold)
         }
 
         civInfo.citiesConnectedToCapitalToMediums = citiesReachedToMediums

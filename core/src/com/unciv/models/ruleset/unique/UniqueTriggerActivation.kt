@@ -223,7 +223,7 @@ object UniqueTriggerActivation {
                     civInfo.addNotification(
                         notification,
                         LocationAction(applicableCities.map { it.location }),
-                        NotificationCategory.City,
+                        NotificationCategory.Cities,
                         NotificationIcon.Population
                     )
                 return applicableCities.any()
@@ -240,7 +240,7 @@ object UniqueTriggerActivation {
                     civInfo.addNotification(
                         notificationText,
                         LocationAction(randomCity.location, tile?.position),
-                        NotificationCategory.City,
+                        NotificationCategory.Cities,
                         NotificationIcon.Population
                     )
                 }
