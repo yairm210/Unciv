@@ -197,7 +197,7 @@ class CityScreen(
             if (tileInfo.improvement == null) return false
             val civInfo = city.civInfo
             val existingStats = tileInfo.getImprovementStats(
-                tileInfo.getUnpillagedTileImprovement()!!,
+                tileInfo.getTileImprovement()!!,
                 civInfo,
                 city,
                 cityUniqueCache
