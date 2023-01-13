@@ -151,7 +151,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         while (tilesToCheck.isNotEmpty()) {
             val updatedTiles = ArrayList<TileInfo>()
             for (tileToCheck in tilesToCheck)
-                for (neighbor in tileToCheck.neighbors) {
+                for (neighbor in tileToCheck.neighbors.sortedByDescending { if(it.isLand) 1 else 0 }) {
                     if (tilesToIgnore?.contains(neighbor) == true) continue // ignore this tile
                     var totalDistanceToTile: Float = when {
                         !unit.civInfo.hasExplored(neighbor) ->
