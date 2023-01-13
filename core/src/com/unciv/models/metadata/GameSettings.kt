@@ -70,7 +70,7 @@ class GameSettings {
     var useDemographics: Boolean = false
     var showZoomButtons: Boolean = false
 
-    var notificationsLogMaxTurns = 5
+    var notificationsLogMaxTurns = 15
 
     var androidCutout: Boolean = false
 

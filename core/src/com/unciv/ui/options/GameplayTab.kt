@@ -52,7 +52,7 @@ private fun addNotificationLogMaxTurnsSlider(table: Table, settings: GameSetting
     table.add("Notifications log max turns".toLabel()).left().fillX()
 
     val minimapSlider = UncivSlider(
-        3f, 15f, 1f,
+        3f, 90f, 1f,
         initial = settings.notificationsLogMaxTurns.toFloat()
     ) {
         val turns = it.toInt()

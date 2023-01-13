@@ -1,9 +1,11 @@
 package com.unciv.logic.civilization
 
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.json.HashMapVector2
+import com.unciv.json.json
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.UncivShowableException
@@ -46,7 +48,9 @@ import com.unciv.ui.utils.MayaCalendar
 import com.unciv.ui.utils.extensions.toPercent
 import com.unciv.ui.utils.extensions.withItem
 import com.unciv.ui.victoryscreen.RankingType
+import com.unciv.utils.Log
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -292,7 +296,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         toReturn.exploredTiles.addAll(gameInfo.tileMap.values.asSequence().map { it.position }.filter { it in exploredTiles })
         toReturn.lastSeenImprovement.putAll(lastSeenImprovement)
         toReturn.notifications.addAll(notifications)
-        toReturn.notificationsLog.addAll(notificationsLog)
         toReturn.citiesCreated = citiesCreated
         toReturn.popupAlerts.addAll(popupAlerts)
         toReturn.tradeRequests.addAll(tradeRequests)
@@ -927,6 +930,8 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     }
 
     fun startTurn() {
+        readNotificationsLog()
+
         civConstructions.startTurn()
         attacksSinceTurnStart.clear()
         updateStatsForNextTurn() // for things that change when turn passes e.g. golden age, city state influence
@@ -986,6 +991,8 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     }
 
     fun endTurn() {
+        readNotificationsLog()
+
         val notificationsThisTurn = NotificationsLog(gameInfo.turns)
         notificationsThisTurn.notifications.addAll(notifications)
 
@@ -995,6 +1002,8 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
         if (notificationsThisTurn.notifications.isNotEmpty())
             notificationsLog.add(notificationsThisTurn)
+
+        writeNotificationsLog()
 
         notifications.clear()
         updateStatsForNextTurn()
@@ -1050,6 +1059,25 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         cachedMilitaryMight = -1    // Reset so we don't use a value from a previous turn
 
         updateWinningCiv() // Maybe we did something this turn to win
+    }
+
+    fun readNotificationsLog() {
+        if (isHuman()) {
+            try {
+                val fileHandle = FileHandle("SaveFiles/notificationLog_${civName}_${gameInfo.gameId}")
+                notificationsLog = json().fromJson(ArrayList::class.java, NotificationsLog::class.java, fileHandle) as ArrayList<NotificationsLog>
+            } catch (ex: Exception) {
+                Log.error("Error reading file")
+            }
+        }
+    }
+
+    fun writeNotificationsLog() {
+        if (isHuman()) {
+            val fileHandle = FileHandle("SaveFiles/notificationLog_${civName}_${gameInfo.gameId}")
+            val notifLogJson = json().toJson(notificationsLog)
+            fileHandle.writeString(notifLogJson, false)
+        }
     }
 
     private fun startTurnFlags() {
