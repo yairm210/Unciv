@@ -495,7 +495,7 @@ class TileMap : IsPartOfGameInfoSerialization {
         val unit = gameInfo.ruleSet.units[unitName]!!.getMapUnit(civInfo)
 
         fun getPassableNeighbours(tileInfo: TileInfo): Set<TileInfo> =
-                tileInfo.neighbors.filter { unit.movement.canPassThrough(it, buildCheck = true) }.toSet()
+                tileInfo.neighbors.filter { unit.movement.canPassThrough(it) }.toSet()
 
         // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
         unit.assignOwner(civInfo, false)
@@ -506,7 +506,7 @@ class TileMap : IsPartOfGameInfoSerialization {
         // try to place at the original point (this is the most probable scenario)
         val currentTile = get(position)
         unit.currentTile = currentTile  // temporary
-        if (unit.movement.canMoveTo(currentTile, buildCheck = true)) unitToPlaceTile = currentTile
+        if (unit.movement.canMoveTo(currentTile)) unitToPlaceTile = currentTile
 
         // if it's not suitable, try to find another tile nearby
         if (unitToPlaceTile == null) {
@@ -515,7 +515,7 @@ class TileMap : IsPartOfGameInfoSerialization {
             while (unitToPlaceTile == null && tryCount++ < 10) {
                 unitToPlaceTile = potentialCandidates
                         .sortedByDescending { if (unit.baseUnit.isLandUnit()) it.isLand else true } // Land units should prefer to go into land tiles
-                        .firstOrNull { unit.movement.canMoveTo(it, buildCheck = true) }
+                        .firstOrNull { unit.movement.canMoveTo(it) }
                 if (unitToPlaceTile != null) continue
                 // if it's not found yet, let's check their neighbours
                 val newPotentialCandidates = mutableSetOf<TileInfo>()

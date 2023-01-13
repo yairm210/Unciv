@@ -189,6 +189,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
      * Returns an empty list if there's no way to get to the destination.
      */
     fun getShortestPath(destination: TileInfo, avoidDamagingTerrain: Boolean = false): List<TileInfo> {
+        if (unit.hasUnique(UniqueType.CannotMove)) return listOf()
         // First try and find a path without damaging terrain
         if (!avoidDamagingTerrain && unit.civInfo.passThroughImpassableUnlocked && unit.baseUnit.isLandUnit()) {
             val damageFreePath = getShortestPath(destination, true)
@@ -320,6 +321,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
     /** This is performance-heavy - use as last resort, only after checking everything else!
      * Also note that REACHABLE tiles are not necessarily tiles that the unit CAN ENTER */
     fun canReach(destination: TileInfo): Boolean {
+        if (unit.hasUnique(UniqueType.CannotMove)) return false
         if (unit.baseUnit.movesLikeAirUnits() || unit.isPreparingParadrop())
             return canReachInCurrentTurn(destination)
         return getShortestPath(destination).any()
@@ -619,12 +621,11 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
      * Designates whether we can enter the tile - without attacking
      * DOES NOT designate whether we can reach that tile in the current turn
      */
-    fun canMoveTo(tile: TileInfo, assumeCanPassThrough: Boolean = false, buildCheck: Boolean = false): Boolean {
-        if (!buildCheck && unit.hasUnique(UniqueType.CannotMove)) return false
+    fun canMoveTo(tile: TileInfo, assumeCanPassThrough: Boolean = false): Boolean {
         if (unit.baseUnit.movesLikeAirUnits())
-            return canAirUnitMoveTo(tile, unit, buildCheck = buildCheck)
+            return canAirUnitMoveTo(tile, unit)
 
-        if (!assumeCanPassThrough && !canPassThrough(tile, buildCheck = buildCheck))
+        if (!assumeCanPassThrough && !canPassThrough(tile))
             return false
 
         // even if they'll let us pass through, we can't enter their city - unless we just captured it
@@ -638,8 +639,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
             tile.militaryUnit == null && (tile.civilianUnit == null || tile.civilianUnit!!.owner == unit.owner || unit.civInfo.isAtWarWith(tile.civilianUnit!!.civInfo))
     }
 
-    private fun canAirUnitMoveTo(tile: TileInfo, unit: MapUnit, buildCheck: Boolean = false): Boolean {
-        if (!buildCheck && unit.hasUnique(UniqueType.CannotMove)) return false
+    private fun canAirUnitMoveTo(tile: TileInfo, unit: MapUnit): Boolean {
         // landing in the city
         if (tile.isCityCenter()) {
             if (tile.airUnits.filter { !it.isTransported }.size < 6 && tile.getCity()?.civInfo == unit.civInfo)
@@ -671,8 +671,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
      * so multiple callees of this function have been optimized,
      * because optimization on this function results in massive benefits!
      */
-    fun canPassThrough(tile: TileInfo, buildCheck: Boolean = false): Boolean {
-        if (!buildCheck && unit.hasUnique(UniqueType.CannotMove)) return false
+    fun canPassThrough(tile: TileInfo): Boolean {
         if (tile.isImpassible()) {
             // special exception - ice tiles are technically impassible, but some units can move through them anyway
             // helicopters can pass through impassable tiles like mountains
