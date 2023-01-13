@@ -336,9 +336,9 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         return getDistanceToTiles().containsKey(destination)
     }
 
-    fun getReachableTilesInCurrentTurn(): Sequence<TileInfo> {
+    fun getReachableTilesInCurrentTurn(attacking: Boolean=false): Sequence<TileInfo> {
         return when {
-            unit.hasUnique(UniqueType.CannotMove) -> emptySequence()
+            (!attacking && unit.hasUnique(UniqueType.CannotMove)) -> emptySequence()
             unit.baseUnit.movesLikeAirUnits() ->
                 unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getMaxMovementForAirUnits()))
             unit.isPreparingParadrop() ->
