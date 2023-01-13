@@ -465,6 +465,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun canAttack(): Boolean {
         if (currentMovement == 0f) return false
+        if (isCivilian()) return false
         return attacksThisTurn < maxAttacksPerTurn()
     }
 
