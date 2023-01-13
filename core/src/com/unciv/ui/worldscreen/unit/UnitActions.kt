@@ -494,11 +494,8 @@ object UnitActions {
         for (unique in unit.baseUnit().getMatchingUniques(UniqueType.CanTransform,
             StateForConditionals(unit = unit, civInfo = civInfo, tile = unitTile))) {
             val upgradedUnit = civInfo.getEquivalentUnit(unique.params[0])
-            val conditional =
-                    unique.conditionals.firstOrNull { it.type == UniqueType.ConditionalCost }
-            val statCostOfUpgrade = if (conditional == null) 0 else conditional.params[0].toInt()
-            val costStat =
-                    if (conditional == null) Stat.valueOf("Gold") else Stat.valueOf(conditional.params[1])
+            val statCostOfUpgrade = 0
+            val costStat = Stat.valueOf("Gold")
             // don't show if haven't researched/is obsolete
             if (!unit.canUpgrade(unitToUpgradeTo = upgradedUnit)) continue
 

@@ -593,7 +593,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     ConditionalBeforeTurns("before [amount] turns", UniqueTarget.Conditional),
     ConditionalAfterTurns("after [amount] turns", UniqueTarget.Conditional),
-    ConditionalCost("for [amount] [stat]", UniqueTarget.Conditional),
 
     /////// civ conditionals
     ConditionalWar("when at war", UniqueTarget.Conditional),
