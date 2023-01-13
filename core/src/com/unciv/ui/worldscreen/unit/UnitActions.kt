@@ -494,12 +494,10 @@ object UnitActions {
         for (unique in unit.baseUnit().getMatchingUniques(UniqueType.CanTransform,
             StateForConditionals(unit = unit, civInfo = civInfo, tile = unitTile))) {
             val upgradedUnit = civInfo.getEquivalentUnit(unique.params[0])
-            val statCostOfUpgrade = 0
-            val costStat = Stat.valueOf("Gold")
             // don't show if haven't researched/is obsolete
             if (!unit.canUpgrade(unitToUpgradeTo = upgradedUnit)) continue
 
-            // Check _new_ resource requirements (display only - yes even for free or special upgrades)
+            // Check _new_ resource requirements
             // Using Counter to aggregate is a bit exaggerated, but - respect the mad modder.
             val resourceRequirementsDelta = Counter<String>()
             for ((resource, amount) in unit.baseUnit().getResourceRequirements())
@@ -511,10 +509,8 @@ object UnitActions {
                 .joinToString { "${it.value} {${it.key}}".tr() }
 
             val title = if (newResourceRequirementsString.isEmpty())
-                if (statCostOfUpgrade == 0) "Transform to [${upgradedUnit.name}]"
-                else "Transform to [${upgradedUnit.name}] ([$statCostOfUpgrade] [${costStat.name}])"
-            else if (statCostOfUpgrade == 0) "Transform to [${upgradedUnit.name}]\n([$newResourceRequirementsString])"
-            else "Transform to [${upgradedUnit.name}]\n([$statCostOfUpgrade] [${costStat.name}], [$newResourceRequirementsString])"
+                "Transform to [${upgradedUnit.name}]"
+            else "Transform to [${upgradedUnit.name}]\n([$newResourceRequirementsString])"
 
             transformList.add(UnitAction(UnitActionType.Transform,
                 title = title,
@@ -529,13 +525,11 @@ object UnitActions {
                         val resurrectedUnit = civInfo.placeUnitNearTile(unitTile.position, unit.name)!!
                         unit.copyStatisticsTo(resurrectedUnit)
                     } else { // Managed to upgrade
-                        civInfo.addStat(costStat, -statCostOfUpgrade)
                         unit.copyStatisticsTo(newUnit)
                         newUnit.currentMovement = 0f
                     }
                 }.takeIf {
-                    (unit.civInfo.getStatReserve(costStat) >= statCostOfUpgrade
-                            && unit.currentMovement > 0
+                    (unit.currentMovement > 0
                             && !unit.isEmbarked()
                             && unit.canUpgrade(unitToUpgradeTo = upgradedUnit)
                             )
