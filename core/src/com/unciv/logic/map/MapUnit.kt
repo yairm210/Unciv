@@ -477,7 +477,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun getMaxMovementForAirUnits(): Int {
-        if (hasUnique(UniqueType.CannotMove)) return getRange()  // also used for marking attack range
         return getRange() * 2
     }
 
@@ -1001,7 +1000,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         updateVisibleTiles()
     }
 
-    fun putInTile(tile: TileInfo, buildCheck: Boolean = false) {
+    fun putInTile(tile: TileInfo) {
         when {
             !movement.canMoveTo(tile) ->
                 throw Exception("Unit $name at $currentTile can't be put in tile ${tile.position}!")

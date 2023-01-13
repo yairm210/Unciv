@@ -673,14 +673,13 @@ class WorldMapHolder(
             }
         }
 
+        // Add back in the red markers for Air Unit Attack range since they can't move, but can still attack
         if (unit.hasUnique(UniqueType.CannotMove) && isAirUnit && !unit.isPreparingAirSweep()) {
-            val tilesInAttackRange = unit.movement.getReachableTilesInCurrentTurn(true)
+            val tilesInAttackRange = unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getRange()))
             for (tile in tilesInAttackRange) {
                 for (tileToColor in tileGroups[tile]!!) {
-                    if (tile.aerialDistanceTo(unit.getTile()) <= unit.getRange()) {
-                        // The tile is within attack range
-                        tileToColor.showHighlight(Color.RED, 0.3f)
-                    }
+                    // The tile is within attack range
+                    tileToColor.showHighlight(Color.RED, 0.3f)
                 }
             }
         }
