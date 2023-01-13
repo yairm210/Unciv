@@ -147,11 +147,13 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         val unitTile = if (origin == currentUnitTile.position) currentUnitTile else currentUnitTile.tileMap[origin]
         distanceToTiles[unitTile] = ParentTileAndTotalDistance(unitTile, 0f)
         var tilesToCheck = listOf(unitTile)
+        val landUnit = unit.baseUnit.isLandUnit()
 
         while (tilesToCheck.isNotEmpty()) {
             val updatedTiles = ArrayList<TileInfo>()
             for (tileToCheck in tilesToCheck)
-                for (neighbor in tileToCheck.neighbors.sortedByDescending { if(it.isLand) 1 else 0 }) {
+                for (neighbor in tileToCheck.neighbors.sortedByDescending { landUnit && it.isLand }) {
+                    //for (neighbor in tileToCheck.neighbors.sortedByDescending { it.isLand }) {
                     if (tilesToIgnore?.contains(neighbor) == true) continue // ignore this tile
                     var totalDistanceToTile: Float = when {
                         !unit.civInfo.hasExplored(neighbor) ->
