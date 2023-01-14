@@ -768,6 +768,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [Trade](https://www.flaticon.com/free-icon/trade_4257019) created by Smashicons for Conduct Trade Mission
 - [Nothing](https://www.flaticon.com/free-icon/nothing_5084125) created by Freepik for Nothing construction process
 - Icon for Unique created by [vegeta1k95](https://github.com/vegeta1k95)
+- [Transform] created by letstalkaboutdune
 
 ### Main menu
 

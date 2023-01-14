@@ -1235,7 +1235,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
             Stat.Culture -> policies.storedCulture
             Stat.Science -> {
                 if (tech.currentTechnology() == null) 0
-                else tech.remainingScienceToTech(tech.currentTechnology()!!.name)
+                else tech.researchOfTech(tech.currentTechnology()!!.name)
             }
             Stat.Gold -> gold
             Stat.Faith -> religionManager.storedFaith
