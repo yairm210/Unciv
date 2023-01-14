@@ -1,21 +1,17 @@
-
-
 Fixed battle table uneven when only one side has modifiers
 
-"Street fighter" style of health bars
+"Street fighter" style of health bars, different colors for 'definite damage' and 'possible damage'
 
-Resolved  - Different colors for 'definite damage' and 'possible damage'
+Pathfinding avoids embarkation when possible
 
-Resolved  - Consider tile happiness for start-of-turn computations
+Modding: 'transform' action - by itanasi
 
-Resolved  - Better Himeji Castle unique text
+Consider tile happiness for start-of-turn computations
 
-Resolved  - Fixed sleep not showing on units in tiles with improvements in repair
+Better Himeji Castle unique text
 
- - Fixed Great Person speed modifier
+Fixed sleep not showing on units in tiles with improvements in repair
+
+Fixed Great Person speed modifier
 
 Civilians no longer 'attack' on rightclick
-
-4.3.21-patch1
-
-Fixed Huns nation color  - By letstalkaboutdune
