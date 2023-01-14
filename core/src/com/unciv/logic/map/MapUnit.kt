@@ -1239,8 +1239,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
             && improvement.name != Constants.cancelImprovementOrder
             && tile.improvementInProgress != improvement.name
         ) return false
-        if (tile.improvementInProgress == Constants.repair) return true
-        return getMatchingUniques(UniqueType.BuildImprovements)
+        val buildImprovementUniques = getMatchingUniques(UniqueType.BuildImprovements)
+        if (tile.improvementInProgress == Constants.repair && buildImprovementUniques.any()) return true
+        return buildImprovementUniques
             .any { improvement.matchesFilter(it.params[0]) || tile.matchesTerrainFilter(it.params[0]) }
     }
 
