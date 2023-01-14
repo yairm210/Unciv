@@ -39,8 +39,9 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
         }
 
         for ((key, value) in greatPersonPointsCounter) {
-            if (value > pointsForNextGreatPerson * gameSpeedModifier) {
-                greatPersonPointsCounter.add(key, -pointsForNextGreatPerson)
+            val requiredPoints = (pointsForNextGreatPerson * gameSpeedModifier).toInt()
+            if (value >= requiredPoints) {
+                greatPersonPointsCounter.add(key, -requiredPoints)
                 pointsForNextGreatPerson *= 2
                 return key
             }
