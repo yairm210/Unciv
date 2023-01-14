@@ -529,10 +529,9 @@ object UnitActions {
                         newUnit.currentMovement = 0f
                     }
                 }.takeIf {
-                    (unit.currentMovement > 0
+                    unit.currentMovement > 0
                             && !unit.isEmbarked()
                             && unit.canUpgrade(unitToUpgradeTo = upgradedUnit)
-                            )
                 }
             ) )
         }
