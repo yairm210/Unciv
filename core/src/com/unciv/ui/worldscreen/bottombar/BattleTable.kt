@@ -174,8 +174,8 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
                 else listOf()
 
         for (i in 0..max(attackerModifiers.size, defenderModifiers.size)) {
-            if (i < attackerModifiers.size) add(attackerModifiers[i]) else add()
-            if (i < defenderModifiers.size) add(defenderModifiers[i]) else add()
+            if (i < attackerModifiers.size) add(attackerModifiers[i]) else add().width(quarterScreen)
+            if (i < defenderModifiers.size) add(defenderModifiers[i]) else add().width(quarterScreen)
             row().pad(2f)
         }
 
@@ -389,7 +389,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         for (modifier in attackerModifiers) {
             add(modifier)
-            add()
+            add().width(quarterScreen)
             row().pad(2f)
         }
 
