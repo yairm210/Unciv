@@ -1,3 +1,25 @@
+## 4.3.22
+
+Fixed battle table uneven when only one side has modifiers
+
+"Street fighter" style of health bars
+
+Resolved  - Different colors for 'definite damage' and 'possible damage'
+
+Resolved  - Consider tile happiness for start-of-turn computations
+
+Resolved  - Better Himeji Castle unique text
+
+Resolved  - Fixed sleep not showing on units in tiles with improvements in repair
+
+ - Fixed Great Person speed modifier
+
+Civilians no longer 'attack' on rightclick
+
+4.3.21-patch1
+
+Fixed Huns nation color  - By letstalkaboutdune
+
 ## 4.3.21
 
 Notifications sorted by category
