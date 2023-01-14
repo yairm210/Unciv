@@ -230,8 +230,8 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             }
             add(defeatedText.toLabel())
         } else {
-            add(getHealthBar(attacker.getHealth(), attacker.getMaxHealth(), maxDamageToAttacker, minDamageToAttacker))
-            add(getHealthBar(defender.getHealth(), defender.getMaxHealth(), maxDamageToDefender, minDamageToDefender)).row()
+            add(getHealthBar(attacker.getHealth(), attacker.getMaxHealth(), maxDamageToAttacker, minDamageToAttacker, true))
+            add(getHealthBar(defender.getHealth(), defender.getMaxHealth(), maxDamageToDefender, minDamageToDefender, false)).row()
 
             val attackerHealth = attacker.getHealth()
             val minRemainingLifeAttacker = max(attackerHealth-maxDamageToAttacker, 0)
@@ -393,8 +393,8 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             row().pad(2f)
         }
 
-        add(getHealthBar(attacker.getHealth(), attacker.getMaxHealth(), 0,0))
-        add(getHealthBar(attacker.getMaxHealth(), attacker.getMaxHealth(), 0,0))
+        add(getHealthBar(attacker.getHealth(), attacker.getMaxHealth(), 0,0, true))
+        add(getHealthBar(attacker.getMaxHealth(), attacker.getMaxHealth(), 0,0, false))
         row().pad(5f)
 
         val attackButton = "Air Sweep".toTextButton().apply { color = Color.RED }
