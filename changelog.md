@@ -1,3 +1,19 @@
+## 4.4.1
+
+Bonus damage additive
+
+Differentiated attackable from visible tiles per Civ V
+
+Tiles 1 step out of bounds of visibility are visible if they're higher than current tile
+
+New tile visibility framework!
+
+Added framework for tile visibility testing
+
+Resolved health bar overflow problems
+
+Preparation for Tactical AI Rework: analysis map, domination zones  - By vegeta1k95
+
 ## 4.4.0
 
 Fixed battle table uneven when only one side has modifiers
