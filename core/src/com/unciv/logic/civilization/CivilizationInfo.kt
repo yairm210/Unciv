@@ -8,6 +8,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.VictoryData
+import com.unciv.logic.automation.ai.TacticalAI
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.city.CityInfo
@@ -172,6 +173,9 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     val popupAlerts = ArrayList<PopupAlert>()
     private var allyCivName: String? = null
     var naturalWonders = ArrayList<String>()
+
+    /* AI section */
+    val tacticalAI = TacticalAI()
 
     var notifications = ArrayList<Notification>()
 
@@ -364,6 +368,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     var cityStateResource: String? = null
     var cityStateUniqueUnit: String? = null // Unique unit for militaristic city state. Might still be null if there are no appropriate units
     fun isMajorCiv() = nation.isMajorCiv()
+    fun isMinorCiv() = nation.isCityState() || nation.isBarbarian()
     fun isAlive(): Boolean = !isDefeated()
 
     fun hasMetCivTerritory(otherCiv: CivilizationInfo): Boolean = otherCiv.getCivTerritory().any { hasExplored(it) }
@@ -893,6 +898,8 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         }
 
         hasLongCountDisplayUnique = hasUnique(UniqueType.MayanCalendarDisplay)
+
+        tacticalAI.init(this)
 
     }
 

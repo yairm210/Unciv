@@ -218,6 +218,8 @@ class CityInfo : IsPartOfGameInfoSerialization {
         }
 
         triggerCitiesSettledNearOtherCiv()
+
+        civInfo.gameInfo.cityDistances.setDirty()
     }
 
     private fun addStartingBuildings(civInfo: CivilizationInfo, startingEra: String) {
@@ -807,6 +809,8 @@ class CityInfo : IsPartOfGameInfoSerialization {
             civInfo.updateProximity(otherCiv,
                 otherCiv.updateProximity(civInfo))
         }
+
+        civInfo.gameInfo.cityDistances.setDirty()
     }
 
     fun annexCity() = CityInfoConquestFunctions(this).annexCity()
