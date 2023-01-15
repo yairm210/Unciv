@@ -63,7 +63,7 @@ object BattleTableHelpers {
         ))
     }
 
-    fun getHealthBar(currentHealth: Int, maxHealth: Int, maxDamage: Int, minDamage: Int, leftToRight:Boolean): Table {
+    fun getHealthBar(maxHealth: Int, currentHealth: Int, maxRemainingHealth: Int, minRemainingHealth: Int): Table {
         val healthBar = Table()
         val totalWidth = 100f
         fun addHealthToBar(image: Image, amount:Int) {
@@ -81,21 +81,13 @@ object BattleTableHelpers {
 
         val maybeDamagedHealth = ImageGetter.getDot(Color.ORANGE)
 
-        val remainingHealth = currentHealth - minDamage
         val remainingHealthDot = ImageGetter.getWhiteDot()
         remainingHealthDot.color = Color.GREEN
 
-        if (leftToRight) {
-            addHealthToBar(ImageGetter.getDot(Color.BLACK), maxHealth - currentHealth)
-            addHealthToBar(damagedHealth, maxDamage - minDamage)
-            addHealthToBar(maybeDamagedHealth, minDamage)
-            addHealthToBar(remainingHealthDot, remainingHealth)
-        } else {
-            addHealthToBar(remainingHealthDot, remainingHealth)
-            addHealthToBar(maybeDamagedHealth, minDamage)
-            addHealthToBar(damagedHealth, maxDamage - minDamage)
-            addHealthToBar(ImageGetter.getDot(Color.BLACK), maxHealth - currentHealth)
-        }
+        addHealthToBar(ImageGetter.getDot(Color.BLACK), maxHealth - currentHealth)
+        addHealthToBar(damagedHealth, currentHealth - maxRemainingHealth)
+        addHealthToBar(maybeDamagedHealth, maxRemainingHealth - minRemainingHealth)
+        addHealthToBar(remainingHealthDot, minRemainingHealth)
 
         healthBar.pack()
         return healthBar

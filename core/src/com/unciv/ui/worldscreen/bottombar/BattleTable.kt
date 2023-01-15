@@ -230,21 +230,21 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             }
             add(defeatedText.toLabel())
         } else {
-            add(getHealthBar(attacker.getHealth(), attacker.getMaxHealth(), maxDamageToAttacker, minDamageToAttacker, true))
-            add(getHealthBar(defender.getHealth(), defender.getMaxHealth(), maxDamageToDefender, minDamageToDefender, false)).row()
-
             val attackerHealth = attacker.getHealth()
             val minRemainingLifeAttacker = max(attackerHealth-maxDamageToAttacker, 0)
             val maxRemainingLifeAttacker = max(attackerHealth-minDamageToAttacker, 0)
+
+            val defenderHealth = defender.getHealth()
+            val minRemainingLifeDefender = max(defenderHealth-maxDamageToDefender, 0)
+            val maxRemainingLifeDefender = max(defenderHealth-minDamageToDefender, 0)
+
+            add(getHealthBar(attacker.getMaxHealth(), attacker.getHealth(), maxRemainingLifeAttacker, minRemainingLifeAttacker))
+            add(getHealthBar(defender.getMaxHealth(), defender.getHealth(), maxRemainingLifeDefender, minRemainingLifeDefender)).row()
 
             if (minRemainingLifeAttacker == attackerHealth) add(attackerHealth.toLabel())
             else if (maxRemainingLifeAttacker == minRemainingLifeAttacker) add("$attackerHealth → $maxRemainingLifeAttacker".toLabel())
             else add("$attackerHealth → $minRemainingLifeAttacker-$maxRemainingLifeAttacker".toLabel())
 
-
-            val defenderHealth = defender.getHealth()
-            val minRemainingLifeDefender = max(defenderHealth-maxDamageToDefender, 0)
-            val maxRemainingLifeDefender = max(defenderHealth-minDamageToDefender, 0)
 
             if (minRemainingLifeDefender == maxRemainingLifeDefender) add("$defenderHealth → $maxRemainingLifeDefender".toLabel())
             else add("$defenderHealth → $minRemainingLifeDefender-$maxRemainingLifeDefender".toLabel())
@@ -393,8 +393,8 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             row().pad(2f)
         }
 
-        add(getHealthBar(attacker.getHealth(), attacker.getMaxHealth(), 0,0, true))
-        add(getHealthBar(attacker.getMaxHealth(), attacker.getMaxHealth(), 0,0, false))
+        add(getHealthBar(attacker.getMaxHealth(), attacker.getHealth(), attacker.getHealth(),attacker.getHealth()))
+        add(getHealthBar(attacker.getMaxHealth(), attacker.getMaxHealth(), attacker.getMaxHealth(), attacker.getMaxHealth()))
         row().pad(5f)
 
         val attackButton = "Air Sweep".toTextButton().apply { color = Color.RED }
