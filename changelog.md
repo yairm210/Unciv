@@ -1,14 +1,11 @@
 ## 4.4.1
 
-Bonus damage additive
-
-Differentiated attackable from visible tiles per Civ V
-
-Tiles 1 step out of bounds of visibility are visible if they're higher than current tile
-
 New tile visibility framework!
+ - Differentiated attackable from visible tiles per Civ V
+ - Tiles 1 step out of bounds of visibility are visible if they're higher than current tile
+ - Higher tiles can be visible beyond non-visible, hidden tiles
 
-Added framework for tile visibility testing
+Damage bonuses are additive, per Civ V, not multiplicative
 
 Resolved health bar overflow problems
 
