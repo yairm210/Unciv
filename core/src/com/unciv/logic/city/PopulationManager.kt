@@ -2,6 +2,7 @@ package com.unciv.logic.city
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.automation.Automation
+import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.Counter
@@ -46,6 +47,9 @@ class PopulationManager : IsPartOfGameInfoSerialization {
     fun getFoodToNextPopulation(): Int {
         // civ v math, civilization.wikia
         var foodRequired = 15 + 6 * (population - 1) + floor((population - 1).toDouble().pow(1.8))
+
+        foodRequired *= cityInfo.civInfo.gameInfo.speed.modifier
+
         if (cityInfo.civInfo.isCityState())
             foodRequired *= 1.5f
         if (!cityInfo.civInfo.isHuman())
@@ -70,7 +74,8 @@ class PopulationManager : IsPartOfGameInfoSerialization {
     fun nextTurn(food: Int) {
         foodStored += food
         if (food < 0)
-            cityInfo.civInfo.addNotification("[${cityInfo.name}] is starving!", cityInfo.location, NotificationIcon.Growth, NotificationIcon.Death)
+            cityInfo.civInfo.addNotification("[${cityInfo.name}] is starving!",
+                cityInfo.location, NotificationCategory.Cities, NotificationIcon.Growth, NotificationIcon.Death)
         if (foodStored < 0) {        // starvation!
             if (population > 1) addPopulation(-1)
             foodStored = 0
@@ -86,11 +91,10 @@ class PopulationManager : IsPartOfGameInfoSerialization {
             foodStored += (getFoodToNextPopulation() * percentOfFoodCarriedOver / 100f).toInt()
             addPopulation(1)
             cityInfo.updateCitizens = true
-            cityInfo.civInfo.addNotification("[${cityInfo.name}] has grown!", cityInfo.location, NotificationIcon.Growth)
+            cityInfo.civInfo.addNotification("[${cityInfo.name}] has grown!", cityInfo.location,
+                NotificationCategory.Cities, NotificationIcon.Growth)
         }
     }
-
-    private fun getStatsOfSpecialist(name: String) = cityInfo.cityStats.getStatsOfSpecialist(name)
 
     fun addPopulation(count: Int) {
         val changedAmount =

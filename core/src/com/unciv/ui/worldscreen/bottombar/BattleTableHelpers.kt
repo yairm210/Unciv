@@ -63,14 +63,13 @@ object BattleTableHelpers {
         ))
     }
 
-    fun getHealthBar(currentHealth: Int, maxHealth: Int, expectedDamage: Int): Table {
+    fun getHealthBar(currentHealth: Int, maxHealth: Int, maxDamage: Int, minDamage: Int, leftToRight:Boolean): Table {
         val healthBar = Table()
         val totalWidth = 100f
         fun addHealthToBar(image: Image, amount:Int) {
             val width = totalWidth * amount / maxHealth
             healthBar.add(image).size(width.coerceIn(0f, totalWidth),3f)
         }
-        addHealthToBar(ImageGetter.getDot(Color.BLACK), maxHealth - currentHealth)
 
         val damagedHealth = ImageGetter.getDot(Color.FIREBRICK)
         if (UncivGame.Current.settings.continuousRendering) {
@@ -79,16 +78,24 @@ object BattleTableHelpers {
                 Actions.color(Color.BLACK, 0.7f),
                 Actions.color(Color.FIREBRICK, 0.7f)
             ))) }
-        addHealthToBar(damagedHealth,expectedDamage)
 
-        val remainingHealth = currentHealth - expectedDamage
+        val maybeDamagedHealth = ImageGetter.getDot(Color.ORANGE)
+
+        val remainingHealth = currentHealth - minDamage
         val remainingHealthDot = ImageGetter.getWhiteDot()
-        remainingHealthDot.color = when {
-            remainingHealth / maxHealth.toFloat() > 2 / 3f -> Color.GREEN
-            remainingHealth / maxHealth.toFloat() > 1 / 3f -> Color.ORANGE
-            else -> Color.RED
+        remainingHealthDot.color = Color.GREEN
+
+        if (leftToRight) {
+            addHealthToBar(ImageGetter.getDot(Color.BLACK), maxHealth - currentHealth)
+            addHealthToBar(damagedHealth, maxDamage - minDamage)
+            addHealthToBar(maybeDamagedHealth, minDamage)
+            addHealthToBar(remainingHealthDot, remainingHealth)
+        } else {
+            addHealthToBar(remainingHealthDot, remainingHealth)
+            addHealthToBar(maybeDamagedHealth, minDamage)
+            addHealthToBar(damagedHealth, maxDamage - minDamage)
+            addHealthToBar(ImageGetter.getDot(Color.BLACK), maxHealth - currentHealth)
         }
-        addHealthToBar(remainingHealthDot ,remainingHealth)
 
         healthBar.pack()
         return healthBar

@@ -1,3 +1,58 @@
+## 4.4.0
+
+Fixed battle table uneven when only one side has modifiers
+
+"Street fighter" style of health bars, different colors for 'definite damage' and 'possible damage'
+
+Pathfinding avoids embarkation when possible
+
+Modding: 'transform' action - by itanasi
+
+Consider tile happiness for start-of-turn computations
+
+Better Himeji Castle unique text
+
+Fixed sleep not showing on units in tiles with improvements in repair
+
+Fixed Great Person speed modifier
+
+Civilians no longer 'attack' on rightclick
+
+## 4.3.21
+
+Notifications sorted by category
+
+Game speed affects additional aspects
+
+Better bonus resource color
+
+Better nation colors
+
+Modding: Recognize uncontrasting colors for nations according to WCAG guidelines, and suggest tinted versions to conform
+
+Fixed city screen bug for pillaged improvements
+
+AbsoluteUnits - Roman Uniques - By letstalkaboutdune
+
+Fixed some warnings  - By alexban011
+
+## 4.3.20
+
+Show numbers on attack damage and final strength comparison for battles
+
+Changed Windows icon for Unciv to new icon
+
+Unit icons no longer overlap unit action images, improved render time for unit images
+
+MoveTo image visible
+
+AbsoluteUnits - Unique Triremes - By letstalkaboutdune
+
+By vegeta1k95:
+- Modding: allow custom ResourcePortraits
+- Fix foreign units flags fading
+- Fix AI being able to bombard non-visible tiles + optimizations
+
 ## 4.3.19
 
 Updated Unciv Android icons

@@ -231,7 +231,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
                 "An unknown civilization has adopted the [${policy.name}] policy"
             }
             civ.addNotification(
-                "${defaultNotificationText}${extraNotificationTextCopy}", NotificationIcon.Culture
+                "${defaultNotificationText}${extraNotificationTextCopy}", NotificationCategory.General, NotificationIcon.Culture
             )
         }
     }

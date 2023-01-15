@@ -32,6 +32,7 @@ import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.ui.worldscreen.bottombar.BattleTableHelpers.flashWoundedCombatants
 import com.unciv.ui.worldscreen.bottombar.BattleTableHelpers.getHealthBar
 import kotlin.math.max
+import kotlin.math.roundToInt
 
 class BattleTable(val worldScreen: WorldScreen): Table() {
 
@@ -173,9 +174,17 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
                 else listOf()
 
         for (i in 0..max(attackerModifiers.size, defenderModifiers.size)) {
-            if (i < attackerModifiers.size) add(attackerModifiers[i]) else add()
-            if (i < defenderModifiers.size) add(defenderModifiers[i]) else add()
+            if (i < attackerModifiers.size) add(attackerModifiers[i]) else add().width(quarterScreen)
+            if (i < defenderModifiers.size) add(defenderModifiers[i]) else add().width(quarterScreen)
             row().pad(2f)
+        }
+
+        if (attackerModifiers.any() || defenderModifiers.any()){
+            addSeparator()
+            val attackerStrength = BattleDamage.getAttackingStrength(attacker, defender).roundToInt()
+            val defenderStrength = BattleDamage.getDefendingStrength(attacker, defender).roundToInt()
+            add(attackerStrength.toString() + attackIcon)
+            add(defenderStrength.toString() + attackIcon).row()
         }
 
         // from Battle.addXp(), check for can't gain more XP from Barbarians
@@ -186,25 +195,30 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             row()
         }
 
-        var damageToDefender = BattleDamage.calculateDamageToDefender(attacker, defender, true)
-        var damageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, defender, true)
+        val maxDamageToDefender = BattleDamage.calculateDamageToDefender(attacker, defender, 1f)
+        val minDamageToDefender = BattleDamage.calculateDamageToDefender(attacker, defender, 0f)
+        var expectedDamageToDefenderForHealthbar = (maxDamageToDefender + minDamageToDefender) / 2
 
-        if (damageToAttacker > attacker.getHealth() && damageToDefender > defender.getHealth()) {
+        val maxDamageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, defender, 1f)
+        val minDamageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, defender, 0f)
+        var expectedDamageToAttackerForHealthbar = (maxDamageToAttacker + minDamageToAttacker) / 2
+
+        if (expectedDamageToAttackerForHealthbar > attacker.getHealth() && expectedDamageToDefenderForHealthbar > defender.getHealth()) {
             // when damage exceeds health, we don't want to show negative health numbers
             // Also if both parties are supposed to die it's not indicative of who is more likely to win
             // So we "normalize" the damages until one dies
-            if (damageToDefender * attacker.getHealth() > damageToAttacker * defender.getHealth()) { // defender dies quicker ie first
+            if (expectedDamageToDefenderForHealthbar * attacker.getHealth() > expectedDamageToAttackerForHealthbar * defender.getHealth()) { // defender dies quicker ie first
                 // Both damages *= (defender.health/damageToDefender)
-                damageToDefender = defender.getHealth()
-                damageToAttacker *= (defender.getHealth() / damageToDefender.toFloat()).toInt()
+                expectedDamageToDefenderForHealthbar = defender.getHealth()
+                expectedDamageToAttackerForHealthbar *= (defender.getHealth() / expectedDamageToDefenderForHealthbar.toFloat()).toInt()
             } else { // attacker dies first
                 // Both damages *= (attacker.health/damageToAttacker)
-                damageToAttacker = attacker.getHealth()
-                damageToDefender *= (attacker.getHealth() / damageToAttacker.toFloat()).toInt()
+                expectedDamageToAttackerForHealthbar = attacker.getHealth()
+                expectedDamageToDefenderForHealthbar *= (attacker.getHealth() / expectedDamageToAttackerForHealthbar.toFloat()).toInt()
             }
         }
-        else if (damageToAttacker > attacker.getHealth()) damageToAttacker = attacker.getHealth()
-        else if (damageToDefender > defender.getHealth()) damageToDefender = defender.getHealth()
+        else if (expectedDamageToAttackerForHealthbar > attacker.getHealth()) expectedDamageToAttackerForHealthbar = attacker.getHealth()
+        else if (expectedDamageToDefenderForHealthbar > defender.getHealth()) expectedDamageToDefenderForHealthbar = defender.getHealth()
 
         if (attacker.isMelee() &&
                 (defender.isCivilian() || defender is CityCombatant && defender.isDefeated())) {
@@ -216,8 +230,24 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             }
             add(defeatedText.toLabel())
         } else {
-            add(getHealthBar(attacker.getHealth(), attacker.getMaxHealth(), damageToAttacker))
-            add(getHealthBar(defender.getHealth(), defender.getMaxHealth(), damageToDefender))
+            add(getHealthBar(attacker.getHealth(), attacker.getMaxHealth(), maxDamageToAttacker, minDamageToAttacker, true))
+            add(getHealthBar(defender.getHealth(), defender.getMaxHealth(), maxDamageToDefender, minDamageToDefender, false)).row()
+
+            val attackerHealth = attacker.getHealth()
+            val minRemainingLifeAttacker = max(attackerHealth-maxDamageToAttacker, 0)
+            val maxRemainingLifeAttacker = max(attackerHealth-minDamageToAttacker, 0)
+
+            if (minRemainingLifeAttacker == attackerHealth) add(attackerHealth.toLabel())
+            else if (maxRemainingLifeAttacker == minRemainingLifeAttacker) add("$attackerHealth → $maxRemainingLifeAttacker".toLabel())
+            else add("$attackerHealth → $minRemainingLifeAttacker-$maxRemainingLifeAttacker".toLabel())
+
+
+            val defenderHealth = defender.getHealth()
+            val minRemainingLifeDefender = max(defenderHealth-maxDamageToDefender, 0)
+            val maxRemainingLifeDefender = max(defenderHealth-minDamageToDefender, 0)
+
+            if (minRemainingLifeDefender == maxRemainingLifeDefender) add("$defenderHealth → $maxRemainingLifeDefender".toLabel())
+            else add("$defenderHealth → $minRemainingLifeDefender-$maxRemainingLifeDefender".toLabel())
         }
 
         row().pad(5f)
@@ -247,7 +277,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             attackButton.label.color = Color.GRAY
         } else {
             attackButton.onClick(UncivSound.Silent) {  // onAttackButtonClicked will do the sound
-                onAttackButtonClicked(attacker, defender, attackableTile, damageToAttacker, damageToDefender)
+                onAttackButtonClicked(attacker, defender, attackableTile, expectedDamageToAttackerForHealthbar, expectedDamageToDefenderForHealthbar)
             }
         }
 
@@ -359,12 +389,12 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         for (modifier in attackerModifiers) {
             add(modifier)
-            add()
+            add().width(quarterScreen)
             row().pad(2f)
         }
 
-        add(getHealthBar(attacker.getHealth(), attacker.getMaxHealth(), 0))
-        add(getHealthBar(attacker.getMaxHealth(), attacker.getMaxHealth(), 0))
+        add(getHealthBar(attacker.getHealth(), attacker.getMaxHealth(), 0,0, true))
+        add(getHealthBar(attacker.getMaxHealth(), attacker.getMaxHealth(), 0,0, false))
         row().pad(5f)
 
         val attackButton = "Air Sweep".toTextButton().apply { color = Color.RED }

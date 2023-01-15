@@ -23,7 +23,10 @@ class GoldenAgeManager : IsPartOfGameInfoSerialization {
     fun isGoldenAge(): Boolean = turnsLeftForCurrentGoldenAge > 0
 
     fun happinessRequiredForNextGoldenAge(): Int {
-        return ((500 + numberOfGoldenAges * 250) * civInfo.cities.size.toPercent()).toInt() //https://forums.civfanatics.com/resources/complete-guide-to-happiness-vanilla.25584/
+        var cost = (500 + numberOfGoldenAges * 250).toFloat()
+        cost *= civInfo.cities.size.toPercent()  //https://forums.civfanatics.com/resources/complete-guide-to-happiness-vanilla.25584/
+        cost *= civInfo.gameInfo.speed.modifier
+        return cost.toInt()
     }
 
     fun enterGoldenAge(unmodifiedNumberOfTurns: Int = 10) {
@@ -32,7 +35,7 @@ class GoldenAgeManager : IsPartOfGameInfoSerialization {
             turnsToGoldenAge *= unique.params[0].toPercent()
         turnsToGoldenAge *= civInfo.gameInfo.speed.goldenAgeLengthModifier
         turnsLeftForCurrentGoldenAge += turnsToGoldenAge.toInt()
-        civInfo.addNotification("You have entered a Golden Age!", "StatIcons/Happiness")
+        civInfo.addNotification("You have entered a Golden Age!", NotificationCategory.General, "StatIcons/Happiness")
         civInfo.popupAlerts.add(PopupAlert(AlertType.GoldenAge, ""))
     }
 

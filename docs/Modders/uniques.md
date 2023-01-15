@@ -1277,6 +1277,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Unit
 
+??? example  "Can transform to [unit]"
+	Example: "Can transform to [Musketman]"
+
+	Applicable to: Unit
+
 ## Promotion uniques
 ??? example  "Heal this unit by [amount] HP"
 	Example: "Heal this unit by [3] HP"

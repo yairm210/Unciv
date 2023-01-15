@@ -71,6 +71,43 @@ class RulesetValidator(val ruleset: Ruleset) {
                 lines += "${nation.name} can settle cities, but has no city names!"
             }
 
+            // https://www.w3.org/TR/WCAG20/#visual-audio-contrast-contrast
+            val constrastRatio = nation.getContrastRatio()
+            if (constrastRatio < 3) {
+                val innerColorLuminance = getRelativeLuminance(nation.getInnerColor())
+                val outerColorLuminance = getRelativeLuminance(nation.getOuterColor())
+
+                val innerLerpColor:Color
+                val outerLerpColor:Color
+
+                if (innerColorLuminance > outerColorLuminance) { // inner is brighter
+                    innerLerpColor = Color.WHITE
+                    outerLerpColor = Color.BLACK
+                }
+                else {
+                    innerLerpColor = Color.BLACK
+                    outerLerpColor = Color.WHITE
+                }
+
+                var text = "${nation.name}'s colors do not contrast enough - it is unreadable!"
+
+                for (i in 1..10){
+                    val newInnerColor = nation.getInnerColor().cpy().lerp(innerLerpColor, 0.05f *i)
+                    val newOuterColor = nation.getOuterColor().cpy().lerp(outerLerpColor, 0.05f *i)
+
+                    if (getContrastRatio(newInnerColor, newOuterColor) > 3){
+                        text += "\nSuggested colors: "
+                        text += "\n\t\t\"outerColor\": [${(newOuterColor.r*255).toInt()}, ${(newOuterColor.g*255).toInt()}, ${(newOuterColor.b*255).toInt()}],"
+                        text += "\n\t\t\"innerColor\": [${(newInnerColor.r*255).toInt()}, ${(newInnerColor.g*255).toInt()}, ${(newInnerColor.b*255).toInt()}],"
+                        break
+                    }
+                }
+
+                lines.add(
+                    text, RulesetErrorSeverity.WarningOptionsOnly
+                )
+            }
+
             checkUniques(nation, lines, rulesetInvariant, tryFixUnknownUniques)
         }
 

@@ -40,6 +40,17 @@ object NotificationIcon {
     const val War = "OtherIcons/Pillage"
 }
 
+enum class NotificationCategory{
+    General,
+    Trade,
+    Diplomacy,
+    Production,
+    Units,
+    War,
+    Religion,
+    Cities
+}
+
 /**
  * [action] is not realized as lambda, as it would be too easy to introduce references to objects
  * there that should not be serialized to the saved game.
@@ -50,11 +61,13 @@ open class Notification() : IsPartOfGameInfoSerialization {
 
     var icons: ArrayList<String> = ArrayList() // Must be ArrayList and not List so it can be deserialized
     var action: NotificationAction? = null
+    var category: String = NotificationCategory.General.name
 
-    constructor(text: String, notificationIcons: ArrayList<String>, action: NotificationAction? = null) : this() {
+    constructor(text: String, notificationIcons: ArrayList<String>, action: NotificationAction?, category:NotificationCategory) : this() {
         this.text = text
         this.icons = notificationIcons
         this.action = action
+        this.category = category.name
     }
 
     fun addNotificationIcons(ruleset: Ruleset, iconSize: Float, table: Table) {

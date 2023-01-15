@@ -2,6 +2,7 @@ package com.unciv.logic.city
 
 import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.Counter
 import com.unciv.models.Religion
@@ -106,7 +107,8 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
 
     private fun triggerReligionAdoption(newMajorityReligion: String) {
         val newMajorityReligionObject = cityInfo.civInfo.gameInfo.religions[newMajorityReligion]!!
-        cityInfo.civInfo.addNotification("Your city [${cityInfo.name}] was converted to [${newMajorityReligionObject.getReligionDisplayName()}]!", cityInfo.location, NotificationIcon.Faith)
+        cityInfo.civInfo.addNotification("Your city [${cityInfo.name}] was converted to [${newMajorityReligionObject.getReligionDisplayName()}]!",
+            cityInfo.location, NotificationCategory.Religion, NotificationIcon.Faith)
 
         if (newMajorityReligion in religionsAtSomePointAdopted) return
 
@@ -125,11 +127,13 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
                 religionOwningCiv.addNotification(
                     "You gained [$statsGranted] as your religion was spread to [${cityInfo.name}]",
                     cityInfo.location,
+                    NotificationCategory.Religion,
                     NotificationIcon.Faith
                 )
             else
                 religionOwningCiv.addNotification(
                     "You gained [$statsGranted] as your religion was spread to an unknown city",
+                    NotificationCategory.Religion,
                     NotificationIcon.Faith
                 )
         }

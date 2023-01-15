@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.Proximity
 import com.unciv.logic.civilization.ReligionState
@@ -593,16 +594,16 @@ class CityInfo : IsPartOfGameInfoSerialization {
     fun isHolyCityOf(religionName: String?) = isHolyCity() && religion.religionThisIsTheHolyCityOf == religionName
 
     fun canBeDestroyed(justCaptured: Boolean = false): Boolean {
-        if (civInfo.gameInfo.gameParameters.noCityRazing) return false;
+        if (civInfo.gameInfo.gameParameters.noCityRazing) return false
 
         val allowRazeCapital = civInfo.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.allowRazeCapital)
         val allowRazeHolyCity = civInfo.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.allowRazeHolyCity)
 
-        if (isOriginalCapital && !allowRazeCapital) return false;
-        if (isHolyCity() && !allowRazeHolyCity) return false;
-        if (isCapital() && !justCaptured && !allowRazeCapital) return false;
+        if (isOriginalCapital && !allowRazeCapital) return false
+        if (isHolyCity() && !allowRazeHolyCity) return false
+        if (isCapital() && !justCaptured && !allowRazeCapital) return false
 
-        return true;
+        return true
     }
 
     fun getForceEvaluation(): Int {
@@ -687,13 +688,13 @@ class CityInfo : IsPartOfGameInfoSerialization {
                     CityFlags.WeLoveTheKing.name -> {
                         civInfo.addNotification(
                                 "We Love The King Day in [$name] has ended.",
-                                location, NotificationIcon.City)
+                                location, NotificationCategory.General, NotificationIcon.City)
                         demandNewResource()
                     }
                     CityFlags.Resistance.name -> {
                         civInfo.addNotification(
                                 "The resistance in [$name] has ended!",
-                                location,"StatIcons/Resistance")
+                                location, NotificationCategory.General, "StatIcons/Resistance")
                     }
                 }
             }
@@ -748,7 +749,7 @@ class CityInfo : IsPartOfGameInfoSerialization {
             if (population.population <= 0) {
                 civInfo.addNotification(
                     "[$name] has been razed to the ground!",
-                    location,
+                    location, NotificationCategory.General,
                     "OtherIcons/Fire"
                 )
                 destroyCity()
@@ -870,7 +871,7 @@ class CityInfo : IsPartOfGameInfoSerialization {
         if (demandedResource == "") // Failed to get a valid resource, try again some time later
             setFlag(CityFlags.ResourceDemand, 15 + Random().nextInt(10))
         else
-            civInfo.addNotification("[$name] demands [$demandedResource]!", location, NotificationIcon.City, "ResourceIcons/$demandedResource")
+            civInfo.addNotification("[$name] demands [$demandedResource]!", location, NotificationCategory.General, NotificationIcon.City, "ResourceIcons/$demandedResource")
     }
 
     private fun tryWeLoveTheKing() {
@@ -879,7 +880,7 @@ class CityInfo : IsPartOfGameInfoSerialization {
             setFlag(CityFlags.WeLoveTheKing, 20 + 1) // +1 because it will be decremented by 1 in the same startTurn()
             civInfo.addNotification(
                     "Because they have [$demandedResource], the citizens of [$name] are celebrating We Love The King Day!",
-                    location, NotificationIcon.City, NotificationIcon.Happiness)
+                    location, NotificationCategory.General, NotificationIcon.City, NotificationIcon.Happiness)
         }
     }
 

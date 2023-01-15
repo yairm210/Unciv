@@ -13,6 +13,7 @@ import com.unciv.logic.city.RejectionReason
 import com.unciv.logic.city.RejectionReasons
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.UnitActionType
 import com.unciv.models.helpers.UnitMovementMemoryType
@@ -464,6 +465,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun canAttack(): Boolean {
         if (currentMovement == 0f) return false
+        if (isCivilian()) return false
         return attacksThisTurn < maxAttacksPerTurn()
     }
 
@@ -597,11 +599,13 @@ class MapUnit : IsPartOfGameInfoSerialization {
             if (era != null)
                 stepCost *= (1f + era.eraNumber * constants.eraMultiplier)
             stepCost = (stepCost * civModifier).pow(constants.exponent)
+            stepCost *= civInfo.gameInfo.speed.modifier
             goldCostOfUpgrade += (stepCost / constants.roundTo).toInt() * constants.roundTo
             if (baseUnit == unitToUpgradeTo)
                 break  // stop at requested BaseUnit to upgrade to
             currentUnit = baseUnit
         }
+
 
         return goldCostOfUpgrade
     }
@@ -759,7 +763,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             val locations = LocationAction(tile.position, closestCity.location)
             civInfo.addNotification(
                 "Clearing a [$removedTerrainFeature] has created [$productionPointsToAdd] Production for [${closestCity.name}]",
-                locations, NotificationIcon.Construction
+                locations, NotificationCategory.Production, NotificationIcon.Construction
             )
         }
     }
@@ -855,7 +859,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
             if (lostReligiousStrength != null)
                 religiousStrengthLost += lostReligiousStrength
             if (religiousStrengthLost >= baseUnit.religiousStrength) {
-                civInfo.addNotification("Your [${name}] lost its faith after spending too long inside enemy territory!", getTile().position, name)
+                civInfo.addNotification("Your [${name}] lost its faith after spending too long inside enemy territory!",
+                    getTile().position, NotificationCategory.Units, name)
                 destroy()
             }
         }
@@ -956,7 +961,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
         for (stat in gainedStats)
             civInfo.addStat(stat.key, stat.value.toInt())
-        civInfo.addNotification("By expending your [$name] you gained [${gainedStats}]!", getTile().position, name)
+        civInfo.addNotification("By expending your [$name] you gained [${gainedStats}]!",
+            getTile().position, NotificationCategory.Units, name)
     }
 
     fun removeFromTile() = currentTile.removeUnit(this)
@@ -1025,6 +1031,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         civInfo.addNotification(
             "We have captured a barbarian encampment and recovered [${goldGained.toInt()}] gold!",
             tile.position,
+            NotificationCategory.War,
             NotificationIcon.Gold
         )
     }
@@ -1143,6 +1150,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             civInfo.addNotification(
                 "Our [$name] took [$tileDamage] tile damage and was destroyed",
                 currentTile.position,
+                NotificationCategory.Units,
                 name,
                 NotificationIcon.Death
             )
@@ -1150,6 +1158,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         } else if (tileDamage > 0) civInfo.addNotification(
             "Our [$name] took [$tileDamage] tile damage",
             currentTile.position,
+            NotificationCategory.Units,
             name
         )
     }
@@ -1185,17 +1194,20 @@ class MapUnit : IsPartOfGameInfoSerialization {
             civInfo.addNotification(
                 "An enemy [Citadel] has destroyed our [$name]",
                 locations,
+                NotificationCategory.War,
                 NotificationIcon.Citadel, NotificationIcon.Death, name
             )
             citadelTile.getOwner()?.addNotification(
                 "Your [Citadel] has destroyed an enemy [$name]",
                 locations,
+                NotificationCategory.War,
                 NotificationIcon.Citadel, NotificationIcon.Death, name
             )
             destroy()
         } else civInfo.addNotification(
             "An enemy [Citadel] has attacked our [$name]",
             locations,
+            NotificationCategory.War,
             NotificationIcon.Citadel, NotificationIcon.War, name
         )
     }
@@ -1227,8 +1239,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
             && improvement.name != Constants.cancelImprovementOrder
             && tile.improvementInProgress != improvement.name
         ) return false
-        if (tile.improvementInProgress == Constants.repair) return true
-        return getMatchingUniques(UniqueType.BuildImprovements)
+        val buildImprovementUniques = getMatchingUniques(UniqueType.BuildImprovements)
+        if (tile.improvementInProgress == Constants.repair && buildImprovementUniques.any()) return true
+        return buildImprovementUniques
             .any { improvement.matchesFilter(it.params[0]) || tile.matchesTerrainFilter(it.params[0]) }
     }
 

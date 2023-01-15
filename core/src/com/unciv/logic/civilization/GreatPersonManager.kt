@@ -2,7 +2,6 @@ package com.unciv.logic.civilization
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.models.Counter
-import java.util.HashSet
 
 // todo: Great Admiral?
 // todo: Free GP from policies and wonders should increase threshold according to the wiki
@@ -32,7 +31,7 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
-    fun getNewGreatPerson(): String? {
+    fun getNewGreatPerson(gameSpeedModifier:Float): String? {
         if (greatGeneralPoints > pointsForNextGreatGeneral) {
             greatGeneralPoints -= pointsForNextGreatGeneral
             pointsForNextGreatGeneral += 50
@@ -40,8 +39,9 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
         }
 
         for ((key, value) in greatPersonPointsCounter) {
-            if (value > pointsForNextGreatPerson) {
-                greatPersonPointsCounter.add(key, -pointsForNextGreatPerson)
+            val requiredPoints = (pointsForNextGreatPerson * gameSpeedModifier).toInt()
+            if (value >= requiredPoints) {
+                greatPersonPointsCounter.add(key, -requiredPoints)
                 pointsForNextGreatPerson *= 2
                 return key
             }

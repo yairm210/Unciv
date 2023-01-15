@@ -6,6 +6,7 @@ import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -17,6 +18,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
@@ -56,6 +58,7 @@ object UnitActions {
 
         addPromoteAction(unit, actionList)
         addUnitUpgradeAction(unit, actionList)
+        addTransformAction(unit, actionList)
         addPillageAction(unit, actionList, worldScreen)
         addParadropAction(unit, actionList)
         addAirSweepAction(unit, actionList)
@@ -322,6 +325,7 @@ object UnitActions {
                     tile.getOwner()?.addNotification(
                         pillageText,
                         tile.position,
+                        NotificationCategory.War,
                         icon,
                         NotificationIcon.War,
                         unit.baseUnit.name
@@ -360,28 +364,21 @@ object UnitActions {
         }
 
         for (stat in pillageYield) {
-            when (stat.key) {
-                in Stat.statsWithCivWideField -> {
-                    unit.civInfo.addStat(stat.key, stat.value.toInt())
-                    globalPillageYield[stat.key] += stat.value
-                }
-                else -> {
-                    if (closestCity != null) {
-                        closestCity.addStat(stat.key, stat.value.toInt())
-                        toCityPillageYield[stat.key] += stat.value
-                    }
-                }
+            if (stat.key in Stat.statsWithCivWideField) {
+                unit.civInfo.addStat(stat.key, stat.value.toInt())
+                globalPillageYield[stat.key] += stat.value
+            }
+            else if (closestCity != null) {
+                closestCity.addStat(stat.key, stat.value.toInt())
+                toCityPillageYield[stat.key] += stat.value
             }
         }
 
-        if (!toCityPillageYield.isEmpty() && closestCity != null) {
-            val pillagerLootLocal = "We have looted [${toCityPillageYield.toStringWithoutIcons()}] from a [${improvement.name}] which has been sent to [${closestCity.name}]"
-            unit.civInfo.addNotification(pillagerLootLocal, tile.position, "ImprovementIcons/${improvement.name}", NotificationIcon.War)
-        }
-        if (!globalPillageYield.isEmpty()) {
-            val pillagerLootGlobal = "We have looted [${globalPillageYield.toStringWithoutIcons()}] from a [${improvement.name}]"
-            unit.civInfo.addNotification(pillagerLootGlobal, tile.position, "ImprovementIcons/${improvement.name}", NotificationIcon.War)
-        }
+        val lootNotificationText = if (!toCityPillageYield.isEmpty() && closestCity != null)
+            "We have looted [${toCityPillageYield.toStringWithoutIcons()}] from a [${improvement.name}] which has been sent to [${closestCity.name}]"
+        else "We have looted [${globalPillageYield.toStringWithoutIcons()}] from a [${improvement.name}]"
+
+        unit.civInfo.addNotification(lootNotificationText, tile.position, NotificationCategory.War, "ImprovementIcons/${improvement.name}", NotificationIcon.War)
     }
 
     private fun addExplorationActions(unit: MapUnit, actionList: ArrayList<UnitAction>) {
@@ -476,6 +473,70 @@ object UnitActions {
         getUpgradeAction(unit,  isFree = true, isSpecial = false)
     fun getAncientRuinsUpgradeAction(unit: MapUnit) =
         getUpgradeAction(unit,  isFree = true, isSpecial = true)
+
+    private fun addTransformAction(
+        unit: MapUnit,
+        actionList: ArrayList<UnitAction>,
+        maxSteps: Int = Int.MAX_VALUE
+    ) {
+        val upgradeAction = getTransformAction(unit)
+        if (upgradeAction != null) actionList += upgradeAction
+    }
+
+    /**  */
+    private fun getTransformAction(
+        unit: MapUnit
+    ): ArrayList<UnitAction>? {
+        if (!unit.baseUnit().hasUnique(UniqueType.CanTransform)) return null // can't upgrade to anything
+        val unitTile = unit.getTile()
+        val civInfo = unit.civInfo
+        val transformList = ArrayList<UnitAction>()
+        for (unique in unit.baseUnit().getMatchingUniques(UniqueType.CanTransform,
+            StateForConditionals(unit = unit, civInfo = civInfo, tile = unitTile))) {
+            val upgradedUnit = civInfo.getEquivalentUnit(unique.params[0])
+            // don't show if haven't researched/is obsolete
+            if (!unit.canUpgrade(unitToUpgradeTo = upgradedUnit)) continue
+
+            // Check _new_ resource requirements
+            // Using Counter to aggregate is a bit exaggerated, but - respect the mad modder.
+            val resourceRequirementsDelta = Counter<String>()
+            for ((resource, amount) in unit.baseUnit().getResourceRequirements())
+                resourceRequirementsDelta.add(resource, -amount)
+            for ((resource, amount) in upgradedUnit.getResourceRequirements())
+                resourceRequirementsDelta.add(resource, amount)
+            val newResourceRequirementsString = resourceRequirementsDelta.entries
+                .filter { it.value > 0 }
+                .joinToString { "${it.value} {${it.key}}".tr() }
+
+            val title = if (newResourceRequirementsString.isEmpty())
+                "Transform to [${upgradedUnit.name}]"
+            else "Transform to [${upgradedUnit.name}]\n([$newResourceRequirementsString])"
+
+            transformList.add(UnitAction(UnitActionType.Transform,
+                title = title,
+                action = {
+                    unit.destroy()
+                    val newUnit = civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name)
+
+                    /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
+                     * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
+                     */
+                    if (newUnit == null) {
+                        val resurrectedUnit = civInfo.placeUnitNearTile(unitTile.position, unit.name)!!
+                        unit.copyStatisticsTo(resurrectedUnit)
+                    } else { // Managed to upgrade
+                        unit.copyStatisticsTo(newUnit)
+                        newUnit.currentMovement = 0f
+                    }
+                }.takeIf {
+                    unit.currentMovement > 0
+                            && !unit.isEmbarked()
+                            && unit.canUpgrade(unitToUpgradeTo = upgradedUnit)
+                }
+            ) )
+        }
+        return transformList
+    }
 
     private fun addBuildingImprovementsAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo, worldScreen: WorldScreen, unitTable: UnitTable) {
         if (!unit.hasUniqueToBuildImprovements) return
@@ -647,7 +708,7 @@ object UnitActions {
                         unit.civInfo.addGold(goldEarned.toInt())
                         tile.owningCity!!.civInfo.getDiplomacyManager(unit.civInfo).addInfluence(influenceEarned)
                         unit.civInfo.addNotification("Your trade mission to [${tile.owningCity!!.civInfo}] has earned you [${goldEarned}] gold and [$influenceEarned] influence!",
-                            tile.owningCity!!.civInfo.civName, NotificationIcon.Gold, NotificationIcon.Culture)
+                            NotificationCategory.General, tile.owningCity!!.civInfo.civName, NotificationIcon.Gold, NotificationIcon.Culture)
                         unit.consume()
                     }.takeIf { canConductTradeMission }
                 )
@@ -741,10 +802,10 @@ object UnitActions {
                 if (city.religion.religionThisIsTheHolyCityOf != null) {
                     val religion = unit.civInfo.gameInfo.religions[city.religion.religionThisIsTheHolyCityOf]!!
                     if (city.religion.religionThisIsTheHolyCityOf != unit.religion && !city.religion.isBlockedHolyCity) {
-                        religion.getFounder().addNotification("An [${unit.baseUnit.name}] has removed your religion [${religion.getReligionDisplayName()}] from its Holy City [${city.name}]!")
+                        religion.getFounder().addNotification("An [${unit.baseUnit.name}] has removed your religion [${religion.getReligionDisplayName()}] from its Holy City [${city.name}]!", NotificationCategory.Religion)
                         city.religion.isBlockedHolyCity = true
                     } else if (city.religion.religionThisIsTheHolyCityOf == unit.religion && city.religion.isBlockedHolyCity) {
-                        religion.getFounder().addNotification("An [${unit.baseUnit.name}] has restored [${city.name}] as the Holy City of your religion [${religion.getReligionDisplayName()}]!")
+                        religion.getFounder().addNotification("An [${unit.baseUnit.name}] has restored [${city.name}] as the Holy City of your religion [${religion.getReligionDisplayName()}]!", NotificationCategory.Religion)
                         city.religion.isBlockedHolyCity = false
                     }
                 }
@@ -832,7 +893,8 @@ object UnitActions {
         }
 
         for (otherCiv in civsToNotify)
-            otherCiv.addNotification("Your territory has been stolen by [${unit.civInfo}]!", unit.currentTile.position, unit.civInfo.civName, NotificationIcon.War)
+            otherCiv.addNotification("Your territory has been stolen by [${unit.civInfo}]!",
+                unit.currentTile.position, NotificationCategory.Cities, unit.civInfo.civName, NotificationIcon.War)
     }
 
     private fun addFortifyActions(actionList: ArrayList<UnitAction>, unit: MapUnit, showingAdditionalActions: Boolean) {

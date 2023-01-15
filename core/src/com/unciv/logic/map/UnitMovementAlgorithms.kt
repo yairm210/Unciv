@@ -221,13 +221,20 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         val newTilesToCheck = ArrayList<TileInfo>()
         var considerZoneOfControl = true // only for first distance!
         val visitedTiles: HashSet<TileInfo> = hashSetOf(currentTile)
+
         while (true) {
             if (distance == 2) { // only set this once after distance > 1
                 movementThisTurn = unit.getMaxMovement().toFloat()
                 considerZoneOfControl = false  // by then units would have moved around, we don't need to consider untenable futures when it harms performance!
             }
             newTilesToCheck.clear()
-            for (tileToCheck in tilesToCheck) {
+
+            var tilesByPreference = tilesToCheck.sortedBy { it.aerialDistanceTo(destination) }
+            // Avoid embarkation when possible
+            if (unit.type.isLandUnit()) tilesByPreference = tilesByPreference.sortedByDescending { it.isLand }
+
+
+            for (tileToCheck in tilesByPreference) {
                 val distanceToTilesThisTurn = if (distance == 1) {
                     getDistanceToTiles(considerZoneOfControl) // check cache
                 }
@@ -248,6 +255,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
                         }
                         path.reverse() // and reverse in order to get the list in chronological order
                         pathfindingCache.setShortestPathCache(destination, path)
+
                         return path
                     } else {
                         if (movementTreeParents.containsKey(reachableTile)) continue // We cannot be faster than anything existing...

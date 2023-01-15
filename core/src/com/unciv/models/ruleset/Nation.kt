@@ -11,8 +11,9 @@ import com.unciv.ui.civilopedia.CivilopediaScreen.Companion.showReligionInCivilo
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.extensions.colorFromRGB
+import kotlin.math.pow
 
-class Nation : RulesetObject() {
+ class Nation : RulesetObject() {
     var leaderName = ""
     fun getLeaderDisplayName() = if (isCityState()) name
     else "[$leaderName] of [$name]"
@@ -285,4 +286,28 @@ class Nation : RulesetObject() {
         }
     }
 
+     fun getContrastRatio() = getContrastRatio(getInnerColor(), getOuterColor())
 }
+
+
+ /** All defined by https://www.w3.org/TR/WCAG20/#relativeluminancedef */
+ fun getRelativeLuminance(color:Color):Double{
+     fun getRelativeChannelLuminance(channel:Float):Double =
+             if (channel < 0.03928)  channel / 12.92
+             else ((channel + 0.055) / 1.055).pow(2.4)
+
+     val R = getRelativeChannelLuminance(color.r)
+     val G = getRelativeChannelLuminance(color.g)
+     val B = getRelativeChannelLuminance(color.b)
+
+     return 0.2126 * R + 0.7152 * G + 0.0722 * B
+ }
+
+ /** https://www.w3.org/TR/WCAG20/#contrast-ratiodef */
+ fun getContrastRatio(color1:Color, color2:Color): Double { // ratio can range from 1 to 21
+     val innerColorLuminance = getRelativeLuminance(color1)
+     val outerColorLuminance = getRelativeLuminance(color2)
+
+     return if (innerColorLuminance > outerColorLuminance) (innerColorLuminance + 0.05) / (outerColorLuminance + 0.05)
+     else (outerColorLuminance + 0.05) / (innerColorLuminance + 0.05)
+ }

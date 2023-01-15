@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.unique.LocalUniqueCache
@@ -41,6 +42,8 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
     fun getCultureToNextTile(): Int {
         var cultureToNextTile = 6 * (max(0, tilesClaimed()) + 1.4813).pow(1.3)
 
+        cultureToNextTile *= cityInfo.civInfo.gameInfo.speed.cultureCostModifier
+
         if (cityInfo.civInfo.isCityState())
             cultureToNextTile *= 1.5f   // City states grow slower, perhaps 150% cost?
 
@@ -65,6 +68,8 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         val baseCost = 50
         val distanceFromCenter = tileInfo.aerialDistanceTo(cityInfo.getCenterTile())
         var cost = baseCost * (distanceFromCenter - 1) + tilesClaimed() * 5.0
+
+        cost *= cityInfo.civInfo.gameInfo.speed.goldCostModifier
 
         for (unique in cityInfo.getMatchingUniques(UniqueType.TileCostPercentage)) {
             if (cityInfo.matchesFilter(unique.params[1]))
@@ -170,7 +175,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
             val location = addNewTileWithCulture()
             if (location != null) {
                 val locations = LocationAction(location, cityInfo.location)
-                cityInfo.civInfo.addNotification("[" + cityInfo.name + "] has expanded its borders!", locations, NotificationIcon.Culture)
+                cityInfo.civInfo.addNotification("[" + cityInfo.name + "] has expanded its borders!", locations, NotificationCategory.Cities, NotificationIcon.Culture)
             }
         }
     }

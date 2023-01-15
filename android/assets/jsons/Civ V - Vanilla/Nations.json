@@ -82,8 +82,10 @@
 		"neutralHello": "How are you today?",
 		"hateHello": "Oh. It's you?",
 		"tradeRequest": "My friend, do you think you can accept this request?",
-		"outerColor": [0, 149, 82],
-		"innerColor": [255, 255, 255],
+
+        "outerColor": [9, 112, 84],
+        "innerColor": [255,255,255],
+
 		"uniqueName": "Art of War",
 		"uniques": ["Great General provides double combat bonus", "[Great General] is earned [50]% faster"],
 		"cities": ["Beijing","Shanghai","Guangzhou","Nanjing","Xian","Chengdu","Hangzhou","Tianjin","Macau","Shandong",
@@ -163,8 +165,8 @@
 		"neutralHello": "Hello.",
 		"hateHello": "It's you.",
 		"tradeRequest": "France offers you this exceptional proposition.",
-		"outerColor": [65, 141, 254],
-		"innerColor": [235, 235, 139],
+        "outerColor": [ 38, 98, 255],
+        "innerColor": [239,236,148],
 		"uniqueName": "Ancien Régime",
 		"uniques": ["[+2 Culture] [in all cities] <before discovering [Steam Power]>"],
 		"cities": ["Paris","Orleans","Lyon","Troyes","Tours","Marseille","Chartres","Avignon","Rouen","Grenoble",
@@ -216,8 +218,10 @@
 		"neutralHello": "Hail.",
 		"hateHello": "What do you want?",
 		"tradeRequest": "I offer this, for your consideration.",
-		"outerColor": [70, 0, 118],
-		"innerColor": [240, 199, 0],
+
+        "outerColor": [ 53,0,87],
+        "innerColor": [238,201,9],
+
 		"uniqueName": "The Glory of Rome",
 		"uniques": ["[+25]% Production towards any buildings that already exist in the Capital"],
 		"cities": ["Rome","Antium","Cumae","Neapolis","Ravenna","Arretium","Mediolanum","Arpinum","Circei","Setia",
@@ -266,8 +270,10 @@
 		"neutralHello": "Good day.",
 		"hateHello": "Well?",
 		"tradeRequest": "Is the following trade of interest to you?",
-		"outerColor": [31, 51, 120],
-		"innerColor": [255, 255, 255],
+
+        "outerColor": [ 28,51,119],
+        "innerColor": [255,255,255],
+
 		"uniqueName": "Manifest Destiny",
 		"uniques": ["[+1] Sight <for [{Military} {Land}] units>", "[-50]% Gold cost of acquiring tiles [in all cities]"],
 		"cities": ["Washington","New York","Boston","Philadelphia","Atlanta","Chicago","Seattle","San Francisco","Los Angeles","Houston",
@@ -320,9 +326,11 @@
 		"neutralHello": "I wish you peace.",
 		"hateHello": "What do you want?",
 		"tradeRequest": "My friend, are you interested in this arrangement?",
-		"outerColor": [18, 136, 7],
-		"innerColor": [255, 153, 50],
-		"uniqueName": "Population Growth",
+
+        "outerColor": [14, 113, 4],
+        "innerColor": [255, 163, 71],
+
+        "uniqueName": "Population Growth",
 		"uniques": ["Unhappiness from number of Cities doubled", "[-50]% Unhappiness from [Population] [in all cities]"],
 		"cities": ["Delhi","Mumbai","Vijayanagara","Pataliputra","Varanasi","Agra","Calcutta","Lahore","Bangalore","Hyderabad","Madurai","Ahmedabad",
 			"Kolhapur","Prayaga","Ayodhya","Indraprastha","Mathura","Ujjain","Gulbarga","Jaunpur","Rajagriha","Sravasti","Tiruchirapalli","Thanjavur",
@@ -374,9 +382,11 @@
 		"neutralHello": "Greetings!",
 		"hateHello": "What do you want?",
 		"tradeRequest": "Let us do business! Would you be interested?",
-		"outerColor": [247, 249, 200],
-		"innerColor": [18, 82, 30],
-		"uniqueName": "Barbary Corsairs",
+
+        "outerColor": [245,248,185],
+        "innerColor": [18,84,30],
+
+        "uniqueName": "Barbary Corsairs",
 		"uniques": ["[-66]% maintenance costs <for [Water] units>",
 			"When defeating a [{Barbarian} {Water}] unit, earn [25] Gold and recruit it <with [50]% chance>"],
 		"cities": ["Istanbul","Edirne","Ankara","Bursa","Konya","Samsun","Gaziantep","Diyarbakır","Izmir","Kayseri","Malatya",
@@ -428,8 +438,10 @@
 		"neutralHello": "Good day.",
 		"hateHello": "Oh, it's you.",
 		"tradeRequest": "Does this trade work for you, my friend?",
-		"outerColor": [65, 87, 87],
-		"innerColor": [252, 202, 129],
+
+        "outerColor": [54,72,72],
+        "innerColor": [246,205,137],
+
 		"uniqueName": "The Great Warpath",
 		"uniques": ["All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel."],
 		"cities": ["Onondaga","Osininka","Grand River","Akwesasme","Buffalo Creek","Brantford","Montreal","Genesse River",
@@ -453,9 +465,11 @@
 		"neutralHello": "Good day to you!",
 		"hateHello": "Ahh... you...",
 		"tradeRequest": "In my endless magnanimity, I am making you this offer. You agree, of course?",
-		"outerColor": [177, 8, 3],
-		"innerColor": [245, 230, 55],
-		"uniqueName": "Achaemenid Legacy",
+
+        "outerColor": [153,5,3],
+        "innerColor": [244,232,54],
+
+        "uniqueName": "Achaemenid Legacy",
 		"uniques": ["[+50]% Golden Age length", "[+1] Movement <for [All] units> <during a Golden Age>", "[+10]% Strength <for [All] units> <during a Golden Age>"],
 		"cities": ["Persepolis","Parsagadae","Susa","Ecbatana","Tarsus","Gordium","Bactra","Sardis","Ergili","Dariushkabir",
 			"Ghulaman","Zohak","Istakhr","Jinjan","Borazjan","Herat","Dakyanus","Bampur","Turengtepe","Rey","Shiraz",
@@ -614,8 +628,9 @@
 		"hateHello": "What do you want?",
 		"tradeRequest": "Accept this agreement or suffer the consequences.",
 
-		"outerColor": [161, 57, 35],
-		"innerColor": [137, 239, 213],
+        "outerColor": [139,32,23],
+        "innerColor": [134,238,214],
+
 		"uniqueName": "Sacrificial Captives",
 		"uniques": ["Earn [100]% of killed [Military] unit's [Strength] as [Culture]"],
 		"cities": ["Tenochtitlan","Teotihuacan","Tlatelolco","Texcoco","Tlaxcala","Calixtlahuaca","Xochicalco","Tlacopan",
@@ -652,8 +667,9 @@
 		"afterPeace": "Viracocha has frowned upon our war, and has agreed to our peace agreements.",
 		"tradeRequest": "The Incan people offer this fair trade.",
 
-		"outerColor": [255,184,34],
-		"innerColor": [7,159,119],
+        "outerColor": [255,184,33],
+        "innerColor": [3,115,86],
+
 		"uniqueName": "Great Andean Road",
 		"uniques": ["Units ignore terrain costs when moving into any tile with Hills",
 			"[-50]% maintenance on road & railroads",
@@ -680,9 +696,11 @@
 		"neutralHello": "Hail to you.",
 		"hateHello": "Oh, it's you.",
 		"tradeRequest": "This is a fine deal! Even a drunk beggar would agree!",
-		"outerColor": [109,43,21],
-		"innerColor": [240,231,180],
-		"uniqueName": "Viking Fury",
+
+        "outerColor": [51,25,0],
+        "innerColor": [255,255,102],
+
+        "uniqueName": "Viking Fury",
 		"uniques": ["[+1] Movement <for [Embarked] units>", "[1] Movement point cost to disembark <for [All] units>",
 			"No movement cost to pillage <for [Melee] units>"],
 		"cities": ["Copenhagen","Aarhus","Kaupang","Ribe","Viborg","Tunsberg","Roskilde","Hedeby","Oslo","Jelling","Truso",
@@ -726,7 +744,7 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "So this is how it feels to die...",
 		"outerColor": [0, 0, 0],
-		"innerColor": [0,0,255],
+		"innerColor": [51,51,255],
 		"cities": ["Hanoi"]
 	},
 	{
@@ -737,8 +755,8 @@
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "Unacceptable!",
-		"outerColor": [0, 0, 0],
-		"innerColor": [153,0,76],
+        "outerColor": [0, 0, 0],
+        "innerColor": [168,38,102],
 		"cities": ["Kabul"]
 	},
 	{
@@ -1072,7 +1090,7 @@
 	{
 		"name": "Barbarians",
 		"outerColor": [0,0,0],
-		"innerColor": [182,0,0],
+		"innerColor": [185,12,12],
 		"uniques": ["Can only heal by pillaging"]
 	}
 

@@ -227,7 +227,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
                     && !it.isAtWarWith(civInfo)
                     && it.getProximity(civInfo) <= Proximity.Far }) {
                 otherCiv.addNotification("[${civInfo.civName}] is being invaded by Barbarians! Destroy Barbarians near their territory to earn Influence.",
-                    civInfo.getCapital()!!.location, civInfo.civName, NotificationIcon.War)
+                    civInfo.getCapital()!!.location, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.War)
             }
             civInfo.addFlag(CivFlags.TurnsTillCallForBarbHelp.name, 30)
         }
@@ -334,7 +334,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
 
             assignedQuests.add(newQuest)
             assignee.addNotification("[${civInfo.civName}] assigned you a new quest: [${quest.name}].",
-                    DiplomacyAction(civInfo.civName), civInfo.civName, "OtherIcons/Quest")
+                    DiplomacyAction(civInfo.civName), NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
 
             if (quest.isIndividual())
                 individualQuestCountdown[assignee.civName] = UNSET
@@ -425,7 +425,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         if (rewardInfluence > 0)
             assignee.addNotification(
                 "[${civInfo.civName}] rewarded you with [${rewardInfluence.toInt()}] influence for completing the [${assignedQuest.questName}] quest.",
-                civInfo.getCapital()!!.location, civInfo.civName, "OtherIcons/Quest"
+                civInfo.getCapital()!!.location, NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest"
             )
 
         // We may have received bonuses from city-state friend-ness or ally-ness
@@ -440,11 +440,11 @@ class QuestManager : IsPartOfGameInfoSerialization {
         if (winners.isEmpty()) {
             assignee.addNotification(
                     "[${civInfo.civName}] no longer needs your help with the [${assignedQuest.questName}] quest.",
-                    civInfo.getCapital()!!.location, civInfo.civName, "OtherIcons/Quest")
+                    civInfo.getCapital()!!.location, NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
         } else {
             assignee.addNotification(
                     "The [${assignedQuest.questName}] quest for [${civInfo.civName}] has ended. It was won by [${winners.joinToString { it.assignee.tr() }}].",
-                    civInfo.getCapital()!!.location, civInfo.civName, "OtherIcons/Quest")
+                    civInfo.getCapital()!!.location, NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
         }
     }
 
@@ -524,7 +524,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
             assignedQuests.removeAll(revokedQuests)
             if (revokedQuests.count() > 0)
                 bully.addNotification("[${civInfo.civName}] cancelled the quests they had given you because you demanded tribute from them.",
-                    DiplomacyAction(civInfo.civName), civInfo.civName, "OtherIcons/Quest")
+                    DiplomacyAction(civInfo.civName), NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
         }
     }
 
@@ -543,9 +543,9 @@ class QuestManager : IsPartOfGameInfoSerialization {
         for (thirdCiv in civInfo.getKnownCivs().filter { it.isAlive() && !it.isAtWarWith(civInfo) && it.isMajorCiv() }) {
             if (location != null)
                 thirdCiv.addNotification("[${civInfo.civName}] is being attacked by [${attacker.civName}]! Kill [$unitsToKill] of the attacker's military units and they will be immensely grateful.",
-                    location, civInfo.civName, "OtherIcons/Quest")
+                    location, NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
             else thirdCiv.addNotification("[${civInfo.civName}] is being attacked by [${attacker.civName}]! Kill [$unitsToKill] of the attacker's military units and they will be immensely grateful.",
-                civInfo.civName, "OtherIcons/Quest")
+                NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
         }
     }
 
@@ -567,7 +567,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         // Quest complete?
         if (updatedKillCount >= unitsToKillForCiv[killed.civName]!!) {
             killer.addNotification("[${civInfo.civName}] is deeply grateful for your assistance in the war against [${killed.civName}]!",
-                DiplomacyAction(civInfo.civName), civInfo.civName, "OtherIcons/Quest")
+                DiplomacyAction(civInfo.civName), NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
             civInfo.getDiplomacyManager(killer).addInfluence(100f) // yikes
             endWarWithMajorQuest(killed)
         }
@@ -581,9 +581,9 @@ class QuestManager : IsPartOfGameInfoSerialization {
         for ((attackerName, unitsToKill) in unitsToKillForCiv) {
             if (location != null)
                 otherCiv.addNotification("[${civInfo.civName}] is being attacked by [$attackerName]! Kill [$unitsToKill] of the attacker's military units and they will be immensely grateful.",
-                    location, civInfo.civName, "OtherIcons/Quest")
+                    location, NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
             else otherCiv.addNotification("[${civInfo.civName}] is being attacked by [$attackerName]! Kill [$unitsToKill] of the attacker's military units and they will be immensely grateful.",
-                civInfo.civName, "OtherIcons/Quest")
+                NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
         }
     }
 
@@ -603,7 +603,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
             if (unitsKilledSoFar(attacker, thirdCiv) >= unitsToKill(attacker)) // Don't show the notification to the one who won the quest
                 continue
             thirdCiv.addNotification("[${civInfo.civName}] no longer needs your assistance against [${attacker.civName}].",
-                DiplomacyAction(civInfo.civName), civInfo.civName, "OtherIcons/Quest")
+                DiplomacyAction(civInfo.civName), NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
         }
         unitsToKillForCiv.remove(attacker.civName)
         unitsKilledFromCiv.remove(attacker.civName)

@@ -40,8 +40,10 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
                 val metCiv = entry.key
                 if (metCiv == civInfo || metCiv.isBarbarian() || civInfo.diplomacy.containsKey(metCiv.civName)) continue
                 civInfo.makeCivilizationsMeet(metCiv)
-                civInfo.addNotification("We have encountered [" + metCiv.civName + "]!", entry.value.position, metCiv.civName, NotificationIcon.Diplomacy)
-                metCiv.addNotification("We have encountered [" + civInfo.civName + "]!", entry.value.position, civInfo.civName, NotificationIcon.Diplomacy)
+                civInfo.addNotification("We have encountered [${metCiv.civName}]!",
+                    entry.value.position, NotificationCategory.Diplomacy, metCiv.civName, NotificationIcon.Diplomacy)
+                metCiv.addNotification("We have encountered [${civInfo.civName}]!",
+                    entry.value.position, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
             }
 
             discoverNaturalWonders()
@@ -124,7 +126,8 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
             if (civInfo.naturalWonders.contains(tile.naturalWonder))
                 continue
             civInfo.discoverNaturalWonder(tile.naturalWonder!!)
-            civInfo.addNotification("We have discovered [${tile.naturalWonder}]!", tile.position, "StatIcons/Happiness")
+            civInfo.addNotification("We have discovered [${tile.naturalWonder}]!",
+                tile.position, NotificationCategory.General, "StatIcons/Happiness")
 
             var goldGained = 0
             val discoveredNaturalWonders = civInfo.gameInfo.civilizations.filter { it != civInfo && it.isMajorCiv() }
@@ -140,7 +143,8 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
 
             if (goldGained > 0) {
                 civInfo.addGold(goldGained)
-                civInfo.addNotification("We have received [$goldGained] Gold for discovering [${tile.naturalWonder}]", NotificationIcon.Gold)
+                civInfo.addNotification("We have received [$goldGained] Gold for discovering [${tile.naturalWonder}]",
+                    NotificationCategory.General, NotificationIcon.Gold)
             }
 
         }
@@ -160,12 +164,14 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         if (!initialSetup) { // In the initial setup we're loading an old game state, so it doesn't really count
             for (city in citiesReachedToMediums.keys)
                 if (city !in civInfo.citiesConnectedToCapitalToMediums && city.civInfo == civInfo && city != civInfo.getCapital()!!)
-                    civInfo.addNotification("[${city.name}] has been connected to your capital!", city.location, NotificationIcon.Gold)
+                    civInfo.addNotification("[${city.name}] has been connected to your capital!",
+                        city.location, NotificationCategory.Cities, NotificationIcon.Gold)
 
             // This may still contain cities that have just been destroyed by razing - thus the population test
             for (city in civInfo.citiesConnectedToCapitalToMediums.keys)
                 if (!citiesReachedToMediums.containsKey(city) && city.civInfo == civInfo && city.population.population > 0)
-                    civInfo.addNotification("[${city.name}] has been disconnected from your capital!", city.location, NotificationIcon.Gold)
+                    civInfo.addNotification("[${city.name}] has been disconnected from your capital!",
+                        city.location, NotificationCategory.Cities, NotificationIcon.Gold)
         }
 
         civInfo.citiesConnectedToCapitalToMediums = citiesReachedToMediums

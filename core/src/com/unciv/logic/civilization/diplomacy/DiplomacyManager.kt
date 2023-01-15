@@ -6,6 +6,7 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CityStatePersonality
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PopupAlert
@@ -388,8 +389,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                         remakePeaceTreaty(trade.theirOffers.first { it.name == Constants.peaceTreaty }.duration)
                     }
 
-                    civInfo.addNotification("One of our trades with [$otherCivName] has been cut short", NotificationIcon.Trade, otherCivName)
-                    otherCiv().addNotification("One of our trades with [${civInfo.civName}] has been cut short", NotificationIcon.Trade, civInfo.civName)
+                    civInfo.addNotification("One of our trades with [$otherCivName] has been cut short", NotificationCategory.Trade, NotificationIcon.Trade, otherCivName)
+                    otherCiv().addNotification("One of our trades with [${civInfo.civName}] has been cut short", NotificationCategory.Trade, NotificationIcon.Trade, civInfo.civName)
                     civInfo.updateDetailedCivResources()
                 }
             }
@@ -454,14 +455,15 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             val civCapitalLocation = if (civInfo.cities.isNotEmpty() || civInfo.getCapital() != null) civInfo.getCapital()!!.location else null
             if (getTurnsToRelationshipChange() == 1) {
                 val text = "Your relationship with [${civInfo.civName}] is about to degrade"
-                if (civCapitalLocation != null) otherCiv().addNotification(text, civCapitalLocation, civInfo.civName, NotificationIcon.Diplomacy)
-                else otherCiv().addNotification(text, civInfo.civName, NotificationIcon.Diplomacy)
+                if (civCapitalLocation != null) otherCiv().addNotification(text,
+                    civCapitalLocation, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
+                else otherCiv().addNotification(text, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
             }
 
             if (initialRelationshipLevel >= RelationshipLevel.Friend && initialRelationshipLevel != relationshipLevel()) {
                 val text = "Your relationship with [${civInfo.civName}] degraded"
-                if (civCapitalLocation != null) otherCiv().addNotification(text, civCapitalLocation, civInfo.civName, NotificationIcon.Diplomacy)
-                else otherCiv().addNotification(text, civInfo.civName, NotificationIcon.Diplomacy)
+                if (civCapitalLocation != null) otherCiv().addNotification(text, civCapitalLocation, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
+                else otherCiv().addNotification(text, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
             }
 
             // Potentially notify about afraid status
@@ -472,8 +474,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             ) {
                 setFlag(DiplomacyFlags.NotifiedAfraid, 20)  // Wait 20 turns until next reminder
                 val text = "[${civInfo.civName}] is afraid of your military power!"
-                if (civCapitalLocation != null) otherCiv().addNotification(text, civCapitalLocation, civInfo.civName, NotificationIcon.Diplomacy)
-                else otherCiv().addNotification(text, civInfo.civName, NotificationIcon.Diplomacy)
+                if (civCapitalLocation != null) otherCiv().addNotification(text, civCapitalLocation, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
+                else otherCiv().addNotification(text, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
             }
         }
     }
@@ -564,8 +566,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                 trades.remove(trade)
                 for (offer in trade.ourOffers.union(trade.theirOffers).filter { it.duration == 0 }) { // this was a timed trade
                     if (offer in trade.theirOffers)
-                        civInfo.addNotification("[${offer.name}] from [$otherCivName] has ended", otherCivName, NotificationIcon.Trade)
-                    else civInfo.addNotification("[${offer.name}] to [$otherCivName] has ended", otherCivName, NotificationIcon.Trade)
+                        civInfo.addNotification("[${offer.name}] from [$otherCivName] has ended", NotificationCategory.Trade, otherCivName, NotificationIcon.Trade)
+                    else civInfo.addNotification("[${offer.name}] to [$otherCivName] has ended", NotificationCategory.Trade, otherCivName, NotificationIcon.Trade)
 
                     civInfo.updateStatsForNextTurn() // if they were bringing us gold per turn
                     if (trade.theirOffers.union(trade.ourOffers) // if resources were involved
@@ -635,7 +637,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         // Cancel all trades.
         for (trade in trades)
             for (offer in trade.theirOffers.filter { it.duration > 0 })
-                civInfo.addNotification("[" + offer.name + "] from [$otherCivName] has ended", otherCivName, NotificationIcon.Trade)
+                civInfo.addNotification("[${offer.name}] from [$otherCivName] has ended",
+                    NotificationCategory.Trade, otherCivName, NotificationIcon.Trade)
         trades.clear()
         updateHasOpenBorders()
 
@@ -699,11 +702,13 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         onWarDeclared()
         otherCivDiplomacy.onWarDeclared()
 
-        otherCiv.addNotification("[${civInfo.civName}] has declared war on us!", NotificationIcon.War, civInfo.civName)
+        otherCiv.addNotification("[${civInfo.civName}] has declared war on us!",
+            NotificationCategory.Diplomacy, NotificationIcon.War, civInfo.civName)
         otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration, civInfo.civName))
 
         getCommonKnownCivs().forEach {
-            it.addNotification("[${civInfo.civName}] has declared war on [$otherCivName]!", civInfo.civName, NotificationIcon.War, otherCivName)
+            it.addNotification("[${civInfo.civName}] has declared war on [$otherCivName]!",
+                NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.War, otherCivName)
         }
 
         otherCivDiplomacy.setModifier(DiplomaticModifiers.DeclaredWarOnUs, -20f)
@@ -762,7 +767,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         for (civ in getCommonKnownCivs()) {
             civ.addNotification(
                     "[${civInfo.civName}] and [$otherCivName] have signed a Peace Treaty!",
-                    civInfo.civName, NotificationIcon.Diplomacy, otherCivName
+                    NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName
             )
         }
     }
@@ -812,11 +817,11 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
         if (otherCiv().playerType == PlayerType.Human)
             otherCiv().addNotification("[${civInfo.civName}] and [$otherCivName] have signed the Declaration of Friendship!",
-                    civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
+                NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
 
         for (thirdCiv in getCommonKnownCivs().filter { it.isMajorCiv() }) {
             thirdCiv.addNotification("[${civInfo.civName}] and [$otherCivName] have signed the Declaration of Friendship!",
-                    civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
+                NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
             thirdCiv.getDiplomacyManager(civInfo).setFriendshipBasedModifier()
         }
     }
@@ -842,11 +847,13 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         setFlag(DiplomacyFlags.Denunciation, 30)
         otherCivDiplomacy().setFlag(DiplomacyFlags.Denunciation, 30)
 
-        otherCiv().addNotification("[${civInfo.civName}] has denounced us!", NotificationIcon.Diplomacy, civInfo.civName)
+        otherCiv().addNotification("[${civInfo.civName}] has denounced us!",
+            NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
 
         // We, A, are denouncing B. What do other major civs (C,D, etc) think of this?
         getCommonKnownCivs().filter { it.isMajorCiv() }.forEach { thirdCiv ->
-            thirdCiv.addNotification("[${civInfo.civName}] has denounced [$otherCivName]!", civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
+            thirdCiv.addNotification("[${civInfo.civName}] has denounced [$otherCivName]!",
+                NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
             val thirdCivRelationshipWithOtherCiv = thirdCiv.getDiplomacyManager(otherCiv()).relationshipLevel()
             val thirdCivDiplomacyManager = thirdCiv.getDiplomacyManager(civInfo)
             when (thirdCivRelationshipWithOtherCiv) {
@@ -862,14 +869,16 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     fun agreeNotToSettleNear() {
         otherCivDiplomacy().setFlag(DiplomacyFlags.AgreedToNotSettleNearUs, 100)
         addModifier(DiplomaticModifiers.UnacceptableDemands, -10f)
-        otherCiv().addNotification("[${civInfo.civName}] agreed to stop settling cities near us!", NotificationIcon.Diplomacy, civInfo.civName)
+        otherCiv().addNotification("[${civInfo.civName}] agreed to stop settling cities near us!",
+            NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
     }
 
     fun refuseDemandNotToSettleNear() {
         addModifier(DiplomaticModifiers.UnacceptableDemands, -20f)
         otherCivDiplomacy().setFlag(DiplomacyFlags.IgnoreThemSettlingNearUs, 100)
         otherCivDiplomacy().addModifier(DiplomaticModifiers.RefusedToNotSettleCitiesNearUs, -15f)
-        otherCiv().addNotification("[${civInfo.civName}] refused to stop settling cities near us!", NotificationIcon.Diplomacy, civInfo.civName)
+        otherCiv().addNotification("[${civInfo.civName}] refused to stop settling cities near us!",
+            NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
     }
 
     fun sideWithCityState() {
@@ -880,7 +889,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     fun becomeWary() {
         if (hasFlag(DiplomacyFlags.WaryOf)) return // once is enough
         setFlag(DiplomacyFlags.WaryOf, -1) // Never expires
-        otherCiv().addNotification("City-States grow wary of your aggression. The resting point for Influence has decreased by [20] for [${civInfo.civName}].", civInfo.civName)
+        otherCiv().addNotification("City-States grow wary of your aggression. " +
+                "The resting point for Influence has decreased by [20] for [${civInfo.civName}].",
+            NotificationCategory.Diplomacy, civInfo.civName)
     }
 
     //endregion

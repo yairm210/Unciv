@@ -135,7 +135,7 @@ class ModCheckTab(
                             val label = Label(line.text, BaseScreen.skin)
                                 .apply { color = line.errorSeverityToReport.color }
                             label.wrap = true
-                            it.add(label).width(stage.width / 2).row()
+                            it.add(label).width(stage.width / 2).pad(10f).row()
                         }
                         if (!noProblem)
                             it.add("Copy to clipboard".toTextButton().onClick {
