@@ -273,7 +273,7 @@ class TacticalAnalysisMap {
             if (zone.tileCount < 5 && zone.city == null) {
                 val biggerZone = zones.asSequence()
                     .filter { it.isWater() == zone.isWater() && it.neighboringZones.contains(zone.id) }
-                    .minByOrNull { it.tileCount }
+                    .firstOrNull()
                 if (biggerZone != null) {
                     plotPositionToZoneId.asSequence()
                         .filter { it.value == zone.id }
@@ -283,9 +283,12 @@ class TacticalAnalysisMap {
             }
         }
         zones.removeAll(toRemove)
+        zoneIdToZoneIndex.clear()
 
-        for (zone in zones)
-            zoneIdToZoneIndex[zone.id] = zones.indexOf(zone)
+        for (i in 0 until zones.size) {
+            val zoneId = zones[i].id
+            zoneIdToZoneIndex[zoneId] = i
+        }
     }
 
     private fun establishZoneNeighborhood() {

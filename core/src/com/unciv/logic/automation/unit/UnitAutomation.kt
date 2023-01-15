@@ -153,7 +153,7 @@ object UnitAutomation {
                 val tilesCanMoveTo = unit.movement.getDistanceToTiles()
                     .filter { unit.movement.canMoveTo(it.key) }
                 if (tilesCanMoveTo.isNotEmpty())
-                    unit.movement.moveToTile(tilesCanMoveTo.minBy { it.value.totalDistance }.key)
+                    unit.movement.moveToTile(tilesCanMoveTo.minByOrNull { it.value.totalDistance }!!.key)
             }
 
 
