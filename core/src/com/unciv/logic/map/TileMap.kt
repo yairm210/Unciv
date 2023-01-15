@@ -36,7 +36,7 @@ class TileMap : IsPartOfGameInfoSerialization {
 
     var mapParameters = MapParameters()
 
-    private var tileList = ArrayList<TileInfo>()
+    var tileList = ArrayList<TileInfo>()
 
     /** Structure geared for simple serialization by Gdx.Json (which is a little blind to kotlin collections, especially HashSet)
      * @param position [Vector2] of the location
