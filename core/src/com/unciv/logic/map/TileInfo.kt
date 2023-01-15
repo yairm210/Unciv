@@ -345,7 +345,13 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     }
 
     @delegate:Transient
-    val height : Int by lazy {
+    val tileHeight : Int by lazy { // for e.g. hill+forest this is 2, since forest is visible above units
+        if (terrainHasUnique(UniqueType.BlocksLineOfSightAtSameElevation)) unitHeight + 1
+        else unitHeight
+    }
+
+    @delegate:Transient
+    val unitHeight : Int by lazy { // for e.g. hill+forest this is 1, since only hill provides height for units
         allTerrains.flatMap { it.getMatchingUniques(UniqueType.VisibilityElevation) }
             .map { it.params[0].toInt() }.sum()
     }

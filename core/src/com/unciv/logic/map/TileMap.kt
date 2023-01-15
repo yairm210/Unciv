@@ -12,6 +12,7 @@ import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.UniqueType
+import java.lang.Integer.max
 import kotlin.math.abs
 
 /** An Unciv map with all properties as produced by the [map editor][com.unciv.ui.mapeditor.MapEditorScreen]
@@ -325,52 +326,50 @@ class TileMap : IsPartOfGameInfoSerialization {
             vectorUnwrappedLeft
     }
 
+    data class ViewableTile(val tile:TileInfo, val maxHeightSeenToTile:Int, val isVisible:Boolean, val isAttackable: Boolean)
+
     /** @return List of tiles visible from location [position] for a unit with sight range [sightDistance] */
     fun getViewableTiles(position: Vector2, sightDistance: Int): List<TileInfo> {
-        val viewableTiles = getTilesInDistance(position, 1).toMutableList()
-        val currentTileHeight = get(position).height
+        val aUnitHeight = get(position).unitHeight
+        val viewableTiles = mutableListOf(ViewableTile(
+            get(position),
+            aUnitHeight,
+            isVisible = true,
+            isAttackable = false
+        ))
 
         for (i in 1..sightDistance) { // in each layer,
             // This is so we don't use tiles in the same distance to "see over",
             // that is to say, the "viewableTiles.contains(it) check will return false for neighbors from the same distance
-            val tilesToAddInDistanceI = ArrayList<TileInfo>()
+            val tilesToAddInDistanceI = ArrayList<ViewableTile>()
 
             for (cTile in getTilesAtDistance(position, i)) { // for each tile in that layer,
-                val cTileHeight = cTile.height
+                val cTileHeight = cTile.tileHeight
 
                 /*
-            Okay so, if we're looking at a tile from a to c with b in the middle,
+            Okay so, if we're looking at a tile from height a to one with height c with a MAXIMUM HEIGHT of b in the middle,
             we have several scenarios:
-            1. a>b -  - I can see everything, b does not hide c
-            2. a==b
-                2.1 c>b - c is tall enough I can see it over b!
-                2.2 b blocks view from same-elevation tiles - hides c
-                2.3 none of the above - I can see c
+            1. a>=b - I can see everything, b does not hide c (equals is 'flat plain' or 'string of hills' or 'hill viewing over forests')
             3. a<b
-                3.1 b>=c - b hides c
-                3.2 b<c - c is tall enough I can see it over b!
+                3.1 b>=c - b hides c (hills hide other hills, forests, etc)
+                3.2 b<c - c is tall enough I can see it over b (hill+forest, mountain)
 
-            This can all be summed up as "I can see c if a>b || c>b || (a==b && b !blocks same-elevation view)"
+            This can all be summed up as "I can see c if a=>b || c>b"
             */
+                val bMinimumHighestSeenTerrainSoFar = viewableTiles.filter { it.tile in cTile.neighbors }
+                    .minOf { it.maxHeightSeenToTile }
 
-                val containsViewableNeighborThatCanSeeOver = cTile.neighbors.any { bNeighbor: TileInfo ->
-                    val bNeighborHeight = bNeighbor.height
-                    viewableTiles.contains(bNeighbor)
-                    && (
-                        currentTileHeight > bNeighborHeight // a>b
-                        || cTileHeight > bNeighborHeight // c>b
-                        || (
-                            currentTileHeight == bNeighborHeight // a==b
-                            && !bNeighbor.terrainHasUnique(UniqueType.BlocksLineOfSightAtSameElevation)
-                        )
-                    )
-                }
-                if (containsViewableNeighborThatCanSeeOver) tilesToAddInDistanceI.add(cTile)
+                tilesToAddInDistanceI.add(ViewableTile(
+                    cTile,
+                    max(cTileHeight, bMinimumHighestSeenTerrainSoFar),
+                    aUnitHeight >= bMinimumHighestSeenTerrainSoFar || cTileHeight > bMinimumHighestSeenTerrainSoFar,
+                    aUnitHeight >= bMinimumHighestSeenTerrainSoFar || cTile.unitHeight > bMinimumHighestSeenTerrainSoFar,
+                ))
             }
             viewableTiles.addAll(tilesToAddInDistanceI)
         }
 
-        return viewableTiles
+        return viewableTiles.filter { it.isVisible }.map { it.tile }
     }
 
     /** Strips all units from [TileMap]
