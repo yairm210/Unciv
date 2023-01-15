@@ -23,12 +23,11 @@ class CityDistance(
                 return a
             else if (a.distance > b.distance)
                 return b
-            else {
-                if (a.city.civInfo.isMajorCiv() && b.city.civInfo.isMinorCiv())
-                    return a
-                else if (b.city.civInfo.isMajorCiv() && a.city.civInfo.isMinorCiv())
-                    return b
-            }
+
+            if (a.city.civInfo.isMajorCiv() && b.city.civInfo.isMinorCiv())
+                return a
+            else if (b.city.civInfo.isMajorCiv() && a.city.civInfo.isMinorCiv())
+                return b
 
             return a
         }
@@ -85,7 +84,7 @@ class CityDistanceData {
         // Clear previous info
         reset()
 
-        for (player in game.civilizations.asSequence()) {
+        for (player in game.civilizations) {
 
             // Not interested in defeated players
             if (player.isDefeated())
@@ -95,43 +94,27 @@ class CityDistanceData {
             if (isMajor)
                 resetPlayer(player.civName)
 
-            // Update distances for every city and every tile
+            // Update distances for each tile inside radius 4 around each city
             for (city in player.cities.asSequence())
-                for (otherTile in game.tileMap.values.asSequence())
+                for (otherTile in city.getCenterTile().getTilesInDistance(4))
                     updateDistances(otherTile, city, player, isMajor)
-
         }
 
         shouldUpdate = false
 
     }
 
-    fun getClosestCityDistance(tile: TileInfo, player: CivilizationInfo? = null, majorsOnly: Boolean = false) : Int {
+    fun getClosestCityDistance(tile: TileInfo, player: CivilizationInfo? = null, majorsOnly: Boolean = false) : CityDistance? {
 
         if (shouldUpdate)
             update()
 
-        return if (player != null && player.isMajorCiv())
-            data[player.civName]!![tile.position]?.distance ?: Int.MAX_VALUE
-        else if (majorsOnly)
-            data[IDENTIFIER_MAJOR_CIVS]!![tile.position]?.distance ?: Int.MAX_VALUE
-        else
-            data[IDENTIFIER_ALL_CIVS]!![tile.position]?.distance ?: Int.MAX_VALUE
-
-    }
-
-    fun getClosestCity(tile: TileInfo, player: CivilizationInfo? = null, majorsOnly: Boolean = false) : CityInfo? {
-
-        if (shouldUpdate)
-            update()
-
-        return if (player != null && player.isMajorCiv())
-            data[player.civName]!![tile.position]?.city
-        else if (majorsOnly)
-            data[IDENTIFIER_MAJOR_CIVS]!![tile.position]?.city
-        else
-            data[IDENTIFIER_ALL_CIVS]!![tile.position]?.city
-
+        val identifier = when {
+            player != null && player.isMajorCiv() -> player.civName
+            majorsOnly -> IDENTIFIER_MAJOR_CIVS
+            else -> IDENTIFIER_ALL_CIVS
+        }
+        return data[identifier]!![tile.position]
     }
 
     fun setDirty() {

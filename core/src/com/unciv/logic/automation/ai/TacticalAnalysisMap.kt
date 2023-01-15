@@ -170,14 +170,14 @@ class TacticalAnalysisMap {
 
             // Is this plot close to a city?
             val cityDistance = game.cityDistances.getClosestCityDistance(tile, null, false)
-            if (cityDistance > maxRange) {
+            if (cityDistance == null) {
                 // Non-city tiles processed separately
                 nonCityTiles.add(tile)
                 continue
             }
 
             val city: CityInfo? = when {
-                cityDistance < 3 -> game.cityDistances.getClosestCity(tile, null, false)
+                cityDistance.distance < 3 -> cityDistance.city
                 else -> tile.getCity()
             }
 
@@ -275,7 +275,8 @@ class TacticalAnalysisMap {
                     .filter { it.isWater() == zone.isWater() && it.neighboringZones.contains(zone.id) }
                     .minByOrNull { it.tileCount }
                 if (biggerZone != null) {
-                    plotPositionToZoneId.asSequence().filter { it.value == zone.id }
+                    plotPositionToZoneId.asSequence()
+                        .filter { it.value == zone.id }
                         .forEach { plotPositionToZoneId[it.key] = biggerZone.id }
                     toRemove.add(zone)
                 }
