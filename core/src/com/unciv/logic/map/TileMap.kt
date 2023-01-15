@@ -347,7 +347,7 @@ class TileMap : IsPartOfGameInfoSerialization {
                 val cTileHeight = cTile.tileHeight
 
                 // For the sightdistance+1 layer - that's "one out of sight" - it's only visible if it's higher than the current tile
-                if (i == sightDistance+1 && cTileHeight <= aUnitHeight)
+                if (i == sightDistance+1 && (cTileHeight <= aUnitHeight || forAttack))
                     continue
 
                 /*

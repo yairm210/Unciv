@@ -202,18 +202,16 @@ object BattleDamage {
     }
 
 
-    private fun modifiersToMultiplicationBonus(modifiers: Counter<String>): Float {
+    private fun modifiersToFinalBonus(modifiers: Counter<String>): Float {
         var finalModifier = 1f
-        for (modifierValue in modifiers.values) finalModifier *= modifierValue.toPercent()
+        for (modifierValue in modifiers.values) finalModifier += modifierValue / 100f
         return finalModifier
     }
 
     private fun getHealthDependantDamageRatio(combatant: ICombatant): Float {
         return if (combatant !is MapUnitCombatant
             || combatant.unit.hasUnique(UniqueType.NoDamagePenalty, checkCivInfoUniques = true)
-        ) {
-            1f
-        }
+        ) 1f
         // Each 3 points of health reduces damage dealt by 1%
         else 1 - (100 - combatant.getHealth()) / 300f
     }
@@ -226,7 +224,7 @@ object BattleDamage {
         attacker: ICombatant,
         defender: ICombatant
     ): Float {
-        val attackModifier = modifiersToMultiplicationBonus(getAttackModifiers(attacker, defender))
+        val attackModifier = modifiersToFinalBonus(getAttackModifiers(attacker, defender))
         return max(1f, attacker.getAttackingStrength() * attackModifier)
     }
 
@@ -235,7 +233,7 @@ object BattleDamage {
      * Includes defence modifiers
      */
     fun getDefendingStrength(attacker: ICombatant, defender: ICombatant): Float {
-        val defenceModifier = modifiersToMultiplicationBonus(getDefenceModifiers(attacker, defender))
+        val defenceModifier = modifiersToFinalBonus(getDefenceModifiers(attacker, defender))
         return max(1f, defender.getDefendingStrength(attacker.isRanged()) * defenceModifier)
     }
 
