@@ -138,6 +138,9 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     @Transient
     var spaceResources = HashSet<String>()
 
+    @Transient
+    var cityDistances: CityDistanceData = CityDistanceData()
+
     //endregion
     //region Pure functions
 
@@ -572,6 +575,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         spaceResources.addAll(ruleSet.victories.values.flatMap { it.requiredSpaceshipParts })
 
         barbarians.setTransients(this)
+
+        cityDistances.game = this
 
         guaranteeUnitPromotions()
     }

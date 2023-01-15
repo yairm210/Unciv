@@ -218,7 +218,7 @@ class WorldMapHolder(
                 unitTable.citySelected(previousSelectedCity)
             }
         }
-
+        worldScreen.viewingCiv.tacticalAI.showZonesDebug(tileInfo)
         worldScreen.shouldUpdate = true
     }
 
@@ -502,7 +502,7 @@ class WorldMapHolder(
     }
 
 
-    private fun addOverlayOnTileGroup(group: TileGroup, actor: Actor) {
+    fun addOverlayOnTileGroup(group: TileGroup, actor: Actor) {
 
         actor.center(group)
         actor.x += group.x
