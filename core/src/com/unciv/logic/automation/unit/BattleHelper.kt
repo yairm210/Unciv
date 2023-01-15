@@ -68,8 +68,7 @@ object BattleHelper {
             val tilesInAttackRange =
                 if (unit.hasUnique(UniqueType.IndirectFire) || unit.baseUnit.movesLikeAirUnits())
                     reachableTile.getTilesInDistance(rangeOfAttack)
-                else reachableTile.getViewableTilesList(rangeOfAttack)
-                    .asSequence()
+                else reachableTile.tileMap.getViewableTiles(reachableTile.position, rangeOfAttack, true).asSequence()
 
             for (tile in tilesInAttackRange) {
                 if (tile in tilesWithEnemies) attackableTiles += AttackableTile(

@@ -329,7 +329,7 @@ class TileMap : IsPartOfGameInfoSerialization {
     data class ViewableTile(val tile:TileInfo, val maxHeightSeenToTile:Int, val isVisible:Boolean, val isAttackable: Boolean)
 
     /** @return List of tiles visible from location [position] for a unit with sight range [sightDistance] */
-    fun getViewableTiles(position: Vector2, sightDistance: Int): List<TileInfo> {
+    fun getViewableTiles(position: Vector2, sightDistance: Int, forAttack:Boolean = false): List<TileInfo> {
         val aUnitHeight = get(position).unitHeight
         val viewableTiles = mutableListOf(ViewableTile(
             get(position),
@@ -372,6 +372,8 @@ class TileMap : IsPartOfGameInfoSerialization {
             }
             viewableTiles.addAll(tilesToAddInDistanceI)
         }
+
+        if (forAttack) return viewableTiles.filter { it.isAttackable }.map { it.tile }
 
         return viewableTiles.filter { it.isVisible }.map { it.tile }
     }

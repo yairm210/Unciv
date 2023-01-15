@@ -187,6 +187,18 @@ class VisibilityTests {
     }
 
     @Test
+    fun canSeeElevation3TilesEvenWithInvisibleIntermediate() {
+        val source = addTile("Grassland", Vector2(0f,0f))
+        addTile(listOf("Grassland", "Hill"), Vector2(1f,0f))
+        val intermediate = addTile(listOf("Grassland", "Hill"), Vector2(2f,0f))
+        val beyondSight = addTile(listOf("Grassland", "Hill", "Forest"), Vector2(3f,0f))
+
+        val viewableTiles = source.getViewableTilesList(2)
+        assert(viewableTiles.contains(beyondSight))
+        assert(!viewableTiles.contains(intermediate))
+    }
+
+    @Test
     fun cannotSeeHiddenElevation3Tiles() {
         val source = addTile("Grassland", Vector2(0f,0f))
         addTile("Grassland", Vector2(1f,0f))
@@ -195,6 +207,28 @@ class VisibilityTests {
 
         val viewableTiles = source.getViewableTilesList(2)
         assert(!viewableTiles.contains(beyondSight))
+    }
+
+    @Test
+    fun canSeeButNotAttackHillForestOverHill() {
+        val grassland = addTile("Grassland", Vector2(0f,0f))
+        addTile(listOf("Grassland", "Hill"), Vector2(1f,0f))
+        val hillForest = addTile(listOf("Grassland", "Hill", "Forest"), Vector2(2f, 0f))
+        val viewableTiles = grassland.getViewableTilesList(2)
+        assert(viewableTiles.contains(hillForest))
+        val attackableTiles = tileMap.getViewableTiles(grassland.position, 2, true)
+        assert(!attackableTiles.contains(hillForest))
+    }
+
+    @Test
+    fun canSeeAndAttackMountainOverHill() {
+        val grassland = addTile("Grassland", Vector2(0f,0f))
+        addTile(listOf("Grassland", "Hill"), Vector2(1f,0f))
+        val mountain = addTile(listOf("Mountain"), Vector2(2f, 0f))
+        val viewableTiles = grassland.getViewableTilesList(2)
+        assert(viewableTiles.contains(mountain))
+        val attackableTiles = tileMap.getViewableTiles(grassland.position, 2, true)
+        assert(attackableTiles.contains(mountain))
     }
 
 }
