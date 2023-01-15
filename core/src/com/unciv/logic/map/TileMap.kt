@@ -338,13 +338,17 @@ class TileMap : IsPartOfGameInfoSerialization {
             isAttackable = false
         ))
 
-        for (i in 1..sightDistance) { // in each layer,
+        for (i in 1..sightDistance+1) { // in each layer,
             // This is so we don't use tiles in the same distance to "see over",
             // that is to say, the "viewableTiles.contains(it) check will return false for neighbors from the same distance
             val tilesToAddInDistanceI = ArrayList<ViewableTile>()
 
             for (cTile in getTilesAtDistance(position, i)) { // for each tile in that layer,
                 val cTileHeight = cTile.tileHeight
+
+                // For the sightdistance+1 layer - that's "one out of sight" - it's only visible if it's higher than the current tile
+                if (i == sightDistance+1 && cTileHeight <= aUnitHeight)
+                    continue
 
                 /*
             Okay so, if we're looking at a tile from height a to one with height c with a MAXIMUM HEIGHT of b in the middle,

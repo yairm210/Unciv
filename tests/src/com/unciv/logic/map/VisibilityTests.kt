@@ -163,4 +163,38 @@ class VisibilityTests {
         assert(!viewableTiles.contains(hill))
     }
 
+
+    @Test
+    fun cannotSee3TilesAwayPlain() {
+        val source = addTile("Grassland", Vector2(0f,0f))
+        addTile("Grassland", Vector2(1f,0f))
+        addTile("Grassland", Vector2(2f,0f))
+        val beyondSight = addTile("Grassland", Vector2(3f,0f))
+
+        val viewableTiles = source.getViewableTilesList(2)
+        assert(!viewableTiles.contains(beyondSight))
+    }
+
+    @Test
+    fun canSeeElevation3Tiles() {
+        val source = addTile("Grassland", Vector2(0f,0f))
+        addTile("Grassland", Vector2(1f,0f))
+        addTile("Grassland", Vector2(2f,0f))
+        val beyondSight = addTile(listOf("Grassland", "Hill"), Vector2(3f,0f))
+
+        val viewableTiles = source.getViewableTilesList(2)
+        assert(viewableTiles.contains(beyondSight))
+    }
+
+    @Test
+    fun cannotSeeHiddenElevation3Tiles() {
+        val source = addTile("Grassland", Vector2(0f,0f))
+        addTile("Grassland", Vector2(1f,0f))
+        addTile(listOf("Grassland", "Forest"), Vector2(2f,0f))
+        val beyondSight = addTile(listOf("Grassland", "Hill"), Vector2(3f,0f))
+
+        val viewableTiles = source.getViewableTilesList(2)
+        assert(!viewableTiles.contains(beyondSight))
+    }
+
 }
