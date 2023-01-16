@@ -828,6 +828,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                 NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
             thirdCiv.getDiplomacyManager(civInfo).setFriendshipBasedModifier()
         }
+
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDeclaringFriendship))
+            UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
     }
 
     private fun setFriendshipBasedModifier() {

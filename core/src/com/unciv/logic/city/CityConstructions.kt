@@ -442,7 +442,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             }
         }
 
-        if (construction is Building){
+        if (construction is Building) {
             for (unique in cityInfo.civInfo.getTriggeredUniques(UniqueType.TriggerUponConstructingBuilding, StateForConditionals(cityInfo.civInfo, cityInfo)))
                 if (unique.conditionals.any {it.type == UniqueType.TriggerUponConstructingBuilding && construction.matchesFilter(it.params[0])})
                     UniqueTriggerActivation.triggerCivwideUnique(unique, cityInfo.civInfo, cityInfo)
