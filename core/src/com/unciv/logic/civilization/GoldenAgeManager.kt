@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.utils.extensions.toPercent
 
@@ -37,6 +38,9 @@ class GoldenAgeManager : IsPartOfGameInfoSerialization {
         turnsLeftForCurrentGoldenAge += turnsToGoldenAge.toInt()
         civInfo.addNotification("You have entered a Golden Age!", NotificationCategory.General, "StatIcons/Happiness")
         civInfo.popupAlerts.add(PopupAlert(AlertType.GoldenAge, ""))
+
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnteringGoldenAge))
+            UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
     }
 
     fun endTurn(happiness: Int) {
