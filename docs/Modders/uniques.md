@@ -1875,6 +1875,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: TriggerCondition
 
+??? example  "upon adopting [policy]"
+	Example: "upon adopting [Oligarchy]"
+
+	Applicable to: TriggerCondition
+
 ??? example  "upon declaring war"
 	Applicable to: TriggerCondition
 

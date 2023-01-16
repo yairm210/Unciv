@@ -201,6 +201,11 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         for (unique in policy.uniqueObjects)
             UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
 
+
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponAdoptingPolicy))
+            if (unique.conditionals.any {it.type == UniqueType.TriggerUponAdoptingPolicy && it.params[0] == policy.name})
+                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+
         // This ALSO has the side-effect of updating the CivInfo statForNextTurn so we don't need to call it explicitly
         for (cityInfo in civInfo.cities) cityInfo.cityStats.update()
 
