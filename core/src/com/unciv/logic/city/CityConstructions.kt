@@ -16,6 +16,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueMap
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
@@ -440,6 +441,11 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                     NotificationCategory.General, NotificationIcon.Construction, buildingIcon)
             }
         }
+
+        if (construction is Building)
+            for (unique in cityInfo.civInfo.getTriggeredUniques(UniqueType.TriggerUponConstructingBuilding, StateForConditionals(cityInfo.civInfo, cityInfo)))
+                if (unique.conditionals.any {it.type == UniqueType.TriggerUponConstructingBuilding && construction.matchesFilter(it.params[0])})
+                    UniqueTriggerActivation.triggerCivwideUnique(unique, cityInfo.civInfo, cityInfo)
     }
 
     fun addBuilding(buildingName: String) {

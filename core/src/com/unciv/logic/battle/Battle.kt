@@ -563,7 +563,7 @@ object Battle {
         for (unique in attackerCiv.getTriggeredUniques(UniqueType.TriggerUponConqueringCity,
                 StateForConditionals(attackerCiv, city, attacker.unit, attackedTile = city.getCenterTile() )
         ))
-            UniqueTriggerActivation.triggerCivwideUnique(unique, attackerCiv)
+            UniqueTriggerActivation.triggerCivwideUnique(unique, attackerCiv, city)
     }
 
     fun getMapCombatantOfTile(tile: TileInfo): ICombatant? {
