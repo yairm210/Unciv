@@ -1875,6 +1875,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: TriggerCondition
 
+??? example  "upon entering the [era]"
+	Example: "upon entering the [Ancient era]"
+
+	Applicable to: TriggerCondition
+
 ??? example  "upon adopting [policy]"
 	Example: "upon adopting [Oligarchy]"
 

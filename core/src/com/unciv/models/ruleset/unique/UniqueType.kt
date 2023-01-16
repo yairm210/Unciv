@@ -700,10 +700,10 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ///////////////////////////////////////// region TRIGGERS /////////////////////////////////////////
 
     TriggerUponResearch("upon discovering [tech]", UniqueTarget.TriggerCondition),
+    TriggerUponEnteringEra("upon entering the [era]", UniqueTarget.TriggerCondition),
     TriggerUponAdoptingPolicy("upon adopting [policy]", UniqueTarget.TriggerCondition),
     TriggerUponDeclaringWar("upon declaring war", UniqueTarget.TriggerCondition),
     TriggerUponEnteringGoldenAge("upon entering a Golden Age", UniqueTarget.TriggerCondition),
-
     //endregion
 
     ///////////////////////////////////////////// region META /////////////////////////////////////////////

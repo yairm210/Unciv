@@ -341,6 +341,11 @@ class TechManager : IsPartOfGameInfoSerialization {
             for (era in erasPassed)
                 for (unique in era.uniqueObjects)
                     UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+
+            val eraNames = erasPassed.map { it.name }.toHashSet()
+            for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnteringEra))
+                if (unique.conditionals.any {it.type == UniqueType.TriggerUponEnteringEra && it.params[0] in eraNames})
+                    UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
         }
 
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponResearch))
