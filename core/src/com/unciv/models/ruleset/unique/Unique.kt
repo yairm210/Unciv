@@ -305,8 +305,7 @@ class UniqueMap: HashMap<String, ArrayList<Unique>>() {
 
     /** Adds one [unique] unless it has a ConditionalTimedUnique conditional */
     fun addUnique(unique: Unique) {
-        if (unique.conditionals.any { it.type == UniqueType.ConditionalTimedUnique }
-                && unique.conditionals.none { it.type!!.targetTypes.contains(UniqueTarget.TriggerCondition)}) return
+        if (unique.conditionals.any { it.type == UniqueType.ConditionalTimedUnique }) return
         if (!containsKey(unique.placeholderText)) this[unique.placeholderText] = ArrayList()
         this[unique.placeholderText]!!.add(unique)
     }
