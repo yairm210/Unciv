@@ -706,10 +706,12 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     TriggerUponEnteringGoldenAge("upon entering a Golden Age", UniqueTarget.TriggerCondition),
     TriggerUponConqueringCity("upon conquering a city", UniqueTarget.TriggerCondition),
     TriggerUponConstructingBuilding("upon constructing [buildingFilter]", UniqueTarget.TriggerCondition),
+    // Not auto cityfiltered, since 'in all cities' can be read 'only if it's in all cities'
+    TriggerUponConstructingBuildingCityFilter("upon constructing [buildingFilter] [cityFilter]", UniqueTarget.TriggerCondition),
 
     TriggerUponFoundingPantheon("upon founding a Pantheon", UniqueTarget.TriggerCondition),
     TriggerUponFoundingReligion("upon founding a Religion", UniqueTarget.TriggerCondition),
-    TriggerUponEnhancingReligion("upon enahncing a Religion", UniqueTarget.TriggerCondition),
+    TriggerUponEnhancingReligion("upon enhancing a Religion", UniqueTarget.TriggerCondition),
 
 
     //endregion
