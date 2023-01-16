@@ -63,7 +63,8 @@ class UniqueDocsWriter {
             for (uniqueType in uniqueTypes) {
                 if (uniqueType.getDeprecationAnnotation() != null) continue
 
-                val uniqueText = if (targetType == UniqueTarget.Conditional) "&lt;${uniqueType.text}&gt;"
+                val uniqueText = if (targetType == UniqueTarget.Conditional || targetType == UniqueTarget.TriggerCondition)
+                    "&lt;${uniqueType.text}&gt;"
                 else uniqueType.text
                 lines += "??? example  \"$uniqueText\"" // collapsable material mkdocs block, see https://squidfunk.github.io/mkdocs-material/reference/admonitions/?h=%3F%3F%3F#collapsible-blocks
                 if (uniqueType.parameterTypeMap.isNotEmpty()) {

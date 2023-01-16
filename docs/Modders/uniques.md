@@ -1870,50 +1870,50 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ## TriggerCondition uniques
-??? example  "upon discovering [tech]"
-	Example: "upon discovering [Agriculture]"
+??? example  "&lt;upon discovering [tech]&gt;"
+	Example: "&lt;upon discovering [Agriculture]&gt;"
 
 	Applicable to: TriggerCondition
 
-??? example  "upon entering the [era]"
-	Example: "upon entering the [Ancient era]"
+??? example  "&lt;upon entering the [era]&gt;"
+	Example: "&lt;upon entering the [Ancient era]&gt;"
 
 	Applicable to: TriggerCondition
 
-??? example  "upon adopting [policy]"
-	Example: "upon adopting [Oligarchy]"
+??? example  "&lt;upon adopting [policy]&gt;"
+	Example: "&lt;upon adopting [Oligarchy]&gt;"
 
 	Applicable to: TriggerCondition
 
-??? example  "upon declaring war with a major Civilization"
+??? example  "&lt;upon declaring war with a major Civilization&gt;"
 	Applicable to: TriggerCondition
 
-??? example  "upon declaring friendship"
+??? example  "&lt;upon declaring friendship&gt;"
 	Applicable to: TriggerCondition
 
-??? example  "upon entering a Golden Age"
+??? example  "&lt;upon entering a Golden Age&gt;"
 	Applicable to: TriggerCondition
 
-??? example  "upon conquering a city"
+??? example  "&lt;upon conquering a city&gt;"
 	Applicable to: TriggerCondition
 
-??? example  "upon constructing [buildingFilter]"
-	Example: "upon constructing [Culture]"
-
-	Applicable to: TriggerCondition
-
-??? example  "upon constructing [buildingFilter] [cityFilter]"
-	Example: "upon constructing [Culture] [in all cities]"
+??? example  "&lt;upon constructing [buildingFilter]&gt;"
+	Example: "&lt;upon constructing [Culture]&gt;"
 
 	Applicable to: TriggerCondition
 
-??? example  "upon founding a Pantheon"
+??? example  "&lt;upon constructing [buildingFilter] [cityFilter]&gt;"
+	Example: "&lt;upon constructing [Culture] [in all cities]&gt;"
+
 	Applicable to: TriggerCondition
 
-??? example  "upon founding a Religion"
+??? example  "&lt;upon founding a Pantheon&gt;"
 	Applicable to: TriggerCondition
 
-??? example  "upon enhancing a Religion"
+??? example  "&lt;upon founding a Religion&gt;"
+	Applicable to: TriggerCondition
+
+??? example  "&lt;upon enhancing a Religion&gt;"
 	Applicable to: TriggerCondition
 
 
