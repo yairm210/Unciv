@@ -741,8 +741,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         }
         otherCivDiplomacy.removeFlag(DiplomacyFlags.ResearchAgreement)
 
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDeclaringWar))
-            UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+        if (otherCiv.isMajorCiv())
+            for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDeclaringWar))
+                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
     }
 
     /** Should only be called from makePeace */

@@ -1885,10 +1885,35 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: TriggerCondition
 
-??? example  "upon declaring war"
+??? example  "upon declaring war with a major Civilization"
+	Applicable to: TriggerCondition
+
+??? example  "upon declaring friendship"
 	Applicable to: TriggerCondition
 
 ??? example  "upon entering a Golden Age"
+	Applicable to: TriggerCondition
+
+??? example  "upon conquering a city"
+	Applicable to: TriggerCondition
+
+??? example  "upon constructing [buildingFilter]"
+	Example: "upon constructing [Culture]"
+
+	Applicable to: TriggerCondition
+
+??? example  "upon constructing [buildingFilter] [cityFilter]"
+	Example: "upon constructing [Culture] [in all cities]"
+
+	Applicable to: TriggerCondition
+
+??? example  "upon founding a Pantheon"
+	Applicable to: TriggerCondition
+
+??? example  "upon founding a Religion"
+	Applicable to: TriggerCondition
+
+??? example  "upon enhancing a Religion"
 	Applicable to: TriggerCondition
 
 
