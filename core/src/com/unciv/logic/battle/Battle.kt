@@ -22,6 +22,7 @@ import com.unciv.models.UnitActionType
 import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -523,7 +524,6 @@ object Battle {
     private fun conquerCity(city: CityInfo, attacker: MapUnitCombatant) {
         val attackerCiv = attacker.getCivInfo()
 
-
         attackerCiv.addNotification("We have conquered the city of [${city.name}]!", city.location, NotificationCategory.War, NotificationIcon.War)
 
         city.hasJustBeenConquered = true
@@ -559,6 +559,11 @@ object Battle {
 
         if (attackerCiv.isCurrentPlayer())
             UncivGame.Current.settings.addCompletedTutorialTask("Conquer a city")
+
+        for (unique in attackerCiv.getTriggeredUniques(UniqueType.TriggerUponConqueringCity,
+                StateForConditionals(attackerCiv, city, attacker.unit, attackedTile = city.getCenterTile() )
+        ))
+            UniqueTriggerActivation.triggerCivwideUnique(unique, attackerCiv)
     }
 
     fun getMapCombatantOfTile(tile: TileInfo): ICombatant? {
