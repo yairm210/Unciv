@@ -86,8 +86,7 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
     }
 
     private fun getUniquesOfBeliefs(beliefs: HashSet<String>): Sequence<Unique> {
-        val result = mapToExistingBeliefs(beliefs).asSequence().flatMap { it.uniqueObjects }
-        return result
+        return mapToExistingBeliefs(beliefs).asSequence().flatMap { it.uniqueObjects }
     }
 
     fun getFollowerUniques() = getUniquesOfBeliefs(followerBeliefs)

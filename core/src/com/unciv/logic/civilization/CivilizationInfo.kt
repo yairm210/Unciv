@@ -486,6 +486,17 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         yieldAll(gameInfo.ruleSet.globalUniques.getMatchingUniques(uniqueType, stateForConditionals))
     }
 
+    fun getTriggeredUniques(trigger: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(this)) : Sequence<Unique> = sequence{
+        yieldAll(nation.uniqueMap.getTriggeredUniques(trigger, stateForConditionals))
+        yieldAll(cities.asSequence()
+            .flatMap { city -> city.cityConstructions.builtBuildingUniqueMap.getTriggeredUniques(trigger, stateForConditionals) }
+        )
+        yieldAll(policies.policyUniques.getTriggeredUniques(trigger, stateForConditionals))
+        yieldAll(tech.techUniques.getTriggeredUniques(trigger, stateForConditionals))
+        yieldAll(getEra().uniqueMap.getTriggeredUniques (trigger, stateForConditionals))
+        yieldAll(gameInfo.ruleSet.globalUniques.uniqueMap.getTriggeredUniques(trigger, stateForConditionals))
+    }
+
 
     //region Units
     fun getCivUnitsSize(): Int = units.size

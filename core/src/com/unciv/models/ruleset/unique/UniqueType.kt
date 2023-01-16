@@ -50,7 +50,7 @@ enum class UniqueTarget(val inheritsFrom: UniqueTarget? = null) {
     CityState(Global),
     ModOptions,
     Conditional,
-    TriggerCondition
+    TriggerCondition(Global)
     ;
 
     fun canAcceptUniqueTarget(uniqueTarget: UniqueTarget): Boolean {
@@ -693,6 +693,13 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     UnitsGainPromotion("[mapUnitFilter] units gain the [promotion] promotion", UniqueTarget.Triggerable),  // Not used in Vanilla
     FreeStatBuildings("Provides the cheapest [stat] building in your first [amount] cities for free", UniqueTarget.Triggerable),  // used in Policy
     FreeSpecificBuildings("Provides a [buildingName] in your first [amount] cities for free", UniqueTarget.Triggerable),  // used in Policy
+
+    //endregion
+
+
+    ///////////////////////////////////////// region TRIGGERS /////////////////////////////////////////
+
+    TriggerUponResearch("upon discovering [tech]", UniqueTarget.TriggerCondition),
 
     //endregion
 

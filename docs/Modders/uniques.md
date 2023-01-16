@@ -30,11 +30,21 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
+??? example  "[amount] population in a random city"
+	Example: "[3] population in a random city"
+
+	Applicable to: Triggerable
+
 ??? example  "Free Technology"
 	Applicable to: Triggerable
 
 ??? example  "[amount] Free Technologies"
 	Example: "[3] Free Technologies"
+
+	Applicable to: Triggerable
+
+??? example  "[amount] free random researchable Tech(s) from the [era]"
+	Example: "[3] free random researchable Tech(s) from the [Ancient era]"
 
 	Applicable to: Triggerable
 
@@ -47,6 +57,24 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Triggerable
 
 ??? example  "Triggers voting for the Diplomatic Victory"
+	Applicable to: Triggerable
+
+??? example  "Gain [amount] [stat]"
+	Example: "Gain [3] [Culture]"
+
+	Applicable to: Triggerable
+
+??? example  "Gain [amount]-[amount] [stat]"
+	Example: "Gain [3]-[3] [Culture]"
+
+	Applicable to: Triggerable
+
+??? example  "Gain enough Faith for a Pantheon"
+	Applicable to: Triggerable
+
+??? example  "Gain enough Faith for [amount]% of a Great Prophet"
+	Example: "Gain enough Faith for [3]% of a Great Prophet"
+
 	Applicable to: Triggerable
 
 ??? example  "This Unit gains the [promotion] promotion"
@@ -70,7 +98,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Triggerable
 
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Triggerable, Global, Nation, Era, Tech, Policy, FounderBelief, FollowerBelief, Building, Wonder, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Tutorial, CityState, ModOptions, Conditional
+	Applicable to: Triggerable, Global, Nation, Era, Tech, Policy, FounderBelief, FollowerBelief, Building, Wonder, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Tutorial, CityState, ModOptions, Conditional, TriggerCondition
 
 ## Global uniques
 ??? example  "[stats]"
@@ -1579,34 +1607,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Ruins
 
-??? example  "[amount] population in a random city"
-	Example: "[3] population in a random city"
-
-	Applicable to: Ruins
-
-??? example  "[amount] free random researchable Tech(s) from the [era]"
-	Example: "[3] free random researchable Tech(s) from the [Ancient era]"
-
-	Applicable to: Ruins
-
-??? example  "Gain [amount] [stat]"
-	Example: "Gain [3] [Culture]"
-
-	Applicable to: Ruins
-
-??? example  "Gain [amount]-[amount] [stat]"
-	Example: "Gain [3]-[3] [Culture]"
-
-	Applicable to: Ruins
-
-??? example  "Gain enough Faith for a Pantheon"
-	Applicable to: Ruins
-
-??? example  "Gain enough Faith for [amount]% of a Great Prophet"
-	Example: "Gain enough Faith for [3]% of a Great Prophet"
-
-	Applicable to: Ruins
-
 ??? example  "Reveal up to [amount/'all'] [tileFilter] within a [amount] tile radius"
 	Example: "Reveal up to [3] [Farm] within a [3] tile radius"
 
@@ -1868,6 +1868,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "&lt;in all except [Hybrid] Regions&gt;"
 
 	Applicable to: Conditional
+
+## TriggerCondition uniques
+??? example  "upon discovering [tech]"
+	Example: "upon discovering [Agriculture]"
+
+	Applicable to: TriggerCondition
 
 
 *[action]: An action that a unit can perform. Currently, there are only two actions part of this: 'Spread Religion' and 'Remove Foreign religions from your own cities'

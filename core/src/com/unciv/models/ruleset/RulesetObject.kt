@@ -2,6 +2,7 @@ package com.unciv.models.ruleset
 
 import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.NamedStats
 import com.unciv.ui.civilopedia.FormattedLine
@@ -18,10 +19,13 @@ abstract class RulesetObject: IRulesetObject {
         else uniques.map { Unique(it, getUniqueTarget(), name) }
     }
     @delegate:Transient
-    override val uniqueMap: Map<String, List<Unique>> by lazy {
-        if (uniques.isEmpty()) emptyMap()
-        else uniqueObjects.groupBy { it.placeholderText }
+    override val uniqueMap: UniqueMap by lazy {
+        if (uniques.isEmpty()) UniqueMap()
+        val newUniqueMap = UniqueMap()
+        newUniqueMap.addUniques(uniqueObjects)
+        newUniqueMap
     }
+
     override var civilopediaText = listOf<FormattedLine>()
     override fun toString() = name
 }
@@ -39,5 +43,6 @@ abstract class RulesetStatsObject: NamedStats(), IRulesetObject {
         if (uniques.isEmpty()) emptyMap()
         else uniqueObjects.groupBy { it.placeholderText }
     }
+
     override var civilopediaText = listOf<FormattedLine>()
 }

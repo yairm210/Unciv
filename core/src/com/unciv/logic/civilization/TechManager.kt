@@ -342,6 +342,11 @@ class TechManager : IsPartOfGameInfoSerialization {
                 for (unique in era.uniqueObjects)
                     UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
         }
+
+        val triggerableUniques = civInfo.getTriggeredUniques(UniqueType.TriggerUponResearch)
+        for (unique in triggerableUniques)
+            if (unique.conditionals.any {it.type == UniqueType.TriggerUponResearch && it.params[0] == techName})
+                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
     }
 
     fun updateEra() {

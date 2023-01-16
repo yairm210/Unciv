@@ -125,6 +125,9 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         state: StateForConditionals
     ): Boolean {
 
+        if (condition.type!!.targetTypes.contains(UniqueTarget.TriggerCondition))
+            return true // not a filtering condition
+
         fun ruleset() = state.civInfo!!.gameInfo.ruleSet
 
         val relevantUnit by lazy {
@@ -322,6 +325,10 @@ class UniqueMap: HashMap<String, ArrayList<Unique>>() {
         .filter { it.conditionalsApply(state) }
 
     fun getAllUniques() = this.asSequence().flatMap { it.value.asSequence() }
+
+    fun getTriggeredUniques(trigger: UniqueType, stateForConditionals: StateForConditionals) =
+            getAllUniques().filter { it.conditionals.any { it.type == trigger } }
+                .filter { it.conditionalsApply(stateForConditionals) }
 }
 
 
