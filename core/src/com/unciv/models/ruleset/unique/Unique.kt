@@ -305,7 +305,8 @@ class UniqueMap: HashMap<String, ArrayList<Unique>>() {
 
     /** Adds one [unique] unless it has a ConditionalTimedUnique conditional */
     fun addUnique(unique: Unique) {
-        if (unique.conditionals.any { it.type == UniqueType.ConditionalTimedUnique }) return
+        if (unique.conditionals.any { it.type == UniqueType.ConditionalTimedUnique }
+                && unique.conditionals.none { it.type!!.targetTypes.contains(UniqueTarget.TriggerCondition)}) return
         if (!containsKey(unique.placeholderText)) this[unique.placeholderText] = ArrayList()
         this[unique.placeholderText]!!.add(unique)
     }
@@ -326,9 +327,11 @@ class UniqueMap: HashMap<String, ArrayList<Unique>>() {
 
     fun getAllUniques() = this.asSequence().flatMap { it.value.asSequence() }
 
-    fun getTriggeredUniques(trigger: UniqueType, stateForConditionals: StateForConditionals) =
-            getAllUniques().filter { it.conditionals.any { it.type == trigger } }
-                .filter { it.conditionalsApply(stateForConditionals) }
+    fun getTriggeredUniques(trigger: UniqueType, stateForConditionals: StateForConditionals): Sequence<Unique> {
+        val result = getAllUniques().filter { it.conditionals.any { it.type == trigger } }
+            .filter { it.conditionalsApply(stateForConditionals) }
+        return result
+    }
 }
 
 
