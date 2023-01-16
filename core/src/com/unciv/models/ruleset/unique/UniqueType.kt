@@ -50,6 +50,7 @@ enum class UniqueTarget(val inheritsFrom: UniqueTarget? = null) {
     CityState(Global),
     ModOptions,
     Conditional,
+    TriggerCondition
     ;
 
     fun canAcceptUniqueTarget(uniqueTarget: UniqueTarget): Boolean {
@@ -159,8 +160,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     UnhappinessFromPopulationTypePercentageChange("[relativeAmount]% Unhappiness from [populationFilter] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     FoodConsumptionBySpecialists("[relativeAmount]% Food consumption by specialists [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    @Deprecated("as of 4.3.4", ReplaceWith("[+1 Happiness] per [2] social policies adopted"))
-    HappinessPer2Policies("Provides 1 happiness per 2 additional social policies adopted", UniqueTarget.Global),
     ExcessHappinessToGlobalStat("[relativeAmount]% of excess happiness converted to [stat]", UniqueTarget.Global),
 
     BorderGrowthPercentage("[relativeAmount]% Culture cost of natural border growth [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
@@ -204,8 +203,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     DoubleResourceProduced("Double quantity of [resource] produced", UniqueTarget.Global),
 
     StatsFromNaturalWonders("[stats] for every known Natural Wonder", UniqueTarget.Global),
-    @Deprecated("as of 4.3.6", ReplaceWith("[+1 Happiness] for every known Natural Wonder"))
-    DoubleHappinessFromNaturalWonders("Double Happiness from Natural Wonders", UniqueTarget.Global),
 
     EnablesConstructionOfSpaceshipParts("Enables construction of Spaceship parts", UniqueTarget.Global),
     EnemyLandUnitsSpendExtraMovement("Enemy [mapUnitFilter] units must spend [amount] extra movement points when inside your territory", UniqueTarget.Global),
@@ -667,18 +664,18 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     OneTimeEnterGoldenAge("Empire enters golden age", UniqueTarget.Triggerable),  // used in Policies, Buildings
     OneTimeFreeGreatPerson("Free Great Person", UniqueTarget.Triggerable),  // used in Policies, Buildings
     OneTimeGainPopulation("[amount] population [cityFilter]", UniqueTarget.Triggerable),  // used in CN tower
-    OneTimeGainPopulationRandomCity("[amount] population in a random city", UniqueTarget.Ruins),
+    OneTimeGainPopulationRandomCity("[amount] population in a random city", UniqueTarget.Triggerable),
     OneTimeFreeTech("Free Technology", UniqueTarget.Triggerable),  // used in Buildings
     OneTimeAmountFreeTechs("[amount] Free Technologies", UniqueTarget.Triggerable),  // used in Policy
-    OneTimeFreeTechRuins("[amount] free random researchable Tech(s) from the [era]", UniqueTarget.Ruins),
+    OneTimeFreeTechRuins("[amount] free random researchable Tech(s) from the [era]", UniqueTarget.Triggerable),
     OneTimeRevealEntireMap("Reveals the entire map", UniqueTarget.Triggerable),  // used in tech
     OneTimeFreeBelief("Gain a free [beliefType] belief", UniqueTarget.Triggerable),
     OneTimeTriggerVoting("Triggers voting for the Diplomatic Victory", UniqueTarget.Triggerable),  // used in Building
 
-    OneTimeGainStat("Gain [amount] [stat]", UniqueTarget.Ruins),
-    OneTimeGainStatRange("Gain [amount]-[amount] [stat]", UniqueTarget.Ruins),
-    OneTimeGainPantheon("Gain enough Faith for a Pantheon", UniqueTarget.Ruins),
-    OneTimeGainProphet("Gain enough Faith for [amount]% of a Great Prophet", UniqueTarget.Ruins),
+    OneTimeGainStat("Gain [amount] [stat]", UniqueTarget.Triggerable),
+    OneTimeGainStatRange("Gain [amount]-[amount] [stat]", UniqueTarget.Triggerable),
+    OneTimeGainPantheon("Gain enough Faith for a Pantheon", UniqueTarget.Triggerable),
+    OneTimeGainProphet("Gain enough Faith for [amount]% of a Great Prophet", UniqueTarget.Triggerable),
     // todo: The "up to [All]" used in vanilla json is not nice to read. Split?
     // Or just reword it without the 'up to', so it reads "Reveal [amount/'all'] [tileFilter] tiles within [amount] tiles"
     OneTimeRevealSpecificMapTiles("Reveal up to [amount/'all'] [tileFilter] within a [amount] tile radius", UniqueTarget.Ruins),
@@ -700,14 +697,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     //endregion
 
     ///////////////////////////////////////////// region META /////////////////////////////////////////////
-    @Deprecated("as of 4.2.18", ReplaceWith("Only available <after [amount] turns>"))
-    AvailableAfterCertainTurns("Only available after [amount] turns", UniqueTarget.Ruins),
     HiddenWithoutReligion("Hidden when religion is disabled", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Ruins, flags = UniqueFlag.setOfHiddenToUsers),
 
-    @Deprecated("as of 4.2.18", ReplaceWith("Only available <before founding a Pantheon>"))
-    HiddenBeforePantheon("Hidden before founding a Pantheon", UniqueTarget.Ruins),
-    @Deprecated("as of 4.2.18", ReplaceWith("Only available <before founding a Pantheon>"))
-    HiddenAfterPantheon("Hidden after founding a Pantheon", UniqueTarget.Ruins),
     HiddenAfterGreatProphet("Hidden after generating a Great Prophet", UniqueTarget.Ruins),
     HiddenWithoutVictoryType("Hidden when [victoryType] Victory is disabled", UniqueTarget.Building, UniqueTarget.Unit, flags = UniqueFlag.setOfHiddenToUsers),
     HiddenFromCivilopedia("Will not be displayed in Civilopedia", *UniqueTarget.values(), flags = UniqueFlag.setOfHiddenToUsers),
@@ -716,6 +707,16 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     // region DEPRECATED AND REMOVED
 
+    @Deprecated("as of 4.3.4", ReplaceWith("[+1 Happiness] per [2] social policies adopted"), DeprecationLevel.ERROR)
+    HappinessPer2Policies("Provides 1 happiness per 2 additional social policies adopted", UniqueTarget.Global),
+    @Deprecated("as of 4.3.6", ReplaceWith("[+1 Happiness] for every known Natural Wonder"), DeprecationLevel.ERROR)
+    DoubleHappinessFromNaturalWonders("Double Happiness from Natural Wonders", UniqueTarget.Global),
+    @Deprecated("as of 4.2.18", ReplaceWith("Only available <after [amount] turns>"), DeprecationLevel.ERROR)
+    AvailableAfterCertainTurns("Only available after [amount] turns", UniqueTarget.Ruins),
+    @Deprecated("as of 4.2.18", ReplaceWith("Only available <before founding a Pantheon>"), DeprecationLevel.ERROR)
+    HiddenBeforePantheon("Hidden before founding a Pantheon", UniqueTarget.Ruins),
+    @Deprecated("as of 4.2.18", ReplaceWith("Only available <before founding a Pantheon>"), DeprecationLevel.ERROR)
+    HiddenAfterPantheon("Hidden after founding a Pantheon", UniqueTarget.Ruins),
     @Deprecated("as of 4.3.4", ReplaceWith("[stats]"), DeprecationLevel.ERROR)
     CityStateStatsPerTurn("Provides [stats] per turn", UniqueTarget.CityState), // Should not be Happiness!
     @Deprecated("as of 4.3.4", ReplaceWith("[stats] [cityFilter]"), DeprecationLevel.ERROR)

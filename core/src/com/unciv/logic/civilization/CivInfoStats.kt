@@ -270,10 +270,6 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                 statMap.add(key, value)
         }
 
-        if (civInfo.hasUnique(UniqueType.HappinessPer2Policies)) {
-            statMap.add("Policies", civInfo.policies.getAdoptedPolicies().count { !Policy.isBranchCompleteByName(it) } / 2)
-        }
-
         val transportUpkeep = getTransportationUpkeep() * -1
         if (transportUpkeep.happiness != 0f)
             statMap["Transportation Upkeep"] = transportUpkeep.happiness
@@ -316,8 +312,6 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
         val statsPerNaturalWonder = Stats(happiness = 1f)
 
-        if (civInfo.hasUnique(UniqueType.DoubleHappinessFromNaturalWonders))
-            statsPerNaturalWonder.happiness *= 2
         for (unique in civInfo.getMatchingUniques(UniqueType.StatsFromNaturalWonders))
             statsPerNaturalWonder.add(unique.stats)
 
