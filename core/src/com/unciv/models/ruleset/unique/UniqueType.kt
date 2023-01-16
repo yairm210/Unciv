@@ -707,6 +707,11 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     TriggerUponConqueringCity("upon conquering a city", UniqueTarget.TriggerCondition),
     TriggerUponConstructingBuilding("upon constructing [buildingFilter]", UniqueTarget.TriggerCondition),
 
+    TriggerUponFoundingPantheon("upon founding a Pantheon", UniqueTarget.TriggerCondition),
+    TriggerUponFoundingReligion("upon founding a Religion", UniqueTarget.TriggerCondition),
+    TriggerUponEnhancingReligion("upon enahncing a Religion", UniqueTarget.TriggerCondition),
+
+
     //endregion
 
     ///////////////////////////////////////////// region META /////////////////////////////////////////////

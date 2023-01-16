@@ -8,6 +8,7 @@ import com.unciv.models.Counter
 import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.utils.extensions.toPercent
 import java.lang.Integer.max
@@ -132,6 +133,9 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         for (city in civInfo.cities)
             city.religion.addPressure(beliefName, 200 * city.population.population)
         religionState = ReligionState.Pantheon
+
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponFoundingPantheon))
+            UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
     }
 
     // https://www.reddit.com/r/civ/comments/2m82wu/can_anyone_detail_the_finer_points_of_great/
@@ -238,11 +242,14 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         return true
     }
 
-    fun useProphetForFoundingReligion(prophet: MapUnit) {
+    fun foundReligion(prophet: MapUnit) {
         if (!mayFoundReligionNow(prophet)) return // How did you do this?
         if (religionState == ReligionState.None) shouldChoosePantheonBelief = true
         religionState = ReligionState.FoundingReligion
         civInfo.religionManager.foundingCityId = prophet.getTile().getCity()!!.id
+
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponFoundingReligion))
+            UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
     }
 
     /**
@@ -303,8 +310,11 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         when (religionState) {
             ReligionState.FoundingReligion ->
                 foundReligion(iconName!!, religionName!!)
-            ReligionState.EnhancingReligion ->
+            ReligionState.EnhancingReligion -> {
                 religionState = ReligionState.EnhancedReligion
+                for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnhancingReligion))
+                    UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+            }
             ReligionState.None -> {
                 foundPantheon(beliefs[0].name, useFreeBeliefs)
             }

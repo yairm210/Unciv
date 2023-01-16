@@ -727,7 +727,7 @@ object UnitActions {
 
     fun getFoundReligionAction(unit: MapUnit): () -> Unit {
         return {
-            unit.civInfo.religionManager.useProphetForFoundingReligion(unit)
+            unit.civInfo.religionManager.foundReligion(unit)
             unit.consume()
         }
     }
