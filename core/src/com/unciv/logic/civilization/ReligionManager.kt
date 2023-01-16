@@ -156,6 +156,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         if (storedFaith < faithForNextGreatProphet()) return false
         if (!civInfo.isMajorCiv()) return false
         if (civInfo.hasUnique(UniqueType.MayNotGenerateGreatProphet)) return false
+        if (religionState == ReligionState.Pantheon && remainingFoundableReligions() == 0) return false // too many have been founded
         return true
     }
 
@@ -217,9 +218,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
 
     fun mayFoundReligionAtAll(prophet: MapUnit): Boolean {
         if (!civInfo.gameInfo.isReligionEnabled()) return false // No religion
-
         if (religionState >= ReligionState.Religion) return false // Already created a major religion
-
         // Already used its power for other things
         if (prophet.abilityUsesLeft.any { it.value != prophet.maxAbilityUses[it.key] }) return false
 
