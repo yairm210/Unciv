@@ -297,11 +297,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
-??? example  "[stats] whenever a Great Person is expended"
-	Example: "[+1 Gold, +2 Production] whenever a Great Person is expended"
-
-	Applicable to: Global
-
 ??? example  "[relativeAmount]% Unhappiness from [populationFilter] [cityFilter]"
 	Example: "[+20]% Unhappiness from [Followers of this Religion] [in all cities]"
 
@@ -530,11 +525,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Resting point for Influence with City-States following this religion [amount]"
 	Example: "Resting point for Influence with City-States following this religion [3]"
-
-	Applicable to: Global
-
-??? example  "[relativeAmount]% [stat] from City-States"
-	Example: "[+20]% [Culture] from City-States"
 
 	Applicable to: Global
 
@@ -1518,9 +1508,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Adjacent enemy units ending their turn take [amount] damage"
 	Example: "Adjacent enemy units ending their turn take [3] damage"
 
-	Applicable to: Improvement
-
-??? example  "Constructing it will take over the tiles around it and assign them to your closest city"
 	Applicable to: Improvement
 
 ??? example  "Great Improvement"

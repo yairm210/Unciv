@@ -341,7 +341,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         hasStrengthBonusInRadiusUnique = hasUnique(UniqueType.StrengthBonusInRadius)
         hasCitadelPlacementUnique = getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
             .mapNotNull { civInfo.gameInfo.ruleSet.tileImprovements[it.params[0]] }
-            .any { it.hasUnique(UniqueType.TakeOverTilesAroundWhenBuilt) }
+            .any { it.hasUnique(UniqueType.TakesOverAdjacentTiles) }
     }
 
     fun copyStatisticsTo(newUnit: MapUnit) {

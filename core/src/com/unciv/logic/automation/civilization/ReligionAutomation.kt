@@ -370,7 +370,7 @@ object ReligionAutomation {
                     unique.stats.values.sum()
                 UniqueType.StatsFromGlobalFollowers ->
                     4f * (unique.stats.values.sum() / unique.params[1].toFloat())
-                UniqueType.StatsSpendingGreatPeople ->
+                UniqueType.ProvidesStatsWheneverGreatPersonExpended ->
                     unique.stats.values.sum() / 2f
                 UniqueType.Strength ->
                     unique.params[0].toFloat() / 4f
