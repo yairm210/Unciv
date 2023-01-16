@@ -14,6 +14,7 @@ import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.utils.extensions.toPercent
 import kotlin.math.ceil
@@ -739,6 +740,11 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             otherCivDiplomacy.totalOfScienceDuringRA = 0
         }
         otherCivDiplomacy.removeFlag(DiplomacyFlags.ResearchAgreement)
+
+
+
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDeclaringWar))
+            UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
     }
 
     /** Should only be called from makePeace */

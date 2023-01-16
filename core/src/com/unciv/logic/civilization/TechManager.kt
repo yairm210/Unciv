@@ -343,8 +343,7 @@ class TechManager : IsPartOfGameInfoSerialization {
                     UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
         }
 
-        val triggerableUniques = civInfo.getTriggeredUniques(UniqueType.TriggerUponResearch)
-        for (unique in triggerableUniques)
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponResearch))
             if (unique.conditionals.any {it.type == UniqueType.TriggerUponResearch && it.params[0] == techName})
                 UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
     }
