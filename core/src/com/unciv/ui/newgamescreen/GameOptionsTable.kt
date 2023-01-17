@@ -92,7 +92,7 @@ class GameOptionsTable(
     }
 
     private fun Table.addRandomMajorCivsCheckbox() =
-            addCheckbox("Random major civs", gameParameters.randomMajorCivs) {
+            addCheckbox("Random major civilizations", gameParameters.randomMajorCivs) {
                 gameParameters.randomMajorCivs = it
                 updatePlayerPickerTable.invoke("")
             }

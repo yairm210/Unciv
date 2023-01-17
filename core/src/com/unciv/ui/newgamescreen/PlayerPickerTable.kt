@@ -153,19 +153,25 @@ class PlayerPickerTable(
         setValuesButton.onClick {
             val screen = UncivGame.Current.screen ?: return@onClick
             var randomValue = 0
-            val enteredMin = minCivstextField.text
-            val enteredMax = maxCivstextField.text
+            var enteredMin = minCivstextField.text
+            var enteredMax = maxCivstextField.text
 
             if (enteredMin == "" || enteredMax == "") {
                 ToastPopup("Please enter values for maxmimum and minimum number of civilizations!", screen)
             }
+
             try {
+                if (enteredMin.toInt() < 1)
+                    enteredMin = "1"
                 randomValue = (enteredMin.toInt()..enteredMax.toInt()).random()
+            } catch (nsee: NoSuchElementException) { // in case the user enters the numbers backwards
+                if (enteredMax.toInt() < 1)
+                    enteredMax = "1"
+                randomValue = (enteredMax.toInt()..enteredMin.toInt()).random()
             } catch (nfe: NumberFormatException) {
                 ToastPopup("Please enter only integer values!", screen)
-            } catch (nsee: NoSuchElementException) { // in case the user enters the numbers backwards
-                randomValue = (enteredMax.toInt()..enteredMin.toInt()).random()
             }
+
             for (i in 0 until randomValue) {
                 val player = Player()
                 gameParameters.randomPlayers.add(player)
