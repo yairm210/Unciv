@@ -58,13 +58,19 @@ class GameOptionsTable(
                 val turnSlider = addMaxTurnsSlider()
                 if (turnSlider != null)
                     add(turnSlider).padTop(10f).row()
-                addCityStatesSlider()
+                if (gameParameters.randomCityStates) {
+                    addMinCityStatesSlider()
+                    addMaxCityStatesSlider()
+                } else {
+                    addCityStatesSlider()
+                }
             }).colspan(2).fillX().row()
         }).row()
         addVictoryTypeCheckboxes()
 
 
         val checkboxTable = Table().apply { defaults().left().pad(2.5f) }
+        checkboxTable.addRandomCityStatesCheckbox()
         checkboxTable.addNoCityRazingCheckbox()
         checkboxTable.addNoBarbariansCheckbox()
         checkboxTable.addRagingBarbariansCheckbox()
@@ -89,6 +95,13 @@ class GameOptionsTable(
         checkbox.isDisabled = lockable && locked
         add(checkbox).colspan(2).row()
     }
+
+    private fun Table.addRandomCityStatesCheckbox() =
+            addCheckbox("Random number of city states", gameParameters.randomCityStates)
+            {
+                gameParameters.randomCityStates = it
+                update()
+            }
 
     private fun Table.addNoCityRazingCheckbox() =
             addCheckbox("No City Razing", gameParameters.noCityRazing)
@@ -148,6 +161,32 @@ class GameOptionsTable(
         add("{Number of City-States}:".toLabel()).left().expandX()
         val slider = UncivSlider(0f, maxCityStates.toFloat(), 1f, initial = gameParameters.numberOfCityStates.toFloat()) {
             gameParameters.numberOfCityStates = it.toInt()
+        }
+        slider.permanentTip = true
+        slider.isDisabled = locked
+        add(slider).padTop(10f).row()
+    }
+
+    private fun Table.addMinCityStatesSlider() {
+        val minCityStates = numberOfCityStates()
+        if (minCityStates == 0) return
+
+        add("{Min number of City-States}:".toLabel()).left().expandX()
+        val slider = UncivSlider(0f, minCityStates.toFloat(), 1f, initial = gameParameters.minNumberOfCityStates.toFloat()) {
+            gameParameters.minNumberOfCityStates = it.toInt()
+        }
+        slider.permanentTip = true
+        slider.isDisabled = locked
+        add(slider).padTop(10f).row()
+    }
+
+    private fun Table.addMaxCityStatesSlider() {
+        val maxCityStates = numberOfCityStates()
+        if (maxCityStates == 0) return
+
+        add("{Max number of City-States}:".toLabel()).left().expandX()
+        val slider = UncivSlider(0f, maxCityStates.toFloat(), 1f, initial = gameParameters.maxNumberOfCityStates.toFloat()) {
+            gameParameters.maxNumberOfCityStates = it.toInt()
         }
         slider.permanentTip = true
         slider.isDisabled = locked

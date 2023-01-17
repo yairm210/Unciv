@@ -263,7 +263,13 @@ object GameStarter {
 
         var addedCityStates = 0
         // Keep trying to add city states until we reach the target number.
-        while (addedCityStates < newGameParameters.numberOfCityStates) {
+        val numberOfCityStates = if (newGameParameters.randomCityStates) {
+            (newGameParameters.minNumberOfCityStates..newGameParameters.maxNumberOfCityStates).random()
+        } else {
+            newGameParameters.numberOfCityStates
+        }
+        println(numberOfCityStates)
+        while (addedCityStates < numberOfCityStates) {
             if (availableCityStatesNames.isEmpty()) // We ran out of city-states somehow
                 break
 

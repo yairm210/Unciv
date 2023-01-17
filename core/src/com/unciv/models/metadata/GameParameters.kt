@@ -20,7 +20,10 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
         for (i in 1..3) add(Player())
     }
     var numberOfCityStates = 6
+    var minNumberOfCityStates = 0
+    var maxNumberOfCityStates = 0
 
+    var randomCityStates = false
     var noCityRazing = false
     var noBarbarians = false
     var ragingBarbarians = false
