@@ -1,46 +1,12 @@
 ## 4.4.2
 
-Advanced game options hidden by default for faster initial game
-
-Fixed broken test, faster local tests
-
-Better docs for Trigger Conditions
-
-War -> war with major civ
-
-Trigger upon declaring friendship
-
-Added building trigger with city filter
-
-Added religion triggers
-
-Added trigger conditional for constructing building
-
-Added trigger conditional for capturing city
-
-Added trigger conditional for entering era
-
-Actually no
-
-Conditional triggers now work with timed uniques
-
-Added 'upon entering golden age' trigger
-
-Added 'upon adopting policy' trigger
-
-Added 'upon declaring war' trigger
-
 Added trigger conditions framework!
 
-old unique deprecation
+Advanced game options hidden by default for faster initial game
 
 Great prophets do not spawn to pantheons that cannot become religions
 
-Reverted Himeji Castle change - see 
-
-RTL language support in very first paragraph of translation docs, so as not to waste people's time
-
-Resolved  - Fixed Reliquary belief
+Fixed Reliquary belief
 
 ## 4.4.1
 
