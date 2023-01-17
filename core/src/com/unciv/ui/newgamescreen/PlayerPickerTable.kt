@@ -157,7 +157,7 @@ class PlayerPickerTable(
             var enteredMax = maxCivstextField.text
 
             if (enteredMin == "" || enteredMax == "") {
-                ToastPopup("Please enter values for maxmimum and minimum number of civilizations!", screen)
+                ToastPopup("Please enter values for maxmimum and minimum number of civilizations!".tr(), screen)
             }
 
             try {
@@ -169,7 +169,7 @@ class PlayerPickerTable(
                     enteredMax = "1"
                 randomValue = (enteredMax.toInt()..enteredMin.toInt()).random()
             } catch (nfe: NumberFormatException) {
-                ToastPopup("Please enter only integer values!", screen)
+                ToastPopup("Please enter only integer values!".tr(), screen)
             }
 
             for (i in 0 until randomValue) {
