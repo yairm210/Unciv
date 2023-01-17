@@ -404,8 +404,6 @@ class Ruleset {
                         })
                     }
         }
-
-        debug("Loading ruleset - %sms", System.currentTimeMillis() - gameBasicsStartTime)
     }
 
     /** Building costs are unique in that they are dependant on info in the technology part.

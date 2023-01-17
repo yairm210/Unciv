@@ -3,7 +3,6 @@ package com.unciv.uniques
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.MapUnitCombatant
-import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.testing.GdxTestRunner
 import org.junit.Assert
@@ -25,7 +24,7 @@ class TriggeredUniquesTests {
 
     @Test
     fun testConditionalTimedUniqueIsTriggerable() {
-        val unique = policy.getMatchingUniques(UniqueType.Strength, StateForConditionals.IgnoreConditionals).firstOrNull()
+        val unique = policy.uniqueObjects.first{ it.type == UniqueType.Strength }
         Assert.assertTrue("Unique with timed conditional must be triggerable", unique!!.isTriggerable)
     }
 

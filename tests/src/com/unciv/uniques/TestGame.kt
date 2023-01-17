@@ -45,7 +45,7 @@ class TestGame {
         UncivGame.Current.settings = GameSettings()
 
         // Create a new ruleset we can easily edit, and set the important variables of gameInfo
-        RulesetCache.loadRulesets()
+        RulesetCache.loadRulesets(noMods = true)
         ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!
         gameInfo.ruleSet = ruleset
         gameInfo.difficultyObject = ruleset.difficulties["Prince"]!!

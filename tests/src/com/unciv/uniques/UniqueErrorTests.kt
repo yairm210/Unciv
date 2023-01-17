@@ -25,7 +25,7 @@ class UniqueErrorTests {
 
     @Test
     fun testCodependantTechs() {
-        RulesetCache.loadRulesets()
+        RulesetCache.loadRulesets(noMods = true)
         val ruleset = RulesetCache.getVanillaRuleset()
 
         // Create a prerequisite loop

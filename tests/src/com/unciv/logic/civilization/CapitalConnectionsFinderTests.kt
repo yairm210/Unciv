@@ -49,7 +49,7 @@ class CapitalConnectionsFinderTests {
 
     @Before
     fun setup() {
-        RulesetCache.loadRulesets()
+        RulesetCache.loadRulesets(noMods = true)
         rules = RulesetCache.getVanillaRuleset()
         // Setup the GameInfo mock
         every { mockGameInfo.getCivilization(capture(slot)) } answers { civilizations.getValue(slot.captured) }

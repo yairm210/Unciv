@@ -24,7 +24,7 @@ class FreshWaterTests {
 
     @Before
     fun initTheWorld() {
-        RulesetCache.loadRulesets()
+        RulesetCache.loadRulesets(noMods = true)
         ruleSet = RulesetCache.getVanillaRuleset()
         map = MapSaver.mapFromSavedString(testingMap)
         map.setTransients(ruleSet, false)

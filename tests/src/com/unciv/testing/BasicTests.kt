@@ -17,6 +17,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
+import com.unciv.utils.Log
 import com.unciv.utils.debug
 import org.junit.Assert
 import org.junit.Before
@@ -31,7 +32,8 @@ class BasicTests {
     var ruleset = Ruleset()
     @Before
     fun loadTranslations() {
-        RulesetCache.loadRulesets()
+        Log.shouldLog()
+        RulesetCache.loadRulesets(noMods = true)
         ruleset = RulesetCache.getVanillaRuleset()
     }
 

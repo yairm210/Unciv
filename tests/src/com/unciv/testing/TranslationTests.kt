@@ -29,7 +29,7 @@ class TranslationTests {
             override fun write(b: Int) {}
         }))
         translations.readAllLanguagesTranslation()
-        RulesetCache.loadRulesets()
+        RulesetCache.loadRulesets(noMods = true)
         ruleset = RulesetCache.getVanillaRuleset()
         System.setOut(outputChannel)
     }

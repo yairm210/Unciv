@@ -22,7 +22,7 @@ class VisibilityTests {
 
     @Before
     fun initTheWorld() {
-        RulesetCache.loadRulesets()
+        RulesetCache.loadRulesets(noMods = true)
         ruleSet = RulesetCache.getVanillaRuleset()
         civInfo.gameInfo = GameInfo()
         civInfo.gameInfo.ruleSet = ruleSet
