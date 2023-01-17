@@ -15,10 +15,12 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
 
     @Deprecated("Since 4.1.11")
     var gameSpeed = ""
+    var randomNumberOfPlayers = false
     var players = ArrayList<Player>().apply {
         add(Player().apply { playerType = PlayerType.Human })
         for (i in 1..3) add(Player())
     }
+    var randomNumberOfCityStates = false
     var numberOfCityStates = 6
 
     var noCityRazing = false

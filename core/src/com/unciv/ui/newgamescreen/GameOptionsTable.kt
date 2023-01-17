@@ -60,6 +60,8 @@ class GameOptionsTable(
                     add(turnSlider).padTop(10f).row()
                 addCityStatesSlider()
             }).colspan(2).fillX().row()
+            addRandomCityStatesCheckbox()
+            addRandomPlayersCheckbox()
         }).row()
         addVictoryTypeCheckboxes()
 
@@ -140,6 +142,14 @@ class GameOptionsTable(
     private fun Table.addNoStartBiasCheckbox() =
             addCheckbox("Disable starting bias", gameParameters.noStartBias)
             { gameParameters.noStartBias = it }
+
+    private fun Table.addRandomPlayersCheckbox() =
+            addCheckbox("Random number of Players", gameParameters.noStartBias)
+            { gameParameters.randomNumberOfPlayers = it }
+
+    private fun Table.addRandomCityStatesCheckbox() =
+            addCheckbox("Random number of City-States", gameParameters.noStartBias)
+            { gameParameters.randomNumberOfCityStates = it }
 
     private fun Table.addCityStatesSlider() {
         val maxCityStates = numberOfCityStates()

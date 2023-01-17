@@ -98,6 +98,34 @@ class NewGameScreen(
         rightSideButton.enable()
         rightSideButton.setText("Start game!".tr())
         rightSideButton.onClick {
+            if (gameSetupInfo.gameParameters.randomNumberOfCityStates) {
+                val half = gameSetupInfo.gameParameters.numberOfCityStates / 2
+                val otherHalf = gameSetupInfo.gameParameters.numberOfCityStates - half // This is to handle odd numbers
+                gameSetupInfo.gameParameters.numberOfCityStates = half + Random().nextInt(otherHalf)
+            }
+
+            if (gameSetupInfo.gameParameters.randomNumberOfPlayers) {
+                val half = gameSetupInfo.gameParameters.players.size / 2
+                val otherHalf = gameSetupInfo.gameParameters.players.size - half // This is to handle odd numbers
+                var playerCount = half + Random().nextInt(otherHalf)
+                val humanPlayerCount = gameSetupInfo.gameParameters.players.filter {
+                    it.playerType === PlayerType.Human
+                }.count()
+                val spectatorCount = gameSetupInfo.gameParameters.players.filter {
+                    it.chosenCiv === Constants.spectator
+                }.count()
+                playerCount = playerCount.coerceAtLeast(humanPlayerCount + spectatorCount)
+                val numberPlayersToRemove = gameSetupInfo.gameParameters.players.size - playerCount
+
+                if (numberPlayersToRemove > 0) {
+                    val playersToRemove = gameSetupInfo.gameParameters.players.filter {
+                        it.playerType === PlayerType.AI
+                    }.shuffled().subList(0, numberPlayersToRemove)
+
+                    gameSetupInfo.gameParameters.players.removeAll(playersToRemove)
+                }
+            }
+
             if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
                 if (!checkConnectionToMultiplayerServer()) {
                     val noInternetConnectionPopup = Popup(this)
