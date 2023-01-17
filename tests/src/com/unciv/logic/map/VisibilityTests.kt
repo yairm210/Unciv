@@ -156,11 +156,12 @@ class VisibilityTests {
 
     @Test
     fun cannotSeeMountainOverHillForest() {
-        val grassland = addTile("Grassland", Vector2(0f,0f))
+        val grassland = addTile(listOf("Grassland", "Hill"), Vector2(0f,0f))
+        addTile(listOf("Grassland", "Hill"), Vector2(0f,0f))
         addTile(listOf("Grassland", "Hill", "Forest"), Vector2(1f,0f))
-        val hill = addTile(listOf("Mountain"), Vector2(2f, 0f))
-        val viewableTiles = grassland.getViewableTilesList(2)
-        assert(!viewableTiles.contains(hill))
+        val mountain = addTile(listOf("Mountain"), Vector2(2f, 0f))
+        val viewableTiles = grassland.getViewableTilesList(4)
+        assert(!viewableTiles.contains(mountain))
     }
 
 
