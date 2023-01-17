@@ -49,6 +49,8 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
         parameters.difficulty = difficulty
         parameters.speed = speed
         parameters.players = ArrayList(players)
+        parameters.randomNumberOfPlayers = randomNumberOfPlayers
+        parameters.randomNumberOfCityStates = randomNumberOfCityStates
         parameters.numberOfCityStates = numberOfCityStates
         parameters.noBarbarians = noBarbarians
         parameters.ragingBarbarians = ragingBarbarians
@@ -70,6 +72,8 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
             yield("${players.count { it.playerType == PlayerType.Human }} ${PlayerType.Human}")
             yield("${players.count { it.playerType == PlayerType.AI }} ${PlayerType.AI}")
             yield("$numberOfCityStates CS")
+            if (randomNumberOfPlayers) yield("Random number of Players")
+            if (randomNumberOfCityStates) yield("Random number of City-States")
             if (isOnlineMultiplayer) yield("Online Multiplayer")
             if (noBarbarians) yield("No barbs")
             if (ragingBarbarians) yield("Raging barbs")
