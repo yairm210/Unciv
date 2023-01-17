@@ -24,9 +24,11 @@ import com.unciv.ui.multiplayer.FriendPickerList
 import com.unciv.ui.pickerscreens.PickerPane
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.Popup
+import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.extensions.*
 import java.util.*
+import kotlin.NoSuchElementException
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 /**
@@ -82,6 +84,11 @@ class PlayerPickerTable(
         for (player in gameParameters.players) {
             playerListTable.add(getPlayerTable(player)).width(civBlocksWidth).padBottom(20f).row()
         }
+
+        if (gameParameters.randomMajorCivs) {
+            playerListTable.add(getRandomCivsTable()).width(civBlocksWidth).padBottom(20f).row()
+        }
+
         if (!locked && gameParameters.players.size < gameBasics.nations.values.count { it.isMajorCiv() }) {
             val addPlayerButton = "+".toLabel(Color.BLACK, 30)
                 .apply { this.setAlignment(Align.center) }
@@ -124,6 +131,53 @@ class PlayerPickerTable(
         if (gameParameters.players.any { it.chosenCiv == desiredCiv }) return
         // Do auto-select, silently no-op if no suitable slot (human with 'random' choice)
         gameParameters.players.firstOrNull { it.chosenCiv == Constants.random && it.playerType == PlayerType.Human }?.chosenCiv = desiredCiv
+    }
+
+    private fun getRandomCivsTable(): Table {
+        val randomCivsTable = Table()
+        randomCivsTable.pad(5f)
+        randomCivsTable.background = BaseScreen.skinStrings.getUiBackground(
+            "NewGameScreen/PlayerPickerTable/PlayerTable",
+            tintColor = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.8f)
+        )
+
+        randomCivsTable.add("Random civilizations".toLabel()).row()
+
+        val minCivstextField = UncivTextField.create("Minimum number of civilizations")
+        val maxCivstextField = UncivTextField.create("Maximum number of civilizations")
+        val textFieldsTable = Table()
+        textFieldsTable.add(minCivstextField).fillX().pad(5f).padRight(10f)
+        textFieldsTable.add(maxCivstextField).fillX().pad(5f).row()
+
+        val setValuesButton = "Set values".toTextButton()
+        setValuesButton.onClick {
+            val screen = UncivGame.Current.screen ?: return@onClick
+            var randomValue = 0
+            val enteredMin = minCivstextField.text
+            val enteredMax = maxCivstextField.text
+
+            if (enteredMin == "" || enteredMax == "") {
+                ToastPopup("Please enter values for maxmimum and minimum number of civilizations!", screen)
+            }
+            try {
+                randomValue = (enteredMin.toInt()..enteredMax.toInt()).random()
+            } catch (nfe: NumberFormatException) {
+                ToastPopup("Please enter only integer values!", screen)
+            } catch (nsee: NoSuchElementException) { // in case the user enters the numbers backwards
+                randomValue = (enteredMax.toInt()..enteredMin.toInt()).random()
+            }
+            for (i in 0 until randomValue) {
+                val player = Player()
+                gameParameters.randomPlayers.add(player)
+            }
+
+            // update the start game button if there are 2 or more players
+            (previousScreen as? PickerScreen)?.setRightSideButtonEnabled((gameParameters.randomPlayers.size + gameParameters.players.size) > 2)
+        }
+        randomCivsTable.add(textFieldsTable).row()
+        randomCivsTable.add(setValuesButton)
+
+        return randomCivsTable
     }
 
     /**

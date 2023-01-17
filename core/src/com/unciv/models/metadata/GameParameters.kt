@@ -19,8 +19,10 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
         add(Player().apply { playerType = PlayerType.Human })
         for (i in 1..3) add(Player())
     }
+    var randomPlayers = ArrayList<Player>()
     var numberOfCityStates = 6
 
+    var randomMajorCivs = false
     var noCityRazing = false
     var noBarbarians = false
     var ragingBarbarians = false

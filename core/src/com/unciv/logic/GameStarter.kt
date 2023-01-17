@@ -250,6 +250,16 @@ object GameStarter {
             gameInfo.civilizations.add(playerCiv)
         }
 
+        for (randomPlayer in newGameParameters.randomPlayers) {
+            val nationName = availableCivNames.pop()
+            availableCivNames.remove(nationName)
+
+            val randomPlayerCiv = CivilizationInfo(nationName)
+            for (tech in startingTechs)
+                randomPlayerCiv.tech.techsResearched.add(tech.name) // can't be .addTechnology because the civInfo isn't assigned yet
+            gameInfo.civilizations.add(randomPlayerCiv)
+        }
+
         val availableCityStatesNames = Stack<String>()
         // since we shuffle and then order by, we end up with all the City-States with starting tiles first in a random order,
         //   and then all the other City-States in a random order! Because the sortedBy function is stable!

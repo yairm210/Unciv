@@ -65,6 +65,7 @@ class GameOptionsTable(
 
 
         val checkboxTable = Table().apply { defaults().left().pad(2.5f) }
+        checkboxTable.addRandomMajorCivsCheckbox()
         checkboxTable.addNoCityRazingCheckbox()
         checkboxTable.addNoBarbariansCheckbox()
         checkboxTable.addRagingBarbariansCheckbox()
@@ -89,6 +90,12 @@ class GameOptionsTable(
         checkbox.isDisabled = lockable && locked
         add(checkbox).colspan(2).row()
     }
+
+    private fun Table.addRandomMajorCivsCheckbox() =
+            addCheckbox("Random major civs", gameParameters.randomMajorCivs) {
+                gameParameters.randomMajorCivs = it
+                updatePlayerPickerTable.invoke("")
+            }
 
     private fun Table.addNoCityRazingCheckbox() =
             addCheckbox("No City Razing", gameParameters.noCityRazing)
