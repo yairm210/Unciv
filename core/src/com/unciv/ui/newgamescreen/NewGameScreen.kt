@@ -115,7 +115,7 @@ class NewGameScreen(
                     it.chosenCiv === Constants.spectator
                 }.count()
                 playerCount = playerCount.coerceAtLeast(humanPlayerCount + spectatorCount)
-                val numberPlayersToRemove = gameSetupInfo.gameParameters.players.size - playerCount
+                val numberPlayersToRemove = gameSetupInfo.gameParameters.players.size - playerCount - 1 // Make sure there is 1 AI
 
                 if (numberPlayersToRemove > 0) {
                     val playersToRemove = gameSetupInfo.gameParameters.players.filter {
