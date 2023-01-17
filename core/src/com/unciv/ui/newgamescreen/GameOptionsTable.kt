@@ -144,11 +144,11 @@ class GameOptionsTable(
             { gameParameters.noStartBias = it }
 
     private fun Table.addRandomPlayersCheckbox() =
-            addCheckbox("Random number of Players", gameParameters.noStartBias)
+            addCheckbox("Random number of Players", gameParameters.randomNumberOfPlayers)
             { gameParameters.randomNumberOfPlayers = it }
 
     private fun Table.addRandomCityStatesCheckbox() =
-            addCheckbox("Random number of City-States", gameParameters.noStartBias)
+            addCheckbox("Random number of City-States", gameParameters.randomNumberOfCityStates)
             { gameParameters.randomNumberOfCityStates = it }
 
     private fun Table.addCityStatesSlider() {
