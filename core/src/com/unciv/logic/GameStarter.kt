@@ -268,7 +268,6 @@ object GameStarter {
         } else {
             newGameParameters.numberOfCityStates
         }
-        println(numberOfCityStates)
         while (addedCityStates < numberOfCityStates) {
             if (availableCityStatesNames.isEmpty()) // We ran out of city-states somehow
                 break
