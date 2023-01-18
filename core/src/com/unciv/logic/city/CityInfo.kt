@@ -22,7 +22,6 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import java.util.*
-import kotlin.math.ceil
 import kotlin.math.roundToInt
 
 enum class CityFlags {
@@ -252,21 +251,6 @@ class CityInfo : IsPartOfGameInfoSerialization {
 
     fun foodForNextTurn() = cityStats.currentCityStats.food.roundToInt()
 
-    /** Take null to mean infinity. */
-    fun getNumTurnsToNewPopulation(): Int? {
-        if (!isGrowing()) return null
-        val roundedFoodPerTurn = foodForNextTurn().toFloat()
-        val remainingFood = population.getFoodToNextPopulation() - population.foodStored
-        var turnsToGrowth = ceil(remainingFood / roundedFoodPerTurn).toInt()
-        if (turnsToGrowth < 1) turnsToGrowth = 1
-        return turnsToGrowth
-    }
-
-    /** Take null to mean infinity. */
-    fun getNumTurnsToStarvation(): Int? {
-        if (!isStarving()) return null
-        return population.foodStored / -foodForNextTurn() + 1
-    }
 
     fun containsBuildingUnique(uniqueType: UniqueType) =
         cityConstructions.getBuiltBuildings().flatMap { it.uniqueObjects }.any { it.isOfType(uniqueType) }

@@ -403,11 +403,11 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
 
             val turnLabelText = when {
                 city.isGrowing() -> {
-                    val turnsToGrowth = city.getNumTurnsToNewPopulation()
+                    val turnsToGrowth = city.population.getNumTurnsToNewPopulation()
                     if (turnsToGrowth != null && turnsToGrowth < 100) turnsToGrowth.toString() else "∞"
                 }
                 city.isStarving() -> {
-                    val turnsToStarvation = city.getNumTurnsToStarvation()
+                    val turnsToStarvation = city.population.getNumTurnsToStarvation()
                     if (turnsToStarvation != null && turnsToStarvation < 100) turnsToStarvation.toString() else "∞"
                 }
                 else -> "∞"

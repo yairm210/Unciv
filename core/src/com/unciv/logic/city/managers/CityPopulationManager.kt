@@ -12,6 +12,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.ui.utils.extensions.toPercent
 import com.unciv.ui.utils.extensions.withItem
 import com.unciv.ui.utils.extensions.withoutItem
+import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.pow
 
@@ -57,6 +58,24 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
             foodRequired *= cityInfo.civInfo.gameInfo.getDifficulty().aiCityGrowthModifier
         return foodRequired.toInt()
     }
+
+    /** Take null to mean infinity. */
+    fun getNumTurnsToStarvation(): Int? {
+        if (!cityInfo.isStarving()) return null
+        return foodStored / -cityInfo.foodForNextTurn() + 1
+    }
+
+
+    /** Take null to mean infinity. */
+    fun getNumTurnsToNewPopulation(): Int? {
+        if (!cityInfo.isGrowing()) return null
+        val roundedFoodPerTurn = cityInfo.foodForNextTurn().toFloat()
+        val remainingFood = getFoodToNextPopulation() - foodStored
+        var turnsToGrowth = ceil(remainingFood / roundedFoodPerTurn).toInt()
+        if (turnsToGrowth < 1) turnsToGrowth = 1
+        return turnsToGrowth
+    }
+
 
     //endregion
 
