@@ -11,10 +11,9 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameStarter
 import com.unciv.logic.IdChecker
-import com.unciv.logic.MapSaver
+import com.unciv.logic.files.MapSaver
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapGeneratedMainType
-import com.unciv.logic.map.MapType
 import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.models.metadata.GameSetupInfo
@@ -25,7 +24,6 @@ import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ExpanderTab
 import com.unciv.ui.utils.RecreateOnResize
@@ -37,7 +35,6 @@ import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.pad
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
-import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread

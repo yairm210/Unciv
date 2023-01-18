@@ -1,6 +1,9 @@
-package com.unciv.models.ruleset
+package com.unciv.models.ruleset.tech
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.models.ruleset.IRulesetObject
+import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType

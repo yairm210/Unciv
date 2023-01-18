@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
-import com.unciv.models.ruleset.Nation
+import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.ui.civilopedia.FormattedLine.IconDisplay
 import com.unciv.ui.civilopedia.MarkupRenderer

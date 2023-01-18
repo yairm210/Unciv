@@ -1,4 +1,4 @@
-package com.unciv.models.ruleset
+package com.unciv.models.ruleset.nation
 
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueMap

@@ -2,8 +2,8 @@ package com.unciv.ui.options
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
-import com.unciv.logic.UncivFiles
-import com.unciv.logic.MapSaver
+import com.unciv.logic.files.UncivFiles
+import com.unciv.logic.files.MapSaver
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.ui.utils.BaseScreen

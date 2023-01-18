@@ -1,7 +1,7 @@
-package com.unciv.logic
+package com.unciv.logic.files
 
-import com.unciv.logic.UncivFiles.CustomLoadResult
-import com.unciv.logic.UncivFiles.CustomSaveResult
+import com.unciv.logic.files.UncivFiles.CustomLoadResult
+import com.unciv.logic.files.UncivFiles.CustomSaveResult
 import com.unciv.utils.concurrency.Concurrency
 import java.io.InputStream
 import java.io.OutputStream

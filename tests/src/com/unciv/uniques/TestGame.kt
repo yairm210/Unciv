@@ -18,7 +18,7 @@ import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IRulesetObject
-import com.unciv.models.ruleset.Nation
+import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache

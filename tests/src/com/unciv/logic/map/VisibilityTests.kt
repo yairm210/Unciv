@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.*
+import com.unciv.models.ruleset.nation.Nation
 import com.unciv.testing.GdxTestRunner
 import org.junit.Before
 import org.junit.Test

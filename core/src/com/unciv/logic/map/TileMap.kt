@@ -3,12 +3,11 @@ package com.unciv.logic.map
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.GameInfo
-import com.unciv.logic.HexMath
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.mapgenerator.MapLandmassGenerator
 import com.unciv.models.metadata.Player
-import com.unciv.models.ruleset.Nation
+import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.UniqueType

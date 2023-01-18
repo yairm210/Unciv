@@ -35,11 +35,11 @@ import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeRequest
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.CityStateType
-import com.unciv.models.ruleset.Difficulty
-import com.unciv.models.ruleset.Era
+import com.unciv.models.ruleset.nation.CityStateType
+import com.unciv.models.ruleset.nation.Difficulty
+import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.ModOptionsConstants
-import com.unciv.models.ruleset.Nation
+import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.tile.ResourceSupplyList

@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.UncivFiles
+import com.unciv.logic.files.UncivFiles
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter

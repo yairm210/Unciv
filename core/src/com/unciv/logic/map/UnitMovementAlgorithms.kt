@@ -2,7 +2,7 @@ package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
-import com.unciv.logic.HexMath.getDistance
+import com.unciv.logic.map.HexMath.getDistance
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.models.ruleset.unique.UniqueType

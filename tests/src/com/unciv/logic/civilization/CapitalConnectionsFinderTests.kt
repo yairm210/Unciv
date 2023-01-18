@@ -9,7 +9,7 @@ import com.unciv.logic.civilization.transients.CapitalConnectionsFinder
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
-import com.unciv.models.ruleset.Nation
+import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.TerrainType

@@ -9,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.unciv.UncivGame
-import com.unciv.logic.HexMath
+import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.ui.map.TileGroupMap
@@ -17,7 +17,6 @@ import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ZoomableScrollPane
-import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.onClick
 
 

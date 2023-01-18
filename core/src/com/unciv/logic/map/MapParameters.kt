@@ -1,8 +1,8 @@
 package com.unciv.logic.map
 
-import com.unciv.logic.HexMath.getEquivalentHexagonalRadius
-import com.unciv.logic.HexMath.getEquivalentRectangularSize
-import com.unciv.logic.HexMath.getNumberOfTilesInHexagon
+import com.unciv.logic.map.HexMath.getEquivalentHexagonalRadius
+import com.unciv.logic.map.HexMath.getEquivalentRectangularSize
+import com.unciv.logic.map.HexMath.getNumberOfTilesInHexagon
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.models.metadata.BaseRuleset
 

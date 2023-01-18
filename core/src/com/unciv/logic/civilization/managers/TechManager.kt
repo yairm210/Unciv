@@ -13,7 +13,7 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.TechAction
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.RoadStatus
-import com.unciv.models.ruleset.Era
+import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTarget

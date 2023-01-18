@@ -1,4 +1,4 @@
-package com.unciv.logic
+package com.unciv.logic.files
 
 import com.badlogic.gdx.Files
 import com.badlogic.gdx.Gdx
@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.SerializationException
 import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
+import com.unciv.logic.*
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.doMigrations
 import com.unciv.models.metadata.isMigrationNecessary
@@ -86,7 +87,9 @@ class UncivFiles(
 
     fun getSaves(autoSaves: Boolean = true): Sequence<FileHandle> {
         val saves = getSaves(SAVE_FILES_FOLDER)
-        val filteredSaves = if (autoSaves) { saves } else { saves.filter { !it.name().startsWith(AUTOSAVE_FILE_NAME) }}
+        val filteredSaves = if (autoSaves) { saves } else { saves.filter { !it.name().startsWith(
+            AUTOSAVE_FILE_NAME
+        ) }}
         return filteredSaves
     }
 
@@ -429,7 +432,9 @@ class UncivFiles(
             return loadGameByName(AUTOSAVE_FILE_NAME)
         } catch (ex: Exception) {
             // silent fail if we can't read the autosave for any reason - try to load the last autosave by turn number first
-            val autosaves = getSaves().filter { it.name() != AUTOSAVE_FILE_NAME && it.name().startsWith(AUTOSAVE_FILE_NAME) }
+            val autosaves = getSaves().filter { it.name() != AUTOSAVE_FILE_NAME && it.name().startsWith(
+                AUTOSAVE_FILE_NAME
+            ) }
             return loadGameFromFile(autosaves.maxByOrNull { it.lastModified() }!!)
         }
     }

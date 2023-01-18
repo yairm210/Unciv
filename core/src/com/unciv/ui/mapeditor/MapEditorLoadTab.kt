@@ -5,7 +5,7 @@ import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
-import com.unciv.logic.MapSaver
+import com.unciv.logic.files.MapSaver
 import com.unciv.logic.UncivShowableException
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr

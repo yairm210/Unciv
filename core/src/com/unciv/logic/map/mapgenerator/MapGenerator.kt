@@ -2,7 +2,7 @@ package com.unciv.logic.map.mapgenerator
 
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.HexMath
+import com.unciv.logic.map.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapShape

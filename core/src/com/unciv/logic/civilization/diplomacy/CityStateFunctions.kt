@@ -12,7 +12,7 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.Proximity
-import com.unciv.models.ruleset.CityStateType
+import com.unciv.models.ruleset.nation.CityStateType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.unique.StateForConditionals

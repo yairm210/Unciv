@@ -1,6 +1,6 @@
 package com.unciv
 
-import com.unciv.logic.CustomFileLocationHelper
+import com.unciv.logic.files.CustomFileLocationHelper
 import com.unciv.ui.crashhandling.CrashReportSysInfo
 import com.unciv.ui.utils.AudioExceptionHelper
 import com.unciv.ui.utils.GeneralPlatformSpecificHelpers

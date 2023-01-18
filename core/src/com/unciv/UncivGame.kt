@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
-import com.unciv.logic.UncivFiles
+import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.multiplayer.OnlineMultiplayer

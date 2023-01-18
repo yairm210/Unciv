@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.unciv.UncivGame
 import com.unciv.json.json
 import com.unciv.logic.GameInfo
-import com.unciv.logic.UncivFiles
+import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.GameStarter
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapParameters

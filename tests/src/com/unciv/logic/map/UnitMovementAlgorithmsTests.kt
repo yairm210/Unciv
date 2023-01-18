@@ -8,6 +8,8 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.models.ruleset.*
+import com.unciv.models.ruleset.nation.Difficulty
+import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.testing.GdxTestRunner
 import org.junit.Assert

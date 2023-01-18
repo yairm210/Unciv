@@ -18,11 +18,12 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.managers.TechManager
+import com.unciv.logic.map.CityDistanceData
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.Religion
 import com.unciv.models.metadata.GameParameters
-import com.unciv.models.ruleset.Difficulty
+import com.unciv.models.ruleset.nation.Difficulty
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache

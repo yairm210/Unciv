@@ -1,7 +1,7 @@
 package com.unciv.app.desktop
 
 import com.badlogic.gdx.Gdx
-import com.unciv.logic.CustomFileLocationHelper
+import com.unciv.logic.files.CustomFileLocationHelper
 import java.awt.Component
 import java.awt.EventQueue
 import java.awt.event.WindowEvent

@@ -3,7 +3,7 @@ package com.unciv.logic.civilization.diplomacy
 import com.unciv.logic.GameInfo
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.models.ruleset.Nation
+import com.unciv.models.ruleset.nation.Nation
 import com.unciv.testing.GdxTestRunner
 import io.mockk.every
 import io.mockk.mockk

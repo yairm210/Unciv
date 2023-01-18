@@ -1,4 +1,4 @@
-package com.unciv.models
+package com.unciv.logic.automation.unit
 
 import com.unciv.logic.map.TileInfo
 

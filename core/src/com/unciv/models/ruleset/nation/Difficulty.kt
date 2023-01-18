@@ -1,9 +1,10 @@
-package com.unciv.models.ruleset
+package com.unciv.models.ruleset.nation
 
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.INamed
-import com.unciv.ui.civilopedia.ICivilopediaText
 import com.unciv.ui.civilopedia.FormattedLine
+import com.unciv.ui.civilopedia.ICivilopediaText
 import com.unciv.ui.utils.Fonts
 
 class Difficulty: INamed, ICivilopediaText {
@@ -88,7 +89,7 @@ class Difficulty: INamed, ICivilopediaText {
         if (aiMajorCivBonusStartingUnits.isNotEmpty()) {
             lines += FormattedLine()
             lines += FormattedLine("{Major AI civilization bonus starting units}:", indent = 1)
-            aiMajorCivBonusStartingUnits.groupBy { it }.map { 
+            aiMajorCivBonusStartingUnits.groupBy { it }.map {
                 it.key to it.value.size
             }.forEach {
                 lines += FormattedLine(Unique(if (it.second == 1) "[${it.first}]" else "${it.second} [${it.first}]"), indent = 2)

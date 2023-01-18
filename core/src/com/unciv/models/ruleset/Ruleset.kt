@@ -11,6 +11,10 @@ import com.unciv.models.Counter
 import com.unciv.models.ModConstants
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameParameters
+import com.unciv.models.ruleset.nation.CityStateType
+import com.unciv.models.ruleset.nation.Difficulty
+import com.unciv.models.ruleset.nation.Nation
+import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.Terrain

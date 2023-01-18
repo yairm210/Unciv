@@ -9,7 +9,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.Counter
-import com.unciv.models.ruleset.Nation
+import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr

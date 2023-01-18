@@ -1,4 +1,4 @@
-package com.unciv.logic
+package com.unciv.logic.files
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
