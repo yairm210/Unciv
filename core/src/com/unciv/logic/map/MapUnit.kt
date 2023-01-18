@@ -478,7 +478,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun getMaxMovementForAirUnits(): Int {
-        if (hasUnique(UniqueType.CannotMove)) return getRange()  // also used for marking attack range
         return getRange() * 2
     }
 

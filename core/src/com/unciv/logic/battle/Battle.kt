@@ -428,6 +428,7 @@ object Battle {
     private fun postBattleMoveToAttackedTile(attacker: ICombatant, defender: ICombatant, attackedTile: TileInfo) {
         if (!attacker.isMelee()) return
         if (!defender.isDefeated() && defender.getCivInfo() != attacker.getCivInfo()) return
+        if (attacker is MapUnitCombatant && attacker.hasUnique(UniqueType.CannotMove)) return
 
         // This is so that if we attack e.g. a barbarian in enemy territory that we can't enter, we won't enter it
         if ((attacker as MapUnitCombatant).unit.movement.canMoveTo(attackedTile)) {
@@ -1015,6 +1016,7 @@ object Battle {
         if (attacker !is MapUnitCombatant) return false         // allow simple access to unit property
         if (defender !is MapUnitCombatant) return false
         if (defender.unit.isEmbarked()) return false
+        if (defender.hasUnique(UniqueType.CannotMove)) return false
         // Promotions have no effect as per what I could find in available documentation
         val attackBaseUnit = attacker.unit.baseUnit
         val defendBaseUnit = defender.unit.baseUnit
