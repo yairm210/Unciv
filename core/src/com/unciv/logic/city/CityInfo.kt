@@ -2,7 +2,6 @@ package com.unciv.logic.city
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.IsPartOfGameInfoSerialization
-import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.managers.CityEspionageManager
 import com.unciv.logic.city.managers.CityExpansionManager
 import com.unciv.logic.city.managers.CityInfoConquestFunctions
@@ -24,7 +23,6 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import java.util.*
 import kotlin.math.ceil
-import kotlin.math.pow
 import kotlin.math.roundToInt
 
 enum class CityFlags {
@@ -141,6 +139,7 @@ class CityInfo : IsPartOfGameInfoSerialization {
 
     fun isCapital(): Boolean = cityConstructions.getBuiltBuildings().any { it.hasUnique(UniqueType.IndicatesCapital) }
     fun isCoastal(): Boolean = centerTileInfo.isCoastalTile()
+
     fun capitalCityIndicator(): String {
         val indicatorBuildings = getRuleset().buildings.values
             .asSequence()
@@ -153,7 +152,6 @@ class CityInfo : IsPartOfGameInfoSerialization {
     fun isConnectedToCapital(connectionTypePredicate: (Set<String>) -> Boolean = { true }): Boolean {
         val mediumTypes = civInfo.citiesConnectedToCapitalToMediums[this] ?: return false
         return connectionTypePredicate(mediumTypes)
-
     }
 
     fun hasFlag(flag: CityFlags) = flagsCountdown.containsKey(flag.name)
@@ -162,10 +160,6 @@ class CityInfo : IsPartOfGameInfoSerialization {
     fun isWeLoveTheKingDayActive() = hasFlag(CityFlags.WeLoveTheKing)
     fun isInResistance() = hasFlag(CityFlags.Resistance)
 
-    /** @return the number of tiles 4 (un-modded) out from this city that could hold a city, ie how lonely this city is */
-    fun getFrontierScore() = getCenterTile()
-        .getTilesAtDistance(civInfo.gameInfo.ruleSet.modOptions.constants.minimalCityDistance + 1)
-        .count { it.canBeSettled() && (it.getOwner() == null || it.getOwner() == civInfo ) }
 
     fun getRuleset() = civInfo.gameInfo.ruleSet
 
@@ -371,26 +365,6 @@ class CityInfo : IsPartOfGameInfoSerialization {
         if (isCapital() && !justCaptured && !allowRazeCapital) return false
 
         return true
-    }
-
-    fun getForceEvaluation(): Int {
-        // Same as for units, so higher values count more
-        return CityCombatant(this).getDefendingStrength().toFloat().pow(1.5f).toInt()
-    }
-
-    fun getNeighbouringCivs(): Set<String> {
-        val tilesList: HashSet<TileInfo> = getTiles().toHashSet()
-        val cityPositionList: ArrayList<TileInfo> = arrayListOf()
-
-        for (tiles in tilesList)
-            for (tile in tiles.neighbors)
-                if (!tilesList.contains(tile))
-                    cityPositionList.add(tile)
-
-        return cityPositionList
-            .asSequence()
-            .mapNotNull { it.getOwner()?.civName }
-            .toSet()
     }
 
     //endregion

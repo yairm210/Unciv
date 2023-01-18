@@ -2,6 +2,7 @@ package com.unciv.logic.civilization.diplomacy
 
 import com.unciv.Constants
 import com.unciv.logic.automation.civilization.NextTurnAutomation
+import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivFlags
 import com.unciv.logic.civilization.CivilizationInfo
@@ -390,7 +391,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                     it.militaryUnit!!.getForceEvaluation()
                 else 0
             }
-        val csForce = civInfo.getCapital()!!.getForceEvaluation() + inRangeTiles
+        val csForce = CityCombatant(civInfo.getCapital()!!).getDefendingStrength().toFloat().pow(1.5f).toInt() + inRangeTiles
             .sumOf { if (it.militaryUnit?.civInfo == civInfo)
                     it.militaryUnit!!.getForceEvaluation()
                 else 0

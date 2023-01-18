@@ -6,6 +6,7 @@ import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.UniqueType
@@ -149,8 +150,9 @@ class TradeEvaluation {
             }
         }
     }
+
     private fun surroundedByOurCities(city: CityInfo, civInfo: CivilizationInfo): Int {
-        val borderingCivs: Set<String> = city.getNeighbouringCivs()
+        val borderingCivs: Set<String> = getNeighbouringCivs(city)
         if (borderingCivs.size == 1 && borderingCivs.contains(civInfo.civName)) {
             return 10 * civInfo.getEraNumber() // if the city is surrounded only by trading civ
         }
@@ -158,6 +160,22 @@ class TradeEvaluation {
             return 2 * civInfo.getEraNumber() // if the city has a border with trading civ
         return 0
     }
+
+    private fun getNeighbouringCivs(city:CityInfo): Set<String> {
+        val tilesList: HashSet<TileInfo> = city.getTiles().toHashSet()
+        val cityPositionList: ArrayList<TileInfo> = arrayListOf()
+
+        for (tiles in tilesList)
+            for (tile in tiles.neighbors)
+                if (!tilesList.contains(tile))
+                    cityPositionList.add(tile)
+
+        return cityPositionList
+            .asSequence()
+            .mapNotNull { it.getOwner()?.civName }
+            .toSet()
+    }
+
 
     fun evaluateSellCost(offer: TradeOffer, civInfo: CivilizationInfo, tradePartner: CivilizationInfo): Int {
         when (offer.type) {
