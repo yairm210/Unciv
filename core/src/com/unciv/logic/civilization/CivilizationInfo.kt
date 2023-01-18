@@ -30,7 +30,6 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.UnitMovementAlgorithms
 import com.unciv.logic.trade.TradeRequest
-import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Victory
@@ -952,12 +951,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
             Stat.Faith -> religionManager.storedFaith
             else -> 0
         }
-    }
-
-    fun getGreatPersonPointsForNextTurn(): Counter<String> {
-        val greatPersonPoints = Counter<String>()
-        for (city in cities) greatPersonPoints.add(city.getGreatPersonPoints())
-        return greatPersonPoints
     }
 
     /**

@@ -249,8 +249,8 @@ class TurnManager(val civInfo: CivilizationInfo) {
 
         civInfo.espionageManager.endTurn()
 
-        if (civInfo.isMajorCiv())
-            civInfo.greatPeople.addGreatPersonPoints(civInfo.getGreatPersonPointsForNextTurn()) // City-states don't get great people!
+        if (civInfo.isMajorCiv()) // City-states don't get great people!
+            civInfo.greatPeople.addGreatPersonPoints()
 
         // To handle tile's owner issue (#8246), we need to run being razed city first.
         for (city in sequence {

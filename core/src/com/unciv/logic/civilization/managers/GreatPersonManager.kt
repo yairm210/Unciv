@@ -59,8 +59,8 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
         return null
     }
 
-    fun addGreatPersonPoints(greatPersonPointsForTurn: Counter<String>) {
-        greatPersonPointsCounter.add(greatPersonPointsForTurn)
+    fun addGreatPersonPoints() {
+        greatPersonPointsCounter.add(getGreatPersonPointsForNextTurn())
     }
 
 
@@ -71,6 +71,12 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
         return if (!civInfo.gameInfo.isReligionEnabled())
             greatPeople.filter { !it.hasUnique(UniqueType.HiddenWithoutReligion) }.toHashSet()
         else greatPeople.toHashSet()
+    }
+
+    fun getGreatPersonPointsForNextTurn(): Counter<String> {
+        val greatPersonPoints = Counter<String>()
+        for (city in civInfo.cities) greatPersonPoints.add(city.getGreatPersonPoints())
+        return greatPersonPoints
     }
 
 }
