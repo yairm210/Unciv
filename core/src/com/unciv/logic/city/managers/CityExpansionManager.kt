@@ -164,7 +164,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         cityInfo.cityStats.update()
 
         for (unit in tileInfo.getUnits().toList()) // toListed because we're modifying
-            if (!unit.civInfo.canPassThroughTiles(cityInfo.civInfo))
+            if (!unit.civInfo.diplomacyFunctions.canPassThroughTiles(cityInfo.civInfo))
                 unit.movement.teleportToClosestMoveableTile()
 
         cityInfo.civInfo.cache.updateViewableTiles()

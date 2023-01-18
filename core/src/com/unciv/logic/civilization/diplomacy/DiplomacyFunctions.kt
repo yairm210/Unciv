@@ -6,6 +6,8 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.UnitMovementAlgorithms
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -107,13 +109,43 @@ class DiplomacyFunctions(val civInfo:CivilizationInfo){
 
     fun canSignResearchAgreementsWith(otherCiv: CivilizationInfo): Boolean {
         val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
-        val cost = civInfo.getResearchAgreementCost()
+        val cost = getResearchAgreementCost()
         return canSignResearchAgreement() && otherCiv.diplomacyFunctions.canSignResearchAgreement()
                 && diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
                 && !diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement)
                 && !diplomacyManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.ResearchAgreement)
                 && civInfo.gold >= cost && otherCiv.gold >= cost
     }
+
+    fun getResearchAgreementCost(): Int {
+        // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
+        return (
+                civInfo.getEra().researchAgreementCost * civInfo.gameInfo.speed.goldCostModifier
+                ).toInt()
+    }
+
+
+    /**
+     * @returns whether units of this civilization can pass through the tiles owned by [otherCiv],
+     * considering only civ-wide filters.
+     * Use [TileInfo.canCivPassThrough] to check whether units of a civilization can pass through
+     * a specific tile, considering only civ-wide filters.
+     * Use [UnitMovementAlgorithms.canPassThrough] to check whether a specific unit can pass through
+     * a specific tile.
+     */
+    fun canPassThroughTiles(otherCiv: CivilizationInfo): Boolean {
+        if (otherCiv == civInfo) return true
+        if (otherCiv.isBarbarian()) return true
+        if (civInfo.isBarbarian() && civInfo.gameInfo.turns >= civInfo.gameInfo.difficultyObject.turnBarbariansCanEnterPlayerTiles)
+            return true
+        val diplomacyManager = civInfo.diplomacy[otherCiv.civName]
+        if (diplomacyManager != null && (diplomacyManager.hasOpenBorders || diplomacyManager.diplomaticStatus == DiplomaticStatus.War))
+            return true
+        // Players can always pass through city-state tiles
+        if (civInfo.isHuman() && otherCiv.isCityState()) return true
+        return false
+    }
+
 
 
 }

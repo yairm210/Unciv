@@ -291,10 +291,10 @@ object Automation {
             }
 
             // Assume buildings remain useful
-            val neededForBuilding = civInfo.lastEraResourceUsedForBuilding[resource] != null
+            val neededForBuilding = civInfo.cache.lastEraResourceUsedForBuilding[resource] != null
             // Don't care about old units
-            val neededForUnits = civInfo.lastEraResourceUsedForUnit[resource] != null
-                    && civInfo.lastEraResourceUsedForUnit[resource]!! >= civInfo.getEraNumber()
+            val neededForUnits = civInfo.cache.lastEraResourceUsedForUnit[resource] != null
+                    && civInfo.cache.lastEraResourceUsedForUnit[resource]!! >= civInfo.getEraNumber()
 
             // No need to save for both
             if (!neededForBuilding || !neededForUnits) {

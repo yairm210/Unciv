@@ -1066,7 +1066,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         if (tileOwner == null || tileOwner == civInfo) return true
         if (isCityCenter() && civInfo.isAtWarWith(tileOwner)
                 && !getCity()!!.hasJustBeenConquered) return false
-        if (!civInfo.canPassThroughTiles(tileOwner)) return false
+        if (!civInfo.diplomacyFunctions.canPassThroughTiles(tileOwner)) return false
         return true
     }
 

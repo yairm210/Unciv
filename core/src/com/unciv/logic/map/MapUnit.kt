@@ -846,7 +846,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         if (hasUnique(UniqueType.ReligiousUnit)
             && getTile().getOwner() != null
             && !getTile().getOwner()!!.isCityState()
-            && !civInfo.canPassThroughTiles(getTile().getOwner()!!)
+            && !civInfo.diplomacyFunctions.canPassThroughTiles(getTile().getOwner()!!)
         ) {
             val lostReligiousStrength =
                 getMatchingUniques(UniqueType.CanEnterForeignTilesButLosesReligiousStrength)
@@ -874,8 +874,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         due = true
 
         // Hakkapeliitta movement boost
-        if (getTile().getUnits().count() > 1)
-        {
+        if (getTile().getUnits().count() > 1) {
             // For every double-stacked tile, check if our cohabitant can boost our speed
             for (unit in getTile().getUnits())
             {
@@ -893,11 +892,13 @@ class MapUnit : IsPartOfGameInfoSerialization {
             this.currentTile.getTilesInDistance(3).any {
                 it.militaryUnit != null && it in civInfo.viewableTiles && it.militaryUnit!!.civInfo.isAtWarWith(civInfo)
             }
-        )
-            action = null
+        )  action = null
 
         val tileOwner = getTile().getOwner()
-        if (tileOwner != null && !canEnterForeignTerrain && !civInfo.canPassThroughTiles(tileOwner) && !tileOwner.isCityState()) // if an enemy city expanded onto this tile while I was in it
+        if (tileOwner != null
+                && !canEnterForeignTerrain
+                && !civInfo.diplomacyFunctions.canPassThroughTiles(tileOwner)
+                && !tileOwner.isCityState()) // if an enemy city expanded onto this tile while I was in it
             movement.teleportToClosestMoveableTile()
 
         addMovementMemory()

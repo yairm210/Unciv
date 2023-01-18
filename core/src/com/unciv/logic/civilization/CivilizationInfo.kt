@@ -12,8 +12,8 @@ import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.diplomacy.CityStateFunctions
 import com.unciv.logic.civilization.diplomacy.CityStatePersonality
-import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFunctions
+import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.managers.EspionageManager
 import com.unciv.logic.civilization.managers.GoldenAgeManager
@@ -29,7 +29,6 @@ import com.unciv.logic.civilization.transients.CivInfoStatsForNextTurn
 import com.unciv.logic.civilization.transients.CivInfoTransientCache
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
-import com.unciv.logic.map.UnitMovementAlgorithms
 import com.unciv.logic.trade.TradeRequest
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Policy
@@ -128,11 +127,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     @Transient
     var nonStandardTerrainDamage = false
 
-    @Transient
-    var lastEraResourceUsedForBuilding = HashMap<String, Int>()
-
-    @Transient
-    val lastEraResourceUsedForUnit = HashMap<String, Int>()
 
     @Transient
     var thingsToFocusOnForVictory = setOf<Victory.Focus>()
@@ -678,20 +672,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         nonStandardTerrainDamage = getMatchingUniques(UniqueType.DamagesContainingUnits)
             .any { gameInfo.ruleSet.terrains[it.params[0]]!!.damagePerTurn != it.params[1].toInt() }
 
-        // Cache the last era each resource is used for buildings or units respectively for AI building evaluation
-        for (resource in gameInfo.ruleSet.tileResources.values.asSequence().filter { it.resourceType == ResourceType.Strategic }.map { it.name }) {
-            val applicableBuildings = gameInfo.ruleSet.buildings.values.filter { it.requiresResource(resource) && getEquivalentBuilding(it) == it }
-            val applicableUnits = gameInfo.ruleSet.units.values.filter { it.requiresResource(resource) && getEquivalentUnit(it) == it }
-
-            val lastEraForBuilding = applicableBuildings.maxOfOrNull { gameInfo.ruleSet.eras[gameInfo.ruleSet.technologies[it.requiredTech]?.era()]?.eraNumber ?: 0 }
-            val lastEraForUnit = applicableUnits.maxOfOrNull { gameInfo.ruleSet.eras[gameInfo.ruleSet.technologies[it.requiredTech]?.era()]?.eraNumber ?: 0 }
-
-            if (lastEraForBuilding != null)
-                lastEraResourceUsedForBuilding[resource] = lastEraForBuilding
-            if (lastEraForUnit != null)
-                lastEraResourceUsedForUnit[resource] = lastEraForUnit
-        }
-
         hasLongCountDisplayUnique = hasUnique(UniqueType.MayanCalendarDisplay)
 
         tacticalAI.init(this)
@@ -704,7 +684,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     fun hasFlag(flag: String) = flagsCountdown.contains(flag)
 
     fun getTurnsBetweenDiplomaticVotes() = (15 * gameInfo.speed.modifier).toInt() // Dunno the exact calculation, hidden in Lua files
-
     fun getTurnsTillNextDiplomaticVote() = flagsCountdown[CivFlags.TurnsTillNextDiplomaticVote.name]
 
     fun getRecentBullyingCountdown() = flagsCountdown[CivFlags.RecentlyBullied.name]
@@ -764,27 +743,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         }
     }
 
-    /**
-     * @returns whether units of this civilization can pass through the tiles owned by [otherCiv],
-     * considering only civ-wide filters.
-     * Use [TileInfo.canCivPassThrough] to check whether units of a civilization can pass through
-     * a specific tile, considering only civ-wide filters.
-     * Use [UnitMovementAlgorithms.canPassThrough] to check whether a specific unit can pass through
-     * a specific tile.
-     */
-    fun canPassThroughTiles(otherCiv: CivilizationInfo): Boolean {
-        if (otherCiv == this) return true
-        if (otherCiv.isBarbarian()) return true
-        if (nation.isBarbarian() && gameInfo.turns >= gameInfo.difficultyObject.turnBarbariansCanEnterPlayerTiles)
-            return true
-        val diplomacyManager = diplomacy[otherCiv.civName]
-        if (diplomacyManager != null && (diplomacyManager.hasOpenBorders || diplomacyManager.diplomaticStatus == DiplomaticStatus.War))
-            return true
-        // Players can always pass through city-state tiles
-        if (isHuman() && otherCiv.isCityState()) return true
-        return false
-    }
-
 
     fun addNotification(text: String, location: Vector2, category:NotificationCategory, vararg notificationIcons: String) {
         addNotification(text, LocationAction(location), category, *notificationIcons)
@@ -817,13 +775,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
             for (tradeRequest in diplomacyManager.otherCiv().tradeRequests.filter { it.requestingCiv == civName })
                 diplomacyManager.otherCiv().tradeRequests.remove(tradeRequest) // it  would be really weird to get a trade request from a dead civ
         }
-    }
-
-    fun getResearchAgreementCost(): Int {
-        // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
-        return (
-            getEra().researchAgreementCost * gameInfo.speed.goldCostModifier
-        ).toInt()
     }
 
     fun updateProximity(otherCiv: CivilizationInfo, preCalculated: Proximity? = null): Proximity = cache.updateProximity(otherCiv, preCalculated)

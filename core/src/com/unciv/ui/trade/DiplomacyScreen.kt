@@ -24,9 +24,7 @@ import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Quest
 import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
@@ -289,10 +287,6 @@ class DiplomacyScreen(
         return diplomacyTable
     }
 
-    fun fillUniquePlaceholders(unique:Unique, vararg strings: String):String {
-        return unique.placeholderText.fillPlaceholders(*strings) + unique.conditionals.map { " <${it.text}>" }
-            .joinToString("")
-    }
 
     private fun getCityStateDiplomacyTable(otherCiv: CivilizationInfo): Table {
         val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)
@@ -453,7 +447,7 @@ class DiplomacyScreen(
         }
 
 
-        if (isNotPlayersTurn() || otherCivDiplomacyManager.getInfluence() < 60 || !needsImprovements)
+        if (isNotPlayersTurn() || otherCivDiplomacyManager.getInfluence() < 60)
             improveTileButton.disable()
         return improveTileButton
     }
@@ -749,7 +743,7 @@ class DiplomacyScreen(
     private fun getResearchAgreementButton(otherCiv: CivilizationInfo): TextButton {
         val researchAgreementButton = "Research Agreement".toTextButton()
 
-        val requiredGold = viewingCiv.getResearchAgreementCost()
+        val requiredGold = viewingCiv.diplomacyFunctions.getResearchAgreementCost()
         researchAgreementButton.onClick {
             val tradeTable = setTrade(otherCiv)
             val researchAgreement =

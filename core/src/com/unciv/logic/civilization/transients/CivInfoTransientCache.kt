@@ -10,11 +10,34 @@ import com.unciv.logic.civilization.Proximity
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.tile.ResourceSupplyList
+import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 
 /** CivInfo class was getting too crowded */
 class CivInfoTransientCache(val civInfo: CivilizationInfo) {
+
+    @Transient
+    var lastEraResourceUsedForBuilding = java.util.HashMap<String, Int>()
+
+    @Transient
+    val lastEraResourceUsedForUnit = java.util.HashMap<String, Int>()
+
+    fun setTransients(){
+        val ruleset = civInfo.gameInfo.ruleSet
+        for (resource in ruleset.tileResources.values.asSequence().filter { it.resourceType == ResourceType.Strategic }.map { it.name }) {
+            val applicableBuildings = ruleset.buildings.values.filter { it.requiresResource(resource) && civInfo.getEquivalentBuilding(it) == it }
+            val applicableUnits = ruleset.units.values.filter { it.requiresResource(resource) && civInfo.getEquivalentUnit(it) == it }
+
+            val lastEraForBuilding = applicableBuildings.maxOfOrNull { ruleset.eras[ruleset.technologies[it.requiredTech]?.era()]?.eraNumber ?: 0 }
+            val lastEraForUnit = applicableUnits.maxOfOrNull { ruleset.eras[ruleset.technologies[it.requiredTech]?.era()]?.eraNumber ?: 0 }
+
+            if (lastEraForBuilding != null)
+                lastEraResourceUsedForBuilding[resource] = lastEraForBuilding
+            if (lastEraForUnit != null)
+                lastEraResourceUsedForUnit[resource] = lastEraForUnit
+        }
+    }
 
     fun updateSightAndResources() {
         updateViewableTiles()

@@ -697,7 +697,7 @@ object NextTurnAutomation {
             // Default setting is 5, this will be changed according to different civ.
             if ((1..10).random() > 5) continue
             val tradeLogic = TradeLogic(civInfo, otherCiv)
-            val cost = civInfo.getResearchAgreementCost()
+            val cost = civInfo.diplomacyFunctions.getResearchAgreementCost()
             tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, cost))
             tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, cost))
 
@@ -764,7 +764,7 @@ object NextTurnAutomation {
         fun isTileCanMoveThrough(tileInfo: TileInfo): Boolean {
             val owner = tileInfo.getOwner()
             return !tileInfo.isImpassible()
-                    && (owner == otherCiv || owner == null || civInfo.canPassThroughTiles(owner))
+                    && (owner == otherCiv || owner == null || civInfo.diplomacyFunctions.canPassThroughTiles(owner))
         }
 
         val reachableEnemyCitiesBfs = BFS(civInfo.getCapital()!!.getCenterTile()) { isTileCanMoveThrough(it) }
