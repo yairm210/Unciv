@@ -1,6 +1,8 @@
-package com.unciv.logic.civilization
+package com.unciv.logic.civilization.transients
 
 import com.unciv.Constants
+import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.ruleset.Policy

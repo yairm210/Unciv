@@ -6,7 +6,7 @@ import com.unciv.json.HashMapVector2
 import com.unciv.json.json
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.PerpetualConstruction
-import com.unciv.logic.civilization.TechManager
+import com.unciv.logic.civilization.managers.TechManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.models.ruleset.ModOptions

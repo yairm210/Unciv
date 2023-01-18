@@ -1,7 +1,12 @@
-package com.unciv.logic.civilization
+package com.unciv.logic.civilization.transients
 
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.civilization.Proximity
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.tile.ResourceSupplyList
@@ -41,9 +46,15 @@ class CivInfoTransientCache(val civInfo: CivilizationInfo) {
                 if (metCiv == civInfo || metCiv.isBarbarian() || civInfo.diplomacy.containsKey(metCiv.civName)) continue
                 civInfo.makeCivilizationsMeet(metCiv)
                 civInfo.addNotification("We have encountered [${metCiv.civName}]!",
-                    entry.value.position, NotificationCategory.Diplomacy, metCiv.civName, NotificationIcon.Diplomacy)
+                    entry.value.position,
+                    NotificationCategory.Diplomacy, metCiv.civName,
+                    NotificationIcon.Diplomacy
+                )
                 metCiv.addNotification("We have encountered [${civInfo.civName}]!",
-                    entry.value.position, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
+                    entry.value.position,
+                    NotificationCategory.Diplomacy, civInfo.civName,
+                    NotificationIcon.Diplomacy
+                )
             }
 
             discoverNaturalWonders()
@@ -144,7 +155,8 @@ class CivInfoTransientCache(val civInfo: CivilizationInfo) {
             if (goldGained > 0) {
                 civInfo.addGold(goldGained)
                 civInfo.addNotification("We have received [$goldGained] Gold for discovering [${tile.naturalWonder}]",
-                    NotificationCategory.General, NotificationIcon.Gold)
+                    NotificationCategory.General, NotificationIcon.Gold
+                )
             }
 
         }
@@ -165,13 +177,15 @@ class CivInfoTransientCache(val civInfo: CivilizationInfo) {
             for (city in citiesReachedToMediums.keys)
                 if (city !in civInfo.citiesConnectedToCapitalToMediums && city.civInfo == civInfo && city != civInfo.getCapital()!!)
                     civInfo.addNotification("[${city.name}] has been connected to your capital!",
-                        city.location, NotificationCategory.Cities, NotificationIcon.Gold)
+                        city.location, NotificationCategory.Cities, NotificationIcon.Gold
+                    )
 
             // This may still contain cities that have just been destroyed by razing - thus the population test
             for (city in civInfo.citiesConnectedToCapitalToMediums.keys)
                 if (!citiesReachedToMediums.containsKey(city) && city.civInfo == civInfo && city.population.population > 0)
                     civInfo.addNotification("[${city.name}] has been disconnected from your capital!",
-                        city.location, NotificationCategory.Cities, NotificationIcon.Gold)
+                        city.location, NotificationCategory.Cities, NotificationIcon.Gold
+                    )
         }
 
         civInfo.citiesConnectedToCapitalToMediums = citiesReachedToMediums

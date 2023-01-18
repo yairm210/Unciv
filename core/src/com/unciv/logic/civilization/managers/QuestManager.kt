@@ -1,10 +1,18 @@
-package com.unciv.logic.civilization
+package com.unciv.logic.civilization.managers
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.civilization.diplomacy.CityStatePersonality
+import com.unciv.logic.civilization.CivFlags
+import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.DiplomacyAction
+import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.civilization.Proximity
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.TileInfo
@@ -163,7 +171,9 @@ class QuestManager : IsPartOfGameInfoSerialization {
                 if (civInfo.gameInfo.turns == INDIVIDUAL_QUEST_FIRST_POSSIBLE_TURN)
                     Random.nextInt(INDIVIDUAL_QUEST_FIRST_POSSIBLE_TURN_RAND)
                 else
-                    INDIVIDUAL_QUEST_MIN_TURNS_BETWEEN + Random.nextInt(INDIVIDUAL_QUEST_RAND_TURNS_BETWEEN)
+                    INDIVIDUAL_QUEST_MIN_TURNS_BETWEEN + Random.nextInt(
+                        INDIVIDUAL_QUEST_RAND_TURNS_BETWEEN
+                    )
 
         individualQuestCountdown[challenger.civName] = (countdown * civInfo.gameInfo.speed.modifier).toInt()
     }
@@ -225,9 +235,13 @@ class QuestManager : IsPartOfGameInfoSerialization {
                     it.isMajorCiv()
                     && it.isAlive()
                     && !it.isAtWarWith(civInfo)
-                    && it.getProximity(civInfo) <= Proximity.Far }) {
+                    && it.getProximity(civInfo) <= Proximity.Far
+            }) {
                 otherCiv.addNotification("[${civInfo.civName}] is being invaded by Barbarians! Destroy Barbarians near their territory to earn Influence.",
-                    civInfo.getCapital()!!.location, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.War)
+                    civInfo.getCapital()!!.location,
+                    NotificationCategory.Diplomacy, civInfo.civName,
+                    NotificationIcon.War
+                )
             }
             civInfo.addFlag(CivFlags.TurnsTillCallForBarbHelp.name, 30)
         }
@@ -334,7 +348,8 @@ class QuestManager : IsPartOfGameInfoSerialization {
 
             assignedQuests.add(newQuest)
             assignee.addNotification("[${civInfo.civName}] assigned you a new quest: [${quest.name}].",
-                    DiplomacyAction(civInfo.civName), NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
+                    DiplomacyAction(civInfo.civName),
+                NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
 
             if (quest.isIndividual())
                 individualQuestCountdown[assignee.civName] = UNSET
@@ -440,11 +455,13 @@ class QuestManager : IsPartOfGameInfoSerialization {
         if (winners.isEmpty()) {
             assignee.addNotification(
                     "[${civInfo.civName}] no longer needs your help with the [${assignedQuest.questName}] quest.",
-                    civInfo.getCapital()!!.location, NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
+                    civInfo.getCapital()!!.location,
+                NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
         } else {
             assignee.addNotification(
                     "The [${assignedQuest.questName}] quest for [${civInfo.civName}] has ended. It was won by [${winners.joinToString { it.assignee.tr() }}].",
-                    civInfo.getCapital()!!.location, NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
+                    civInfo.getCapital()!!.location,
+                NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
         }
     }
 
@@ -524,7 +541,8 @@ class QuestManager : IsPartOfGameInfoSerialization {
             assignedQuests.removeAll(revokedQuests)
             if (revokedQuests.count() > 0)
                 bully.addNotification("[${civInfo.civName}] cancelled the quests they had given you because you demanded tribute from them.",
-                    DiplomacyAction(civInfo.civName), NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
+                    DiplomacyAction(civInfo.civName),
+                    NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
         }
     }
 

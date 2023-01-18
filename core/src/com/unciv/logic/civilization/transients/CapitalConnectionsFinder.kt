@@ -1,6 +1,7 @@
-package com.unciv.logic.civilization
+package com.unciv.logic.civilization.transients
 
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo

@@ -1,6 +1,7 @@
-package com.unciv.logic.civilization
+package com.unciv.logic.civilization.managers
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.Counter
 
 // todo: Great Admiral?

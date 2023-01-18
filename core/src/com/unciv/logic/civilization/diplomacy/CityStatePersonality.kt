@@ -1,4 +1,4 @@
-package com.unciv.logic.civilization
+package com.unciv.logic.civilization.diplomacy
 
 enum class CityStatePersonality {
     Friendly,

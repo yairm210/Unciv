@@ -3,11 +3,16 @@ package com.unciv.logic.city
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.battle.CityCombatant
+import com.unciv.logic.city.managers.CityEspionageManager
+import com.unciv.logic.city.managers.CityExpansionManager
+import com.unciv.logic.city.managers.CityInfoConquestFunctions
+import com.unciv.logic.city.managers.CityPopulationManager
+import com.unciv.logic.city.managers.CityReligionManager
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.Proximity
-import com.unciv.logic.civilization.ReligionState
+import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
@@ -109,7 +114,7 @@ class CityInfo : IsPartOfGameInfoSerialization {
     var health = 200
 
 
-    var population = PopulationManager()
+    var population = CityPopulationManager()
     var cityConstructions = CityConstructions()
     var expansion = CityExpansionManager()
     var religion = CityReligionManager()

@@ -6,7 +6,7 @@ import com.unciv.logic.battle.CombatAction
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.ReligionState
+import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetValidator
 import com.unciv.models.stats.Stats

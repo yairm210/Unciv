@@ -1,6 +1,9 @@
-package com.unciv.logic.civilization
+package com.unciv.logic.civilization.managers
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.MapSize
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Policy.PolicyBranchType
@@ -237,7 +240,9 @@ class PolicyManager : IsPartOfGameInfoSerialization {
                 "An unknown civilization has adopted the [${policy.name}] policy"
             }
             civ.addNotification(
-                "{${defaultNotificationText}}{${extraNotificationTextCopy}}", NotificationCategory.General, NotificationIcon.Culture
+                "{${defaultNotificationText}}{${extraNotificationTextCopy}}",
+                NotificationCategory.General,
+                NotificationIcon.Culture
             )
         }
     }

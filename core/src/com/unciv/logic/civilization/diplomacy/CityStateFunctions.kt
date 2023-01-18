@@ -1,11 +1,17 @@
-package com.unciv.logic.civilization
+package com.unciv.logic.civilization.diplomacy
 
 import com.unciv.Constants
 import com.unciv.logic.automation.civilization.NextTurnAutomation
-import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
-import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
-import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.logic.civilization.AlertType
+import com.unciv.logic.civilization.CivFlags
+import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.DiplomacyAction
+import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.civilization.Proximity
 import com.unciv.models.ruleset.CityStateType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceSupplyList
@@ -75,7 +81,8 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         val placedUnit = receivingCiv.placeUnitNearTile(cities.city1.location, giftedUnit.name)
             ?: return
         val locations = LocationAction(placedUnit.getTile().position, cities.city2.location)
-        receivingCiv.addNotification( "[${civInfo.civName}] gave us a [${giftedUnit.name}] as a gift!", locations, NotificationCategory.Units, civInfo.civName, giftedUnit.name)
+        receivingCiv.addNotification( "[${civInfo.civName}] gave us a [${giftedUnit.name}] as a gift!", locations,
+            NotificationCategory.Units, civInfo.civName, giftedUnit.name)
     }
 
     fun giveMilitaryUnitToPatron(receivingCiv: CivilizationInfo) {
@@ -231,8 +238,14 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             if (newAllyName != null) {
                 val newAllyCiv = civInfo.gameInfo.getCivilization(newAllyName)
                 val text = "We have allied with [${civInfo.civName}]."
-                if (capitalLocation != null) newAllyCiv.addNotification(text, capitalLocation, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
-                else newAllyCiv.addNotification(text, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
+                if (capitalLocation != null) newAllyCiv.addNotification(text, capitalLocation,
+                    NotificationCategory.Diplomacy, civInfo.civName,
+                    NotificationIcon.Diplomacy
+                )
+                else newAllyCiv.addNotification(text,
+                    NotificationCategory.Diplomacy, civInfo.civName,
+                    NotificationIcon.Diplomacy
+                )
                 newAllyCiv.cache.updateViewableTiles()
                 newAllyCiv.cache.updateCivResources()
                 for (unique in newAllyCiv.getMatchingUniques(UniqueType.CityStateCanBeBoughtForGold))
@@ -252,8 +265,14 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             if (oldAllyName != null) {
                 val oldAllyCiv = civInfo.gameInfo.getCivilization(oldAllyName)
                 val text = "We have lost alliance with [${civInfo.civName}]."
-                if (capitalLocation != null) oldAllyCiv.addNotification(text, capitalLocation, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
-                else oldAllyCiv.addNotification(text, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
+                if (capitalLocation != null) oldAllyCiv.addNotification(text, capitalLocation,
+                    NotificationCategory.Diplomacy, civInfo.civName,
+                    NotificationIcon.Diplomacy
+                )
+                else oldAllyCiv.addNotification(text,
+                    NotificationCategory.Diplomacy, civInfo.civName,
+                    NotificationIcon.Diplomacy
+                )
                 oldAllyCiv.cache.updateViewableTiles()
                 oldAllyCiv.cache.updateCivResources()
             }
@@ -291,10 +310,14 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
 
         otherCiv.addGold(-getDiplomaticMarriageCost())
         otherCiv.addNotification("We have married into the ruling family of [${civInfo.civName}], bringing them under our control.",
-            civInfo.getCapital()!!.location, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCiv.civName)
+            civInfo.getCapital()!!.location,
+            NotificationCategory.Diplomacy, civInfo.civName,
+            NotificationIcon.Diplomacy, otherCiv.civName)
         for (civ in civInfo.gameInfo.civilizations.filter { it != otherCiv })
             civ.addNotification("[${otherCiv.civName}] has married into the ruling family of [${civInfo.civName}], bringing them under their control.",
-                civInfo.getCapital()!!.location, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCiv.civName)
+                civInfo.getCapital()!!.location,
+                NotificationCategory.Diplomacy, civInfo.civName,
+                NotificationIcon.Diplomacy, otherCiv.civName)
         for (unit in civInfo.getCivUnits())
             unit.gift(otherCiv)
 
@@ -503,8 +526,11 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                 bully.addNotification("[${protector.civName}] is upset that you demanded tribute from [${civInfo.civName}], whom they have pledged to protect!",
                     NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, protector.civName)
             else    // Let humans choose who to side with
-                protector.popupAlerts.add(PopupAlert(AlertType.BulliedProtectedMinor,
-                    bully.civName + "@" + civInfo.civName))   // we need to pass both civs as argument, hence the horrible chimera
+                protector.popupAlerts.add(
+                    PopupAlert(
+                        AlertType.BulliedProtectedMinor,
+                    bully.civName + "@" + civInfo.civName)
+                )   // we need to pass both civs as argument, hence the horrible chimera
         }
 
         // Set a diplomatic flag so we remember for future quests (and not to give them any)
@@ -546,16 +572,16 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                     // High probability if very aggressive
                     probability = when (cityState.getProximity(attacker)) {
                         Proximity.Neighbors -> 100
-                        Proximity.Close     -> 75
-                        Proximity.Far       -> 50
-                        Proximity.Distant   -> 25
+                        Proximity.Close -> 75
+                        Proximity.Far -> 50
+                        Proximity.Distant -> 25
                         else                -> 0
                     }
                 } else {
                     // Lower probability if only somewhat aggressive
                     probability = when (cityState.getProximity(attacker)) {
                         Proximity.Neighbors -> 50
-                        Proximity.Close     -> 20
+                        Proximity.Close -> 20
                         else                -> 0
                     }
                 }
@@ -585,8 +611,11 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                 attacker.addNotification("[${protector.civName}] is upset that you attacked [${civInfo.civName}], whom they have pledged to protect!",
                     NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, protector.civName)
             else    // Let humans choose who to side with
-                protector.popupAlerts.add(PopupAlert(AlertType.AttackedProtectedMinor,
-                    attacker.civName + "@" + civInfo.civName))   // we need to pass both civs as argument, hence the horrible chimera
+                protector.popupAlerts.add(
+                    PopupAlert(
+                        AlertType.AttackedProtectedMinor,
+                    attacker.civName + "@" + civInfo.civName)
+                )   // we need to pass both civs as argument, hence the horrible chimera
         }
 
         // Set up war with major pseudo-quest

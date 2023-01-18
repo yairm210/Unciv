@@ -1,7 +1,8 @@
-package com.unciv.logic.city
+package com.unciv.logic.city.managers
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.automation.Automation
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.TileInfo
@@ -14,7 +15,7 @@ import com.unciv.ui.utils.extensions.withoutItem
 import kotlin.math.floor
 import kotlin.math.pow
 
-class PopulationManager : IsPartOfGameInfoSerialization {
+class CityPopulationManager : IsPartOfGameInfoSerialization {
     @Transient
     lateinit var cityInfo: CityInfo
 
@@ -29,8 +30,8 @@ class PopulationManager : IsPartOfGameInfoSerialization {
 
 
     //region pure functions
-    fun clone(): PopulationManager {
-        val toReturn = PopulationManager()
+    fun clone(): CityPopulationManager {
+        val toReturn = CityPopulationManager()
         toReturn.specialistAllocations.add(specialistAllocations)
         toReturn.population = population
         toReturn.foodStored = foodStored

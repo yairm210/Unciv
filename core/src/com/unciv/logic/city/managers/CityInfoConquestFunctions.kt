@@ -1,8 +1,10 @@
-﻿package com.unciv.logic.city
+﻿package com.unciv.logic.city.managers
 
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.battle.Battle
+import com.unciv.logic.city.CityFlags
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon

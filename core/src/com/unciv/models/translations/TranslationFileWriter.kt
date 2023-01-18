@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
-import com.unciv.logic.civilization.SpyAction
+import com.unciv.logic.civilization.managers.SpyAction
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.LocaleCode
 import com.unciv.models.ruleset.*

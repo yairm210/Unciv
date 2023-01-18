@@ -1,9 +1,9 @@
-package com.unciv.logic.civilization
+package com.unciv.logic.civilization.managers
 
 import com.unciv.Constants
-import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.civilization.CivilizationInfo
 
 enum class SpyAction(val stringName: String) {
     None("None"),

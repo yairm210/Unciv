@@ -1,8 +1,9 @@
-package com.unciv.logic.city
+package com.unciv.logic.city.managers
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.automation.Automation
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon

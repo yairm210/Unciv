@@ -1,7 +1,8 @@
-package com.unciv.logic.civilization
+package com.unciv.logic.civilization.managers
 
 import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Milestone
 import com.unciv.models.ruleset.unique.UniqueType

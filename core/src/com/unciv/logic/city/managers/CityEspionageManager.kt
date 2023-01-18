@@ -1,6 +1,7 @@
-package com.unciv.logic.city
+package com.unciv.logic.city.managers
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 
 class CityEspionageManager : IsPartOfGameInfoSerialization{

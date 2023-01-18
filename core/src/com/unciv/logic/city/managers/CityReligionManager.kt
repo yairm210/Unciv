@@ -1,7 +1,8 @@
-package com.unciv.logic.city
+package com.unciv.logic.city.managers
 
 import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.Counter

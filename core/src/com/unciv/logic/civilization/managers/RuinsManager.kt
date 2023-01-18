@@ -1,4 +1,4 @@
-package com.unciv.logic.civilization.RuinsManager
+package com.unciv.logic.civilization.managers
 // Why is this the only file in its own package?
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
