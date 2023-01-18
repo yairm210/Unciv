@@ -20,7 +20,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.backends.android.AndroidApplication
 import com.badlogic.gdx.backends.android.DefaultAndroidFiles
 import com.unciv.logic.GameInfo
-import com.unciv.logic.UncivFiles
+import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.OnlineMultiplayerFiles
 import com.unciv.models.metadata.GameSettingsMultiplayer
