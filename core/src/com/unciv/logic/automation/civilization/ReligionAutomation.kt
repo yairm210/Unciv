@@ -346,7 +346,7 @@ object ReligionAutomation {
                     ) 0f
                     // This is something completely different from the original, but I have no idea
                     // what happens over there
-                    else civInfo.statsForNextTurn[Stat.valueOf(unique.params[2])] * 5f / unique.params[1].toFloat()
+                    else civInfo.stats.statsForNextTurn[Stat.valueOf(unique.params[2])] * 5f / unique.params[1].toFloat()
                 UniqueType.BuyUnitsWithStat, UniqueType.BuyBuildingsWithStat ->
                     if (civInfo.religionManager.religion != null
                         && civInfo.religionManager.religion!!.getFollowerUniques()
@@ -354,7 +354,7 @@ object ReligionAutomation {
                     ) 0f
                     // This is something completely different from the original, but I have no idea
                     // what happens over there
-                    else civInfo.statsForNextTurn[Stat.valueOf(unique.params[1])] * 10f / civInfo.getEra().baseUnitBuyCost
+                    else civInfo.stats.statsForNextTurn[Stat.valueOf(unique.params[1])] * 10f / civInfo.getEra().baseUnitBuyCost
                 UniqueType.BuyUnitsByProductionCost ->
                     15f * if (civInfo.wantsToFocusOn(Victory.Focus.Military)) 2f else 1f
                 UniqueType.StatsWhenSpreading ->

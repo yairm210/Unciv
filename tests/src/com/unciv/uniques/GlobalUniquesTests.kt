@@ -42,14 +42,14 @@ class GlobalUniquesTests {
     fun statsNotOnBuilding() {
         val civInfo = game.addCiv("[+2 Gold]")
         civInfo.updateStatsForNextTurn()
-        Assert.assertTrue(civInfo.statsForNextTurn.equals(Stats(gold=2f)))
+        Assert.assertTrue(civInfo.stats.statsForNextTurn.equals(Stats(gold=2f)))
     }
 
     @Test
     fun statsHappinessNotOnBuilding() {
         val civInfo = game.addCiv("[+7 Happiness]")
         civInfo.updateStatsForNextTurn()
-        Assert.assertTrue(civInfo.happinessForNextTurn == civInfo.getDifficulty().baseHappiness + 7)
+        Assert.assertTrue(civInfo.stats.happiness == civInfo.getDifficulty().baseHappiness + 7)
     }
 
 
@@ -201,7 +201,7 @@ class GlobalUniquesTests {
         val city2 = game.addCity(civInfo, tile2)
         val inBetweenTile = game.setTileFeatures(Vector2(0f, 1f), Constants.desert)
         inBetweenTile.roadStatus = RoadStatus.Road
-        civInfo.cache().updateCitiesConnectedToCapital()
+        civInfo.cache.updateCitiesConnectedToCapital()
         city2.cityStats.update()
 
         Assert.assertTrue(city2.cityStats.finalStatList["Trade routes"]!!.science == 30f)
@@ -215,9 +215,9 @@ class GlobalUniquesTests {
         civInfo.policies.freePolicies = 3
         for (policyName in policiesToAdopt){
             val policy = game.ruleset.policies[policyName]!!
-            civInfo.policies.adopt(policy, )
+            civInfo.policies.adopt(policy)
         }
-        Assert.assertTrue(civInfo.stats().getStatMapForNextTurn()["Policies"]!!.science == 30f)
+        Assert.assertTrue(civInfo.stats.getStatMapForNextTurn()["Policies"]!!.science == 30f)
     }
 
     @Test
@@ -235,7 +235,7 @@ class GlobalUniquesTests {
 
         civ1.updateStatsForNextTurn()
 
-        Assert.assertTrue(civ1.statsForNextTurn.science == 30f)
+        Assert.assertTrue(civ1.stats.statsForNextTurn.science == 30f)
     }
 
     @Test
@@ -253,7 +253,7 @@ class GlobalUniquesTests {
 
         val baseHappiness = civ1.getDifficulty().baseHappiness
         // Since civ1 has no cities, there are no other happiness sources
-        Assert.assertTrue(civ1.happinessForNextTurn == baseHappiness + 42)
+        Assert.assertTrue(civ1.stats.happiness == baseHappiness + 42)
     }
 
     @Test
@@ -269,7 +269,7 @@ class GlobalUniquesTests {
 
         civ1.updateStatsForNextTurn()
 
-        Assert.assertTrue(civ1.statsForNextTurn.science == 90f)
+        Assert.assertTrue(civ1.stats.statsForNextTurn.science == 90f)
     }
 
     // endregion
@@ -410,7 +410,7 @@ class GlobalUniquesTests {
         val inBetweenTile = game.setTileFeatures(Vector2(0f, 1f), Constants.desert)
         inBetweenTile.roadStatus = RoadStatus.Road
 
-        civInfo.cache().updateCitiesConnectedToCapital()
+        civInfo.cache.updateCitiesConnectedToCapital()
         Assert.assertTrue(city2.cityStats.isConnectedToCapital(RoadStatus.Road))
 
         city2.cityStats.update()

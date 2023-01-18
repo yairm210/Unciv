@@ -19,6 +19,13 @@ import kotlin.math.pow
 /** CivInfo class was getting too crowded */
 class CivInfoStats(val civInfo: CivilizationInfo) {
 
+    @Transient
+    /** Happiness for next turn */
+    var happiness = 0
+
+    @Transient
+    var statsForNextTurn = Stats()
+
     private fun getUnitMaintenance(): Int {
         val baseUnitCost = 0.5f
         var freeUnits = 3
@@ -174,7 +181,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                     Constants.cityStates,
                     Stats().add(
                         Stat.valueOf(unique.params[0]),
-                        otherCiv.statsForNextTurn[Stat.valueOf(unique.params[0])] * unique.params[1].toFloat() / 100f
+                        statsForNextTurn[Stat.valueOf(unique.params[0])] * unique.params[1].toFloat() / 100f
                     )
                 )
             }

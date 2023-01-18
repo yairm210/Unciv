@@ -115,12 +115,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     var enemyMovementPenaltyUniques: Sequence<Unique>? = null
 
     @Transient
-    var statsForNextTurn = Stats()
-
-    @Transient
-    var happinessForNextTurn = 0
-
-    @Transient
     var detailedCivResources = ResourceSupplyList()
 
     @Transient
@@ -397,18 +391,17 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     }
 
     @Transient
-    private val civInfoStats = CivInfoStats(this)
-    fun stats() = civInfoStats
+    val stats = CivInfoStats(this)
 
     @Transient
     val cache = CivInfoTransientCache(this)
 
     fun updateStatsForNextTurn() {
-        happinessForNextTurn = stats().getHappinessBreakdown().values.sum().roundToInt()
-        statsForNextTurn = stats().getStatMapForNextTurn().values.reduce { a, b -> a + b }
+        stats.happiness = stats.getHappinessBreakdown().values.sum().roundToInt()
+        stats.statsForNextTurn = stats.getStatMapForNextTurn().values.reduce { a, b -> a + b }
     }
 
-    fun getHappiness() = happinessForNextTurn
+    fun getHappiness() = stats.happiness
 
 
     fun getCivResources(): ResourceSupplyList = summarizedCivResources
@@ -755,8 +748,8 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         else when (category) {
                 RankingType.Score -> calculateTotalScore().toInt()
                 RankingType.Population -> cities.sumOf { it.population.population }
-                RankingType.Crop_Yield -> statsForNextTurn.food.roundToInt()
-                RankingType.Production -> statsForNextTurn.production.roundToInt()
+                RankingType.Crop_Yield -> stats.statsForNextTurn.food.roundToInt()
+                RankingType.Production -> stats.statsForNextTurn.production.roundToInt()
                 RankingType.Gold -> gold
                 RankingType.Territory -> cities.sumOf { it.tiles.size }
                 RankingType.Force -> getMilitaryMight()
@@ -1010,7 +1003,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
         notifications.clear()
         updateStatsForNextTurn()
-        val nextTurnStats = statsForNextTurn
+        val nextTurnStats = stats.statsForNextTurn
 
         policies.endTurn(nextTurnStats.culture.toInt())
         totalCultureForContests += nextTurnStats.culture.toInt()
