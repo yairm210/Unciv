@@ -176,7 +176,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         if (civInfo.isCityState()) return when {
             getInfluence() <= -30 || civInfo.isAtWarWith(otherCiv()) -> RelationshipLevel.Unforgivable
             getInfluence() < 0 -> RelationshipLevel.Enemy
-            getInfluence() < 30 && civInfo.getTributeWillingness(otherCiv()) > 0 -> RelationshipLevel.Afraid
+            getInfluence() < 30 && civInfo.cityStateFunctions.getTributeWillingness(otherCiv()) > 0 -> RelationshipLevel.Afraid
             getInfluence() >= 60 && civInfo.getAllyCiv() == otherCivName -> RelationshipLevel.Ally
             getInfluence() >= 30 -> RelationshipLevel.Friend
             else -> RelationshipLevel.Neutral
@@ -234,7 +234,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
     fun setInfluence(amount: Float) {
         influence = max(amount, MINIMUM_INFLUENCE)
-        civInfo.updateAllyCivForCityState()
+        civInfo.cityStateFunctions.updateAllyCivForCityState()
     }
 
     fun getInfluence() = if (civInfo.isAtWarWith(otherCiv())) MINIMUM_INFLUENCE else influence
@@ -470,7 +470,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             // Potentially notify about afraid status
             if (getInfluence() < 30  // We usually don't want to bully our friends
                 && !hasFlag(DiplomacyFlags.NotifiedAfraid)
-                && civInfo.getTributeWillingness(otherCiv()) > 0
+                && civInfo.cityStateFunctions.getTributeWillingness(otherCiv()) > 0
                 && otherCiv().isMajorCiv()
             ) {
                 setFlag(DiplomacyFlags.NotifiedAfraid, 20)  // Wait 20 turns until next reminder
@@ -645,8 +645,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
         val civAtWarWith = otherCiv()
 
-        if (civInfo.isCityState() && civInfo.getProtectorCivs().contains(civAtWarWith)) {
-            civInfo.removeProtectorCiv(civAtWarWith, forced = true)
+        if (civInfo.isCityState() && civInfo.cityStateFunctions.getProtectorCivs().contains(civAtWarWith)) {
+            civInfo.cityStateFunctions.removeProtectorCiv(civAtWarWith, forced = true)
         }
 
         diplomaticStatus = DiplomaticStatus.War
@@ -692,7 +692,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
             // You attacked your own ally, you're a right bastard
             if (otherCiv.getAllyCiv() == civInfo.civName) {
-                otherCiv.updateAllyCivForCityState()
+                otherCiv.cityStateFunctions.updateAllyCivForCityState()
                 otherCivDiplomacy.setInfluence(-120f)
                 for (knownCiv in civInfo.getKnownCivs()) {
                     knownCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.BetrayedDeclarationOfFriendship, -10f)

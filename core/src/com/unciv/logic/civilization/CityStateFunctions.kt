@@ -60,6 +60,8 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         return true
     }
 
+    fun turnsForGreatPersonFromCityState(): Int = ((37 + Random().nextInt(7)) * civInfo.gameInfo.speed.modifier).toInt()
+
     /** Gain a random great person from the city state */
     fun giveGreatPersonToPatron(receivingCiv: CivilizationInfo) {
 
@@ -417,7 +419,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         civInfo.addFlag(CivFlags.RecentlyBullied.name, 20)
     }
 
-    fun canGiveStat(statType: Stat): Boolean {
+    fun canProvideStat(statType: Stat): Boolean {
         if (!civInfo.isCityState())
             return false
         for (bonus in getCityStateBonuses(civInfo.cityStateType, RelationshipLevel.Ally)) {
@@ -486,7 +488,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
     private fun cityStateBullied(bully: CivilizationInfo) {
         if (!civInfo.isCityState()) return // What are we doing here?
 
-        for (protector in civInfo.getProtectorCivs()) {
+        for (protector in civInfo.cityStateFunctions.getProtectorCivs()) {
             if (!protector.knows(bully)) // Who?
                 continue
             val protectorDiplomacy = protector.getDiplomacyManager(bully)
@@ -568,7 +570,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             }
         }
 
-        for (protector in civInfo.getProtectorCivs()) {
+        for (protector in civInfo.cityStateFunctions.getProtectorCivs()) {
             if (!protector.knows(attacker)) // Who?
                 continue
             val protectorDiplomacy = protector.getDiplomacyManager(attacker)
@@ -596,7 +598,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
     fun cityStateDestroyed(attacker: CivilizationInfo) {
         if (!civInfo.isCityState()) return // What are we doing here?
 
-        for (protector in civInfo.getProtectorCivs()) {
+        for (protector in civInfo.cityStateFunctions.getProtectorCivs()) {
             if (!protector.knows(attacker)) // Who?
                 continue
             val protectorDiplomacy = protector.getDiplomacyManager(attacker)

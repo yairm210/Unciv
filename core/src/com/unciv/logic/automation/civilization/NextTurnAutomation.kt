@@ -272,11 +272,11 @@ object NextTurnAutomation {
     private fun tryGainInfluence(civInfo: CivilizationInfo, cityState: CivilizationInfo) {
         if (civInfo.gold < 250) return // save up
         if (cityState.getDiplomacyManager(civInfo).getInfluence() < 20) {
-            cityState.receiveGoldGift(civInfo, 250)
+            cityState.cityStateFunctions.receiveGoldGift(civInfo, 250)
             return
         }
         if (civInfo.gold < 500) return // it's not worth it to invest now, wait until you have enough for 2
-        cityState.receiveGoldGift(civInfo, 500)
+        cityState.cityStateFunctions.receiveGoldGift(civInfo, 500)
         return
     }
 
@@ -292,7 +292,7 @@ object NextTurnAutomation {
 
         if (civInfo.wantsToFocusOn(Victory.Focus.Culture)) {
             for (cityState in civInfo.getKnownCivs()
-                    .filter { it.isCityState() && it.cityStateFunctions.canGiveStat(Stat.Culture) }) {
+                    .filter { it.isCityState() && it.cityStateFunctions.canProvideStat(Stat.Culture) }) {
                 val diploManager = cityState.getDiplomacyManager(civInfo)
                 if (diploManager.getInfluence() < 40) { // we want to gain influence with them
                     tryGainInfluence(civInfo, cityState)
@@ -326,10 +326,10 @@ object NextTurnAutomation {
     private fun valueCityStateAlliance(civInfo: CivilizationInfo, cityState: CivilizationInfo): Int {
         var value = 0
 
-        if (civInfo.wantsToFocusOn(Victory.Focus.Culture) && cityState.canGiveStat(Stat.Culture)) {
+        if (civInfo.wantsToFocusOn(Victory.Focus.Culture) && cityState.cityStateFunctions.canProvideStat(Stat.Culture)) {
             value += 10
         }
-        else if (civInfo.wantsToFocusOn(Victory.Focus.Science) && cityState.canGiveStat(Stat.Science)) {
+        else if (civInfo.wantsToFocusOn(Victory.Focus.Science) && cityState.cityStateFunctions.canProvideStat(Stat.Science)) {
             // In case someone mods this in
             value += 10
         }
@@ -346,10 +346,10 @@ object NextTurnAutomation {
         else if (civInfo.wantsToFocusOn(Victory.Focus.CityStates)) {
             value += 5  // Generally be friendly
         }
-        if (civInfo.getHappiness() < 5 && cityState.canGiveStat(Stat.Happiness)) {
+        if (civInfo.getHappiness() < 5 && cityState.cityStateFunctions.canProvideStat(Stat.Happiness)) {
             value += 10 - civInfo.getHappiness()
         }
-        if (civInfo.getHappiness() > 5 && cityState.canGiveStat(Stat.Food)) {
+        if (civInfo.getHappiness() > 5 && cityState.cityStateFunctions.canProvideStat(Stat.Food)) {
             value += 5
         }
 
@@ -380,12 +380,12 @@ object NextTurnAutomation {
         for (state in civInfo.getKnownCivs().filter{!it.isDefeated() && it.isCityState()}) {
             val diplomacyManager = state.getDiplomacyManager(civInfo.civName)
             if(diplomacyManager.relationshipLevel() >= RelationshipLevel.Friend
-                && state.otherCivCanPledgeProtection(civInfo))
+                && state.cityStateFunctions.otherCivCanPledgeProtection(civInfo))
             {
-                state.addProtectorCiv(civInfo)
+                state.cityStateFunctions.addProtectorCiv(civInfo)
             } else if (diplomacyManager.relationshipLevel() < RelationshipLevel.Friend
-                && state.otherCivCanWithdrawProtection(civInfo)) {
-                state.removeProtectorCiv(civInfo)
+                && state.cityStateFunctions.otherCivCanWithdrawProtection(civInfo)) {
+                state.cityStateFunctions.removeProtectorCiv(civInfo)
             }
         }
     }
@@ -396,8 +396,8 @@ object NextTurnAutomation {
             if(diplomacyManager.relationshipLevel() < RelationshipLevel.Friend
                     && diplomacyManager.diplomaticStatus == DiplomaticStatus.Peace
                     && valueCityStateAlliance(civInfo, state) <= 0
-                    && state.getTributeWillingness(civInfo) >= 0) {
-                if (state.getTributeWillingness(civInfo, demandingWorker = true) > 0)
+                    && state.cityStateFunctions.getTributeWillingness(civInfo) >= 0) {
+                if (state.cityStateFunctions.getTributeWillingness(civInfo, demandingWorker = true) > 0)
                     state.cityStateFunctions.tributeWorker(civInfo)
                 else
                     state.cityStateFunctions.tributeGold(civInfo)
@@ -741,8 +741,8 @@ object NextTurnAutomation {
         var theirCombatStrength = otherCiv.getStatForRanking(RankingType.Force).toFloat() + baseForce + CityCombatant(otherCiv.getCapital()!!).getCityStrength()
 
         //for city-states, also consider their protectors
-        if (otherCiv.isCityState() and otherCiv.getProtectorCivs().isNotEmpty()) {
-            theirCombatStrength += otherCiv.getProtectorCivs().filterNot { it == civInfo }
+        if (otherCiv.isCityState() and otherCiv.cityStateFunctions.getProtectorCivs().isNotEmpty()) {
+            theirCombatStrength += otherCiv.cityStateFunctions.getProtectorCivs().filterNot { it == civInfo }
                 .sumOf { it.getStatForRanking(RankingType.Force) }
         }
 

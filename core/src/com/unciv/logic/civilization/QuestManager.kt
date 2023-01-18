@@ -371,7 +371,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
             QuestName.GreatPerson.value -> getGreatPersonForQuest(challenger) != null
             QuestName.FindPlayer.value -> getCivilizationToFindForQuest(challenger) != null
             QuestName.FindNaturalWonder.value -> getNaturalWonderToFindForQuest(challenger) != null
-            QuestName.PledgeToProtect.value -> mostRecentBully != null && challenger !in civInfo.getProtectorCivs()
+            QuestName.PledgeToProtect.value -> mostRecentBully != null && challenger !in civInfo.cityStateFunctions.getProtectorCivs()
             QuestName.GiveGold.value -> mostRecentBully != null
             QuestName.DenounceCiv.value -> mostRecentBully != null && challenger.knows(mostRecentBully)
                                             && !challenger.getDiplomacyManager(mostRecentBully).hasFlag(DiplomacyFlags.Denunciation)
@@ -395,7 +395,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
             QuestName.GreatPerson.value -> assignee.getCivGreatPeople().any { it.baseUnit.getReplacedUnit(civInfo.gameInfo.ruleSet).name == assignedQuest.data1 }
             QuestName.FindPlayer.value -> assignee.hasMetCivTerritory(civInfo.gameInfo.getCivilization(assignedQuest.data1))
             QuestName.FindNaturalWonder.value -> assignee.naturalWonders.contains(assignedQuest.data1)
-            QuestName.PledgeToProtect.value -> assignee in civInfo.getProtectorCivs()
+            QuestName.PledgeToProtect.value -> assignee in civInfo.cityStateFunctions.getProtectorCivs()
             QuestName.DenounceCiv.value -> assignee.getDiplomacyManager(assignedQuest.data1).hasFlag(DiplomacyFlags.Denunciation)
             QuestName.SpreadReligion.value -> civInfo.getCapital()!!.religion.getMajorityReligion() == civInfo.gameInfo.religions[assignedQuest.data2]
             else -> false

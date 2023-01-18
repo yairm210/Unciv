@@ -17,7 +17,7 @@ import kotlin.math.min
 import kotlin.math.pow
 
 /** CivInfo class was getting too crowded */
-class CivInfoStats(val civInfo: CivilizationInfo) {
+class CivInfoStatsForNextTurn(val civInfo: CivilizationInfo) {
 
     @Transient
     /** Happiness for next turn */

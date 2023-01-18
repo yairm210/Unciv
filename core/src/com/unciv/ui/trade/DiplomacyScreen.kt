@@ -215,7 +215,7 @@ class DiplomacyScreen(
         }
         diplomacyTable.row().padTop(15f)
 
-        otherCiv.updateAllyCivForCityState()
+        otherCiv.cityStateFunctions.updateAllyCivForCityState()
         var ally = otherCiv.getAllyCiv()
         if (ally != null) {
             val allyInfluence = otherCiv.getDiplomacyManager(ally).getInfluence().toInt()
@@ -226,7 +226,7 @@ class DiplomacyScreen(
                 .row()
         }
 
-        val protectors = otherCiv.getProtectorCivs()
+        val protectors = otherCiv.cityStateFunctions.getProtectorCivs()
         if (protectors.isNotEmpty()) {
             val newProtectors = arrayListOf<String>()
             for (protector in protectors) {
@@ -355,12 +355,12 @@ class DiplomacyScreen(
         val revokeProtectionButton = "Revoke Protection".toTextButton()
         revokeProtectionButton.onClick {
             ConfirmPopup(this, "Revoke protection for [${otherCiv.civName}]?", "Revoke Protection") {
-                otherCiv.removeProtectorCiv(viewingCiv)
+                otherCiv.cityStateFunctions.removeProtectorCiv(viewingCiv)
                 updateLeftSideTable(otherCiv)
                 updateRightSide(otherCiv)
             }.open()
         }
-        if (isNotPlayersTurn() || !otherCiv.otherCivCanWithdrawProtection(viewingCiv)) revokeProtectionButton.disable()
+        if (isNotPlayersTurn() || !otherCiv.cityStateFunctions.otherCivCanWithdrawProtection(viewingCiv)) revokeProtectionButton.disable()
         return revokeProtectionButton
     }
 
@@ -373,12 +373,12 @@ class DiplomacyScreen(
                 "Pledge to protect",
                 true
             ) {
-                otherCiv.addProtectorCiv(viewingCiv)
+                otherCiv.cityStateFunctions.addProtectorCiv(viewingCiv)
                 updateLeftSideTable(otherCiv)
                 updateRightSide(otherCiv)
             }.open()
         }
-        if (isNotPlayersTurn() || !otherCiv.otherCivCanPledgeProtection(viewingCiv)) protectionButton.disable()
+        if (isNotPlayersTurn() || !otherCiv.cityStateFunctions.otherCivCanPledgeProtection(viewingCiv)) protectionButton.disable()
         return protectionButton
     }
 
@@ -484,7 +484,7 @@ class DiplomacyScreen(
             val giftButton =
                 "Gift [$giftAmount] gold (+[$influenceAmount] influence)".toTextButton()
             giftButton.onClick {
-                otherCiv.receiveGoldGift(viewingCiv, giftAmount)
+                otherCiv.cityStateFunctions.receiveGoldGift(viewingCiv, giftAmount)
                 updateLeftSideTable(otherCiv)
                 updateRightSide(otherCiv)
             }
@@ -571,7 +571,7 @@ class DiplomacyScreen(
             rightSideTable.add(ScrollPane(getCityStateDiplomacyTable(otherCiv)))
         }
         diplomacyTable.add(demandGoldButton).row()
-        if (otherCiv.getTributeWillingness(viewingCiv, demandingWorker = false) < 0)   demandGoldButton.disable()
+        if (otherCiv.cityStateFunctions.getTributeWillingness(viewingCiv, demandingWorker = false) < 0)   demandGoldButton.disable()
 
         val demandWorkerButton = "Take worker (-50 Influence)".toTextButton()
         demandWorkerButton.onClick {
@@ -580,7 +580,7 @@ class DiplomacyScreen(
             rightSideTable.add(ScrollPane(getCityStateDiplomacyTable(otherCiv)))
         }
         diplomacyTable.add(demandWorkerButton).row()
-        if (otherCiv.getTributeWillingness(viewingCiv, demandingWorker = true) < 0)    demandWorkerButton.disable()
+        if (otherCiv.cityStateFunctions.getTributeWillingness(viewingCiv, demandingWorker = true) < 0)    demandWorkerButton.disable()
 
         val backButton = "Back".toTextButton()
         backButton.onClick {

@@ -312,7 +312,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 add(getCloseButton("Very well.", 'n') {
                     val capitalLocation = LocationAction(cityState.cities.asSequence().map { it.location }) // in practice 0 or 1 entries, that's OK
                     player.addNotification("You have broken your Pledge to Protect [${cityState.civName}]!", capitalLocation, NotificationCategory.Diplomacy, cityState.civName)
-                    cityState.removeProtectorCiv(player, forced = true)
+                    cityState.cityStateFunctions.removeProtectorCiv(player, forced = true)
                 }).row()
             }
             AlertType.RecapturedCivilian -> addRecapturedCivilianTable()

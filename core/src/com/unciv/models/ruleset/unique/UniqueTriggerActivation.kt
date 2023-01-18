@@ -339,7 +339,7 @@ object UniqueTriggerActivation {
             CityStateCanGiftGreatPeople -> {
                 civInfo.addFlag(
                     CivFlags.CityStateGreatPersonGift.name,
-                    civInfo.turnsForGreatPersonFromCityState() / 2
+                    civInfo.cityStateFunctions.turnsForGreatPersonFromCityState() / 2
                 )
                 if (notification != null) {
                     civInfo.addNotification(notification, NotificationCategory.Diplomacy, NotificationIcon.CityState)

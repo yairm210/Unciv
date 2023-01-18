@@ -391,7 +391,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     }
 
     @Transient
-    val stats = CivInfoStats(this)
+    val stats = CivInfoStatsForNextTurn(this)
 
     @Transient
     val cache = CivInfoTransientCache(this)
@@ -630,7 +630,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         else
             otherCiv.addNotification(meetString, NotificationCategory.Diplomacy, NotificationIcon.Gold)
 
-        if (otherCiv.isCityState() && otherCiv.canGiveStat(Stat.Faith)){
+        if (otherCiv.isCityState() && otherCiv.cityStateFunctions.canProvideStat(Stat.Faith)){
             otherCiv.addNotification(religionMeetString, NotificationCategory.Diplomacy, NotificationIcon.Faith)
 
             for ((key, value) in faithAmount)
@@ -1073,7 +1073,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
                     && givingCityState != null
                 ) {
                     givingCityState.cityStateFunctions.giveGreatPersonToPatron(this)
-                    flagsCountdown[flag] = turnsForGreatPersonFromCityState()
+                    flagsCountdown[flag] = cityStateFunctions.turnsForGreatPersonFromCityState()
                 }
 
                 continue
@@ -1389,28 +1389,8 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         moveCapitalTo(newCapital)
     }
 
-    //////////////////////// City State wrapper functions ////////////////////////
-
-    fun receiveGoldGift(donorCiv: CivilizationInfo, giftAmount: Int) =
-        cityStateFunctions.receiveGoldGift(donorCiv, giftAmount)
-    fun turnsForGreatPersonFromCityState(): Int = ((37 + Random().nextInt(7)) * gameInfo.speed.modifier).toInt()
-
-    fun getProtectorCivs() = cityStateFunctions.getProtectorCivs()
-    fun addProtectorCiv(otherCiv: CivilizationInfo) = cityStateFunctions.addProtectorCiv(otherCiv)
-    fun removeProtectorCiv(otherCiv: CivilizationInfo, forced: Boolean = false) =
-        cityStateFunctions.removeProtectorCiv(otherCiv, forced)
-    fun otherCivCanPledgeProtection(otherCiv: CivilizationInfo) = cityStateFunctions.otherCivCanPledgeProtection(otherCiv)
-    fun otherCivCanWithdrawProtection(otherCiv: CivilizationInfo) = cityStateFunctions.otherCivCanWithdrawProtection(otherCiv)
-
-    fun updateAllyCivForCityState() = cityStateFunctions.updateAllyCivForCityState()
-    fun getTributeWillingness(demandingCiv: CivilizationInfo, demandingWorker: Boolean = false)
-        = cityStateFunctions.getTributeWillingness(demandingCiv, demandingWorker)
-    fun canGiveStat(statType: Stat) = cityStateFunctions.canGiveStat(statType)
-
     fun getAllyCiv() = allyCivName
     fun setAllyCiv(newAllyName: String?) { allyCivName = newAllyName }
-
-    //endregion
 
     fun asPreview() = CivilizationInfoPreview(this)
 }
