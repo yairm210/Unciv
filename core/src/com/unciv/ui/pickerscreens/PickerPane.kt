@@ -83,7 +83,7 @@ class PickerPane(
         /** Return a button for picker screens that display a list of big buttons with icons and labels. */
         fun getPickerOptionButton(icon: Actor, label: String): Button {
             return IconTextButton(label, icon).apply {
-                iconCell!!.size(pickerOptionIconSize).pad(10f)
+                iconCell.size(pickerOptionIconSize).pad(10f)
                 labelCell.pad(10f)
             }
         }

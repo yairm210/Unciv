@@ -884,7 +884,7 @@ object UnitActions {
             val otherCiv = tile.getOwner()
             if (otherCiv != null) {
                 // decrease relations for -10 pt/tile
-                if (!otherCiv.knows(unit.civInfo)) otherCiv.makeCivilizationsMeet(unit.civInfo)
+                if (!otherCiv.knows(unit.civInfo)) otherCiv.diplomacyFunctions.makeCivilizationsMeet(unit.civInfo)
                 otherCiv.getDiplomacyManager(unit.civInfo).addModifier(DiplomaticModifiers.StealingTerritory, -10f)
                 civsToNotify.add(otherCiv)
             }
@@ -989,7 +989,7 @@ object UnitActions {
                 .addModifier(DiplomaticModifiers.GaveUsUnits, 5f)
 
             if (recipient.isCityState() && unit.isGreatPerson())
-                unit.destroy()  // City states dont get GPs
+                unit.destroy()  // City states don't get GPs
             else
                 unit.gift(recipient)
             UncivGame.Current.worldScreen!!.shouldUpdate = true

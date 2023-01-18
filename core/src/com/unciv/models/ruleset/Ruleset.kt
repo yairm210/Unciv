@@ -232,8 +232,6 @@ class Ruleset {
             allRulesetObjects() + sequenceOf(modOptions)
 
     fun load(folderHandle: FileHandle) {
-        val gameBasicsStartTime = System.currentTimeMillis()
-
         val modOptionsFile = folderHandle.child("ModOptions.json")
         if (modOptionsFile.exists()) {
             try {

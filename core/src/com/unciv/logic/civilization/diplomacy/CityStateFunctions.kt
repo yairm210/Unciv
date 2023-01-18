@@ -257,7 +257,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                         civInfo.getDiplomacyManager(newEnemy).declareWar()
                     else if (!civInfo.knows(newEnemy)) {
                         // We have to meet first
-                        civInfo.makeCivilizationsMeet(newEnemy, warOnContact = true)
+                        civInfo.diplomacyFunctions.makeCivilizationsMeet(newEnemy, warOnContact = true)
                         civInfo.getDiplomacyManager(newEnemy).declareWar()
                     }
                 }

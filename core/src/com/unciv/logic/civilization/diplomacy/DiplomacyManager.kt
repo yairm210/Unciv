@@ -665,7 +665,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                     thirdCiv.getDiplomacyManager(civAtWarWith).declareWar(true)
                 else if (!thirdCiv.knows(civAtWarWith)) {
                     // Our city state ally has not met them yet, so they have to meet first
-                    thirdCiv.makeCivilizationsMeet(civAtWarWith, warOnContact = true)
+                    thirdCiv.diplomacyFunctions.makeCivilizationsMeet(civAtWarWith, warOnContact = true)
                     thirdCiv.getDiplomacyManager(civAtWarWith).declareWar(true)
                 }
             }

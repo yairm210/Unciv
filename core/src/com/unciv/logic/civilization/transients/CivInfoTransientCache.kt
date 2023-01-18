@@ -50,7 +50,7 @@ class CivInfoTransientCache(val civInfo: CivilizationInfo) {
             for (entry in viewedCivs) {
                 val metCiv = entry.key
                 if (metCiv == civInfo || metCiv.isBarbarian() || civInfo.diplomacy.containsKey(metCiv.civName)) continue
-                civInfo.makeCivilizationsMeet(metCiv)
+                civInfo.diplomacyFunctions.makeCivilizationsMeet(metCiv)
                 civInfo.addNotification("We have encountered [${metCiv.civName}]!",
                     entry.value.position,
                     NotificationCategory.Diplomacy, metCiv.civName,

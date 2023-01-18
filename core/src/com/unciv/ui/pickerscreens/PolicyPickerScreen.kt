@@ -211,7 +211,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         topTable.row()
 
         val branches = viewingCiv.gameInfo.ruleSet.policyBranches
-        var rowChangeCount = Int.MAX_VALUE
+        val rowChangeCount: Int
 
         // estimate how many branch boxes fit using average size (including pad)
         // TODO If we'd want to use scene2d correctly, this is supposed to happen inside an overridden layout() method
@@ -220,9 +220,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         if (numBranchesY > 1.5f) {
             val numRows = if (numBranchesY < 2.9f) 2 else (numBranchesY + 0.1f).toInt()
             rowChangeCount = (branches.size + numRows - 1) / numRows
-        } else {
-            rowChangeCount = branches.size
-        }
+        } else rowChangeCount = branches.size
 
 
         // Actually create and distribute the policy branches

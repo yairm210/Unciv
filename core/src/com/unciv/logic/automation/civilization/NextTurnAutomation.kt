@@ -683,12 +683,12 @@ object NextTurnAutomation {
     }
 
     private fun offerResearchAgreement(civInfo: CivilizationInfo) {
-        if (!civInfo.canSignResearchAgreement()) return // don't waste your time
+        if (!civInfo.diplomacyFunctions.canSignResearchAgreement()) return // don't waste your time
 
         val canSignResearchAgreementCiv = civInfo.getKnownCivs()
                 .asSequence()
                 .filter {
-                    civInfo.canSignResearchAgreementsWith(it)
+                    civInfo.diplomacyFunctions.canSignResearchAgreementsWith(it)
                             && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedResearchAgreement)
                 }
                 .sortedByDescending { it.stats.statsForNextTurn.science }
@@ -752,12 +752,12 @@ object NextTurnAutomation {
         val theirCity = closestCities.city2
 
         if (civInfo.units.getCivUnits().filter { it.isMilitary() }.none {
-                val damageRecievedWhenAttacking =
+                val damageReceivedWhenAttacking =
                     BattleDamage.calculateDamageToAttacker(
                         MapUnitCombatant(it),
                         CityCombatant(theirCity)
                     )
-                damageRecievedWhenAttacking < 100
+                damageReceivedWhenAttacking < 100
             })
                 return 0 // You don't have any units that can attack this city without dying, don't declare war.
 

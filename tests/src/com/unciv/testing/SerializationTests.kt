@@ -80,7 +80,7 @@ class SerializationTests {
 
         // Ensure some diplomacy objects are instantiated
         val otherCiv = game.getCivilization("Greece")
-        civ.makeCivilizationsMeet(otherCiv)
+        civ.diplomacyFunctions.makeCivilizationsMeet(otherCiv)
     }
 
     @Test

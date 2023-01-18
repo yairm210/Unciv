@@ -174,7 +174,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
         // How can you conquer a city but not know the civ you conquered it from?!
         // I don't know either, but some of our players have managed this, and crashed their game!
         if (!conqueringCiv.knows(oldCiv))
-            conqueringCiv.makeCivilizationsMeet(oldCiv)
+            conqueringCiv.diplomacyFunctions.makeCivilizationsMeet(oldCiv)
 
         oldCiv.getDiplomacyManager(conqueringCiv)
                 .addModifier(DiplomaticModifiers.CapturedOurCities, -aggroGenerated)
@@ -246,7 +246,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
 
         // In order to get "plus points" in Diplomacy, you have to establish diplomatic relations if you haven't yet
         if (!conqueringCiv.knows(foundingCiv))
-            conqueringCiv.makeCivilizationsMeet(foundingCiv)
+            conqueringCiv.diplomacyFunctions.makeCivilizationsMeet(foundingCiv)
 
         if (foundingCiv.isMajorCiv()) {
             foundingCiv.getDiplomacyManager(conqueringCiv)
@@ -299,7 +299,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
             removeBuildingsOnMoveToCiv(oldCiv)
 
             // Place palace for newCiv if this is the only city they have
-            // This needs to happen _before_ free buildings are added, as somtimes these should
+            // This needs to happen _before_ free buildings are added, as sometimes these should
             // only be placed in the capital, and then there needs to be a capital.
             if (newCivInfo.cities.size == 1) {
                 newCivInfo.moveCapitalTo(this)

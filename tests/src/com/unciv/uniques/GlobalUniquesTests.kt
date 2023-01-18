@@ -383,7 +383,7 @@ class GlobalUniquesTests {
         val cityStateTile = game.getTile(Vector2(0f, 1f))
         @Suppress("UNUSED_VARIABLE")
         val cityStateCity = game.addCity(cityState, cityStateTile, true)
-        civInfo.makeCivilizationsMeet(cityState)
+        civInfo.diplomacyFunctions.makeCivilizationsMeet(cityState)
         cityState.getDiplomacyManager(civInfo).addInfluence(100f)
 
         city.cityStats.update()

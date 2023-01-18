@@ -10,14 +10,13 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.enable
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toTextButton
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
-class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
+class MultiplayerScreen : PickerScreen() {
     private var selectedGame: OnlineMultiplayerGame? = null
 
     private val editButtonText = "Game settings"

@@ -2,14 +2,26 @@ package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
-import com.unciv.logic.map.HexMath.getDistance
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.map.HexMath.getDistance
 import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.models.ruleset.unique.UniqueType
 
 class UnitMovementAlgorithms(val unit: MapUnit) {
 
     private val pathfindingCache = PathfindingCache(unit)
+
+    fun getEnemyMovementPenalty(civInfo:CivilizationInfo, enemyUnit: MapUnit): Float {
+        if (civInfo.enemyMovementPenaltyUniques != null && civInfo.enemyMovementPenaltyUniques!!.any()) {
+            return civInfo.enemyMovementPenaltyUniques!!.sumOf {
+                if (it.type!! == UniqueType.EnemyLandUnitsSpendExtraMovement
+                        && enemyUnit.matchesFilter(it.params[0]))
+                    it.params[1].toInt()
+                else 0
+            }.toFloat()
+        }
+        return 0f // should not reach this point
+    }
 
     // This function is called ALL THE TIME and should be as time-optimal as possible!
     private fun getMovementCostBetweenAdjacentTiles(
@@ -36,7 +48,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
             toOwner != null &&
             toOwner.hasActiveEnemyMovementPenalty &&
             civInfo.isAtWarWith(toOwner)
-        ) toOwner.getEnemyMovementPenalty(unit) else 0f
+        ) getEnemyMovementPenalty(toOwner, unit) else 0f
 
         if (from.getUnpillagedRoad() == RoadStatus.Railroad && to.getUnpillagedRoad() == RoadStatus.Railroad)
             return RoadStatus.Railroad.movement + extraCost

@@ -8,7 +8,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.AlertType
-import com.unciv.logic.civilization.managers.AssignedQuest
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -17,6 +16,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers.*
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.logic.civilization.managers.AssignedQuest
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
@@ -113,7 +113,7 @@ class DiplomacyScreen(
 
         var selectCivY = 0f
 
-        for (civ in viewingCiv.getKnownCivsSorted()) {
+        for (civ in viewingCiv.diplomacyFunctions.getKnownCivsSorted()) {
             if (civ == selectCiv) {
                 selectCivY = leftSideTable.prefHeight
             }
@@ -665,7 +665,7 @@ class DiplomacyScreen(
                 diplomacyTable.add(getDeclareFriendshipButton(otherCiv)).row()
 
 
-            if (viewingCiv.canSignResearchAgreementsWith(otherCiv))
+            if (viewingCiv.diplomacyFunctions.canSignResearchAgreementsWith(otherCiv))
                 diplomacyTable.add(getResearchAgreementButton(otherCiv)).row()
 
             if (!diplomacyManager.hasFlag(DiplomacyFlags.Denunciation)

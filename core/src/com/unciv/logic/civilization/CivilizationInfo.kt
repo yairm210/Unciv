@@ -12,8 +12,8 @@ import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.diplomacy.CityStateFunctions
 import com.unciv.logic.civilization.diplomacy.CityStatePersonality
-import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
+import com.unciv.logic.civilization.diplomacy.DiplomacyFunctions
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.managers.EspionageManager
 import com.unciv.logic.civilization.managers.GoldenAgeManager
@@ -48,10 +48,8 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unique.getMatchingUniques
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
-import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.extensions.toPercent
-import com.unciv.ui.utils.extensions.withItem
 import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
 import kotlin.math.max
@@ -90,6 +88,9 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
     @Transient
     val units = UnitManager(this)
+
+    @Transient
+    var diplomacyFunctions = DiplomacyFunctions(this)
 
     @Transient
     var viewableTiles = setOf<TileInfo>()
@@ -328,39 +329,25 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     fun knows(otherCivName: String) = diplomacy.containsKey(otherCivName)
     fun knows(otherCiv: CivilizationInfo) = knows(otherCiv.civName)
 
-    /** A sorted Sequence of all other civs we know (excluding barbarians and spectators) */
-    fun getKnownCivsSorted(includeCityStates: Boolean = true, includeDefeated: Boolean = false) =
-        gameInfo.civilizations.asSequence()
-        .filterNot {
-            it == this ||
-                it.isBarbarian() || it.isSpectator() ||
-                !this.knows(it) ||
-                (!includeDefeated && it.isDefeated()) ||
-                (!includeCityStates && it.isCityState())
-        }
-        .sortedWith(
-            compareByDescending<CivilizationInfo> { it.isMajorCiv() }
-                .thenBy (UncivGame.Current.settings.getCollatorFromLocale()) { it.civName.tr() }
-        )
     fun getCapital() = cities.firstOrNull { it.isCapital() }
     fun isHuman() = playerType == PlayerType.Human
     fun isAI() = playerType == PlayerType.AI
-    fun isOneCityChallenger() = (
-            playerType == PlayerType.Human &&
-                    gameInfo.gameParameters.oneCityChallenge)
+    fun isOneCityChallenger() = playerType == PlayerType.Human && gameInfo.gameParameters.oneCityChallenge
 
     fun isCurrentPlayer() = gameInfo.currentPlayerCiv == this
+    fun isMajorCiv() = nation.isMajorCiv()
+    fun isMinorCiv() = nation.isCityState() || nation.isBarbarian()
+    fun isCityState(): Boolean = nation.isCityState()
     fun isBarbarian() = nation.isBarbarian()
     fun isSpectator() = nation.isSpectator()
-    fun isCityState(): Boolean = nation.isCityState()
+    fun isAlive(): Boolean = !isDefeated()
+
     @delegate:Transient
     val cityStateType: CityStateType by lazy { gameInfo.ruleSet.cityStateTypes[nation.cityStateType!!]!! }
     var cityStatePersonality: CityStatePersonality = CityStatePersonality.Neutral
     var cityStateResource: String? = null
     var cityStateUniqueUnit: String? = null // Unique unit for militaristic city state. Might still be null if there are no appropriate units
-    fun isMajorCiv() = nation.isMajorCiv()
-    fun isMinorCiv() = nation.isCityState() || nation.isBarbarian()
-    fun isAlive(): Boolean = !isDefeated()
+
 
     fun hasMetCivTerritory(otherCiv: CivilizationInfo): Boolean = otherCiv.getCivTerritory().any { hasExplored(it) }
     fun getCompletedPolicyBranchesCount(): Int = policies.adoptedPolicies.count { Policy.isBranchCompleteByName(it) }
@@ -399,7 +386,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     }
 
     fun getHappiness() = stats.happiness
-
 
     fun getCivResources(): ResourceSupplyList = summarizedCivResources
 
@@ -509,6 +495,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
             ?: throw UncivShowableException("Unit $baseUnitName doesn't seem to exist!")
         return getEquivalentUnit(baseUnit)
     }
+
     fun getEquivalentUnit(baseUnit: BaseUnit): BaseUnit {
         if (baseUnit.replaces != null)
             return getEquivalentUnit(baseUnit.replaces!!) // Equivalent of unique unit is the equivalent of the replaced unit
@@ -517,56 +504,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
             if (unit.replaces == baseUnit.name && unit.uniqueTo == civName)
                 return unit
         return baseUnit
-    }
-
-    fun makeCivilizationsMeet(otherCiv: CivilizationInfo, warOnContact: Boolean = false) {
-        meetCiv(otherCiv, warOnContact)
-        otherCiv.meetCiv(this, warOnContact)
-    }
-
-    private fun meetCiv(otherCiv: CivilizationInfo, warOnContact: Boolean = false) {
-        diplomacy[otherCiv.civName] = DiplomacyManager(this, otherCiv.civName)
-            .apply { diplomaticStatus = DiplomaticStatus.Peace }
-
-        if (!otherCiv.isSpectator())
-            otherCiv.popupAlerts.add(PopupAlert(AlertType.FirstContact, civName))
-
-        if (isCurrentPlayer())
-            UncivGame.Current.settings.addCompletedTutorialTask("Meet another civilization")
-
-        if (!(isCityState() && otherCiv.isMajorCiv())) return
-        if (warOnContact || otherCiv.isMinorCivAggressor()) return // No gift if they are bad people, or we are just about to be at war
-
-        val cityStateLocation = if (cities.isEmpty()) null else getCapital()!!.location
-
-        val giftAmount = Stats(gold = 15f)
-        val faithAmount = Stats(faith = 4f)
-        // Later, religious city-states will also gift gold, making this the better implementation
-        // For now, it might be overkill though.
-        var meetString = "[${civName}] has given us [${giftAmount}] as a token of goodwill for meeting us"
-        val religionMeetString = "[${civName}] has also given us [${faithAmount}]"
-        if (diplomacy.filter { it.value.otherCiv().isMajorCiv() }.size == 1) {
-            giftAmount.timesInPlace(2f)
-            meetString = "[${civName}] has given us [${giftAmount}] as we are the first major civ to meet them"
-        }
-        if (cityStateLocation != null)
-            otherCiv.addNotification(meetString, cityStateLocation, NotificationCategory.Diplomacy, NotificationIcon.Gold)
-        else
-            otherCiv.addNotification(meetString, NotificationCategory.Diplomacy, NotificationIcon.Gold)
-
-        if (otherCiv.isCityState() && otherCiv.cityStateFunctions.canProvideStat(Stat.Faith)){
-            otherCiv.addNotification(religionMeetString, NotificationCategory.Diplomacy, NotificationIcon.Faith)
-
-            for ((key, value) in faithAmount)
-                otherCiv.addStat(key, value.toInt())
-        }
-        for ((key, value) in giftAmount)
-            otherCiv.addStat(key, value.toInt())
-
-        if (cities.isNotEmpty())
-            otherCiv.exploredTiles = otherCiv.exploredTiles.withItem(getCapital()!!.location)
-
-        questManager.justMet(otherCiv) // Include them in war with major pseudo-quest
     }
 
     override fun toString(): String = civName // for debug
@@ -587,31 +524,10 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
     fun getEraNumber(): Int = getEra().eraNumber
 
-    fun isAtWarWith(otherCiv: CivilizationInfo): Boolean {
-        return when {
-            otherCiv == this -> false
-            otherCiv.isBarbarian() || isBarbarian() -> true
-            else -> {
-                val diplomacyManager = diplomacy[otherCiv.civName]
-                    ?: return false // not encountered yet
-                return diplomacyManager.diplomaticStatus == DiplomaticStatus.War
-            }
-        }
-    }
+    fun isAtWarWith(otherCiv: CivilizationInfo) = diplomacyFunctions.isAtWarWith(otherCiv)
 
     fun isAtWar() = diplomacy.values.any { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv().isDefeated() }
 
-    fun getEnemyMovementPenalty(enemyUnit: MapUnit): Float {
-        if (enemyMovementPenaltyUniques != null && enemyMovementPenaltyUniques!!.any()) {
-            return enemyMovementPenaltyUniques!!.sumOf {
-                if (it.type!! == UniqueType.EnemyLandUnitsSpendExtraMovement
-                        && enemyUnit.matchesFilter(it.params[0]))
-                    it.params[1].toInt()
-                else 0
-            }.toFloat()
-        }
-        return 0f // should not reach this point
-    }
 
     /**
      * Returns a civilization caption suitable for greetings including player type info:
@@ -623,34 +539,13 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         val online = gameInfo.gameParameters.isOnlineMultiplayer
         return nation.getLeaderDisplayName().tr() +
             when {
-                !online && !severalHumans ->
-                    ""                      // offline single player will know everybody else is AI
-                playerType == PlayerType.AI ->
-                    " (" + "AI".tr() + ")"
-                online ->
-                    " (" + "Human".tr() + " - " + "Multiplayer".tr() + ")"
-                else ->
-                    " (" + "Human".tr() + " - " + "Hotseat".tr() + ")"
+                !online && !severalHumans -> ""  // offline single player will know everybody else is AI
+                playerType == PlayerType.AI -> " (${"AI".tr()})"
+                online -> " (${"Human".tr()} - ${"Multiplayer".tr()})"
+                else -> " (${"Human".tr()} - ${"Hotseat".tr()})"
             }
     }
 
-    fun canSignResearchAgreement(): Boolean {
-        if (!isMajorCiv()) return false
-        if (!hasUnique(UniqueType.EnablesResearchAgreements)) return false
-        if (gameInfo.ruleSet.technologies.values
-                        .none { tech.canBeResearched(it.name) && !tech.isResearched(it.name) }) return false
-        return true
-    }
-
-    fun canSignResearchAgreementsWith(otherCiv: CivilizationInfo): Boolean {
-        val diplomacyManager = getDiplomacyManager(otherCiv)
-        val cost = getResearchAgreementCost()
-        return canSignResearchAgreement() && otherCiv.canSignResearchAgreement()
-                && diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
-                && !diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement)
-                && !diplomacyManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.ResearchAgreement)
-                && gold >= cost && otherCiv.gold >= cost
-    }
 
     fun getStatForRanking(category: RankingType): Int {
         return if (isDefeated()) 0
@@ -686,9 +581,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         sum = (sum * min(goldBonus, 2f)).toInt()    // 2f is max bonus
         return sum
     }
-
-    fun hasTechOrPolicy(techOrPolicyName: String) =
-        tech.isResearched(techOrPolicyName) || policies.isAdopted(techOrPolicyName)
 
     fun isMinorCivAggressor() = numMinorCivsAttacked >= 2
     fun isMinorCivWarmonger() = numMinorCivsAttacked >= 4

@@ -167,7 +167,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         }
 
         val multiplayerTable = getMenuButton("Multiplayer", "OtherIcons/Multiplayer", 'm')
-            { game.pushScreen(MultiplayerScreen(this)) }
+            { game.pushScreen(MultiplayerScreen()) }
         column2.add(multiplayerTable).row()
 
         val mapEditorScreenTable = getMenuButton("Map editor", "OtherIcons/MapEditor", 'e')
