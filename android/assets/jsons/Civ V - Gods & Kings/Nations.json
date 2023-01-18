@@ -92,8 +92,7 @@
 
 		"favouredReligion": "Taoism",
 		"uniqueName": "Art of War",
-		"uniques": ["Great General provides double combat bonus", "[Great General] is earned [50]% faster",
-            "Gain [1000] [Faith] <upon entering the [Classical era]>"],
+		"uniques": ["Great General provides double combat bonus", "[Great General] is earned [50]% faster"],
 		"cities": ["Beijing","Shanghai","Guangzhou","Nanjing","Xian","Chengdu","Hangzhou","Tianjin","Macau","Shandong",
 			"Kaifeng","Ningbo","Baoding","Yangzhou","Harbin","Chongqing","Luoyang","Kunming","Taipei","Shenyang",
 			"Taiyuan","Tainan","Dalian","Lijiang","Wuxi","Suzhou","Maoming","Shaoguan","Yangjiang","Heyuan","Huangshi",
