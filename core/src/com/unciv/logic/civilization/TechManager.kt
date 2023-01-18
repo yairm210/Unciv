@@ -7,6 +7,7 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.models.ruleset.Era
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.unique.UniqueMap
+import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -248,9 +249,15 @@ class TechManager : IsPartOfGameInfoSerialization {
             repeatingTechsResearched++
         researchedTechnologies = researchedTechnologies.withItem(newTech)
         addTechToTransients(newTech)
-        for (unique in newTech.uniqueObjects) {
-            UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
-        }
+        for (unique in newTech.uniqueObjects)
+            if (unique.conditionals.none { it.type!!.targetTypes.contains(UniqueTarget.TriggerCondition) })
+                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponResearch))
+            if (unique.conditionals.any {it.type == UniqueType.TriggerUponResearch && it.params[0] == techName})
+                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+
+
         updateTransientBooleans()
         for (city in civInfo.cities) {
             city.updateCitizens = true
@@ -340,17 +347,14 @@ class TechManager : IsPartOfGameInfoSerialization {
                 .sortedBy { it.eraNumber }
             for (era in erasPassed)
                 for (unique in era.uniqueObjects)
-                    UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+                    if (unique.conditionals.none { it.type!!.targetTypes.contains(UniqueTarget.TriggerCondition) })
+                        UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
 
             val eraNames = erasPassed.map { it.name }.toHashSet()
             for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnteringEra))
                 if (unique.conditionals.any {it.type == UniqueType.TriggerUponEnteringEra && it.params[0] in eraNames})
                     UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
         }
-
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponResearch))
-            if (unique.conditionals.any {it.type == UniqueType.TriggerUponResearch && it.params[0] == techName})
-                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
     }
 
     fun updateEra() {

@@ -6,6 +6,7 @@ import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Policy.PolicyBranchType
 import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.ruleset.unique.UniqueMap
+import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.utils.extensions.toPercent
@@ -199,8 +200,8 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         }
 
         for (unique in policy.uniqueObjects)
-            UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
-
+            if (unique.conditionals.none { it.type!!.targetTypes.contains(UniqueTarget.TriggerCondition) })
+                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
 
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponAdoptingPolicy))
             if (unique.conditionals.any {it.type == UniqueType.TriggerUponAdoptingPolicy && it.params[0] == policy.name})
