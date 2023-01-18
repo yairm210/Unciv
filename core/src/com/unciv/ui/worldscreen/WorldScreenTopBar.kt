@@ -187,7 +187,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         }
 
         fun update(worldScreen: WorldScreen) {
-            val newVisible = worldScreen.selectedCiv.stats().getUnitSupplyDeficit() > 0
+            val newVisible = worldScreen.selectedCiv.stats.getUnitSupplyDeficit() > 0
             if (newVisible == unitSupplyCell.hasActor()) return
             if (newVisible) unitSupplyCell.setActor(unitSupplyImage)
                 .size(50f).padLeft(10f)
@@ -316,7 +316,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     }
 
     private fun updateStatsTable(civInfo: CivilizationInfo) {
-        val nextTurnStats = civInfo.statsForNextTurn
+        val nextTurnStats = civInfo.stats.statsForNextTurn
         val goldPerTurn = " (" + rateLabel(nextTurnStats.gold) + ")"
         goldLabel.setText(civInfo.gold.toString() + goldPerTurn)
 

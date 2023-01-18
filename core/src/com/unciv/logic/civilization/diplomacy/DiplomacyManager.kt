@@ -502,7 +502,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
             // At the end of every turn
             if (flag == DiplomacyFlags.ResearchAgreement.name)
-                totalOfScienceDuringRA += civInfo.statsForNextTurn.science.toInt()
+                totalOfScienceDuringRA += civInfo.stats.statsForNextTurn.science.toInt()
 
             // These modifiers decrease slightly @ 50
             if (flagsCountdown[flag] == 50) {

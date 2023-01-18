@@ -87,7 +87,7 @@ class UnitOverviewTab(
     private fun showWorldScreenAt(tile: TileInfo) = showWorldScreenAt(tile.position, null)
 
     private fun getUnitSupplyTable(): ExpanderTab {
-        val stats = viewingPlayer.stats()
+        val stats = viewingPlayer.stats
         val deficit = stats.getUnitSupplyDeficit()
         val icon = if (deficit <= 0) null else Group().apply {
             isTransform = false

@@ -53,7 +53,7 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
         if (isWorldScreen) {
             val techCost = techManager.costOfTech(techName)
             val remainingTech = techManager.remainingScienceToTech(techName)
-            val techThisTurn = techManager.civInfo.statsForNextTurn.science
+            val techThisTurn = techManager.civInfo.stats.statsForNextTurn.science
 
             val percentComplete = (techCost - remainingTech) / techCost.toFloat()
             val percentWillBeComplete = (techCost - (remainingTech-techThisTurn)) / techCost.toFloat()

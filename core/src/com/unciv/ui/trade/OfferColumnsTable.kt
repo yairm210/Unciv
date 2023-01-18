@@ -25,7 +25,7 @@ class OfferColumnsTable(private val tradeLogic: TradeLogic, val screen: Diplomac
     private val ourAvailableOffersTable = OffersListScroll("OurAvail") {
         when (it.type) {
             TradeType.Gold -> openGoldSelectionPopup(it, tradeLogic.currentTrade.ourOffers, tradeLogic.ourCivilization.gold)
-            TradeType.Gold_Per_Turn -> openGoldSelectionPopup(it, tradeLogic.currentTrade.ourOffers, tradeLogic.ourCivilization.statsForNextTurn.gold.toInt())
+            TradeType.Gold_Per_Turn -> openGoldSelectionPopup(it, tradeLogic.currentTrade.ourOffers, tradeLogic.ourCivilization.stats.statsForNextTurn.gold.toInt())
             else -> addOffer(it, tradeLogic.currentTrade.ourOffers, tradeLogic.currentTrade.theirOffers)
         }
     }
@@ -33,21 +33,21 @@ class OfferColumnsTable(private val tradeLogic: TradeLogic, val screen: Diplomac
     private val ourOffersTable = OffersListScroll("OurTrade") {
         when (it.type) {
             TradeType.Gold -> openGoldSelectionPopup(it, tradeLogic.currentTrade.ourOffers, tradeLogic.ourCivilization.gold)
-            TradeType.Gold_Per_Turn -> openGoldSelectionPopup(it, tradeLogic.currentTrade.ourOffers, tradeLogic.ourCivilization.statsForNextTurn.gold.toInt())
+            TradeType.Gold_Per_Turn -> openGoldSelectionPopup(it, tradeLogic.currentTrade.ourOffers, tradeLogic.ourCivilization.stats.statsForNextTurn.gold.toInt())
             else -> addOffer(it.copy(amount = -it.amount), tradeLogic.currentTrade.ourOffers, tradeLogic.currentTrade.theirOffers)
         }
     }
     private val theirOffersTable = OffersListScroll("TheirTrade") {
         when (it.type) {
             TradeType.Gold -> openGoldSelectionPopup(it, tradeLogic.currentTrade.theirOffers, tradeLogic.otherCivilization.gold)
-            TradeType.Gold_Per_Turn -> openGoldSelectionPopup(it, tradeLogic.currentTrade.theirOffers, tradeLogic.otherCivilization.statsForNextTurn.gold.toInt())
+            TradeType.Gold_Per_Turn -> openGoldSelectionPopup(it, tradeLogic.currentTrade.theirOffers, tradeLogic.otherCivilization.stats.statsForNextTurn.gold.toInt())
             else -> addOffer(it.copy(amount = -it.amount), tradeLogic.currentTrade.theirOffers, tradeLogic.currentTrade.ourOffers)
         }
     }
     private val theirAvailableOffersTable = OffersListScroll("TheirAvail") {
         when (it.type) {
             TradeType.Gold -> openGoldSelectionPopup(it, tradeLogic.currentTrade.theirOffers, tradeLogic.otherCivilization.gold)
-            TradeType.Gold_Per_Turn -> openGoldSelectionPopup(it, tradeLogic.currentTrade.theirOffers, tradeLogic.otherCivilization.statsForNextTurn.gold.toInt())
+            TradeType.Gold_Per_Turn -> openGoldSelectionPopup(it, tradeLogic.currentTrade.theirOffers, tradeLogic.otherCivilization.stats.statsForNextTurn.gold.toInt())
             else -> addOffer(it, tradeLogic.currentTrade.theirOffers, tradeLogic.currentTrade.ourOffers)
         }
     }

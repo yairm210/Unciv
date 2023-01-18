@@ -96,7 +96,7 @@ object NextTurnAutomation {
 
     fun automateGoldToSciencePercentage(civInfo: CivilizationInfo) {
         // Don't let the AI run blindly with the default convert-gold-to-science ratio if that option is enabled
-        val estimatedIncome = civInfo.statsForNextTurn.gold.toInt()
+        val estimatedIncome = civInfo.stats.statsForNextTurn.gold.toInt()
         val projectedGold = civInfo.gold + estimatedIncome
         // TODO: some cleverness, this is just wild guessing.
         val pissPoor = civInfo.tech.era.baseUnitBuyCost
@@ -691,7 +691,7 @@ object NextTurnAutomation {
                     civInfo.canSignResearchAgreementsWith(it)
                             && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedResearchAgreement)
                 }
-                .sortedByDescending { it.statsForNextTurn.science }
+                .sortedByDescending { it.stats.statsForNextTurn.science }
 
         for (otherCiv in canSignResearchAgreementCiv) {
             // Default setting is 5, this will be changed according to different civ.

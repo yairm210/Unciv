@@ -158,13 +158,13 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalWithResource -> state.civInfo?.hasResource(condition.params[0]) == true
             UniqueType.ConditionalWithoutResource -> state.civInfo?.hasResource(condition.params[0]) == false
             UniqueType.ConditionalHappy ->
-                state.civInfo != null && state.civInfo.statsForNextTurn.happiness >= 0
+                state.civInfo != null && state.civInfo.stats.statsForNextTurn.happiness >= 0
             UniqueType.ConditionalBetweenHappiness ->
                 state.civInfo != null
-                && condition.params[0].toInt() <= state.civInfo.happinessForNextTurn
-                && state.civInfo.happinessForNextTurn < condition.params[1].toInt()
+                && condition.params[0].toInt() <= state.civInfo.stats.happiness
+                && state.civInfo.stats.happiness < condition.params[1].toInt()
             UniqueType.ConditionalBelowHappiness ->
-                state.civInfo != null && state.civInfo.happinessForNextTurn < condition.params[0].toInt()
+                state.civInfo != null && state.civInfo.stats.happiness < condition.params[0].toInt()
             UniqueType.ConditionalGoldenAge ->
                 state.civInfo != null && state.civInfo.goldenAges.isGoldenAge()
             UniqueType.ConditionalWLTKD ->

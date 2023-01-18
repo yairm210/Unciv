@@ -80,7 +80,7 @@ class StatsOverviewTab(
     }
 
     fun update() {
-        val statMap = viewingPlayer.stats().getStatMapForNextTurn()
+        val statMap = viewingPlayer.stats.getStatMapForNextTurn()
         updateHappinessTable()
         goldTable.updateStatTable(Stat.Gold, statMap)
         scienceTable.updateStatTable(Stat.Science, statMap)
@@ -109,7 +109,7 @@ class StatsOverviewTab(
 
     private fun updateHappinessTable() = happinessTable.apply {
         addHeading("Happiness")
-        val happinessBreakdown = viewingPlayer.stats().getHappinessBreakdown()
+        val happinessBreakdown = viewingPlayer.stats.getHappinessBreakdown()
         for ((key, value) in happinessBreakdown)
             addLabeledValue(key, value)
         addTotal(happinessBreakdown.values.sum())
