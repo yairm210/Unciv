@@ -14,6 +14,9 @@ import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.diplomacy.CityStateFunctions
 import com.unciv.logic.civilization.diplomacy.CityStatePersonality
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.civilization.diplomacy.DiplomacyManager
+import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.managers.EspionageManager
 import com.unciv.logic.civilization.managers.GoldenAgeManager
 import com.unciv.logic.civilization.managers.GreatPersonManager
@@ -23,25 +26,20 @@ import com.unciv.logic.civilization.managers.ReligionManager
 import com.unciv.logic.civilization.managers.RuinsManager
 import com.unciv.logic.civilization.managers.TechManager
 import com.unciv.logic.civilization.managers.VictoryManager
-import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
-import com.unciv.logic.civilization.diplomacy.DiplomacyManager
-import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.transients.CivInfoStatsForNextTurn
 import com.unciv.logic.civilization.transients.CivInfoTransientCache
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.UnitMovementAlgorithms
-import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeRequest
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.nation.CityStateType
-import com.unciv.models.ruleset.nation.Difficulty
-import com.unciv.models.ruleset.tech.Era
-import com.unciv.models.ruleset.ModOptionsConstants
-import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Victory
+import com.unciv.models.ruleset.nation.CityStateType
+import com.unciv.models.ruleset.nation.Difficulty
+import com.unciv.models.ruleset.nation.Nation
+import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
@@ -49,13 +47,11 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.TemporaryUnique
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.ruleset.unique.endTurn
 import com.unciv.models.ruleset.unique.getMatchingUniques
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
-import com.unciv.ui.utils.MayaCalendar
 import com.unciv.ui.utils.extensions.toPercent
 import com.unciv.ui.utils.extensions.withItem
 import com.unciv.ui.victoryscreen.RankingType
@@ -136,7 +132,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     val cityStateFunctions = CityStateFunctions(this)
 
     @Transient
-    private var cachedMilitaryMight = -1
+    var cachedMilitaryMight = -1
 
     @Transient
     var passThroughImpassableUnlocked = false   // Cached Boolean equal to passableImpassables.isNotEmpty()
@@ -194,7 +190,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     val tradeRequests = ArrayList<TradeRequest>()
 
     /** See DiplomacyManager.flagsCountdown for why this does not map Enums to ints */
-    private var flagsCountdown = HashMap<String, Int>()
+    var flagsCountdown = HashMap<String, Int>()
 
     /** Arraylist instead of HashMap as the same unique might appear multiple times
      * We don't use pairs, as these cannot be serialized due to having no no-arg constructor
@@ -806,7 +802,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     fun isMinorCivAggressor() = numMinorCivsAttacked >= 2
     fun isMinorCivWarmonger() = numMinorCivsAttacked >= 4
 
-    private fun isLongCountActive(): Boolean {
+    fun isLongCountActive(): Boolean {
         val unique = getMatchingUniques(UniqueType.MayanGainGreatPerson).firstOrNull()
             ?: return false
         return tech.isResearched(unique.params[1])
@@ -943,53 +939,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
             gameInfo.barbarians.updateEncampments()
     }
 
-    fun startTurn() {
-        civConstructions.startTurn()
-        attacksSinceTurnStart.clear()
-        updateStatsForNextTurn() // for things that change when turn passes e.g. golden age, city state influence
-
-        // Do this after updateStatsForNextTurn but before cities.startTurn
-        if (playerType == PlayerType.AI && gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.convertGoldToScience))
-            NextTurnAutomation.automateGoldToSciencePercentage(this)
-
-        // Generate great people at the start of the turn,
-        // so they won't be generated out in the open and vulnerable to enemy attacks before you can control them
-        if (cities.isNotEmpty()) { //if no city available, addGreatPerson will throw exception
-            val greatPerson = greatPeople.getNewGreatPerson()
-            if (greatPerson != null && gameInfo.ruleSet.units.containsKey(greatPerson)) addUnit(greatPerson)
-            religionManager.startTurn()
-            if (isLongCountActive())
-                MayaCalendar.startTurnForMaya(this)
-        }
-
-        cache.updateViewableTiles() // adds explored tiles so that the units will be able to perform automated actions better
-        cache.updateCitiesConnectedToCapital()
-        startTurnFlags()
-        updateRevolts()
-        for (city in cities) city.startTurn()  // Most expensive part of startTurn
-
-        for (unit in getCivUnits()) unit.startTurn()
-
-        if (playerType == PlayerType.Human && UncivGame.Current.settings.automatedUnitsMoveOnTurnStart) {
-            hasMovedAutomatedUnits = true
-            for (unit in getCivUnits())
-                unit.doAction()
-        } else hasMovedAutomatedUnits = false
-
-        cache.updateCivResources() // If you offered a trade last turn, this turn it will have been accepted/declined
-
-        for (tradeRequest in tradeRequests.toList()) { // remove trade requests where one of the sides can no longer supply
-            val offeringCiv = gameInfo.getCivilization(tradeRequest.requestingCiv)
-            if (offeringCiv.isDefeated() || !TradeEvaluation().isTradeValid(tradeRequest.trade, this, offeringCiv)) {
-                tradeRequests.remove(tradeRequest)
-                // Yes, this is the right direction. I checked.
-                offeringCiv.addNotification("Our proposed trade is no longer relevant!", NotificationCategory.Trade, NotificationIcon.Trade)
-            }
-        }
-
-        updateWinningCiv()
-    }
-
     fun updateWinningCiv(){
         if (gameInfo.victoryData == null) {
             val victoryType = victoryManager.getVictoryTypeAchieved()
@@ -999,129 +948,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
                 for (civInfo in gameInfo.civilizations)
                     civInfo.popupAlerts.add(PopupAlert(AlertType.GameHasBeenWon, civName))
             }
-        }
-    }
-
-    fun endTurn() {
-        val notificationsThisTurn = NotificationsLog(gameInfo.turns)
-        notificationsThisTurn.notifications.addAll(notifications)
-
-        while (notificationsLog.size >= UncivGame.Current.settings.notificationsLogMaxTurns) {
-            notificationsLog.removeFirst()
-        }
-
-        if (notificationsThisTurn.notifications.isNotEmpty())
-            notificationsLog.add(notificationsThisTurn)
-
-        notifications.clear()
-        updateStatsForNextTurn()
-        val nextTurnStats = stats.statsForNextTurn
-
-        policies.endTurn(nextTurnStats.culture.toInt())
-        totalCultureForContests += nextTurnStats.culture.toInt()
-
-        if (isCityState())
-            questManager.endTurn()
-
-        // disband units until there are none left OR the gold values are normal
-        if (!isBarbarian() && gold < -100 && nextTurnStats.gold.toInt() < 0) {
-            for (i in 1 until (gold / -100)) {
-                var civMilitaryUnits = getCivUnits().filter { it.baseUnit.isMilitary() }
-                if (civMilitaryUnits.any()) {
-                    val unitToDisband = civMilitaryUnits.first()
-                    unitToDisband.disband()
-                    civMilitaryUnits -= unitToDisband
-                    val unitName = unitToDisband.shortDisplayName()
-                    addNotification("Cannot provide unit upkeep for $unitName - unit has been disbanded!", NotificationCategory.Units, unitName, NotificationIcon.Death)
-                }
-            }
-        }
-
-        addGold( nextTurnStats.gold.toInt() )
-
-        if (cities.isNotEmpty() && gameInfo.ruleSet.technologies.isNotEmpty())
-            tech.endTurn(nextTurnStats.science.toInt())
-
-        religionManager.endTurn(nextTurnStats.faith.toInt())
-        totalFaithForContests += nextTurnStats.faith.toInt()
-
-        espionageManager.endTurn()
-
-        if (isMajorCiv()) greatPeople.addGreatPersonPoints(getGreatPersonPointsForNextTurn()) // City-states don't get great people!
-
-        // To handle tile's owner issue (#8246), we need to run being razed city first.
-        for (city in sequence {
-            yieldAll(cities.filter { it.isBeingRazed })
-            yieldAll(cities.filterNot { it.isBeingRazed })
-        }.toList()) { // a city can be removed while iterating (if it's being razed) so we need to iterate over a copy
-            city.endTurn()
-        }
-
-        temporaryUniques.endTurn()
-
-        goldenAges.endTurn(getHappiness())
-        getCivUnits().forEach { it.endTurn() }  // This is the most expensive part of endTurn
-        diplomacy.values.toList().forEach { it.nextTurn() } // we copy the diplomacy values so if it changes in-loop we won't crash
-        cache.updateHasActiveEnemyMovementPenalty()
-
-        cachedMilitaryMight = -1    // Reset so we don't use a value from a previous turn
-
-        updateWinningCiv() // Maybe we did something this turn to win
-    }
-
-    private fun startTurnFlags() {
-        for (flag in flagsCountdown.keys.toList()) {
-            // In case we remove flags while iterating
-            if (!flagsCountdown.containsKey(flag)) continue
-
-            if (flag == CivFlags.CityStateGreatPersonGift.name) {
-                val cityStateAllies: List<CivilizationInfo> =
-                    getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civName }
-                val givingCityState = cityStateAllies.filter { it.cities.isNotEmpty() }.randomOrNull()
-
-                if (cityStateAllies.isNotEmpty()) flagsCountdown[flag] = flagsCountdown[flag]!! - 1
-
-                if (flagsCountdown[flag]!! < min(cityStateAllies.size, 10) && cities.isNotEmpty()
-                    && givingCityState != null
-                ) {
-                    givingCityState.cityStateFunctions.giveGreatPersonToPatron(this)
-                    flagsCountdown[flag] = cityStateFunctions.turnsForGreatPersonFromCityState()
-                }
-
-                continue
-            }
-
-            if (flagsCountdown[flag]!! > 0)
-                flagsCountdown[flag] = flagsCountdown[flag]!! - 1
-
-            if (flagsCountdown[flag] != 0) continue
-
-            when (flag) {
-                CivFlags.RevoltSpawning.name -> doRevoltSpawn()
-            }
-        }
-        handleDiplomaticVictoryFlags()
-    }
-
-    private fun handleDiplomaticVictoryFlags() {
-        if (flagsCountdown[CivFlags.ShouldResetDiplomaticVotes.name] == 0) {
-            gameInfo.diplomaticVictoryVotesCast.clear()
-            removeFlag(CivFlags.ShowDiplomaticVotingResults.name)
-            removeFlag(CivFlags.ShouldResetDiplomaticVotes.name)
-        }
-
-        if (flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == 0) {
-            gameInfo.processDiplomaticVictory()
-            if (gameInfo.civilizations.any { it.victoryManager.hasWon() } ) {
-                removeFlag(CivFlags.TurnsTillNextDiplomaticVote.name)
-            } else {
-                addFlag(CivFlags.ShouldResetDiplomaticVotes.name, 1)
-                addFlag(CivFlags.TurnsTillNextDiplomaticVote.name, getTurnsBetweenDiplomaticVotes())
-            }
-        }
-
-        if (flagsCountdown[CivFlags.TurnsTillNextDiplomaticVote.name] == 0) {
-            addFlag(CivFlags.ShowDiplomaticVotingResults.name, 1)
         }
     }
 
@@ -1150,76 +976,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
          flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == 0
          && gameInfo.civilizations.any { it.isMajorCiv() && !it.isDefeated() && it != this }
 
-
-    private fun updateRevolts() {
-        if (gameInfo.civilizations.none { it.isBarbarian() }) {
-            // Can't spawn revolts without barbarians ¯\_(ツ)_/¯
-            return
-        }
-
-        if (!hasUnique(UniqueType.SpawnRebels)) {
-            removeFlag(CivFlags.RevoltSpawning.name)
-            return
-        }
-
-        if (!hasFlag(CivFlags.RevoltSpawning.name)) {
-            addFlag(CivFlags.RevoltSpawning.name, max(getTurnsBeforeRevolt(),1))
-            return
-        }
-    }
-
-    private fun doRevoltSpawn() {
-        val barbarians = try {
-            // The first test in `updateRevolts` should prevent getting here in a no-barbarians game, but it has been shown to still occur
-            gameInfo.getBarbarianCivilization()
-        } catch (ex: NoSuchElementException) {
-            removeFlag(CivFlags.RevoltSpawning.name)
-            return
-        }
-
-        val random = Random()
-        val rebelCount = 1 + random.nextInt(100 + 20 * (cities.size - 1)) / 100
-        val spawnCity = cities.maxByOrNull { random.nextInt(it.population.population + 10) } ?: return
-        val spawnTile = spawnCity.getTiles().maxByOrNull { rateTileForRevoltSpawn(it) } ?: return
-        val unitToSpawn = gameInfo.ruleSet.units.values.asSequence().filter {
-            it.uniqueTo == null && it.isMelee() && it.isLandUnit()
-            && !it.hasUnique(UniqueType.CannotAttack) && it.isBuildable(this)
-        }.maxByOrNull {
-            random.nextInt(1000)
-        } ?: return
-
-        repeat(rebelCount) {
-            gameInfo.tileMap.placeUnitNearTile(
-                spawnTile.position,
-                unitToSpawn.name,
-                barbarians
-            )
-        }
-
-        // Will be automatically added again as long as unhappiness is still low enough
-        removeFlag(CivFlags.RevoltSpawning.name)
-
-        addNotification("Your citizens are revolting due to very high unhappiness!", spawnTile.position, NotificationCategory.General, unitToSpawn.name, "StatIcons/Malcontent")
-    }
-
-    // Higher is better
-    private fun rateTileForRevoltSpawn(tile: TileInfo): Int {
-        if (tile.isWater || tile.militaryUnit != null || tile.civilianUnit != null || tile.isCityCenter() || tile.isImpassible())
-            return -1
-        var score = 10
-        if (tile.improvement == null) {
-            score += 4
-            if (tile.resource != null) {
-                score += 3
-            }
-        }
-        if (tile.getDefensiveBonus() > 0)
-            score += 4
-        return score
-    }
-
-    private fun getTurnsBeforeRevolt() =
-        ((4 + Random().nextInt(3)) * max(gameInfo.speed.modifier, 1f)).toInt()
 
     /** Modify gold by a given amount making sure it does neither overflow nor underflow.
      * @param delta the amount to add (can be negative)

@@ -18,16 +18,17 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.managers.TechManager
+import com.unciv.logic.civilization.managers.TurnManager
 import com.unciv.logic.map.CityDistanceData
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.Religion
 import com.unciv.models.metadata.GameParameters
-import com.unciv.models.ruleset.nation.Difficulty
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.Speed
+import com.unciv.models.ruleset.nation.Difficulty
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
@@ -273,7 +274,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         //  would skip a turn if an AI civ calls nextTurn
         //  this happens when resigning a multiplayer game)
         if (player.isHuman()) {
-            player.endTurn()
+            TurnManager(player).endTurn()
             setNextPlayer()
         }
 
@@ -290,7 +291,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         {
 
             // Starting preparations
-            player.startTurn()
+            TurnManager(player).startTurn()
 
             // Automation done here
             player.doTurn()
@@ -302,7 +303,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             }
 
             // Clean up
-            player.endTurn()
+            TurnManager(player).endTurn()
 
             // To the next player
             setNextPlayer()
@@ -317,7 +318,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         currentPlayerCiv = getCivilization(currentPlayer)
 
         // Starting his turn
-        player.startTurn()
+        TurnManager(player).startTurn()
 
         // No popups for spectators
         if (currentPlayerCiv.isSpectator())

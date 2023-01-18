@@ -12,8 +12,8 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.Proximity
-import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
@@ -213,13 +213,13 @@ class CityInfo : IsPartOfGameInfoSerialization {
         // Update proximity rankings for all civs
         for (otherCiv in civInfo.gameInfo.getAliveMajorCivs()) {
             if (civInfo.getProximity(otherCiv) != Proximity.Neighbors) // unless already neighbors
-                civInfo.updateProximity(otherCiv,
-                otherCiv.updateProximity(civInfo))
+                civInfo.cache.updateProximity(otherCiv,
+                otherCiv.cache.updateProximity(civInfo))
         }
         for (otherCiv in civInfo.gameInfo.getAliveCityStates()) {
             if (civInfo.getProximity(otherCiv) != Proximity.Neighbors) // unless already neighbors
-                civInfo.updateProximity(otherCiv,
-                    otherCiv.updateProximity(civInfo))
+                civInfo.cache.updateProximity(otherCiv,
+                    otherCiv.cache.updateProximity(civInfo))
         }
 
         triggerCitiesSettledNearOtherCiv()
