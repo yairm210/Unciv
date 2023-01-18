@@ -7,9 +7,7 @@ import com.unciv.json.HashMapVector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.UncivShowableException
-import com.unciv.logic.VictoryData
 import com.unciv.logic.automation.ai.TacticalAI
-import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.diplomacy.CityStateFunctions
@@ -226,7 +224,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     val passableImpassables = HashSet<String>() // For Carthage-like uniques
 
     // For Aggressor, Warmonger status
-    private var numMinorCivsAttacked = 0
+    internal var numMinorCivsAttacked = 0
 
     var totalCultureForContests = 0
     var totalFaithForContests = 0
@@ -915,41 +913,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
     }
 
-    fun updateSightAndResources() {
-        cache.updateViewableTiles()
-        cache.updateHasActiveEnemyMovementPenalty()
-        cache.updateCivResources()
-    }
-
-    fun changeMinorCivsAttacked(count: Int) {
-        numMinorCivsAttacked += count
-    }
-
-    fun doTurn() {
-
-        // Defeated civs do nothing
-        if (isDefeated())
-            return
-
-        // Do stuff
-        NextTurnAutomation.automateCivMoves(this)
-
-        // Update barbarian camps
-        if (isBarbarian() && !gameInfo.gameParameters.noBarbarians)
-            gameInfo.barbarians.updateEncampments()
-    }
-
-    fun updateWinningCiv(){
-        if (gameInfo.victoryData == null) {
-            val victoryType = victoryManager.getVictoryTypeAchieved()
-            if (victoryType != null) {
-                gameInfo.victoryData = VictoryData(civName, victoryType, gameInfo.turns)
-
-                for (civInfo in gameInfo.civilizations)
-                    civInfo.popupAlerts.add(PopupAlert(AlertType.GameHasBeenWon, civName))
-            }
-        }
-    }
 
     fun addFlag(flag: String, count: Int) = flagsCountdown.set(flag, count)
     fun removeFlag(flag: String) = flagsCountdown.remove(flag)

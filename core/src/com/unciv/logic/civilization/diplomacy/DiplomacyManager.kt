@@ -686,7 +686,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
         if (otherCiv.isCityState() && !indirectCityStateAttack) {
             otherCivDiplomacy.setInfluence(-60f)
-            civInfo.changeMinorCivsAttacked(1)
+            civInfo.numMinorCivsAttacked += 1
             otherCiv.cityStateFunctions.cityStateAttacked(civInfo)
 
             // You attacked your own ally, you're a right bastard

@@ -1,12 +1,15 @@
 package com.unciv.logic.civilization.managers
 
 import com.unciv.UncivGame
+import com.unciv.logic.VictoryData
 import com.unciv.logic.automation.civilization.NextTurnAutomation
+import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivFlags
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.ruleset.ModOptionsConstants
@@ -66,7 +69,7 @@ class TurnManager(val civInfo: CivilizationInfo) {
             }
         }
 
-        civInfo.updateWinningCiv()
+        updateWinningCiv()
     }
 
 
@@ -266,7 +269,33 @@ class TurnManager(val civInfo: CivilizationInfo) {
 
         civInfo.cachedMilitaryMight = -1    // Reset so we don't use a value from a previous turn
 
-        civInfo.updateWinningCiv() // Maybe we did something this turn to win
+        updateWinningCiv() // Maybe we did something this turn to win
+    }
+
+    fun updateWinningCiv(){
+        if (civInfo.gameInfo.victoryData != null) return // Game already won
+
+        val victoryType = civInfo.victoryManager.getVictoryTypeAchieved()
+        if (victoryType != null) {
+            civInfo.gameInfo.victoryData =
+                    VictoryData(civInfo.civName, victoryType, civInfo.gameInfo.turns)
+
+            for (civInfo in civInfo.gameInfo.civilizations)
+                civInfo.popupAlerts.add(PopupAlert(AlertType.GameHasBeenWon, civInfo.civName))
+        }
+    }
+
+    fun automateTurn() {
+        // Defeated civs do nothing
+        if (civInfo.isDefeated())
+            return
+
+        // Do stuff
+        NextTurnAutomation.automateCivMoves(civInfo)
+
+        // Update barbarian camps
+        if (civInfo.isBarbarian() && !civInfo.gameInfo.gameParameters.noBarbarians)
+            civInfo.gameInfo.barbarians.updateEncampments()
     }
 
 }

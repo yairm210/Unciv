@@ -16,6 +16,12 @@ import com.unciv.models.ruleset.unique.UniqueType
 /** CivInfo class was getting too crowded */
 class CivInfoTransientCache(val civInfo: CivilizationInfo) {
 
+    fun updateSightAndResources() {
+        updateViewableTiles()
+        updateHasActiveEnemyMovementPenalty()
+        updateCivResources()
+    }
+
     // This is a big performance
     fun updateViewableTiles() {
         setNewViewableTiles()

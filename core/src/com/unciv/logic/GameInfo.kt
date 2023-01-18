@@ -294,7 +294,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             TurnManager(player).startTurn()
 
             // Automation done here
-            player.doTurn()
+            TurnManager(player).automateTurn()
 
             // Do we need to break if player won?
             if (simulateUntilWin && player.victoryManager.hasWon()) {
@@ -540,7 +540,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         }) {
             for (unit in civInfo.getCivUnits())
                 unit.updateVisibleTiles(false) // this needs to be done after all the units are assigned to their civs and all other transients are set
-            civInfo.updateSightAndResources() // only run ONCE and not for each unit - this is a huge performance saver!
+            civInfo.cache.updateSightAndResources() // only run ONCE and not for each unit - this is a huge performance saver!
 
             // Since this depends on the cities of ALL civilizations,
             // we need to wait until we've set the transients of all the cities before we can run this.
