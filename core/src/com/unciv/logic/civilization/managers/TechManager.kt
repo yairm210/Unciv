@@ -418,7 +418,8 @@ class TechManager : IsPartOfGameInfoSerialization {
         techUniques.addUniques(tech.uniqueObjects)
     }
 
-    fun setTransients() {
+    fun setTransients(civInfo: CivilizationInfo) {
+        this.civInfo = civInfo
         researchedTechnologies.addAll(techsResearched.map { getRuleset().technologies[it]!! })
         researchedTechnologies.forEach { addTechToTransients(it) }
         updateEra()  // before updateTransientBooleans so era-based conditionals can work

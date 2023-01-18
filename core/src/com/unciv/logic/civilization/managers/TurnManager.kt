@@ -3,6 +3,7 @@ package com.unciv.logic.civilization.managers
 import com.unciv.UncivGame
 import com.unciv.logic.VictoryData
 import com.unciv.logic.automation.civilization.NextTurnAutomation
+import com.unciv.logic.city.managers.CityTurnManager
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivFlags
 import com.unciv.logic.civilization.CivilizationInfo
@@ -48,7 +49,7 @@ class TurnManager(val civInfo: CivilizationInfo) {
         civInfo.cache.updateCitiesConnectedToCapital()
         startTurnFlags()
         updateRevolts()
-        for (city in civInfo.cities) city.startTurn()  // Most expensive part of startTurn
+        for (city in civInfo.cities) CityTurnManager(city).startTurn()  // Most expensive part of startTurn
 
         for (unit in civInfo.units.getCivUnits()) unit.startTurn()
 
@@ -257,7 +258,7 @@ class TurnManager(val civInfo: CivilizationInfo) {
             yieldAll(civInfo.cities.filter { it.isBeingRazed })
             yieldAll(civInfo.cities.filterNot { it.isBeingRazed })
         }.toList()) { // a city can be removed while iterating (if it's being razed) so we need to iterate over a copy
-            city.endTurn()
+            CityTurnManager(city).endTurn()
         }
 
         civInfo.temporaryUniques.endTurn()

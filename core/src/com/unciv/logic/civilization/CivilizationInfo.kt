@@ -10,6 +10,7 @@ import com.unciv.logic.UncivShowableException
 import com.unciv.logic.automation.ai.TacticalAI
 import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.managers.CityFounder
 import com.unciv.logic.civilization.diplomacy.CityStateFunctions
 import com.unciv.logic.civilization.diplomacy.CityStatePersonality
 import com.unciv.logic.civilization.diplomacy.DiplomacyFunctions
@@ -625,40 +626,22 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     fun setTransients() {
         goldenAges.civInfo = this
         greatPeople.civInfo = this
-
         civConstructions.setTransients(civInfo = this)
-
-        policies.civInfo = this
-        if (policies.adoptedPolicies.size > 0 && policies.numberOfAdoptedPolicies == 0)
-            policies.numberOfAdoptedPolicies = policies.adoptedPolicies.count { !Policy.isBranchCompleteByName(it) }
-        policies.setTransients()
-
-        questManager.civInfo = this
-        questManager.setTransients()
-
-        if (citiesCreated == 0 && cities.any())
-            citiesCreated = cities.filter { it.name in nation.cities }.size
-
-        religionManager.civInfo = this // needs to be before tech, since tech setTransients looks at all uniques
-        religionManager.setTransients()
-
-        tech.civInfo = this
-        tech.setTransients()
-
+        policies.setTransients(this)
+        questManager.setTransients(this)
+        religionManager.setTransients(this) // needs to be before tech, since tech setTransients looks at all uniques
+        tech.setTransients(this)
         ruinsManager.setTransients(this)
+        espionageManager.setTransients(this)
+        victoryManager.civInfo = this
 
         for (diplomacyManager in diplomacy.values) {
             diplomacyManager.civInfo = this
             diplomacyManager.updateHasOpenBorders()
         }
 
-        espionageManager.setTransients(this)
-
-        victoryManager.civInfo = this
-
         for (cityInfo in cities) {
-            cityInfo.civInfo = this // must be before the city's setTransients because it depends on the tilemap, that comes from the currentPlayerCivInfo
-            cityInfo.setTransients()
+            cityInfo.setTransients(this) // must be before the city's setTransients because it depends on the tilemap, that comes from the currentPlayerCivInfo
         }
 
         // Now that all tile transients have been updated, clean "worked" tiles that are not under the Civ's control
@@ -742,7 +725,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         }
     }
 
-
     fun addNotification(text: String, location: Vector2, category:NotificationCategory, vararg notificationIcons: String) {
         addNotification(text, LocationAction(location), category, *notificationIcons)
     }
@@ -757,7 +739,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     }
 
     fun addCity(location: Vector2) {
-        val newCity = CityInfo(this, location)
+        val newCity = CityFounder().foundCity(this, location)
         newCity.cityConstructions.chooseNextConstruction()
     }
 

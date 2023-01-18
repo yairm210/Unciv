@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.managers.CityFounder
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapSizeNew
@@ -18,12 +19,12 @@ import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IRulesetObject
-import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.Specialist
 import com.unciv.models.ruleset.Speed
+import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -133,7 +134,7 @@ class TestGame {
         replacePalace: Boolean = false,
         initialPopulation: Int = 0
     ): CityInfo {
-        val cityInfo = CityInfo(civInfo, tile.position)
+        val cityInfo = CityFounder().foundCity(civInfo, tile.position)
         if (initialPopulation != 1)
             cityInfo.population.addPopulation(initialPopulation - 1) // With defaults this will remove population
 

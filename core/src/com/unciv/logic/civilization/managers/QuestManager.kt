@@ -100,7 +100,8 @@ class QuestManager : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
-    fun setTransients() {
+    fun setTransients(civInfo: CivilizationInfo) {
+        this.civInfo = civInfo
         for (quest in assignedQuests)
             quest.gameInfo = civInfo.gameInfo
     }

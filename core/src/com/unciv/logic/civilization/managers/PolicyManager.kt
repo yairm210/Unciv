@@ -97,7 +97,8 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     @Suppress("MemberVisibilityCanBePrivate")
     fun getPolicyByName(name: String): Policy = getRulesetPolicies()[name]!!
 
-    fun setTransients() {
+    fun setTransients(civInfo: CivilizationInfo) {
+        this.civInfo = civInfo
         for (policyName in adoptedPolicies) addPolicyToTransients(
             getPolicyByName(policyName)
         )

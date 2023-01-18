@@ -9,9 +9,9 @@ import com.unciv.logic.civilization.transients.CapitalConnectionsFinder
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
-import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.testing.GdxTestRunner
@@ -113,14 +113,13 @@ class CapitalConnectionsFinderTests {
 
     private fun createCity(civInfo: CivilizationInfo, position: Vector2, name: String, capital: Boolean = false, hasHarbor: Boolean = false): CityInfo {
         return CityInfo().apply {
-            this.civInfo = civInfo
             location = position
             if (capital)
                 cityConstructions.builtBuildings.add(rules.buildings.values.first { it.hasUnique(UniqueType.IndicatesCapital) }.name)
             if (hasHarbor)
                 cityConstructions.builtBuildings.add(rules.buildings.values.first { it.hasUnique(UniqueType.ConnectTradeRoutes) }.name)
             this.name = name
-            setTransients()
+            setTransients(civInfo)
             tilesMap[location].setOwningCity(this)
         }
     }

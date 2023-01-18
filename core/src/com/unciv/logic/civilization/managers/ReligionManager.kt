@@ -60,7 +60,8 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         return clone
     }
 
-    fun setTransients() {
+    fun setTransients(civInfo: CivilizationInfo) {
+        this.civInfo = civInfo
         // Find our religion from the map of founded religions.
         // First check if there is any major religion
         religion = civInfo.gameInfo.religions.values.firstOrNull {
