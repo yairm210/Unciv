@@ -231,8 +231,8 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                 val text = "We have allied with [${civInfo.civName}]."
                 if (capitalLocation != null) newAllyCiv.addNotification(text, capitalLocation, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
                 else newAllyCiv.addNotification(text, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
-                newAllyCiv.updateViewableTiles()
-                newAllyCiv.updateDetailedCivResources()
+                newAllyCiv.cache.updateViewableTiles()
+                newAllyCiv.cache.updateCivResources()
                 for (unique in newAllyCiv.getMatchingUniques(UniqueType.CityStateCanBeBoughtForGold))
                     newAllyCiv.getDiplomacyManager(civInfo.civName).setFlag(DiplomacyFlags.MarriageCooldown, unique.params[0].toInt())
 
@@ -252,8 +252,8 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                 val text = "We have lost alliance with [${civInfo.civName}]."
                 if (capitalLocation != null) oldAllyCiv.addNotification(text, capitalLocation, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
                 else oldAllyCiv.addNotification(text, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
-                oldAllyCiv.updateViewableTiles()
-                oldAllyCiv.updateDetailedCivResources()
+                oldAllyCiv.cache.updateViewableTiles()
+                oldAllyCiv.cache.updateCivResources()
             }
         }
     }

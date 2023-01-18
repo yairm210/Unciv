@@ -50,7 +50,7 @@ class EspionageOverviewScreen(val civInfo: CivilizationInfo) : PickerScreen(true
 
         closeButton.isVisible = true
         closeButton.onActivation {
-            civInfo.updateViewableTiles()
+            civInfo.cache.updateViewableTiles()
             game.popScreen()
         }
         closeButton.keyShortcuts.add(KeyCharAndCode.BACK)

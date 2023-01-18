@@ -553,7 +553,7 @@ class TileMap : IsPartOfGameInfoSerialization {
         civInfo.updateStatsForNextTurn()
 
         if (unit.baseUnit.getResourceRequirements().isNotEmpty())
-            civInfo.updateDetailedCivResources()
+            civInfo.cache.updateCivResources()
 
         return unit
     }

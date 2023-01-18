@@ -201,7 +201,7 @@ class GlobalUniquesTests {
         val city2 = game.addCity(civInfo, tile2)
         val inBetweenTile = game.setTileFeatures(Vector2(0f, 1f), Constants.desert)
         inBetweenTile.roadStatus = RoadStatus.Road
-        civInfo.transients().updateCitiesConnectedToCapital()
+        civInfo.cache().updateCitiesConnectedToCapital()
         city2.cityStats.update()
 
         Assert.assertTrue(city2.cityStats.finalStatList["Trade routes"]!!.science == 30f)
@@ -410,7 +410,7 @@ class GlobalUniquesTests {
         val inBetweenTile = game.setTileFeatures(Vector2(0f, 1f), Constants.desert)
         inBetweenTile.roadStatus = RoadStatus.Road
 
-        civInfo.transients().updateCitiesConnectedToCapital()
+        civInfo.cache().updateCitiesConnectedToCapital()
         Assert.assertTrue(city2.cityStats.isConnectedToCapital(RoadStatus.Road))
 
         city2.cityStats.update()

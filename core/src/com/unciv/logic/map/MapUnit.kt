@@ -414,7 +414,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
         // Set equality automatically determines if anything changed - https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-abstract-set/equals.html
         if (updateCivViewableTiles && oldViewableTiles != viewableTiles)
-            civInfo.updateViewableTiles() // for the civ
+            civInfo.cache.updateViewableTiles()
     }
 
     fun isActionUntilHealed() = action?.endsWith("until healed") == true
@@ -721,7 +721,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 ) {
                     // We removed a terrain (e.g. Forest) and the improvement (e.g. Lumber mill) requires it!
                     tile.changeImprovement(null)
-                    if (tile.resource != null) civInfo.updateDetailedCivResources() // unlikely, but maybe a mod makes a resource improvement dependent on a terrain feature
+                    if (tile.resource != null) civInfo.cache.updateCivResources() // unlikely, but maybe a mod makes a resource improvement dependent on a terrain feature
                 }
                 if (RoadStatus.values().any { tile.improvementInProgress == it.removeAction }) {
                     tile.removeRoad()
@@ -913,7 +913,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         currentMovement = 0f
         removeFromTile()
         civInfo.removeUnit(this)
-        civInfo.updateViewableTiles()
+        civInfo.cache.updateViewableTiles()
         if (destroyTransportedUnit) {
             // all transported units should be destroyed as well
             currentTile.getUnits().filter { it.isTransported && isTransportTypeOf(it) }
@@ -925,13 +925,13 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun gift(recipient: CivilizationInfo) {
         civInfo.removeUnit(this)
-        civInfo.updateViewableTiles()
+        civInfo.cache.updateViewableTiles()
         // all transported units should be destroyed as well
         currentTile.getUnits().filter { it.isTransported && isTransportTypeOf(it) }
             .toList() // because we're changing the list
             .forEach { unit -> unit.destroy() }
         assignOwner(recipient)
-        recipient.updateViewableTiles()
+        recipient.cache.updateViewableTiles()
     }
 
     /** Destroys the unit and gives stats if its a great person */

@@ -849,7 +849,7 @@ class CityInfo : IsPartOfGameInfoSerialization {
         population.unassignExtraPopulation() // If the building provided specialists, release them to other work
         population.autoAssignPopulation()
         cityStats.update()
-        civInfo.updateDetailedCivResources() // this building could be a resource-requiring one
+        civInfo.cache.updateCivResources() // this building could be a resource-requiring one
     }
 
     private fun demandNewResource() {

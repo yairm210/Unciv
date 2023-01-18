@@ -670,7 +670,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         tileForImprovement.changeImprovement(improvement.name)
         cityInfo.civInfo.lastSeenImprovement[tileForImprovement.position] = improvement.name
         cityInfo.cityStats.update()
-        cityInfo.civInfo.updateDetailedCivResources()
+        cityInfo.civInfo.cache.updateCivResources()
         // If bought the worldscreen will not have been marked to update, and the new improvement won't show until later...
         if (UncivGame.isCurrentInitialized() && UncivGame.Current.worldScreen != null)
             UncivGame.Current.worldScreen!!.shouldUpdate = true

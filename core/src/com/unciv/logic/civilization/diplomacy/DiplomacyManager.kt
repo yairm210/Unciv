@@ -392,7 +392,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
                     civInfo.addNotification("One of our trades with [$otherCivName] has been cut short", NotificationCategory.Trade, NotificationIcon.Trade, otherCivName)
                     otherCiv().addNotification("One of our trades with [${civInfo.civName}] has been cut short", NotificationCategory.Trade, NotificationIcon.Trade, civInfo.civName)
-                    civInfo.updateDetailedCivResources()
+                    civInfo.cache.updateCivResources()
                 }
             }
         }
@@ -573,7 +573,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                     civInfo.updateStatsForNextTurn() // if they were bringing us gold per turn
                     if (trade.theirOffers.union(trade.ourOffers) // if resources were involved
                                 .any { it.type == TradeType.Luxury_Resource || it.type == TradeType.Strategic_Resource })
-                        civInfo.updateDetailedCivResources()
+                        civInfo.cache.updateCivResources()
                 }
             }
         }

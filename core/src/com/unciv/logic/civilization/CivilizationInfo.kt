@@ -401,8 +401,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     fun stats() = civInfoStats
 
     @Transient
-    private val civInfoTransientUpdater = CivInfoTransientUpdater(this)
-    fun transients() = civInfoTransientUpdater
+    val cache = CivInfoTransientCache(this)
 
     fun updateStatsForNextTurn() {
         happinessForNextTurn = stats().getHappinessBreakdown().values.sum().roundToInt()
@@ -522,7 +521,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
             // and in any case it'll be updated once civ info transients are
             updateStatsForNextTurn() // unit upkeep
             if (mapUnit.baseUnit.getResourceRequirements().isNotEmpty())
-                updateDetailedCivResources()
+                cache.updateCivResources()
         }
     }
 
@@ -535,7 +534,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
         updateStatsForNextTurn() // unit upkeep
         if (mapUnit.baseUnit.getResourceRequirements().isNotEmpty())
-            updateDetailedCivResources()
+            cache.updateCivResources()
     }
 
     fun getIdleUnits() = getCivUnits().filter { it.isIdle() }
@@ -916,20 +915,14 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     }
 
     fun updateSightAndResources() {
-        updateViewableTiles()
-        updateHasActiveEnemyMovementPenalty()
-        updateDetailedCivResources()
+        cache.updateViewableTiles()
+        cache.updateHasActiveEnemyMovementPenalty()
+        cache.updateCivResources()
     }
 
     fun changeMinorCivsAttacked(count: Int) {
         numMinorCivsAttacked += count
     }
-
-    // implementation in a separate class, to not clog up CivInfo
-    fun initialSetCitiesConnectedToCapitalTransients() = transients().updateCitiesConnectedToCapital(true)
-    fun updateHasActiveEnemyMovementPenalty() = transients().updateHasActiveEnemyMovementPenalty()
-    fun updateViewableTiles() = transients().updateViewableTiles()
-    fun updateDetailedCivResources() = transients().updateCivResources()
 
     fun doTurn() {
 
@@ -964,8 +957,8 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
                 MayaCalendar.startTurnForMaya(this)
         }
 
-        updateViewableTiles() // adds explored tiles so that the units will be able to perform automated actions better
-        transients().updateCitiesConnectedToCapital()
+        cache.updateViewableTiles() // adds explored tiles so that the units will be able to perform automated actions better
+        cache.updateCitiesConnectedToCapital()
         startTurnFlags()
         updateRevolts()
         for (city in cities) city.startTurn()  // Most expensive part of startTurn
@@ -978,7 +971,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
                 unit.doAction()
         } else hasMovedAutomatedUnits = false
 
-        updateDetailedCivResources() // If you offered a trade last turn, this turn it will have been accepted/declined
+        cache.updateCivResources() // If you offered a trade last turn, this turn it will have been accepted/declined
 
         for (tradeRequest in tradeRequests.toList()) { // remove trade requests where one of the sides can no longer supply
             val offeringCiv = gameInfo.getCivilization(tradeRequest.requestingCiv)
@@ -1064,7 +1057,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         goldenAges.endTurn(getHappiness())
         getCivUnits().forEach { it.endTurn() }  // This is the most expensive part of endTurn
         diplomacy.values.toList().forEach { it.nextTurn() } // we copy the diplomacy values so if it changes in-loop we won't crash
-        updateHasActiveEnemyMovementPenalty()
+        cache.updateHasActiveEnemyMovementPenalty()
 
         cachedMilitaryMight = -1    // Reset so we don't use a value from a previous turn
 
@@ -1374,7 +1367,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         ).toInt()
     }
 
-    fun updateProximity(otherCiv: CivilizationInfo, preCalculated: Proximity? = null): Proximity = transients().updateProximity(otherCiv, preCalculated)
+    fun updateProximity(otherCiv: CivilizationInfo, preCalculated: Proximity? = null): Proximity = cache.updateProximity(otherCiv, preCalculated)
 
     /**
      * Removes current capital then moves capital to argument city if not null

@@ -125,7 +125,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
             }
 
         }
-        conqueringCiv.updateViewableTiles() // Might see new tiles from this city
+        conqueringCiv.cache.updateViewableTiles() // Might see new tiles from this city
     }
 
 

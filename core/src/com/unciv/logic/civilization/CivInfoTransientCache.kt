@@ -9,7 +9,7 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 
 /** CivInfo class was getting too crowded */
-class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
+class CivInfoTransientCache(val civInfo: CivilizationInfo) {
 
     // This is a big performance
     fun updateViewableTiles() {

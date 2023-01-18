@@ -681,15 +681,15 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 UniqueTriggerActivation.triggerCivwideUnique(unique, cityInfo.civInfo, cityInfo)
 
         if (hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovement))
-            civInfo.updateHasActiveEnemyMovementPenalty()
+            civInfo.cache.updateHasActiveEnemyMovementPenalty()
 
         // Korean unique - apparently gives the same as the research agreement
         if (science > 0 && civInfo.hasUnique(UniqueType.TechBoostWhenScientificBuildingsBuiltInCapital))
             civInfo.tech.addScience(civInfo.tech.scienceOfLast8Turns.sum() / 8)
 
         cityConstructions.cityInfo.cityStats.update() // new building, new stats
-        civInfo.updateDetailedCivResources() // this building/unit could be a resource-requiring one
-        civInfo.transients().updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor
+        civInfo.cache.updateCivResources() // this building/unit could be a resource-requiring one
+        civInfo.cache.updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor
 
         return true
     }

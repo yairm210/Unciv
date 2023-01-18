@@ -102,8 +102,8 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                                 unit.movement.teleportToClosestMoveableTile()
                         }
                     }
-                    to.updateViewableTiles()
-                    from.updateViewableTiles()
+                    to.cache.updateViewableTiles()
+                    from.cache.updateViewableTiles()
 
                     // suggest an option to liberate the city
                     if (to.isHuman()
@@ -127,7 +127,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                 }
             }
             to.updateStatsForNextTurn()
-            to.updateDetailedCivResources()
+            to.cache.updateCivResources()
         }
 
         transferTrade(ourCivilization, otherCivilization, currentTrade)

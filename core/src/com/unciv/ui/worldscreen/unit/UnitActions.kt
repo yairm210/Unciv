@@ -158,7 +158,7 @@ object UnitActions {
                 val city = tile.getCity()
                 if (city != null) {
                     city.cityStats.update()
-                    city.civInfo.updateDetailedCivResources()
+                    city.civInfo.cache.updateCivResources()
                 }
                 unit.destroy()
             }.takeIf { unit.currentMovement > 0 })
@@ -333,7 +333,7 @@ object UnitActions {
 
                     pillageLooting(tile, unit)
                     tile.setPillaged()
-                    if (tile.resource != null) tile.getOwner()?.updateDetailedCivResources()    // this might take away a resource
+                    if (tile.resource != null) tile.getOwner()?.cache?.updateCivResources()    // this might take away a resource
                     tile.getCity()?.updateCitizens = true
 
                     val freePillage = unit.hasUnique(UniqueType.NoMovementToPillage, checkCivInfoUniques = true)

@@ -139,7 +139,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
 
         tileInfo.setOwningCity(null)
 
-        cityInfo.civInfo.updateDetailedCivResources()
+        cityInfo.civInfo.cache.updateCivResources()
         cityInfo.cityStats.update()
     }
 
@@ -159,14 +159,14 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         cityInfo.tiles = cityInfo.tiles.withItem(tileInfo.position)
         tileInfo.setOwningCity(cityInfo)
         cityInfo.population.autoAssignPopulation()
-        cityInfo.civInfo.updateDetailedCivResources()
+        cityInfo.civInfo.cache.updateCivResources()
         cityInfo.cityStats.update()
 
         for (unit in tileInfo.getUnits().toList()) // toListed because we're modifying
             if (!unit.civInfo.canPassThroughTiles(cityInfo.civInfo))
                 unit.movement.teleportToClosestMoveableTile()
 
-        cityInfo.civInfo.updateViewableTiles()
+        cityInfo.civInfo.cache.updateViewableTiles()
     }
 
     fun nextTurn(culture: Float) {

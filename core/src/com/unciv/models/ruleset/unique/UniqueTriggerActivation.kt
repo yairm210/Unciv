@@ -290,7 +290,7 @@ object UniqueTriggerActivation {
             }
 
             StrategicResourcesIncrease -> {
-                civInfo.updateDetailedCivResources()
+                civInfo.cache.updateCivResources()
                 if (notification != null) {
                     civInfo.addNotification(
                         notification,
@@ -503,7 +503,7 @@ object UniqueTriggerActivation {
                     .map { it.position }
                     .filter { tileBasedRandom.nextFloat() < unique.params[2].toFloat() / 100f }
                 civInfo.addExploredTiles(tilesToReveal)
-                civInfo.updateViewableTiles()
+                civInfo.cache.updateViewableTiles()
                 if (notification != null)
                     civInfo.addNotification(
                         notification,
