@@ -755,7 +755,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         val challengerGreatPeople = challenger.getCivGreatPeople().map { it.baseUnit.getReplacedUnit(ruleSet) }
         val cityStateGreatPeople = civInfo.getCivGreatPeople().map { it.baseUnit.getReplacedUnit(ruleSet) }
 
-        val greatPeople = challenger.getGreatPeople()
+        val greatPeople = challenger.greatPeople.getGreatPeople()
                 .map { it.getReplacedUnit(ruleSet) }
                 .distinct()
                 .filterNot { challengerGreatPeople.contains(it)

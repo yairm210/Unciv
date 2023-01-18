@@ -175,7 +175,7 @@ object UniqueTriggerActivation {
 
             OneTimeFreeGreatPerson, MayanGainGreatPerson -> {
                 if (civInfo.isSpectator()) return false
-                val greatPeople = civInfo.getGreatPeople()
+                val greatPeople = civInfo.greatPeople.getGreatPeople()
                 if (unique.type == MayanGainGreatPerson && civInfo.greatPeople.longCountGPPool.isEmpty())
                     civInfo.greatPeople.longCountGPPool = greatPeople.map { it.name }.toHashSet()
                 if (civInfo.isHuman()) {

@@ -651,13 +651,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         questManager.justMet(otherCiv) // Include them in war with major pseudo-quest
     }
 
-    fun discoverNaturalWonder(naturalWonderName: String) {
-        naturalWonders.add(naturalWonderName)
-    }
-
-    override fun toString(): String {
-        return civName
-    } // for debug
+    override fun toString(): String = civName // for debug
 
     /**
      *  Determine loss conditions.
@@ -688,15 +682,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     }
 
     fun isAtWar() = diplomacy.values.any { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv().isDefeated() }
-
-    fun canEnterBordersOf(otherCiv: CivilizationInfo): Boolean {
-        if (otherCiv == this) return true // own borders are always open
-        if (otherCiv.isBarbarian() || isBarbarian()) return false // barbarians blocks the routes
-        val diplomacyManager = diplomacy[otherCiv.civName]
-            ?: return false // not encountered yet
-        if (otherCiv.isCityState() && diplomacyManager.diplomaticStatus != DiplomaticStatus.War) return true
-        return diplomacyManager.hasOpenBorders
-    }
 
     fun getEnemyMovementPenalty(enemyUnit: MapUnit): Float {
         if (enemyMovementPenaltyUniques != null && enemyMovementPenaltyUniques!!.any()) {
@@ -782,16 +767,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         val goldBonus = sqrt(max(0f, gold.toFloat())).toPercent()  // 2f if gold == 10000
         sum = (sum * min(goldBonus, 2f)).toInt()    // 2f is max bonus
         return sum
-    }
-
-
-    fun getGreatPeople(): HashSet<BaseUnit> {
-        val greatPeople = gameInfo.ruleSet.units.values.asSequence()
-            .filter { it.isGreatPerson() }
-            .map { getEquivalentUnit(it.name) }
-        return if (!gameInfo.isReligionEnabled())
-            greatPeople.filter { !it.hasUnique(UniqueType.HiddenWithoutReligion) }.toHashSet()
-        else greatPeople.toHashSet()
     }
 
     fun hasTechOrPolicy(techOrPolicyName: String) =

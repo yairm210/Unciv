@@ -2,6 +2,7 @@ package com.unciv.logic.civilization.transients
 
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
@@ -13,7 +14,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
     private var citiesToCheck = mutableListOf(civInfo.getCapital()!!)
     private lateinit var newCitiesToCheck: MutableList<CityInfo>
 
-    private val openBordersCivCities = civInfo.gameInfo.getCities().filter { civInfo.canEnterBordersOf(it.civInfo) }
+    private val openBordersCivCities = civInfo.gameInfo.getCities().filter { canEnterBordersOf(it.civInfo) }
 
     private val harbor = "Harbor"   // hardcoding at least centralized for this class for now
     private val road = RoadStatus.Road.name
@@ -96,7 +97,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
 
         val bfs = BFS(cityToConnectFrom.getCenterTile()) {
               val owner = it.getOwner()
-              (it.isCityCenter() || tileFilter(it)) && (owner == null || civInfo.canEnterBordersOf(owner))
+              (it.isCityCenter() || tileFilter(it)) && (owner == null || canEnterBordersOf(owner))
         }
         bfs.stepToEnd()
         val reachedCities = openBordersCivCities.filter {
@@ -124,6 +125,16 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
 
     private fun CityInfo.addMedium(transportType: String) {
         citiesReachedToMediums[this]!!.add(transportType)
+    }
+
+
+    private fun canEnterBordersOf(otherCiv: CivilizationInfo): Boolean {
+        if (otherCiv == civInfo) return true // own borders are always open
+        if (otherCiv.isBarbarian() || civInfo.isBarbarian()) return false // barbarians blocks the routes
+        val diplomacyManager = civInfo.diplomacy[otherCiv.civName]
+            ?: return false // not encountered yet
+        if (otherCiv.isCityState() && diplomacyManager.diplomaticStatus != DiplomaticStatus.War) return true
+        return diplomacyManager.hasOpenBorders
     }
 
 }

@@ -16,7 +16,7 @@ class GreatPersonPickerScreen(val civInfo:CivilizationInfo) : PickerScreen() {
         closeButton.isVisible = false
         rightSideButton.setText("Choose a free great person".tr())
 
-        val greatPersonUnits = civInfo.getGreatPeople()
+        val greatPersonUnits = civInfo.greatPeople.getGreatPeople()
         val useMayaLongCount = civInfo.greatPeople.mayaLimitedFreeGP > 0
 
         for (unit in greatPersonUnits) {

@@ -3,6 +3,8 @@ package com.unciv.logic.civilization.managers
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.Counter
+import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unit.BaseUnit
 
 // todo: Great Admiral?
 // todo: Free GP from policies and wonders should increase threshold according to the wiki
@@ -61,5 +63,14 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
         greatPersonPointsCounter.add(greatPersonPointsForTurn)
     }
 
+
+    fun getGreatPeople(): HashSet<BaseUnit> {
+        val greatPeople = civInfo.gameInfo.ruleSet.units.values.asSequence()
+            .filter { it.isGreatPerson() }
+            .map { civInfo.getEquivalentUnit(it.name) }
+        return if (!civInfo.gameInfo.isReligionEnabled())
+            greatPeople.filter { !it.hasUnique(UniqueType.HiddenWithoutReligion) }.toHashSet()
+        else greatPeople.toHashSet()
+    }
 
 }

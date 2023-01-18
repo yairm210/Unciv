@@ -142,7 +142,7 @@ class CivInfoTransientCache(val civInfo: CivilizationInfo) {
             // GBR could be discovered twice otherwise!
             if (civInfo.naturalWonders.contains(tile.naturalWonder))
                 continue
-            civInfo.discoverNaturalWonder(tile.naturalWonder!!)
+            civInfo.naturalWonders.add(tile.naturalWonder!!)
             civInfo.addNotification("We have discovered [${tile.naturalWonder}]!",
                 tile.position, NotificationCategory.General, "StatIcons/Happiness")
 
