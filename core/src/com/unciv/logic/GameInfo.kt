@@ -538,7 +538,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             yieldAll(civilizations.filter { it.isCityState() })
             yieldAll(civilizations.filter { !it.isCityState() })
         }) {
-            for (unit in civInfo.getCivUnits())
+            for (unit in civInfo.units.getCivUnits())
                 unit.updateVisibleTiles(false) // this needs to be done after all the units are assigned to their civs and all other transients are set
             civInfo.cache.updateSightAndResources() // only run ONCE and not for each unit - this is a huge performance saver!
 

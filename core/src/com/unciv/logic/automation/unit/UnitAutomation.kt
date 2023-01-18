@@ -10,8 +10,8 @@ import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.unique.UniqueType
@@ -148,7 +148,7 @@ object UnitAutomation {
             if (tryRunAwayIfNeccessary(unit)) return
 
             if (unit.currentTile.isCityCenter() && unit.currentTile.getCity()!!.isCapital()
-                    && !unit.hasUnique(UniqueType.AddInCapital) && unit.civInfo.getCivUnits().any { unit.hasUnique(UniqueType.AddInCapital) }){
+                    && !unit.hasUnique(UniqueType.AddInCapital) && unit.civInfo.units.getCivUnits().any { unit.hasUnique(UniqueType.AddInCapital) }){
                 // First off get out of the way, then decide if you actually want to do something else
                 val tilesCanMoveTo = unit.movement.getDistanceToTiles()
                     .filter { unit.movement.canMoveTo(it.key) }
@@ -418,7 +418,7 @@ object UnitAutomation {
     }
 
     private fun tryAccompanySettlerOrGreatPerson(unit: MapUnit): Boolean {
-        val settlerOrGreatPersonToAccompany = unit.civInfo.getCivUnits()
+        val settlerOrGreatPersonToAccompany = unit.civInfo.units.getCivUnits()
             .firstOrNull {
                 val tile = it.currentTile
                 it.isCivilian() &&

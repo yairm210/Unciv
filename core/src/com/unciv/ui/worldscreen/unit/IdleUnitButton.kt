@@ -29,7 +29,7 @@ class IdleUnitButton (
         enable()
         onClick {
 
-            val idleUnits = unitTable.worldScreen.viewingCiv.getIdleUnits()
+            val idleUnits = unitTable.worldScreen.viewingCiv.units.getIdleUnits()
             if (idleUnits.none()) return@onClick
 
             val unitToSelect: MapUnit

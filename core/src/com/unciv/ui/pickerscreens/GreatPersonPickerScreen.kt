@@ -32,7 +32,7 @@ class GreatPersonPickerScreen(val civInfo:CivilizationInfo) : PickerScreen() {
         }
 
         rightSideButton.onClick(UncivSound.Choir) {
-            civInfo.addUnit(theChosenOne!!.name, civInfo.getCapital())
+            civInfo.units.addUnit(theChosenOne!!.name, civInfo.getCapital())
             civInfo.greatPeople.freeGreatPeople--
             if (useMayaLongCount) {
                 civInfo.greatPeople.mayaLimitedFreeGP--

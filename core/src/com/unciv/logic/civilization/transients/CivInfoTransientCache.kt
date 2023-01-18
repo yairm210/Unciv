@@ -69,7 +69,7 @@ class CivInfoTransientCache(val civInfo: CivilizationInfo) {
 
     private fun updateViewableInvisibleTiles() {
         val newViewableInvisibleTiles = HashSet<TileInfo>()
-        for (unit in civInfo.getCivUnits()) {
+        for (unit in civInfo.units.getCivUnits()) {
             val invisibleUnitUniques = unit.getMatchingUniques(UniqueType.CanSeeInvisibleUnits)
             if (invisibleUnitUniques.none()) continue
             val visibleUnitTypes = invisibleUnitUniques.map { it.params[0] }
@@ -103,7 +103,7 @@ class CivInfoTransientCache(val civInfo: CivilizationInfo) {
         newViewableTiles.addAll(ownedTiles)
         val neighboringUnownedTiles = ownedTiles.flatMap { tile -> tile.neighbors.filter { it.getOwner() != civInfo } }
         newViewableTiles.addAll(neighboringUnownedTiles)
-        newViewableTiles.addAll(civInfo.getCivUnits().flatMap { unit -> unit.viewableTiles.asSequence().filter { it.getOwner() != civInfo } })
+        newViewableTiles.addAll(civInfo.units.getCivUnits().flatMap { unit -> unit.viewableTiles.asSequence().filter { it.getOwner() != civInfo } })
 
         for (otherCiv in civInfo.getKnownCivs()) {
             if (otherCiv.getAllyCiv() == civInfo.civName || otherCiv.civName == civInfo.getAllyCiv()) {
@@ -229,7 +229,7 @@ class CivInfoTransientCache(val civInfo: CivilizationInfo) {
         for (diplomacyManager in civInfo.diplomacy.values)
             newDetailedCivResources.add(diplomacyManager.resourcesFromTrade())
 
-        for (unit in civInfo.getCivUnits())
+        for (unit in civInfo.units.getCivUnits())
             newDetailedCivResources.subtractResourceRequirements(
                 unit.baseUnit.getResourceRequirements(), civInfo.gameInfo.ruleSet, "Units")
 

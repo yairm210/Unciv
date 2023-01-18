@@ -5,7 +5,6 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
-import com.unciv.logic.civilization.diplomacy.CityStatePersonality
 import com.unciv.logic.civilization.CivFlags
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.DiplomacyAction
@@ -13,6 +12,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.Proximity
+import com.unciv.logic.civilization.diplomacy.CityStatePersonality
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.TileInfo
@@ -407,7 +407,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
             QuestName.Route.value -> assignee.isCapitalConnectedToCity(civInfo.getCapital()!!)
             QuestName.ConnectResource.value -> assignee.detailedCivResources.map { it.resource }.contains(civInfo.gameInfo.ruleSet.tileResources[assignedQuest.data1])
             QuestName.ConstructWonder.value -> assignee.cities.any { it.cityConstructions.isBuilt(assignedQuest.data1) }
-            QuestName.GreatPerson.value -> assignee.getCivGreatPeople().any { it.baseUnit.getReplacedUnit(civInfo.gameInfo.ruleSet).name == assignedQuest.data1 }
+            QuestName.GreatPerson.value -> assignee.units.getCivGreatPeople().any { it.baseUnit.getReplacedUnit(civInfo.gameInfo.ruleSet).name == assignedQuest.data1 }
             QuestName.FindPlayer.value -> assignee.hasMetCivTerritory(civInfo.gameInfo.getCivilization(assignedQuest.data1))
             QuestName.FindNaturalWonder.value -> assignee.naturalWonders.contains(assignedQuest.data1)
             QuestName.PledgeToProtect.value -> assignee in civInfo.cityStateFunctions.getProtectorCivs()
@@ -549,7 +549,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
     /** Gets notified when we are attacked, for war with major pseudo-quest */
     fun wasAttackedBy(attacker: CivilizationInfo) {
         // Set target number units to kill
-        val totalMilitaryUnits = attacker.getCivUnits().count { !it.isCivilian() }
+        val totalMilitaryUnits = attacker.units.getCivUnits().count { !it.isCivilian() }
         val unitsToKill = max(3, totalMilitaryUnits / 4)
         unitsToKillForCiv[attacker.civName] = unitsToKill
 
@@ -752,8 +752,8 @@ class QuestManager : IsPartOfGameInfoSerialization {
     private fun getGreatPersonForQuest(challenger: CivilizationInfo): BaseUnit? {
         val ruleSet = civInfo.gameInfo.ruleSet
 
-        val challengerGreatPeople = challenger.getCivGreatPeople().map { it.baseUnit.getReplacedUnit(ruleSet) }
-        val cityStateGreatPeople = civInfo.getCivGreatPeople().map { it.baseUnit.getReplacedUnit(ruleSet) }
+        val challengerGreatPeople = challenger.units.getCivGreatPeople().map { it.baseUnit.getReplacedUnit(ruleSet) }
+        val cityStateGreatPeople = civInfo.units.getCivGreatPeople().map { it.baseUnit.getReplacedUnit(ruleSet) }
 
         val greatPeople = challenger.greatPeople.getGreatPeople()
                 .map { it.getReplacedUnit(ruleSet) }

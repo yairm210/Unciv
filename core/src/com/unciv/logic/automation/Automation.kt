@@ -128,8 +128,8 @@ object Automation {
         }
 
         val totalCarriableUnits =
-            civInfo.getCivUnits().count { it.matchesFilter(carryFilter) }
-        val totalCarryingSlots = civInfo.getCivUnits().sumOf { getCarryAmount(it) }
+            civInfo.units.getCivUnits().count { it.matchesFilter(carryFilter) }
+        val totalCarryingSlots = civInfo.units.getCivUnits().sumOf { getCarryAmount(it) }
         return totalCarriableUnits < totalCarryingSlots
     }
 

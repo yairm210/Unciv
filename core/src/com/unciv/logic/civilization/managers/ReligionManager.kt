@@ -178,7 +178,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
             val birthCity =
                 if (religionState <= ReligionState.Pantheon) civInfo.getCapital()
                 else civInfo.religionManager.getHolyCity()
-            val prophet = civInfo.addUnit(prophetUnitName, birthCity) ?: return
+            val prophet = civInfo.units.addUnit(prophetUnitName, birthCity) ?: return
             prophet.religion = religion!!.name
             storedFaith -= faithForNextGreatProphet()
             civInfo.civConstructions.boughtItemsWithIncreasingPrice.add(prophetUnitName, 1)
@@ -368,7 +368,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         foundingCityId = null
         shouldChoosePantheonBelief = false
 
-        for (unit in civInfo.getCivUnits())
+        for (unit in civInfo.units.getCivUnits())
             if (unit.hasUnique(UniqueType.ReligiousUnit) && unit.hasUnique(UniqueType.TakeReligionOverBirthCity))
                 unit.religion = newReligion.name
     }

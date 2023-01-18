@@ -23,6 +23,7 @@ import com.unciv.logic.civilization.managers.QuestManager
 import com.unciv.logic.civilization.managers.ReligionManager
 import com.unciv.logic.civilization.managers.RuinsManager
 import com.unciv.logic.civilization.managers.TechManager
+import com.unciv.logic.civilization.managers.UnitManager
 import com.unciv.logic.civilization.managers.VictoryManager
 import com.unciv.logic.civilization.transients.CivInfoStatsForNextTurn
 import com.unciv.logic.civilization.transients.CivInfoTransientCache
@@ -87,19 +88,8 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     @Transient
     lateinit var nation: Nation
 
-    /**
-     * We never add or remove from here directly, could cause comodification problems.
-     * Instead, we create a copy list with the change, and replace this list.
-     * The other solution, casting toList() every "get", has a performance cost
-     */
     @Transient
-    private var units = listOf<MapUnit>()
-
-    /**
-     * Index in the unit list above of the unit that is potentially due and is next up for button "Next unit".
-     */
-    @Transient
-    private var nextPotentiallyDueAt = 0
+    val units = UnitManager(this)
 
     @Transient
     var viewableTiles = setOf<TileInfo>()
@@ -315,6 +305,8 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
+
+
     //region pure functions
     fun getDifficulty(): Difficulty {
         if (isHuman()) return gameInfo.getDifficulty()
@@ -495,79 +487,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     }
 
 
-    //region Units
-    fun getCivUnitsSize(): Int = units.size
-    fun getCivUnits(): Sequence<MapUnit> = units.asSequence()
-    fun getCivGreatPeople(): Sequence<MapUnit> = getCivUnits().filter { mapUnit -> mapUnit.isGreatPerson() }
-
-    // Similar to getCivUnits(), but the returned list is rotated so that the
-    // 'nextPotentiallyDueAt' unit is first here.
-    private fun getCivUnitsStartingAtNextDue(): Sequence<MapUnit> = sequenceOf(units.subList(nextPotentiallyDueAt, units.size) + units.subList(0, nextPotentiallyDueAt)).flatten()
-
-    fun addUnit(mapUnit: MapUnit, updateCivInfo: Boolean = true) {
-        // Since we create a new list anyway (otherwise some concurrent modification
-        // exception will happen), also rearrange existing units so that
-        // 'nextPotentiallyDueAt' becomes 0.  This way new units are always last to be due
-        // (can be changed as wanted, just have a predictable place).
-        val newList = getCivUnitsStartingAtNextDue().toMutableList()
-        newList.add(mapUnit)
-        units = newList
-        nextPotentiallyDueAt = 0
-
-        if (updateCivInfo) {
-            // Not relevant when updating TileInfo transients, since some info of the civ itself isn't yet available,
-            // and in any case it'll be updated once civ info transients are
-            updateStatsForNextTurn() // unit upkeep
-            if (mapUnit.baseUnit.getResourceRequirements().isNotEmpty())
-                cache.updateCivResources()
-        }
-    }
-
-    fun removeUnit(mapUnit: MapUnit) {
-        // See comment in addUnit().
-        val newList = getCivUnitsStartingAtNextDue().toMutableList()
-        newList.remove(mapUnit)
-        units = newList
-        nextPotentiallyDueAt = 0
-
-        updateStatsForNextTurn() // unit upkeep
-        if (mapUnit.baseUnit.getResourceRequirements().isNotEmpty())
-            cache.updateCivResources()
-    }
-
-    fun getIdleUnits() = getCivUnits().filter { it.isIdle() }
-
-    fun getDueUnits(): Sequence<MapUnit> = getCivUnitsStartingAtNextDue().filter { it.due && it.isIdle() }
-
-    fun shouldGoToDueUnit() = UncivGame.Current.settings.checkForDueUnits && getDueUnits().any()
-
-    // Return the next due unit, but preferably not 'unitToSkip': this is returned only if it is the only remaining due unit.
-    fun cycleThroughDueUnits(unitToSkip: MapUnit? = null): MapUnit? {
-        if (units.none()) return null
-
-        var returnAt = nextPotentiallyDueAt
-        var fallbackAt = -1
-
-        do {
-            if (units[returnAt].due && units[returnAt].isIdle()) {
-                if (units[returnAt] != unitToSkip) {
-                    nextPotentiallyDueAt = (returnAt + 1) % units.size
-                    return units[returnAt]
-                }
-                else fallbackAt = returnAt
-            }
-
-            returnAt = (returnAt + 1) % units.size
-        } while (returnAt != nextPotentiallyDueAt)
-
-        if (fallbackAt >= 0) {
-            nextPotentiallyDueAt = (fallbackAt + 1) % units.size
-            return units[fallbackAt]
-        }
-        else return null
-    }
-    //endregion
-
     fun shouldOpenTechPicker(): Boolean {
         if (!tech.canResearchTech()) return false
         if (tech.freeTechs != 0) return true
@@ -661,7 +580,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     fun isDefeated() = when {
         isBarbarian() || isSpectator() -> false     // Barbarians and voyeurs can't lose
         hasEverOwnedOriginalCapital == true -> cities.isEmpty()
-        else -> getCivUnits().none()
+        else -> units.getCivUnits().none()
     }
 
     fun getEra(): Era = tech.era
@@ -757,7 +676,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
     private fun calculateMilitaryMight(): Int {
         var sum = 1 // minimum value, so we never end up with 0
-        for (unit in units) {
+        for (unit in units.getCivUnits()) {
             sum += if (unit.baseUnit.isWaterUnit())
                 unit.getForceEvaluation() / 2   // Really don't value water units highly
             else
@@ -988,50 +907,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
                 if (action is LocationAction && action.locations.isEmpty()) null else action, category))
     }
 
-    fun addUnit(unitName: String, city: CityInfo? = null): MapUnit? {
-        if (cities.isEmpty()) return null
-        if (!gameInfo.ruleSet.units.containsKey(unitName)) return null
-
-        val cityToAddTo = city ?: cities.random()
-        val unit = getEquivalentUnit(unitName)
-        val placedUnit = placeUnitNearTile(cityToAddTo.location, unit.name)
-        // silently bail if no tile to place the unit is found
-            ?: return null
-        if (unit.isGreatPerson()) {
-            addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", placedUnit.getTile().position, NotificationCategory.General, unit.name)
-        }
-
-        if (placedUnit.hasUnique(UniqueType.ReligiousUnit) && gameInfo.isReligionEnabled()) {
-            placedUnit.religion =
-                when {
-                    placedUnit.hasUnique(UniqueType.TakeReligionOverBirthCity)
-                    && religionManager.religion?.isMajorReligion() == true ->
-                        religionManager.religion!!.name
-                    city != null -> city.cityConstructions.cityInfo.religion.getMajorityReligionName()
-                    else -> religionManager.religion?.name
-                }
-            placedUnit.setupAbilityUses(cityToAddTo)
-        }
-
-        for (unique in getMatchingUniques(UniqueType.LandUnitsCrossTerrainAfterUnitGained)) {
-            if (unit.matchesFilter(unique.params[1])) {
-                passThroughImpassableUnlocked = true    // Update the cached Boolean
-                passableImpassables.add(unique.params[0])   // Add to list of passable impassables
-            }
-        }
-
-        return placedUnit
-    }
-
-    /** Tries to place the a [unitName] unit into the [TileInfo] closest to the given the [location]
-     * @param location where to try to place the unit
-     * @param unitName name of the [BaseUnit] to create and place
-     * @return created [MapUnit] or null if no suitable location was found
-     * */
-    fun placeUnitNearTile(location: Vector2, unitName: String): MapUnit? {
-        return gameInfo.tileMap.placeUnitNearTile(location, unitName, this)
-    }
-
     fun addCity(location: Vector2) {
         val newCity = CityInfo(this, location)
         newCity.cityConstructions.chooseNextConstruction()
@@ -1042,7 +917,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         else "The City-State of [$civName] has been destroyed!"
         for (civ in gameInfo.civilizations)
             civ.addNotification(destructionText, NotificationCategory.General, civName, NotificationIcon.Death)
-        getCivUnits().forEach { it.destroy() }
+        units.getCivUnits().forEach { it.destroy() }
         tradeRequests.clear() // if we don't do this then there could be resources taken by "pending" trades forever
         for (diplomacyManager in diplomacy.values) {
             diplomacyManager.trades.clear()

@@ -30,7 +30,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private val units = cityInfo.getRuleset().units.values
 
-    private val civUnits = civInfo.getCivUnits()
+    private val civUnits = civInfo.units.getCivUnits()
     private val militaryUnits = civUnits.count { it.baseUnit.isMilitary() }
     private val workers = civUnits.count { it.hasUniqueToBuildImprovements && it.isCivilian() }.toFloat()
     private val cities = civInfo.cities.size

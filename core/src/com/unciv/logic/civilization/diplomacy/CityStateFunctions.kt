@@ -12,8 +12,8 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.Proximity
-import com.unciv.models.ruleset.nation.CityStateType
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.nation.CityStateType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
@@ -78,7 +78,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             return
         val giftedUnit = giftableUnits.random()
         val cities = NextTurnAutomation.getClosestCities(receivingCiv, civInfo) ?: return
-        val placedUnit = receivingCiv.placeUnitNearTile(cities.city1.location, giftedUnit.name)
+        val placedUnit = receivingCiv.units.placeUnitNearTile(cities.city1.location, giftedUnit.name)
             ?: return
         val locations = LocationAction(placedUnit.getTile().position, cities.city2.location)
         receivingCiv.addNotification( "[${civInfo.civName}] gave us a [${giftedUnit.name}] as a gift!", locations,
@@ -108,7 +108,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             ?: return  // That filter _can_ result in no candidates, if so, quit silently
 
         // placing the unit may fail - in that case stay quiet
-        val placedUnit = receivingCiv.placeUnitNearTile(city.location, militaryUnit.name) ?: return
+        val placedUnit = receivingCiv.units.placeUnitNearTile(city.location, militaryUnit.name) ?: return
 
         // The unit should have bonuses from Barracks, Alhambra etc as if it was built in the CS capital
         militaryUnit.addConstructionBonuses(placedUnit, civInfo.getCapital()!!.cityConstructions)
@@ -283,7 +283,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         // https://github.com/Gedemon/Civ5-DLL/blob/master/CvGameCoreDLL_Expansion1/CvMinorCivAI.cpp, line 7812
         var cost = (500 * civInfo.gameInfo.speed.goldCostModifier).toInt()
         // Plus disband value of all units
-        for (unit in civInfo.getCivUnits()) {
+        for (unit in civInfo.units.getCivUnits()) {
             cost += unit.baseUnit.getDisbandGold(civInfo)
         }
         // Round to lower multiple of 5
@@ -318,7 +318,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                 civInfo.getCapital()!!.location,
                 NotificationCategory.Diplomacy, civInfo.civName,
                 NotificationIcon.Diplomacy, otherCiv.civName)
-        for (unit in civInfo.getCivUnits())
+        for (unit in civInfo.units.getCivUnits())
             unit.gift(otherCiv)
 
         // Make sure this CS can never be liberated
@@ -435,7 +435,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                 it.value.isCivilian() && it.value.isBuildable(civInfo)
         }
         if (buildableWorkerLikeUnits.isEmpty()) return  // Bad luck?
-        demandingCiv.placeUnitNearTile(civInfo.getCapital()!!.location, buildableWorkerLikeUnits.keys.random())
+        demandingCiv.units.placeUnitNearTile(civInfo.getCapital()!!.location, buildableWorkerLikeUnits.keys.random())
 
         civInfo.getDiplomacyManager(demandingCiv).addInfluence(-50f)
         cityStateBullied(demandingCiv)
@@ -462,7 +462,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             val diplomacy = civInfo.getDiplomacyManager(otherCiv)
             if (diplomacy.hasFlag(DiplomacyFlags.AngerFreeIntrusion)) continue // They recently helped us
 
-            val unitsInBorder = otherCiv.getCivUnits().count { !it.isCivilian() && it.getTile().getOwner() == civInfo }
+            val unitsInBorder = otherCiv.units.getCivUnits().count { !it.isCivilian() && it.getTile().getOwner() == civInfo }
             if (unitsInBorder > 0 && diplomacy.relationshipLevel() < RelationshipLevel.Friend) {
                 diplomacy.addInfluence(-10f)
                 if (!diplomacy.hasFlag(DiplomacyFlags.BorderConflict)) {
@@ -489,7 +489,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         if (civInfo.gameInfo.gameParameters.noBarbarians) return 0
         val barbarianCiv = civInfo.gameInfo.civilizations.firstOrNull { it.isBarbarian() }
             ?: return 0
-        return barbarianCiv.getCivUnits().count { it.threatensCiv(civInfo) }
+        return barbarianCiv.units.getCivUnits().count { it.threatensCiv(civInfo) }
     }
 
     fun threateningBarbarianKilledBy(otherCiv: CivilizationInfo) {
@@ -651,7 +651,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
 
     /** Asks all met majors that haven't yet declared wor on [attacker] to at least give some units */
     fun askForUnitGifts(attacker: CivilizationInfo) {
-        if (attacker.isDefeated() || civInfo.isDefeated()) // nevermind, someone died
+        if (attacker.isDefeated() || civInfo.isDefeated()) // never mind, someone died
             return
         if (civInfo.cities.isEmpty()) // Can't receive units with no cities
             return

@@ -18,8 +18,8 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.map.MapVisualization
 import com.unciv.logic.multiplayer.MultiplayerGameUpdated
@@ -173,7 +173,7 @@ class WorldScreen(
         val tileToCenterOn: Vector2 =
                 when {
                     viewingCiv.cities.isNotEmpty() && viewingCiv.getCapital() != null -> viewingCiv.getCapital()!!.location
-                    viewingCiv.getCivUnits().any() -> viewingCiv.getCivUnits().first().getTile().position
+                    viewingCiv.units.getCivUnits().any() -> viewingCiv.units.getCivUnits().first().getTile().position
                     else -> Vector2.Zero
                 }
 
@@ -411,7 +411,7 @@ class WorldScreen(
 
         mapHolder.resetArrows()
         if (UncivGame.Current.settings.showUnitMovements) {
-            val allUnits = gameInfo.civilizations.asSequence().flatMap { it.getCivUnits() }
+            val allUnits = gameInfo.civilizations.asSequence().flatMap { it.units.getCivUnits() }
             val allAttacks = allUnits.map { unit -> unit.attacksSinceTurnStart.asSequence().map { attacked -> Triple(unit.civInfo, unit.getTile().position, attacked) } }.flatten() +
                 gameInfo.civilizations.asSequence().flatMap { civInfo -> civInfo.attacksSinceTurnStart.asSequence().map { Triple(civInfo, it.source, it.target) } }
             mapHolder.updateMovementOverlay(
@@ -509,7 +509,7 @@ class WorldScreen(
         if (viewingCiv.isAtWar() && !completedTasks.contains("Conquer a city"))
             return "Conquer a city!\nBring an enemy city down to low health > " +
                     "\nEnter the city with a melee unit"
-        if (viewingCiv.getCivUnits().any { it.baseUnit.movesLikeAirUnits() } && !completedTasks.contains("Move an air unit"))
+        if (viewingCiv.units.getCivUnits().any { it.baseUnit.movesLikeAirUnits() } && !completedTasks.contains("Move an air unit"))
             return "Move an air unit!\nSelect an air unit > select another city within range > " +
                     "\nMove the unit to the other city"
         if (!completedTasks.contains("See your stats breakdown"))
@@ -537,10 +537,10 @@ class WorldScreen(
         }
         displayTutorial(TutorialTrigger.AfterConquering) { viewingCiv.cities.any { it.hasJustBeenConquered } }
 
-        displayTutorial(TutorialTrigger.InjuredUnits) { gameInfo.getCurrentPlayerCivilization().getCivUnits().any { it.health < 100 } }
+        displayTutorial(TutorialTrigger.InjuredUnits) { gameInfo.getCurrentPlayerCivilization().units.getCivUnits().any { it.health < 100 } }
 
         displayTutorial(TutorialTrigger.Workers) {
-            gameInfo.getCurrentPlayerCivilization().getCivUnits().any {
+            gameInfo.getCurrentPlayerCivilization().units.getCivUnits().any {
                 it.hasUniqueToBuildImprovements && it.isCivilian() && !it.isGreatPerson()
             }
         }
@@ -642,7 +642,7 @@ class WorldScreen(
         // Try to select something new if we already have the next pending unit selected.
         if (bottomUnitTable.selectedUnit != null)
             bottomUnitTable.selectedUnit!!.due = false
-        val nextDueUnit = viewingCiv.cycleThroughDueUnits(bottomUnitTable.selectedUnit)
+        val nextDueUnit = viewingCiv.units.cycleThroughDueUnits(bottomUnitTable.selectedUnit)
         if (nextDueUnit != null) {
             mapHolder.setCenterPosition(
                 nextDueUnit.currentTile.position,
@@ -774,11 +774,11 @@ class WorldScreen(
                     game.pushScreen(DiplomaticVotePickerScreen(viewingCiv))
                 }
 
-            viewingCiv.shouldGoToDueUnit() ->
+            viewingCiv.units.shouldGoToDueUnit() ->
                 NextTurnAction("Next unit", Color.LIGHT_GRAY,
                     "NotificationIcons/NextUnit") { switchToNextUnit() }
 
-            !game.settings.automatedUnitsMoveOnTurnStart && !viewingCiv.hasMovedAutomatedUnits && viewingCiv.getCivUnits()
+            !game.settings.automatedUnitsMoveOnTurnStart && !viewingCiv.hasMovedAutomatedUnits && viewingCiv.units.getCivUnits()
                 .any { it.currentMovement > Constants.minimumMovementEpsilon && (it.isMoving() || it.isAutomated() || it.isExploring()) } ->
                 NextTurnAction("Move automated units", Color.LIGHT_GRAY,
                     "NotificationIcons/MoveAutomatedUnits") {
@@ -786,7 +786,7 @@ class WorldScreen(
                     isPlayersTurn = false // Disable state changes
                     nextTurnButton.disable()
                     Concurrency.run("Move automated units") {
-                        for (unit in viewingCiv.getCivUnits())
+                        for (unit in viewingCiv.units.getCivUnits())
                             unit.doAction()
                         launchOnGLThread {
                             shouldUpdate = true
@@ -857,7 +857,7 @@ class WorldScreen(
                     .flatMap { it.cities.asSequence() }.any { viewingCiv.hasExplored(it.location) }
         }
         displayTutorial(TutorialTrigger.ApolloProgram) { viewingCiv.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts) }
-        displayTutorial(TutorialTrigger.SiegeUnits) { viewingCiv.getCivUnits().any { it.baseUnit.isProbablySiegeUnit() } }
+        displayTutorial(TutorialTrigger.SiegeUnits) { viewingCiv.units.getCivUnits().any { it.baseUnit.isProbablySiegeUnit() } }
         displayTutorial(TutorialTrigger.Embarking) { viewingCiv.hasUnique(UniqueType.LandUnitEmbarkation) }
         displayTutorial(TutorialTrigger.NaturalWonders) { viewingCiv.naturalWonders.size > 0 }
         displayTutorial(TutorialTrigger.WeLoveTheKingDay) { viewingCiv.cities.any { it.demandedResource != "" } }

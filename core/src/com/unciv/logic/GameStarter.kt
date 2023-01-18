@@ -323,7 +323,7 @@ object GameStarter {
             }
 
             fun placeNearStartingPosition(unitName: String) {
-                civ.placeUnitNearTile(startingLocation.position, unitName)
+                civ.units.placeUnitNearTile(startingLocation.position, unitName)
             }
 
             // Determine starting units based on starting era

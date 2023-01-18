@@ -7,8 +7,8 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.mapgenerator.MapLandmassGenerator
 import com.unciv.models.metadata.Player
-import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.UniqueType
 import java.lang.Integer.max
@@ -529,7 +529,7 @@ class TileMap : IsPartOfGameInfoSerialization {
         }
 
         if (unitToPlaceTile == null) {
-            civInfo.removeUnit(unit) // since we added it to the civ units in the previous assignOwner
+            civInfo.units.removeUnit(unit) // since we added it to the civ units in the previous assignOwner
             return null // we didn't actually create a unit...
         }
 

@@ -38,7 +38,7 @@ class TurnManager(val civInfo: CivilizationInfo) {
         if (civInfo.cities.isNotEmpty()) { //if no city available, addGreatPerson will throw exception
             val greatPerson = civInfo.greatPeople.getNewGreatPerson()
             if (greatPerson != null && civInfo.gameInfo.ruleSet.units.containsKey(greatPerson))
-                civInfo.addUnit(greatPerson)
+                civInfo.units.addUnit(greatPerson)
             civInfo.religionManager.startTurn()
             if (civInfo.isLongCountActive())
                 MayaCalendar.startTurnForMaya(civInfo)
@@ -50,11 +50,11 @@ class TurnManager(val civInfo: CivilizationInfo) {
         updateRevolts()
         for (city in civInfo.cities) city.startTurn()  // Most expensive part of startTurn
 
-        for (unit in civInfo.getCivUnits()) unit.startTurn()
+        for (unit in civInfo.units.getCivUnits()) unit.startTurn()
 
         if (civInfo.playerType == PlayerType.Human && UncivGame.Current.settings.automatedUnitsMoveOnTurnStart) {
             civInfo.hasMovedAutomatedUnits = true
-            for (unit in civInfo.getCivUnits())
+            for (unit in civInfo.units.getCivUnits())
                 unit.doAction()
         } else civInfo.hasMovedAutomatedUnits = false
 
@@ -228,7 +228,7 @@ class TurnManager(val civInfo: CivilizationInfo) {
         // disband units until there are none left OR the gold values are normal
         if (!civInfo.isBarbarian() && civInfo.gold < -100 && nextTurnStats.gold.toInt() < 0) {
             for (i in 1 until (civInfo.gold / -100)) {
-                var civMilitaryUnits = civInfo.getCivUnits().filter { it.baseUnit.isMilitary() }
+                var civMilitaryUnits = civInfo.units.getCivUnits().filter { it.baseUnit.isMilitary() }
                 if (civMilitaryUnits.any()) {
                     val unitToDisband = civMilitaryUnits.first()
                     unitToDisband.disband()
@@ -263,7 +263,7 @@ class TurnManager(val civInfo: CivilizationInfo) {
         civInfo.temporaryUniques.endTurn()
 
         civInfo.goldenAges.endTurn(civInfo.getHappiness())
-        civInfo.getCivUnits().forEach { it.endTurn() }  // This is the most expensive part of endTurn
+        civInfo.units.getCivUnits().forEach { it.endTurn() }  // This is the most expensive part of endTurn
         civInfo.diplomacy.values.toList().forEach { it.nextTurn() } // we copy the diplomacy values so if it changes in-loop we won't crash
         civInfo.cache.updateHasActiveEnemyMovementPenalty()
 
@@ -272,7 +272,7 @@ class TurnManager(val civInfo: CivilizationInfo) {
         updateWinningCiv() // Maybe we did something this turn to win
     }
 
-    fun updateWinningCiv(){
+    private fun updateWinningCiv(){
         if (civInfo.gameInfo.victoryData != null) return // Game already won
 
         val victoryType = civInfo.victoryManager.getVictoryTypeAchieved()

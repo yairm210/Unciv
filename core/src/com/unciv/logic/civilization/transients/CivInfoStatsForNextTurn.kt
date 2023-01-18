@@ -35,7 +35,7 @@ class CivInfoStatsForNextTurn(val civInfo: CivilizationInfo) {
             freeUnits += unique.params[0].toInt()
         }
 
-        var unitsToPayFor = civInfo.getCivUnits()
+        var unitsToPayFor = civInfo.units.getCivUnits()
         if (civInfo.hasUnique(UniqueType.UnitsInCitiesNoMaintenance))
             unitsToPayFor = unitsToPayFor.filterNot {
                 it.getTile().isCityCenter() && it.canGarrison()
@@ -160,7 +160,7 @@ class CivInfoStatsForNextTurn(val civInfo: CivilizationInfo) {
         }
         return totalSupply.toInt()
     }
-    fun getUnitSupplyDeficit(): Int = max(0,civInfo.getCivUnitsSize() - getUnitSupply())
+    fun getUnitSupplyDeficit(): Int = max(0,civInfo.units.getCivUnitsSize() - getUnitSupply())
 
     /** Per each supply missing, a player gets -10% production. Capped at -70%. */
     fun getUnitSupplyProductionPenalty(): Float = -min(getUnitSupplyDeficit() * 10f, 70f)
@@ -228,7 +228,6 @@ class CivInfoStatsForNextTurn(val civInfo: CivilizationInfo) {
             if (!containsKey(key)) put(key, value)
             else put(key, value+get(key)!!)
         }
-        fun HashMap<String, Float>.add(key:String, value: Int) = add(key, value.toFloat())
 
         statMap["Base happiness"] = civInfo.getDifficulty().baseHappiness.toFloat()
 
@@ -289,7 +288,7 @@ class CivInfoStatsForNextTurn(val civInfo: CivilizationInfo) {
         return statMap
     }
 
-    fun getGlobalStatsFromUniques():StatMap {
+    private fun getGlobalStatsFromUniques():StatMap {
         val statMap = StatMap()
         if (civInfo.religionManager.religion != null) {
             for (unique in civInfo.religionManager.religion!!.getFounderUniques()) {

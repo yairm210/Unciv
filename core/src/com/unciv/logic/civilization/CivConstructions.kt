@@ -7,8 +7,6 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
-import java.util.*
-import kotlin.collections.HashMap
 
 class CivConstructions : IsPartOfGameInfoSerialization {
 
@@ -132,7 +130,7 @@ class CivConstructions : IsPartOfGameInfoSerialization {
                 it.cityConstructions.containsBuildingOrEquivalent(objectToCount.name)
                 || it.cityConstructions.isBeingConstructedOrEnqueued(objectToCount.name)
             }
-            is BaseUnit -> civInfo.getCivUnits().count { it.name == objectToCount.name } +
+            is BaseUnit -> civInfo.units.getCivUnits().count { it.name == objectToCount.name } +
                 civInfo.cities.count { it.cityConstructions.isBeingConstructedOrEnqueued(objectToCount.name) }
             else -> 0
         }

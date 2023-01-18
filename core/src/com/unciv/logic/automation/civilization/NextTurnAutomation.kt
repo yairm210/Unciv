@@ -16,11 +16,11 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PopupAlert
-import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.trade.Trade
@@ -512,7 +512,7 @@ object NextTurnAutomation {
             if (resourceCount >= Automation.getReservedSpaceResourceAmount(civInfo))
                 continue
 
-            val unitToDisband = civInfo.getCivUnits()
+            val unitToDisband = civInfo.units.getCivUnits()
                 .filter { it.baseUnit.requiresResource(resource) }
                 .minByOrNull { it.getForceEvaluation() }
             unitToDisband?.disband()
@@ -710,7 +710,7 @@ object NextTurnAutomation {
         if (civInfo.cities.isEmpty() || civInfo.diplomacy.isEmpty()) return
         if (civInfo.isAtWar() || civInfo.getHappiness() <= 0) return
 
-        val ourMilitaryUnits = civInfo.getCivUnits().filter { !it.isCivilian() }.count()
+        val ourMilitaryUnits = civInfo.units.getCivUnits().filter { !it.isCivilian() }.count()
         if (ourMilitaryUnits < civInfo.cities.size) return
         if (ourMilitaryUnits < 4) return  // to stop AI declaring war at the beginning of games when everyone isn't set up well enough
 
@@ -751,7 +751,7 @@ object NextTurnAutomation {
         val ourCity = closestCities.city1
         val theirCity = closestCities.city2
 
-        if (civInfo.getCivUnits().filter { it.isMilitary() }.none {
+        if (civInfo.units.getCivUnits().filter { it.isMilitary() }.none {
                 val damageRecievedWhenAttacking =
                     BattleDamage.calculateDamageToAttacker(
                         MapUnitCombatant(it),
@@ -875,7 +875,7 @@ object NextTurnAutomation {
 
 
     private fun automateUnits(civInfo: CivilizationInfo) {
-        val sortedUnits = civInfo.getCivUnits().sortedBy { unit ->
+        val sortedUnits = civInfo.units.getCivUnits().sortedBy { unit ->
             when {
                 unit.baseUnit.isAirUnit() -> 2
                 unit.baseUnit.isRanged() -> 3
@@ -915,7 +915,7 @@ object NextTurnAutomation {
         val settlerUnits = civInfo.gameInfo.ruleSet.units.values
                 .filter { it.hasUnique(UniqueType.FoundCity) && it.isBuildable(civInfo) }
         if (settlerUnits.isEmpty()) return
-        if (civInfo.getCivUnits().none { it.hasUnique(UniqueType.FoundCity) }
+        if (civInfo.units.getCivUnits().none { it.hasUnique(UniqueType.FoundCity) }
                 && civInfo.cities.none {
                     val currentConstruction = it.cityConstructions.getCurrentConstruction()
                     currentConstruction is BaseUnit && currentConstruction.hasUnique(UniqueType.FoundCity)

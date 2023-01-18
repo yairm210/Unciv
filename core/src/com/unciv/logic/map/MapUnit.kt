@@ -433,9 +433,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun isPreparingAirSweep() = action == UnitActionType.AirSweep.value
     fun isSetUpForSiege() = action == UnitActionType.SetUp.value
 
-    /** For display in Unit Overview */
-    fun getActionLabel() = if (action == null) "" else if (isFortified()) UnitActionType.Fortify.value else if (isMoving()) "Moving" else action!!
-
     fun isMilitary() = baseUnit.isMilitary()
     fun isCivilian() = baseUnit.isCivilian()
 
@@ -552,9 +549,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
         // and the civ currently has 0 horses, we need to see if the upgrade will be buildable
         // WHEN THE CURRENT UNIT IS NOT HERE
         // TODO redesign without kludge: Inform getRejectionReasons about 'virtually available' resources somehow
-        civInfo.removeUnit(this)
+        civInfo.units.removeUnit(this)
         val rejectionReasons = unitToUpgradeTo.getRejectionReasons(civInfo)
-        civInfo.addUnit(this)
+        civInfo.units.addUnit(this)
 
         var relevantRejectionReasons = rejectionReasons.asSequence().filterNot { it.rejectionReason == RejectionReason.Unbuildable }
         if (ignoreRequirements)
@@ -912,7 +909,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         civInfo.attacksSinceTurnStart.addAll(attacksSinceTurnStart.asSequence().map { CivilizationInfo.HistoricalAttackMemory(this.name, currentPosition, it) })
         currentMovement = 0f
         removeFromTile()
-        civInfo.removeUnit(this)
+        civInfo.units.removeUnit(this)
         civInfo.cache.updateViewableTiles()
         if (destroyTransportedUnit) {
             // all transported units should be destroyed as well
@@ -924,7 +921,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun gift(recipient: CivilizationInfo) {
-        civInfo.removeUnit(this)
+        civInfo.units.removeUnit(this)
         civInfo.cache.updateViewableTiles()
         // all transported units should be destroyed as well
         currentTile.getUnits().filter { it.isTransported && isTransportTypeOf(it) }
@@ -1073,11 +1070,11 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun assignOwner(civInfo: CivilizationInfo, updateCivInfo: Boolean = true) {
         owner = civInfo.civName
         this.civInfo = civInfo
-        civInfo.addUnit(this, updateCivInfo)
+        civInfo.units.addUnit(this, updateCivInfo)
     }
 
     fun capturedBy(captor: CivilizationInfo) {
-        civInfo.removeUnit(this)
+        civInfo.units.removeUnit(this)
         assignOwner(captor)
         currentMovement = 0f
         // It's possible that the unit can no longer stand on the tile it was captured on.

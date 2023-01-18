@@ -495,7 +495,7 @@ class UnitMovementAlgorithmsTests {
         unit.civInfo = civInfo
         unit.baseUnit.uniques.add("Can carry [2] [Aircraft] units")
         unit.updateUniques(ruleSet)
-        civInfo.addUnit(unit, false)
+        civInfo.units.addUnit(unit, false)
 
         val fighters = ArrayList<MapUnit>()
         for (i in 0..1) {
@@ -507,14 +507,14 @@ class UnitMovementAlgorithmsTests {
             tile.airUnits += newFighter
             newFighter.name = "Fighter"
             newFighter.isTransported = true
-            civInfo.addUnit(newFighter, false)
+            civInfo.units.addUnit(newFighter, false)
             fighters += newFighter
         }
 
         // simulate ejecting all units within foreign territory
-        for (unit in civInfo.getCivUnits()) unit.movement.teleportToClosestMoveableTile()
+        for (unit in civInfo.units.getCivUnits()) unit.movement.teleportToClosestMoveableTile()
         Assert.assertTrue("Transport and transported units must be teleported to the same tile",
-            civInfo.getCivUnits().toList().size == 3 && civInfo.getCivUnits().all { it.getTile() == newTiles.last() })
+            civInfo.units.getCivUnits().toList().size == 3 && civInfo.units.getCivUnits().all { it.getTile() == newTiles.last() })
     }
 
 }

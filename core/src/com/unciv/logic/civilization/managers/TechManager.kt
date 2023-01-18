@@ -68,7 +68,7 @@ class TechManager : IsPartOfGameInfoSerialization {
 
     /** When moving towards a certain tech, the user doesn't have to manually pick every one. */
     var techsToResearch = ArrayList<String>()
-    var overflowScience = 0
+    private var overflowScience = 0
     var techsInProgress = HashMap<String, Int>()
 
     /** In civ IV, you can auto-convert a certain percentage of gold in cities to science */
@@ -340,7 +340,7 @@ class TechManager : IsPartOfGameInfoSerialization {
 
         for (unique in civInfo.getMatchingUniques(UniqueType.ReceiveFreeUnitWhenDiscoveringTech)) {
             if (unique.params[1] != techName) continue
-            civInfo.addUnit(unique.params[0])
+            civInfo.units.addUnit(unique.params[0])
         }
         for (unique in civInfo.getMatchingUniques(UniqueType.MayanGainGreatPerson)) {
             if (unique.params[1] != techName) continue
@@ -385,7 +385,7 @@ class TechManager : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun updateEra() {
+    private fun updateEra() {
         val ruleset = civInfo.gameInfo.ruleSet
         if (ruleset.technologies.isEmpty() || researchedTechnologies.isEmpty())
             return
