@@ -159,7 +159,7 @@ class StatsOverviewTab(
 
         val greatPersonPoints = viewingPlayer.greatPeople.greatPersonPointsCounter
         val greatPersonPointsPerTurn = viewingPlayer.getGreatPersonPointsForNextTurn()
-        val pointsToGreatPerson = viewingPlayer.greatPeople.pointsForNextGreatPerson
+        val pointsToGreatPerson = viewingPlayer.greatPeople.getPointsRequiredForGreatPerson()
         for ((greatPerson, points) in greatPersonPoints) {
             add(greatPerson.toLabel()).left()
             add("$points/$pointsToGreatPerson".toLabel())

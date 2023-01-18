@@ -847,6 +847,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
     fun setTransients() {
         goldenAges.civInfo = this
+        greatPeople.civInfo = this
 
         civConstructions.setTransients(civInfo = this)
 
@@ -956,7 +957,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         // Generate great people at the start of the turn,
         // so they won't be generated out in the open and vulnerable to enemy attacks before you can control them
         if (cities.isNotEmpty()) { //if no city available, addGreatPerson will throw exception
-            val greatPerson = greatPeople.getNewGreatPerson(gameInfo.speed.modifier)
+            val greatPerson = greatPeople.getNewGreatPerson()
             if (greatPerson != null && gameInfo.ruleSet.units.containsKey(greatPerson)) addUnit(greatPerson)
             religionManager.startTurn()
             if (isLongCountActive())

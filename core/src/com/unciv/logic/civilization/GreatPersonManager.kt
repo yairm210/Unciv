@@ -8,7 +8,12 @@ import com.unciv.models.Counter
 // todo: GP from Maya long count should increase threshold as well - implement together
 
 class GreatPersonManager : IsPartOfGameInfoSerialization {
-    var pointsForNextGreatPerson = 100
+
+    @Transient
+    lateinit var civInfo: CivilizationInfo
+
+    /** Base points, without speed modifier */
+    private var pointsForNextGreatPerson = 100
     var pointsForNextGreatGeneral = 200
 
     var greatPersonPointsCounter = Counter<String>()
@@ -31,7 +36,9 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
-    fun getNewGreatPerson(gameSpeedModifier:Float): String? {
+    fun getPointsRequiredForGreatPerson() = (pointsForNextGreatPerson * civInfo.gameInfo.speed.modifier).toInt()
+
+    fun getNewGreatPerson(): String? {
         if (greatGeneralPoints > pointsForNextGreatGeneral) {
             greatGeneralPoints -= pointsForNextGreatGeneral
             pointsForNextGreatGeneral += 50
@@ -39,7 +46,7 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
         }
 
         for ((key, value) in greatPersonPointsCounter) {
-            val requiredPoints = (pointsForNextGreatPerson * gameSpeedModifier).toInt()
+            val requiredPoints = getPointsRequiredForGreatPerson()
             if (value >= requiredPoints) {
                 greatPersonPointsCounter.add(key, -requiredPoints)
                 pointsForNextGreatPerson *= 2
