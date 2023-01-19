@@ -1,4 +1,4 @@
-package com.unciv.ui.mapeditor
+package com.unciv.ui.mapeditor.tabs
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
@@ -17,6 +17,7 @@ import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.FormattedLine.IconDisplay
 import com.unciv.ui.civilopedia.MarkupRenderer
+import com.unciv.ui.mapeditor.MapEditorScreen
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ExpanderTab

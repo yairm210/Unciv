@@ -7,8 +7,8 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.TileInfo
-import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
@@ -21,7 +21,8 @@ import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.MarkupRenderer
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.mapeditor.MapEditorEditTab.BrushHandlerType
+import com.unciv.ui.mapeditor.tabs.MapEditorEditTab
+import com.unciv.ui.mapeditor.tabs.MapEditorEditTab.BrushHandlerType
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.BaseScreen

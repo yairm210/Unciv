@@ -1,4 +1,4 @@
-package com.unciv.ui.mapeditor
+package com.unciv.ui.mapeditor.tabs
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -13,7 +13,16 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.mapeditor.MapEditorOptionsTab.TileMatchFuzziness
+import com.unciv.ui.mapeditor.IMapEditorEditSubTabs
+import com.unciv.ui.mapeditor.MapEditorEditFeaturesTab
+import com.unciv.ui.mapeditor.MapEditorEditImprovementsTab
+import com.unciv.ui.mapeditor.MapEditorEditResourcesTab
+import com.unciv.ui.mapeditor.MapEditorEditRiversTab
+import com.unciv.ui.mapeditor.MapEditorEditStartsTab
+import com.unciv.ui.mapeditor.MapEditorEditTerrainTab
+import com.unciv.ui.mapeditor.MapEditorEditWondersTab
+import com.unciv.ui.mapeditor.MapEditorScreen
+import com.unciv.ui.mapeditor.tabs.MapEditorOptionsTab.TileMatchFuzziness
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyCharAndCode

@@ -6,13 +6,14 @@ import com.unciv.UncivGame
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapSizeNew
-import com.unciv.logic.map.tile.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.tile.TileInfo
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.mapeditor.tabs.MapEditorOptionsTab
 import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.utils.BaseScreen

@@ -1,6 +1,13 @@
 package com.unciv.ui.mapeditor
 
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.mapeditor.tabs.MapEditorEditTab
+import com.unciv.ui.mapeditor.tabs.MapEditorGenerateTab
+import com.unciv.ui.mapeditor.tabs.MapEditorLoadTab
+import com.unciv.ui.mapeditor.tabs.MapEditorModsTab
+import com.unciv.ui.mapeditor.tabs.MapEditorOptionsTab
+import com.unciv.ui.mapeditor.tabs.MapEditorSaveTab
+import com.unciv.ui.mapeditor.tabs.MapEditorViewTab
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.TabbedPager
 

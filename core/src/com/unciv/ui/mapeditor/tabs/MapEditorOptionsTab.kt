@@ -1,4 +1,4 @@
-package com.unciv.ui.mapeditor
+package com.unciv.ui.mapeditor.tabs
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.files.MapSaver
 import com.unciv.models.translations.tr
+import com.unciv.ui.mapeditor.MapEditorScreen
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyCharAndCode

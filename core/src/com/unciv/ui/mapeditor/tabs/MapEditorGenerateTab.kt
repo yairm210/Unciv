@@ -1,4 +1,4 @@
-package com.unciv.ui.mapeditor
+package com.unciv.ui.mapeditor.tabs
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup
@@ -13,6 +13,8 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.mapeditor.MapEditorScreen
+import com.unciv.ui.mapeditor.MapGeneratorSteps
 import com.unciv.ui.newgamescreen.MapParametersTable
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup

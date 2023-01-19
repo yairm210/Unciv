@@ -1,4 +1,4 @@
-package com.unciv.ui.mapeditor
+package com.unciv.ui.mapeditor.tabs
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
@@ -9,6 +9,8 @@ import com.unciv.logic.files.MapSaver
 import com.unciv.logic.map.MapGeneratedMainType
 import com.unciv.logic.map.TileMap
 import com.unciv.models.translations.tr
+import com.unciv.ui.mapeditor.MapEditorFilesTable
+import com.unciv.ui.mapeditor.MapEditorScreen
 import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
