@@ -60,6 +60,10 @@ class GameOptionsTable(
                 val turnSlider = addMaxTurnsSlider()
                 if (turnSlider != null)
                     add(turnSlider).padTop(10f).row()
+                if (gameParameters.randomNumberOfPlayers) {
+                    addMinPlayersSlider()
+                    addMaxPlayersSlider()
+                }
                 if (gameParameters.randomNumberOfCityStates) {
                     addMinCityStatesSlider()
                     addMaxCityStatesSlider()
@@ -87,8 +91,8 @@ class GameOptionsTable(
             if (UncivGame.Current.settings.enableEspionageOption)
                 it.addEnableEspionageCheckbox()
             it.addNoStartBiasCheckbox()
-            it.addRandomCityStatesCheckbox()
             it.addRandomPlayersCheckbox()
+            it.addRandomCityStatesCheckbox()
         }
         add(expander).pad(10f).padTop(10f).growX().row()
 
@@ -148,6 +152,10 @@ class GameOptionsTable(
         { gameParameters.espionageEnabled = it }
 
 
+    private fun numberOfPlayable() = ruleset.nations.values.count {
+        it.isMajorCiv()
+    }
+
     private fun numberOfCityStates() = ruleset.nations.values.count {
         it.isCityState()
         && !it.hasUnique(UniqueType.CityStateDeprecated)
@@ -158,8 +166,11 @@ class GameOptionsTable(
             { gameParameters.noStartBias = it }
 
     private fun Table.addRandomPlayersCheckbox() =
-            addCheckbox("Random number of Players", gameParameters.randomNumberOfPlayers)
-            { gameParameters.randomNumberOfPlayers = it }
+            addCheckbox("Random number of Civilizations", gameParameters.randomNumberOfPlayers)
+            {
+                gameParameters.randomNumberOfPlayers = it
+                update()
+            }
 
     private fun Table.addRandomCityStatesCheckbox() =
             addCheckbox("Random number of City-States", gameParameters.randomNumberOfCityStates)
@@ -167,6 +178,32 @@ class GameOptionsTable(
                 gameParameters.randomNumberOfCityStates = it
                 update()
             }
+
+    private fun Table.addMinPlayersSlider() {
+        val playableAvailable = numberOfPlayable()
+        if (playableAvailable == 0) return
+
+        add("{Min number of Civilizations}:".toLabel()).left().expandX()
+        val slider = UncivSlider(0f, playableAvailable.toFloat(), 1f, initial = gameParameters.minNumberOfPlayers.toFloat()) {
+            gameParameters.minNumberOfPlayers = it.toInt()
+        }
+        slider.permanentTip = true
+        slider.isDisabled = locked
+        add(slider).padTop(10f).row()
+    }
+
+    private fun Table.addMaxPlayersSlider() {
+        val playableAvailable = numberOfPlayable()
+        if (playableAvailable == 0) return
+
+        add("{Max number of Civilizations}:".toLabel()).left().expandX()
+        val slider = UncivSlider(0f, playableAvailable.toFloat(), 1f, initial = gameParameters.maxNumberOfPlayers.toFloat()) {
+            gameParameters.maxNumberOfPlayers = it.toInt()
+        }
+        slider.permanentTip = true
+        slider.isDisabled = locked
+        add(slider).padTop(10f).row()
+    }
 
     private fun Table.addMinCityStatesSlider() {
         val cityStatesAvailable = numberOfCityStates()

@@ -16,6 +16,8 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     @Deprecated("Since 4.1.11")
     var gameSpeed = ""
     var randomNumberOfPlayers = false
+    var minNumberOfPlayers = 3
+    var maxNumberOfPlayers = 3
     var players = ArrayList<Player>().apply {
         add(Player().apply { playerType = PlayerType.Human })
         for (i in 1..3) add(Player())
@@ -52,6 +54,8 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
         parameters.speed = speed
         parameters.players = ArrayList(players)
         parameters.randomNumberOfPlayers = randomNumberOfPlayers
+        parameters.minNumberOfPlayers = minNumberOfPlayers
+        parameters.maxNumberOfPlayers = maxNumberOfPlayers
         parameters.randomNumberOfCityStates = randomNumberOfCityStates
         parameters.minNumberOfCityStates = minNumberOfCityStates
         parameters.maxNumberOfCityStates = maxNumberOfCityStates
