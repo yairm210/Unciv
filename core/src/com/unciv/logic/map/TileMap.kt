@@ -6,6 +6,8 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.mapgenerator.MapLandmassGenerator
+import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.tile.TileInfo
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
@@ -325,7 +327,7 @@ class TileMap : IsPartOfGameInfoSerialization {
             vectorUnwrappedLeft
     }
 
-    data class ViewableTile(val tile:TileInfo, val maxHeightSeenToTile:Int, val isVisible:Boolean, val isAttackable: Boolean)
+    data class ViewableTile(val tile: TileInfo, val maxHeightSeenToTile:Int, val isVisible:Boolean, val isAttackable: Boolean)
 
     /** @return List of tiles visible from location [position] for a unit with sight range [sightDistance] */
     fun getViewableTiles(position: Vector2, sightDistance: Int, forAttack:Boolean = false): List<TileInfo> {

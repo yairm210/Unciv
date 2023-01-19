@@ -1,9 +1,12 @@
-package com.unciv.logic.map
+package com.unciv.logic.map.mapunit
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.map.BFS
 import com.unciv.logic.map.HexMath.getDistance
+import com.unciv.logic.map.tile.RoadStatus
+import com.unciv.logic.map.tile.TileInfo
 import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.models.ruleset.unique.UniqueType
 

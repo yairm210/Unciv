@@ -2,7 +2,7 @@ package com.unciv.logic.city
 
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.map.RoadStatus
+import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.GlobalUniques

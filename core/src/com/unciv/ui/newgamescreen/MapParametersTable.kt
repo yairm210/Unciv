@@ -118,13 +118,11 @@ class MapParametersTable(
     private fun addMapTypeSelectBox() {
         // MapType is not an enum so we can't simply enumerate. //todo: make it so!
         val mapTypes = listOfNotNull(
-            MapType.default,
             MapType.pangaea,
             MapType.continentAndIslands,
             MapType.twoContinents,
             MapType.threeContinents,
             MapType.fourCorners,
-            MapType.smoothedRandom,
             MapType.archipelago,
             MapType.innerSea,
             if (forMapEditor && mapGeneratedMainType != MapGeneratedMainType.randomGenerated) MapType.empty else null

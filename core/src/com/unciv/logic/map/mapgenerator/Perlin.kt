@@ -1,7 +1,7 @@
-package com.unciv.logic.map
+package com.unciv.logic.map.mapgenerator
 
-import kotlin.math.floor
 import kotlin.math.abs
+import kotlin.math.floor
 
 // version 1.1.3
 // From https://rosettacode.org/wiki/Perlin_noise#Kotlin
@@ -105,13 +105,20 @@ object Perlin {
         val bb = p[b + 1] + zi
 
         return lerp(w, lerp(v, lerp(u, grad3(p[aa], xx, yy, zz),
-                grad3(p[ba], xx - 1, yy, zz)),
+                grad3(p[ba], xx - 1, yy, zz)
+        ),
                 lerp(u, grad3(p[ab], xx, yy - 1, zz),
-                        grad3(p[bb], xx - 1, yy - 1, zz))),
+                        grad3(p[bb], xx - 1, yy - 1, zz)
+                )
+        ),
                 lerp(v, lerp(u, grad3(p[aa + 1], xx, yy, zz - 1),
-                        grad3(p[ba + 1], xx - 1, yy, zz - 1)),
+                        grad3(p[ba + 1], xx - 1, yy, zz - 1)
+                ),
                         lerp(u, grad3(p[ab + 1], xx, yy - 1, zz - 1),
-                                grad3(p[bb + 1], xx - 1, yy - 1, zz - 1))))
+                                grad3(p[bb + 1], xx - 1, yy - 1, zz - 1)
+                        )
+                )
+        )
     }
 
     private fun fade(t: Double) = t * t * t * (t * (t * 6 - 15) + 10)

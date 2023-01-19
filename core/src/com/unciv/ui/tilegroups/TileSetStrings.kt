@@ -2,8 +2,8 @@ package com.unciv.ui.tilegroups
 
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.MapUnit
-import com.unciv.logic.map.RoadStatus
+import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.tilesets.TileSetConfig
 import com.unciv.ui.images.ImageAttempter
@@ -117,7 +117,7 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, unitS
      * The era-based image wins out, even though it's not the current era.
      */
 
-    private fun tryGetUnitImageLocation(unit:MapUnit): String? {
+    private fun tryGetUnitImageLocation(unit: MapUnit): String? {
 
         var baseUnitIconLocation = getString(this.unitsLocation, unit.name)
         if (unit.isEmbarked()) {

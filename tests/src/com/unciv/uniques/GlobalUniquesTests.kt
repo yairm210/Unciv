@@ -3,7 +3,7 @@ package com.unciv.uniques
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
-import com.unciv.logic.map.RoadStatus
+import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.stats.Stats
 import com.unciv.testing.GdxTestRunner

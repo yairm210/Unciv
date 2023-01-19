@@ -2,7 +2,7 @@ package com.unciv.models.ruleset
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
-import com.unciv.logic.map.RoadStatus
+import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.ruleset.nation.getContrastRatio
 import com.unciv.models.ruleset.nation.getRelativeLuminance
 import com.unciv.models.ruleset.tile.TerrainType

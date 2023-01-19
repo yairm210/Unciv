@@ -123,7 +123,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
                     .generateMap(MapParameters().apply {
                         shape = MapShape.rectangular
                         mapSize = MapSizeNew(mapWidth.toInt() + 1, mapHeight.toInt() + 1)
-                        type = MapType.default
+                        type = MapType.pangaea
                         waterThreshold = -0.1f // mainly land, gets about 30% water
                         modifyForEasterEgg()
                     })

@@ -4,7 +4,7 @@ import com.unciv.Constants
 import com.unciv.logic.automation.unit.BattleHelper
 import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.MapUnit
+import com.unciv.logic.map.mapunit.MapUnit
 
 class BarbarianAutomation(val civInfo: CivilizationInfo) {
 

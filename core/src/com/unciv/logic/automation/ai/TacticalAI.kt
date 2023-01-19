@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.UncivGame
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.tile.TileInfo
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.extensions.toGroup
 import com.unciv.utils.Log

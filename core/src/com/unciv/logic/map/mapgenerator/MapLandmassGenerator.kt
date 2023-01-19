@@ -1,7 +1,10 @@
 package com.unciv.logic.map.mapgenerator
 
 import com.unciv.logic.map.HexMath
-import com.unciv.logic.map.*
+import com.unciv.logic.map.MapShape
+import com.unciv.logic.map.MapType
+import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType
 import kotlin.math.abs
@@ -45,7 +48,6 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
             MapType.twoContinents -> createTwoContinents(tileMap)
             MapType.threeContinents -> createThreeContinents(tileMap)
             MapType.fourCorners -> createFourCorners(tileMap)
-            MapType.smoothedRandom -> generateLandCellularAutomata(tileMap)
             MapType.archipelago -> createArchipelago(tileMap)
             MapType.default -> createPerlin(tileMap)
         }
@@ -85,24 +87,6 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
         tile.baseTerrain = if (elevation < waterThreshold) waterTerrainName else landTerrainName
     }
 
-    /**
-     * Smoothen the map by clustering landmass and oceans with probability [threshold].
-     * [TileInfo]s with more than 3 land neighbours are converted to land.
-     * [TileInfo]s with more than 3 water neighbours are converted to water.
-     */
-    private fun smoothen(tileMap: TileMap, threshold: Double = 1.0) {
-        for (tileInfo in tileMap.values) {
-            if (randomness.RNG.nextFloat() > threshold)
-                continue
-
-            val numberOfLandNeighbors = tileInfo.neighbors.count { it.baseTerrain == landTerrainName }
-            if (numberOfLandNeighbors > 3)
-                tileInfo.baseTerrain = landTerrainName
-            else if (numberOfLandNeighbors < 3)
-                tileInfo.baseTerrain = waterTerrainName
-        }
-    }
-
     private fun createPerlin(tileMap: TileMap) {
         val elevationSeed = randomness.RNG.nextInt().toDouble()
         for (tile in tileMap.values) {
@@ -124,7 +108,7 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
         val elevationSeed = randomness.RNG.nextInt().toDouble()
         for (tile in tileMap.values) {
             var elevation = randomness.getPerlinNoise(tile, elevationSeed)
-            elevation = (elevation + getEllipticContinent(tile, tileMap)) / 2.0
+            elevation = elevation*(3/4f) + getEllipticContinent(tile, tileMap) / 4
             spawnLandOrWater(tile, elevation)
         }
     }
@@ -186,7 +170,7 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
         val elevationSeed = randomness.RNG.nextInt().toDouble()
         for (tile in tileMap.values) {
             var elevation = randomness.getPerlinNoise(tile, elevationSeed)
-            elevation = (elevation + getFourCornersTransform(tile, tileMap)) / 2.0
+            elevation = elevation/2 + getFourCornersTransform(tile, tileMap)/2
             spawnLandOrWater(tile, elevation)
         }
     }
@@ -204,7 +188,7 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
         val x = tileInfo.longitude
         val y = tileInfo.latitude
 
-        val distanceFactor = x * x / (a * a) + y * y / (b * b)
+        val distanceFactor = x * x / (a * a) + y * y / (b * b) + (x+y).pow(2) / (a+b).pow(2)
 
         return min(0.3, 1.0 - (5.0 * distanceFactor * distanceFactor + randomScale) / 3.0)
     }
@@ -244,7 +228,7 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
         // So what we do it create a line of water in the middle - where latitude or longitude is close to 0.
         val randomScale = randomness.RNG.nextDouble()
         val latitudeFactor = abs(tileInfo.latitude) / tileMap.maxLatitude
-        var longitudeFactor = abs(tileInfo.longitude) / tileMap.maxLongitude
+        val longitudeFactor = abs(tileInfo.longitude) / tileMap.maxLongitude
 
         var factor = if (isLatitude) latitudeFactor else longitudeFactor
 
@@ -313,9 +297,11 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
             ) * 1.5f
         }
 
+        val shouldBeWater = 1-factor
+
         // there's nothing magical about this, it's just what we got from playing around with a lot of different options -
         //   the numbers can be changed if you find that something else creates better looking continents
-        return min(0.2, -1.0 + (5.0 * factor.pow(0.5f) + randomScale) / 3.0)
+        return 1.0 - (5.0 * shouldBeWater*shouldBeWater + randomScale) / 3.0
     }
 
     /**
@@ -328,18 +314,5 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
                                      scale: Double = 15.0): Double {
         val worldCoords = HexMath.hex2WorldCoords(tile.position)
         return Perlin.ridgedNoise3d(worldCoords.x.toDouble(), worldCoords.y.toDouble(), seed, nOctaves, persistence, lacunarity, scale)
-    }
-
-    private fun generateLandCellularAutomata(tileMap: TileMap) {
-        // Empiric nice looking range: 0.37..0.72 giving ~15%-85% water
-        // The old code had 0.55 (inverted) hard-coded, so to get the same we need waterThreshold = -0.055 for the MainMenu background.
-        waterThreshold = 0.545 + 1.75 * waterThreshold
-
-        for (tile in tileMap.values) {
-            spawnLandOrWater(tile, randomness.RNG.nextDouble())  // RNG is [0.0, 1.0]
-            tile.setTransients()
-        }
-
-        smoothen(tileMap)
     }
 }

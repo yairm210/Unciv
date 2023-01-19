@@ -1,9 +1,9 @@
 package com.unciv.logic.map
 
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.map.HexMath.getEquivalentHexagonalRadius
 import com.unciv.logic.map.HexMath.getEquivalentRectangularSize
 import com.unciv.logic.map.HexMath.getNumberOfTilesInHexagon
-import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.models.metadata.BaseRuleset
 
 
@@ -147,9 +147,6 @@ object MapType : IsPartOfGameInfoSerialization {
     const val archipelago = "Archipelago"
     const val innerSea = "Inner Sea"
 
-    // Cellular automata style
-    const val smoothedRandom = "Smoothed Random"
-
     // All ocean tiles
     const val empty = "Empty"
 }
@@ -230,10 +227,7 @@ class MapParameters : IsPartOfGameInfoSerialization {
         vegetationRichness = 0.4f
         rareFeaturesRichness = 0.05f
         resourceRichness = 0.1f
-        waterThreshold = if (type == MapType.smoothedRandom)
-            -0.05f // make world about 55% land
-        else
-            0f
+        waterThreshold = 0f
     }
 
     fun getArea() = when {

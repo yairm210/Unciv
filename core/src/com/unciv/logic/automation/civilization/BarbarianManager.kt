@@ -5,7 +5,7 @@ import com.unciv.Constants
 import com.unciv.json.HashMapVector2
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
-import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.tile.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.utils.extensions.randomWeighted

@@ -7,8 +7,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.MapUnit
-import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.tile.TileInfo
 import com.unciv.models.UnitActionType
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.images.IconTextButton
@@ -186,7 +186,7 @@ class UnitOverviewTab(
             }
             add(editIcon)
 
-            fun getActionLabel(unit:MapUnit) = when {
+            fun getActionLabel(unit: MapUnit) = when {
                 unit.action == null -> ""
                 unit.isFortified() -> UnitActionType.Fortify.value
                 unit.isMoving() -> "Moving"

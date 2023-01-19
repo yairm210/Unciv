@@ -5,9 +5,9 @@ import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
-import com.unciv.logic.map.MapUnit
-import com.unciv.logic.map.PathsToTilesWithinTurn
-import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.mapunit.PathsToTilesWithinTurn
+import com.unciv.logic.map.tile.TileInfo
 import com.unciv.models.ruleset.unique.UniqueType
 
 object BattleHelper {

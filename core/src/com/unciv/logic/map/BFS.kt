@@ -1,5 +1,6 @@
 package com.unciv.logic.map
 
+import com.unciv.logic.map.tile.TileInfo
 import kotlin.collections.ArrayDeque
 
 /**
@@ -43,7 +44,7 @@ class BFS(
      * Process one tile-to-search, fetching all neighbors not yet touched
      * and adding those that fulfill the [predicate] to the reached set
      * and to the yet-to-be-processed set.
-     * 
+     *
      * Will do nothing when [hasEnded] returns `true`
      */
     fun nextStep() {

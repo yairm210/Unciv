@@ -6,8 +6,8 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
-import com.unciv.logic.map.TileInfo
-import com.unciv.logic.map.UnitMovementAlgorithms
+import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.mapunit.UnitMovementAlgorithms
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
