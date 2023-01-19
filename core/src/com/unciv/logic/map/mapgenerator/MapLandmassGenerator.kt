@@ -3,14 +3,15 @@ package com.unciv.logic.map.mapgenerator
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapType
-import com.unciv.logic.map.tile.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.tile.TileInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
+import kotlin.math.sqrt
 
 class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRandomness) {
     //region _Fields
@@ -286,7 +287,7 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
         val longitudeFactor = abs(tileInfo.longitude) / tileMap.maxLongitude
         val latitudeFactor = abs(tileInfo.latitude) / tileMap.maxLatitude
 
-        var factor = min(longitudeFactor, latitudeFactor)
+        var factor = sqrt(longitudeFactor * latitudeFactor) /1.5f
 
         // If this is a world wrap, we want it to be separated on both sides -
         // so we make the actual strip of water thinner, but we put it both in the middle of the map and on the edges of the map
