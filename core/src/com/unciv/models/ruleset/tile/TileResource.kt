@@ -1,7 +1,7 @@
 package com.unciv.models.ruleset.tile
 
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.tile.TileInfo
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetStatsObject

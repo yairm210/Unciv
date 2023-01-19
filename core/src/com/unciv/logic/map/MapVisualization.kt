@@ -3,6 +3,7 @@ package com.unciv.logic.map
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.map.mapunit.MapUnit
 
 /** Helper class for making decisions about more abstract information that may be displayed on the world map (or fair to use in AI), but which does not have any direct influence on save state, rules, or behaviour. */
 class MapVisualization(val gameInfo: GameInfo, val viewingCiv: CivilizationInfo) {

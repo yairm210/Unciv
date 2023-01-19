@@ -9,8 +9,8 @@ import com.unciv.logic.city.managers.CityPopulationManager
 import com.unciv.logic.city.managers.CityReligionManager
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
-import com.unciv.logic.map.RoadStatus
-import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.tile.RoadStatus
+import com.unciv.logic.map.tile.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.ModOptionsConstants

@@ -1,8 +1,8 @@
 package com.unciv.logic.battle
 
 import com.unciv.logic.automation.unit.SpecificUnitAutomation
-import com.unciv.logic.map.MapUnit
-import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.tile.TileInfo
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 

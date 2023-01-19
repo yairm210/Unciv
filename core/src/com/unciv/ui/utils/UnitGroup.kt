@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
-import com.unciv.logic.map.MapUnit
+import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.surroundWithCircle

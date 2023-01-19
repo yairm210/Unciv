@@ -13,7 +13,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.PerpetualConstruction
-import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.tile.TileInfo
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unique.UniqueType

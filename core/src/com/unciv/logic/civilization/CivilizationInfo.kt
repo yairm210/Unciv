@@ -28,8 +28,8 @@ import com.unciv.logic.civilization.managers.UnitManager
 import com.unciv.logic.civilization.managers.VictoryManager
 import com.unciv.logic.civilization.transients.CivInfoStatsForNextTurn
 import com.unciv.logic.civilization.transients.CivInfoTransientCache
-import com.unciv.logic.map.MapUnit
-import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.tile.TileInfo
 import com.unciv.logic.trade.TradeRequest
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Policy

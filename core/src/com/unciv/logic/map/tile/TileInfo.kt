@@ -1,4 +1,4 @@
-﻿package com.unciv.logic.map
+﻿package com.unciv.logic.map.tile
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
@@ -7,6 +7,10 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.map.HexMath
+import com.unciv.logic.map.MapResources
+import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain

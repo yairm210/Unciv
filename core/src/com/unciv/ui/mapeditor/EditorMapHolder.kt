@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.unciv.UncivGame
 import com.unciv.logic.map.HexMath
-import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.tile.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileGroup

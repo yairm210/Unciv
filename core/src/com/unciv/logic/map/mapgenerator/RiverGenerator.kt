@@ -3,7 +3,7 @@ package com.unciv.logic.map.mapgenerator
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.utils.debug
-import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.tile.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Ruleset
 import kotlin.math.roundToInt

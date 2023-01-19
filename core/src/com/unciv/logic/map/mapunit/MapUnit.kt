@@ -1,4 +1,4 @@
-package com.unciv.logic.map
+package com.unciv.logic.map.mapunit
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
@@ -15,6 +15,8 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.map.tile.RoadStatus
+import com.unciv.logic.map.tile.TileInfo
 import com.unciv.models.UnitActionType
 import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.models.ruleset.Ruleset

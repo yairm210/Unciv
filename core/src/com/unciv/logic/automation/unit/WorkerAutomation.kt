@@ -12,9 +12,9 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.map.BFS
-import com.unciv.logic.map.MapUnit
-import com.unciv.logic.map.RoadStatus
-import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.tile.RoadStatus
+import com.unciv.logic.map.tile.TileInfo
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.UniqueType

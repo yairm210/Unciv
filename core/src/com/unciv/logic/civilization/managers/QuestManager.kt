@@ -15,7 +15,7 @@ import com.unciv.logic.civilization.Proximity
 import com.unciv.logic.civilization.diplomacy.CityStatePersonality
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.tile.TileInfo
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Quest
 import com.unciv.models.ruleset.QuestName

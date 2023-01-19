@@ -23,8 +23,8 @@ import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.MapUnit
-import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.tile.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.automation.unit.AttackableTile
 import com.unciv.models.UncivSound

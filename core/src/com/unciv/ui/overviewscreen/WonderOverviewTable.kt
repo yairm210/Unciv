@@ -6,7 +6,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.tile.TileInfo
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.QuestName

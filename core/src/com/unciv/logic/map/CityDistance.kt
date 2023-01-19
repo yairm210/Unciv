@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.map.tile.TileInfo
 
 class CityDistance(
     val city: CityInfo,

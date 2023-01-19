@@ -8,8 +8,8 @@ import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
-import com.unciv.logic.map.MapUnit
-import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.tile.TileInfo
 import com.unciv.logic.multiplayer.isUsersTurn
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Ruleset

@@ -6,8 +6,8 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.transients.CapitalConnectionsFinder
-import com.unciv.logic.map.RoadStatus
-import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.tile.RoadStatus
+import com.unciv.logic.map.tile.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache

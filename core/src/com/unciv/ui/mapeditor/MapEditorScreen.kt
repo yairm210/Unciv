@@ -6,7 +6,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapSizeNew
-import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.tile.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSetupInfo

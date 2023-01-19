@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.map.BFS
-import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.tile.TileInfo
 import com.unciv.logic.map.mapgenerator.MapGenerationRandomness
 import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.models.ruleset.Ruleset

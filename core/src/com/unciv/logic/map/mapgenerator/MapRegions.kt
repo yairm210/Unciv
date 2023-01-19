@@ -7,7 +7,7 @@ import com.unciv.logic.map.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapResources
 import com.unciv.logic.map.MapShape
-import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.tile.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Ruleset

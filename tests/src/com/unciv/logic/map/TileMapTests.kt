@@ -2,6 +2,7 @@ package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
+import com.unciv.logic.map.tile.TileInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.testing.GdxTestRunner

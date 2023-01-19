@@ -10,8 +10,8 @@ import com.unciv.logic.civilization.MayaLongCountAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.managers.ReligionState
-import com.unciv.logic.map.MapUnit
-import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.tile.TileInfo
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.stats.Stat

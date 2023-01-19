@@ -1,4 +1,4 @@
-package com.unciv.logic.map
+package com.unciv.logic.map.tile
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.models.ruleset.Ruleset
