@@ -263,9 +263,17 @@ object GameStarter {
             .shuffled()
             .sortedBy { it in civNamesWithStartingLocations } ) // pop() gets the last item, so sort ascending
 
+        val numberOfCityStates = if (newGameParameters.randomNumberOfCityStates) {
+            // This swaps min and max if the user accidentally swapped min and max
+            val min = newGameParameters.minNumberOfCityStates.coerceAtMost(newGameParameters.maxNumberOfCityStates)
+            val max = newGameParameters.maxNumberOfCityStates.coerceAtLeast(newGameParameters.minNumberOfCityStates)
+            (min..max).random()
+        } else {
+            newGameParameters.numberOfCityStates
+        }
         var addedCityStates = 0
         // Keep trying to add city states until we reach the target number.
-        while (addedCityStates < newGameParameters.numberOfCityStates) {
+        while (addedCityStates < numberOfCityStates) {
             if (availableCityStatesNames.isEmpty()) // We ran out of city-states somehow
                 break
 

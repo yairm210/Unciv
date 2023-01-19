@@ -95,17 +95,6 @@ class NewGameScreen(
         rightSideButton.enable()
         rightSideButton.setText("Start game!".tr())
         rightSideButton.onClick {
-            if (gameSetupInfo.gameParameters.randomNumberOfCityStates) {
-                val numberOfCityStates = gameSetupInfo.gameParameters.numberOfCityStates
-                if (numberOfCityStates == 1) {
-                    gameSetupInfo.gameParameters.numberOfCityStates = Random().nextInt(1)
-                } else if (numberOfCityStates > 1) {
-                    val half = numberOfCityStates / 2
-                    val otherHalf = numberOfCityStates - half // This is to handle odd numbers
-                    gameSetupInfo.gameParameters.numberOfCityStates = half + Random().nextInt(otherHalf)
-                }
-            }
-
             if (gameSetupInfo.gameParameters.randomNumberOfPlayers) {
                 val half = gameSetupInfo.gameParameters.players.size / 2
                 val otherHalf = gameSetupInfo.gameParameters.players.size - half // This is to handle odd numbers
