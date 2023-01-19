@@ -166,8 +166,6 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     }
 
     fun canAdoptPolicy(): Boolean {
-        if (civInfo.cities.isEmpty()) return false
-
         if (freePolicies == 0 && storedCulture < getCultureNeededForNextPolicy()) return false
 
         //Return true if there is a policy to adopt, else return false
