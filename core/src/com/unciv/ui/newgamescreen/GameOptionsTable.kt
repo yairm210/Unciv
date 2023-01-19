@@ -184,7 +184,7 @@ class GameOptionsTable(
         if (playableAvailable == 0) return
 
         add("{Min number of Civilizations}:".toLabel()).left().expandX()
-        val slider = UncivSlider(0f, playableAvailable.toFloat(), 1f, initial = gameParameters.minNumberOfPlayers.toFloat()) {
+        val slider = UncivSlider(2f, playableAvailable.toFloat(), 1f, initial = gameParameters.minNumberOfPlayers.toFloat()) {
             gameParameters.minNumberOfPlayers = it.toInt()
         }
         slider.permanentTip = true
@@ -197,7 +197,7 @@ class GameOptionsTable(
         if (playableAvailable == 0) return
 
         add("{Max number of Civilizations}:".toLabel()).left().expandX()
-        val slider = UncivSlider(0f, playableAvailable.toFloat(), 1f, initial = gameParameters.maxNumberOfPlayers.toFloat()) {
+        val slider = UncivSlider(2f, playableAvailable.toFloat(), 1f, initial = gameParameters.maxNumberOfPlayers.toFloat()) {
             gameParameters.maxNumberOfPlayers = it.toInt()
         }
         slider.permanentTip = true

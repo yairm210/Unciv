@@ -13,6 +13,7 @@ import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSetupInfo
+import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
@@ -235,6 +236,33 @@ object GameStarter {
             else emptySet()
         val presetMajors = Stack<String>()
         presetMajors.addAll(availableCivNames.filter { it in civNamesWithStartingLocations })
+
+        if (newGameParameters.randomNumberOfPlayers) {
+            // This swaps min and max if the user accidentally swapped min and max
+            val min = newGameParameters.minNumberOfPlayers.coerceAtMost(newGameParameters.maxNumberOfPlayers)
+            val max = newGameParameters.maxNumberOfPlayers.coerceAtLeast(newGameParameters.minNumberOfPlayers)
+            var playerCount = (min..max).random()
+
+            val humanPlayerCount = newGameParameters.players.filter {
+                it.playerType === PlayerType.Human
+            }.count()
+            val spectatorCount = newGameParameters.players.filter {
+                it.chosenCiv === Constants.spectator
+            }.count()
+            playerCount = playerCount.coerceAtLeast(humanPlayerCount + spectatorCount)
+
+            if (newGameParameters.players.size < playerCount) {
+                val neededPlayers = playerCount - newGameParameters.players.size
+                for (i in 1..neededPlayers) newGameParameters.players.add(Player())
+            } else if (newGameParameters.players.size > playerCount) {
+                val extraPlayers = newGameParameters.players.size - playerCount
+                val playersToRemove = newGameParameters.players.filter {
+                    it.playerType === PlayerType.AI
+                }.shuffled().subList(0, extraPlayers)
+
+                newGameParameters.players.removeAll(playersToRemove)
+            }
+        }
 
         for (player in newGameParameters.players.sortedBy { it.chosenCiv == Constants.random }) {
             val nationName = when {
