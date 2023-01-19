@@ -2,8 +2,8 @@ package com.unciv.logic.map.mapgenerator
 
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.map.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapType
@@ -903,7 +903,7 @@ class MapGenerationRandomness {
         nOctaves: Int = 6,
         persistence: Double = 0.5,
         lacunarity: Double = 2.0,
-        scale: Double = 10.0
+        scale: Double = 30.0
     ): Double {
         val worldCoords = HexMath.hex2WorldCoords(tile.position)
         return Perlin.noise3d(worldCoords.x.toDouble(), worldCoords.y.toDouble(), seed, nOctaves, persistence, lacunarity, scale)

@@ -123,7 +123,6 @@ class MapParametersTable(
             MapType.twoContinents,
             MapType.threeContinents,
             MapType.fourCorners,
-            MapType.smoothedRandom,
             MapType.archipelago,
             MapType.innerSea,
             if (forMapEditor && mapGeneratedMainType != MapGeneratedMainType.randomGenerated) MapType.empty else null
