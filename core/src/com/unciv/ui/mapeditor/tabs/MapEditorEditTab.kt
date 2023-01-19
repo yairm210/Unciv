@@ -6,9 +6,9 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.map.BFS
-import com.unciv.logic.map.tile.TileInfo
 import com.unciv.logic.map.mapgenerator.MapGenerationRandomness
 import com.unciv.logic.map.mapgenerator.RiverGenerator
+import com.unciv.logic.map.tile.TileInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
@@ -22,6 +22,7 @@ import com.unciv.ui.mapeditor.MapEditorEditStartsTab
 import com.unciv.ui.mapeditor.MapEditorEditTerrainTab
 import com.unciv.ui.mapeditor.MapEditorEditWondersTab
 import com.unciv.ui.mapeditor.MapEditorScreen
+import com.unciv.ui.mapeditor.TileInfoNormalizer
 import com.unciv.ui.mapeditor.tabs.MapEditorOptionsTab.TileMatchFuzziness
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.BaseScreen
@@ -290,7 +291,7 @@ class MapEditorEditTab(
 
         brushAction(tile)
         tile.setTerrainTransients()
-        tile.normalizeToRuleset(ruleset)    // todo: this does not do what we need
+        TileInfoNormalizer.normalizeToRuleset(tile, ruleset)
         if (!paintedTile.isSimilarEnough(tile)) {
             // revert tile to original state
             tile.applyFrom(savedTile)

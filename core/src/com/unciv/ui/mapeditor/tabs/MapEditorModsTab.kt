@@ -8,6 +8,7 @@ import com.unciv.Constants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.mapeditor.MapEditorScreen
+import com.unciv.ui.mapeditor.TileInfoNormalizer
 import com.unciv.ui.newgamescreen.ModCheckboxTable
 import com.unciv.ui.newgamescreen.TranslatedSelectBox
 import com.unciv.ui.popup.Popup
@@ -146,6 +147,6 @@ class MapEditorModsTab(
 
     private fun fitMapToRuleset(newRuleset: Ruleset) {
         for (tile in editorScreen.tileMap.values)
-            tile.normalizeToRuleset(newRuleset)
+            TileInfoNormalizer.normalizeToRuleset(tile, newRuleset)
     }
 }
