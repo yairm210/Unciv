@@ -11,6 +11,10 @@ import com.unciv.models.Counter
 import com.unciv.models.ModConstants
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameParameters
+import com.unciv.models.ruleset.nation.CityStateType
+import com.unciv.models.ruleset.nation.Difficulty
+import com.unciv.models.ruleset.nation.Nation
+import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.Terrain
@@ -228,8 +232,6 @@ class Ruleset {
             allRulesetObjects() + sequenceOf(modOptions)
 
     fun load(folderHandle: FileHandle) {
-        val gameBasicsStartTime = System.currentTimeMillis()
-
         val modOptionsFile = folderHandle.child("ModOptions.json")
         if (modOptionsFile.exists()) {
             try {
@@ -404,8 +406,6 @@ class Ruleset {
                         })
                     }
         }
-
-        debug("Loading ruleset - %sms", System.currentTimeMillis() - gameBasicsStartTime)
     }
 
     /** Building costs are unique in that they are dependant on info in the technology part.

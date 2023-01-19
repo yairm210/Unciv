@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.civilization.NextTurnAutomation
+import com.unciv.logic.automation.unit.AttackableTile
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivilizationInfo
@@ -17,7 +18,6 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.AttackableTile
 import com.unciv.models.UnitActionType
 import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.models.ruleset.unique.StateForConditionals
@@ -204,12 +204,8 @@ object Battle {
                 if (defeatedUnitYieldSourceType == "Cost") unitCost else unitStr
             val yieldAmount = (yieldTypeSourceAmount * yieldPercent).toInt()
 
-            // This should be unnecessary as we check this for uniques when reading them in
-            try {
-                val stat = Stat.valueOf(unique.params[3])
-                civUnit.getCivInfo().addStat(stat, yieldAmount)
-            } catch (ex: Exception) {
-            } // parameter is not a stat
+            val stat = Stat.valueOf(unique.params[3])
+            civUnit.getCivInfo().addStat(stat, yieldAmount)
         }
 
         // CS friendship from killing barbarians
@@ -297,7 +293,7 @@ object Battle {
     /** Places a [unitName] unit near [tile] after being attacked by [attacker].
      * Adds a notification to [attacker]'s civInfo and returns whether the captured unit could be placed */
     private fun spawnCapturedUnit(unitName: String, attacker: ICombatant, tile: TileInfo): Boolean {
-        val addedUnit = attacker.getCivInfo().placeUnitNearTile(tile.position, unitName) ?: return false
+        val addedUnit = attacker.getCivInfo().units.placeUnitNearTile(tile.position, unitName) ?: return false
         addedUnit.currentMovement = 0f
         addedUnit.health = 50
         attacker.getCivInfo().addNotification("An enemy [${unitName}] has joined us!", addedUnit.getTile().position, NotificationCategory.War, unitName)
@@ -310,7 +306,7 @@ object Battle {
         return true
     }
 
-    private data class DamageDealt(val attackerDealt: Int, val defenderDealt: Int) {}
+    private data class DamageDealt(val attackerDealt: Int, val defenderDealt: Int)
 
     private fun takeDamage(attacker: ICombatant, defender: ICombatant): DamageDealt {
         var potentialDamageToDefender = BattleDamage.calculateDamageToDefender(attacker, defender)
@@ -428,6 +424,7 @@ object Battle {
     private fun postBattleMoveToAttackedTile(attacker: ICombatant, defender: ICombatant, attackedTile: TileInfo) {
         if (!attacker.isMelee()) return
         if (!defender.isDefeated() && defender.getCivInfo() != attacker.getCivInfo()) return
+        if (attacker is MapUnitCombatant && attacker.hasUnique(UniqueType.CannotMove)) return
 
         // This is so that if we attack e.g. a barbarian in enemy territory that we can't enter, we won't enter it
         if ((attacker as MapUnitCombatant).unit.movement.canMoveTo(attackedTile)) {
@@ -630,7 +627,7 @@ object Battle {
                 // This is so that future checks which check if a unit has been captured are caught give the right answer
                 //  For example, in postBattleMoveToAttackedTile
                 capturedUnit.civInfo = attacker.getCivInfo()
-                attacker.getCivInfo().placeUnitNearTile(capturedUnitTile.position, Constants.worker)
+                attacker.getCivInfo().units.placeUnitNearTile(capturedUnitTile.position, Constants.worker)
             }
             else -> capturedUnit.capturedBy(attacker.getCivInfo())
         }
@@ -859,7 +856,7 @@ object Battle {
         var potentialInterceptors = sequence<MapUnit> {  }
         for (interceptingCiv in UncivGame.Current.gameInfo!!.civilizations
             .filter {attacker.getCivInfo().isAtWarWith(it)}) {
-            potentialInterceptors += interceptingCiv.getCivUnits()
+            potentialInterceptors += interceptingCiv.units.getCivUnits()
                 .filter { it.canIntercept(attackedTile) }
         }
 
@@ -879,8 +876,6 @@ object Battle {
                 interceptor.currentTile.position,
                 attacker.unit.currentTile.position
             )
-            val locationsAttackerUnknown =
-                    LocationAction(interceptor.currentTile.position, attackedTile.position)
             val locationsInterceptorUnknown =
                     LocationAction(attackedTile.position, attacker.unit.currentTile.position)
 
@@ -951,7 +946,7 @@ object Battle {
         if (attacker.unit.hasUnique(UniqueType.CannotBeIntercepted, StateForConditionals(attacker.getCivInfo(), ourCombatant = attacker, theirCombatant = defender, attackedTile = attackedTile)))
             return
         // Pick highest chance interceptor
-        for (interceptor in interceptingCiv.getCivUnits()
+        for (interceptor in interceptingCiv.units.getCivUnits()
             .filter { it.canIntercept(attackedTile) }
             .sortedByDescending { it.interceptChance() }
         ) {
@@ -1015,6 +1010,7 @@ object Battle {
         if (attacker !is MapUnitCombatant) return false         // allow simple access to unit property
         if (defender !is MapUnitCombatant) return false
         if (defender.unit.isEmbarked()) return false
+        if (defender.hasUnique(UniqueType.CannotMove)) return false
         // Promotions have no effect as per what I could find in available documentation
         val attackBaseUnit = attacker.unit.baseUnit
         val defendBaseUnit = defender.unit.baseUnit

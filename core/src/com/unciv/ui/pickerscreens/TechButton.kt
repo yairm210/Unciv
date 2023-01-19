@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
-import com.unciv.logic.civilization.TechManager
+import com.unciv.logic.civilization.managers.TechManager
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
@@ -53,7 +53,7 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
         if (isWorldScreen) {
             val techCost = techManager.costOfTech(techName)
             val remainingTech = techManager.remainingScienceToTech(techName)
-            val techThisTurn = techManager.civInfo.statsForNextTurn.science
+            val techThisTurn = techManager.civInfo.stats.statsForNextTurn.science
 
             val percentComplete = (techCost - remainingTech) / techCost.toFloat()
             val percentWillBeComplete = (techCost - (remainingTech-techThisTurn)) / techCost.toFloat()

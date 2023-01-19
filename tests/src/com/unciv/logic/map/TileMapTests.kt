@@ -21,7 +21,7 @@ class TileMapTests {
 
     @Before
     fun initTheWorld() {
-        RulesetCache.loadRulesets()
+        RulesetCache.loadRulesets(noMods = true)
         ruleSet = RulesetCache.getVanillaRuleset()
         map = TileMap()
 

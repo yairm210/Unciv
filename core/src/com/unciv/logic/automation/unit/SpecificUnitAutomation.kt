@@ -197,7 +197,7 @@ object SpecificUnitAutomation {
         if (unit.civInfo.gameInfo.turns == 0) {   // Special case, we want AI to settle in place on turn 1.
             val foundCityAction = UnitActions.getFoundCityAction(unit, unit.getTile())
             // Depending on era and difficulty we might start with more than one settler. In that case settle the one with the best location
-            val otherSettlers = unit.civInfo.getCivUnits().filter { it.currentMovement > 0 && it.baseUnit == unit.baseUnit }
+            val otherSettlers = unit.civInfo.units.getCivUnits().filter { it.currentMovement > 0 && it.baseUnit == unit.baseUnit }
             if(foundCityAction?.action != null &&
                     otherSettlers.none {
                         rankTileAsCityCenter(it.getTile(), nearbyTileRankings, emptySequence()) > rankTileAsCityCenter(unit.getTile(), nearbyTileRankings, emptySequence())
@@ -220,8 +220,14 @@ object SpecificUnitAutomation {
 
         if (bestCityLocation == null) { // We got a badass over here, all tiles within 5 are taken?
             // Try to move towards the frontier
-            val frontierCity = unit.civInfo.cities.maxByOrNull { it.getFrontierScore() }
-            if (frontierCity != null && frontierCity.getFrontierScore() > 0  && unit.movement.canReach(frontierCity.getCenterTile()))
+
+            /** @return the number of tiles 4 (un-modded) out from this city that could hold a city, ie how lonely this city is */
+            fun getFrontierScore(cityInfo: CityInfo) = cityInfo.getCenterTile()
+                .getTilesAtDistance(cityInfo.civInfo.gameInfo.ruleSet.modOptions.constants.minimalCityDistance + 1)
+                .count { it.canBeSettled() && (it.getOwner() == null || it.getOwner() == cityInfo.civInfo ) }
+
+            val frontierCity = unit.civInfo.cities.maxByOrNull { getFrontierScore(it) }
+            if (frontierCity != null && getFrontierScore(frontierCity) > 0  && unit.movement.canReach(frontierCity.getCenterTile()))
                 unit.movement.headTowards(frontierCity.getCenterTile())
             if (UnitAutomation.tryExplore(unit)) return // try to find new areas
             UnitAutomation.wander(unit) // go around aimlessly

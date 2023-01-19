@@ -9,12 +9,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.WonderInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.logic.map.HexMath
 import com.unciv.models.ruleset.Policy.PolicyBranchType
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.trade.DiplomacyScreen
@@ -263,8 +262,8 @@ class GlobalPoliticsOverviewTable (
             !it.isSpectator() && !it.isBarbarian() && (persistableData.includeCityStates || !it.isCityState())
         }
         undefeatedCivs = sequenceOf(viewingPlayer) +
-                viewingPlayer.getKnownCivsSorted(persistableData.includeCityStates)
-        defeatedCivs = viewingPlayer.getKnownCivsSorted(persistableData.includeCityStates, true)
+                viewingPlayer.diplomacyFunctions.getKnownCivsSorted(persistableData.includeCityStates)
+        defeatedCivs = viewingPlayer.diplomacyFunctions.getKnownCivsSorted(persistableData.includeCityStates, true)
             .filter { it.isDefeated() }
 
         clear()

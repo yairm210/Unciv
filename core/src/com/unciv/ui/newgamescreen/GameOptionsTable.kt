@@ -1,6 +1,7 @@
 package com.unciv.ui.newgamescreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.UniqueType
@@ -11,6 +12,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.multiplayer.MultiplayerHelpers
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.ExpanderTab
 import com.unciv.ui.utils.UncivSlider
 import com.unciv.ui.utils.extensions.onChange
 import com.unciv.ui.utils.extensions.toCheckBox
@@ -66,19 +68,25 @@ class GameOptionsTable(
         addVictoryTypeCheckboxes()
 
 
+
         val checkboxTable = Table().apply { defaults().left().pad(2.5f) }
-        checkboxTable.addNoCityRazingCheckbox()
-        checkboxTable.addNoBarbariansCheckbox()
-        checkboxTable.addRagingBarbariansCheckbox()
-        checkboxTable.addOneCityChallengeCheckbox()
-        checkboxTable.addNuclearWeaponsCheckbox()
         checkboxTable.addIsOnlineMultiplayerCheckbox()
         if (gameParameters.isOnlineMultiplayer)
             checkboxTable.addAnyoneCanSpectateCheckbox()
-        if (UncivGame.Current.settings.enableEspionageOption)
-            checkboxTable.addEnableEspionageCheckbox()
-        checkboxTable.addNoStartBiasCheckbox()
         add(checkboxTable).center().row()
+
+        val expander = ExpanderTab("Advanced Settings", startsOutOpened = false) {
+            it.addNoCityRazingCheckbox()
+            it.addNoBarbariansCheckbox()
+            it.addRagingBarbariansCheckbox()
+            it.addOneCityChallengeCheckbox()
+            it.addNuclearWeaponsCheckbox()
+            if (UncivGame.Current.settings.enableEspionageOption)
+                it.addEnableEspionageCheckbox()
+            it.addNoStartBiasCheckbox()
+        }
+        add(expander).pad(10f).padTop(10f).growX().row()
+
 
         if (!isPortrait)
             add(modCheckboxes).row()
@@ -89,6 +97,7 @@ class GameOptionsTable(
     private fun Table.addCheckbox(text: String, initialState: Boolean, lockable: Boolean = true, onChange: (newValue: Boolean) -> Unit) {
         val checkbox = text.toCheckBox(initialState) { onChange(it) }
         checkbox.isDisabled = lockable && locked
+        checkbox.align(Align.left)
         add(checkbox).colspan(2).row()
     }
 

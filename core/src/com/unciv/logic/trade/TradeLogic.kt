@@ -39,7 +39,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
         }
 
         offers.add(TradeOffer("Gold", TradeType.Gold, civInfo.gold))
-        offers.add(TradeOffer("Gold per turn", TradeType.Gold_Per_Turn, civInfo.statsForNextTurn.gold.toInt()))
+        offers.add(TradeOffer("Gold per turn", TradeType.Gold_Per_Turn, civInfo.stats.statsForNextTurn.gold.toInt()))
 
         if (!civInfo.isOneCityChallenger() && !otherCivilization.isOneCityChallenger()
                 && !civInfo.isCityState() && !otherCivilization.isCityState()) {
@@ -98,12 +98,12 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                     city.getCenterTile().getUnits().toList().forEach { it.movement.teleportToClosestMoveableTile() }
                     for (tile in city.getTiles()) {
                         for (unit in tile.getUnits().toList()) {
-                            if (!unit.civInfo.canPassThroughTiles(to) && !unit.canEnterForeignTerrain)
+                            if (!unit.civInfo.diplomacyFunctions.canPassThroughTiles(to) && !unit.canEnterForeignTerrain)
                                 unit.movement.teleportToClosestMoveableTile()
                         }
                     }
-                    to.updateViewableTiles()
-                    from.updateViewableTiles()
+                    to.cache.updateViewableTiles()
+                    from.cache.updateViewableTiles()
 
                     // suggest an option to liberate the city
                     if (to.isHuman()
@@ -120,14 +120,14 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                     }
                 }
                 if (offer.type == TradeType.Introduction)
-                    to.makeCivilizationsMeet(to.gameInfo.getCivilization(offer.name))
+                    to.diplomacyFunctions.makeCivilizationsMeet(to.gameInfo.getCivilization(offer.name))
                 if (offer.type == TradeType.WarDeclaration) {
                     val nameOfCivToDeclareWarOn = offer.name
                     from.getDiplomacyManager(nameOfCivToDeclareWarOn).declareWar()
                 }
             }
             to.updateStatsForNextTurn()
-            to.updateDetailedCivResources()
+            to.cache.updateCivResources()
         }
 
         transferTrade(ourCivilization, otherCivilization, currentTrade)

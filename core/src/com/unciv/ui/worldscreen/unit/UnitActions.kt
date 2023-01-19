@@ -158,7 +158,7 @@ object UnitActions {
                 val city = tile.getCity()
                 if (city != null) {
                     city.cityStats.update()
-                    city.civInfo.updateDetailedCivResources()
+                    city.civInfo.cache.updateCivResources()
                 }
                 unit.destroy()
             }.takeIf { unit.currentMovement > 0 })
@@ -333,7 +333,7 @@ object UnitActions {
 
                     pillageLooting(tile, unit)
                     tile.setPillaged()
-                    if (tile.resource != null) tile.getOwner()?.updateDetailedCivResources()    // this might take away a resource
+                    if (tile.resource != null) tile.getOwner()?.cache?.updateCivResources()    // this might take away a resource
                     tile.getCity()?.updateCitizens = true
 
                     val freePillage = unit.hasUnique(UniqueType.NoMovementToPillage, checkCivInfoUniques = true)
@@ -443,13 +443,13 @@ object UnitActions {
             title = title,
             action = {
                 unit.destroy(destroyTransportedUnit = false)
-                val newUnit = civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name)
+                val newUnit = civInfo.units.placeUnitNearTile(unitTile.position, upgradedUnit.name)
 
                 /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
                  * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
                  */
                 if (newUnit == null) {
-                    val resurrectedUnit = civInfo.placeUnitNearTile(unitTile.position, unit.name)!!
+                    val resurrectedUnit = civInfo.units.placeUnitNearTile(unitTile.position, unit.name)!!
                     unit.copyStatisticsTo(resurrectedUnit)
                 } else { // Managed to upgrade
                     if (!isFree) civInfo.addGold(-goldCostOfUpgrade)
@@ -476,8 +476,7 @@ object UnitActions {
 
     private fun addTransformAction(
         unit: MapUnit,
-        actionList: ArrayList<UnitAction>,
-        maxSteps: Int = Int.MAX_VALUE
+        actionList: ArrayList<UnitAction>
     ) {
         val upgradeAction = getTransformAction(unit)
         if (upgradeAction != null) actionList += upgradeAction
@@ -516,13 +515,13 @@ object UnitActions {
                 title = title,
                 action = {
                     unit.destroy()
-                    val newUnit = civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name)
+                    val newUnit = civInfo.units.placeUnitNearTile(unitTile.position, upgradedUnit.name)
 
                     /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
                      * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
                      */
                     if (newUnit == null) {
-                        val resurrectedUnit = civInfo.placeUnitNearTile(unitTile.position, unit.name)!!
+                        val resurrectedUnit = civInfo.units.placeUnitNearTile(unitTile.position, unit.name)!!
                         unit.copyStatisticsTo(resurrectedUnit)
                     } else { // Managed to upgrade
                         unit.copyStatisticsTo(newUnit)
@@ -771,7 +770,7 @@ object UnitActions {
         }
     }
 
-    fun addSpreadReligionActions(unit: MapUnit, actionList: ArrayList<UnitAction>, city: CityInfo) {
+    private fun addSpreadReligionActions(unit: MapUnit, actionList: ArrayList<UnitAction>, city: CityInfo) {
         if (!unit.civInfo.religionManager.maySpreadReligionAtAll(unit)) return
         actionList += UnitAction(UnitActionType.SpreadReligion,
             title = "Spread [${unit.getReligionDisplayName()!!}]",
@@ -885,7 +884,7 @@ object UnitActions {
             val otherCiv = tile.getOwner()
             if (otherCiv != null) {
                 // decrease relations for -10 pt/tile
-                if (!otherCiv.knows(unit.civInfo)) otherCiv.makeCivilizationsMeet(unit.civInfo)
+                if (!otherCiv.knows(unit.civInfo)) otherCiv.diplomacyFunctions.makeCivilizationsMeet(unit.civInfo)
                 otherCiv.getDiplomacyManager(unit.civInfo).addModifier(DiplomaticModifiers.StealingTerritory, -10f)
                 civsToNotify.add(otherCiv)
             }
@@ -990,7 +989,7 @@ object UnitActions {
                 .addModifier(DiplomaticModifiers.GaveUsUnits, 5f)
 
             if (recipient.isCityState() && unit.isGreatPerson())
-                unit.destroy()  // City states dont get GPs
+                unit.destroy()  // City states don't get GPs
             else
                 unit.gift(recipient)
             UncivGame.Current.worldScreen!!.shouldUpdate = true

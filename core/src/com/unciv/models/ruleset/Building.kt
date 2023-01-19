@@ -644,7 +644,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             getRejectionReasons(cityConstructions).isEmpty()
 
     override fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat?): Boolean {
-        val civInfo = cityConstructions.cityInfo.civInfo
+        val cityInfo = cityConstructions.cityInfo
+        val civInfo = cityInfo.civInfo
 
         if (civInfo.gameInfo.spaceResources.contains(name)) {
             civInfo.victoryManager.currentsSpaceshipParts.add(name, 1)
@@ -666,18 +667,29 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         cityConstructions.addFreeBuildings()
 
         for (unique in uniqueObjects)
-            UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, cityConstructions.cityInfo)
+            if (unique.conditionals.none { it.type!!.targetTypes.contains(UniqueTarget.TriggerCondition) })
+                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, cityConstructions.cityInfo)
+
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponConstructingBuilding, StateForConditionals(civInfo, cityInfo)))
+            if (unique.conditionals.any {it.type == UniqueType.TriggerUponConstructingBuilding && matchesFilter(it.params[0])})
+                UniqueTriggerActivation.triggerCivwideUnique(unique, cityInfo.civInfo, cityInfo)
+
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponConstructingBuildingCityFilter, StateForConditionals(cityInfo.civInfo, cityInfo)))
+            if (unique.conditionals.any {it.type == UniqueType.TriggerUponConstructingBuildingCityFilter
+                            && matchesFilter(it.params[0])
+                            && cityInfo.matchesFilter(it.params[1])})
+                UniqueTriggerActivation.triggerCivwideUnique(unique, cityInfo.civInfo, cityInfo)
 
         if (hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovement))
-            civInfo.updateHasActiveEnemyMovementPenalty()
+            civInfo.cache.updateHasActiveEnemyMovementPenalty()
 
         // Korean unique - apparently gives the same as the research agreement
         if (science > 0 && civInfo.hasUnique(UniqueType.TechBoostWhenScientificBuildingsBuiltInCapital))
             civInfo.tech.addScience(civInfo.tech.scienceOfLast8Turns.sum() / 8)
 
         cityConstructions.cityInfo.cityStats.update() // new building, new stats
-        civInfo.updateDetailedCivResources() // this building/unit could be a resource-requiring one
-        civInfo.transients().updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor
+        civInfo.cache.updateCivResources() // this building/unit could be a resource-requiring one
+        civInfo.cache.updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor
 
         return true
     }

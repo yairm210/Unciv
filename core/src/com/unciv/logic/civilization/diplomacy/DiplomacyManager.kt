@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.AlertType
-import com.unciv.logic.civilization.CityStatePersonality
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
@@ -176,7 +175,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         if (civInfo.isCityState()) return when {
             getInfluence() <= -30 || civInfo.isAtWarWith(otherCiv()) -> RelationshipLevel.Unforgivable
             getInfluence() < 0 -> RelationshipLevel.Enemy
-            getInfluence() < 30 && civInfo.getTributeWillingness(otherCiv()) > 0 -> RelationshipLevel.Afraid
+            getInfluence() < 30 && civInfo.cityStateFunctions.getTributeWillingness(otherCiv()) > 0 -> RelationshipLevel.Afraid
             getInfluence() >= 60 && civInfo.getAllyCiv() == otherCivName -> RelationshipLevel.Ally
             getInfluence() >= 30 -> RelationshipLevel.Friend
             else -> RelationshipLevel.Neutral
@@ -234,7 +233,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
     fun setInfluence(amount: Float) {
         influence = max(amount, MINIMUM_INFLUENCE)
-        civInfo.updateAllyCivForCityState()
+        civInfo.cityStateFunctions.updateAllyCivForCityState()
     }
 
     fun getInfluence() = if (civInfo.isAtWarWith(otherCiv())) MINIMUM_INFLUENCE else influence
@@ -392,7 +391,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
                     civInfo.addNotification("One of our trades with [$otherCivName] has been cut short", NotificationCategory.Trade, NotificationIcon.Trade, otherCivName)
                     otherCiv().addNotification("One of our trades with [${civInfo.civName}] has been cut short", NotificationCategory.Trade, NotificationIcon.Trade, civInfo.civName)
-                    civInfo.updateDetailedCivResources()
+                    civInfo.cache.updateCivResources()
                 }
             }
         }
@@ -420,7 +419,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         hasOpenBorders = newHasOpenBorders
 
         if (bordersWereClosed) { // borders were closed, get out!
-            for (unit in civInfo.getCivUnits()
+            for (unit in civInfo.units.getCivUnits()
                 .filter { it.currentTile.getOwner()?.civName == otherCivName }.toList()) {
                 unit.movement.teleportToClosestMoveableTile()
             }
@@ -470,7 +469,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             // Potentially notify about afraid status
             if (getInfluence() < 30  // We usually don't want to bully our friends
                 && !hasFlag(DiplomacyFlags.NotifiedAfraid)
-                && civInfo.getTributeWillingness(otherCiv()) > 0
+                && civInfo.cityStateFunctions.getTributeWillingness(otherCiv()) > 0
                 && otherCiv().isMajorCiv()
             ) {
                 setFlag(DiplomacyFlags.NotifiedAfraid, 20)  // Wait 20 turns until next reminder
@@ -502,7 +501,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
             // At the end of every turn
             if (flag == DiplomacyFlags.ResearchAgreement.name)
-                totalOfScienceDuringRA += civInfo.statsForNextTurn.science.toInt()
+                totalOfScienceDuringRA += civInfo.stats.statsForNextTurn.science.toInt()
 
             // These modifiers decrease slightly @ 50
             if (flagsCountdown[flag] == 50) {
@@ -573,7 +572,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                     civInfo.updateStatsForNextTurn() // if they were bringing us gold per turn
                     if (trade.theirOffers.union(trade.ourOffers) // if resources were involved
                                 .any { it.type == TradeType.Luxury_Resource || it.type == TradeType.Strategic_Resource })
-                        civInfo.updateDetailedCivResources()
+                        civInfo.cache.updateCivResources()
                 }
             }
         }
@@ -645,8 +644,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
         val civAtWarWith = otherCiv()
 
-        if (civInfo.isCityState() && civInfo.getProtectorCivs().contains(civAtWarWith)) {
-            civInfo.removeProtectorCiv(civAtWarWith, forced = true)
+        if (civInfo.isCityState() && civInfo.cityStateFunctions.getProtectorCivs().contains(civAtWarWith)) {
+            civInfo.cityStateFunctions.removeProtectorCiv(civAtWarWith, forced = true)
         }
 
         diplomaticStatus = DiplomaticStatus.War
@@ -666,7 +665,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                     thirdCiv.getDiplomacyManager(civAtWarWith).declareWar(true)
                 else if (!thirdCiv.knows(civAtWarWith)) {
                     // Our city state ally has not met them yet, so they have to meet first
-                    thirdCiv.makeCivilizationsMeet(civAtWarWith, warOnContact = true)
+                    thirdCiv.diplomacyFunctions.makeCivilizationsMeet(civAtWarWith, warOnContact = true)
                     thirdCiv.getDiplomacyManager(civAtWarWith).declareWar(true)
                 }
             }
@@ -687,12 +686,12 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
         if (otherCiv.isCityState() && !indirectCityStateAttack) {
             otherCivDiplomacy.setInfluence(-60f)
-            civInfo.changeMinorCivsAttacked(1)
+            civInfo.numMinorCivsAttacked += 1
             otherCiv.cityStateFunctions.cityStateAttacked(civInfo)
 
             // You attacked your own ally, you're a right bastard
             if (otherCiv.getAllyCiv() == civInfo.civName) {
-                otherCiv.updateAllyCivForCityState()
+                otherCiv.cityStateFunctions.updateAllyCivForCityState()
                 otherCivDiplomacy.setInfluence(-120f)
                 for (knownCiv in civInfo.getKnownCivs()) {
                     knownCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.BetrayedDeclarationOfFriendship, -10f)
@@ -751,7 +750,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         diplomaticStatus = DiplomaticStatus.Peace
         val otherCiv = otherCiv()
         // Get out of others' territory
-        for (unit in civInfo.getCivUnits().filter { it.getTile().getOwner() == otherCiv }.toList())
+        for (unit in civInfo.units.getCivUnits().filter { it.getTile().getOwner() == otherCiv }.toList())
             unit.movement.teleportToClosestMoveableTile()
 
         for (thirdCiv in civInfo.getKnownCivs()) {

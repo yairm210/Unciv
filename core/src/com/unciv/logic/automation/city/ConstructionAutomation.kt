@@ -30,7 +30,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private val units = cityInfo.getRuleset().units.values
 
-    private val civUnits = civInfo.getCivUnits()
+    private val civUnits = civInfo.units.getCivUnits()
     private val militaryUnits = civUnits.count { it.baseUnit.isMilitary() }
     private val workers = civUnits.count { it.hasUniqueToBuildImprovements && it.isCivilian() }.toFloat()
     private val cities = civInfo.cities.size
@@ -112,7 +112,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private fun addMilitaryUnitChoice() {
         if (!isAtWar && !cityIsOverAverageProduction) return // don't make any military units here. Infrastructure first!
-        if (!isAtWar && (civInfo.statsForNextTurn.gold < 0 || militaryUnits > max(5, cities * 2))) return
+        if (!isAtWar && (civInfo.stats.statsForNextTurn.gold < 0 || militaryUnits > max(5, cities * 2))) return
         if (civInfo.gold < -50) return
 
         val militaryUnit = Automation.chooseMilitaryUnit(cityInfo) ?: return
@@ -332,7 +332,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
             && Automation.allowAutomatedConstruction(civInfo, cityInfo, it) }
             .isBuildable().minByOrNull { it.cost }
         if (goldBuilding != null) {
-            val modifier = if (civInfo.statsForNextTurn.gold < 0) 3f else 1.2f
+            val modifier = if (civInfo.stats.statsForNextTurn.gold < 0) 3f else 1.2f
             addChoice(relativeCostEffectiveness, goldBuilding.name, modifier)
         }
     }

@@ -248,7 +248,7 @@ enum class UniqueParameterType(
             }
         },
 
-    /** Implemented by [PopulationManager.getPopulationFilterAmount][com.unciv.logic.city.PopulationManager.getPopulationFilterAmount] */
+    /** Implemented by [PopulationManager.getPopulationFilterAmount][com.unciv.logic.city.CityPopulationManager.getPopulationFilterAmount] */
     PopulationFilter("populationFilter", "Followers of this Religion", null, "Population Filters") {
         private val knownValues = setOf("Population", "Specialists", "Unemployed", "Followers of the Majority Religion", "Followers of this Religion")
         override fun getErrorSeverity(

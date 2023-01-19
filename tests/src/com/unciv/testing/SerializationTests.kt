@@ -4,17 +4,17 @@ import com.badlogic.gdx.Gdx
 import com.unciv.UncivGame
 import com.unciv.json.json
 import com.unciv.logic.GameInfo
-import com.unciv.logic.UncivFiles
 import com.unciv.logic.GameStarter
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapSizeNew
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSettings
+import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.utils.debug
 import org.junit.After
@@ -71,7 +71,7 @@ class SerializationTests {
 
         // Found a city otherwise too many classes have no instance and are not tested
         val civ = game.getCurrentPlayerCivilization()
-        val unit = civ.getCivUnits().first { it.hasUnique(UniqueType.FoundCity) }
+        val unit = civ.units.getCivUnits().first { it.hasUnique(UniqueType.FoundCity) }
         val tile = unit.getTile()
         unit.civInfo.addCity(tile.position)
         if (tile.ruleset.tileImprovements.containsKey("City center"))
@@ -80,7 +80,7 @@ class SerializationTests {
 
         // Ensure some diplomacy objects are instantiated
         val otherCiv = game.getCivilization("Greece")
-        civ.makeCivilizationsMeet(otherCiv)
+        civ.diplomacyFunctions.makeCivilizationsMeet(otherCiv)
     }
 
     @Test
@@ -108,7 +108,7 @@ class SerializationTests {
             return
         }
 
-        val pattern = """\{(\w+)\${'$'}delegate:\{class:kotlin.SynchronizedLazyImpl,"""
+        val pattern = """\{(\w+)\\${'$'}delegate:\{class:kotlin.SynchronizedLazyImpl,"""
         val matches = Regex(pattern).findAll(json)
         matches.forEach {
             debug("Lazy missing `@delegate:Transient` annotation: %s", it.groups[1]!!.value)

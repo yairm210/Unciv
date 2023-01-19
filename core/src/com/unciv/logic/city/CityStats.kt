@@ -310,9 +310,9 @@ class CityStats(val cityInfo: CityInfo) {
 
     private fun getStatPercentBonusesFromUnitSupply(): Stats {
         val stats = Stats()
-        val supplyDeficit = cityInfo.civInfo.stats().getUnitSupplyDeficit()
+        val supplyDeficit = cityInfo.civInfo.stats.getUnitSupplyDeficit()
         if (supplyDeficit > 0)
-            stats.production = cityInfo.civInfo.stats().getUnitSupplyProductionPenalty()
+            stats.production = cityInfo.civInfo.stats.getUnitSupplyProductionPenalty()
         return stats
     }
 

@@ -5,10 +5,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
 import com.unciv.UncivGame
-import com.unciv.logic.MapSaver
+import com.unciv.logic.files.MapSaver
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.map.MapGeneratedMainType
-import com.unciv.logic.map.MapType
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.BaseScreen

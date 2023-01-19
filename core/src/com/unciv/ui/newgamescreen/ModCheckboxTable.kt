@@ -52,8 +52,11 @@ class ModCheckboxTable(
         if (extensionRulesetModButtons.any()) {
             add(ExpanderTab("Extension mods:", persistenceID = "NewGameExpansionMods") {
                 it.defaults().pad(5f,0f)
-                for (checkbox in extensionRulesetModButtons) it.add(checkbox).row()
-            }).padTop(padTop).growX().row()
+                for (checkbox in extensionRulesetModButtons) {
+                    checkbox.left()
+                    it.add(checkbox).row()
+                }
+            }).pad(10f).padTop(padTop).growX().row()
         }
     }
 

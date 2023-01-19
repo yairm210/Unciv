@@ -61,10 +61,10 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
     // This is so that not on every update(), we will update the unit table.
     // Most of the time it's the same unit with the same stats so why waste precious time?
-    var selectedUnitHasChanged = false
+    private var selectedUnitHasChanged = false
     val separator: Actor
 
-    var bg = Image(BaseScreen.skinStrings.getUiBackground("WorldScreen/UnitTable",
+    private var bg = Image(BaseScreen.skinStrings.getUiBackground("WorldScreen/UnitTable",
         BaseScreen.skinStrings.roundedEdgeRectangleMidShape,
         BaseScreen.skinStrings.skinConfig.baseColor.darken(0.5f)))
 
@@ -131,7 +131,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
             }
         }
 
-        if (worldScreen.viewingCiv.getIdleUnits().any()) { // more efficient to do this check once for both
+        if (worldScreen.viewingCiv.units.getIdleUnits().any()) { // more efficient to do this check once for both
             prevIdleUnitButton.enable()
             nextIdleUnitButton.enable()
         } else {
@@ -323,16 +323,13 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
             else -> null
         }
 
-        if (curUnit == null) {
-            nextUnit = priorityUnit
-        } else {
-
-            nextUnit = when {
+        nextUnit = when {
+                curUnit == null -> priorityUnit
                 curUnit == civUnit && milUnit != null && milUnit.isEligible() -> {if (civUnit.isPrioritized()) milUnit else null}
                 curUnit == milUnit && civUnit != null && civUnit.isEligible() -> {if (civUnit.isPrioritized()) null else civUnit}
                 else -> priorityUnit
             }
-        }
+
 
         when {
             forceSelectUnit != null ->

@@ -452,7 +452,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     override fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat?): Boolean {
         val civInfo = cityConstructions.cityInfo.civInfo
-        val unit = civInfo.placeUnitNearTile(cityConstructions.cityInfo.location, name)
+        val unit = civInfo.units.placeUnitNearTile(cityConstructions.cityInfo.location, name)
             ?: return false  // couldn't place the unit, so there's actually no unit =(
 
         //movement penalty
@@ -511,10 +511,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
     }
 
-
-    fun getDirectUpgradeUnit(civInfo: CivilizationInfo): BaseUnit {
-        return civInfo.getEquivalentUnit(upgradesTo!!)
-    }
 
     fun getReplacedUnit(ruleset: Ruleset): BaseUnit {
         return if (replaces == null) this

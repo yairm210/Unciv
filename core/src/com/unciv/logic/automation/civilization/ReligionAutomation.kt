@@ -4,7 +4,7 @@ import com.unciv.Constants
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.ReligionState
+import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
@@ -41,7 +41,7 @@ object ReligionAutomation {
         val citiesWithoutOurReligion = civInfo.cities.filter { it.religion.getMajorityReligion() != civInfo.religionManager.religion!! }
         // The original had a cap at 4 missionaries total, but 1/4 * the number of cities should be more appropriate imo
         if (citiesWithoutOurReligion.count() >
-            4 * civInfo.getCivUnits().count { it.canDoReligiousAction(Constants.spreadReligion) || it.canDoReligiousAction(Constants.removeHeresy) }
+            4 * civInfo.units.getCivUnits().count { it.canDoReligiousAction(Constants.spreadReligion) || it.canDoReligiousAction(Constants.removeHeresy) }
         ) {
             val (city, pressureDifference) = citiesWithoutOurReligion.map { city ->
                 city to city.religion.getPressureDeficit(civInfo.religionManager.religion?.name)
@@ -57,7 +57,7 @@ object ReligionAutomation {
         val holyCity = civInfo.religionManager.getHolyCity()
         if (holyCity != null
             && holyCity in civInfo.cities
-            && civInfo.getCivUnits().count { it.hasUnique(UniqueType.PreventSpreadingReligion) } == 0
+            && civInfo.units.getCivUnits().count { it.hasUnique(UniqueType.PreventSpreadingReligion) } == 0
             && !holyCity.religion.isProtectedByInquisitor()
         ) {
             buyInquisitorNear(civInfo, holyCity)
@@ -77,7 +77,7 @@ object ReligionAutomation {
         // Todo: buy Great People post industrial era
 
         // Just buy missionaries to spread our religion outside of our civ
-        if (civInfo.getCivUnits().count { it.canDoReligiousAction(Constants.spreadReligion) } < 4) {
+        if (civInfo.units.getCivUnits().count { it.canDoReligiousAction(Constants.spreadReligion) } < 4) {
             buyMissionaryInAnyCity(civInfo)
             return
         }
@@ -346,7 +346,7 @@ object ReligionAutomation {
                     ) 0f
                     // This is something completely different from the original, but I have no idea
                     // what happens over there
-                    else civInfo.statsForNextTurn[Stat.valueOf(unique.params[2])] * 5f / unique.params[1].toFloat()
+                    else civInfo.stats.statsForNextTurn[Stat.valueOf(unique.params[2])] * 5f / unique.params[1].toFloat()
                 UniqueType.BuyUnitsWithStat, UniqueType.BuyBuildingsWithStat ->
                     if (civInfo.religionManager.religion != null
                         && civInfo.religionManager.religion!!.getFollowerUniques()
@@ -354,7 +354,7 @@ object ReligionAutomation {
                     ) 0f
                     // This is something completely different from the original, but I have no idea
                     // what happens over there
-                    else civInfo.statsForNextTurn[Stat.valueOf(unique.params[1])] * 10f / civInfo.getEra().baseUnitBuyCost
+                    else civInfo.stats.statsForNextTurn[Stat.valueOf(unique.params[1])] * 10f / civInfo.getEra().baseUnitBuyCost
                 UniqueType.BuyUnitsByProductionCost ->
                     15f * if (civInfo.wantsToFocusOn(Victory.Focus.Military)) 2f else 1f
                 UniqueType.StatsWhenSpreading ->

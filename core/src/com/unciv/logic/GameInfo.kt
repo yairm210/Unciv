@@ -17,16 +17,18 @@ import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
-import com.unciv.logic.civilization.TechManager
+import com.unciv.logic.civilization.managers.TechManager
+import com.unciv.logic.civilization.managers.TurnManager
+import com.unciv.logic.map.CityDistanceData
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.Religion
 import com.unciv.models.metadata.GameParameters
-import com.unciv.models.ruleset.Difficulty
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.Speed
+import com.unciv.models.ruleset.nation.Difficulty
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
@@ -272,7 +274,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         //  would skip a turn if an AI civ calls nextTurn
         //  this happens when resigning a multiplayer game)
         if (player.isHuman()) {
-            player.endTurn()
+            TurnManager(player).endTurn()
             setNextPlayer()
         }
 
@@ -289,10 +291,10 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         {
 
             // Starting preparations
-            player.startTurn()
+            TurnManager(player).startTurn()
 
             // Automation done here
-            player.doTurn()
+            TurnManager(player).automateTurn()
 
             // Do we need to break if player won?
             if (simulateUntilWin && player.victoryManager.hasWon()) {
@@ -301,7 +303,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             }
 
             // Clean up
-            player.endTurn()
+            TurnManager(player).endTurn()
 
             // To the next player
             setNextPlayer()
@@ -316,7 +318,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         currentPlayerCiv = getCivilization(currentPlayer)
 
         // Starting his turn
-        player.startTurn()
+        TurnManager(player).startTurn()
 
         // No popups for spectators
         if (currentPlayerCiv.isSpectator())
@@ -536,14 +538,14 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             yieldAll(civilizations.filter { it.isCityState() })
             yieldAll(civilizations.filter { !it.isCityState() })
         }) {
-            for (unit in civInfo.getCivUnits())
+            for (unit in civInfo.units.getCivUnits())
                 unit.updateVisibleTiles(false) // this needs to be done after all the units are assigned to their civs and all other transients are set
-            civInfo.updateSightAndResources() // only run ONCE and not for each unit - this is a huge performance saver!
+            civInfo.cache.updateSightAndResources() // only run ONCE and not for each unit - this is a huge performance saver!
 
             // Since this depends on the cities of ALL civilizations,
             // we need to wait until we've set the transients of all the cities before we can run this.
             // Hence why it's not in CivInfo.setTransients().
-            civInfo.initialSetCitiesConnectedToCapitalTransients()
+            civInfo.cache.updateCitiesConnectedToCapital(true)
 
             // We need to determine the GLOBAL happiness state in order to determine the city stats
             for (cityInfo in civInfo.cities) {

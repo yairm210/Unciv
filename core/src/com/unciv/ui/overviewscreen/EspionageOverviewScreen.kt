@@ -8,8 +8,8 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.Spy
-import com.unciv.logic.civilization.SpyAction
+import com.unciv.logic.civilization.managers.Spy
+import com.unciv.logic.civilization.managers.SpyAction
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.pickerscreens.PickerScreen
@@ -50,7 +50,7 @@ class EspionageOverviewScreen(val civInfo: CivilizationInfo) : PickerScreen(true
 
         closeButton.isVisible = true
         closeButton.onActivation {
-            civInfo.updateViewableTiles()
+            civInfo.cache.updateViewableTiles()
             game.popScreen()
         }
         closeButton.keyShortcuts.add(KeyCharAndCode.BACK)

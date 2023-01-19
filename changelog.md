@@ -1,3 +1,13 @@
+## 4.4.2
+
+Added trigger conditions framework!
+
+Advanced game options hidden by default for faster initial game
+
+Great prophets do not spawn to pantheons that cannot become religions
+
+Fixed Reliquary belief
+
 ## 4.4.1
 
 New tile visibility framework!

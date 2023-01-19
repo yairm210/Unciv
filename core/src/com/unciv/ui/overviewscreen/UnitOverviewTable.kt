@@ -9,6 +9,7 @@ import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.UnitActionType
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
@@ -87,7 +88,7 @@ class UnitOverviewTab(
     private fun showWorldScreenAt(tile: TileInfo) = showWorldScreenAt(tile.position, null)
 
     private fun getUnitSupplyTable(): ExpanderTab {
-        val stats = viewingPlayer.stats()
+        val stats = viewingPlayer.stats
         val deficit = stats.getUnitSupplyDeficit()
         val icon = if (deficit <= 0) null else Group().apply {
             isTransform = false
@@ -120,7 +121,7 @@ class UnitOverviewTab(
             it.addLabeledValue("Population", stats.getUnitSupplyFromPop())
             it.addSeparator()
             it.addLabeledValue("Total Supply", stats.getUnitSupply())
-            it.addLabeledValue("In Use", viewingPlayer.getCivUnitsSize())
+            it.addLabeledValue("In Use", viewingPlayer.units.getCivUnitsSize())
             it.addSeparator()
             it.addLabeledValue("Supply Deficit", deficit)
             it.addLabeledValue("Production Penalty", "${stats.getUnitSupplyProductionPenalty().toInt()}%")
@@ -155,7 +156,7 @@ class UnitOverviewTab(
         val game = overviewScreen.game
         defaults().pad(5f)
 
-        for (unit in viewingPlayer.getCivUnits().sortedWith(
+        for (unit in viewingPlayer.units.getCivUnits().sortedWith(
             compareBy({ it.displayName() },
                 { !it.due },
                 { it.currentMovement <= Constants.minimumMovementEpsilon },
@@ -184,7 +185,15 @@ class UnitOverviewTab(
                         overviewScreen.game.replaceCurrentScreen(EmpireOverviewScreen(viewingPlayer, "", "")) })
             }
             add(editIcon)
-            if (unit.action == null) add() else add(unit.getActionLabel().toLabel())
+
+            fun getActionLabel(unit:MapUnit) = when {
+                unit.action == null -> ""
+                unit.isFortified() -> UnitActionType.Fortify.value
+                unit.isMoving() -> "Moving"
+                else -> unit.action!!
+            }
+
+            if (unit.action == null) add() else add(getActionLabel(unit).toLabel())
             if (baseUnit.strength > 0) add(baseUnit.strength.toLabel()) else add()
             if (baseUnit.rangedStrength > 0) add(baseUnit.rangedStrength.toLabel()) else add()
             add(unit.getMovementString().toLabel())

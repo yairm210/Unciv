@@ -11,8 +11,8 @@ import com.sun.jna.Native
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
 import com.unciv.json.json
-import com.unciv.logic.SETTINGS_FILE_NAME
-import com.unciv.logic.UncivFiles
+import com.unciv.logic.files.SETTINGS_FILE_NAME
+import com.unciv.logic.files.UncivFiles
 import com.unciv.models.metadata.ScreenSize
 import com.unciv.models.metadata.WindowState
 import com.unciv.ui.utils.Fonts

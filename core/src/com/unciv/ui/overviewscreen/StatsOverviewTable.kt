@@ -80,7 +80,7 @@ class StatsOverviewTab(
     }
 
     fun update() {
-        val statMap = viewingPlayer.stats().getStatMapForNextTurn()
+        val statMap = viewingPlayer.stats.getStatMapForNextTurn()
         updateHappinessTable()
         goldTable.updateStatTable(Stat.Gold, statMap)
         scienceTable.updateStatTable(Stat.Science, statMap)
@@ -109,7 +109,7 @@ class StatsOverviewTab(
 
     private fun updateHappinessTable() = happinessTable.apply {
         addHeading("Happiness")
-        val happinessBreakdown = viewingPlayer.stats().getHappinessBreakdown()
+        val happinessBreakdown = viewingPlayer.stats.getHappinessBreakdown()
         for ((key, value) in happinessBreakdown)
             addLabeledValue(key, value)
         addTotal(happinessBreakdown.values.sum())
@@ -158,8 +158,8 @@ class StatsOverviewTab(
         add("Points per turn".toLabel()).row()
 
         val greatPersonPoints = viewingPlayer.greatPeople.greatPersonPointsCounter
-        val greatPersonPointsPerTurn = viewingPlayer.getGreatPersonPointsForNextTurn()
-        val pointsToGreatPerson = viewingPlayer.greatPeople.pointsForNextGreatPerson
+        val greatPersonPointsPerTurn = viewingPlayer.greatPeople.getGreatPersonPointsForNextTurn()
+        val pointsToGreatPerson = viewingPlayer.greatPeople.getPointsRequiredForGreatPerson()
         for ((greatPerson, points) in greatPersonPoints) {
             add(greatPerson.toLabel()).left()
             add("$points/$pointsToGreatPerson".toLabel())

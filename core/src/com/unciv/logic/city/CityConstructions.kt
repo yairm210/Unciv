@@ -16,7 +16,6 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueMap
-import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
@@ -441,18 +440,6 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                     NotificationCategory.General, NotificationIcon.Construction, buildingIcon)
             }
         }
-
-        if (construction is Building) {
-            for (unique in cityInfo.civInfo.getTriggeredUniques(UniqueType.TriggerUponConstructingBuilding, StateForConditionals(cityInfo.civInfo, cityInfo)))
-                if (unique.conditionals.any {it.type == UniqueType.TriggerUponConstructingBuilding && construction.matchesFilter(it.params[0])})
-                    UniqueTriggerActivation.triggerCivwideUnique(unique, cityInfo.civInfo, cityInfo)
-
-            for (unique in cityInfo.civInfo.getTriggeredUniques(UniqueType.TriggerUponConstructingBuildingCityFilter, StateForConditionals(cityInfo.civInfo, cityInfo)))
-                if (unique.conditionals.any {it.type == UniqueType.TriggerUponConstructingBuildingCityFilter
-                                && construction.matchesFilter(it.params[0])
-                                && cityInfo.matchesFilter(it.params[1])})
-                    UniqueTriggerActivation.triggerCivwideUnique(unique, cityInfo.civInfo, cityInfo)
-        }
     }
 
     fun addBuilding(buildingName: String) {
@@ -683,7 +670,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         tileForImprovement.changeImprovement(improvement.name)
         cityInfo.civInfo.lastSeenImprovement[tileForImprovement.position] = improvement.name
         cityInfo.cityStats.update()
-        cityInfo.civInfo.updateDetailedCivResources()
+        cityInfo.civInfo.cache.updateCivResources()
         // If bought the worldscreen will not have been marked to update, and the new improvement won't show until later...
         if (UncivGame.isCurrentInitialized() && UncivGame.Current.worldScreen != null)
             UncivGame.Current.worldScreen!!.shouldUpdate = true

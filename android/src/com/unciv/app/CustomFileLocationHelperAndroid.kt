@@ -6,7 +6,7 @@ import android.net.Uri
 import android.provider.DocumentsContract
 import android.provider.OpenableColumns
 import androidx.annotation.GuardedBy
-import com.unciv.logic.CustomFileLocationHelper
+import com.unciv.logic.files.CustomFileLocationHelper
 import java.io.InputStream
 import java.io.OutputStream
 

@@ -6,7 +6,7 @@ import com.unciv.logic.battle.CombatAction
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.ReligionState
+import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetValidator
 import com.unciv.models.stats.Stats
@@ -158,13 +158,13 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalWithResource -> state.civInfo?.hasResource(condition.params[0]) == true
             UniqueType.ConditionalWithoutResource -> state.civInfo?.hasResource(condition.params[0]) == false
             UniqueType.ConditionalHappy ->
-                state.civInfo != null && state.civInfo.statsForNextTurn.happiness >= 0
+                state.civInfo != null && state.civInfo.stats.statsForNextTurn.happiness >= 0
             UniqueType.ConditionalBetweenHappiness ->
                 state.civInfo != null
-                && condition.params[0].toInt() <= state.civInfo.happinessForNextTurn
-                && state.civInfo.happinessForNextTurn < condition.params[1].toInt()
+                && condition.params[0].toInt() <= state.civInfo.stats.happiness
+                && state.civInfo.stats.happiness < condition.params[1].toInt()
             UniqueType.ConditionalBelowHappiness ->
-                state.civInfo != null && state.civInfo.happinessForNextTurn < condition.params[0].toInt()
+                state.civInfo != null && state.civInfo.stats.happiness < condition.params[0].toInt()
             UniqueType.ConditionalGoldenAge ->
                 state.civInfo != null && state.civInfo.goldenAges.isGoldenAge()
             UniqueType.ConditionalWLTKD ->
@@ -271,7 +271,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalFirstCivToResearch -> sourceObjectType == UniqueTarget.Tech
                     && state.civInfo != null
                     && state.civInfo.gameInfo.civilizations.none {
-                it != state.civInfo && it.isMajorCiv() && it.hasTechOrPolicy(sourceObjectName!!)
+                it != state.civInfo && it.isMajorCiv() && (it.tech.isResearched(sourceObjectName!!) || it.policies.isAdopted(sourceObjectName))
             }
 
             else -> false

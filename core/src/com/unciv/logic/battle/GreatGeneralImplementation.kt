@@ -1,10 +1,10 @@
 package com.unciv.logic.battle
 
+import com.unciv.logic.automation.unit.SpecificUnitAutomation
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.logic.automation.unit.SpecificUnitAutomation  // for Kdoc
 
 
 object GreatGeneralImplementation {
@@ -27,7 +27,7 @@ object GreatGeneralImplementation {
      */
     fun getGreatGeneralBonus(unit: MapUnit): Pair<String, Int> {
         val civInfo = unit.civInfo
-        val allGenerals = civInfo.getCivUnits()
+        val allGenerals = civInfo.units.getCivUnits()
             .filter { it.hasStrengthBonusInRadiusUnique }
         if (allGenerals.none()) return Pair("", 0)
 

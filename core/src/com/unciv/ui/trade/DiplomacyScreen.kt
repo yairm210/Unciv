@@ -8,7 +8,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.AlertType
-import com.unciv.logic.civilization.AssignedQuest
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -17,6 +16,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers.*
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.logic.civilization.managers.AssignedQuest
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
@@ -24,9 +24,7 @@ import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Quest
 import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
@@ -113,7 +111,7 @@ class DiplomacyScreen(
 
         var selectCivY = 0f
 
-        for (civ in viewingCiv.getKnownCivsSorted()) {
+        for (civ in viewingCiv.diplomacyFunctions.getKnownCivsSorted()) {
             if (civ == selectCiv) {
                 selectCivY = leftSideTable.prefHeight
             }
@@ -215,7 +213,7 @@ class DiplomacyScreen(
         }
         diplomacyTable.row().padTop(15f)
 
-        otherCiv.updateAllyCivForCityState()
+        otherCiv.cityStateFunctions.updateAllyCivForCityState()
         var ally = otherCiv.getAllyCiv()
         if (ally != null) {
             val allyInfluence = otherCiv.getDiplomacyManager(ally).getInfluence().toInt()
@@ -226,7 +224,7 @@ class DiplomacyScreen(
                 .row()
         }
 
-        val protectors = otherCiv.getProtectorCivs()
+        val protectors = otherCiv.cityStateFunctions.getProtectorCivs()
         if (protectors.isNotEmpty()) {
             val newProtectors = arrayListOf<String>()
             for (protector in protectors) {
@@ -289,10 +287,6 @@ class DiplomacyScreen(
         return diplomacyTable
     }
 
-    fun fillUniquePlaceholders(unique:Unique, vararg strings: String):String {
-        return unique.placeholderText.fillPlaceholders(*strings) + unique.conditionals.map { " <${it.text}>" }
-            .joinToString("")
-    }
 
     private fun getCityStateDiplomacyTable(otherCiv: CivilizationInfo): Table {
         val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)
@@ -355,12 +349,12 @@ class DiplomacyScreen(
         val revokeProtectionButton = "Revoke Protection".toTextButton()
         revokeProtectionButton.onClick {
             ConfirmPopup(this, "Revoke protection for [${otherCiv.civName}]?", "Revoke Protection") {
-                otherCiv.removeProtectorCiv(viewingCiv)
+                otherCiv.cityStateFunctions.removeProtectorCiv(viewingCiv)
                 updateLeftSideTable(otherCiv)
                 updateRightSide(otherCiv)
             }.open()
         }
-        if (isNotPlayersTurn() || !otherCiv.otherCivCanWithdrawProtection(viewingCiv)) revokeProtectionButton.disable()
+        if (isNotPlayersTurn() || !otherCiv.cityStateFunctions.otherCivCanWithdrawProtection(viewingCiv)) revokeProtectionButton.disable()
         return revokeProtectionButton
     }
 
@@ -373,12 +367,12 @@ class DiplomacyScreen(
                 "Pledge to protect",
                 true
             ) {
-                otherCiv.addProtectorCiv(viewingCiv)
+                otherCiv.cityStateFunctions.addProtectorCiv(viewingCiv)
                 updateLeftSideTable(otherCiv)
                 updateRightSide(otherCiv)
             }.open()
         }
-        if (isNotPlayersTurn() || !otherCiv.otherCivCanPledgeProtection(viewingCiv)) protectionButton.disable()
+        if (isNotPlayersTurn() || !otherCiv.cityStateFunctions.otherCivCanPledgeProtection(viewingCiv)) protectionButton.disable()
         return protectionButton
     }
 
@@ -453,7 +447,7 @@ class DiplomacyScreen(
         }
 
 
-        if (isNotPlayersTurn() || otherCivDiplomacyManager.getInfluence() < 60 || !needsImprovements)
+        if (isNotPlayersTurn() || otherCivDiplomacyManager.getInfluence() < 60)
             improveTileButton.disable()
         return improveTileButton
     }
@@ -484,7 +478,7 @@ class DiplomacyScreen(
             val giftButton =
                 "Gift [$giftAmount] gold (+[$influenceAmount] influence)".toTextButton()
             giftButton.onClick {
-                otherCiv.receiveGoldGift(viewingCiv, giftAmount)
+                otherCiv.cityStateFunctions.receiveGoldGift(viewingCiv, giftAmount)
                 updateLeftSideTable(otherCiv)
                 updateRightSide(otherCiv)
             }
@@ -526,7 +520,7 @@ class DiplomacyScreen(
                         viewingCiv.addGold(-200)
                         improvableTile.stopWorkingOnImprovement()
                         improvableTile.changeImprovement(tileImprovement.name)
-                        otherCiv.updateDetailedCivResources()
+                        otherCiv.cache.updateCivResources()
                         rightSideTable.clear()
                         rightSideTable.add(ScrollPane(getCityStateDiplomacyTable(otherCiv)))
                     }
@@ -571,7 +565,7 @@ class DiplomacyScreen(
             rightSideTable.add(ScrollPane(getCityStateDiplomacyTable(otherCiv)))
         }
         diplomacyTable.add(demandGoldButton).row()
-        if (otherCiv.getTributeWillingness(viewingCiv, demandingWorker = false) < 0)   demandGoldButton.disable()
+        if (otherCiv.cityStateFunctions.getTributeWillingness(viewingCiv, demandingWorker = false) < 0)   demandGoldButton.disable()
 
         val demandWorkerButton = "Take worker (-50 Influence)".toTextButton()
         demandWorkerButton.onClick {
@@ -580,7 +574,7 @@ class DiplomacyScreen(
             rightSideTable.add(ScrollPane(getCityStateDiplomacyTable(otherCiv)))
         }
         diplomacyTable.add(demandWorkerButton).row()
-        if (otherCiv.getTributeWillingness(viewingCiv, demandingWorker = true) < 0)    demandWorkerButton.disable()
+        if (otherCiv.cityStateFunctions.getTributeWillingness(viewingCiv, demandingWorker = true) < 0)    demandWorkerButton.disable()
 
         val backButton = "Back".toTextButton()
         backButton.onClick {
@@ -665,7 +659,7 @@ class DiplomacyScreen(
                 diplomacyTable.add(getDeclareFriendshipButton(otherCiv)).row()
 
 
-            if (viewingCiv.canSignResearchAgreementsWith(otherCiv))
+            if (viewingCiv.diplomacyFunctions.canSignResearchAgreementsWith(otherCiv))
                 diplomacyTable.add(getResearchAgreementButton(otherCiv)).row()
 
             if (!diplomacyManager.hasFlag(DiplomacyFlags.Denunciation)
@@ -749,7 +743,7 @@ class DiplomacyScreen(
     private fun getResearchAgreementButton(otherCiv: CivilizationInfo): TextButton {
         val researchAgreementButton = "Research Agreement".toTextButton()
 
-        val requiredGold = viewingCiv.getResearchAgreementCost()
+        val requiredGold = viewingCiv.diplomacyFunctions.getResearchAgreementCost()
         researchAgreementButton.onClick {
             val tradeTable = setTrade(otherCiv)
             val researchAgreement =

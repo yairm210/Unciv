@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.logic.MapSaver
+import com.unciv.logic.files.MapSaver
 import com.unciv.models.translations.tr
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.BaseScreen

@@ -6,9 +6,9 @@ import com.unciv.json.HashMapVector2
 import com.unciv.json.json
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.PerpetualConstruction
-import com.unciv.logic.civilization.TechManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
+import com.unciv.logic.civilization.managers.TechManager
 import com.unciv.models.ruleset.ModOptions
 import com.unciv.models.ruleset.Ruleset
 
@@ -178,7 +178,7 @@ object BackwardCompatibility {
     fun GameInfo.convertFortify() {
         val reg = Regex("""^Fortify\s+(\d+)([\w\s]*)""")
         for (civInfo in civilizations) {
-            for (unit in civInfo.getCivUnits()) {
+            for (unit in civInfo.units.getCivUnits()) {
                 if (unit.action != null && reg.matches(unit.action!!)) {
                     val (turns, heal) = reg.find(unit.action!!)!!.destructured
                     unit.turnsFortified = turns.toInt()

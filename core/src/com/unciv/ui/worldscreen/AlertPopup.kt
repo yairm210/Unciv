@@ -61,7 +61,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
         return button
     }
 
-    fun addLeaderName(civInfo: CivilizationInfo) {
+    private fun addLeaderName(civInfo: CivilizationInfo) {
         add(LeaderIntroTable(civInfo))
         addSeparator()
     }
@@ -312,7 +312,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 add(getCloseButton("Very well.", 'n') {
                     val capitalLocation = LocationAction(cityState.cities.asSequence().map { it.location }) // in practice 0 or 1 entries, that's OK
                     player.addNotification("You have broken your Pledge to Protect [${cityState.civName}]!", capitalLocation, NotificationCategory.Diplomacy, cityState.civName)
-                    cityState.removeProtectorCiv(player, forced = true)
+                    cityState.cityStateFunctions.removeProtectorCiv(player, forced = true)
                 }).row()
             }
             AlertType.RecapturedCivilian -> addRecapturedCivilianTable()
@@ -350,7 +350,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 originalOwner.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
             if (closestCity != null) {
                 // Attempt to place the unit near their nearest city
-                originalOwner.placeUnitNearTile(closestCity.location, unitName)
+                originalOwner.units.placeUnitNearTile(closestCity.location, unitName)
             }
 
             if (originalOwner.isCityState()) {
@@ -369,7 +369,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 // This is so that future checks which check if a unit has been captured are caught give the right answer
                 //  For example, in postBattleMoveToAttackedTile
                 capturedUnit.civInfo = captor
-                captor.placeUnitNearTile(tile.position, Constants.worker)
+                captor.units.placeUnitNearTile(tile.position, Constants.worker)
             } else
                 capturedUnit.capturedBy(captor)
         }).row()

@@ -6,6 +6,8 @@ import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.files.MapSaver
+import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapgenerator.MapGenerator
@@ -321,7 +323,7 @@ object GameStarter {
             }
 
             fun placeNearStartingPosition(unitName: String) {
-                civ.placeUnitNearTile(startingLocation.position, unitName)
+                civ.units.placeUnitNearTile(startingLocation.position, unitName)
             }
 
             // Determine starting units based on starting era

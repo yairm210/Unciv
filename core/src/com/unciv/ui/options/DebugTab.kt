@@ -2,8 +2,8 @@ package com.unciv.ui.options
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
-import com.unciv.logic.UncivFiles
-import com.unciv.logic.MapSaver
+import com.unciv.logic.files.UncivFiles
+import com.unciv.logic.files.MapSaver
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.ui.utils.BaseScreen
@@ -88,7 +88,7 @@ fun debugTab() = Table(BaseScreen.skin).apply {
                 curGameInfo.getCurrentPlayerCivilization().popupAlerts.removeLastOrNull()
             }
         }
-        curGameInfo.getCurrentPlayerCivilization().updateSightAndResources()
+        curGameInfo.getCurrentPlayerCivilization().cache.updateSightAndResources()
         if (worldScreen != null) worldScreen.shouldUpdate = true
     }
     add(unlockTechsButton).colspan(2).row()
@@ -106,7 +106,7 @@ fun debugTab() = Table(BaseScreen.skin).apply {
             // If this becomes a problem, check if such an improvement exists and otherwise plop down a great improvement or so
             tile.changeImprovement(resource.getImprovements().first())
         }
-        curGameInfo.getCurrentPlayerCivilization().updateSightAndResources()
+        curGameInfo.getCurrentPlayerCivilization().cache.updateSightAndResources()
         if (worldScreen != null) worldScreen.shouldUpdate = true
     }
     add(giveResourcesButton).colspan(2).row()

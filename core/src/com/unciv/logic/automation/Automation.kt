@@ -86,7 +86,7 @@ object Automation {
             // Food already handled above. Science/Culture have low weights in Stats already
             yieldStats.gold /= 2 // it's barely worth anything at this point
         } else {
-            if (city.civInfo.gold < 0 && city.civInfo.statsForNextTurn.gold <= 0)
+            if (city.civInfo.gold < 0 && city.civInfo.stats.statsForNextTurn.gold <= 0)
                 yieldStats.gold *= 2 // We have a global problem
 
             if (city.tiles.size < 12 || city.civInfo.wantsToFocusOn(Victory.Focus.Culture))
@@ -128,8 +128,8 @@ object Automation {
         }
 
         val totalCarriableUnits =
-            civInfo.getCivUnits().count { it.matchesFilter(carryFilter) }
-        val totalCarryingSlots = civInfo.getCivUnits().sumOf { getCarryAmount(it) }
+            civInfo.units.getCivUnits().count { it.matchesFilter(carryFilter) }
+        val totalCarryingSlots = civInfo.units.getCivUnits().sumOf { getCarryAmount(it) }
         return totalCarriableUnits < totalCarryingSlots
     }
 
@@ -291,10 +291,10 @@ object Automation {
             }
 
             // Assume buildings remain useful
-            val neededForBuilding = civInfo.lastEraResourceUsedForBuilding[resource] != null
+            val neededForBuilding = civInfo.cache.lastEraResourceUsedForBuilding[resource] != null
             // Don't care about old units
-            val neededForUnits = civInfo.lastEraResourceUsedForUnit[resource] != null
-                    && civInfo.lastEraResourceUsedForUnit[resource]!! >= civInfo.getEraNumber()
+            val neededForUnits = civInfo.cache.lastEraResourceUsedForUnit[resource] != null
+                    && civInfo.cache.lastEraResourceUsedForUnit[resource]!! >= civInfo.getEraNumber()
 
             // No need to save for both
             if (!neededForBuilding || !neededForUnits) {
@@ -433,7 +433,7 @@ object Automation {
                 else
                     (2.4f + (stats.food - 2) / 2) // 1.2 point for each food up to 2, from there on half a point
 
-        rank += if (civInfo.gold < 0 && civInfo.statsForNextTurn.gold <= 0)
+        rank += if (civInfo.gold < 0 && civInfo.stats.statsForNextTurn.gold <= 0)
                     stats.gold
                 else
                     stats.gold / 3 // 3 gold is much worse than 2 production

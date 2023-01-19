@@ -414,7 +414,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
         // Set equality automatically determines if anything changed - https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-abstract-set/equals.html
         if (updateCivViewableTiles && oldViewableTiles != viewableTiles)
-            civInfo.updateViewableTiles() // for the civ
+            civInfo.cache.updateViewableTiles()
     }
 
     fun isActionUntilHealed() = action?.endsWith("until healed") == true
@@ -432,9 +432,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun isPreparingParadrop() = action == UnitActionType.Paradrop.value
     fun isPreparingAirSweep() = action == UnitActionType.AirSweep.value
     fun isSetUpForSiege() = action == UnitActionType.SetUp.value
-
-    /** For display in Unit Overview */
-    fun getActionLabel() = if (action == null) "" else if (isFortified()) UnitActionType.Fortify.value else if (isMoving()) "Moving" else action!!
 
     fun isMilitary() = baseUnit.isMilitary()
     fun isCivilian() = baseUnit.isCivilian()
@@ -478,7 +475,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun getMaxMovementForAirUnits(): Int {
-        if (hasUnique(UniqueType.CannotMove)) return getRange()  // also used for marking attack range
         return getRange() * 2
     }
 
@@ -553,9 +549,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
         // and the civ currently has 0 horses, we need to see if the upgrade will be buildable
         // WHEN THE CURRENT UNIT IS NOT HERE
         // TODO redesign without kludge: Inform getRejectionReasons about 'virtually available' resources somehow
-        civInfo.removeUnit(this)
+        civInfo.units.removeUnit(this)
         val rejectionReasons = unitToUpgradeTo.getRejectionReasons(civInfo)
-        civInfo.addUnit(this)
+        civInfo.units.addUnit(this)
 
         var relevantRejectionReasons = rejectionReasons.asSequence().filterNot { it.rejectionReason == RejectionReason.Unbuildable }
         if (ignoreRequirements)
@@ -722,7 +718,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 ) {
                     // We removed a terrain (e.g. Forest) and the improvement (e.g. Lumber mill) requires it!
                     tile.changeImprovement(null)
-                    if (tile.resource != null) civInfo.updateDetailedCivResources() // unlikely, but maybe a mod makes a resource improvement dependent on a terrain feature
+                    if (tile.resource != null) civInfo.cache.updateCivResources() // unlikely, but maybe a mod makes a resource improvement dependent on a terrain feature
                 }
                 if (RoadStatus.values().any { tile.improvementInProgress == it.removeAction }) {
                     tile.removeRoad()
@@ -850,7 +846,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         if (hasUnique(UniqueType.ReligiousUnit)
             && getTile().getOwner() != null
             && !getTile().getOwner()!!.isCityState()
-            && !civInfo.canPassThroughTiles(getTile().getOwner()!!)
+            && !civInfo.diplomacyFunctions.canPassThroughTiles(getTile().getOwner()!!)
         ) {
             val lostReligiousStrength =
                 getMatchingUniques(UniqueType.CanEnterForeignTilesButLosesReligiousStrength)
@@ -878,8 +874,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         due = true
 
         // Hakkapeliitta movement boost
-        if (getTile().getUnits().count() > 1)
-        {
+        if (getTile().getUnits().count() > 1) {
             // For every double-stacked tile, check if our cohabitant can boost our speed
             for (unit in getTile().getUnits())
             {
@@ -897,11 +892,13 @@ class MapUnit : IsPartOfGameInfoSerialization {
             this.currentTile.getTilesInDistance(3).any {
                 it.militaryUnit != null && it in civInfo.viewableTiles && it.militaryUnit!!.civInfo.isAtWarWith(civInfo)
             }
-        )
-            action = null
+        )  action = null
 
         val tileOwner = getTile().getOwner()
-        if (tileOwner != null && !canEnterForeignTerrain && !civInfo.canPassThroughTiles(tileOwner) && !tileOwner.isCityState()) // if an enemy city expanded onto this tile while I was in it
+        if (tileOwner != null
+                && !canEnterForeignTerrain
+                && !civInfo.diplomacyFunctions.canPassThroughTiles(tileOwner)
+                && !tileOwner.isCityState()) // if an enemy city expanded onto this tile while I was in it
             movement.teleportToClosestMoveableTile()
 
         addMovementMemory()
@@ -913,8 +910,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
         civInfo.attacksSinceTurnStart.addAll(attacksSinceTurnStart.asSequence().map { CivilizationInfo.HistoricalAttackMemory(this.name, currentPosition, it) })
         currentMovement = 0f
         removeFromTile()
-        civInfo.removeUnit(this)
-        civInfo.updateViewableTiles()
+        civInfo.units.removeUnit(this)
+        civInfo.cache.updateViewableTiles()
         if (destroyTransportedUnit) {
             // all transported units should be destroyed as well
             currentTile.getUnits().filter { it.isTransported && isTransportTypeOf(it) }
@@ -925,14 +922,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun gift(recipient: CivilizationInfo) {
-        civInfo.removeUnit(this)
-        civInfo.updateViewableTiles()
+        civInfo.units.removeUnit(this)
+        civInfo.cache.updateViewableTiles()
         // all transported units should be destroyed as well
         currentTile.getUnits().filter { it.isTransported && isTransportTypeOf(it) }
             .toList() // because we're changing the list
             .forEach { unit -> unit.destroy() }
         assignOwner(recipient)
-        recipient.updateViewableTiles()
+        recipient.cache.updateViewableTiles()
     }
 
     /** Destroys the unit and gives stats if its a great person */
@@ -1074,11 +1071,11 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun assignOwner(civInfo: CivilizationInfo, updateCivInfo: Boolean = true) {
         owner = civInfo.civName
         this.civInfo = civInfo
-        civInfo.addUnit(this, updateCivInfo)
+        civInfo.units.addUnit(this, updateCivInfo)
     }
 
     fun capturedBy(captor: CivilizationInfo) {
-        civInfo.removeUnit(this)
+        civInfo.units.removeUnit(this)
         assignOwner(captor)
         currentMovement = 0f
         // It's possible that the unit can no longer stand on the tile it was captured on.

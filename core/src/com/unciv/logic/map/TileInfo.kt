@@ -3,7 +3,6 @@
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.HexMath
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
@@ -1067,7 +1066,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         if (tileOwner == null || tileOwner == civInfo) return true
         if (isCityCenter() && civInfo.isAtWarWith(tileOwner)
                 && !getCity()!!.hasJustBeenConquered) return false
-        if (!civInfo.canPassThroughTiles(tileOwner)) return false
+        if (!civInfo.diplomacyFunctions.canPassThroughTiles(tileOwner)) return false
         return true
     }
 

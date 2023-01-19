@@ -7,29 +7,37 @@ import com.unciv.json.HashMapVector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.UncivShowableException
-import com.unciv.logic.VictoryData
 import com.unciv.logic.automation.ai.TacticalAI
-import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.city.CityInfo
-import com.unciv.logic.civilization.RuinsManager.RuinsManager
-import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.city.managers.CityFounder
+import com.unciv.logic.civilization.diplomacy.CityStateFunctions
+import com.unciv.logic.civilization.diplomacy.CityStatePersonality
+import com.unciv.logic.civilization.diplomacy.DiplomacyFunctions
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.civilization.managers.EspionageManager
+import com.unciv.logic.civilization.managers.GoldenAgeManager
+import com.unciv.logic.civilization.managers.GreatPersonManager
+import com.unciv.logic.civilization.managers.PolicyManager
+import com.unciv.logic.civilization.managers.QuestManager
+import com.unciv.logic.civilization.managers.ReligionManager
+import com.unciv.logic.civilization.managers.RuinsManager
+import com.unciv.logic.civilization.managers.TechManager
+import com.unciv.logic.civilization.managers.UnitManager
+import com.unciv.logic.civilization.managers.VictoryManager
+import com.unciv.logic.civilization.transients.CivInfoStatsForNextTurn
+import com.unciv.logic.civilization.transients.CivInfoTransientCache
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
-import com.unciv.logic.map.UnitMovementAlgorithms
-import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeRequest
-import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.CityStateType
-import com.unciv.models.ruleset.Difficulty
-import com.unciv.models.ruleset.Era
-import com.unciv.models.ruleset.ModOptionsConstants
-import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Victory
+import com.unciv.models.ruleset.nation.CityStateType
+import com.unciv.models.ruleset.nation.Difficulty
+import com.unciv.models.ruleset.nation.Nation
+import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
@@ -37,15 +45,11 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.TemporaryUnique
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.ruleset.unique.endTurn
 import com.unciv.models.ruleset.unique.getMatchingUniques
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
-import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
-import com.unciv.ui.utils.MayaCalendar
 import com.unciv.ui.utils.extensions.toPercent
-import com.unciv.ui.utils.extensions.withItem
 import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
 import kotlin.math.max
@@ -82,19 +86,11 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     @Transient
     lateinit var nation: Nation
 
-    /**
-     * We never add or remove from here directly, could cause comodification problems.
-     * Instead, we create a copy list with the change, and replace this list.
-     * The other solution, casting toList() every "get", has a performance cost
-     */
     @Transient
-    private var units = listOf<MapUnit>()
+    val units = UnitManager(this)
 
-    /**
-     * Index in the unit list above of the unit that is potentially due and is next up for button "Next unit".
-     */
     @Transient
-    private var nextPotentiallyDueAt = 0
+    var diplomacyFunctions = DiplomacyFunctions(this)
 
     @Transient
     var viewableTiles = setOf<TileInfo>()
@@ -115,12 +111,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     var enemyMovementPenaltyUniques: Sequence<Unique>? = null
 
     @Transient
-    var statsForNextTurn = Stats()
-
-    @Transient
-    var happinessForNextTurn = 0
-
-    @Transient
     var detailedCivResources = ResourceSupplyList()
 
     @Transient
@@ -130,7 +120,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     val cityStateFunctions = CityStateFunctions(this)
 
     @Transient
-    private var cachedMilitaryMight = -1
+    var cachedMilitaryMight = -1
 
     @Transient
     var passThroughImpassableUnlocked = false   // Cached Boolean equal to passableImpassables.isNotEmpty()
@@ -138,11 +128,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     @Transient
     var nonStandardTerrainDamage = false
 
-    @Transient
-    var lastEraResourceUsedForBuilding = HashMap<String, Int>()
-
-    @Transient
-    val lastEraResourceUsedForUnit = HashMap<String, Int>()
 
     @Transient
     var thingsToFocusOnForVictory = setOf<Victory.Focus>()
@@ -188,7 +173,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     val tradeRequests = ArrayList<TradeRequest>()
 
     /** See DiplomacyManager.flagsCountdown for why this does not map Enums to ints */
-    private var flagsCountdown = HashMap<String, Int>()
+    var flagsCountdown = HashMap<String, Int>()
 
     /** Arraylist instead of HashMap as the same unique might appear multiple times
      * We don't use pairs, as these cannot be serialized due to having no no-arg constructor
@@ -224,7 +209,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     val passableImpassables = HashSet<String>() // For Carthage-like uniques
 
     // For Aggressor, Warmonger status
-    private var numMinorCivsAttacked = 0
+    internal var numMinorCivsAttacked = 0
 
     var totalCultureForContests = 0
     var totalFaithForContests = 0
@@ -316,6 +301,8 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
+
+
     //region pure functions
     fun getDifficulty(): Difficulty {
         if (isHuman()) return gameInfo.getDifficulty()
@@ -337,39 +324,25 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     fun knows(otherCivName: String) = diplomacy.containsKey(otherCivName)
     fun knows(otherCiv: CivilizationInfo) = knows(otherCiv.civName)
 
-    /** A sorted Sequence of all other civs we know (excluding barbarians and spectators) */
-    fun getKnownCivsSorted(includeCityStates: Boolean = true, includeDefeated: Boolean = false) =
-        gameInfo.civilizations.asSequence()
-        .filterNot {
-            it == this ||
-                it.isBarbarian() || it.isSpectator() ||
-                !this.knows(it) ||
-                (!includeDefeated && it.isDefeated()) ||
-                (!includeCityStates && it.isCityState())
-        }
-        .sortedWith(
-            compareByDescending<CivilizationInfo> { it.isMajorCiv() }
-                .thenBy (UncivGame.Current.settings.getCollatorFromLocale()) { it.civName.tr() }
-        )
     fun getCapital() = cities.firstOrNull { it.isCapital() }
     fun isHuman() = playerType == PlayerType.Human
     fun isAI() = playerType == PlayerType.AI
-    fun isOneCityChallenger() = (
-            playerType == PlayerType.Human &&
-                    gameInfo.gameParameters.oneCityChallenge)
+    fun isOneCityChallenger() = playerType == PlayerType.Human && gameInfo.gameParameters.oneCityChallenge
 
     fun isCurrentPlayer() = gameInfo.currentPlayerCiv == this
+    fun isMajorCiv() = nation.isMajorCiv()
+    fun isMinorCiv() = nation.isCityState() || nation.isBarbarian()
+    fun isCityState(): Boolean = nation.isCityState()
     fun isBarbarian() = nation.isBarbarian()
     fun isSpectator() = nation.isSpectator()
-    fun isCityState(): Boolean = nation.isCityState()
+    fun isAlive(): Boolean = !isDefeated()
+
     @delegate:Transient
     val cityStateType: CityStateType by lazy { gameInfo.ruleSet.cityStateTypes[nation.cityStateType!!]!! }
     var cityStatePersonality: CityStatePersonality = CityStatePersonality.Neutral
     var cityStateResource: String? = null
     var cityStateUniqueUnit: String? = null // Unique unit for militaristic city state. Might still be null if there are no appropriate units
-    fun isMajorCiv() = nation.isMajorCiv()
-    fun isMinorCiv() = nation.isCityState() || nation.isBarbarian()
-    fun isAlive(): Boolean = !isDefeated()
+
 
     fun hasMetCivTerritory(otherCiv: CivilizationInfo): Boolean = otherCiv.getCivTerritory().any { hasExplored(it) }
     fun getCompletedPolicyBranchesCount(): Int = policies.adoptedPolicies.count { Policy.isBranchCompleteByName(it) }
@@ -397,20 +370,17 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     }
 
     @Transient
-    private val civInfoStats = CivInfoStats(this)
-    fun stats() = civInfoStats
+    val stats = CivInfoStatsForNextTurn(this)
 
     @Transient
-    private val civInfoTransientUpdater = CivInfoTransientUpdater(this)
-    fun transients() = civInfoTransientUpdater
+    val cache = CivInfoTransientCache(this)
 
     fun updateStatsForNextTurn() {
-        happinessForNextTurn = stats().getHappinessBreakdown().values.sum().roundToInt()
-        statsForNextTurn = stats().getStatMapForNextTurn().values.reduce { a, b -> a + b }
+        stats.happiness = stats.getHappinessBreakdown().values.sum().roundToInt()
+        stats.statsForNextTurn = stats.getStatMapForNextTurn().values.reduce { a, b -> a + b }
     }
 
-    fun getHappiness() = happinessForNextTurn
-
+    fun getHappiness() = stats.happiness
 
     fun getCivResources(): ResourceSupplyList = summarizedCivResources
 
@@ -498,79 +468,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     }
 
 
-    //region Units
-    fun getCivUnitsSize(): Int = units.size
-    fun getCivUnits(): Sequence<MapUnit> = units.asSequence()
-    fun getCivGreatPeople(): Sequence<MapUnit> = getCivUnits().filter { mapUnit -> mapUnit.isGreatPerson() }
-
-    // Similar to getCivUnits(), but the returned list is rotated so that the
-    // 'nextPotentiallyDueAt' unit is first here.
-    private fun getCivUnitsStartingAtNextDue(): Sequence<MapUnit> = sequenceOf(units.subList(nextPotentiallyDueAt, units.size) + units.subList(0, nextPotentiallyDueAt)).flatten()
-
-    fun addUnit(mapUnit: MapUnit, updateCivInfo: Boolean = true) {
-        // Since we create a new list anyway (otherwise some concurrent modification
-        // exception will happen), also rearrange existing units so that
-        // 'nextPotentiallyDueAt' becomes 0.  This way new units are always last to be due
-        // (can be changed as wanted, just have a predictable place).
-        val newList = getCivUnitsStartingAtNextDue().toMutableList()
-        newList.add(mapUnit)
-        units = newList
-        nextPotentiallyDueAt = 0
-
-        if (updateCivInfo) {
-            // Not relevant when updating TileInfo transients, since some info of the civ itself isn't yet available,
-            // and in any case it'll be updated once civ info transients are
-            updateStatsForNextTurn() // unit upkeep
-            if (mapUnit.baseUnit.getResourceRequirements().isNotEmpty())
-                updateDetailedCivResources()
-        }
-    }
-
-    fun removeUnit(mapUnit: MapUnit) {
-        // See comment in addUnit().
-        val newList = getCivUnitsStartingAtNextDue().toMutableList()
-        newList.remove(mapUnit)
-        units = newList
-        nextPotentiallyDueAt = 0
-
-        updateStatsForNextTurn() // unit upkeep
-        if (mapUnit.baseUnit.getResourceRequirements().isNotEmpty())
-            updateDetailedCivResources()
-    }
-
-    fun getIdleUnits() = getCivUnits().filter { it.isIdle() }
-
-    fun getDueUnits(): Sequence<MapUnit> = getCivUnitsStartingAtNextDue().filter { it.due && it.isIdle() }
-
-    fun shouldGoToDueUnit() = UncivGame.Current.settings.checkForDueUnits && getDueUnits().any()
-
-    // Return the next due unit, but preferably not 'unitToSkip': this is returned only if it is the only remaining due unit.
-    fun cycleThroughDueUnits(unitToSkip: MapUnit? = null): MapUnit? {
-        if (units.none()) return null
-
-        var returnAt = nextPotentiallyDueAt
-        var fallbackAt = -1
-
-        do {
-            if (units[returnAt].due && units[returnAt].isIdle()) {
-                if (units[returnAt] != unitToSkip) {
-                    nextPotentiallyDueAt = (returnAt + 1) % units.size
-                    return units[returnAt]
-                }
-                else fallbackAt = returnAt
-            }
-
-            returnAt = (returnAt + 1) % units.size
-        } while (returnAt != nextPotentiallyDueAt)
-
-        if (fallbackAt >= 0) {
-            nextPotentiallyDueAt = (fallbackAt + 1) % units.size
-            return units[fallbackAt]
-        }
-        else return null
-    }
-    //endregion
-
     fun shouldOpenTechPicker(): Boolean {
         if (!tech.canResearchTech()) return false
         if (tech.freeTechs != 0) return true
@@ -593,6 +490,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
             ?: throw UncivShowableException("Unit $baseUnitName doesn't seem to exist!")
         return getEquivalentUnit(baseUnit)
     }
+
     fun getEquivalentUnit(baseUnit: BaseUnit): BaseUnit {
         if (baseUnit.replaces != null)
             return getEquivalentUnit(baseUnit.replaces!!) // Equivalent of unique unit is the equivalent of the replaced unit
@@ -603,63 +501,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         return baseUnit
     }
 
-    fun makeCivilizationsMeet(otherCiv: CivilizationInfo, warOnContact: Boolean = false) {
-        meetCiv(otherCiv, warOnContact)
-        otherCiv.meetCiv(this, warOnContact)
-    }
-
-    private fun meetCiv(otherCiv: CivilizationInfo, warOnContact: Boolean = false) {
-        diplomacy[otherCiv.civName] = DiplomacyManager(this, otherCiv.civName)
-            .apply { diplomaticStatus = DiplomaticStatus.Peace }
-
-        if (!otherCiv.isSpectator())
-            otherCiv.popupAlerts.add(PopupAlert(AlertType.FirstContact, civName))
-
-        if (isCurrentPlayer())
-            UncivGame.Current.settings.addCompletedTutorialTask("Meet another civilization")
-
-        if (!(isCityState() && otherCiv.isMajorCiv())) return
-        if (warOnContact || otherCiv.isMinorCivAggressor()) return // No gift if they are bad people, or we are just about to be at war
-
-        val cityStateLocation = if (cities.isEmpty()) null else getCapital()!!.location
-
-        val giftAmount = Stats(gold = 15f)
-        val faithAmount = Stats(faith = 4f)
-        // Later, religious city-states will also gift gold, making this the better implementation
-        // For now, it might be overkill though.
-        var meetString = "[${civName}] has given us [${giftAmount}] as a token of goodwill for meeting us"
-        val religionMeetString = "[${civName}] has also given us [${faithAmount}]"
-        if (diplomacy.filter { it.value.otherCiv().isMajorCiv() }.size == 1) {
-            giftAmount.timesInPlace(2f)
-            meetString = "[${civName}] has given us [${giftAmount}] as we are the first major civ to meet them"
-        }
-        if (cityStateLocation != null)
-            otherCiv.addNotification(meetString, cityStateLocation, NotificationCategory.Diplomacy, NotificationIcon.Gold)
-        else
-            otherCiv.addNotification(meetString, NotificationCategory.Diplomacy, NotificationIcon.Gold)
-
-        if (otherCiv.isCityState() && otherCiv.canGiveStat(Stat.Faith)){
-            otherCiv.addNotification(religionMeetString, NotificationCategory.Diplomacy, NotificationIcon.Faith)
-
-            for ((key, value) in faithAmount)
-                otherCiv.addStat(key, value.toInt())
-        }
-        for ((key, value) in giftAmount)
-            otherCiv.addStat(key, value.toInt())
-
-        if (cities.isNotEmpty())
-            otherCiv.exploredTiles = otherCiv.exploredTiles.withItem(getCapital()!!.location)
-
-        questManager.justMet(otherCiv) // Include them in war with major pseudo-quest
-    }
-
-    fun discoverNaturalWonder(naturalWonderName: String) {
-        naturalWonders.add(naturalWonderName)
-    }
-
-    override fun toString(): String {
-        return civName
-    } // for debug
+    override fun toString(): String = civName // for debug
 
     /**
      *  Determine loss conditions.
@@ -670,47 +512,17 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     fun isDefeated() = when {
         isBarbarian() || isSpectator() -> false     // Barbarians and voyeurs can't lose
         hasEverOwnedOriginalCapital == true -> cities.isEmpty()
-        else -> getCivUnits().none()
+        else -> units.getCivUnits().none()
     }
 
     fun getEra(): Era = tech.era
 
     fun getEraNumber(): Int = getEra().eraNumber
 
-    fun isAtWarWith(otherCiv: CivilizationInfo): Boolean {
-        return when {
-            otherCiv == this -> false
-            otherCiv.isBarbarian() || isBarbarian() -> true
-            else -> {
-                val diplomacyManager = diplomacy[otherCiv.civName]
-                    ?: return false // not encountered yet
-                return diplomacyManager.diplomaticStatus == DiplomaticStatus.War
-            }
-        }
-    }
+    fun isAtWarWith(otherCiv: CivilizationInfo) = diplomacyFunctions.isAtWarWith(otherCiv)
 
     fun isAtWar() = diplomacy.values.any { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv().isDefeated() }
 
-    fun canEnterBordersOf(otherCiv: CivilizationInfo): Boolean {
-        if (otherCiv == this) return true // own borders are always open
-        if (otherCiv.isBarbarian() || isBarbarian()) return false // barbarians blocks the routes
-        val diplomacyManager = diplomacy[otherCiv.civName]
-            ?: return false // not encountered yet
-        if (otherCiv.isCityState() && diplomacyManager.diplomaticStatus != DiplomaticStatus.War) return true
-        return diplomacyManager.hasOpenBorders
-    }
-
-    fun getEnemyMovementPenalty(enemyUnit: MapUnit): Float {
-        if (enemyMovementPenaltyUniques != null && enemyMovementPenaltyUniques!!.any()) {
-            return enemyMovementPenaltyUniques!!.sumOf {
-                if (it.type!! == UniqueType.EnemyLandUnitsSpendExtraMovement
-                        && enemyUnit.matchesFilter(it.params[0]))
-                    it.params[1].toInt()
-                else 0
-            }.toFloat()
-        }
-        return 0f // should not reach this point
-    }
 
     /**
      * Returns a civilization caption suitable for greetings including player type info:
@@ -722,42 +534,21 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         val online = gameInfo.gameParameters.isOnlineMultiplayer
         return nation.getLeaderDisplayName().tr() +
             when {
-                !online && !severalHumans ->
-                    ""                      // offline single player will know everybody else is AI
-                playerType == PlayerType.AI ->
-                    " (" + "AI".tr() + ")"
-                online ->
-                    " (" + "Human".tr() + " - " + "Multiplayer".tr() + ")"
-                else ->
-                    " (" + "Human".tr() + " - " + "Hotseat".tr() + ")"
+                !online && !severalHumans -> ""  // offline single player will know everybody else is AI
+                playerType == PlayerType.AI -> " (${"AI".tr()})"
+                online -> " (${"Human".tr()} - ${"Multiplayer".tr()})"
+                else -> " (${"Human".tr()} - ${"Hotseat".tr()})"
             }
     }
 
-    fun canSignResearchAgreement(): Boolean {
-        if (!isMajorCiv()) return false
-        if (!hasUnique(UniqueType.EnablesResearchAgreements)) return false
-        if (gameInfo.ruleSet.technologies.values
-                        .none { tech.canBeResearched(it.name) && !tech.isResearched(it.name) }) return false
-        return true
-    }
-
-    fun canSignResearchAgreementsWith(otherCiv: CivilizationInfo): Boolean {
-        val diplomacyManager = getDiplomacyManager(otherCiv)
-        val cost = getResearchAgreementCost()
-        return canSignResearchAgreement() && otherCiv.canSignResearchAgreement()
-                && diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
-                && !diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement)
-                && !diplomacyManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.ResearchAgreement)
-                && gold >= cost && otherCiv.gold >= cost
-    }
 
     fun getStatForRanking(category: RankingType): Int {
         return if (isDefeated()) 0
         else when (category) {
                 RankingType.Score -> calculateTotalScore().toInt()
                 RankingType.Population -> cities.sumOf { it.population.population }
-                RankingType.Crop_Yield -> statsForNextTurn.food.roundToInt()
-                RankingType.Production -> statsForNextTurn.production.roundToInt()
+                RankingType.Crop_Yield -> stats.statsForNextTurn.food.roundToInt()
+                RankingType.Production -> stats.statsForNextTurn.production.roundToInt()
                 RankingType.Gold -> gold
                 RankingType.Territory -> cities.sumOf { it.tiles.size }
                 RankingType.Force -> getMilitaryMight()
@@ -775,7 +566,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
     private fun calculateMilitaryMight(): Int {
         var sum = 1 // minimum value, so we never end up with 0
-        for (unit in units) {
+        for (unit in units.getCivUnits()) {
             sum += if (unit.baseUnit.isWaterUnit())
                 unit.getForceEvaluation() / 2   // Really don't value water units highly
             else
@@ -786,23 +577,10 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         return sum
     }
 
-
-    fun getGreatPeople(): HashSet<BaseUnit> {
-        val greatPeople = gameInfo.ruleSet.units.values.asSequence()
-            .filter { it.isGreatPerson() }
-            .map { getEquivalentUnit(it.name) }
-        return if (!gameInfo.isReligionEnabled())
-            greatPeople.filter { !it.hasUnique(UniqueType.HiddenWithoutReligion) }.toHashSet()
-        else greatPeople.toHashSet()
-    }
-
-    fun hasTechOrPolicy(techOrPolicyName: String) =
-        tech.isResearched(techOrPolicyName) || policies.isAdopted(techOrPolicyName)
-
     fun isMinorCivAggressor() = numMinorCivsAttacked >= 2
     fun isMinorCivWarmonger() = numMinorCivsAttacked >= 4
 
-    private fun isLongCountActive(): Boolean {
+    fun isLongCountActive(): Boolean {
         val unique = getMatchingUniques(UniqueType.MayanGainGreatPerson).firstOrNull()
             ?: return false
         return tech.isResearched(unique.params[1])
@@ -847,40 +625,23 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
     fun setTransients() {
         goldenAges.civInfo = this
-
+        greatPeople.civInfo = this
         civConstructions.setTransients(civInfo = this)
-
-        policies.civInfo = this
-        if (policies.adoptedPolicies.size > 0 && policies.numberOfAdoptedPolicies == 0)
-            policies.numberOfAdoptedPolicies = policies.adoptedPolicies.count { !Policy.isBranchCompleteByName(it) }
-        policies.setTransients()
-
-        questManager.civInfo = this
-        questManager.setTransients()
-
-        if (citiesCreated == 0 && cities.any())
-            citiesCreated = cities.filter { it.name in nation.cities }.size
-
-        religionManager.civInfo = this // needs to be before tech, since tech setTransients looks at all uniques
-        religionManager.setTransients()
-
-        tech.civInfo = this
-        tech.setTransients()
-
+        policies.setTransients(this)
+        questManager.setTransients(this)
+        religionManager.setTransients(this) // needs to be before tech, since tech setTransients looks at all uniques
+        tech.setTransients(this)
         ruinsManager.setTransients(this)
+        espionageManager.setTransients(this)
+        victoryManager.civInfo = this
 
         for (diplomacyManager in diplomacy.values) {
             diplomacyManager.civInfo = this
             diplomacyManager.updateHasOpenBorders()
         }
 
-        espionageManager.setTransients(this)
-
-        victoryManager.civInfo = this
-
         for (cityInfo in cities) {
-            cityInfo.civInfo = this // must be before the city's setTransients because it depends on the tilemap, that comes from the currentPlayerCivInfo
-            cityInfo.setTransients()
+            cityInfo.setTransients(this) // must be before the city's setTransients because it depends on the tilemap, that comes from the currentPlayerCivInfo
         }
 
         // Now that all tile transients have been updated, clean "worked" tiles that are not under the Civ's control
@@ -894,244 +655,17 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         nonStandardTerrainDamage = getMatchingUniques(UniqueType.DamagesContainingUnits)
             .any { gameInfo.ruleSet.terrains[it.params[0]]!!.damagePerTurn != it.params[1].toInt() }
 
-        // Cache the last era each resource is used for buildings or units respectively for AI building evaluation
-        for (resource in gameInfo.ruleSet.tileResources.values.asSequence().filter { it.resourceType == ResourceType.Strategic }.map { it.name }) {
-            val applicableBuildings = gameInfo.ruleSet.buildings.values.filter { it.requiresResource(resource) && getEquivalentBuilding(it) == it }
-            val applicableUnits = gameInfo.ruleSet.units.values.filter { it.requiresResource(resource) && getEquivalentUnit(it) == it }
-
-            val lastEraForBuilding = applicableBuildings.maxOfOrNull { gameInfo.ruleSet.eras[gameInfo.ruleSet.technologies[it.requiredTech]?.era()]?.eraNumber ?: 0 }
-            val lastEraForUnit = applicableUnits.maxOfOrNull { gameInfo.ruleSet.eras[gameInfo.ruleSet.technologies[it.requiredTech]?.era()]?.eraNumber ?: 0 }
-
-            if (lastEraForBuilding != null)
-                lastEraResourceUsedForBuilding[resource] = lastEraForBuilding
-            if (lastEraForUnit != null)
-                lastEraResourceUsedForUnit[resource] = lastEraForUnit
-        }
-
         hasLongCountDisplayUnique = hasUnique(UniqueType.MayanCalendarDisplay)
 
         tacticalAI.init(this)
-
     }
 
-    fun updateSightAndResources() {
-        updateViewableTiles()
-        updateHasActiveEnemyMovementPenalty()
-        updateDetailedCivResources()
-    }
-
-    fun changeMinorCivsAttacked(count: Int) {
-        numMinorCivsAttacked += count
-    }
-
-    // implementation in a separate class, to not clog up CivInfo
-    fun initialSetCitiesConnectedToCapitalTransients() = transients().updateCitiesConnectedToCapital(true)
-    fun updateHasActiveEnemyMovementPenalty() = transients().updateHasActiveEnemyMovementPenalty()
-    fun updateViewableTiles() = transients().updateViewableTiles()
-    fun updateDetailedCivResources() = transients().updateCivResources()
-
-    fun doTurn() {
-
-        // Defeated civs do nothing
-        if (isDefeated())
-            return
-
-        // Do stuff
-        NextTurnAutomation.automateCivMoves(this)
-
-        // Update barbarian camps
-        if (isBarbarian() && !gameInfo.gameParameters.noBarbarians)
-            gameInfo.barbarians.updateEncampments()
-    }
-
-    fun startTurn() {
-        civConstructions.startTurn()
-        attacksSinceTurnStart.clear()
-        updateStatsForNextTurn() // for things that change when turn passes e.g. golden age, city state influence
-
-        // Do this after updateStatsForNextTurn but before cities.startTurn
-        if (playerType == PlayerType.AI && gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.convertGoldToScience))
-            NextTurnAutomation.automateGoldToSciencePercentage(this)
-
-        // Generate great people at the start of the turn,
-        // so they won't be generated out in the open and vulnerable to enemy attacks before you can control them
-        if (cities.isNotEmpty()) { //if no city available, addGreatPerson will throw exception
-            val greatPerson = greatPeople.getNewGreatPerson(gameInfo.speed.modifier)
-            if (greatPerson != null && gameInfo.ruleSet.units.containsKey(greatPerson)) addUnit(greatPerson)
-            religionManager.startTurn()
-            if (isLongCountActive())
-                MayaCalendar.startTurnForMaya(this)
-        }
-
-        updateViewableTiles() // adds explored tiles so that the units will be able to perform automated actions better
-        transients().updateCitiesConnectedToCapital()
-        startTurnFlags()
-        updateRevolts()
-        for (city in cities) city.startTurn()  // Most expensive part of startTurn
-
-        for (unit in getCivUnits()) unit.startTurn()
-
-        if (playerType == PlayerType.Human && UncivGame.Current.settings.automatedUnitsMoveOnTurnStart) {
-            hasMovedAutomatedUnits = true
-            for (unit in getCivUnits())
-                unit.doAction()
-        } else hasMovedAutomatedUnits = false
-
-        updateDetailedCivResources() // If you offered a trade last turn, this turn it will have been accepted/declined
-
-        for (tradeRequest in tradeRequests.toList()) { // remove trade requests where one of the sides can no longer supply
-            val offeringCiv = gameInfo.getCivilization(tradeRequest.requestingCiv)
-            if (offeringCiv.isDefeated() || !TradeEvaluation().isTradeValid(tradeRequest.trade, this, offeringCiv)) {
-                tradeRequests.remove(tradeRequest)
-                // Yes, this is the right direction. I checked.
-                offeringCiv.addNotification("Our proposed trade is no longer relevant!", NotificationCategory.Trade, NotificationIcon.Trade)
-            }
-        }
-
-        updateWinningCiv()
-    }
-
-    fun updateWinningCiv(){
-        if (gameInfo.victoryData == null) {
-            val victoryType = victoryManager.getVictoryTypeAchieved()
-            if (victoryType != null) {
-                gameInfo.victoryData = VictoryData(civName, victoryType, gameInfo.turns)
-
-                for (civInfo in gameInfo.civilizations)
-                    civInfo.popupAlerts.add(PopupAlert(AlertType.GameHasBeenWon, civName))
-            }
-        }
-    }
-
-    fun endTurn() {
-        val notificationsThisTurn = NotificationsLog(gameInfo.turns)
-        notificationsThisTurn.notifications.addAll(notifications)
-
-        while (notificationsLog.size >= UncivGame.Current.settings.notificationsLogMaxTurns) {
-            notificationsLog.removeFirst()
-        }
-
-        if (notificationsThisTurn.notifications.isNotEmpty())
-            notificationsLog.add(notificationsThisTurn)
-
-        notifications.clear()
-        updateStatsForNextTurn()
-        val nextTurnStats = statsForNextTurn
-
-        policies.endTurn(nextTurnStats.culture.toInt())
-        totalCultureForContests += nextTurnStats.culture.toInt()
-
-        if (isCityState())
-            questManager.endTurn()
-
-        // disband units until there are none left OR the gold values are normal
-        if (!isBarbarian() && gold < -100 && nextTurnStats.gold.toInt() < 0) {
-            for (i in 1 until (gold / -100)) {
-                var civMilitaryUnits = getCivUnits().filter { it.baseUnit.isMilitary() }
-                if (civMilitaryUnits.any()) {
-                    val unitToDisband = civMilitaryUnits.first()
-                    unitToDisband.disband()
-                    civMilitaryUnits -= unitToDisband
-                    val unitName = unitToDisband.shortDisplayName()
-                    addNotification("Cannot provide unit upkeep for $unitName - unit has been disbanded!", NotificationCategory.Units, unitName, NotificationIcon.Death)
-                }
-            }
-        }
-
-        addGold( nextTurnStats.gold.toInt() )
-
-        if (cities.isNotEmpty() && gameInfo.ruleSet.technologies.isNotEmpty())
-            tech.endTurn(nextTurnStats.science.toInt())
-
-        religionManager.endTurn(nextTurnStats.faith.toInt())
-        totalFaithForContests += nextTurnStats.faith.toInt()
-
-        espionageManager.endTurn()
-
-        if (isMajorCiv()) greatPeople.addGreatPersonPoints(getGreatPersonPointsForNextTurn()) // City-states don't get great people!
-
-        // To handle tile's owner issue (#8246), we need to run being razed city first.
-        for (city in sequence {
-            yieldAll(cities.filter { it.isBeingRazed })
-            yieldAll(cities.filterNot { it.isBeingRazed })
-        }.toList()) { // a city can be removed while iterating (if it's being razed) so we need to iterate over a copy
-            city.endTurn()
-        }
-
-        temporaryUniques.endTurn()
-
-        goldenAges.endTurn(getHappiness())
-        getCivUnits().forEach { it.endTurn() }  // This is the most expensive part of endTurn
-        diplomacy.values.toList().forEach { it.nextTurn() } // we copy the diplomacy values so if it changes in-loop we won't crash
-        updateHasActiveEnemyMovementPenalty()
-
-        cachedMilitaryMight = -1    // Reset so we don't use a value from a previous turn
-
-        updateWinningCiv() // Maybe we did something this turn to win
-    }
-
-    private fun startTurnFlags() {
-        for (flag in flagsCountdown.keys.toList()) {
-            // In case we remove flags while iterating
-            if (!flagsCountdown.containsKey(flag)) continue
-
-            if (flag == CivFlags.CityStateGreatPersonGift.name) {
-                val cityStateAllies: List<CivilizationInfo> =
-                    getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civName }
-                val givingCityState = cityStateAllies.filter { it.cities.isNotEmpty() }.randomOrNull()
-
-                if (cityStateAllies.isNotEmpty()) flagsCountdown[flag] = flagsCountdown[flag]!! - 1
-
-                if (flagsCountdown[flag]!! < min(cityStateAllies.size, 10) && cities.isNotEmpty()
-                    && givingCityState != null
-                ) {
-                    givingCityState.cityStateFunctions.giveGreatPersonToPatron(this)
-                    flagsCountdown[flag] = turnsForGreatPersonFromCityState()
-                }
-
-                continue
-            }
-
-            if (flagsCountdown[flag]!! > 0)
-                flagsCountdown[flag] = flagsCountdown[flag]!! - 1
-
-            if (flagsCountdown[flag] != 0) continue
-
-            when (flag) {
-                CivFlags.RevoltSpawning.name -> doRevoltSpawn()
-            }
-        }
-        handleDiplomaticVictoryFlags()
-    }
-
-    private fun handleDiplomaticVictoryFlags() {
-        if (flagsCountdown[CivFlags.ShouldResetDiplomaticVotes.name] == 0) {
-            gameInfo.diplomaticVictoryVotesCast.clear()
-            removeFlag(CivFlags.ShowDiplomaticVotingResults.name)
-            removeFlag(CivFlags.ShouldResetDiplomaticVotes.name)
-        }
-
-        if (flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == 0) {
-            gameInfo.processDiplomaticVictory()
-            if (gameInfo.civilizations.any { it.victoryManager.hasWon() } ) {
-                removeFlag(CivFlags.TurnsTillNextDiplomaticVote.name)
-            } else {
-                addFlag(CivFlags.ShouldResetDiplomaticVotes.name, 1)
-                addFlag(CivFlags.TurnsTillNextDiplomaticVote.name, getTurnsBetweenDiplomaticVotes())
-            }
-        }
-
-        if (flagsCountdown[CivFlags.TurnsTillNextDiplomaticVote.name] == 0) {
-            addFlag(CivFlags.ShowDiplomaticVotingResults.name, 1)
-        }
-    }
 
     fun addFlag(flag: String, count: Int) = flagsCountdown.set(flag, count)
     fun removeFlag(flag: String) = flagsCountdown.remove(flag)
     fun hasFlag(flag: String) = flagsCountdown.contains(flag)
 
     fun getTurnsBetweenDiplomaticVotes() = (15 * gameInfo.speed.modifier).toInt() // Dunno the exact calculation, hidden in Lua files
-
     fun getTurnsTillNextDiplomaticVote() = flagsCountdown[CivFlags.TurnsTillNextDiplomaticVote.name]
 
     fun getRecentBullyingCountdown() = flagsCountdown[CivFlags.RecentlyBullied.name]
@@ -1151,76 +685,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
          flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == 0
          && gameInfo.civilizations.any { it.isMajorCiv() && !it.isDefeated() && it != this }
 
-
-    private fun updateRevolts() {
-        if (gameInfo.civilizations.none { it.isBarbarian() }) {
-            // Can't spawn revolts without barbarians ¯\_(ツ)_/¯
-            return
-        }
-
-        if (!hasUnique(UniqueType.SpawnRebels)) {
-            removeFlag(CivFlags.RevoltSpawning.name)
-            return
-        }
-
-        if (!hasFlag(CivFlags.RevoltSpawning.name)) {
-            addFlag(CivFlags.RevoltSpawning.name, max(getTurnsBeforeRevolt(),1))
-            return
-        }
-    }
-
-    private fun doRevoltSpawn() {
-        val barbarians = try {
-            // The first test in `updateRevolts` should prevent getting here in a no-barbarians game, but it has been shown to still occur
-            gameInfo.getBarbarianCivilization()
-        } catch (ex: NoSuchElementException) {
-            removeFlag(CivFlags.RevoltSpawning.name)
-            return
-        }
-
-        val random = Random()
-        val rebelCount = 1 + random.nextInt(100 + 20 * (cities.size - 1)) / 100
-        val spawnCity = cities.maxByOrNull { random.nextInt(it.population.population + 10) } ?: return
-        val spawnTile = spawnCity.getTiles().maxByOrNull { rateTileForRevoltSpawn(it) } ?: return
-        val unitToSpawn = gameInfo.ruleSet.units.values.asSequence().filter {
-            it.uniqueTo == null && it.isMelee() && it.isLandUnit()
-            && !it.hasUnique(UniqueType.CannotAttack) && it.isBuildable(this)
-        }.maxByOrNull {
-            random.nextInt(1000)
-        } ?: return
-
-        repeat(rebelCount) {
-            gameInfo.tileMap.placeUnitNearTile(
-                spawnTile.position,
-                unitToSpawn.name,
-                barbarians
-            )
-        }
-
-        // Will be automatically added again as long as unhappiness is still low enough
-        removeFlag(CivFlags.RevoltSpawning.name)
-
-        addNotification("Your citizens are revolting due to very high unhappiness!", spawnTile.position, NotificationCategory.General, unitToSpawn.name, "StatIcons/Malcontent")
-    }
-
-    // Higher is better
-    private fun rateTileForRevoltSpawn(tile: TileInfo): Int {
-        if (tile.isWater || tile.militaryUnit != null || tile.civilianUnit != null || tile.isCityCenter() || tile.isImpassible())
-            return -1
-        var score = 10
-        if (tile.improvement == null) {
-            score += 4
-            if (tile.resource != null) {
-                score += 3
-            }
-        }
-        if (tile.getDefensiveBonus() > 0)
-            score += 4
-        return score
-    }
-
-    private fun getTurnsBeforeRevolt() =
-        ((4 + Random().nextInt(3)) * max(gameInfo.speed.modifier, 1f)).toInt()
 
     /** Modify gold by a given amount making sure it does neither overflow nor underflow.
      * @param delta the amount to add (can be negative)
@@ -1261,34 +725,6 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun getGreatPersonPointsForNextTurn(): Counter<String> {
-        val greatPersonPoints = Counter<String>()
-        for (city in cities) greatPersonPoints.add(city.getGreatPersonPoints())
-        return greatPersonPoints
-    }
-
-    /**
-     * @returns whether units of this civilization can pass through the tiles owned by [otherCiv],
-     * considering only civ-wide filters.
-     * Use [TileInfo.canCivPassThrough] to check whether units of a civilization can pass through
-     * a specific tile, considering only civ-wide filters.
-     * Use [UnitMovementAlgorithms.canPassThrough] to check whether a specific unit can pass through
-     * a specific tile.
-     */
-    fun canPassThroughTiles(otherCiv: CivilizationInfo): Boolean {
-        if (otherCiv == this) return true
-        if (otherCiv.isBarbarian()) return true
-        if (nation.isBarbarian() && gameInfo.turns >= gameInfo.difficultyObject.turnBarbariansCanEnterPlayerTiles)
-            return true
-        val diplomacyManager = diplomacy[otherCiv.civName]
-        if (diplomacyManager != null && (diplomacyManager.hasOpenBorders || diplomacyManager.diplomaticStatus == DiplomaticStatus.War))
-            return true
-        // Players can always pass through city-state tiles
-        if (isHuman() && otherCiv.isCityState()) return true
-        return false
-    }
-
-
     fun addNotification(text: String, location: Vector2, category:NotificationCategory, vararg notificationIcons: String) {
         addNotification(text, LocationAction(location), category, *notificationIcons)
     }
@@ -1302,52 +738,8 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
                 if (action is LocationAction && action.locations.isEmpty()) null else action, category))
     }
 
-    fun addUnit(unitName: String, city: CityInfo? = null): MapUnit? {
-        if (cities.isEmpty()) return null
-        if (!gameInfo.ruleSet.units.containsKey(unitName)) return null
-
-        val cityToAddTo = city ?: cities.random()
-        val unit = getEquivalentUnit(unitName)
-        val placedUnit = placeUnitNearTile(cityToAddTo.location, unit.name)
-        // silently bail if no tile to place the unit is found
-            ?: return null
-        if (unit.isGreatPerson()) {
-            addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", placedUnit.getTile().position, NotificationCategory.General, unit.name)
-        }
-
-        if (placedUnit.hasUnique(UniqueType.ReligiousUnit) && gameInfo.isReligionEnabled()) {
-            placedUnit.religion =
-                when {
-                    placedUnit.hasUnique(UniqueType.TakeReligionOverBirthCity)
-                    && religionManager.religion?.isMajorReligion() == true ->
-                        religionManager.religion!!.name
-                    city != null -> city.cityConstructions.cityInfo.religion.getMajorityReligionName()
-                    else -> religionManager.religion?.name
-                }
-            placedUnit.setupAbilityUses(cityToAddTo)
-        }
-
-        for (unique in getMatchingUniques(UniqueType.LandUnitsCrossTerrainAfterUnitGained)) {
-            if (unit.matchesFilter(unique.params[1])) {
-                passThroughImpassableUnlocked = true    // Update the cached Boolean
-                passableImpassables.add(unique.params[0])   // Add to list of passable impassables
-            }
-        }
-
-        return placedUnit
-    }
-
-    /** Tries to place the a [unitName] unit into the [TileInfo] closest to the given the [location]
-     * @param location where to try to place the unit
-     * @param unitName name of the [BaseUnit] to create and place
-     * @return created [MapUnit] or null if no suitable location was found
-     * */
-    fun placeUnitNearTile(location: Vector2, unitName: String): MapUnit? {
-        return gameInfo.tileMap.placeUnitNearTile(location, unitName, this)
-    }
-
     fun addCity(location: Vector2) {
-        val newCity = CityInfo(this, location)
+        val newCity = CityFounder().foundCity(this, location)
         newCity.cityConstructions.chooseNextConstruction()
     }
 
@@ -1356,7 +748,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         else "The City-State of [$civName] has been destroyed!"
         for (civ in gameInfo.civilizations)
             civ.addNotification(destructionText, NotificationCategory.General, civName, NotificationIcon.Death)
-        getCivUnits().forEach { it.destroy() }
+        units.getCivUnits().forEach { it.destroy() }
         tradeRequests.clear() // if we don't do this then there could be resources taken by "pending" trades forever
         for (diplomacyManager in diplomacy.values) {
             diplomacyManager.trades.clear()
@@ -1366,14 +758,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun getResearchAgreementCost(): Int {
-        // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
-        return (
-            getEra().researchAgreementCost * gameInfo.speed.goldCostModifier
-        ).toInt()
-    }
-
-    fun updateProximity(otherCiv: CivilizationInfo, preCalculated: Proximity? = null): Proximity = transients().updateProximity(otherCiv, preCalculated)
+    fun updateProximity(otherCiv: CivilizationInfo, preCalculated: Proximity? = null): Proximity = cache.updateProximity(otherCiv, preCalculated)
 
     /**
      * Removes current capital then moves capital to argument city if not null
@@ -1402,28 +787,8 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         moveCapitalTo(newCapital)
     }
 
-    //////////////////////// City State wrapper functions ////////////////////////
-
-    fun receiveGoldGift(donorCiv: CivilizationInfo, giftAmount: Int) =
-        cityStateFunctions.receiveGoldGift(donorCiv, giftAmount)
-    fun turnsForGreatPersonFromCityState(): Int = ((37 + Random().nextInt(7)) * gameInfo.speed.modifier).toInt()
-
-    fun getProtectorCivs() = cityStateFunctions.getProtectorCivs()
-    fun addProtectorCiv(otherCiv: CivilizationInfo) = cityStateFunctions.addProtectorCiv(otherCiv)
-    fun removeProtectorCiv(otherCiv: CivilizationInfo, forced: Boolean = false) =
-        cityStateFunctions.removeProtectorCiv(otherCiv, forced)
-    fun otherCivCanPledgeProtection(otherCiv: CivilizationInfo) = cityStateFunctions.otherCivCanPledgeProtection(otherCiv)
-    fun otherCivCanWithdrawProtection(otherCiv: CivilizationInfo) = cityStateFunctions.otherCivCanWithdrawProtection(otherCiv)
-
-    fun updateAllyCivForCityState() = cityStateFunctions.updateAllyCivForCityState()
-    fun getTributeWillingness(demandingCiv: CivilizationInfo, demandingWorker: Boolean = false)
-        = cityStateFunctions.getTributeWillingness(demandingCiv, demandingWorker)
-    fun canGiveStat(statType: Stat) = cityStateFunctions.canGiveStat(statType)
-
     fun getAllyCiv() = allyCivName
     fun setAllyCiv(newAllyName: String?) { allyCivName = newAllyName }
-
-    //endregion
 
     fun asPreview() = CivilizationInfoPreview(this)
 }

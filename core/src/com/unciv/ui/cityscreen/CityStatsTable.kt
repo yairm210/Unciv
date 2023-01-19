@@ -158,11 +158,11 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
 
         var turnsToPopString =
                 when {
-                    cityInfo.isStarving() -> "[${cityInfo.getNumTurnsToStarvation()}] turns to lose population"
+                    cityInfo.isStarving() -> "[${cityInfo.population.getNumTurnsToStarvation()}] turns to lose population"
                     cityInfo.getRuleset().units[cityInfo.cityConstructions.currentConstructionFromQueue]
                         .let { it != null && it.hasUnique(UniqueType.ConvertFoodToProductionWhenConstructed) }
                     -> "Food converts to production"
-                    cityInfo.isGrowing() -> "[${cityInfo.getNumTurnsToNewPopulation()}] turns to new population"
+                    cityInfo.isGrowing() -> "[${cityInfo.population.getNumTurnsToNewPopulation()}] turns to new population"
                     else -> "Stopped population growth"
                 }.tr()
         turnsToPopString += " (${cityInfo.population.foodStored}${Fonts.food}/${cityInfo.population.getFoodToNextPopulation()}${Fonts.food})"
@@ -354,7 +354,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
             info.add("{$greatPersonName} (+$gppPerTurn)".toLabel()).left().padBottom(4f).expandX().row()
 
             val gppCurrent = cityInfo.civInfo.greatPeople.greatPersonPointsCounter[greatPersonName]
-            val gppNeeded = cityInfo.civInfo.greatPeople.pointsForNextGreatPerson
+            val gppNeeded = cityInfo.civInfo.greatPeople.getPointsRequiredForGreatPerson()
 
             val percent = gppCurrent!! / gppNeeded.toFloat()
 

@@ -22,7 +22,7 @@ class TradeTable(val otherCivilization: CivilizationInfo, stage: DiplomacyScreen
 
     private fun retractOffer(){
         otherCivilization.tradeRequests.removeAll { it.requestingCiv == currentPlayerCiv.civName }
-        currentPlayerCiv.updateDetailedCivResources()
+        currentPlayerCiv.cache.updateCivResources()
         offerButton.setText("Offer trade".tr())
     }
 
@@ -48,7 +48,7 @@ class TradeTable(val otherCivilization: CivilizationInfo, stage: DiplomacyScreen
             }
 
             otherCivilization.tradeRequests.add(TradeRequest(currentPlayerCiv.civName,tradeLogic.currentTrade.reverse()))
-            currentPlayerCiv.updateDetailedCivResources()
+            currentPlayerCiv.cache.updateCivResources()
             offerButton.setText("Retract offer".tr())
         }
 

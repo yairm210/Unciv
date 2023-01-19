@@ -53,7 +53,6 @@ class NotificationsScroll(
         maxNotificationsHeight: Float,
         tileInfoTableHeight: Float
     ) {
-
         val previousScrollY = scrollY
 
         updateContent(notifications)
@@ -127,9 +126,8 @@ class NotificationsScroll(
         sizeScrollingSpacer(tileInfoTableHeight)
 
         pack()
-        if (height == newHeight) return
         height = newHeight  // after this, maxY is still incorrect until layout()
-        invalidateHierarchy()
+        layout()
     }
 
     /** Add some empty space that can be scrolled under the TileInfoTable which is covering our lower part */

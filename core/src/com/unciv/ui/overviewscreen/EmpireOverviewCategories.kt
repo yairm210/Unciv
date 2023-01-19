@@ -3,8 +3,8 @@ package com.unciv.ui.overviewscreen
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.overviewscreen.EmpireOverviewTab.EmpireOverviewTabPersistableData
+import com.unciv.ui.utils.KeyCharAndCode
 
 private typealias FactoryType = (CivilizationInfo, EmpireOverviewScreen, EmpireOverviewTabPersistableData?) -> EmpireOverviewTab
 
@@ -39,7 +39,7 @@ enum class EmpireOverviewCategories(
     Units("OtherIcons/Shield", 'U', Align.topLeft,
         fun (viewingPlayer: CivilizationInfo, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?)
                 = UnitOverviewTab(viewingPlayer, overviewScreen, persistedData),
-        fun (viewingPlayer: CivilizationInfo) = viewingPlayer.getCivUnits().none().toState()),
+        fun (viewingPlayer: CivilizationInfo) = viewingPlayer.units.getCivUnits().none().toState()),
     Politics("OtherIcons/Politics", 'P', Align.top,
         fun (viewingPlayer: CivilizationInfo, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?)
                 = GlobalPoliticsOverviewTable(viewingPlayer, overviewScreen, persistedData),
@@ -64,7 +64,7 @@ enum class EmpireOverviewCategories(
         fun (viewingPlayer: CivilizationInfo, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?)
                 = NotificationsOverviewTable(worldScreen = UncivGame.Current.worldScreen!!, viewingPlayer, overviewScreen, persistedData),
         fun (_: CivilizationInfo) = EmpireOverviewTabState.Normal)
-    
+
     ; //must be here
 
     constructor(iconName: String, shortcutChar: Char, scrollAlign: Int, factory: FactoryType, stateTester: StateTesterType = { _ -> EmpireOverviewTabState.Normal })
