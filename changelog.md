@@ -1,3 +1,55 @@
+## 4.4.3
+
+Resolved  - can pick a policy with enough culture even if you have no cities
+
+Korea's unique applies to Library
+
+Notifications scroll retains position
+
+More cityinfo cleanup
+
+Move more context-specific functions out of CityInfo
+
+chore: Split CityInfo functions into CityTurnMAnager and CityFounder
+
+Fixed Android build, hopefully
+
+chore: More cleanup
+
+chore: Moved diplomacy functions to DiplomacyFunctions
+
+chore: Moved unit functions to UnitManager
+
+chore: More civinfo cleanup
+
+chore: More civinfo cleanup
+
+chore: More civinfo cleanup
+
+chore: Removed turn management functions from CivInfo
+
+chore: File reorg
+
+chore: File reorg
+
+chore: removed city state functions from civinfo
+
+chore: moved statsForNextTurn and happiness transients into civ stats
+
+Better indication of cached-updating functions for civinfo
+
+Displayed Great Person point requirements always take game speed into account
+
+Conditioned trigger uniques do not 'go off' without the trigger (e.g. when tech researched, building built)
+
+Resolve  - global alerts not translated properly
+
+Add options to use random number of players and city states.  - By FiretronP75
+
+Remove China's faith boost when reaching classical era  - By RealBamboolord
+
+Refactor Cannot Move Unique  - By itanasi
+
 ## 4.4.2
 
 Added trigger conditions framework!
