@@ -1,7 +1,11 @@
 package com.unciv.logic.map.mapgenerator
 
 import com.unciv.logic.map.HexMath
-import com.unciv.logic.map.*
+import com.unciv.logic.map.MapShape
+import com.unciv.logic.map.MapType
+import com.unciv.logic.map.Perlin
+import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType
 import kotlin.math.abs
@@ -123,8 +127,8 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
     private fun createPangaea(tileMap: TileMap) {
         val elevationSeed = randomness.RNG.nextInt().toDouble()
         for (tile in tileMap.values) {
-            var elevation = randomness.getPerlinNoise(tile, elevationSeed)
-            elevation = (elevation + getEllipticContinent(tile, tileMap)) / 2.0
+            var elevation = randomness.getPerlinNoise(tile, elevationSeed, scale=30.0)
+            elevation = elevation*(3/4f) + getEllipticContinent(tile, tileMap) / 4
             spawnLandOrWater(tile, elevation)
         }
     }
@@ -204,7 +208,7 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
         val x = tileInfo.longitude
         val y = tileInfo.latitude
 
-        val distanceFactor = x * x / (a * a) + y * y / (b * b)
+        val distanceFactor = x * x / (a * a) + y * y / (b * b) + (x+y).pow(2) / (a+b).pow(2)
 
         return min(0.3, 1.0 - (5.0 * distanceFactor * distanceFactor + randomScale) / 3.0)
     }
