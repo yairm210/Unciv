@@ -363,7 +363,7 @@ class CityStats(val cityInfo: CityInfo) {
                         || it.terrainHasUnique(UniqueType.TileProvidesYieldWithoutPopulation))
             }
         for (cell in workedTiles) {
-            val cellStats = cell.getTileStats(cityInfo, cityInfo.civInfo, localUniqueCache)
+            val cellStats = cell.stats.getTileStats(cityInfo, cityInfo.civInfo, localUniqueCache)
             stats.add(cellStats)
         }
         statsFromTiles = stats

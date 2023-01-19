@@ -133,7 +133,7 @@ class GlobalUniquesTests {
         cityInfo.cityConstructions.addBuilding(building.name)
 
         val tile2 = game.setTileFeatures(Vector2(0f,1f), Constants.grassland)
-        Assert.assertTrue(tile2.getTileStats(cityInfo, civInfo).gold == 4f)
+        Assert.assertTrue(tile2.stats.getTileStats(cityInfo, civInfo).gold == 4f)
     }
 
     @Test
@@ -147,11 +147,11 @@ class GlobalUniquesTests {
 
         val tile2 = game.setTileFeatures(Vector2(0f,1f), Constants.grassland)
         game.addTileToCity(cityInfo, tile2)
-        Assert.assertTrue(tile2.getTileStats(cityInfo, civInfo).gold == 4f)
+        Assert.assertTrue(tile2.stats.getTileStats(cityInfo, civInfo).gold == 4f)
 
         val tile3 = game.setTileFeatures(Vector2(0f, 2f), Constants.grassland, listOf(Constants.forest))
         game.addTileToCity(cityInfo, tile3)
-        Assert.assertFalse(tile3.getTileStats(cityInfo, civInfo).gold == 4f)
+        Assert.assertFalse(tile3.stats.getTileStats(cityInfo, civInfo).gold == 4f)
     }
 
     @Test
@@ -174,7 +174,7 @@ class GlobalUniquesTests {
         cityInfo.cityConstructions.addBuilding(building2.name)
 
         val tile2 = game.setTileFeatures(Vector2(0f,1f), Constants.grassland)
-        Assert.assertTrue(tile2.getTileStats(cityInfo, civInfo).faith == 3f)
+        Assert.assertTrue(tile2.stats.getTileStats(cityInfo, civInfo).faith == 3f)
 
         cityInfo.cityConstructions.removeBuilding(building2.name)
 
@@ -317,7 +317,7 @@ class GlobalUniquesTests {
 
         val tile2 = game.setTileFeatures(Vector2(0f,1f), Constants.grassland)
         tile2.changeImprovement("Farm")
-        Assert.assertTrue(tile2.getTileStats(city, civInfo).faith == 9f)
+        Assert.assertTrue(tile2.stats.getTileStats(city, civInfo).faith == 9f)
 
         city.cityConstructions.addBuilding(emptyBuilding.name)
         city.cityStats.update()
@@ -342,7 +342,7 @@ class GlobalUniquesTests {
 
         val tile2 = game.setTileFeatures(Vector2(0f,1f), Constants.grassland)
         tile2.changeImprovement("Farm")
-        Assert.assertTrue(tile2.getTileStats(city, civInfo).faith == 9f)
+        Assert.assertTrue(tile2.stats.getTileStats(city, civInfo).faith == 9f)
 
         city.cityConstructions.addBuilding(emptyBuilding.name)
         city.cityStats.update()

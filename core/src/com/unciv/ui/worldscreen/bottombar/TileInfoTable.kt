@@ -45,7 +45,7 @@ class TileInfoTable(private val viewingCiv :CivilizationInfo) : Table(BaseScreen
 
         // padLeft = padRight + 5: for symmetry. An extra 5 for the distance yield number to
         // tile text comes from the pad up there in updateTileTable
-        for ((key, value) in tile.getTileStats(viewingCiv)) {
+        for ((key, value) in tile.stats.getTileStats(viewingCiv)) {
             table.add(ImageGetter.getStatIcon(key.name))
                 .size(20f).align(Align.right).padLeft(10f)
             table.add(value.toInt().toLabel())

@@ -78,7 +78,7 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
     }
 
     private fun updateYieldGroup() {
-        yieldGroup.setStats(tileInfo.getTileStats(city, city.civInfo))
+        yieldGroup.setStats(tileInfo.stats.getTileStats(city, city.civInfo))
         yieldGroup.setOrigin(Align.center)
         yieldGroup.setScale(0.7f)
         yieldGroup.toFront()

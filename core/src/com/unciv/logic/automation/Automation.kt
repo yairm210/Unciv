@@ -22,7 +22,7 @@ import com.unciv.ui.victoryscreen.RankingType
 object Automation {
 
     fun rankTileForCityWork(tile: TileInfo, city: CityInfo, cityStats: Stats): Float {
-        val stats = tile.getTileStats(city, city.civInfo)
+        val stats = tile.stats.getTileStats(city, city.civInfo)
         return rankStatsForCityWork(stats, city, cityStats)
     }
 
@@ -349,7 +349,7 @@ object Automation {
         if (tile == null) return 0f
         val tileOwner = tile.getOwner()
         if (tileOwner != null && tileOwner != civInfo) return 0f // Already belongs to another civilization, useless to us
-        val stats = tile.getTileStats(null, civInfo)
+        val stats = tile.stats.getTileStats(null, civInfo)
         var rank = rankStatsValue(stats, civInfo)
         if (tile.improvement == null) rank += 0.5f // improvement potential!
         if (tile.isPillaged()) rank += 0.6f
@@ -400,7 +400,7 @@ object Automation {
         if (tile.naturalWonder != null) score -= 105
 
         // Straight up take the sum of all yields
-        score -= tile.getTileStats(cityInfo, cityInfo.civInfo, localUniqueCache).values.sum().toInt()
+        score -= tile.stats.getTileStats(cityInfo, cityInfo.civInfo, localUniqueCache).values.sum().toInt()
 
         // Check if we get access to better tiles from this tile
         var adjacentNaturalWonder = false

@@ -49,7 +49,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
         isVisible = true
         innerTable.clearChildren()
 
-        val stats = selectedTile.getTileStats(city, city.civInfo)
+        val stats = selectedTile.stats.getTileStats(city, city.civInfo)
         innerTable.pad(5f)
 
         innerTable.add( MarkupRenderer.render(selectedTile.toMarkup(city.civInfo), iconDisplay = IconDisplay.None) {
@@ -110,7 +110,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
      * Used from onClick and keyboard dispatch, thus only minimal parameters are passed,
      * and it needs to do all checks and the sound as appropriate.
      */
-    fun askToBuyTile(selectedTile: TileInfo) {
+    private fun askToBuyTile(selectedTile: TileInfo) {
         // These checks are redundant for the onClick action, but not for the keyboard binding
         if (!isTilePurchaseShown(selectedTile)) return
         val goldCostOfTile = city.expansion.getGoldCostOfTile(selectedTile)

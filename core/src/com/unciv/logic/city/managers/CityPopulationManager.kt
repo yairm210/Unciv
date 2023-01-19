@@ -175,7 +175,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
             if (valueBestTile > valueBestSpecialist) {
                 if (bestTile != null) {
                     cityInfo.workedTiles = cityInfo.workedTiles.withItem(bestTile.position)
-                    cityStats[Stat.Food] += bestTile.getTileStats(cityInfo, cityInfo.civInfo)[Stat.Food]
+                    cityStats[Stat.Food] += bestTile.stats.getTileStats(cityInfo, cityInfo.civInfo)[Stat.Food]
                 }
             } else if (bestJob != null) {
                 specialistAllocations.add(bestJob, 1)

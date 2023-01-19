@@ -324,7 +324,7 @@ object GameStarter {
 
         val startScores = HashMap<TileInfo, Float>(tileMap.values.size)
         for (tile in tileMap.values) {
-            startScores[tile] = tile.getTileStartScore()
+            startScores[tile] = tile.stats.getTileStartScore()
         }
         val allCivs = gameInfo.civilizations.filter { !it.isBarbarian() }
         val landTilesInBigEnoughGroup = getCandidateLand(allCivs.size, tileMap, startScores)

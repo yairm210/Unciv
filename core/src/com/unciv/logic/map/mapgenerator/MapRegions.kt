@@ -3,12 +3,12 @@ package com.unciv.logic.map.mapgenerator
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
-import com.unciv.logic.map.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.MapResources
 import com.unciv.logic.map.MapShape
-import com.unciv.logic.map.tile.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.tile.TileInfo
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
@@ -265,7 +265,7 @@ class MapRegions (val ruleset: Ruleset){
         // The rest are positive bias
         val positiveBiasCivs = civilizations.filterNot { it in coastBiasCivs || it in negativeBiasCivs || it in randomCivs }
                 .sortedBy { ruleset.nations[it.civName]!!.startBias.size } // civs with only one desired region go first
-        val positiveBiasFallbackCivs = ArrayList<CivilizationInfo>() // Civs who couln't get their desired region at first pass
+        val positiveBiasFallbackCivs = ArrayList<CivilizationInfo>() // Civs who couldn't get their desired region at first pass
         val unpickedRegions = regions.toMutableList()
 
         // First assign coast bias civs
@@ -711,7 +711,7 @@ class MapRegions (val ruleset: Ruleset){
     }
 
     private fun getPotentialYield(tile: TileInfo, stat: Stat, unimproved: Boolean = false): Float {
-        val baseYield = tile.getTileStats(null)[stat]
+        val baseYield = tile.stats.getTileStats(null)[stat]
         if (unimproved) return baseYield
 
         val bestImprovementYield = tile.tileMap.ruleset!!.tileImprovements.values

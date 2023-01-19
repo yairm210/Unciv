@@ -17,17 +17,13 @@ import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
-import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.stats.Stat
-import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
-import com.unciv.ui.utils.extensions.toPercent
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.random.Random
@@ -41,6 +37,9 @@ open class TileInfo : IsPartOfGameInfoSerialization {
 
     @Transient
     val improvementFunctions = TileInfoImprovementFunctions(this)
+
+    @Transient
+    val stats = TileStatFunctions(this)
 
     @Transient
     private var isCityCenterInternal = false
@@ -230,7 +229,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
             return tileResourceCache!!
         }
 
-    private fun getNaturalWonder(): Terrain =
+    internal fun getNaturalWonder(): Terrain =
             if (naturalWonder == null) throw Exception("No natural wonder exists for this tile!")
             else ruleset.terrains[naturalWonder!!]!!
 
@@ -428,168 +427,6 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     fun isLocked(): Boolean {
         val workingCity = getWorkingCity()
         return workingCity != null && workingCity.lockedTiles.contains(position)
-    }
-
-    fun getTileStats(observingCiv: CivilizationInfo?): Stats = getTileStats(getCity(), observingCiv)
-
-    fun getTileStats(city: CityInfo?, observingCiv: CivilizationInfo?,
-                     localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)
-    ): Stats {
-        var stats = getBaseTerrain().cloneStats()
-
-        val stateForConditionals = StateForConditionals(civInfo = observingCiv, cityInfo = city, tile = this)
-
-        for (terrainFeatureBase in terrainFeatureObjects) {
-            when {
-                terrainFeatureBase.hasUnique(UniqueType.NullifyYields) ->
-                    return terrainFeatureBase.cloneStats()
-                terrainFeatureBase.overrideStats -> stats = terrainFeatureBase.cloneStats()
-                else -> stats.add(terrainFeatureBase)
-            }
-        }
-
-        if (naturalWonder != null) {
-            val wonderStats = getNaturalWonder().cloneStats()
-
-            if (getNaturalWonder().overrideStats)
-                stats = wonderStats
-            else
-                stats.add(wonderStats)
-        }
-
-        if (city != null) {
-            var tileUniques = city.getMatchingUniques(UniqueType.StatsFromTiles, StateForConditionals.IgnoreConditionals)
-                .filter { city.matchesFilter(it.params[2]) }
-            tileUniques += city.getMatchingUniques(UniqueType.StatsFromObject, StateForConditionals.IgnoreConditionals)
-            for (unique in localUniqueCache.get("StatsFromTilesAndObjects", tileUniques)) {
-                if (!unique.conditionalsApply(stateForConditionals)) continue
-                val tileType = unique.params[1]
-                if (!matchesTerrainFilter(tileType, observingCiv)) continue
-                stats.add(unique.stats)
-            }
-
-            for (unique in localUniqueCache.get("StatsFromTilesWithout",
-                city.getMatchingUniques(UniqueType.StatsFromTilesWithout, StateForConditionals.IgnoreConditionals))
-            ) {
-                if (
-                    unique.conditionalsApply(stateForConditionals) &&
-                    matchesTerrainFilter(unique.params[1]) &&
-                    !matchesTerrainFilter(unique.params[2]) &&
-                    city.matchesFilter(unique.params[3])
-                )
-                    stats.add(unique.stats)
-            }
-        }
-
-        if (isAdjacentToRiver()) stats.gold++
-
-        if (observingCiv != null) {
-            // resource base
-            if (hasViewableResource(observingCiv)) stats.add(tileResource)
-
-            val improvement = getUnpillagedTileImprovement()
-            if (improvement != null)
-                stats.add(improvementFunctions.getImprovementStats(improvement, observingCiv, city, localUniqueCache))
-
-            if (stats.gold != 0f && observingCiv.goldenAges.isGoldenAge())
-                stats.gold++
-        }
-        if (isCityCenter()) {
-            if (stats.food < 2) stats.food = 2f
-            if (stats.production < 1) stats.production = 1f
-        }
-
-        for ((stat, value) in stats)
-            if (value < 0f) stats[stat] = 0f
-
-        for ((stat, value) in getTilePercentageStats(observingCiv, city)) {
-            stats[stat] *= value.toPercent()
-        }
-
-        return stats
-    }
-
-    // Only gets the tile percentage bonus, not the improvement percentage bonus
-    @Suppress("MemberVisibilityCanBePrivate")
-    fun getTilePercentageStats(observingCiv: CivilizationInfo?, city: CityInfo?): Stats {
-        val stats = Stats()
-        val stateForConditionals = StateForConditionals(civInfo = observingCiv, cityInfo = city, tile = this)
-
-        if (city != null) {
-            for (unique in city.getMatchingUniques(UniqueType.StatPercentFromObject, stateForConditionals)) {
-                val tileFilter = unique.params[2]
-                if (matchesTerrainFilter(tileFilter, observingCiv))
-                    stats[Stat.valueOf(unique.params[1])] += unique.params[0].toFloat()
-            }
-
-            for (unique in city.getMatchingUniques(UniqueType.AllStatsPercentFromObject, stateForConditionals)) {
-                val tileFilter = unique.params[1]
-                if (!matchesTerrainFilter(tileFilter, observingCiv)) continue
-                val statPercentage = unique.params[0].toFloat()
-                for (stat in Stat.values())
-                    stats[stat] += statPercentage
-            }
-
-        } else if (observingCiv != null) {
-            for (unique in observingCiv.getMatchingUniques(UniqueType.StatPercentFromObject, stateForConditionals)) {
-                val tileFilter = unique.params[2]
-                if (matchesTerrainFilter(tileFilter, observingCiv))
-                    stats[Stat.valueOf(unique.params[1])] += unique.params[0].toFloat()
-            }
-
-            for (unique in observingCiv.getMatchingUniques(UniqueType.AllStatsPercentFromObject, stateForConditionals)) {
-                val tileFilter = unique.params[1]
-                if (!matchesTerrainFilter(tileFilter, observingCiv)) continue
-                val statPercentage = unique.params[0].toFloat()
-                for (stat in Stat.values())
-                    stats[stat] += statPercentage
-            }
-        }
-
-        return stats
-    }
-
-    fun getTileStartScore(): Float {
-        var sum = 0f
-        for (tile in getTilesInDistance(2)) {
-            val tileYield = tile.getTileStartYield(tile == this)
-            sum += tileYield
-            if (tile in neighbors)
-                sum += tileYield
-        }
-
-        if (isHill())
-            sum -= 2f
-        if (isAdjacentToRiver())
-            sum += 2f
-        if (neighbors.any { it.baseTerrain == Constants.mountain })
-            sum += 2f
-        if (isCoastalTile())
-            sum += 3f
-        if (!isCoastalTile() && neighbors.any { it.isCoastalTile() })
-            sum -= 7f
-
-        return sum
-    }
-
-    private fun getTileStartYield(isCenter: Boolean): Float {
-        var stats = getBaseTerrain().cloneStats()
-
-        for (terrainFeatureBase in terrainFeatureObjects) {
-            if (terrainFeatureBase.overrideStats)
-                stats = terrainFeatureBase.cloneStats()
-            else
-                stats.add(terrainFeatureBase)
-        }
-        if (resource != null) stats.add(tileResource)
-
-        if (stats.production < 0) stats.production = 0f
-        if (isCenter) {
-            if (stats.food < 2) stats.food = 2f
-            if (stats.production < 1) stats.production = 1f
-        }
-
-        return stats.food + stats.production + stats.gold
     }
 
     // For dividing the map into Regions to determine start locations

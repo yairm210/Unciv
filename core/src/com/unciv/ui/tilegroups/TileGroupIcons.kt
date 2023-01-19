@@ -23,7 +23,7 @@ class TileGroupIcons(val tileGroup: TileGroup) {
 
     var improvementIcon: Actor? = null
     var populationIcon: Image? = null //reuse for acquire icon
-    val startingLocationIcons = mutableListOf<Actor>()
+    private val startingLocationIcons = mutableListOf<Actor>()
 
     var civilianUnitIcon: UnitGroup? = null
     var militaryUnitIcon: UnitGroup? = null
@@ -142,7 +142,7 @@ class TileGroupIcons(val tileGroup: TileGroup) {
 
         if (showTileYields) {
             // Setting up YieldGroup Icon
-            tileGroup.tileYieldGroup.setStats(tileGroup.tileInfo.getTileStats(viewingCiv))
+            tileGroup.tileYieldGroup.setStats(tileGroup.tileInfo.stats.getTileStats(viewingCiv))
             tileGroup.tileYieldGroup.setOrigin(Align.center)
             tileGroup.tileYieldGroup.setScale(0.7f)
             tileGroup.tileYieldGroup.toFront()

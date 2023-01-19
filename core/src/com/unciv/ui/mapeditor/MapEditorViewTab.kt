@@ -6,11 +6,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.tile.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.tile.TileInfo
 import com.unciv.models.Counter
-import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaScreen
@@ -158,7 +158,7 @@ class MapEditorViewTab(
         editorScreen.tileClickHandler = null
     }
 
-    fun tileClickHandler(tile: TileInfo) {
+    private fun tileClickHandler(tile: TileInfo) {
         if (tileDataCell == null) return
 
         val lines = ArrayList<FormattedLine>()
@@ -169,7 +169,7 @@ class MapEditorViewTab(
         lines.addAll(tile.toMarkup(null))
 
         val stats = try {
-            tile.getTileStats(null, mockCiv)
+            tile.stats.getTileStats(null, mockCiv)
         } catch (ex: Exception) {
             // Maps aren't always fixed to remove dead references... like resource "Gold"
             if (ex.message != null)
