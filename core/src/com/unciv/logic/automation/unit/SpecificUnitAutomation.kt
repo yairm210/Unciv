@@ -263,7 +263,7 @@ object SpecificUnitAutomation {
             val applicableTiles = city.getWorkableTiles().filter {
                 it.isLand && it.resource == null && !it.isCityCenter()
                         && (unit.currentTile == it || unit.movement.canMoveTo(it))
-                        && !it.containsGreatImprovement() && it.canBuildImprovement(improvement, unit.civInfo)
+                        && !it.containsGreatImprovement() && it.improvementFunctions.canBuildImprovement(improvement, unit.civInfo)
             }
             if (applicableTiles.none()) continue
 

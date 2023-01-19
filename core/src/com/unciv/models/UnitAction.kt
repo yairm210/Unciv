@@ -1,14 +1,11 @@
 package com.unciv.models
 
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.unciv.Constants
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.KeyCharAndCode
-import com.unciv.ui.utils.extensions.surroundWithCircle
-import com.unciv.ui.utils.extensions.surroundWithThinCircle
 
 
 /** Unit Actions - class - carries dynamic data and actual execution.

@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.tile.ImprovementBuildingProblem
 import com.unciv.logic.map.tile.TileInfo
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.LocalUniqueCache
@@ -29,13 +30,14 @@ class ImprovementPickerScreen(
     companion object {
         /** Set of resolvable improvement building problems that this class knows how to report. */
         private val reportableProblems = setOf(
-            TileInfo.ImprovementBuildingProblem.MissingTech,
-            TileInfo.ImprovementBuildingProblem.NotJustOutsideBorders,
-            TileInfo.ImprovementBuildingProblem.OutsideBorders,
-            TileInfo.ImprovementBuildingProblem.MissingResources)
+            ImprovementBuildingProblem.MissingTech,
+            ImprovementBuildingProblem.NotJustOutsideBorders,
+            ImprovementBuildingProblem.OutsideBorders,
+            ImprovementBuildingProblem.MissingResources
+        )
 
         /** Return true if we can report improvements associated with the [problems] (or there are no problems for it at all). */
-        fun canReport(problems: Collection<TileInfo.ImprovementBuildingProblem>) = problems.all { it in reportableProblems }
+        fun canReport(problems: Collection<ImprovementBuildingProblem>) = problems.all { it in reportableProblems }
     }
 
     private var selectedImprovement: TileImprovement? = null
@@ -89,10 +91,10 @@ class ImprovementPickerScreen(
             if (improvement.name == tileInfo.improvement) continue // also checked by canImprovementBeBuiltHere, but after more expensive tests
             if (!unit.canBuildImprovement(improvement)) continue
 
-            var unbuildableBecause = tileInfo.getImprovementBuildingProblems(improvement, currentPlayerCiv).toSet()
+            var unbuildableBecause = tileInfo.improvementFunctions.getImprovementBuildingProblems(improvement, currentPlayerCiv).toSet()
             if (!canReport(unbuildableBecause)) {
                 // Try after pretending to have removed the top terrain layer.
-                unbuildableBecause = tileInfoWithoutLastTerrain.getImprovementBuildingProblems(improvement, currentPlayerCiv).toSet()
+                unbuildableBecause = tileInfoWithoutLastTerrain.improvementFunctions.getImprovementBuildingProblems(improvement, currentPlayerCiv).toSet()
                 if (!canReport(unbuildableBecause)) continue
                 else suggestRemoval = true
             }
@@ -107,7 +109,7 @@ class ImprovementPickerScreen(
                     // *other* improvements with same shortcutKey
                     .filter { it.shortcutKey == improvement.shortcutKey && it != improvement }
                     // civ can build it (checks tech researched)
-                    .filter { tileInfo.canBuildImprovement(it, currentPlayerCiv) }
+                    .filter { tileInfo.improvementFunctions.canBuildImprovement(it, currentPlayerCiv) }
                     // is technologically more advanced
                     .filter { getRequiredTechColumn(it) > techLevel }
                     .any()
@@ -131,13 +133,13 @@ class ImprovementPickerScreen(
 
             if (suggestRemoval)
                 proposedSolutions.add("${Constants.remove}[${tileInfo.getLastTerrain().name}] first")
-            if (TileInfo.ImprovementBuildingProblem.MissingTech in unbuildableBecause)
+            if (ImprovementBuildingProblem.MissingTech in unbuildableBecause)
                 proposedSolutions.add("Research [${improvement.techRequired}] first")
-            if (TileInfo.ImprovementBuildingProblem.NotJustOutsideBorders in unbuildableBecause)
+            if (ImprovementBuildingProblem.NotJustOutsideBorders in unbuildableBecause)
                 proposedSolutions.add("Have this tile close to your borders")
-            if (TileInfo.ImprovementBuildingProblem.OutsideBorders in unbuildableBecause)
+            if (ImprovementBuildingProblem.OutsideBorders in unbuildableBecause)
                 proposedSolutions.add("Have this tile inside your empire")
-            if (TileInfo.ImprovementBuildingProblem.MissingResources in unbuildableBecause) {
+            if (ImprovementBuildingProblem.MissingResources in unbuildableBecause) {
                 proposedSolutions.addAll(improvement.getMatchingUniques(UniqueType.ConsumesResources).filter {
                     currentPlayerCiv.getCivResourcesByName()[it.params[1]]!! < it.params[0].toInt()
                 }.map { "Acquire more [$it]" })

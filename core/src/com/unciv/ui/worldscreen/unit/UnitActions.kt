@@ -150,7 +150,7 @@ object UnitActions {
 
         val improvementName = tile.tileResource.getImprovingImprovement(tile, unit.civInfo) ?: return null
         val improvement = tile.ruleset.tileImprovements[improvementName] ?: return null
-        if (!tile.canBuildImprovement(improvement, unit.civInfo)) return null
+        if (!tile.improvementFunctions.canBuildImprovement(improvement, unit.civInfo)) return null
 
         return UnitAction(UnitActionType.Create, "Create [$improvementName]",
             action = {
@@ -544,7 +544,7 @@ object UnitActions {
         val couldConstruct = unit.currentMovement > 0
             && !tile.isCityCenter()
             && unit.civInfo.gameInfo.ruleSet.tileImprovements.values.any {
-                ImprovementPickerScreen.canReport(tile.getImprovementBuildingProblems(it, unit.civInfo).toSet())
+                ImprovementPickerScreen.canReport(tile.improvementFunctions.getImprovementBuildingProblems(it, unit.civInfo).toSet())
                 && unit.canBuildImprovement(it)
             }
 
@@ -841,7 +841,7 @@ object UnitActions {
                 }.takeIf {
                     resourcesAvailable
                     && unit.currentMovement > 0f
-                    && tile.canBuildImprovement(improvement, unit.civInfo)
+                    && tile.improvementFunctions.canBuildImprovement(improvement, unit.civInfo)
                     // Next test is to prevent interfering with UniqueType.CreatesOneImprovement -
                     // not pretty, but users *can* remove the building from the city queue an thus clear this:
                     && !tile.isMarkedForCreatesOneImprovement()

@@ -331,11 +331,11 @@ class WorkerAutomation(
         if (tile.improvement == null || junkImprovement == true) {
             if (tile.improvementInProgress != null && unit.canBuildImprovement(tile.getTileImprovementInProgress()!!, tile)) return true
             val chosenImprovement = chooseImprovement(unit, tile)
-            if (chosenImprovement != null && tile.canBuildImprovement(chosenImprovement, civInfo) && unit.canBuildImprovement(chosenImprovement, tile)) return true
+            if (chosenImprovement != null && tile.improvementFunctions.canBuildImprovement(chosenImprovement, civInfo) && unit.canBuildImprovement(chosenImprovement, tile)) return true
         } else if (!tile.containsGreatImprovement() && tile.hasViewableResource(civInfo)
             && tile.tileResource.isImprovedBy(tile.improvement!!)
             && (chooseImprovement(unit, tile) // if the chosen improvement is not null and buildable
-                .let { it != null && tile.canBuildImprovement(it, civInfo) && unit.canBuildImprovement(it, tile)}))
+                .let { it != null && tile.improvementFunctions.canBuildImprovement(it, civInfo) && unit.canBuildImprovement(it, tile)}))
             return true
         return false // couldn't find anything to construct here
     }
@@ -365,7 +365,7 @@ class WorkerAutomation(
 
         val potentialTileImprovements = ruleSet.tileImprovements.filter {
             unit.canBuildImprovement(it.value, tile)
-                    && tile.canBuildImprovement(it.value, civInfo)
+                    && tile.improvementFunctions.canBuildImprovement(it.value, civInfo)
                     && (it.value.uniqueTo == null || it.value.uniqueTo == unit.civInfo.civName)
         }
         if (potentialTileImprovements.isEmpty()) return null
@@ -405,7 +405,7 @@ class WorkerAutomation(
             // While AI sucks in strategical placement of forts, allow a human does it manually
             !civInfo.isHuman() && evaluateFortPlacement(tile, civInfo,false) -> Constants.fort
             // I think we can assume that the unique improvement is better
-            uniqueImprovement != null && tile.canBuildImprovement(uniqueImprovement, civInfo)
+            uniqueImprovement != null && tile.improvementFunctions.canBuildImprovement(uniqueImprovement, civInfo)
                 -> uniqueImprovement.name
 
             lastTerrain.let {

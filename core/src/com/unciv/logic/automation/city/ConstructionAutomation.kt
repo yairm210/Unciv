@@ -154,7 +154,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
             .any { tile ->
                 tile.hasViewableResource(civInfo) && tile.improvement == null && tile.getOwner() == civInfo
                 && tile.tileResource.getImprovements().any {
-                    tile.canBuildImprovement(tile.ruleset.tileImprovements[it]!!, civInfo)
+                    tile.improvementFunctions.canBuildImprovement(tile.ruleset.tileImprovements[it]!!, civInfo)
                 }
             }
         ) return

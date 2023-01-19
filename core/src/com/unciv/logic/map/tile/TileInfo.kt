@@ -9,8 +9,8 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.MapResources
-import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
@@ -38,6 +38,9 @@ open class TileInfo : IsPartOfGameInfoSerialization {
 
     @Transient
     lateinit var ruleset: Ruleset  // a tile can be a tile with a ruleset, even without a map.
+
+    @Transient
+    public val improvementFunctions = TileInfoImprovementFunctions(this)
 
     @Transient
     private var isCityCenterInternal = false
@@ -749,157 +752,6 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         return (neighbors + this).any { neighbor -> neighbor.matchesFilter(terrainFilter) }
     }
 
-    /** Returns true if the [improvement] can be built on this [TileInfo] */
-    fun canBuildImprovement(improvement: TileImprovement, civInfo: CivilizationInfo): Boolean = getImprovementBuildingProblems(improvement, civInfo).none()
-
-    enum class ImprovementBuildingProblem {
-        WrongCiv, MissingTech, Unbuildable, NotJustOutsideBorders, OutsideBorders, UnmetConditional, Obsolete, MissingResources, Other
-    }
-
-    /** Generates a sequence of reasons that prevent building given [improvement].
-     *  If the sequence is empty, improvement can be built immediately.
-     */
-    fun getImprovementBuildingProblems(improvement: TileImprovement, civInfo: CivilizationInfo): Sequence<ImprovementBuildingProblem> = sequence {
-        val stateForConditionals = StateForConditionals(civInfo, tile = this@TileInfo)
-
-        if (improvement.uniqueTo != null && improvement.uniqueTo != civInfo.civName)
-            yield(ImprovementBuildingProblem.WrongCiv)
-        if (improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!))
-            yield(ImprovementBuildingProblem.MissingTech)
-        if (improvement.hasUnique(UniqueType.Unbuildable, stateForConditionals))
-            yield(ImprovementBuildingProblem.Unbuildable)
-
-        if (getOwner() != civInfo && !improvement.hasUnique(UniqueType.CanBuildOutsideBorders, stateForConditionals)) {
-            if (!improvement.hasUnique(UniqueType.CanBuildJustOutsideBorders, stateForConditionals))
-                yield(ImprovementBuildingProblem.OutsideBorders)
-            else if (neighbors.none { it.getOwner() == civInfo })
-                yield(ImprovementBuildingProblem.NotJustOutsideBorders)
-        }
-
-        if (improvement.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals).any {
-                !it.conditionalsApply(stateForConditionals)
-            })
-            yield(ImprovementBuildingProblem.UnmetConditional)
-
-        if (improvement.getMatchingUniques(UniqueType.ObsoleteWith, stateForConditionals).any {
-                civInfo.tech.isResearched(it.params[0])
-            })
-            yield(ImprovementBuildingProblem.Obsolete)
-
-        if (improvement.getMatchingUniques(UniqueType.ConsumesResources, stateForConditionals).any {
-                civInfo.getCivResourcesByName()[it.params[1]]!! < it.params[0].toInt()
-            })
-            yield(ImprovementBuildingProblem.MissingResources)
-
-        val knownFeatureRemovals = ruleset.tileImprovements.values
-            .filter { rulesetImprovement ->
-                rulesetImprovement.name.startsWith(Constants.remove)
-                && RoadStatus.values().none { it.removeAction == rulesetImprovement.name }
-                && (rulesetImprovement.techRequired == null || civInfo.tech.isResearched(rulesetImprovement.techRequired!!))
-            }
-
-        if (!canImprovementBeBuiltHere(improvement, hasViewableResource(civInfo), knownFeatureRemovals, stateForConditionals))
-            // There are way too many conditions in that functions, besides, they are not interesting
-            // at least for the current usecases. Improve if really needed.
-            yield(ImprovementBuildingProblem.Other)
-    }
-
-    /** Without regards to what CivInfo it is, a lot of the checks are just for the improvement on the tile.
-     *  Doubles as a check for the map editor.
-     */
-    private fun canImprovementBeBuiltHere(
-        improvement: TileImprovement,
-        resourceIsVisible: Boolean = resource != null,
-        knownFeatureRemovals: List<TileImprovement>? = null,
-        stateForConditionals: StateForConditionals = StateForConditionals(tile=this)
-    ): Boolean {
-
-        fun TileImprovement.canBeBuildOnThisUnbuildableTerrain(
-            knownFeatureRemovals: List<TileImprovement>? = null,
-        ): Boolean {
-            val topTerrain = getLastTerrain()
-            // We can build if we are specifically allowed to build on this terrain
-            if (isAllowedOnFeature(topTerrain.name)) return true
-
-            // Otherwise, we can if this improvement removes the top terrain
-            if (!hasUnique(UniqueType.RemovesFeaturesIfBuilt, stateForConditionals)) return false
-            val removeAction = ruleset.tileImprovements[Constants.remove + topTerrain.name] ?: return false
-            // and we have the tech to remove that top terrain
-            if (removeAction.techRequired != null && (knownFeatureRemovals == null || removeAction !in knownFeatureRemovals)) return false
-            // and we can build it on the tile without the top terrain
-            val clonedTile = this@TileInfo.clone()
-            clonedTile.removeTerrainFeature(topTerrain.name)
-            return clonedTile.canImprovementBeBuiltHere(improvement, resourceIsVisible, knownFeatureRemovals, stateForConditionals)
-        }
-
-        return when {
-            improvement.name == this.improvement -> false
-            isCityCenter() -> false
-
-            // First we handle a few special improvements
-
-            // Can only cancel if there is actually an improvement being built
-            improvement.name == Constants.cancelImprovementOrder -> (this.improvementInProgress != null)
-            // Can only remove roads if that road is actually there
-            RoadStatus.values().any { it.removeAction == improvement.name } -> roadStatus.removeAction == improvement.name
-            // Can only remove features if that feature is actually there
-            improvement.name.startsWith(Constants.remove) -> terrainFeatures.any { it == improvement.name.removePrefix(Constants.remove) }
-            // Can only build roads if on land and they are better than the current road
-            RoadStatus.values().any { it.name == improvement.name } -> !isWater && RoadStatus.valueOf(improvement.name) > roadStatus
-
-            // Then we check if there is any reason to not allow this improvement to be build
-
-            // Can't build if there is already an irremovable improvement here
-            this.improvement != null && getTileImprovement()!!.hasUnique(UniqueType.Irremovable, stateForConditionals) -> false
-
-            // Can't build if this terrain is unbuildable, except when we are specifically allowed to
-            getLastTerrain().unbuildable && !improvement.canBeBuildOnThisUnbuildableTerrain(knownFeatureRemovals) -> false
-
-            // Can't build if any terrain specifically prevents building this improvement
-            getTerrainMatchingUniques(UniqueType.RestrictedBuildableImprovements, stateForConditionals).any {
-                unique -> !improvement.matchesFilter(unique.params[0])
-            } -> false
-
-            // Can't build if the improvement specifically prevents building on some present feature
-            improvement.getMatchingUniques(UniqueType.CannotBuildOnTile, stateForConditionals).any {
-                unique -> matchesTerrainFilter(unique.params[0])
-            } -> false
-
-            // Can't build if an improvement is only allowed to be built on specific tiles and this is not one of them
-            // If multiple uniques of this type exists, we want all to match (e.g. Hill _and_ Forest would be meaningful)
-            improvement.getMatchingUniques(UniqueType.CanOnlyBeBuiltOnTile, stateForConditionals).let {
-                it.any() && it.any { unique -> !matchesTerrainFilter(unique.params[0]) }
-            } -> false
-
-            // Can't build if the improvement requires an adjacent terrain that is not present
-            improvement.getMatchingUniques(UniqueType.MustBeNextTo, stateForConditionals).any {
-                !isAdjacentTo(it.params[0])
-            } -> false
-
-            // Can't build it if it is only allowed to improve resources and it doesn't improve this resource
-            improvement.hasUnique(UniqueType.CanOnlyImproveResource, stateForConditionals) && (
-                !resourceIsVisible || !tileResource.isImprovedBy(improvement.name)
-            ) -> false
-
-            // At this point we know this is a normal improvement and that there is no reason not to allow it to be built.
-
-            // Lastly we check if the improvement may be built on this terrain or resource
-            improvement.canBeBuiltOn(getLastTerrain().name) -> true
-            isLand && improvement.canBeBuiltOn("Land") -> true
-            isWater && improvement.canBeBuiltOn("Water") -> true
-            // DO NOT reverse this &&. isAdjacentToFreshwater() is a lazy which calls a function, and reversing it breaks the tests.
-            improvement.hasUnique(UniqueType.ImprovementBuildableByFreshWater, stateForConditionals)
-                && isAdjacentTo(Constants.freshWater) -> true
-
-            // I don't particularly like this check, but it is required to build mines on non-hill resources
-            resourceIsVisible && tileResource.isImprovedBy(improvement.name) -> true
-            // DEPRECATED since 4.0.14, REMOVE SOON:
-            isLand && improvement.terrainsCanBeBuiltOn.isEmpty() && !improvement.hasUnique(UniqueType.CanOnlyImproveResource) -> true
-            // No reason this improvement should be built here, so can't build it
-            else -> false
-        }
-    }
-
     /** Implements [UniqueParameterType.TileFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TileFilter] */
     fun matchesFilter(filter: String, civInfo: CivilizationInfo? = null): Boolean {
         if (matchesTerrainFilter(filter, civInfo)) return true
@@ -1098,7 +950,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
                 else
                     FormattedLine(resource!!, link="Resource/$resource")
         if (resource != null && viewingCiv != null && hasViewableResource(viewingCiv)) {
-            val resourceImprovement = tileResource.getImprovements().firstOrNull { canBuildImprovement(ruleset.tileImprovements[it]!!, viewingCiv) }
+            val resourceImprovement = tileResource.getImprovements().firstOrNull { improvementFunctions.canBuildImprovement(ruleset.tileImprovements[it]!!, viewingCiv) }
             val tileImprovement = ruleset.tileImprovements[resourceImprovement]
             if (tileImprovement?.techRequired != null
                 && !viewingCiv.tech.isResearched(tileImprovement.techRequired!!)) {
@@ -1428,7 +1280,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
             return
         }
         changeImprovement(null) // Unset, and check if it can be reset. If so, do it, if not, invalid.
-        if (canImprovementBeBuiltHere(improvementObject, stateForConditionals = StateForConditionals.IgnoreConditionals))
+        if (improvementFunctions.canImprovementBeBuiltHere(improvementObject, stateForConditionals = StateForConditionals.IgnoreConditionals))
             changeImprovement(improvementObject.name)
     }
 

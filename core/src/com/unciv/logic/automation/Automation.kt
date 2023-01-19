@@ -246,7 +246,7 @@ object Automation {
         if (!construction.hasCreateOneImprovementUnique()) return true  // redundant but faster???
         val improvement = construction.getImprovementToCreate(cityInfo.getRuleset()) ?: return true
         return cityInfo.getTiles().any {
-            it.canBuildImprovement(improvement, civInfo)
+            it.improvementFunctions.canBuildImprovement(improvement, civInfo)
         }
     }
 
@@ -338,7 +338,7 @@ object Automation {
     /** Support [UniqueType.CreatesOneImprovement] unique - find best tile for placement automation */
     fun getTileForConstructionImprovement(cityInfo: CityInfo,  improvement: TileImprovement): TileInfo? {
         return cityInfo.getTiles().filter {
-            it.canBuildImprovement(improvement, cityInfo.civInfo)
+            it.improvementFunctions.canBuildImprovement(improvement, cityInfo.civInfo)
         }.maxByOrNull {
             rankTileForCityWork(it, cityInfo, cityInfo.cityStats.currentCityStats)
         }
