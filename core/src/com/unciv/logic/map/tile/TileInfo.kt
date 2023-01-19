@@ -756,8 +756,6 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     }
 
     fun setTerrainTransients() {
-        // Uninitialized tilemap - when you're displaying a tile in the civilopedia or map editor
-        if (::tileMap.isInitialized) convertHillToTerrainFeature()
         if (!ruleset.terrains.containsKey(baseTerrain))
             throw Exception("Terrain $baseTerrain does not exist in ruleset!")
         baseTerrainObject = ruleset.terrains[baseTerrain]!!
@@ -938,69 +936,6 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         stopWorkingOnImprovement()
     }
 
-    fun normalizeToRuleset(ruleset: Ruleset) {
-        if (naturalWonder != null && !ruleset.terrains.containsKey(naturalWonder))
-            naturalWonder = null
-        if (naturalWonder != null) {
-            baseTerrain = this.getNaturalWonder().turnsInto!!
-            setTerrainFeatures(listOf())
-            resource = null
-            changeImprovement(null)
-        }
-
-        if (!ruleset.terrains.containsKey(baseTerrain))
-            baseTerrain = ruleset.terrains.values.first { it.type == TerrainType.Land && !it.impassable }.name
-
-        val newFeatures = ArrayList<String>()
-        for (terrainFeature in terrainFeatures) {
-            val terrainFeatureObject = ruleset.terrains[terrainFeature]
-                ?: continue
-            if (terrainFeatureObject.occursOn.isNotEmpty() && !terrainFeatureObject.occursOn.contains(baseTerrain))
-                continue
-            newFeatures.add(terrainFeature)
-        }
-        if (newFeatures.size != terrainFeatures.size)
-            setTerrainFeatures(newFeatures)
-
-        if (resource != null && !ruleset.tileResources.containsKey(resource)) resource = null
-        if (resource != null) {
-            val resourceObject = ruleset.tileResources[resource]!!
-            if (resourceObject.terrainsCanBeFoundOn.none { it == baseTerrain || terrainFeatures.contains(it) })
-                resource = null
-        }
-
-        // If we're checking this at gameInfo.setTransients, we can't check the top terrain
-        if (improvement != null && ::baseTerrainObject.isInitialized) normalizeTileImprovement(ruleset)
-        if (isWater || isImpassible())
-            removeRoad()
-    }
-
-    private fun normalizeTileImprovement(ruleset: Ruleset) {
-        val improvementObject = ruleset.tileImprovements[improvement]
-        if (improvementObject == null) {
-            changeImprovement(null)
-            return
-        }
-        changeImprovement(null) // Unset, and check if it can be reset. If so, do it, if not, invalid.
-        if (improvementFunctions.canImprovementBeBuiltHere(improvementObject, stateForConditionals = StateForConditionals.IgnoreConditionals))
-            changeImprovement(improvementObject.name)
-    }
-
-    private fun convertHillToTerrainFeature() {
-        if (baseTerrain == Constants.hill &&
-                ruleset.terrains[Constants.hill]?.type == TerrainType.TerrainFeature) {
-            val mostCommonBaseTerrain = neighbors.filter { it.isLand && !it.isImpassible() }
-                    .groupBy { it.baseTerrain }.maxByOrNull { it.value.size }
-            baseTerrain = mostCommonBaseTerrain?.key ?: Constants.grassland
-            //We have to add hill as first terrain feature
-            val copy = terrainFeatures.toTypedArray()
-            val newTerrainFeatures = ArrayList<String>()
-            newTerrainFeatures.add(Constants.hill)
-            newTerrainFeatures.addAll(copy)
-            // We set this directly since this is BEFORE the initial setTerrainFeatures
-            terrainFeatures = newTerrainFeatures
-        }
-    }
 
     /**
      * Assign a continent ID to this tile.
