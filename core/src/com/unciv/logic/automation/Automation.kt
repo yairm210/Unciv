@@ -5,9 +5,9 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.BFS
+import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.TileInfo
-import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.tile.ResourceType
@@ -389,7 +389,7 @@ object Automation {
 
         // Improvements are good: less points
         if (tile.improvement != null &&
-            tile.getImprovementStats(
+            tile.improvementFunctions.getImprovementStats(
                 tile.getTileImprovement()!!,
                 cityInfo.civInfo,
                 cityInfo,

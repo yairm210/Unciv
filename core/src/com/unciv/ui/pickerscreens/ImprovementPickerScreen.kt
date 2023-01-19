@@ -155,7 +155,7 @@ class ImprovementPickerScreen(
             val statIcons = getStatIconsTable(provideResource, removeImprovement)
 
             // get benefits of the new improvement
-            val stats = tileInfo.getImprovementStats(
+            val stats = tileInfo.improvementFunctions.getImprovementStats(
                 improvement,
                 currentPlayerCiv,
                 tileInfo.getCity(),
@@ -164,7 +164,7 @@ class ImprovementPickerScreen(
             // subtract the benefits of the replaced improvement, if any
             val existingImprovement = tileInfo.getTileImprovement()
             if (existingImprovement != null && removeImprovement) {
-                val existingStats = tileInfo.getImprovementStats(
+                val existingStats = tileInfo.improvementFunctions.getImprovementStats(
                     existingImprovement,
                     currentPlayerCiv,
                     tileInfo.getCity(),

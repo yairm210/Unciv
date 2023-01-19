@@ -196,13 +196,13 @@ class CityScreen(
         fun isExistingImprovementValuable(tileInfo: TileInfo, improvementToPlace: TileImprovement): Boolean {
             if (tileInfo.improvement == null) return false
             val civInfo = city.civInfo
-            val existingStats = tileInfo.getImprovementStats(
+            val existingStats = tileInfo.improvementFunctions.getImprovementStats(
                 tileInfo.getTileImprovement()!!,
                 civInfo,
                 city,
                 cityUniqueCache
             )
-            val replacingStats = tileInfo.getImprovementStats(
+            val replacingStats = tileInfo.improvementFunctions.getImprovementStats(
                 improvementToPlace,
                 civInfo,
                 city,
