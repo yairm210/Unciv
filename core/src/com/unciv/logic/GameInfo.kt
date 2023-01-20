@@ -220,7 +220,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     fun isReligionEnabled(): Boolean {
         val religionDisabledByRuleset = (ruleSet.eras[gameParameters.startingEra]!!.hasUnique(UniqueType.DisablesReligion)
                 || ruleSet.modOptions.uniques.contains(ModOptionsConstants.disableReligion))
-        return !religionDisabledByRuleset && gameParameters.religionEnabled
+        return !religionDisabledByRuleset
     }
 
     fun isEspionageEnabled(): Boolean {

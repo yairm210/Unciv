@@ -64,7 +64,6 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
         parameters.ragingBarbarians = ragingBarbarians
         parameters.oneCityChallenge = oneCityChallenge
         parameters.nuclearWeaponsEnabled = nuclearWeaponsEnabled
-        parameters.religionEnabled = religionEnabled
         parameters.victoryTypes = ArrayList(victoryTypes)
         parameters.startingEra = startingEra
         parameters.isOnlineMultiplayer = isOnlineMultiplayer
