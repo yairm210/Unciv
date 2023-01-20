@@ -82,6 +82,12 @@ class MapParametersTable(
     private val advancedSliders = HashMap<UncivSlider, ()->Float>()
 
     init {
+        update()
+    }
+
+    fun update() {
+        clear()
+
         skin = BaseScreen.skin
         defaults().pad(5f, 10f)
         if (mapGeneratedMainType == MapGeneratedMainType.randomGenerated) {
@@ -396,14 +402,20 @@ class MapParametersTable(
         addSlider("Water level", {mapParameters.waterThreshold}, -0.1f, 0.1f)
         { mapParameters.waterThreshold = it }
 
-        val randomPoolButton = "Random nations pool".toTextButton()
+        val randomNationsPoolCheckbox = "Random nations pool".toCheckBox(mapParameters.enableRandomNationsPool) {
+            mapParameters.enableRandomNationsPool = it
+            update()
+        }
+        table.add(randomNationsPoolCheckbox).row()
+
+        val randomPoolButton = "Select nations".toTextButton()
         randomPoolButton.onClick {
             if (previousScreen != null) {
-                RandomNationPickerPopup(previousScreen).open()
+                RandomNationPickerPopup(previousScreen, mapParameters).open()
             }
         }
-        table.add(randomPoolButton).colspan(2).padTop(10f).row()
-
+        if (mapParameters.enableRandomNationsPool)
+            table.add(randomPoolButton).colspan(2).padTop(10f).row()
 
         val resetToDefaultButton = "Reset to defaults".toTextButton()
         resetToDefaultButton.onClick {
@@ -417,7 +429,8 @@ class MapParametersTable(
 }
 
 private class RandomNationPickerPopup(
-    previousScreen: IPreviousScreen
+    previousScreen: IPreviousScreen,
+    val mapParameters: MapParameters
 ) : Popup(previousScreen as BaseScreen) {
     companion object {
         // These are used for the Close/OK buttons in the lower left/right corners:
@@ -426,6 +439,7 @@ private class RandomNationPickerPopup(
         const val buttonsOffsetFromEdge = 5f
         val buttonsBackColor: Color = Color.BLACK.cpy().apply { a = 0.67f }
     }
+
     val blockWidth: Float = 0f
     val civBlocksWidth = if(blockWidth <= 10f) previousScreen.stage.width / 3 - 5f else blockWidth
 
@@ -528,8 +542,8 @@ private class RandomNationPickerPopup(
         updateNationListTable()
     }
 
-    private fun returnSelected(): ArrayList<Nation> {
+    private fun returnSelected() {
         close()
-        return selectedNations
+        mapParameters.randomNations = selectedNations
     }
 }
