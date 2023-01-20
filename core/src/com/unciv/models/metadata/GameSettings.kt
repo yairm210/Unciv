@@ -217,6 +217,7 @@ enum class GameSetting(
 
     /** **Warning:** It is the obligation of the caller to select the same type [T] that the [kClass] of this property has */
     fun <T> getProperty(settings: GameSettings): KMutableProperty0<T> {
+        @Suppress("UNCHECKED_CAST")
         return propertyGetter(settings) as KMutableProperty0<T>
     }
 }
