@@ -33,8 +33,6 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var oneCityChallenge = false
     var godMode = false
     var nuclearWeaponsEnabled = true
-    @Deprecated("As of 4.2.3")
-    var religionEnabled = true
     var espionageEnabled = false
     var noStartBias = false
 
@@ -64,7 +62,6 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
         parameters.ragingBarbarians = ragingBarbarians
         parameters.oneCityChallenge = oneCityChallenge
         parameters.nuclearWeaponsEnabled = nuclearWeaponsEnabled
-        parameters.religionEnabled = religionEnabled
         parameters.victoryTypes = ArrayList(victoryTypes)
         parameters.startingEra = startingEra
         parameters.isOnlineMultiplayer = isOnlineMultiplayer

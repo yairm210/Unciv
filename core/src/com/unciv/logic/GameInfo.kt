@@ -20,8 +20,8 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.managers.TechManager
 import com.unciv.logic.civilization.managers.TurnManager
 import com.unciv.logic.map.CityDistanceData
-import com.unciv.logic.map.tile.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.tile.TileInfo
 import com.unciv.models.Religion
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.ModOptionsConstants
@@ -220,7 +220,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     fun isReligionEnabled(): Boolean {
         val religionDisabledByRuleset = (ruleSet.eras[gameParameters.startingEra]!!.hasUnique(UniqueType.DisablesReligion)
                 || ruleSet.modOptions.uniques.contains(ModOptionsConstants.disableReligion))
-        return !religionDisabledByRuleset && gameParameters.religionEnabled
+        return !religionDisabledByRuleset
     }
 
     fun isEspionageEnabled(): Boolean {
