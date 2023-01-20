@@ -412,7 +412,9 @@ class MapParametersTable(
         val randomPoolButton = "Select nations".toTextButton()
         randomPoolButton.onClick {
             if (previousScreen != null) {
-                RandomNationPickerPopup(previousScreen, mapParameters).open()
+                val popup = RandomNationPickerPopup(previousScreen, mapParameters)
+                popup.open()
+                popup.update()
             }
         }
         if (mapParameters.enableRandomNationsPool)
@@ -449,9 +451,9 @@ private class RandomNationPickerPopup(
     private val partHeight = stageToShowOn.height * (if (stageToShowOn.isNarrowerThan4to3()) 0.45f else 0.8f)
     private val nationListTable = Table()
     private val nationListScroll = AutoScrollPane(nationListTable)
-    private val nationsListTable = Table()
-    private val nationsListScroll = AutoScrollPane(nationsListTable)
-    private var selectedNations = arrayListOf<Nation>()
+    private val selectedNationsListTable = Table()
+    private val selectedNationsListScroll = AutoScrollPane(selectedNationsListTable)
+    private var selectedNations = mapParameters.randomNations
     var nations = arrayListOf<Nation>()
 
 
@@ -463,8 +465,8 @@ private class RandomNationPickerPopup(
         add(nationListScroll).size( civBlocksWidth + 10f, partHeight )
         // +10, because the nation table has a 5f pad, for a total of +10f
         if (stageToShowOn.isNarrowerThan4to3()) row()
-        nationsListScroll.setOverscroll(false, false)
-        add(nationsListScroll).size(civBlocksWidth + 10f, partHeight) // Same here, see above
+        selectedNationsListScroll.setOverscroll(false, false)
+        add(selectedNationsListScroll).size(civBlocksWidth + 10f, partHeight) // Same here, see above
 
         update()
 
@@ -487,11 +489,12 @@ private class RandomNationPickerPopup(
         okButton.setPosition(innerTable.width - buttonsOffsetFromEdge, buttonsOffsetFromEdge, Align.bottomRight)
         innerTable.addActor(okButton)
 
-        nationsListTable.touchable = Touchable.enabled
+        selectedNationsListTable.touchable = Touchable.enabled
     }
 
-    private fun update() {
+    fun update() {
         nationListTable.clear()
+        selectedNations = mapParameters.randomNations
         nations -= selectedNations.toSet()
         nations = nations.sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.name.tr() }).toMutableList() as ArrayList<Nation>
 
@@ -503,6 +506,16 @@ private class RandomNationPickerPopup(
             cell.row()
             nationTable.onClick {
                 addNationToPool(nation)
+            }
+        }
+
+        if (selectedNations.isNotEmpty()) {
+            selectedNationsListTable.clear()
+
+            for (currentNation in selectedNations) {
+                val nationTable = NationTable(currentNation, civBlocksWidth, 0f)
+                nationTable.onClick { removeNationFromPool(currentNation) }
+                selectedNationsListTable.add(nationTable).row()
             }
         }
     }
@@ -519,12 +532,12 @@ private class RandomNationPickerPopup(
     }
 
     private fun updateNationListTable() {
-        nationsListTable.clear()
+        selectedNationsListTable.clear()
 
         for (currentNation in selectedNations) {
             val nationTable = NationTable(currentNation, civBlocksWidth, 0f)
             nationTable.onClick { removeNationFromPool(currentNation) }
-            nationsListTable.add(nationTable).row()
+            selectedNationsListTable.add(nationTable).row()
         }
     }
 
