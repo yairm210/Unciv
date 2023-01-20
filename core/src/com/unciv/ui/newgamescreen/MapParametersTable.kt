@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldFilter.DigitsOnlyFilter
 import com.badlogic.gdx.utils.Align
-import com.unciv.Constants
 import com.unciv.logic.map.MapGeneratedMainType
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapResources
@@ -448,8 +447,8 @@ private class RandomNationPickerPopup(
     private val partHeight = stageToShowOn.height * (if (stageToShowOn.isNarrowerThan4to3()) 0.45f else 0.8f)
     private val nationListTable = Table()
     private val nationListScroll = AutoScrollPane(nationListTable)
-    private val nationDetailsTable = Table()
-    private val nationDetailsScroll = AutoScrollPane(nationDetailsTable)
+    private val nationsListTable = Table()
+    private val nationsListScroll = AutoScrollPane(nationsListTable)
     private var selectedNations = arrayListOf<Nation>()
     var nations = arrayListOf<Nation>()
 
@@ -462,8 +461,8 @@ private class RandomNationPickerPopup(
         add(nationListScroll).size( civBlocksWidth + 10f, partHeight )
         // +10, because the nation table has a 5f pad, for a total of +10f
         if (stageToShowOn.isNarrowerThan4to3()) row()
-        nationDetailsScroll.setOverscroll(false, false)
-        add(nationDetailsScroll).size(civBlocksWidth + 10f, partHeight) // Same here, see above
+        nationsListScroll.setOverscroll(false, false)
+        add(nationsListScroll).size(civBlocksWidth + 10f, partHeight) // Same here, see above
 
         update()
 
@@ -486,7 +485,7 @@ private class RandomNationPickerPopup(
         okButton.setPosition(innerTable.width - buttonsOffsetFromEdge, buttonsOffsetFromEdge, Align.bottomRight)
         innerTable.addActor(okButton)
 
-        nationDetailsTable.touchable = Touchable.enabled
+        nationsListTable.touchable = Touchable.enabled
     }
 
     private fun update() {
@@ -518,12 +517,12 @@ private class RandomNationPickerPopup(
     }
 
     private fun updateNationListTable() {
-        nationDetailsTable.clear()
+        nationsListTable.clear()
 
         for (currentNation in selectedNations) {
             val nationTable = NationTable(currentNation, civBlocksWidth, 0f)
             nationTable.onClick { removeNationFromPool(currentNation) }
-            nationDetailsTable.add(nationTable).row()
+            nationsListTable.add(nationTable).row()
         }
     }
 
