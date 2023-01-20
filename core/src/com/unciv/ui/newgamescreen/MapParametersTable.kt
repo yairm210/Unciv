@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldFilter.DigitsOnlyFilter
 import com.badlogic.gdx.utils.Align
+import com.unciv.UncivGame
 import com.unciv.logic.map.MapGeneratedMainType
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapResources
@@ -18,6 +19,7 @@ import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.mapgenerator.MapGenerationRandomness
 import com.unciv.models.ruleset.nation.Nation
+import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.AutoScrollPane
@@ -491,7 +493,7 @@ private class RandomNationPickerPopup(
     private fun update() {
         nationListTable.clear()
         nations -= selectedNations.toSet()
-        nations = nations.sortedBy { it.name }.toMutableList() as ArrayList<Nation>
+        nations = nations.sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.name.tr() }).toMutableList() as ArrayList<Nation>
 
         var currentY = 0f
         for (nation in nations) {
