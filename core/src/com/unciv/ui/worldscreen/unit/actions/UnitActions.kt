@@ -312,6 +312,11 @@ object UnitActions {
         for (unique in unit.baseUnit().getMatchingUniques(UniqueType.CanTransform,
             StateForConditionals(unit = unit, civInfo = civInfo, tile = unitTile))) {
             val upgradedUnit = civInfo.getEquivalentUnit(unique.params[0])
+            val conditional =
+                    unique.conditionals.firstOrNull { it.type == UniqueType.ConditionalCost }
+            val statCostOfUpgrade = if (conditional == null) 0 else conditional.params[0].toInt()
+            val costStat =
+                    if (conditional == null) Stat.valueOf("Gold") else Stat.valueOf(conditional.params[1])
             // don't show if haven't researched/is obsolete
             if (!unit.upgrade.canUpgrade(unitToUpgradeTo = upgradedUnit)) continue
 
@@ -322,6 +327,8 @@ object UnitActions {
                 resourceRequirementsDelta.add(resource, -amount)
             for ((resource, amount) in upgradedUnit.getResourceRequirements())
                 resourceRequirementsDelta.add(resource, amount)
+            if (conditional != null)
+                resourceRequirementsDelta.add(costStat.name, statCostOfUpgrade)
             val newResourceRequirementsString = resourceRequirementsDelta.entries
                 .filter { it.value > 0 }
                 .joinToString { "${it.value} {${it.key}}".tr() }
@@ -343,11 +350,13 @@ object UnitActions {
                         val resurrectedUnit = civInfo.units.placeUnitNearTile(unitTile.position, unit.name)!!
                         unit.copyStatisticsTo(resurrectedUnit)
                     } else { // Managed to upgrade
+                        civInfo.addStat(costStat, -statCostOfUpgrade)
                         unit.copyStatisticsTo(newUnit)
                         newUnit.currentMovement = 0f
                     }
                 }.takeIf {
-                    unit.currentMovement > 0
+                    unit.civInfo.getStatReserve(costStat) >= statCostOfUpgrade
+                            && unit.currentMovement > 0
                             && !unit.isEmbarked()
                             && unit.upgrade.canUpgrade(unitToUpgradeTo = upgradedUnit)
                 }
