@@ -162,7 +162,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
 
         if (game.files.getSaves().any()) {
             val loadGameTable = getMenuButton("Load game", "OtherIcons/Load", 'l')
-                { game.pushScreen(LoadGameScreen(this)) }
+                { game.pushScreen(LoadGameScreen()) }
             column1.add(loadGameTable).row()
         }
 
