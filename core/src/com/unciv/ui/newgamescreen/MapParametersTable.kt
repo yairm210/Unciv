@@ -1,10 +1,15 @@
 package com.unciv.ui.newgamescreen
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldFilter.DigitsOnlyFilter
+import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.logic.map.MapGeneratedMainType
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapResources
@@ -13,13 +18,22 @@ import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.mapgenerator.MapGenerationRandomness
+import com.unciv.models.ruleset.nation.Nation
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popup.Popup
+import com.unciv.ui.utils.AutoScrollPane
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ExpanderTab
+import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.UncivSlider
 import com.unciv.ui.utils.UncivTextField
+import com.unciv.ui.utils.extensions.isNarrowerThan4to3
+import com.unciv.ui.utils.extensions.keyShortcuts
+import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.onChange
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.pad
+import com.unciv.ui.utils.extensions.surroundWithCircle
 import com.unciv.ui.utils.extensions.toCheckBox
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
@@ -31,6 +45,7 @@ import com.unciv.ui.utils.extensions.toTextButton
  *  @param forMapEditor whether the [MapType.empty] option should be present. Is used by the Map Editor, but should **never** be used with the New Game
  * */
 class MapParametersTable(
+    private val previousScreen: IPreviousScreen? = null,
     private val mapParameters: MapParameters,
     private val mapGeneratedMainType: String,
     private val forMapEditor: Boolean = false,
@@ -381,6 +396,15 @@ class MapParametersTable(
         addSlider("Water level", {mapParameters.waterThreshold}, -0.1f, 0.1f)
         { mapParameters.waterThreshold = it }
 
+        val randomPoolButton = "Random nations pool".toTextButton()
+        randomPoolButton.onClick {
+            if (previousScreen != null) {
+                RandomNationPickerPopup(previousScreen).open()
+            }
+        }
+        table.add(randomPoolButton).colspan(2).padTop(10f).row()
+
+
         val resetToDefaultButton = "Reset to defaults".toTextButton()
         resetToDefaultButton.onClick {
             mapParameters.resetAdvancedSettings()
@@ -389,5 +413,123 @@ class MapParametersTable(
                 entry.key.value = entry.value()
         }
         table.add(resetToDefaultButton).colspan(2).padTop(10f).row()
+    }
+}
+
+private class RandomNationPickerPopup(
+    previousScreen: IPreviousScreen
+) : Popup(previousScreen as BaseScreen) {
+    companion object {
+        // These are used for the Close/OK buttons in the lower left/right corners:
+        const val buttonsCircleSize = 70f
+        const val buttonsIconSize = 50f
+        const val buttonsOffsetFromEdge = 5f
+        val buttonsBackColor: Color = Color.BLACK.cpy().apply { a = 0.67f }
+    }
+    val blockWidth: Float = 0f
+    val civBlocksWidth = if(blockWidth <= 10f) previousScreen.stage.width / 3 - 5f else blockWidth
+
+    // This Popup's body has two halves of same size, either side by side or arranged vertically
+    // depending on screen proportions - determine height for one of those
+    private val partHeight = stageToShowOn.height * (if (stageToShowOn.isNarrowerThan4to3()) 0.45f else 0.8f)
+    private val nationListTable = Table()
+    private val nationListScroll = AutoScrollPane(nationListTable)
+    private val nationDetailsTable = Table()
+    private val nationDetailsScroll = AutoScrollPane(nationDetailsTable)
+    private var selectedNations = arrayListOf<Nation>()
+    var nations = arrayListOf<Nation>()
+
+
+    init {
+        var nationListScrollY = 0f
+        nations += previousScreen.ruleset.nations.values.asSequence()
+            .filter { it.isMajorCiv() }
+        nationListScroll.setOverscroll(false, false)
+        add(nationListScroll).size( civBlocksWidth + 10f, partHeight )
+        // +10, because the nation table has a 5f pad, for a total of +10f
+        if (stageToShowOn.isNarrowerThan4to3()) row()
+        nationDetailsScroll.setOverscroll(false, false)
+        add(nationDetailsScroll).size(civBlocksWidth + 10f, partHeight) // Same here, see above
+
+        update()
+
+        nationListScroll.layout()
+        pack()
+        if (nationListScrollY > 0f) {
+            // center the selected nation vertically, getRowHeight safe because nationListScrollY > 0f ensures at least 1 row
+            nationListScrollY -= (nationListScroll.height - nationListTable.getRowHeight(0)) / 2
+            nationListScroll.scrollY = nationListScrollY.coerceIn(0f, nationListScroll.maxY)
+        }
+
+        val closeButton = "OtherIcons/Close".toImageButton(Color.FIREBRICK)
+        closeButton.onActivation { close() }
+        closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
+        closeButton.setPosition(buttonsOffsetFromEdge, buttonsOffsetFromEdge, Align.bottomLeft)
+        innerTable.addActor(closeButton)
+
+        val okButton = "OtherIcons/Checkmark".toImageButton(Color.LIME)
+        okButton.onClick { returnSelected() }
+        okButton.setPosition(innerTable.width - buttonsOffsetFromEdge, buttonsOffsetFromEdge, Align.bottomRight)
+        innerTable.addActor(okButton)
+
+        nationDetailsTable.touchable = Touchable.enabled
+    }
+
+    private fun update() {
+        nationListTable.clear()
+        nations -= selectedNations.toSet()
+        nations = nations.sortedBy { it.name }.toMutableList() as ArrayList<Nation>
+
+        var currentY = 0f
+        for (nation in nations) {
+            val nationTable = NationTable(nation, civBlocksWidth, 0f) // no need for min height
+            val cell = nationListTable.add(nationTable)
+            currentY += cell.padBottom + cell.prefHeight + cell.padTop
+            cell.row()
+            nationTable.onClick {
+                addNationToPool(nation)
+            }
+        }
+    }
+
+    private fun String.toImageButton(overColor: Color): Group {
+        val style = ImageButton.ImageButtonStyle()
+        val image = ImageGetter.getDrawable(this)
+        style.imageUp = image
+        style.imageOver = image.tint(overColor)
+        val button = ImageButton(style)
+        button.setSize(buttonsIconSize, buttonsIconSize)
+
+        return button.surroundWithCircle(buttonsCircleSize, false, buttonsBackColor)
+    }
+
+    private fun updateNationListTable() {
+        nationDetailsTable.clear()
+
+        for (currentNation in selectedNations) {
+            val nationTable = NationTable(currentNation, civBlocksWidth, 0f)
+            nationTable.onClick { removeNationFromPool(currentNation) }
+            nationDetailsTable.add(nationTable).row()
+        }
+    }
+
+    private fun addNationToPool(nation: Nation) {
+        selectedNations.add(nation)
+
+        update()
+        updateNationListTable()
+    }
+
+    private fun removeNationFromPool(nation: Nation) {
+        nations.add(nation)
+        selectedNations.remove(nation)
+
+        update()
+        updateNationListTable()
+    }
+
+    private fun returnSelected(): ArrayList<Nation> {
+        close()
+        return selectedNations
     }
 }
