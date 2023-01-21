@@ -1,29 +1,5 @@
-
-
-AI doesn't declare war until it's sufficiently built up
-
-Deprecated 'religion enabled'
-
-Better 4-corner maps
-
-Chore: Moved map normalization functions from TileInfo into MapEditor where they belong
-
-Chore: Move map editor tabs to separate folder
-
-Chore: Moved tile stat functions to separate class
-
-Chore: Moved tile improvement functions to separate class
-
-Chore: Moved tile improvement functions to separate class
-
-map file reorg
-
 Better generation for all map types
-
-Better Pangaea generation, no Default map
 
 Include forked repos in github search.  - By FiretronP75
 
-By alexban011:
-- fixed even more warnings 
-- version bump 
+AI doesn't declare war until it's sufficiently built up
