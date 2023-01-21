@@ -376,14 +376,16 @@ class MapParametersTable(
             return slider
         }
 
-        fun addCheckbox(
-            text: String,
-            startsOutChecked: Boolean = false,
-            changeAction: ((Boolean) -> Unit)): CheckBox {
-            val checkbox = text.toCheckBox(startsOutChecked) {
-                changeAction.invoke(true)
-            }
+        fun addCheckbox(text: String, startsOutChecked: Boolean = false, changeAction: ((Boolean) -> Unit)): CheckBox {
+            val checkbox = text.toCheckBox(startsOutChecked) { changeAction.invoke(true) }
             return checkbox
+        }
+
+        fun addTextButton(text: String, shouldAddToTable: Boolean = false, action: ((Boolean) -> Unit),) {
+            val button = text.toTextButton()
+            button.onClick { action.invoke(true) }
+            if (shouldAddToTable)
+                table.add(button).colspan(2).padTop(10f).row()
         }
 
         addSlider("Map Elevation", {mapParameters.elevationExponent}, 0.6f, 0.8f)
@@ -424,25 +426,20 @@ class MapParametersTable(
             }).row()
         }
 
-        val randomPoolButton = "Select nations".toTextButton()
-        randomPoolButton.onClick {
+        addTextButton("Select nations", mapParameters.enableRandomNationsPool) {
             if (previousScreen != null) {
                 val popup = RandomNationPickerPopup(previousScreen, mapParameters)
                 popup.open()
                 popup.update()
             }
         }
-        if (mapParameters.enableRandomNationsPool)
-            table.add(randomPoolButton).colspan(2).padTop(10f).row()
 
-        val resetToDefaultButton = "Reset to defaults".toTextButton()
-        resetToDefaultButton.onClick {
+        addTextButton("Reset to defaults", true) {
             mapParameters.resetAdvancedSettings()
             seedTextField.text = mapParameters.seed.toString()
             for (entry in advancedSliders)
                 entry.key.value = entry.value()
         }
-        table.add(resetToDefaultButton).colspan(2).padTop(10f).row()
     }
 }
 
