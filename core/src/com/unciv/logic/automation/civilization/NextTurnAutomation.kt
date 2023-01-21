@@ -712,7 +712,8 @@ object NextTurnAutomation {
 
         val ourMilitaryUnits = civInfo.units.getCivUnits().filter { !it.isCivilian() }.count()
         if (ourMilitaryUnits < civInfo.cities.size) return
-        if (ourMilitaryUnits < 4) return  // to stop AI declaring war at the beginning of games when everyone isn't set up well enough
+        if (ourMilitaryUnits < 4) return  // to stop AI declaring war at the beginning of games when everyone isn't set up well enough\
+        if (civInfo.cities.size < 3) return // FAR too early for that what are you thinking!
 
         //evaluate war
         val enemyCivs = civInfo.getKnownCivs()
