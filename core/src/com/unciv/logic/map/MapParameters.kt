@@ -188,6 +188,7 @@ class MapParameters : IsPartOfGameInfoSerialization {
     var waterThreshold = 0.0f
 
     var enableRandomNationsPool = false
+    var blacklistRandomNationsPool = false
     var randomNations = arrayListOf<Nation>()
 
     /** Shifts temperature (after random, latitude and temperatureExtremeness).*/

@@ -409,6 +409,12 @@ class MapParametersTable(
         }
         table.add(randomNationsPoolCheckbox).row()
 
+        val blacklistRandomNationsPoolCheckbox = "Blacklist random nations pool".toCheckBox(mapParameters.blacklistRandomNationsPool) {
+            mapParameters.blacklistRandomNationsPool = it
+        }
+        if (mapParameters.enableRandomNationsPool)
+            table.add(blacklistRandomNationsPoolCheckbox).row()
+
         val randomPoolButton = "Select nations".toTextButton()
         randomPoolButton.onClick {
             if (previousScreen != null) {
