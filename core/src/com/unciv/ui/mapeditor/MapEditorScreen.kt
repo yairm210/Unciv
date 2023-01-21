@@ -37,10 +37,8 @@ import com.unciv.ui.worldscreen.ZoomButtonPair
 //todo Mod tab change base ruleset - disableAllCheckboxes - instead some intelligence to leave those mods on that stay compatible?
 //todo The setSkin call in newMapHolder belongs in ImageGetter.setNewRuleset and should be intelligent as resetFont is expensive and the probability a mod touched a few EmojiIcons is low
 //todo new brush: remove natural wonder
-//todo "random nation" starting location (maybe no new internal representation = all major nations)
 //todo Nat Wonder step generator: Needs tweaks to avoid placing duplicates or wonders too close together
 //todo Music? Different suffix? Off? 20% Volume?
-//todo See #6694 - allow placing Barbarian encampments (problem: dead on game start - BarbarianManager.encampments)
 //todo See #6694 - allow adding tiles to a map (1 cell all around on hex? world-wrapped hex?? all around on rectangular? top bottom only on world-wrapped??)
 //todo move map copy&paste to save/load??
 

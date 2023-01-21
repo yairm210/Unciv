@@ -242,7 +242,7 @@ class MapEditorEditImprovementsTab(
     companion object {
         //todo This should really be easier, the attributes should allow such a test in one go
         private val disallowImprovements = listOf(
-            "Remove ", "Cancel improvement", "City center", Constants.barbarianEncampment
+            "Remove ", "Cancel improvement", "City center"
         )
         private fun TileImprovement.group() = when {
             RoadStatus.values().any { it.name == name } -> 2
@@ -276,6 +276,7 @@ class MapEditorEditStartsTab(
                 tile.tileMap.removeStartingLocations(tile.position)
             }
         } }).padBottom(0f).row()
+
         add(MarkupRenderer.render(
             getNations(),
             iconDisplay = FormattedLine.IconDisplay.NoLink
