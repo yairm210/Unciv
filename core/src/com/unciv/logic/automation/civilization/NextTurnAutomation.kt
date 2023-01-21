@@ -7,7 +7,7 @@ import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.MapUnitCombatant
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.AlertType
@@ -980,7 +980,7 @@ object NextTurnAutomation {
 
     /** Handle decision making after city conquest, namely whether the AI should liberate, puppet,
      * or raze a city */
-    fun onConquerCity(civInfo: CivilizationInfo, city: CityInfo) {
+    fun onConquerCity(civInfo: CivilizationInfo, city: City) {
         if (!city.hasDiplomaticMarriage()) {
             val foundingCiv = civInfo.gameInfo.getCivilization(city.foundingCiv)
             var valueAlliance = valueCityStateAlliance(civInfo, foundingCiv)
@@ -1007,7 +1007,7 @@ object NextTurnAutomation {
         return getClosestCities(civ1, civ2)?.aerialDistance ?: Int.MAX_VALUE
     }
 
-    data class CityDistance(val city1: CityInfo, val city2: CityInfo, val aerialDistance: Int)
+    data class CityDistance(val city1: City, val city2: City, val aerialDistance: Int)
 
     fun getClosestCities(civ1: CivilizationInfo, civ2: CivilizationInfo): CityDistance? {
         if (civ1.cities.isEmpty() || civ2.cities.isEmpty())

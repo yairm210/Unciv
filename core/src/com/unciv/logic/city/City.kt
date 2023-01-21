@@ -9,9 +9,9 @@ import com.unciv.logic.city.managers.CityPopulationManager
 import com.unciv.logic.city.managers.CityReligionManager
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.TileMap
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.tile.ResourceSupplyList
@@ -31,7 +31,7 @@ enum class CityFlags {
 }
 
 
-class CityInfo : IsPartOfGameInfoSerialization {
+class City : IsPartOfGameInfoSerialization {
     @Suppress("JoinDeclarationAndAssignment")
     @Transient
     lateinit var civInfo: CivilizationInfo
@@ -102,8 +102,8 @@ class CityInfo : IsPartOfGameInfoSerialization {
     fun hasDiplomaticMarriage(): Boolean = foundingCiv == ""
 
     //region pure functions
-    fun clone(): CityInfo {
-        val toReturn = CityInfo()
+    fun clone(): City {
+        val toReturn = City()
         toReturn.location = location
         toReturn.id = id
         toReturn.name = name
@@ -291,7 +291,7 @@ class CityInfo : IsPartOfGameInfoSerialization {
             buildingsCounter.add(building.greatPersonPoints)
         sourceToGPP["Buildings"] = buildingsCounter
 
-        val stateForConditionals = StateForConditionals(civInfo = civInfo, cityInfo = this)
+        val stateForConditionals = StateForConditionals(civInfo = civInfo, city = this)
         for ((_, gppCounter) in sourceToGPP) {
             for (unique in civInfo.getMatchingUniques(UniqueType.GreatPersonEarnedFaster, stateForConditionals)) {
                 val unitName = unique.params[0]
@@ -359,10 +359,10 @@ class CityInfo : IsPartOfGameInfoSerialization {
         tileMap = civInfo.gameInfo.tileMap
         centerTile = tileMap[location]
         tilesInRange = getCenterTile().getTilesInDistance(3).toHashSet()
-        population.cityInfo = this
-        expansion.cityInfo = this
+        population.city = this
+        expansion.city = this
         expansion.setTransients()
-        cityConstructions.cityInfo = this
+        cityConstructions.city = this
         cityConstructions.setTransients()
         religion.setTransients(this)
         espionage.setTransients(this)
@@ -423,7 +423,7 @@ class CityInfo : IsPartOfGameInfoSerialization {
             civInfo.moveCapitalToNextLargest()
         }
 
-        civInfo.cities = civInfo.cities.toMutableList().apply { remove(this@CityInfo) }
+        civInfo.cities = civInfo.cities.toMutableList().apply { remove(this@City) }
         getCenterTile().changeImprovement("City ruins")
 
         // Edge case! What if a water unit is in a city, and you raze the city?

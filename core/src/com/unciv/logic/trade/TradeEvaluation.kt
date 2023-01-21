@@ -3,7 +3,7 @@ package com.unciv.logic.trade
 import com.unciv.Constants
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.tile.Tile
@@ -151,7 +151,7 @@ class TradeEvaluation {
         }
     }
 
-    private fun surroundedByOurCities(city: CityInfo, civInfo: CivilizationInfo): Int {
+    private fun surroundedByOurCities(city: City, civInfo: CivilizationInfo): Int {
         val borderingCivs: Set<String> = getNeighbouringCivs(city)
         if (borderingCivs.size == 1 && borderingCivs.contains(civInfo.civName)) {
             return 10 * civInfo.getEraNumber() // if the city is surrounded only by trading civ
@@ -161,7 +161,7 @@ class TradeEvaluation {
         return 0
     }
 
-    private fun getNeighbouringCivs(city:CityInfo): Set<String> {
+    private fun getNeighbouringCivs(city:City): Set<String> {
         val tilesList: HashSet<Tile> = city.getTiles().toHashSet()
         val cityPositionList: ArrayList<Tile> = arrayListOf()
 
@@ -270,7 +270,7 @@ class TradeEvaluation {
         }
     }
 
-    fun distanceCityTradeModifier(civInfo: CivilizationInfo, capitalcity: CityInfo, city: CityInfo): Int{
+    fun distanceCityTradeModifier(civInfo: CivilizationInfo, capitalcity: City, city: City): Int{
         val distanceBetweenCities = capitalcity.getCenterTile().aerialDistanceTo(city.getCenterTile())
 
         if (distanceBetweenCities < 500) return 0

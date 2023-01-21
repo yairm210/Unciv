@@ -1,7 +1,7 @@
 package com.unciv.logic.automation.civilization
 
 import com.unciv.Constants
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.managers.ReligionState
@@ -157,7 +157,7 @@ object ReligionAutomation {
         cityToBuyGreatProphet.cityConstructions.purchaseConstruction(greatProphetUnit, -1, true, Stat.Faith)
     }
 
-    private fun buyInquisitorNear(civInfo: CivilizationInfo, city: CityInfo) {
+    private fun buyInquisitorNear(civInfo: CivilizationInfo, city: City) {
         if (civInfo.religionManager.religionState < ReligionState.Religion) return
         var inquisitors = civInfo.gameInfo.ruleSet.units.values.filter {
             it.getMapUnit(civInfo).canDoReligiousAction(Constants.removeHeresy)
@@ -225,7 +225,7 @@ object ReligionAutomation {
         return score
     }
 
-    private fun beliefBonusForTile(belief: Belief, tile: Tile, city: CityInfo): Float {
+    private fun beliefBonusForTile(belief: Belief, tile: Tile, city: City): Float {
         var bonusYield = 0f
         for (unique in belief.uniqueObjects) {
             when (unique.type) {
@@ -243,7 +243,7 @@ object ReligionAutomation {
         return bonusYield
     }
 
-    private fun beliefBonusForCity(civInfo: CivilizationInfo, belief: Belief, city: CityInfo): Float {
+    private fun beliefBonusForCity(civInfo: CivilizationInfo, belief: Belief, city: City): Float {
         var score = 0f
         val ruleSet = civInfo.gameInfo.ruleSet
         for (unique in belief.uniqueObjects) {

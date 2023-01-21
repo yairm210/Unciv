@@ -11,7 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.CityConstructions
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
@@ -52,7 +52,7 @@ class IconTable(borderColor: Color, innerColor: Color, borderSize: Float, border
     override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
 }
 
-class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Table(BaseScreen.skin){
+class CityButton(val city: City, private val tileGroup: WorldTileGroup): Table(BaseScreen.skin){
     val worldScreen = tileGroup.worldScreen
     val uncivGame = worldScreen.game
 
@@ -437,7 +437,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
                 table.add(label).expandY().bottom().padRight(3f)
 
                 val constructionPercentage = cityConstructions.getWorkDone(cityCurrentConstruction.name) /
-                        (cityCurrentConstruction as INonPerpetualConstruction).getProductionCost(cityConstructions.cityInfo.civInfo).toFloat()
+                        (cityCurrentConstruction as INonPerpetualConstruction).getProductionCost(cityConstructions.city.civInfo).toFloat()
                 val productionBar = ImageGetter.getProgressBarVertical(4f, tableHeight, constructionPercentage,
                     Colors.construction, Color.BLACK, 1f)
                 productionBar.color.a = 0.8f

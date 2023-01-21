@@ -1,7 +1,7 @@
 package com.unciv.logic.map.tile
 
 import com.unciv.Constants
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.LocalUniqueCache
@@ -173,7 +173,7 @@ class TileInfoImprovementFunctions(val tile: Tile) {
     fun getImprovementStats(
         improvement: TileImprovement,
         observingCiv: CivilizationInfo,
-        city: CityInfo?,
+        city: City?,
         cityUniqueCache: LocalUniqueCache = LocalUniqueCache(false)
     ): Stats {
         val stats = improvement.cloneStats()
@@ -182,7 +182,7 @@ class TileInfoImprovementFunctions(val tile: Tile) {
         )
             stats.add(tile.tileResource.improvementStats!!.clone()) // resource-specific improvement
 
-        val conditionalState = StateForConditionals(civInfo = observingCiv, cityInfo = city, tile = tile)
+        val conditionalState = StateForConditionals(civInfo = observingCiv, city = city, tile = tile)
         for (unique in improvement.getMatchingUniques(UniqueType.Stats, conditionalState)) {
             stats.add(unique.stats)
         }
@@ -207,7 +207,7 @@ class TileInfoImprovementFunctions(val tile: Tile) {
 
     private fun getImprovementStatsForCity(
         improvement: TileImprovement,
-        city: CityInfo,
+        city: City,
         conditionalState: StateForConditionals,
         cityUniqueCache: LocalUniqueCache
     ): Stats {
@@ -254,11 +254,11 @@ class TileInfoImprovementFunctions(val tile: Tile) {
     fun getImprovementPercentageStats(
         improvement: TileImprovement,
         observingCiv: CivilizationInfo,
-        city: CityInfo?,
+        city: City?,
         cityUniqueCache: LocalUniqueCache
     ): Stats {
         val stats = Stats()
-        val conditionalState = StateForConditionals(civInfo = observingCiv, cityInfo = city, tile = tile)
+        val conditionalState = StateForConditionals(civInfo = observingCiv, city = city, tile = tile)
 
         // I would love to make an interface 'canCallMatchingUniques'
         // from which both cityInfo and CivilizationInfo derive, so I don't have to duplicate all this code

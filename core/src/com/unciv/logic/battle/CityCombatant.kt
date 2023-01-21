@@ -1,6 +1,6 @@
 package com.unciv.logic.battle
 
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UncivSound
@@ -11,7 +11,7 @@ import com.unciv.ui.utils.extensions.toPercent
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
-class CityCombatant(val city: CityInfo) : ICombatant {
+class CityCombatant(val city: City) : ICombatant {
     override fun getMaxHealth(): Int {
         return city.getMaxHealth()
     }

@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
@@ -114,7 +114,7 @@ class WonderInfo {
         val groupColor: Color,
         val status: WonderStatus,
         val civ: CivilizationInfo?,
-        val city: CityInfo?,
+        val city: City?,
         val location: Tile?
     ) {
         val viewEntireMapForDebug = UncivGame.Current.viewEntireMapForDebug

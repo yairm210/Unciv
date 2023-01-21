@@ -8,7 +8,7 @@ import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
@@ -1001,7 +1001,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             .sumOf { it.params[1].toInt() }
     }
 
-    fun setupAbilityUses(buildCity: CityInfo? = null) {
+    fun setupAbilityUses(buildCity: City? = null) {
         for (action in religiousActionsUnitCanDo()) {
             val baseAmount = getBaseMaxActionUses(action)
             val additional =

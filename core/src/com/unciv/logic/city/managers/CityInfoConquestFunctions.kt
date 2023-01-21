@@ -4,7 +4,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.city.CityFlags
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
@@ -22,7 +22,7 @@ import kotlin.math.roundToInt
 import kotlin.random.Random
 
 /** Helper class for containing 200 lines of "how to move cities between civs" */
-class CityInfoConquestFunctions(val city: CityInfo){
+class CityInfoConquestFunctions(val city: City){
     private val tileBasedRandom = Random(city.getCenterTile().position.toString().hashCode())
 
     private fun getGoldForCapturingCity(conqueringCiv: CivilizationInfo): Int {

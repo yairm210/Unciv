@@ -2,7 +2,7 @@ package com.unciv.logic.civilization.managers
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.UncivGame
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.map.mapunit.MapUnit
@@ -26,7 +26,7 @@ class UnitManager(val civInfo:CivilizationInfo) {
     @Transient
     private var nextPotentiallyDueAt = 0
 
-    fun addUnit(unitName: String, city: CityInfo? = null): MapUnit? {
+    fun addUnit(unitName: String, city: City? = null): MapUnit? {
         if (civInfo.cities.isEmpty()) return null
         if (!civInfo.gameInfo.ruleSet.units.containsKey(unitName)) return null
 
@@ -45,7 +45,7 @@ class UnitManager(val civInfo:CivilizationInfo) {
                         placedUnit.hasUnique(UniqueType.TakeReligionOverBirthCity)
                                 && civInfo.religionManager.religion?.isMajorReligion() == true ->
                             civInfo.religionManager.religion!!.name
-                        city != null -> city.cityConstructions.cityInfo.religion.getMajorityReligionName()
+                        city != null -> city.cityConstructions.city.religion.getMajorityReligionName()
                         else -> civInfo.religionManager.religion?.name
                     }
             placedUnit.setupAbilityUses(cityToAddTo)

@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.city.managers.CityFounder
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PlayerType
@@ -133,7 +133,7 @@ class TestGame {
         tile: Tile,
         replacePalace: Boolean = false,
         initialPopulation: Int = 0
-    ): CityInfo {
+    ): City {
         val cityInfo = CityFounder().foundCity(civInfo, tile.position)
         if (initialPopulation != 1)
             cityInfo.population.addPopulation(initialPopulation - 1) // With defaults this will remove population
@@ -147,7 +147,7 @@ class TestGame {
         return cityInfo
     }
 
-    fun addTileToCity(city: CityInfo, tile: Tile) {
+    fun addTileToCity(city: City, tile: Tile) {
         city.tiles.add(tile.position)
     }
 

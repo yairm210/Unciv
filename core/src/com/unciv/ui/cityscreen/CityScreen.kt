@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UncivSound
@@ -35,7 +35,7 @@ import com.unciv.ui.utils.extensions.toTextButton
 import com.unciv.ui.worldscreen.WorldScreen
 
 class CityScreen(
-    internal val city: CityInfo,
+    internal val city: City,
     initSelectedConstruction: IConstruction? = null,
     initSelectedTile: Tile? = null
 ): BaseScreen(), RecreateOnResize {
@@ -328,8 +328,8 @@ class CityScreen(
         mapScrollPane.updateVisualScroll()
     }
 
-    private fun tileGroupOnClick(tileGroup: CityTileGroup, cityInfo: CityInfo) {
-        if (cityInfo.isPuppet) return
+    private fun tileGroupOnClick(tileGroup: CityTileGroup, city: City) {
+        if (city.isPuppet) return
         val tileInfo = tileGroup.tile
 
         /** [UniqueType.CreatesOneImprovement] support - select tile for improvement */
@@ -337,7 +337,7 @@ class CityScreen(
             val pickTileData = this.pickTileData!!
             this.pickTileData = null
             val improvement = pickTileData.improvement
-            if (tileInfo.improvementFunctions.canBuildImprovement(improvement, cityInfo.civInfo)) {
+            if (tileInfo.improvementFunctions.canBuildImprovement(improvement, city.civInfo)) {
                 if (pickTileData.isBuying) {
                     constructionsTable.askToBuyConstruction(pickTileData.building, pickTileData.buyStat, tileInfo)
                 } else {
@@ -346,7 +346,7 @@ class CityScreen(
                     // were to be allowed in the queue - or a little nontransparent to the user why they
                     // won't reorder - maybe one day redesign to have the target tiles attached to queue entries.
                     tileInfo.markForCreatesOneImprovement(improvement.name)
-                    cityInfo.cityConstructions.addToQueue(pickTileData.building.name)
+                    city.cityConstructions.addToQueue(pickTileData.building.name)
                 }
             }
             update()
@@ -355,15 +355,15 @@ class CityScreen(
 
         selectTile(tileInfo)
         if (tileGroup.isWorkable && canChangeState) {
-            if (!tileInfo.providesYield() && cityInfo.population.getFreePopulation() > 0) {
-                cityInfo.workedTiles.add(tileInfo.position)
-                cityInfo.lockedTiles.add(tileInfo.position)
+            if (!tileInfo.providesYield() && city.population.getFreePopulation() > 0) {
+                city.workedTiles.add(tileInfo.position)
+                city.lockedTiles.add(tileInfo.position)
                 game.settings.addCompletedTutorialTask("Reassign worked tiles")
             } else if (tileInfo.isWorked()) {
-                cityInfo.workedTiles.remove(tileInfo.position)
-                cityInfo.lockedTiles.remove(tileInfo.position)
+                city.workedTiles.remove(tileInfo.position)
+                city.lockedTiles.remove(tileInfo.position)
             }
-            cityInfo.cityStats.update()
+            city.cityStats.update()
         }
         update()
     }

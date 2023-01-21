@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.IsPartOfGameInfoSerialization
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.HexMath
@@ -45,10 +45,10 @@ open class Tile : IsPartOfGameInfoSerialization {
     private var isCityCenterInternal = false
 
     @Transient
-    var owningCity: CityInfo? = null
+    var owningCity: City? = null
         private set
 
-    fun setOwningCity(city:CityInfo?){
+    fun setOwningCity(city:City?){
         if (city != null) {
             if (roadStatus != RoadStatus.None && roadOwner != "") {
                 // remove previous neutral tile owner
@@ -208,7 +208,7 @@ open class Tile : IsPartOfGameInfoSerialization {
         return null
     }
 
-    fun getCity(): CityInfo? = owningCity
+    fun getCity(): City? = owningCity
 
     fun getLastTerrain(): Terrain = when {
         terrainFeatures.isNotEmpty() -> ruleset.terrains[terrainFeatures.last()]
@@ -414,7 +414,7 @@ open class Tile : IsPartOfGameInfoSerialization {
         return uniques
     }
 
-    fun getWorkingCity(): CityInfo? {
+    fun getWorkingCity(): City? {
         val civInfo = getOwner() ?: return null
         return civInfo.cities.firstOrNull { it.isWorked(this) }
     }

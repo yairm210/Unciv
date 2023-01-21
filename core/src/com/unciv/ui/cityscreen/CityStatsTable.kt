@@ -10,7 +10,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityFlags
 import com.unciv.logic.city.CityFocus
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
@@ -327,11 +327,11 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         return expanderTab
     }
 
-    private fun addGreatPersonPointInfo(cityInfo: CityInfo) {
+    private fun addGreatPersonPointInfo(city: City) {
 
         val greatPeopleTable = Table()
 
-        val greatPersonPoints = cityInfo.getGreatPersonPointsForNextTurn()
+        val greatPersonPoints = city.getGreatPersonPointsForNextTurn()
         val allGreatPersonNames = greatPersonPoints.asSequence().flatMap { it.value.keys }.distinct()
 
         if (allGreatPersonNames.none())
@@ -353,8 +353,8 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
                 .left().padBottom(4f).padRight(5f)
             info.add("{$greatPersonName} (+$gppPerTurn)".toLabel()).left().padBottom(4f).expandX().row()
 
-            val gppCurrent = cityInfo.civInfo.greatPeople.greatPersonPointsCounter[greatPersonName]
-            val gppNeeded = cityInfo.civInfo.greatPeople.getPointsRequiredForGreatPerson()
+            val gppCurrent = city.civInfo.greatPeople.greatPersonPointsCounter[greatPersonName]
+            val gppNeeded = city.civInfo.greatPeople.getPointsRequiredForGreatPerson()
 
             val percent = gppCurrent!! / gppNeeded.toFloat()
 

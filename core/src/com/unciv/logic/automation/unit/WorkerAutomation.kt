@@ -8,7 +8,7 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.automation.unit.UnitAutomation.wander
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.map.BFS
@@ -54,7 +54,7 @@ class WorkerAutomation(
         else civInfo.tech.getBestRoadAvailable()
 
     /** Civ-wide list of unconnected Cities, sorted by closest to capital first */
-    private val citiesThatNeedConnecting: List<CityInfo> by lazy {
+    private val citiesThatNeedConnecting: List<City> by lazy {
         val result = civInfo.cities.asSequence()
             .filter {
                 it.population.population > 3

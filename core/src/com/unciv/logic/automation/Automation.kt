@@ -1,7 +1,7 @@
 package com.unciv.logic.automation
 
 import com.unciv.logic.city.CityFocus
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.BFS
@@ -21,26 +21,26 @@ import com.unciv.ui.victoryscreen.RankingType
 
 object Automation {
 
-    fun rankTileForCityWork(tile: Tile, city: CityInfo, cityStats: Stats): Float {
+    fun rankTileForCityWork(tile: Tile, city: City, cityStats: Stats): Float {
         val stats = tile.stats.getTileStats(city, city.civInfo)
         return rankStatsForCityWork(stats, city, cityStats)
     }
 
-    fun rankSpecialist(specialist: String, cityInfo: CityInfo, cityStats: Stats): Float {
-        val stats = cityInfo.cityStats.getStatsOfSpecialist(specialist)
-        var rank = rankStatsForCityWork(stats, cityInfo, cityStats, true)
+    fun rankSpecialist(specialist: String, city: City, cityStats: Stats): Float {
+        val stats = city.cityStats.getStatsOfSpecialist(specialist)
+        var rank = rankStatsForCityWork(stats, city, cityStats, true)
         // derive GPP score
         var gpp = 0f
-        if (cityInfo.getRuleset().specialists.containsKey(specialist)) { // To solve problems in total remake mods
-            val specialistInfo = cityInfo.getRuleset().specialists[specialist]!!
+        if (city.getRuleset().specialists.containsKey(specialist)) { // To solve problems in total remake mods
+            val specialistInfo = city.getRuleset().specialists[specialist]!!
             gpp = specialistInfo.greatPersonPoints.sumValues().toFloat()
         }
-        gpp = gpp * (100 + cityInfo.currentGPPBonus) / 100
+        gpp = gpp * (100 + city.currentGPPBonus) / 100
         rank += gpp * 3 // GPP weight
         return rank
     }
 
-    private fun rankStatsForCityWork(stats: Stats, city: CityInfo, cityStats: Stats, specialist: Boolean = false): Float {
+    private fun rankStatsForCityWork(stats: Stats, city: City, cityStats: Stats, specialist: Boolean = false): Float {
         val cityAIFocus = city.cityAIFocus
         val yieldStats = stats.clone()
 
@@ -105,7 +105,7 @@ object Automation {
         return yieldStats.values.sum()
     }
 
-    fun tryTrainMilitaryUnit(city: CityInfo) {
+    fun tryTrainMilitaryUnit(city: City) {
         if (city.isPuppet) return
         val chosenUnitName = chooseMilitaryUnit(city)
         if (chosenUnitName != null)
@@ -133,7 +133,7 @@ object Automation {
         return totalCarriableUnits < totalCarryingSlots
     }
 
-    fun chooseMilitaryUnit(city: CityInfo): String? {
+    fun chooseMilitaryUnit(city: City): String? {
         val currentChoice = city.cityConstructions.getCurrentConstruction()
         if (currentChoice is BaseUnit && !currentChoice.isCivilian()) return city.cityConstructions.currentConstructionFromQueue
 
@@ -227,10 +227,10 @@ object Automation {
      */
     fun allowAutomatedConstruction(
         civInfo: CivilizationInfo,
-        cityInfo: CityInfo,
+        city: City,
         construction: INonPerpetualConstruction
     ): Boolean {
-        return allowCreateImprovementBuildings(civInfo, cityInfo, construction)
+        return allowCreateImprovementBuildings(civInfo, city, construction)
                 && allowSpendingResource(civInfo, construction)
     }
 
@@ -239,13 +239,13 @@ object Automation {
      *  Constructions without pass uncontested. */
     fun allowCreateImprovementBuildings(
         civInfo: CivilizationInfo,
-        cityInfo: CityInfo,
+        city: City,
         construction: INonPerpetualConstruction
     ): Boolean {
         if (construction !is Building) return true
         if (!construction.hasCreateOneImprovementUnique()) return true  // redundant but faster???
-        val improvement = construction.getImprovementToCreate(cityInfo.getRuleset()) ?: return true
-        return cityInfo.getTiles().any {
+        val improvement = construction.getImprovementToCreate(city.getRuleset()) ?: return true
+        return city.getTiles().any {
             it.improvementFunctions.canBuildImprovement(improvement, civInfo)
         }
     }
@@ -336,11 +336,11 @@ object Automation {
     }
 
     /** Support [UniqueType.CreatesOneImprovement] unique - find best tile for placement automation */
-    fun getTileForConstructionImprovement(cityInfo: CityInfo,  improvement: TileImprovement): Tile? {
-        return cityInfo.getTiles().filter {
-            it.improvementFunctions.canBuildImprovement(improvement, cityInfo.civInfo)
+    fun getTileForConstructionImprovement(city: City, improvement: TileImprovement): Tile? {
+        return city.getTiles().filter {
+            it.improvementFunctions.canBuildImprovement(improvement, city.civInfo)
         }.maxByOrNull {
-            rankTileForCityWork(it, cityInfo, cityInfo.cityStats.currentCityStats)
+            rankTileForCityWork(it, city, city.cityStats.currentCityStats)
         }
     }
 
@@ -363,7 +363,7 @@ object Automation {
     }
 
     // Ranks a tile for the expansion algorithm of cities
-    internal fun rankTileForExpansion(tile: Tile, cityInfo: CityInfo,
+    internal fun rankTileForExpansion(tile: Tile, city: City,
                                       localUniqueCache: LocalUniqueCache): Int {
         // https://github.com/Gedemon/Civ5-DLL/blob/aa29e80751f541ae04858b6d2a2c7dcca454201e/CvGameCoreDLL_Expansion1/CvCity.cpp#L10301
         // Apparently this is not the full calculation. The exact tiles are also
@@ -371,13 +371,13 @@ object Automation {
         // Exact details are not implemented, but can be found in CvAStar.cpp:2119,
         // function `InfluenceCost()`.
         // Implementing these will require an additional variable for each terrainType
-        val distance = tile.aerialDistanceTo(cityInfo.getCenterTile())
+        val distance = tile.aerialDistanceTo(city.getCenterTile())
 
         // Higher score means tile is less likely to be picked
         var score = distance * 100
 
         // Resources are good: less points
-        if (tile.hasViewableResource(cityInfo.civInfo)) {
+        if (tile.hasViewableResource(city.civInfo)) {
             if (tile.tileResource.resourceType != ResourceType.Bonus) score -= 105
             else if (distance <= 3) score -= 104
         } else {
@@ -391,8 +391,8 @@ object Automation {
         if (tile.improvement != null &&
             tile.improvementFunctions.getImprovementStats(
                 tile.getTileImprovement()!!,
-                cityInfo.civInfo,
-                cityInfo,
+                city.civInfo,
+                city,
                 localUniqueCache
             ).values.sum() > 0f
         ) score -= 5
@@ -400,14 +400,14 @@ object Automation {
         if (tile.naturalWonder != null) score -= 105
 
         // Straight up take the sum of all yields
-        score -= tile.stats.getTileStats(cityInfo, cityInfo.civInfo, localUniqueCache).values.sum().toInt()
+        score -= tile.stats.getTileStats(city, city.civInfo, localUniqueCache).values.sum().toInt()
 
         // Check if we get access to better tiles from this tile
         var adjacentNaturalWonder = false
 
         for (adjacentTile in tile.neighbors.filter { it.getOwner() == null }) {
-            val adjacentDistance = cityInfo.getCenterTile().aerialDistanceTo(adjacentTile)
-            if (adjacentTile.hasViewableResource(cityInfo.civInfo) &&
+            val adjacentDistance = city.getCenterTile().aerialDistanceTo(adjacentTile)
+            if (adjacentTile.hasViewableResource(city.civInfo) &&
                 (adjacentDistance < 3 ||
                     adjacentTile.tileResource.resourceType != ResourceType.Bonus
                 )
@@ -420,7 +420,7 @@ object Automation {
         if (adjacentNaturalWonder) score -= 1
 
         // Tiles not adjacent to owned land are very hard to acquire
-        if (tile.neighbors.none { it.getCity() != null && it.getCity()!!.id == cityInfo.id })
+        if (tile.neighbors.none { it.getCity() != null && it.getCity()!!.id == city.id })
             score += 1000
 
         return score

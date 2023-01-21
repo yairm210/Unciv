@@ -2,7 +2,7 @@ package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.GameInfo
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.transients.CapitalConnectionsFinder
@@ -111,8 +111,8 @@ class CapitalConnectionsFinderTests {
                 tile.roadStatus = type
     }
 
-    private fun createCity(civInfo: CivilizationInfo, position: Vector2, name: String, capital: Boolean = false, hasHarbor: Boolean = false): CityInfo {
-        return CityInfo().apply {
+    private fun createCity(civInfo: CivilizationInfo, position: Vector2, name: String, capital: Boolean = false, hasHarbor: Boolean = false): City {
+        return City().apply {
             location = position
             if (capital)
                 cityConstructions.builtBuildings.add(rules.buildings.values.first { it.hasUnique(UniqueType.IndicatesCapital) }.name)

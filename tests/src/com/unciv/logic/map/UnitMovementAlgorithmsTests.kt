@@ -3,7 +3,7 @@ package com.unciv.logic.map
 
 import com.unciv.Constants
 import com.unciv.logic.GameInfo
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -81,7 +81,7 @@ class UnitMovementAlgorithmsTests {
         otherTile.position.y = 1f
         map.tileMatrix[0].add(otherTile)
 
-        val city = CityInfo()
+        val city = City()
         city.location = cityTile.position
         city.civInfo = civInfo
         cityTile.setOwningCity(city)
@@ -248,7 +248,7 @@ class UnitMovementAlgorithmsTests {
         otherCiv.civName = "Other civ"
         otherCiv.nation = Nation().apply { name = "Other nation" }
 
-        val city = CityInfo()
+        val city = City()
         city.location = tile.position.cpy().add(1f,1f)
         city.civInfo = otherCiv
         tile.setOwningCity(city)
@@ -305,7 +305,7 @@ class UnitMovementAlgorithmsTests {
 
         val otherCiv = createOpponentCiv("Other", DiplomaticStatus.Peace)
 
-        val city = CityInfo()
+        val city = City()
         city.location = tile.position.cpy().add(5f, 5f) // random shift to avoid of being in city
         city.civInfo = otherCiv
         tile.setOwningCity(city)
@@ -414,7 +414,7 @@ class UnitMovementAlgorithmsTests {
         newTiles[3].baseTerrain = "Grand Mesa"
         newTiles[3].setTransients()
         // create our city
-        CityInfo().apply {
+        City().apply {
             this.civInfo = this@UnitMovementAlgorithmsTests.civInfo
             location = newTiles.last().position.cpy()
             tiles.add(location)

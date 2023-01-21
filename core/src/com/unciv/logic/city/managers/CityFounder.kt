@@ -1,7 +1,7 @@
 package com.unciv.logic.city.managers
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.Proximity
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -10,41 +10,41 @@ import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.unique.UniqueType
 
 class CityFounder {
-    fun foundCity(civInfo: CivilizationInfo, cityLocation: Vector2) :CityInfo{
-        val cityInfo = CityInfo()
+    fun foundCity(civInfo: CivilizationInfo, cityLocation: Vector2) :City{
+        val city = City()
 
-        cityInfo.foundingCiv = civInfo.civName
-        cityInfo.turnAcquired = civInfo.gameInfo.turns
-        cityInfo.location = cityLocation
-        cityInfo.setTransients(civInfo)
+        city.foundingCiv = civInfo.civName
+        city.turnAcquired = civInfo.gameInfo.turns
+        city.location = cityLocation
+        city.setTransients(civInfo)
 
-        cityInfo.name = generateNewCityName(
+        city.name = generateNewCityName(
             civInfo,
             civInfo.gameInfo.civilizations.asSequence().filter { civ -> civ.isAlive() }.toSet(),
             arrayListOf("New ", "Neo ", "Nova ", "Altera ")
         ) ?: "City Without A Name"
 
-        cityInfo.isOriginalCapital = civInfo.citiesCreated == 0
-        if (cityInfo.isOriginalCapital) {
+        city.isOriginalCapital = civInfo.citiesCreated == 0
+        if (city.isOriginalCapital) {
             civInfo.hasEverOwnedOriginalCapital = true
             // if you have some culture before the 1st city is found, you may want to adopt the 1st policy
             civInfo.policies.shouldOpenPolicyPicker = true
         }
         civInfo.citiesCreated++
 
-        civInfo.cities = civInfo.cities.toMutableList().apply { add(cityInfo) }
+        civInfo.cities = civInfo.cities.toMutableList().apply { add(city) }
 
         val startingEra = civInfo.gameInfo.gameParameters.startingEra
 
-        addStartingBuildings(cityInfo, civInfo, startingEra)
+        addStartingBuildings(city, civInfo, startingEra)
 
-        cityInfo.expansion.reset()
+        city.expansion.reset()
 
-        cityInfo.tryUpdateRoadStatus()
+        city.tryUpdateRoadStatus()
 
-        val tile = cityInfo.getCenterTile()
+        val tile = city.getCenterTile()
         for (terrainFeature in tile.terrainFeatures.filter {
-            cityInfo.getRuleset().tileImprovements.containsKey(
+            city.getRuleset().tileImprovements.containsKey(
                 "Remove $it"
             )
         })
@@ -54,18 +54,18 @@ class CityFounder {
         tile.improvementInProgress = null
 
         val ruleset = civInfo.gameInfo.ruleSet
-        cityInfo.workedTiles = hashSetOf() //reassign 1st working tile
+        city.workedTiles = hashSetOf() //reassign 1st working tile
 
-        cityInfo.population.setPopulation(ruleset.eras[startingEra]!!.settlerPopulation)
+        city.population.setPopulation(ruleset.eras[startingEra]!!.settlerPopulation)
 
         if (civInfo.religionManager.religionState == ReligionState.Pantheon) {
-            cityInfo.religion.addPressure(
+            city.religion.addPressure(
                 civInfo.religionManager.religion!!.name,
-                200 * cityInfo.population.population
+                200 * city.population.population
             )
         }
 
-        cityInfo.population.autoAssignPopulation()
+        city.population.autoAssignPopulation()
 
         // Update proximity rankings for all civs
         for (otherCiv in civInfo.gameInfo.getAliveMajorCivs()) {
@@ -79,10 +79,10 @@ class CityFounder {
                     otherCiv.cache.updateProximity(civInfo))
         }
 
-        triggerCitiesSettledNearOtherCiv(cityInfo)
+        triggerCitiesSettledNearOtherCiv(city)
         civInfo.gameInfo.cityDistances.setDirty()
 
-        return cityInfo
+        return city
     }
 
 
@@ -186,20 +186,20 @@ class CityFounder {
     }
 
 
-    private fun addStartingBuildings(cityInfo: CityInfo, civInfo: CivilizationInfo, startingEra: String) {
+    private fun addStartingBuildings(city: City, civInfo: CivilizationInfo, startingEra: String) {
         val ruleset = civInfo.gameInfo.ruleSet
-        if (civInfo.cities.size == 1) cityInfo.cityConstructions.addBuilding(cityInfo.capitalCityIndicator())
+        if (civInfo.cities.size == 1) city.cityConstructions.addBuilding(city.capitalCityIndicator())
 
         // Add buildings and pop we get from starting in this era
         for (buildingName in ruleset.eras[startingEra]!!.settlerBuildings) {
             val building = ruleset.buildings[buildingName] ?: continue
             val uniqueBuilding = civInfo.getEquivalentBuilding(building)
-            if (uniqueBuilding.isBuildable(cityInfo.cityConstructions))
-                cityInfo.cityConstructions.addBuilding(uniqueBuilding.name)
+            if (uniqueBuilding.isBuildable(city.cityConstructions))
+                city.cityConstructions.addBuilding(uniqueBuilding.name)
         }
 
         civInfo.civConstructions.tryAddFreeBuildings()
-        cityInfo.cityConstructions.addFreeBuildings()
+        city.cityConstructions.addFreeBuildings()
     }
 
 
@@ -212,18 +212,18 @@ class CityFounder {
      But if they don't keep their promise they get a -20 that will only fully disappear in 160 turns.
      There's a lot of triggering going on here.
      */
-    private fun triggerCitiesSettledNearOtherCiv(cityInfo: CityInfo) {
+    private fun triggerCitiesSettledNearOtherCiv(city: City) {
         val citiesWithin6Tiles =
-                cityInfo.civInfo.gameInfo.civilizations.asSequence()
-                    .filter { it.isMajorCiv() && it != cityInfo.civInfo }
+                city.civInfo.gameInfo.civilizations.asSequence()
+                    .filter { it.isMajorCiv() && it != city.civInfo }
                     .flatMap { it.cities }
-                    .filter { it.getCenterTile().aerialDistanceTo(cityInfo.getCenterTile()) <= 6 }
+                    .filter { it.getCenterTile().aerialDistanceTo(city.getCenterTile()) <= 6 }
         val civsWithCloseCities =
                 citiesWithin6Tiles
                     .map { it.civInfo }
                     .distinct()
-                    .filter { it.knows(cityInfo.civInfo) && it.hasExplored(cityInfo.location) }
+                    .filter { it.knows(city.civInfo) && it.hasExplored(city.location) }
         for (otherCiv in civsWithCloseCities)
-            otherCiv.getDiplomacyManager(cityInfo.civInfo).setFlag(DiplomacyFlags.SettledCitiesNearUs, 30)
+            otherCiv.getDiplomacyManager(city.civInfo).setFlag(DiplomacyFlags.SettledCitiesNearUs, 30)
     }
 }

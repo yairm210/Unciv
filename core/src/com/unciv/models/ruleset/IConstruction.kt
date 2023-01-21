@@ -24,22 +24,22 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     var requiredTech: String?
 
     fun getProductionCost(civInfo: CivilizationInfo): Int
-    fun getStatBuyCost(cityInfo: CityInfo, stat: Stat): Int?
+    fun getStatBuyCost(city: City, stat: Stat): Int?
     fun getRejectionReasons(cityConstructions: CityConstructions): RejectionReasons
     fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat? = null): Boolean  // Yes I'm hilarious.
 
     /** Only checks if it has the unique to be bought with this stat, not whether it is purchasable at all */
-    fun canBePurchasedWithStat(cityInfo: CityInfo?, stat: Stat): Boolean {
+    fun canBePurchasedWithStat(city: City?, stat: Stat): Boolean {
         if (stat == Stat.Production || stat == Stat.Happiness) return false
         if (hasUnique(UniqueType.CannotBePurchased)) return false
         if (stat == Stat.Gold) return !hasUnique(UniqueType.Unbuildable)
         // Can be purchased with [Stat] [cityFilter]
-        if (cityInfo != null && getMatchingUniques(UniqueType.CanBePurchasedWithStat)
-            .any { it.params[0] == stat.name && cityInfo.matchesFilter(it.params[1]) }
+        if (city != null && getMatchingUniques(UniqueType.CanBePurchasedWithStat)
+            .any { it.params[0] == stat.name && city.matchesFilter(it.params[1]) }
         ) return true
         // Can be purchased for [amount] [Stat] [cityFilter]
-        if (cityInfo != null && getMatchingUniques(UniqueType.CanBePurchasedForAmountStat)
-            .any { it.params[1] == stat.name && cityInfo.matchesFilter(it.params[2]) }
+        if (city != null && getMatchingUniques(UniqueType.CanBePurchasedForAmountStat)
+            .any { it.params[1] == stat.name && city.matchesFilter(it.params[2]) }
         ) return true
         return false
     }
@@ -50,8 +50,8 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
         return rejectionReasons.all { it.rejectionReason == RejectionReason.Unbuildable }
     }
 
-    fun canBePurchasedWithAnyStat(cityInfo: CityInfo): Boolean {
-        return Stat.values().any { canBePurchasedWithStat(cityInfo, it) }
+    fun canBePurchasedWithAnyStat(city: City): Boolean {
+        return Stat.values().any { canBePurchasedWithStat(city, it) }
     }
 
     fun getBaseGoldCost(civInfo: CivilizationInfo): Double {
@@ -59,21 +59,21 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
         return (30.0 * getProductionCost(civInfo)).pow(0.75) * hurryCostModifier.toPercent()
     }
 
-    fun getBaseBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
-        if (stat == Stat.Gold) return getBaseGoldCost(cityInfo.civInfo).toInt()
+    fun getBaseBuyCost(city: City, stat: Stat): Int? {
+        if (stat == Stat.Gold) return getBaseGoldCost(city.civInfo).toInt()
 
-        val conditionalState = StateForConditionals(civInfo = cityInfo.civInfo, cityInfo = cityInfo)
+        val conditionalState = StateForConditionals(civInfo = city.civInfo, city = city)
 
         // Can be purchased for [amount] [Stat] [cityFilter]
         val lowestCostUnique = getMatchingUniques(UniqueType.CanBePurchasedForAmountStat, conditionalState)
-            .filter { it.params[1] == stat.name && cityInfo.matchesFilter(it.params[2]) }
+            .filter { it.params[1] == stat.name && city.matchesFilter(it.params[2]) }
             .minByOrNull { it.params[0].toInt() }
         if (lowestCostUnique != null) return lowestCostUnique.params[0].toInt()
 
         // Can be purchased with [Stat] [cityFilter]
         if (getMatchingUniques(UniqueType.CanBePurchasedWithStat, conditionalState)
-            .any { it.params[0] == stat.name && cityInfo.matchesFilter(it.params[1]) }
-        ) return cityInfo.civInfo.getEra().baseUnitBuyCost
+            .any { it.params[0] == stat.name && city.matchesFilter(it.params[1]) }
+        ) return city.civInfo.getEra().baseUnitBuyCost
         return null
     }
 
@@ -199,7 +199,7 @@ data class RejectionReasonInstance(val rejectionReason:RejectionReason,
 open class PerpetualConstruction(override var name: String, val description: String) : IConstruction {
 
     override fun shouldBeDisplayed(cityConstructions: CityConstructions) = isBuildable(cityConstructions)
-    open fun getProductionTooltip(cityInfo: CityInfo) : String = ""
+    open fun getProductionTooltip(city: City) : String = ""
 
     companion object {
         val science = PerpetualStatConversion(Stat.Science)
@@ -226,15 +226,15 @@ open class PerpetualConstruction(override var name: String, val description: Str
 open class PerpetualStatConversion(val stat: Stat) :
     PerpetualConstruction(stat.name, "Convert production to [${stat.name}] at a rate of [rate] to 1") {
 
-    override fun getProductionTooltip(cityInfo: CityInfo) : String
-            = "\r\n${(cityInfo.cityStats.currentCityStats.production / getConversionRate(cityInfo)).roundToInt()}/${Fonts.turn}"
-    fun getConversionRate(cityInfo: CityInfo) : Int = (1/cityInfo.cityStats.getStatConversionRate(stat)).roundToInt()
+    override fun getProductionTooltip(city: City) : String
+            = "\r\n${(city.cityStats.currentCityStats.production / getConversionRate(city)).roundToInt()}/${Fonts.turn}"
+    fun getConversionRate(city: City) : Int = (1/city.cityStats.getStatConversionRate(stat)).roundToInt()
 
     override fun isBuildable(cityConstructions: CityConstructions): Boolean {
-        if (stat == Stat.Faith && !cityConstructions.cityInfo.civInfo.gameInfo.isReligionEnabled())
+        if (stat == Stat.Faith && !cityConstructions.city.civInfo.gameInfo.isReligionEnabled())
             return false
 
-        return cityConstructions.cityInfo.civInfo.getMatchingUniques(UniqueType.EnablesCivWideStatProduction)
+        return cityConstructions.city.civInfo.getMatchingUniques(UniqueType.EnablesCivWideStatProduction)
             .any { it.params[0] == stat.name }
     }
 }

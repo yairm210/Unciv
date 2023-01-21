@@ -1,7 +1,7 @@
 package com.unciv.ui.tilegroups
 
 import com.unciv.UncivGame
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
@@ -45,7 +45,7 @@ class WorldTileGroup(internal val worldScreen: WorldScreen, tile: Tile, tileSetS
     }
 
 
-    private fun updateCityButton(city: CityInfo?, viewable: Boolean) {
+    private fun updateCityButton(city: City?, viewable: Boolean) {
         if (city == null && cityButton != null)// there used to be a city here but it was razed
         {
             cityButton!!.remove()
@@ -61,7 +61,7 @@ class WorldTileGroup(internal val worldScreen: WorldScreen, tile: Tile, tileSetS
         }
     }
 
-    fun selectCity(city: CityInfo?) : Boolean {
+    fun selectCity(city: City?) : Boolean {
         if (city == null) return false
         return worldScreen.bottomUnitTable.citySelected(city)
     }

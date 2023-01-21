@@ -3,7 +3,7 @@ package com.unciv.ui.cityscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.map.tile.Tile
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.tilegroups.TileGroup
@@ -11,7 +11,7 @@ import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.extensions.centerX
 
-class CityTileGroup(private val city: CityInfo, tile: Tile, tileSetStrings: TileSetStrings) : TileGroup(tile,tileSetStrings) {
+class CityTileGroup(private val city: City, tile: Tile, tileSetStrings: TileSetStrings) : TileGroup(tile,tileSetStrings) {
 
     var isWorkable = false
     private var yieldGroup = YieldGroup()

@@ -5,7 +5,7 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.GreatGeneralImplementation
 import com.unciv.logic.battle.MapUnitCombatant
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
@@ -222,9 +222,9 @@ object SpecificUnitAutomation {
             // Try to move towards the frontier
 
             /** @return the number of tiles 4 (un-modded) out from this city that could hold a city, ie how lonely this city is */
-            fun getFrontierScore(cityInfo: CityInfo) = cityInfo.getCenterTile()
-                .getTilesAtDistance(cityInfo.civInfo.gameInfo.ruleSet.modOptions.constants.minimalCityDistance + 1)
-                .count { it.canBeSettled() && (it.getOwner() == null || it.getOwner() == cityInfo.civInfo ) }
+            fun getFrontierScore(city: City) = city.getCenterTile()
+                .getTilesAtDistance(city.civInfo.gameInfo.ruleSet.modOptions.constants.minimalCityDistance + 1)
+                .count { it.canBeSettled() && (it.getOwner() == null || it.getOwner() == city.civInfo ) }
 
             val frontierCity = unit.civInfo.cities.maxByOrNull { getFrontierScore(it) }
             if (frontierCity != null && getFrontierScore(frontierCity) > 0  && unit.movement.canReach(frontierCity.getCenterTile()))
@@ -395,7 +395,7 @@ object SpecificUnitAutomation {
 
     private fun determineBestInquisitorCityToConvert(
         unit: MapUnit,
-    ): CityInfo? {
+    ): City? {
         if (unit.religion != unit.civInfo.religionManager.religion?.name || !unit.canDoReligiousAction(Constants.removeHeresy))
             return null
 

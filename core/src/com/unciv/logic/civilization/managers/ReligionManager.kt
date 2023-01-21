@@ -2,7 +2,7 @@ package com.unciv.logic.civilization.managers
 
 import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.Counter
@@ -431,7 +431,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
             .sumOf { it.religion.getFollowersOf(religion!!.name)!! }
     }
 
-    fun getHolyCity(): CityInfo? {
+    fun getHolyCity(): City? {
         if (religion == null) return null
         return civInfo.gameInfo.getCities().firstOrNull { it.isHolyCityOf(religion!!.name) }
     }

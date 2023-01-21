@@ -1,6 +1,6 @@
 package com.unciv.logic.civilization.transients
 
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.BFS
@@ -10,9 +10,9 @@ import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.collections.set
 
 class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
-    private val citiesReachedToMediums = HashMap<CityInfo, MutableSet<String>>()
+    private val citiesReachedToMediums = HashMap<City, MutableSet<String>>()
     private var citiesToCheck = mutableListOf(civInfo.getCapital()!!)
-    private lateinit var newCitiesToCheck: MutableList<CityInfo>
+    private lateinit var newCitiesToCheck: MutableList<City>
 
     private val openBordersCivCities = civInfo.gameInfo.getCities().filter { canEnterBordersOf(it.civInfo) }
 
@@ -30,7 +30,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
         citiesReachedToMediums[civInfo.getCapital()!!] = hashSetOf("Start")
     }
 
-    fun find(): Map<CityInfo, Set<String>> {
+    fun find(): Map<City, Set<String>> {
         // We map which cities we've reached, to the mediums they've been reached by -
         // this is so we know that if we've seen which cities can be connected by port A, and one
         // of those is city B, then we don't need to check the cities that B can connect to by port,
@@ -55,7 +55,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
         return citiesReachedToMediums
     }
 
-    private fun checkRoad(cityToConnectFrom: CityInfo) {
+    private fun checkRoad(cityToConnectFrom: City) {
         check(
                 cityToConnectFrom,
                 transportType = road,
@@ -64,7 +64,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
         )
     }
 
-    private fun checkRailroad(cityToConnectFrom: CityInfo) {
+    private fun checkRailroad(cityToConnectFrom: City) {
         check(
                 cityToConnectFrom,
                 transportType = railroad,
@@ -72,7 +72,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
         )
     }
 
-    private fun checkHarbor(cityToConnectFrom: CityInfo) {
+    private fun checkHarbor(cityToConnectFrom: City) {
         check(
                 cityToConnectFrom,
                 transportType = if(cityToConnectFrom.wasPreviouslyReached(railroad,null)) harborFromRailroad else harborFromRoad,
@@ -82,14 +82,14 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
         )
     }
 
-    private fun CityInfo.containsHarbor() =
+    private fun City.containsHarbor() =
             this.cityConstructions.builtBuildingUniqueMap.getUniques(UniqueType.ConnectTradeRoutes).any()
 
-    private fun check(cityToConnectFrom: CityInfo,
+    private fun check(cityToConnectFrom: City,
                       transportType: String,
                       overridingTransportType: String? = null,
                       tileFilter: (Tile) -> Boolean,
-                      cityFilter: (CityInfo) -> Boolean = { true }) {
+                      cityFilter: (City) -> Boolean = { true }) {
         // This is the time-saving mechanism we discussed earlier - If I arrived at this city via a certain BFS,
         // then obviously I already have all the cities that can be reached via that BFS so I don't need to run it again.
         if (cityToConnectFrom.wasPreviouslyReached(transportType, overridingTransportType))
@@ -111,19 +111,19 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
         }
     }
 
-    private fun addCityIfFirstEncountered(reachedCity: CityInfo) {
+    private fun addCityIfFirstEncountered(reachedCity: City) {
         if (!citiesReachedToMediums.containsKey(reachedCity)) {
             newCitiesToCheck.add(reachedCity)
             citiesReachedToMediums[reachedCity] = mutableSetOf()
         }
     }
 
-    private fun CityInfo.wasPreviouslyReached(transportType: String, overridingTransportType: String?): Boolean {
+    private fun City.wasPreviouslyReached(transportType: String, overridingTransportType: String?): Boolean {
         val mediums = citiesReachedToMediums[this]!!
         return mediums.contains(transportType) || mediums.contains(overridingTransportType)
     }
 
-    private fun CityInfo.addMedium(transportType: String) {
+    private fun City.addMedium(transportType: String) {
         citiesReachedToMediums[this]!!.add(transportType)
     }
 

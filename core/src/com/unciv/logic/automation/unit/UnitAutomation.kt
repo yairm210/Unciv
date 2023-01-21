@@ -8,7 +8,7 @@ import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.managers.ReligionState
@@ -377,7 +377,7 @@ object UnitAutomation {
     }
 
     /** Get a list of visible tiles which have something attackable */
-    fun getBombardableTiles(city: CityInfo): Sequence<Tile> =
+    fun getBombardableTiles(city: City): Sequence<Tile> =
             city.getCenterTile().getTilesInDistance(city.range)
                     .filter { it.isVisible(city.civInfo) && BattleHelper.containsAttackableEnemy(it, CityCombatant(city)) }
 
@@ -540,7 +540,7 @@ object UnitAutomation {
         return true
     }
 
-    fun tryBombardEnemy(city: CityInfo): Boolean {
+    fun tryBombardEnemy(city: City): Boolean {
         if (!city.canBombard()) return false
         val enemy = chooseBombardTarget(city)
             ?: return false
@@ -548,7 +548,7 @@ object UnitAutomation {
         return true
     }
 
-    private fun chooseBombardTarget(city: CityInfo): ICombatant? {
+    private fun chooseBombardTarget(city: City): ICombatant? {
         var targets = getBombardableTiles(city).map { Battle.getMapCombatantOfTile(it)!! }
         if (targets.none()) return null
 
@@ -606,7 +606,7 @@ object UnitAutomation {
                     && unit.movement.canMoveTo(centerTile)
         }
 
-        fun isCityThatNeedsDefendingInWartime(city: CityInfo): Boolean {
+        fun isCityThatNeedsDefendingInWartime(city: City): Boolean {
             if (city.health < city.getMaxHealth()) return true // this city is under attack!
             for (enemyCivCity in unit.civInfo.diplomacy.values
                     .filter { it.diplomaticStatus == DiplomaticStatus.War }

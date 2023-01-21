@@ -2,7 +2,7 @@ package com.unciv.logic.civilization.managers
 
 import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.CivilizationInfo
 
 enum class SpyAction(val stringName: String) {
@@ -67,9 +67,9 @@ class Spy() : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun moveTo(cityInfo: CityInfo?) {
-        location = cityInfo?.id
-        if (cityInfo == null) { // Moving to spy hideout
+    fun moveTo(city: City?) {
+        location = city?.id
+        if (city == null) { // Moving to spy hideout
             action = SpyAction.None
             timeTillActionFinish = 0
             return
@@ -80,7 +80,7 @@ class Spy() : IsPartOfGameInfoSerialization {
 
     fun isSetUp() = action !in listOf(SpyAction.Moving, SpyAction.None, SpyAction.EstablishNetwork)
 
-    fun getLocation(): CityInfo? {
+    fun getLocation(): City? {
         return civInfo.gameInfo.getCities().firstOrNull { it.id == location }
     }
 

@@ -9,7 +9,7 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.automation.ai.TacticalAI
 import com.unciv.logic.automation.unit.WorkerAutomation
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.city.managers.CityFounder
 import com.unciv.logic.civilization.diplomacy.CityStateFunctions
 import com.unciv.logic.civilization.diplomacy.CityStatePersonality
@@ -100,7 +100,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
     /** Contains mapping of cities to travel mediums from ALL civilizations connected by trade routes to the capital */
     @Transient
-    var citiesConnectedToCapitalToMediums = mapOf<CityInfo, Set<String>>()
+    var citiesConnectedToCapitalToMediums = mapOf<City, Set<String>>()
 
     /** This is for performance since every movement calculation depends on this, see MapUnit comment */
     @Transient
@@ -187,7 +187,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     // if we only use lists, and change the list each time the cities are changed,
     // we won't get concurrent modification exceptions.
     // This is basically a way to ensure our lists are immutable.
-    var cities = listOf<CityInfo>()
+    var cities = listOf<City>()
     var citiesCreated = 0
     var exploredTiles = HashSet<Vector2>()
 
@@ -399,7 +399,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         return newResourceSupplyList
     }
 
-    fun isCapitalConnectedToCity(city: CityInfo): Boolean = citiesConnectedToCapitalToMediums.keys.contains(city)
+    fun isCapitalConnectedToCity(city: City): Boolean = citiesConnectedToCapitalToMediums.keys.contains(city)
 
 
     /**
@@ -433,7 +433,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
     // Does not return local uniques, only global ones.
     /** Destined to replace getMatchingUniques, gradually, as we fill the enum */
-    fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(this), cityToIgnore: CityInfo? = null) = sequence {
+    fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(this), cityToIgnore: City? = null) = sequence {
         yieldAll(nation.getMatchingUniques(uniqueType, stateForConditionals))
         yieldAll(cities.asSequence()
             .filter { it != cityToIgnore }
@@ -763,7 +763,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     /**
      * Removes current capital then moves capital to argument city if not null
      */
-    fun moveCapitalTo(city: CityInfo?) {
+    fun moveCapitalTo(city: City?) {
         if (cities.isNotEmpty() && getCapital() != null) {
             val oldCapital = getCapital()!!
             oldCapital.cityConstructions.removeBuilding(oldCapital.capitalCityIndicator())

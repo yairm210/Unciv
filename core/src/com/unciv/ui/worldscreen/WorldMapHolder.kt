@@ -21,7 +21,7 @@ import com.unciv.logic.automation.unit.BattleHelper
 import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
@@ -718,7 +718,7 @@ class WorldMapHolder(
         }
     }
 
-    private fun updateBombardableTilesForSelectedCity(city: CityInfo) {
+    private fun updateBombardableTilesForSelectedCity(city: City) {
         if (!city.canBombard()) return
         for (attackableTile in UnitAutomation.getBombardableTiles(city)) {
             for (group in tileGroups[attackableTile]!!) {

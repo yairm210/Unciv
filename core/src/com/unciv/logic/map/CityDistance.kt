@@ -2,12 +2,12 @@ package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.GameInfo
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.tile.Tile
 
 class CityDistance(
-    val city: CityInfo,
+    val city: City,
     val distance: Int) {
 
     companion object {
@@ -62,13 +62,13 @@ class CityDistanceData {
         data[identifier] = HashMap()
     }
 
-    private fun updateDistanceIfLower(identifier: String, position: Vector2, city: CityInfo, distance: Int) {
+    private fun updateDistanceIfLower(identifier: String, position: Vector2, city: City, distance: Int) {
         val currentDistance = data[identifier]!![position]
         val newDistance = CityDistance(city, distance)
         data[identifier]!![position] = CityDistance.compare(currentDistance, newDistance)
     }
 
-    private fun updateDistances(thisTile: Tile, city: CityInfo, owner: CivilizationInfo, isMajor: Boolean) {
+    private fun updateDistances(thisTile: Tile, city: City, owner: CivilizationInfo, isMajor: Boolean) {
 
         val cityTile = city.getCenterTile()
         val distance = thisTile.aerialDistanceTo(cityTile)

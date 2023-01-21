@@ -2,7 +2,7 @@ package com.unciv.logic.city.managers
 
 import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.Counter
@@ -13,7 +13,7 @@ import com.unciv.ui.utils.extensions.toPercent
 
 class CityReligionManager : IsPartOfGameInfoSerialization {
     @Transient
-    lateinit var cityInfo: CityInfo
+    lateinit var city: City
 
     // This needs to be kept track of for the
     // "[Stats] when a city adopts this religion for the first time" unique
@@ -25,7 +25,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
     private val followers: Counter<String> = Counter()
 
     @delegate:Transient
-    private val pressureFromAdjacentCities: Int by lazy { cityInfo.civInfo.gameInfo.speed.religiousPressureAdjacentCity }
+    private val pressureFromAdjacentCities: Int by lazy { city.civInfo.gameInfo.speed.religiousPressureAdjacentCity }
 
     var religionThisIsTheHolyCityOf: String? = null
     var isBlockedHolyCity = false
@@ -36,7 +36,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
 
     fun clone(): CityReligionManager {
         val toReturn = CityReligionManager()
-        toReturn.cityInfo = cityInfo
+        toReturn.city = city
         toReturn.religionsAtSomePointAdopted.addAll(religionsAtSomePointAdopted)
         toReturn.pressures.putAll(pressures)
         toReturn.followers.putAll(followers)
@@ -45,8 +45,8 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
-    fun setTransients(cityInfo: CityInfo) {
-        this.cityInfo = cityInfo
+    fun setTransients(city: City) {
+        this.city = city
         // We don't need to check for changes in the majority religion, and as this
         // loads in the religion, _of course_ the religion changes, but it shouldn't
         // have any effect
@@ -76,7 +76,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
     }
 
     fun addPressure(religionName: String, amount: Int, shouldUpdateFollowers: Boolean = true) {
-        if (!cityInfo.civInfo.gameInfo.isReligionEnabled()) return // No religion, no pressures
+        if (!city.civInfo.gameInfo.isReligionEnabled()) return // No religion, no pressures
         pressures.add(religionName, amount)
 
         if (shouldUpdateFollowers) {
@@ -107,9 +107,9 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
     }
 
     private fun triggerReligionAdoption(newMajorityReligion: String) {
-        val newMajorityReligionObject = cityInfo.civInfo.gameInfo.religions[newMajorityReligion]!!
-        cityInfo.civInfo.addNotification("Your city [${cityInfo.name}] was converted to [${newMajorityReligionObject.getReligionDisplayName()}]!",
-            cityInfo.location, NotificationCategory.Religion, NotificationIcon.Faith)
+        val newMajorityReligionObject = city.civInfo.gameInfo.religions[newMajorityReligion]!!
+        city.civInfo.addNotification("Your city [${city.name}] was converted to [${newMajorityReligionObject.getReligionDisplayName()}]!",
+            city.location, NotificationCategory.Religion, NotificationIcon.Faith)
 
         if (newMajorityReligion in religionsAtSomePointAdopted) return
 
@@ -124,10 +124,10 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
 
             for ((key, value) in statsGranted)
                 religionOwningCiv.addStat(key, value.toInt())
-            if (religionOwningCiv.hasExplored(cityInfo.location))
+            if (religionOwningCiv.hasExplored(city.location))
                 religionOwningCiv.addNotification(
-                    "You gained [$statsGranted] as your religion was spread to [${cityInfo.name}]",
-                    cityInfo.location,
+                    "You gained [$statsGranted] as your religion was spread to [${city.name}]",
+                    city.location,
                     NotificationCategory.Religion,
                     NotificationIcon.Faith
                 )
@@ -147,10 +147,10 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
             else null
 
         followers.clear()
-        if (cityInfo.population.population <= 0) return
+        if (city.population.population <= 0) return
 
         val remainders = HashMap<String, Float>()
-        val pressurePerFollower = pressures.values.sum() / cityInfo.population.population
+        val pressurePerFollower = pressures.values.sum() / city.population.population
 
         // First give each religion an approximate share based on pressure
         for ((religion, pressure) in pressures) {
@@ -159,7 +159,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
             remainders[religion] = pressure.toFloat() - followersOfThisReligion * pressurePerFollower
         }
 
-        var unallocatedPopulation = cityInfo.population.population - followers.values.sum()
+        var unallocatedPopulation = city.population.population - followers.values.sum()
 
         // Divide up the remaining population
         while (unallocatedPopulation > 0) {
@@ -206,9 +206,9 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
     fun removeUnknownPantheons() {
         for (pressure in pressures.keys.toList()) {  // Copy the keys because we might modify
             if (pressure == Constants.noReligionName) continue
-            val correspondingReligion = cityInfo.civInfo.gameInfo.religions[pressure]!!
+            val correspondingReligion = city.civInfo.gameInfo.religions[pressure]!!
             if (correspondingReligion.isPantheon()
-                && correspondingReligion.foundingCivName != cityInfo.civInfo.civName
+                && correspondingReligion.foundingCivName != city.civInfo.civName
             ) {
                 pressures.remove(pressure)
             }
@@ -221,32 +221,32 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         val religionWithMaxPressure = pressures.maxByOrNull { it.value }!!.key
         return when {
             religionWithMaxPressure == Constants.noReligionName -> null
-            followers[religionWithMaxPressure]!! >= cityInfo.population.population / 2 -> religionWithMaxPressure
+            followers[religionWithMaxPressure]!! >= city.population.population / 2 -> religionWithMaxPressure
             else -> null
         }
     }
 
     fun getMajorityReligion(): Religion? {
-        return cityInfo.civInfo.gameInfo.religions[getMajorityReligionName()]
+        return city.civInfo.gameInfo.religions[getMajorityReligionName()]
     }
 
     private fun getAffectedBySurroundingCities() {
-        if (!cityInfo.civInfo.gameInfo.isReligionEnabled()) return // No religion, no spreading
+        if (!city.civInfo.gameInfo.isReligionEnabled()) return // No religion, no spreading
         // We don't update the amount of followers yet, as only the end result should matter
         // If multiple religions would become the majority religion due to pressure,
         // this will make it so we only receive a notification for the last one.
         // Also, doing it like this increases performance :D
-        if (cityInfo.isHolyCity()) {
+        if (city.isHolyCity()) {
             addPressure(religionThisIsTheHolyCityOf!!,5 * pressureFromAdjacentCities, false)
         }
 
-        for (city in cityInfo.civInfo.gameInfo.getCities()) {
-            if (city == cityInfo) continue
+        for (city in city.civInfo.gameInfo.getCities()) {
+            if (city == this.city) continue
             val majorityReligionOfCity = city.religion.getMajorityReligionName() ?: continue
-            if (!cityInfo.civInfo.gameInfo.religions[majorityReligionOfCity]!!.isMajorReligion()) continue
-            if (city.getCenterTile().aerialDistanceTo(cityInfo.getCenterTile())
+            if (!this.city.civInfo.gameInfo.religions[majorityReligionOfCity]!!.isMajorReligion()) continue
+            if (city.getCenterTile().aerialDistanceTo(this.city.getCenterTile())
                     > city.religion.getSpreadRange()) continue
-            addPressure(majorityReligionOfCity, city.religion.pressureAmountToAdjacentCities(cityInfo), false)
+            addPressure(majorityReligionOfCity, city.religion.pressureAmountToAdjacentCities(this.city), false)
         }
 
         updateNumberOfFollowers()
@@ -255,7 +255,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
     private fun getSpreadRange(): Int {
         var spreadRange = 10
 
-        for (unique in cityInfo.getLocalMatchingUniques(UniqueType.ReligionSpreadDistance)) {
+        for (unique in city.getLocalMatchingUniques(UniqueType.ReligionSpreadDistance)) {
             spreadRange += unique.params[0].toInt()
         }
 
@@ -270,25 +270,27 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
     /** Doesn't update the pressures, only returns what they are if the update were to happen right now */
     fun getPressuresFromSurroundingCities(): Counter<String> {
         val addedPressure = Counter<String>()
-        if (cityInfo.isHolyCity()) {
+        if (city.isHolyCity()) {
             addedPressure[religionThisIsTheHolyCityOf!!] = 5 * pressureFromAdjacentCities
         }
         val allCitiesWithin10Tiles =
-            cityInfo.civInfo.gameInfo.getCities()
+            city.civInfo.gameInfo.getCities()
                 .filter {
-                    it != cityInfo
-                    && it.getCenterTile().aerialDistanceTo(cityInfo.getCenterTile()) <= it.religion.getSpreadRange()
+                    it != city
+                    && it.getCenterTile().aerialDistanceTo(city.getCenterTile()) <= it.religion.getSpreadRange()
                 }
         for (city in allCitiesWithin10Tiles) {
             val majorityReligionOfCity = city.religion.getMajorityReligion() ?: continue
             if (!majorityReligionOfCity.isMajorReligion()) continue
-            addedPressure.add(majorityReligionOfCity.name, city.religion.pressureAmountToAdjacentCities(cityInfo))
+            addedPressure.add(majorityReligionOfCity.name, city.religion.pressureAmountToAdjacentCities(
+                this.city
+            ))
         }
         return addedPressure
     }
 
     fun isProtectedByInquisitor(fromReligion: String? = null): Boolean {
-        for (tile in cityInfo.getCenterTile().getTilesInDistance(1)) {
+        for (tile in city.getCenterTile().getTilesInDistance(1)) {
             for (unit in listOf(tile.civilianUnit, tile.militaryUnit)) {
                 if (unit?.religion != null
                     && (fromReligion == null || unit.religion != fromReligion)
@@ -301,11 +303,11 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         return false
     }
 
-    private fun pressureAmountToAdjacentCities(pressuredCity: CityInfo): Int {
+    private fun pressureAmountToAdjacentCities(pressuredCity: City): Int {
         var pressure = pressureFromAdjacentCities.toFloat()
 
         // Follower beliefs of this religion
-        for (unique in cityInfo.getLocalMatchingUniques(UniqueType.NaturalReligionSpreadStrength)) {
+        for (unique in city.getLocalMatchingUniques(UniqueType.NaturalReligionSpreadStrength)) {
             if (pressuredCity.matchesFilter(unique.params[1]))
                 pressure *= unique.params[0].toPercent()
         }

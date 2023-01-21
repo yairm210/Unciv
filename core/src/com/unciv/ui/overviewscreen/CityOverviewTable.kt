@@ -10,7 +10,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityFlags
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
@@ -65,7 +65,7 @@ class CityOverviewTab(
         // Readability helpers
         private fun String.isStat() = Stat.isStat(this)
 
-        private fun CityInfo.getStat(stat: Stat) =
+        private fun City.getStat(stat: Stat) =
             if (stat == Stat.Happiness)
                 cityStats.happinessList.values.sum().roundToInt()
             else cityStats.currentCityStats[stat].roundToInt()
@@ -112,7 +112,7 @@ class CityOverviewTab(
         }
     }
 
-    fun getComparator() = Comparator { city2: CityInfo, city1: CityInfo ->
+    fun getComparator() = Comparator { city2: City, city1: City ->
         when(persistableData.sortedBy) {
             CITY -> collator.compare(city2.name.tr(), city1.name.tr())
             CONSTRUCTION -> collator.compare(

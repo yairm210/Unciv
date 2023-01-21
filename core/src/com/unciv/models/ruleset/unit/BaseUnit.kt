@@ -1,7 +1,7 @@
 package com.unciv.models.ruleset.unit
 
 import com.unciv.logic.city.CityConstructions
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.RejectionReason
 import com.unciv.logic.city.RejectionReasons
@@ -75,10 +75,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     }
 
     /** Generate description as multi-line string for CityScreen addSelectedConstructionTable
-     * @param cityInfo Supplies civInfo to show available resources after resource requirements */
-    fun getDescription(cityInfo: CityInfo): String {
+     * @param city Supplies civInfo to show available resources after resource requirements */
+    fun getDescription(city: City): String {
         val lines = mutableListOf<String>()
-        val availableResources = cityInfo.civInfo.getCivResources().associate { it.resource.name to it.amount }
+        val availableResources = city.civInfo.getCivResources().associate { it.resource.name to it.amount }
         for ((resource, amount) in getResourceRequirements()) {
             val available = availableResources[resource] ?: 0
             lines += "{${resource.getConsumesAmountString(amount)}} ({[$available] available})".tr()
@@ -259,92 +259,92 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         return productionCost.toInt()
     }
 
-    override fun canBePurchasedWithStat(cityInfo: CityInfo?, stat: Stat): Boolean {
-        if (cityInfo == null) return super.canBePurchasedWithStat(cityInfo, stat)
-        val conditionalState = StateForConditionals(civInfo = cityInfo.civInfo, cityInfo = cityInfo)
+    override fun canBePurchasedWithStat(city: City?, stat: Stat): Boolean {
+        if (city == null) return super.canBePurchasedWithStat(city, stat)
+        val conditionalState = StateForConditionals(civInfo = city.civInfo, city = city)
 
-        if (cityInfo.getMatchingUniques(UniqueType.BuyUnitsIncreasingCost, conditionalState)
+        if (city.getMatchingUniques(UniqueType.BuyUnitsIncreasingCost, conditionalState)
                     .any {
                         it.params[2] == stat.name
                                 && matchesFilter(it.params[0])
-                                && cityInfo.matchesFilter(it.params[3])
+                                && city.matchesFilter(it.params[3])
                     }) return true
 
-        if (cityInfo.getMatchingUniques(UniqueType.BuyUnitsByProductionCost, conditionalState)
+        if (city.getMatchingUniques(UniqueType.BuyUnitsByProductionCost, conditionalState)
                     .any { it.params[1] == stat.name && matchesFilter(it.params[0]) })
             return true
 
-        if (cityInfo.getMatchingUniques(UniqueType.BuyUnitsWithStat, conditionalState)
+        if (city.getMatchingUniques(UniqueType.BuyUnitsWithStat, conditionalState)
                     .any {
                         it.params[1] == stat.name
                                 && matchesFilter(it.params[0])
-                                && cityInfo.matchesFilter(it.params[2])
+                                && city.matchesFilter(it.params[2])
                     })
             return true
 
-        if (cityInfo.getMatchingUniques(UniqueType.BuyUnitsForAmountStat, conditionalState)
+        if (city.getMatchingUniques(UniqueType.BuyUnitsForAmountStat, conditionalState)
                     .any {
                         it.params[2] == stat.name
                                 && matchesFilter(it.params[0])
-                                && cityInfo.matchesFilter(it.params[3])
+                                && city.matchesFilter(it.params[3])
                     })
             return true
 
-        return super.canBePurchasedWithStat(cityInfo, stat)
+        return super.canBePurchasedWithStat(city, stat)
     }
 
-    override fun getBaseBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
-        if (stat == Stat.Gold) return getBaseGoldCost(cityInfo.civInfo).toInt()
-        val conditionalState = StateForConditionals(civInfo = cityInfo.civInfo, cityInfo = cityInfo)
+    override fun getBaseBuyCost(city: City, stat: Stat): Int? {
+        if (stat == Stat.Gold) return getBaseGoldCost(city.civInfo).toInt()
+        val conditionalState = StateForConditionals(civInfo = city.civInfo, city = city)
 
         return sequence {
-            val baseCost = super.getBaseBuyCost(cityInfo, stat)
+            val baseCost = super.getBaseBuyCost(city, stat)
             if (baseCost != null)
                 yield(baseCost)
-            yieldAll(cityInfo.getMatchingUniques(UniqueType.BuyUnitsIncreasingCost, conditionalState)
+            yieldAll(city.getMatchingUniques(UniqueType.BuyUnitsIncreasingCost, conditionalState)
                 .filter {
                     it.params[2] == stat.name
                     && matchesFilter(it.params[0])
-                    && cityInfo.matchesFilter(it.params[3])
+                    && city.matchesFilter(it.params[3])
                 }.map {
                     getCostForConstructionsIncreasingInPrice(
                         it.params[1].toInt(),
                         it.params[4].toInt(),
-                        cityInfo.civInfo.civConstructions.boughtItemsWithIncreasingPrice[name] ?: 0
+                        city.civInfo.civConstructions.boughtItemsWithIncreasingPrice[name] ?: 0
                     )
                 }
             )
-            yieldAll(cityInfo.getMatchingUniques(UniqueType.BuyUnitsByProductionCost, conditionalState)
+            yieldAll(city.getMatchingUniques(UniqueType.BuyUnitsByProductionCost, conditionalState)
                 .filter { it.params[1] == stat.name && matchesFilter(it.params[0]) }
-                .map { getProductionCost(cityInfo.civInfo) * it.params[2].toInt() }
+                .map { getProductionCost(city.civInfo) * it.params[2].toInt() }
             )
-            if (cityInfo.getMatchingUniques(UniqueType.BuyUnitsWithStat, conditionalState)
+            if (city.getMatchingUniques(UniqueType.BuyUnitsWithStat, conditionalState)
                 .any {
                     it.params[1] == stat.name
                     && matchesFilter(it.params[0])
-                    && cityInfo.matchesFilter(it.params[2])
+                    && city.matchesFilter(it.params[2])
                 }
             ) {
-                yield(cityInfo.civInfo.getEra().baseUnitBuyCost)
+                yield(city.civInfo.getEra().baseUnitBuyCost)
             }
-            yieldAll(cityInfo.getMatchingUniques(UniqueType.BuyUnitsForAmountStat, conditionalState)
+            yieldAll(city.getMatchingUniques(UniqueType.BuyUnitsForAmountStat, conditionalState)
                 .filter {
                     it.params[2] == stat.name
                     && matchesFilter(it.params[0])
-                    && cityInfo.matchesFilter(it.params[3])
+                    && city.matchesFilter(it.params[3])
                 }.map { it.params[1].toInt() }
             )
         }.minOrNull()
     }
 
-    override fun getStatBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
-        var cost = getBaseBuyCost(cityInfo, stat)?.toDouble() ?: return null
+    override fun getStatBuyCost(city: City, stat: Stat): Int? {
+        var cost = getBaseBuyCost(city, stat)?.toDouble() ?: return null
 
-        for (unique in cityInfo.getMatchingUniques(UniqueType.BuyUnitsDiscount)) {
+        for (unique in city.getMatchingUniques(UniqueType.BuyUnitsDiscount)) {
             if (stat.name == unique.params[0] && matchesFilter(unique.params[1]))
                 cost *= unique.params[2].toPercent()
         }
-        for (unique in cityInfo.getMatchingUniques(UniqueType.BuyItemsDiscount))
+        for (unique in city.getMatchingUniques(UniqueType.BuyItemsDiscount))
             if (stat.name == unique.params[0])
                 cost *= unique.params[1].toPercent()
 
@@ -357,28 +357,28 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         val rejectionReasons = getRejectionReasons(cityConstructions)
         return rejectionReasons.none { !it.shouldShow }
             || (
-                canBePurchasedWithAnyStat(cityConstructions.cityInfo)
+                canBePurchasedWithAnyStat(cityConstructions.city)
                 && rejectionReasons.all { it.rejectionReason == RejectionReason.Unbuildable }
             )
     }
 
     override fun getRejectionReasons(cityConstructions: CityConstructions): RejectionReasons {
         val rejectionReasons = RejectionReasons()
-        if (isWaterUnit() && !cityConstructions.cityInfo.isCoastal())
+        if (isWaterUnit() && !cityConstructions.city.isCoastal())
             rejectionReasons.add(RejectionReason.WaterUnitsInCoastalCities)
         if (isAirUnit()) {
-            val fakeUnit = getMapUnit(cityConstructions.cityInfo.civInfo)
-            val canUnitEnterTile = fakeUnit.movement.canMoveTo(cityConstructions.cityInfo.getCenterTile())
+            val fakeUnit = getMapUnit(cityConstructions.city.civInfo)
+            val canUnitEnterTile = fakeUnit.movement.canMoveTo(cityConstructions.city.getCenterTile())
             if (!canUnitEnterTile)
                 rejectionReasons.add(RejectionReason.NoPlaceToPutUnit)
         }
-        val civInfo = cityConstructions.cityInfo.civInfo
+        val civInfo = cityConstructions.city.civInfo
         for (unique in uniqueObjects) {
             when (unique.type) {
-                UniqueType.OnlyAvailableWhen -> if (!unique.conditionalsApply(civInfo, cityConstructions.cityInfo))
+                UniqueType.OnlyAvailableWhen -> if (!unique.conditionalsApply(civInfo, cityConstructions.city))
                     rejectionReasons.add(RejectionReason.ShouldNotBeDisplayed)
 
-                UniqueType.RequiresPopulation -> if (unique.params[0].toInt() > cityConstructions.cityInfo.population.population)
+                UniqueType.RequiresPopulation -> if (unique.params[0].toInt() > cityConstructions.city.population.population)
                     rejectionReasons.add(RejectionReason.PopulationRequirement.toInstance(unique.text))
 
                 else -> {}
@@ -451,8 +451,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     }
 
     override fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat?): Boolean {
-        val civInfo = cityConstructions.cityInfo.civInfo
-        val unit = civInfo.units.placeUnitNearTile(cityConstructions.cityInfo.location, name)
+        val civInfo = cityConstructions.city.civInfo
+        val unit = civInfo.units.placeUnitNearTile(cityConstructions.city.location, name)
             ?: return false  // couldn't place the unit, so there's actually no unit =(
 
         //movement penalty
@@ -464,9 +464,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             unit.religion =
                 if (unit.hasUnique(UniqueType.TakeReligionOverBirthCity))
                     civInfo.religionManager.religion?.name
-                else cityConstructions.cityInfo.religion.getMajorityReligionName()
+                else cityConstructions.city.religion.getMajorityReligionName()
 
-            unit.setupAbilityUses(cityConstructions.cityInfo)
+            unit.setupAbilityUses(cityConstructions.city)
         }
 
         if (this.isCivilian()) return true // tiny optimization makes save files a few bytes smaller
@@ -477,22 +477,22 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     }
 
     fun addConstructionBonuses(unit: MapUnit, cityConstructions: CityConstructions) {
-        val civInfo = cityConstructions.cityInfo.civInfo
+        val civInfo = cityConstructions.city.civInfo
 
         @Suppress("LocalVariableName")
         var XP = 0
 
         for (unique in
-        cityConstructions.cityInfo.getMatchingUniques(UniqueType.UnitStartingExperience)
-            .filter { cityConstructions.cityInfo.matchesFilter(it.params[2]) }
+        cityConstructions.city.getMatchingUniques(UniqueType.UnitStartingExperience)
+            .filter { cityConstructions.city.matchesFilter(it.params[2]) }
         ) {
             if (unit.matchesFilter(unique.params[0]))
                 XP += unique.params[1].toInt()
         }
         unit.promotions.XP = XP
 
-        for (unique in cityConstructions.cityInfo.getMatchingUniques(UniqueType.UnitStartingPromotions)
-            .filter { cityConstructions.cityInfo.matchesFilter(it.params[1]) }) {
+        for (unique in cityConstructions.city.getMatchingUniques(UniqueType.UnitStartingPromotions)
+            .filter { cityConstructions.city.matchesFilter(it.params[1]) }) {
             val filter = unique.params[0]
             val promotion = unique.params.last()
 

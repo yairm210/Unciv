@@ -21,7 +21,7 @@ import kotlin.math.sqrt
 
 class ConstructionAutomation(val cityConstructions: CityConstructions){
 
-    private val cityInfo = cityConstructions.cityInfo
+    private val cityInfo = cityConstructions.city
     private val civInfo = cityInfo.civInfo
 
     private val buildings = cityInfo.getRuleset().buildings.values

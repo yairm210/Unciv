@@ -2,7 +2,7 @@ package com.unciv.models.ruleset.unique
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.CivFlags
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.LocationAction
@@ -27,7 +27,7 @@ object UniqueTriggerActivation {
     fun triggerCivwideUnique(
         unique: Unique,
         civInfo: CivilizationInfo,
-        cityInfo: CityInfo? = null,
+        city: City? = null,
         tile: Tile? = null,
         notification: String? = null
     ): Boolean {
@@ -37,9 +37,9 @@ object UniqueTriggerActivation {
             return true
         }
 
-        if (!unique.conditionalsApply(civInfo, cityInfo)) return false
+        if (!unique.conditionalsApply(civInfo, city)) return false
 
-        val chosenCity = cityInfo ?: civInfo.cities.firstOrNull { it.isCapital() }
+        val chosenCity = city ?: civInfo.cities.firstOrNull { it.isCapital() }
         val tileBasedRandom =
             if (tile != null) Random(tile.position.toString().hashCode())
             else Random(-550) // Very random indeed
@@ -177,8 +177,8 @@ object UniqueTriggerActivation {
 
             UniqueType.OneTimeGainPopulation -> {
                 val applicableCities = when (unique.params[1]) {
-                    "in this city" -> sequenceOf(cityInfo!!)
-                    "in other cities" -> civInfo.cities.asSequence().filter { it != cityInfo }
+                    "in this city" -> sequenceOf(city!!)
+                    "in other cities" -> civInfo.cities.asSequence().filter { it != city }
                     else -> civInfo.cities.asSequence().filter { it.matchesFilter(unique.params[1]) }
                 }
                 for (city in applicableCities) {

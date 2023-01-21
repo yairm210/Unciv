@@ -10,7 +10,7 @@ import com.unciv.logic.BackwardCompatibility.migrateBarbarianCamps
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
 import com.unciv.logic.GameInfo.Companion.CURRENT_COMPATIBILITY_NUMBER
 import com.unciv.logic.GameInfo.Companion.FIRST_WITHOUT
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.CivilizationInfoPreview
 import com.unciv.logic.civilization.LocationAction
@@ -393,7 +393,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         }
     }
 
-    private fun addBombardNotification(thisPlayer: CivilizationInfo, cities: List<CityInfo>) {
+    private fun addBombardNotification(thisPlayer: CivilizationInfo, cities: List<City>) {
         if (cities.size < 3) {
             for (city in cities)
                 thisPlayer.addNotification("Your city [${city.name}] can bombard the enemy!", city.location, NotificationCategory.War, NotificationIcon.City, NotificationIcon.Crosshair)
@@ -415,7 +415,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         maxDistance: Int,
         showForeign: Boolean
     ): Boolean {
-        data class CityTileAndDistance(val city: CityInfo, val tile: Tile, val distance: Int)
+        data class CityTileAndDistance(val city: City, val tile: Tile, val distance: Int)
 
         val exploredRevealTiles: Sequence<Tile> =
                 if (ruleSet.tileResources[resourceName]!!.hasUnique(UniqueType.CityStateOnlyResource)) {

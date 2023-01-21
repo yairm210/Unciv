@@ -3,7 +3,7 @@ package com.unciv.logic.automation.ai
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.GameInfo
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.TileMap
@@ -23,7 +23,7 @@ class TacticalDominanceZone {
     var id = "UNKNOWN"
     var territoryType = TacticalTerritoryType.NONE
     var owner: CivilizationInfo? = null
-    var city: CityInfo? = null
+    var city: City? = null
     var area: Int = -1
     var tileCount: Int = 0
 
@@ -176,7 +176,7 @@ class TacticalAnalysisMap {
                 continue
             }
 
-            val city: CityInfo? = when {
+            val city: City? = when {
                 cityDistance.distance < 3 -> cityDistance.city
                 else -> tile.getCity()
             }

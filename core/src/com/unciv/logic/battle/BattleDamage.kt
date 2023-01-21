@@ -37,7 +37,7 @@ object BattleDamage {
             if (combatAction == CombatAction.Attack) enemy.getTile()
             else combatant.getTile()
 
-        val conditionalState = StateForConditionals(civInfo, cityInfo = (combatant as? CityCombatant)?.city, ourCombatant = combatant, theirCombatant = enemy,
+        val conditionalState = StateForConditionals(civInfo, city = (combatant as? CityCombatant)?.city, ourCombatant = combatant, theirCombatant = enemy,
             attackedTile = attackedTile, combatAction = combatAction)
 
         if (combatant is MapUnitCombatant) {
