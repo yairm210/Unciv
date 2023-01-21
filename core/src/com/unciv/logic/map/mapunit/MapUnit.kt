@@ -699,7 +699,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
 
-    private fun workOnImprovement() {
+    internal fun workOnImprovement() {
         val tile = getTile()
         if (tile.isMarkedForCreatesOneImprovement()) return
         tile.turnsToImprovement -= 1
@@ -766,17 +766,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
     }
 
-    private fun heal() {
-        if (isEmbarked()) return // embarked units can't heal
-        if (health >= 100) return // No need to heal if at max health
-        if (hasUnique(UniqueType.HealOnlyByPillaging, checkCivInfoUniques = true)) return
-
-        val amountToHealBy = rankTileForHealing(getTile())
-        if (amountToHealBy == 0) return
-
-        healBy(amountToHealBy)
-    }
-
     fun healBy(amount: Int) {
         health += amount *
             if (hasUnique(UniqueType.HealingEffectsDoubled, checkCivInfoUniques = true)) 2
@@ -819,92 +808,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
             healing += maxAdjacentHealingBonus
 
         return healing
-    }
-
-    fun endTurn() {
-        movement.clearPathfindingCache()
-        if (currentMovement > 0
-            && getTile().improvementInProgress != null
-            && canBuildImprovement(getTile().getTileImprovementInProgress()!!)
-        ) workOnImprovement()
-        if (currentMovement == getMaxMovement().toFloat() && isFortified() && turnsFortified < 2) {
-            turnsFortified++
-        }
-        if (!isFortified())
-            turnsFortified = 0
-
-        if (currentMovement == getMaxMovement().toFloat() // didn't move this turn
-            || hasUnique(UniqueType.HealsEvenAfterAction)
-        ) heal()
-
-        if (action != null && health > 99)
-            if (isActionUntilHealed()) {
-                action = null // wake up when healed
-            }
-
-        if (isPreparingParadrop() || isPreparingAirSweep())
-            action = null
-
-        if (hasUnique(UniqueType.ReligiousUnit)
-            && getTile().getOwner() != null
-            && !getTile().getOwner()!!.isCityState()
-            && !civInfo.diplomacyFunctions.canPassThroughTiles(getTile().getOwner()!!)
-        ) {
-            val lostReligiousStrength =
-                getMatchingUniques(UniqueType.CanEnterForeignTilesButLosesReligiousStrength)
-                    .map { it.params[0].toInt() }
-                    .minOrNull()
-            if (lostReligiousStrength != null)
-                religiousStrengthLost += lostReligiousStrength
-            if (religiousStrengthLost >= baseUnit.religiousStrength) {
-                civInfo.addNotification("Your [${name}] lost its faith after spending too long inside enemy territory!",
-                    getTile().position, NotificationCategory.Units, name)
-                destroy()
-            }
-        }
-
-        doCitadelDamage()
-        doTerrainDamage()
-
-        addMovementMemory()
-    }
-
-    fun startTurn() {
-        movement.clearPathfindingCache()
-        currentMovement = getMaxMovement().toFloat()
-        attacksThisTurn = 0
-        due = true
-
-        // Hakkapeliitta movement boost
-        if (getTile().getUnits().count() > 1) {
-            // For every double-stacked tile, check if our cohabitant can boost our speed
-            for (unit in getTile().getUnits())
-            {
-                if (unit == this) continue
-
-                if (unit.getMatchingUniques(UniqueType.TransferMovement)
-                        .any { matchesFilter(it.params[0]) } )
-                    currentMovement = maxOf(getMaxMovement().toFloat(), unit.getMaxMovement().toFloat())
-            }
-        }
-
-        // Wake sleeping units if there's an enemy in vision range:
-        // Military units always but civilians only if not protected.
-        if (isSleeping() && (isMilitary() || (currentTile.militaryUnit == null && !currentTile.isCityCenter())) &&
-            this.currentTile.getTilesInDistance(3).any {
-                it.militaryUnit != null && it in civInfo.viewableTiles && it.militaryUnit!!.civInfo.isAtWarWith(civInfo)
-            }
-        )  action = null
-
-        val tileOwner = getTile().getOwner()
-        if (tileOwner != null
-                && !canEnterForeignTerrain
-                && !civInfo.diplomacyFunctions.canPassThroughTiles(tileOwner)
-                && !tileOwner.isCityState()) // if an enemy city expanded onto this tile while I was in it
-            movement.teleportToClosestMoveableTile()
-
-        addMovementMemory()
-        attacksSinceTurnStart.clear()
     }
 
     fun destroy(destroyTransportedUnit: Boolean = true) {
@@ -1141,26 +1044,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return damageFactor
     }
 
-    private fun doTerrainDamage() {
-        val tileDamage = getDamageFromTerrain()
-        health -= tileDamage
-
-        if (health <= 0) {
-            civInfo.addNotification(
-                "Our [$name] took [$tileDamage] tile damage and was destroyed",
-                currentTile.position,
-                NotificationCategory.Units,
-                name,
-                NotificationIcon.Death
-            )
-            destroy()
-        } else if (tileDamage > 0) civInfo.addNotification(
-            "Our [$name] took [$tileDamage] tile damage",
-            currentTile.position,
-            NotificationCategory.Units,
-            name
-        )
-    }
 
     fun getDamageFromTerrain(tile: TileInfo = currentTile): Int {
         if (civInfo.nonStandardTerrainDamage) {
@@ -1174,42 +1057,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return  tile.allTerrains.sumOf { it.damagePerTurn }
     }
 
-    private fun doCitadelDamage() {
-        // Check for Citadel damage - note: 'Damage does not stack with other Citadels'
-        val (citadelTile, damage) = currentTile.neighbors
-            .filter {
-                it.getOwner() != null
-                && it.getUnpillagedImprovement() != null
-                && civInfo.isAtWarWith(it.getOwner()!!)
-            }.map { tile ->
-                tile to tile.getTileImprovement()!!.getMatchingUniques(UniqueType.DamagesAdjacentEnemyUnits)
-                    .sumOf { it.params[0].toInt() }
-            }.maxByOrNull { it.second }
-            ?: return
-        if (damage == 0) return
-        health -= damage
-        val locations = LocationAction(citadelTile.position, currentTile.position)
-        if (health <= 0) {
-            civInfo.addNotification(
-                "An enemy [Citadel] has destroyed our [$name]",
-                locations,
-                NotificationCategory.War,
-                NotificationIcon.Citadel, NotificationIcon.Death, name
-            )
-            citadelTile.getOwner()?.addNotification(
-                "Your [Citadel] has destroyed an enemy [$name]",
-                locations,
-                NotificationCategory.War,
-                NotificationIcon.Citadel, NotificationIcon.Death, name
-            )
-            destroy()
-        } else civInfo.addNotification(
-            "An enemy [Citadel] has attacked our [$name]",
-            locations,
-            NotificationCategory.War,
-            NotificationIcon.Citadel, NotificationIcon.War, name
-        )
-    }
 
     /** Implements [UniqueParameterType.MapUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.MapUnitFilter] */
     fun matchesFilter(filter: String): Boolean {

@@ -11,6 +11,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.map.mapunit.UnitTurnManager
 import com.unciv.logic.map.tile.TileInfo
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.ruleset.ModOptionsConstants
@@ -51,7 +52,7 @@ class TurnManager(val civInfo: CivilizationInfo) {
         updateRevolts()
         for (city in civInfo.cities) CityTurnManager(city).startTurn()  // Most expensive part of startTurn
 
-        for (unit in civInfo.units.getCivUnits()) unit.startTurn()
+        for (unit in civInfo.units.getCivUnits()) UnitTurnManager(unit).startTurn()
 
         if (civInfo.playerType == PlayerType.Human && UncivGame.Current.settings.automatedUnitsMoveOnTurnStart) {
             civInfo.hasMovedAutomatedUnits = true
@@ -264,7 +265,7 @@ class TurnManager(val civInfo: CivilizationInfo) {
         civInfo.temporaryUniques.endTurn()
 
         civInfo.goldenAges.endTurn(civInfo.getHappiness())
-        civInfo.units.getCivUnits().forEach { it.endTurn() }  // This is the most expensive part of endTurn
+        civInfo.units.getCivUnits().forEach { UnitTurnManager(it).endTurn() }  // This is the most expensive part of endTurn
         civInfo.diplomacy.values.toList().forEach { it.nextTurn() } // we copy the diplomacy values so if it changes in-loop we won't crash
         civInfo.cache.updateHasActiveEnemyMovementPenalty()
 
