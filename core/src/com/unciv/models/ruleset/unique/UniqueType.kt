@@ -613,8 +613,12 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ConditionalAfterPantheon("after founding a Pantheon", UniqueTarget.Conditional),
 
     ConditionalBuildingBuilt("if [buildingFilter] is constructed", UniqueTarget.Conditional),
+
     ConditionalWithResource("with [resource]", UniqueTarget.Conditional),
     ConditionalWithoutResource("without [resource]", UniqueTarget.Conditional),
+
+    ConditionalWhenAboveAmountResource("when above [amount] [resource]", UniqueTarget.Conditional),
+    ConditionalWhenBelowAmountResource("when below [amount] [resource]", UniqueTarget.Conditional),
 
     /////// city conditionals
     ConditionalCityWithBuilding("in cities with a [buildingFilter]", UniqueTarget.Conditional),

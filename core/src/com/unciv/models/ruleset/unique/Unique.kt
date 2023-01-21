@@ -157,6 +157,10 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalNotWar -> state.civInfo?.isAtWar() == false
             UniqueType.ConditionalWithResource -> state.civInfo?.hasResource(condition.params[0]) == true
             UniqueType.ConditionalWithoutResource -> state.civInfo?.hasResource(condition.params[0]) == false
+            UniqueType.ConditionalWhenAboveAmountResource -> state.civInfo != null
+                    && state.civInfo.getCivResourcesByName()[condition.params[1]]!! > condition.params[0].toInt()
+            UniqueType.ConditionalWhenBelowAmountResource -> state.civInfo != null
+                    && state.civInfo.getCivResourcesByName()[condition.params[1]]!! < condition.params[0].toInt()
             UniqueType.ConditionalHappy ->
                 state.civInfo != null && state.civInfo.stats.statsForNextTurn.happiness >= 0
             UniqueType.ConditionalBetweenHappiness ->
